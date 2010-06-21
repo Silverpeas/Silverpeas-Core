@@ -24,6 +24,7 @@
 
 package com.stratelia.silverpeas.contentManager;
 
+import java.util.HashMap;
 import java.util.Iterator;
 
 import com.silverpeas.util.i18n.AbstractI18NBean;
@@ -55,6 +56,10 @@ public class GlobalSilverContent extends AbstractI18NBean implements java.io.Ser
   private String userId = "";
   private String creatorFirstName = "";
   private String creatorLastName = "";
+  /**
+   * list of XML form fields used to sort results
+   */
+  private HashMap<String, String> sortableXMLFormFields = null;
 
   /* following attributes are exclusively used by taglibs */
   private String spaceId = "";
@@ -89,6 +94,9 @@ public class GlobalSilverContent extends AbstractI18NBean implements java.io.Ser
     init(mie.getTitle(), mie.getPreView(), null, null, mie.getObjectId(), mie
         .getComponent(), mie.getLastModificationDate(), null, mie.getCreationUser());
     setCreationDate(mie.getCreationDate());
+
+    //add the sortable feld from XML form   
+    sortableXMLFormFields = mie.getSortableXMLFormFields();
 
     Iterator<String> languages = mie.getLanguages();
     while (languages.hasNext()) {
@@ -289,6 +297,21 @@ public class GlobalSilverContent extends AbstractI18NBean implements java.io.Ser
 
   public void setThumbnailMimeType(String thumbnailMimeType) {
     this.thumbnailMimeType = thumbnailMimeType;
+  }
+  /**
+   * gets the list of Sortable fields if the content is a form XML
+   * @return the sortableXMLFormFields
+   */
+  public HashMap<String, String> getSortableXMLFormFields() {
+    return sortableXMLFormFields;
+  }
+
+  /**
+   * Sets the Sortable fields if the content is a form XML
+   * @param sortableXMLFormFields the sortableXMLFormFields to set
+   */
+  public void setSortableXMLFormFields(HashMap<String, String> sortableXMLFormFields) {
+    this.sortableXMLFormFields = sortableXMLFormFields;
   }
 
 }

@@ -26,6 +26,7 @@ package com.stratelia.webactiv.searchEngine.model;
 
 import java.io.Serializable;
 import java.net.URLEncoder;
+import java.util.HashMap;
 
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
@@ -34,6 +35,11 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
  * A MatchingIndexEntry is an IndexEntry completed with a score by the search engine.
  */
 public class MatchingIndexEntry extends IndexEntry implements Serializable {
+  
+  /**
+   * list of XML form fields used to sort results
+   */
+  private HashMap<String, String> sortableXMLFormFields = null;
 
   private static final long serialVersionUID = 5931254295396221458L;
 
@@ -81,6 +87,23 @@ public class MatchingIndexEntry extends IndexEntry implements Serializable {
 
     return "documentId%3d" + id;
   }
+
+  /**
+   * gets the list of Sortable fields if the content is a form XML
+   * @return the sortableXMLFormFields
+   */
+  public HashMap<String, String> getSortableXMLFormFields() {
+    return sortableXMLFormFields;
+  }
+
+  /**
+   * Sets the Sortable fields if the content is a form XML
+   * @param sortableXMLFormFields the sortableXMLFormFields to set
+   */
+  public void setSortableXMLFormFields(HashMap<String, String> sortableXMLFormFields) {
+    this.sortableXMLFormFields = sortableXMLFormFields;
+  }
+
 
   /**
    * The score defaults to 0 as if the entry wasn't a matching entry.

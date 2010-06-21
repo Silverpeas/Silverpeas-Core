@@ -37,6 +37,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
@@ -47,6 +48,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.SearchEnginePropertiesManager;
 import com.stratelia.webactiv.util.indexEngine.parser.Parser;
 import com.stratelia.webactiv.util.indexEngine.parser.ParserManager;
 
@@ -537,11 +539,19 @@ public class IndexManager {
     }
 
     List list3 = indexEntry.getFields();
+    Store storeAction = null;
     for (int i = 0; i < list3.size(); i++) {
       FieldDescription field = (FieldDescription) list3.get(i);
-      if (StringUtil.isDefined(field.getContent()))
+      if (StringUtil.isDefined(field.getContent())){
+        // if a field is used for the sort it's stored in the lucene index
+        if(SearchEnginePropertiesManager.getFieldsNameList().contains(field.getFieldName())){
+          storeAction =Field.Store.YES;
+        }else {
+          storeAction =Field.Store.NO;
+        }
         doc.add(new Field(getFieldName(field.getFieldName(), field.getLang()),
-            field.getContent(), Field.Store.NO, Field.Index.TOKENIZED));
+            field.getContent(), storeAction, Field.Index.TOKENIZED));
+    }
     }
 
     if ("Wysiwyg".equals(indexEntry.getObjectType())

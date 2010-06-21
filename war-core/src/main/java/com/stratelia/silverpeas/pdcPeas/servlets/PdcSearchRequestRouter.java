@@ -1345,7 +1345,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
     request.setAttribute("RefreshEnabled", new Boolean(pdcSC.isRefreshEnabled()));
 
     request.setAttribute("Results", pdcSC.getSortedResultsToDisplay(pdcSC.getSortValue(), pdcSC
-        .getSortOrder(), filter));
+        .getSortOrder(), pdcSC.getXmlFormSortValue(),pdcSC.getSortImplemtor(), filter));
 
     if (filter != null) {
       // Add filtered data

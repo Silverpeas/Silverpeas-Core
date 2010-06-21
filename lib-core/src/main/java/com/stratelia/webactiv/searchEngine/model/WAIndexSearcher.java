@@ -26,6 +26,7 @@ package com.stratelia.webactiv.searchEngine.model;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -57,6 +58,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.SearchEnginePropertiesManager;
 import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
@@ -411,6 +413,25 @@ public class WAIndexSearcher {
         indexEntry.setStartDate(doc.get(IndexManager.STARTDATE));
         indexEntry.setEndDate(doc.get(IndexManager.ENDDATE));
         indexEntry.setScore(scoreDoc.score); // TODO check the score.
+        // determines if the content contains sortable field and puts them in MatchingIndexEntry
+        // object
+        if ("Publication".equals(indexEntry.getObjectType())) {
+          HashMap<String, String> sortableField = new HashMap<String, String>();
+          String fieldValue = null;
+
+          for (String formXMLFieldName : SearchEnginePropertiesManager.getFieldsNameList()) {
+            if (I18NHelper.isDefaultLanguage(query.getRequestedLanguage())) {
+              fieldValue = doc.get(formXMLFieldName);
+            } else {
+              fieldValue = doc.get(formXMLFieldName + "_" + query.getRequestedLanguage());
+            }
+            if (fieldValue != null) {
+              sortableField.put(formXMLFieldName, fieldValue);
+            }
+          }
+          indexEntry.setSortableXMLFormFields(sortableField);
+        }
+
         results.add(indexEntry);
       }
     }

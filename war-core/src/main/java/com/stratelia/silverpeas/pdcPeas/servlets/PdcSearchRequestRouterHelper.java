@@ -34,11 +34,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 
 import com.silverpeas.interestCenter.model.InterestCenter;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.SearchAxis;
 import com.stratelia.silverpeas.pdc.model.SearchContext;
 import com.stratelia.silverpeas.pdc.model.SearchCriteria;
 import com.stratelia.silverpeas.pdc.model.Value;
+import com.stratelia.silverpeas.pdcPeas.Keys;
 import com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController;
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 import com.stratelia.silverpeas.pdcPeas.model.QueryParameters;
@@ -149,6 +151,16 @@ public class PdcSearchRequestRouterHelper {
       pdcSC.setSortValue(sortRes);
     }
     String paramSortOrder = request.getParameter("sortOrder");
+    String paramSortResFieldXForm = request.getParameter(Keys.RequestSortXformField.value());
+    if (StringUtil.isDefined(paramSortResFieldXForm)) {    
+      pdcSC.setXmlFormSortValue(paramSortResFieldXForm);
+    }
+    //
+    String sortImplementor = request.getParameter(Keys.RequestSortImplementor.value());
+    if (StringUtil.isDefined(sortImplementor)) {    
+      pdcSC.setSortImplemtor(sortImplementor);
+    }
+    
     if (paramSortOrder != null) {
       pdcSC.setSortOrder(paramSortOrder);
     }

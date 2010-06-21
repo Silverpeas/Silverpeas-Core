@@ -76,6 +76,9 @@ import com.stratelia.silverpeas.pdc.model.SearchContext;
 import com.stratelia.silverpeas.pdc.model.SearchCriteria;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.pdc.model.Value;
+import com.stratelia.silverpeas.pdcPeas.Keys;
+import com.stratelia.silverpeas.pdcPeas.SortResults;
+import com.stratelia.silverpeas.pdcPeas.SortResultsFactory;
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 import com.stratelia.silverpeas.pdcPeas.model.QueryParameters;
 import com.stratelia.silverpeas.pdcPeas.vo.AuthorVO;
@@ -161,6 +164,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private DataRecord xmlData = null;
   private int searchScope = SEARCH_FULLTEXT;
   private ComponentSecurity componentSecurity = null;
+  // field value of XML form used to sort results
+  private String xmlFormSortValue = null;
+  // keyword used to retrieve the implementation to realize sorting or filtering
+  private String sortImplementor = null;
 
   private int currentResultsDisplay = SHOWRESULTS_ALL;
   public static final int SHOWRESULTS_ALL = 0;
@@ -426,7 +433,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   public List<GlobalSilverResult> getResultsToDisplay() throws Exception {
-    return getSortedResultsToDisplay(getSortValue(), getSortOrder(), null);
+    return getSortedResultsToDisplay(getSortValue(), getSortOrder(), getXmlFormSortValue(),
+        getSortImplemtor(), null);
   }
 
   /**
@@ -520,7 +528,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   public List<GlobalSilverResult> getSortedResultsToDisplay(int sortValue, String sortOrder,
-      ResultFilterVO filter)
+      String xmlFormSortValue, String sortType, ResultFilterVO filter)
       throws Exception {
     List<GlobalSilverResult> sortedResultsToDisplay = new ArrayList<GlobalSilverResult>();
 
@@ -539,200 +547,36 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       }
     }
 
-    // Sort global silver result
-    sortGlobalSilverResult(sortValue, sortOrder, results);
-
     // Check if we need to filter or not result
     List<GlobalSilverResult> sortedResults = new ArrayList<GlobalSilverResult>();
+    // Tri de tous les résultats
+    // Gets a SortResult implementation to realize the sorting and/or filtering results
+    SortResults sortResults = SortResultsFactory.getSortResults(sortType);
+    String sortValString = null;
+    // determines which value used for sort value
+    if (StringUtil.isDefined(xmlFormSortValue)) {
+      sortValString = xmlFormSortValue;
+    } else {
+      sortValString = Integer.toString(sortValue);
+    }
+    // realizes the sort
+    if (sortValue == 7) {
+      setPopularityToResults();
+    }
+    sortedResults = sortResults.execute(results, sortOrder, sortValString, getLanguage());
     if (filter != null) {
       // Check Author filter
-      sortedResultsToDisplay = filterResult(filter, results, sortedResults);
+      sortedResultsToDisplay = filterResult(filter, sortedResults);
     } else {
-      for (GlobalSilverResult globalSilverResult : results) {
-        sortedResults.add(globalSilverResult);
-      }
       // Put the full result list in session
       setGlobalSR(sortedResults);
 
+      // get the part of results to display
       sortedResultsToDisplay = sortedResults.subList(
           getIndexOfFirstResultToDisplay(), getLastIndexToDisplay());
     }
 
     return sortedResultsToDisplay;
-  }
-
-  /**
-   * Return a list of global silver result which are sorted by sortValue in sortOrder order
-   * @param sortValue the sort value
-   * @param sortOrder the sort order
-   * @param results the list to be sorted
-   */
-  private void sortGlobalSilverResult(int sortValue, String sortOrder,
-      List<GlobalSilverResult> results) {
-
-    // Title comparator
-    final Comparator<GlobalSilverResult> cTitreAsc = new Comparator<GlobalSilverResult>() {
-
-      public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
-        String string1 = o1.getName(getLanguage());
-        String string2 = o2.getName(getLanguage());
-
-        if (string1 != null && string2 != null) {
-          return string1.compareToIgnoreCase(string2);
-        } else {
-          return -1;
-        }
-      }
-    };
-
-    Comparator<GlobalSilverResult> cPertAsc = new Comparator<GlobalSilverResult>() {
-
-      public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
-        Float float1 = new Float(o1.getRawScore());
-        Float float2 = new Float(o2.getRawScore());
-
-        if (float1 != null && float2 != null) {
-          int result = float1.compareTo(float2);
-          // Add comparison on title if we have the same pertinence
-          return (result != 0) ? result : cTitreAsc.compare(o1, o2);
-        } else {
-          return -1;
-        }
-      }
-    };
-
-    Comparator<GlobalSilverResult> cAuteurAsc = new Comparator<GlobalSilverResult>() {
-
-      public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
-        String string1 = o1.getCreatorName();
-        String string2 = o2.getCreatorName();
-
-        if (string1 != null && string2 != null) {
-          int result = string1.compareToIgnoreCase(string2);
-          // Add comparison on title if we have the same author
-          return (result != 0) ? result : cTitreAsc.compare(o1, o2);
-        } else {
-          return -1;
-        }
-      }
-    };
-
-    Comparator<GlobalSilverResult> cDateAsc = new Comparator<GlobalSilverResult>() {
-
-      public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
-        String string1 = o1.getCreationDate();
-        String string2 = o2.getCreationDate();
-
-        if (string1 != null && string2 != null) {
-          int result = string1.compareTo(string2);
-          // Add comparison on title if we have the same creation date
-          return (result != 0) ? result : cTitreAsc.compare(o1, o2);
-        } else {
-          return -1;
-        }
-      }
-    };
-
-    Comparator<GlobalSilverResult> cUpdateDateAsc = new Comparator<GlobalSilverResult>() {
-
-      public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
-        String string1 = o1.getDate();
-        String string2 = o2.getDate();
-
-        if (string1 != null && string2 != null) {
-          int result = string1.compareTo(string2);
-          // Add comparison on title if we have the same update date
-          return (result != 0) ? result : cTitreAsc.compare(o1, o2);
-        } else {
-          return -1;
-        }
-      }
-    };
-
-    Comparator<GlobalSilverResult> cEmplAsc = new Comparator<GlobalSilverResult>() {
-
-      public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
-        String string1 = o1.getLocation();
-        String string2 = o2.getLocation();
-
-        if (string1 != null && string2 != null) {
-          int result = string1.compareToIgnoreCase(string2);
-          // Add comparison on title if we have the same emplacement
-          return (result != 0) ? result : cTitreAsc.compare(o1, o2);
-        } else {
-          return -1;
-        }
-      }
-    };
-
-    Comparator<GlobalSilverResult> cPopularityAsc = new Comparator<GlobalSilverResult>() {
-
-      public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
-        Integer pop1 = Integer.valueOf(o1.getHits());
-        Integer pop2 = Integer.valueOf(o2.getHits());
-
-        if (pop1 != null && pop2 != null) {
-          int result = pop1.compareTo(pop2);
-          // Add comparison on title if we have the same popularity
-          return (result != 0) ? result : cTitreAsc.compare(o1, o2);
-        } else {
-          return -1;
-        }
-      }
-    };
-
-    if (sortValue == 1 && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {
-      // Pertinence ASC
-      Collections.sort(results, cPertAsc);
-    } else if (sortValue == 1 && PdcSearchSessionController.SORT_ORDER_DESC.equals(sortOrder)) {
-      // Pertinence DESC
-      Collections.sort(results, cPertAsc);
-      Collections.reverse(results);
-    } else if (sortValue == 2 && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {
-      // Titre ASC
-      Collections.sort(results, cTitreAsc);
-    } else if (sortValue == 2 && PdcSearchSessionController.SORT_ORDER_DESC.equals(sortOrder)) {
-      // Titre DESC
-      Collections.sort(results, cTitreAsc);
-      Collections.reverse(results);
-    } else if (sortValue == 3 && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {
-      // Auteur ASC
-      Collections.sort(results, cAuteurAsc);
-    } else if (sortValue == 3 && PdcSearchSessionController.SORT_ORDER_DESC.equals(sortOrder)) {
-      // Auteur DESC
-      Collections.sort(results, cAuteurAsc);
-      Collections.reverse(results);
-    } else if (sortValue == 4 && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {
-      // Date ASC
-      Collections.sort(results, cDateAsc);
-    } else if (sortValue == 4 && PdcSearchSessionController.SORT_ORDER_DESC.equals(sortOrder)) {
-      // Date DESC
-      Collections.sort(results, cDateAsc);
-      Collections.reverse(results);
-    } else if (sortValue == 5 && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {
-      // Date ASC
-      Collections.sort(results, cUpdateDateAsc);
-    } else if (sortValue == 5 && PdcSearchSessionController.SORT_ORDER_DESC.equals(sortOrder)) {
-      // Date DESC
-      Collections.sort(results, cUpdateDateAsc);
-      Collections.reverse(results);
-    } else if (sortValue == 6 && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {
-      // Emplacement ASC
-      Collections.sort(results, cEmplAsc);
-    } else if (sortValue == 6 && PdcSearchSessionController.SORT_ORDER_DESC.equals(sortOrder)) {
-      // Emplacement DESC
-      Collections.sort(results, cEmplAsc);
-      Collections.reverse(results);
-    } else if (sortValue == 7 && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {
-      // Popularity ASC
-      setPopularityToResults();
-      Collections.sort(results, cPopularityAsc);
-    } else if (sortValue == 7 && PdcSearchSessionController.SORT_ORDER_DESC.equals(sortOrder)) {
-      // Popularity DESC
-      setPopularityToResults();
-      Collections.sort(results, cPopularityAsc);
-      Collections.reverse(results);
-    }
   }
 
   private void setPopularityToResults() {
@@ -787,7 +631,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * @return list of GlobalSilverResult to display
    */
   private List<GlobalSilverResult> filterResult(ResultFilterVO filter,
-      List<GlobalSilverResult> listGSR, List<GlobalSilverResult> sortedResults) {
+      List<GlobalSilverResult> listGSR) {
+    List<GlobalSilverResult> sortedResults = new ArrayList<GlobalSilverResult>();
     List<GlobalSilverResult> sortedResultsToDisplay;
     String authorFilter = filter.getAuthorId();
     boolean filterAuthor = false;
@@ -2451,5 +2296,39 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   public void setCurrentResultsDisplay(int currentResultsDisplay) {
     this.currentResultsDisplay = currentResultsDisplay;
+  }
+
+  /**
+   * Gets the XML form field used to realize sorting
+   * @return the xmlFormSortValue
+   */
+  public String getXmlFormSortValue() {
+    return xmlFormSortValue;
+  }
+
+  /**
+   * Sets the XML form field used to realize sorting
+   * @param xmlFormSortValue the xmlFormSortValue to set
+   */
+  public void setXmlFormSortValue(String xmlFormSortValue) {
+    this.xmlFormSortValue = xmlFormSortValue;
+  }
+
+  /**
+   * Gets the keyword to retreive the implementation class name to realize sorting or filtering
+   * @return the sortImplemtor
+   */
+  public String getSortImplemtor() {
+    if (sortImplementor == null) {
+      return Keys.defaultImplementor.value();
+    }
+    return sortImplementor;
+  }
+
+  /**
+   * @param sortImplemtor the sortImplemtor to set
+   */
+  public void setSortImplemtor(String sortImplementor) {
+    this.sortImplementor = sortImplementor;
   }
 }
