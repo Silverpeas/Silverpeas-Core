@@ -83,6 +83,15 @@ public class RandomGenerator {
     return random.nextLong();
   }
 
+
+  /**
+   * Generate a random float.
+   * @return a random float.
+   */
+  public static float getRandomFloat() {
+    return random.nextFloat();
+  }
+
   /**
    * Generate a random String of size 32.
    * @return a random String of 32 chars.
