@@ -1224,6 +1224,11 @@ td.browsebar a:hover {
 	color: #000000;
 }
 
+#domainsBar #loginBox .forgottenPwd a {
+	font-size: 10px;
+	color: #666666;
+}
+
 /****************************************/
 	/****** Look V5 - ViewGenerator *********/
 	/****************************************/ /* objet window */

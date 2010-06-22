@@ -63,6 +63,16 @@ if (!StringUtil.isDefined(spaceId) && StringUtil.isDefined(componentId))
 
 ResourceLocator resourceSearchEngine = new ResourceLocator("com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", "");
 int autocompletionMinChars = SilverpeasSettings.readInt(resourceSearchEngine, "autocompletion.minChars", 3);
+
+//Is "forgotten password" feature active ?
+ResourceLocator authenticationBundle = new ResourceLocator("com.silverpeas.authentication.multilang.authentication", "");
+ResourceLocator general	= new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
+String pwdResetBehavior = general.getString("forgottenPwdActive", "reinit");    
+boolean forgottenPwdActive = !pwdResetBehavior.equalsIgnoreCase("false");
+String urlToForgottenPwd = m_sContext+"/CredentialsServlet/ForgotPassword";
+if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
+  urlToForgottenPwd = m_sContext+"/CredentialsServlet/LoginQuestion";
+}
 %>
 
 <html>
@@ -229,6 +239,17 @@ out.println(gef.getLookStyleSheet());
         return labels;
     }
 
+    function toForgottenPassword() {
+    	var form = document.getElementById("authForm");
+        if (form.elements["Login"].value.length == 0) {
+            alert("<%=authenticationBundle.getString("authentication.logon.loginMissing") %>");
+        } else {
+        	form.action = "<%=urlToForgottenPwd%>";
+        	form.target = "MyMain";
+        	form.submit();
+        }
+    }
+
   	//used by keyword autocompletion
     <%  if(SilverpeasSettings.readBoolean(resourceSearchEngine, "enableAutocompletion", false)){ %>
     	$(document).ready(function(){
@@ -331,7 +352,7 @@ out.println(gef.getLookStyleSheet());
     </div>
             
     <div id="loginBox">
-      <form name="authForm" action="<%=m_sContext%>/AuthenticationServlet" method="POST" target="_top">
+      <form name="authForm" id="authForm" action="<%=m_sContext%>/AuthenticationServlet" method="POST" target="_top">
         <table width="100%">
         <tr>
             <td align="right" valign="top"> 
@@ -356,6 +377,15 @@ out.println(gef.getLookStyleSheet());
                             <td colspan="2" align="right"><%=button.print()%></td>
                         </tr>
                     </table>
+                   	 <% if (forgottenPwdActive) { %>
+						<span class="forgottenPwd">
+						<% if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) { %>
+							<a href="javascript:toForgottenPassword()"><%=authenticationBundle.getString("authentication.logon.passwordForgotten") %></a>
+						<% } else { %>
+						 	<a href="javascript:toForgottenPassword()"><%=authenticationBundle.getString("authentication.logon.passwordReinit") %></a>
+						<%} %>
+						</span>
+					 <% } %>
                 <% } else { 
                     Button button = gef.getFormButton(helper.getString("lookSilverpeasV5.logout"), "javaScript:logout();", false);
                 %>
