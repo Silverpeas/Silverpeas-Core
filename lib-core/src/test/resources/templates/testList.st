@@ -1,1 +1,1 @@
-la liste est = $list; separator=", "$
+la liste donnée est = $list; separator=", "$

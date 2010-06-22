@@ -1,1 +1,1 @@
-la valeur est = $element$
+la valeur donnée est = $element$

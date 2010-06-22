@@ -53,7 +53,7 @@ public class SilverpeasTemplateTest {
     String attributeString = "single";
     template.setAttribute("element", attributeString);
     String result = template.applyFileTemplate("testString");
-    assertEquals("la valeur est = single", result);
+    assertEquals("la valeur donnée est = single", result);
   }
 
   @Test
@@ -87,7 +87,7 @@ public class SilverpeasTemplateTest {
     attributeList[1] = "deux";
     template.setAttribute("list", attributeList);
     String result = template.applyFileTemplate("testList");
-    assertEquals("la liste est = un, deux", result);
+    assertEquals("la liste donnée est = un, deux", result);
   }
 
 }
