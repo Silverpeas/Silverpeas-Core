@@ -38,7 +38,7 @@
     </dependency>
     <dependency>
       <groupId>${project.parent.groupId}</groupId>
-      <artifactId>test-core</artifactId>
+      <artifactId>it-test-core</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

@@ -19,15 +19,10 @@
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>com.silverpeas.core</groupId>
       <artifactId>test-core</artifactId>
       <version>${project.version}</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -37,7 +32,36 @@
     <dependency>
       <groupId>org.springmodules</groupId>
       <artifactId>spring-modules-jcr</artifactId>
-    </dependency>   
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.dbunit</groupId>
+      <artifactId>dbunit</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jndi</groupId>
+      <artifactId>fscontext</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jndi</groupId>
+      <artifactId>providerutil</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>

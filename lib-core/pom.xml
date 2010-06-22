@@ -14,25 +14,15 @@
 
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.jndi</groupId>
-      <artifactId>fscontext</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.jndi</groupId>
-      <artifactId>providerutil</artifactId>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>test-core</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>informa</groupId>
       <artifactId>informa</artifactId>
       <classifier>silverpeas</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.dbunit</groupId>
-      <artifactId>dbunit</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
