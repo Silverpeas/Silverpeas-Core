@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.attachment.control;
 
 import java.sql.Connection;
@@ -50,9 +49,11 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 public class AttachmentBmImpl implements AttachmentBm {
+
   public AttachmentBmImpl() {
   }
 
+  @Override
   public AttachmentDetail createAttachment(AttachmentDetail attachDetail)
       throws AttachmentException {
     Connection con = getConnection();
@@ -71,14 +72,12 @@ public class AttachmentBmImpl implements AttachmentBm {
     }
   }
 
-  public void updateAttachment(AttachmentDetail attachDetail)
-      throws AttachmentException {
+  @Override
+  public void updateAttachment(AttachmentDetail attachDetail) throws AttachmentException {
     Connection con = getConnection();
     try {
       boolean updateDefault = false;
-
-      AttachmentDetail oldAttachment = AttachmentDAO.findByPrimaryKey(con,
-          attachDetail.getPK());
+      AttachmentDetail oldAttachment = AttachmentDAO.findByPrimaryKey(con, attachDetail.getPK());
       String oldLang = oldAttachment.getLanguage();
 
       if (attachDetail.isRemoveTranslation()) {
@@ -90,9 +89,7 @@ public class AttachmentBmImpl implements AttachmentBm {
               attachDetail.getPK());
 
           if (translations != null && translations.size() > 0) {
-            AttachmentDetailI18N translation = translations
-                .get(0);
-
+            AttachmentDetailI18N translation = translations.get(0);
             attachDetail.setPhysicalName(translation.getPhysicalName());
             attachDetail.setLogicalName(translation.getLogicalName());
             attachDetail.setType(translation.getType());
@@ -102,14 +99,11 @@ public class AttachmentBmImpl implements AttachmentBm {
             attachDetail.setTitle(translation.getTitle());
             attachDetail.setInfo(translation.getInfo());
             attachDetail.setLanguage(translation.getLanguage());
-
             AttachmentI18NDAO.removeTranslation(con, translation.getId());
-
             updateDefault = true;
           }
         } else {
-          AttachmentI18NDAO.removeTranslation(con, attachDetail
-              .getTranslationId());
+          AttachmentI18NDAO.removeTranslation(con, attachDetail.getTranslationId());
         }
       } else {
         // Add or update a translation
@@ -120,16 +114,14 @@ public class AttachmentBmImpl implements AttachmentBm {
           }
 
           if (!oldLang.equalsIgnoreCase(attachDetail.getLanguage())) {
-            AttachmentDetailI18N translation = new AttachmentDetailI18N(
-                attachDetail);
+            AttachmentDetailI18N translation = new AttachmentDetailI18N(attachDetail);
             String translationId = attachDetail.getTranslationId();
 
-            if (translationId != null && !translationId.equals("-1")) {
+            if (translationId != null && !"-1".equals(translationId)) {
               AttachmentI18NDAO.updateTranslation(con, translation);
             } else {
               AttachmentI18NDAO.addTranslation(con, translation);
             }
-
             attachDetail.setPhysicalName(oldAttachment.getPhysicalName());
             attachDetail.setLogicalName(oldAttachment.getLogicalName());
             attachDetail.setType(oldAttachment.getType());
@@ -146,18 +138,18 @@ public class AttachmentBmImpl implements AttachmentBm {
           updateDefault = true;
         }
       }
-
-      if (updateDefault)
+      if (updateDefault) {
         AttachmentDAO.updateRow(con, attachDetail);
+      }
     } catch (SQLException se) {
       throw new AttachmentException("AttachmentBmImpl.updateAttachment()",
-          SilverpeasException.ERROR,
-          "attachment.EX_RECORD_NOT_UPDATE_ATTACHMENT", se);
+          SilverpeasException.ERROR, "attachment.EX_RECORD_NOT_UPDATE_ATTACHMENT", se);
     } finally {
       closeConnection(con);
     }
   }
 
+  @Override
   public Vector<AttachmentDetail> getAttachmentsByForeignKey(AttachmentPK foreignKey)
       throws AttachmentException {
     Connection con = getConnection();
@@ -327,8 +319,9 @@ public class AttachmentBmImpl implements AttachmentBm {
           + " componentId = " + componentId);
       notifMetaData.setConnection(con);
       if (notifMetaData.getSender() == null
-          || notifMetaData.getSender().length() == 0)
+          || notifMetaData.getSender().length() == 0) {
         notifMetaData.setSender(senderId);
+      }
       NotificationSender notifSender = new NotificationSender(componentId);
       notifSender.notifyUser(notifMetaData);
     } catch (NotificationManagerException e) {
@@ -344,9 +337,9 @@ public class AttachmentBmImpl implements AttachmentBm {
       throws AttachmentException {
     Connection con = getConnection();
     try {
-      if (!I18NHelper.isI18N || !StringUtil.isDefined(language))
+      if (!I18NHelper.isI18N || !StringUtil.isDefined(language)) {
         AttachmentDAO.updateXmlForm(con, pk, xmlFormName);
-      else {
+      } else {
         AttachmentDetail attachment = AttachmentDAO.findByPrimaryKey(con, pk);
         if (!StringUtil.isDefined(attachment.getLanguage())
             || attachment.getLanguage().equals(language)) {
@@ -389,8 +382,9 @@ public class AttachmentBmImpl implements AttachmentBm {
 
   private void closeConnection(Connection con) {
     try {
-      if (con != null)
+      if (con != null) {
         con.close();
+      }
     } catch (Exception e) {
       SilverTrace.error("attachment", "AttachmentBmImpl.closeConnection()",
           "root.EX_CONNECTION_CLOSE_FAILED", "", e);

@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.attachment.model;
 
 import java.sql.Connection;
@@ -49,8 +48,8 @@ public class AttachmentDAO {
   private static String attachmentTableName = "SB_Attachment_Attachment";
   private static String attachmentTableColumns =
       " attachmentId, attachmentPhysicalName, attachmentLogicalName, attachmentDescription, attachmentType, "
-          + "attachmentSize, attachmentContext, attachmentForeignkey, instanceId, attachmentCreationDate, attachmentAuthor, "
-          + "attachmentTitle, attachmentInfo, attachmentOrderNum, workerId, cloneId, lang, reservationDate, alertDate, expiryDate, xmlForm ";
+      + "attachmentSize, attachmentContext, attachmentForeignkey, instanceId, attachmentCreationDate, attachmentAuthor, "
+      + "attachmentTitle, attachmentInfo, attachmentOrderNum, workerId, cloneId, lang, reservationDate, alertDate, expiryDate, xmlForm ";
   private final static int nameMaxLength = 100;
 
   public AttachmentDAO() {
@@ -73,16 +72,15 @@ public class AttachmentDAO {
     String u = rs.getString("attachmentCreationDate");
     if (u != null) {
       try {
-        attachDetail.setCreationDate(DateUtil.parse(rs
-            .getString("attachmentCreationDate")));
+        attachDetail.setCreationDate(DateUtil.parse(rs.getString("attachmentCreationDate")));
       } catch (java.text.ParseException e) {
         throw new SQLException(
             "AttachmentDAO.result2AttachmentDetail() : internal error : creationDate format unknown for attachment.pk = "
-                +
-                pk + " : " + e.toString());
+            + pk + " : " + e.toString());
       }
-    } else
+    } else {
       attachDetail.setCreationDate(new Date());
+    }
     attachDetail.setAuthor(rs.getString("attachmentAuthor"));
     attachDetail.setTitle(rs.getString("attachmentTitle"));
     attachDetail.setInfo(rs.getString("attachmentInfo"));
@@ -101,16 +99,15 @@ public class AttachmentDAO {
     String rd = rs.getString("reservationDate");
     if (rd != null) {
       try {
-        attachDetail.setReservationDate(DateUtil.parse(rs
-            .getString("reservationDate")));
+        attachDetail.setReservationDate(DateUtil.parse(rs.getString("reservationDate")));
       } catch (java.text.ParseException e) {
         throw new SQLException(
             "AttachmentDAO.result2AttachmentDetail() : internal error : reservationDate format unknown for attachment.pk = "
-                +
-                pk + " : " + e.toString());
+            + pk + " : " + e.toString());
       }
-    } else
+    } else {
       attachDetail.setReservationDate(null);
+    }
 
     // recuperation de la date d'alerte
     String ad = rs.getString("alertDate");
@@ -120,11 +117,11 @@ public class AttachmentDAO {
       } catch (java.text.ParseException e) {
         throw new SQLException(
             "AttachmentDAO.result2AttachmentDetail() : internal error : alertDate format unknown for attachment.pk = "
-                +
-                pk + " : " + e.toString());
+            + pk + " : " + e.toString());
       }
-    } else
+    } else {
       attachDetail.setAlertDate(null);
+    }
 
     // recuperation de la date d'expiration
     String ed = rs.getString("expiryDate");
@@ -134,11 +131,11 @@ public class AttachmentDAO {
       } catch (java.text.ParseException e) {
         throw new SQLException(
             "AttachmentDAO.result2AttachmentDetail() : internal error : expiryDate format unknown for attachment.pk = "
-                +
-                pk + " : " + e.toString());
+            + pk + " : " + e.toString());
       }
-    } else
+    } else {
       attachDetail.setExpiryDate(null);
+    }
 
     attachDetail.setXmlForm(rs.getString("xmlForm"));
 
@@ -153,8 +150,9 @@ public class AttachmentDAO {
 
     // First get the max orderNum
     AttachmentDetail ad = findLast(con, attach);
-    if (ad != null)
+    if (ad != null) {
       attach.setOrderNum(ad.getOrderNum() + 1);
+    }
 
     String insertQuery = "insert into "
         + attachmentTableName
@@ -184,19 +182,21 @@ public class AttachmentDAO {
       prepStmt.setString(15, attach.getWorkerId());
       prepStmt.setString(16, attach.getCloneId());
       prepStmt.setString(17, attach.getLanguage());
-      if (attach.getReservationDate() != null)
-        prepStmt.setString(18, DateUtil.date2SQLDate(attach
-            .getReservationDate()));
-      else
+      if (attach.getReservationDate() != null) {
+        prepStmt.setString(18, DateUtil.date2SQLDate(attach.getReservationDate()));
+      } else {
         prepStmt.setString(18, null);
-      if (attach.getAlertDate() != null)
+      }
+      if (attach.getAlertDate() != null) {
         prepStmt.setString(19, DateUtil.date2SQLDate(attach.getAlertDate()));
-      else
+      } else {
         prepStmt.setString(19, null);
-      if (attach.getExpiryDate() != null)
+      }
+      if (attach.getExpiryDate() != null) {
         prepStmt.setString(20, DateUtil.date2SQLDate(attach.getExpiryDate()));
-      else
+      } else {
         prepStmt.setString(20, null);
+      }
 
       prepStmt.setString(21, attach.getXmlForm());
 
@@ -213,24 +213,18 @@ public class AttachmentDAO {
 
   public static void updateRow(Connection con, AttachmentDetail attach)
       throws SQLException {
-    String updateQuery =
-        "update "
-            +
-            attachmentTableName
-            +
-            " set attachmentTitle = ?, attachmentInfo = ?, "
-            +
-            "attachmentPhysicalName = ?, attachmentLogicalName = ?, attachmentDescription = ?, attachmentSize = ?, "
-            +
-            "attachmentType = ?, attachmentContext = ?, attachmentCreationDate = ?, attachmentAuthor = ?, "
-            +
-            "attachmentOrderNum = ?, workerId = ?, instanceId = ?, lang = ?, reservationDate = ? , alertDate = ?, expiryDate = ?, xmlForm = ? "
-            + " where attachmentId = ? ";
+    StringBuilder updateQuery = new StringBuilder();
+    updateQuery.append("UPDATE ").append(attachmentTableName).append(" SET attachmentTitle = ?, ");
+    updateQuery.append("attachmentInfo = ?, attachmentPhysicalName = ?, attachmentLogicalName = ?, ");
+    updateQuery.append("attachmentDescription = ?, attachmentSize = ?, attachmentType = ?, ");
+    updateQuery.append("attachmentContext = ?, attachmentCreationDate = ?, attachmentAuthor = ?, ");
+    updateQuery.append("attachmentOrderNum = ?, workerId = ?, instanceId = ?, lang = ?, ");
+    updateQuery.append("reservationDate = ? , alertDate = ?, expiryDate = ?, xmlForm = ? ");
+    updateQuery.append(" WHERE attachmentId = ? ");
     PreparedStatement prepStmt = null;
     try {
-      prepStmt = con.prepareStatement(updateQuery);
-      prepStmt.setString(1, StringUtil.truncate(attach.getTitle(),
-          nameMaxLength));
+      prepStmt = con.prepareStatement(updateQuery.toString());
+      prepStmt.setString(1, StringUtil.truncate(attach.getTitle(), nameMaxLength));
       prepStmt.setString(2, attach.getInfo());
       prepStmt.setString(3, attach.getPhysicalName());
       prepStmt.setString(4, attach.getLogicalName());
@@ -249,16 +243,15 @@ public class AttachmentDAO {
       prepStmt.setString(13, attach.getInstanceId());
 
       if (!StringUtil.isDefined(attach.getLanguage())
-          || I18NHelper.isDefaultLanguage(attach.getLanguage()))
+          || I18NHelper.isDefaultLanguage(attach.getLanguage())) {
         prepStmt.setNull(14, Types.VARCHAR);
-      else
+      } else {
         prepStmt.setString(14, attach.getLanguage());
-
+      }
       if (attach.getReservationDate() == null) {
         prepStmt.setString(15, null);
       } else {
-        prepStmt.setString(15, DateUtil.date2SQLDate(attach
-            .getReservationDate()));
+        prepStmt.setString(15, DateUtil.date2SQLDate(attach.getReservationDate()));
       }
       if (attach.getAlertDate() == null) {
         prepStmt.setString(16, null);
@@ -270,11 +263,8 @@ public class AttachmentDAO {
       } else {
         prepStmt.setString(17, DateUtil.date2SQLDate(attach.getExpiryDate()));
       }
-
       prepStmt.setString(18, attach.getXmlForm());
-
       prepStmt.setInt(19, new Integer(attach.getPK().getId()).intValue());
-
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -505,9 +495,9 @@ public class AttachmentDAO {
     selectQuery.append("select ").append(attachmentTableColumns);
     selectQuery.append(" from ").append(attachmentTableName);
     selectQuery.append(" where attachmentForeignKey = ? ");
-    if (context != null)
-      selectQuery.append(" and attachmentContext like '").append(context)
-          .append("%'");
+    if (context != null) {
+      selectQuery.append(" and attachmentContext like '").append(context).append("%'");
+    }
     selectQuery.append(" and instanceId = ? ");
     selectQuery.append(" order by attachmentOrderNum, attachmentId ");
 
@@ -557,9 +547,10 @@ public class AttachmentDAO {
     selectQuery.append("select ").append(attachmentTableColumns);
     selectQuery.append(" from ").append(attachmentTableName);
     selectQuery.append(" where attachmentForeignKey = ? ");
-    if (ad.getContext() != null)
+    if (ad.getContext() != null) {
       selectQuery.append(" and attachmentContext like '").append(
           ad.getContext()).append("%'");
+    }
     selectQuery.append(" and instanceId = ? ");
     selectQuery.append(" and attachmentOrderNum < ?");
     selectQuery.append(" order by attachmentOrderNum DESC, attachmentId DESC");
@@ -596,9 +587,10 @@ public class AttachmentDAO {
     selectQuery.append("select ").append(attachmentTableColumns);
     selectQuery.append(" from ").append(attachmentTableName);
     selectQuery.append(" where attachmentForeignKey = ? ");
-    if (ad.getContext() != null)
+    if (ad.getContext() != null) {
       selectQuery.append(" and attachmentContext like '").append(
           ad.getContext()).append("%'");
+    }
     selectQuery.append(" and instanceId = ? ");
     selectQuery.append(" and attachmentOrderNum > ?");
     selectQuery.append(" order by attachmentOrderNum, attachmentId");
@@ -635,9 +627,10 @@ public class AttachmentDAO {
     selectQuery.append("select ").append(attachmentTableColumns);
     selectQuery.append(" from ").append(attachmentTableName);
     selectQuery.append(" where attachmentForeignKey = ? ");
-    if (ad.getContext() != null)
+    if (ad.getContext() != null) {
       selectQuery.append(" and attachmentContext like '").append(
           ad.getContext()).append("%'");
+    }
     selectQuery.append(" and instanceId = ? ");
     selectQuery.append(" order by attachmentOrderNum DESC, attachmentId DESC");
 
@@ -686,10 +679,11 @@ public class AttachmentDAO {
     StringBuffer selectQuery = new StringBuffer();
     selectQuery.append("select ").append(attachmentTableColumns);
     selectQuery.append(" from ").append(attachmentTableName);
-    if (alert)
+    if (alert) {
       selectQuery.append(" where alertDate = ? ");
-    else
+    } else {
       selectQuery.append(" where expiryDate = ? ");
+    }
 
     SilverTrace.info("attachment", "AttachmentDAO.findByPKAndContext()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery.toString());
@@ -785,5 +779,4 @@ public class AttachmentDAO {
       DBUtil.close(prepStmt);
     }
   }
-
 }

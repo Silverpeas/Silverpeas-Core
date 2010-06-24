@@ -21,13 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * @author Norbert CHAIX
- * @version 1.0
- date 01/09/2000
- */
-
 package com.stratelia.webactiv.beans.admin;
 
 import java.io.Serializable;
@@ -37,6 +30,12 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 public class UserDetail extends Object implements Serializable, Comparable<UserDetail> {
 
+  public static final String ADMIN_ACCESS = "A";
+  public static final String USER_ACCESS = "U";
+  public static final String REMOVED_ACCESS = "R";
+  public static final String GUEST_ACCESS = "G";
+  public static final String KM_ACCESS = "K";
+  public static final String DOMAIN_ACCESS = "D";
   private static final long serialVersionUID = -109886153681824159L;
   private String m_sId = null;
   private String m_sSpecificId = null;
@@ -56,16 +55,16 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
   }
 
   public UserDetail(UserDetail toClone) {
-    m_sId = toClone.m_sId;
-    m_sSpecificId = toClone.m_sSpecificId;
-    m_sDomainId = toClone.m_sDomainId;
-    m_sLogin = toClone.m_sLogin;
-    m_sFirstName = toClone.m_sFirstName;
-    m_sLastName = toClone.m_sLastName;
-    m_seMail = toClone.m_seMail;
-    m_sAccessLevel = toClone.m_sAccessLevel;
-    m_sLoginQuestion = toClone.m_sLoginQuestion;
-    m_sLoginAnswer = toClone.m_sLoginAnswer;
+    m_sId = toClone.getId();
+    m_sSpecificId = toClone.getSpecificId();
+    m_sDomainId = toClone.getDomainId();
+    m_sLogin = toClone.getLogin();
+    m_sFirstName = toClone.getFirstName();
+    m_sLastName = toClone.getLastName();
+    m_seMail = toClone.geteMail();
+    m_sAccessLevel = toClone.getAccessLevel();
+    m_sLoginQuestion = toClone.getLoginQuestion();
+    m_sLoginAnswer = toClone.getLoginAnswer();
   }
 
   public String getLoginQuestion() {
@@ -182,16 +181,19 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
 
   /**
    * Set user's email
+   * @param seMail 
    */
   public void seteMail(String seMail) {
-    if (seMail != null)
+    if (seMail != null) {
       m_seMail = seMail;
-    else
+    } else {
       m_seMail = "";
+    }
   }
 
   /**
    * Get user's email
+   * @return 
    */
   public String geteMail() {
     return m_seMail;
@@ -199,6 +201,7 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
 
   /**
    * Get user's access level
+   * @return 
    */
   public String getAccessLevel() {
     return m_sAccessLevel;
@@ -206,21 +209,20 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
 
   /**
    * Set user access level
+   * @param sAccessLevel 
    */
   public void setAccessLevel(String sAccessLevel) {
     if (sAccessLevel != null) {
       m_sAccessLevel = sAccessLevel.trim();
     } else {
-      m_sAccessLevel = "U";
+      m_sAccessLevel = USER_ACCESS;
     }
 
   }
 
   public boolean isDomainAdminRestricted() {
     return ((GeneralPropertiesManager.getDomainVisibility() != GeneralPropertiesManager.DVIS_ALL)
-        && (!isAccessAdmin()) && ((GeneralPropertiesManager
-        .getDomainVisibility() != GeneralPropertiesManager.DVIS_ONE) || (!getDomainId()
-        .equals("0"))));
+        && (!isAccessAdmin()) && ((GeneralPropertiesManager.getDomainVisibility() != GeneralPropertiesManager.DVIS_ONE) || (!getDomainId().equals("0"))));
   }
 
   public boolean isBackOfficeVisible() {
@@ -228,27 +230,27 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
   }
 
   public boolean isAccessAdmin() {
-    return "A".equalsIgnoreCase(m_sAccessLevel);
+    return ADMIN_ACCESS.equalsIgnoreCase(m_sAccessLevel);
   }
 
   public boolean isAccessDomainManager() {
-    return "D".equalsIgnoreCase(m_sAccessLevel);
+    return DOMAIN_ACCESS.equalsIgnoreCase(m_sAccessLevel);
   }
 
   public boolean isAccessUser() {
-    return "U".equalsIgnoreCase(m_sAccessLevel);
+    return USER_ACCESS.equalsIgnoreCase(m_sAccessLevel);
   }
 
   public boolean isAccessRemoved() {
-    return "R".equalsIgnoreCase(m_sAccessLevel);
+    return REMOVED_ACCESS.equalsIgnoreCase(m_sAccessLevel);
   }
 
   public boolean isAccessGuest() {
-    return "G".equalsIgnoreCase(m_sAccessLevel);
+    return GUEST_ACCESS.equalsIgnoreCase(m_sAccessLevel);
   }
 
   public boolean isAccessKMManager() {
-    return "K".equalsIgnoreCase(m_sAccessLevel);
+    return KM_ACCESS.equalsIgnoreCase(m_sAccessLevel);
   }
 
   public String getDisplayedName() {
@@ -264,22 +266,30 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
   }
 
   public boolean equals(UserDetail cmpUser) {
-    if (isEqualStrings(m_sId, cmpUser.m_sId) == false)
+    if (!isEqualStrings(m_sId, cmpUser.getId())) {
       return false;
-    if (isEqualStrings(m_sSpecificId, cmpUser.m_sSpecificId) == false)
+    }
+    if (!isEqualStrings(m_sSpecificId, cmpUser.getSpecificId())) {
       return false;
-    if (isEqualStrings(m_sDomainId, cmpUser.m_sDomainId) == false)
+    }
+    if (!isEqualStrings(m_sDomainId, cmpUser.getDomainId())) {
       return false;
-    if (isEqualStrings(m_sLogin, cmpUser.m_sLogin) == false)
+    }
+    if (!isEqualStrings(m_sLogin, cmpUser.getLogin())) {
       return false;
-    if (isEqualStrings(m_sFirstName, cmpUser.m_sFirstName) == false)
+    }
+    if (!isEqualStrings(m_sFirstName, cmpUser.getFirstName())) {
       return false;
-    if (isEqualStrings(m_sLastName, cmpUser.m_sLastName) == false)
+    }
+    if (!isEqualStrings(m_sLastName, cmpUser.getLastName())) {
       return false;
-    if (isEqualStrings(m_seMail, cmpUser.m_seMail) == false)
+    }
+    if (!isEqualStrings(m_seMail, cmpUser.geteMail())) {
       return false;
-    if (isEqualStrings(m_sAccessLevel, cmpUser.m_sAccessLevel) == false)
+    }
+    if (!isEqualStrings(m_sAccessLevel, cmpUser.getAccessLevel())) {
       return false;
+    }
     return true;
   }
 
@@ -317,9 +327,6 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
 
   public int compareTo(UserDetail o) {
     UserDetail other = o;
-    return ((getLastName() + getFirstName()).toLowerCase())
-        .compareTo((other.getLastName() + other.getFirstName())
-        .toLowerCase());
+    return ((getLastName() + getFirstName()).toLowerCase()).compareTo((other.getLastName() + other.getFirstName()).toLowerCase());
   }
-
 }
