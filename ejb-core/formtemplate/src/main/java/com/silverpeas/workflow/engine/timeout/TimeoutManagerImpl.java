@@ -151,8 +151,11 @@ public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventHandler
                   Date actionDate = step.getActionDate();
 
                   long interval = today.getTime() - actionDate.getTime();
-                  long timeout = timeoutInterval * 60 * 60 * 1000;
+                  long timeout = timeoutInterval * 60 * 1000;
 
+                  SilverTrace.debug("workflowEngine",
+                      "TimeoutManagerImpl.doTimeoutManagement", "",
+                      "Action if interval=" + interval + "> timeout="+timeout);
                   if (interval > timeout) {
                     TimeoutEvent event = new TimeoutEventImpl(instances[k],
                         states[j], timeoutAction);
@@ -163,7 +166,7 @@ public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventHandler
                         + peasIds[i] + "' instance Id : '"
                         + instances[k].getInstanceId() + "' state : '"
                         + states[j].getName() + "interval : "
-                        + (interval / (60 * 60 * 1000)));
+                        + (interval / (60 * 1000)));
                   }
                 }
               }
