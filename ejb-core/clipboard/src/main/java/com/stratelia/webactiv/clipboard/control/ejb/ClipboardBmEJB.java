@@ -36,8 +36,9 @@ import javax.ejb.CreateException;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.silverpeas.util.clipboard.ClipboardException;
 import com.silverpeas.util.clipboard.ClipboardSelection;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
 
 /**
@@ -60,7 +61,7 @@ public class ClipboardBmEJB implements SessionBean {
   /**
    * Copy a node.
    */
-  public void add(ClipboardSelection objectToCopy) throws RemoteException {
+  public void add(ClipboardSelection objectToCopy) throws ClipboardException {
     try {
       SilverTrace.info("clipboard", "ClipboardBmEJB.add()",
           "root.MSG_GEN_ENTER_METHOD");
@@ -120,7 +121,8 @@ public class ClipboardBmEJB implements SessionBean {
     } catch (Exception e) {
       SilverTrace.warn("clipboard", "ClipboardBmEJB.add()",
           "root.MSG_GEN_ERROR", "ERROR occured in ClipboardBmEJB.add()", e);
-      throw new RemoteException("ERROR occured in ClipboardBmEJB.add()", e);
+      throw new ClipboardException("ClipboardBmEJB", SilverTrace.TRACE_LEVEL_ERROR,
+          "ERROR occured in ClipboardBmEJB.add()", e);
     }
   }
 
@@ -143,7 +145,7 @@ public class ClipboardBmEJB implements SessionBean {
   /**
    * Return the selected objects.
    */
-  public Collection getSelectedObjects() throws RemoteException {
+  public Collection getSelectedObjects() throws ClipboardException {
     try {
       m_Count += 1;
       ArrayList result = new ArrayList();
@@ -161,15 +163,16 @@ public class ClipboardBmEJB implements SessionBean {
       SilverTrace.warn("clipboard", "ClipboardBmEJB.getSelectedObjects()",
           "root.MSG_GEN_ERROR",
           "ERROR occured in ClipboardBmEJB.getSelectedObjects()", e);
-      throw new RemoteException(
+      throw new ClipboardException("ClipboardBmEJB", SilverTrace.TRACE_LEVEL_ERROR,
           "ERROR occured in ClipboardBmEJB.getSelectedObjects()", e);
     }
   }
 
   /**
    * Returns the number of elements in the clipboard.
+   * @throws ClipboardException
    */
-  public int size() throws RemoteException {
+  public int size() throws ClipboardException {
     try {
       int Size;
 
@@ -178,14 +181,16 @@ public class ClipboardBmEJB implements SessionBean {
     } catch (Exception e) {
       SilverTrace.warn("clipboard", "ClipboardBmEJB.size()",
           "root.MSG_GEN_ERROR", "ERROR occured in ClipboardBmEJB.size()", e);
-      throw new RemoteException("ERROR occured in ClipboardBmEJB.size()", e);
+      throw new ClipboardException("ClipboardBmEJB", SilverTrace.TRACE_LEVEL_ERROR,
+          "ERROR occured in ClipboardBmEJB.size()", e);
     }
   }
 
   /**
    * Returns the element at the specified position in the clipboard.
+   * @throws ClipboardException
    */
-  public ClipboardSelection getObject(int index) throws RemoteException {
+  public ClipboardSelection getObject(int index) throws ClipboardException {
     try {
       ClipboardSelection clipObject;
 
@@ -195,10 +200,9 @@ public class ClipboardBmEJB implements SessionBean {
       SilverTrace.warn("clipboard", "ClipboardBmEJB.getObject()",
           "root.MSG_GEN_ERROR",
           "ERROR occured in ClipboardBmEJB.getObject() index = "
-          + Integer.toString(index), e);
-      throw new RemoteException(
-          "ERROR occured in ClipboardBmEJB.getObject() index = "
-          + Integer.toString(index), e);
+              + Integer.toString(index), e);
+      throw new ClipboardException("ClipboardBmEJB", SilverTrace.TRACE_LEVEL_ERROR,
+          "ERROR occured in getObject(" + index + ")", e);
     }
   }
 
@@ -213,8 +217,9 @@ public class ClipboardBmEJB implements SessionBean {
 
   /**
    * Returns the element at the specified position in the clipboard.
+   * @throws ClipboardException
    */
-  public void setSelected(int index, boolean setIt) throws RemoteException {
+  public void setSelected(int index, boolean setIt) throws ClipboardException {
     ClipboardSelection clipObject;
 
     try {
@@ -226,41 +231,43 @@ public class ClipboardBmEJB implements SessionBean {
       SilverTrace.warn("clipboard", "ClipboardBmEJB.setSelected()",
           "root.MSG_GEN_ERROR",
           "ERROR occured in ClipboardBmEJB.setSelected() index = "
-          + Integer.toString(index), e);
-      throw new RemoteException(
-          "ERROR occured in ClipboardBmEJB.setSelected() index = "
-          + Integer.toString(index), e);
+              + Integer.toString(index), e);
+      throw new ClipboardException("ClipboardBmEJB", SilverTrace.TRACE_LEVEL_ERROR,
+          "ERROR occured in getSelectedObject(" + index + ", " + setIt + ")", e);
     }
   }
 
   /**
    * Removes the element at the specified position in the clipboard.
+   * @throws ClipboardException
    */
-  public void removeObject(int index) throws RemoteException {
+  public void removeObject(int index) throws ClipboardException {
     try {
       m_ObjectList.remove(index);
     } catch (Exception e) {
       SilverTrace.warn("clipboard", "ClipboardBmEJB.remove()",
           "root.MSG_GEN_ERROR",
           "ERROR occured in ClipboardBmEJB.remove() index = "
-          + Integer.toString(index), e);
-      throw new RemoteException(
-          "ERROR occured in ClipboardBmEJB.remove() index = "
-          + Integer.toString(index), e);
+              + Integer.toString(index), e);
+      throw new ClipboardException("ClipboardBmEJB", SilverTrace.TRACE_LEVEL_ERROR,
+          "ERROR occured in ClipboardBmEJB.remove(" + index + ")", e);
+
     }
   }
 
   /**
    * Removes all of the elements from the clipboard.
+   * @throws ClipboardException
    */
-  public void clear() throws RemoteException {
+  public void clear() throws ClipboardException {
     try {
       m_ObjectList.clear();
       m_LastObject = null;
     } catch (Exception e) {
       SilverTrace.warn("clipboard", "ClipboardBmEJB.clear()",
           "root.MSG_GEN_ERROR", "ERROR occured in ClipboardBmEJB.clear()", e);
-      throw new RemoteException("ERROR occured in ClipboardBmEJB.clear()", e);
+      throw new ClipboardException("ClipboardBmEJB", SilverTrace.TRACE_LEVEL_ERROR,
+          "ERROR occured in ClipboardBmEJB.clear()", e);
     }
   }
 
