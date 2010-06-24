@@ -450,6 +450,8 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
    * @param instanceId instance id
    */
   public void removeProcessInstance(String instanceId) throws WorkflowException {
+    SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstance()",
+    "root.MSG_GEN_ENTER_METHOD","InstanceId="+instanceId);
     ProcessInstanceImpl instance;
     Database db = null;
     try {
@@ -472,6 +474,8 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
     }
 
     WorkflowHub.getErrorManager().removeErrorsOfInstance(instanceId);
+    SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstance()",
+    "root.MSG_GEN_EXIT_METHOD");
   }
 
   /**
@@ -487,13 +491,20 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 
   public void removeProcessInstanceData(ProcessInstance instance)
       throws WorkflowException {
+    SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstanceData()",
+        "root.MSG_GEN_ENTER_METHOD");
+
     ForeignPK foreignPK = new ForeignPK(instance.getInstanceId(), instance
         .getModelId());
 
     // delete attachments
+    SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstanceData()",
+        "root.MSG_GEN_PARAM_VALUE", "Delete attachments foreignPK = "+foreignPK);
     AttachmentController.deleteAttachmentByCustomerPK(foreignPK);
 
     // delete versioning
+    SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstanceData()",
+        "root.MSG_GEN_PARAM_VALUE", "Delete versiong foreignPK = "+foreignPK);
     try {
       getVersioningBm().deleteDocumentsByForeignPK(foreignPK);
     } catch (Exception e) {
@@ -502,6 +513,9 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
           "EX_ERR_CANT_REMOVE_VERSIONNING_FILES", e);
     }
 
+    // delete folder
+    SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstanceData()",
+        "root.MSG_GEN_PARAM_VALUE", "Delete folder");
     try {
       RecordSet folderRecordSet = instance.getProcessModel()
           .getFolderRecordSet();
@@ -512,6 +526,9 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
           "EX_ERR_CANT_REMOVE_FOLDER", e);
     }
 
+    // delete history steps
+    SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstanceData()",
+        "root.MSG_GEN_PARAM_VALUE", "Delete history steps");
     HistoryStep[] steps = instance.getHistorySteps();
     for (int i = 0; steps != null && i < steps.length; i++) {
       if (!steps[i].getAction().equals("#question#")
@@ -520,9 +537,14 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
     }
 
     // delete associated todos
+    SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstanceData()",
+        "root.MSG_GEN_PARAM_VALUE", "Delete associated todos");
     TodoBackboneAccess tbba = new TodoBackboneAccess();
     tbba.removeEntriesFromExternal("useless", foreignPK.getInstanceId(),
         foreignPK.getId() + "##%");
+
+    SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstanceData()",
+    "root.MSG_GEN_EXIT_METHOD");
   }
 
   /**

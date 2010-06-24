@@ -275,7 +275,7 @@ class TaskDoneRequest implements Request {
    * Method declaration
    */
   public void process() throws WorkflowException {
-    SilverTrace.info("workflowEngine", "workflowEngineThread",
+    SilverTrace.info("workflowEngine", "workflowEngineThread.process()",
         "workflowEngine.INFO_PROCESS_ADD_TASKDONE_REQUEST", event.toString());
 
     // Get the process instance
@@ -350,6 +350,8 @@ class TaskDoneRequest implements Request {
       try {
         boolean removeInstance = processEvent(instance, step.getId());
         if (removeInstance) {
+          SilverTrace.info("workflowEngine", "workflowEngineThread.process()",
+              "root.MSG_GEN_PARAM_VALUE", "DELETE INSTANCE "+instance.getInstanceId());
           // remove data associated to forms and tasks
           ((ProcessInstanceManagerImpl) instanceManager)
               .removeProcessInstanceData(instance);
@@ -776,7 +778,7 @@ class ResponseRequest implements Request {
    * Method declaration
    */
   public void process() throws WorkflowException {
-    SilverTrace.info("indexEngine", "IndexerThread",
+    SilverTrace.info("workflowEngine", "workflowEngineThread.process",
         "workflowEngine.INFO_PROCESS_RESPONSE_REQUEST", event.toString());
 
     // Get the process instance
@@ -949,7 +951,7 @@ class TimeoutRequest implements Request {
    * Method declaration
    */
   public void process() throws WorkflowException {
-    SilverTrace.info("indexEngine", "IndexerThread",
+    SilverTrace.info("workflowEngine", "workflowEngineThread.process",
         "workflowEngine.INFO_PROCESS_TIMEOUT_REQUEST", event.toString());
 
     // Get the process instance
@@ -1002,7 +1004,18 @@ class TimeoutRequest implements Request {
       try {
         boolean removeInstance = processEvent(instance, step.getId());
         if (removeInstance)
+          SilverTrace.info("workflowEngine", "workflowEngineThread.process()",
+              "root.MSG_GEN_PARAM_VALUE", "DELETE INSTANCE "+instance.getInstanceId());
+          // remove data associated to forms and tasks
+          ((ProcessInstanceManagerImpl) instanceManager)
+              .removeProcessInstanceData(instance);
+
+          // remove instance itself
           db.remove(instance);
+
+          // remove errors
+          WorkflowHub.getErrorManager().removeErrorsOfInstance(
+              instance.getInstanceId());
       } catch (WorkflowException we) {
         db.rollback();
 
@@ -1317,12 +1330,15 @@ class WorkflowTools {
     QualifiedUsers wkUsers = state.getWorkingUsers();
     Actor[] actors = instance.getActors(wkUsers, state);
 
-    // Assign tasks to these working users
-    Task[] tasks = taskManager.createTasks(actors, instance);
-    for (int i = 0; i < tasks.length; i++) {
-      taskManager.assignTask(tasks[i], event.getUser());
+    // Assign tasks to these working users (except for automatic event, in this cas no user for this event)
+    if (event.getUser() != null)
+    {
+      Task[] tasks = taskManager.createTasks(actors, instance);
+      for (int i = 0; i < tasks.length; i++) {
+        taskManager.assignTask(tasks[i], event.getUser());
+      }
     }
-
+    
     // Declare these working users in instance
     for (int i = 0; i < actors.length; i++) {
       instance.addWorkingUser(actors[i], state);
