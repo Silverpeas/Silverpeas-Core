@@ -418,6 +418,7 @@
       if (id > 0) {
         $.get('<%=m_Context%>/Attachment', {Id:id,FileLanguage:'<%=contentLanguage%>',Action:'Checkout'},
         function(data){
+          if(data == 'ok') {
           var oMenu = eval("oMenu"+id);
           oMenu.getItem(3).cfg.setProperty("disabled", false);
           oMenu.getItem(0).cfg.setProperty("disabled", true);
@@ -434,7 +435,9 @@
   <% }%>
           $('#worker'+id).html("<%=attResources.getString("readOnly")%> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <%=attResources.getString("at")%> <%=DateUtil.getOutputDate(new Date(), language)%>");
           $('#worker'+id).css({'visibility':'visible'});
-        });
+        }else{
+          window.location.href=window.location.href;
+        }});
       }
     }
 

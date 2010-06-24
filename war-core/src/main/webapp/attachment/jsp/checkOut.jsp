@@ -24,7 +24,7 @@
 
 --%>
 
-<!--D�finition des informations globales de la page --->
+<!--Definition des informations globales de la page --->
 <%@ page language="java" %>
 <%@ page import="javax.servlet.*"%>
 <%@ page import="javax.servlet.http.*"%>
@@ -50,20 +50,20 @@
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
 <%
-	String url 			= request.getParameter("Url");
-    String idAttachment = request.getParameter("IdAttachment");
-    String userId		= request.getParameter("UserId");
-  	String fileLanguage = request.getParameter("FileLanguage");
-  	
-    boolean checkOutOK = AttachmentController.checkoutFile(idAttachment, userId, fileLanguage);
-    
-    if (checkOutOK)
-    	response.sendRedirect(URLManager.getApplicationURL()+url);
-    else
-    {
-    	if (url.indexOf("?") == -1)
-	        response.sendRedirect(URLManager.getApplicationURL()+url+"?CheckOutStatus=1");
-	    else
-	    	response.sendRedirect(URLManager.getApplicationURL()+url+"&CheckOutStatus=1");
-    }
+      String url = request.getParameter("Url");
+      String idAttachment = request.getParameter("IdAttachment");
+      String userId = request.getParameter("UserId");
+      String fileLanguage = request.getParameter("FileLanguage");
+
+      boolean checkOutOK = AttachmentController.checkoutFile(idAttachment, userId, fileLanguage);
+
+      if (checkOutOK) {
+        response.sendRedirect(URLManager.getApplicationURL() + url);
+      } else {
+        if (url.indexOf("?") == -1) {
+          response.sendRedirect(URLManager.getApplicationURL() + url + "?CheckOutStatus=1");
+        } else {
+          response.sendRedirect(URLManager.getApplicationURL() + url + "&CheckOutStatus=1");
+        }
+      }
 %>

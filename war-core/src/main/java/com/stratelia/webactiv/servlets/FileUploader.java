@@ -22,28 +22,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.webactiv.servlets;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.apache.commons.fileupload.DiskFileUpload;
-import org.apache.commons.fileupload.FileItem;
-
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
@@ -52,28 +35,24 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.fileupload.DiskFileUpload;
+import org.apache.commons.fileupload.FileItem;
 
 /**
  * Class declaration
  * @author
  */
 public class FileUploader extends HttpServlet {
-  HttpSession session;
-  PrintWriter out;
 
-  /**
-   * Method declaration
-   * @param config
-   * @see
-   */
-  public void init(ServletConfig config) {
-    try {
-      super.init(config);
-    } catch (ServletException se) {
-      SilverTrace.fatal("peasUtil", "FileUploader.init",
-          "peasUtil.CANNOT_ACCESS_SUPERCLASS");
-    }
-  }
 
   /**
    * Method declaration
@@ -83,6 +62,7 @@ public class FileUploader extends HttpServlet {
    * @throws ServletException
    * @see
    */
+  @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     doPost(req, res);
@@ -96,32 +76,27 @@ public class FileUploader extends HttpServlet {
    * @throws ServletException
    * @see
    */
+  @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
-    SilverTrace.info("peasUtil", "FileUploader.doPost",
-        "root.MSG_GEN_ENTER_METHOD");
-
+    SilverTrace.info("peasUtil", "FileUploader.doPost", "root.MSG_GEN_ENTER_METHOD");
     try {
       DiskFileUpload dfu = new DiskFileUpload();
       List items = dfu.parseRequest(req);
-
       FileItem file = getUploadedFile(items, "FileField");
       String userId = getParameterValue(items, "UserId");
       String attachmentId = getParameterValue(items, "FileId");
       String contentLanguage = getParameterValue(items, "FileLang");
-
       // in case of versioning
       String privateOrPublic = getParameterValue(items, "Version");
       String comments = getParameterValue(items, "Comment");
 
-      if (privateOrPublic != null && privateOrPublic.length() > 0
-          && !"null".equals(privateOrPublic)) {
-        int versionType = (privateOrPublic.equals("publique") ? DocumentVersion.TYPE_PUBLIC_VERSION
+      if (StringUtil.isDefined(privateOrPublic)) {
+        int versionType = ("publique".equals(privateOrPublic) ? DocumentVersion.TYPE_PUBLIC_VERSION
             : DocumentVersion.TYPE_DEFAULT_VERSION);
-        processVersion(attachmentId, versionType, comments, file, userId,
-            contentLanguage);
+        processVersion(attachmentId, versionType, comments, file, userId, contentLanguage);
       } else {
-        processAttachment(attachmentId, file, contentLanguage);
+        processAttachment(attachmentId, getUserId(req), file, contentLanguage);
       }
     } catch (Exception e) {
       SilverTrace.debug("peasUtil", "FileUploader.doPost",
@@ -129,60 +104,34 @@ public class FileUploader extends HttpServlet {
     }
   }
 
-  private void processAttachment(String fileId, FileItem file, String language)
+  private void processAttachment(String fileId, String userId, FileItem file, String language)
       throws Exception {
-    SilverTrace.debug("peasUtil", "FileUploader.processAttachment()",
-        "root.MSG_GEN_ENTER_METHOD", "fileId = " + fileId);
-    AttachmentDetail attachmentDetail = AttachmentController
-        .searchAttachmentByPK(new AttachmentPK(fileId));
+    SilverTrace.debug("peasUtil", "FileUploader.processAttachment()", "root.MSG_GEN_ENTER_METHOD", 
+        "fileId = " + fileId);
+    AttachmentDetail attachmentDetail = AttachmentController.searchAttachmentByPK(
+        new AttachmentPK(fileId));
     String componentId = attachmentDetail.getInstanceId();
     String destFile = FileRepositoryManager.getAbsolutePath(componentId)
-        + AttachmentController.CONTEXT_ATTACHMENTS
-        + attachmentDetail.getPhysicalName(language);
-
-    // String uploadFileFullName =
-    // AttachmentController.CONTEXT_OFFICE_ATTACHMENTS+fileName;
+        + AttachmentController.CONTEXT_ATTACHMENTS + attachmentDetail.getPhysicalName(language);
     File uploadFile = new File(destFile);
-    file.write(uploadFile);
-
-    AttachmentController.checkinFile(fileId, true, false, true, language);
+    file.write(uploadFile);    
+    AttachmentController.checkinFile(fileId, userId, true, false, true, language);
   }
 
   private void processVersion(String documentId, int versionType,
       String comment, FileItem file, String userId, String language)
       throws Exception {
     VersioningUtil versioningUtil = new VersioningUtil();
-
-    DocumentVersion documentVersion = versioningUtil
-        .getLastVersion(new DocumentPK(new Integer(documentId).intValue()));
-
-    // DocumentVersion newDocumentVersion =
-    // versioningUtil.createNewDocumentVersion(documentVersion);
-    // newDocumentVersion.setAuthorId(Integer.parseInt(userId));
-
+    DocumentVersion documentVersion = versioningUtil.getLastVersion(new DocumentPK(Integer.parseInt(documentId)));
     String componentId = documentVersion.getInstanceId();
-
-    // newDocumentVersion.setPk(new DocumentVersionPK(new
-    // Integer(documentId).intValue()));
-    // SilverTrace.debug("peasUtil", "FileUploader.processVersion()",
-    // "root.MSG_GEN_PARAM_VALUE",
-    // "newDocumentVersion.getId() = "+newDocumentVersion.getPk().getId());
-
     String logicalName = documentVersion.getLogicalName();
     String suffix = FileRepositoryManager.getFileExtension(logicalName);
-    String newPhysicalName = new Long(new Date().getTime()).toString() + "."
-        + suffix;
-
+    String newPhysicalName = new Long(new Date().getTime()).toString() + "." + suffix;
     String newVersionFile = FileRepositoryManager.getAbsolutePath(componentId)
         + DocumentVersion.CONTEXT_VERSIONING + newPhysicalName;
-
-    // String uploadFileFullName =
-    // AttachmentController.CONTEXT_OFFICE_ATTACHMENTS+fileName;
     File uploadFile = new File(newVersionFile);
     file.write(uploadFile);
-
-    versioningUtil.checkinFile(documentId, versionType, comment, userId,
-        newPhysicalName);
+    versioningUtil.checkinFile(documentId, versionType, comment, userId, newPhysicalName);
   }
 
   private FileItem getUploadedFile(List items, String parameterName) {
@@ -205,5 +154,10 @@ public class FileUploader extends HttpServlet {
       }
     }
     return null;
+  }
+  
+    private String getUserId(HttpServletRequest request) {
+    return ((MainSessionController) request.getSession().getAttribute(
+        MainSessionController.MAIN_SESSION_CONTROLLER_ATT)).getUserId();
   }
 }

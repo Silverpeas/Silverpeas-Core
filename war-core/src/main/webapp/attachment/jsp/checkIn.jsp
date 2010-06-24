@@ -58,10 +58,12 @@
         String url = request.getParameter("Url");
         String idAttachment = request.getParameter("IdAttachment");
         String fileLanguage = request.getParameter("FileLanguage");
+        MainSessionController mainSessionController = (MainSessionController) request.getSession(
+            ).getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
         boolean update = Boolean.valueOf(request.getParameter("update_attachment")).booleanValue();
         boolean force = Boolean.valueOf(request.getParameter("force_release")).booleanValue()
-                && "A".equals(((MainSessionController) session.getAttribute("SilverSessionController")).getCurrentUserDetail().getAccessLevel()) ;
-        if(!AttachmentController.checkinFile(idAttachment, false, update, force, fileLanguage)) {
+                && "A".equals(mainSessionController.getCurrentUserDetail().getAccessLevel()) ;
+        if(!AttachmentController.checkinFile(idAttachment, mainSessionController.getUserId(), false, update, force, fileLanguage)) {
           if(url.indexOf('?') > 0) {
             url = url + '&';
           }else {
