@@ -49,5 +49,5 @@ CREATE TABLE ST_NotifSended (
 
 CREATE TABLE ST_NotifSendedReceiver (
 	notifId		int		NOT NULL,
-	receiverId	int		NOT NULL
+	userId		int		NOT NULL
 );
