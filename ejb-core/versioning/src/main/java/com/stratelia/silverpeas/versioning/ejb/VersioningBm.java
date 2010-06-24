@@ -70,7 +70,7 @@ public interface VersioningBm extends javax.ejb.EJBObject {
   public void deleteDocumentsByInstanceId(String instanceId)
       throws RemoteException;
 
-  public void checkDocumentOut(DocumentPK documentPK, int ownerId,
+  public boolean checkDocumentOut(DocumentPK documentPK, int ownerId,
       java.util.Date checkOutDate) throws RemoteException;
 
   public void checkDocumentIn(DocumentPK documentPK, int userId)

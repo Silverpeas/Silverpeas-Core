@@ -509,9 +509,9 @@ public class VersioningUtil {
    * @return void
    * @exception RemoteException
    */
-  public void checkDocumentOut(DocumentPK documentPK, int ownerID,
+  public boolean checkDocumentOut(DocumentPK documentPK, int ownerID,
       java.util.Date checkOutDate) throws RemoteException {
-    getVersioningBm().checkDocumentOut(documentPK, ownerID, checkOutDate);
+    return getVersioningBm().checkDocumentOut(documentPK, ownerID, checkOutDate);
   }
 
   /**

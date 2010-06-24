@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.peasCore;
 
 import java.rmi.NoSuchObjectException;
@@ -60,13 +59,14 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /*
- This object is used by all the components jsp that have access to the session.
- It is initialized given a login and a password which is authenticated.
- It provides functions to get information about the logged user (which is unique).
- It is also used to update the current environnement of the user (current domain, current component).
+This object is used by all the components jsp that have access to the session.
+It is initialized given a login and a password which is authenticated.
+It provides functions to get information about the logged user (which is unique).
+It is also used to update the current environnement of the user (current domain, current component).
  */
 public class MainSessionController extends AdminReference implements Clipboard {
 
+  public static final String MAIN_SESSION_CONTROLLER_ATT = "SilverSessionController";
   ClipboardBm m_ClipboardBm = null;
   PersonalizationBm m_PersonalizationBm = null;
   Object m_ComponentSOFactory = null;
@@ -257,8 +257,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
       // "MainSessionController.getPersonalization()",
       // "root.MSG_GEN_ENTER_METHOD");
       try {
-        PersonalizationBmHome personalizationBmHome = (PersonalizationBmHome) EJBUtilitaire.
-            getEJBObjectRef(JNDINames.PERSONALIZATIONBM_EJBHOME,
+        PersonalizationBmHome personalizationBmHome = (PersonalizationBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PERSONALIZATIONBM_EJBHOME,
             PersonalizationBmHome.class);
         m_PersonalizationBm = personalizationBmHome.create();
         m_PersonalizationBm.setActor(getUserId());

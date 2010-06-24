@@ -217,7 +217,7 @@ public class VersioningBmEJB implements SessionBean {
     }
   }
 
-  public void checkDocumentOut(DocumentPK documentPK, int ownerId,
+  public boolean checkDocumentOut(DocumentPK documentPK, int ownerId,
       java.util.Date checkOutDate) {
     Connection con = openConnection();
     SilverTrace.debug("versioning", "checkDocumentOut",
@@ -225,6 +225,9 @@ public class VersioningBmEJB implements SessionBean {
 
     try {
       Document doc = getDocument(documentPK);
+      if(doc.getOwnerId() > 0) {
+        return false;
+      }
       updateDates(doc);
 
       SilverTrace.debug("versioning", "checkDocumentOut",
@@ -239,6 +242,7 @@ public class VersioningBmEJB implements SessionBean {
         lastVersion.setAuthorId(ownerId);
         RepositoryHelper.getJcrDocumentService().createDocument(lastVersion);
       }
+      return true;
     } catch (Exception re) {
       throw new VersioningRuntimeException("VersioningBmEJB.checkDocumentOut",
           SilverpeasRuntimeException.ERROR, "versioning.CHECK_DOCUMENT_OUT",

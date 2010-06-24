@@ -37,6 +37,7 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import static com.stratelia.silverpeas.peasCore.MainSessionController.*;
 import com.stratelia.silverpeas.peasCore.PeasCoreException;
 import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
@@ -96,34 +97,28 @@ public abstract class ComponentRequestRouter extends HttpServlet {
     doPost(request, response);
   }
 
-  private String computeDestination(HttpServletRequest request,
-      HttpServletResponse response) {
+  private String computeDestination(HttpServletRequest request, HttpServletResponse response) {
     String destination = null;
     request.getParameterNames(); // flush for orion
     // get the main session controller
     HttpSession session = request.getSession(true);
-    MainSessionController mainSessionCtrl = (MainSessionController) session
-        .getAttribute("SilverSessionController");
+    MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(
+        MAIN_SESSION_CONTROLLER_ATT);
     if (mainSessionCtrl == null) {
       SilverTrace.warn("peasCore", "ComponentRequestRouter.computeDestination",
           "root.MSG_GEN_SESSION_TIMEOUT", "NewSessionId=" + session.getId());
-      return GeneralPropertiesManager.getGeneralResourceLocator().getString(
-          "sessionTimeout");
+      return GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
     }
-
     // App in Maintenance ?
-    SilverTrace.debug("peasCore",
-        "ComponentRequestRouter.computeDestination()",
+    SilverTrace.debug("peasCore", "ComponentRequestRouter.computeDestination()",
         "root.MSG_GEN_PARAM_VALUE", "appInMaintenance = "
         + String.valueOf(mainSessionCtrl.isAppInMaintenance()));
-    SilverTrace.debug("peasCore",
-        "ComponentRequestRouter.computeDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "type User = "
-        + mainSessionCtrl.getUserAccessLevel());
+    SilverTrace.debug("peasCore","ComponentRequestRouter.computeDestination()",
+        "root.MSG_GEN_PARAM_VALUE", "type User = " + mainSessionCtrl.getUserAccessLevel());
     if (mainSessionCtrl.isAppInMaintenance()
-        && !mainSessionCtrl.getCurrentUserDetail().isAccessAdmin())
-      return GeneralPropertiesManager.getGeneralResourceLocator().getString(
-          "redirectAppInMaintenance");
+        && !mainSessionCtrl.getCurrentUserDetail().isAccessAdmin()) {
+      return GeneralPropertiesManager.getGeneralResourceLocator().getString("redirectAppInMaintenance");
+    }
 
     // Get the space id and the component id required by the user
     String[] context = getComponentId(request, mainSessionCtrl);
@@ -131,25 +126,19 @@ public abstract class ComponentRequestRouter extends HttpServlet {
     String componentId = context[1];
     String function = context[2];
 
-    SilverTrace.debug("peasCore",
-        "ComponentRequestRouter.computeDestination()",
+    SilverTrace.debug("peasCore", "ComponentRequestRouter.computeDestination()",
         "root.MSG_GEN_PARAM_VALUE", "spaceId= " + spaceId);
-    SilverTrace.debug("peasCore",
-        "ComponentRequestRouter.computeDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "type User = "
-        + mainSessionCtrl.getUserAccessLevel());
+    SilverTrace.debug("peasCore", "ComponentRequestRouter.computeDestination()",
+        "root.MSG_GEN_PARAM_VALUE", "type User = " + mainSessionCtrl.getUserAccessLevel());
 
-    boolean isSpaceInMaintenance = mainSessionCtrl
-        .isSpaceInMaintenance(spaceId);
-    SilverTrace.debug("peasCore",
-        "ComponentRequestRouter.computeDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "spaceIsMaintenance = "
-        + isSpaceInMaintenance);
+    boolean isSpaceInMaintenance = mainSessionCtrl.isSpaceInMaintenance(spaceId);
+    SilverTrace.debug("peasCore", "ComponentRequestRouter.computeDestination()",
+        "root.MSG_GEN_PARAM_VALUE", "spaceIsMaintenance = " + isSpaceInMaintenance);
 
     // Space in Maintenance ?
-    if (isSpaceInMaintenance
-        && !mainSessionCtrl.getCurrentUserDetail().isAccessAdmin())
+    if (isSpaceInMaintenance && !mainSessionCtrl.getCurrentUserDetail().isAccessAdmin()) {
       return "/admin/jsp/spaceInMaintenance.jsp";
+    }
 
     ComponentSessionController component = getComponentSessionController(
         session, componentId);
