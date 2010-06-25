@@ -50,6 +50,7 @@ public class SilverpeasStringTemplate implements SilverpeasTemplate {
     if (!file.exists() ||  !file.isFile()) {
       group = new StringTemplateGroup(fileName, templateConfig.getProperty(TEMPLATE_ROOT_DIR));
     }
+    group.setFileCharEncoding("UTF-8");
     StringTemplate template = group.getInstanceOf(fileName);
     return applyAttributes(template);
   }
