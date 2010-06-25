@@ -1417,7 +1417,7 @@ td.browsebar a:hover {
 	margin-right: auto;
 }
 
-.tableBoard td {
+.tableBoard > td {
 	text-align: left;
 }
 
