@@ -519,6 +519,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
           pdcSC.resetResultPage();
           pdcSC.resetResultPageId();
           pdcSC.resetSearchPage();
+          pdcSC.resetSearchPageId();
         }
 
         // Display classic result page or only PDC result page
@@ -849,6 +850,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
           pdcSC.resetResultPage();
           pdcSC.resetResultPageId();
           pdcSC.resetSearchPage();
+          pdcSC.resetSearchPageId();
         }
 
         pdcSC.setResultPage(request.getParameter("ResultPage"));
@@ -1897,9 +1899,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
 
   private void processChangeSearchType(String function, PdcSearchSessionController pdcSC,
       HttpServletRequest request) throws Exception {
-    String searchPage = request.getParameter("SearchPage");
-    pdcSC.setSearchPage(searchPage);
-
+    pdcSC.setSearchPage(request.getParameter("SearchPage"));
+    pdcSC.setSearchPageId(request.getParameter("SearchPageId"));
     pdcSC.setResultPage(request.getParameter("ResultPage"));
     pdcSC.setResultPageId(request.getParameter("ResultPageId"));
 
@@ -1908,6 +1909,16 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
     } else if (function.equals("ChangeSearchTypeToAdvanced")) {
       pdcSC.setSearchType(PdcSearchSessionController.SEARCH_ADVANCED);
     } else if (function.equals("ChangeSearchTypeToXml")) {
+      // setting predefined values
+      String templateName = request.getParameter("Template");
+      if (StringUtil.isDefined(templateName)) {
+        pdcSC.setXmlTemplate(templateName);
+      }
+      String spaceId = request.getParameter("SpaceId");
+      if (StringUtil.isDefined(spaceId)) {
+        pdcSC.getQueryParameters().setSpaceId(spaceId);
+      }
+
       pdcSC.setSearchType(PdcSearchSessionController.SEARCH_XML);
     } else {
       pdcSC.setSearchType(PdcSearchSessionController.SEARCH_EXPERT);
@@ -1916,15 +1927,16 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
 
   private String getDestinationDuringSearch(PdcSearchSessionController pdcSC,
       HttpServletRequest request) {
-    String searchPage = request.getParameter("SearchPage");
-    pdcSC.setSearchPage(searchPage);
+    pdcSC.setSearchPage(request.getParameter("SearchPage"));
+    pdcSC.setSearchPageId(request.getParameter("SearchPageId"));
 
-    if (pdcSC.getSearchType() == PdcSearchSessionController.SEARCH_XML)
+    if (pdcSC.getSearchType() == PdcSearchSessionController.SEARCH_XML) {
+      request.setAttribute("PageId", pdcSC.getSearchPageId());
       return "/pdcPeas/jsp/globalSearchXML.jsp";
-    else {
-      if (StringUtil.isDefined(pdcSC.getSearchPage()))
+    } else {
+      if (StringUtil.isDefined(pdcSC.getSearchPage())) {
         return pdcSC.getSearchPage();
-      else {
+      } else {
         // put search type
         request.setAttribute("SearchType", new Integer(pdcSC.getSearchType()));
         request.setAttribute("XmlSearchVisible", new Boolean(pdcSC.isXmlSearchVisible()));

@@ -158,6 +158,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public static final int SEARCH_PDC = 1;
   public static final int SEARCH_MIXED = 2;
   private String searchPage = null;
+  private String searchPageId = null;
   private String resultPage = null;
   private String resultPageId = null;
   // XML Search Session's objects
@@ -2224,6 +2225,22 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   public void resetSearchPage() {
     searchPage = null;
+  }
+  
+  public String getSearchPageId() {
+    return searchPageId;
+  }
+
+  public void setSearchPageId(String searchPageId) {
+    if (StringUtil.isDefined(searchPageId)) {
+      this.searchPageId = searchPageId;
+    } else {
+      resetSearchPageId();
+    }
+  }
+
+  public void resetSearchPageId() {
+    searchPageId = null;
   }
 
   public String getResultPage() {
