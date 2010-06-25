@@ -29,8 +29,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.silverpeas.external.webConnections.model.ConnectionDetail;
 import com.silverpeas.util.cryptage.CryptageException;
@@ -117,11 +118,11 @@ public class ConnectionDAO {
     PreparedStatement prepStmt = null;
     try {
       int newId = DBUtil.getNextId(tableName, "connectionId");
-      id = new Integer(newId).toString();
+      id = String.valueOf(newId);
       String query =
-          "insert into " + tableName +
+          "INSERT INTO " + tableName +
           " (connectionId, userId, componentId, paramLogin, paramPassword) " +
-          "values (?,?,?,?,?)";
+          "VALUES (?,?,?,?,?)";
       prepStmt = con.prepareStatement(query);
       initParam(prepStmt, newId, connection);
       prepStmt.executeUpdate();
@@ -142,7 +143,7 @@ public class ConnectionDAO {
     try {
       String query = "delete from " + tableName + " where connectionId = ? ";
       prepStmt = con.prepareStatement(query);
-      prepStmt.setInt(1, new Integer(connectionId));
+      prepStmt.setInt(1, Integer.parseInt(connectionId));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -218,7 +219,7 @@ public class ConnectionDAO {
     connection.setConnectionId(rs.getInt("connectionId"));
     connection.setUserId(rs.getString("userId"));
     connection.setComponentId(rs.getString("componentId"));
-    Hashtable<String, String> param = new Hashtable<String, String>();
+    Map<String, String> param = new HashMap<String, String>();
     String login = rs.getString("paramLogin");
     byte[] password = rs.getBytes("paramPassword");
     OrganizationController orga = new OrganizationController();
@@ -247,7 +248,7 @@ public class ConnectionDAO {
    */
   private static void initParam(PreparedStatement prepStmt, int id, ConnectionDetail connection)
       throws SQLException {
-    prepStmt.setInt(1, new Integer(id).intValue());
+    prepStmt.setInt(1, id);
     prepStmt.setInt(2, Integer.parseInt(connection.getUserId()));
     prepStmt.setString(3, connection.getComponentId());
     OrganizationController orga = new OrganizationController();

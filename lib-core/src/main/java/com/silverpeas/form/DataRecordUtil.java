@@ -24,7 +24,8 @@
 
 package com.silverpeas.form;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.silverpeas.form.fieldType.DateField;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -63,26 +64,28 @@ public class DataRecordUtil {
    */
   static public String applySubstitution(String text, DataRecord data,
       String lang) {
-    return applySubstitution(text, data, lang, new Vector<String>());
+    return applySubstitution(text, data, lang, new ArrayList<String>());
   }
 
   static private String applySubstitution(String text, DataRecord data,
-      String lang, Vector<String> resolvedVars) {
-    if (text == null)
+      String lang, List<String> resolvedVars) {
+    if (text == null) {
       return "";
+    }
 
     int varBegin = text.indexOf("${");
-    if (varBegin == -1)
+    if (varBegin == -1) {
       return text;
+    }
 
     int varEnd = text.indexOf("}", varBegin);
-    if (varEnd == -1)
+    if (varEnd == -1) {
       return text;
+    }
 
     String var = text.substring(varBegin + 2, varEnd);
     String prefix = text.substring(0, varBegin);
-    String suffix = (varEnd + 1 < text.length()) ? text.substring(varEnd + 1)
-        : null;
+    String suffix = (varEnd + 1 < text.length()) ? text.substring(varEnd + 1) : null;
 
     String value;
     try {

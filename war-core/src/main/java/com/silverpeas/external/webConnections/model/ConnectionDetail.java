@@ -25,7 +25,7 @@
 package com.silverpeas.external.webConnections.model;
 
 import java.io.Serializable;
-import java.util.Hashtable;
+import java.util.Map;
 
 public class ConnectionDetail implements Serializable {
   /**
@@ -37,7 +37,7 @@ public class ConnectionDetail implements Serializable {
   private String userId;
   private String componentId;
   private String componentName;
-  private Hashtable<String, String> param;
+  private Map<String, String> param;
 
   public ConnectionDetail() {
   }
@@ -70,11 +70,11 @@ public class ConnectionDetail implements Serializable {
     this.componentId = componentId;
   }
 
-  public Hashtable<String, String> getParam() {
+  public Map<String, String> getParam() {
     return param;
   }
 
-  public void setParam(Hashtable<String, String> param) {
+  public void setParam(Map<String, String> param) {
     this.param = param;
   }
 

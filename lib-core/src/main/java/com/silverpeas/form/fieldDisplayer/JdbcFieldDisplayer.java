@@ -42,7 +42,9 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.JdbcField;
 import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DBUtil;
 
 /**
  * A JdbcFieldDisplayer is an object which can display a listbox in HTML the content of a listbox to
@@ -170,21 +172,13 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer {
         jdbcConnection = jdbcField.connectJdbc(driverName, url, login, password);
         listRes = jdbcField.selectSql(jdbcConnection, query, currentUserId);
       } finally {
-        try {
-          if (jdbcConnection != null)
-            jdbcConnection.close();
-        } catch (SQLException e) {
-          SilverTrace.error("formTemplate", "JdbcFieldDisplayer.selectSql",
-              "root.EX_CONNECTION_CLOSE_FAILED", e);
-        }
+        DBUtil.close(jdbcConnection);
       }
     }
 
-    if (listRes != null && listRes.size() > 0) {
-
+    if (listRes != null && ! listRes.isEmpty()) {
       int zindex =
-          (PagesContext.getLastFieldIndex() - new Integer(PagesContext.getCurrentFieldIndex())
-          .intValue()) * 9000;
+          (PagesContext.getLastFieldIndex() - Integer.parseInt(PagesContext.getCurrentFieldIndex())) * 9000;
       html += "<style type=\"text/css\">\n";
       html += "	#listAutocomplete" + fieldName + " {\n";
       html += "		width:15em;\n";
@@ -193,7 +187,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer {
       html += "	#listAutocomplete" + fieldName + " {\n";
       html +=
           "		z-index:" + zindex +
-          "; /* z-index needed on top instance for ie & sf absolute inside relative issue */\n";
+              "; /* z-index needed on top instance for ie & sf absolute inside relative issue */\n";
       html += "	}\n";
       html += "	#" + fieldName + " {\n";
       html += "		_position:absolute; /* abs pos needed for ie quirks */\n";
@@ -237,10 +231,10 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer {
       html += "<script type=\"text/javascript\">\n";
       html +=
           " this.oACDS" + fieldName + " = new YAHOO.util.LocalDataSource(listArray" + fieldName +
-          ");\n";
+              ");\n";
       html +=
           "	this.oAutoComp" + fieldName + " = new YAHOO.widget.AutoComplete('" + fieldName +
-          "','container" + fieldName + "', this.oACDS" + fieldName + ");\n";
+              "','container" + fieldName + "', this.oACDS" + fieldName + ");\n";
       html += "	this.oAutoComp" + fieldName + ".prehighlightClassName = \"yui-ac-prehighlight\";\n";
       html += "	this.oAutoComp" + fieldName + ".typeAhead = true;\n";
       html += "	this.oAutoComp" + fieldName + ".useShadow = true;\n";
@@ -285,7 +279,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer {
           !template.isHidden()) {
         html +=
             "&nbsp;<img src=\"" + mandatoryImg +
-            "\" width=\"5\" height=\"5\" border=\"0\" alt=\"\"/>&nbsp;\n";
+                "\" width=\"5\" height=\"5\" border=\"0\" alt=\"\"/>&nbsp;\n";
       }
     }
 

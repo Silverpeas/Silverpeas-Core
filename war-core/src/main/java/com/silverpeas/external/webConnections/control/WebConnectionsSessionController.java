@@ -26,9 +26,9 @@ package com.silverpeas.external.webConnections.control;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import com.silverpeas.external.webConnections.dao.WebConnectionsImpl;
 import com.silverpeas.external.webConnections.model.ConnectionDetail;
@@ -78,7 +78,7 @@ public class WebConnectionsSessionController extends AbstractComponentSessionCon
     ComponentInst inst = orga.getComponentInst(connection.getComponentId());
     String componentName = inst.getLabel();
     String url = inst.getParameterValue("Url");
-    Hashtable<String, String> param = connection.getParam();
+    Map<String, String> param = connection.getParam();
     int i = 1;
     String nameParam = inst.getParameterValue("nameParam" + i);
     while (StringUtil.isDefined(nameParam)) {

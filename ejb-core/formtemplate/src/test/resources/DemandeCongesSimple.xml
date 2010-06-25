@@ -25,12 +25,12 @@
 
 -->
 
-<!-- PROC�DURE : DEMANDE DE CONGES SIMPLIFIEE -->
+<!-- PROCEDURE : DEMANDE DE CONGES SIMPLIFIEE -->
 <processModel name="DemandeCongesSimple"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 				  xsi:noNamespaceSchemaLocation="processModel.xsd">
 
-	<label>Demande de cong�s simplifi�e</label>
+	<label>Demande de conges simplifiee</label>
 
 	<!-- DESCRIPTION DES ROLES -->
 	<roles>
