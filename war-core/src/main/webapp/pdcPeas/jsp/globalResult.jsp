@@ -163,6 +163,10 @@ boolean markResult 		= resource.getSetting("enableMarkAsRead", true);
 boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 
 int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intValue(); 
+String pageId = (String) request.getAttribute("ResultPageId");
+if (!StringUtil.isDefined(pageId)) {
+  pageId = "globalResult";
+}
 %>
 
 <html>
@@ -422,7 +426,7 @@ int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intV
 	<% } %>
 </script>
 </HEAD>
-<BODY class="searchEngine" id="globalResult">
+<BODY class="searchEngine" id="<%=pageId %>">
 <form name="AdvancedSearch" action="javascript:sendQuery()" method="post">
 <%
 	browseBar.setComponentName(resource.getString("pdcPeas.ResultPage"));
@@ -850,13 +854,14 @@ int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intV
 
 
 
-	<input type="hidden" name="selectedIds">
-	<input type="hidden" name="notSelectedIds">
-	<input type="hidden" name="Index">
-	<input type="hidden" name="contentURL">
-	<input type="hidden" name="componentId">
-	<input type="hidden" name="sortOrder" value="<%=sortOrder%>">
+	<input type="hidden" name="selectedIds"/>
+	<input type="hidden" name="notSelectedIds"/>
+	<input type="hidden" name="Index"/>
+	<input type="hidden" name="contentURL"/>
+	<input type="hidden" name="componentId"/>
+	<input type="hidden" name="sortOrder" value="<%=sortOrder%>"/>
 	<input type="hidden" name="ShowResults" value="<%=resultsDisplayMode%>"/>
+	<input type="hidden" name="ResultPageId" value="<%=pageId %>"/>
 </form>
 <%@ include file="modalMessage.jsp.inc" %>
 </body>

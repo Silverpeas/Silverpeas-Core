@@ -517,6 +517,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
         if ("clear".equals(mode)) {
           clearUserChoices(pdcSC);
           pdcSC.resetResultPage();
+          pdcSC.resetResultPageId();
           pdcSC.resetSearchPage();
         }
 
@@ -524,8 +525,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
         String showResults = request.getParameter("ShowResults");
         pdcSC.setCurrentResultsDisplay(showResults);
 
-        String resultPage = request.getParameter("ResultPage");
-        pdcSC.setResultPage(resultPage);
+        pdcSC.setResultPage(request.getParameter("ResultPage"));
+        pdcSC.setResultPageId(request.getParameter("ResultPageId"));
 
         String searchType = request.getParameter("searchType");
         if (searchType != null && !"".equals(searchType)) {
@@ -846,11 +847,12 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
         if ("clear".equals(mode)) {
           clearUserChoices(pdcSC);
           pdcSC.resetResultPage();
+          pdcSC.resetResultPageId();
           pdcSC.resetSearchPage();
         }
 
-        String resultPage = request.getParameter("ResultPage");
-        pdcSC.setResultPage(resultPage);
+        pdcSC.setResultPage(request.getParameter("ResultPage"));
+        pdcSC.setResultPageId(request.getParameter("ResultPageId"));
 
         String searchType = request.getParameter("searchType");
         if (searchType != null && !"".equals(searchType)) {
@@ -1345,7 +1347,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
     request.setAttribute("RefreshEnabled", new Boolean(pdcSC.isRefreshEnabled()));
 
     request.setAttribute("Results", pdcSC.getSortedResultsToDisplay(pdcSC.getSortValue(), pdcSC
-        .getSortOrder(), pdcSC.getXmlFormSortValue(),pdcSC.getSortImplemtor(), filter));
+        .getSortOrder(), pdcSC.getXmlFormSortValue(), pdcSC.getSortImplemtor(), filter));
 
     if (filter != null) {
       // Add filtered data
@@ -1371,6 +1373,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
     request.setAttribute("spellingWords", pdcSC.getSpellingwords());
 
     request.setAttribute("ResultsDisplay", Integer.valueOf(pdcSC.getCurrentResultsDisplay()));
+    request.setAttribute("ResultPageId", pdcSC.getResultPageId());
   }
 
   /**
@@ -1897,8 +1900,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
     String searchPage = request.getParameter("SearchPage");
     pdcSC.setSearchPage(searchPage);
 
-    String resultPage = request.getParameter("ResultPage");
-    pdcSC.setResultPage(resultPage);
+    pdcSC.setResultPage(request.getParameter("ResultPage"));
+    pdcSC.setResultPageId(request.getParameter("ResultPageId"));
 
     if (function.equals("ChangeSearchTypeToSimple")) {
       pdcSC.setSearchType(PdcSearchSessionController.SEARCH_SIMPLE);
