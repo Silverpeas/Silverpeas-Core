@@ -138,6 +138,8 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 
   public ProcessInstance[] getProcessInstances(String peasId, User user,
       String role, String[] userRoles, String[] userGroupIds) throws WorkflowException {
+    SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.getProcessInstances()",
+        "root.MSG_GEN_ENTER_METHOD", "peasId = "+peasId+", user = "+user.getUserId()+", role = "+role);
     Connection con = null;
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -168,11 +170,11 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
           selectQuery.append(getSQLClauseIn(userRoles));
           selectQuery.append(")");
         }
-        selectQuery.append(" or intUser.groupId is null");
         if (userGroupIds != null && userGroupIds.length > 0) {
-          selectQuery.append(" or intUser.groupId in (");
+          selectQuery.append(" or (intUser.groupId is not null");
+          selectQuery.append(" and intUser.groupId in (");
           selectQuery.append(getSQLClauseIn(userGroupIds));
-          selectQuery.append(")");
+          selectQuery.append("))");
         }
         selectQuery.append(") and intUser.role = ? ");
         selectQuery.append("union ");
@@ -185,15 +187,18 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
           selectQuery.append(getSQLClauseIn(userRoles));
           selectQuery.append(")");
         }
-        selectQuery.append(" or wkUser.groupId is null");
         if (userGroupIds != null && userGroupIds.length > 0) {
-          selectQuery.append(" or wkUser.groupId in (");
+          selectQuery.append(" or (wkUser.groupId is not null");
+          selectQuery.append(" and wkUser.groupId in (");
           selectQuery.append(getSQLClauseIn(userGroupIds));
-          selectQuery.append(")");
+          selectQuery.append("))");
         }
         selectQuery.append(") and wkUser.role = ? ");
         selectQuery.append(")");
         selectQuery.append("order by I.instanceId desc");
+        
+        SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.getProcessInstances()",
+            "root.MSG_GEN_PARAM_VALUE", "SQL query = "+selectQuery.toString());
 
         prepStmt = con.prepareStatement(selectQuery.toString());
         prepStmt.setString(1, peasId);
