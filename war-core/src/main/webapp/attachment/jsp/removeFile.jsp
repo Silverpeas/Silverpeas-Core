@@ -40,8 +40,6 @@
 
 <%@ page import="javax.ejb.RemoveException, javax.ejb.CreateException, java.sql.SQLException, javax.naming.NamingException, java.rmi.RemoteException, javax.ejb.FinderException"%>
 <%@ page import="java.util.Collection, java.util.ArrayList, java.util.Iterator, java.util.Date"%>
-<%@ page import="com.oreilly.servlet.multipart.*"%>
-<%@ page import="com.oreilly.servlet.MultipartRequest"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
@@ -78,8 +76,6 @@
   		  indexIt = true;
   	  	else if ("0".equals(sIndexIt))
   		  indexIt = false;
-        
-        out.print("<BR>idAttachment="+idAttachment);
         
         //create AttachmentPK with id and componentId
         AttachmentPK atPK = new AttachmentPK(idAttachment, componentId);

@@ -40,8 +40,6 @@
 
 <%@ page import="javax.ejb.RemoveException, javax.ejb.CreateException, java.sql.SQLException, javax.naming.NamingException, java.rmi.RemoteException, javax.ejb.FinderException"%>
 <%@ page import="java.util.Collection, java.util.ArrayList, java.util.Iterator, java.util.Date"%>
-<%@ page import="com.oreilly.servlet.multipart.*"%>
-<%@ page import="com.oreilly.servlet.MultipartRequest"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
@@ -70,7 +68,6 @@
         String context = request.getParameter("Context");
         String url = request.getParameter("Url");
         String idAttachment = request.getParameter("IdAttachment");
-        out.print("<BR>idAttachment="+idAttachment);
 
         //create AttachmentPK with id and spaceId and componentId
         AttachmentPK atPK = new AttachmentPK(idAttachment, componentId);
