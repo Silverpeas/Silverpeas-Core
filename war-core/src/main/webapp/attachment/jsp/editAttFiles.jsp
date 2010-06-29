@@ -184,8 +184,13 @@
 
           function uploadCompleted(s)
           {
-            location.href="<%=m_Context%><%=url%>";
+            reloadPage();
           }
+
+          function reloadPage() 
+		  {
+			location.href="<%=m_Context%><%=url%>";
+		  }
 
           function SelectFile( fileUrl )
           {

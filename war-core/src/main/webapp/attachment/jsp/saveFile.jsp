@@ -181,7 +181,11 @@
       %>
       <% } else {%>
       <script language='javascript'>
-        window.opener.location.reload();
+      	try {
+      		window.opener.reloadPage();
+      	} catch (e) {
+        	window.opener.location.reload();
+      	}
         window.close();
       </script>
       <% }%>

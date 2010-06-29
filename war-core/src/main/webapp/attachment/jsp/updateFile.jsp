@@ -135,9 +135,13 @@
 %>
 <HTML>
   <BODY>
-    <script language='javascript'>
-      window.opener.location.reload();
-      window.close();
+    <script type="text/javascript">
+    	try {
+  			window.opener.reloadPage();
+  		} catch (e) {
+    		window.opener.location.reload();
+  		}
+      	window.close();
     </script>
   </BODY>
 </HTML>
