@@ -346,10 +346,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("ListPublicVersionsOfDocument")) {
         String documentId = request.getParameter("DocId");
         String isAlias = request.getParameter("Alias");
-        String componentId = request.getParameter("ComponentId");
-        versioningSC.setComponentId(componentId);
         DocumentPK documentPK = new DocumentPK(Integer.parseInt(documentId),
-            versioningSC.getSpaceId(), componentId);
+            versioningSC.getSpaceId(), versioningSC.getComponentId());
 
         Document document = versioningSC.getDocument(documentPK);
         List<DocumentVersion> publicVersions = versioningSC.getPublicDocumentVersions(documentPK);
@@ -851,10 +849,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
       throws RemoteException {
     String documentId = request.getParameter("DocId");
     String isAlias = request.getParameter("Alias");
-    String componentId = request.getParameter("ComponentId");
-    versioningSC.setComponentId(componentId);
     DocumentPK documentPK = new DocumentPK(Integer.parseInt(documentId),
-        versioningSC.getSpaceId(), componentId);
+        versioningSC.getSpaceId(), versioningSC.getComponentId());
 
     Document document = versioningSC.getDocument(documentPK);
 

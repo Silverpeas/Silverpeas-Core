@@ -87,9 +87,9 @@
 <%@ page import="com.stratelia.silverpeas.peasCore.ComponentContext"%>
 
 <%!
-  VersioningSessionController setComponentSessionController(HttpSession session, MainSessionController mainSessionCtrl) {
+  VersioningSessionController setComponentSessionController(HttpSession session, MainSessionController mainSessionCtrl, String componentId) {
     //ask to MainSessionController to create the ComponentContext
-    ComponentContext componentContext = mainSessionCtrl.createComponentContext(null, null);
+    ComponentContext componentContext = mainSessionCtrl.createComponentContext(null, componentId);
     //instanciate a new CSC
     VersioningSessionController component = new VersioningSessionController(mainSessionCtrl, componentContext);
     session.setAttribute("Silverpeas_versioningPeas", component);

@@ -262,8 +262,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 		topicRightsEnabled = new Boolean(s_topicRightsEnabled).booleanValue();
 	if (versioningSC == null)
 	{	
-		versioningSC = setComponentSessionController(session, m_MainSessionCtrl);
- 	 	versioningSC.setComponentId(componentId);
+		versioningSC = setComponentSessionController(session, m_MainSessionCtrl, componentId);
 		 versioningSC.setFileRightsMode(versionningFileRightsMode);
 		 versioningSC.setAttributesContext(nodeId, topicRightsEnabled);
 		request.setAttribute(URLManager.CMP_VERSIONINGPEAS, versioningSC);

@@ -54,7 +54,7 @@
 	}
 	if (versioningSC == null) 
 	{
-	  versioningSC = setComponentSessionController(session, m_MainSessionCtrl);
+	  versioningSC = setComponentSessionController(session, m_MainSessionCtrl, componentId);
 	}
   versioningSC.setAttributesContext(spaceId,componentId,spaceLabel,componentLabel, nodeId, topicRightsEnabled);
   ResourceLocator messages = new ResourceLocator("com.stratelia.silverpeas.versioningPeas.multilang.versioning", m_MainSessionCtrl.getFavoriteLanguage());
