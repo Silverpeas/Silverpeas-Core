@@ -48,6 +48,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.cache.AdminCache;
+import com.stratelia.webactiv.beans.admin.cache.GroupCache;
 import com.stratelia.webactiv.beans.admin.cache.Space;
 import com.stratelia.webactiv.beans.admin.cache.TreeCache;
 import com.stratelia.webactiv.beans.admin.instance.control.Instanciateur;
@@ -1176,8 +1177,8 @@ public class Admin extends Object {
       String componentName = componentInst.getName();
       String componentId = componentName + componentInst.getId();
 
-      String[] asCompoNames = {componentName};
-      String[] asCompoIds = {componentId};
+      String[] asCompoNames = { componentName };
+      String[] asCompoIds = { componentId };
       instantiateComponents(sUserId, asCompoIds, asCompoNames, spaceInstFather.getId(),
           connectionProd);
 
@@ -1301,8 +1302,8 @@ public class Admin extends Object {
 
         // Uninstantiate the components
         String componentName = componentInst.getName();
-        String[] asCompoName = {componentName};
-        String[] asCompoId = {sClientComponentId};
+        String[] asCompoName = { componentName };
+        String[] asCompoId = { sClientComponentId };
         unInstantiateComponents(sUserId, asCompoId, asCompoName,
             getClientSpaceId(sFatherClientId), connectionProd);
 
@@ -1694,8 +1695,10 @@ public class Admin extends Object {
       m_Cache.resetComponentInst();
 
       // reset treecache list in old and new spaces
-      TreeCache.setComponents(getDriverSpaceId(oldSpaceId), m_ComponentInstManager.getComponentsInSpace(Integer.parseInt(getDriverSpaceId(oldSpaceId))));
-      TreeCache.setComponents(getDriverSpaceId(spaceId), m_ComponentInstManager.getComponentsInSpace(Integer.parseInt(getDriverSpaceId(spaceId))));
+      TreeCache.setComponents(getDriverSpaceId(oldSpaceId), m_ComponentInstManager
+          .getComponentsInSpace(Integer.parseInt(getDriverSpaceId(oldSpaceId))));
+      TreeCache.setComponents(getDriverSpaceId(spaceId), m_ComponentInstManager
+          .getComponentsInSpace(Integer.parseInt(getDriverSpaceId(spaceId))));
     } catch (Exception e) {
       rollback();
       throw new AdminException("Admin.moveComponentInst",
@@ -1822,7 +1825,8 @@ public class Admin extends Object {
 
     List<String> groups = getAllGroupsOfUser(userId);
 
-    return m_ProfiledObjectManager.getUserProfileNames(objectId, objectType, Integer.parseInt(getDriverComponentId(componentId)),
+    return m_ProfiledObjectManager.getUserProfileNames(objectId, objectType, Integer
+        .parseInt(getDriverComponentId(componentId)),
         Integer.parseInt(userId), groups);
   }
 
@@ -2809,7 +2813,8 @@ public class Admin extends Object {
         m_DDManager.startTransaction(false);
 
         GroupProfileInst oldSpaceProfile =
-            m_GroupProfileInstManager.getGroupProfileInst(m_DDManager, null, groupProfileInstNew.getGroupId());
+            m_GroupProfileInstManager.getGroupProfileInst(m_DDManager, null, groupProfileInstNew
+                .getGroupId());
 
         // Update the group profile in tables
         m_GroupProfileInstManager.updateGroupProfileInst(oldSpaceProfile,
@@ -3607,19 +3612,26 @@ public class Admin extends Object {
   }
 
   private List<String> getAllGroupsOfUser(String userId) throws AdminException {
-    List<String> allGroupsOfUser = new ArrayList<String>();
-    String[] directGroupIds = m_GroupManager.getDirectGroupsOfUser(m_DDManager, userId);
-    for (int g = 0; g < directGroupIds.length; g++) {
-      Group group = m_GroupManager.getGroup(directGroupIds[g], false); // TODO: cacher les groupes
-      if (group != null) {
-        allGroupsOfUser.add(group.getId());
-        while (StringUtil.isDefined(group.getSuperGroupId())) {
-          group = m_GroupManager.getGroup(group.getSuperGroupId(), false);
-          if (group != null) {
-            allGroupsOfUser.add(group.getId());
+    List<String> allGroupsOfUser = GroupCache.getAllGroupIdsOfUser(userId);
+    if (allGroupsOfUser == null) {
+      // group ids of user is not yet processed
+      // process it and store it in cache
+      allGroupsOfUser = new ArrayList<String>();
+      String[] directGroupIds = m_GroupManager.getDirectGroupsOfUser(m_DDManager, userId);
+      for (int g = 0; g < directGroupIds.length; g++) {
+        Group group = m_GroupManager.getGroup(directGroupIds[g], false);
+        if (group != null) {
+          allGroupsOfUser.add(group.getId());
+          while (StringUtil.isDefined(group.getSuperGroupId())) {
+            group = m_GroupManager.getGroup(group.getSuperGroupId(), false);
+            if (group != null) {
+              allGroupsOfUser.add(group.getId());
+            }
           }
         }
       }
+      // store groupIds of user in cache
+      GroupCache.setAllGroupIdsOfUser(userId, allGroupsOfUser);
     }
     return allGroupsOfUser;
   }
@@ -4936,7 +4948,8 @@ public class Admin extends Object {
               // All users by access level
               if (domainId == null) {
                 userIds =
-                    Arrays.asList(m_DDManager.organization.user.getUserIdsByAccessLevel(accessLevel));
+                    Arrays.asList(m_DDManager.organization.user
+                        .getUserIdsByAccessLevel(accessLevel));
               } else {
                 userIds =
                     Arrays.asList(m_UserManager.getUserIdsOfDomainAndAccessLevel(m_DDManager,
@@ -4951,7 +4964,8 @@ public class Admin extends Object {
             // Available only for "domaine mixte"
             if ("-1".equals(domainId)) {
               userIds =
-                  Arrays.asList(m_DDManager.organization.user.getUserIdsOfDomain(Integer.parseInt(dId)));
+                  Arrays.asList(m_DDManager.organization.user.getUserIdsOfDomain(Integer
+                      .parseInt(dId)));
             }
           }
         } else if (rule.toLowerCase().startsWith("dc_")) {
@@ -5424,7 +5438,8 @@ public class Admin extends Object {
       }
     }
     if ((parentId == null)
-        && ((parentSpecificIds.length > 0) || ((askedParentId != null) && (askedParentId.length() > 0)))) {// We
+        &&
+        ((parentSpecificIds.length > 0) || ((askedParentId != null) && (askedParentId.length() > 0)))) {// We
       // can't
       // add
       // the
@@ -5479,7 +5494,8 @@ public class Admin extends Object {
         existingGroupId = null;
         try {
           existingGroupId =
-              m_GroupManager.getGroupIdBySpecificIdAndDomainId(m_DDManager, childs[i].getSpecificId(), latestGroup.getDomainId());
+              m_GroupManager.getGroupIdBySpecificIdAndDomainId(m_DDManager, childs[i]
+                  .getSpecificId(), latestGroup.getDomainId());
           existingGroup = getGroup(existingGroupId);
           if (existingGroup.getSuperGroupId().equals(latestGroup.getId())) { // Only
             // synchronize

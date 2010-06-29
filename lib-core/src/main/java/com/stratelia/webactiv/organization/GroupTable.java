@@ -34,6 +34,7 @@ import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SynchroGroupReport;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
+import com.stratelia.webactiv.beans.admin.cache.GroupCache;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
@@ -723,6 +724,7 @@ public class GroupTable extends Table {
         "Ajout de l'utilisateur d'ID " + userId + " dans le groupe d'ID "
         + groupId + ", requête : " + INSERT_A_GROUP_USER_REL, null);
     updateRelation(INSERT_A_GROUP_USER_REL, params);
+    GroupCache.removeCacheOfUser(Integer.toString(userId));
   }
 
   /**
@@ -763,6 +765,7 @@ public class GroupTable extends Table {
             "Ajout de l'utilisateur d'ID " + userId + " dans le groupe d'ID "
             + groupId + ", requête : " + INSERT_A_GROUP_USER_REL, null);
         updateRelation(INSERT_A_GROUP_USER_REL, params);
+        GroupCache.removeCacheOfUser(Integer.toString(userId));
       }
     }
   }
@@ -786,6 +789,7 @@ public class GroupTable extends Table {
         "Retrait de l'utilisateur d'ID " + userId + " du groupe d'ID "
         + groupId + ", requête : " + DELETE_GROUP_USER_REL, null);
     updateRelation(DELETE_GROUP_USER_REL, params);
+    GroupCache.removeCacheOfUser(Integer.toString(userId));
   }
 
   static final private String DELETE_GROUP_USER_REL =
@@ -821,6 +825,7 @@ public class GroupTable extends Table {
             "Retrait de l'utilisateur d'ID " + userId + " du groupe d'ID "
             + groupId + ", requête : " + DELETE_GROUP_USER_REL, null);
         updateRelation(DELETE_GROUP_USER_REL, params);
+        GroupCache.removeCacheOfUser(Integer.toString(userId));
       } else {
         throw new AdminPersistenceException(
             "GroupTable.removeUsersFromGroup()", SilverpeasException.ERROR,
