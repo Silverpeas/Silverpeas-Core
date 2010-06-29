@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.viewGenerator.html.monthCalendar;
 
 import com.silverpeas.util.EncodeHelper;
@@ -49,27 +48,25 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
    * @return
    * @see
    */
+  @Override
   public String print() {
     ResourceLocator message = new ResourceLocator(
         "com.stratelia.webactiv.almanach.multilang.almanach", this.language);
     try {
-      StringBuffer html = new StringBuffer();
-
-      html
-          .append("<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"98%\" bgcolor=\"#000000\"><tr><td><table cellpadding=\"0\" cellspacing=\"1\" border=\"0\" width=\"100%\">");
-
+      StringBuilder html = new StringBuilder();
+      html.append(
+          "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"98%\" bgcolor=\"#000000\">");
+      html.append("<tr><td><table cellpadding=\"0\" cellspacing=\"1\" border=\"0\" width=\"100%\">");
       html.append(printDayOfWeek());
-
       int k = super.getNumbersWeekOfMonth();
 
-      SilverTrace.info("viewgenerator", "MonthCalendarWA1.print()",
-          "root.MSG_GEN_PARAM_VALUE", " Numbers week = " + k + ". ");
+      SilverTrace.info("viewgenerator", "MonthCalendarWA1.print()", "root.MSG_GEN_PARAM_VALUE",
+          "Numbers week = " + k + ". ");
       for (int i = 1; i <= k; i++) {
         html.append(printNumberDayOfWeek(i));
         html.append(printWeek(i, message));
       }
       html.append("</table></td></tr></table>");
-
       return html.toString();
     } catch (Exception e) {
       return e.getMessage();
@@ -84,12 +81,9 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
   private String printDayOfWeek() {
     String[] nameDay = super.getHeaderNameDay();
     int numbersDayOfWeek = super.getNumbersDayOfWeek();
-
-    StringBuffer html = new StringBuffer("<tr class=\"intfdcolor51\">");
-
+    StringBuilder html = new StringBuilder("<tr class=\"intfdcolor51\">");
     for (int i = 0; i < numbersDayOfWeek; i++) {
-      html
-          .append(" <td width=\"14%\" align=\"center\"><span class=\"txtnav\">");
+      html.append(" <td width=\"14%\" align=\"center\"><span class=\"txtnav\">");
       html.append(nameDay[i]);
       html.append("</span></td>");
     }
@@ -105,14 +99,12 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
    * @see
    */
   private String printNumberDayOfWeek(int week) throws Exception {
-    StringBuffer html = new StringBuffer();
+    StringBuilder html = new StringBuilder();
     html.append("<tr>");
     int numbersDayOfWeek = super.getNumbersDayOfWeek();
     Day[] day = super.getDayOfWeek(week);
-
-    SilverTrace.info("viewgenerator",
-        "MonthCalendarWA1.printNumberDayOfWeek()", "root.MSG_GEN_PARAM_VALUE",
-        " Week = " + week + ". ");
+    SilverTrace.info("viewgenerator", "MonthCalendarWA1.printNumberDayOfWeek()",
+        "root.MSG_GEN_PARAM_VALUE", "Week = " + week + ". ");
     for (int k = 0; k < numbersDayOfWeek; k++) {
       if (day[k].getIsInThisMonth()) {
         if (day[k].isCurrentDay()) {
@@ -120,11 +112,9 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
         } else {
           html.append("<td class=\"intfdcolor\">");
         }
-
-        html.append("&nbsp;")
-            .append("<a href=\"javascript:onClick=clickDay('").append(
-            DateUtil.getInputDate(day[k].getDate(), super.language))
-            .append("')\" class=\"almanachDay\" ").append(
+        html.append("&nbsp;").append("<a href=\"javascript:onClick=clickDay('").append(
+            DateUtil.getInputDate(day[k].getDate(), super.language)).append(
+            "')\" class=\"almanachDay\" ").append(
             "onfocus=\"this.blur()\">").append(day[k].getNumbers()).append(
             "</a> </td>");
       } else {
@@ -146,15 +136,13 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
    * @see
    */
   private String printWeek(int week, ResourceLocator message) throws Exception {
-    StringBuffer html = new StringBuffer();
+    StringBuilder html = new StringBuilder();
 
     int numbersRowOfWeek = super.getNumbersOfRow(week);
-
     SilverTrace.info("viewgenerator", "MonthCalendarWA1.printWeek()",
         "root.MSG_GEN_PARAM_VALUE", " Week = " + (week - 1)
         + "); numbersRowOfWeek=" + numbersRowOfWeek + ". ");
     // pour chaque row de la semaine
-
     for (int i = 0; i < numbersRowOfWeek; i++) {
       html.append("<tr>");
       html.append(printRow(week, i, numbersRowOfWeek, message));
@@ -178,8 +166,7 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
     SilverTrace.info("viewgenerator", "MonthCalendarWA1.printRow()",
         "root.MSG_GEN_PARAM_VALUE", " Week = " + week + "; numbersRowOfWeek="
         + numbersRowOfWeek + ". ");
-    StringBuffer html = new StringBuffer();
-
+    StringBuilder html = new StringBuilder();
     int numbersDayOfWeek = super.getNumbersDayOfWeek();
     Day[] days = super.getDayOfWeek(week);
 
@@ -211,42 +198,33 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
         } else {
           html.append("<td class=\"intfdcolor51\"");
         }
-
         html.append(" height=\"").append(height).append("\"");
-
         boolean tdIsCreate = false;
-
         // contrôle pour chaque événement, s'il débute ou pas ce jour
         // courant
         // afin d'avoir le html approprié
         for (int z = 0; z < nbEvt; z++) {
           if (evt[z].isInDay(days[k])) {
             int colspan = evt[z].getSpanDay(days[k].getDate());
-
             if (colspan > 1) {
-              html.append(" colspan=\"" + String.valueOf(colspan) + "\">");
+              html.append(" colspan=\"").append(colspan).append("\">");
               k += (colspan - 1);
             } else {
               html.append(">");
             }
-
             String title = evt[z].getName();
-
             if (title.length() > 30) {
               title = title.substring(0, 30) + "...";
             }
-
             title = EncodeHelper.javaStringToHtmlString(title);
-
-            if (evt[z].getColor() != null)
+            if (evt[z].getColor() != null) {
               title = "<span style=\"color :" + evt[z].getColor() + "\">"
                   + title + "</span>";
-
+            }
             if (evt[z].getPriority() == 1) {
-              html.append(
-                  "<img src=\"icons/urgent.gif\" align=\"absmiddle\" alt=\"")
-                  .append(message.getString("important")).append("\" title=\"")
-                  .append(message.getString("important")).append("\"/> ");
+              html.append("<img src=\"icons/urgent.gif\" align=\"absmiddle\" alt=\"");
+              html.append(message.getString("important")).append("\" title=\"");
+              html.append(message.getString("important")).append("\"/> ");
             }
             html.append("<a href=\"javascript:onClick=clickEvent(").append(
                 evt[z].getId()).append(", '");
@@ -254,22 +232,20 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
             html.append(evt[z].getInstanceId()).append("')\"");
             if (StringUtil.isDefined(evt[z].getTooltip())) {
               html.append(" onmouseover=\"return overlib('").append(
-                  EncodeHelper.javaStringToJsString(evt[z].getTooltip())).append("', CAPTION, '")
-                  .append(
+                  EncodeHelper.javaStringToJsString(evt[z].getTooltip())).append("', CAPTION, '").
+                  append(
                   EncodeHelper.javaStringToJsString(evt[z].getName())).append(
                   "');\" onmouseout=\"return nd();\">");
             } else {
-              html.append(" title=\"")
-                  .append(EncodeHelper.javaStringToHtmlString(evt[z].getName()))
-                  .append("\">");
+              html.append(" title=\"").append(EncodeHelper.javaStringToHtmlString(evt[z].getName())).
+                  append("\">");
             }
             html.append(title).append("</a>");
-            if (evt[z].getStartHour() != null
-                && evt[z].getStartHour().length() > 0) {
+            if (evt[z].getStartHour() != null && evt[z].getStartHour().length() > 0) {
               html.append("&nbsp;(").append(evt[z].getStartHour());
-              if (evt[z].getEndHour() != null
-                  && evt[z].getEndHour().length() > 0)
+              if (evt[z].getEndHour() != null && evt[z].getEndHour().length() > 0) {
                 html.append("-").append(evt[z].getEndHour());
+              }
               html.append(")");
             }
             html.append("</td>");
