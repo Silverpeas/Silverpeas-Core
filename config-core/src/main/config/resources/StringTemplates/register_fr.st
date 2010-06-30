@@ -1,23 +1,23 @@
 <div class="componentNav">
 
-<span class="txtNav"><center>Bienvenue sur le module Référentiel</center></span><br/>
-Le référentiel permet de gérer les utilisateurs autorisés à accéder à Silverpeas.<br/>
-Chaque utilisateur appartient à un domaine. Dans ce domaine, les utilisateurs peuvent être regroupés en groupes et sous groupes.<br/>
-Les groupes peuvent être gérés manuellement ou automatiquement (groupe synchronisé).<br/>
+<span class="txtNav"><center>Bienvenue sur le module RÃ©fÃ©rentiel</center></span><br/>
+Le rÃ©fÃ©rentiel permet de gÃ©rer les utilisateurs autorisÃ©s Ã  accÃ©der Ã  Silverpeas.<br/>
+Chaque utilisateur appartient Ã  un domaine. Dans ce domaine, les utilisateurs peuvent Ãªtre regroupÃ©s en groupes et sous groupes.<br/>
+Les groupes peuvent Ãªtre gÃ©rÃ©s manuellement ou automatiquement (groupe synchronisÃ©).<br/>
 <br/>
 Il existe plusieurs types de domaines :
 <ul>
 <li>les domaines utilisateurs<br/>
 - $listDomains; separator="<br/> - "$
 <br/>
-On notera que le domaine <em>Silverpeas</em> existe par défaut.
+On notera que le domaine <em>Silverpeas</em> existe par dÃ©faut.
 <br/>
-Les autres domaines peuvent être créés manuellement ou être branchés sur un annuaire externe (LDAP).<br/><br/>
+Les autres domaines peuvent Ãªtre crÃ©Ã©s manuellement ou Ãªtre branchÃ©s sur un annuaire externe (LDAP).<br/><br/>
 </li>
 
 <li>le domaine mixte<br/>
-Aucune création d'utilisateur n'est possible sur ce domaine.<br/>
-Il permet simplement de regrouper des utilisateurs provenant des différents domaines. 
+Aucune crÃ©ation d'utilisateur n'est possible sur ce domaine.<br/>
+Il permet simplement de regrouper des utilisateurs provenant des diffÃ©rents domaines. 
 </li>
 </ul>
 
