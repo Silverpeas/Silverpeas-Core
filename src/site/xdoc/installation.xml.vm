@@ -40,18 +40,51 @@ Please find a list of the tools you will need to install Silverpeas below.<br/>
       <subsection name="Java 6">
         <p>Silverpeas needs a Java SE Development Kit (JDK) at least of version 6, which can be downloaded from Sun
           <a href="http://java.sun.com/javase/downloads/index.jsp#jdk">here</a>.<br/>
-          Don't forget to set-up the environment variable <code>%JAVA_HOME%</code>.
+          Don't forget to set-up the environment variable <b>JAVA_HOME</b>.
         </p>
       </subsection>
       <subsection name="Apache Maven">
-        <p>Apache Maven 2.2.x is used in Silverpeas for the building of  components and the assembly. It must be installed on the target platform.<br/>
-          For correct installation, see <a href="http://www.sonatype.com/books/maven-book/reference/installation.html">Maven - The Definitive Guide</a>
+        <p>Apache Maven 2.2.x is used in Silverpeas for the building of components and the assembly. It must be installed on the target platform.<br/>
+        To install Maven, follw these steps:
+        <ol>
+          <li>Download Maven 2.2.x from the <a href="http://maven.apache.org/download.html">Apache web site</a> or one of its mirrors.</li>
+          <li>Uncompress the downloaded archive in a directory</li>
+          <li>Define the environment variable <b>M2_HOME</b> to the resulting directory.</li>
+          <li>Add <code>%M2_HOME%\bin</code> to your <code>%PATH%</code> variable.</li>
+        </ol>
+        </p>
+        <p>
+          For a complete installation description, see <a href="http://www.sonatype.com/books/maven-book/reference/installation.html">Maven - The Definitive Guide</a>
         </p>
         <p>For more information about Apache Maven, please see the
           <a href="http://maven.apache.org">their website</a> or
           <a href="http://www.sonatype.com/books/maven-book/reference/">download the ebook</a>
         </p>
-        <p>If you are behind a <b>proxy</b> don't forget to configure it correctly for Maven following <a href="http://maven.apache.org/guides/mini/guide-proxies.html">these directions</a>.
+        <p>If you are behind a <b>proxy</b> don't forget to configure it correctly for Maven:
+          <ul>
+            <li>Edit or create the file <code>~/.m2/settings.xml</code>.</li>
+            <li>Add the follwing instructions according to your proxy configuration<br/>
+              <source><![CDATA[<settings>
+  .
+  .
+  <proxies>
+   <proxy>
+      <active>true</active>
+      <protocol>http</protocol>
+      <host>proxy.somewhere.com</host>
+      <port>8080</port>
+      <username>proxyuser</username>
+      <password>somepassword</password>
+      <nonProxyHosts>www.google.com|*.somewhere.com</nonProxyHosts>
+    </proxy>
+  </proxies>
+  .
+  .
+</settings>]]></source></li>
+          </ul>
+        </p>
+        <p>
+          For a complete configuration description, see this <a href="http://maven.apache.org/guides/mini/guide-proxies.html">Maven documentation page</a>.
         </p>
       </subsection>
       <subsection name="Postgresql">
@@ -84,7 +117,7 @@ Please find a list of the tools you will need to install Silverpeas below.<br/>
           <li><a href="http://repository.silverpeas.org/files/jboss403.zip"><img src="images/windows_logo_24X24.png"/> here for Windows</a></li>
           <li><a href="http://repository.silverpeas.org/files/jboss403.tar.gz"><img src="images/linux_logo_24X24.png"/> here for Linux</a>.</li>
         </ul>
-        <p>You have to set-up the environment variable <code>%JBOSS_HOME%</code> for the directory in which you have unzipped the jboss403.zip</p>
+        <p>You have to set-up the environment variable <b>JBOSS_HOME</b> for the directory in which you have unzipped the jboss403.zip</p>
       </subsection>
       <subsection name="Preparing Silverpeas">
         <p>We currently provide a packaged and pre-configured version that will build Silverpeas and its database. Please download </p>
@@ -103,7 +136,7 @@ Please find a list of the tools you will need to install Silverpeas below.<br/>
         </ul>
 </fieldset>
         <p>1. Unzip/decompress the contents into a <code>silverpeas</code> directory,</p>
-        <p>2. Define an environment variable <code>%SILVERPEAS_HOME%</code> that points to this directory.</p>
+        <p>2. Define an environment variable <b>SILVERPEAS_HOME</b> that points to this directory.</p>
         <p>For example:<br/>
         Unzip the <b>silverpeas-${installer_stable_version}.zip</b> file into <i>C:\Java</i>.<br/>
         The <code>%SILVERPEAS_HOME%</code> should be located at  <i>C:\Java\silverpeas-${installer_stable_version}</i>.
