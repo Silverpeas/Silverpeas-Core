@@ -173,13 +173,13 @@
         int nbAttachmentPerLine = 3;
 
         if (attachmentPosition != null && "right".equals(attachmentPosition)) {
-          out.println("<TABLE class=\"attachments\">");
+          out.println("<table class=\"attachments\">");
           out.println(
-              "<TR><TD class=\"header\"><img src=\"" + m_Context + "/util/icons/attachedFiles.gif\" class=\"picto\"/></td></TR>");
+              "<tr><td class=\"header\"><img src=\"" + m_Context + "/util/icons/attachedFiles.gif\" class=\"picto\"/></td></tr>");
         } else {
           out.println("<TABLE border=\"0\">");
           out.println(
-              "<TR><TD align=\"center\" colspan=\"" + (2 * nbAttachmentPerLine - 1) + "\"><img src=\"" + m_Context + "/util/icons/attachedFiles.gif\"/></td></TR>");
+              "<tr><td align=\"center\" colspan=\"" + (2 * nbAttachmentPerLine - 1) + "\"><img src=\"" + m_Context + "/util/icons/attachedFiles.gif\"/></td></tr>");
         }
 
         AttachmentDetail attachmentDetail = null;
@@ -198,17 +198,15 @@
           }
           info = attachmentDetail.getInfo(contentLanguage);
           if (StringUtil.isDefined(attachmentDetail.getAuthor(contentLanguage))) {
-            author = "<BR/><i>" + attachmentDetail.getAuthor(contentLanguage) + "</i>";
+            author = "<br/><i>" + attachmentDetail.getAuthor(contentLanguage) + "</i>";
           }
 
           if ("bottom".equals(attachmentPosition) && a == 1) {
-            out.println("<TR id=\"attachment" + attachmentDetail.getPK().getId() + "\">");
+            out.println("<tr id=\"attachment" + attachmentDetail.getPK().getId() + "\">");
           } else if ("right".equals(attachmentPosition)) {
             out.println(
                 "<li id=\"attachment_" + attachmentDetail.getPK().getId() + "\" class=\"attachmentListItem\">");
           }
-
-          //out.println("<TD valign=\"top\">");
           out.print("<span class=\"lineMain\">");
           if (showIcon) {
             out.println(
