@@ -35,30 +35,48 @@
   </head>
   <body>
     <section name="Upgrading from Silverpeas 5.1 to Silverpeas 5.2">
-      <p>Before Silverpeas 5.2 there were <b>two</b> configuration files, with Silverpeas 5.2 the file
-       <i>SilverpeasSettings.xml</i> has been splitted in two. Now you will find <i>config.xml</i> containing
-       the part that has to be manually edited and <i>SilverpeasSettings.xml</i> which provides a default
-       configuration for Silverpeas, overriden by creating a <i>CustomerSettings.xml</i>.<br/>
-       If you don't have your own <i>CustomerSettings.xml</i>, all you have to do is copy the <i>SilverpeasSettings.xml</i>
-       and redefine your configuration.</p>
-       <p>On the Windows plateform another step is requied, you have to reinstall JBoss with the new package or
-       you have to manually edit the <i>%JBOSS_HOME%\bin\run.bat</i> file and remove the line 77 (or add a <code>rem</code> before the command) :
-       <source><![CDATA[set JAVA_OPTS=%JAVA_OPTS% -Xms512m -Xmx512m]]></source></p>
+      <p>Before Silverpeas 5.2 there were 
+        <b>two</b> configuration files, with Silverpeas 5.2 the file
+        <i>SilverpeasSettings.xml</i> has been splitted in two. Now you will find 
+        <i>config.xml</i> containing
+       the part that has to be manually edited and 
+        <i>SilverpeasSettings.xml</i> which provides a default
+       configuration for Silverpeas, overriden by creating a 
+        <i>CustomerSettings.xml</i>.
+        <br/>
+       If you don't have your own 
+        <i>CustomerSettings.xml</i>, all you have to do is copy the 
+        <i>SilverpeasSettings.xml</i>
+       and redefine your configuration.
+      </p>
+      <p>On the Windows plateform another step is requied, you have to reinstall JBoss with the new package or
+       you have to manually edit the 
+        <i>%JBOSS_HOME%\bin\run.bat</i> file and remove the line 77 (or add a 
+        <code>rem</code> before the command) :
+        <source><![CDATA[set JAVA_OPTS=%JAVA_OPTS% -Xms512m -Xmx512m]]>
+        </source>
+      </p>
     </section>
     <section name="Pre-requisite">
       <p>Silverpeas V5 can be installed over the last stable version of Silverpeas V4, a.k.a. Silverpeas
-      V4 P410-M3. As Silverpeas V5 has only the migration scripts from this version, you <b>must</b> upgrade
-      to Silverpeas V4 P410-M3 before any migration to Silverpeas V5.<br/>
+      V4 P410-M3. As Silverpeas V5 has only the migration scripts from this version, you 
+        <b>must</b> upgrade
+      to Silverpeas V4 P410-M3 before any migration to Silverpeas V5.
+        <br/>
       </p>
       <subsection name="Preparing the new installation">
         <p>Silverpeas needs a Java SE Development Kit (JDK) at least of version 6, which can be downloaded from Sun
-          <a href="http://java.sun.com/javase/downloads/index.jsp#jdk">here</a>.<br/>
-          Don't forget to set-up the environment variable <code>%JAVA_HOME%</code>.
+          <a href="http://java.sun.com/javase/downloads/index.jsp#jdk">here</a>.
+          <br/>
+          Don't forget to set-up the environment variable 
+          <code>%JAVA_HOME%</code>.
         </p>
       </subsection>
       <subsection name="Apache Maven">
-        <p>Apache Maven 2.2.x is used in Silverpeas for the building of  components and the assembly. It must be installed on the target platform.<br/>
-          For correct installation, see <a href="http://www.sonatype.com/books/maven-book/reference/installation.html">Maven - The Definitive Guide</a>
+        <p>Apache Maven 2.2.x is used in Silverpeas for the building of  components and the assembly. It must be installed on the target platform.
+          <br/>
+          For correct installation, see 
+          <a href="http://www.sonatype.com/books/maven-book/reference/installation.html">Maven - The Definitive Guide</a>
         </p>
         <p>For more information about Apache Maven, please see the
           <a href="http://maven.apache.org">their website</a> or
@@ -66,42 +84,64 @@
         </p>
       </subsection>
       <subsection name="Environment Variables">
-        <p>In order for Silverpeas V5 to run ,the follwing environment variables <b>must</b> have been set :</p>
+        <p>In order for Silverpeas V5 to run ,the follwing environment variables 
+          <b>must</b> have been set :
+        </p>
         <ul>
-          <li><code>%SILVERPEAS_HOME%</code> : pointing to the installation directory of Silverpeas.</li>
-          <li><code>%$JBOSS_HOME%</code> : pointing to the installation directory of JBoss.</li>
+          <li>
+            <code>%SILVERPEAS_HOME%</code> : pointing to the installation directory of Silverpeas.
+          </li>
+          <li>
+            <code>%$JBOSS_HOME%</code> : pointing to the installation directory of JBoss.
+          </li>
         </ul>
-        <p>These variables should be available to the user running Silverpeas. With <i>FireDaemon</i> on Windows that means
-        that the variables should be set as system variables.</p>
+        <p>These variables should be available to the user running Silverpeas. With 
+          <i>FireDaemon</i> on Windows that means
+        that the variables should be set as system variables.
+        </p>
       </subsection>
     </section>
     <section name="Configuration">
       <subsection name="Configuring the JDBC Driver">
         <p>Silverpeas default configuration is using Postgresql, but if you plan to use Oracle you need a special step to
-        add the JDBC driver to Silverpeas. Edit the file <i>%SILVERPEAS_HOME%\bin\pom.xml</i> and add the following code :</p>
+        add the JDBC driver to Silverpeas.
+        </p>
+        <p>First, you need to install the Oracle JDBC driver in your local repository with the following command :</p>
+        <source><![CDATA[
+mvn install:install-file -DgroupId=com.oracle -DartifactId=ojdbc6 -Dpackaging=jar -Dversion=11.2.0.1.0 -DgeneratePom=true -Dfile=/path/to/jar]]>
+        </source>
+        <p>Now that the driver is available for Maven, edit the file 
+          <i>%SILVERPEAS_HOME%\bin\pom.xml</i> and add the following code :
+        </p>
         <ul>         
           <li>Oracle : 
-          <source><![CDATA[
+            <source><![CDATA[
 <dependencies>
   <dependency>
     <groupId>com.oracle</groupId>
     <artifactId>ojdbc6</artifactId>
     <version>11.2.0.1.0</version>
   </dependency>
-</dependencies>]]></source>
+</dependencies>]]>
+            </source>
           </li>
         </ul>
-        <p>Now, you need to install the Oracle JDBC driver in your local repository with the following command :</p>
-        <source><![CDATA[
-mvn install:install-file -DgroupId=com.oracle -DartifactId=ojdbc6 -Dpackaging=jar -Dversion=11.2.0.1.0 -DgeneratePom=true -Dfile=/path/to/jar]]></source>
-        </subsection>
+        <p>Before, following Silverpeas installation instructions, one last step is required : you need to copy the driver jar file into 
+         <i>%SILVERPEAS_HOME%\bin\jar</i> and edit the script  <i>%SILVERPEAS_HOME%\bin\dbBuilder.bat</i> adding
+         the Oracle JDBC driver to the <code>CLASSPATH</code>./p>
+      </subsection>
       <subsection name="Configuring Silverpeas">
-        <p>Now, you have to edit your configuration file : <i>%SILVERPEAS_HOME%\setup\settings\CustomerSettings.xml</i>
+        <p>Now, you have to edit your configuration file : 
+          <i>%SILVERPEAS_HOME%\setup\settings\CustomerSettings.xml</i>
         in order to take into account your new environment. The configuration is quite simple : you have to replace all
-        <code>$SILVERPEAS_HOME\silverpeas\</code> with <code>$SILVERPEAS_HOME\</code>.<br/>
-        In order to keep your existing data, you have to edit the provided <i>%SILVERPEAS_HOME%\setup\settings\SilverpeasSettings.xml</i>
-        to define the correct directory to your data root directory.</p>
+          <code>$SILVERPEAS_HOME\silverpeas\</code> with 
+          <code>$SILVERPEAS_HOME\</code>.
+          <br/>
+        In order to keep your existing data, you have to edit the provided 
+          <i>%SILVERPEAS_HOME%\setup\settings\SilverpeasSettings.xml</i>
+        to define the correct directory to your data root directory.
+        </p>
       </subsection>
     </section>
- </body>
+  </body>
 </document>
