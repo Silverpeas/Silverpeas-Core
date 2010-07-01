@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.notation.model;
 
 import java.io.Serializable;
@@ -60,21 +59,27 @@ public class NotationPK extends WAPrimaryKey implements Serializable {
     return userId;
   }
 
+  @Override
+  public int hashCode() {
+    return this.toString().hashCode();
+  }
+
   /**
    * Comparison between two notation primary key. Since various attributes of the both elements can
    * be null, using toString() method to compare the elements avoids to check null cases for each
    * attribute.
+   * @param other 
    */
+  @Override
   public boolean equals(Object other) {
-    return ((other instanceof NotationPK) && (toString()
-        .equals(((NotationPK) other).toString())));
+    return ((other instanceof NotationPK) && (toString().equals(((NotationPK) other).toString())));
   }
 
+  @Override
   public String toString() {
     return new StringBuffer().append("(id = ").append(getId()).append(
         ", space = ").append(getSpace()).append(", componentName = ").append(
         getComponentName()).append(", type = ").append(getType()).append(
         ", userId = ").append(getUserId()).append(")").toString();
   }
-
 }
