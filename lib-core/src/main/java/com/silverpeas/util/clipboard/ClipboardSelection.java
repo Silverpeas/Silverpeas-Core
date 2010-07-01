@@ -24,6 +24,8 @@
 
 package com.silverpeas.util.clipboard;
 
+
+import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
@@ -32,8 +34,6 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
-
 /**
  * Class declaration
  * @author
@@ -41,9 +41,9 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
 public abstract class ClipboardSelection implements Serializable, ClipboardOwner, Transferable {
 
   private static final long serialVersionUID = 7296607705319157979L;
-  static public DataFlavor IndexFlavor = new DataFlavor("silverpeas/index",
+  final static public DataFlavor IndexFlavor = new DataFlavor("silverpeas/index",
       "Silverpeas index");
-  static public DataFlavor SilverpeasKeyDataFlavor = new DataFlavor(
+  final static public DataFlavor SilverpeasKeyDataFlavor = new DataFlavor(
       "silverpeas/keydata", "Silverpeas keydata");
   protected ArrayList<DataFlavor> supportedFlavorsList = new ArrayList<DataFlavor>();
   protected boolean selected = true;
@@ -59,61 +59,57 @@ public abstract class ClipboardSelection implements Serializable, ClipboardOwner
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
+   * Add a new DataFlavor to the list of supported DataFlavors.
+   * @param parFlavor 
    */
   protected void addFlavor(DataFlavor parFlavor) {
     supportedFlavorsList.add(parFlavor);
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
+   * Indicates if a DataFlavor is in the list of supported DataFlavors.
+   * @param parFlavor
+   * @return true if the dataflavor is supported, false otherwise.
    */
+  @Override
   public boolean isDataFlavorSupported(DataFlavor parFlavor) {
-    // return parFlavor.equals (IndexFlavor);
-    boolean supported = true;
-
-    try {
-      int index = 0;
-
-      while (!parFlavor
-          .equals(supportedFlavorsList.get(index++)))
-        ;
-    } catch (IndexOutOfBoundsException e) {
-      supported = false;
+    if(parFlavor == null) {
+      return false;
     }
-    ;
-    return supported;
+    return supportedFlavorsList.contains(parFlavor); 
   }
 
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
    */
+  @Override
   public synchronized DataFlavor[] getTransferDataFlavors() {
     return ((DataFlavor[]) (supportedFlavorsList
         .toArray(new DataFlavor[supportedFlavorsList.size()])));
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
+   * Return the data stored into the DataFlavor.
+   * @param parFlavor
+   * @return 
    */
+  @Override
   public synchronized Object getTransferData(DataFlavor parFlavor)
       throws UnsupportedFlavorException {
-    if (parFlavor.equals(IndexFlavor)) {
+    if (IndexFlavor.equals(parFlavor)) {
       return getIndexEntry();
-    } else if (parFlavor.equals(SilverpeasKeyDataFlavor)) {
+    } else if (SilverpeasKeyDataFlavor.equals(parFlavor)) {
       return getKeyData();
     } else {
-      throw new UnsupportedFlavorException(IndexFlavor);
+      throw new UnsupportedFlavorException(parFlavor);
     }
   }
 
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
+   * @return 
    */
   public boolean isSelected() {
     return selected;
@@ -122,28 +118,32 @@ public abstract class ClipboardSelection implements Serializable, ClipboardOwner
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
+   * @param setIt 
    */
   public void setSelected(boolean setIt) {
     selected = setIt;
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
+   * Does nothing.
+   * @param parClipboard
+   * @param parTransferable 
    */
+  @Override
   public void lostOwnership(Clipboard parClipboard, Transferable parTransferable) {
-    // System.out.println ("Lost ownership");
   }
 
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
+   * @return 
    */
   abstract protected IndexEntry getIndexEntry();
 
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
+   * @return 
    */
   abstract protected SilverpeasKeyData getKeyData();
 

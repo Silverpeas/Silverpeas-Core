@@ -21,37 +21,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.beans.admin;
 
-import java.io.Serializable;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.UnsupportedFlavorException;
 
 import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.silverpeas.util.clipboard.SilverpeasKeyData;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.Serializable;
 
 public class ComponentSelection extends ClipboardSelection implements Serializable {
 
   private static final long serialVersionUID = 4750709802063183409L;
-  static public DataFlavor ComponentDetailFlavor;
-  static {
-    try {
-      ComponentDetailFlavor = new DataFlavor(Class
-          .forName("com.stratelia.webactiv.beans.admin.ComponentInst"),
-          "Component");
-    } catch (ClassNotFoundException e) {
-      e.printStackTrace();
-    }
-  }
-
+  public static final DataFlavor ComponentDetailFlavor = new DataFlavor(ComponentInst.class, 
+      "Component");
   private ComponentInst componentInst;
 
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------ Constructor
-   */
+ /**
+  * 
+  * @param component the component selected.
+  */
   public ComponentSelection(ComponentInst component) {
     super();
     componentInst = component;
@@ -59,42 +49,44 @@ public class ComponentSelection extends ClipboardSelection implements Serializab
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
+   * Returns the data transfered.
+   * @param parFlavor the DataFlavor.
+   * @return the dta copied.
+   * @throws UnsupportedFlavorException
    */
+  @Override
   public synchronized Object getTransferData(DataFlavor parFlavor)
       throws UnsupportedFlavorException {
     Object transferedData;
-
     try {
       transferedData = super.getTransferData(parFlavor);
     } catch (UnsupportedFlavorException e) {
-      if (parFlavor.equals(ComponentDetailFlavor))
+      if (ComponentDetailFlavor.equals(parFlavor)) {
         transferedData = componentInst;
-      else
+      } else {
         throw e;
+      }
     }
     return transferedData;
   }
 
-  /**
-   * --------------------------------------------------------------------------
-   * ------------------------------
-   */
+ /**
+  * Returns the IndexEntry for the component being copeid.
+  * @return an IndexEntry for this component
+  */
+  @Override
   public IndexEntry getIndexEntry() {
-    IndexEntry indexEntry = new IndexEntry(componentInst.getId(), "Component",
-        componentInst.getId());
+    IndexEntry indexEntry = new IndexEntry(componentInst.getId(), "Component", componentInst.getId());
     indexEntry.setTitle(componentInst.getLabel());
     return indexEntry;
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * ------------------------------ Tranformation obligatoire en SilverpeasKeyData
+   * Tranforms the dat into a SilverpeasKeyData.   
    */
+  @Override
   public SilverpeasKeyData getKeyData() {
     SilverpeasKeyData keyData = new SilverpeasKeyData();
-
     keyData.setTitle(componentInst.getName());
     keyData.setAuthor(componentInst.getCreatorUserId());
     keyData.setCreationDate(componentInst.getCreateDate());
