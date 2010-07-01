@@ -23,10 +23,11 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import java.io.Serializable;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import java.io.Serializable;
 
 public class UserDetail extends Object implements Serializable, Comparable<UserDetail> {
 
@@ -85,6 +86,7 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
 
   /**
    * Get user id as stored in database
+   * @return 
    */
   public String getId() {
     return m_sId;
@@ -92,6 +94,7 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
 
   /**
    * Set user id
+   * @param sId 
    */
   public void setId(String sId) {
     m_sId = sId;
@@ -99,6 +102,7 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
 
   /**
    * Get specific user id
+   * @return 
    */
   public String getSpecificId() {
     return m_sSpecificId;
@@ -106,13 +110,15 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
 
   /**
    * Set specific user id
+   * @param sSpecificId 
    */
   public void setSpecificId(String sSpecificId) {
     m_sSpecificId = sSpecificId;
   }
 
   /**
-   * Get user domain id
+   * Get user's domain id
+   * @return user's domain id
    */
   public String getDomainId() {
     return m_sDomainId;
@@ -120,13 +126,15 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
 
   /**
    * Set user domain id
+   * @param sDomainId 
    */
   public void setDomainId(String sDomainId) {
     m_sDomainId = sDomainId;
   }
 
   /**
-   * Get user login
+   * Get user's login
+   * @return user's login
    */
   public String getLogin() {
     return m_sLogin;
@@ -134,6 +142,7 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
 
   /**
    * Set user login
+   * @param sLogin 
    */
   public void setLogin(String sLogin) {
     if (sLogin != null) {
@@ -145,6 +154,7 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
 
   /**
    * Get user's first name
+   * @return user's first name
    */
   public String getFirstName() {
     return m_sFirstName;
@@ -152,6 +162,7 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
 
   /**
    * Set user first name
+   * @param sFirstName user first name
    */
   public void setFirstName(String sFirstName) {
     if (sFirstName != null) {
@@ -163,6 +174,7 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
 
   /**
    * Get user's last name
+   * @return user's last name 
    */
   public String getLastName() {
     return m_sLastName;
@@ -170,6 +182,7 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
 
   /**
    * Set user last name
+   * @param sLastName user last name
    */
   public void setLastName(String sLastName) {
     if (sLastName != null) {
@@ -222,7 +235,9 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
 
   public boolean isDomainAdminRestricted() {
     return ((GeneralPropertiesManager.getDomainVisibility() != GeneralPropertiesManager.DVIS_ALL)
-        && (!isAccessAdmin()) && ((GeneralPropertiesManager.getDomainVisibility() != GeneralPropertiesManager.DVIS_ONE) || (!getDomainId().equals("0"))));
+        && (!isAccessAdmin())
+        && ((GeneralPropertiesManager.getDomainVisibility() != GeneralPropertiesManager.DVIS_ONE) 
+        || (!"0".equals(getDomainId()))));
   }
 
   public boolean isBackOfficeVisible() {
@@ -266,41 +281,14 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
   }
 
   public boolean equals(UserDetail cmpUser) {
-    if (!isEqualStrings(m_sId, cmpUser.getId())) {
-      return false;
-    }
-    if (!isEqualStrings(m_sSpecificId, cmpUser.getSpecificId())) {
-      return false;
-    }
-    if (!isEqualStrings(m_sDomainId, cmpUser.getDomainId())) {
-      return false;
-    }
-    if (!isEqualStrings(m_sLogin, cmpUser.getLogin())) {
-      return false;
-    }
-    if (!isEqualStrings(m_sFirstName, cmpUser.getFirstName())) {
-      return false;
-    }
-    if (!isEqualStrings(m_sLastName, cmpUser.getLastName())) {
-      return false;
-    }
-    if (!isEqualStrings(m_seMail, cmpUser.geteMail())) {
-      return false;
-    }
-    if (!isEqualStrings(m_sAccessLevel, cmpUser.getAccessLevel())) {
-      return false;
-    }
-    return true;
-  }
-
-  protected boolean isEqualStrings(String s1, String s2) {
-    if ((s1 == null) && (s2 == null)) {
-      return true;
-    }
-    if ((s1 == null) || (s2 == null)) {
-      return false;
-    }
-    return s1.equals(s2);
+    return StringUtil.areStringEquals(m_sId, cmpUser.getId())
+        && StringUtil.areStringEquals(m_sSpecificId, cmpUser.getSpecificId())
+        && StringUtil.areStringEquals(m_sDomainId, cmpUser.getDomainId()) 
+        && StringUtil.areStringEquals(m_sLogin, cmpUser.getLogin())
+        && StringUtil.areStringEquals(m_sFirstName, cmpUser.getFirstName()) 
+        && StringUtil.areStringEquals(m_sLastName, cmpUser.getLastName())
+        && StringUtil.areStringEquals(m_seMail, cmpUser.geteMail())
+        && StringUtil.areStringEquals(m_sAccessLevel, cmpUser.getAccessLevel());
   }
 
   /**
@@ -325,8 +313,10 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
         "admin.MSG_DUMP_USER", "AccessLevel : " + m_sAccessLevel);
   }
 
+  @Override
   public int compareTo(UserDetail o) {
     UserDetail other = o;
-    return ((getLastName() + getFirstName()).toLowerCase()).compareTo((other.getLastName() + other.getFirstName()).toLowerCase());
+    return ((getLastName() + getFirstName()).toLowerCase()).compareTo((other.getLastName() + other.
+        getFirstName()).toLowerCase());
   }
 }
