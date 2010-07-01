@@ -279,6 +279,28 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
     }
     return valret;
   }
+  
+  @Override
+  public boolean equals(Object other) {
+    if(other instanceof UserDetail) {
+      return this.equals((UserDetail) other);
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 3;
+    hash = 41 * hash + (this.m_sId != null ? this.m_sId.hashCode() : 0);
+    hash = 41 * hash + (this.m_sSpecificId != null ? this.m_sSpecificId.hashCode() : 0);
+    hash = 41 * hash + (this.m_sDomainId != null ? this.m_sDomainId.hashCode() : 0);
+    hash = 41 * hash + (this.m_sLogin != null ? this.m_sLogin.hashCode() : 0);
+    hash = 41 * hash + (this.m_sFirstName != null ? this.m_sFirstName.hashCode() : 0);
+    hash = 41 * hash + (this.m_sLastName != null ? this.m_sLastName.hashCode() : 0);
+    hash = 41 * hash + (this.m_seMail != null ? this.m_seMail.hashCode() : 0);
+    hash = 41 * hash + (this.m_sAccessLevel != null ? this.m_sAccessLevel.hashCode() : 0);
+    return hash;
+  }
 
   public boolean equals(UserDetail cmpUser) {
     return StringUtil.areStringEquals(m_sId, cmpUser.getId())
