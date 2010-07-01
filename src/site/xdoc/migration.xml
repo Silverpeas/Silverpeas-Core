@@ -128,7 +128,7 @@ mvn install:install-file -DgroupId=com.oracle -DartifactId=ojdbc6 -Dpackaging=ja
         </ul>
         <p>Before, following Silverpeas installation instructions, one last step is required : you need to copy the driver jar file into 
          <i>%SILVERPEAS_HOME%\bin\jar</i> and edit the script  <i>%SILVERPEAS_HOME%\bin\dbBuilder.bat</i> adding
-         the Oracle JDBC driver to the <code>CLASSPATH</code>./p>
+         the Oracle JDBC driver to the <code>CLASSPATH</code>.</p>
       </subsection>
       <subsection name="Configuring Silverpeas">
         <p>Now, you have to edit your configuration file : 
