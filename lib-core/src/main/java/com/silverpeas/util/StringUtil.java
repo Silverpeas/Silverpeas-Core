@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.util;
 
 import com.ibm.icu.text.CharsetDetector;
@@ -184,6 +183,18 @@ public class StringUtil {
     detector.setText(data);
     CharsetMatch detectedEnc = detector.detect();
     return detectedEnc.getName();
+  }
 
+  /**
+   * Indicates if two Strings are equals, managing null.
+   * @param s1 the first String.
+   * @param s2 the second String.
+   * @return true ifthe two Strings are equals.
+   */
+  public static boolean areStringEquals(String s1, String s2) {
+    if (s1 == null) {
+      return s2 == null;
+    }
+    return s1.equals(s2);
   }
 }
