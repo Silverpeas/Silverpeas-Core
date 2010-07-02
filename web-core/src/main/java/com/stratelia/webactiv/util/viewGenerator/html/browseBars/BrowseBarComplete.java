@@ -44,7 +44,7 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
  */
 public class BrowseBarComplete extends AbstractBrowseBar {
 
-  private static String CONNECTOR = "<span class=\"connector\"> > </span>";
+  private static String CONNECTOR = "<span class=\"connector\">&nbsp;>&nbsp;</span>";
 
   /**
    * Constructor declaration
@@ -146,7 +146,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
           }
           result.append("\"");
           result.append(" class=\"component\"");
-          result.append(" id=\"").append(componentInstLight.getId()).append("\"");
+          result.append(" id=\"bc_").append(componentInstLight.getId()).append("\"");
           result.append(">");
           result.append(componentInstLight.getLabel(language));
           result.append("</a>");
@@ -212,7 +212,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
         "/admin/jsp/MainFrameSilverpeasV5.jsp?RedirectToSpaceId=\"+spaceId;");
     script.append("}");
     script.append("function removeBreadCrumbElements() {");
-    script.append("$('#breadCrumb #").append(getComponentId()).append("').nextAll().remove();");
+    script.append("$('#breadCrumb .component').nextAll().remove();");
     script.append("}");
     script.append("function addBreadCrumbElement(link, label) {");
     script.append("$('#breadCrumb').append('").append(CONNECTOR).append(
