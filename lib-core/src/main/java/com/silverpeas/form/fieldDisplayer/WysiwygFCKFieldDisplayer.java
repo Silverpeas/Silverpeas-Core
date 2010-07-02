@@ -204,7 +204,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
       List<ComponentInstLight> galleries = WysiwygController.getGalleries();
       String fieldNameFunction = FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'));
 
-      if (!galleries.isEmpty()) {
+      if (galleries != null && !galleries.isEmpty()) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("<select id=\"galleryFile_" + fieldName +
             "\" name=\"componentId\" onchange=\"openGalleryFileManager" + fieldNameFunction +
@@ -299,7 +299,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
       out.println("}");
 
       // Gallery files exists; javascript functions
-      if (!galleries.isEmpty()) {
+      if (galleries != null && !galleries.isEmpty()) {
         out.println("var galleryFileWindow=window;");
         out.println("function openGalleryFileManager" + fieldNameFunction + "(){");
         out.println("index = document.getElementById(\"galleryFile_" + fieldName +
