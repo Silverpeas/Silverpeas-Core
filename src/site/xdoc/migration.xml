@@ -35,23 +35,18 @@
   </head>
   <body>
     <section name="Upgrading from Silverpeas 5.1 to Silverpeas 5.2">
-      <p>Before Silverpeas 5.2 there were 
-        <b>two</b> configuration files, with Silverpeas 5.2 the file
-        <i>SilverpeasSettings.xml</i> has been splitted in two. Now you will find 
-        <i>config.xml</i> containing
-       the part that has to be manually edited and 
-        <i>SilverpeasSettings.xml</i> which provides a default
-       configuration for Silverpeas, overriden by creating a 
-        <i>CustomerSettings.xml</i>.
+      <p>Before Silverpeas 5.2 there were <b>two</b> configuration files to be manually edited. With 
+      Silverpeas 5.2, all the general configuration parameters are in the file <i>config.xml</i>. 
+      Now you will find <i>config.xml</i> containing the part that has to be manually edited and 
+        <i>SilverpeasSettings.xml</i> which provides a defaultconfiguration for Silverpeas, 
+        overriden by creating a <i>CustomerSettings.xml</i>.
         <br/>
-       If you don't have your own 
-        <i>CustomerSettings.xml</i>, all you have to do is copy the 
-        <i>SilverpeasSettings.xml</i>
-       and redefine your configuration.
+       If you need some specific configuration you can create a <i>CustomerSettings.xml</i> file 
+       and define your own configuration elements like it is done in the <i>SilverpeasSettings.xml</i>
+       file.
       </p>
-      <p>On the Windows plateform another step is requied, you have to reinstall JBoss with the new package or
-       you have to manually edit the 
-        <i>%JBOSS_HOME%\bin\run.bat</i> file and remove the line 77 (or add a 
+      <p>On the Windows plateform another step is required, you have to manually edit the 
+        <i>%JBOSS_HOME%\bin\run.bat</i> file and remove the line 77 (or comment it, adding 
         <code>rem</code> before the command) :
         <source><![CDATA[set JAVA_OPTS=%JAVA_OPTS% -Xms512m -Xmx512m]]>
         </source>

@@ -147,8 +147,9 @@ Please find a list of the tools you will need to install Silverpeas below.<br/>
         <p>Silverpeas configuration is defined in the directory <code>%SILVERPEAS_HOME%\setup\settings\</code>.
         There you should find three files :
           <ul>
-            <li><b>config.xml: </b>where you can configure the database connection and other Silverpeas parameters.</li>
-            <li><b>JBossSettings.xml: </b>this is where JBoss is configured, you may configure the JVM parameters for the application.</li>
+            <li><b>config.xml: </b>where you can configure the database connection and other Silverpeas parameters
+such as the JVM parameters for the application.</li>
+            <li><b>JBossSettings.xml: </b>this is used for configuraing JBoss, you should not have to edit it.</li>
             <li><b>SilverpeasSettings.xml: </b>this is a default configuration for Silverpeas. If you want your own specific configuration,
 you can copy and paste this file to <i>CustomerSettings.xml</i> where you can define your own configuration. Creating the
  <i>CustomerSettings.xml</i> file will avoid editing the configuration files for each upgrade of Silverpeas.</li>
