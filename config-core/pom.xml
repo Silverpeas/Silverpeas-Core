@@ -9,7 +9,6 @@
 	
   <groupId>com.silverpeas.core</groupId>
   <artifactId>config-core</artifactId>
-  <version>5.3-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Configuration Core</name>
 
