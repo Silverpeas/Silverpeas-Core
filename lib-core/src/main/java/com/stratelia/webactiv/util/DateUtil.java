@@ -21,16 +21,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util;
 
+
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.lang.time.FastDateFormat;
@@ -41,12 +40,12 @@ import org.apache.commons.lang.time.FastDateFormat;
  */
 public class DateUtil {
 
-  private static final long millisPerHour = (long) 60 * (long) 60 * (long) 1000;
-  private static final long millisPerMinute = (long) 60 * (long) 1000;
-  private static Map<String, FastDateFormat> outputFormatters =
-      new HashMap<String, FastDateFormat>();
-  private static Map<String, SimpleDateFormat> inputParsers =
-      new HashMap<String, SimpleDateFormat>();
+  private static final long millisPerHour = 60l * 60l * 1000l;
+  private static final long millisPerMinute = 60l * 1000l;
+  private static Map<String, FastDateFormat> outputFormatters = new HashMap<String, FastDateFormat>(
+      5);
+  private static Map<String, SimpleDateFormat> inputParsers = new HashMap<String, SimpleDateFormat>(
+      5);
   /**
    * Format and parse dates.
    */
@@ -73,8 +72,8 @@ public class DateUtil {
 
   /**
    * Display the date in a language specific standard format.
-   * @parameter date The date to convert
-   * @parameter language The current user's language
+   * @param date the date to convert.
+   * @param language The current user's language
    * @return A String representation of the date in the language specific format.
    */
   public static String dateToString(Date date, String language) {
@@ -133,18 +132,17 @@ public class DateUtil {
 
   public static String getInputDate(String dateDB, String language)
       throws ParseException {
-    if (dateDB == null || "".equals(dateDB) || "null".equals(dateDB)) {
+    if (!StringUtil.isDefined(dateDB)) {
       return "";
-    } else {
-      Date date = parse(dateDB);
-      return getInputDate(date, language);
     }
+    Date date = parse(dateDB);
+    return getInputDate(date, language);
   }
 
   /**
    * Parse the date in a language specific standard format.
-   * @parameter string The String to convert in Date
-   * @parameter language The current user's language
+   * @param string The String to convert in Date
+   * @param language The current user's language
    * @throws java.text.ParseException if the input String is null, empty, or just in an incorrect
    * format.
    * @return A Date representation of the String in the language specific format.
@@ -152,7 +150,6 @@ public class DateUtil {
   public static Date stringToDate(String string, String language)
       throws ParseException {
     SimpleDateFormat format = getDateInputFormat(language);
-
     try {
       return format.parse(string);
     } catch (ParseException e) {
@@ -181,13 +178,10 @@ public class DateUtil {
     if (date == null) {
       return null;
     }
-
     Calendar calendar = Calendar.getInstance();
-
     calendar.setTime(date);
     calendar.set(Calendar.HOUR_OF_DAY, extractHour(hour));
     calendar.set(Calendar.MINUTE, extractMinutes(hour));
-
     return calendar.getTime();
 
   }
@@ -196,11 +190,10 @@ public class DateUtil {
     if (!StringUtil.isDefined(hour)) {
       return 0;
     }
-
-    if (hour.indexOf(":") != -1) {
-      return Integer.parseInt(hour.substring(0, hour.indexOf(":")));
-    } else if (hour.indexOf("h") != -1) {
-      return Integer.parseInt(hour.substring(0, hour.indexOf("h")));
+    if (hour.indexOf(':') != -1) {
+      return Integer.parseInt(hour.substring(0, hour.indexOf(':')));
+    } else if (hour.indexOf('h') != -1) {
+      return Integer.parseInt(hour.substring(0, hour.indexOf('h')));
     } else {
       return 0;
     }
@@ -211,10 +204,10 @@ public class DateUtil {
       return 0;
     }
 
-    if (hour.indexOf(":") != -1) {
-      return Integer.parseInt(hour.substring(hour.indexOf(":") + 1));
-    } else if (hour.indexOf("h") != -1) {
-      return Integer.parseInt(hour.substring(hour.indexOf("h") + 1));
+    if (hour.indexOf(':') != -1) {
+      return Integer.parseInt(hour.substring(hour.indexOf(':') + 1));
+    } else if (hour.indexOf('h') != -1) {
+      return Integer.parseInt(hour.substring(hour.indexOf('h') + 1));
     } else {
       return 0;
     }
@@ -222,7 +215,7 @@ public class DateUtil {
 
   /**
    * Get the date language specific standard output format.
-   * @parameter lang The current user's language
+   * @param lang The current user's language
    * @return A SimpleDateFormat initialized with the language specific output format.
    */
   public static FastDateFormat getDateOutputFormat(String lang) {
@@ -231,7 +224,7 @@ public class DateUtil {
 
   /**
    * Get the date language specific standard input format.
-   * @parameter language The current user's language
+   * @param language The current user's language
    * @return A SimpleDateFormat initialized with the language specific input format.
    */
   public static SimpleDateFormat getDateInputFormat(String language) {
@@ -240,7 +233,7 @@ public class DateUtil {
 
   /**
    * Get the date language specific standard input format.
-   * @parameter lang The current user's language
+   * @param lang The current user's language
    * @return A SimpleDateFormat initialized with the language specific input format.
    */
   public static SimpleDateFormat getDateAndHourInputFormat(String lang) {
@@ -264,6 +257,7 @@ public class DateUtil {
    * Parse a special String into a Date.
    * @param date (String) the format of this date must be yyyy/MM/dd
    * @return a java object Date
+   * @throws ParseException 
    */
   public static Date parse(String date) throws ParseException {
     synchronized (DATE_PARSER) {
@@ -276,6 +270,7 @@ public class DateUtil {
    * @param date (String) the format of this date must be yyyy/MM/dd
    * @param format (String) the whished format in according to the date parameter
    * @return a java object Date
+   * @throws ParseException 
    */
   public static Date parse(String date, String format) throws ParseException {
     SimpleDateFormat sdf = new SimpleDateFormat(format);
@@ -331,29 +326,23 @@ public class DateUtil {
     long hourDuration = duration / millisPerHour;
     long minuteDuration = (duration % millisPerHour) / millisPerMinute;
     long secondDuration = ((duration % millisPerHour) % millisPerMinute) / 1000;
-
-    String dHour = Long.toString(hourDuration);
-    String dMinute = Long.toString(minuteDuration);
-    String dSecond = Long.toString(secondDuration);
-    String result = "";
-    if (hourDuration < 10) {
-      dHour = "0" + dHour;
-    }
+    StringBuilder result = new StringBuilder(10);
     if (hourDuration > 0) {
-      result = dHour + "h";
-    }
-    if (hourDuration > 0 && minuteDuration < 10) {
-      dMinute = "0" + dMinute;
-    }
-    if (hourDuration > 0) {
-      result += dMinute + "m";
+      if (hourDuration < 10) {
+        result.append('0');
+      }
+      result.append(hourDuration).append('h');
+      if (minuteDuration < 10) {
+        result.append('0');
+      }
+      result.append(minuteDuration).append('m');
     } else if (hourDuration <= 0 && minuteDuration > 0) {
-      result += dMinute + "m";
+      result.append(minuteDuration).append('m');
     }
     if (result.length() > 0 && secondDuration < 10) {
-      dSecond = "0" + dSecond;
+      result.append('0');
     }
-    return result += dSecond + "s";
+    return result.append(secondDuration).append('s').toString();
   }
 
   private static FastDateFormat getOutputFormatter(String language) {
@@ -366,7 +355,7 @@ public class DateUtil {
   }
 
   private static SimpleDateFormat getInputFormatter(String language) {
-    SimpleDateFormat formatter = (SimpleDateFormat) inputParsers.get(language);
+    SimpleDateFormat formatter = inputParsers.get(language);
     if (formatter == null) {
       formatter = getDateInputFormat(language);
       inputParsers.put(language, formatter);
@@ -421,7 +410,7 @@ public class DateUtil {
 
   /**
    * Parse a String of format yyyy/MM/dd hh:mm and return the corresponding Date.
-   * @param date the String to be parsed.
+   * @param time the String to be parsed.
    * @return the corresponding date.
    * @throws ParseException
    */
@@ -461,7 +450,6 @@ public class DateUtil {
    * Format a Date to a String of format yyyy/MM/dd.
    * @param date the date to be formatted.
    * @return the formatted String.
-   * @throws ParseException
    */
   public static String formatDate(Date date) {
     if (date == null) {
@@ -474,7 +462,6 @@ public class DateUtil {
    * Format a Calendar to a String of format yyyy/MM/dd.
    * @param calend the date to be formatted.
    * @return the formatted String.
-   * @throws ParseException
    */
   public static String formatDate(Calendar calend) {
     if (calend == null) {
@@ -487,8 +474,7 @@ public class DateUtil {
    * Parse a String of format HH:mm and set the corresponding hours and minutes to the specified
    * Calendar.
    * @param time the String to be parsed.
-   * @param the calendar to be updated.
-   * @throws ParseException
+   * @param calend the calendar to be updated.
    */
   public static void setTime(Calendar calend, String time) {
     calend.set(Calendar.SECOND, 0);
@@ -513,7 +499,6 @@ public class DateUtil {
    * Format a Date to a String of format HH:mm.
    * @param date the date to be formatted.
    * @return the formatted String.
-   * @throws ParseException
    */
   public static String formatTime(Date date) {
     if (date == null) {
@@ -526,12 +511,14 @@ public class DateUtil {
    * Format a Calendar to a String of format HH:mm.
    * @param calend the date to be formatted.
    * @return the formatted String.
-   * @throws ParseException
    */
   public static String formatTime(Calendar calend) {
     if (calend == null) {
       return null;
     }
     return TIME_FORMATTER.format(calend.getTime());
+  }
+
+  private DateUtil() {
   }
 }
