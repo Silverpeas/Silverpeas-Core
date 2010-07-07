@@ -29,7 +29,6 @@
 package com.silverpeas.util;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Map;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -86,6 +85,32 @@ public class StringUtilTest {
     assertFalse(StringUtil.isInteger("a"));
     assertTrue(StringUtil.isInteger("0"));
     assertTrue(StringUtil.isInteger("-1"));
+  }
+
+  /**
+   * Test of isInteger method, of class StringUtil.
+   */
+  @Test
+  public void testIsFloat() {
+    assertTrue(StringUtil.isFloat("1"));
+    assertTrue(StringUtil.isFloat("00100"));
+    assertTrue(StringUtil.isFloat("1.1"));
+    assertFalse(StringUtil.isFloat("a"));
+    assertTrue(StringUtil.isFloat("0"));
+    assertTrue(StringUtil.isFloat("-1"));
+    assertFalse(StringUtil.isFloat("1,1"));
+  }
+
+  /**
+   * Test of isInteger method, of class StringUtil.
+   */
+  @Test
+  public void testConvertFloat() {
+    assertEquals(1.0f, StringUtil.convertFloat("1"), 0.001f);
+    assertEquals(1.1f, StringUtil.convertFloat("1.1"), 0.001f);
+    assertEquals(0f, StringUtil.convertFloat("a"), 0.001f);
+    assertEquals(-1.0f, StringUtil.convertFloat("-1"), 0.001f);
+    assertEquals(1.1f, StringUtil.convertFloat("1,1"), 0.001f);
   }
 
   /**
@@ -161,6 +186,7 @@ public class StringUtilTest {
 
   /**
    * Test of convertToEncoding method, of class StringUtil.
+   * @throws UnsupportedEncodingException 
    */
   @Test
   public void testConvertToEncoding() throws UnsupportedEncodingException {
@@ -189,6 +215,7 @@ public class StringUtilTest {
 
   /**
    * Test of detectEncoding method, of class StringUtil.
+   * @throws UnsupportedEncodingException
    */
   @Test
   public void testDetectEncoding() throws UnsupportedEncodingException {

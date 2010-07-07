@@ -25,8 +25,12 @@ package com.silverpeas.util;
 
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
+import com.silverpeas.util.i18n.I18NHelper;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -48,6 +52,27 @@ public class StringUtil {
   public static boolean isInteger(String id) {
     try {
       Integer.parseInt(id);
+      return true;
+    } catch (NumberFormatException e) {
+      return false;
+    }
+  }
+
+  public static float convertFloat(String value) {
+    if (StringUtil.isFloat(value)) {
+      return Float.valueOf(value);
+    } else if(value != null) {
+      String charge = value.replace(',', '.');
+      if (StringUtil.isFloat(charge)) {
+        return Float.valueOf(charge);
+      }
+    }
+    return 0f;
+  }
+
+  public static boolean isFloat(String id) {
+    try {
+      Float.parseFloat(id);
       return true;
     } catch (NumberFormatException e) {
       return false;
@@ -196,5 +221,31 @@ public class StringUtil {
       return s2 == null;
     }
     return s1.equals(s2);
+  }
+
+  /**
+   * Parse a String into a float using the default locale.
+   * @param value the string to be parsed into a float.
+   * @return the float value.
+   * @throws ParseException
+   */
+  public static float floatValue(String value) throws ParseException {
+    return floatValue(value, I18NHelper.defaultLanguage);
+  }
+
+  /**
+   * Parse a String into a float using the specified locale.
+   * @param value the string to be parsed into a float
+   * @param language the language for defining the locale
+   * @return the float value.
+   * @throws ParseException
+   */
+  public static float floatValue(String value, String language) throws ParseException {
+    String lang = language;
+    if (!StringUtil.isDefined(language)) {
+      lang = I18NHelper.defaultLanguage;
+    }
+    NumberFormat numberFormat = NumberFormat.getInstance(new Locale(lang));
+    return numberFormat.parse(value).floatValue();
   }
 }
