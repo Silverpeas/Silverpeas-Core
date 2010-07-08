@@ -32,6 +32,334 @@
   <head>
   </head>
   <body>
+    <section name="Release 5.2.1">
+      <fieldset class="related-issues">
+        <ul>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/713">Bug #713</a>: Theme Tracker: "Modifications en chaine", champ autocomplete ne fonctionne pas
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/723">Bug #723</a>: Erreur de mise à jour de la base v5.1 vers 5.2 sous Oracle
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/724">Bug #724</a>: Editeur Wysiwyg plante s'il n'y a pas de galleries d'image Wysiwyg (au moins pour les champs riches des Formulaires)
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/725">Bug #725</a>: Les PDC par composants ne fonctionnent plus : erreur java :bloquante
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/726">Bug #726</a>: Fils d'ariane incorrect, s'incrémente du theme selectionné à chaque clique
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/727">Bug #727</a>: Fenêtre de login incorrecte
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/746">Bug #746</a>: Oracle: scripts SQL incorrects
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/749">Bug #749</a>: [WF] En cas d'erreur, il arrive que la colonne stack de la table sb_workflow_error soit trop petite (1500) pour stocker l'erreur
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/760">Bug #760</a>: Erreur sur nouveau gestionnaire de ressources
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/761">Bug #761</a>: Erreur 500 au lieu d'un message clair si emploi de la virgule au lieu du point dans une charge
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/766">Bug #766</a>: Désactivation du bouton brouillon
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/744">Support #744</a>: Perte des parametres de customerSettings lors de la migration V4 en V5.2
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/755">Support #755</a>: interligne en wysiwig
+          </li>
+        </ul>
+      </fieldset>
+    </section>   
+    <section name="Release 5.2">
+      <fieldset class="related-issues">
+        <ul>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/262">Bug #262</a>: Contrôles de lecture incomplets
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/345">Bug #345</a>: Plantage lors de la modification d'un billet vide
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/378">Bug #378</a>: Impossible d'avoir un timeoutAction inférieur à 1 heure
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/379">Bug #379</a>: Impossible de supprimer un utilisateur
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/384">Bug #384</a>: Mauvais cast generique dans la déclaration de NodeHome.findByFatherPrimaryKey(NodePK fatherPK)
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/391">Bug #391</a>: Report pour synchronisation - form - Gestion explicite des transactions incompatible avec un gestionnaire ou un conteneur transactionnel
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/392">Bug #392</a>: Report pour synchronisation - form - tous les champs de IdentifiedRecordTemplate ne sont pas récupérés
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/393">Bug #393</a>: Report pour synchronisation - form - Mise en cache de DummyRecordTemplate et de DummyRecordSet
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/394">Bug #394</a>: Report pour Synchronisation - NullPointerException sur image vide ou format non géré
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/395">Bug #395</a>: Report pour synchronisation - Pas de transactions atomiques pour l'EJB GalleryBm
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/396">Bug #397</a>: Affichage onglet Question inutile
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/412">Bug #412</a>: Classe PublicationPK - equals et hashCode incompatibles avec le modèle de données
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/413">Bug #413</a>: Implémentation de l'Entity PublicationEJB - Non respect du modèle EJB en cas d'objets non trouvés
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/414">Bug #414</a>: Fichier WAComponent.xml mal formé
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/415">Bug #415</a>: ConnectionSettings.xsd - Erreur de typage
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/416">Bug #416</a>: FCKEditor moz-bindings.xml - Code JavaScript interprété par XML (manque CDATA)
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/422">Bug #422</a>: Affichage de la rubrique impossible
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/428">Bug #428</a>: [Websphere] QueryDescription n'est pas serializable
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/430">Bug #430</a>: [Websphere] Enlever la méthode Remove de l'EJB Clipboard
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/432">Bug #432</a>: Suppression d'une réservation en cours par un autre utilisateur
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/446">Bug #446</a>: [Websphere] Exception passée mais non levé dans l'ejb publication
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/447">Bug #447</a>: [Websphere] suppression des méthodes deprecated de l'ejb Statistic
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/450">Bug #450</a>: Envoi de notification manuelle avec choix du canal
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/460">Bug #460</a>: NULL affiché sur liste des instances
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/471">Bug #471</a>: Utilisation de multiples champs JDBC dans un formulaire
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/473">Bug #473</a>: Réunions répétées : date de fin non respectée
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/519">Bug #519</a>: ordre des fiches d'un resultat de recherche
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/536">Bug #536</a>: Réutilisation de données d'instance archivées sur instance nouvellement créee
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/541">Bug #541</a>: Mon compte // Mes taches : dates
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/546">Bug #546</a>: Champs wysiwyg dans les formulaires
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/547">Bug #547</a>: Valeurs dynamiques : pb avec les caractères // et \\
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/556">Bug #556</a>: Workflow : problème lors de l'ajout d'un formulaire après instanciation
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/557">Bug #557</a>: Caractère obligatoire mal pris en charge
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/560">Bug #560</a>: Perte de l'affichage simultané de tous les fils
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/576">Bug #576</a>: Admin : problème dans le calcul des utilisateurs d'un groupe récursivement
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/591">Bug #591</a>: recherche plein texte
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/599">Bug #599</a>: Impossible de sélectionner une date
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/606">Bug #606</a>: Sous linux, le chemin vers le properties multilingue est incorrect
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/633">Bug #633</a>: Admin: erreur dans la récupération des espaces/composants pour un user
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/637">Bug #637</a>: Formation / pb remontée de documents dans la liste des résultats
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/638">Bug #638</a>: Erreur à l'insertion d'une valeur fille dans le plan de classement
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/640">Bug #640</a>: Script from scratch incorrecte sous Oracle
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/646">Bug #646</a>: Cast implicite dans les requêtes SQL
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/655">Bug #655</a>: Problème de connexions managées et de gestion des transactions dans com.stratelia.webactiv.util.Schema
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/660">Bug #660</a>: Récupération des droits sur un objet erronée
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/667">Bug #667</a>: Bundles multilang introuvables sur Linux
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/675">Bug #675</a>: Paramétrage traces.txt incorrect
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/678">Bug #678</a>: Ajout de fichier : message d'avertissement Internet Explorer
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/679">Bug #679</a>: SendInKmelia: erreur sur action automatique
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/680">Bug #680</a>: WF: erreur sur l'assignation de tache (todo) sur une action automatique
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/686">Bug #686</a>: WF, action automatique: Impossibilité d'avoir un timeout inférieur à 1 heure...
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/692">Bug #692</a>: Gros soucis d'affichage dans un kmelia
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/696">Bug #696</a>: Erreur lors de l'ordonnancement
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/699">Bug #699</a>: Sous IE, message d'avertissement lors du glisser/déposer
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/707">Bug #707</a>: Theme Tracker: Opération "Modifications en chaine" absente
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/711">Bug #711</a>: Copier/Coller entre 2 kmelia versionnés
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/712">Bug #712</a>: Corriger les fichiers xmlcomponents
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/13">Feature #13</a>: Améliorer les notifications
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/77">Feature #77</a>: Référentiel : Ajouter un texte explicatif sur la page d'accueil
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/145">Feature #145</a>: Recherche plein texte par thème
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/304">Feature #304</a>: Notifications : Externaliser le corps des messages
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/307">Feature #307</a>: Vignette provenant de la galerie d'images
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/317">Feature #317</a>: Sujet des notifications plus précis
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/336">Feature #336</a>: Mise en place du tri sur les champs de formulaire XML
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/337">Feature #337</a>: personalisation du formulaire de recherche des contenus de type formulaire XML
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/388">Feature #388</a>: Report ajout pour synchronisation - Attachment
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/389">Feature #389</a>: Report pour synchronisation - Utilisation de pubOrder des publications
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/396">Feature #396</a>: Intégration dans Silverpeas v5
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/403">Feature #403</a>: Role dynamique, assignation de groupes dans un role
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/424">Feature #424</a>: Mode "Brouillon" sur les billets
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/425">Feature #425</a>: Prise en compte des modifications à chaud
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/427">Feature #427</a>: Fichiers joints sur une réservation
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/435">Feature #435</a>: Réinitialisation des pwd ET accès aux espaces publics
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/443">Feature #443</a>: rendre paramétrable la hauteur et la largeur des champs wysiwyg
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/459">Feature #459</a>: Workflow: gestion de l'heure dans l'historique PDF
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/523">Feature #523</a>: Report ajout pour Caluire et Cuire - création d'un processus avec injection de métadonnées
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/538">Feature #538</a>: SendInKmelia: Report des modifications effectués dans la V4 pour EFS
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/539">Feature #539</a>: Nouveau champ XML : groupe
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/552">Feature #552</a>: Ajouter la possibilité de récupèrer un champ de formulaire Wysiwyg hors contexte web
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/587">Feature #587</a>: Assigner une tache à un groupe
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/636">Feature #636</a>: Ajout d'image provenant d'une gallerie sur un champ Wysiwyg
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/645">Feature #645</a>: scripts javascript personnalisés associés au look
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/647">Feature #647</a>: Export CSV
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/690">Feature #690</a>: Personnaliser la page de résultat
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/693">Feature #693</a>: Personnaliser la page de recherche XML
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/182">Support #182</a>: log4j.jar sans log4j.xml
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/423">Support #423</a>: XHTML et viewGenerator
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/438">Support #438</a>: Suppression de classes obsolètes
+          </li>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/701">Support #701</a>: Doc d'installation Oracle
+          </li>
+        </ul>
+      </fieldset>
+    </section>
+    <section name="Release 5.1.3">
+      <fieldset class="related-issues">
+        <ul>
+          <li>
+            <a href="http://www.silverpeas.org/redmine/issues/465">Bug #465:
+            </a>:  FILEBOX - Pb de droits
+          </li>          
+        </ul>
+      </fieldset>
+    </section>
     <section name="Release 5.1.2">
       <fieldset class="related-issues">
         <ul>
