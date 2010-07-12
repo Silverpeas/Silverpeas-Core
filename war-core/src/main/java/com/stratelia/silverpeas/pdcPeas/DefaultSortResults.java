@@ -213,4 +213,9 @@ public class DefaultSortResults implements SortResults {
     return results;
   }
 
+  @Override
+  public void setPdcSearchSessionController(PdcSearchSessionController controller) {
+   // Not needed by the default sort
+  }
+
 }

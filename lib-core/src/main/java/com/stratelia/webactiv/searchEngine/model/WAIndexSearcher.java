@@ -60,6 +60,7 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.SearchEnginePropertiesManager;
 import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
+import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
 import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
@@ -130,6 +131,44 @@ public class WAIndexSearcher {
     return factor;
   }
 
+  /**
+   * Searches the Lucene index for a specific object, by giving the PK of the index entry
+   * @param component
+   * @param objectId
+   * @param objectType
+   * @return MatchingIndexEntry wrapping the result, else null
+   */
+  public MatchingIndexEntry search(String component, String objectId, String objectType) {
+    SpaceComponentPair pair = new SpaceComponentPair(null, component);
+    HashSet<SpaceComponentPair> set = new HashSet<SpaceComponentPair>();
+    set.add(pair);
+    
+    IndexEntryPK indexEntryPK = new IndexEntryPK(component, objectType, objectId);
+    MatchingIndexEntry matchingIndexEntry = null;
+    Searcher searcher = getSearcher(set);
+    try {
+      TopDocs topDocs = null;
+      Term term = new Term(IndexManager.KEY, indexEntryPK.toString());
+      
+      TermQuery query = new TermQuery(term);
+      topDocs = searcher.search(query, maxNumberResult);
+      ScoreDoc scoreDoc = topDocs.scoreDocs[0];
+      
+      matchingIndexEntry = createMatchingIndexEntry(scoreDoc, "*", searcher);
+    } catch (IOException ioe) {
+      SilverTrace.fatal("searchEngine", "WAIndexSearcher.search()",
+          "searchEngine.MSG_CORRUPTED_INDEX_FILE", ioe);
+    } finally {
+      try {
+        if (searcher != null)
+          searcher.close();
+      } catch (IOException ioe) {
+        SilverTrace.fatal("searchEngine", "WAIndexSearcher.search()",
+            "searchEngine.MSG_CANNOT_CLOSE_SEARCHER", ioe);
+      }
+    }
+    return matchingIndexEntry;
+  }
   /**
    * Search the documents of the given component's set. All entries found whose startDate is not
    * reached or whose endDate is passed are pruned from the results set.
@@ -370,6 +409,67 @@ public class WAIndexSearcher {
   }
 
   /**
+   * 
+   * @param scoreDoc occurence of Lucene search result
+   * @param requestedLanguage
+   * @param searcher
+   * @return MatchingIndexEntry wraps the Lucene search result
+   * @throws IOException if there is a problem when searching Lucene index
+   */
+  private MatchingIndexEntry createMatchingIndexEntry(ScoreDoc scoreDoc, String requestedLanguage, Searcher searcher)
+      throws IOException {
+    Document doc = searcher.doc(scoreDoc.doc);
+    MatchingIndexEntry indexEntry = new MatchingIndexEntry(IndexEntryPK.create(doc.get(IndexManager.KEY)));
+
+    Iterator<String> languages = I18NHelper.getLanguages();
+    while (languages.hasNext()) {
+      String language = languages.next();
+
+      if (I18NHelper.isDefaultLanguage(language)) {
+        indexEntry.setTitle(doc.get(IndexManager.TITLE), language);
+        indexEntry.setPreview(doc.get(IndexManager.PREVIEW), language);
+      } else {
+        indexEntry.setTitle(doc.get(IndexManager.TITLE + "_" + language), language);
+        indexEntry.setPreview(doc.get(IndexManager.PREVIEW + "_" + language), language);
+      }
+    }
+
+    indexEntry.setKeyWords(doc.get(IndexManager.KEYWORDS));
+    indexEntry.setCreationUser(doc.get(IndexManager.CREATIONUSER));
+    indexEntry.setCreationDate(doc.get(IndexManager.CREATIONDATE));
+    indexEntry.setLastModificationUser(doc.get(IndexManager.LASTUPDATEUSER));
+    indexEntry.setLastModificationDate(doc.get(IndexManager.LASTUPDATEDATE));
+    indexEntry.setThumbnail(doc.get(IndexManager.THUMBNAIL));
+    indexEntry.setThumbnailMimeType(doc
+        .get(IndexManager.THUMBNAIL_MIMETYPE));
+    indexEntry.setThumbnailDirectory(doc
+        .get(IndexManager.THUMBNAIL_DIRECTORY));
+    indexEntry.setStartDate(doc.get(IndexManager.STARTDATE));
+    indexEntry.setEndDate(doc.get(IndexManager.ENDDATE));
+    indexEntry.setScore(scoreDoc.score); // TODO check the score.
+    // Checks the content to see if it contains sortable field
+    // and puts them in MatchingIndexEntry object 
+    if ("Publication".equals(indexEntry.getObjectType())) {
+      HashMap<String, String> sortableField = new HashMap<String, String>();
+      String fieldValue = null;
+
+      for (String formXMLFieldName : SearchEnginePropertiesManager.getFieldsNameList()) {
+        if ("*".equals(requestedLanguage) || I18NHelper.isDefaultLanguage(requestedLanguage)) {
+          fieldValue = doc.get(formXMLFieldName);
+        } else {
+          fieldValue = doc.get(formXMLFieldName + "_" + requestedLanguage);
+        }
+        if (fieldValue != null) {
+          sortableField.put(formXMLFieldName, fieldValue);
+        }
+      }
+      indexEntry.setSortableXMLFormFields(sortableField);
+    }
+
+    return indexEntry;
+  }
+  
+  /**
    * Makes a List of MatchingIndexEntry from a lucene hits. All entries found whose startDate is not
    * reached or whose endDate is passed are pruned from the results list.
    */
@@ -381,57 +481,8 @@ public class WAIndexSearcher {
       ScoreDoc scoreDoc = null;
 
       for (int i = 0; i < topDocs.scoreDocs.length; i++) {
-        MatchingIndexEntry indexEntry;
         scoreDoc = topDocs.scoreDocs[i];
-        Document doc = searcher.doc(scoreDoc.doc);
-
-        indexEntry = new MatchingIndexEntry(IndexEntryPK.create(doc.get(IndexManager.KEY)));
-
-        Iterator<String> languages = I18NHelper.getLanguages();
-        while (languages.hasNext()) {
-          String language = languages.next();
-
-          if (I18NHelper.isDefaultLanguage(language)) {
-            indexEntry.setTitle(doc.get(IndexManager.TITLE), language);
-            indexEntry.setPreview(doc.get(IndexManager.PREVIEW), language);
-          } else {
-            indexEntry.setTitle(doc.get(IndexManager.TITLE + "_" + language), language);
-            indexEntry.setPreview(doc.get(IndexManager.PREVIEW + "_" + language), language);
-          }
-        }
-
-        indexEntry.setKeyWords(doc.get(IndexManager.KEYWORDS));
-        indexEntry.setCreationUser(doc.get(IndexManager.CREATIONUSER));
-        indexEntry.setCreationDate(doc.get(IndexManager.CREATIONDATE));
-        indexEntry.setLastModificationUser(doc.get(IndexManager.LASTUPDATEUSER));
-        indexEntry.setLastModificationDate(doc.get(IndexManager.LASTUPDATEDATE));
-        indexEntry.setThumbnail(doc.get(IndexManager.THUMBNAIL));
-        indexEntry.setThumbnailMimeType(doc
-            .get(IndexManager.THUMBNAIL_MIMETYPE));
-        indexEntry.setThumbnailDirectory(doc
-            .get(IndexManager.THUMBNAIL_DIRECTORY));
-        indexEntry.setStartDate(doc.get(IndexManager.STARTDATE));
-        indexEntry.setEndDate(doc.get(IndexManager.ENDDATE));
-        indexEntry.setScore(scoreDoc.score); // TODO check the score.
-        // determines if the content contains sortable field and puts them in MatchingIndexEntry
-        // object
-        if ("Publication".equals(indexEntry.getObjectType())) {
-          HashMap<String, String> sortableField = new HashMap<String, String>();
-          String fieldValue = null;
-
-          for (String formXMLFieldName : SearchEnginePropertiesManager.getFieldsNameList()) {
-            if (I18NHelper.isDefaultLanguage(query.getRequestedLanguage())) {
-              fieldValue = doc.get(formXMLFieldName);
-            } else {
-              fieldValue = doc.get(formXMLFieldName + "_" + query.getRequestedLanguage());
-            }
-            if (fieldValue != null) {
-              sortableField.put(formXMLFieldName, fieldValue);
-            }
-          }
-          indexEntry.setSortableXMLFormFields(sortableField);
-        }
-
+        MatchingIndexEntry indexEntry = createMatchingIndexEntry(scoreDoc, query.getRequestedLanguage(), searcher);
         results.add(indexEntry);
       }
     }

@@ -25,6 +25,7 @@ package com.stratelia.silverpeas.pdcPeas;
 
 import java.util.List;
 
+import com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController;
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 
 /**
@@ -43,5 +44,9 @@ public interface SortResults {
    */
   public List<GlobalSilverResult> execute(List<GlobalSilverResult> results,String sortOrder, String sortValue, String language);
 
-
+  /**
+   * Sets a PdcSearchSessionController in case this is needed by the sort
+   * @param controller
+   */
+  public void setPdcSearchSessionController(PdcSearchSessionController controller);
 }

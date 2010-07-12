@@ -52,19 +52,43 @@ public class XMLFormFieldComparator implements Comparator<GlobalSilverContent> {
 
   @Override
   public int compare(GlobalSilverContent firstContent, GlobalSilverContent secondContent) {
-    String firstField = firstContent.getSortableXMLFormFields().get(fieldName);
-    String secondField = secondContent.getSortableXMLFormFields().get(fieldName);
-    boolean isComparable =
-        (StringUtils.isNotEmpty(firstField) && StringUtils.isNotEmpty(secondField));
-
-    if (SORT_ORDER_ASC.equals(sortOrder) && isComparable) {
-      return firstField.compareTo(secondField);
-    } else if (SORT_ORDER_DESC.equals(sortOrder) && isComparable) {
-      return secondField.compareTo(firstField);
-    } else {
-      return 0;
+    String firstFieldValue = null;
+    String secondFieldValue = null;
+    int result = 0;
+    
+    if (firstContent.getSortableXMLFormFields() != null) {
+      firstFieldValue = firstContent.getSortableXMLFormFields().get(fieldName);
     }
-
+    
+    if (secondContent.getSortableXMLFormFields() != null) {
+      secondFieldValue = secondContent.getSortableXMLFormFields().get(fieldName);
+    }
+    
+    if (firstFieldValue == null) {
+      if (secondFieldValue == null) {
+        result = 0;
+      }
+      else {
+        // firstFieldValue (null) > secondFieldValue (not null)
+        result = 1;
+      }
+    }
+    else {
+      if (secondFieldValue == null) {
+        // firstFieldValue (not null) < secondFieldValue (null)
+        result = -1;
+      }
+      else {
+        result = firstFieldValue.compareTo(secondFieldValue);
+      }
+    }
+    
+    
+    if (SORT_ORDER_ASC.equals(sortOrder)) {
+      return result;
+    } else {
+      return -result;
+    }
   }
 
 }

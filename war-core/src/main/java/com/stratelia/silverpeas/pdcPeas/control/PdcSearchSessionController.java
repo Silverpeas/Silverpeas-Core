@@ -554,6 +554,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     // Tri de tous les résultats
     // Gets a SortResult implementation to realize the sorting and/or filtering results
     SortResults sortResults = SortResultsFactory.getSortResults(sortType);
+    sortResults.setPdcSearchSessionController(this);
     String sortValString = null;
     // determines which value used for sort value
     if (StringUtil.isDefined(xmlFormSortValue)) {
@@ -983,6 +984,57 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return results;
   }
 
+  /**
+   * Converts a MatchingIndexEntry to a GlobalSilverResult, mainly duplicate code
+   * from matchingIndexEntries2GlobalSilverResults, needs a Silverpeas Guru to refactor the two methods
+   * @param matchingIndexEntry
+   * @return GlobalSilverResult or null if the MatchingIndexEntry was null
+   * @throws Exception
+   */
+  public GlobalSilverResult matchingIndexEntry2GlobalSilverResult(
+      MatchingIndexEntry matchingIndexEntry) {
+    
+    if (matchingIndexEntry == null) {
+      return null;
+    }
+    
+    // reinitialisation
+    String title = matchingIndexEntry.getTitle();
+    String componentId = matchingIndexEntry.getComponent();
+    String location = null;
+    
+    GlobalSilverResult gsr = new GlobalSilverResult(matchingIndexEntry);
+
+    SilverTrace.info(
+        "pdcPeas",
+        "PdcSearchSessionController.matchingIndexEntry2GlobalSilverResult()",
+        "root.MSG_GEN_PARAM_VALUE", "title= " + title);
+
+    // preparation sur l'emplacement du document
+    if (componentId.startsWith("user@")) {
+      UserDetail user = getOrganizationController().getUserDetail(
+          componentId.substring(5, componentId.indexOf("_")));
+      String component = componentId.substring(componentId.indexOf("_") + 1);
+      location = user.getDisplayedName() + " / " + component;
+    } else if (componentId.equals("pdc")) {
+      location = getString("pdcPeas.pdc");
+    } else {
+      ComponentInstLight componentInst = getOrganizationController().getComponentInstLight(
+          componentId);
+      if (componentInst != null) {
+        location = getSpaceLabel(componentInst.getDomainFatherId()) + " / "
+            + componentInst.getLabel(getLanguage());
+      }
+    }
+
+    gsr.setLocation(location);
+
+    String userId = matchingIndexEntry.getCreationUser();
+    gsr.setCreatorName(getCompleteUserName(userId));
+    
+    return gsr;
+  }
+  
   private List<GlobalSilverResult> globalSilverContents2GlobalSilverResults(
       List<GlobalSilverContent> globalSilverContents) throws Exception {
     if (globalSilverContents == null || globalSilverContents.isEmpty()) {

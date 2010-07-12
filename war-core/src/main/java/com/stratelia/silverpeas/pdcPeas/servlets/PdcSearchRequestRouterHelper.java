@@ -148,21 +148,24 @@ public class PdcSearchRequestRouterHelper {
       int sortRes = new Integer(paramSortRes).intValue();
       pdcSC.setSortValue(sortRes);
     }
-    String paramSortOrder = request.getParameter("sortOrder");
+    String paramSortOrder = request.getParameter("sortOrder");   
+    if (paramSortOrder != null) {
+      pdcSC.setSortOrder(paramSortOrder);
+    }
     String paramSortResFieldXForm = request.getParameter(Keys.RequestSortXformField.value());
     if (StringUtil.isDefined(paramSortResFieldXForm)) {
       pdcSC.setXmlFormSortValue(paramSortResFieldXForm);
     }
-    //
+    else {
+      pdcSC.setXmlFormSortValue(null);
+    }
     String sortImplementor = request.getParameter(Keys.RequestSortImplementor.value());
     if (StringUtil.isDefined(sortImplementor)) {
       pdcSC.setSortImplemtor(sortImplementor);
     }
-
-    if (paramSortOrder != null) {
-      pdcSC.setSortOrder(paramSortOrder);
+    else {
+      pdcSC.setSortImplemtor(null);
     }
-
     return queryParameters;
   }
 

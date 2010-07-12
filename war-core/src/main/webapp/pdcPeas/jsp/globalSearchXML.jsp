@@ -25,6 +25,7 @@
 --%>
 
 <%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
+<%@ page import="com.stratelia.silverpeas.pdcPeas.Keys"%>
 <%@ page import="com.silverpeas.form.DataRecord"%>
 <%@ page import="com.silverpeas.form.PagesContext"%>
 <%@ page import="com.silverpeas.form.Form"%>
@@ -32,6 +33,11 @@
 
 <%@ include file="checkAdvancedSearch.jsp"%>
 <%
+// TODO chercher les clés dans Keys
+String sortOrder = (String) request.getParameter("sortOrder");
+String sortImp = (String) request.getParameter("sortImp");
+String SortResXForm = (String) request.getParameter("SortResXForm");
+
 List 				xmlForms 	= (List) request.getAttribute("XMLForms");
 PublicationTemplate template 	= (PublicationTemplate) request.getAttribute("Template");
 DataRecord			emptyData	= (DataRecord) request.getAttribute("Data");
@@ -93,6 +99,12 @@ function chooseTemplate()
 function viewXmlSearch(){
 	document.XMLRestrictForm.submit();
 }
+
+$(document).ready(
+	function(){
+		viewXmlSearch();
+	}
+)
 </script>
 </head>
 <body class="yui-skin-sam" id="<%=pageId %>">
@@ -200,7 +212,11 @@ function viewXmlSearch(){
 			</select>
 			</td>
 		</tr>
+
 		<input type="hidden" name="SearchPageId" value="<%=pageId %>"/>
+		<input type="hidden" name="sortOrder" value="<%=sortOrder %>"/>
+		<input type="hidden" name="sortImp" value="<%=sortImp %>"/>
+		<input type="hidden" name="SortResXForm" value="<%=SortResXForm %>"/>
 		</form>
         </table>
 		<%

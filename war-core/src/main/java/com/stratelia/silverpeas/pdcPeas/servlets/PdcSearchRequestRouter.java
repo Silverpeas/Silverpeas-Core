@@ -68,6 +68,7 @@ import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.SearchContext;
 import com.stratelia.silverpeas.pdc.model.SearchCriteria;
 import com.stratelia.silverpeas.pdc.model.Value;
+import com.stratelia.silverpeas.pdcPeas.Keys;
 import com.stratelia.silverpeas.pdcPeas.control.GoogleTabsUtil;
 import com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController;
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
@@ -1847,9 +1848,32 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
       if (StringUtil.isDefined(templateName)) {
         pdcSC.setXmlTemplate(templateName);
       }
+ 
       String spaceId = request.getParameter("SpaceId");
       if (StringUtil.isDefined(spaceId)) {
         pdcSC.getQueryParameters().setSpaceId(spaceId);
+      }
+
+      String sortImp = request.getParameter(Keys.RequestSortImplementor.value());
+      if (StringUtil.isDefined(templateName)) {
+        pdcSC.setSortImplemtor(sortImp);
+      }
+      else {
+        pdcSC.setSortImplemtor(null);
+      }
+      String SortResXForm = request.getParameter(Keys.RequestSortXformField.value());
+      if (StringUtil.isDefined(templateName)) {
+        pdcSC.setXmlFormSortValue(SortResXForm);
+      }
+      else {
+        pdcSC.setXmlFormSortValue(null);
+      }
+      String sortOrder = request.getParameter("sortOrder");
+      if (StringUtil.isDefined(sortOrder)) {
+        pdcSC.setSortOrder(sortOrder);
+      }
+      else {
+        pdcSC.setSortOrder(PdcSearchSessionController.SORT_ORDER_ASC);
       }
 
       pdcSC.setSearchType(PdcSearchSessionController.SEARCH_XML);
