@@ -99,13 +99,38 @@ public class Coordinate implements Serializable {
    * @see
    */
   public String toString() {
-    String result = "Coordinate {" + "\n";
+    StringBuffer result = new StringBuffer("Coordinate {\n");
+    result.append("  getCoordinateId() = ").append(getCoordinateId()).append("\n");    
+    result.append("  getCoordinatePoints() = ").append(getCoordinatePoints().toString()).append("\n");
+    result.append("}");
+    return result.toString();
+  }
 
-    result = result + "  getCoordinateId() = " + getCoordinateId() + "\n";
-    result = result + "  getCoordinatePoints() = "
-        + getCoordinatePoints().toString() + "\n";
-    result = result + "}";
-    return result;
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 97 * hash + this.coordinateId;
+    hash = 97 * hash + (this.coordinatePoints != null ? this.coordinatePoints.hashCode() : 0);
+    return hash;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final Coordinate other = (Coordinate) obj;
+    if (this.coordinateId != other.coordinateId) {
+      return false;
+    }
+    if (this.coordinatePoints != other.coordinatePoints && (this.coordinatePoints == null 
+        || !this.coordinatePoints.equals(other.coordinatePoints))) {
+      return false;
+    }
+    return true;
   }
 
 }

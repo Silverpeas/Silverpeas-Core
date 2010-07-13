@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+  <sb_coordinates_coordinates coordinatesid="1" nodeid="1057" coordinatesleaf="0"
+      coordinatesdisplayorder="1" instanceid="kmax888" />
+  <sb_coordinates_coordinates coordinatesid="1" nodeid="1058" coordinatesleaf="0"
+      coordinatesdisplayorder="2" instanceid="kmax888" />
+  <sb_coordinates_coordinates coordinatesid="1" nodeid="1060" coordinatesleaf="1"
+      coordinatesdisplayorder="1" instanceid="kmax888" />
+  <sb_coordinates_coordinates coordinatesid="1" nodeid="1064" coordinatesleaf="1"
+      coordinatesdisplayorder="2" instanceid="kmax888" />
+  <sb_coordinates_coordinates coordinatesid="2" nodeid="1057" coordinatesleaf="0"
+      coordinatesdisplayorder="1" instanceid="kmax888" />
+  <sb_coordinates_coordinates coordinatesid="2" nodeid="1058" coordinatesleaf="1"
+      coordinatesdisplayorder="2" instanceid="kmax888" />
+  <sb_coordinates_coordinates coordinatesid="2" nodeid="1060" coordinatesleaf="1"
+      coordinatesdisplayorder="1" instanceid="kmax888" />
+  <sb_coordinates_coordinates coordinatesid="3" nodeid="1057" coordinatesleaf="0"
+      coordinatesdisplayorder="1" instanceid="kmax888" />
+  <sb_coordinates_coordinates coordinatesid="3" nodeid="1058" coordinatesleaf="1"
+      coordinatesdisplayorder="2" instanceid="kmax888" />
+  <sb_coordinates_coordinates coordinatesid="3" nodeid="1061" coordinatesleaf="1"
+      coordinatesdisplayorder="1" instanceid="kmax888" />
+      
+  <sb_coordinates_coordinates coordinatesid="1" nodeid="1603" coordinatesleaf="0"
+      coordinatesdisplayorder="1" instanceid="kmax1144" />
+  <sb_coordinates_coordinates coordinatesid="1" nodeid="1604" coordinatesleaf="1"
+      coordinatesdisplayorder="1" instanceid="kmax1144" />
+  <sb_coordinates_coordinates coordinatesid="1" nodeid="1612" coordinatesleaf="1"
+      coordinatesdisplayorder="2" instanceid="kmax1144" />
+  <sb_coordinates_coordinates coordinatesid="2" nodeid="1603" coordinatesleaf="0"
+      coordinatesdisplayorder="1" instanceid="kmax1144" />
+  <sb_coordinates_coordinates coordinatesid="2" nodeid="1604" coordinatesleaf="1"
+      coordinatesdisplayorder="1" instanceid="kmax1144" />
+  <sb_coordinates_coordinates coordinatesid="2" nodeid="1612" coordinatesleaf="0"
+      coordinatesdisplayorder="2" instanceid="kmax1144" />
+  <sb_coordinates_coordinates coordinatesid="2" nodeid="1613" coordinatesleaf="1"
+      coordinatesdisplayorder="2" instanceid="kmax1144" />
+
+
+</dataset>

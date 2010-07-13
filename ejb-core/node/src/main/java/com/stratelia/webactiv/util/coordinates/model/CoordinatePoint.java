@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.webactiv.util.coordinates.model;
 
 import java.io.Serializable;
@@ -229,5 +226,52 @@ public class CoordinatePoint implements Serializable {
   public void setPath(String path) {
     this.path = path;
   }
+
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 89 * hash + this.coordinateId;
+    hash = 89 * hash + this.nodeId;
+    hash = 89 * hash + (this.leaf ? 1 : 0);
+    hash = 89 * hash + (this.name != null ? this.name.hashCode() : 0);
+    hash = 89 * hash + this.level;
+    hash = 89 * hash + this.displayOrder;
+    hash = 89 * hash + (this.path != null ? this.path.hashCode() : 0);
+    return hash;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final CoordinatePoint other = (CoordinatePoint) obj;
+    if (this.coordinateId != other.coordinateId) {
+      return false;
+    }
+    if (this.nodeId != other.nodeId) {
+      return false;
+    }
+    if (this.leaf != other.leaf) {
+      return false;
+    }
+    if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
+      return false;
+    }
+    if (this.level != other.level) {
+      return false;
+    }
+    if (this.displayOrder != other.displayOrder) {
+      return false;
+    }
+    if ((this.path == null) ? (other.path != null) : !this.path.equals(other.path)) {
+      return false;
+    }
+    return true;
+  }
+  
 
 }

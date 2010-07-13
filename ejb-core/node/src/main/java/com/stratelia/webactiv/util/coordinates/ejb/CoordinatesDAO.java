@@ -21,20 +21,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-// TODO : reporter dans CVS (done)
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.webactiv.util.coordinates.ejb;
 
-import java.sql.*;
-import java.util.*;
-
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.coordinates.model.*;
-
-import com.stratelia.silverpeas.silvertrace.*;
+import com.stratelia.webactiv.util.coordinates.model.Coordinate;
+import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
+import com.stratelia.webactiv.util.coordinates.model.CoordinatePoint;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Class declaration
@@ -44,6 +46,20 @@ public class CoordinatesDAO {
 
   public static final String COORDINATESCOLUMNNAMES =
       "coordinatesId, nodeId, coordinatesLeaf,coordinatesDisplayOrder,instanceId";
+  private static final String SELECT_BY_NODEID =
+      "SELECT DISTINCT(coordinatesId) AS id FROM sb_coordinates_coordinates WHERE nodeid = ? AND instanceid = ? ";
+  private static final String SELECT_BY_COMPONENT =
+      "SELECT DISTINCT(coordinatesid) FROM sb_coordinates_coordinates WHERE instanceid = ?";
+  private static final String SELECT_BY_PK = "SELECT coordinatesid, nodeid, coordinatesleaf, "
+      + "coordinatesdisplayorder,instanceid FROM sb_coordinates_coordinates WHERE coordinatesid = ? "
+      + "AND coordinatesleaf = ? AND instanceid = ? ORDER BY coordinatesdisplayorder ";
+  private static final String SELECT_MAX_ORDER =
+      "SELECT MAX(coordinatesdisplayorder) FROM sb_coordinates_coordinates WHERE instanceId= ?";
+  private static final String SELECT_MAX_ID =
+      "SELECT MAX(coordinatesid) FROM sb_coordinates_coordinates WHERE instanceid = ?";
+  private static final String INSERT_COORDINATE = "INSERT INTO sb_coordinates_coordinates ("
+      + "coordinatesid, nodeid, coordinatesleaf, coordinatesdisplayorder, instanceid) VALUES ( ? , "
+      + "? , ? , ? , ?)";
 
   /**
    * Method declaration
@@ -54,16 +70,10 @@ public class CoordinatesDAO {
    */
   private static CoordinatePoint getCoordinatePointFromResultSet(ResultSet rs)
       throws SQLException {
-    int coordinateId = rs.getInt(1);
-    int nodeId = rs.getInt(2);
-    boolean leaf = false;
-
-    if (rs.getString(3).equals("1")) {
-      leaf = true;
-
-    }
+    int coordinateId = rs.getInt("coordinatesId");
+    int nodeId = rs.getInt("nodeid");
+    boolean leaf = "1".equals(rs.getString("coordinatesleaf"));
     CoordinatePoint result = new CoordinatePoint(coordinateId, nodeId, leaf);
-
     return result;
   }
 
@@ -76,32 +86,26 @@ public class CoordinatesDAO {
    * @throws SQLException
    * @see
    */
-  private static ArrayList selectCoordinatePointsByNodeIds(Connection con,
-      ArrayList fatherIds, CoordinatePK pk) throws SQLException {
-
-    CoordinatePoint coordinatePoint = null;
-    ArrayList list = new ArrayList();
-    String fatherId = "";
-    String whereClause = "";
-
+  private static List<CoordinatePoint> selectCoordinatePointsByNodeIds(Connection con,
+      List<Integer> fatherIds, CoordinatePK pk) throws SQLException {
+    List<CoordinatePoint> list = new ArrayList<CoordinatePoint>();
+    StringBuilder whereClause = new StringBuilder(20 * fatherIds.size() + 200);
     if (fatherIds != null) {
-      Iterator it = fatherIds.iterator();
-
-      whereClause += "(";
+      Iterator<Integer> it = fatherIds.iterator();
+      whereClause.append("(");
       while (it.hasNext()) {
-        fatherId = ((Integer) it.next()).toString();
-        whereClause += " nodeId = " + fatherId;
+        whereClause.append(" nodeId = ").append(it.next());
         if (it.hasNext()) {
-          whereClause += " or ";
+          whereClause.append(" OR ");
         } else {
-          whereClause += " ) ";
+          whereClause.append(" ) ");
         }
       }
     }
-
-    String selectQuery = "select * " + "from " + pk.getTableName() + " where "
-        + whereClause + " and instanceId = '" + pk.getComponentName() + "' "
-        + " order by coordinatesId, nodeId ASC";
+    String selectQuery = "SELECT coordinatesId, nodeId, coordinatesLeaf, coordinatesDisplayOrder, "
+        + "instanceId FROM sb_coordinates_coordinates WHERE "
+        + whereClause + " AND instanceId = '" + pk.getComponentName() + "' "
+        + " ORDER BY coordinatesId, nodeId ASC";
 
     Statement stmt = null;
     ResultSet rs = null;
@@ -110,7 +114,7 @@ public class CoordinatesDAO {
       stmt = con.createStatement();
       rs = stmt.executeQuery(selectQuery);
       while (rs.next()) {
-        coordinatePoint = getCoordinatePointFromResultSet(rs);
+        CoordinatePoint coordinatePoint = getCoordinatePointFromResultSet(rs);
         list.add(coordinatePoint);
       }
     } finally {
@@ -129,22 +133,18 @@ public class CoordinatesDAO {
    * @return
    * @see
    */
-  private static int getNbMatchingCoordinates(int currentCoordinateId,
-      ArrayList fatherIds, ArrayList toCheck, int begin) {
-    CoordinatePoint coordinatePoint = null;
-    int currentRId;
-    int currentNId;
+  private static int getNbMatchingCoordinates(int currentCoordinateId, List<Integer> fatherIds,
+      List<CoordinatePoint> toCheck, int begin) {
     int i = begin; // toCheck indice
     int f = 1; // fatherIds indice
     boolean coordinateMatch = true;
     int nbMatchingCoordinates = 0;
 
     while (i < toCheck.size() && coordinateMatch) {
-      coordinatePoint = (CoordinatePoint) toCheck.get(i);
-      currentRId = coordinatePoint.getCoordinateId();
-      currentNId = coordinatePoint.getNodeId();
-      if (currentRId == currentCoordinateId
-          && currentNId == ((Integer) fatherIds.get(f)).intValue()) {
+      CoordinatePoint coordinatePoint = toCheck.get(i);
+      int currentRId = coordinatePoint.getCoordinateId();
+      int currentNId = coordinatePoint.getNodeId();
+      if (currentRId == currentCoordinateId && currentNId == (fatherIds.get(f)).intValue()) {
         nbMatchingCoordinates++;
         f++;
         i++;
@@ -164,19 +164,18 @@ public class CoordinatesDAO {
    * @throws SQLException
    * @see
    */
-  public static Collection selectByFatherIds(Connection con,
-      ArrayList fatherIds, CoordinatePK pk) throws SQLException {
+  public static Collection<String> selectByFatherIds(Connection con, List<Integer> fatherIds,
+      CoordinatePK pk)
+      throws SQLException {
 
     // get all points corresponding to fatherIds
-    ArrayList points = selectCoordinatePointsByNodeIds(con, fatherIds, pk);
-
+    List<CoordinatePoint> points = selectCoordinatePointsByNodeIds(con, fatherIds, pk);
     SilverTrace.info("coordinates", "CoordinatesDAO.selectByFatherIds()",
         "root.MSG_GEN_PARAM_VALUE", "fatherIds = " + fatherIds.toString()
         + " | points = " + points.toString());
 
-    ArrayList toCheck = new ArrayList(points); // toCheck always contains points
-    ArrayList coordinatePKs = new ArrayList(); // 
-    CoordinatePoint point = null;
+    List<CoordinatePoint> toCheck = new ArrayList<CoordinatePoint>(points); // toCheck always contains points
+    List<String> coordinatePKs = new ArrayList<String>();
     int nbAxis = fatherIds.size(); // number of axis
     int currentCoordinateId;
     int nbMatchingPoints = 0;
@@ -184,15 +183,14 @@ public class CoordinatesDAO {
 
     // check all points
     while (i < points.size()) {
-      point = (CoordinatePoint) points.get(i);
+      CoordinatePoint point = points.get(i);
       currentCoordinateId = point.getCoordinateId();
-      if (point.getNodeId() == ((Integer) fatherIds.get(0)).intValue()) {
-
+      if (point.getNodeId() == fatherIds.get(0).intValue()) {
         // verifie que les n-1 axes de la BD correspondent aux axes de fatherIds
         nbMatchingPoints = getNbMatchingCoordinates(currentCoordinateId,
             fatherIds, toCheck, i + 1);
         if (nbMatchingPoints == (nbAxis - 1)) {
-          coordinatePKs.add(new Integer(currentCoordinateId).toString());
+          coordinatePKs.add(String.valueOf(currentCoordinateId));
           i = i + nbMatchingPoints;
         }
       }
@@ -201,14 +199,14 @@ public class CoordinatesDAO {
     return coordinatePKs;
   }
 
-  public static Collection selectByFatherPaths(Connection con,
-      ArrayList fatherPaths, CoordinatePK pk) throws SQLException {
-    ArrayList coordinateIds = selectCoordinateIdsByNodeIds(con, fatherPaths, pk);
+  public static Collection<String> selectByFatherPaths(Connection con,
+      List<String> fatherPaths, CoordinatePK pk) throws SQLException {
+    List<String> coordinateIds = selectCoordinateIdsByNodeIds(con, fatherPaths, pk);
     return coordinateIds;
   }
 
-  private static ArrayList selectCoordinateIdsByNodeIds(Connection con,
-      ArrayList fatherPaths, CoordinatePK pk) throws SQLException {
+  private static List<String> selectCoordinateIdsByNodeIds(Connection con,
+      List<String> fatherPaths, CoordinatePK pk) throws SQLException {
     ResultSet rs = null;
 
     String fatherPath = "";
@@ -217,9 +215,9 @@ public class CoordinatesDAO {
     String rootFatherId = "";
     int axisToMatch = fatherPaths.size();
     if (fatherPaths != null) {
-      Iterator it = fatherPaths.iterator();
+      Iterator<String> it = fatherPaths.iterator();
       while (it.hasNext()) {
-        fatherPath = (String) it.next();
+        fatherPath = it.next();
         SilverTrace.info("coordinates",
             "CoordinatesDAO.selectCoordinateIdsByNodeIds()",
             "root.MSG_GEN_PARAM_VALUE", "fatherPath = " + fatherPath);
@@ -245,15 +243,17 @@ public class CoordinatesDAO {
         whereClause += " nodeId = " + fatherId;
         whereClause += " or (nodeId = " + rootFatherId
             + " and coordinatesLeaf = '1') ";
-        if (it.hasNext())
+        if (it.hasNext()) {
           whereClause += " Or ";
+        }
       }
     }
 
     String selectStatement = "select coordinatesId, count(*) " + "from "
         + pk.getTableName() + " ";
-    if (fatherPaths != null && fatherPaths.size() > 0)
+    if (fatherPaths != null && fatherPaths.size() > 0) {
       selectStatement += "where " + whereClause;
+    }
     selectStatement += " And instanceId = '" + pk.getComponentName() + "' ";
     selectStatement += " GROUP BY coordinatesId";
 
@@ -261,14 +261,15 @@ public class CoordinatesDAO {
     try {
       prepStmt = con.prepareStatement(selectStatement);
       rs = prepStmt.executeQuery();
-      ArrayList list = new ArrayList();
+      List<String> list = new ArrayList<String>();
       int coordinateId = 0;
       int nbMatches = 0;
       while (rs.next()) {
         coordinateId = rs.getInt(1);
         nbMatches = rs.getInt(2);
-        if (nbMatches == axisToMatch)
+        if (nbMatches == axisToMatch) {
           list.add(new Integer(coordinateId).toString());
+        }
       }
       return list;
     } finally {
@@ -287,12 +288,9 @@ public class CoordinatesDAO {
    */
   private static void addCoordinatePoint(Connection con, CoordinatePK pk,
       CoordinatePoint point, int coordinateId) throws SQLException {
-    String insertQuery = "insert into " + pk.getTableName()
-        + " values ( ? , ? , ? , ? , ?)";
     PreparedStatement prepStmt = null;
-
     try {
-      prepStmt = con.prepareStatement(insertQuery);
+      prepStmt = con.prepareStatement(INSERT_COORDINATE);
       prepStmt.setInt(1, coordinateId);
       prepStmt.setInt(2, point.getNodeId());
       if (point.isLeaf()) {
@@ -318,17 +316,12 @@ public class CoordinatesDAO {
    * @see
    */
   public static int addCoordinate(Connection con, CoordinatePK pk,
-      ArrayList coordinatePoints) throws SQLException {
-    SilverTrace.info("coordinates", "CoordinatesDAO.addCoordinate()",
-        "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString()
-        + " and coordinatePoints = " + coordinatePoints.toString());
-
+      List<CoordinatePoint> coordinatePoints)
+      throws SQLException {
+    SilverTrace.info("coordinates", "CoordinatesDAO.addCoordinate()", "root.MSG_GEN_PARAM_VALUE",
+        "pk = " + pk.toString() + " and coordinatePoints = " + coordinatePoints.toString());
     int coordinateId = getMaxCoordinateId(con, pk) + 1;
-    Iterator it = coordinatePoints.iterator();
-    CoordinatePoint point = null;
-
-    while (it.hasNext()) {
-      point = (CoordinatePoint) it.next();
+    for (CoordinatePoint point : coordinatePoints) {
       SilverTrace.info("coordinates", "CoordinatesDAO.addCoordinate()",
           "root.MSG_GEN_PARAM_VALUE", "Try to insert point = "
           + point.toString());
@@ -348,38 +341,30 @@ public class CoordinatesDAO {
    * @throws SQLException
    * @see
    */
-  public static void removeCoordinates(Connection con, CoordinatePK pk,
-      ArrayList coordinateIds) throws SQLException {
+  public static void removeCoordinates(Connection con, CoordinatePK pk, List<String> coordinateIds)
+      throws SQLException {
     SilverTrace.info("coordinates", "CoordinatesDAO.removeCoordinates()",
         "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString()
         + " and coordinateIds = " + coordinateIds.toString());
-
-    String coordinateId = "";
-    String whereClause = "";
-
+    StringBuilder deleteQuery = new StringBuilder("DELETE FROM sb_coordinates_coordinates WHERE ");
     if (coordinateIds != null) {
-      Iterator it = coordinateIds.iterator();
-
-      whereClause += "(";
+      Iterator<String> it = coordinateIds.iterator();
+      deleteQuery.append("(");
       while (it.hasNext()) {
-        coordinateId = (String) it.next();
-        whereClause += " coordinatesId = " + coordinateId;
+        String coordinateId = it.next();
+        deleteQuery.append(" coordinatesId = ").append(coordinateId);
         if (it.hasNext()) {
-          whereClause += " or ";
-        } else {
-          whereClause += " ) ";
+          deleteQuery.append(" OR ");
         }
       }
+      deleteQuery.append(" ) ");
     }
-
-    String deleteQuery = "delete from " + pk.getTableName() + " where "
-        + whereClause + " and instanceId = '" + pk.getComponentName() + "'";
-
+    deleteQuery.append(" AND instanceId = '").append(pk.getComponentName()).append("'");
     Statement stmt = null;
 
     try {
       stmt = con.createStatement();
-      stmt.executeUpdate(deleteQuery);
+      stmt.executeUpdate(deleteQuery.toString());
     } finally {
       DBUtil.close(stmt);
     }
@@ -394,38 +379,30 @@ public class CoordinatesDAO {
    * @see
    */
   public static void removeCoordinatesByPoints(Connection con, CoordinatePK pk,
-      ArrayList coordinatePoints) throws SQLException {
+      List<String> coordinatePoints) throws SQLException {
     SilverTrace.info("coordinates",
         "CoordinatesDAO.removeCoordinatesByPoints()",
         "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString()
         + " and coordinatePoints = " + coordinatePoints.toString());
-
-    String pointId = "";
-    String whereClause = "";
-
+    StringBuilder deleteQuery = new StringBuilder("DELETE FROM sb_coordinates_coordinates WHERE ");
     if (coordinatePoints != null) {
-      Iterator it = coordinatePoints.iterator();
-
-      whereClause += "(";
+      Iterator<String> it = coordinatePoints.iterator();
+      deleteQuery.append("(");
       while (it.hasNext()) {
-        pointId = (String) it.next();
-        whereClause += " nodeId = " + pointId;
+        String pointId = it.next();
+        deleteQuery.append(" nodeId = ").append(pointId);
         if (it.hasNext()) {
-          whereClause += " or ";
-        } else {
-          whereClause += " ) ";
+          deleteQuery.append(" or ");
         }
       }
+      deleteQuery.append(" ) ");
     }
-
-    String deleteQuery = "delete from " + pk.getTableName() + " where "
-        + whereClause + " and instanceId ='" + pk.getComponentName() + "'";
-
+    deleteQuery.append(" AND instanceId ='").append(pk.getComponentName()).append("'");
     Statement stmt = null;
 
     try {
       stmt = con.createStatement();
-      stmt.executeUpdate(deleteQuery);
+      stmt.executeUpdate(deleteQuery.toString());
     } finally {
       DBUtil.close(stmt);
     }
@@ -442,24 +419,18 @@ public class CoordinatesDAO {
   private static int getMaxCoordinateId(Connection con, CoordinatePK pk)
       throws SQLException {
     int maxFromTable = 0;
-
-    Statement stmt = null;
+    PreparedStatement pstmt = null;
     ResultSet rs = null;
-
     try {
-      String nextPKStatement = "SELECT MAX(coordinatesId) FROM "
-          + pk.getTableName() + " where instanceId='" + pk.getComponentName()
-          + "'";
-
-      stmt = con.createStatement();
-      rs = stmt.executeQuery(nextPKStatement);
+      pstmt = con.prepareStatement(SELECT_MAX_ID);
+      pstmt.setString(1, pk.getComponentName());
+      rs = pstmt.executeQuery();
       if (rs.next()) {
         maxFromTable = rs.getInt(1);
       }
     } finally {
-      DBUtil.close(rs, stmt);
+      DBUtil.close(rs, pstmt);
     }
-
     return maxFromTable;
   }
 
@@ -473,24 +444,18 @@ public class CoordinatesDAO {
    */
   private static int getMaxDisplayOrder(Connection con, CoordinatePK pk)
       throws SQLException {
-
     int maxFromTable = 0;
-    Statement stmt = null;
+    PreparedStatement pstmt = null;
     ResultSet rs = null;
-
     try {
-      String nextPKStatement = "SELECT MAX(coordinatesDisplayOrder) FROM "
-          + pk.getTableName() + " where instanceId='" + pk.getComponentName()
-          + "'";
-
-      stmt = con.createStatement();
-      rs = stmt.executeQuery(nextPKStatement);
+      pstmt = con.prepareStatement(SELECT_MAX_ORDER);
+      pstmt.setString(1, pk.getComponentName());
+      rs = pstmt.executeQuery();
       if (rs.next()) {
         maxFromTable = rs.getInt(1);
-
       }
     } finally {
-      DBUtil.close(rs, stmt);
+      DBUtil.close(rs, pstmt);
     }
     return maxFromTable;
   }
@@ -505,32 +470,23 @@ public class CoordinatesDAO {
    */
   private static Coordinate selectCoordinateByCoordinatePK(Connection con,
       CoordinatePK pk) throws SQLException {
-
-    CoordinatePoint coordinatePoint = null;
-    ArrayList list = new ArrayList();
-    String selectQuery = "select * " + "from " + pk.getTableName()
-        + " where coordinatesId = ? " + " and coordinatesLeaf = ? "
-        + " and instanceId = ? " + " order by coordinatesDisplayOrder ";
-
+    List<CoordinatePoint> list = new ArrayList<CoordinatePoint>();
+    int id = Integer.parseInt(pk.getId());
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-
     try {
-      prepStmt = con.prepareStatement(selectQuery);
-      prepStmt.setInt(1, new Integer(pk.getId()).intValue());
+      prepStmt = con.prepareStatement(SELECT_BY_PK);
+      prepStmt.setInt(1, id);
       prepStmt.setString(2, "1");
       prepStmt.setString(3, pk.getComponentName());
       rs = prepStmt.executeQuery();
-
       while (rs.next()) {
-        coordinatePoint = getCoordinatePointFromResultSet(rs);
-        list.add(coordinatePoint);
+        list.add(getCoordinatePointFromResultSet(rs));
       }
     } finally {
       DBUtil.close(rs, prepStmt);
     }
-
-    return new Coordinate(new Integer(pk.getId()).intValue(), list);
+    return new Coordinate(id, list);
   }
 
   /**
@@ -542,18 +498,11 @@ public class CoordinatesDAO {
    * @throws SQLException
    * @see
    */
-  public static ArrayList selectCoordinatesByCoordinateIds(Connection con,
-      ArrayList coordinateIds, CoordinatePK pk) throws SQLException {
-    Iterator it = coordinateIds.iterator();
-    ArrayList coordinates = new ArrayList();
-    String coordinateId = "";
-    Coordinate coordinate = null;
-
-    while (it.hasNext()) {
-      coordinateId = (String) it.next();
-      coordinate = selectCoordinateByCoordinatePK(con, new CoordinatePK(
-          coordinateId, pk));
-      coordinates.add(coordinate);
+  public static ArrayList<Coordinate> selectCoordinatesByCoordinateIds(Connection con,
+      List<String> coordinateIds, CoordinatePK pk) throws SQLException {
+    ArrayList<Coordinate> coordinates = new ArrayList<Coordinate>();
+    for (String coordinateId : coordinateIds) {
+      coordinates.add(selectCoordinateByCoordinatePK(con, new CoordinatePK(coordinateId, pk)));
     }
     return coordinates;
   }
@@ -566,30 +515,21 @@ public class CoordinatesDAO {
    * @throws SQLException
    * @see
    */
-  private static Collection getCoordinateIds(Connection con, CoordinatePK pk)
+  static Collection<String> getCoordinateIds(Connection con, CoordinatePK pk)
       throws SQLException {
-
-    ArrayList coordinateIds = new ArrayList();
-    String selectQuery = "select distinct(coordinatesId) " + "from "
-        + pk.getTableName() + " where instanceId ='" + pk.getComponentName()
-        + "'";
-
-    Statement stmt = null;
+    List<String> coordinateIds = new ArrayList<String>();
+    PreparedStatement pstmt = null;
     ResultSet rs = null;
-
     try {
-      stmt = con.createStatement();
-      rs = stmt.executeQuery(selectQuery);
-      String coordinateId = "";
-
+      pstmt = con.prepareStatement(SELECT_BY_COMPONENT);
+      pstmt.setString(1, pk.getComponentName());
+      rs = pstmt.executeQuery();
       while (rs.next()) {
-        coordinateId = new Integer(rs.getInt(1)).toString();
-        coordinateIds.add(coordinateId);
+        coordinateIds.add(rs.getString("coordinatesid"));
       }
     } finally {
-      DBUtil.close(rs, stmt);
+      DBUtil.close(rs, pstmt);
     }
-
     return coordinateIds;
   }
 
@@ -607,16 +547,11 @@ public class CoordinatesDAO {
         "CoordinatesDAO.addPointToAllCoordinates()",
         "root.MSG_GEN_PARAM_VALUE", "pk = " + pk.toString() + " and point = "
         + point.toString());
-
-    Collection coordinateIds = getCoordinateIds(con, pk);
     int maxDisplayOrder = getMaxDisplayOrder(con, pk);
-
     point.setOrder(maxDisplayOrder + 1);
-    Iterator it = coordinateIds.iterator();
-    int coordinateId;
-
-    while (it.hasNext()) {
-      coordinateId = new Integer((String) it.next()).intValue();
+    Collection<String> coordinateIds = getCoordinateIds(con, pk);
+    for(String id : coordinateIds) {
+      int coordinateId = Integer.parseInt(id);
       addCoordinatePoint(con, pk, point, coordinateId);
     }
   }
@@ -630,34 +565,26 @@ public class CoordinatesDAO {
    * @throws SQLException
    * @see
    */
-  public static Collection getCoordinateIdsByNodeId(Connection con,
-      CoordinatePK pk, String nodeId) throws SQLException {
-
-    ArrayList coordinateIds = new ArrayList();
-
-    String selectQuery = "select distinct(coordinatesId) " + "from "
-        + pk.getTableName() + " where nodeId = ? " + " and instanceId = ? ";
-
+  public static Collection<String> getCoordinateIdsByNodeId(Connection con, CoordinatePK pk,
+      String nodeId)
+      throws SQLException {
+    List<String> coordinateIds = new ArrayList<String>();
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-
     try {
-      prepStmt = con.prepareStatement(selectQuery);
+      prepStmt = con.prepareStatement(SELECT_BY_NODEID);
       prepStmt.setInt(1, new Integer(nodeId).intValue());
       prepStmt.setString(2, pk.getComponentName());
       rs = prepStmt.executeQuery();
-
-      String coordinateId = "";
-
       while (rs.next()) {
-        coordinateId = new Integer(rs.getInt(1)).toString();
-        coordinateIds.add(coordinateId);
+        coordinateIds.add(rs.getString("id"));
       }
     } finally {
       DBUtil.close(rs, prepStmt);
     }
-
     return coordinateIds;
   }
 
+  private CoordinatesDAO() {
+  }
 }
