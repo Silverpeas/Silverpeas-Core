@@ -141,6 +141,11 @@
       <groupId>javax.portlet</groupId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <artifactId>container</artifactId>
+      <groupId>com.sun.portal.portletcontainer</groupId>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
   
   <build>
