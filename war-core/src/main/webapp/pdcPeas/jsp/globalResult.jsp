@@ -746,7 +746,7 @@ if (!StringUtil.isDefined(pageId)) {
       	if (authors != null) {
       	  %>
       	  <div id="facetAuthor">
-      	  <div id="searchGroupTitle"><span class="author"><%=resource.getString("GML.author")%></span></div>
+      	  <div id="searchGroupTitle"><span class="author"><fmt:message key="pdcPeas.group.author" /></span></div>
    		  <div id="searchGroupValues"> 
    			<ul>
       	  <%
@@ -794,7 +794,7 @@ if (!StringUtil.isDefined(pageId)) {
       	if (components != null) {
       	  %>
       	  <div id="facetInstance">
-      	  <div id="searchGroupTitle"><span class="component"><%=resource.getString("GML.jobPeas")%></span></div>
+      	  <div id="searchGroupTitle"><span class="component"><fmt:message key="pdcPeas.group.service" /></span></div>
    		  <div id="searchGroupValues">
    			<ul>
       	  <%
