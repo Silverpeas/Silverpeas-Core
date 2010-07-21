@@ -4,13 +4,13 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>parent</artifactId>
-    <version>12</version>
+    <version>13-SNAPSHOT</version>
   </parent>
 
   <scm>
     <connection>scm:svn:https://www.silverpeas.org/svn/silverpeas/core/trunk</connection>
     <developerConnection>scm:svn:https://www.silverpeas.org/svn/silverpeas/core/trunk</developerConnection>
-    <url>https://repository.silverpeas.org/redmine/repositories/show/silverpeas-core</url>
+    <url>https://www.silverpeas.org/redmine/repositories/show/silverpeas-core</url>
   </scm>
 
   <repositories>
@@ -18,7 +18,7 @@
       <id>NexusSilverpeas</id>
       <layout>default</layout>
       <name>Silverpeas Repository</name>
-      <url>http://repository.silverpeas.org/nexus/content/groups/silverpeas</url>
+      <url>http://www.silverpeas.org/nexus/content/groups/silverpeas</url>
       <releases>
         <enabled>true</enabled>
       </releases>
