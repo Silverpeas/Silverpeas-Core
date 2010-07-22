@@ -6,7 +6,7 @@ package com.stratelia.silverpeas.pdcPeas;
  *
  */
 public enum Keys {
-  // TODO a zapper
+  // Stores the form field that will be used for the sort (form$$field)
   RequestSortXformField("SortResXForm"),
   // Stores the kind of sort that will be used (defaultSort, xmlFormSort, ...)
   RequestSortImplementor("sortImp"),
