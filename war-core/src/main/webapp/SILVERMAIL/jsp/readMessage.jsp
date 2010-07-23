@@ -23,7 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -36,18 +36,14 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="java.util.Date"%>
 
 <%
-String from = (String) request.getParameter("from");
-boolean fromHomePage = false;
-if (from != null && from.equals("homePage"))
-{
-	fromHomePage = true;
-}
-SILVERMAILMessage msg = silvermailScc.getMessage( silvermailScc.getCurrentMessageId() );
+  String from = request.getParameter("from");
+  boolean fromHomePage = "homePage".equals(from);
+  SILVERMAILMessage msg = silvermailScc.getMessage( silvermailScc.getCurrentMessageId() );
 %>
-
-<HTML>
-<HEAD>
-<TITLE>___/ Silverpeas - Corporate Portal Organizer \________________________________________________________________________</TITLE>
+<html>
+<head>
+  <title>___/ Silverpeas - Corporate Portal Organizer
+  \________________________________________________________________________</title>
 <%
   out.println(gef.getLookStyleSheet());
 %>
@@ -78,8 +74,8 @@ SILVERMAILMessage msg = silvermailScc.getMessage( silvermailScc.getCurrentMessag
   }
 </script>
 
-</HEAD>
-<BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5>
+</head>
+<body marginwidth=5 marginheight=5 leftmargin=5 topmargin=5>
 <%
     Window window = gef.getWindow();
 
@@ -94,7 +90,7 @@ SILVERMAILMessage msg = silvermailScc.getMessage( silvermailScc.getCurrentMessag
     out.println(frame.printBefore());
 %>
 
-<CENTER>
+<center>
 <table CELLPADDING=0 CELLSPACING=2 BORDER=0 WIDTH="98%" CLASS=intfdcolor>
   <tr>
     <td CLASS=intfdcolor4 NOWRAP>
@@ -102,15 +98,15 @@ SILVERMAILMessage msg = silvermailScc.getMessage( silvermailScc.getCurrentMessag
        <form name="silvermailForm" Action="" Method="POST">
         <tr>
           <td valign="baseline" align=left class="txtlibform"><%=silvermailScc.getString("date")%> :&nbsp;</td>
-          <td align=left valign="baseline"><%=Encode.javaStringToHtmlString(resource.getOutputDate(msg.getDate()))%></td>
+          <td align=left valign="baseline"><%=EncodeHelper.javaStringToHtmlString(resource.getOutputDate(msg.getDate()))%></td>
         </tr>
         <tr>
           <td valign="baseline" align=left class="txtlibform"><%=silvermailScc.getString("source")%> :&nbsp;</td>
-          <td align=left valign="baseline"><%=Encode.javaStringToHtmlString(msg.getSource())%></td>
+          <td align=left valign="baseline"><%=EncodeHelper.javaStringToHtmlString(msg.getSource())%></td>
         </tr>
 		<tr>
           <td valign="baseline" align=left  class="txtlibform"><%=silvermailScc.getString("from")%> :&nbsp;</td>
-          <td align=left valign="baseline"><%=Encode.javaStringToHtmlString(msg.getSenderName())%></td>
+          <td align=left valign="baseline"><%=EncodeHelper.javaStringToHtmlString(msg.getSenderName())%></td>
         </tr>
         <tr>
           <td valign="baseline" align=left  class="txtlibform"><%=silvermailScc.getString("url")%> :&nbsp;</td>
@@ -125,11 +121,11 @@ SILVERMAILMessage msg = silvermailScc.getMessage( silvermailScc.getCurrentMessag
         </tr>
 		<tr>
           <td valign="baseline" align=left  class="txtlibform"><%=silvermailScc.getString("subject")%> :&nbsp;</td>
-          <td align=left valign="baseline"><%=Encode.javaStringToHtmlString(msg.getSubject())%></td>
+          <td align=left valign="baseline"><%=EncodeHelper.javaStringToHtmlString(msg.getSubject())%></td>
         </tr>
         <tr>
           <td valign="baseline" align=left  class="txtlibform"></td>
-          <td align=left valign="baseline"><%=Encode.javaStringToHtmlParagraphe(msg.getBody())%></td>
+          <td align=left valign="baseline"><%=EncodeHelper.javaStringToHtmlParagraphe(msg.getBody())%></td>
         </tr>
        </form>
       </table>
@@ -143,10 +139,10 @@ SILVERMAILMessage msg = silvermailScc.getMessage( silvermailScc.getCurrentMessag
     buttonPane.addButton((Button) gef.getFormButton(silvermailScc.getString("close"), "javascript:onClick=closeWindow();", false));
     out.println(buttonPane.print());
 %>
-</CENTER>
+</center>
 <%
     out.println(frame.printAfter());
     out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

@@ -23,19 +23,19 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ include file="checkNotification.jsp" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
 <%
-   String action = (String) request.getParameter("Action");
+   String action = request.getParameter("Action");
 	
-   String notificationId = Encode.htmlStringToJavaString((String) request.getAttribute("notificationId"));
+   String notificationId = EncodeHelper.htmlStringToJavaString((String) request.getAttribute("notificationId"));
    String priorityId = (String) request.getAttribute("priorityId");
-   String txtTitle = Encode.htmlStringToJavaString((String) request.getAttribute("txtTitle"));
-   String txtMessage = Encode.htmlStringToJavaString((String) request.getAttribute("txtMessage"));
-   String popupMode = (String) request.getParameter("popupMode");
-   String editTargets = (String) request.getParameter("editTargets");
+   String txtTitle = EncodeHelper.htmlStringToJavaString((String) request.getAttribute("txtTitle"));
+   String txtMessage = EncodeHelper.htmlStringToJavaString((String) request.getAttribute("txtMessage"));
+   String popupMode = request.getParameter("popupMode");
+   String editTargets = request.getParameter("editTargets");
 
 	 String[] selectedIdUsers = (String[])request.getAttribute("SelectedIdUsers");
 	 String[] selectedIdGroups = (String[])request.getAttribute("SelectedIdGroups");
@@ -72,15 +72,15 @@
     </HTML> 
 <% } else { %>
 
-<HTML>
-<HEAD>
-<TITLE>___/ Silverpeas - Corporate Portal Organizer \________________________________________________________________________</TITLE>
+<html>
+<head>
+<title>___/ Silverpeas - Corporate Portal Organizer \________________________________________________________________________</title>
 <%
    out.println(gef.getLookStyleSheet());
 %> 
 
-</HEAD> 
-<BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5 onLoad="document.notificationSenderForm.txtTitle.focus();">
+</head> 
+<body marginwidth=5 marginheight=5 leftmargin=5 topmargin=5 onLoad="document.notificationSenderForm.txtTitle.focus();">
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script language="JavaScript">
@@ -138,20 +138,19 @@ function SubmitWithAction(action,verifParams)
     out.println(frame.printBefore());
 %>
 
-<CENTER>
+<center>
 <table CELLPADDING=0 CELLSPACING=2 BORDER=0 WIDTH="98%" CLASS=intfdcolor>
   <tr>
     <td CLASS=intfdcolor4 NOWRAP>
       <table CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%">
 
-<form name="notificationSenderForm" Action=""  Method="POST">
-
+<form name="notificationSenderForm" Action=""  Method="POST"  accept-charset="UTF-8">
         <tr>
           <td valign="baseline" align=left  class="txtlibform">
             <%=notificationScc.getString("name")%> :&nbsp;
           </td>
           <td align=left valign="baseline">
-           <input type="text" name="txtTitle" size="50" maxlength="<%=NotificationParameters.MAX_SIZE_TITLE%>" value="<%=Encode.javaStringToHtmlString(txtTitle)%>">
+           <input type="text" name="txtTitle" size="50" maxlength="<%=NotificationParameters.MAX_SIZE_TITLE%>" value="<%=EncodeHelper.javaStringToHtmlString(txtTitle)%>">
 			 <img border="0" src="<%=mandatoryField%>" width="5" height="5">
           </td>
         </tr>
@@ -161,7 +160,7 @@ function SubmitWithAction(action,verifParams)
             <%=notificationScc.getString("description")%> :
           </td>
           <td align=left valign="top" class="txtnav">
-		<textarea type="text" name="txtMessage" value="<%=Encode.javaStringToHtmlString(txtMessage)%>" cols="49" rows="4"><%=Encode.javaStringToHtmlString(txtMessage)%></textarea>
+		<textarea type="text" name="txtMessage" value="<%=EncodeHelper.javaStringToHtmlString(txtMessage)%>" cols="49" rows="4"><%=EncodeHelper.javaStringToHtmlString(txtMessage)%></textarea>
           </td>
         </tr>
 	    <tr>			
@@ -174,18 +173,6 @@ function SubmitWithAction(action,verifParams)
             </select>
 	      </td>
         </tr>
-<!--	    <tr>			
-          <td valign="baseline" align=left  class="txtlibform">
-            <%=notificationScc.getString("notif_type")%> :
-          </td>
-          <td align=left valign="baseline">
-            <select name="priorityId">
-               <% out.println(notificationScc.buildOptions(notificationScc.getNotifPriorities(), priorityId, null)); %>
-            </select>
-          </td>
-        </tr>
--->        
-         
         <tr>			
           <td valign="top" align=left  class="txtlibform">
             <%=notificationScc.getString("users_dest")%> :&nbsp;
@@ -196,7 +183,6 @@ function SubmitWithAction(action,verifParams)
                </select>
           </td>
         </tr>
-
         <tr>			
           <td valign="top" align=left  class="txtlibform">
             <%=notificationScc.getString("groups_dest")%> :&nbsp;
@@ -235,7 +221,7 @@ function SubmitWithAction(action,verifParams)
     </td>
   </tr>
 </table>
-<BR>
+<br />
 <%
     ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton((Button) gef.getFormButton(notificationScc.getString("Envoyer"), "javascript:SubmitWithAction('sendNotif',true)", false));
@@ -243,12 +229,12 @@ function SubmitWithAction(action,verifParams)
 		
     out.println(buttonPane.print());
 %>
-</CENTER>
+</center>
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>
 <%} 
 %>

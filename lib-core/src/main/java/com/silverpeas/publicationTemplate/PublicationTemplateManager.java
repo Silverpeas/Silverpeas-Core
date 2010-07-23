@@ -93,8 +93,9 @@ public class PublicationTemplateManager {
   static public GenericRecordSet addDynamicPublicationTemplate(String externalId,
       String templateFileName) throws PublicationTemplateException {
     try {
-      if (!templateFileName.endsWith(".xml"))
+      if (!templateFileName.endsWith(".xml")) {
         templateFileName += ".xml";
+      }
 
       PublicationTemplate thePubTemplate = loadPublicationTemplate(templateFileName);
 
@@ -117,16 +118,15 @@ public class PublicationTemplateManager {
    * Returns the PublicationTemplate having the given externalId.
    */
   static public PublicationTemplate getPublicationTemplate(String externalId,
-      String templateFileName)
-      throws PublicationTemplateException {
-    PublicationTemplate thePubTemplate = (PublicationTemplate) pubTemplate.get(externalId);
-
+      String templateFileName) throws PublicationTemplateException {
+    String currentTemplateFileName = templateFileName;
+    PublicationTemplate thePubTemplate = pubTemplate.get(externalId);
     if (thePubTemplate == null) {
       if (templateFileName == null) {
         try {
           RecordSet set = GenericRecordSetManager.getRecordSet(externalId);
           IdentifiedRecordTemplate template = (IdentifiedRecordTemplate) set.getRecordTemplate();
-          templateFileName = template.getTemplateName();
+          currentTemplateFileName = template.getTemplateName();
         } catch (Exception e) {
           throw new PublicationTemplateException(
               "PublicationTemplateManager.getPublicationTemplate", "form.EXP_INSERT_FAILED",

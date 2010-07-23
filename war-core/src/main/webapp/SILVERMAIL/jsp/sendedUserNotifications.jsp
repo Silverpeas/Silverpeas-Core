@@ -67,8 +67,8 @@ function deleteAllMessages() {
 }
 
 </script>
-</HEAD>
-<BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5>
+</head>
+<body marginwidth=5 marginheight=5 leftmargin=5 topmargin=5>
 <%
   
   Window window = gef.getWindow();
@@ -114,8 +114,8 @@ function deleteAllMessages() {
 	  Date notifDate = message.getNotifDate();
     ArrayCellText cell = line.addArrayCellText(resource.getOutputDate(notifDate));
     cell.setCompareOn(notifDate);
-    line.addArrayCellText(Encode.javaStringToHtmlString(message.getSource()) + "</A>");
-    line.addArrayCellText(link + Encode.javaStringToHtmlString(message.getTitle()) + "</A>");
+    line.addArrayCellText(EncodeHelper.javaStringToHtmlString(message.getSource()) + "</A>");
+    line.addArrayCellText(link + EncodeHelper.javaStringToHtmlString(message.getTitle()) + "</A>");
 
     // Ajout des icones de modification et de suppression
     IconPane actions = gef.getIconPane();
@@ -128,5 +128,5 @@ function deleteAllMessages() {
   out.println(frame.printAfter());
   out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

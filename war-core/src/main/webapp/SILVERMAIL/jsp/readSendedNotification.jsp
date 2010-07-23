@@ -23,11 +23,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
-			response.setHeader("Pragma", "no-cache"); //HTTP 1.0
-			response.setDateHeader("Expires", -1); //prevents caching at the proxy server
+  response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+  response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 <%@ include file="graphicBox.jsp"%>
 <%@ include file="checkSilvermail.jsp"%>
@@ -37,66 +37,54 @@
 <%@ page import="java.util.Date"%>
 
 <%
-  String from = (String) request.getParameter("from");
-			boolean fromHomePage = false;
-			if (from != null && from.equals("homePage")) {
-				fromHomePage = true;
-			}
-			SendedNotificationDetail notif = (SendedNotificationDetail) request
-					.getAttribute("SendedNotification");
+  String from = request.getParameter("from");
+  boolean fromHomePage = "homePage".equals(from);
+  SendedNotificationDetail notif = (SendedNotificationDetail) request.getAttribute("SendedNotification");
 %>
+<%@page	import="com.stratelia.silverpeas.notificationManager.model.SendedNotificationDetail"%>
+<html>
+<head>
+  <title>___/ Silverpeas - Corporate Portal Organizer
+  \________________________________________________________________________</title>
+  <%
+    out.println(gef.getLookStyleSheet());
+  %>
+  <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 
+  <script type="text/javascript" >
+    function deleteMessage( notifId )
+    {
+      window.opener.location = "DeleteSendedNotification.jsp?NotifId=" + notifId;
+      window.close();
+    }
 
-<%@page
-	import="com.stratelia.silverpeas.notificationManager.model.SendedNotificationDetail"%><HTML>
-<HEAD>
-<TITLE>___/ Silverpeas - Corporate Portal Organizer
-\________________________________________________________________________</TITLE>
-<%
-  out.println(gef.getLookStyleSheet());
-%>
+    function goTo()
+    {
+      window.opener.location = "<%=m_context%>" + "<%=notif.getLink()%>";
+      window.close();
+    }
 
-<script type="text/javascript"
-	src="<%=m_context%>/util/javaScript/animation.js"></script>
-
-<script>
-  function deleteMessage( notifId )
-  {
-    window.opener.location = "DeleteSendedNotification.jsp?NotifId=" + notifId;
-    window.close();
-  }
-
-  function goTo()
-  {
-	window.opener.location = "<%=m_context%>" + "<%=notif.getLink()%>";
-	window.close();
-  }
-
-  function closeWindow()
-  {
-	<%if (fromHomePage) {%>
-		window.opener.location.reload();
-	<%} else {%>
-		window.opener.location = "SendedUserNotifications.jsp";
-	<%}%>
-	window.close();
-  }
-</script>
-
-</HEAD>
+    function closeWindow()
+    {
+      <%if (fromHomePage) {%>
+          window.opener.location.reload();
+      <%} else {%>
+          window.opener.location = "SendedUserNotifications.jsp";
+      <%}%>
+      window.close();
+    }
+  </script>
+</head>
 <BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5>
 <%
   Window window = gef.getWindow();
-
-			BrowseBar browseBar = window.getBrowseBar();
-			browseBar.setComponentName(silvermailScc.getString("silverMail"));
-			browseBar.setPath(silvermailScc.getString("message"));
-
-			out.println(window.printBefore());
-
-			//Instanciation du cadre avec le view generator
-			Frame frame = gef.getFrame();
-			out.println(frame.printBefore());
+  BrowseBar browseBar = window.getBrowseBar();
+  browseBar.setComponentName(silvermailScc.getString("silverMail"));
+  browseBar.setPath(silvermailScc.getString("message"));
+  out.println(window.printBefore());
+  //Instanciation du cadre avec le view generator
+  Frame frame = gef.getFrame();
+  out.println(frame.printBefore());
 %>
 
 <CENTER>
@@ -108,13 +96,13 @@
 			<tr>
 				<td valign="baseline" align=left class="txtlibform"><%=silvermailScc.getString("date")%>
 				:&nbsp;</td>
-				<td align=left valign="baseline"><%=Encode.javaStringToHtmlString(resource
+				<td align=left valign="baseline"><%=EncodeHelper.javaStringToHtmlString(resource
 					.getOutputDate(notif.getNotifDate()))%></td>
 			</tr>
 			<tr>
 				<td valign="baseline" align=left class="txtlibform"><%=silvermailScc.getString("source")%>
 				:&nbsp;</td>
-				<td align=left valign="baseline"><%=Encode.javaStringToHtmlString(notif.getSource())%></td>
+				<td align=left valign="baseline"><%=EncodeHelper.javaStringToHtmlString(notif.getSource())%></td>
 			</tr>
 			<tr>
 				<td valign="baseline" align=left class="txtlibform"><%=silvermailScc.getString("url")%>
@@ -133,11 +121,11 @@
 			<tr>
 				<td valign="baseline" align=left class="txtlibform"><%=silvermailScc.getString("title")%>
 				:&nbsp;</td>
-				<td align=left valign="baseline"><%=Encode.javaStringToHtmlString(notif.getTitle())%></td>
+				<td align=left valign="baseline"><%=EncodeHelper.javaStringToHtmlString(notif.getTitle())%></td>
 			</tr>
 			<tr>
 				<td valign="baseline" align=left class="txtlibform"></td>
-				<td align=left valign="baseline"><%=Encode.javaStringToHtmlParagraphe(notif.getBody())%></td>
+				<td align=left valign="baseline"><%=EncodeHelper.javaStringToHtmlParagraphe(notif.getBody())%></td>
 			</tr>
 			</form>
 		</table>

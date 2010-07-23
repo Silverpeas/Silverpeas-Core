@@ -127,14 +127,14 @@ function newMessage() {
 	Date date = message.getDate();
     ArrayCellText cell = line.addArrayCellText(hasBeenReadenOrNotBegin + resource.getOutputDate(date) + hasBeenReadenOrNotEnd);
     cell.setCompareOn(date);
-    line.addArrayCellText(hasBeenReadenOrNotBegin + Encode.javaStringToHtmlString(message.getSource()) + "</A>" + hasBeenReadenOrNotEnd);
-    line.addArrayCellText(hasBeenReadenOrNotBegin + link + Encode.javaStringToHtmlString(message.getSenderName()) + "</A>" + hasBeenReadenOrNotEnd);
+    line.addArrayCellText(hasBeenReadenOrNotBegin + EncodeHelper.javaStringToHtmlString(message.getSource()) + "</A>" + hasBeenReadenOrNotEnd);
+    line.addArrayCellText(hasBeenReadenOrNotBegin + link + EncodeHelper.javaStringToHtmlString(message.getSenderName()) + "</A>" + hasBeenReadenOrNotEnd);
     if ( message.getUrl()!=null && message.getUrl().length()>0 )
-    	line.addArrayCellText(hasBeenReadenOrNotBegin + "<A HREF =\"" + Encode.javaStringToHtmlString(message.getUrl()) + "\" target=_top><img src=\""+resource.getIcon("silvermail.link")+"\" border=\"0\"></A>" + hasBeenReadenOrNotEnd);
+    	line.addArrayCellText(hasBeenReadenOrNotBegin + "<A HREF =\"" + EncodeHelper.javaStringToHtmlString(message.getUrl()) + "\" target=_top><img src=\""+resource.getIcon("silvermail.link")+"\" border=\"0\"></A>" + hasBeenReadenOrNotEnd);
     else
 		line.addArrayCellText( "" );    
     
-    line.addArrayCellText(hasBeenReadenOrNotBegin + link + Encode.javaStringToHtmlString(message.getSubject()) + "</A>" + hasBeenReadenOrNotEnd);
+    line.addArrayCellText(hasBeenReadenOrNotBegin + link + EncodeHelper.javaStringToHtmlString(message.getSubject()) + "</A>" + hasBeenReadenOrNotEnd);
 
     // Ajout des icones de modification et de suppression
     IconPane actions = gef.getIconPane();
