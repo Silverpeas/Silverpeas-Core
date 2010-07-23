@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.lookV5;
 
 import java.io.File;
@@ -54,7 +53,7 @@ import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.SilverpeasSettings;
+import static com.stratelia.silverpeas.util.SilverpeasSettings.*;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -72,6 +71,8 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 public class AjaxServletLookV5 extends HttpServlet {
 
+  private static final String DISABLE = "DISABLE";
+
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
@@ -83,14 +84,12 @@ public class AjaxServletLookV5 extends HttpServlet {
       throws ServletException, IOException {
     HttpSession session = req.getSession(true);
 
-    MainSessionController m_MainSessionCtrl = (MainSessionController) session
-        .getAttribute("SilverSessionController");
-    GraphicElementFactory gef = (GraphicElementFactory) session
-        .getAttribute("SessionGraphicElementFactory");
-    LookHelper helper = (LookHelper) session
-        .getAttribute("Silverpeas_LookHelper");
-    OrganizationController orgaController = m_MainSessionCtrl
-        .getOrganizationController();
+    MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(
+        "SilverSessionController");
+    GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
+        "SessionGraphicElementFactory");
+    LookHelper helper = (LookHelper) session.getAttribute("Silverpeas_LookHelper");
+    OrganizationController orgaController = m_MainSessionCtrl.getOrganizationController();
 
     String userId = m_MainSessionCtrl.getUserId();
     String language = m_MainSessionCtrl.getFavoriteLanguage();
@@ -115,14 +114,14 @@ public class AjaxServletLookV5 extends HttpServlet {
 
     // User favorite space DAO
     List<UserFavoriteSpaceVO> listUserFS = new ArrayList<UserFavoriteSpaceVO>();
-    if (!"DISABLE".equalsIgnoreCase(helper.getDisplayUserFavoriteSpace())) {
+    if (!DISABLE.equalsIgnoreCase(helper.getDisplayUserFavoriteSpace())) {
       UserFavoriteSpaceDAO ufsDAO = DAOFactory.getUserFavoriteSpaceDAO();
       listUserFS = ufsDAO.getListUserFavoriteSpace(userId);
     }
 
     if (StringUtil.isDefined(componentId)) {
       helper.setComponentIdAndSpaceIds(null, null, componentId);
-    } else if (StringUtil.isDefined(spaceId) && !spaceId.equals("spacePerso")) {
+    } else if (StringUtil.isDefined(spaceId) && !isPersonnalSpace(spaceId)) {
       helper.setSpaceIdAndSubSpaceId(spaceId);
     }
     if (StringUtil.isDefined(userMenuDisplayMode)) {
@@ -139,7 +138,7 @@ public class AjaxServletLookV5 extends HttpServlet {
     writer.write("<ajax-response>");
     writer.write("<response type=\"object\" id=\"" + responseId + "\">");
 
-    if (StringUtil.isDefined(init) && "1".equals(init)) {
+    if ("1".equals(init)) {
       if (!StringUtil.isDefined(spaceId) && !StringUtil.isDefined(componentId)) {
         displayFirstLevelSpaces(userId, language, defaultLook, orgaController,
             helper, writer, listUserFS, userMenuDisplayMode);
@@ -170,207 +169,26 @@ public class AjaxServletLookV5 extends HttpServlet {
         SilverTrace.error("lookSilverpeasV5", "Ajax", "root.ERROR");
       }
     } else if (StringUtil.isDefined(spaceId)) {
-      if (spaceId.equals("spacePerso")) {
+      if (isPersonnalSpace(spaceId)) {
         // Affichage de l'espace perso
-
         ResourceLocator settings = gef.getFavoriteLookSettings();
         ResourceLocator message = new ResourceLocator(
-            "com.stratelia.webactiv.homePage.multilang.homePageBundle",
-            language);
-
-        writer.write("<spacePerso id=\"" + spaceId
-            + "\" type=\"space\" level=\"0\">");
-
-        boolean isAnonymousAccess = helper.isAnonymousAccess();
-
-        if (!isAnonymousAccess
-            && SilverpeasSettings.readBoolean(settings,
-            "personnalSpaceVisible", true)) {
-          if (SilverpeasSettings.readBoolean(settings, "agendaVisible", true)) {
-            writer
-                .write("<item id=\"agenda\" name=\""
-                    +
-                    EncodeHelper.escapeXml(message.getString("Diary"))
-                    +
-                    "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
-                    + URLManager.getURL(URLManager.CMP_AGENDA) + "Main\"/>");
-          }
-          if (SilverpeasSettings.readBoolean(settings, "todoVisible", true)) {
-            writer
-                .write("<item id=\"todo\" name=\""
-                    +
-                    EncodeHelper.escapeXml(message.getString("ToDo"))
-                    +
-                    "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
-                    + URLManager.getURL(URLManager.CMP_TODO) + "todo.jsp\"/>");
-          }
-          if (SilverpeasSettings.readBoolean(settings, "notificationVisible",
-              true)) {
-            writer
-                .write("<item id=\"notification\" name=\""
-                    +
-                    EncodeHelper.escapeXml(message.getString("Mail"))
-                    +
-                    "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
-                    + URLManager.getURL(URLManager.CMP_SILVERMAIL) + "Main\"/>");
-          }
-          if (SilverpeasSettings.readBoolean(settings, "interestVisible", true)) {
-            writer
-                .write("<item id=\"subscriptions\" name=\""
-                    +
-                    EncodeHelper.escapeXml(message
-                        .getString("MyInterestCenters"))
-                    +
-                    "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
-                    + URLManager.getURL(URLManager.CMP_PDCSUBSCRIPTION)
-                    + "subscriptionList.jsp\"/>");
-          }
-          if (SilverpeasSettings.readBoolean(settings, "favRequestVisible",
-              true)) {
-            writer
-                .write("<item id=\"requests\" name=\""
-                    +
-                    EncodeHelper.escapeXml(message.getString("FavRequests"))
-                    +
-                    "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
-                    + URLManager.getURL(URLManager.CMP_INTERESTCENTERPEAS)
-                    + "iCenterList.jsp\"/>");
-          }
-          if (SilverpeasSettings.readBoolean(settings, "linksVisible", true)) {
-            writer
-                .write("<item id=\"links\" name=\""
-                    +
-                    EncodeHelper.escapeXml(message.getString("FavLinks"))
-                    +
-                    "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
-                    + URLManager.getURL(URLManager.CMP_MYLINKSPEAS)
-                    + "Main\"/>");
-          }
-
-          if (SilverpeasSettings.readBoolean(settings, "fileSharingVisible",
-              false)) {
-            FileSharingInterface fileSharing = new FileSharingInterfaceImpl();
-            if (fileSharing.getTicketsByUser(userId).size() > 0) {
-              writer
-                  .write("<item id=\"fileSharing\" name=\""
-                      +
-                      EncodeHelper
-                          .escapeXml(message.getString("FileSharing"))
-                      +
-                      "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
-                      + URLManager.getURL(URLManager.CMP_FILESHARING)
-                      + "Main\"/>");
-            }
-          }
-          // mes connexions
-          if (SilverpeasSettings.readBoolean(settings, "webconnectionsVisible",
-              true)) {
-            WebConnectionsInterface webConnections = new WebConnectionsImpl();
-            if (webConnections.getConnectionsByUser(userId).size() > 0) {
-              writer
-                  .write("<item id=\"webConnections\" name=\""
-                      +
-                      EncodeHelper
-                          .escapeXml(message.getString("WebConnections"))
-                      +
-                      "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
-                      + URLManager.getURL(URLManager.CMP_WEBCONNECTIONS)
-                      + "Main\"/>");
-            }
-          }
-
-          if (SilverpeasSettings.readBoolean(settings, "customVisible", true)) {
-            writer
-                .write("<item id=\"personalize\" name=\""
-                    +
-                    EncodeHelper.escapeXml(message
-                        .getString("Personalization"))
-                    +
-                    "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
-                    + URLManager.getURL(URLManager.CMP_PERSONALIZATION)
-                    + "Main.jsp\"/>");
-          }
-          if (SilverpeasSettings.readBoolean(settings, "mailVisible", true)) {
-            writer
-                .write("<item id=\"notifAdmins\" name=\""
-                    +
-                    EncodeHelper.escapeXml(message.getString("Feedback"))
-                    +
-                    "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"javascript:notifyAdministrators()\"/>");
-          }
-          if (SilverpeasSettings
-              .readBoolean(settings, "clipboardVisible", true)) {
-            writer
-                .write("<item id=\"clipboard\" name=\""
-                    +
-                    EncodeHelper.escapeXml(message.getString("Clipboard"))
-                    +
-                    "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"javascript:openClipboard()\"/>");
-          }
-
-          if (SilverpeasSettings.readBoolean(settings, "PersonalSpaceAddingsEnabled", true)) {
-
-            PersonalSpaceController psc = new PersonalSpaceController();
-            SpaceInst personalSpace = psc.getPersonalSpace(userId);
-            if (personalSpace != null) {
-              for (ComponentInst component : personalSpace.getAllComponentsInst()) {
-                String label =
-                    helper.getString("lookSilverpeasV5.personalSpace." + component.getName());
-                if (!StringUtil.isDefined(label)) {
-                  label = component.getName();
-                }
-                String url =
-                    URLManager.getURL(component.getName(), null, component.getName() +
-                    component.getId()) +
-                    "Main";
-                writer
-                    .write("<item id=\"" +
-                        component.getName() +
-                        component.getId() +
-                        "\" name=\""
-                        +
-                        EncodeHelper.escapeXml(label)
-                        +
-                        "\" description=\"\" type=\"component\" kind=\"personalComponent\" level=\"1\" open=\"false\" url=\"" +
-                        url + "\"/>");
-              }
-            }
-            int nbComponentAvailables = psc.getVisibleComponents(orgaController).size();
-            if (nbComponentAvailables > 0) {
-              if (personalSpace == null ||
-                  personalSpace.getAllComponentsInst().size() < nbComponentAvailables) {
-                writer
-                    .write("<item id=\"addComponent\" name=\""
-                        +
-                        EncodeHelper.escapeXml(helper
-                            .getString("lookSilverpeasV5.personalSpace.add"))
-                        +
-                        "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"javascript:listComponents()\"/>");
-              }
-            }
-          }
-        }
-
-        writer.write("</spacePerso>");
+            "com.stratelia.webactiv.homePage.multilang.homePageBundle", language);
+        serializePersonalSpace(writer, userId, language, orgaController, helper, settings, message);
       } else {
         // First get space's path cause it can be a subspace
-        List<String> spaceIdsPath = getSpaceIdsPath(spaceId, componentId,
-            orgaController);
-
-        displaySpace(spaceId, componentId, spaceIdsPath, userId, language,
-            defaultLook, displayPDC, false, orgaController, helper, writer, listUserFS,
-            userMenuDisplayMode);
-
-        displayPDC(getPDC, spaceId, componentId, userId, displayContextualPDC,
-            m_MainSessionCtrl, writer);
+        List<String> spaceIdsPath = getSpaceIdsPath(spaceId, componentId, orgaController);
+        displaySpace(spaceId, componentId, spaceIdsPath, userId, language, defaultLook, displayPDC,
+            false, orgaController, helper, writer, listUserFS, userMenuDisplayMode);
+        displayPDC(getPDC, spaceId, componentId, userId, displayContextualPDC, m_MainSessionCtrl,
+            writer);
       }
     } else if (StringUtil.isDefined(componentId)) {
-      displayPDC(getPDC, spaceId, componentId, userId, displayContextualPDC,
-          m_MainSessionCtrl, writer);
+      displayPDC(getPDC, spaceId, componentId, userId, displayContextualPDC, m_MainSessionCtrl,
+          writer);
     } else if (StringUtil.isDefined(pdc)) {
       displayNotContextualPDC(userId, m_MainSessionCtrl, writer);
     }
-
     writer.write("</response>");
     writer.write("</ajax-response>");
 
@@ -409,10 +227,9 @@ public class AjaxServletLookV5 extends HttpServlet {
     } else if (StringUtil.isDefined(componentId)) {
       spacePath = orgaController.getSpacePathToComponent(componentId);
     }
-
     List<String> spaceIdsPath = null;
     for (int s = 0; s < spacePath.size(); s++) {
-      SpaceInst space = (SpaceInst) spacePath.get(s);
+      SpaceInst space = spacePath.get(s);
       if (spaceIdsPath == null) {
         spaceIdsPath = new ArrayList<String>();
       }
@@ -469,12 +286,6 @@ public class AjaxServletLookV5 extends HttpServlet {
       OrganizationController orgaController, LookHelper helper, Writer writer,
       List<UserFavoriteSpaceVO> listUFS, String userMenuDisplayMode) throws IOException {
     boolean isTransverse = false;
-    // boolean displayBookmarks = false;
-    // // First check user menu display mode
-    // if ("BOOKMARKS".equalsIgnoreCase(helper.getUserMenuDisplayMode())) {
-    // displayBookmarks = true;
-    // }
-
     int i = 0;
     while (!isTransverse && i < spacePath.size()) {
       String spaceIdInPath = spacePath.get(i);
@@ -494,7 +305,7 @@ public class AjaxServletLookV5 extends HttpServlet {
     // Affichage de l'espace collaboratif
     SpaceInstLight space = orgaController.getSpaceInstLightById(spaceId);
     if (space != null) {
-      StringBuffer itemSB = new StringBuffer();
+      StringBuilder itemSB = new StringBuilder();
       itemSB.append("<item open=\"").append(open).append("\" ");
       itemSB.append(getSpaceAttributes(space, language, defaultLook, helper));
       itemSB.append(getFavoriteSpaceAttribute(userId, orgaController, listUFS, space, helper));
@@ -542,8 +353,8 @@ public class AjaxServletLookV5 extends HttpServlet {
    */
   private String getFavoriteSpaceAttribute(String userId, OrganizationController orgaController,
       List<UserFavoriteSpaceVO> listUFS, SpaceInstLight space, LookHelper helper) {
-    StringBuffer favSpace = new StringBuffer();
-    if (!"DISABLE".equalsIgnoreCase(helper.getDisplayUserFavoriteSpace())) {
+    StringBuilder favSpace = new StringBuilder();
+    if (!DISABLE.equalsIgnoreCase(helper.getDisplayUserFavoriteSpace())) {
       favSpace.append(" favspace=\"");
       if (isUserFavoriteSpace(listUFS, space.getShortId())) {
         favSpace.append("true");
@@ -570,18 +381,18 @@ public class AjaxServletLookV5 extends HttpServlet {
     // Then get all first level spaces
     String[] availableSpaceIds = getRootSpaceIds(userId, orgaController, helper);
 
-    out.write("<spaces menu=\"" + helper.getDisplayUserFavoriteSpace() + "\">");
-    String spaceId = null;
+    out.write("<spaces menu=\"");
+    out.write(helper.getDisplayUserFavoriteSpace());
+    out.write("\">");
     boolean loadCurSpace = false;
-    for (int nI = 0; nI < availableSpaceIds.length; nI++) {
-      spaceId = (String) availableSpaceIds[nI];
+    for (String spaceId : availableSpaceIds) {
       // Check if user favorite space is enable/disable
-      if ("DISABLE".equalsIgnoreCase(userMenuDisplayMode) ||
-          "ALL".equalsIgnoreCase(userMenuDisplayMode)) {
+      if (DISABLE.equalsIgnoreCase(userMenuDisplayMode)
+          || "ALL".equalsIgnoreCase(userMenuDisplayMode)) {
         loadCurSpace = true;
       } else if ("BOOKMARKS".equalsIgnoreCase(userMenuDisplayMode)) {
-        if (isUserFavoriteSpace(listUFS, spaceId) ||
-            containsFavoriteSubSpace(spaceId, listUFS, orgaController, userId)) {
+        if (isUserFavoriteSpace(listUFS, spaceId)
+            || containsFavoriteSubSpace(spaceId, listUFS, orgaController, userId)) {
           loadCurSpace = true;
         }
       }
@@ -594,8 +405,8 @@ public class AjaxServletLookV5 extends HttpServlet {
     out.write("</spaces>");
   }
 
-  private String getSpaceAttributes(SpaceInstLight space, String language,
-      String defaultLook, LookHelper helper) {
+  private String getSpaceAttributes(SpaceInstLight space, String language, String defaultLook,
+      LookHelper helper) {
     String spaceLook = space.getLook();
     if (!StringUtil.isDefined(spaceLook)) {
       spaceLook = defaultLook;
@@ -608,12 +419,14 @@ public class AjaxServletLookV5 extends HttpServlet {
     if (isTransverse) {
       attributeType = "spaceTransverse";
     }
-
-    return "id=\"" + space.getFullId() + "\" name=\""
-        + EncodeHelper.escapeXml(space.getName(language)) + "\" description=\""
-        + EncodeHelper.escapeXml(space.getDescription()) + "\" type=\""
-        + attributeType + "\" kind=\"space\" level=\"" + space.getLevel()
-        + "\" look=\"" + spaceLook + "\" wallpaper=\"" + spaceWallpaper + "\"";
+    StringBuilder buffer = new StringBuilder(500);
+    buffer.append("id=\"").append(space.getFullId()).append("\" name=\"");
+    buffer.append(EncodeHelper.escapeXml(space.getName(language))).append("\" description=\"");
+    buffer.append(EncodeHelper.escapeXml(space.getDescription())).append("\" type=\"");
+    buffer.append(attributeType).append("\" kind=\"space\" level=\"").append(space.getLevel());
+    buffer.append("\" look=\"").append(spaceLook).append("\" wallpaper=\"").append(spaceWallpaper);
+    buffer.append("\"");
+    return buffer.toString();
   }
 
   private void displayFirstLevelSpaces(String userId, String language,
@@ -629,21 +442,21 @@ public class AjaxServletLookV5 extends HttpServlet {
     // Start writing XML spaces node
     out.write("<spaces menu=\"" + helper.getDisplayUserFavoriteSpace() + "\">");
     for (int nI = 0; nI < availableSpaceIds.length; nI++) {
-      spaceId = (String) availableSpaceIds[nI];
+      spaceId = availableSpaceIds[nI];
       // Check if user favorite space is enable/disable
-      if ("DISABLE".equalsIgnoreCase(userMenuDisplayMode) ||
-          "ALL".equalsIgnoreCase(userMenuDisplayMode)) {
+      if (DISABLE.equalsIgnoreCase(userMenuDisplayMode)
+          || "ALL".equalsIgnoreCase(userMenuDisplayMode)) {
         loadCurSpace = true;
       } else if ("BOOKMARKS".equalsIgnoreCase(userMenuDisplayMode)) {
-        if (isUserFavoriteSpace(listUFS, spaceId) ||
-            containsFavoriteSubSpace(spaceId, listUFS, orgaController, userId)) {
+        if (isUserFavoriteSpace(listUFS, spaceId)
+            || containsFavoriteSubSpace(spaceId, listUFS, orgaController, userId)) {
           loadCurSpace = true;
         }
       }
       if (loadCurSpace) {
         space = orgaController.getSpaceInstLightById(spaceId);
         if (space != null) {
-          StringBuffer itemSB = new StringBuffer();
+          StringBuilder itemSB = new StringBuilder();
           itemSB.append("<item ");
           itemSB.append(getSpaceAttributes(space, language, defaultLook, helper));
           itemSB.append(getFavoriteSpaceAttribute(userId, orgaController, listUFS, space, helper));
@@ -673,17 +486,17 @@ public class AjaxServletLookV5 extends HttpServlet {
       if (space != null) {
         open = (spacePath != null && spacePath.contains(subSpaceId));
         // Check user favorite space
-        if ("DISABLE".equalsIgnoreCase(userMenuDisplayMode) ||
-            "ALL".equalsIgnoreCase(userMenuDisplayMode)) {
+        if (DISABLE.equalsIgnoreCase(userMenuDisplayMode)
+            || "ALL".equalsIgnoreCase(userMenuDisplayMode)) {
           loadCurSpace = true;
         } else if ("BOOKMARKS".equalsIgnoreCase(userMenuDisplayMode)) {
-          if (isUserFavoriteSpace(listUFS, subSpaceId) ||
-              containsFavoriteSubSpace(subSpaceId, listUFS, orgaController, userId)) {
+          if (isUserFavoriteSpace(listUFS, subSpaceId)
+              || containsFavoriteSubSpace(subSpaceId, listUFS, orgaController, userId)) {
             loadCurSpace = true;
           }
         }
         if (loadCurSpace) {
-          StringBuffer itemSB = new StringBuffer();
+          StringBuilder itemSB = new StringBuilder();
           itemSB.append("<item ");
           itemSB.append(getSpaceAttributes(space, language, defaultLook, helper));
           itemSB.append(" open=\"").append(open).append("\"");
@@ -733,8 +546,8 @@ public class AjaxServletLookV5 extends HttpServlet {
       String userId, String language, OrganizationController orgaController,
       Writer out, String userMenuDisplayMode, List<UserFavoriteSpaceVO> listUFS) throws IOException {
     boolean loadCurComponent = false;
-    if ("DISABLE".equalsIgnoreCase(userMenuDisplayMode) ||
-        "ALL".equalsIgnoreCase(userMenuDisplayMode)) {
+    if (DISABLE.equalsIgnoreCase(userMenuDisplayMode)
+        || "ALL".equalsIgnoreCase(userMenuDisplayMode)) {
       loadCurComponent = true;
     } else if ("BOOKMARKS".equalsIgnoreCase(userMenuDisplayMode)) {
       if (isUserFavoriteSpace(listUFS, spaceId)) {
@@ -754,30 +567,32 @@ public class AjaxServletLookV5 extends HttpServlet {
       String url = null;
       String kind = null;
       for (int c = 0; componentIds != null && c < componentIds.length; c++) {
-        component = (ComponentInst) orgaController
-            .getComponentInst(componentIds[c]);
-
+        component = orgaController.getComponentInst(componentIds[c]);
         if (component != null && !component.isHidden()) {
           open = (targetComponentId != null && component.getId().equals(
               targetComponentId));
-          url = URLManager.getURL(component.getName(), null, component.getId())
-              + "Main";
-
+          url = URLManager.getURL(component.getName(), null, component.getId()) + "Main";
           kind = component.getName();
-          WAComponent descriptor = Instanciateur.getWAComponent(component
-              .getName());
+          WAComponent descriptor = Instanciateur.getWAComponent(component.getName());
           if (descriptor != null
-              && "RprocessManager"
-              .equalsIgnoreCase(descriptor.getRequestRouter()))
+              && "RprocessManager".equalsIgnoreCase(descriptor.getRequestRouter())) {
             kind = "processManager";
-
-          out.write("<item id=\"" + component.getId() + "\" name=\""
-              + EncodeHelper.escapeXml(component.getLabel(language))
-              + "\" description=\""
-              + EncodeHelper.escapeXml(component.getDescription(language))
-              + "\" type=\"component\" kind=\"" + EncodeHelper.escapeXml(kind)
-              + "\" level=\"" + level + "\" open=\"" + open + "\" url=\"" + url
-              + "\"/>");
+          }
+          out.write("<item id=\"");
+          out.write(component.getId());
+          out.write("\" name=\"");
+          out.write(EncodeHelper.escapeXml(component.getLabel(language)));
+          out.write("\" description=\"");
+          out.write(EncodeHelper.escapeXml(component.getDescription(language)));
+          out.write("\" type=\"component\" kind=\"");
+          out.write(EncodeHelper.escapeXml(kind));
+          out.write("\" level=\"");
+          out.write(level);
+          out.write("\" open=\"");
+          out.write(String.valueOf(open));
+          out.write("\" url=\"");
+          out.write(url);
+          out.write("\"/>");
         }
       }
     }
@@ -799,30 +614,31 @@ public class AjaxServletLookV5 extends HttpServlet {
       List<String> cmps = null;
       if (StringUtil.isDefined(spaceId)) {
         // L'item courant est un espace
-        cmps = getAvailableComponents(spaceId, userId, mainSC
-            .getOrganizationController());
+        cmps = getAvailableComponents(spaceId, userId, mainSC.getOrganizationController());
       } else {
         cmps = Arrays.asList(mainSC.getUserAvailComponentIds());
       }
 
-      if (cmps != null && cmps.size() > 0)
+      if (cmps != null && cmps.size() > 0) {
         primaryAxis = pdc.getPertinentAxisByInstanceIds(searchContext, "P",
             cmps);
+      }
     }
-
     SearchAxis axis = null;
     if (primaryAxis != null) {
       for (int a = 0; a < primaryAxis.size(); a++) {
         axis = primaryAxis.get(a);
         if (axis != null && axis.getNbObjects() > 0) {
-          out.write("<axis id=\"" + axis.getAxisId() + "\" name=\""
-              + EncodeHelper.escapeXml(axis.getAxisName())
-              + "\" description=\"\" level=\"0\" open=\"false\" nbObjects=\""
-              + axis.getNbObjects() + "\"/>");
+          out.write("<axis id=\"");
+          out.write(axis.getAxisId());
+          out.write("\" name=\"");
+          out.write(EncodeHelper.escapeXml(axis.getAxisName()));
+          out.write("\" description=\"\" level=\"0\" open=\"false\" nbObjects=\"");
+          out.write(axis.getNbObjects());
+          out.write("\"/>");
         }
       }
     }
-
     pdc = null;
     primaryAxis = null;
   }
@@ -841,10 +657,10 @@ public class AjaxServletLookV5 extends HttpServlet {
     int len = valuePath.length();
     valueId = valuePath.substring(0, len - 1); // on retire le slash
 
-    if (valuePath.equals("/")) {
+    if ("/".equals(valuePath)) {
       valueId = valueId.substring(1);// on retire le slash
     } else {
-      int lastIdx = valueId.lastIndexOf("/");
+      int lastIdx = valueId.lastIndexOf('/');
       valueId = valueId.substring(lastIdx + 1);
     }
     return valueId;
@@ -869,8 +685,8 @@ public class AjaxServletLookV5 extends HttpServlet {
           daughters = pdc.getPertinentDaughterValuesByInstanceId(searchContext,
               axisId, valuePath, componentId);
         } else {
-          List<String> cmps = getAvailableComponents(spaceId, userId, mainSC
-              .getOrganizationController());
+          List<String> cmps = getAvailableComponents(spaceId, userId, mainSC.
+              getOrganizationController());
           daughters = pdc.getPertinentDaughterValuesByInstanceIds(
               searchContext, axisId, valuePath, cmps);
         }
@@ -901,9 +717,8 @@ public class AjaxServletLookV5 extends HttpServlet {
   }
 
   private String getWallPaper(String spaceId) {
-    String path = FileRepositoryManager.getAbsolutePath("Space"
-        + spaceId.substring(2), new String[] { "look" });
-
+    String path = FileRepositoryManager.getAbsolutePath("Space" + spaceId.substring(2),
+        new String[]{"look"});
     File file = new File(path + "wallPaper.jpg");
     if (file.isFile()) {
       return "1";
@@ -917,10 +732,9 @@ public class AjaxServletLookV5 extends HttpServlet {
     return "0";
   }
 
-  private String[] getRootSpaceIds(String userId,
-      OrganizationController orgaController, LookHelper helper) {
+  private String[] getRootSpaceIds(String userId, OrganizationController orgaController,
+      LookHelper helper) {
     List<String> rootSpaceIds = new ArrayList<String>();
-
     List<String> topSpaceIds = helper.getTopSpaceIds();
     String[] availableSpaceIds = orgaController.getAllRootSpaceIds(userId);
     for (int i = 0; i < availableSpaceIds.length; i++) {
@@ -928,7 +742,137 @@ public class AjaxServletLookV5 extends HttpServlet {
         rootSpaceIds.add(availableSpaceIds[i]);
       }
     }
+    return rootSpaceIds.toArray(new String[rootSpaceIds.size()]);
+  }
 
-    return (String[]) rootSpaceIds.toArray(new String[0]);
+  protected boolean isPersonnalSpace(String spaceId) {
+    return "spacePerso".equalsIgnoreCase(spaceId);
+  }
+
+  protected void serializePersonalSpace(Writer writer, String userId, String language,
+      OrganizationController orgaController, LookHelper helper, ResourceLocator settings,
+      ResourceLocator message) throws IOException {
+    // Affichage de l'espace perso
+    writer.write("<spacePerso id=\"spacePerso\" type=\"space\" level=\"0\">");
+    boolean isAnonymousAccess = helper.isAnonymousAccess();
+
+    if (!isAnonymousAccess && readBoolean(settings, "personnalSpaceVisible", true)) {
+      if (readBoolean(settings, "agendaVisible", true)) {
+        writer.write("<item id=\"agenda\" name=\""
+            + EncodeHelper.escapeXml(message.getString("Diary"))
+            + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
+            + URLManager.getURL(URLManager.CMP_AGENDA) + "Main\"/>");
+      }
+      if (readBoolean(settings, "todoVisible", true)) {
+        writer.write("<item id=\"todo\" name=\""
+            + EncodeHelper.escapeXml(message.getString("ToDo"))
+            + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
+            + URLManager.getURL(URLManager.CMP_TODO) + "todo.jsp\"/>");
+      }
+      if (readBoolean(settings, "notificationVisible", true)) {
+        writer.write("<item id=\"notification\" name=\""
+            + EncodeHelper.escapeXml(message.getString("Mail"))
+            + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
+            + URLManager.getURL(URLManager.CMP_SILVERMAIL) + "Main\"/>");
+      }
+      if (readBoolean(settings, "interestVisible", true)) {
+        writer.write("<item id=\"subscriptions\" name=\""
+            + EncodeHelper.escapeXml(message.getString("MyInterestCenters"))
+            + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
+            + URLManager.getURL(URLManager.CMP_PDCSUBSCRIPTION)
+            + "subscriptionList.jsp\"/>");
+      }
+      if (readBoolean(settings, "favRequestVisible", true)) {
+        writer.write("<item id=\"requests\" name=\""
+            + EncodeHelper.escapeXml(message.getString("FavRequests"))
+            + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
+            + URLManager.getURL(URLManager.CMP_INTERESTCENTERPEAS)
+            + "iCenterList.jsp\"/>");
+      }
+      if (readBoolean(settings, "linksVisible", true)) {
+        writer.write("<item id=\"links\" name=\""
+            + EncodeHelper.escapeXml(message.getString("FavLinks"))
+            + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
+            + URLManager.getURL(URLManager.CMP_MYLINKSPEAS)
+            + "Main\"/>");
+      }
+      if (readBoolean(settings, "fileSharingVisible", true)) {
+        FileSharingInterface fileSharing = new FileSharingInterfaceImpl();
+        if (!fileSharing.getTicketsByUser(userId).isEmpty()) {
+          writer.write("<item id=\"fileSharing\" name=\"");
+          writer.write(EncodeHelper.escapeXml(message.getString("FileSharing")));
+          writer.write("\" description=\"\" type=\"component\" kind=\"\" level=\"1\" ");
+          writer.write("open=\"false\" url=\"");
+          writer.write(URLManager.getURL(URLManager.CMP_FILESHARING));
+          writer.write("Main\"/>");
+        }
+      }
+      // mes connexions
+      if (readBoolean(settings, "webconnectionsVisible", true)) {
+        WebConnectionsInterface webConnections = new WebConnectionsImpl();
+        if (webConnections.getConnectionsByUser(userId).size() > 0) {
+          writer.write("<item id=\"webConnections\" name=\"");
+          writer.write(EncodeHelper.escapeXml(message.getString("WebConnections")));
+          writer.write("\" description=\"\" type=\"component\" kind=\"\" level=\"1\" ");
+          writer.write("open=\"false\" url=\"");
+          writer.write(URLManager.getURL(URLManager.CMP_WEBCONNECTIONS));
+          writer.write("Main\"/>");
+        }
+      }
+
+      if (readBoolean(settings, "customVisible", true)) {
+        writer.write("<item id=\"personalize\" name=\""
+            + EncodeHelper.escapeXml(message.getString("Personalization"))
+            + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
+            + URLManager.getURL(URLManager.CMP_PERSONALIZATION)
+            + "Main.jsp\"/>");
+      }
+      if (readBoolean(settings, "mailVisible", true)) {
+        writer.write(
+            "<item id=\"notifAdmins\" name=\""
+            + EncodeHelper.escapeXml(message.getString("Feedback"))
+            + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"javascript:notifyAdministrators()\"/>");
+      }
+      if (readBoolean(settings, "clipboardVisible", true)) {
+        writer.write(
+            "<item id=\"clipboard\" name=\""
+            + EncodeHelper.escapeXml(message.getString("Clipboard"))
+            + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"javascript:openClipboard()\"/>");
+      }
+
+      if (readBoolean(settings, "PersonalSpaceAddingsEnabled", true)) {
+        PersonalSpaceController psc = new PersonalSpaceController();
+        SpaceInst personalSpace = psc.getPersonalSpace(userId);
+        if (personalSpace != null) {
+          for (ComponentInst component : personalSpace.getAllComponentsInst()) {
+            String label =
+                helper.getString("lookSilverpeasV5.personalSpace." + component.getName());
+            if (!StringUtil.isDefined(label)) {
+              label = component.getName();
+            }
+            String url = URLManager.getURL(component.getName(), null, component.getName()
+                + component.getId()) + "Main";
+            writer.write("<item id=\""
+                + component.getName()
+                + component.getId()
+                + "\" name=\""
+                + EncodeHelper.escapeXml(label)
+                + "\" description=\"\" type=\"component\" kind=\"personalComponent\" level=\"1\" open=\"false\" url=\""
+                + url + "\"/>");
+          }
+        }
+        int nbComponentAvailables = psc.getVisibleComponents(orgaController).size();
+        if (nbComponentAvailables > 0) {
+          if (personalSpace == null
+              || personalSpace.getAllComponentsInst().size() < nbComponentAvailables) {
+            writer.write(
+                "<item id=\"addComponent\" name=\""
+                + EncodeHelper.escapeXml(helper.getString("lookSilverpeasV5.personalSpace.add"))
+                + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"javascript:listComponents()\"/>");
+          }
+        }
+      }
+    }
+    writer.write("</spacePerso>");
   }
 }

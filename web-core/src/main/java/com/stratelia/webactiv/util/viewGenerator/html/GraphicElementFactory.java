@@ -35,6 +35,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
@@ -118,14 +119,15 @@ public class GraphicElementFactory extends Object {
 
   public static ResourceLocator getGeneralSettings() {
     if (generalSettings == null) {
-      generalSettings = new ResourceLocator("com.stratelia.webactiv.general", "fr");
+      generalSettings = new ResourceLocator("com.stratelia.webactiv.general", 
+          I18NHelper.defaultLanguage);
     }
     return generalSettings;
   }
 
   public ResourceLocator getMultilang() {
     if (multilang == null) {
-      String language = "fr";
+      String language = I18NHelper.defaultLanguage;
       if (mainSessionController != null) {
         language = mainSessionController.getFavoriteLanguage();
       }
@@ -164,8 +166,7 @@ public class GraphicElementFactory extends Object {
       // get the customer lookSettings
       try {
         lookSettings = new ResourceLocator(
-            "com.stratelia.webactiv.util.viewGenerator.settings.lookSettings",
-            "");
+            "com.stratelia.webactiv.util.viewGenerator.settings.lookSettings", "");
       } catch (java.util.MissingResourceException e) {
         // the customer lookSettings is undefined
         // get the default silverpeas looks
@@ -188,8 +189,7 @@ public class GraphicElementFactory extends Object {
         "root.MSG_GEN_ENTER_METHOD");
     if (silverpeasLookSettings == null) {
       silverpeasLookSettings = new ResourceLocator(
-          "com.stratelia.webactiv.util.viewGenerator.settings.defaultLookSettings",
-          "");
+          "com.stratelia.webactiv.util.viewGenerator.settings.defaultLookSettings", "");
     }
     return silverpeasLookSettings;
   }

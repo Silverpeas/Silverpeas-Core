@@ -24,13 +24,7 @@
 
 package com.stratelia.webactiv.servlets;
 
-import java.io.IOException;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.authentication.Authentication;
@@ -38,11 +32,18 @@ import com.stratelia.silverpeas.notificationManager.NotificationManagerException
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 public class LoginServlet extends HttpServlet {
 
@@ -50,9 +51,10 @@ public class LoginServlet extends HttpServlet {
   private String m_sContext = "";
   private String m_sAbsolute = "";
 
+  @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws IOException {
-    com.stratelia.silverpeas.peasCore.MainSessionController controller = null;
+    MainSessionController controller = null;
 
     // Get the session
     HttpSession session = request.getSession(true);
@@ -77,8 +79,9 @@ public class LoginServlet extends HttpServlet {
     SilverTrace.info("peasCore", "LoginServlet.doPost()",
         "root.MSG_GEN_PARAM_VALUE", "sAbsolute=" + m_sAbsolute);
 
-    if (sPathInfo != null)
+    if (sPathInfo != null) {
       sURI = sURI.substring(0, sURI.lastIndexOf(sPathInfo));
+    }
 
     m_sContext = sURI.substring(0, sURI.lastIndexOf(sServletPath));
     if (m_sContext.charAt(m_sContext.length() - 1) == '/') {
@@ -86,7 +89,7 @@ public class LoginServlet extends HttpServlet {
     }
 
     // Get the parameters from the login page
-    String sKey = (String) request.getParameter("Key");
+    String sKey = request.getParameter("Key");
     if (sKey == null) {
       sKey = (String) session.getAttribute("svplogin_Key");
     }
@@ -97,7 +100,7 @@ public class LoginServlet extends HttpServlet {
       // Get the user profile from the admin
       SilverTrace.info("peasCore", "LoginServlet.doPost()",
           "root.MSG_GEN_PARAM_VALUE", "session id=" + session.getId());
-      controller = new com.stratelia.silverpeas.peasCore.MainSessionController(
+      controller = new MainSessionController(
           sKey, session.getId()); // Throws Specific Exception
 
       // Get and store password change capabilities
@@ -111,10 +114,11 @@ public class LoginServlet extends HttpServlet {
       Boolean alertUserAboutPwdExpiration = (Boolean) session
           .getAttribute(Authentication.PASSWORD_IS_ABOUT_TO_EXPIRE);
       if ((alertUserAboutPwdExpiration != null)
-          && (alertUserAboutPwdExpiration.booleanValue()))
+          && (alertUserAboutPwdExpiration.booleanValue())) {
         alertUserAboutPwdExpiration(controller.getUserId(), controller
             .getOrganizationController().getAdministratorUserIds(
             controller.getUserId())[0], controller.getFavoriteLanguage());
+      }
 
     } catch (Exception e) {
       SilverTrace.error("peasCore", "LoginServlet.doPost()",
@@ -137,8 +141,9 @@ public class LoginServlet extends HttpServlet {
       String serverName = request.getServerName();
       String serverPort = "";
       int srv_port = request.getServerPort();
-      if (srv_port != 80)
+      if (srv_port != 80) {
         serverPort = String.valueOf(srv_port);
+      }
       controller.initServerProps(serverName, serverPort);
 
       // Put a graphicElementFactory in the session
@@ -200,6 +205,7 @@ public class LoginServlet extends HttpServlet {
     }
   }
 
+  @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     doPost(request, response);
