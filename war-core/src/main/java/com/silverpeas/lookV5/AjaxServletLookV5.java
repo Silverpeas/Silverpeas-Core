@@ -72,6 +72,9 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 public class AjaxServletLookV5 extends HttpServlet {
 
   private static final String DISABLE = "DISABLE";
+  private static final String ALL = "ALL";
+  private static final String BOOKMARKS = "BOOKMARKS";
+  private static final long serialVersionUID = 1L;
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -305,7 +308,7 @@ public class AjaxServletLookV5 extends HttpServlet {
     // Affichage de l'espace collaboratif
     SpaceInstLight space = orgaController.getSpaceInstLightById(spaceId);
     if (space != null) {
-      StringBuilder itemSB = new StringBuilder();
+      StringBuilder itemSB = new StringBuilder(200);
       itemSB.append("<item open=\"").append(open).append("\" ");
       itemSB.append(getSpaceAttributes(space, language, defaultLook, helper));
       itemSB.append(getFavoriteSpaceAttribute(userId, orgaController, listUFS, space, helper));
@@ -315,18 +318,7 @@ public class AjaxServletLookV5 extends HttpServlet {
 
       if (open) {
         // Default display configuration
-        boolean spaceBeforeComponent = true;
-        // Display computing : First look at global configuration
-        if (JobStartPagePeasSettings.SPACEDISPLAYPOSITION_CONFIG.equalsIgnoreCase(
-            JobStartPagePeasSettings.SPACEDISPLAYPOSITION_BEFORE)) {
-          spaceBeforeComponent = true;
-        } else if (JobStartPagePeasSettings.SPACEDISPLAYPOSITION_CONFIG.equalsIgnoreCase(
-            JobStartPagePeasSettings.SPACEDISPLAYPOSITION_AFTER)) {
-          spaceBeforeComponent = false;
-        } else if (JobStartPagePeasSettings.SPACEDISPLAYPOSITION_CONFIG.equalsIgnoreCase(
-            JobStartPagePeasSettings.SPACEDISPLAYPOSITION_TODEFINE)) {
-          spaceBeforeComponent = space.isDisplaySpaceFirst();
-        }
+         boolean spaceBeforeComponent = isSpaceBeforeComponentNeeded(space);
         if (spaceBeforeComponent) {
           getSubSpaces(spaceId, userId, spacePath, componentId, language,
               defaultLook, orgaController, helper, writer, listUFS, userMenuDisplayMode);
@@ -353,7 +345,7 @@ public class AjaxServletLookV5 extends HttpServlet {
    */
   private String getFavoriteSpaceAttribute(String userId, OrganizationController orgaController,
       List<UserFavoriteSpaceVO> listUFS, SpaceInstLight space, LookHelper helper) {
-    StringBuilder favSpace = new StringBuilder();
+    StringBuilder favSpace = new StringBuilder(20);
     if (!DISABLE.equalsIgnoreCase(helper.getDisplayUserFavoriteSpace())) {
       favSpace.append(" favspace=\"");
       if (isUserFavoriteSpace(listUFS, space.getShortId())) {
@@ -381,21 +373,13 @@ public class AjaxServletLookV5 extends HttpServlet {
     // Then get all first level spaces
     String[] availableSpaceIds = getRootSpaceIds(userId, orgaController, helper);
 
-    out.write("<spaces menu=\"");
-    out.write(helper.getDisplayUserFavoriteSpace());
-    out.write("\">");
-    boolean loadCurSpace = false;
-    for (String spaceId : availableSpaceIds) {
-      // Check if user favorite space is enable/disable
-      if (DISABLE.equalsIgnoreCase(userMenuDisplayMode)
-          || "ALL".equalsIgnoreCase(userMenuDisplayMode)) {
-        loadCurSpace = true;
-      } else if ("BOOKMARKS".equalsIgnoreCase(userMenuDisplayMode)) {
-        if (isUserFavoriteSpace(listUFS, spaceId)
-            || containsFavoriteSubSpace(spaceId, listUFS, orgaController, userId)) {
-          loadCurSpace = true;
-        }
-      }
+    out.write("<spaces menu=\"" + helper.getDisplayUserFavoriteSpace() + "\">");
+    String spaceId = null;
+    
+    for (int nI = 0; nI < availableSpaceIds.length; nI++) {
+      spaceId = availableSpaceIds[nI];
+      boolean loadCurSpace = isLoadingContentNeeded(userMenuDisplayMode, userId, spaceId, listUFS,
+          orgaController);
       if (loadCurSpace) {
         displaySpace(spaceId, targetComponentId, spacePath, userId, language,
             defaultLook, false, false, orgaController, helper, out, listUFS, userMenuDisplayMode);
@@ -405,8 +389,8 @@ public class AjaxServletLookV5 extends HttpServlet {
     out.write("</spaces>");
   }
 
-  private String getSpaceAttributes(SpaceInstLight space, String language, String defaultLook,
-      LookHelper helper) {
+  private String getSpaceAttributes(SpaceInstLight space, String language,
+      String defaultLook, LookHelper helper) {
     String spaceLook = space.getLook();
     if (!StringUtil.isDefined(spaceLook)) {
       spaceLook = defaultLook;
@@ -419,14 +403,12 @@ public class AjaxServletLookV5 extends HttpServlet {
     if (isTransverse) {
       attributeType = "spaceTransverse";
     }
-    StringBuilder buffer = new StringBuilder(500);
-    buffer.append("id=\"").append(space.getFullId()).append("\" name=\"");
-    buffer.append(EncodeHelper.escapeXml(space.getName(language))).append("\" description=\"");
-    buffer.append(EncodeHelper.escapeXml(space.getDescription())).append("\" type=\"");
-    buffer.append(attributeType).append("\" kind=\"space\" level=\"").append(space.getLevel());
-    buffer.append("\" look=\"").append(spaceLook).append("\" wallpaper=\"").append(spaceWallpaper);
-    buffer.append("\"");
-    return buffer.toString();
+
+    return "id=\"" + space.getFullId() + "\" name=\""
+        + EncodeHelper.escapeXml(space.getName(language)) + "\" description=\""
+        + EncodeHelper.escapeXml(space.getDescription()) + "\" type=\""
+        + attributeType + "\" kind=\"space\" level=\"" + space.getLevel()
+        + "\" look=\"" + spaceLook + "\" wallpaper=\"" + spaceWallpaper + "\"";
   }
 
   private void displayFirstLevelSpaces(String userId, String language,
@@ -438,25 +420,16 @@ public class AjaxServletLookV5 extends HttpServlet {
     // Loop variable declaration
     SpaceInstLight space = null;
     String spaceId = null;
-    boolean loadCurSpace = false;
     // Start writing XML spaces node
     out.write("<spaces menu=\"" + helper.getDisplayUserFavoriteSpace() + "\">");
     for (int nI = 0; nI < availableSpaceIds.length; nI++) {
       spaceId = availableSpaceIds[nI];
-      // Check if user favorite space is enable/disable
-      if (DISABLE.equalsIgnoreCase(userMenuDisplayMode)
-          || "ALL".equalsIgnoreCase(userMenuDisplayMode)) {
-        loadCurSpace = true;
-      } else if ("BOOKMARKS".equalsIgnoreCase(userMenuDisplayMode)) {
-        if (isUserFavoriteSpace(listUFS, spaceId)
-            || containsFavoriteSubSpace(spaceId, listUFS, orgaController, userId)) {
-          loadCurSpace = true;
-        }
-      }
+      boolean loadCurSpace = isLoadingContentNeeded(userMenuDisplayMode, userId, spaceId, listUFS,
+          orgaController);
       if (loadCurSpace) {
         space = orgaController.getSpaceInstLightById(spaceId);
         if (space != null) {
-          StringBuilder itemSB = new StringBuilder();
+          StringBuilder itemSB = new StringBuilder(200);
           itemSB.append("<item ");
           itemSB.append(getSpaceAttributes(space, language, defaultLook, helper));
           itemSB.append(getFavoriteSpaceAttribute(userId, orgaController, listUFS, space, helper));
@@ -476,27 +449,19 @@ public class AjaxServletLookV5 extends HttpServlet {
       throws IOException {
     String[] spaceIds = orgaController.getAllSubSpaceIds(spaceId, userId);
 
-    SpaceInstLight space = null;
     String subSpaceId = null;
     boolean open = false;
     boolean loadCurSpace = false;
     for (int nI = 0; nI < spaceIds.length; nI++) {
       subSpaceId = spaceIds[nI];
-      space = orgaController.getSpaceInstLightById(subSpaceId);
+      SpaceInstLight space = orgaController.getSpaceInstLightById(subSpaceId);
       if (space != null) {
         open = (spacePath != null && spacePath.contains(subSpaceId));
         // Check user favorite space
-        if (DISABLE.equalsIgnoreCase(userMenuDisplayMode)
-            || "ALL".equalsIgnoreCase(userMenuDisplayMode)) {
-          loadCurSpace = true;
-        } else if ("BOOKMARKS".equalsIgnoreCase(userMenuDisplayMode)) {
-          if (isUserFavoriteSpace(listUFS, subSpaceId)
-              || containsFavoriteSubSpace(subSpaceId, listUFS, orgaController, userId)) {
-            loadCurSpace = true;
-          }
-        }
+        loadCurSpace = isLoadingContentNeeded(userMenuDisplayMode, userId, spaceId, listUFS,
+            orgaController);
         if (loadCurSpace) {
-          StringBuilder itemSB = new StringBuilder();
+          StringBuilder itemSB = new StringBuilder(200);
           itemSB.append("<item ");
           itemSB.append(getSpaceAttributes(space, language, defaultLook, helper));
           itemSB.append(" open=\"").append(open).append("\"");
@@ -507,18 +472,7 @@ public class AjaxServletLookV5 extends HttpServlet {
 
           if (open) {
             // Default display configuration
-            boolean spaceBeforeComponent = true;
-            // Display computing : First look at global configuration
-            if (JobStartPagePeasSettings.SPACEDISPLAYPOSITION_CONFIG.equalsIgnoreCase(
-                JobStartPagePeasSettings.SPACEDISPLAYPOSITION_BEFORE)) {
-              spaceBeforeComponent = true;
-            } else if (JobStartPagePeasSettings.SPACEDISPLAYPOSITION_CONFIG.equalsIgnoreCase(
-                JobStartPagePeasSettings.SPACEDISPLAYPOSITION_AFTER)) {
-              spaceBeforeComponent = false;
-            } else if (JobStartPagePeasSettings.SPACEDISPLAYPOSITION_CONFIG.equalsIgnoreCase(
-                JobStartPagePeasSettings.SPACEDISPLAYPOSITION_TODEFINE)) {
-              spaceBeforeComponent = space.isDisplaySpaceFirst();
-            }
+            boolean spaceBeforeComponent = isSpaceBeforeComponentNeeded(space);
             // the subtree must be displayed
             // components of expanded space must be displayed too
             if (spaceBeforeComponent) {
@@ -545,23 +499,12 @@ public class AjaxServletLookV5 extends HttpServlet {
   private void getComponents(String spaceId, String targetComponentId,
       String userId, String language, OrganizationController orgaController,
       Writer out, String userMenuDisplayMode, List<UserFavoriteSpaceVO> listUFS) throws IOException {
-    boolean loadCurComponent = false;
-    if (DISABLE.equalsIgnoreCase(userMenuDisplayMode)
-        || "ALL".equalsIgnoreCase(userMenuDisplayMode)) {
-      loadCurComponent = true;
-    } else if ("BOOKMARKS".equalsIgnoreCase(userMenuDisplayMode)) {
-      if (isUserFavoriteSpace(listUFS, spaceId)) {
-        loadCurComponent = true;
-      }
-    }
+    boolean loadCurComponent = isLoadingContentNeeded(userMenuDisplayMode, userId, spaceId, listUFS,
+        orgaController);
     if (loadCurComponent) {
-      String[] componentIds = orgaController.getAvailCompoIdsAtRoot(spaceId,
-          userId);
-
+      String[] componentIds = orgaController.getAvailCompoIdsAtRoot(spaceId, userId);
       SpaceInstLight space = orgaController.getSpaceInstLightById(spaceId);
-
       int level = space.getLevel() + 1;
-
       ComponentInst component = null;
       boolean open = false;
       String url = null;
@@ -572,27 +515,21 @@ public class AjaxServletLookV5 extends HttpServlet {
           open = (targetComponentId != null && component.getId().equals(
               targetComponentId));
           url = URLManager.getURL(component.getName(), null, component.getId()) + "Main";
+
           kind = component.getName();
           WAComponent descriptor = Instanciateur.getWAComponent(component.getName());
           if (descriptor != null
               && "RprocessManager".equalsIgnoreCase(descriptor.getRequestRouter())) {
             kind = "processManager";
           }
-          out.write("<item id=\"");
-          out.write(component.getId());
-          out.write("\" name=\"");
-          out.write(EncodeHelper.escapeXml(component.getLabel(language)));
-          out.write("\" description=\"");
-          out.write(EncodeHelper.escapeXml(component.getDescription(language)));
-          out.write("\" type=\"component\" kind=\"");
-          out.write(EncodeHelper.escapeXml(kind));
-          out.write("\" level=\"");
-          out.write(level);
-          out.write("\" open=\"");
-          out.write(String.valueOf(open));
-          out.write("\" url=\"");
-          out.write(url);
-          out.write("\"/>");
+
+          out.write("<item id=\"" + component.getId() + "\" name=\""
+              + EncodeHelper.escapeXml(component.getLabel(language))
+              + "\" description=\""
+              + EncodeHelper.escapeXml(component.getDescription(language))
+              + "\" type=\"component\" kind=\"" + EncodeHelper.escapeXml(kind)
+              + "\" level=\"" + level + "\" open=\"" + open + "\" url=\"" + url
+              + "\"/>");
         }
       }
     }
@@ -629,13 +566,10 @@ public class AjaxServletLookV5 extends HttpServlet {
       for (int a = 0; a < primaryAxis.size(); a++) {
         axis = primaryAxis.get(a);
         if (axis != null && axis.getNbObjects() > 0) {
-          out.write("<axis id=\"");
-          out.write(axis.getAxisId());
-          out.write("\" name=\"");
-          out.write(EncodeHelper.escapeXml(axis.getAxisName()));
-          out.write("\" description=\"\" level=\"0\" open=\"false\" nbObjects=\"");
-          out.write(axis.getNbObjects());
-          out.write("\"/>");
+          out.write("<axis id=\"" + axis.getAxisId() + "\" name=\""
+              + EncodeHelper.escapeXml(axis.getAxisName())
+              + "\" description=\"\" level=\"0\" open=\"false\" nbObjects=\""
+              + axis.getNbObjects() + "\"/>");
         }
       }
     }
@@ -799,24 +733,22 @@ public class AjaxServletLookV5 extends HttpServlet {
       if (readBoolean(settings, "fileSharingVisible", true)) {
         FileSharingInterface fileSharing = new FileSharingInterfaceImpl();
         if (!fileSharing.getTicketsByUser(userId).isEmpty()) {
-          writer.write("<item id=\"fileSharing\" name=\"");
-          writer.write(EncodeHelper.escapeXml(message.getString("FileSharing")));
-          writer.write("\" description=\"\" type=\"component\" kind=\"\" level=\"1\" ");
-          writer.write("open=\"false\" url=\"");
-          writer.write(URLManager.getURL(URLManager.CMP_FILESHARING));
-          writer.write("Main\"/>");
+          writer.write("<item id=\"fileSharing\" name=\""
+              + EncodeHelper.escapeXml(message.getString("FileSharing"))
+              + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
+              + URLManager.getURL(URLManager.CMP_FILESHARING)
+              + "Main\"/>");
         }
       }
       // mes connexions
       if (readBoolean(settings, "webconnectionsVisible", true)) {
         WebConnectionsInterface webConnections = new WebConnectionsImpl();
         if (webConnections.getConnectionsByUser(userId).size() > 0) {
-          writer.write("<item id=\"webConnections\" name=\"");
-          writer.write(EncodeHelper.escapeXml(message.getString("WebConnections")));
-          writer.write("\" description=\"\" type=\"component\" kind=\"\" level=\"1\" ");
-          writer.write("open=\"false\" url=\"");
-          writer.write(URLManager.getURL(URLManager.CMP_WEBCONNECTIONS));
-          writer.write("Main\"/>");
+          writer.write("<item id=\"webConnections\" name=\""
+              + EncodeHelper.escapeXml(message.getString("WebConnections"))
+              + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
+              + URLManager.getURL(URLManager.CMP_WEBCONNECTIONS)
+              + "Main\"/>");
         }
       }
 
@@ -874,5 +806,33 @@ public class AjaxServletLookV5 extends HttpServlet {
       }
     }
     writer.write("</spacePerso>");
+  }
+
+  protected boolean isLoadingContentNeeded(String userMenuDisplayMode, String userId, String spaceId,
+      List<UserFavoriteSpaceVO> listUFS, OrganizationController orgaController) {
+    if (DISABLE.equalsIgnoreCase(userMenuDisplayMode) || ALL.equalsIgnoreCase(userMenuDisplayMode)) {
+      return true;
+    } else if (BOOKMARKS.equalsIgnoreCase(userMenuDisplayMode)) {
+      if (isUserFavoriteSpace(listUFS, spaceId)
+          || containsFavoriteSubSpace(spaceId, listUFS, orgaController, userId)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  protected boolean isSpaceBeforeComponentNeeded(SpaceInstLight space) {
+    // Display computing : First look at global configuration
+    if (JobStartPagePeasSettings.SPACEDISPLAYPOSITION_CONFIG.equalsIgnoreCase(
+        JobStartPagePeasSettings.SPACEDISPLAYPOSITION_BEFORE)) {
+      return true;
+    } else if (JobStartPagePeasSettings.SPACEDISPLAYPOSITION_CONFIG.equalsIgnoreCase(
+        JobStartPagePeasSettings.SPACEDISPLAYPOSITION_AFTER)) {
+      return false;
+    } else if (JobStartPagePeasSettings.SPACEDISPLAYPOSITION_CONFIG.equalsIgnoreCase(
+        JobStartPagePeasSettings.SPACEDISPLAYPOSITION_TODEFINE)) {
+      return space.isDisplaySpaceFirst();
+    }
+    return true;
   }
 }
