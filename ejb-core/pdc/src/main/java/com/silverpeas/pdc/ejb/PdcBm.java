@@ -30,7 +30,6 @@ import java.rmi.RemoteException;
 
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
-import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.Value;
 
 import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
@@ -72,10 +71,10 @@ public interface PdcBm extends EJBObject {
 
   public AxisHeader getAxisHeader(String axisId) throws RemoteException;
 
-  public String createDaughterValueWithId(String axisId, Value value) throws RemoteException, PdcException;
-  
-  public int addPosition(int pubId, ClassifyPosition position, String componentId, boolean alertSubscribers) throws RemoteException, PdcException;
+  public String createDaughterValueWithId(String axisId, Value value) throws RemoteException;
 
-  public void removeAllPositions(int pubId, String componentId) throws RemoteException, PdcException;
-  
+  public int addPosition(int pubId, ClassifyPosition position, String componentId,
+      boolean alertSubscribers) throws RemoteException;
+      
+  public void removeAllPositions(int pubId, String componentId) throws RemoteException;
 }

@@ -121,14 +121,27 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
     return value;
   }
 
-  public String createDaughterValueWithId(String axisId, Value value) throws RemoteException,
-      PdcException {
-    return getPdcBm().createDaughterValueWithId(value, value.getFatherId(), axisId);
+  public String createDaughterValueWithId(String axisId, Value value) throws RemoteException {
+      String daughterId = null;
+      try{
+          daughterId = getPdcBm().createDaughterValueWithId(value, value.getFatherId(), axisId);
+      } catch (PdcException e) {
+          throw new PdcBmRuntimeException("PdcBmEJB.createDaughterValueWithId",
+              SilverpeasRuntimeException.ERROR, "Pdc.CANNOT_CREATE_AXE", e);
+      }
+      return daughterId;
   }
 
   public int addPosition(int pubId, ClassifyPosition position, String componentId,
-      boolean alertSubscribers) throws RemoteException, PdcException {
-    return getPdcBm().addPosition(pubId, position, componentId, alertSubscribers);
+      boolean alertSubscribers) throws RemoteException {
+      int positionId = -1;
+      try{
+          positionId = getPdcBm().addPosition(pubId, position, componentId, alertSubscribers);
+      } catch (PdcException e) {
+          throw new PdcBmRuntimeException("PdcBmEJB.addPosition",
+              SilverpeasRuntimeException.ERROR, "Pdc.CANNOT_CREATE_VALUE", e);
+      }
+      return positionId;
   }
 
   public ArrayList getDaughters(String axisId, String valueId)
