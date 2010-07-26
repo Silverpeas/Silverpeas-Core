@@ -90,20 +90,17 @@ public interface CalendarBmBusinessSkeleton {
   /**
    * addJournal() add a journal entry in the database
    */
-  public String addJournal(JournalHeader journal) throws RemoteException,
-      CalendarException;
+  public String addJournal(JournalHeader journal) throws RemoteException;
 
   /**
    * addToDo() add a todo entry in the database
    */
-  public String addToDo(ToDoHeader todo) throws RemoteException,
-      CalendarException;
+  public String addToDo(ToDoHeader todo) throws RemoteException;
 
   /**
    * updateJournal() update the journal entry, specified by the id, in the database
    */
-  public void updateJournal(JournalHeader journal) throws RemoteException,
-      CalendarException;
+  public void updateJournal(JournalHeader journal) throws RemoteException;
 
   /**
    * updateToDo() update the todo entry, specified by the id, in the database
@@ -111,8 +108,7 @@ public interface CalendarBmBusinessSkeleton {
   /*
    * public void updateToDo(ToDoHeader todo) throws RemoteException, CreateException;
    */
-  public void updateToDo(ToDoHeader todo) throws RemoteException,
-      CalendarException;
+  public void updateToDo(ToDoHeader todo) throws RemoteException;
 
   /**
    * removeJournal() remove the journal entry specified by the id
