@@ -446,11 +446,10 @@ public class PublicationEJB implements EntityBean {
    * @see com.stratelia.webactiv.util.publication.info.model.ModelPK
    * @see com.stratelia.webactiv.util.publication.info.model.InfoDetail
    * @throws java.sql.SQLException
-   * @throws UtilException
    * @since 1.0
    */
   public void createInfoDetail(ModelPK modelPK, InfoDetail infos)
-      throws SQLException, UtilException {
+      throws SQLException {
 
     SilverTrace.info("publication", "PublicationEJB.createInfoDetail()",
         "root.MSG_GEN_ENTER_METHOD", "modelId = " + modelPK.getId());
@@ -467,6 +466,10 @@ public class PublicationEJB implements EntityBean {
       infoPK = iPK;
       isModified = true;
       ejbStore();
+    }catch(UtilException e){
+        throw new PublicationRuntimeException("PublicationEJB.createInfoDetail()",
+                SilverpeasRuntimeException.ERROR,
+                "root.EX_CANT_INSERT_TRANSLATIONS", e);
     } finally {
       freeConnection(con);
     }
@@ -483,7 +486,7 @@ public class PublicationEJB implements EntityBean {
    * @since 1.0
    */
   public void createInfoModelDetail(ModelPK modelPK, InfoDetail infos)
-      throws SQLException, UtilException {
+      throws SQLException {
 
     SilverTrace.info("publication", "PublicationEJB.createInfoModelDetail()",
         "root.MSG_GEN_ENTER_METHOD", "modelId = " + modelPK.getId());
@@ -506,6 +509,10 @@ public class PublicationEJB implements EntityBean {
         // Creation from A to Z
         createInfoDetail(modelPK, infos);
       }
+    }catch(UtilException e){
+        throw new PublicationRuntimeException("PublicationEJB.createInfoModelDetail()",
+                SilverpeasRuntimeException.ERROR,
+                "root.EX_CANT_INSERT_TRANSLATIONS", e);
     } finally {
       freeConnection(con);
     }
@@ -536,11 +543,9 @@ public class PublicationEJB implements EntityBean {
    * @param infos An InfoDetail which contains info to update to the publication
    * @see com.stratelia.webactiv.util.publication.info.model.InfoDetail
    * @throws java.sql.SQLException
-   * @throws UtilException
    * @since 1.0
    */
-  public void updateInfoDetail(InfoDetail infos) throws SQLException,
-      UtilException {
+  public void updateInfoDetail(InfoDetail infos) throws SQLException {
 
     SilverTrace.info("publication", "PublicationEJB.updateInfoDetail()",
         "root.MSG_GEN_ENTER_METHOD");
@@ -582,6 +587,10 @@ public class PublicationEJB implements EntityBean {
         updateDate = new Date();
         isModified = true;
       }
+    }catch(UtilException e){
+        throw new PublicationRuntimeException("PublicationEJB.createInfoModelDetail()",
+                SilverpeasRuntimeException.ERROR,
+                "root.EX_CANT_INSERT_TRANSLATIONS", e);
     } finally {
       freeConnection(con);
     }

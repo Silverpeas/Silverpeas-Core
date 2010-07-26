@@ -132,7 +132,7 @@ public interface Publication extends EJBObject {
    * @see
    */
   public void createInfoDetail(ModelPK modelPK, InfoDetail infos)
-      throws RemoteException, UtilException, SQLException;
+      throws RemoteException, SQLException;
 
   /**
    * Method declaration
@@ -144,7 +144,7 @@ public interface Publication extends EJBObject {
    * @see
    */
   public void createInfoModelDetail(ModelPK modelPK, InfoDetail infos)
-      throws RemoteException, UtilException, SQLException;
+      throws RemoteException, SQLException;
 
   /**
    * Method declaration
@@ -154,8 +154,7 @@ public interface Publication extends EJBObject {
    * @throws UtilException
    * @see
    */
-  public void updateInfoDetail(InfoDetail infos) throws RemoteException,
-      UtilException, SQLException;
+  public void updateInfoDetail(InfoDetail infos) throws RemoteException, SQLException;
 
   /**
    * Method declaration
