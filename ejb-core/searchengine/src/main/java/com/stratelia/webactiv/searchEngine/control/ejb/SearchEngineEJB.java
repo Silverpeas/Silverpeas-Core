@@ -38,7 +38,9 @@ import com.stratelia.webactiv.searchEngine.model.ParseException;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.searchEngine.model.SearchCompletion;
 import com.stratelia.webactiv.searchEngine.model.WAIndexSearcher;
+import com.stratelia.webactiv.searchEngine.model.ParseRuntimeException;
 import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
  * A SearchEngineEJB search the web'activ index and give access to the retrieved index entries.
@@ -62,16 +64,20 @@ public class SearchEngineEJB implements SessionBean, SearchEngineBmBusinessSkele
   /**
    * Search the index for the required documents.
    */
-  public void search(QueryDescription query) throws RemoteException,
-      ParseException {
-    results = new WAIndexSearcher().search(query);
-    // spelling word functionality is triggered by a threshold defined in pdcPeasSettings.properties
-    // (wordSpellingMinScore).
-    if (SilverpeasSettings.readBoolean(pdcSettings, "enableWordSpelling", false) &&
-        isSpellingNeeded()) {
-      DidYouMeanSearcher searcher = new DidYouMeanSearcher();
-      spellingWords = searcher.suggest(query);
-    }
+  public void search(QueryDescription query) throws RemoteException {
+      try{
+          results = new WAIndexSearcher().search(query);
+        // spelling word functionality is triggered by a threshold defined in pdcPeasSettings.properties
+        // (wordSpellingMinScore).
+        if (SilverpeasSettings.readBoolean(pdcSettings, "enableWordSpelling", false) &&
+            isSpellingNeeded()) {
+          DidYouMeanSearcher searcher = new DidYouMeanSearcher();
+          spellingWords = searcher.suggest(query);
+        }
+      }catch(ParseException pe){
+          throw new ParseRuntimeException("SearchEngineEJB.search",
+                  SilverpeasRuntimeException.ERROR, "searchEngine.EXP_PARSE_EXCEPTION", pe);
+      }
   }
 
   /**

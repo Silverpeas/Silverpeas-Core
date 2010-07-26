@@ -28,7 +28,6 @@ import java.rmi.RemoteException;
 import java.util.Set;
 
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
-import com.stratelia.webactiv.searchEngine.model.ParseException;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 
 /**
@@ -40,7 +39,7 @@ public interface SearchEngineBmBusinessSkeleton {
   /**
    * Search the index for the required documents.
    */
-  void search(QueryDescription query) throws RemoteException, ParseException;
+  void search(QueryDescription query) throws RemoteException;
 
   /**
    * Return the count of matching document retrived by the last search. Return 0 if called before
