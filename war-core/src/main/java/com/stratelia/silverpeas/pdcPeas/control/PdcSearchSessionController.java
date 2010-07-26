@@ -1876,7 +1876,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public List<SpaceInstLight> getAllowedSpaces() {
     List<SpaceInstLight> allowed = new ArrayList<SpaceInstLight>();
 
-    String[] spaceIds = getOrganizationController().getAllSpaceIds(getUserId());
+    String[] spaceIds = getOrganizationController().getAllRootSpaceIds(getUserId());
 
     // add each shared domains
     for (int nI = 0; nI < spaceIds.length; nI++) {
