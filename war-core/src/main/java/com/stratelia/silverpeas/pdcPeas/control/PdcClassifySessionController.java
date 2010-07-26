@@ -36,6 +36,7 @@ import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
+import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -131,21 +132,28 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
 
   public int addPosition(ClassifyPosition position) throws PdcException {
     int result = -1;
-    if (pdcFieldPositionsManager.isEnabled()) {
-      pdcFieldPositionsManager.addPosition(position);
-    } else {
-      if (getCurrentSilverObjectId() != -1) {
-        // classical classification = addPosition to one object
-        result = getPdcBm().addPosition(getCurrentSilverObjectId(), position,
-            getCurrentComponentId(), isSendSubscriptions());
-      } else if (getCurrentSilverObjectIds() != null) {
-        String silverObjectId = null;
-        for (int i = 0; i < getCurrentSilverObjectIds().size(); i++) {
-          silverObjectId = getCurrentSilverObjectIds().get(i);
-          getPdcBm().addPosition(Integer.parseInt(silverObjectId), position,
-              getCurrentComponentId(), isSendSubscriptions());
+    try{
+        if (pdcFieldPositionsManager.isEnabled()) {
+          pdcFieldPositionsManager.addPosition(position);
+        } else {
+          if (getCurrentSilverObjectId() != -1) {
+            // classical classification = addPosition to one object
+            result = getPdcBm().addPosition(getCurrentSilverObjectId(), position,
+                getCurrentComponentId(), isSendSubscriptions());
+          } else if (getCurrentSilverObjectIds() != null) {
+            String silverObjectId = null;
+            for (int i = 0; i < getCurrentSilverObjectIds().size(); i++) {
+              silverObjectId = (String) getCurrentSilverObjectIds().get(i);
+              getPdcBm().addPosition(Integer.parseInt(silverObjectId), position,
+                  getCurrentComponentId(), isSendSubscriptions());
+            }
+          }
         }
-      }
+    }catch(PdcRuntimeException pe){
+        throw new PdcException(
+                "PdcClassifySessionController.addPosition()",
+                SilverpeasException.ERROR, pe.getMessage(),
+                pe);
     }
     return result;
   }
