@@ -41,15 +41,12 @@
 
   <bean id="sessionFactory" name="sessionFactory"
     class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
-    <property name="mappingResources">
-      <list>
-        <value>Message.hbm.xml</value>
-        <value>Attachment.hbm.xml</value>
-        <value>ExternalUser.hbm.xml</value>
-        <value>MailingList.hbm.xml</value>
-        <value>InternalSubscriber.hbm.xml</value>
-      </list>
-    </property>
+	<property name="mappingDirectoryLocations">
+		<list>
+			<value>WEB-INF/mappings</value>
+		</list>
+	</property> 
+
     <property name="hibernateProperties">
       <props>
         <prop key="hibernate.dialect">${hibernate.dialect}</prop>
