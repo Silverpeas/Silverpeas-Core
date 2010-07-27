@@ -89,7 +89,7 @@ public class ConfigurationClassLoader extends ClassLoader {
   @Override
   public URL getResource(String name) {
     URL resource = super.getResource(name);
-    if (resource == null && name != null && name.endsWith(".properties")) {
+    if (resource == null && name != null) {
       String fileName = baseDir + name;
       File file = new File(fileName);
       if (file.exists()) {
