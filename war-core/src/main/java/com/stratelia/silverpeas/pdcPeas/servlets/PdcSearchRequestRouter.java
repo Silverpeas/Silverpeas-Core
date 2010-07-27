@@ -89,6 +89,7 @@ import com.stratelia.webactiv.searchEngine.model.ScoreComparator;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
 import com.stratelia.webactiv.util.exception.UtilException;
+import com.sun.mail.iap.Response;
 
 public class PdcSearchRequestRouter extends ComponentRequestRouter {
 
@@ -1878,6 +1879,12 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
 
       pdcSC.setSearchType(PdcSearchSessionController.SEARCH_XML);
     } else {
+      String spaceId = request.getParameter("spaces");
+      pdcSC.getQueryParameters().setSpaceId(spaceId);
+      
+      String instanceId = request.getParameter("componentSearch");
+      pdcSC.getQueryParameters().setInstanceId(instanceId);
+      
       pdcSC.setSearchType(PdcSearchSessionController.SEARCH_EXPERT);
     }
   }

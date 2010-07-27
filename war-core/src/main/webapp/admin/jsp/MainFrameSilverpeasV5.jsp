@@ -170,7 +170,7 @@ function showPdcFrame() {
 }
 
 function hidePdcFrame() {
-	resizeFrame("0,115,*,0,0");
+	resizeFrame("0,115,*,0,0,0");
 }
 
 setTimeout("init()",100);

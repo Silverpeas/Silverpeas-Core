@@ -219,7 +219,8 @@ out.println(gef.getLookStyleSheet());
 
     function getFooterPage()
     {
-        return getContext()+"/RpdcSearch/jsp/ChangeSearchTypeToExpert?mode=clear&SearchPage=/admin/jsp/pdcSearchSilverpeasV5.jsp&";
+        //return getContext()+"/RpdcSearch/jsp/ChangeSearchTypeToExpert?mode=clear&SearchPage=/admin/jsp/pdcSearchSilverpeasV5.jsp&";
+    	return getContext()+"/RpdcSearch/jsp/ChangeSearchTypeToExpert?SearchPage=/admin/jsp/pdcSearchSilverpeasV5.jsp&";
     }
 
     /**
@@ -336,7 +337,8 @@ out.println(gef.getLookStyleSheet());
         </div>
       </c:if>
       <div id="spaces">
-      <center><br/><br/><fmt:message key="lookSilverpeasV5.loadingSpaces" /><br/><br/><img src="icons/silverpeasV5/inProgress.gif"/></center></div>
+      	<center><br/><br/><fmt:message key="lookSilverpeasV5.loadingSpaces" /><br/><br/><img src="icons/silverpeasV5/inProgress.gif"/></center>
+      </div>
       <% if (!helper.isAnonymousAccess()) { %>
         <div id="spacePerso" class="spaceLevelPerso"><a class="spaceURL" href="javaScript:openMySpace();"><fmt:message key="lookSilverpeasV5.PersonalSpace" /></a></div>
       <% } %>
