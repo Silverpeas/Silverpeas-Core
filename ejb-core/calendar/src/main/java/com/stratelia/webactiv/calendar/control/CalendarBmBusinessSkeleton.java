@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.calendar.control;
 
 import java.rmi.RemoteException;
@@ -34,6 +33,7 @@ import com.stratelia.webactiv.calendar.model.Attendee;
 import com.stratelia.webactiv.calendar.model.Category;
 import com.stratelia.webactiv.calendar.model.JournalHeader;
 import com.stratelia.webactiv.calendar.model.SchedulableCount;
+import com.stratelia.webactiv.calendar.socialNetwork.SocialInformationEvent;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
 
 public interface CalendarBmBusinessSkeleton {
@@ -51,6 +51,13 @@ public interface CalendarBmBusinessSkeleton {
    */
   public Collection<JournalHeader> getNextDaySchedulablesForUser(String day, String userId,
       String categoryId, String participation) throws RemoteException;
+
+  /**
+   * getNextEventForUser for a particular user returns the next events scheduled. This
+   * includes all kinds of events
+   */
+  public List<JournalHeader> getNextEventsForUser(String day, String userId,
+      String classification, int limit, int offset) throws RemoteException;
 
   /**
    * getPeriodSchedulablesForUser() for a particular user returns all the events scheduled during a
@@ -224,5 +231,4 @@ public interface CalendarBmBusinessSkeleton {
   public void removeHolidayDate(HolidayDetail holiday) throws RemoteException;
 
   public void removeHolidayDates(List<HolidayDetail> holidayDates) throws RemoteException;
-
 }

@@ -21,10 +21,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 //TODO : reporter dans CVS (done)
 package com.stratelia.webactiv.calendar.model;
 
+import com.silverpeas.socialNetwork.model.SocialInformation;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.calendar.socialNetwork.SocialInformationEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -39,6 +41,7 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
+import java.util.Hashtable;
 import java.util.List;
 
 public class JournalDAO {
@@ -47,11 +50,9 @@ public class JournalDAO {
       "id, name, delegatorId, description, priority, classification, startDay, startHour, endDay, endHour, externalId";
   private static final String JOURNALCOLUMNNAMES =
       "CalendarJournal.id, CalendarJournal.name, CalendarJournal.delegatorId, CalendarJournal.description, CalendarJournal.priority, "
-          + " CalendarJournal.classification, CalendarJournal.startDay, CalendarJournal.startHour, CalendarJournal.endDay, CalendarJournal.endHour, CalendarJournal.externalId";
-
+      + " CalendarJournal.classification, CalendarJournal.startDay, CalendarJournal.startHour, CalendarJournal.endDay, CalendarJournal.endHour, CalendarJournal.externalId";
   private static final String INSERT_JOURNAL = "INSERT INTO CalendarJournal ("
       + COLUMNNAMES + ") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
   private static final String UPDATE_JOURNAL = "UPDATE CalendarJournal SET name = ?, "
       + "delegatorId = ?, description = ?, priority = ?, classification = ?, "
       + "startDay = ?, startHour = ?, endDay = ?, endHour = ?, externalId = ? WHERE id = ?";
@@ -75,10 +76,11 @@ public class JournalDAO {
       prepStmt.setString(9, journal.getEndDay());
       prepStmt.setString(10, journal.getEndHour());
       prepStmt.setString(11, journal.getExternalId());
-      if (prepStmt.executeUpdate() == 0)
+      if (prepStmt.executeUpdate() == 0) {
         throw new CalendarException(
             "JournalDAO.Connection con,  addJournal(Connection con, JournalHeader journal)",
             SilverpeasException.ERROR, "calendar.EX_EXCUTE_INSERT_EMPTY");
+      }
     } finally {
       DBUtil.close(prepStmt);
     }
@@ -88,7 +90,6 @@ public class JournalDAO {
   public static void updateJournal(Connection con, JournalHeader journal)
       throws SQLException, CalendarException {
     PreparedStatement prepStmt = null;
-
     try {
       prepStmt = con.prepareStatement(UPDATE_JOURNAL);
       prepStmt.setString(1, journal.getName());
@@ -102,10 +103,11 @@ public class JournalDAO {
       prepStmt.setString(9, journal.getEndHour());
       prepStmt.setString(10, journal.getExternalId());
       prepStmt.setInt(11, new Integer(journal.getId()).intValue());
-      if (prepStmt.executeUpdate() == 0)
+      if (prepStmt.executeUpdate() == 0) {
         throw new CalendarException(
             "JournalDAO.Connection con,  updateJournal(Connection con, JournalHeader journal)",
             SilverpeasException.ERROR, "calendar.EX_EXCUTE_UPDATE_EMPTY");
+      }
     } finally {
       DBUtil.close(prepStmt);
     }
@@ -118,10 +120,11 @@ public class JournalDAO {
     try {
       prepStmt = con.prepareStatement(DELETE_JOURNAL);
       prepStmt.setInt(1, new Integer(id).intValue());
-      if (prepStmt.executeUpdate() == 0)
+      if (prepStmt.executeUpdate() == 0) {
         throw new CalendarException(
             "JournalDAO.Connection con,  removeJournal(Connection con, JournalHeader journal)",
             SilverpeasException.ERROR, "calendar.EX_EXCUTE_DELETE_EMPTY");
+      }
     } finally {
       DBUtil.close(prepStmt);
     }
@@ -178,44 +181,41 @@ public class JournalDAO {
     selectStatement.append("select distinct ").append(
         JournalDAO.JOURNALCOLUMNNAMES).append(
         " from CalendarJournal, CalendarJournalAttendee ");
-    if (categoryId != null)
-      selectStatement.append(", CalendarJournalCategory ");
-
-    selectStatement
-        .append(" where (CalendarJournal.id = CalendarJournalAttendee.journalId) ");
-    selectStatement.append(" and (userId = '").append(userId).append("'");
-    selectStatement.append(" and participationStatus = '")
-        .append(participation).append("') ");
     if (categoryId != null) {
-      selectStatement
-          .append(" and (CalendarJournal.id = CalendarJournalCategory.journalId) ");
-      selectStatement.append(" and (CalendarJournalCategory.categoryId = '")
-          .append(categoryId).append("') ");
+      selectStatement.append(", CalendarJournalCategory ");
     }
 
-    selectStatement.append(" and ((startDay ").append(comparator).append(" '")
-        .append(day).append("') or (startDay <= '").append(day).append(
+    selectStatement.append(" where (CalendarJournal.id = CalendarJournalAttendee.journalId) ");
+    selectStatement.append(" and (userId = '").append(userId).append("'");
+    selectStatement.append(" and participationStatus = '").append(participation).append("') ");
+    if (categoryId != null) {
+      selectStatement.append(" and (CalendarJournal.id = CalendarJournalCategory.journalId) ");
+      selectStatement.append(" and (CalendarJournalCategory.categoryId = '").append(categoryId).
+          append("') ");
+    }
+
+    selectStatement.append(" and ((startDay ").append(comparator).append(" '").append(day).append(
+        "') or (startDay <= '").append(day).append(
         "' and endDay >= '").append(day).append("')) ");
 
     if (participation.equals(ParticipationStatus.ACCEPTED)) {
       selectStatement.append("union ").append("select distinct ").append(
           JournalDAO.JOURNALCOLUMNNAMES).append(" from CalendarJournal ");
-      if (categoryId != null)
+      if (categoryId != null) {
         selectStatement.append(", CalendarJournalCategory ");
+      }
 
       selectStatement.append(" where (delegatorId = '").append(userId).append(
           "') ");
 
       if (categoryId != null) {
-        selectStatement
-            .append(" and (CalendarJournal.id = CalendarJournalCategory.journalId) ");
-        selectStatement.append(" and (CalendarJournalCategory.categoryId = '")
-            .append(categoryId).append("') ");
+        selectStatement.append(" and (CalendarJournal.id = CalendarJournalCategory.journalId) ");
+        selectStatement.append(" and (CalendarJournalCategory.categoryId = '").append(categoryId).
+            append("') ");
       }
 
-      selectStatement.append(" and ((startDay ").append(comparator)
-          .append(" '").append(day).append("') or (startDay <= '").append(day)
-          .append("' and endDay >= '").append(day).append("')) ");
+      selectStatement.append(" and ((startDay ").append(comparator).append(" '").append(day).append(
+          "') or (startDay <= '").append(day).append("' and endDay >= '").append(day).append("')) ");
     }
 
     selectStatement.append(" order by 7 , 8 "); // Modif PHiL -> Interbase
@@ -252,45 +252,59 @@ public class JournalDAO {
         participation, ">=");
   }
 
+  public static List<JournalHeader> getNextEventsForUser(Connection con,
+      String day, String userId, String classification, int limit, int offset)
+      throws SQLException, java.text.ParseException {
+
+    String DatabaseProductName = con.getMetaData().getDatabaseProductName().toUpperCase();
+    if (DatabaseProductName.contains("PostgreSQL".toUpperCase())) {
+      return getNextCalendarJournalForUser_PostgreSQL(con, day, userId, classification, limit,
+          offset);
+    } else if (DatabaseProductName.contains("oracle".toUpperCase())) {
+      return getNextCalendarJournalForUser_Oracle(con, day, userId, classification, limit,
+          offset);
+    } else //MSSQL
+    {
+      return getNextCalendarJournalForUser_MSSQL(con, day, userId, classification, limit,
+          offset);
+    }
+  }
+
   public static Collection<SchedulableCount> countMonthJournalsForUser(Connection con,
       String month, String userId, String categoryId, String participation)
       throws SQLException {
     StringBuffer selectStatement = new StringBuffer(200);
     String theDay = "";
-    selectStatement
-        .append("select count(distinct CalendarJournal.id), ? from CalendarJournal, CalendarJournalAttendee ");
-    if (categoryId != null)
-      selectStatement.append(", CalendarJournalCategory ");
-
-    selectStatement
-        .append("where (CalendarJournal.id = CalendarJournalAttendee.journalId) ");
-    selectStatement.append("and (userId = ").append(userId);
-    selectStatement.append(" and participationStatus = '")
-        .append(participation).append("')");
-    selectStatement
-        .append(" and ((startDay = ?) or ((startDay <= ?) and (endDay >= ?))) ");
+    selectStatement.append(
+        "select count(distinct CalendarJournal.id), ? from CalendarJournal, CalendarJournalAttendee ");
     if (categoryId != null) {
-      selectStatement
-          .append(" and (CalendarJournal.id = CalendarJournalCategory.journalId)");
-      selectStatement.append(" and (CalendarJournalCategory.categoryId = '")
-          .append(categoryId).append("') ");
+      selectStatement.append(", CalendarJournalCategory ");
+    }
+
+    selectStatement.append("where (CalendarJournal.id = CalendarJournalAttendee.journalId) ");
+    selectStatement.append("and (userId = ").append(userId);
+    selectStatement.append(" and participationStatus = '").append(participation).append("')");
+    selectStatement.append(" and ((startDay = ?) or ((startDay <= ?) and (endDay >= ?))) ");
+    if (categoryId != null) {
+      selectStatement.append(" and (CalendarJournal.id = CalendarJournalCategory.journalId)");
+      selectStatement.append(" and (CalendarJournalCategory.categoryId = '").append(categoryId).
+          append("') ");
     }
     selectStatement.append("group by ?");
 
     if (participation.equals(ParticipationStatus.ACCEPTED)) {
-      selectStatement
-          .append("union select count(distinct CalendarJournal.id), ? from CalendarJournal ");
-      if (categoryId != null)
+      selectStatement.append(
+          "union select count(distinct CalendarJournal.id), ? from CalendarJournal ");
+      if (categoryId != null) {
         selectStatement.append(", CalendarJournalCategory ");
+      }
       selectStatement.append("where (delegatorId = '").append(userId).append(
           "')");
-      selectStatement
-          .append(" and ((startDay = ?) or ((startDay <= ?) and (endDay >= ?)))");
+      selectStatement.append(" and ((startDay = ?) or ((startDay <= ?) and (endDay >= ?)))");
       if (categoryId != null) {
-        selectStatement
-            .append(" and (CalendarJournal.id = CalendarJournalCategory.journalId)");
-        selectStatement.append(" and (CalendarJournalCategory.categoryId = '")
-            .append(categoryId).append("') ");
+        selectStatement.append(" and (CalendarJournal.id = CalendarJournalCategory.journalId)");
+        selectStatement.append(" and (CalendarJournalCategory.categoryId = '").append(categoryId).
+            append("') ");
       }
       selectStatement.append("group by ?");
     }
@@ -304,10 +318,11 @@ public class JournalDAO {
       ResultSet rs = null;
       prepStmt = con.prepareStatement(selectStatement.toString());
       for (int day = 1; day == 31; day++) {
-        if (day < 10)
+        if (day < 10) {
           theDay = month + "0" + String.valueOf(day);
-        else
+        } else {
           theDay = month + String.valueOf(day);
+        }
         prepStmt.setString(1, theDay);
         prepStmt.setString(2, theDay);
         prepStmt.setString(3, theDay);
@@ -339,20 +354,18 @@ public class JournalDAO {
       String participation) throws SQLException, java.text.ParseException {
 
     StringBuffer selectStatement = new StringBuffer(200);
-    selectStatement.append("select distinct ").append(JournalDAO.COLUMNNAMES)
-        .append(" from CalendarJournal, CalendarJournalAttendee ");
-    if (categoryId != null)
+    selectStatement.append("select distinct ").append(JournalDAO.COLUMNNAMES).append(
+        " from CalendarJournal, CalendarJournalAttendee ");
+    if (categoryId != null) {
       selectStatement.append(", CalendarJournalCategory ");
+    }
 
-    selectStatement
-        .append(" where (CalendarJournal.id = CalendarJournalAttendee.journalId) ");
+    selectStatement.append(" where (CalendarJournal.id = CalendarJournalAttendee.journalId) ");
     selectStatement.append(" and (userId = '").append(userId).append("' ");
-    selectStatement.append(" and participationStatus = '")
-        .append(participation).append("') ");
+    selectStatement.append(" and participationStatus = '").append(participation).append("') ");
 
     if (categoryId != null) {
-      selectStatement
-          .append(" and (CalendarJournal.id = CalendarJournalCategory.journalId) ");
+      selectStatement.append(" and (CalendarJournal.id = CalendarJournalCategory.journalId) ");
       selectStatement.append(" and (categoryId = '").append(categoryId).append(
           "') ");
     }
@@ -361,25 +374,24 @@ public class JournalDAO {
         "' and startDay <= '").append(end).append("')");
     selectStatement.append(" or (endDay >= '").append(begin).append(
         "' and endDay <= '").append(end).append("')");
-    selectStatement.append(" or ('").append(begin)
-        .append("' >= startDay and '").append(begin).append("' <= endDay) ");
-    selectStatement.append(" or ('").append(end).append("' >= startDay and '")
-        .append(end).append("' <= endDay) ) ");
+    selectStatement.append(" or ('").append(begin).append("' >= startDay and '").append(begin).
+        append("' <= endDay) ");
+    selectStatement.append(" or ('").append(end).append("' >= startDay and '").append(end).append(
+        "' <= endDay) ) ");
 
     if (participation.equals(ParticipationStatus.ACCEPTED)) {
       selectStatement.append(" union select distinct ").append(
           JournalDAO.COLUMNNAMES).append(" from CalendarJournal ");
-      if (categoryId != null)
+      if (categoryId != null) {
         selectStatement.append(", CalendarJournalCategory ");
+      }
 
       selectStatement.append("where (delegatorId = '").append(userId).append(
           "') ");
 
       if (categoryId != null) {
-        selectStatement
-            .append(" and (CalendarJournal.id = CalendarJournalCategory.journalId) ");
-        selectStatement.append(" and (categoryId = '").append(categoryId)
-            .append("') ");
+        selectStatement.append(" and (CalendarJournal.id = CalendarJournalCategory.journalId) ");
+        selectStatement.append(" and (categoryId = '").append(categoryId).append("') ");
       }
       selectStatement.append(" and ( (startDay >= '").append(begin).append(
           "' and startDay <= '").append(end).append("')");
@@ -387,8 +399,8 @@ public class JournalDAO {
           "' and endDay <= '").append(end).append("')");
       selectStatement.append(" or ('").append(begin).append(
           "' >= startDay and '").append(begin).append("' <= endDay) ");
-      selectStatement.append(" or ('").append(end)
-          .append("' >= startDay and '").append(end).append("' <= endDay) ) ");
+      selectStatement.append(" or ('").append(end).append("' >= startDay and '").append(end).append(
+          "' <= endDay) ) ");
     }
     selectStatement.append(" order by 7 , 8 ");
     PreparedStatement prepStmt = null;
@@ -445,9 +457,9 @@ public class JournalDAO {
       prepStmt = con.prepareStatement(selectStatement);
       prepStmt.setInt(1, new Integer(journalId).intValue());
       rs = prepStmt.executeQuery();
-      if (rs.next())
+      if (rs.next()) {
         journal = getJournalHeaderFromResultSet(rs);
-      else {
+      } else {
         throw new CalendarException(
             "JournalDAO.Connection con, String journalId",
             SilverpeasException.ERROR, "calendar.EX_RS_EMPTY", "journalId="
@@ -548,5 +560,159 @@ public class JournalDAO {
     } finally {
       DBUtil.close(rs, prepStmt);
     }
+  }
+
+  private static List<JournalHeader> getNextCalendarJournalForUser_PostgreSQL(Connection con,
+      String day, String userId, String classification, int limit, int offset) throws SQLException,
+      java.text.ParseException {
+
+
+
+    String SelectNextEvents = "select distinct " + JournalDAO.JOURNALCOLUMNNAMES + " from CalendarJournal "
+        + " where  delegatorId = ? and endDay >= ? ";
+    int classificationIndex = 2, limitIndex = 3;
+    if (StringUtil.isDefined(classification)) {
+      SelectNextEvents = SelectNextEvents + " and classification = ? ";
+      classificationIndex++;
+      limitIndex++;
+    }
+    SelectNextEvents = SelectNextEvents + " order by 7 , 8 ";
+
+    if (limit > 0) {
+      SelectNextEvents = SelectNextEvents + "  limit  ?  offset  ? ";
+    }
+
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+
+    List<JournalHeader> list = null;
+    try {
+      prepStmt = con.prepareStatement(SelectNextEvents);
+      prepStmt.setString(1, userId);
+      prepStmt.setString(2, day);
+      if (classificationIndex == 3)//Classification para not null
+      {
+        prepStmt.setString(classificationIndex, classification);
+      }
+      if (limit > 0)//limit para >0 do the search with limit the result
+      {
+        prepStmt.setInt(limitIndex, limit);
+        prepStmt.setInt(limitIndex + 1, offset);
+      }
+
+      rs = prepStmt.executeQuery();
+
+      list = new ArrayList<JournalHeader>();
+
+      while (rs.next()) {
+        JournalHeader journal = getJournalHeaderFromResultSet(rs);
+        list.add(journal);
+      }
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+    return list;
+  }
+
+  private static List<JournalHeader> getNextCalendarJournalForUser_Oracle(Connection con,
+      String day, String userId, String classification, int limit, int offset) throws SQLException,
+      java.text.ParseException {
+
+
+    String SelectNextEventsOracle = " select * from (ROWNUM num , photos_oracle.* from (";
+    String SelectNextEvents = " select distinct " + JournalDAO.JOURNALCOLUMNNAMES + " from CalendarJournal "
+        + " where  delegatorId = ? and endDay >= ? ";
+    int classificationIndex = 2, limitIndex = 3;
+    if (StringUtil.isDefined(classification)) {
+      SelectNextEvents = SelectNextEvents + " and classification = ? ";
+      classificationIndex++;
+      limitIndex++;
+    }
+    SelectNextEvents = SelectNextEvents + " order by 7 , 8 ";
+
+    SelectNextEventsOracle = SelectNextEventsOracle + " " + SelectNextEvents;
+    if (limit > 0) {
+      SelectNextEventsOracle = SelectNextEventsOracle + "  ) photos_oracle) where num between ? and ? ";
+    }
+
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+
+    List<JournalHeader> list = null;
+    try {
+      prepStmt = con.prepareStatement(SelectNextEventsOracle);
+      prepStmt.setString(1, userId);
+      prepStmt.setString(2, day);
+      if (classificationIndex == 3)//Classification para not null
+      {
+        prepStmt.setString(classificationIndex, classification);
+      }
+      if (limit > 0)//limit para >0 do the search with limit the result
+      {
+        prepStmt.setInt(limitIndex, limit);
+        prepStmt.setInt(limitIndex + 1, offset + 1);//firstIndex=offset+1;
+      }
+
+      rs = prepStmt.executeQuery();
+
+      list = new ArrayList<JournalHeader>();
+
+      while (rs.next()) {
+        JournalHeader journal = getJournalHeaderFromResultSet(rs);
+        list.add(journal);
+      }
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+    return list;
+  }
+
+  private static List<JournalHeader> getNextCalendarJournalForUser_MSSQL(Connection con,
+      String day, String userId, String classification, int limit, int offset) throws SQLException,
+      java.text.ParseException {
+
+
+
+    String SelectNextEvents = "select distinct " + JournalDAO.JOURNALCOLUMNNAMES + " from CalendarJournal "
+        + " where  delegatorId = ? and endDay >= ? ";
+    int classificationIndex = 2;
+    if (StringUtil.isDefined(classification)) {
+      SelectNextEvents = SelectNextEvents + " and classification = ? ";
+      classificationIndex++;
+
+    }
+    SelectNextEvents = SelectNextEvents + " order by 7 , 8 ";
+
+
+
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+
+    List<JournalHeader> list = null;
+    try {
+      prepStmt = con.prepareStatement(SelectNextEvents);
+      prepStmt.setString(1, userId);
+      prepStmt.setString(2, day);
+      if (classificationIndex == 3)//Classification para not null
+      {
+        prepStmt.setString(classificationIndex, classification);
+      }
+
+
+      rs = prepStmt.executeQuery();
+
+      list = new ArrayList<JournalHeader>();
+      int index = 0;
+      while (rs.next()) {
+        // limit the searche
+        if (index > offset && index <= limit + offset) {
+          JournalHeader journal = getJournalHeaderFromResultSet(rs);
+          list.add(journal);
+        }
+      }
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+    return list;
   }
 }

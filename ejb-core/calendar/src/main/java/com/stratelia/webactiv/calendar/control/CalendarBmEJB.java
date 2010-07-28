@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 // TODO : reporter dans CVS (done)
 package com.stratelia.webactiv.calendar.control;
 
@@ -168,8 +167,7 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
 
   public Collection<ToDoHeader> getExternalTodos(String spaceId, String componentId,
       String externalId) throws RemoteException {
-    SilverTrace
-        .info(
+    SilverTrace.info(
         "calendar",
         "getExternalTodos(String spaceId, String componentId, String externalId)",
         "root.MSG_GEN_ENTER_METHOD", "space=" + spaceId + ", component="
@@ -226,16 +224,20 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
     SilverTrace.info("calendar", "CalendarBmEJB. updateToDo(ToDoHeader todo)",
         "root.MSG_GEN_ENTER_METHOD");
 
-    if (todo.getName() == null)
+    if (todo.getName() == null) {
       throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
           "calendar.EX_PARAM_NULL");
-    if (todo.getDelegatorId() == null)
+    }
+    if (todo.getDelegatorId() == null) {
       throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
           "calendar.EX_PARAM_NULL");
-    if ((todo.getEndDate() != null) && (todo.getStartDate() != null))
-      if (todo.getStartDate().compareTo(todo.getEndDate()) > 0)
+    }
+    if ((todo.getEndDate() != null) && (todo.getStartDate() != null)) {
+      if (todo.getStartDate().compareTo(todo.getEndDate()) > 0) {
         throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
             "calendar.EX_DATE_FIN_ERROR");
+      }
+    }
 
     Connection con = getConnection();
     try {
@@ -258,16 +260,20 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
   public String addToDo(ToDoHeader todo) throws RemoteException {
     SilverTrace.info("calendar", "CalendarBmEJB. addToDo(ToDoHeader todo)",
         "root.MSG_GEN_ENTER_METHOD");
-    if (todo.getName() == null)
+    if (todo.getName() == null) {
       throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
           "calendar.EX_PARAM_NULL");
-    if (todo.getDelegatorId() == null)
+    }
+    if (todo.getDelegatorId() == null) {
       throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
           "calendar.EX_PARAM_NULL");
-    if ((todo.getEndDate() != null) && (todo.getStartDate() != null))
-      if (todo.getStartDate().compareTo(todo.getEndDate()) > 0)
+    }
+    if ((todo.getEndDate() != null) && (todo.getStartDate() != null)) {
+      if (todo.getStartDate().compareTo(todo.getEndDate()) > 0) {
         throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
             "calendar.EX_DATE_FIN_ERROR");
+      }
+    }
 
     Connection con = getConnection();
     try {
@@ -377,13 +383,12 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
   public Collection<JournalHeader> getPeriodSchedulablesForUser(String begin, String end,
       String userId, String categoryId, String participation)
       throws RemoteException {
-    SilverTrace
-        .info(
-            "calendar",
-            "CalendarBmEJB. getPeriodSchedulablesForUser(String begin,String end,String userId,String categoryId,String participation)",
-            "root.MSG_GEN_ENTER_METHOD", "begin=" + begin + ", end=" + end
-                + ", userId=" + userId + ", categoryId=" + categoryId
-                + ", participation=" + participation);
+    SilverTrace.info(
+        "calendar",
+        "CalendarBmEJB. getPeriodSchedulablesForUser(String begin,String end,String userId,String categoryId,String participation)",
+        "root.MSG_GEN_ENTER_METHOD", "begin=" + begin + ", end=" + end
+        + ", userId=" + userId + ", categoryId=" + categoryId
+        + ", participation=" + participation);
     Connection con = getConnection();
     try {
       return JournalDAO.getPeriodJournalHeadersForUser(con, begin, end, userId, categoryId,
@@ -399,13 +404,12 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
 
   public Collection<SchedulableCount> countMonthSchedulablesForUser(String month, String userId,
       String categoryId, String participation) throws RemoteException {
-    SilverTrace
-        .info(
-            "calendar",
-            "CalendarBmEJB.countMonthSchedulablesForUser(String month,String userId,String categoryId,String participation)",
-            "root.MSG_GEN_ENTER_METHOD", "month=" + month + ", userId="
-                + userId + ", categoryId=" + categoryId + ", participation="
-                + participation);
+    SilverTrace.info(
+        "calendar",
+        "CalendarBmEJB.countMonthSchedulablesForUser(String month,String userId,String categoryId,String participation)",
+        "root.MSG_GEN_ENTER_METHOD", "month=" + month + ", userId="
+        + userId + ", categoryId=" + categoryId + ", participation="
+        + participation);
     Connection con = getConnection();
     try {
       return JournalDAO.countMonthJournalsForUser(con, month, userId, categoryId, participation);
@@ -421,37 +425,47 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
   /**
    * methods for journal
    */
-
   public String addJournal(JournalHeader journal) throws RemoteException {
     SilverTrace.info("calendar",
         "CalendarBmEJB.addJournal(JournalHeader journal)",
         "root.MSG_GEN_ENTER_METHOD");
     // verify the journal attributes are correctly set
-    if (journal.getName() == null)
+    if (journal.getName() == null) {
       throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
           "calendar.EX_PARAM_NULL", "name");
-    if (journal.getStartDate() == null)
+    }
+    if (journal.getStartDate() == null) {
       throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
           "calendar.EX_PARAM_NULL", "startDate");
-    if (journal.getDelegatorId() == null)
+    }
+    if (journal.getDelegatorId() == null) {
       throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
           "calendar.EX_PARAM_NULL", "delegatorId");
-    if (journal.getStartDate().compareTo(journal.getEndDate()) > 0)
+    }
+    if (journal.getStartDate().compareTo(journal.getEndDate()) > 0) {
       throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
           "calendar.EX_DATE_FIN_ERROR");
-    if (journal.getStartHour() != null)
-      if (journal.getEndHour() == null)
+    }
+    if (journal.getStartHour() != null) {
+      if (journal.getEndHour() == null) {
         throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
             "calendar.EX_PARAM_NULL", "endHour");
-    if (journal.getEndHour() != null)
-      if (journal.getStartHour() == null)
+      }
+    }
+    if (journal.getEndHour() != null) {
+      if (journal.getStartHour() == null) {
         throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
             "calendar.EX_PARAM_NULL", "startHour");
-    if (journal.getStartDate().compareTo(journal.getEndDate()) == 0)
-      if (journal.getStartHour() != null)
-        if (journal.getStartHour().compareTo(journal.getEndHour()) > 0)
+      }
+    }
+    if (journal.getStartDate().compareTo(journal.getEndDate()) == 0) {
+      if (journal.getStartHour() != null) {
+        if (journal.getStartHour().compareTo(journal.getEndHour()) > 0) {
           throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
               "calendar.EX_HOUR_FIN_ERRORR");
+        }
+      }
+    }
 
     // write in DB
     Connection con = getConnection();
@@ -482,31 +496,42 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
         "CalendarBmEJB.updateJournal(JournalHeader journal)",
         "root.MSG_GEN_ENTER_METHOD");
     // verify the journal attributes are correctly set
-    if (journal.getName() == null)
+    if (journal.getName() == null) {
       throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
           "calendar.EX_PARAM_NULL", "name");
-    if (journal.getStartDate() == null)
+    }
+    if (journal.getStartDate() == null) {
       throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
           "calendar.EX_PARAM_NULL", "startDate");
-    if (journal.getDelegatorId() == null)
+    }
+    if (journal.getDelegatorId() == null) {
       throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
           "calendar.EX_PARAM_NULL", "delegatorId");
-    if (journal.getStartDate().compareTo(journal.getEndDate()) > 0)
+    }
+    if (journal.getStartDate().compareTo(journal.getEndDate()) > 0) {
       throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
           "calendar.EX_DATE_FIN_ERROR");
-    if (journal.getStartHour() != null)
-      if (journal.getEndHour() == null)
+    }
+    if (journal.getStartHour() != null) {
+      if (journal.getEndHour() == null) {
         throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
             "calendar.EX_PARAM_NULL", "endHour");
-    if (journal.getEndHour() != null)
-      if (journal.getStartHour() == null)
+      }
+    }
+    if (journal.getEndHour() != null) {
+      if (journal.getStartHour() == null) {
         throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
             "calendar.EX_PARAM_NULL", "startHour");
-    if (journal.getStartDate().compareTo(journal.getEndDate()) == 0)
-      if (journal.getStartHour() != null)
-        if (journal.getStartHour().compareTo(journal.getEndHour()) > 0)
+      }
+    }
+    if (journal.getStartDate().compareTo(journal.getEndDate()) == 0) {
+      if (journal.getStartHour() != null) {
+        if (journal.getStartHour().compareTo(journal.getEndHour()) > 0) {
           throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
               "calendar.EX_HOUR_FIN_ERRORR");
+        }
+      }
+    }
 
     Connection con = getConnection();
     try {
@@ -613,8 +638,7 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
 
   public Collection<JournalHeader> getExternalJournalHeadersForUserAfterDate(String userId,
       java.util.Date startDate) throws RemoteException {
-    SilverTrace
-        .info(
+    SilverTrace.info(
         "calendar",
         "CalendarBmEJB.getOutlookJournalHeadersForUserAfterDate(String userId, Date startDate)",
         "root.MSG_GEN_ENTER_METHOD", "outlookId=" + userId);
@@ -640,11 +664,10 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
 
   public Collection<JournalHeader> getJournalHeadersForUserAfterDate(String userId,
       java.util.Date startDate, int nbReturned) throws RemoteException {
-    SilverTrace
-        .info(
-            "calendar",
-            "CalendarBmEJB.getJournalHeadersForUserAfterDate(String userId, Date startDate, int nbReturned)",
-            "root.MSG_GEN_ENTER_METHOD", "userId=" + userId);
+    SilverTrace.info(
+        "calendar",
+        "CalendarBmEJB.getJournalHeadersForUserAfterDate(String userId, Date startDate, int nbReturned)",
+        "root.MSG_GEN_ENTER_METHOD", "userId=" + userId);
     Connection con = getConnection();
     try {
       return JournalDAO.getJournalHeadersForUserAfterDate(con, userId, startDate, nbReturned);
@@ -689,8 +712,7 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
 
   public void removeJournalAttendee(String journalId, Attendee attendee)
       throws RemoteException {
-    SilverTrace
-        .info(
+    SilverTrace.info(
         "calendar",
         "CalendarBmEJB.removeJournalAttendee(String journalId,Attendee attendee)",
         "root.MSG_GEN_ENTER_METHOD");
@@ -700,8 +722,7 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
       try {
         removeIndex(getJournalHeader(journalId), attendee.getUserId());
       } catch (Exception e) {
-        SilverTrace
-            .warn(
+        SilverTrace.warn(
             "calendar",
             "CalendarBmEJB.removeJournalAttendee(String journalId,Attendee attendee)",
             "root.EX_INDEX_FAILED", "", e);
@@ -747,41 +768,46 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
     // search for element to remove
     for (Attendee attendee : current) {
       boolean toRemove = true;
-      if (userIds != null)
+      if (userIds != null) {
         for (int i = 0; i < userIds.length; i++) {
-          if (userIds[i].equals(attendee.getUserId()))
+          if (userIds[i].equals(attendee.getUserId())) {
             toRemove = false;
+          }
         }
-      if (toRemove)
+      }
+      if (toRemove) {
         removeJournalAttendee(journalId, new Attendee(attendee.getUserId()));
+      }
     }
     // search for element to add
-    if (userIds != null)
+    if (userIds != null) {
       for (int i = 0; i < userIds.length; i++) {
         boolean toAdd = true;
         for (Attendee attendee : current) {
-          if (userIds[i].equals(attendee.getUserId()))
+          if (userIds[i].equals(attendee.getUserId())) {
             toAdd = false;
+          }
         }
         if (toAdd) {
           Attendee attendee;
-          if (userIds[i].equals(journalHeader.getDelegatorId()))
+          if (userIds[i].equals(journalHeader.getDelegatorId())) {
             attendee = new Attendee(userIds[i], ParticipationStatus.ACCEPTED);
-          else
+          } else {
             attendee = new Attendee(userIds[i]);
+          }
           addJournalAttendee(journalId, attendee);
         }
       }
+    }
   }
 
   public void setJournalParticipationStatus(String journalId, String userId,
       String participation) throws RemoteException {
-    SilverTrace
-        .info(
-            "calendar",
-            "CalendarBmEJB.setJournalParticipationStatus(String journalId,String userId,String participation)",
-            "root.MSG_GEN_ENTER_METHOD", "journalId=" + journalId + ", userId="
-                + userId + ", participation=" + participation);
+    SilverTrace.info(
+        "calendar",
+        "CalendarBmEJB.setJournalParticipationStatus(String journalId,String userId,String participation)",
+        "root.MSG_GEN_ENTER_METHOD", "journalId=" + journalId + ", userId="
+        + userId + ", participation=" + participation);
     Attendee attendee = new Attendee(userId, participation);
     Connection con = getConnection();
     try {
@@ -827,8 +853,7 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
       try {
         removeIndex(getToDoHeader(todoId), attendee.getUserId());
       } catch (Exception e) {
-        SilverTrace
-            .warn(
+        SilverTrace.warn(
             "calendar",
             "CalendarBmEJB.removeToDoAttendee(String todoId,Attendee attendee)",
             "root.EX_INDEX_FAILED", "", e);
@@ -872,27 +897,32 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
     // search for element to remove
     for (Attendee attendee : current) {
       boolean toRemove = true;
-      if (userIds != null)
+      if (userIds != null) {
         for (int i = 0; i < userIds.length; i++) {
-          if (userIds[i].equals(attendee.getUserId()))
+          if (userIds[i].equals(attendee.getUserId())) {
             toRemove = false;
+          }
         }
-      if (toRemove)
+      }
+      if (toRemove) {
         removeToDoAttendee(todoId, new Attendee(attendee.getUserId()));
+      }
     }
     // search for element to add
-    if (userIds != null)
+    if (userIds != null) {
       for (int i = 0; i < userIds.length; i++) {
         boolean toAdd = true;
         for (Attendee attendee : current) {
-          if (userIds[i].equals(attendee.getUserId()))
+          if (userIds[i].equals(attendee.getUserId())) {
             toAdd = false;
+          }
         }
         if (toAdd) {
           Attendee attendee = new Attendee(userIds[i]);
           addToDoAttendee(todoId, attendee);
         }
       }
+    }
   }
 
   /**
@@ -952,8 +982,7 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
 
   public void removeJournalCategory(String journalId, String categoryId)
       throws RemoteException {
-    SilverTrace
-        .info(
+    SilverTrace.info(
         "calendar",
         "CalendarBmEJB.removeJournalCategory(String journalId,String categoryId)",
         "root.MSG_GEN_ENTER_METHOD", "journalId=" + journalId
@@ -991,8 +1020,7 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
 
   public void setJournalCategories(String journalId, String[] categoryIds)
       throws RemoteException {
-    SilverTrace
-        .info(
+    SilverTrace.info(
         "calendar",
         "CalendarBmEJB.setJournalCategories(String journalId,String[] categoryIds)",
         "root.MSG_GEN_ENTER_METHOD");
@@ -1000,25 +1028,31 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
     // search for element to remove
     for (Category category : current) {
       boolean toRemove = true;
-      if (categoryIds != null)
+      if (categoryIds != null) {
         for (int i = 0; i < categoryIds.length; i++) {
-          if (categoryIds[i].equals(category.getId()))
+          if (categoryIds[i].equals(category.getId())) {
             toRemove = false;
+          }
         }
-      if (toRemove)
+      }
+      if (toRemove) {
         removeJournalCategory(journalId, category.getId());
+      }
     }
     // search for element to add
-    if (categoryIds != null)
+    if (categoryIds != null) {
       for (int i = 0; i < categoryIds.length; i++) {
         boolean toAdd = true;
         for (Category category : current) {
-          if (categoryIds[i].equals(category.getId()))
+          if (categoryIds[i].equals(category.getId())) {
             toAdd = false;
+          }
         }
-        if (toAdd)
+        if (toAdd) {
           addJournalCategory(journalId, categoryIds[i]);
+        }
       }
+    }
   }
 
   /**
@@ -1053,8 +1087,9 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
     } finally {
       try {
         DBUtil.close(rs, prepStmt);
-        if (con != null)
+        if (con != null) {
           con.close();
+        }
       } catch (SQLException se) {
         SilverTrace.warn("calendar", "CalendarBmEJB.indexAllTodo()",
             "root.EX_RESOURCE_CLOSE_FAILED", "", se);
@@ -1215,8 +1250,9 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
     } finally {
       try {
         DBUtil.close(rs, prepStmt);
-        if (con != null)
+        if (con != null) {
           con.close();
+        }
       } catch (SQLException se) {
         SilverTrace.warn("calendar", "CalendarBmEJB.indexAllJournal()",
             "root.EX_RESOURCE_CLOSE_FAILED", "", se);
@@ -1229,12 +1265,13 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
   private void createIndex(Schedulable detail, String userId) {
     try {
       FullIndexEntry indexEntry = null;
-      if (detail instanceof ToDoHeader)
+      if (detail instanceof ToDoHeader) {
         indexEntry = new FullIndexEntry("user@" + userId + "_todo", "todo",
             detail.getId());
-      else
+      } else {
         indexEntry = new FullIndexEntry("user@" + userId + "_agenda", "agenda",
             detail.getId());
+      }
       indexEntry.setTitle(detail.getName());
       indexEntry.setPreView(detail.getDescription());
       indexEntry.setCreationUser(detail.getDelegatorId());
@@ -1255,12 +1292,12 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
 
   private IndexEntryPK getIndexEntry(Schedulable detail, String userId) {
     IndexEntryPK indexEntry = null;
-    if (detail instanceof ToDoHeader)
-      indexEntry = new IndexEntryPK("user@" + userId + "_todo", "todo", detail
-          .getId());
-    else
+    if (detail instanceof ToDoHeader) {
+      indexEntry = new IndexEntryPK("user@" + userId + "_todo", "todo", detail.getId());
+    } else {
       indexEntry = new IndexEntryPK("user@" + userId + "_agenda", "agenda",
           detail.getId());
+    }
     return indexEntry;
   }
 
@@ -1296,5 +1333,30 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
       throws javax.ejb.EJBException, java.rmi.RemoteException {
     // Debug.debug(700, "CalendarBmEJB.setSessionContext()", "enter", null,
     // null);
+  }
+
+  /**
+   * Method for getting the next events of userId ,the result is limited
+   * @param String day, String userId, String classification, int limit, int offset
+   * @return Collection
+   */
+  @Override
+  public List<JournalHeader> getNextEventsForUser(String day, String userId, String classification,
+      int limit, int offset) throws RemoteException {
+
+    SilverTrace.info("calendar",
+        "CalendarBmEJB.getNextEventsForUser(String id)",
+        "root.MSG_GEN_ENTER_METHOD", "day=" + day + "userId=" + userId
+        + "Classification=" + classification + "limit=" + limit + "offset=" + offset);
+    Connection con = getConnection();
+    try {
+      return JournalDAO.getNextEventsForUser(con, day, userId, classification, limit, offset);
+    } catch (Exception e) {
+      throw new CalendarRuntimeException(
+          "CalendarBmEJB.getNextEventsForUser(String day,String userId,String classification,int limit, int offset)",
+          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_JOURNALS", e);
+    } finally {
+      freeConnection(con);
+    }
   }
 }
