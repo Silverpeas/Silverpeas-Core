@@ -328,18 +328,18 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
   function pdcAxisSearch(axisId)
   {
   	currentValuePath="/0/";
-  	var query = getContext()+"/RpdcSearch/jsp/showaxishfromhomepage?AxisId="+axisId+"&ValueId="+currentValuePath;
+  	var query = getContext()+"/RpdcSearch/jsp/AdvancedSearch?mode=clear&ShowResults=1&searchType=2&AxisId="+axisId+"&ValueId="+currentValuePath;
   	if (isPDCContextual())
-  		query += "&component_id="+currentComponentId+"&space_id="+currentSpaceId;
+  		query += "&componentSearch="+currentComponentId+"&spaces="+currentSpaceId;
   	
   	parent.MyMain.location.href=query;
   }
   
   function pdcValueSearch(valuePath)
   {
-	  var query = getContext()+"/RpdcSearch/jsp/showaxishfromhomepage?AxisId="+currentAxisId+"&ValueId="+valuePath;
+	  var query = getContext()+"/RpdcSearch/jsp/AdvancedSearch?mode=clear&ShowResults=1&searchType=2&AxisId="+currentAxisId+"&ValueId="+valuePath;
 	  if (isPDCContextual())
-		  query += "&component_id="+currentComponentId+"&space_id="+currentSpaceId;
+		  query += "&componentSearch="+currentComponentId+"&spaces="+currentSpaceId;
 	  
 	  parent.MyMain.location.href=query;
   }
