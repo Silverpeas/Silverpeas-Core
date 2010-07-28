@@ -147,8 +147,24 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-  
+
   <build>
     <finalName>war-core</finalName>
+    <testResources>
+      <testResource>
+	<directory>${basedir}/src/test/resources</directory>
+	<excludes>
+	  <exclude>*.jpg</exclude>
+	</excludes>
+	<filtering>true</filtering>
+      </testResource>
+      <testResource>
+	<directory>${basedir}/src/test/resources</directory>
+	<includes>
+	  <include>*.jpg</include>
+	</includes>
+	<filtering>false</filtering>
+      </testResource>
+    </testResources>
   </build>
 </project>
