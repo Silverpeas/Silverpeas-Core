@@ -24,128 +24,105 @@
 
 --%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ page isELIgnored="false"%>
+<%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
+<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<c:set var="componentId" value="${requestScope.componentId}" />
+<c:set var="sessionController" value="${requestScope.SILVERMAIL}" />
+<c:set var="from" value="${param.from}" />
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+<c:set var="notif" value="${requestScope.SendedNotification}"/>
 <%
-  response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
-  response.setHeader("Pragma", "no-cache"); //HTTP 1.0
-  response.setDateHeader("Expires", -1); //prevents caching at the proxy server
+      response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+      response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+      response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
-<%@ include file="graphicBox.jsp"%>
-<%@ include file="checkSilvermail.jsp"%>
-<%@ page
-	import="com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessage"%>
-<%@ page import="com.stratelia.webactiv.util.DateUtil"%>
-<%@ page import="java.util.Date"%>
-
-<%
-  String from = request.getParameter("from");
-  boolean fromHomePage = "homePage".equals(from);
-  SendedNotificationDetail notif = (SendedNotificationDetail) request.getAttribute("SendedNotification");
-%>
-<%@page	import="com.stratelia.silverpeas.notificationManager.model.SendedNotificationDetail"%>
 <html>
-<head>
-  <title>___/ Silverpeas - Corporate Portal Organizer
-  \________________________________________________________________________</title>
-  <%
-    out.println(gef.getLookStyleSheet());
-  %>
-  <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+  <head>
+    <title>___/ Silverpeas - Corporate Portal Organizer
+      \________________________________________________________________________</title>
+      <view:looknfeel />
+    <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>
 
-  <script type="text/javascript" >
-    function deleteMessage( notifId )
-    {
-      window.opener.location = "DeleteSendedNotification.jsp?NotifId=" + notifId;
-      window.close();
-    }
+    <script type="text/javascript" >
+      function deleteMessage( notifId )
+      {
+        window.opener.location = "DeleteSendedNotification.jsp?NotifId=" + notifId;
+        window.close();
+      }
 
-    function goTo()
-    {
-      window.opener.location = "<%=m_context%>" + "<%=notif.getLink()%>";
-      window.close();
-    }
+      function goTo()
+      {
+        window.opener.location="<c:url value="${notif.link}"/>";
+        window.close();
+      }
 
-    function closeWindow()
-    {
-      <%if (fromHomePage) {%>
-          window.opener.location.reload();
-      <%} else {%>
-          window.opener.location = "SendedUserNotifications.jsp";
-      <%}%>
-      window.close();
-    }
-  </script>
-</head>
-<BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5>
-<%
-  Window window = gef.getWindow();
-  BrowseBar browseBar = window.getBrowseBar();
-  browseBar.setComponentName(silvermailScc.getString("silverMail"));
-  browseBar.setPath(silvermailScc.getString("message"));
-  out.println(window.printBefore());
-  //Instanciation du cadre avec le view generator
-  Frame frame = gef.getFrame();
-  out.println(frame.printBefore());
-%>
-
-<CENTER>
-<table CELLPADDING=0 CELLSPACING=2 BORDER=0 WIDTH="98%" CLASS=intfdcolor>
-	<tr>
-		<td CLASS=intfdcolor4 NOWRAP>
-		<table CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%">
-			<form name="silvermailForm" Action="" Method="POST">
-			<tr>
-				<td valign="baseline" align=left class="txtlibform"><%=silvermailScc.getString("date")%>
-				:&nbsp;</td>
-				<td align=left valign="baseline"><%=EncodeHelper.javaStringToHtmlString(resource
-					.getOutputDate(notif.getNotifDate()))%></td>
-			</tr>
-			<tr>
-				<td valign="baseline" align=left class="txtlibform"><%=silvermailScc.getString("source")%>
-				:&nbsp;</td>
-				<td align=left valign="baseline"><%=EncodeHelper.javaStringToHtmlString(notif.getSource())%></td>
-			</tr>
-			<tr>
-				<td valign="baseline" align=left class="txtlibform"><%=silvermailScc.getString("url")%>
-				:&nbsp;</td>
-				<td align=left valign="baseline">
-				<%
-				  if (notif.getLink() != null && notif.getLink().length() > 0)
-								out.println("<A HREF =\"javaScript:goTo();\"><img src=\""
-										+ resource.getIcon("silvermail.link")
-										+ "\" border=\"0\"></A>");
-							else
-								out.println("");
-				%>
-				</td>
-			</tr>
-			<tr>
-				<td valign="baseline" align=left class="txtlibform"><%=silvermailScc.getString("title")%>
-				:&nbsp;</td>
-				<td align=left valign="baseline"><%=EncodeHelper.javaStringToHtmlString(notif.getTitle())%></td>
-			</tr>
-			<tr>
-				<td valign="baseline" align=left class="txtlibform"></td>
-				<td align=left valign="baseline"><%=EncodeHelper.javaStringToHtmlParagraphe(notif.getBody())%></td>
-			</tr>
-			</form>
-		</table>
-		</td>
-	</tr>
-</table>
-<%=separator%> <%
-   ButtonPane buttonPane = gef.getButtonPane();
- 			buttonPane.addButton((Button) gef.getFormButton(silvermailScc
- 					.getString("delete"), "javascript:onClick=deleteMessage("
- 					+ notif.getNotifId() + ");", false));
- 			buttonPane.addButton((Button) gef.getFormButton(silvermailScc
- 					.getString("close"), "javascript:onClick=closeWindow();",
- 					false));
- 			out.println(buttonPane.print());
- %>
-</CENTER>
-<%
-  out.println(frame.printAfter());
-			out.println(window.printAfter());
-%>
-</BODY>
-</HTML>
+      function closeWindow()
+      {
+      <c:choose>
+        <c:when test="${'homePage' eq from}">window.opener.location.reload();</c:when>
+        <c:otherwise>window.opener.location="SendedUserNotifications.jsp";</c:otherwise>
+      </c:choose>
+          window.close();
+        }
+    </script>
+  </head>
+  <body marginwidth="5" marginheight="5" leftmargin="5" topmargin="5">
+    <fmt:message key="silverMail" var="browseLabel" />
+    <view:browseBar>
+      <view:browseBarElt link="" label="${browseLabel}" />
+      <view:browseBarElt link="" label="${notif.title}" />
+    </view:browseBar>
+    <view:window>
+      <view:frame>
+        <center>
+          <table cellpadding="2" cellspacing="0" border="0" width="98%" class="intfdcolor">
+            <tr>
+              <td class="intfdcolor4" NOWRAP>
+                <table CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%">
+                  <form name="silvermailForm" Action="" Method="POST">
+                    <tr>
+                      <td valign="baseline" align=left class="txtlibform"><fmt:message key="date"/>:&nbsp;</td>
+                      <td align=left valign="baseline"><fmt:formatDate value="${notif.notifDate}" pattern="dd/MM/yyyy HH:mm:ss" /></td>
+                    </tr>
+                    <tr>
+                      <td valign="baseline" align=left class="txtlibform"><fmt:message key="source"/>:&nbsp;</td>
+                      <td align=left valign="baseline"><c:out value="${notif.source}" /></td>
+                    </tr>
+                    <tr>
+                      <td valign="baseline" align=left class="txtlibform"><fmt:message key="url"/>:&nbsp;</td>
+                      <td align=left valign="baseline">
+                        <c:if test="${!empty notif.link}">
+                          <fmt:message key="silvermail.link" bundle="${icons}" var="icon_url" />
+                          <a href="javaScript:goTo();"><img src="<c:url value="${icon_url}"/>" border="0"/></a>
+                          </c:if>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td valign="baseline" align=left class="txtlibform"><fmt:message key="title"/>:&nbsp;</td>
+                      <td align=left valign="baseline"><c:out value="${notif.title}" /></td>
+                    </tr>
+                    <tr>
+                      <td valign="baseline" align=left class="txtlibform"></td>
+                      <td align=left valign="baseline"><c:out value="${notif.body}" /></td>
+                    </tr>
+                  </form>
+                </table>
+              </td>
+            </tr>
+          </table>
+          <table cellpadding="2" cellspacing="0" border="0"><tr><td><img src="<c:url value="/util/icons/colorPix/1px.gif" />"/></td></tr></table>
+                <fmt:message var="closeLabel" key="close" />
+                <c:set var="deleteAction">javascript:onClick=deleteMessage(<c:out value="${notif.notifId}"/>);</c:set>
+          <fmt:message var="deleteLabel" key="delete" />
+          <table cellpadding="2" cellspacing="0" border="0"><tr><td>
+                <view:button label="${deleteLabel}" action="${deleteAction}"/></td>
+              <td><view:button label="${closeLabel}" action="javascript:onClick=closeWindow();"/></td></tr></table>
+        </center>
+      </view:frame>
+    </view:window>
+  </body>
+</html>

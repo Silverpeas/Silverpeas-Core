@@ -234,5 +234,10 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
   public void setCurrentMessageId(long value) {
     currentMessageId = value;
   }
+  
+  
+  public SILVERMAILMessage getCurrentMessage() throws SILVERMAILException {
+    return  SILVERMAILPersistence.getMessage(currentMessageId);
+  }
 
 }
