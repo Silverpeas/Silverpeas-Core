@@ -422,10 +422,6 @@ public class ContainerManager extends Object implements java.io.Serializable {
       tempAsso = new Hashtable();
       // Fetch the results
       while (resSet.next()) {
-        /*
-         * s_asAssoInstanceId.add(new Integer(resSet.getInt(1)));
-         * s_asAssoComponentId.add(resSet.getString(2));
-         */
         tempAsso.put(resSet.getString(2), Integer.toString(resSet.getInt(1)));
       }
     } catch (Exception e) {
@@ -847,10 +843,10 @@ public class ContainerManager extends Object implements java.io.Serializable {
       resSet = prepStmt.executeQuery();
 
       // Fetch the results
-      ArrayList alFilteredPositions = new ArrayList();
+      List<Integer> alFilteredPositions = new ArrayList<Integer>();
 
       while (resSet.next()) {
-        alFilteredPositions.add(new Integer(resSet.getInt(1)));
+        alFilteredPositions.add(Integer.valueOf(resSet.getInt(1)));
       }
 
       return alFilteredPositions;

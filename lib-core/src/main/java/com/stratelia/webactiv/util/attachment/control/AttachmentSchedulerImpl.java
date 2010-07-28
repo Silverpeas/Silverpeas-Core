@@ -106,11 +106,9 @@ public class AttachmentSchedulerImpl implements SchedulerEventHandler {
     long now = new Date().getTime();
 
     String resultActifyPath = resources.getString("ActifyPathResult");
-    int delayBeforeProcess = new Integer(resources
-        .getString("DelayBeforeProcess")).intValue();
+    int delayBeforeProcess = Integer.parseInt(resources.getString("DelayBeforeProcess"));
 
-    File folderToAnalyse = new File(FileRepositoryManager.getTemporaryPath()
-        + resultActifyPath);
+    File folderToAnalyse = new File(FileRepositoryManager.getTemporaryPath() + resultActifyPath);
     File[] elementsList = folderToAnalyse.listFiles();
 
     // List all folders in Actify
@@ -126,9 +124,8 @@ public class AttachmentSchedulerImpl implements SchedulerEventHandler {
       if (element.isDirectory()
           && (lastModified + delayBeforeProcess * 1000 * 60 < now)
           && dirName.substring(0, 2).equals("a_")) {
-        componentId = dirName.substring(dirName.indexOf("_") + 1, dirName
-            .lastIndexOf("_"));
-        attachmentId = dirName.substring(dirName.lastIndexOf("_") + 1);
+        componentId = dirName.substring(dirName.indexOf('_') + 1, dirName.lastIndexOf('_'));
+        attachmentId = dirName.substring(dirName.lastIndexOf('_') + 1);
 
         String detailPathToAnalyse = element.getAbsolutePath();
         SilverTrace.info("Attachment",
@@ -172,8 +169,7 @@ public class AttachmentSchedulerImpl implements SchedulerEventHandler {
    * @throws Exception
    */
   public synchronized void doPurgeActify(Date date) throws Exception {
-    int delayBeforePurge = new Integer(resources.getString("DelayBeforePurge"))
-        .intValue();
+    int delayBeforePurge = Integer.parseInt(resources.getString("DelayBeforePurge"));
     long now = new Date().getTime();
 
     File folderToAnalyse = new File(FileRepositoryManager.getTemporaryPath()

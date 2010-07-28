@@ -264,7 +264,7 @@ public class AttachmentDAO {
         prepStmt.setString(17, DateUtil.date2SQLDate(attach.getExpiryDate()));
       }
       prepStmt.setString(18, attach.getXmlForm());
-      prepStmt.setInt(19, new Integer(attach.getPK().getId()).intValue());
+      prepStmt.setInt(19, Integer.parseInt(attach.getPK().getId()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -324,7 +324,7 @@ public class AttachmentDAO {
       attachDetail = null;
 
       prepStmt = con.prepareStatement(selectQuery.toString());
-      prepStmt.setInt(1, new Integer(pk.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(pk.getId()));
 
       rs = prepStmt.executeQuery();
       if (rs.next()) {
@@ -667,7 +667,7 @@ public class AttachmentDAO {
           + " where attachmentId = ? ";
 
       prepStmt = con.prepareStatement(deleteQuery);
-      prepStmt.setInt(1, new Integer(pk.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(pk.getId()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);

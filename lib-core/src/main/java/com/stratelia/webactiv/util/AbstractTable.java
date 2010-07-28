@@ -510,7 +510,7 @@ public abstract class AbstractTable {
       // more then one row !
       throw new UtilException("AbstractTable.getInteger", "Not unique row !");
     }
-    return new Integer(result);
+    return Integer.valueOf(result);
   }
 
   protected int insertRow(String insertQuery, Object row) throws UtilException {

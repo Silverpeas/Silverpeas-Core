@@ -139,8 +139,7 @@ public class Admin extends Object {
       m_sWaProductionUser = resources.getString("WaProductionUser");
       m_sWaProductionPswd = resources.getString("WaProductionPswd");
 
-      m_nEntrepriseClientSpaceId =
-          new Integer(resources.getString("EntrepriseClientSpaceId")).intValue();
+      m_nEntrepriseClientSpaceId = Integer.parseInt(resources.getString("EntrepriseClientSpaceId"));
       m_sAdministratorEMail = resources.getString("AdministratorEMail");
       m_sDAPIGeneralAdminId = resources.getString("DAPIGeneralAdminId");
 

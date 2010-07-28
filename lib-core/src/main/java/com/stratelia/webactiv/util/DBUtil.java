@@ -260,9 +260,7 @@ public class DBUtil {
       if (rs.next()) {
         maxFromTable = rs.getInt(1);
       }
-      maxFromTable = maxFromTable + 1;
-      return maxFromTable;
-      // maxIdManager.put(tableName, new Integer(maxFromTable));
+      return maxFromTable + 1;
     } finally {
       close(rs, prepStmt);
     }

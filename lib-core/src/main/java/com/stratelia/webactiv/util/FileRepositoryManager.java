@@ -342,17 +342,16 @@ public class FileRepositoryManager extends Object {
    * @return String
    */
   static public String getFileDownloadTime(long size) {
-    int fileSizeReference = new Integer(uploadSettings
-        .getString("FileSizeReference")).intValue();
-    int theoricDownloadTime = new Integer(uploadSettings
-        .getString("DownloadTime")).intValue();
+    int fileSizeReference = Integer.parseInt(uploadSettings.getString("FileSizeReference"));
+    int theoricDownloadTime = Integer.parseInt(uploadSettings.getString("DownloadTime"));
     long fileDownloadEstimation = ((size * theoricDownloadTime) / fileSizeReference) / 60;
-    if (fileDownloadEstimation < 1)
+    if (fileDownloadEstimation < 1) {
       return "t < 1 min";
-    else if ((fileDownloadEstimation >= 1) && (fileDownloadEstimation < 5))
+    } 
+    if ((fileDownloadEstimation >= 1) && (fileDownloadEstimation < 5)) {
       return "1 < t < 5 mins";
-    else
-      return " t > 5 mins";
+    }
+    return " t > 5 mins";
   }
 
   /**

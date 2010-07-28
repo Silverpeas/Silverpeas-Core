@@ -628,7 +628,7 @@ public class ContentManager extends Object implements java.io.Serializable {
               "(silverContentId, internalContentId, contentInstanceid, authorId, creationDate, beginDate, endDate, isVisible) ";
       sSQLStatement += "VALUES (" + newSilverContentId + ",'"
           + sInternalContentId + "'," + nContentInstanceId + ","
-          + new Integer(sAuthorId).intValue() + ",?, ? , ? , ? )";
+          + Integer.parseInt(sAuthorId) + ",?, ? , ? , ? )";
 
       // Execute the insertion
       SilverTrace.info("contentManager", "ContentManager.addSilverContent",
@@ -772,14 +772,13 @@ public class ContentManager extends Object implements java.io.Serializable {
         sInternalContentId = documentFeature.get(i);
         sComponentId = documentFeature.get(i + 1);
         // Get the SilverContentId
-        silverContentId = getSilverContentId(stmt, sInternalContentId,
-            sComponentId, true);
+        silverContentId = getSilverContentId(stmt, sInternalContentId, sComponentId, true);
 
         // add the result into the sortedSet
         if (silverContentId != -1) {
           // le composant dont instanceId et objectId courant
           // fait partie du PDC
-          alSilverContentId.add(new Integer(silverContentId));
+          alSilverContentId.add(Integer.valueOf(silverContentId));
         }
 
       }
@@ -821,7 +820,7 @@ public class ContentManager extends Object implements java.io.Serializable {
    */
   public String getInternalContentId(int nSilverContentId)
       throws ContentManagerException {
-    String sSilverContentId = new Integer(nSilverContentId).toString();
+    String sSilverContentId = String.valueOf(nSilverContentId);
     String sInternalContentId = getInternalContentIdFromCache(sSilverContentId);
     if (sInternalContentId == null) {
       Connection connection = null;
@@ -968,14 +967,11 @@ public class ContentManager extends Object implements java.io.Serializable {
 
       // Fetch the results
       while (resSet.next()) {
-        // s_asAssoInstanceId.add(new Integer(resSet.getInt(1)));
-        // s_asAssoComponentId.add(resSet.getString(2));
-        tempAsso.put(resSet.getString(2), Integer.toString(resSet.getInt(1)));
+        tempAsso.put(resSet.getString(2), String.valueOf(resSet.getInt(1)));
       }
     } catch (Exception e) {
       throw new ContentManagerException("ContentManager.loadAsso",
-          SilverpeasException.ERROR, "contentManager.EX_CANT_LOAD_ASSO_CACHE",
-          "", e);
+          SilverpeasException.ERROR, "contentManager.EX_CANT_LOAD_ASSO_CACHE", "", e);
     } finally {
       DBUtil.close(resSet, prepStmt);
       try {
@@ -1114,15 +1110,14 @@ public class ContentManager extends Object implements java.io.Serializable {
 
       // Fetch the result
       while (resSet.next()) {
-        allSilverContentIds.add(new Integer(resSet.getInt(1)));
+        allSilverContentIds.add(Integer.valueOf(resSet.getInt(1)));
       }
 
       return allSilverContentIds;
     } catch (Exception e) {
       throw new ContentManagerException(
           "ContentManager.getSilverContentIdByInstanceId",
-          SilverpeasException.ERROR, "contentManager.EX_CANT_GET_INSTANCEID",
-          "", e);
+          SilverpeasException.ERROR, "contentManager.EX_CANT_GET_INSTANCEID", "", e);
     } finally {
       DBUtil.close(resSet, prepStmt);
       closeConnection(con);

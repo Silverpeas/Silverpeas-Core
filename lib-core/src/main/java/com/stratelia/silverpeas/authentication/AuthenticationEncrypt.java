@@ -36,12 +36,12 @@ public class AuthenticationEncrypt implements EncryptionInterface {
   public String encode(String stringToEncode) {
     SilverTrace.info("authentication", "AuthenticationEncrypt.encode()",
         "root.MSG_PARAM_ENTER_METHOD", "stringToEncode=" + stringToEncode);
-    StringBuffer hashString = new StringBuffer();
+    StringBuilder hashString = new StringBuilder();
     char[] uniqueKey = stringToEncode.toCharArray();
     for (int i = 0; i < uniqueKey.length; ++i) {
       String carInt = new Integer(uniqueKey[i] * 3).toString();
       String lg = new Integer(carInt.length()).toString();
-      hashString.append(lg + carInt);
+      hashString.append(lg).append(carInt);
     }
     hashString.reverse();
     SilverTrace.info("authentication", "AuthenticationEncrypt.encode()",
@@ -60,13 +60,12 @@ public class AuthenticationEncrypt implements EncryptionInterface {
     int pos = 0;
     String reverseEncodedText = new StringBuffer(encodedText).reverse()
         .toString();
-    StringBuffer hashString = new StringBuffer();
+    StringBuilder hashString = new StringBuilder();
     for (int i = 0; i + pos < reverseEncodedText.length(); i++) {
-      lg = new Integer(reverseEncodedText.substring(i + pos, i + pos + 1))
-          .intValue();
+      lg = Integer.parseInt(reverseEncodedText.substring(i + pos, i + pos + 1));
       String car = reverseEncodedText.substring(i + pos + 1, i + pos + 1 + lg);
       pos = pos + lg;
-      hashString.append((char) (new Integer(car).intValue() / 3));
+      hashString.append((char) (Integer.parseInt(car) / 3));
     }
     SilverTrace.info("authentication", "AuthenticationEncrypt.decode()",
         "root.MSG_PARAM_EXIT_METHOD", "decodedString=" + hashString.toString());
@@ -92,12 +91,12 @@ public class AuthenticationEncrypt implements EncryptionInterface {
     prand = asciiChar_string;
 
     int sPos = new Double(Math.floor(prand.length() / 5)).intValue();
-    StringBuffer stringMult = new StringBuffer();
+    StringBuilder stringMult = new StringBuilder();
     stringMult.append(prand.charAt(sPos)).append(prand.charAt(sPos * 2))
         .append(prand.charAt(sPos * 3)).append(prand.charAt(sPos * 4)).append(
         prand.charAt(sPos * 5));
 
-    int mult = new Integer(stringMult.toString()).intValue();
+    int mult = Integer.parseInt(stringMult.toString());
 
     int incr = Math.round(key.length() / 2);
     double modu = Math.pow(2, 127) - 1;
@@ -111,7 +110,7 @@ public class AuthenticationEncrypt implements EncryptionInterface {
 
     int dec_chrInt;
 
-    StringBuffer hashString = new StringBuffer();
+    StringBuilder hashString = new StringBuilder();
     for (int i = 0; i < str.length(); i += 2) {
       dec_chrInt = Integer.parseInt(str.substring(i, i + 2), 16)
           ^ new Double(Math.floor((prandInt / modu) * 255)).intValue();
@@ -120,8 +119,9 @@ public class AuthenticationEncrypt implements EncryptionInterface {
     }
     decStr = hashString.toString();
     String decStrFinal = decStr;
-    if (extraCrypt)
+    if (extraCrypt) {
       decStrFinal = decode(decStr);
+    }
     return decStrFinal;
   }
 }

@@ -730,11 +730,11 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
             .getAttachmentContext(context));
         int nodeId = 0;
         if (fatherId == null) {
-          nodeId = new Integer(fatherId).intValue();
+          nodeId = Integer.parseInt(fatherId);
         }
         valret = FileServerUtils.getUrl(pk.getSpace(), pk.getComponentName(),
-            userId, logicalName, physicalName, type, true, new Integer(
-            foreignKey.getId()).intValue(), nodeId, theContext);
+            userId, logicalName, physicalName, type, true, Integer.parseInt(
+            foreignKey.getId()), nodeId, theContext);
         SilverTrace.info("attachment",
             "AttachmentDetail.getAttachmentURLToMemorize",
             "root.MSG_GEN_PARAM_VALUE",
