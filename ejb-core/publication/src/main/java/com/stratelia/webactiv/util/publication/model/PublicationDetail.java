@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.publication.model;
 
 import java.io.Serializable;
@@ -65,7 +64,6 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     Serializable {
 
   private static final long serialVersionUID = 9199848912262605680L;
-
   private PublicationPK pk;
   private String infoId;
   private String name;
@@ -92,29 +90,22 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   private String targetValidatorId;
   private String cloneId;
   private String cloneStatus;
-
   private String silverObjectId; // added for the components - PDC integration
   private String iconUrl;
-
   // added for the taglib
   private InfoDetail infoDetail = null;
   private List<XMLField> xmlFields = null;
-
   // added for indexation
   private int indexOperation = IndexManager.ADD;
-
   // added for import/export
   private boolean statusMustBeChecked = true;
   private boolean updateDateMustBeSet = true;
-
-  // ajouté pour les statistiques
+  // ajoutÃ© pour les statistiques
   private int nbAccess = 0;
-
   private boolean notYetVisible = false;
   private boolean noMoreVisible = false;
   private Date beginDateAndHour = null;
   private Date endDateAndHour = null;
-
   // added for export component
   public static final String DRAFT = "Draft";
   public static final String VALID = "Valid";
@@ -123,7 +114,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public static final String CLONE = "Clone";
 
   /**
-   * Constructeur par défaut: nécéssaire au mapping castor du module d'importExport
+   * Constructeur par dÃ©faut: nÃ©cÃ©ssaire au mapping castor du module d'importExport
    */
   public PublicationDetail() {
   }
@@ -537,17 +528,20 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   }
 
   public String getName(String lang) {
-    if (!I18NHelper.isI18N)
+    if (!I18NHelper.isI18N) {
       return getName();
+    }
 
     PublicationI18N p = (PublicationI18N) getTranslations().get(lang);
-    if (p == null)
+    if (p == null) {
       p = (PublicationI18N) getNextTranslation();
+    }
 
-    if (p != null)
+    if (p != null) {
       return p.getName();
-    else
+    } else {
       return getName();
+    }
   }
 
   public void setName(String name) {
@@ -562,17 +556,20 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   }
 
   public String getDescription(String lang) {
-    if (!I18NHelper.isI18N)
+    if (!I18NHelper.isI18N) {
       return getDescription();
+    }
 
     PublicationI18N p = (PublicationI18N) getTranslations().get(lang);
-    if (p == null)
+    if (p == null) {
       p = (PublicationI18N) getNextTranslation();
+    }
 
-    if (p != null)
+    if (p != null) {
       return p.getDescription();
-    else
+    } else {
       return getDescription();
+    }
   }
 
   public void setDescription(String description) {
@@ -652,17 +649,20 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   }
 
   public String getKeywords(String lang) {
-    if (!I18NHelper.isI18N)
+    if (!I18NHelper.isI18N) {
       return getKeywords();
+    }
 
     PublicationI18N p = (PublicationI18N) getTranslations().get(lang);
-    if (p == null)
+    if (p == null) {
       p = (PublicationI18N) getNextTranslation();
+    }
 
-    if (p != null)
+    if (p != null) {
       return p.getKeywords();
-    else
+    } else {
       return getKeywords();
+    }
   }
 
   public String getContent() {
@@ -697,16 +697,13 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     StringBuffer result = new StringBuffer();
     result.append("PublicationDetail {").append("\n");
     if (getPK() != null) {
-      result.append("  getPK().getId() = ").append(getPK().getId())
-          .append("\n");
+      result.append("  getPK().getId() = ").append(getPK().getId()).append("\n");
       result.append("  getPK().getEd() = ").append(getPK().getSpace()).append(
           "\n");
-      result.append("  getPK().getCo() = ").append(getPK().getComponentName())
-          .append("\n");
+      result.append("  getPK().getCo() = ").append(getPK().getComponentName()).append("\n");
     }
     result.append("  getName() = ").append(getName()).append("\n");
-    result.append("  getDescription() = ").append(getDescription())
-        .append("\n");
+    result.append("  getDescription() = ").append(getDescription()).append("\n");
     result.append("  getCreationDate() = ").append(getCreationDate()).append(
         "\n");
     result.append("  getBeginDate() = ").append(getBeginDate()).append("\n");
@@ -728,8 +725,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
         "\n");
     result.append("  getValidatorId()  = ").append(getValidatorId()).append(
         "\n");
-    result.append("  getSilverObjectId()  = ").append(getSilverObjectId())
-        .append("\n");
+    result.append("  getSilverObjectId()  = ").append(getSilverObjectId()).append("\n");
     result.append("  getAuthor()  = ").append(getAuthor()).append("\n");
     result.append("}");
     return result.toString();
@@ -780,7 +776,6 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   }
 
   // methods to be implemented by SilverContentInterface
-
   public String getURL() {
     return "searchResult?Type=Publication&Id=" + getId();
   }
@@ -794,10 +789,11 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   }
 
   public String getDate() {
-    if (getUpdateDate() != null)
+    if (getUpdateDate() != null) {
       return DateUtil.date2SQLDate(getUpdateDate());
-    else
+    } else {
       return DateUtil.date2SQLDate(getCreationDate());
+    }
   }
 
   public String getSilverCreationDate() {
@@ -848,8 +844,9 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
 
     String fieldName = params[0];
     String language = null;
-    if (params.length > 1)
+    if (params.length > 1) {
       language = params[1];
+    }
 
     String fieldValue = "";
 
@@ -865,18 +862,16 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
           } else {
             if (fieldValue.startsWith("image_")
                 || fieldValue.startsWith("file_")) {
-              String attachmentId = fieldValue.substring(fieldValue
-                  .indexOf("_") + 1, fieldValue.length());
+              String attachmentId = fieldValue.substring(fieldValue.indexOf("_") + 1, fieldValue.
+                  length());
               if (attachmentId != null && attachmentId.length() > 0
                   && !attachmentId.equals("null")) {
-                AttachmentDetail attachment = AttachmentController
-                    .searchAttachmentByPK(new AttachmentPK(attachmentId,
+                AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(
+                    attachmentId,
                     "useless", getPK().getInstanceId()));
                 if (attachment != null) {
-                  attachment
-                      .setLogicalName(attachment.getLogicalName(language));
-                  attachment.setPhysicalName(attachment
-                      .getPhysicalName(language));
+                  attachment.setLogicalName(attachment.getLogicalName(language));
+                  attachment.setPhysicalName(attachment.getPhysicalName(language));
                   attachment.setType(attachment.getType(language));
                   fieldValue = attachment.getWebURL();
                 }
@@ -884,8 +879,8 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
                 fieldValue = "";
               }
             } else if (fieldValue.startsWith(WysiwygFCKFieldDisplayer.dbKey)) {
-              fieldValue = WysiwygFCKFieldDisplayer.getContentFromFile(getPK()
-                  .getInstanceId(), getPK().getId(), fieldName, language);
+              fieldValue = WysiwygFCKFieldDisplayer.getContentFromFile(getPK().getInstanceId(), getPK().
+                  getId(), fieldName, language);
             } else {
               fieldValue = EncodeHelper.javaStringToHtmlParagraphe(fieldValue);
             }
@@ -909,8 +904,8 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     FormTemplateBm formTemplateBm = null;
     if (formTemplateBm == null) {
       try {
-        FormTemplateBmHome formTemplateBmHome = (FormTemplateBmHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.FORMTEMPLATEBM_EJBHOME,
+        FormTemplateBmHome formTemplateBmHome = (FormTemplateBmHome) EJBUtilitaire.getEJBObjectRef(
+            JNDINames.FORMTEMPLATEBM_EJBHOME,
             FormTemplateBmHome.class);
         formTemplateBm = formTemplateBmHome.create();
       } catch (Exception e) {
@@ -924,7 +919,6 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   }
 
   /****************************************************************************************/
-
   public InfoDetail getInfoDetail() {
     if (infoDetail == null) {
       try {
@@ -944,8 +938,9 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     StringBuffer content = new StringBuffer();
 
     InfoDetail infoDetail = getInfoDetail();
-    if (infoDetail != null)
+    if (infoDetail != null) {
       allInfoText = infoDetail.getInfoTextList();
+    }
 
     if (allInfoText != null) {
       Iterator<InfoTextDetail> it = allInfoText.iterator();
@@ -963,13 +958,14 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     String fieldContent = "";
     InfoDetail infoDetail = getInfoDetail();
     ArrayList<InfoTextDetail> allInfoText = null;
-    if (infoDetail != null)
+    if (infoDetail != null) {
       allInfoText = (ArrayList<InfoTextDetail>) infoDetail.getInfoTextList();
+    }
 
     if (allInfoText != null) {
-      if (fieldIndex < allInfoText.size())
-        fieldContent = (allInfoText.get(fieldIndex))
-            .getContent();
+      if (fieldIndex < allInfoText.size()) {
+        fieldContent = (allInfoText.get(fieldIndex)).getContent();
+      }
     }
     return fieldContent;
   }
@@ -979,12 +975,14 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     InfoDetail infoDetail = getInfoDetail();
     ArrayList<InfoImageDetail> allInfoImage = null;
 
-    if (infoDetail != null)
+    if (infoDetail != null) {
       allInfoImage = (ArrayList<InfoImageDetail>) infoDetail.getInfoImageList();
+    }
 
     if (allInfoImage != null) {
-      if (fieldIndex < allInfoImage.size())
+      if (fieldIndex < allInfoImage.size()) {
         infoImageDetail = allInfoImage.get(fieldIndex);
+      }
     }
     return infoImageDetail;
   }
@@ -992,24 +990,26 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public Map<String, String> getImageMappedUrl(int fieldIndex) {
     Map<String, String> imageMappedURL = null;
     InfoImageDetail infoImageDetail = getImage(fieldIndex);
-    if (infoImageDetail != null)
+    if (infoImageDetail != null) {
       imageMappedURL = infoImageDetail.getMappedUrl();
+    }
     return imageMappedURL;
   }
 
   public String getImageUrl(int fieldIndex) {
     String imageURL = null;
     InfoImageDetail infoImageDetail = getImage(fieldIndex);
-    if (infoImageDetail != null)
+    if (infoImageDetail != null) {
       imageURL = infoImageDetail.getWebURL();
+    }
     return imageURL;
   }
 
   public PublicationBm getPublicationBm() {
     if (publicationBm == null) {
       try {
-        PublicationBmHome publicationBmHome = (PublicationBmHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+        PublicationBmHome publicationBmHome = (PublicationBmHome) EJBUtilitaire.getEJBObjectRef(
+            JNDINames.PUBLICATIONBM_EJBHOME,
             PublicationBmHome.class);
         publicationBm = publicationBmHome.create();
       } catch (Exception e) {
@@ -1023,21 +1023,22 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   }
 
   public Collection<AttachmentDetail> getAttachments() {
-    if (getPK() == null)
+    if (getPK() == null) {
       SilverTrace.info("publication", "PublicationDetail.getAttachments()",
           "root.MSG_GEN_ENTER_METHOD", "getPK() is null !");
-    else
+    } else {
       SilverTrace.info("publication", "PublicationDetail.getAttachments()",
           "root.MSG_GEN_ENTER_METHOD", "getPK() is not null !");
+    }
 
     String ctx = "Images";
 
-    AttachmentPK foreignKey = new AttachmentPK(getPK().getId(), getPK()
-        .getSpace(), getPK().getComponentName());
+    AttachmentPK foreignKey = new AttachmentPK(getPK().getId(), getPK().getSpace(), getPK().
+        getComponentName());
     SilverTrace.info("publication", "PublicationDetail.getAttachments()",
         "root.MSG_GEN_PARAM_VALUE", "foreignKey = " + foreignKey.toString());
-    Collection<AttachmentDetail> attachmentList = AttachmentController
-        .searchAttachmentByPKAndContext(foreignKey, ctx);
+    Collection<AttachmentDetail> attachmentList = AttachmentController.
+        searchAttachmentByPKAndContext(foreignKey, ctx);
     SilverTrace.info("publication", "PublicationDetail.getAttachments()",
         "root.MSG_GEN_PARAM_VALUE", "attachmentList.size() = "
         + attachmentList.size());
@@ -1047,14 +1048,13 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public String getWysiwyg() {
     String wysiwygContent = null;
     try {
-      wysiwygContent = WysiwygController.loadFileAndAttachment(getPK()
-          .getSpace(), getPK().getComponentName(), getPK().getId());
+      wysiwygContent = WysiwygController.loadFileAndAttachment(getPK().getSpace(), getPK().
+          getComponentName(), getPK().getId());
     } catch (Exception e) {
       wysiwygContent = "Erreur lors du chargement du wysiwyg !";
     }
     return wysiwygContent;
   }
-
   private PublicationBm publicationBm = null;
 
   public void setImportance(int importance) {
@@ -1115,8 +1115,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   }
 
   public boolean haveGotClone() {
-    return (cloneId != null && !"-1".equals(cloneId) && !"null".equals(cloneId) && cloneId
-        .length() > 0);
+    return (cloneId != null && !"-1".equals(cloneId) && !"null".equals(cloneId) && cloneId.length() > 0);
   }
 
   public boolean isClone() {
@@ -1221,4 +1220,11 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     return VALID.equals(this.status);
   }
 
+  public boolean equals(Object o) {
+    if (o instanceof PublicationDetail) {
+      PublicationDetail anotherPublication = (PublicationDetail) o;
+      return this.pk.equals(anotherPublication.getPK());
+    }
+    return false;
+  }
 }

@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.publication.ejb;
 
 import java.sql.Connection;
@@ -35,12 +34,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.publication.socialNetwork.SocialInformationPublication;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
@@ -48,8 +50,7 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
-import java.util.HashMap;
-import java.util.Map;
+import com.stratelia.webactiv.util.publication.model.PublicationWithStatus;
 
 /**
  * This is the Publication Data Access Object.
@@ -73,20 +74,14 @@ public class PublicationDAO {
   private static final String publicationTableName = "SB_Publication_Publi";
   private static final String publicationFatherTableName = "SB_Publication_PubliFather";
   private static final String nodeTableName = "SB_Node_Node";
-
   private static final String UPDATE_PUBLICATION =
       "UPDATE SB_Publication_Publi SET infoId = ?, "
-          +
-          "pubName = ?, pubDescription = ?, pubCreationDate = ?, pubBeginDate = ?, pubEndDate = ?, "
-          +
-          "pubCreatorId = ?, pubImportance = ?, pubVersion = ?, pubKeywords = ?, pubContent = ?, "
-          +
-          "pubStatus = ?, pubImage = ?, pubImageMimeType = ?, pubUpdateDate = ?, pubUpdaterId = ?, "
-          +
-          "instanceId = ?, pubValidatorId = ?, pubValidateDate = ?, pubBeginHour = ?, pubEndHour = ?, "
-          +
-          "pubAuthor = ?, pubTargetValidatorId = ?, pubCloneId = ?, pubCloneStatus = ?, lang = ? " +
-          "WHERE pubId = ? ";
+      + "pubName = ?, pubDescription = ?, pubCreationDate = ?, pubBeginDate = ?, pubEndDate = ?, "
+      + "pubCreatorId = ?, pubImportance = ?, pubVersion = ?, pubKeywords = ?, pubContent = ?, "
+      + "pubStatus = ?, pubImage = ?, pubImageMimeType = ?, pubUpdateDate = ?, pubUpdaterId = ?, "
+      + "instanceId = ?, pubValidatorId = ?, pubValidateDate = ?, pubBeginHour = ?, pubEndHour = ?, "
+      + "pubAuthor = ?, pubTargetValidatorId = ?, pubCloneId = ?, pubCloneStatus = ?, lang = ? "
+      + "WHERE pubId = ? ";
 
   /**
    * This class must not be instanciated
@@ -284,15 +279,12 @@ public class PublicationDAO {
       selectStatement.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
       selectStatement.append(
           "( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
-      selectStatement
-          .append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
-      selectStatement
-          .append(
+      selectStatement.append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
+      selectStatement.append(
           "( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour AND ? < P.pubEndHour )");
       selectStatement.append(" ) ");
       selectStatement.append(" and (N.nodePath like '").append(fatherPath).append("/").append(
-          fatherPK.
-          getId()).append("%' or N.nodeId = ").append(fatherPK.getId()).append(")");
+          fatherPK.getId()).append("%' or N.nodeId = ").append(fatherPK.getId()).append(")");
 
       PreparedStatement prepStmt = null;
       ResultSet rs = null;
@@ -356,10 +348,8 @@ public class PublicationDAO {
       selectStatement.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
       selectStatement.append(
           "( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
-      selectStatement
-          .append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
-      selectStatement
-          .append(
+      selectStatement.append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
+      selectStatement.append(
           "( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour AND ? < P.pubEndHour )");
       selectStatement.append(" ) ");
     }
@@ -438,8 +428,7 @@ public class PublicationDAO {
     insertStatement.append(
         " instanceId, pubUpdaterId, pubValidateDate, pubValidatorId, pubBeginHour, pubEndHour,");
     insertStatement.append(" pubAuthor, pubTargetValidatorId, pubCloneId, pubCloneStatus, lang) ");
-    insertStatement
-        .append(
+    insertStatement.append(
         " values ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ?, ? , ? , ? , ? , ? , ? , ? , ?)");
     PreparedStatement prepStmt = null;
 
@@ -596,7 +585,7 @@ public class PublicationDAO {
       primary = new PublicationPK(detail.getPK().getId(), primaryKey);
       primary.pubDetail = detail;
     }
-    
+
     return primary;
   }
 
@@ -692,8 +681,7 @@ public class PublicationDAO {
       } catch (java.text.ParseException e) {
         throw new SQLException(
             "PublicationDAO : resultSet2PublicationDetail() : internal error : updateDate format unknown for publication.pk = "
-                +
-                pk + " : " + e.toString());
+            + pk + " : " + e.toString());
       }
     } else {
       updateDate = creationDate;
@@ -713,8 +701,7 @@ public class PublicationDAO {
     } catch (java.text.ParseException e) {
       throw new SQLException(
           "PublicationDAO : resultSet2PublicationDetail() : internal error : validateDate format unknown for publication.pk = "
-              +
-              pk + " : " + e.toString());
+          + pk + " : " + e.toString());
     }
     String validatorId = rs.getString(20);
 
@@ -924,14 +911,11 @@ public class PublicationDAO {
     }
 
     StringBuilder selectStatement = new StringBuilder(128);
-    selectStatement
-        .append(
+    selectStatement.append(
         "select  distinct P.pubId, P.infoId, P.pubName, P.pubDescription, P.pubCreationDate, P.pubBeginDate, ");
-    selectStatement
-        .append(
+    selectStatement.append(
         "         P.pubEndDate, P.pubCreatorId, P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, ");
-    selectStatement
-        .append(
+    selectStatement.append(
         "		 P.pubStatus, P.pubImage, P.pubImageMimeType, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, F.puborder ");
     selectStatement.append("from ").append(pubPK.getTableName()).append(" P, ").append(pubPK.
         getTableName()).append("Father F ");
@@ -942,10 +926,8 @@ public class PublicationDAO {
       selectStatement.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
       selectStatement.append(
           "( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
-      selectStatement
-          .append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
-      selectStatement
-          .append(
+      selectStatement.append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
+      selectStatement.append(
           "( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour AND ? < P.pubEndHour )");
       selectStatement.append(" ) ");
     }
@@ -1077,14 +1059,11 @@ public class PublicationDAO {
     List<PublicationDetail> list = new ArrayList<PublicationDetail>();
     if (componentIds != null && componentIds.size() > 0) {
       StringBuilder selectStatement = new StringBuilder(128);
-      selectStatement
-          .append(
+      selectStatement.append(
           "select  distinct P.pubId, P.infoId, P.pubName, P.pubDescription, P.pubCreationDate, P.pubBeginDate, ");
-      selectStatement
-          .append(
+      selectStatement.append(
           "         P.pubEndDate, P.pubCreatorId, P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, ");
-      selectStatement
-          .append(
+      selectStatement.append(
           "		 P.pubStatus, P.pubImage, P.pubImageMimeType, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang ");
       selectStatement.append("from ").append(publicationTableName).append(
           " P, ").append(publicationTableName).append("Father F ");
@@ -1094,10 +1073,8 @@ public class PublicationDAO {
       selectStatement.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
       selectStatement.append(
           "( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
-      selectStatement
-          .append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
-      selectStatement
-          .append(
+      selectStatement.append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
+      selectStatement.append(
           "( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour AND ? < P.pubEndHour )");
       selectStatement.append(" ) ");
       selectStatement.append(" and F.pubId = P.pubId ");
@@ -1179,10 +1156,8 @@ public class PublicationDAO {
       selectStatement.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
       selectStatement.append(
           "( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
-      selectStatement
-          .append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
-      selectStatement
-          .append(
+      selectStatement.append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
+      selectStatement.append(
           "( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour AND ? < P.pubEndHour )");
       selectStatement.append(" ) ");
       selectStatement.append(" and F.pubId = P.pubId ");
@@ -1359,14 +1334,12 @@ public class PublicationDAO {
       Connection con, PublicationPK pubPK, String status, String fatherId,
       int fetchSize) throws SQLException {
 
-    Collection<PublicationDetail> thisLastPublis = getLastPublis(pubPK.
-        getComponentName());
+    Collection<PublicationDetail> thisLastPublis = getLastPublis(pubPK.getComponentName());
     if (thisLastPublis != null) {
       return thisLastPublis;
     } else {
       String selectStatement = QueryStringFactory.
-          getSelectByBeginDateDescAndStatusAndNotLinkedToFatherId(pubPK.
-          getTableName());
+          getSelectByBeginDateDescAndStatusAndNotLinkedToFatherId(pubPK.getTableName());
 
       PreparedStatement prepStmt = null;
       ResultSet rs = null;
@@ -1624,8 +1597,7 @@ public class PublicationDAO {
       throws SQLException {
     StringBuilder selectStatement = new StringBuilder(128);
     selectStatement.append("select * from ").append(pubPK.getTableName()).append(" P, ").append(
-        pubPK.
-        getTableName()).append("Father F ");
+        pubPK.getTableName()).append("Father F ");
     selectStatement.append(" where P.instanceId = ? ");
     selectStatement.append(" and F.pubId = P.pubId ");
     selectStatement.append(" AND (F.nodeId = ").append(nodeId);
@@ -1931,5 +1903,158 @@ public class PublicationDAO {
     } finally {
       DBUtil.close(rs, prepStmt);
     }
+  }
+
+  /**
+   * Method
+   * @param
+   * @throws SQLException
+   * */
+  public static List<SocialInformationPublication> getAllPublicationsIDbyUserid(Connection con,
+      String userId, int firstIndex, int nbElement) throws SQLException {
+    String DatabaseProductName = con.getMetaData().getDatabaseProductName().toUpperCase();
+    if (DatabaseProductName.contains("PostgreSQL".toUpperCase())) {
+      return getAllPublicationsIDbyUserid_PostgreSQL(con, userId, firstIndex, nbElement);
+
+    } else if (DatabaseProductName.contains("oracle".toUpperCase())) {
+      return getAllPublicationsIDbyUserid_Oracle(con, userId, firstIndex, nbElement);
+    } else //MSSQL
+    {
+      return getAllPublicationsIDbyUserid_MMSQL(con, userId, firstIndex, nbElement);
+    }
+  }
+
+  /**
+   * Method  return SocialInformationPublication list whene the data base is PostgreSQL
+   * @param
+   * @throws SQLException
+   * */
+  public static List<SocialInformationPublication> getAllPublicationsIDbyUserid_PostgreSQL(
+      Connection con,
+      String userId, int firstIndex, int nbElement) throws SQLException {
+    List<SocialInformationPublication> listPublications = new ArrayList<SocialInformationPublication>();
+
+    String query = "(SELECT pubcreationdate AS dateinformation, pubid, 'false' as type  FROM sb_publication_publi  WHERE pubcreatorid = ? and pubstatus = 'Valid')"
+        + "UNION (SELECT  pubupdatedate AS dateinformation, pubid, 'true' as type FROM sb_publication_publi  WHERE  pubupdaterid = ? and pubstatus = 'Valid')"
+        + "ORDER BY dateinformation DESC, type DESC limit ? offset ? ";
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      prepStmt = con.prepareStatement(query);
+      prepStmt.setString(1, userId);
+      prepStmt.setString(2, userId);
+      prepStmt.setInt(3, nbElement);
+      prepStmt.setInt(4, firstIndex);
+      rs = prepStmt.executeQuery();
+      while (rs.next()) {
+
+        PublicationDetail pd = getPublication(con, rs.getInt(2));
+        PublicationWithStatus withStatus = new PublicationWithStatus(pd, rs.getBoolean(3));
+
+        listPublications.add(new SocialInformationPublication(withStatus));
+      }
+
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+    return listPublications;
+  }
+
+  /**
+   * Method  return SocialInformationPublication list whene the data base is Oracle
+   * @param
+   * @throws SQLException
+   * */
+  public static List<SocialInformationPublication> getAllPublicationsIDbyUserid_Oracle(
+      Connection con,
+      String userId, int firstIndex, int nbElement) throws SQLException {
+    List<SocialInformationPublication> listPublications = new ArrayList<SocialInformationPublication>();
+    String queryOracle = " select * from (ROWNUM num , pubs_oracle.* from (";
+    String query = "(SELECT pubcreationdate AS dateinformation, pubid, 'false' as type  FROM sb_publication_publi  WHERE pubcreatorid = ? and pubstatus = 'Valid')"
+        + "UNION (SELECT  pubupdatedate AS dateinformation, pubid, 'true' as type FROM sb_publication_publi  WHERE  pubupdaterid = ? and pubstatus = 'Valid')"
+        + "ORDER BY dateinformation DESC, type DESC  ";
+    queryOracle = queryOracle + " " + query;
+    queryOracle = queryOracle + " ) pubs_oracle) where num between ? and ? ";
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      prepStmt = con.prepareStatement(query);
+      prepStmt.setString(1, userId);
+      prepStmt.setString(2, userId);
+      prepStmt.setInt(3, nbElement);
+      prepStmt.setInt(4, firstIndex);
+      rs = prepStmt.executeQuery();
+      while (rs.next()) {
+
+        PublicationDetail pd = getPublication(con, rs.getInt(2));
+        PublicationWithStatus withStatus = new PublicationWithStatus(pd, rs.getBoolean(3));
+
+        listPublications.add(new SocialInformationPublication(withStatus));
+      }
+
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+    return listPublications;
+  }
+
+  /**
+   * Method  return SocialInformationPublication list whene the data base is PostgreSQL
+   * @param
+   * @throws SQLException
+   * */
+  public static List<SocialInformationPublication> getAllPublicationsIDbyUserid_MMSQL(Connection con,
+      String userId, int firstIndex, int nbElement) throws SQLException {
+    List<SocialInformationPublication> listPublications = new ArrayList<SocialInformationPublication>();
+
+    String query = "(SELECT pubcreationdate AS dateinformation, pubid, 'false' as type  FROM sb_publication_publi  WHERE pubcreatorid = ? and pubstatus = 'Valid')"
+        + "UNION (SELECT  pubupdatedate AS dateinformation, pubid, 'true' as type FROM sb_publication_publi  WHERE  pubupdaterid = ? and pubstatus = 'Valid')"
+        + "ORDER BY dateinformation DESC, type DESC ";
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      prepStmt = con.prepareStatement(query);
+      prepStmt.setString(1, userId);
+      prepStmt.setString(2, userId);
+      rs = prepStmt.executeQuery();
+      int index = 0;
+      while (rs.next()) {
+        // limit the searche
+        if (index >= firstIndex && index < nbElement + firstIndex) {
+          PublicationDetail pd = getPublication(con, rs.getInt(2));
+          PublicationWithStatus withStatus = new PublicationWithStatus(pd, rs.getBoolean(3));
+
+          listPublications.add(new SocialInformationPublication(withStatus));
+        }
+        index++;
+      }
+
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+    return listPublications;
+  }
+
+  /**
+   *
+   *@param
+   * */
+  public static PublicationDetail getPublication(Connection con, int pubId) throws SQLException {
+    PublicationDetail pub = new PublicationDetail();
+    String query = "select * from sb_publication_publi where pubid = ? ";
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      prepStmt = con.prepareStatement(query);
+      prepStmt.setInt(1, pubId);
+      rs = prepStmt.executeQuery();
+      if (rs.next()) {
+        pub = resultSet2PublicationDetail(rs, null);
+      }
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+    return pub;
+
   }
 }

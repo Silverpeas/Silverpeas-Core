@@ -36,7 +36,6 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 public class PublicationPK extends WAPrimaryKey implements Serializable {
 
   private static final long serialVersionUID = -6957633959517435029L;
-
   /** For flat pk design pattern. */
   public transient PublicationDetail pubDetail = null;
 
@@ -51,7 +50,7 @@ public class PublicationPK extends WAPrimaryKey implements Serializable {
 
   /**
    * Constructor which set the id The WAPrimaryKey provides space and component name
-   * @param id 
+   * @param id
    * @param space
    * @param componentName
    * @since 1.0

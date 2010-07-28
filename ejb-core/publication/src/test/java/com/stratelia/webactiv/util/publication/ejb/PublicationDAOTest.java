@@ -30,12 +30,17 @@ package com.stratelia.webactiv.util.publication.ejb;
 
 import com.silverpeas.components.model.AbstractTestDao;
 import com.silverpeas.jcrutil.RandomGenerator;
+import com.stratelia.webactiv.publication.socialNetwork.SocialInformationPublication;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.util.publication.model.PublicationWithStatus;
 import java.io.File;
 import java.sql.Connection;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Properties;
 import javax.naming.Context;
 import static org.junit.Assert.*;
@@ -862,6 +867,7 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectBetweenDate method, of class PublicationDAO.
    */
+
   /*@org.junit.Test
   public void testSelectBetweenDate() throws Exception {
   System.out.println("selectBetweenDate");
@@ -879,4 +885,75 @@ public class PublicationDAOTest extends AbstractTestDao {
   protected String getDatasetFileName() {
     return "test-publication-dao-dataset.xml";
   }
+
+
+  @org.junit.Test
+  public void testGetAllPublicationsIDbyUserid() throws Exception{
+    Connection con = getConnection().getConnection();
+    this.setUp();
+    String user100="100";//who created  pub1
+   
+    String user200="200";//who updated pub1 and pub2
+    int pub1Id = 100;
+    
+    PublicationDetail detail1= PublicationDAO.getPublication(con, pub1Id);
+    
+
+//who created  pub1
+    SocialInformationPublication sp1=new SocialInformationPublication(new PublicationWithStatus(
+        (detail1), false));
+    assertNotNull("SocialInformationPublication1 must be not null", sp1);
+    List<SocialInformationPublication> list100=new ArrayList<SocialInformationPublication>();
+    list100.add(sp1);
+    List<SocialInformationPublication> list100DOA=PublicationDAO.getAllPublicationsIDbyUserid(con, user100,
+        0, 5);
+    assertEquals("Must be equal", list100.get(0),list100DOA.get(0));
+     list100DOA=PublicationDAO.getAllPublicationsIDbyUserid_MMSQL(con, user100,
+        0, 5);
+    assertEquals("Must be equal", list100.get(0),list100DOA.get(0));
+    
+//who created pub2
+    String user101="101";//who created pub2
+    int pub2Id = 101;
+    PublicationDetail detail2= PublicationDAO.getPublication(con, pub2Id);
+    SocialInformationPublication sp2=new SocialInformationPublication(new PublicationWithStatus(
+        (detail2), false));
+
+    assertNotNull("SocialInformationPublication2 must be not null", sp2);
+    List<SocialInformationPublication> list101=new ArrayList<SocialInformationPublication>();
+    list101.add(sp2);
+    List<SocialInformationPublication> list101DOA=PublicationDAO.getAllPublicationsIDbyUserid(con, user101,
+        0, 5);
+    assertTrue("Must be equal", list101.get(0).equals(list101DOA.get(0)));
+    
+//who updated pub1 and pub2
+     SocialInformationPublication sp1User200=new SocialInformationPublication(new PublicationWithStatus(
+        (detail1), true));
+      assertNotNull("SocialInformationPublication2 must be not null", sp1User200);
+    SocialInformationPublication sp2User200=new SocialInformationPublication(new PublicationWithStatus(
+        (detail2), true));
+     assertNotNull("SocialInformationPublication2 must be not null", sp2User200);
+    List<SocialInformationPublication> list200=new ArrayList<SocialInformationPublication>();
+    list200.add(sp1User200);
+    list200.add(sp2User200);
+    List<SocialInformationPublication> list200DOA=PublicationDAO.getAllPublicationsIDbyUserid(con, user200,
+        0, 5);
+    assertEquals("Must be equal", list200.get(0),list200DOA.get(0));
+    assertEquals("Must be equal", list200.get(1),list200DOA.get(1));
+    // test first element
+    list200DOA=PublicationDAO.getAllPublicationsIDbyUserid(con, user200,
+        1, 5);
+     assertEquals("Must be equal", list200.get(1),list200DOA.get(0));
+     list200DOA=PublicationDAO.getAllPublicationsIDbyUserid_MMSQL(con, user200,
+        1, 5);
+     assertEquals("Must be equal", list200.get(1),list200DOA.get(0));
+
+     // test nbr of elements
+    list200DOA=PublicationDAO.getAllPublicationsIDbyUserid(con, user200,
+        0, 1);
+     assertEquals("Must be equal", list200.get(0),list200DOA.get(0));
+   
+
+  }
 }
+

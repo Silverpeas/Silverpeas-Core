@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.publication.control;
 
 import java.rmi.RemoteException;
@@ -31,6 +30,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import com.silverpeas.util.ForeignPK;
+import com.stratelia.webactiv.publication.socialNetwork.SocialInformationPublication;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -41,6 +41,7 @@ import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.util.publication.model.PublicationWithStatus;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
 
 /**
@@ -459,4 +460,13 @@ public interface PublicationBmBusinessSkeleton {
    * @throws RemoteException
    */
   public void addLinks(PublicationPK pubPK, List<ForeignPK> links) throws RemoteException;
+
+   /**
+   *
+   **/
+ public List<SocialInformationPublication> getAllPublicationsWithStatusbyUserid(String userId,
+      int firstIndex, int nbElement) throws RemoteException;
+
+
+
 }

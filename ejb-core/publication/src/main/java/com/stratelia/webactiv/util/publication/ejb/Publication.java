@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
 package com.stratelia.webactiv.util.publication.ejb;
@@ -41,6 +41,7 @@ import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelPK;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.util.publication.model.PublicationWithStatus;
 
 /**
  * Interface declaration
@@ -171,4 +172,7 @@ public interface Publication extends EJBObject {
    * @throws SQLException
    */
   public void deleteInfoLinks(List<ForeignPK> links) throws SQLException, RemoteException;
+
+
+ 
 }

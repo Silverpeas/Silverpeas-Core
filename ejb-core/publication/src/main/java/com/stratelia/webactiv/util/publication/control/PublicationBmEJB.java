@@ -21,12 +21,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.publication.control;
 
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,6 +61,7 @@ import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.publication.socialNetwork.SocialInformationPublication;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -100,6 +101,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationI18N;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
+import com.stratelia.webactiv.util.publication.model.PublicationWithStatus;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
 
 /**
@@ -118,13 +120,13 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   public PublicationDetail getDetail(PublicationPK pubPK)
       throws RemoteException {
     if (pubPK.getInstanceId() == null) {
-      // Cas des liens simplifiés
+      // Cas des liens simplifiÃ©s
       // On ne connait que l'id de la publication
       // Tous les attributs d'une primaryKey sont obligatoires pour faire
       // un findByPrimaryKey.
-      // On est donc obligé de faire une recherche directement dans la base
+      // On est donc obligÃ© de faire une recherche directement dans la base
       // avant
-      // pour récuperer l'instanceId !
+      // pour rÃ©cuperer l'instanceId !
       Connection con = null;
       try {
         con = getConnection();
@@ -157,8 +159,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
       PublicationI18N translation = new PublicationI18N(publi.getLanguage(),
           publi.getName(), publi.getDescription(), publi.getKeywords());
       publi.addTranslation(translation);
-      List translations = PublicationI18NDAO
-          .getTranslations(con, publi.getPK());
+      List translations = PublicationI18NDAO.getTranslations(con, publi.getPK());
       publi.setTranslations(translations);
     } catch (SQLException e) {
       throw new PublicationRuntimeException(
@@ -268,8 +269,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
     int index = getIndexOfPublication(pubPK.getId(), publications);
 
     // remove publication in list
-    PublicationDetail publication = (PublicationDetail) publications
-        .remove(index);
+    PublicationDetail publication = (PublicationDetail) publications.remove(index);
 
     index = index + direction;
 
@@ -368,8 +368,8 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
       if (detail.isRemoveTranslation()) {
         // remove wysiwyg content
-        WysiwygController.deleteFile(detail.getPK().getInstanceId(), detail
-            .getPK().getId(), detail.getLanguage());
+        WysiwygController.deleteFile(detail.getPK().getInstanceId(), detail.getPK().getId(), detail.
+            getLanguage());
 
         // remove xml content
         String infoId = detail.getInfoId();
@@ -378,13 +378,12 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
         if (StringUtil.isDefined(infoId) && !isInteger(infoId)) {
           String xmlFormShortName = infoId;
 
-          PublicationTemplate pubTemplate = PublicationTemplateManager
-              .getPublicationTemplate(detail.getPK().getInstanceId() + ":"
+          PublicationTemplate pubTemplate = PublicationTemplateManager.getPublicationTemplate(detail.
+              getPK().getInstanceId() + ":"
               + xmlFormShortName);
 
           RecordSet set = pubTemplate.getRecordSet();
-          DataRecord data = set.getRecord(detail.getPK().getId(), detail
-              .getLanguage());
+          DataRecord data = set.getRecord(detail.getPK().getId(), detail.getLanguage());
           set.delete(data);
         }
       }
@@ -423,8 +422,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
       throw new PublicationRuntimeException(
           "PublicationBmEJB.getValidationSteps()",
           SilverpeasRuntimeException.ERROR,
-          "publication.GETTING_PUBLICATION_VALIDATION_STEPS_FAILED", pubPK
-          .toString(), e);
+          "publication.GETTING_PUBLICATION_VALIDATION_STEPS_FAILED", pubPK.toString(), e);
     } finally {
       freeConnection(con);
     }
@@ -442,8 +440,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
       throw new PublicationRuntimeException(
           "PublicationBmEJB.getValidationStepByUser()",
           SilverpeasRuntimeException.ERROR,
-          "publication.GETTING_PUBLICATION_VALIDATION_STEP_FAILED", pubPK
-          .toString(), e);
+          "publication.GETTING_PUBLICATION_VALIDATION_STEP_FAILED", pubPK.toString(), e);
     } finally {
       freeConnection(con);
     }
@@ -460,8 +457,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
       throw new PublicationRuntimeException(
           "PublicationBmEJB.addValidationStep()",
           SilverpeasRuntimeException.ERROR,
-          "publication.ADDING_PUBLICATION_VALIDATION_STEP_FAILED", step
-          .getPubPK().toString(), e);
+          "publication.ADDING_PUBLICATION_VALIDATION_STEP_FAILED", step.getPubPK().toString(), e);
     } finally {
       freeConnection(con);
     }
@@ -478,8 +474,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
       throw new PublicationRuntimeException(
           "PublicationBmEJB.removeValidationSteps()",
           SilverpeasRuntimeException.ERROR,
-          "publication.REMOVING_PUBLICATION_VALIDATION_STEPS_FAILED", pubPK
-          .toString(), e);
+          "publication.REMOVING_PUBLICATION_VALIDATION_STEPS_FAILED", pubPK.toString(), e);
     } finally {
       freeConnection(con);
     }
@@ -623,8 +618,8 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
       throws RemoteException {
     Connection con = getConnection();
     try {
-      Collection<PublicationDetail> pubDetails = PublicationDAO
-          .getUnavailablePublicationsByPublisherId(con, pubPK, publisherId,
+      Collection<PublicationDetail> pubDetails = PublicationDAO.
+          getUnavailablePublicationsByPublisherId(con, pubPK, publisherId,
           nodeId);
       if (I18NHelper.isI18N) {
         setTranslations(con, pubDetails);
@@ -835,8 +830,8 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
     Connection con = getConnection();
 
     try {
-      Collection<PublicationDetail> detailList = PublicationDAO
-          .selectByBeginDateDescAndStatusAndNotLinkedToFatherId(con, pk,
+      Collection<PublicationDetail> detailList = PublicationDAO.
+          selectByBeginDateDescAndStatusAndNotLinkedToFatherId(con, pk,
           status, fatherId, nbPubs);
       if (I18NHelper.isI18N) {
         setTranslations(con, detailList);
@@ -987,8 +982,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
           PublicationPK targetPK = null;
           while (i.hasNext()) {
             link = i.next();
-            targetPK = new PublicationPK(link.getTargetId(), pubPK
-                .getInstanceId());
+            targetPK = new PublicationPK(link.getTargetId(), pubPK.getInstanceId());
             SeeAlsoDAO.addLink(con, pubPK, targetPK);
           }
         }
@@ -1045,8 +1039,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
     Connection con = getConnection();
 
     try {
-      Collection<PublicationDetail> resultList = PublicationDAO
-          .searchByKeywords(con, query, pubPK);
+      Collection<PublicationDetail> resultList = PublicationDAO.searchByKeywords(con, query, pubPK);
       if (I18NHelper.isI18N) {
         setTranslations(con, resultList);
       }
@@ -1297,8 +1290,8 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
    */
   private PublicationHome getPublicationHome() {
     try {
-      PublicationHome pubHome = (PublicationHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.PUBLICATION_EJBHOME, PublicationHome.class);
+      PublicationHome pubHome = (PublicationHome) EJBUtilitaire.getEJBObjectRef(
+          JNDINames.PUBLICATION_EJBHOME, PublicationHome.class);
 
       return pubHome;
     } catch (Exception re) {
@@ -1446,8 +1439,8 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
           String wysiwygContent = WysiwygController.load(pubPK.getInstanceId(),
               pubPK.getId(), language);
           if (StringUtil.isDefined(wysiwygContent)) {
-            String wysiwygPath = WysiwygController.getWysiwygPath(pubPK
-                .getInstanceId(), pubPK.getId(), language);
+            String wysiwygPath = WysiwygController.getWysiwygPath(pubPK.getInstanceId(),
+                pubPK.getId(), language);
             indexEntry.addFileContent(wysiwygPath, null, "text/html", language);
           }
         }
@@ -1472,8 +1465,8 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
         + ", pubDetail.getInfoId() = " + pubDetail.getInfoId());
     if (!isInteger(pubDetail.getInfoId())) {
       try {
-        PublicationTemplate pub = PublicationTemplateManager
-            .getPublicationTemplate(pubDetail.getPK().getInstanceId() + ":"
+        PublicationTemplate pub = PublicationTemplateManager.getPublicationTemplate(pubDetail.getPK().
+            getInstanceId() + ":"
             + pubDetail.getInfoId());
 
         RecordSet set = pub.getRecordSet();
@@ -1538,8 +1531,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
       SilverTrace.info("publication", "PublicationBmEJB.createIndex()",
           "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString());
       try {
-        CompletePublication completePublication = this
-            .getCompletePublication(pubPK);
+        CompletePublication completePublication = this.getCompletePublication(pubPK);
         FullIndexEntry indexEntry = null;
         PublicationDetail pubDetail = null;
         InfoDetail infoDetail = null;
@@ -1589,8 +1581,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
       Iterator<String> languages = pubDetail.getLanguages();
       while (languages.hasNext()) {
         String language = languages.next();
-        PublicationI18N translation = (PublicationI18N) pubDetail
-            .getTranslation(language);
+        PublicationI18N translation = (PublicationI18N) pubDetail.getTranslation(language);
 
         indexEntry.setTitle(translation.getName(), language);
         indexEntry.setPreview(translation.getDescription(), language);
@@ -1625,8 +1616,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
       indexEntry.setThumbnail(pubDetail.getImage());
       indexEntry.setThumbnailMimeType(pubDetail.getImageMimeType());
-      indexEntry.setThumbnailDirectory(publicationSettings
-          .getString("imagesSubDirectory"));
+      indexEntry.setThumbnailDirectory(publicationSettings.getString("imagesSubDirectory"));
     }
 
     return indexEntry;
@@ -1765,8 +1755,8 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
    */
   private TagCloudBm getTagCloudBm() {
     try {
-      TagCloudBmHome tagCloudBmHome = (TagCloudBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.TAGCLOUDBM_EJBHOME, TagCloudBmHome.class);
+      TagCloudBmHome tagCloudBmHome = (TagCloudBmHome) EJBUtilitaire.getEJBObjectRef(
+          JNDINames.TAGCLOUDBM_EJBHOME, TagCloudBmHome.class);
       TagCloudBm tagCloudBm = tagCloudBmHome.create();
       return tagCloudBm;
     } catch (Exception e) {
@@ -1782,8 +1772,8 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   public CoordinatesBm getCoordinatesBm() {
     CoordinatesBm currentCoordinatesBm = null;
     try {
-      CoordinatesBmHome coordinatesBmHome = (CoordinatesBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.COORDINATESBM_EJBHOME,
+      CoordinatesBmHome coordinatesBmHome = (CoordinatesBmHome) EJBUtilitaire.getEJBObjectRef(
+          JNDINames.COORDINATESBM_EJBHOME,
           CoordinatesBmHome.class);
       currentCoordinatesBm = coordinatesBmHome.create();
     } catch (Exception e) {
@@ -1817,8 +1807,8 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
     String keywords = pubDetail.getKeywords();
     if (keywords != null) {
       TagCloudBm tagCloudBm = getTagCloudBm();
-      TagCloud tagCloud = new TagCloud(pubDetail.getInstanceId(), pubDetail
-          .getId(), TagCloud.TYPE_PUBLICATION);
+      TagCloud tagCloud = new TagCloud(pubDetail.getInstanceId(), pubDetail.getId(),
+          TagCloud.TYPE_PUBLICATION);
       StringTokenizer st = new StringTokenizer(keywords, " ");
       String tag;
       String tagKey;
@@ -1863,8 +1853,8 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
    */
   private NotationBm getNotationBm() {
     try {
-      NotationBmHome notationBmHome = (NotationBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.NOTATIONBM_EJBHOME, NotationBmHome.class);
+      NotationBmHome notationBmHome = (NotationBmHome) EJBUtilitaire.getEJBObjectRef(
+          JNDINames.NOTATIONBM_EJBHOME, NotationBmHome.class);
       NotationBm notationBm = notationBmHome.create();
       return notationBm;
     } catch (Exception e) {
@@ -1945,8 +1935,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
         // deletes existing links
         SeeAlsoDAO.deleteLinksByObjectId(con, pubPK);
         for (ForeignPK link : links) {
-          targetPK = new PublicationPK(link.getId(), link
-              .getInstanceId());
+          targetPK = new PublicationPK(link.getId(), link.getInstanceId());
           // adds links
           SeeAlsoDAO.addLink(con, pubPK, targetPK);
         }
@@ -2004,4 +1993,29 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
    */
   public void setSessionContext(SessionContext sc) {
   }
+
+  @Override
+  public List<SocialInformationPublication> getAllPublicationsWithStatusbyUserid(String userId,
+      int firstIndex, int nbElement) throws RemoteException {
+    Connection con = null;
+    List<SocialInformationPublication> publications = new ArrayList<SocialInformationPublication>();
+    try {
+      con = getConnection();
+      publications = PublicationDAO.getAllPublicationsIDbyUserid(con, userId, firstIndex,  nbElement);
+
+
+    } catch (SQLException e) {
+      throw new PublicationRuntimeException(
+          "PublicationBmEJB.getAllPublicationsWithStatusbyUserid",
+          SilverpeasRuntimeException.ERROR,
+          "publication.GETTING_PUBLICATION_HEADER_FAILED", "userId = " + userId, e);
+    } finally {
+      freeConnection(con);
+    }
+    return publications;
+  }
+
+ 
+
+  
 }
