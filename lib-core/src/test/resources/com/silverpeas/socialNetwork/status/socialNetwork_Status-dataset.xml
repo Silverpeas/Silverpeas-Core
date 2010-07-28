@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Document   : socialNetwork_Status-dataset.xml
+    Author     : Bourakbi Nidale
+    Description:
+        Purpose of the document follows.
+-->
+
+<dataset>
+    <sb_sn_status id="1" userid="1" creationDate="2010-02-01 10:34:15.0000"  description="je suis là" />
+    <sb_sn_status id="2" userid="1" creationDate="2010-03-02 10:33:10.0000"  description="travaille tout simplement" />
+    <sb_sn_status id="3" userid="2" creationDate="2010-05-11 15:25:32.0000"  description="congé" />
+    <sb_sn_status id="4" userid="1" creationDate="2010-07-02 10:33:10.0000"  description="travaille sur readmine" />
+    <sb_sn_status id="5" userid="2" creationDate="2010-07-25 10:33:10.0000"  description="formation" />   
+    <sb_sn_status />
+</dataset>
