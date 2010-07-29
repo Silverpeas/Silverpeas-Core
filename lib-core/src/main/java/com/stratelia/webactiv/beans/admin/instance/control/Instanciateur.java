@@ -39,15 +39,16 @@ package com.stratelia.webactiv.beans.admin.instance.control;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.NameFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 
 public class Instanciateur extends Object {
 
@@ -143,16 +144,20 @@ public class Instanciateur extends Object {
     }
   }
 
-  public void unInstantiateComponentName(String WAComponentName)
+  public void unInstantiateComponentName(String componentName)
       throws InstanciationException {
-    String fullPath = xmlPackage + File.separatorChar + WAComponentName
-        + ".xml";
+    String fullPath = null;
+    try {
+      fullPath = getDescriptorFullPath(componentName);
+    } catch (IOException e) {
+      throw new InstanciationException("Instanciateur.unInstantiateComponentName",
+          InstanciationException.FATAL, e.getMessage(), e);
+    }
     unInstantiateComponent(new WAComponent(fullPath));
   }
 
   @SuppressWarnings("unchecked")
-  public void unInstantiateComponent(WAComponent wac)
-      throws InstanciationException {
+  public void unInstantiateComponent(WAComponent wac) throws InstanciationException {
     try {
       SilverTrace.info("admin", "Instanciateur.unInstantiateComponent",
           "admin.MSG_INFO_UNINSTANCIATE_COMPONENT", wac.toString());
@@ -228,30 +233,27 @@ public class Instanciateur extends Object {
     }
   }
 
-  private static String[] getFileList() {
-    File file = new File(xmlPackage);
-    String[] list = file.list();
-
-    Vector<String> vector = new Vector<String>();
-    for (int i = 0; list != null && i < list.length; i++) {
-      if (list[i].toLowerCase().endsWith(".xml")) {
-        vector.addElement(list[i].substring(0, list[i].length() - 4));
-      }
-    }
-    int count = vector.size();
-    list = new String[count];
-    for (int i = 0; i < list.length; i++) {
-      list[i] = (String) vector.elementAt(i);
-    }
+  private static Collection<File> getFileList() {
+    Collection<File> list = FileUtils.listFiles(new File(xmlPackage), new String[]{"xml"}, true);
     return list;
   }
 
-  private static void buildWAComponentList() throws IOException {
-    String[] list = getFileList();
+  private static String getDescriptorFullPath(String componentName) throws IOException {
+    IOFileFilter filter = new NameFileFilter(componentName + ".xml");
+    List<File> list = new ArrayList<File>(FileUtils.listFiles(new File(xmlPackage), filter,
+        TrueFileFilter.INSTANCE));
+    if(! list.isEmpty()) {
+      return list.get(0).getCanonicalPath();
+    }
+    return new File(xmlPackage, componentName + ".xml").getCanonicalPath();
+  }
 
-    for (int i = 0; i < list.length; i++) {
-      String componentName = list[i];
-      String fullPath = xmlPackage + File.separator + componentName + ".xml";
+  private static void buildWAComponentList() throws IOException {
+    Collection<File> files = getFileList();
+
+    for (File xmlFile : files) {
+      String componentName = FilenameUtils.getBaseName(xmlFile.getName());
+      String fullPath = xmlFile.getCanonicalPath();
       SilverTrace.info("admin", "Instanciateur.buildWAComponentList",
           "admin.MSG_INFO_BUILD_WA_COMPONENT_LIST", "component name: '"
           + componentName + "', full path: '" + fullPath + "'");
