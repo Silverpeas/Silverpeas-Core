@@ -114,10 +114,15 @@ public class Instanciateur extends Object {
     m_sUserId = sUserId;
   }
 
-  public void instantiateComponentName(String WAComponentName)
+  public void instantiateComponentName(String componentName)
       throws InstanciationException {
-    String fullPath = xmlPackage + File.separatorChar + WAComponentName
-        + ".xml";
+    String fullPath = null;
+    try {
+      fullPath = getDescriptorFullPath(componentName);
+    } catch (IOException e) {
+      throw new InstanciationException("Instanciateur.instantiateComponentName",
+          InstanciationException.FATAL, e.getMessage(), e);
+    }
     instantiateComponent(new WAComponent(fullPath));
   }
 
