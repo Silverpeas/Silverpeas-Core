@@ -29,6 +29,9 @@ import javax.servlet.jsp.tagext.Tag;
 import javax.servlet.jsp.tagext.TagSupport;
 
 public class TabTag extends TagSupport {
+  
+  private static final long serialVersionUID = -6366793070888310723L;
+
   private String label;
 
   private String action;

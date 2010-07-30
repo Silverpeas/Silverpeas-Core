@@ -48,7 +48,7 @@ public abstract class AbstractTabbedPane implements TabbedPane {
   public static final int RIGHT = 0;
   public static final int LEFT = 1;
 
-  private Vector tabLines = null; // A collection tabs vector
+  private Vector<Collection<Tab>> tabLines = null; // A collection tabs vector
   private int nbLines = 1;
   // private Collection tabs = null;
   private int indentation = RIGHT;
@@ -68,10 +68,10 @@ public abstract class AbstractTabbedPane implements TabbedPane {
    * @see
    */
   public void init(int nbLines) {
-    Vector tabLines = new Vector(2, 1);
+    Vector<Collection<Tab>> tabLines = new Vector<Collection<Tab>>(2, 1);
 
     for (int i = 1; i <= nbLines; i++) {
-      tabLines.add(new ArrayList());
+      tabLines.add(new ArrayList<Tab>());
     }
     this.nbLines = nbLines;
     this.tabLines = tabLines;
@@ -85,8 +85,8 @@ public abstract class AbstractTabbedPane implements TabbedPane {
    * @see
    */
   public void addTab(String label, String action, boolean disabled) {
-    Vector tabLines = getTabLines();
-    Collection tabs = (Collection) tabLines.get(0);
+    Vector<Collection<Tab>> tabLines = getTabLines();
+    Collection<Tab> tabs = tabLines.get(0);
 
     tabs.add(new Tab(label, action, disabled));
   }
@@ -101,8 +101,8 @@ public abstract class AbstractTabbedPane implements TabbedPane {
    */
   public void addTab(String label, String action, boolean disabled,
       boolean enabled) {
-    Vector tabLines = getTabLines();
-    Collection tabs = (Collection) tabLines.get(0);
+    Vector<Collection<Tab>> tabLines = getTabLines();
+    Collection<Tab> tabs = tabLines.get(0);
 
     tabs.add(new Tab(label, action, disabled, enabled));
   }
@@ -116,13 +116,13 @@ public abstract class AbstractTabbedPane implements TabbedPane {
    * @see
    */
   public void addTab(String label, String action, boolean disabled, int nbLines) {
-    Vector tabLines = getTabLines();
-    Collection tabs = null;
+    Vector<Collection<Tab>> tabLines = getTabLines();
+    Collection<Tab> tabs = null;
 
     if (nbLines <= 0) {
-      tabs = (Collection) tabLines.get(0);
+      tabs = tabLines.get(0);
     } else {
-      tabs = (Collection) tabLines.get(nbLines - 1);
+      tabs = tabLines.get(nbLines - 1);
     }
     tabs.add(new Tab(label, action, disabled));
   }
@@ -138,13 +138,13 @@ public abstract class AbstractTabbedPane implements TabbedPane {
    */
   public void addTab(String label, String action, boolean disabled,
       boolean enabled, int nbLines) {
-    Vector tabLines = getTabLines();
-    Collection tabs = null;
+    Vector<Collection<Tab>> tabLines = getTabLines();
+    Collection<Tab> tabs = null;
 
     if (nbLines <= 0) {
-      tabs = (Collection) tabLines.get(0);
+      tabs = tabLines.get(0);
     } else {
-      tabs = (Collection) tabLines.get(nbLines - 1);
+      tabs = tabLines.get(nbLines - 1);
     }
     tabs.add(new Tab(label, action, disabled, enabled));
   }
@@ -155,12 +155,6 @@ public abstract class AbstractTabbedPane implements TabbedPane {
    * @see
    */
   public String getIconsPath() {
-    /*
-     * if (iconsPath == null) { ResourceLocator generalSettings = new
-     * ResourceLocator("com.stratelia.webactiv.general", "fr"); iconsPath =
-     * generalSettings.getString("ApplicationURL") +
-     * GraphicElementFactory.getSettings().getString("IconsPath"); } return iconsPath;
-     */
     return GraphicElementFactory.getIconsPath();
   }
 
@@ -169,7 +163,7 @@ public abstract class AbstractTabbedPane implements TabbedPane {
    * @return
    * @see
    */
-  public Vector getTabLines() {
+  public Vector<Collection<Tab>> getTabLines() {
     return this.tabLines;
   }
 

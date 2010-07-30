@@ -34,7 +34,6 @@
 package com.stratelia.webactiv.util.viewGenerator.html.tabs;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -59,14 +58,14 @@ public class TabbedPaneSilverpeasV5 extends AbstractTabbedPane {
   public String print() {
     StringBuffer result = new StringBuffer();
     String iconsPath = getIconsPath();
-    Vector tabLines = getTabLines();
-    Collection tabs = null;
+    Vector<Collection<Tab>> tabLines = getTabLines();
+    Collection<Tab> tabs = null;
 
     int nbLines = tabLines.size();
     int incr = nbLines - 1;
 
     for (int j = 0; j < nbLines; j++) {
-      tabs = (Collection) tabLines.get(j);
+      tabs = tabLines.get(j);
       result
           .append("<table id=\"tabbedPane\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\"><tr><td align=\"right\" width=\"100%\">");
       result.append(printTabLine(tabs));
@@ -88,7 +87,7 @@ public class TabbedPaneSilverpeasV5 extends AbstractTabbedPane {
    * @return
    * @see
    */
-  private String printTabLine(Collection tabs) {
+  private String printTabLine(Collection<Tab> tabs) {
 
     StringBuffer result = new StringBuffer();
     String iconsPath = getIconsPath();
@@ -100,10 +99,8 @@ public class TabbedPaneSilverpeasV5 extends AbstractTabbedPane {
     if (indentation == RIGHT) {
       result.append("<td width=\"100%\">&nbsp;</td>\n");
     }
-    Iterator i = tabs.iterator();
 
-    while (i.hasNext()) {
-      Tab tab = (Tab) i.next();
+    for (Tab tab : tabs) {
       String style = null;
       String styleGauche = null;
       String styleDroite = null;

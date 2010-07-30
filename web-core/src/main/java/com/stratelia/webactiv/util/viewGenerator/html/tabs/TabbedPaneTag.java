@@ -33,6 +33,7 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 public class TabbedPaneTag extends TagSupport {
 
+  private static final long serialVersionUID = 2716176010690113590L;
   static final String TABBEDPANE_PAGE_ATT = "pageContextTabbedPane";
 
   public int doEndTag() throws JspException {
