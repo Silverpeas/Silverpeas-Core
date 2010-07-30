@@ -128,8 +128,6 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
     String language = PagesContext.getLanguage();
     String cssClass = null;
 
-    String mandatoryImg = Util.getIcon("mandatoryField");
-
     String fieldName = template.getFieldName();
     Map<String, String> parameters = template.getParameters(language);
 
@@ -156,7 +154,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
     }
 
     if (parameters.containsKey("class")) {
-      cssClass = (String) parameters.get("class");
+      cssClass = parameters.get("class");
       if (StringUtil.isDefined(cssClass))
         cssClass = "class=\"" + cssClass + "\"";
     }
@@ -167,7 +165,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
       }
     } catch (NumberFormatException nfe) {
       SilverTrace.error("form", "CheckBoxDisplayer.display", "form.EX_ERR_ILLEGAL_PARAMETER_COL",
-          (String) parameters.get("cols"));
+          parameters.get("cols"));
       cols = 1;
     }
 
@@ -190,7 +188,7 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
       SilverTrace.error("form", "CheckBoxDisplayer.display", "form.EX_ERR_ILLEGAL_PARAMETERS",
           "Nb keys=" + stKeys.countTokens() + " & Nb values=" + stValues.countTokens());
     } else {
-      html += "<table border=0>";
+      html += "<table border=\"0\">";
       int col = 0;
       for (int i = 0; i < nbTokens; i++) {
         if (col == 0) {
@@ -203,35 +201,32 @@ public class CheckBoxDisplayer extends AbstractFieldDisplayer {
         optValue = stValues.nextToken();
 
         html +=
-            "<INPUT type=\"checkbox\" id=\"" + fieldName + "\" name=\"" + fieldName +
+            "<input type=\"checkbox\" id=\"" + fieldName + "_" + i + "\" name=\"" + fieldName +
             "\" value=\"" + optKey + "\" ";
 
         if (template.isDisabled() || template.isReadOnly()) {
-          html += " disabled ";
+          html += " disabled=\"disabled\" ";
         }
 
         if (valuesFromDB.contains(optKey)) {
-          html += " checked ";
+          html += " checked=\"checked\" ";
         }
 
-        html += ">&nbsp;" + optValue;
-
-        if (StringUtil.isDefined(cssClass))
-          html += "</span>";
+        html += "/>&nbsp;" + optValue;
 
         // last checkBox
         if (i == nbTokens - 1) {
           if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
               !template.isHidden() && PagesContext.useMandatory()) {
-            html +=
-                "&nbsp;<img src=\"" + mandatoryImg + "\" width=\"5\" height=\"5\" border=\"0\">";
+            html += Util.getMandatorySnippet();
           }
         }
+        html += "</td>";
 
         html += "\n";
 
         if (col == cols) {
-          html += "<tr>";
+          html += "</tr>";
           col = 0;
         }
       }

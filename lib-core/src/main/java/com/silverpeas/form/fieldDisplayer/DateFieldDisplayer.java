@@ -26,15 +26,17 @@ package com.silverpeas.form.fieldDisplayer;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.ecs.AlignType;
 import org.apache.ecs.ElementContainer;
-import org.apache.ecs.html.A;
-import org.apache.ecs.html.IMG;
-import org.apache.ecs.html.Input;
-import org.apache.ecs.html.Span;
+import org.apache.ecs.xhtml.a;
+import org.apache.ecs.xhtml.img;
+import org.apache.ecs.xhtml.input;
+import org.apache.ecs.xhtml.span;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -48,8 +50,6 @@ import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A DateFieldDisplayer is an object which can display a TextFiel in HTML the content of a TextFiel
@@ -156,31 +156,31 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
     if (pagesContext.isBlankFieldsUse())
       value = "";
 
-    Input input = new Input();
-    input.setID(fieldName);
-    input.setName(fieldName);
-    input.setValue(EncodeHelper.javaStringToHtmlString(value));
-    input.setType(template.isHidden() ? Input.hidden : Input.text);
-    input.setMaxlength(parameters.containsKey("maxLength") ? parameters.get("maxLength") : "10");
-    input.setSize(parameters.containsKey("size") ? parameters.get("size") : "13");
+    input inputField = new input();
+    inputField.setID(fieldName);
+    inputField.setName(fieldName);
+    inputField.setValue(EncodeHelper.javaStringToHtmlString(value));
+    inputField.setType(template.isHidden() ? input.hidden : input.text);
+    inputField.setMaxlength(parameters.containsKey("maxLength") ? parameters.get("maxLength") : "10");
+    inputField.setSize(parameters.containsKey("size") ? parameters.get("size") : "13");
     if (parameters.containsKey("border")) {
-      input.setBorder(Integer.parseInt(parameters.get("border")));
+      inputField.setBorder(Integer.parseInt(parameters.get("border")));
     }
     if (template.isDisabled()) {
-      input.setDisabled(true);
+      inputField.setDisabled(true);
     } else if (template.isReadOnly()) {
-      input.setReadOnly(true);
+      inputField.setReadOnly(true);
     }
 
     if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {
       ElementContainer container = new ElementContainer();
-      container.addElement(input);
+      container.addElement(inputField);
 
       container.addElement("&nbsp;");
 
-      A link = new A();
+      a link = new a();
       link.setHref("javascript:calendar('" + fieldName + "');");
-      IMG calendarImg = new IMG();
+      img calendarImg = new img();
       calendarImg.setSrc(Util.getIcon("calendar"));
       calendarImg.setWidth(15);
       calendarImg.setHeight(15);
@@ -188,33 +188,35 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
       String calendarLab = Util.getString("GML.viewCalendar", language);
       calendarImg.setAlt(calendarLab);
       calendarImg.setTitle(calendarLab);
-      calendarImg.setAlign(AlignType.absmiddle);
+      calendarImg.setAlign(AlignType.top);
       link.addElement(calendarImg);
       container.addElement(link);
 
       container.addElement("&nbsp;");
-      Span span = new Span();
-      if (StringUtil.isDefined(cssClass))
-        span.setClass(cssClass);
-      else
-        span.setClass("txtnote");
-      span.addElement("(" + Util.getString("GML.dateFormatExemple", language) + ")");
-      container.addElement(span);
+      span spanCSS = new span();
+      if (StringUtil.isDefined(cssClass)) {
+        spanCSS.setClass(cssClass);
+      } else {
+        spanCSS.setClass("txtnote");
+      }
+      spanCSS.addElement("(" + Util.getString("GML.dateFormatExemple", language) + ")");
+      container.addElement(spanCSS);
 
       if (template.isMandatory() && pagesContext.useMandatory()) {
         container.addElement("&nbsp;");
 
-        IMG img = new IMG();
-        img.setSrc(Util.getIcon("mandatoryField"));
-        img.setWidth(5);
-        img.setHeight(5);
-        img.setBorder(0);
-        container.addElement(img);
+        img image = new img();
+        image.setSrc(Util.getIcon("mandatoryField"));
+        image.setWidth(5);
+        image.setHeight(5);
+        image.setBorder(0);
+        image.setAlt("");
+        container.addElement(image);
       }
 
       out.println(container.toString());
     } else {
-      out.println(input.toString());
+      out.println(inputField.toString());
     }
   }
 

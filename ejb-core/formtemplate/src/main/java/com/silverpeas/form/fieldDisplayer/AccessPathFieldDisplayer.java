@@ -95,8 +95,6 @@ public class AccessPathFieldDisplayer extends AbstractFieldDisplayer {
     String value = null;
     String html = "";
 
-    String mandatoryImg = Util.getIcon("mandatoryField");
-
     String fieldName = template.getFieldName();
     AccessPathField accessPathField = null;
 
@@ -122,14 +120,14 @@ public class AccessPathFieldDisplayer extends AbstractFieldDisplayer {
       html += " value=\"" + currentAccessPath + "\"";
     }
     if (template.isDisabled() || template.isReadOnly()) {
-      html += " disabled";
+      html += " disabled=\"disabled\"";
     }
-    html += ">\n";
+    html += "/>\n";
 
     if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
         !template.isHidden() && PagesContext.
         useMandatory()) {
-      html += "&nbsp;<img src=\"" + mandatoryImg + "\" width=\"5\" height=\"5\" border=\"0\">";
+      html += Util.getMandatorySnippet();
     }
 
     out.println(html);

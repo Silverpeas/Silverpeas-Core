@@ -78,14 +78,15 @@ public class XmlForm extends AbstractForm {
     PrintWriter out = new PrintWriter(sw, true);
 
     if (pagesContext.getPrintTitle() && getTitle() != null && getTitle().length() > 0) {
-      out.println("<table CELLPADDING=0 CELLSPACING=2 BORDER=0 WIDTH=\"98%\" CLASS=intfdcolor>");
+      out
+          .println("<table cellpadding=\"0\" cellspacing=\"2\" border=\"0\" width=\"98%\" class=\"intfdcolor\">");
       out.println("<tr>");
-      out.println("<td CLASS=intfdcolor4 NOWRAP>");
-      out.println("<table CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH=\"100%\">");
+      out.println("<td class=\"intfdcolor4\" nowrap=\"nowrap\">");
+      out.println("<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">");
       out.println("<tr>");
-      out.println("<td class=\"intfdcolor\" nowrap width=\"100%\">");
+      out.println("<td class=\"intfdcolor\" nowrap=\"nowrap\" width=\"100%\">");
       out.println("<img border=\"0\" src=\"" + Util.getIcon("px") +
-          "\" width=5><span class=txtNav>" + getTitle() + "</span>");
+          "\" width=\"5\" alt=\"\"/><span class=\"txtNav\">" + getTitle() + "</span>");
       out.println("</td>");
       out.println("</tr>");
       out.println("</table>");
@@ -101,17 +102,17 @@ public class XmlForm extends AbstractForm {
     }
     boolean mandatory = false;
     if (itFields != null && itFields.hasNext()) {
+      out.println("<input type=\"hidden\" name=\"id\" value=\"" + record.getId() + "\"/>");
       if (pagesContext.isBorderPrinted()) {
         out
-            .println("<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=intfdcolor4>");
+            .println("<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"intfdcolor4\">");
         out.println("<tr>");
-        out.println("<td nowrap>");
+        out.println("<td nowrap=\"nowrap\">");
         out
             .println("<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\">");
       } else {
         out.println("<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\">");
       }
-      out.println("<INPUT TYPE=\"hidden\" NAME=id VALUE=\"" + record.getId() + "\">");
 
       // out.flush();
       // jw.write(sw.toString());
@@ -201,14 +202,15 @@ public class XmlForm extends AbstractForm {
             if (fieldDisplayer != null) {
               // sw = new StringWriter();
               // out = new PrintWriter(sw, true);
-              out.println("<tr align=center>");
+              out.println("<tr align=\"center\">");
               if (fieldLabel != null && !fieldLabel.equals("")) {
-                out.println("<td class=\"intfdcolor4\" valign=\"top\" align=left nowrap>");
+                out
+                    .println("<td class=\"intfdcolor4\" valign=\"top\" align=\"left\" nowrap=\"nowrap\">");
                 out.println("<span class=\"txtlibform\">" + fieldLabel + " :</span>");
-                out.println("</TD>");
+                out.println("</td>");
               }
 
-              out.println("<td class=\"intfdcolor4\" valign=\"baseline\" align=left>");
+              out.println("<td class=\"intfdcolor4\" valign=\"baseline\" align=\"left\">");
               if (field == null) {
                 try {
                   field = fieldTemplate.getEmptyField();
@@ -226,8 +228,8 @@ public class XmlForm extends AbstractForm {
               if (isMandatory && !isDisabled && !isReadOnly && !isHidden &&
                   fieldDisplayer.isDisplayedMandatory())
                 mandatory = true;
-              out.println("</TD>");
-              out.println("</TR>");
+              out.println("</td>");
+              out.println("</tr>");
               // out.flush();
               // jw.write(sw.toString());
               pc.incCurrentFieldIndex(fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc));
@@ -238,20 +240,20 @@ public class XmlForm extends AbstractForm {
       // sw = new StringWriter();
       // out = new PrintWriter(sw, true);
       if (mandatory) {
-        out.println("<tr align=left>");
+        out.println("<tr align=\"left\">");
         out.println("<td colspan=\"2\">");
         out.println("(<img border=\"0\" src=\"" + Util.getIcon("mandatoryField") +
-            "\" width=\"5\" height=\"5\">&nbsp;:&nbsp;" +
-            Util.getString("GML.requiredField", language) + ")");
-        out.println("</TD>");
-        out.println("</TR>");
+            "\" width=\"5\" height=\"5\" alt=\"" + Util.getString("GML.requiredField", language) +
+            "\"/>&nbsp;:&nbsp;" + Util.getString("GML.requiredField", language) + ")");
+        out.println("</td>");
+        out.println("</tr>");
       }
       if (pagesContext.isBorderPrinted()) {
-        out.println("</TABLE>");
-        out.println("</TD>");
-        out.println("</TR>");
+        out.println("</table>");
+        out.println("</td>");
+        out.println("</tr>");
       }
-      out.println("</TABLE>");
+      out.println("</table>");
       // out.flush();
       // jw.write(sw.toString());
     }
@@ -277,16 +279,20 @@ public class XmlForm extends AbstractForm {
       String language = pagesContext.getLanguage();
       StringWriter sw = new StringWriter();
       PrintWriter out = new PrintWriter(sw, true);
+      
+      if (record != null) {
+        out.println("<input type=\"hidden\" name=\"id\" value=\"" + record.getId() + "\"/>");
+      }
 
       if (pagesContext.getPrintTitle() && getTitle() != null && getTitle().length() > 0) {
-        out.println("<table CELLPADDING=0 CELLSPACING=2 BORDER=0 WIDTH=\"98%\" CLASS=intfdcolor>");
+        out.println("<table cellpadding=\"0\" cellspacing=\"2\" border=\"0\" width=\"98%\" class=\"intfdcolor\">");
         out.println("<tr>");
-        out.println("<td CLASS=intfdcolor4 NOWRAP>");
-        out.println("<table CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH=\"100%\">");
+        out.println("<td class=\"intfdcolor4\" nowrap=\"nowrap\">");
+        out.println("<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">");
         out.println("<tr>");
-        out.println("<td class=\"intfdcolor\" nowrap width=\"100%\">");
+        out.println("<td class=\"intfdcolor\" nowrap=\"nowrap\" width=\"100%\">");
         out.println("<img border=\"0\" src=\"" + Util.getIcon("px") +
-            "\" width=5><span class=txtNav>" + getTitle() + "</span>");
+            "\" width=\"5\" alt=\"\"/><span class=\"txtNav\">" + getTitle() + "</span>");
         out.println("</td>");
         out.println("</tr>");
         out.println("</table>");
@@ -304,17 +310,13 @@ public class XmlForm extends AbstractForm {
       if ((itFields != null) && (itFields.hasNext())) {
         if (pagesContext.isBorderPrinted()) {
           out
-              .println("<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=intfdcolor4>");
+              .println("<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"intfdcolor4\">");
           out.println("<tr>");
-          out.println("<td nowrap>");
+          out.println("<td nowrap=\"nowrap\">");
           out
               .println("<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\">");
         } else {
           out.println("<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\">");
-        }
-
-        if (record != null) {
-          out.println("<INPUT TYPE=\"hidden\" NAME=id VALUE=\"" + record.getId() + "\">");
         }
 
         out.flush();
@@ -417,8 +419,8 @@ public class XmlForm extends AbstractForm {
               if (fieldDisplayer != null) {
                 sw = new StringWriter();
                 out = new PrintWriter(sw, true);
-                out.println("<tr align=center>");
-                out.println("<td class=\"intfdcolor4\" valign=\"top\" align=left>");
+                out.println("<tr align=\"center\">");
+                out.println("<td class=\"intfdcolor4\" valign=\"top\" align=\"left\">");
                 if (fieldLabel != null && !fieldLabel.equals("")) {
                   if (StringUtil.isDefined(fieldClass))
                     out.println("<span class=\"" + fieldClass + "\">" + fieldLabel + " :</span>");
@@ -426,8 +428,8 @@ public class XmlForm extends AbstractForm {
                     out.println("<span class=\"txtlibform\">" + fieldLabel + " :</span>");
                 } else
                   out.println("<span class=\"txtlibform\">&nbsp;</span>");
-                out.println("</TD>");
-                out.println("<td class=\"intfdcolor4\" valign=\"baseline\" align=left>");
+                out.println("</td>");
+                out.println("<td class=\"intfdcolor4\" valign=\"baseline\" align=\"left\">");
 
                 if (field == null) {
                   try {
@@ -448,8 +450,8 @@ public class XmlForm extends AbstractForm {
                     (!isReadOnly || fieldType.equals(JdbcRefField.TYPE))) {
                   mandatory = true;
                 }
-                out.println("</TD>");
-                out.println("</TR>");
+                out.println("</td>");
+                out.println("</tr>");
                 out.flush();
                 jw.write(sw.toString());
                 pc
@@ -462,20 +464,20 @@ public class XmlForm extends AbstractForm {
         sw = new StringWriter();
         out = new PrintWriter(sw, true);
         if (mandatory) {
-          out.println("<tr align=left>");
+          out.println("<tr align=\"left\">");
           out.println("<td colspan=\"2\">");
           out.println("(<img border=\"0\" src=\"" + Util.getIcon("mandatoryField") +
-              "\" width=\"5\" height=\"5\">&nbsp;:&nbsp;" +
+              "\" width=\"5\" height=\"5\" alt=\"\"/>&nbsp;:&nbsp;" +
               Util.getString("GML.requiredField", language) + ")");
-          out.println("</TD>");
-          out.println("</TR>");
+          out.println("</td>");
+          out.println("</tr>");
         }
         if (pagesContext.isBorderPrinted()) {
-          out.println("</TABLE>");
-          out.println("</TD>");
-          out.println("</TR>");
+          out.println("</table>");
+          out.println("</td>");
+          out.println("</tr>");
         }
-        out.println("</TABLE>");
+        out.println("</table>");
         out.flush();
         jw.write(sw.toString());
       }

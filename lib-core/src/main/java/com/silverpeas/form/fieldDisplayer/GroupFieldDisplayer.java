@@ -112,7 +112,6 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer {
         ", fieldType = " + field.getTypeName());
 
     String language = PagesContext.getLanguage();
-    String mandatoryImg = Util.getIcon("mandatoryField");
     String selectGroupImg = Util.getIcon("groupPanel");
     String selectGroupLab = Util.getString("groupPanel", language);
     String deleteImg = Util.getIcon("delete");
@@ -134,15 +133,15 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer {
       groupName = field.getValue();
     }
     html +=
-        "<INPUT type=\"hidden\""
+        "<input type=\"hidden\""
         + " id=\"" + fieldName + "\" name=\"" + fieldName + "\" value=\"" +
-        EncodeHelper.javaStringToHtmlString(groupId) + "\" >";
+        EncodeHelper.javaStringToHtmlString(groupId) + "\" />";
 
     if (!template.isHidden()) {
       html +=
-          "<INPUT type=\"text\" disabled size=\"50\" "
-          + " id=\"" + fieldName + "$$name\" name=\"" + fieldName + "$$name\" value=\"" +
-          EncodeHelper.javaStringToHtmlString(groupName) + "\" >";
+          "<input type=\"text\" disabled=\"disabled\" size=\"50\" "
+          + " id=\"" + fieldName + "_name\" name=\"" + fieldName + "$$name\" value=\"" +
+          EncodeHelper.javaStringToHtmlString(groupName) + "\" />";
     }
 
     if (!template.isHidden() && !template.isDisabled()
@@ -152,14 +151,14 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer {
           URLManager.getApplicationURL() + "/RselectionPeasWrapper/jsp/open"
           + "?formName=" + PagesContext.getFormName()
           + "&elementId=" + fieldName
-          + "&elementName=" + fieldName + "$$name"
+          + "&elementName=" + fieldName + "_name"
           + "&selectable=" + SelectionUsersGroups.GROUP
           + "&selectedGroup=" + ((groupId == null) ? "" : groupId)
           + "','selectGroup',800,600,'');\" >";
       html += "<img src=\""
           + selectGroupImg
           + "\" width=\"15\" height=\"15\" border=\"0\" alt=\""
-          + selectGroupLab + "\" align=\"absmiddle\" title=\""
+          + selectGroupLab + "\" align=\"top\" title=\""
           + selectGroupLab + "\"/></a>";
       html +=
           "&nbsp;<a href=\"#\" onclick=\"javascript:"
@@ -170,12 +169,11 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer {
       html += "<img src=\""
           + deleteImg
           + "\" width=\"15\" height=\"15\" border=\"0\" alt=\""
-          + deleteLab + "\" align=\"absmiddle\" title=\""
+          + deleteLab + "\" align=\"top\" title=\""
           + deleteLab + "\"/></a>";
 
       if (template.isMandatory() && PagesContext.useMandatory()) {
-        html += "&nbsp;<img src=\"" + mandatoryImg
-            + "\" width=\"5\" height=\"5\" border=\"0\" alt=\"\"/>";
+        html += Util.getMandatorySnippet();
       }
     }
 

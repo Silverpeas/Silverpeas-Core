@@ -127,7 +127,6 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer {
         + field.getTypeName());
 
     String language = PagesContext.getLanguage();
-    String mandatoryImg = Util.getIcon("mandatoryField");
     String selectUserImg = Util.getIcon("userPanel");
     String selectUserLab = Util.getString("userPanel", language);
 
@@ -155,15 +154,15 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer {
     if (!field.isNull()) {
       userNames = field.getValue();
     }
-    html.append("<INPUT type=\"hidden\" name=\"").append(fieldName)
+    html.append("<input type=\"hidden\" name=\"").append(fieldName)
         .append("\" value=\"")
-        .append(EncodeHelper.javaStringToHtmlString(userIds)).append("\" >");
+        .append(EncodeHelper.javaStringToHtmlString(userIds)).append("\" />");
 
     if (!template.isHidden()) {
-      html.append("<TEXTAREA name=\"").append(fieldName)
-          .append("$$name\" disabled rows=\"").append(rows).append("\" cols=\"").append(cols)
+      html.append("<textarea name=\"").append(fieldName)
+          .append("$$name\" disabled=\"disabled\" rows=\"").append(rows).append("\" cols=\"").append(cols)
           .append("\">")
-          .append(EncodeHelper.javaStringToHtmlString(userNames)).append("</TEXTAREA>");
+          .append(EncodeHelper.javaStringToHtmlString(userNames)).append("</textarea>");
     }
 
     if (!template.isHidden() && !template.isDisabled()
@@ -181,11 +180,10 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer {
       html.append("<img src=\"").append(selectUserImg).append(
           "\" width=\"15\" height=\"15\" border=\"0\" alt=\"")
           .append(selectUserLab).append("\" align=\"absmiddle\" title=\"").append(selectUserLab)
-          .append("\"></a>");
+          .append("\"/></a>");
 
       if (template.isMandatory()) {
-        html.append("&nbsp;<img src=\"").append(mandatoryImg).append(
-            "\" width=\"5\" height=\"5\" border=\"0\">");
+        html.append(Util.getMandatorySnippet());
       }
     }
 

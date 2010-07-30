@@ -123,8 +123,6 @@ public class TextAreaFieldDisplayer extends AbstractFieldDisplayer {
     String html = "";
     String cssClass = null;
 
-    String mandatoryImg = Util.getIcon("mandatoryField");
-
     String fieldName = template.getFieldName();
     Map<String, String> parameters = template.getParameters(PagesContext.getLanguage());
 
@@ -149,27 +147,27 @@ public class TextAreaFieldDisplayer extends AbstractFieldDisplayer {
     if (parameters.containsKey("rows")) {
       rows = parameters.get("rows");
     }
-    html += " rows=" + rows;
+    html += " rows=\"" + rows + "\"";
 
     if (parameters.containsKey("cols")) {
       cols = parameters.get("cols");
     }
-    html += " cols=" + cols;
+    html += " cols=\"" + cols + "\"";
 
     if (template.isDisabled()) {
-      html += " disabled";
+      html += " disabled=\"disabled\"";
     } else if (template.isReadOnly()) {
-      html += " readOnly";
+      html += " readonly=\"readonly\"";
     }
 
-    html += " >" + EncodeHelper.javaStringToHtmlString(value) + "</TEXTAREA>";
+    html += " >" + EncodeHelper.javaStringToHtmlString(value) + "</textarea>";
 
     if (StringUtil.isDefined(cssClass))
       html += "</span>";
 
     if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
         !template.isHidden() && PagesContext.useMandatory()) {
-      html += "&nbsp;<img src=\"" + mandatoryImg + "\" width=\"5\" height=\"5\" border=\"0\"/>";
+      html += Util.getMandatorySnippet();
     }
 
     out.println(html);

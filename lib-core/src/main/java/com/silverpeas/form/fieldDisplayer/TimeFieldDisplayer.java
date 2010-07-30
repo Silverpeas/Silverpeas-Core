@@ -25,12 +25,14 @@
 package com.silverpeas.form.fieldDisplayer;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.ecs.ElementContainer;
-import org.apache.ecs.html.IMG;
-import org.apache.ecs.html.Input;
+import org.apache.ecs.xhtml.img;
+import org.apache.ecs.xhtml.input;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -43,8 +45,6 @@ import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A TimeFieldDisplayer is an object which can display a time
@@ -152,39 +152,39 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer {
     if (template.isReadOnly() && !template.isHidden()) {
       html = value;
     } else {
-      Input input = new Input();
-      input.setName(template.getFieldName());
-      input.setID(template.getFieldName());
-      input.setValue(EncodeHelper.javaStringToHtmlString(value));
-      input.setType(template.isHidden() ? Input.hidden : Input.text);
-      input.setMaxlength("5");
-      input.setSize("10");
+      input inputField = new input();
+      inputField.setName(template.getFieldName());
+      inputField.setID(template.getFieldName());
+      inputField.setValue(EncodeHelper.javaStringToHtmlString(value));
+      inputField.setType(template.isHidden() ? input.hidden : input.text);
+      inputField.setMaxlength("5");
+      inputField.setSize("10");
       if (template.isDisabled()) {
-        input.setDisabled(true);
+        inputField.setDisabled(true);
       } else if (template.isReadOnly()) {
-        input.setReadOnly(true);
+        inputField.setReadOnly(true);
       }
 
-      IMG img = null;
+      img image = null;
       if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
           !template.isHidden() && pageContext.
           useMandatory()) {
-        img = new IMG();
-        img.setSrc(Util.getIcon("mandatoryField"));
-        img.setWidth(5);
-        img.setHeight(5);
-        img.setBorder(0);
+        image = new img();
+        image.setSrc(Util.getIcon("mandatoryField"));
+        image.setWidth(5);
+        image.setHeight(5);
+        image.setBorder(0);
       }
 
       // print field
-      if (img != null) {
+      if (image != null) {
         ElementContainer container = new ElementContainer();
-        container.addElement(input);
+        container.addElement(inputField);
         container.addElement("&nbsp;");
-        container.addElement(img);
+        container.addElement(image);
         out.println(container.toString());
       } else {
-        out.println(input.toString());
+        out.println(inputField.toString());
       }
     }
     out.println(html);

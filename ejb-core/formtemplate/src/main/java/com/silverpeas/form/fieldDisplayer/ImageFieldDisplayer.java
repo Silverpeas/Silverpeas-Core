@@ -141,8 +141,6 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
         getFieldName() + ", value = " + field.getValue() + ", fieldType = " +
         field.getTypeName());
 
-    String mandatoryImg = Util.getIcon("mandatoryField");
-
     String html = "";
 
     String fieldName = template.getFieldName();
@@ -164,11 +162,11 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
 
     if (template.isReadOnly() && !template.isHidden()) {
       if (attachment != null) {
-        Map parameters = template.getParameters(pagesContext.getLanguage());
+        Map<String, String> parameters = template.getParameters(pagesContext.getLanguage());
         String height =
-            (parameters.containsKey("height") ? (String) parameters.get("height") : "");
+            (parameters.containsKey("height") ? parameters.get("height") : "");
         String width =
-            (parameters.containsKey("width") ? (String) parameters.get("width") : "");
+            (parameters.containsKey("width") ? parameters.get("width") : "");
 
         String paramHeight = "";
         String paramWidth = "";
@@ -202,7 +200,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
           }
         }
 
-        out.print("<IMG alt=\"\" src=\"");
+        out.print("<img alt=\"\" src=\"");
         out.print(webContext);
         out.print(attachment.getAttachmentURL());
         out.print("\"");
@@ -211,14 +209,14 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
         out.print("/>");
       }
     } else if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {
-      out.print("<INPUT type=\"file\" size=\"50\" id=\"");
+      out.print("<input type=\"file\" size=\"50\" id=\"");
       out.print(fieldName);
       out.print("\" name=\"");
       out.print(fieldName);
-      out.print("\">");
+      out.print("\"/>");
       html +=
-          "<INPUT type=\"hidden\" name=\"" + fieldName + Field.FILE_PARAM_NAME_SUFFIX +
-          "\" value=\"" + attachmentId + "\">";
+          "<input type=\"hidden\" name=\"" + fieldName + Field.FILE_PARAM_NAME_SUFFIX +
+          "\" value=\"" + attachmentId + "\"/>";
 
       if (attachment != null) {
         String deleteImg = Util.getIcon("delete");
@@ -226,11 +224,11 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
 
         html += "&nbsp;<span id=\"div" + fieldName + "\">";
         html +=
-            "<IMG alt=\"\" align=\"absmiddle\" src=\"" + attachment.getAttachmentIcon() +
-            "\" width=20>&nbsp;";
+            "<img alt=\"\" align=\"top\" src=\"" + attachment.getAttachmentIcon() +
+            "\" width=\"20\"/>&nbsp;";
         html +=
-            "<A href=\"" + webContext + attachment.getAttachmentURL() + "\" target=\"_blank\">" +
-            attachment.getLogicalName() + "</A>";
+            "<a href=\"" + webContext + attachment.getAttachmentURL() + "\" target=\"_blank\">" +
+            attachment.getLogicalName() + "</a>";
 
         html +=
             "&nbsp;<a href=\"#\" onclick=\"javascript:"
@@ -241,13 +239,13 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
         html += "<img src=\""
             + deleteImg
             + "\" width=\"15\" height=\"15\" border=\"0\" alt=\""
-            + deleteLab + "\" align=\"absmiddle\" title=\""
-            + deleteLab + "\"></a>";
+            + deleteLab + "\" align=\"top\" title=\""
+            + deleteLab + "\"/></a>";
         html += "</span>";
       }
 
       if (template.isMandatory() && pagesContext.useMandatory()) {
-        html += "&nbsp;<img src=\"" + mandatoryImg + "\" width=\"5\" height=\"5\" border=\"0\">";
+        html += Util.getMandatorySnippet();
       }
     }
     out.println(html);
@@ -325,7 +323,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
     return 2;
   }
 
-  private String processUploadedImage(List items, String parameterName, PagesContext pagesContext)
+  private String processUploadedImage(List<FileItem> items, String parameterName, PagesContext pagesContext)
       throws Exception {
     String attachmentId = null;
     FileItem item = FileUploadUtil.getFile(items, parameterName);

@@ -75,12 +75,12 @@ public class Util {
         + "/util/javaScript/checkForm.js" + "\"></script>\n";
     includes += "<script type=\"text/javascript\" src=\"" + path
         + "/util/javaScript/animation.js" + "\"></script>\n";
-    includes += "<script language=\"JavaScript\">";
-    includes += "function calendar(idField) {";
+    includes += "<script type=\"text/javascript\">\n";
+    includes += "function calendar(idField) {\n";
     includes += "	SP_openWindow('" + path
         + URLManager.getURL(URLManager.CMP_AGENDA)
-        + "calendar.jsp?idElem='+idField,'Calendrier',180,200,'');";
-    includes += "}";
+        + "calendar.jsp?idElem='+idField,'Calendrier',180,200,'');\n";
+    includes += "}\n";
     includes += "</script>\n";
 
     // includes external scripts once because
@@ -131,6 +131,7 @@ public class Util {
    */
   public static String getMandatorySnippet() {
     return "&nbsp;<img src=\"" + getIcon("mandatoryField")
-        + "\" width=\"5\" height=\"5\" border=\"0\">";
+        + "\" width=\"5\" height=\"5\" border=\"0\" alt=\"" +
+        Util.getString("GML.requiredField", language) + "\"/>";
   }
 }

@@ -34,11 +34,14 @@ import com.silverpeas.form.FormException;
  * @see FieldDisplayer
  */
 public class FileField implements Field {
+  
+  private static final long serialVersionUID = -6926466281028971482L;
   /**
    * The text field type name.
    */
   static public final String TYPE = TYPE_FILE;
   static public final String PARAM_NAME_SUFFIX = "$$id";
+  static public final String PARAM_ID_SUFFIX = "_id";
 
   /**
    * Returns the type name.

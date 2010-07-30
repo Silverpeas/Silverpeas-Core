@@ -24,7 +24,14 @@
 
 package com.silverpeas.form.fieldDisplayer;
 
+import java.io.File;
 import java.io.PrintWriter;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -40,31 +47,24 @@ import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
+import com.stratelia.silverpeas.versioning.ejb.VersioningBmHome;
+import com.stratelia.silverpeas.versioning.model.Document;
+import com.stratelia.silverpeas.versioning.model.DocumentPK;
+import com.stratelia.silverpeas.versioning.model.DocumentVersion;
+import com.stratelia.silverpeas.versioning.model.Worker;
+import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import com.stratelia.silverpeas.versioning.model.Document;
-import com.stratelia.silverpeas.versioning.model.DocumentPK;
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
-import com.stratelia.silverpeas.versioning.model.Worker;
-import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
-import com.stratelia.silverpeas.versioning.ejb.VersioningBmHome;
-import com.stratelia.silverpeas.versioning.util.VersioningUtil;
-import com.stratelia.webactiv.util.FileServerUtils;
-import com.stratelia.webactiv.util.ResourceLocator;
-import java.io.File;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import org.apache.commons.fileupload.FileItem;
 
 /**
  * A FileFieldDisplayer is an object which can display a link to a file (attachment) in HTML and can
@@ -152,8 +152,6 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
         "fieldName = " + template.getFieldName() + ", value = " + field.getValue() +
         ", fieldType = " + field.getTypeName());
 
-    String mandatoryImg = Util.getIcon("mandatoryField");
-
     String html = "";
 
     String fieldName = template.getFieldName();
@@ -176,17 +174,17 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
 
     if (template.isReadOnly() && !template.isHidden()) {
       if (attachment != null) {
-        html = "<IMG alt=\"\" src=\"" + attachment.getAttachmentIcon() + "\" width=20>&nbsp;";
+        html = "<img alt=\"\" src=\"" + attachment.getAttachmentIcon() + "\" width=\"20\">&nbsp;";
         html +=
-            "<A href=\"" + webContext + attachment.getAttachmentURL() + "\" target=\"_blank\">" +
-            attachment.getLogicalName() + "</A>";
+            "<a href=\"" + webContext + attachment.getAttachmentURL() + "\" target=\"_blank\">" +
+            attachment.getLogicalName() + "</a>";
       }
     } else if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {
       html +=
-          "<INPUT type=\"file\" size=\"50\" id=\"" + fieldName + "\" name=\"" + fieldName + "\">";
+          "<input type=\"file\" size=\"50\" id=\"" + fieldName + "\" name=\"" + fieldName + "\"/>";
       html +=
-          "<INPUT type=\"hidden\" id=\"" + fieldName + FileField.PARAM_NAME_SUFFIX + "\" name=\"" +
-          fieldName + FileField.PARAM_NAME_SUFFIX + "\" value=\"" + attachmentId + "\">";
+          "<input type=\"hidden\" id=\"" + fieldName + FileField.PARAM_ID_SUFFIX + "\" name=\"" +
+          fieldName + FileField.PARAM_NAME_SUFFIX + "\" value=\"" + attachmentId + "\"/>";
 
       if (attachment != null) {
         String deleteImg = Util.getIcon("delete");
@@ -194,11 +192,11 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
 
         html += "&nbsp;<span id=\"div" + fieldName + "\">";
         html +=
-            "<IMG alt=\"\" align=\"absmiddle\" src=\"" + attachment.getAttachmentIcon() +
-            "\" width=20>&nbsp;";
+            "<img alt=\"\" align=\"top\" src=\"" + attachment.getAttachmentIcon() +
+            "\" width=\"20\"/>&nbsp;";
         html +=
-            "<A href=\"" + webContext + attachment.getAttachmentURL() + "\" target=\"_blank\">" +
-            attachment.getLogicalName() + "</A>";
+            "<a href=\"" + webContext + attachment.getAttachmentURL() + "\" target=\"_blank\">" +
+            attachment.getLogicalName() + "</a>";
 
         html +=
             "&nbsp;<a href=\"#\" onclick=\"javascript:" + "document.getElementById('div" +
@@ -207,12 +205,12 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
             "';" + "\">";
         html +=
             "<img src=\"" + deleteImg + "\" width=\"15\" height=\"15\" border=\"0\" alt=\"" +
-            deleteLab + "\" align=\"absmiddle\" title=\"" + deleteLab + "\"></a>";
+            deleteLab + "\" align=\"top\" title=\"" + deleteLab + "\"/></a>";
         html += "</span>";
       }
 
       if (template.isMandatory() && pagesContext.useMandatory()) {
-        html += "&nbsp;<img src=\"" + mandatoryImg + "\" width=\"5\" height=\"5\" border=\"0\">";
+        html += Util.getMandatorySnippet();
       }
     }
     out.println(html);
@@ -284,7 +282,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
     return new ArrayList<String>();
   }
 
-  private String processUploadedFile(List items, String parameterName, PagesContext pagesContext)
+  private String processUploadedFile(List<FileItem> items, String parameterName, PagesContext pagesContext)
       throws Exception {
     String attachmentId = null;
     FileItem item = FileUploadUtil.getFile(items, parameterName);

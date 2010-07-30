@@ -170,7 +170,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
       out.println(code);
 
     } else {
-      out.println("<TABLE>");
+      out.println("<table>");
       // dynamic value functionality
       if (DynamicValueReplacement.isActivate()) {
         out.println("<tr class=\"TB_Expand\"> <td class=\"TB_Expand\" align=\"center\">");
@@ -185,6 +185,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
       List<ComponentInstLight> fileStorage =
           WysiwygController.getStorageFile(pageContext.getUserId());
       if (!fileStorage.isEmpty()) {
+        out.println("<tr class=\"TB_Expand\"><td class=\"TB_Expand\">");
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("<select id=\"storageFile_" + fieldName +
             "\" name=\"componentId\" onchange=\"openStorageFilemanager" +
@@ -205,6 +206,9 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
       String fieldNameFunction = FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'));
 
       if (galleries != null && !galleries.isEmpty()) {
+        if (fileStorage.isEmpty()) {
+          out.println("<tr class=\"TB_Expand\"><td class=\"TB_Expand\">");
+        }
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("<select id=\"galleryFile_" + fieldName +
             "\" name=\"componentId\" onchange=\"openGalleryFileManager" + fieldNameFunction +
@@ -219,7 +223,11 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
         out.println(stringBuilder.toString());
       }
 
-      out.println("<TR>");
+      if (!fileStorage.isEmpty() || (galleries != null && !galleries.isEmpty())) {
+        out.println("</td></tr>");
+      }
+
+      out.println("<tr>");
 
       // looks for size parameters
       int editorWitdh = 500;
@@ -231,10 +239,10 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
         editorHeight = Integer.parseInt(parameters.get("height"));
       }
 
-      out.println("<TD valign=top>");
-      out.println("<textarea id=\"" + fieldName + "\" name=\"" + fieldName + "\">" + code +
-          "</textarea>");
-      out.println("<script language=\"JavaScript\">");
+      out.println("<td valign=\"top\">");
+      out.println("<textarea id=\"" + fieldName + "\" name=\"" + fieldName +
+          "\" rows=\"10\" cols=\"10\">" + code + "</textarea>");
+      out.println("<script type=\"text/javascript\">");
       out.println("var oFCKeditor = new FCKeditor('" + fieldName + "');");
       out.println("oFCKeditor.Width = \"" + editorWitdh + "\";");
       out.println("oFCKeditor.Height = \"" + editorHeight + "\";");
@@ -295,7 +303,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
       out.println(" var oEditor = FCKeditorAPI.GetInstance('" + fieldName + "');");
       out.println("oEditor.Focus();");
       out
-          .println("oEditor.InsertHtml('<a href=\"'+url+'\"> <img src=\"'+img+'\" width=\"20\" border=\"0\"> '+label+'</a> ');");
+          .println("oEditor.InsertHtml('<a href=\"'+url+'\"> <img src=\"'+img+'\" width=\"20\" border=\"0\" alt=\"\"/> '+label+'</a> ');");
       out.println("}");
 
       // Gallery files exists; javascript functions
@@ -327,7 +335,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
         out.println("function choixImageInGallery" + fieldNameFunction + "(url){");
         out.println(" var oEditor = FCKeditorAPI.GetInstance('" + fieldName + "');");
         out.println("oEditor.Focus();");
-        out.println("oEditor.InsertHtml('<img src=\"'+url+'\" border=\"0\"/>');");
+        out.println("oEditor.InsertHtml('<img src=\"'+url+'\" border=\"0\" alt=\"\"/>');");
         out.println("}");
       }
 
@@ -337,9 +345,9 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
         out.println(Util.getMandatorySnippet());
       }
 
-      out.println("</TD>");
-      out.println("</TR>");
-      out.println("</TABLE>");
+      out.println("</td>");
+      out.println("</tr>");
+      out.println("</table>");
 
     }
   }
@@ -400,11 +408,11 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
             fieldName,
             language);
         try {
-        Source source = new Source(new FileInputStream(file));
-        if (source != null) {
-          fieldValueIndex = source.getTextExtractor().toString();
-        }
-        }catch(IOException ioex){
+          Source source = new Source(new FileInputStream(file));
+          if (source != null) {
+            fieldValueIndex = source.getTextExtractor().toString();
+          }
+        } catch (IOException ioex) {
           SilverTrace.warn("form", "WysiwygFCKFieldDisplayer.index", "form.incorrect_data",
               "File not found " + file + " " + ioex.getMessage(), ioex);
         }

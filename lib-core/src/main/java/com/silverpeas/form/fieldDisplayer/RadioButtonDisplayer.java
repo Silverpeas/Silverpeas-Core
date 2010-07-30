@@ -125,8 +125,6 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer {
     String language = pageContext.getLanguage();
     String cssClass = null;
 
-    String mandatoryImg = Util.getIcon("mandatoryField");
-
     String fieldName = template.getFieldName();
     Map<String, String> parameters = template.getParameters(language);
 
@@ -194,7 +192,7 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer {
       SilverTrace.error("form", "RadioButtonDisplayer.display", "form.EX_ERR_ILLEGAL_PARAMETERS",
           "Nb keys=" + stKeys.countTokens() + " & Nb values=" + stValues.countTokens());
     } else {
-      html += "<table border=0>";
+      html += "<table border=\"0\">";
       int col = 0;
       for (int i = 0; i < nbTokens; i++) {
         if (col == 0) {
@@ -209,18 +207,18 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer {
         if (StringUtil.isDefined(cssClass))
           html += "<span " + cssClass + ">";
         html +=
-            "<INPUT type=\"radio\" id=\"" + fieldName + "\" name=\"" + fieldName + "\" value=\"" +
-            optKey + "\" ";
+            "<input type=\"radio\" id=\"" + fieldName + "_" + i + "\" name=\"" + fieldName +
+                "\" value=\"" + optKey + "\" ";
 
         if (template.isDisabled() || template.isReadOnly()) {
-          html += " disabled ";
+          html += " disabled=\"disabled\" ";
         }
 
         if (optKey.equals(value)) {
-          html += " checked ";
+          html += " checked=\"checked\" ";
         }
 
-        html += ">&nbsp;" + optValue;
+        html += "/>&nbsp;" + optValue;
 
         if (StringUtil.isDefined(cssClass))
           html += "</span>";
@@ -228,8 +226,7 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer {
         if (i == nbTokens - 1) {
           if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
               !template.isHidden() && pageContext.useMandatory()) {
-            html +=
-                "&nbsp;<img src=\"" + mandatoryImg + "\" width=\"5\" height=\"5\" border=\"0\">";
+            html += Util.getMandatorySnippet();
           }
         }
 

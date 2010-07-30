@@ -25,12 +25,13 @@
 package com.silverpeas.form.fieldDisplayer;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.ecs.ElementContainer;
-import org.apache.ecs.html.IMG;
-import org.apache.ecs.html.Input;
+import org.apache.ecs.xhtml.img;
+import org.apache.ecs.xhtml.input;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -44,7 +45,6 @@ import com.silverpeas.form.fieldType.TextFieldImpl;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import java.util.ArrayList;
 
 /**
  * A TextFieldDisplayer is an object which can display a TextFiel in HTML the content of a TextFiel
@@ -156,8 +156,8 @@ public class UrlFieldDisplayer extends AbstractFieldDisplayer {
           value = "http://" + value;
         }
         html =
-            "<A TARGET=\"_blank\" HREF=\"" + value + "\">" +
-            EncodeHelper.javaStringToHtmlString(value) + "</A>";
+            "<a target=\"_blank\" href=\"" + value + "\">" +
+            EncodeHelper.javaStringToHtmlString(value) + "</a>";
       }
     } else {
       // Suggestions used ?
@@ -172,59 +172,59 @@ public class UrlFieldDisplayer extends AbstractFieldDisplayer {
             .getComponentId());
       }
 
-      Input input = new Input();
-      input.setName(template.getFieldName());
-      input.setID(template.getFieldName());
-      input.setValue(EncodeHelper.javaStringToHtmlString(value));
-      input.setType(template.isHidden() ? Input.hidden : Input.text);
-      input.setMaxlength(parameters.containsKey("maxLength") ? (String) parameters.get("maxLength")
+      input inputField = new input();
+      inputField.setName(template.getFieldName());
+      inputField.setID(template.getFieldName());
+      inputField.setValue(EncodeHelper.javaStringToHtmlString(value));
+      inputField.setType(template.isHidden() ? input.hidden : input.text);
+      inputField.setMaxlength(parameters.containsKey("maxLength") ? (String) parameters.get("maxLength")
           : "1000");
-      input.setSize(parameters.containsKey("size") ? (String) parameters.get("size") : "50");
+      inputField.setSize(parameters.containsKey("size") ? (String) parameters.get("size") : "50");
       if (parameters.containsKey("border")) {
-        input.setBorder(Integer.parseInt((String) parameters.get("border")));
+        inputField.setBorder(Integer.parseInt((String) parameters.get("border")));
       }
       if (template.isDisabled()) {
-        input.setDisabled(true);
+        inputField.setDisabled(true);
       } else if (template.isReadOnly()) {
-        input.setReadOnly(true);
+        inputField.setReadOnly(true);
       }
 
-      IMG img = null;
+      img image = null;
       if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
           !template.isHidden() && pageContext.
           useMandatory()) {
-        img = new IMG();
-        img.setSrc(Util.getIcon("mandatoryField"));
-        img.setWidth(5);
-        img.setHeight(5);
-        img.setBorder(0);
+        image = new img();
+        image.setSrc(Util.getIcon("mandatoryField"));
+        image.setWidth(5);
+        image.setHeight(5);
+        image.setBorder(0);
       }
 
       if (suggestions != null && suggestions.size() > 0) {
         TextFieldImpl.printSuggestionsIncludes(pageContext, fieldName, out);
         out.println("<div id=\"listAutocomplete" + fieldName + "\">\n");
 
-        out.println(input.toString());
+        out.println(inputField.toString());
 
         out.println("<div id=\"container" + fieldName + "\"/>\n");
         out.println("</div>\n");
 
-        if (img != null) {
-          img.setStyle("position:absolute;left:16em;top:5px");
-          out.println(img.toString());
+        if (image != null) {
+          image.setStyle("position:absolute;left:16em;top:5px");
+          out.println(image.toString());
         }
 
         TextFieldImpl.printSuggestionsScripts(pageContext, fieldName, suggestions, out);
       } else {
         // print field
-        if (img != null) {
+        if (image != null) {
           ElementContainer container = new ElementContainer();
-          container.addElement(input);
+          container.addElement(inputField);
           container.addElement("&nbsp;");
-          container.addElement(img);
+          container.addElement(image);
           out.println(container.toString());
         } else {
-          out.println(input.toString());
+          out.println(inputField.toString());
         }
       }
     }

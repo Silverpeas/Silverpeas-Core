@@ -113,7 +113,6 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer {
     String html = "";
     String language = PagesContext.getLanguage();
     String cssClass = null;
-    String mandatoryImg = Util.getIcon("mandatoryField");
 
     String fieldName = template.getFieldName();
     Map<String, String> parameters = template.getParameters(language);
@@ -133,16 +132,16 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer {
         cssClass = "class=\"" + cssClass + "\"";
     }
     if (StringUtil.isDefined(cssClass))
-      html += "<SELECT " + cssClass + " id=\"" + fieldName + "\" name=\"" + fieldName + "\"";
+      html += "<select " + cssClass + " id=\"" + fieldName + "\" name=\"" + fieldName + "\"";
     else
-      html += "<SELECT id=\"" + fieldName + "\" name=\"" + fieldName + "\"";
+      html += "<select id=\"" + fieldName + "\" name=\"" + fieldName + "\"";
 
     if (template.isDisabled() || template.isReadOnly()) {
       html += " disabled";
     }
 
     html += " >\n";
-    html += "<OPTION value=\"\"></OPTION>\n";
+    html += "<option value=\"\"></option>\n";
     if (parameters.containsKey("keys")) {
       keys = parameters.get("keys");
     }
@@ -167,20 +166,20 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer {
         optKey = stKeys.nextToken();
         optValue = stValues.nextToken();
 
-        html += "<OPTION ";
+        html += "<option ";
         if (optKey.equals(value)) {
-          html += "SELECTED ";
+          html += "selected=\"selected\" ";
         }
 
-        html += "value=\"" + optKey + "\">" + optValue + "</OPTION>\n";
+        html += "value=\"" + optKey + "\">" + optValue + "</option>\n";
       }
     }
 
-    html += "</SELECT>\n";
+    html += "</select>\n";
 
     if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
         !template.isHidden() && PagesContext.useMandatory()) {
-      html += "&nbsp;<img src=\"" + mandatoryImg + "\" width=\"5\" height=\"5\" border=\"0\"/>";
+      html += Util.getMandatorySnippet();
     }
 
     out.println(html);
@@ -193,8 +192,6 @@ public class ListBoxFieldDisplayer extends AbstractFieldDisplayer {
       throw new FormException("TextAreaFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
           TextField.TYPE);
     }
-
-    // String newValue = request.getParameter(template.getFieldName());
 
     if (field.acceptValue(newValue, PagesContext.getLanguage())) {
       field.setValue(newValue, PagesContext.getLanguage());

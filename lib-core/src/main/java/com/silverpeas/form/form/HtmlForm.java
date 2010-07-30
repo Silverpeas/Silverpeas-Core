@@ -252,8 +252,8 @@ public class HtmlForm extends AbstractForm {
       StringWriter sw = new StringWriter();
       PrintWriter out = new PrintWriter(sw, true);
 
-      out.println("<INPUT TYPE=\"hidden\" NAME=id VALUE=\"" + record.getId()
-          + "\">");
+      out.println("<input type=\"hidden\" name=\"id\" value=\"" + record.getId()
+          + "\"/>");
       parseFile(out);
 
       out.flush();
@@ -284,8 +284,8 @@ public class HtmlForm extends AbstractForm {
       // StringWriter sw = new StringWriter();
       PrintWriter out = new PrintWriter(sw, true);
 
-      out.println("<INPUT TYPE=\"hidden\" NAME=id VALUE=\"" + record.getId()
-          + "\">");
+      out.println("<input type=\"hidden\" name=\"id\" value=\"" + record.getId()
+          + "\"/>");
       parseFile(out);
 
       // out.flush();
