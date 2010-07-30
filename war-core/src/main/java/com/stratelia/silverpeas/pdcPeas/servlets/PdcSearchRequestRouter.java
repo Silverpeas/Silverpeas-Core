@@ -89,7 +89,6 @@ import com.stratelia.webactiv.searchEngine.model.ScoreComparator;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
 import com.stratelia.webactiv.util.exception.UtilException;
-import com.sun.mail.iap.Response;
 
 public class PdcSearchRequestRouter extends ComponentRequestRouter {
 
