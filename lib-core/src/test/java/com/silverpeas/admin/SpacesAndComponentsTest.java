@@ -109,13 +109,15 @@ public class SpacesAndComponentsTest extends JndiBasedDBTestCase {
   }
 
   private AdminController getAdminController() {
-    return new AdminController("1");
+    AdminController ac = new AdminController("1");
+    ac.reloadAdminCache();
+    return ac;
   }
 
   @Test
   public void testAddSpace() {
     AdminController ac = getAdminController();
-    
+
     // test space creation
     SpaceInst space = new SpaceInst();
     space.setCreatorUserId("1");
@@ -132,12 +134,12 @@ public class SpacesAndComponentsTest extends JndiBasedDBTestCase {
     String subSpaceId = ac.addSpaceInst(subspace);
     assertNotNull(subSpaceId);
     assertEquals("WA4", subSpaceId);
-    
-    //test subspace of root space
+
+    // test subspace of root space
     String[] subSpaceIds = ac.getAllSubSpaceIds("WA3");
     assertEquals(1, subSpaceIds.length);
-    
-    //test level calculation
+
+    // test level calculation
     subspace = ac.getSpaceInstById("WA4");
     assertEquals(1, subspace.getLevel());
   }
@@ -149,7 +151,7 @@ public class SpacesAndComponentsTest extends JndiBasedDBTestCase {
     String desc = "New description";
     space.setDescription(desc);
     ac.updateSpaceInst(space);
-    
+
     space = ac.getSpaceInstById("1");
     assertEquals(desc, space.getDescription());
   }
@@ -157,12 +159,12 @@ public class SpacesAndComponentsTest extends JndiBasedDBTestCase {
   @Test
   public void testDeleteSpace() {
     AdminController ac = getAdminController();
-    
+
     ac.deleteSpaceInstById("WA1", false);
-    
+
     SpaceInst space = ac.getSpaceInstById("WA1");
     assertEquals("R", space.getStatus());
-    
+
     ac.deleteSpaceInstById("WA1", true);
     space = ac.getSpaceInstById("WA1");
     assertNull(space);
@@ -170,27 +172,23 @@ public class SpacesAndComponentsTest extends JndiBasedDBTestCase {
 
   @Test
   public void testAddComponent() {
-    /*AdminController ac = getAdminController();
-    
-    ComponentInst component = new ComponentInst();
-    component.setCreatorUserId("1");
-    component.setDomainFatherId("WA2");
-    component.setLabel("Mon nouveau composant");
-    component.setName("kmelia");
-    
-    String id = ac.addComponentInst(component);
-    assertEquals("kmelia2", id);*/
+    /*
+     * AdminController ac = getAdminController(); ComponentInst component = new ComponentInst();
+     * component.setCreatorUserId("1"); component.setDomainFatherId("WA2");
+     * component.setLabel("Mon nouveau composant"); component.setName("kmelia"); String id =
+     * ac.addComponentInst(component); assertEquals("kmelia2", id);
+     */
   }
 
   @Test
   public void testUpdateComponent() {
     AdminController ac = getAdminController();
-    
+
     ComponentInst component = ac.getComponentInst("kmelia1");
     String desc = "New description";
     component.setDescription(desc);
     ac.updateComponentInst(component);
-    
+
     component = ac.getComponentInst("kmelia1");
     assertEquals(desc, component.getDescription());
   }
@@ -198,72 +196,72 @@ public class SpacesAndComponentsTest extends JndiBasedDBTestCase {
   @Test
   public void testDeleteComponent() {
     AdminController ac = getAdminController();
-    
+
     ac.deleteComponentInst("kmelia1", false);
-    
+
     ComponentInst component = ac.getComponentInst("kmelia1");
     assertEquals("R", component.getStatus());
-    
+
     ac.deleteComponentInst("kmelia1", true);
     component = ac.getComponentInst("kmelia1");
     assertEquals("", component.getName());
   }
-  
+
   @Test
-  public void testProfileInheritance()
-  {
+  public void testProfileInheritance() {
     AdminController ac = getAdminController();
-    
-    //set space profile (admin)
+
+    // set space profile (admin)
     SpaceProfileInst profile = new SpaceProfileInst();
     profile.setSpaceFatherId("WA1");
     profile.setName("admin");
     profile.addUser("1");
     String profileId = ac.addSpaceProfileInst(profile, "1");
     assertEquals("1", profileId);
-    
-    //test inheritance
+
+    // test inheritance
     assertEquals(true, ac.isComponentAvailable("almanach2", "1"));
-    
-    //test if subspace is available
-    /*String[] subSpaceIds = ac.getAllSubSpaceIds("WA1", "1");
-    assertEquals(1, subSpaceIds.length);*/
-    
-    //remove user from space profile
+
+    // test if subspace is available
+    /*
+     * String[] subSpaceIds = ac.getAllSubSpaceIds("WA1", "1"); assertEquals(1, subSpaceIds.length);
+     */
+
+    // remove user from space profile
     profile = ac.getSpaceProfileInst(profileId);
     profile.removeAllUsers();
     ac.updateSpaceProfileInst(profile, "1");
-    
-    //test inheritance
+
+    // test inheritance
     assertEquals(false, ac.isComponentAvailable("almanach2", "1"));
   }
 
   @Test
   public void testSpaceManager() throws AdminException {
     AdminController ac = getAdminController();
-    
-    //set user1 as space manager
+
+    // set user1 as space manager
     SpaceProfileInst profile = new SpaceProfileInst();
     profile.setSpaceFatherId("WA2");
     profile.setName("Manager");
     profile.addUser("1");
     String profileId = ac.addSpaceProfileInst(profile, "1");
     assertEquals("1", profileId);
-    
-    //set user2 as simple reader on space
+
+    // set user2 as simple reader on space
     profile = new SpaceProfileInst();
     profile.setSpaceFatherId("WA2");
     profile.setName("reader");
     profile.addUser("2");
     profileId = ac.addSpaceProfileInst(profile, "1");
     assertEquals("2", profileId);
-    
-    //test if user1 is manager of at least one space
+
+    // test if user1 is manager of at least one space
     Admin admin = new Admin();
     String[] managerIds = admin.getUserManageableSpaceIds("1");
     assertEquals(1, managerIds.length);
-    
-    //test if user2 cannot manage spaces
+
+    // test if user2 cannot manage spaces
     managerIds = admin.getUserManageableSpaceIds("2");
     assertEquals(0, managerIds.length);
   }

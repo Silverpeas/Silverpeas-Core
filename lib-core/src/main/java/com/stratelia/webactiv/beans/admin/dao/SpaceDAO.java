@@ -30,7 +30,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
@@ -103,14 +105,14 @@ public class SpaceDAO {
 
   public static List<String> getManageableSpaceIds(Connection con, String userId,
       List<String> groupIds) throws SQLException {
-    List<String> manageableGroupIds = new ArrayList<String>();
+    Set<String> manageableSpaceIds = new HashSet<String>();
     if (StringUtil.isDefined(userId)) {
-      manageableGroupIds.addAll(getManageableSpaceIdsByUser(con, userId));
+      manageableSpaceIds.addAll(getManageableSpaceIdsByUser(con, userId));
     }
     if (groupIds != null && groupIds.size() > 0) {
-      manageableGroupIds.addAll(getManageableSpaceIdsByGroups(con, groupIds));
+      manageableSpaceIds.addAll(getManageableSpaceIdsByGroups(con, groupIds));
     }
-    return manageableGroupIds;
+    return new ArrayList<String>(manageableSpaceIds);
   }
 
   static final private String queryGetManageableSpaceIdsByUser = "select st_spaceuserrole.spaceid"

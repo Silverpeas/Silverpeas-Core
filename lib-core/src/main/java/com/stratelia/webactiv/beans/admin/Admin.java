@@ -122,6 +122,8 @@ public class Admin extends Object {
   static private ResourceLocator roleMapping = null;
   static private boolean useProfileInheritance = false;
 
+  private static transient boolean cacheLoaded = false;
+
   /**
    * Admin Constructor
    */
@@ -172,11 +174,16 @@ public class Admin extends Object {
         m_spaceInstanciator = new SpaceInstanciateur(getAllComponents());
       }
       // Init tree cache
-      reloadCache();
+      synchronized (Admin.class) {
+        if (!cacheLoaded) {
+          reloadCache();
+        }
+      }
     }
   }
 
   public final void reloadCache() {
+    m_Cache.resetCache();
     TreeCache.clearCache();
     // Init tree cache
     try {
@@ -191,6 +198,7 @@ public class Admin extends Object {
     } catch (Exception e) {
       SilverTrace.error("admin", "Constructor", "ERROR_WHEN_INITIALIZING_ADMIN", e);
     }
+    cacheLoaded = true;
   }
 
   // -------------------------------------------------------------------------
@@ -2813,7 +2821,7 @@ public class Admin extends Object {
 
         GroupProfileInst oldSpaceProfile =
             m_GroupProfileInstManager.getGroupProfileInst(m_DDManager, null, groupProfileInstNew
-                .getGroupId());
+            .getGroupId());
 
         // Update the group profile in tables
         m_GroupProfileInstManager.updateGroupProfileInst(oldSpaceProfile,
@@ -4101,7 +4109,7 @@ public class Admin extends Object {
   }
 
   /**
-   * Get the spaces roots ids manageable by given user Id
+   * Get the sub space ids manageable by given user Id in given space
    */
   public String[] getUserManageableSubSpaceIds(String sUserId,
       String sParentSpaceId) throws AdminException {
@@ -4113,11 +4121,18 @@ public class Admin extends Object {
       String parentSpaceId = getDriverSpaceId(sParentSpaceId);
 
       // retain only sub spaces
+      boolean find = false;
       List<String> manageableRootSpaceIds = new ArrayList<String>();
-      for (int s = 0; s < asManageableSpaceIds.length; s++) {
-        SpaceInstLight space = TreeCache.getSpaceInstLight(asManageableSpaceIds[s]);
-        if (parentSpaceId.equals(space.getFatherId())) {
-          manageableRootSpaceIds.add(asManageableSpaceIds[s]);
+      for (String manageableSpaceId : asManageableSpaceIds) {
+        find = false;
+        SpaceInstLight space = TreeCache.getSpaceInstLight(manageableSpaceId);
+        while (!space.isRoot() && !find) {
+          if (parentSpaceId.equals(space.getFatherId())) {
+            manageableRootSpaceIds.add(manageableSpaceId);
+            find = true;
+          } else {
+            space = TreeCache.getSpaceInstLight(space.getFatherId());
+          }
         }
       }
       return manageableRootSpaceIds.toArray(new String[manageableRootSpaceIds.size()]);
@@ -4125,7 +4140,7 @@ public class Admin extends Object {
       throw new AdminException("Admin.getManageableSubSpaceIds",
           SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_MANAGEABLE_SPACE_IDS", "user Id : '" + sUserId
-          + "' Spacez = " + sParentSpaceId, e);
+          + "' Space = " + sParentSpaceId, e);
     }
   }
 
@@ -4948,7 +4963,7 @@ public class Admin extends Object {
               if (domainId == null) {
                 userIds =
                     Arrays.asList(m_DDManager.organization.user
-                        .getUserIdsByAccessLevel(accessLevel));
+                    .getUserIdsByAccessLevel(accessLevel));
               } else {
                 userIds =
                     Arrays.asList(m_UserManager.getUserIdsOfDomainAndAccessLevel(m_DDManager,
@@ -4964,7 +4979,7 @@ public class Admin extends Object {
             if ("-1".equals(domainId)) {
               userIds =
                   Arrays.asList(m_DDManager.organization.user.getUserIdsOfDomain(Integer
-                      .parseInt(dId)));
+                  .parseInt(dId)));
             }
           }
         } else if (rule.toLowerCase().startsWith("dc_")) {
@@ -5494,7 +5509,7 @@ public class Admin extends Object {
         try {
           existingGroupId =
               m_GroupManager.getGroupIdBySpecificIdAndDomainId(m_DDManager, childs[i]
-                  .getSpecificId(), latestGroup.getDomainId());
+              .getSpecificId(), latestGroup.getDomainId());
           existingGroup = getGroup(existingGroupId);
           if (existingGroup.getSuperGroupId().equals(latestGroup.getId())) { // Only
             // synchronize
