@@ -282,17 +282,12 @@ public class UserRoleTable extends Table {
     if (userRole == null)
       return;
 
-    UserRow[] users = organization.user.getDirectUsersOfUserRole(id);
-    for (int i = 0; i < users.length; i++) {
-      removeUserFromUserRole(users[i].id, id);
-    }
+    // delete all groups attached to profile
+    removeAllGroupsFromUserRole(id);
 
-    GroupRow[] groups = organization.group.getDirectGroupsInUserRole(id);
-    for (int i = 0; i < groups.length; i++) {
-      removeGroupFromUserRole(groups[i].id, id);
-    }
+    // delete all users attached to profile
+    removeAllUsersFromUserRole(id);
 
-    // organization.userSet.removeUserSet(UserSetRow.RIGHTS, id);
     updateRelation(DELETE_USERROLE, id);
   }
 
@@ -369,6 +364,35 @@ public class UserRoleTable extends Table {
 
   static final private String DELETE_USERROLE_USER_REL =
       "delete from ST_UserRole_User_Rel where userRoleId = ? and userId = ?";
+
+  /**
+   * Removes all users from a userRole.
+   */
+  public void removeAllUsersFromUserRole(int userRoleId)
+      throws AdminPersistenceException {
+
+    SynchroReport.debug("UserRoleTable.removeAllUsersFromUserRole()",
+        "Retrait des utilisateurs du role d'ID " + userRoleId + ", requête : " +
+        DELETE_USERROLE_USER_REL, null);
+    updateRelation(DELETE_ALL_USERS_FROM_USERROLE, userRoleId);
+  }
+
+  static final private String DELETE_ALL_USERS_FROM_USERROLE =
+      "delete from ST_UserRole_User_Rel where userRoleId = ? ";
+
+  /**
+   * Removes all groups from a userRole.
+   */
+  public void removeAllGroupsFromUserRole(int userRoleId) throws AdminPersistenceException {
+
+    SynchroReport.debug("UserRoleTable.removeAllGroupsFromUserRole()",
+        "Retrait des groupes du role d'ID " + userRoleId + ", requête : " +
+        DELETE_USERROLE_USER_REL, null);
+    updateRelation(DELETE_ALL_GROUPS_FROM_USERROLE, userRoleId);
+  }
+
+  static final private String DELETE_ALL_GROUPS_FROM_USERROLE =
+      "delete from ST_UserRole_Group_Rel where userRoleId = ? ";
 
   /**
    * Tests if a group has a given role (not recursive).

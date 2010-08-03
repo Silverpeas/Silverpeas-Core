@@ -250,21 +250,11 @@ public class SpaceUserRoleTable extends Table {
     if (spaceUserRole == null)
       return;
 
-    UserRow[] users = organization.user.getDirectUsersOfSpaceUserRole(id);
-    for (int i = 0; i < users.length; i++) {
-      removeUserFromSpaceUserRole(users[i].id, id);
-    }
+    //delete all users attached to profile
+    removeAllUsersFromSpaceUserRole(id);
 
-    GroupRow[] groups = organization.group.getDirectGroupsInSpaceUserRole(id);
-    for (int i = 0; i < groups.length; i++) {
-      removeGroupFromSpaceUserRole(groups[i].id, id);
-    }
-
-    /*
-     * if (spaceUserRole.roleName.equalsIgnoreCase("manager"))
-     * organization.userSet.removeUserSet("M", id); else organization.userSet.removeUserSet("X",
-     * id);
-     */
+    //delete all groups attached to profile
+    removeAllGroupsFromSpaceUserRole(id);
 
     updateRelation(DELETE_SPACEUSERROLE, id);
   }
@@ -351,6 +341,21 @@ public class SpaceUserRoleTable extends Table {
       "delete from ST_SpaceUserRole_User_Rel where spaceUserRoleId = ? and userId = ?";
 
   /**
+   * Removes all users from a spaceUserRole.
+   */
+  public void removeAllUsersFromSpaceUserRole(int spaceUserRoleId)
+      throws AdminPersistenceException {
+    SynchroReport.debug("SpaceUserRoleTable.removeAllUsersFromSpaceUserRole()",
+        "Retrait des utilisateurs du role d'espace d'ID "
+        + spaceUserRoleId + ", requête : " + DELETE_SPACEUSERROLE_USER_REL,
+        null);
+    updateRelation(DELETE_ALL_USERS_FROM_SPACEUSERROLE, spaceUserRoleId);
+  }
+
+  static final private String DELETE_ALL_USERS_FROM_SPACEUSERROLE =
+      "delete from ST_SpaceUserRole_User_Rel where spaceUserRoleId = ? ";
+
+  /**
    * Tests if a group has a given role (not recursive).
    */
   public boolean isGroupDirectlyInRole(int groupId, int spaceUserRoleId)
@@ -429,6 +434,21 @@ public class SpaceUserRoleTable extends Table {
 
   static final private String DELETE_SPACEUSERROLE_GROUP_REL =
       "delete from ST_SpaceUserRole_Group_Rel where spaceUserRoleId = ? and groupId = ?";
+
+  /**
+   * Removes all groups from a spaceUserRole.
+   */
+  public void removeAllGroupsFromSpaceUserRole(int spaceUserRoleId)
+      throws AdminPersistenceException {
+    SynchroReport
+        .debug("SpaceUserRoleTable.removeAllGroupsFromSpaceUserRole()",
+        "Retrait des groupes du rôle de l'espace d'ID " + spaceUserRoleId + ", requête : "
+        + DELETE_SPACEUSERROLE_GROUP_REL, null);
+    updateRelation(DELETE_ALL_GROUPS_FROM_SPACEUSERROLE, spaceUserRoleId);
+  }
+
+  static final private String DELETE_ALL_GROUPS_FROM_SPACEUSERROLE =
+      "delete from ST_SpaceUserRole_Group_Rel where spaceUserRoleId = ?";
 
   /**
    * Fetch the current spaceUserRole row from a resultSet.

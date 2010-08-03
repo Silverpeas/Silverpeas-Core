@@ -169,19 +169,8 @@ public class ProfileInstManager extends Object {
   public void deleteProfileInst(ProfileInst profileInst,
       DomainDriverManager ddManager) throws AdminException {
     try {
-      // delete the node link Profile_Group
-      for (int nI = 0; nI < profileInst.getNumGroup(); nI++)
-        ddManager.organization.userRole.removeGroupFromUserRole(
-            idAsInt(profileInst.getGroup(nI)), idAsInt(profileInst.getId()));
-
-      // delete the node link Profile_User
-      for (int nI = 0; nI < profileInst.getNumUser(); nI++)
-        ddManager.organization.userRole.removeUserFromUserRole(
-            idAsInt(profileInst.getUser(nI)), idAsInt(profileInst.getId()));
-
       // delete the profile node
-      ddManager.organization.userRole.removeUserRole(idAsInt(profileInst
-          .getId()));
+      ddManager.organization.userRole.removeUserRole(idAsInt(profileInst.getId()));
     } catch (Exception e) {
       throw new AdminException("ProfileInstManager.deleteProfileInst",
           SilverpeasException.ERROR, "admin.EX_ERR_DELETE_PROFILE",

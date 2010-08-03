@@ -155,21 +155,8 @@ public class SpaceProfileInstManager {
   public void deleteSpaceProfileInst(SpaceProfileInst spaceProfileInst,
       DomainDriverManager ddManager) throws AdminException {
     try {
-      // delete the node link SpaceProfile_Group
-      for (int nI = 0; nI < spaceProfileInst.getNumGroup(); nI++)
-        ddManager.organization.spaceUserRole.removeGroupFromSpaceUserRole(
-            idAsInt(spaceProfileInst.getGroup(nI)), idAsInt(spaceProfileInst
-            .getId()));
-
-      // delete the node link SpaceProfile_User
-      for (int nI = 0; nI < spaceProfileInst.getNumUser(); nI++)
-        ddManager.organization.spaceUserRole.removeUserFromSpaceUserRole(
-            idAsInt(spaceProfileInst.getUser(nI)), idAsInt(spaceProfileInst
-            .getId()));
-
       // delete the spaceProfile node
-      ddManager.organization.spaceUserRole
-          .removeSpaceUserRole(idAsInt(spaceProfileInst.getId()));
+      ddManager.organization.spaceUserRole.removeSpaceUserRole(idAsInt(spaceProfileInst.getId()));
     } catch (Exception e) {
       throw new AdminException(
           "SpaceProfileInstManager.deleteSpaceProfileInst",
