@@ -21,9 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.clipboardPeas.servlets;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.clipboardPeas.control.ClipboardSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
@@ -32,7 +32,6 @@ import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.clipboard.control.ejb.ClipboardBm;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -41,6 +40,8 @@ import javax.servlet.http.HttpSession;
  * @author
  */
 public class ClipboardRequestRouter extends ComponentRequestRouter {
+  private static final long serialVersionUID = 1L;
+
   /**
    * Method declaration
    * @param mainSessionCtrl
@@ -76,11 +77,9 @@ public class ClipboardRequestRouter extends ComponentRequestRouter {
       ComponentSessionController componentSC, HttpServletRequest request) {
     SilverTrace.info("clipboardPeas",
         "ClipboardRequestRooter.getDestination()", "root.MSG_GEN_ENTER_METHOD",
-        " componentName = " + componentSC.getClass().getName()
-        + "; function = " + function);
+        " componentName = " + componentSC.getClass().getName() + "; function = " + function);
     ClipboardSessionController clipboardSC = (ClipboardSessionController) componentSC;
     String destination = "";
-
     if (function.startsWith("copyForm")) {
       destination = "/clipboard/jsp/copyForm.jsp";
     } else if (function.startsWith("paste")) {
@@ -89,25 +88,18 @@ public class ClipboardRequestRouter extends ComponentRequestRouter {
       clipboardSC.setComponentId(request.getParameter("ComponentFrom"));
       clipboardSC.setJSPPage(request.getParameter("JSPPage"));
       clipboardSC.setTargetFrame(request.getParameter("TargetFrame"));
-
-      String componentName = clipboardSC.getComponentRooterName();
-
-      if (componentName != null) {
-        SilverTrace.info("clipboardPeas",
-            "ClipboardRequestRooter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "compR = " + componentName);
-        if (clipboardSC.getComponentId() != null)
-          destination = URLManager
-              .getURL(null, request.getParameter("SpaceFrom"), request
-              .getParameter("ComponentFrom"))
-              + "paste.jsp";
-        else
-          destination = URLManager.getURL(URLManager.CMP_JOBSTARTPAGEPEAS)
-              + "paste.jsp";
+      if (StringUtil.isDefined(clipboardSC.getComponentRooterName())) {
+        SilverTrace.info("clipboardPeas", "ClipboardRequestRooter.getDestination()",
+            "root.MSG_GEN_PARAM_VALUE", "compR = " + clipboardSC.getComponentRooterName());
+        if (StringUtil.isDefined(clipboardSC.getComponentId())) {
+          destination = URLManager.getURL(null, request.getParameter("SpaceFrom"), 
+              clipboardSC.getComponentId()) + "paste.jsp";
+        } else {
+          destination = URLManager.getURL(URLManager.CMP_JOBSTARTPAGEPEAS) + "paste.jsp";
+        }
       } else {
-        SilverTrace.info("clipboardPeas",
-            "ClipboardRequestRooter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "compR is null" + componentName);
+        SilverTrace.info("clipboardPeas", "ClipboardRequestRooter.getDestination()", 
+            "root.MSG_GEN_PARAM_VALUE", "compR is null");
         destination = "/clipboard/jsp/clipboard.jsp";
       }
     } else if (function.startsWith("clipboardRefresh")) {
@@ -126,17 +118,15 @@ public class ClipboardRequestRouter extends ComponentRequestRouter {
         for (int i = 0; i < max; i++) {
           String removedValue = request.getParameter("clipboardId" + i);
           if (removedValue != null) {
-            SilverTrace.info("clipboardPeas",
-                "ClipboardRequestRooter.getDestination()",
+            SilverTrace.info("clipboardPeas", "ClipboardRequestRooter.getDestination()",
                 "root.MSG_GEN_PARAM_VALUE", "clipboardId" + i + " = " + removedValue);
             clipboardSC.removeClipboardElement(i - removed);
             removed++;
           }
         }
       } catch (Exception e) {
-        SilverTrace.error("clipboardPeas",
-            "ClipboardRequestRooter.getDestination()",
-            "clipboardPeas.EX_CANT_WRITE", "delete.jsp");
+        SilverTrace.error("clipboardPeas", "ClipboardRequestRooter.getDestination()",
+            "clipboardPeas.EX_CANT_WRITE", "delete.jsp", e);
       }
       destination = "/clipboard/jsp/clipboard.jsp";
     } else if (function.startsWith("selectObject")) {
@@ -144,17 +134,14 @@ public class ClipboardRequestRouter extends ComponentRequestRouter {
         String objectIndex = request.getParameter("Id");
         String objectStatus = request.getParameter("Status");
         if ((objectIndex != null) && (objectStatus != null)) {
-          SilverTrace.info("clipboardPeas",
-              "ClipboardRequestRooter.getDestination()",
-              "root.MSG_GEN_PARAM_VALUE", "selectObject " + objectIndex
-              + " -> " + objectStatus);
+          SilverTrace.info("clipboardPeas", "ClipboardRequestRooter.getDestination()",
+              "root.MSG_GEN_PARAM_VALUE", "selectObject " + objectIndex + " -> " + objectStatus);
           clipboardSC.setClipboardSelectedElement(Integer.parseInt(objectIndex),
               Boolean.parseBoolean(objectStatus));
         }
       } catch (Exception e) {
-        SilverTrace.error("clipboardPeas",
-            "ClipboardRequestRooter.getDestination()",
-            "clipboardPeas.EX_CANT_WRITE", "delete.jsp");
+        SilverTrace.error("clipboardPeas",  "ClipboardRequestRooter.getDestination()",
+            "clipboardPeas.EX_CANT_WRITE", "delete.jsp", e);
       }
       destination = "/clipboard/jsp/Idle.jsp";
     } else if (function.startsWith("selectionpaste")) {
@@ -165,41 +152,32 @@ public class ClipboardRequestRouter extends ComponentRequestRouter {
           clipboardSC.setClipboardSelectedElement(i, removedValue != null);
         }
       } catch (Exception e) {
-        SilverTrace.error("clipboardPeas",
-            "ClipboardRequestRooter.getDestination()",
-            "clipboardPeas.EX_CANT_WRITE", "selectionpaste.jsp");
+        SilverTrace.error("clipboardPeas", "ClipboardRequestRooter.getDestination()",
+            "clipboardPeas.EX_CANT_WRITE", "selectionpaste.jsp", e);
       }
       String componentName = clipboardSC.getComponentRooterName();
       if (componentName != null) {
-        SilverTrace.info("clipboardPeas",
-            "ClipboardRequestRooter.getDestination()",
+        SilverTrace.info("clipboardPeas", "ClipboardRequestRooter.getDestination()",
             "root.MSG_GEN_PARAM_VALUE", "compR = " + componentName);
-        destination = URLManager.getURL(null,
-            request.getParameter("SpaceFrom"), request
-            .getParameter("ComponentFrom"))
-            + "paste.jsp";
+        destination = URLManager.getURL(null, request.getParameter("SpaceFrom"), 
+            request.getParameter("ComponentFrom")) + "paste.jsp";
       } else {
-        SilverTrace.info("clipboardPeas",
-            "ClipboardRequestRooter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "compR is null" + componentName);
+        SilverTrace.info("clipboardPeas", "ClipboardRequestRooter.getDestination()",
+            "root.MSG_GEN_PARAM_VALUE", "compR is null");
         destination = "/clipboard/jsp/clipboard.jsp";
       }
     } else {
       destination = "/clipboard/jsp/" + function;
     }
-
-    SilverTrace.info("clipboardPeas",
-        "ClipboardRequestRooter.getDestination()", "root.MSG_GEN_EXIT_METHOD",
-        "Destination=" + destination);
+    SilverTrace.info("clipboardPeas", "ClipboardRequestRooter.getDestination()", 
+        "root.MSG_GEN_EXIT_METHOD", "Destination=" + destination);
     return destination;
   }
 
   @Override
   public void updateSessionManagement(HttpSession session, String destination) {
-    SilverTrace.info("clipboardPeas",
-        "ClipboardRequestRouter.updateSessionManagement",
+    SilverTrace.info("clipboardPeas", "ClipboardRequestRouter.updateSessionManagement",
         "root.MSG_GEN_PARAM_VALUE", "dest=" + destination);
-
     if (destination.startsWith("/clipboard/jsp/Idle")) {
       // Set the isalived time
       SessionManager.getInstance().setIsAlived(session);
@@ -208,5 +186,4 @@ public class ClipboardRequestRouter extends ComponentRequestRouter {
       SessionManager.getInstance().setLastAccess(session);
     }
   }
-
 }
