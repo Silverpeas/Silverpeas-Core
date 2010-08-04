@@ -29,6 +29,7 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import javax.servlet.jsp.tagext.TagSupport;
 
@@ -42,6 +43,7 @@ public class ArrayPaneTag extends TagSupport {
   private String var;
   private String title;
   private String summary;
+  private String isXHTML;
   private String routingAddress = null;
   public static final String ARRAY_PANE_PAGE_ATT = "pageContextArrayPane";
 
@@ -65,6 +67,9 @@ public class ArrayPaneTag extends TagSupport {
     }
     if (summary != null) {
       arrayPane.setSummary(summary);
+    }
+    if (StringUtil.isDefined(isXHTML)) {
+      arrayPane.setXHTML(isXHTML.equalsIgnoreCase("true"));
     }
     pageContext.setAttribute(ARRAY_PANE_PAGE_ATT, arrayPane);
     return EVAL_BODY_INCLUDE;

@@ -72,7 +72,7 @@ public class IconPaneWA extends AbstractIconPane {
       result += "<td width=\"" + spacing + "\">&nbsp;</td>";
       result += "<td>";
       result += ((Icon) icons.elementAt(i)).print();
-      result += "</TD>";
+      result += "</td>";
     }
     result += "</tr></table>";
 

@@ -45,6 +45,7 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
   private Vector<ArrayLine> lines;
   private String title = null;
   private String summary = null;
+  private boolean isXHTML = false;
   private String alignement = null;
   private String name;
   private ArrayPaneStatusBean state = null;
@@ -357,13 +358,18 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
     Pagination pagination =
         gef.getPagination(lines.size(), state.getMaximumVisibleLine(), state.getFirstVisibleLine());
 
+    String sep = "&";
+    if (isXHTML) {
+      sep = "&amp;";
+    }
+
     String baseUrl = getUrl();
     if (baseUrl.indexOf("?") < 0)
       baseUrl += "?";
     else
-      baseUrl += "&";
-    baseUrl += ACTION_PARAMETER_NAME + "=ChangePage&" + TARGET_PARAMETER_NAME
-        + "=" + getName() + "&" + INDEX_PARAMETER_NAME + "=";
+      baseUrl += sep;
+    baseUrl += ACTION_PARAMETER_NAME + "=ChangePage" + sep + TARGET_PARAMETER_NAME
+        + "=" + getName() + sep + INDEX_PARAMETER_NAME + "=";
     pagination.setBaseURL(baseUrl);
 
     int columnsCount = columns.size();
@@ -414,7 +420,7 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
       result.append(printPseudoColumn());
     }
     for (int i = 0; i < columns.size(); i++) {
-      result.append(columns.elementAt(i).print());
+      result.append(columns.elementAt(i).print(isXHTML));
       if (m_CellsSpacing == 0) {
         result.append(printPseudoColumn());
       }
@@ -532,6 +538,10 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
 
   public void setSummary(String summary) {
     this.summary = summary;
+  }
+
+  public void setXHTML(boolean isXHTML) {
+    this.isXHTML = isXHTML;
   }
 
 }

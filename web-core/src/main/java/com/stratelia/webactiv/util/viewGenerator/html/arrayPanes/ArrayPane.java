@@ -206,4 +206,6 @@ public interface ArrayPane extends SimpleGraphicElement {
   public void setSummary(String summary);
   
   public String getSummary();
+  
+  public void setXHTML(boolean isXHTML);
 }

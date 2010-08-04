@@ -202,6 +202,10 @@ public class ArrayColumn implements SimpleGraphicElement {
    * @see
    */
   public String print() {
+    return print(false);
+  }
+
+  public String print(boolean xhtml) {
     StringBuffer result = new StringBuffer();
     boolean isAP = false;
     String JSStartString = "";
@@ -256,31 +260,39 @@ public class ArrayColumn implements SimpleGraphicElement {
         SilverTrace.info("viewgenerator", "ArrayColumn.print()",
             "root.MSG_GEN_PARAM_VALUE", " adresse = '" + address + "'");
 
-        result.append("<a class=\"ArrayColumn\" href=\"").append(address)
-            .append(JSStartString);
+        String sep = "&";
+        if (xhtml) {
+          sep = "&amp;";
+        }
+
+        StringBuffer href = new StringBuffer();
+        href.append(address).append(JSStartString);
 
         // standard non-javascript url. Add parameters to the url
         if (isAP == false) {
           String temp = result.toString();
           if (temp.indexOf("?") >= 0) {
             // there are already some parameters
-            result.append("&");
+            href.append(sep);
           } else {
             // there are no parameters
-            result.append("?");
+            href.append("?");
           }
-          result.append(ArrayPane.ACTION_PARAMETER_NAME).append("=Sort&")
-              .append(ArrayPane.TARGET_PARAMETER_NAME).append("=").append(
-              pane.getName()).append("&").append(
+          href.append(ArrayPane.ACTION_PARAMETER_NAME).append("=Sort")
+              .append(sep).append(ArrayPane.TARGET_PARAMETER_NAME).append("=")
+              .append(pane.getName()).append(sep).append(
               ArrayPane.COLUMN_PARAMETER_NAME).append("=").append(
               getColumnNumber());
         }
         // arraypane javascript function. Pass it parameters.
         else {
-          result.append("'").append(pane.getName()).append("',").append(
+          href.append("'").append(pane.getName()).append("',").append(
               getColumnNumber());
         }
-        result.append(JSEndString).append("\">").append(title).append("</a>");
+        href.append(JSEndString);
+
+        result.append("<a class=\"ArrayColumn\" href=\"").append(href);
+        result.append("\">").append(title).append("</a>");
 
         result.append("</th>");
       }

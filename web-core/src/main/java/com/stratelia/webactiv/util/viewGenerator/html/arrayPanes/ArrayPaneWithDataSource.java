@@ -44,6 +44,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
   private Vector<ArrayLine> lines;
   private String title = null;
   private String summary = null;
+  private boolean isXHTML = false;
   private String alignement = null;
   private String name;
   private ArrayPaneStatusBean state = null;
@@ -688,7 +689,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
     }
     result += "<tr>";
     for (int i = 0; i < columns.size(); i++) {
-      result += ((ArrayColumn) columns.elementAt(i)).print();
+      result += ((ArrayColumn) columns.elementAt(i)).print(isXHTML);
       if (m_CellsSpacing == 0) {
         result += printPseudoColumn();
       }
@@ -867,6 +868,10 @@ public class ArrayPaneWithDataSource implements ArrayPane {
 
   public void setSummary(String summary) {
     this.summary = summary;
+  }
+
+  public void setXHTML(boolean isXHTML) {
+    this.isXHTML = isXHTML;
   }
 
 }

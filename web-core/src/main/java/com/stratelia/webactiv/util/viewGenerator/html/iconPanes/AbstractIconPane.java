@@ -45,8 +45,8 @@ import com.stratelia.webactiv.util.viewGenerator.html.icons.IconWA;
 public abstract class AbstractIconPane implements IconPane {
 
   private Vector icons = null;
-  private String verticalWidth = "50px";
-  private String spacing = "20px";
+  private String verticalWidth = "50";
+  private String spacing = "20";
   public final static int VERTICAL_PANE = 1;
   public final static int HORIZONTAL_PANE = 2;
 

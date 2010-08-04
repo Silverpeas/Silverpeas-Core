@@ -324,6 +324,9 @@ public class GraphicElementFactory extends Object {
       code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(
           externalStylesheet).append("\"/>\n");
     }
+    
+    //include specific browseBar javaScript
+    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append("/util/javaScript/browseBarComplete.js\"></script>\n");
 
     if (getFavoriteLookSettings() != null
         && getFavoriteLookSettings().getString("OperationPane").toLowerCase()

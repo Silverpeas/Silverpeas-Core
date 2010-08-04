@@ -90,7 +90,7 @@ public class CalendarWA1 extends AbstractCalendar {
     if (monthVisible) {
       result.append("<tr class=\"txtnav2\"><td colspan=\"7\">\n");
       result
-          .append("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><TR>");
+          .append("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr>");
       if (navigationBar) {
         result
             .append(
@@ -209,7 +209,7 @@ public class CalendarWA1 extends AbstractCalendar {
         if (isSelectable)
           result.append(
               "<td width=\"14%\" class=\"intfdcolor3\" align=\"center\"><a ")
-              .append(dayStyle).append(" HREF=\"javascript:selectDay('")
+              .append(dayStyle).append(" href=\"javascript:selectDay('")
               .append(d).append("')\">").append(i).append("</a></td>\n");
         else
           result.append("<td width=\"14%\" ").append(monthDayStyle).append(
