@@ -41,7 +41,7 @@ function showApplet(divId)
   }
 }
 
-function loadApplet(divId, targetURL, message, max_upload, webcontext)
+function loadApplet(divId, targetURL, message, max_upload, webcontext, altMessage)
 {
   var divDND = document.getElementById(divId);
 
@@ -65,6 +65,8 @@ function loadApplet(divId, targetURL, message, max_upload, webcontext)
     addParam(objectDND, "code", "wjhk.jupload2.JUploadApplet");
     addParam(objectDND, "name", "Silverpeas Drag And Drop");
     addParam(objectDND, "codebase", webcontext + "/upload");
+    var alternatetext = document.createTextNode(altMessage);
+    objectDND.appendChild(alternatetext);
   }
   else
   {
@@ -81,6 +83,7 @@ function loadApplet(divId, targetURL, message, max_upload, webcontext)
     objectDND.setAttribute("vspace", "0");
     objectDND.setAttribute("MAYSCRIPT", "yes");
     objectDND.setAttribute("align", "middle");
+    objectDND.setAttribute("alt", altMessage);
   }
 
   addParam(objectDND, "postURL", targetURL);
@@ -89,7 +92,7 @@ function loadApplet(divId, targetURL, message, max_upload, webcontext)
   addParam(objectDND, "showLogWindow", "false");
   addParam(objectDND, "showStatusBar", "true");
   addParam(objectDND, "afterUploadURL", "javascript:uploadCompleted('%message%')");
-   addParam(objectDND, "afterUploadURL", "javascript:uploadCompleted('%message%')");
+  addParam(objectDND, "afterUploadURL", "javascript:uploadCompleted('%message%')");
   addParam(objectDND, "ftpCreateDirectoryStructure", "true");
   addParam(objectDND, "maxFileSize", max_upload);
   addParam(objectDND, "bgcolor_r", "245");
