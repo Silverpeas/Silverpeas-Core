@@ -340,24 +340,24 @@ public class GraphicElementFactory extends Object {
     String contextPath = getGeneralSettings().getString("ApplicationURL");
     StringBuilder code = new StringBuilder();
 
-    code.append("<!-- CSS for Menu -->");
+    code.append("<!-- CSS for Menu -->\n");
     code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
     code.append(getSettings().getString("YUIMenuCss",
         contextPath + "/util/yui/menu/assets/menu.css"));
-    code.append("\"/>");
-    code.append("<!-- Page-specific styles -->");
-    code.append("<style type=\"text/css\">");
-    code.append("    div.yuimenu {");
-    code.append("    position:dynamic;");
-    code.append("    visibility:hidden;");
-    code.append("    }");
-    code.append("</style>");
+    code.append("\"/>\n");
+    code.append("<!-- Page-specific styles -->\n");
+    code.append("<style type=\"text/css\">\n");
+    code.append("    div.yuimenu {\n");
+    code.append("    position:dynamic;\n");
+    code.append("    visibility:hidden;\n");
+    code.append("    }\n");
+    code.append("</style>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath);
-    code.append("/util/yui/yahoo-dom-event/yahoo-dom-event.js\"></script>");
+    code.append("/util/yui/yahoo-dom-event/yahoo-dom-event.js\"></script>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath);
-    code.append("/util/yui/container/container_core-min.js\"></script>");
+    code.append("/util/yui/container/container_core-min.js\"></script>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath);
-    code.append("/util/yui/menu/menu-min.js\"></script>");
+    code.append("/util/yui/menu/menu-min.js\"></script>\n");
     return code.toString();
   }
 
