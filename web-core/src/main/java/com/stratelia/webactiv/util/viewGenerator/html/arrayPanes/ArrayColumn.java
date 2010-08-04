@@ -22,14 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
-/*
- * ArrayColumn.java
- *
- */
-
 package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
 import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
@@ -215,7 +207,7 @@ public class ArrayColumn implements SimpleGraphicElement {
     String JSStartString = "";
     String JSEndString = "";
 
-    result.append("<td");
+    result.append("<th scope=\"col\"");
 
     // column alignement. By default, alignement is on the left
     if (alignement != null) {
@@ -290,14 +282,14 @@ public class ArrayColumn implements SimpleGraphicElement {
         }
         result.append(JSEndString).append("\">").append(title).append("</a>");
 
-        result.append("</td>");
+        result.append("</th>");
       }
       // behaviour 'no trigger'
       else {
-        result.append(title).append("</td>");
+        result.append(title).append("</th>");
       }
     } else {
-      result.append(" class=\"ArrayColumn\">&nbsp;</td>");
+      result.append(" class=\"ArrayColumn\">&nbsp;</th>");
     }
 
     return result.toString();

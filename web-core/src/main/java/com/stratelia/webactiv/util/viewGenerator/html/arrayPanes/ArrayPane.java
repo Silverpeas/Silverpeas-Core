@@ -22,16 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
-/*
- * ArrayPane.java
- * 
- * Created on 10 octobre 2000, 16:11
- * Modified on 04 july 2001, 15:20
- */
-
 package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
 import javax.servlet.ServletRequest;
@@ -212,4 +202,8 @@ public interface ArrayPane extends SimpleGraphicElement {
   public void setCellsConfiguration(int spacing, int padding, int borderWidth);
 
   public void setPaginationJavaScriptCallback(String callback);
+  
+  public void setSummary(String summary);
+  
+  public String getSummary();
 }

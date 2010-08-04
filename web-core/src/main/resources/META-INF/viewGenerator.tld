@@ -266,6 +266,11 @@
       <type>java.lang.String</type>
     </attribute>
     <attribute>
+      <name>summary</name>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
       <description>Name of the ArrayPane in the SessionScope</description>
       <name>var</name>
       <required>true</required>

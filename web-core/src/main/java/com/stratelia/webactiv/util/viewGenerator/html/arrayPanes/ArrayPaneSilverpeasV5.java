@@ -44,6 +44,7 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
   private Vector<ArrayColumn> columns;
   private Vector<ArrayLine> lines;
   private String title = null;
+  private String summary = null;
   private String alignement = null;
   private String name;
   private ArrayPaneStatusBean state = null;
@@ -385,7 +386,12 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
     result.append("<table width=\"100%\" cellspacing=\"")
         .append(m_CellsSpacing).append("\" cellpadding=\"").append(
         m_CellsPadding).append("\" border=\"").append(m_CellsBorderWidth)
-        .append("\" class=\"tableArrayPane\">");
+        .append("\" class=\"tableArrayPane\" summary=\"").append(getSummary()).append("\">");
+    if (getTitle() != null) {
+      result.append("<caption>");
+      result.append(getTitle());
+      result.append("</caption>");
+    }
     if (m_CellsSpacing == 0) {
       result.append("<tr>");
       result.append("<td colspan=\"").append(columnsCount).append("\">");
@@ -395,14 +401,15 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
       result.append("</tr>\n");
     }
     if (getTitle() != null) {
-      result.append("<tr>");
+      result.append("<tr class=\"titleLine\">");
       result.append("<td class=\"txttitrecol\" colspan=\"")
           .append(columnsCount).append("\">");
       result.append(getTitle());
       result.append("</td>");
       result.append("</tr>\n");
     }
-    result.append("<tr>");
+    result.append("<thead>\n");
+    result.append("<tr>\n");
     if (m_CellsSpacing == 0) {
       result.append(printPseudoColumn());
     }
@@ -413,6 +420,8 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
       }
     }
     result.append("</tr>\n");
+    result.append("</thead>\n");
+    result.append("<tbody>\n");
     if (lines.size() == 0) {
       result.append("<tr><td>&nbsp;</td></tr>\n");
     } else {
@@ -438,6 +447,7 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
         }
       }
     }
+    result.append("</tbody>\n");
     result.append("</table>\n");
 
     if (-1 != state.getMaximumVisibleLine()
@@ -514,6 +524,14 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
   @Override
   public void setPaginationJavaScriptCallback(String callback) {
     paginationJavaScriptCallback = callback;
+  }
+
+  public String getSummary() {
+    return summary;
+  }
+
+  public void setSummary(String summary) {
+    this.summary = summary;
   }
 
 }

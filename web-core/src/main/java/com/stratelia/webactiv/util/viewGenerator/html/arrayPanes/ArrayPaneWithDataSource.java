@@ -40,9 +40,10 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  */
 public class ArrayPaneWithDataSource implements ArrayPane {
 
-  private Vector columns;
-  private Vector lines;
+  private Vector<ArrayColumn> columns;
+  private Vector<ArrayLine> lines;
   private String title = null;
+  private String summary = null;
   private String alignement = null;
   private String name;
   private ArrayPaneStatusBean state = null;
@@ -155,8 +156,8 @@ public class ArrayPaneWithDataSource implements ArrayPane {
       javax.servlet.ServletRequest request, HttpSession session) {
     String target = null;
 
-    columns = new Vector();
-    lines = new Vector();
+    columns = new Vector<ArrayColumn>();
+    lines = new Vector<ArrayLine>();
     this.name = name;
     setRoutingAddress(url);
     this.session = session;
@@ -858,7 +859,14 @@ public class ArrayPaneWithDataSource implements ArrayPane {
   @Override
   public void setPaginationJavaScriptCallback(String callback) {
     // TODO Auto-generated method stub
+  }
 
+  public String getSummary() {
+    return summary;
+  }
+
+  public void setSummary(String summary) {
+    this.summary = summary;
   }
 
 }

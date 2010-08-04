@@ -41,6 +41,7 @@ public class ArrayPaneTag extends TagSupport {
   private static final long serialVersionUID = 1370094709020971218L;
   private String var;
   private String title;
+  private String summary;
   private String routingAddress = null;
   public static final String ARRAY_PANE_PAGE_ATT = "pageContextArrayPane";
 
@@ -61,6 +62,9 @@ public class ArrayPaneTag extends TagSupport {
         gef.getArrayPane(var, routingAddress, pageContext.getRequest(), pageContext.getSession());
     if (title != null) {
       arrayPane.setTitle(title);
+    }
+    if (summary != null) {
+      arrayPane.setSummary(summary);
     }
     pageContext.setAttribute(ARRAY_PANE_PAGE_ATT, arrayPane);
     return EVAL_BODY_INCLUDE;
@@ -93,5 +97,9 @@ public class ArrayPaneTag extends TagSupport {
 
   public void setTitle(final String title) {
     this.title = title;
+  }
+
+  public void setSummary(final String summary) {
+    this.summary = summary;
   }
 }
