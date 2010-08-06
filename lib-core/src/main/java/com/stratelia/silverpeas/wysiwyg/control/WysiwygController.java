@@ -46,7 +46,6 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
-import com.stratelia.webactiv.beans.admin.CompoSpace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -61,39 +60,6 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 /**
  * @author neysseri
  */
-/*
- * CVS Informations $Id: WysiwygController.java,v 1.22 2009/03/26 14:16:24 neysseri Exp $ $Log:
- * WysiwygController.java,v $ Revision 1.22 2009/03/26 14:16:24 neysseri Le copier/coller de contenu
- * Wysiwyg n'était pas correct. Problème de réécriture d'URL des images. Revision 1.21 2009/02/20
- * 07:51:23 neysseri Ajout d'un paramètre IndexIt permettant de spécifier si l'indexation autonome
- * doit être effectué lors de la création/modification Par défaut = true Sinon passez False et
- * utiliser le mécanisme de Callback Revision 1.20 2008/05/21 14:01:25 neysseri no message Revision
- * 1.19.2.2 2008/05/06 09:40:35 ehugonnet Renommage du calcul du context Revision 1.19.2.1
- * 2008/04/29 09:04:16 ehugonnet Extraction de getContext d'AttachmentController dans
- * FileRepositoryManager Revision 1.19 2008/03/26 13:16:30 neysseri no message Revision 1.18
- * 2008/02/26 15:21:13 dlesimple Suppression de spaceId ds getWysiwyg Revision 1.17 2007/12/03
- * 13:25:43 neysseri no message Revision 1.16.2.5 2007/11/21 11:44:07 neysseri no message Revision
- * 1.16.2.4 2007/11/20 15:39:45 neysseri no message Revision 1.16.2.3 2007/11/07 10:31:37 neysseri
- * no message Revision 1.16.2.2 2007/11/05 16:03:46 neysseri no message Revision 1.16.2.1 2007/10/31
- * 17:14:34 neysseri no message Revision 1.16 2007/06/25 11:53:11 cbonin correction bug liens si
- * UNIX Revision 1.15 2007/04/20 14:22:56 neysseri no message Revision 1.14.2.1 2007/03/29 14:13:27
- * neysseri no message Revision 1.14 2006/09/18 07:10:02 neysseri Suppression des méthodes
- * d'indexation. Ce sont les modules utilisants le wysiwyg qui doivent indexer le contenu et pas le
- * wysiwyg lui-même ! Revision 1.13 2005/10/20 10:53:30 neysseri no message Revision 1.12 2005/10/13
- * 19:15:05 neysseri no message Revision 1.11 2005/07/07 18:04:01 neysseri Nettoyage sources
- * Revision 1.10 2005/07/04 09:50:45 dlesimple Tiny MCE v1.45 Revision 1.9 2005/04/22 12:15:51
- * neysseri Added : - deleteFileAndAttachment() Updated : - updateFileAndAttachment() -->
- * synchronized Revision 1.8 2005/04/21 11:01:31 neysseri Ajout du créateur du Wysiwyg (transmis à
- * attachment) Revision 1.7 2005/04/07 18:15:11 neysseri no message Revision 1.6.2.1 2005/03/11
- * 19:19:55 sdevolder *** empty log message *** Revision 1.6 2004/07/26 08:29:28 neysseri no message
- * Revision 1.5 2004/07/23 16:33:11 neysseri Bug copier/coller Revision 1.4 2004/02/06 18:49:52
- * neysseri Now, the both indexation methods are deprecated ! Revision 1.3 2003/09/19 13:12:43
- * neysseri no message Revision 1.2 2002/10/09 07:41:03 neysseri no message Revision 1.1.1.1.6.1
- * 2002/09/27 08:07:49 abudnikau Remove debug Revision 1.1.1.1 2002/08/06 14:47:55 nchaix no message
- * Revision 1.11 2002/04/17 08:06:30 nchaix no message Revision 1.10 2002/01/31 12:13:35 neysseri no
- * message Revision 1.9 2002/01/18 16:55:10 neysseri Stabilisation Lot 2 : Exception et Silvertraces
- */
-
 public class WysiwygController {
 
   public static String WYSIWYG_CONTEXT = "wysiwyg";
@@ -126,13 +92,13 @@ public class WysiwygController {
   {
     AttachmentPK foreignKey = new AttachmentPK(id, spaceId, componentId);
 
-    Vector vectAttachment =
+    Vector<AttachmentDetail> vectAttachment =
         AttachmentController.searchAttachmentByPKAndContext(foreignKey, context);
     int nbImages = vectAttachment.size();
     String[][] imagesList = new String[nbImages][2];
 
     for (int i = 0; i < nbImages; i++) {
-      AttachmentDetail attD = (AttachmentDetail) vectAttachment.elementAt(i);
+      AttachmentDetail attD = vectAttachment.elementAt(i);
 
       String path =
           FileServerUtils.getUrl(spaceId, componentId, attD.getLogicalName(), attD
@@ -159,15 +125,15 @@ public class WysiwygController {
       throws WysiwygException {
     /* chemin du repertoire = c:\\j2sdk\\public_html\\WAUploads\\webSite10\\nomSite\\rep */
     try {
-      Collection listImages = FileFolderManager.getAllImages(path);
-      Iterator i = listImages.iterator();
+      Collection<File> listImages = FileFolderManager.getAllImages(path);
+      Iterator<File> i = listImages.iterator();
       int nbImages = listImages.size();
       String[][] images = new String[nbImages][2];
       SilverTrace.info("wysiwyg", "WysiwygController.getWebsiteImages()",
           "root.MSG_GEN_PARAM_VALUE", "nbImages=" + nbImages + " path=" + path);
       File image;
       for (int j = 0; j < nbImages; j++) {
-        image = (File) i.next();
+        image = i.next();
         SilverTrace.info("wysiwyg", "WysiwygController.getWebsiteImages()",
             "root.MSG_GEN_PARAM_VALUE", "image=" + image.getAbsolutePath());
         images[j][0] = finNode2(image.getAbsolutePath(), componentId).replace('\\', '/');
@@ -191,15 +157,15 @@ public class WysiwygController {
   public static String[][] getWebsitePages(String path, String componentId) throws WysiwygException {
     /* chemin du repertoire = c:\\j2sdk\\public_html\\WAUploads\\webSite10\\nomSite\\rep */
     try {
-      Collection listPages = FileFolderManager.getAllWebPages(getNodePath(path, componentId));
-      Iterator i = listPages.iterator();
+      Collection<File> listPages = FileFolderManager.getAllWebPages(getNodePath(path, componentId));
+      Iterator<File> i = listPages.iterator();
       int nbPages = listPages.size();
       String[][] pages = new String[nbPages][2];
       SilverTrace.info("wysiwyg", "WysiwygController.getWebsitePages()",
           "root.MSG_GEN_PARAM_VALUE", "nbPages=" + nbPages + " path=" + path);
       File page;
       for (int j = 0; j < nbPages; j++) {
-        page = (File) i.next();
+        page = i.next();
         SilverTrace.info("wysiwyg", "WysiwygController.getWebsitePages()",
             "root.MSG_GEN_PARAM_VALUE", "page=" + page.getAbsolutePath());
         pages[j][0] = finNode2(page.getAbsolutePath(), componentId).replace('\\', '/');
@@ -450,10 +416,10 @@ public class WysiwygController {
 
   public static void deleteFile(String componentId, String objectId, String language) {
     AttachmentPK foreignKey = new AttachmentPK(objectId, "useless", componentId);
-    Vector files = AttachmentController.searchAttachmentByCustomerPK(foreignKey);
-    Iterator f = files.iterator();
+    Vector<AttachmentDetail> files = AttachmentController.searchAttachmentByCustomerPK(foreignKey);
+    Iterator<AttachmentDetail> f = files.iterator();
     while (f.hasNext()) {
-      AttachmentDetail file = (AttachmentDetail) f.next();
+      AttachmentDetail file = f.next();
       if (file != null &&
           file.getPhysicalName().equalsIgnoreCase(getWysiwygFileName(objectId, language))) {
         AttachmentController.deleteAttachment(file);
@@ -787,9 +753,9 @@ public class WysiwygController {
   public static boolean haveGotWysiwyg(String spaceId, String componentId, String objectId) {
     String path = AttachmentController.createPath(componentId, WYSIWYG_CONTEXT);
 
-    Iterator languages = I18NHelper.getLanguages();
+    Iterator<String> languages = I18NHelper.getLanguages();
     while (languages.hasNext()) {
-      String language = (String) languages.next();
+      String language = languages.next();
 
       File file = new File(path + getWysiwygFileName(objectId, language));
 
@@ -841,12 +807,12 @@ public class WysiwygController {
   public static AttachmentDetail searchAttachmentDetail(String fileName, String spaceId,
       String componentId, String context, String objectId, Connection con) {
     AttachmentPK foreignKey = new AttachmentPK(objectId, spaceId, componentId);
-    Vector vectAttachment =
+    Vector<AttachmentDetail> vectAttachment =
         AttachmentController.searchAttachmentByPKAndContext(foreignKey, context, con);
     int nbFiles = vectAttachment.size();
 
     for (int i = 0; i < nbFiles; i++) {
-      AttachmentDetail attD = (AttachmentDetail) vectAttachment.elementAt(i);
+      AttachmentDetail attD = vectAttachment.elementAt(i);
 
       if (attD.getLogicalName().equals(fileName)) {
         return attD;
@@ -995,7 +961,7 @@ public class WysiwygController {
       String nPath = AttachmentController.createPath(componentId, getImagesFileName(objectId));
       String newPath = "";
       AttachmentPK foreignKey = new AttachmentPK(oldObjectId, oldSpaceId, oldComponentId);
-      Vector vectAttachment =
+      Vector<AttachmentDetail> vectAttachment =
           AttachmentController.searchAttachmentByPKAndContext(foreignKey,
           getImagesFileName(oldObjectId));
       int nbImages = vectAttachment.size();
@@ -1003,7 +969,7 @@ public class WysiwygController {
 
       for (int i = 0; i < nbImages; i++) {
         currentPath = oldPath;
-        AttachmentDetail attD = (AttachmentDetail) vectAttachment.elementAt(i);
+        AttachmentDetail attD = vectAttachment.elementAt(i);
 
         currentPath += attD.getPhysicalName();
         newPath = nPath + attD.getPhysicalName();
@@ -1171,11 +1137,11 @@ public class WysiwygController {
 
   public static void wysiwygPlaceHaveChanged(String oldComponentId, String oldObjectId,
       String newComponentId, String newObjectId) throws WysiwygException {
-    Iterator languages = I18NHelper.getLanguages();
+    Iterator<String> languages = I18NHelper.getLanguages();
     String language = null;
     String wysiwyg = null;
     while (languages.hasNext()) {
-      language = (String) languages.next();
+      language = languages.next();
       wysiwyg = load(newComponentId, newObjectId, language);
 
       if (StringUtil.isDefined(wysiwyg)) {
@@ -1211,15 +1177,15 @@ public class WysiwygController {
     return path + getWysiwygFileName(objectId);
   }
 
-  public static List getGalleries() {
-    List galleries = null;
+  public static List<ComponentInstLight> getGalleries() {
+    List<ComponentInstLight> galleries = null;
     OrganizationController orgaController = new OrganizationController();
     String[] compoIds = orgaController.getCompoId("gallery");
     for (int c = 0; c < compoIds.length; c++) {
       if ("yes".equalsIgnoreCase(orgaController.getComponentParameterValue("gallery" + compoIds[c],
           "viewInWysiwyg"))) {
         if (galleries == null)
-          galleries = new ArrayList();
+          galleries = new ArrayList<ComponentInstLight>();
 
         ComponentInstLight gallery = orgaController.getComponentInstLight("gallery" + compoIds[c]);
         galleries.add(gallery);
