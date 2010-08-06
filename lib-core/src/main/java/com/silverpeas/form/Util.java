@@ -25,6 +25,7 @@
 package com.silverpeas.form;
 
 import java.io.PrintWriter;
+import java.util.Map;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.FileServerUtils;
@@ -134,4 +135,10 @@ public class Util {
         + "\" width=\"5\" height=\"5\" border=\"0\" alt=\"" +
         Util.getString("GML.requiredField", language) + "\"/>";
   }
+
+  public static boolean getBooleanValue(Map<String, String> parameters, String parameter) {
+    String paramValue = parameters.containsKey(parameter) ? parameters.get(parameter) : "false";
+    return Boolean.valueOf(paramValue).booleanValue();
+  }
+  
 }
