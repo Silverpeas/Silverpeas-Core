@@ -82,9 +82,9 @@ public class PortletWindowRules {
   private static Map getWindowStateMap() {
     Map windowStateMap = new HashMap();
 
-    windowStateMap.put(new Integer(MINIMIZE), ChannelState.MINIMIZED);
-    windowStateMap.put(new Integer(MAXIMIZE), ChannelState.MAXIMIZED);
-    windowStateMap.put(new Integer(NORMAL), ChannelState.NORMAL);
+    windowStateMap.put(Integer.valueOf(MINIMIZE), ChannelState.MINIMIZED);
+    windowStateMap.put(Integer.valueOf(MAXIMIZE), ChannelState.MAXIMIZED);
+    windowStateMap.put(Integer.valueOf(NORMAL), ChannelState.NORMAL);
     return windowStateMap;
 
   }
@@ -92,9 +92,9 @@ public class PortletWindowRules {
   private static Map getWindowStateReverseMap() {
 
     Map windowStateReverseMap = new HashMap();
-    windowStateReverseMap.put(ChannelState.MINIMIZED, new Integer(MINIMIZE));
-    windowStateReverseMap.put(ChannelState.MAXIMIZED, new Integer(MAXIMIZE));
-    windowStateReverseMap.put(ChannelState.NORMAL, new Integer(NORMAL));
+    windowStateReverseMap.put(ChannelState.MINIMIZED, Integer.valueOf(MINIMIZE));
+    windowStateReverseMap.put(ChannelState.MAXIMIZED, Integer.valueOf(MAXIMIZE));
+    windowStateReverseMap.put(ChannelState.NORMAL, Integer.valueOf(NORMAL));
 
     return windowStateReverseMap;
   }
@@ -169,8 +169,8 @@ public class PortletWindowRules {
   public static List mapToStandards(int[] portalWindowStates) {
     List newList = new ArrayList();
     for (int i = 0; portalWindowStates != null && i < portalWindowStates.length; i++) {
-      ChannelState winState = (ChannelState) windowStateMap.get(new Integer(
-          portalWindowStates[i]));
+      ChannelState winState = (ChannelState) windowStateMap.get(
+          Integer.valueOf(portalWindowStates[i]));
       if (winState != null) {
         newList.add(winState);
       }
@@ -184,7 +184,7 @@ public class PortletWindowRules {
    * understood by the container layer
    */
   public static ChannelState mapToStandards(int portalWindowState) {
-    ChannelState winState = (ChannelState) windowStateMap.get(new Integer(
+    ChannelState winState = (ChannelState) windowStateMap.get(Integer.valueOf(
         portalWindowState));
     return winState;
   }

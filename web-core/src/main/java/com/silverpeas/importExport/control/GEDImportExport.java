@@ -548,8 +548,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
         if (listInfoText == null) {
           listInfoText = new ArrayList();
         }
-        listInfoText.add(new InfoTextDetail(null, new Integer(textOrder++).toString(), null,
-            textPart));
+        listInfoText.add(new InfoTextDetail(null, String.valueOf(textOrder++), null, textPart));
       }
     }
 
@@ -567,7 +566,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
         if (listInfoImage == null) {
           listInfoImage = new ArrayList();
         }
-        listInfoImage.add(new InfoImageDetail(null, new Integer(imageOrder++).toString(), null,
+        listInfoImage.add(new InfoImageDetail(null, String.valueOf(imageOrder++), null,
             imagePath, imagePath.substring(imagePath.lastIndexOf(File.separator) + 1), "",
             mimeType, size));
       }

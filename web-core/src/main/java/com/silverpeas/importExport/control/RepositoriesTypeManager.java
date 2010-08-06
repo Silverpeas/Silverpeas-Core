@@ -219,10 +219,9 @@ public class RepositoriesTypeManager {
         if (attDetail.getSize() != 0) {
           List attachments = new ArrayList();
           attachments.add(attDetail);
-          versioningIE.importDocuments(pubDetailToCreate.getPK().getId(),
-              componentId, attachments, new Integer(userDetail.getId())
-              .intValue(), pubDetailToCreate.isIndexable(), new Integer(
-              topicId).toString());
+          versioningIE.importDocuments(pubDetailToCreate.getPK().getId(), componentId, attachments, 
+              Integer.parseInt(userDetail.getId()), pubDetailToCreate.isIndexable(), 
+              String.valueOf(topicId));
         }
       } else {
         // Ajout des attachments

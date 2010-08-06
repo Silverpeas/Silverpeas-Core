@@ -312,7 +312,7 @@ public class PortletWindowRegistryContextImpl implements PortletWindowRegistryCo
   public Integer getRowNumber(String portletWindowName) throws PortletRegistryException {
     PortletRegistryElement portletRegistryElement = getRegistryElement(portletWindowName);
     String rowNumber = portletRegistryElement.getStringProperty(PortletRegistryTags.ROW_KEY);
-    return new Integer(rowNumber);
+    return Integer.valueOf(rowNumber);
   }
 
   public String getWidth(String portletWindowName) throws PortletRegistryException {

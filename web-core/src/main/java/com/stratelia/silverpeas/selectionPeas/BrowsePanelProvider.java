@@ -21,10 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.silverpeas.selectionPeas;
 
 import java.util.Set;
@@ -37,6 +33,7 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 abstract public class BrowsePanelProvider extends PanelProvider {
+
   protected CacheManager m_Cm = null;
   protected ResourceLocator m_Message = null;
   protected OrganizationController m_oc = new OrganizationController();
@@ -71,21 +68,15 @@ abstract public class BrowsePanelProvider extends PanelProvider {
   }
 
   // OVERWRITE THIS FUNCTION : The cache is already managed by CacheManager
-  public void setSelectedElements(Set elements) {
-    int i;
-    int max;
-
-    // Simple case : less than a page to display or display all
-    if ((m_NbDisplayed == -1) || (m_Ids.length <= m_NbDisplayed)) {
-      max = m_Ids.length;
-    } else if (m_Ids.length <= (m_FirstDisplayed + m_NbDisplayed)) {
-      max = m_Ids.length - m_FirstDisplayed;
-    } else {
-      max = m_NbDisplayed;
+  public void setSelectedElements(Set<String> elements) {
+    for (String element : elements) {
+      m_Cm.setSelected(m_what, element, true);
     }
-    for (i = 0; i < max; i++) {
-      m_Cm.setSelected(m_what, m_Ids[m_FirstDisplayed + i], elements
-          .contains(m_Ids[m_FirstDisplayed + i]));
+  }
+
+  public void unsetSelectedElements(Set<String> elements) {
+    for (String element : elements) {
+      m_Cm.setSelected(m_what, element, false);
     }
   }
 

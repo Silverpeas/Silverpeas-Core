@@ -729,33 +729,30 @@ public class PublicationsTypeManager {
                   while (itCoordinatesPoints.hasNext()) {
                     CoordinatePointType coordinatePointType =
                         (CoordinatePointType) itCoordinatesPoints.next();
-                    if (!coordinatePointType.getValue().equals("")) {
+                    if (StringUtil.isDefined(coordinatePointType.getValue())) {
                       // Get NodeDetail by his name
-                      NodeDetail nodeDetail =
-                          coordinateIE.getNodeDetailByName(coordinatePointType.getValue(),
-                          new Integer(coordinatePointType.getAxisId()).intValue(), componentId);
+                      NodeDetail nodeDetail = coordinateIE.getNodeDetailByName(
+                          coordinatePointType.getValue(), coordinatePointType.getAxisId(), 
+                          componentId);
                       SilverTrace.debug("importExport", "PublicationsTypeManager.processImport",
                           "root.MSG_GEN_PARAM_VALUE", "nodeDetail avant= " + nodeDetail);
                       if (nodeDetail == null && createCoordinateAllowed) {
-                        NodeDetail position =
-                            new NodeDetail("toDefine", coordinatePointType.getValue(), "", null,
-                            userDetail.getId(), null, "0", new Integer(coordinatePointType
-                            .getAxisId()).toString(), null);
-                        nodeDetail =
-                            coordinateIE.addPosition(position, new Integer(coordinatePointType
-                            .getAxisId()).toString(), componentId);
-                        SilverTrace
-                            .debug("importExport", "PublicationsTypeManager.processImport",
-                            "root.MSG_GEN_PARAM_VALUE", "nodeDetail apres création= " +
-                            nodeDetail);
+                        NodeDetail position = new NodeDetail("toDefine", 
+                            coordinatePointType.getValue(), "", null, userDetail.getId(), null, 
+                            "0", String.valueOf(coordinatePointType.getAxisId()), null);
+                        nodeDetail = coordinateIE.addPosition(position, String.valueOf(
+                            coordinatePointType .getAxisId()), componentId);
+                        SilverTrace .debug("importExport", "PublicationsTypeManager.processImport",
+                            "root.MSG_GEN_PARAM_VALUE", "nodeDetail apres création= " + nodeDetail);
                       }
                       if (nodeDetail != null) {
-                        if (coordinatePointsPath.equals(""))
+                        if (!StringUtil.isDefined(coordinatePointsPath)) {
                           coordinatePointsPath = nodeDetail.getPath() + nodeDetail.getId();
-                        else
-                          coordinatePointsPath =
-                              coordinatePointsPath + "," + nodeDetail.getPath() +
+                        }
+                        else {
+                          coordinatePointsPath = coordinatePointsPath + "," + nodeDetail.getPath() +
                               nodeDetail.getId();
+                        }
                       }
                     }
                   }
@@ -763,10 +760,11 @@ public class PublicationsTypeManager {
                       "root.MSG_GEN_PARAM_VALUE", "coordinatePointsPath = " + coordinatePointsPath);
                   // Add coordinate (set of coordinatePoints)
                   int coordinateId = coordinateIE.addPositions(componentId, coordinatePointsPath);
-                  if (coordinateId == 0)
+                  if (coordinateId == 0) {
                     unitReport.setError(UnitReport.ERROR_INCORRECT_CLASSIFICATION_ON_COMPONENT);
-                  else
-                    nodes.add(new Integer(coordinateId));
+                  } else {
+                    nodes.add(Integer.valueOf(coordinateId));
+                  }
                 }
               }
             }
@@ -785,8 +783,7 @@ public class PublicationsTypeManager {
           if (pubDetail != null) {
             // Specific Kmax: attach nodes after the publication creation
             if (isKmax(componentId)) {
-              PublicationImportExport.addNodesToPublication(pubDetail.getPK(),
-                  (List<Integer>) nodes);
+              PublicationImportExport.addNodesToPublication(pubDetail.getPK(), (List<Integer>) nodes);
             }
             // traitement du contenu de la publi
             if (pubType.getPublicationContentType() != null) {

@@ -92,9 +92,9 @@ public class AgendaHtmlView {
     setDate(date);
     this.agendaSessionController = agendaSessionController;
     isOtherAgenda = agendaSessionController.isOtherAgendaMode();
-    WEEKDAYNUMBER = new Integer(settings.getString("weekDayNumber")).intValue();
-    BEGINHOUR = new Integer(settings.getString("beginHour")).intValue();
-    ENDHOUR = new Integer(settings.getString("endHour")).intValue();
+    WEEKDAYNUMBER = Integer.parseInt(settings.getString("weekDayNumber"));
+    BEGINHOUR = Integer.parseInt(settings.getString("beginHour"));
+    ENDHOUR = Integer.parseInt(settings.getString("endHour"));
 
   }
 

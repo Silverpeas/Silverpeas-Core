@@ -219,10 +219,10 @@ public class SessionManager implements SchedulerEventHandler {
     // Create new scheduled job
     Vector<Integer> startMinutes = new Vector<Integer>();
     if (60 % minute == 0) {
-      startMinutes.add(new Integer(0));
+      startMinutes.add(Integer.valueOf(0));
     }
     for (int i = minute; i < 60; i += minute) {
-      startMinutes.add(new Integer(i));
+      startMinutes.add(Integer.valueOf(i));
     }
     SimpleScheduler.getJob(myInstance, SESSION_MANAGER_JOB_NAME, startMinutes,
         null, null, null, null, myInstance, "doSessionManagement");

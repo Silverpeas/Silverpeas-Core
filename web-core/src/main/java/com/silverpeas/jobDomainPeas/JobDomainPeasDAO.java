@@ -116,8 +116,7 @@ public class JobDomainPeasDAO {
 
     ResourceLocator propSpecificDomainSQL = new ResourceLocator(
         "com.stratelia.silverpeas.domains.templateDomainSQL", "");
-    int numberOfColumns = new Integer(propSpecificDomainSQL
-        .getString("property.Number")).intValue();
+    int numberOfColumns = Integer.parseInt(propSpecificDomainSQL.getString("property.Number"));
 
     String createQuery = " CREATE TABLE Domain" + domainName + "_User " + "("
         + "id int NOT NULL ," + "firstName varchar(100) NULL ,"
@@ -129,9 +128,9 @@ public class JobDomainPeasDAO {
     String typeColumnTable;
     for (int i = 1; i <= numberOfColumns; i++) {
       typeColumnTable = propSpecificDomainSQL.getString("property_"
-          + Integer.toString(i) + ".Type");
+          + String.valueOf(i) + ".Type");
       nameColumnTable = propSpecificDomainSQL.getString("property_"
-          + Integer.toString(i) + ".MapParameter");
+          + String.valueOf(i) + ".MapParameter");
 
       createQuery += nameColumnTable + " ";
 
@@ -301,7 +300,7 @@ public class JobDomainPeasDAO {
       String groupId;
       Group group;
       while (resultSet.next()) {
-        groupId = new Integer(resultSet.getInt(1)).toString();
+        groupId = String.valueOf(resultSet.getInt(1));
         group = adminCtrl.getGroupById(groupId);
         if (!group.isSynchronized())
           listRes.add(group);
@@ -349,7 +348,7 @@ public class JobDomainPeasDAO {
 
       String userId;
       while (resultSet.next()) {
-        userId = new Integer(resultSet.getInt(1)).toString();
+        userId = String.valueOf(resultSet.getInt(1));
         userFull = adminCtrl.getUserFull(userId);
 
         listRes.add(userFull);
@@ -358,57 +357,10 @@ public class JobDomainPeasDAO {
       DBUtil.close(stmt);
       freeConnection(myCon);
     }
-
-    // Collection listRes2 = new ArrayList();
-    /*
-     * Iterator itUserSilverpeas = listRes.iterator(); String specificId; String specificIdGroup;
-     * String groupId; while(itUserSilverpeas.hasNext()) { userFull = (UserFull)
-     * itUserSilverpeas.next(); //groupe specificId = userFull.getSpecificId(); specificIdGroup =
-     * selectGroupTableDomain_Group_User_Rel(domain, new Integer(specificId).intValue()); groupId =
-     * selectGroupTableST_Group(domain, specificIdGroup); userFull.setSpecificId(groupId); }
-     */
-
     return listRes; // Collection de UserFull
   }
 
-  /**
-   * Sélection du groupId pour le userId spécifié dans la table Domain<domainName>_Group_User_Rel
-   * @return String
-   * @throws SQLException
-   * @see
-   */
-  /*
-   * private static String selectGroupTableDomain_Group_User_Rel(Domain domain, int userSpecificId)
-   * throws SQLException { SilverTrace.info( "jobDomainPeas",
-   * "JobDomainPeasDAO.selectGroupTableDomain_Group_User_Rel", "root.MSG_GEN_ENTER_METHOD"); String
-   * propDomainFileName = domain.getPropFileName(); String domainName =
-   * propDomainFileName.substring(39); String groupId = ""; String query = " SELECT d.groupId"+
-   * " FROM Domain"+domainName+"_Group_User_Rel d "+ " WHERE d.userId = "+userSpecificId; Statement
-   * stmt = null; Connection myCon = getConnection(); try { stmt = myCon.createStatement();
-   * ResultSet resultSet = stmt.executeQuery(query); if (resultSet.next()) { groupId = new
-   * Integer(resultSet.getInt(1)).toString(); } } finally { DBUtil.close(stmt);
-   * freeConnection(myCon); } return groupId; }
-   */
-
-  /**
-   * Sélection du groupId pour le specificGroupId spécifié dans la table ST_Group
-   * @return String
-   * @throws SQLException
-   * @see
-   */
-  /*
-   * private static String selectGroupTableST_Group(Domain domain, String groupSpecificId) throws
-   * SQLException { SilverTrace.info( "jobDomainPeas", "JobDomainPeasDAO.selectGroupTableST_Group",
-   * "root.MSG_GEN_ENTER_METHOD"); String propDomainFileName = domain.getPropFileName(); String
-   * domainName = propDomainFileName.substring(39); String groupId = ""; String query =
-   * " SELECT g.id"+ " FROM Domain"+domainName+"_Group d, ST_Group g "+
-   * " WHERE g.domainId = "+domain.getId() + " AND g.specificId = "+groupSpecificId; Statement stmt
-   * = null; Connection myCon = getConnection(); try { stmt = myCon.createStatement(); ResultSet
-   * resultSet = stmt.executeQuery(query); if (resultSet.next()) { groupId = new
-   * Integer(resultSet.getInt(1)).toString(); } } finally { DBUtil.close(stmt);
-   * freeConnection(myCon); } return groupId; }
-   */
-
+  
   /**
    * Sélection des utilisateurs à synchroniser en delete de la table Domain<domainName>_User
    * @param domainName

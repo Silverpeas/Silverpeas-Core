@@ -199,7 +199,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
     journal.setDescription(description);
     try {
-      journal.getPriority().setValue(new Integer(priority).intValue());
+      journal.getPriority().setValue(Integer.parseInt(priority));
     } catch (Exception e) {
       SilverTrace
           .warn(
@@ -285,7 +285,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
     journal.setName(name);
     journal.setDescription(description);
     try {
-      journal.getPriority().setValue(new Integer(priority).intValue());
+      journal.getPriority().setValue(Integer.parseInt(priority));
     } catch (Exception e) {
       SilverTrace
           .warn(
@@ -947,8 +947,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
     }
     if (currentDisplayType == AgendaHtmlView.BYDAY) {
       return currentCalendar.get(Calendar.DAY_OF_WEEK);
-    } else
-      return new Integer(getString("weekFirstDay")).intValue();
+    }
+    return Integer.parseInt(getString("weekFirstDay"));
   }
 
   /**
@@ -1632,7 +1632,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   public void changeDateStatus(String date, String nextStatus)
       throws RemoteException, ParseException {
-    int status = new Integer(nextStatus).intValue();
+    int status = Integer.parseInt(nextStatus);
     HolidayDetail holiday = new HolidayDetail(DateUtil.parse(date), getUserId());
     if (status == WORKING_DAY) {
       // le jour devient un jour travaillé
@@ -1659,16 +1659,15 @@ public class AgendaSessionController extends AbstractComponentSessionController 
         "root.MSG_GEN_ENTER_METHOD", "year=" + year + ", month=" + month
         + ", day=" + day);
 
-    int iMonth = new Integer(month).intValue();
+    int iMonth = Integer.parseInt(month);
 
-    currentCalendar.set(Calendar.YEAR, new Integer(year).intValue());
+    currentCalendar.set(Calendar.YEAR, Integer.parseInt(year));
     currentCalendar.set(Calendar.MONTH, iMonth);
     currentCalendar.set(Calendar.DATE, 1);
 
     // on se place sur le premier jour du mois
     // correspondant au jour de la semaine passé en paramêtre
-    while (currentCalendar.get(Calendar.DAY_OF_WEEK) != new Integer(day)
-        .intValue()) {
+    while (currentCalendar.get(Calendar.DAY_OF_WEEK) != Integer.parseInt(day)) {
       currentCalendar.add(Calendar.DATE, 1);
     }
 

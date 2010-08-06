@@ -2780,7 +2780,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   public void setIndexOfFirstItemToDisplay(String index) {
-    this.indexOfFirstItemToDisplay = new Integer(index).intValue();
+    this.indexOfFirstItemToDisplay = Integer.parseInt(index);
   }
 
   public int getIndexOfFirstItemToDisplay() {

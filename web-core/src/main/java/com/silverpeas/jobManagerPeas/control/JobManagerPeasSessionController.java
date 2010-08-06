@@ -486,9 +486,9 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
         int total = 0;
         for (int j = 0; j < groupe.length(); j++) {
           String valeur = groupe.substring(j, j + 1);
-          total += new Integer(valeur).intValue();
+          total = total + Integer.parseInt(valeur);
         }
-        if (total != new Integer(serial.substring(i * 1, i * 1 + 1)).intValue())
+        if (total != Integer.parseInt(serial.substring(i * 1, i * 1 + 1)))
           validSequence = false;
       }
     } catch (Exception e) {

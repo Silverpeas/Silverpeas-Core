@@ -27,6 +27,7 @@
 
 package com.stratelia.silverpeas.selectionPeas;
 
+import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.genericPanel.PanelLine;
 import com.stratelia.silverpeas.genericPanel.PanelMiniFilterEdit;
 import com.stratelia.silverpeas.genericPanel.PanelMiniFilterSelect;
@@ -42,7 +43,6 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.viewGenerator.html.Encode;
 
 public class CacheManagerUsersGroups extends CacheManager {
   protected static final int COL_USER_LASTNAME = 0;
@@ -280,19 +280,20 @@ public class CacheManagerUsersGroups extends CacheManager {
       if (SelectionPeasSettings.m_DisplayNbUsersByGroup) {
         if (SelectionPeasSettings.m_DisplayDomains) {
           theValues = new String[4];
-          theValues[COL_GROUP_NAME] = Encode.javaStringToHtmlString(theGroup
-              .getName());
-          theValues[COL_GROUP_DESCRIPTION] = Encode
+          theValues[COL_GROUP_NAME] = EncodeHelper
+              .javaStringToHtmlString(theGroup.getName());
+          theValues[COL_GROUP_DESCRIPTION] = EncodeHelper
               .javaStringToHtmlString(theGroup.getDescription());
           theValues[COL_GROUP_NBUSERS] = Integer.toString(m_oc
               .getAllSubUsersNumber(theGroup.getId()));
-          theValues[COL_GROUP_NBUSERS + 1] = Encode.javaStringToHtmlString(m_ac
-              .getDomain(theGroup.getDomainId()).getName());
+          theValues[COL_GROUP_NBUSERS + 1] = EncodeHelper
+              .javaStringToHtmlString(m_ac.getDomain(theGroup.getDomainId())
+              .getName());
         } else {
           theValues = new String[3];
-          theValues[COL_GROUP_NAME] = Encode.javaStringToHtmlString(theGroup
-              .getName());
-          theValues[COL_GROUP_DESCRIPTION] = Encode
+          theValues[COL_GROUP_NAME] = EncodeHelper
+              .javaStringToHtmlString(theGroup.getName());
+          theValues[COL_GROUP_DESCRIPTION] = EncodeHelper
               .javaStringToHtmlString(theGroup.getDescription());
           theValues[COL_GROUP_NBUSERS] = Integer.toString(m_oc
               .getAllSubUsersNumber(theGroup.getId()));
@@ -300,18 +301,18 @@ public class CacheManagerUsersGroups extends CacheManager {
       } else {
         if (SelectionPeasSettings.m_DisplayDomains) {
           theValues = new String[3];
-          theValues[COL_GROUP_NAME] = Encode.javaStringToHtmlString(theGroup
-              .getName());
-          theValues[COL_GROUP_DESCRIPTION] = Encode
+          theValues[COL_GROUP_NAME] = EncodeHelper
+              .javaStringToHtmlString(theGroup.getName());
+          theValues[COL_GROUP_DESCRIPTION] = EncodeHelper
               .javaStringToHtmlString(theGroup.getDescription());
-          theValues[COL_GROUP_DESCRIPTION + 1] = Encode
+          theValues[COL_GROUP_DESCRIPTION + 1] = EncodeHelper
               .javaStringToHtmlString(m_ac.getDomain(theGroup.getDomainId())
               .getName());
         } else {
           theValues = new String[2];
-          theValues[COL_GROUP_NAME] = Encode.javaStringToHtmlString(theGroup
-              .getName());
-          theValues[COL_GROUP_DESCRIPTION] = Encode
+          theValues[COL_GROUP_NAME] = EncodeHelper
+              .javaStringToHtmlString(theGroup.getName());
+          theValues[COL_GROUP_DESCRIPTION] = EncodeHelper
               .javaStringToHtmlString(theGroup.getDescription());
         }
       }
@@ -324,21 +325,21 @@ public class CacheManagerUsersGroups extends CacheManager {
           "root.GEN_MSG_PARAM_VALUE", "id=" + id);
       if (SelectionPeasSettings.m_DisplayDomains) {
         theValues = new String[4];
-        theValues[COL_USER_LASTNAME] = Encode.javaStringToHtmlString(theUser
-            .getLastName());
-        theValues[COL_USER_FIRSTNAME] = Encode.javaStringToHtmlString(theUser
-            .getFirstName());
-        theValues[COL_USER_EMAIL] = Encode.javaStringToHtmlString(theUser
+        theValues[COL_USER_LASTNAME] = EncodeHelper
+            .javaStringToHtmlString(theUser.getLastName());
+        theValues[COL_USER_FIRSTNAME] = EncodeHelper
+            .javaStringToHtmlString(theUser.getFirstName());
+        theValues[COL_USER_EMAIL] = EncodeHelper.javaStringToHtmlString(theUser
             .geteMail());
-        theValues[COL_USER_DOMAIN] = Encode.javaStringToHtmlString(m_ac
+        theValues[COL_USER_DOMAIN] = EncodeHelper.javaStringToHtmlString(m_ac
             .getDomain(theUser.getDomainId()).getName());
       } else {
         theValues = new String[3];
-        theValues[COL_USER_LASTNAME] = Encode.javaStringToHtmlString(theUser
-            .getLastName());
-        theValues[COL_USER_FIRSTNAME] = Encode.javaStringToHtmlString(theUser
-            .getFirstName());
-        theValues[COL_USER_EMAIL] = Encode.javaStringToHtmlString(theUser
+        theValues[COL_USER_LASTNAME] = EncodeHelper
+            .javaStringToHtmlString(theUser.getLastName());
+        theValues[COL_USER_FIRSTNAME] = EncodeHelper
+            .javaStringToHtmlString(theUser.getFirstName());
+        theValues[COL_USER_EMAIL] = EncodeHelper.javaStringToHtmlString(theUser
             .geteMail());
       }
       return new PanelLine(theUser.getId(), theValues, false);

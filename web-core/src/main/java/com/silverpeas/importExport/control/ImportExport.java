@@ -961,16 +961,14 @@ public class ImportExport {
         }
 
         // Fill unbalanced file html index
-        List unbalancedPublications =
-            PublicationImportExport.getUnbalancedPublications(componentId);
+        List unbalancedPublications = PublicationImportExport.getUnbalancedPublications(componentId);
         Iterator unbalancedPublicationsDetails = unbalancedPublications.iterator();
         String publicationFileNameRelativePath = "";
         String componentLabel = FileServerUtils.replaceAccentChars(componentInst.getLabel());
         while (unbalancedPublicationsDetails.hasNext()) {
           PublicationDetail pubDetail = (PublicationDetail) unbalancedPublicationsDetails.next();
-          PublicationType publicationType =
-              gedIE.getPublicationCompleteById(new Integer(pubDetail.getId()).toString(),
-              componentId);
+          PublicationType publicationType = gedIE.getPublicationCompleteById(String.valueOf(
+              pubDetail.getId()), componentId);
           publicationFileNameRelativePath = componentLabel + File.separator + pubDetail.getId()
               + File.separator + "index.html";
           HtmlExportPublicationGenerator unbalanced = new HtmlExportPublicationGenerator(
@@ -1037,7 +1035,7 @@ public class ImportExport {
           ArrayList currentAxis = (ArrayList) itListAxisWithChildren.next();
           Iterator itAxisNodesDetail = currentAxis.iterator();
           while (itAxisNodesDetail.hasNext()) {
-            String nodeId = new Integer(((NodeDetail) itAxisNodesDetail.next()).getId()).toString();
+            String nodeId = String.valueOf(((NodeDetail) itAxisNodesDetail.next()).getId());
             nodesIds.add(nodeId);
           }
         }
@@ -1119,8 +1117,8 @@ public class ImportExport {
               nodeId = st.nextToken();
               if (!nodeId.equals("index")) {
                 NodeDetail currentNodeDetail = coordinateImportExport.getNodeHeader(new NodePK(
-                    new Integer(nodeId).toString(), componentId));
-                nodeIds.add(new Integer(currentNodeDetail.getId()).toString());
+                    String.valueOf(nodeId), componentId));
+                nodeIds.add(String.valueOf(currentNodeDetail.getId()));
                 if (currentNodeDetail.getLevel() >= 3) {
                   // if subvalue of axis, add this node
                   nodeIds = addNodeToList(nodeIds, currentNodeDetail);
@@ -1130,7 +1128,7 @@ public class ImportExport {
                   // if Axis, add all nodes of this axis
                   for (int i = 0; i < axisChildren.size(); i++) {
                     NodeDetail nodeDetail = (NodeDetail) axisChildren.get(i);
-                    nodeIds.add(new Integer(nodeDetail.getId()).toString());
+                    nodeIds.add(String.valueOf(nodeDetail.getId()));
                   }
                 }
               }
@@ -1260,7 +1258,7 @@ public class ImportExport {
   private List addNodeToList(List nodesIds, NodeDetail nodeDetail) {
     CoordinateImportExport cie = new CoordinateImportExport();
     // Add father
-    nodesIds.add(new Integer(nodeDetail.getFatherPK().getId()).toString());
+    nodesIds.add(String.valueOf(nodeDetail.getFatherPK().getId()));
     if (nodeDetail.getLevel() >= 4) {
       NodeDetail parentNodeDetail = cie.getNodeHeader(nodeDetail.getFatherPK());
       addNodeToList(nodesIds, parentNodeDetail);
