@@ -22,8 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 package com.stratelia.webactiv.agenda.servlets;
 
 import javax.servlet.http.*;
@@ -363,7 +361,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
         while (st.hasMoreTokens()) {
           String categIcal = st.nextToken();
           categoryIds[i] = categIcal;
-          selectedCategoryIds.add(new Integer(categoryIds[i]));
+          selectedCategoryIds.add(Integer.valueOf(categoryIds[i]));
           Category categ = scc.getCategory(categoryIds[i]);
           categories.add(categ);
           i++;

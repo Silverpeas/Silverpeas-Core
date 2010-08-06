@@ -162,19 +162,11 @@ public class AgendaRssServlet extends RssServlet {
     calElement.setTime(event.getStartDate());
     String hourMinute = event.getStartHour(); // hh:mm
     if (hourMinute != null && hourMinute.trim().length() > 0) {
-      /*
-       * int hour = new Integer(hourMinute.substring(0, 2)).intValue() - 1; //-1 car bug d'affichage
-       * du fil RSS qui affiche toujours 1h en trop
-       */
-      int hour = new Integer(hourMinute.substring(0, 2)).intValue();
-      int minute = new Integer(hourMinute.substring(3)).intValue();
+      int hour = Integer.parseInt(hourMinute.substring(0, 2));
+      int minute = Integer.parseInt(hourMinute.substring(3));
       calElement.set(Calendar.HOUR_OF_DAY, hour);
       calElement.set(Calendar.MINUTE, minute);
     } else {
-      /*
-       * calElement.set(Calendar.HOUR_OF_DAY, -1);//-1 car bug d'affichage du fil RSS qui affiche
-       * toujours 1h en trop
-       */
       calElement.set(Calendar.HOUR_OF_DAY, 0);
       calElement.set(Calendar.MINUTE, 0);
     }

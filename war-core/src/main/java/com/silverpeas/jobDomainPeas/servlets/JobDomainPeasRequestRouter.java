@@ -547,30 +547,23 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
               (domainRight & AbstractDomainDriver.ACTION_CREATE_USER) != 0));
 
           DomainDriverManager domainDriverManager = new DomainDriverManager();
-          AbstractDomainDriver domainDriver = domainDriverManager
-              .getDomainDriver(new Integer(jobDomainSC.getTargetDomain()
-                  .getId()).intValue());
+          AbstractDomainDriver domainDriver = domainDriverManager.getDomainDriver(
+              Integer.parseInt(jobDomainSC.getTargetDomain().getId()));
           UserFull newUser = new UserFull(domainDriver);
           newUser.setPasswordAvailable(true);
 
           request.setAttribute("userObject", newUser);
           request.setAttribute("action", "userCreate");
           request.setAttribute("groupsPath", jobDomainSC.getPath(
-              (String) request.getAttribute("myComponentURL"), jobDomainSC
-                  .getString("JDP.userAdd")
+              (String) request.getAttribute("myComponentURL"), jobDomainSC.getString("JDP.userAdd")
                   + "..."));
-          request.setAttribute("minLengthLogin", new Integer(jobDomainSC
-              .getMinLengthLogin()));
-          request.setAttribute("minLengthPwd", new Integer(jobDomainSC
-              .getMinLengthPwd()));
-          request.setAttribute("blanksAllowedInPwd", new Boolean(jobDomainSC
-              .isBlanksAllowedInPwd()));
+          request.setAttribute("minLengthLogin", Integer.valueOf(jobDomainSC.getMinLengthLogin()));
+          request.setAttribute("minLengthPwd", Integer.valueOf(jobDomainSC.getMinLengthPwd()));
+          request.setAttribute("blanksAllowedInPwd", Boolean.valueOf(jobDomainSC.isBlanksAllowedInPwd()));
           request.setAttribute("CurrentUser", jobDomainSC.getUserDetail());
-
           // if community management is activated, add groups on this user is manager
           if (JobDomainSettings.m_UseCommunityManagement) {
-            request.setAttribute("GroupsManagedByCurrentUser", jobDomainSC
-                .getUserManageableGroups());
+            request.setAttribute("GroupsManagedByCurrentUser", jobDomainSC.getUserManageableGroups());
           }
 
           destination = "userCreate.jsp";
@@ -583,7 +576,7 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
         } else if (function.startsWith("displayUserModify")) {
           long domainRight = jobDomainSC.getDomainActions();
 
-          request.setAttribute("isUserRW", new Boolean(
+          request.setAttribute("isUserRW", Boolean.valueOf(
               (domainRight & AbstractDomainDriver.ACTION_UPDATE_USER) != 0));
 
           request.setAttribute("userObject", jobDomainSC.getTargetUserFull());
@@ -592,27 +585,20 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
               (String) request.getAttribute("myComponentURL"), jobDomainSC
                   .getString("JDP.userUpdate")
                   + "..."));
-          request.setAttribute("minLengthLogin", new Integer(jobDomainSC
-              .getMinLengthLogin()));
-          request.setAttribute("minLengthPwd", new Integer(jobDomainSC
-              .getMinLengthPwd()));
-          request.setAttribute("blanksAllowedInPwd", new Boolean(jobDomainSC
-              .isBlanksAllowedInPwd()));
+          request.setAttribute("minLengthLogin", Integer.valueOf(jobDomainSC.getMinLengthLogin()));
+          request.setAttribute("minLengthPwd", Integer.valueOf(jobDomainSC.getMinLengthPwd()));
+          request.setAttribute("blanksAllowedInPwd", Boolean.valueOf(jobDomainSC.isBlanksAllowedInPwd()));
           request.setAttribute("CurrentUser", jobDomainSC.getUserDetail());
-
           destination = "userCreate.jsp";
         } else if (function.startsWith("displayUserMS")) {
           request.setAttribute("userObject", jobDomainSC.getTargetUserFull());
           request.setAttribute("action", "userMS");
-          request.setAttribute("groupsPath", jobDomainSC.getPath(
-              (String) request.getAttribute("myComponentURL"), jobDomainSC
-                  .getString("JDP.userUpdate")
+          request.setAttribute("groupsPath", jobDomainSC.getPath( (String) 
+              request.getAttribute("myComponentURL"), jobDomainSC.getString("JDP.userUpdate")
                   + "..."));
-          request.setAttribute("minLengthLogin", new Integer(jobDomainSC
-              .getMinLengthLogin()));
-          request.setAttribute("minLengthPwd", new Integer(jobDomainSC
-              .getMinLengthPwd()));
-          request.setAttribute("blanksAllowedInPwd", new Boolean(jobDomainSC
+          request.setAttribute("minLengthLogin", Integer.valueOf(jobDomainSC.getMinLengthLogin()));
+          request.setAttribute("minLengthPwd", Integer.valueOf(jobDomainSC.getMinLengthPwd()));
+          request.setAttribute("blanksAllowedInPwd", Boolean.valueOf(jobDomainSC
               .isBlanksAllowedInPwd()));
           request.setAttribute("CurrentUser", jobDomainSC.getUserDetail());
 
@@ -620,21 +606,17 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
         } else if (function.startsWith("displayUserImport")) {
           request.setAttribute("SelectedIds", jobDomainSC
               .getListSelectedUsers());
-          request.setAttribute("FirstUserIndex", new Integer(jobDomainSC
+          request.setAttribute("FirstUserIndex", Integer.valueOf(jobDomainSC
               .getIndexOfFirstItemToDisplay()));
           request.setAttribute("groupsPath", jobDomainSC.getPath(
-              (String) request.getAttribute("myComponentURL"), jobDomainSC
-                  .getString("JDP.userImport")
+              (String) request.getAttribute("myComponentURL"), jobDomainSC.getString("JDP.userImport")
                   + "..."));
-          request.setAttribute("properties", jobDomainSC
-              .getPropertiesToImport());
+          request.setAttribute("properties", jobDomainSC.getPropertiesToImport());
           destination = "userImport.jsp";
         } else if (function.startsWith("displayDomainCreate")) {
           Domain theNewDomain = new Domain();
-          theNewDomain
-              .setDriverClassName("com.stratelia.silverpeas.domains.ldapdriver.LDAPDriver");
-          theNewDomain
-              .setPropFileName("com.stratelia.silverpeas.domains.domain");
+          theNewDomain.setDriverClassName("com.stratelia.silverpeas.domains.ldapdriver.LDAPDriver");
+          theNewDomain.setPropFileName("com.stratelia.silverpeas.domains.domain");
           theNewDomain.setAuthenticationServer("autDomain");
           request.setAttribute("domainObject", theNewDomain);
           request.setAttribute("action", "domainCreate");

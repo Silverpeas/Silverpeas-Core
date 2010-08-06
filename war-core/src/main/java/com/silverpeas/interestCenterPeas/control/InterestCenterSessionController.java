@@ -113,7 +113,7 @@ public class InterestCenterSessionController extends AbstractComponentSessionCon
     initEJB();
     ArrayList pkToRemove = new ArrayList();
     for (int i = 0; i < iDs.length; i++) {
-      pkToRemove.add(new Integer(iDs[i]));
+      pkToRemove.add(Integer.valueOf(iDs[i]));
     }
     icEjb.removeICByPK(pkToRemove);
   }
