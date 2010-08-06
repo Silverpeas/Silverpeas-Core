@@ -33,13 +33,22 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class RequestHelper {
 
-  public static String getRequestParameter(HttpServletRequest request, String parameterName) 
+  public static String getRequestParameter(HttpServletRequest request, String parameterName)
       throws UnsupportedEncodingException {
     String value = request.getParameter(parameterName);
     if (StringUtil.isDefined(value)) {
       value = new String(value.getBytes("ISO-8859-1"), "UTF-8");
     }
     return value;
+  }
+
+  public static int getIntParameter(HttpServletRequest request, String name, int defaultValue) {
+    String param = request.getParameter(name);
+    if (StringUtil.isDefined(param)) {
+
+      return Integer.parseInt(param.trim());
+    }
+    return defaultValue;
   }
 
   private RequestHelper() {
