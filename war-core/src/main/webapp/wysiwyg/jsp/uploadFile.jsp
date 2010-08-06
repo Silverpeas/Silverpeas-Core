@@ -44,7 +44,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory "%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController"%>
@@ -84,26 +83,25 @@ String EncodeURL(String javastring) {
   ResourceLocator message = new ResourceLocator("com.stratelia.silverpeas.wysiwyg.multilang.wysiwygBundle", language);
 %>
 
-<!-- AFFICHAGE BROWSER -->
-<HTML>
-<HEAD>
-<TITLE>_________________/ Silverpeas - Corporate portal organizer \_________________/</TITLE>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>_________________/ Silverpeas - Corporate portal organizer \_________________/</title>
 <% out.println(gef.getLookStyleSheet()); %>
 <style type="text/css">
 <!--
 .eventCells {  padding-right: 3px; padding-left: 3px; vertical-align: top; background-color: #FFFFFF}
 -->
 </style>
-<Script language="JavaScript">
+<script type="text/javascript">
 function returnHtmlEditor() {
   window.close();
 }
 </script>
 
-</HEAD>
-<BODY MARGINHEIGHT="5" MARGINWIDTH="5" TOPMARGIN="5" LEFTMARGIN="5">
-<!-- D�claration des variables  --->
+</head>
+<body>
 <%
   Window window = gef.getWindow();
   BrowseBar browseBar = window.getBrowseBar();
@@ -126,8 +124,8 @@ function returnHtmlEditor() {
 		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttFiles.jsp?Id="+objectId+"&SpaceId="+spaceId+"&ComponentId="+componentId+"&Context="+imagesContext+"&Url="+url+"&OriginWysiwyg=true").include(request, response);
   out.println(frame.printMiddle());
   out.println(frame.printAfter());
-  out.println("<center><BR>"+buttonPane.print()+"</center>");
+  out.println("<center><br/>"+buttonPane.print()+"</center>");
   out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

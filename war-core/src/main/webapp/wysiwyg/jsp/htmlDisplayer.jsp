@@ -1,5 +1,4 @@
-
-<%@page import="com.silverpeas.glossary.HighlightGlossaryTerms"%><%--
+<%--
 
     Copyright (C) 2000 - 2009 Silverpeas
 
@@ -26,7 +25,8 @@
 --%>
 
 <%@page import="java.util.Iterator"%>
-<%@page import="com.silverpeas.util.i18n.I18NHelper"%><%
+<%@page import="com.silverpeas.util.i18n.I18NHelper"%>
+<%
   response.setHeader("Cache-Control", "no-store");
   //HTTP 1.1
   response.setHeader("Pragma", "no-cache");
@@ -35,9 +35,9 @@
 %>
   <%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController" %>
   <%@ page import="com.stratelia.silverpeas.wysiwyg.*" %>
-  <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode" %>
   <%@ page import="com.silverpeas.util.StringUtil"%>
   <%@ page import="com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement"%>
+  <%@ page import="com.silverpeas.glossary.HighlightGlossaryTerms"%>
 <%
   //initialisation des variables
   String objectId    	= request.getParameter("ObjectId");

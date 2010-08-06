@@ -39,13 +39,14 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory "%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
+<%@ page import="com.silverpeas.treeMenu.model.NodeType"%>
 
 <%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController"%>
 <%@ page import="com.stratelia.silverpeas.wysiwyg.*"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
+<%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement" %>
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.ArrayList"%>
@@ -249,14 +250,15 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     browseBar.setExtraInformation(browseInformation);
 %>
 
-
-<%@page import="com.silverpeas.treeMenu.model.NodeType"%><HTML>
-<HEAD>
-<TITLE>Silverpeas Wysiwyg Editor</TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Silverpeas Wysiwyg Editor</title>
 <%
 	out.print(gef.getLookStyleSheet());
 %>
-<style>
+<style type="text/css">
 	.TB_Expand
 	{
 		background-color: #efefde;
@@ -273,7 +275,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	String wysiwygContent = "";
 %>
 
-<script language="javascript">
+<script type="text/javascript">
 	var oEditor;
 	var galleryWindow = window;
 	window.onload = function()
@@ -330,7 +332,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     	    if (ext.toLowerCase() == ".swf") {//du flash
 				oEditor.InsertHtml('<embed type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" 					src="'+str+'"></embed>');
 			} else {
-				oEditor.InsertHtml('<img border="0" src="'+str+'">');
+				oEditor.InsertHtml('<img border="0" src="'+str+'" alt=""/>');
 			}
 		}
 		//var wysiwygContent = oEditor.GetHTML();
@@ -345,7 +347,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 		var componentId = document.recupHtml.galleries.options[index].value;
 		if (index != 0)
 		{
-			url = "<%=context%>/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&Language=<%=language%>";
+			url = "<%=context%>/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&amp;Language=<%=language%>";
 			windowName = "galleryWindow";
 			larg = "820";
 			haut = "600";
@@ -359,7 +361,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	function choixImageInGallery(url)
 	{
 		oEditor.Focus();
-		oEditor.InsertHtml('<img border="0" src="'+url+'">');
+		oEditor.InsertHtml('<img border="0" src="'+url+'" alt=""/>');
 		//var wysiwygContent = oEditor.GetHTML();
 		//re = new RegExp("http:///", "gi");
 		//var newstr = wysiwygContent.replace(re, "/");
@@ -387,7 +389,7 @@ function openStorageFilemanager(){
 	index = document.getElementById("storageFile").selectedIndex;
 	var componentId = document.getElementById("storageFile").options[index].value;
 	if (index != 0){	
-		url = "<%=context%>/kmelia/jsp/attachmentLinkManagement.jsp?key="+componentId+"&ntype=<%=NodeType.COMPONENT%>";
+		url = "<%=context%>/kmelia/jsp/attachmentLinkManagement.jsp?key="+componentId+"&amp;ntype=<%=NodeType.COMPONENT%>";
 		windowName = "StorageFileWindow";
 		width = "750";
 		height = "580";
@@ -400,7 +402,7 @@ function openStorageFilemanager(){
 
 function insertAttachmentLink(url,img,label){
 	oEditor.Focus();
-	oEditor.InsertHtml('<a href="'+url+'" target="_blank"> <img src="'+img+'" width="20" border="0" align="absmiddle"> '+label+'</a> ');
+	oEditor.InsertHtml('<a href="'+url+'" target="_blank"> <img src="'+img+'" width="20" border="0" align="top" alt=""/> '+label+'</a> ');
 }
 </script>
 
@@ -408,15 +410,15 @@ function insertAttachmentLink(url,img,label){
 if (actionWysiwyg.startsWith("SaveHtml") && "1".equals(exit)) {
 %>
 	<script language="javascript">
-	  location.href = '<%=Encode.javaStringToJsString(returnUrl)%>';
+	  location.href = '<%=EncodeHelper.javaStringToJsString(returnUrl)%>';
 	</script>
 <%
 }
 else if (actionWysiwyg.equals("Load") || actionWysiwyg.equals("Refresh") || actionWysiwyg.equals("SaveHtml"))
 {
 %>
-	<form method="post" name="recupHtml" action="<%=context%>/wysiwyg/jsp/htmlEditor.jsp" onSubmit="return Save();">
-		<table border=0 cellpadding=0 cellspacing=0>
+	<form method="post" name="recupHtml" action="<%=context%>/wysiwyg/jsp/htmlEditor.jsp" onsubmit="return Save();">
+		<table border="0" cellpadding="0" cellspacing="0">
 			<tr class="TB_Expand">
 			<td class="TB_Expand" align="center">
 			
@@ -432,7 +434,7 @@ else if (actionWysiwyg.equals("Load") || actionWysiwyg.equals("Refresh") || acti
 			</select>
 	  </c:if>
 				<select id="images" name="images" onchange="choixImage();this.selectedIndex=0">
-					<option selected><%=message.getString("Image")%></option>
+					<option selected="selected"><%=message.getString("Image")%></option>
 							<%
 							if (collectionImages != null) {
 								int nbImages = collectionImages.length;
@@ -448,7 +450,7 @@ else if (actionWysiwyg.equals("Load") || actionWysiwyg.equals("Refresh") || acti
 					{
 						%>
 						<select id="galleries" name="galleries" onchange="choixGallery();this.selectedIndex=0;">
-							<option selected><%=message.getString("Galleries")%></option>
+							<option selected="selected"><%=message.getString("Galleries")%></option>
 							<%
 							for(int i=0; i < galleries.size(); i++ ) {
 								ComponentInstLight gallery = (ComponentInstLight) galleries.get(i);
@@ -469,32 +471,31 @@ else if (actionWysiwyg.equals("Load") || actionWysiwyg.equals("Refresh") || acti
 				 // Only for WebSites
 				 if (collectionPages != null) { %>
 					<select name="liens" onchange="choixLien(); this.selectedIndex=0">
-				        <option selected><%=message.getString("Links")%></option>
+				        <option selected="selected"><%=message.getString("Links")%></option>
 				        <%
 								int nbPages = collectionPages.length;
 								for(int i=0; i < nbPages; i++ ) {
 									out.println("<option value=\""+specificURL+collectionPages[i][0]+"\">"+collectionPages[i][1]+"</option>");
 								}
 					      %>
-						</option>
 					</select>
 				<% } %>
 			</td></tr>
 			<tr><td>
-				<textarea id="codeWysiwyg" name="codeWysiwyg"><%=wysiwygTextValue%></textarea>
+				<textarea id="codeWysiwyg" name="codeWysiwyg" cols="10" rows="10"><%=wysiwygTextValue%></textarea>
 			</td></tr>
 		</table>
-		<INPUT name="code" type="hidden">
-		<INPUT name="actionWysiwyg" type="hidden">
-		<INPUT name="origin" type="hidden" value="<%=componentId%>">
-		<INPUT name="Exit" type="hidden">
+		<input name="code" type="hidden"/>
+		<input name="actionWysiwyg" type="hidden"/>
+		<input name="origin" type="hidden" value="<%=componentId%>"/>
+		<input name="Exit" type="hidden"/>
 <%
 		ButtonPane buttonPane = gef.getButtonPane();
 		Button button = gef.getFormButton(message.getString("SaveAndExit"), "javascript:onClick=B_VALIDER_ONCLICK();", false);
 		Button buttonExit = gef.getFormButton(message.getString("Cancel"), "javascript:location.href='"+returnUrl+"';", false);
 		buttonPane.addButton(button);
 		buttonPane.addButton(buttonExit);
-    	out.println("<center><BR>"+buttonPane.print()+"</center>");
+    	out.println("<center><br/>"+buttonPane.print()+"</center>");
 %>
 	</form>
 <%
@@ -502,4 +503,4 @@ else if (actionWysiwyg.equals("Load") || actionWysiwyg.equals("Refresh") || acti
 	out.println(window.printAfter());
 %>
 	</body>
-</HTML>
+</html>

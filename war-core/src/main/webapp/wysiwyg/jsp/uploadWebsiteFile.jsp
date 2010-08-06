@@ -72,7 +72,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     }
 %>
 	<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-	<script language="javascript">
+	<script type="text/javascript">
 		function isCorrect(nom) {
 	    	if (nom.indexOf("&")>-1 || nom.indexOf(";")>-1 || nom.indexOf("+")>-1 ||
 		        nom.indexOf("%")>-1 || nom.indexOf("#")>-1 || nom.indexOf("'")>-1 ||
@@ -111,17 +111,17 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <% out.println(board.printBefore()); %>
 
-	  <FORM NAME="descriptionFile" ACTION="uploadFile.jsp" METHOD="POST" ENCTYPE="multipart/form-data">
+	  <form name="descriptionFile" action="uploadFile.jsp" method="post" enctype="multipart/form-data">
 		<table>      
-	    <TR>
-	        <TD class="txtlibform"><%=message.getString("FichierUpload")%> : </TD>
-	        <td valign="top">&nbsp;<input type="file" name="fichier" size="50">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/></td>
-	    </TR>
-        <TR> 
-            <TD colspan="2">(<img border="0" src="<%=mandatoryField%>" width="5" height="5"> : <%=message.getString("RequiredField")%>)</TD>
-        </TR>
+	    <tr>
+	        <td class="txtlibform"><%=message.getString("FichierUpload")%> : </td>
+	        <td valign="top">&nbsp;<input type="file" name="fichier" size="50"/>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5" alt=""/></td>
+	    </tr>
+        <tr> 
+            <td colspan="2">(<img border="0" src="<%=mandatoryField%>" width="5" height="5" alt=""/> : <%=message.getString("RequiredField")%>)</td>
+        </tr>
         </table>
-	</FORM>
+	</form>
   <%
   out.println(board.printAfter());
     
