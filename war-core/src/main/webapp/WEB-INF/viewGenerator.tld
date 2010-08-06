@@ -8,7 +8,7 @@
   <tlib-version>1.0</tlib-version>
   <short-name>view</short-name>
   <uri>http://www.silverpeas.com/tld/viewGenerator</uri>
-
+  
   <tag>
     <description>Simple tag to display a Board. A Board should be used inside a Frame.</description>
     <name>board</name>
@@ -131,6 +131,44 @@
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to display a button pane.</description>
+    <name>buttonPane</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.buttons.ButtonPaneTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>Indicates if the button are added vertically.</description>
+      <name>verticalPosition</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
+     <attribute>
+      <description>Indicates if the button are added horizontically</description>
+      <name>vhorizontalPosition</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
+    <attribute>
+      <description>The height of the panel.</description>
+      <name>height</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        true or false to indicate if the button is disabled or not.
+      </description>
+      <name>disabled</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
     </attribute>
   </tag>
   <tag>
@@ -262,6 +300,11 @@
     <body-content>JSP</body-content>
     <attribute>
       <name>title</name>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>summary</name>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>

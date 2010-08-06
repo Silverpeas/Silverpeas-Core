@@ -56,7 +56,7 @@
 
 %>
 <html>
-<TITLE><%=messages.getString("popupTitle")%></TITLE>
+<title><%=messages.getString("popupTitle")%></title>
 <%
     if (document == null)
     {

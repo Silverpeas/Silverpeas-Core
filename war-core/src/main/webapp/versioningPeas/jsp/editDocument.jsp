@@ -36,6 +36,7 @@
 <script src="<%=m_context%>/attachment/jsp/jquery-1.3.2.min.js" type="text/javascript"></script>
 <script src="<%=m_context%>/attachment/jsp/jquery.qtip-1.0.0-rc3.min.js" type="text/javascript"></script>
 <script src="<%=m_context%>/versioningPeas/jsp/javaScript/dragAndDrop.js" type="text/javascript"></script>
+<script src="<%=m_context%>/util/javaScript/upload_applet.js" type="text/javascript"></script>
 
 <%
       ResourceLocator messages = new ResourceLocator("com.stratelia.silverpeas.versioningPeas.multilang.versioning", m_MainSessionCtrl.getFavoriteLanguage());
