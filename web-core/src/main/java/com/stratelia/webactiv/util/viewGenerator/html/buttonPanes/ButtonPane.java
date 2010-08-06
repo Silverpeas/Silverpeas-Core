@@ -22,15 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
-/*
- * BrowseBar.java
- * 
- * Created on 07 decembre 2000, 11:26
- */
-
 package com.stratelia.webactiv.util.viewGenerator.html.buttonPanes;
 
 import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;

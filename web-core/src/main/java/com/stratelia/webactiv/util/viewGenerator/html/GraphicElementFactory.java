@@ -245,6 +245,10 @@ public class GraphicElementFactory extends Object {
   public void setExternalStylesheet(String externalStylesheet) {
     this.externalStylesheet = externalStylesheet;
   }
+  
+  public String getExternalStylesheet() {
+    return this.externalStylesheet;
+  }
 
   public boolean hasExternalStylesheet() {
     return (externalStylesheet != null);
@@ -321,8 +325,7 @@ public class GraphicElementFactory extends Object {
       }
 
     } else {
-      code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(
-          externalStylesheet).append("\"/>\n");
+      code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(externalStylesheet).append("\"/>\n");
     }
     
     //include specific browseBar javaScript

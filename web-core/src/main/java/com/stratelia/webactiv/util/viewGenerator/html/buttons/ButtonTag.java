@@ -30,6 +30,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPaneTag;
 
 public class ButtonTag extends TagSupport {
 
@@ -40,10 +41,15 @@ public class ButtonTag extends TagSupport {
 
   @Override
   public int doEndTag() throws JspException {
-    try {
-      GraphicElementFactory gef = (GraphicElementFactory) pageContext.getSession().getAttribute(
+    GraphicElementFactory gef = (GraphicElementFactory) pageContext.getSession().getAttribute(
           GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-      Button button = gef.getFormButton(label, action, disabled);
+    Button button = gef.getFormButton(label, action, disabled);
+    ButtonPaneTag buttonPane = (ButtonPaneTag) findAncestorWithClass(this, ButtonPaneTag.class);
+    if(buttonPane != null) {
+      buttonPane.addButton(button);
+      return EVAL_PAGE;
+    }
+    try {     
       pageContext.getOut().println(button.print());
     } catch (IOException e) {
       throw new JspException("ButtonTag Tag", e);
