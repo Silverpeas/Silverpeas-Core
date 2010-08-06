@@ -30,6 +30,7 @@ import com.stratelia.webactiv.util.coordinates.model.CoordinatePoint;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import org.dbunit.Assertion;
 import org.dbunit.database.IDatabaseConnection;
@@ -81,11 +82,11 @@ public class CoordinatesDAOTest extends AbstractTestDao {
     fatherPaths.add("/0/1/1060");
     String instanceId = "kmax888";
     CoordinatePK pk = new CoordinatePK(null, null, instanceId);
-    Collection<String> expResult = new ArrayList<String>(2);
+    Collection<String> expResult = new HashSet<String>(2);
     expResult.add("1");
     expResult.add("2");
     @SuppressWarnings("unchecked")
-    Collection<String> result = CoordinatesDAO.selectByFatherPaths(con, fatherPaths, pk);
+    HashSet<String> result = new HashSet<String>(CoordinatesDAO.selectByFatherPaths(con, fatherPaths, pk));
     assertEquals(expResult, result);
   }
 
