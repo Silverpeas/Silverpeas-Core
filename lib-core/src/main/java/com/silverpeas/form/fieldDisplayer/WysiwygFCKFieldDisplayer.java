@@ -40,6 +40,7 @@ import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
+import com.silverpeas.form.GalleryHelper;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.TextField;
@@ -213,7 +214,8 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
         stringBuilder.append("<select id=\"galleryFile_" + fieldName +
             "\" name=\"componentId\" onchange=\"openGalleryFileManager" + fieldNameFunction +
             "();this.selectedIndex=0\">");
-        stringBuilder.append("<option value=\"\">").append(resources.getString("Galleries"))
+        stringBuilder.append("<option value=\"\">").append(
+            Util.getString("GML.galleries", contentLanguage))
             .append("</option>");
         for (ComponentInstLight component : galleries) {
           stringBuilder.append("<option value=\"").append(component.getId()).append("\">").append(
@@ -308,29 +310,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
 
       // Gallery files exists; javascript functions
       if (galleries != null && !galleries.isEmpty()) {
-        out.println("var galleryFileWindow=window;");
-        out.println("function openGalleryFileManager" + fieldNameFunction + "(){");
-        out.println("index = document.getElementById(\"galleryFile_" + fieldName +
-            "\").selectedIndex;");
-        out.println("var componentId = document.getElementById(\"galleryFile_" + fieldName +
-            "\").options[index].value;");
-        out.println("if (index != 0){  ");
-        out.println("url = \"" +
-            URLManager.getApplicationURL() +
-            "/gallery/jsp/wysiwygBrowser.jsp?ComponentId=\"+componentId+\"&Language=" +
-            contentLanguage
-            + "&FieldName=" + fieldNameFunction
-            + "\";");
-        out.println("windowName = \"GalleryFileWindow\";");
-        out.println("width = \"750\";");
-        out.println("height = \"580\";");
-        out
-            .println("windowParams = \"scrollbars=1,directories=0,menubar=0,toolbar=0, alwaysRaised\";");
-        out.println("if (!galleryFileWindow.closed && galleryFileWindow.name==windowName)");
-        out.println("galleryFileWindow.close();");
-        out
-            .println("galleryFileWindow = SP_openWindow(url, windowName, width, height, windowParams);");
-        out.println("}}");
+        GalleryHelper.getJavaScript(fieldNameFunction, fieldName, contentLanguage, out);
 
         out.println("function choixImageInGallery" + fieldNameFunction + "(url){");
         out.println(" var oEditor = FCKeditorAPI.GetInstance('" + fieldName + "');");

@@ -37,6 +37,7 @@
 <%
 	String maxWidth = "";
 	String maxHeight = "";
+	String galleriesChecked = "";
 	
 	if (field != null)
 	{
@@ -47,6 +48,14 @@
 		if (parameters.containsKey("height")) {
 		  maxHeight = (String) parameters.get("height");
 		}
+		
+		if (parameters.containsKey("galleries")) {
+	  		String galleries = (String) parameters.get("galleries");
+	  		if ("true".equalsIgnoreCase(galleries))
+	  		{
+	  		  galleriesChecked = "checked=\"checked\"";
+	  		}
+		}
 	}
 %>
 <%@ include file="includeTopField.jsp.inc" %>
@@ -55,5 +64,8 @@
 </tr>
 <tr>
 	<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.image.maxHeight")%> :</td><td><input type="text" name="Param_height" value="<%=maxHeight%>" size="5" maxLength="4"/></td>
+</tr>
+<tr>
+	<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.image.galleries")%> :</td><td><input type="checkbox" name="Param_galleries" value="true" <%=galleriesChecked%>/></td>
 </tr>
 <%@ include file="includeBottomField.jsp.inc" %>

@@ -229,11 +229,10 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
       String deleteLab = Util.getString("removeImage", language);
 
       out.println("<div id=\"" + fieldName + "ThumbnailArea\" style=\"" + displayCSS + "\">");
-      out.println("<a href=\"" + imageURL + "\" target=\"_blank\">");
+      out.println("<a id=\"" + fieldName + "ThumbnailLink\" href=\"" + imageURL + "\" target=\"_blank\">");
       out.println("<img alt=\"\" align=\"top\" src=\"" + imageURL +
           "\" height=\"50\" id=\"" + fieldName + "Thumbnail\"/>&nbsp;");
       out.println("</a>");
-
       out.println("&nbsp;<a href=\"#\" onclick=\"javascript:"
           + "document.getElementById('" + fieldName + "ThumbnailArea').style.display='none';"
           + "document." + pagesContext.getFormName() + "." + fieldName +
@@ -255,6 +254,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
       out.println("<input type=\"hidden\" name=\"" + fieldName + Field.FILE_PARAM_NAME_SUFFIX +
           "\" id=\"" + fieldName + "Hidden\" value=\"" + attachmentId + "\"/>");
 
+      //Adding "Galleries" listbox if needed
       boolean useGalleries = Util.getBooleanValue(parameters, "galleries");
       String fieldNameFunction = FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'));
       if (useGalleries) {
@@ -262,11 +262,13 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
         if (galleries != null && !galleries.isEmpty()) {
 
           StringBuilder stringBuilder = new StringBuilder();
+          stringBuilder.append(" ").append(Util.getString("GML.or", language)).append(" ");
           stringBuilder.append("<select id=\"galleryFile_" + fieldName +
               "\" name=\"componentId\" onchange=\"openGalleryFileManager" + fieldNameFunction +
               "();this.selectedIndex=0\">");
-          stringBuilder.append("<option value=\"\">").append(Util.getString("Galleries", language))
-              .append("</option>");
+          stringBuilder.append("<option value=\"\">");
+          stringBuilder.append(Util.getString("GML.galleries", language));
+          stringBuilder.append("</option>");
           for (ComponentInstLight component : galleries) {
             stringBuilder.append("<option value=\"").append(component.getId()).append("\">")
                 .append(
@@ -288,6 +290,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
       out.println("function choixImageInGallery" + fieldNameFunction + "(url){");
       out.println("$(\"#" + fieldName + "ThumbnailArea\").css(\"display\", \"block\");");
       out.println("$(\"#" + fieldName + "Thumbnail\").attr(\"src\", url);");
+      out.println("$(\"#" + fieldName + "ThumbnailLink\").attr(\"href\", url);");
       out.println("$(\"#" + fieldName + "Hidden\").attr(\"value\", url);");
       out.println("}");
       out.println("</script>");
