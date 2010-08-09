@@ -39,7 +39,7 @@ Collection 	tickets 		= (Collection) request.getAttribute("Tickets");
 
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 
-<script language="javascript">
+<script type="text/javascript">
 
 var ticketWindow = window;
 
@@ -65,13 +65,10 @@ function deleteTicket(keyFile)
 }
 
 </script>
-
 </head>
-
 <body>
-
-<form name="readForm" action="" method="POST">
-<input type="hidden" name="mode">
+<form name="readForm" action="" method="post">
+<input type="hidden" name="mode"/>
 <%
 	browseBar.setComponentName(resource.getString("fileSharing.tickets"));
 	
@@ -96,42 +93,41 @@ function deleteTicket(keyFile)
 				ArrayLine line = arrayPane.addArrayLine();
 				TicketDetail ticket = (TicketDetail) it.next();
 				
-				String fileId = Integer.toString(ticket.getFileId());
-				String lien = "/File/"+ fileId;
-				// ajouter le context devant le lien si n�c�ssaire
-				if (lien.indexOf("://") == -1)
+				if (ticket.getAttachmentDetail() != null || ticket.getDocument() != null)
 				{
-					lien = m_context + lien;
-				}
-				/*if (ticket.getAttachmentDetail() != null)
-					line.addArrayCellLink(ticket.getAttachmentDetail().getLogicalName(),lien);
-				else
-					line.addArrayCellLink(ticket.getDocument().getName(),lien);*/
-					
-				if (ticket.getAttachmentDetail() != null)
-					line.addArrayCellText(ticket.getAttachmentDetail().getLogicalName());
-				else
-					line.addArrayCellText(ticket.getDocument().getName());
-
-				IconPane iconPane = gef.getIconPane();
-	         	Icon keyIcon = iconPane.addIcon();
-	          	keyIcon.setProperties(resource.getIcon("fileSharing.ticket"), resource.getString("fileSharing.ticket") , ticket.getUrl());
-				line.addArrayCellText(keyIcon.print());
-			
-				String valideDate = resource.getOutputDate(ticket.getEndDate());
-				ArrayCellText cell = line.addArrayCellText(valideDate);
-				cell.setCompareOn(ticket.getEndDate());
-				ArrayCellText cellNb = line.addArrayCellText(ticket.getNbAccess()+"/"+ticket.getNbAccessMax());
-				cellNb.setCompareOn(Integer.valueOf(ticket.getNbAccess()));
 				
-				iconPane = gef.getIconPane();
-	         	Icon updateIcon = iconPane.addIcon();
-	         	Icon deleteIcon = iconPane.addIcon();
-	         	String keyFile = ticket.getKeyFile();
-	          	updateIcon.setProperties(resource.getIcon("fileSharing.update"), resource.getString("fileSharing.updateTicket") , "javaScript:onClick=editTicket('"+ keyFile + "')");
-	         	deleteIcon.setProperties(resource.getIcon("fileSharing.delete"), resource.getString("fileSharing.deleteTicket") , "javaScript:onClick=deleteTicket('"+ keyFile + "')");
-
-	        	line.addArrayCellText(updateIcon.print()+ "&nbsp;&nbsp;&nbsp;&nbsp;" + deleteIcon.print());
+					String fileId = Integer.toString(ticket.getFileId());
+					String lien = "/File/"+ fileId;
+					// ajouter le context devant le lien si n�c�ssaire
+					if (lien.indexOf("://") == -1) {
+						lien = m_context + lien;
+					}
+						
+					if (ticket.getAttachmentDetail() != null)
+						line.addArrayCellText(ticket.getAttachmentDetail().getLogicalName());
+					else
+						line.addArrayCellText(ticket.getDocument().getName());
+	
+					IconPane iconPane = gef.getIconPane();
+		         	Icon keyIcon = iconPane.addIcon();
+		          	keyIcon.setProperties(resource.getIcon("fileSharing.ticket"), resource.getString("fileSharing.ticket") , ticket.getUrl());
+					line.addArrayCellText(keyIcon.print());
+				
+					String valideDate = resource.getOutputDate(ticket.getEndDate());
+					ArrayCellText cell = line.addArrayCellText(valideDate);
+					cell.setCompareOn(ticket.getEndDate());
+					ArrayCellText cellNb = line.addArrayCellText(ticket.getNbAccess()+"/"+ticket.getNbAccessMax());
+					cellNb.setCompareOn(Integer.valueOf(ticket.getNbAccess()));
+					
+					iconPane = gef.getIconPane();
+		         	Icon updateIcon = iconPane.addIcon();
+		         	Icon deleteIcon = iconPane.addIcon();
+		         	String keyFile = ticket.getKeyFile();
+		          	updateIcon.setProperties(resource.getIcon("fileSharing.update"), resource.getString("fileSharing.updateTicket") , "javaScript:onClick=editTicket('"+ keyFile + "')");
+		         	deleteIcon.setProperties(resource.getIcon("fileSharing.delete"), resource.getString("fileSharing.deleteTicket") , "javaScript:onClick=deleteTicket('"+ keyFile + "')");
+	
+		        	line.addArrayCellText(updateIcon.print()+ "&nbsp;&nbsp;&nbsp;&nbsp;" + deleteIcon.print());
+				}
 			}
 		}
 
@@ -143,17 +139,17 @@ function deleteTicket(keyFile)
 
 </form>
   
-<form name="ticketForm" action="" Method="POST">
-	<input type="hidden" name ="KeyFile">
-	<input type="hidden" name="FileId">
-	<input type="hidden" name="ComponentId">
-	<input type="hidden" name="Versioning">
-	<input type="hidden" name="EndDate">
-	<input type="hidden" name="NbAccessMax">
+<form name="ticketForm" action="" method="post">
+	<input type="hidden" name ="KeyFile"/>
+	<input type="hidden" name="FileId"/>
+	<input type="hidden" name="ComponentId"/>
+	<input type="hidden" name="Versioning"/>
+	<input type="hidden" name="EndDate"/>
+	<input type="hidden" name="NbAccessMax"/>
 </form>
 
-<form name="deleteForm" action="DeleteTicket" Method="POST">
-	<input type="hidden" name="KeyFile">
+<form name="deleteForm" action="DeleteTicket" method="post">
+	<input type="hidden" name="KeyFile"/>
 </form>
 
 </body>
