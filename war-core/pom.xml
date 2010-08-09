@@ -146,6 +146,12 @@
       <groupId>com.sun.portal.portletcontainer</groupId>
       <scope>provided</scope>
     </dependency>
+     <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>test-core</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>  
   </dependencies>
 
   <build>

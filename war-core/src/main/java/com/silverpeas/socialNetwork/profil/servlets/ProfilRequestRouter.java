@@ -23,28 +23,17 @@
  */
 package com.silverpeas.socialNetwork.profil.servlets;
 
-import com.silverpeas.socialNetwork.SocialNetworkException;
-import com.silverpeas.socialNetwork.model.SocialInformationType;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import javax.servlet.http.HttpServletRequest;
+
+import com.silverpeas.socialNetwork.SocialNetworkException;
 import com.silverpeas.socialNetwork.profil.control.ProfilSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-
-
-import java.util.ArrayList;
-import java.util.Enumeration;
-
-import java.util.Hashtable;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -77,9 +66,7 @@ public class ProfilRequestRouter extends ComponentRequestRouter {
 
     myProfilSC = (ProfilSessionController) componentSC;
     String userId = request.getParameter("userId");
-    System.out.println("ProfilRequestRouter="+userId+" "+function+" "+isInMyContact(userId));
-
-    if (function.equalsIgnoreCase("Main")) {
+   if (function.equalsIgnoreCase("Main")) {
 
      
       if (myProfilSC.getUserId().equals(userId)) {//go to my Profile
@@ -89,7 +76,7 @@ public class ProfilRequestRouter extends ComponentRequestRouter {
       } else if (isInMyContact(userId)) {// this is  in my contacts
 
 
-        destination = destination = m_context + "RmyContactProfil/jsp/MyInfos?userId="+userId;
+        destination = m_context + "RmyContactProfil/jsp/MyInfos?userId="+userId;
 
       } else {// this is not in my contacts
         request.setAttribute("userFull", myProfilSC.getUserFul(userId));
@@ -98,7 +85,6 @@ public class ProfilRequestRouter extends ComponentRequestRouter {
 
       }
     }
-
     return destination;
   }
   /*

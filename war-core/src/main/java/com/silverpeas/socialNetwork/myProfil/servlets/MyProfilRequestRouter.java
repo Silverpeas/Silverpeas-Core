@@ -74,7 +74,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
       } catch (Exception ex) {
         Logger.getLogger(MyProfilRequestRouter.class.getName()).log(Level.SEVERE, null, ex);
       }
-      destination = destination = "/socialNetwork/jsp/myProfil/myProfilTemplate.jsp";
+      destination = "/socialNetwork/jsp/myProfil/myProfilTemplate.jsp";
     } else if (function.equalsIgnoreCase("ALL")) {
       request.setAttribute("type", SocialInformationType.ALL);
       destination = "/socialNetwork/jsp/myProfil/myProfilTemplate.jsp";
@@ -105,7 +105,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
       request.setAttribute("properties", properties);
       request.setAttribute("propertiesKey", propertiesKey);
       request.setAttribute("propertiesValue", propertiesValue);
-      destination = destination = "/socialNetwork/jsp/myProfil/myInfoTemplate.jsp";
+      destination = "/socialNetwork/jsp/myProfil/myInfoTemplate.jsp";
     } else if (function.equalsIgnoreCase("updateMyInfos")) {
 
       // process extra properties

@@ -58,7 +58,7 @@
 <html>
     <head>
         <view:looknfeel />
-    <scri<script type="text/javascript" src="/silverpeas/util/javaScript/animation.js"></script>
+    <script type="text/javascript" src="/silverpeas/util/javaScript/animation.js"></script>
         <script type="text/javascript" src="/silverpeas/util/javaScript/checkForm.js"></script>
         <script language="JavaScript">
 

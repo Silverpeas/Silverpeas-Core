@@ -68,10 +68,8 @@ public class MyContactProfilRequestRouter extends ComponentRequestRouter {
     String destination = "#";
 
     MyContactProfilSessionController MyContactProfillSC = (MyContactProfilSessionController) componentSC;
-
-
     String userId = request.getParameter("userId");
-SNFullUser snUserFull = new SNFullUser(userId);
+    SNFullUser snUserFull = new SNFullUser(userId);
     if (function.equalsIgnoreCase("MyEvents")) {
       try {
         request.setAttribute("type", SocialInformationType.EVENT);
@@ -107,7 +105,7 @@ SNFullUser snUserFull = new SNFullUser(userId);
       request.setAttribute("properties", properties);
       request.setAttribute("propertiesKey", propertiesKey);
       request.setAttribute("propertiesValue", propertiesValue);
-      destination = destination = "/socialNetwork/jsp/myContactProfil/infosTemplate.jsp";
+      destination = "/socialNetwork/jsp/myContactProfil/infosTemplate.jsp";
     }
     request.setAttribute("snUserFull", snUserFull);
     return destination;

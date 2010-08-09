@@ -33,306 +33,317 @@
 <%@ page import="java.io.File"%>
 
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
-<view:setBundle bundle="${requestScope.resources.multilangBundle}" var="LML" />
-<view:setBundle basename="com.stratelia.webactiv.multilang.generalMultilang" var="GML" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"
+	var="LML" />
+<view:setBundle
+	basename="com.stratelia.webactiv.multilang.generalMultilang" var="GML" />
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 
 
 
 <%
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-        "ApplicationURL");
-    List members = (List) request.getAttribute("Members");
-
-
-
+  String m_context = GeneralPropertiesManager
+					.getGeneralResourceLocator().getString("ApplicationURL");
+			List members = (List) request.getAttribute("Members");
+			String myid = (String) request.getAttribute("MyId");
 %>
 
 <html>
-  <head>
-    <view:looknfeel />
+<head>
+<view:looknfeel />
 
 
 
-    <style type="text/css">
-      * {
-        margin: 0;
-        padding: 0;
-      }
+<style type="text/css">
+* {
+	margin: 0;
+	padding: 0;
+}
 
-      /* message display page */
-      .message_list {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        width: 100%;
-      }
+/* message display page */
+.message_list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+}
 
-      .message_list li {
-        padding: 0px;
-        margin: 3px;
-      }
+.message_list li {
+	padding: 0px;
+	margin: 3px;
+}
 
-      .message_table rd {
-        padding: 0px;
-        margin: 3px;
-      }
+.message_table rd {
+	padding: 0px;
+	margin: 3px;
+}
 
-      #recherche {
-        background-image:
-          url(<%=m_context%>/admin/jsp/icons/silverpeasV5/recherche.jpg);
-        background-repeat: no-repeat;
-      }
+#recherche {
+	background-image:
+		url(<%=m_context%>/admin/jsp/icons/silverpeasV5/recherche.jpg);
+	background-repeat: no-repeat;
+}
 
-      .index {
-        text-decoration: underline;
-        color: black;
-      }
+.index {
+	color: black;
+	font-family: sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	text-decoration: none;
+}
 
-      .active {
-        color: blue
-      }
+.active {
+	color: blue;
+	font-family: sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	text-decoration: none;
+}
 
-      .mail {
-        text-decoration: underline;
-        color: blue;
-      }
+.mail {
+	text-decoration: underline;
+	color: blue;
+}
 
-      .link {
-        color: blue;
-      }
+.link {
+	color: blue;
+}
 
-      .NameLink {
-        font-size: 14px;
-        color: blue;
-      }
+.NameLink {
+	font-size: 14px;
+	color: blue;
+}
 
-      .accordion {
-        width: 480px;
-        border-bottom: solid 1px #c4c4c4;
-      }
+#indexandsearch {
+	background: none repeat scroll 0 0 pink;
+	height: 35px;
+	width: 100%;
+}
 
-      .accordion h3 {
-        background: #e9e7e7
-          url(<%=m_context%>/directory/jsp/icons/arrow-square.gif) no-repeat
-          right -51px;
-        padding: 7px 15px;
-        margin: 0;
-        font: bold 120%/ 100% Arial, Helvetica, sans-serif;
-        border: solid 1px #c4c4c4;
-        border-bottom: none;
-        cursor: pointer;
-      }
+#index {
+	float: left;
+	padding: 10px;
+	text-align: center;
+	width: 500px;
+}
 
-      .accordion h3:hover {
-        background-color: #e3e2e2;
-      }
+#search {
+	float: right;
+	margin: 2px;
+	padding: 5px;
+	text-align: center;
+	width: 300px;
+}
 
-      .accordion h3.active {
-        background-position: right 5px;
-      }
+#principale {
+	background-color: purple;
+}
 
-      .accordion p {
-        background: #f7f7f7;
-        margin: 0;
-        padding: 10px 15px 20px;
-        border-left: solid 1px #c4c4c4;
-        border-right: solid 1px #c4c4c4;
-      }
-    </style>
-    <script type="text/javascript"
-    src="<%=m_context%>/util/javaScript/animation.js"></script>
-    <script type="text/javascript"
-    src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-    <script language="JavaScript">
+#photo {
+	float: left;
+	margin: 2px;
+	padding: 5px;
+}
+
+#information {
+	border: medium none;
+	float: left;
+	padding: 10px;
+	text-align: left;
+	width: 500px;
+}
+
+#connect {
+}
+
+#disconnect{
+}
+.size{
+width : 10px;
+height : 10px;
+}
+
+#invitandmessage {
+	float: right;
+	margin: 10px;
+	padding: 14px;
+	text-align: center;
+	width: 300px;
+}
+</style>
+<script type="text/javascript"
+	src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript"
+	src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<script language="JavaScript">
 
 
-      function OpenPopup(usersId,name ){
-                
-        usersId=usersId+'&Name='+name
-            options="location=no, menubar=no,toolbar=no,scrollbars=yes, resizable        , alwaysRaised"
-        SP_openWindow('<%=m_context + "/Rdirectory/jsp/NotificationView"%>?Recipient='+usersId , 'strWindowName', '500', '200',options );
+    function OpenPopup(usersId,name ){
+              
+      usersId=usersId+'&Name='+name
+          options="location=no, menubar=no,toolbar=no,scrollbars=yes, resizable        , alwaysRaised"
+      SP_openWindow('<%=m_context + "/Rdirectory/jsp/NotificationView"%>?Recipient='+usersId , 'strWindowName', '500', '200',options );
 
-      }
-      function OpenPopupInvitaion(usersId,name){
-        usersId=usersId+'&Name='+name
-            options="directories=no, menubar=no,toolbar=no,scrollbars=yes, resizable=no        , alwaysRaised"
-        SP_openWindow('<%=m_context + "/Rinvitation/jsp/invite"%>?Recipient='+usersId, 'strWindowName', '350', '200',options);
-      }
-
-
-
-
-    </script>
-
-  </head>
-
-
-
-
-  <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5"
-        marginheight="5">
-    <%--  <a href="${GroupUrl}" >Annuiare</a>--%>
-    <c:url value="/RprofilPublic/ProfilPublic" var="profilPublic" />
-
-    <%--<view:browseBar extraInformations="Annuaire Interne"></view:browseBar>--%>
-
-    <view:window>
-
-      <view:frame>
-
-        <view:board>
-          <ol class="message_list">
-            <li>
-              <div align="center">
-                <%
-                    // afficher la bande d'index alphabetique
-                    String para = (String) request.getAttribute("Index");
-
-                    for (char i = 'A'; i <= 'Z'; ++i) {
-
-                      if (para != null && para.equals(String.valueOf(i))) {
-                        out.println(
-                            "<a class=\"active\" href=\"" + i + "\">" + i + "</a>");
-                      } else {
-                        out.println(
-                            "<a class=\"index\" href=\"" + i + "\">" + i + "</a>");
-                      }
-                    }
-                    if (para != null && para.equals("tous")) {
-                      out.println("<a class=\"active\" href=\"tous\">Tous</a>");
-                    } else {
-                      out.println("<a class=\"index\" href=\"tous\">Tous</a>");
-                    }
-                %>
-              </div>
-            </li>
-
-            <li>
-              <form name="search" action="searchByKey" method="post">
-                <table>
-                  <tbody>
-                    <tr>
-                      <td><input type="text" name="key" size="40" maxlength="60"
-                                 style="height: 20px" /></td>
-                      <td>
-                        <img
-                          src="<%=m_context%>/directory/jsp/icons/connected.jpg"
-                          width="10" height="10" alt="advsearch" />
-                        <%--</td>--%> <%--<td><a href="searchByKey"></a></td>--%>
-                    </tr>
-                  </tbody>
-                </table>
+    }
+    function OpenPopupInvitaion(usersId,name){
+      usersId=usersId+'&Name='+name
+          options="directories=no, menubar=no,toolbar=no,scrollbars=yes, resizable=no        , alwaysRaised"
+      SP_openWindow('<%=m_context + "/Rinvitation/jsp/invite"%>?Recipient='+usersId, 'strWindowName', '350', '200',options);
+    }
 
 
 
-              </form>
 
-            </li>
+  </script>
 
-            <%
-                for (int i = 0; i < members.size(); i++) {
-                  Member member = (Member) members.get(i);
+</head>
 
 
 
-            %>
-            <li ><view:board>
 
-                <table >
+<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5"
+	marginheight="5">
+<%--  <a href="${GroupUrl}" >Annuiare</a>--%>
+<c:url value="/RprofilPublic/ProfilPublic" var="profilPublic" />
 
-                  <tbody>
-                    <tr>
-                      <td><a href="createPhoto"><img
-                            src="<%=m_context + member.getProfilPhoto()%>"
-                            width="60" height="70" border="0" alt="viewUser" /> </a></td>
-                      <td width="40%">
-                        <table border="0" cellspacing="5">
-                          <tr>
-                            <td><b> <a href="viewUser?UserId=<%=member.getId()%>"
-                                       class="link"><%=member.getLastName() + " " + member.getFirstName()%></a></b></td>
-                          </tr>
-                          <tr>
-                            <td><a class="link" href="#" class="link" onclick="OpenPopup(<%=member.getId()%>,'<%=member.getLastName() + " " + member.getFirstName()%>')"><%=member.geteMail()%>
-                              </a></td>
-                          </tr>
-                          <tr>
-                            <td><fmt:message key="<%=member.getAccessLevel()%>"
-                                         bundle="${LML}" var="carAccessLevel" />
-                              <fmt:message key="${carAccessLevel}" bundle="${GML}" /></td>
-                          </tr>
-                          <%
-                                                                if (member.
-                                                                    isConnected()) {
-                          %>
-                          <tr>
-                            <td style="color: green"><img src="<%=m_context%>/directory/jsp/icons/connected.jpg" width="10" height="10"
-                                                          alt="connected"/> <fmt:message key="directory.connected" bundle="${LML}" /><%=" " + member.getDuration()%>
+<%--<view:browseBar extraInformations="Annuaire Interne"></view:browseBar>--%>
 
-                            </td>
-                          </tr>
-                          <%
-                                                                                                                      } else {
-                          %>
-                          <tr>
-                            <td><img src="<%=m_context%>/directory/jsp/icons/deconnected.jpg" width="10" height="10" alt="deconnected"/> <fmt:message key="directory.connected" bundle="${LML}" /><%=" " + member.getDuration()%>
+<view:window>
 
-                            </td>
-                          </tr>
-                          <%                                                                                     }
-                          %>
-                        </table>
-                      <td align="right" width="60%">
+	<view:frame>
 
-                        <%
-                                                              if (!request.
-                                                                  getAttribute(
-                                                                  "MyId").
-                                                                  equals(member.
-                                                                  getId())) {
+		<view:board>
+			<ol class="message_list">
+				<div id="indexandsearch">
+				<div id="index">
+				<%
+				  // afficher la bande d'index alphabetique
+										String para = (String) request.getAttribute("Index");
 
-                        %>
+										for (char i = 'A'; i <= 'Z'; ++i) {
+
+											if (para != null && para.equals(String.valueOf(i))) {
+												out.println("<a class=\"active\" href=\"" + i
+														+ "\">" + i + "</a>");
+											} else {
+												out.println("<a class=\"index\" href=\"" + i
+														+ "\">" + i + "</a>");
+											}
+										}
+										if (para != null && para.equals("tous")) {
+											out
+													.println("<a class=\"active\" href=\"tous\">Tous</a>");
+										} else {
+											out
+													.println("<a class=\"index\" href=\"tous\">Tous</a>");
+										}
+				%>
+				</div>
+				<div id="search">
+				<form name="search" action="searchByKey" method="post"><input
+					type="text" name="key" size="40" maxlength="60"
+					style="height: 20px" /> <img
+					src="<%=m_context%>/directory/jsp/icons/connected.jpg" width="10"
+					height="10" alt="advsearch" /> <%--</td>--%> <%--<td><a href="searchByKey"></a></td>--%>
+				</form>
+				</div>
+
+				</div>
+				<%
+				  for (int i = 0; i < members.size(); i++) {
+											Member member = (Member) members.get(i);
+				%>
+
+				<li><view:board>
+
+					<div id="photo"><a href="createPhoto"><img
+						src="<%=m_context + member.getProfilPhoto()%>" width="60"
+						height="70" border="0" alt="viewUser" /> </a></div>
+					<div id="information"><b> <a
+						href="viewUser?UserId=<%=member.getId()%>" class="link"><%=member.getLastName() + " "
+										+ member.getFirstName()%></a></b> </br>
+
+					<a class="link" href="#" class="link"
+						onclick="OpenPopup(<%=member.getId()%>,'<%=member.getLastName() + " "
+										+ member.getFirstName()%>')"><%=member.geteMail()%>
+					</a> </br>
+					<fmt:message key="<%=member.getAccessLevel()%>" bundle="${LML}"
+						var="carAccessLevel" /> <fmt:message key="${carAccessLevel}"
+						bundle="${GML}" /> </br>
+
+					<%
+					  if (member.isConnected()) {
+					%>
+					<div id="connect"><img
+						src="<%=m_context%>/directory/jsp/icons/connected.jpg" 
+						class="size" alt="connected" /> <fmt:message
+						key="directory.connected" bundle="${LML}" /><%=" " + member.getDuration()%>
+					</div>
 
 
-                        <a href="#" class="link" onclick="OpenPopupInvitaion(<%=member.getId()%>,'<%=member.getLastName() + " " + member.getFirstName()%>');">
-                          Envoyer une invitation</a><br />
-                        <br />
-                        <a href="#" class="link" onclick="OpenPopup(<%=member.getId()%>,'<%=member.getLastName() + " " + member.getFirstName()%>')">
-                          Envoyer un message</a>
-                          <%
-                                                                }
-                          %>
-                      </td></tr>
-                  </tbody>
-                </table>
+					<%
+					  } else {
+					%>
+					<div id="disconnect">
+					  <img src="<%=m_context%>/directory/jsp/icons/deconnected.jpg"
+						class="size" alt="deconnected" /> <fmt:message
+						key="directory.connected" bundle="${LML}" /><%=" " + member.getDuration()%>
+					</div>
+					 
+					<%
+					  }
+					%>
+					</div>
+
+					<div id="invitandmessage">
+					<%
+					  if (!request.getAttribute("MyId").equals(
+															member.getId())) {
+														if (!member.isRelationOrInvitation(request
+																.getAttribute("MyId").toString())) {
+					%> <a href="#" class="link"
+						onclick="OpenPopupInvitaion(<%=member.getId()%>,'<%=member.getLastName() + " "
+												+ member.getFirstName()%>');">
+					Envoyer une invitation</a><br />
+					<br />
+					<%
+					  }
+					%> <a href="#" class="link"
+						onclick="OpenPopup(<%=member.getId()%>,'<%=member.getLastName() + " "
+											+ member.getFirstName()%>')">
+					Envoyer un message</a> <%
+   }
+ %>
+					</div>
+					<br />
+				</view:board></li>
+
+				<%
+				  }
+				%>
+
+				<%
+				  int nbPages = 1;
+										nbPages = Integer.parseInt(request.getAttribute(
+												"nbPages").toString());
+										if (nbPages > 1) {
+				%>
+
+				<div id="pagination"><view:pagination
+					currentPage="${requestScope.currentPage}"
+					nbPages="${requestScope.nbPages}" action="pagination"
+					pageParam="currentPage" /></div>
+				<%
+				  }
+				%>
 
 
+			</ol>
 
-                <br />
-              </view:board></li>
-              <%
-                  }
+		</view:board>
+	</view:frame>
 
-              %>
+</view:window>
 
-            <%
-                int nbPages = 1;
-                nbPages = Integer.parseInt(request.getAttribute("nbPages").toString());
-                if (nbPages > 1) {
-            %>
-            <li><view:board>
-                <view:pagination currentPage="${requestScope.currentPage}"
-                                 nbPages="${requestScope.nbPages}" action="pagination"
-                                 pageParam="currentPage" />
-              </view:board></li>
-              <%                                        }
-              %>
-          </ol>
-
-        </view:board>
-      </view:frame>
-
-    </view:window>
-
-  </body>
+</body>
 </html>
