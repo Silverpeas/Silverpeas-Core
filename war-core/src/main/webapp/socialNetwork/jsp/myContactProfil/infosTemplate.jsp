@@ -25,72 +25,61 @@
 --%>
 <%@ include file="check.jsp" %>
 <html>
-    <head>
-        <view:looknfeel />
-        <title><fmt:message key="invitation.action.title" /> </title>
-        <script type="text/javascript" src="/silverpeas/util/javaScript/animation.js"></script>
-        <script type="text/javascript" src="/silverpeas/util/javaScript/checkForm.js"></script>
+  <head>
+    <view:looknfeel />
+    <title><fmt:message key="invitation.action.title" /> </title>
+   <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-1.3.2.min.js" />" ></script>
 
-        <script language="JavaScript">
-            var properties =new Array();
-            <c:forEach items="${properties}" var="property" varStatus="status">
-                properties.push("<c:out value='${properties[status.index]}' escapeXml='false' />");
-            </c:forEach>
-                function enableField()
-    
-                {
-                    if(document.getElementById("enabledStat").disabled==false)
-                    {
-                        document.getElementById("enabledStat").style.backgroundColor="#DEDEDE"
-                        document.getElementById("enabledStat").disabled=true;
+    <script language="JavaScript">
+      var properties =new Array();
+        <c:forEach items="${properties}" var="property" varStatus="status">
+          properties.push("<c:out value='${properties[status.index]}' escapeXml='false' />");
+      </c:forEach>
 
 
-                    }
-                    else{
 
-                        document.getElementById("enabledStat").style.backgroundColor="#FFFFFF";
-                        document.getElementById("enabledStat").focus();
-                        document.getElementById("enabledStat").disabled=false;
-                    }
+      <%--*****************   profil body *******************************************--%>
+      
+        function desabledFields()
+        {
 
-                }
-                function desabledField()
-                {
+          for( i=0; i<properties.length;i++)
+          {
+            var id=properties[i];
+            document.getElementById(id).style.backgroundColor="#F2F2F2";
+            document.getElementById(id).disabled=true;
+          }
+          document.getElementById("myInfoAction").style.visibility='hidden' ;
+        }
+       
+        function afficheButtonEdit(visible)
+        { document.getElementById("actionEditStat").style.display = 'none';
+        }
+      <%--*****************   profil Head *******************************************--%>
+        
 
-                    document.getElementById("enabledStat").style.backgroundColor="#F2F2F2"
-                    document.getElementById("enabledStat").disabled=true;
-                    document.statForm.submit();
+        function getLastStatus(url)
+        {
 
+          $.getJSON(url, function(data) {
+            $('.StatusDiv').empty();
+            var html='';
+            html+='<textarea  id="enabledStat" ';
+            html+='type="text" cols="50" rows="3" >'+data.status+'</textarea>';
+            $('.StatusDiv').append(html);
+            desableStatusZone();
+          });
+        }
+        
+        function desableStatusZone()
+        {
+          document.getElementById("enabledStat").style.backgroundColor="#F2F2F2";
+          document.getElementById("enabledStat").disabled=true;
 
-                }
-              
-                function desabledFields()
-                {
-               
-                    for( i=0; i<properties.length;i++)
-                    {
-                        var id=properties[i];
-                        document.getElementById(id).style.backgroundColor="#F2F2F2";
-                        document.getElementById(id).disabled=true;
-                    }
-                    document.getElementById("myInfoAction").style.visibility='hidden' ;
-                }
-               
-               
-                function toggleZoneMessage() {
-                    if( document.getElementById("zoneMessage").style.display=='none' ){
-                        document.getElementById("actionZoneMessage").style.display = 'none';
-                        document.getElementById("zoneMessage").style.display = '';
-                    }else{
-                        document.getElementById("actionZoneMessage").style.display = '';
-                        document.getElementById("zoneMessage").style.display = 'none';
+        }
 
-                    }
-                }
-
-
-        </script>
-    </head>
+    </script>
+  </head>
 
 
 
@@ -99,50 +88,50 @@
 
 
 
-    <body  bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" >
-        <view:window>
-            <table width="100%" border="0">
-                <tr>
-                    <td width="20%" >
-                        <view:frame>
-                            <view:board>
-                              <%@include file="profilNavigation.jsp" %>
-                            </view:board>
-                        </view:frame>
-                    </td>
-                    <td width="80%" >
-                        <view:frame>
-                            <table width="100%"  border="0"  >
-                                <tr><td id="profil80" height="600px" style="vertical-align: top">
-                                        <table width="100%"  border="0" >
-                                            <tr>
-                                                <td id="profilHead" height="100" width="100%" style="vertical-align: top">
-                                                    <view:board>
+  <body  bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" >
+    <view:window>
+      <table width="100%" border="0">
+        <tr>
+          <td width="20%" >
+            <view:frame>
+              <view:board>
+                <%@include file="profilNavigation.jsp" %>
+              </view:board>
+            </view:frame>
+          </td>
+          <td width="80%" >
+            <view:frame>
+              <table width="100%"  border="0"  >
+                <tr><td id="profil80" height="600px" style="vertical-align: top">
+                    <table width="100%"  border="0" >
+                      <tr>
+                        <td id="profilHead" height="100" width="100%" style="vertical-align: top">
+                          <view:board>
 
-                                                      <%@include file="profilHead.jsp" %>
+                            <%@include file="profilHead.jsp" %>
 
-                                                    </view:board>
+                          </view:board>
 
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td id="profilCore" align="left" height="500" width="100%" style="vertical-align: top">
+                        </td>
+                      </tr>
+                      <tr>
+                        <td id="profilCore" align="left" height="500" width="100%" style="vertical-align: top">
 
-                                                    <view:board>         
-                                                      <%@include file="infosBody.jsp" %>
-                                                    </view:board>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td></tr>
+                          <view:board>
+                            <%@include file="infosBody.jsp" %>
+                          </view:board>
+                        </td>
+                      </tr>
+                    </table>
+                  </td></tr>
 
-                            </table>
+              </table>
 
-                        </view:frame>
-                    </td>
-                </tr>
-            </table>
-        </view:window>
+            </view:frame>
+          </td>
+        </tr>
+      </table>
+    </view:window>
 
-    </body>
+  </body>
 </html>

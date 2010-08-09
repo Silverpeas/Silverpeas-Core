@@ -2,9 +2,12 @@
 <table width="100%"  border="0" >
   <tr>
     <td id="profilHeadPhote" height="100" width="100" style="vertical-align: top; background-repeat: no-repeat; background-image:url(http://localhost:8000/silverpeas/directory/jsp/icons/Photo_profil.jpg)"  >
-
-      <img src="<c:url value="${snUserFull.profilPhoto}"/>" style="vertical-align: top" width="80" height="90" border="0" alt="viewUser" />
+      <div id="photoDiv" >
+        <img src="<c:url value="${snUserFull.profilPhoto}"/>" width="80" height="90" border="0" />
+      </div>
     </td>
+
+
     <td id="profilHeadinfo" height="100" width="40%" align="left" style="vertical-align: middle">
       <b>${snUserFull.userFull.lastName} ${snUserFull.userFull.firstName}</b><br><br>
       ${snUserFull.phone}<br><br>
@@ -26,14 +29,14 @@
 
     <table width="80px"  border="0" align="right" cellspacing="0" >
 
-      <tr> 
+      <tr>
         <td align="right" width="50px" c>
           <div class="StatusDiv">
 
           </div>
           <script>
            
-                getLastStatus('${urlGetLastStatus}');
+            getLastStatus('${urlGetLastStatus}');
           </script>
         </td>
         <td  id="" align="right" style="vertical-align: top">
@@ -54,3 +57,35 @@
 
 </tr>
 </table>
+
+<div id="boxes">
+  <div id="dialog" class="window">
+    <div align="right">
+      <a href="#"class="close">Fermer</a>
+    </div>
+    
+    <br>
+    <view:board>
+      <form Name="photoForm" action="valdateChangePhoto" Method="post" ENCTYPE="multipart/form-data" accept-charset="UTF-8">
+        <table cellpadding="5" width="100%">
+          <tr>
+            <td class="txtlibform"><fmt:message key="directory.photo" />:</td>
+          <td><input type="file" name="WAIMGVAR0" size="60"></td>
+          </tr>
+          <tr>
+            <td class="txtlibform" colspan="2" align="center">
+              <br>
+              <br>
+          <fmt:message key="directory.buttonValid" var="valid"/>
+         <view:button label="${valid}" action="javascript:document.photoForm.submit();" disabled="false" />
+          <%--<input type="submit" value="Valider" >--%>
+          </td>
+          </tr>
+        </table>
+      </form>
+    </view:board>
+  </div>
+  <!-- Mask to cover the whole screen -->
+  <div id="mask"></div>
+</div>
+

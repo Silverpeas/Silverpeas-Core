@@ -35,8 +35,13 @@
 <fmt:message key="profil.events" var="events" />
 <fmt:message key="profil.publications" var="publications" />
 <fmt:message key="profil.photos"  var="photos"/>
-<c:set var="id" value="${snUserFull.userFull.id}"></c:set>
+<%--**********************Profil body******************************--%>
+<fmt:message key="profil.relationShip.suffix"  var="relationShipSuffix"/>
+<fmt:message key="profil.relationShip.prefix"  var="relationShipPrefix"/>
+<fmt:message key="profil.status.suffix"  var="statusSuffix"/>
 
+<c:set var="id" value="${snUserFull.userFull.id}"></c:set>
+<c:url var="urlGetLastStatus" value="/RmyContactJSON?Action=getLastStatus&userId=${id}" />
 
 
 

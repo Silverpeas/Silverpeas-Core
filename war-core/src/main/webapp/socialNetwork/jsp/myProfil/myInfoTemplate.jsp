@@ -28,12 +28,41 @@
   <head>
     <view:looknfeel />
     <title><fmt:message key="invitation.action.title" /> </title>
-   <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-1.3.2.min.js" />" ></script>
-  
+    <style type="text/css">
+      #mask {
+        position:absolute;
+        left:0;
+        top:0;
+        z-index:9000;
+        background-color:#000;
+        display:none;
+      }
+
+      #boxes .window {
+        position:absolute;
+        left:0;
+        top:0;
+        width:440px;
+        height:200px;
+        display:none;
+        z-index:9999;
+        padding:20px;
+      }
+
+      #boxes #dialog {
+        width:375px; 
+        height:203px;
+        padding:10px;
+        background-color:#ffffff;
+      }
+    </style>
+    <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-1.3.2.min.js" />" ></script>
+    <script type="text/javascript"
+    src="<c:url value="/util/javaScript/animation.js"/>"></script>
     <script language="JavaScript">
       var properties =new Array();
-        <c:forEach items="${properties}" var="property" varStatus="status">
-          properties.push("<c:out value='${properties[status.index]}' escapeXml='false' />");
+      <c:forEach items="${properties}" var="property" varStatus="status">
+        properties.push("<c:out value='${properties[status.index]}' escapeXml='false' />");
       </c:forEach>
 
            
@@ -112,18 +141,64 @@
           document.getElementById("enabledStat").disabled=true;
 
         }
+       
+       
+        function openPopupChangePhoto()
+        {
 
+          //Get the A tag
+          var id ='#dialog'
+
+          //Get the screen height and width
+          var maskHeight = $(document).height();
+          var maskWidth = $(window).width();
+
+          //Set heigth and width to mask to fill up the whole screen
+          $('#mask').css({'width':maskWidth,'height':maskHeight});
+
+          //transition effect
+          $('#mask').fadeIn(1000);
+          $('#mask').fadeTo("slow",0.8);
+
+          //Get the window height and width
+          var winH = $(window).height();
+          var winW = $(window).width();
+
+          //Set the popup window to center
+          $(id).css('top',  winH/2-$(id).height()/2);
+          $(id).css('left', winW/2-$(id).width()/2);
+
+          //transition effect
+          $(id).fadeIn(2000);
+
+        }
+        $(document).ready(function() {
+          //if close button is clicked
+          $('.window .close').click(function (e) {
+            //Cancel the link behavior
+            e.preventDefault();
+
+            $('#mask').hide();
+            $('.window').hide();
+          });
+
+          //if mask is clicked
+          $('#mask').click(function () {
+            $(this).hide();
+            $('.window').hide();
+          });
+         
+        });
+
+        
     </script>
   </head>
-
-
-
-
-
-
-
-
   <body  bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" >
+    <view:operationPane>
+      <view:operation action="javascript:openPopupChangePhoto()" altText="Changer mon photo" icon="" />
+      <view:operation action="javascript:enableStatusZone()" altText="Changer mon statut" icon="" />
+      <view:operation action="javascript:enableFields()" altText="Changer mes infos" icon="" />
+    </view:operationPane>
     <view:window>
       <table width="100%" border="0">
         <tr>

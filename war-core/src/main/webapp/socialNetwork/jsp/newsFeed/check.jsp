@@ -30,8 +30,10 @@
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"  />
 <view:setBundle basename="com.stratelia.webactiv.multilang.generalMultilang" var="GML" />
-<fmt:message key="profil.wall" var="wall" />
-<fmt:message key="profil.infos" var="infos" />
+
+
+<fmt:message key="newsFeed.newsFeed" var="newsFeed" />
+<fmt:message key="newsFeed.contacts" var="contacts" />
 <fmt:message key="profil.events" var="events" />
 <fmt:message key="profil.publications" var="publications" />
 <fmt:message key="profil.photos"  var="photos"/>
@@ -39,12 +41,14 @@
 <fmt:message key="profil.relationShip.suffix"  var="relationShipSuffix"/>
 <fmt:message key="profil.relationShip.prefix"  var="relationShipPrefix"/>
 <fmt:message key="profil.status.suffix"  var="statusSuffix"/>
+<fmt:message key="newsFeed.pub.suffix"  var="statusSuffix"/>
 
-<c:set var="id" value="${snUserFull.userFull.id}" />
-<c:url var="urlGetLastStatus" value="/RmyProfilJSON?Action=getLastStatus" />
-<c:url var="urlUpdateStatus" value="/RmyProfilJSON?Action=updateStatus" />
-<c:url var="urlChangePhoto" value="/RmyProfilJSON?Action=valdateChangePhoto" />
-           
+
+
+<c:set var="id" value="${user.userId}"></c:set>
+<c:url var="urlServlet" value="/RnewsFeedJSONServlet?userId=${id}" />
+<c:url var="urlDirectory" value="/RdirectoryServlet/jsp?Action=" />
+<c:url var="urlProfil" value="/Rprofil/jsp?Action=Main" />
 
 
 
