@@ -68,23 +68,25 @@
     HomePageUtil.traceException(exception);
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-        <script language="JavaScript">
+		<title></title>
+		<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+        <script type="text/javascript">
             function displayPopup()
             {
                 SP_openWindow("<%=m_context%>/admin/jsp/popupError.jsp","popup","650","180","");
             }
         </script>
-		<title></title>
-		<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 	</head>
 	<body onload="javascript:displayPopup()">
 		<center>
-			<form name="formulaire" action="Main.jsp" method="post">
-				<input type="Hidden" name="message" value="<% if (exStr != null){out.print(exStr);}%>">
-				<input type="Hidden" name="detailedMessage" value="<% if (detailedString != null){out.print(detailedString);}%>">
-				<input type="Hidden" name="pile" value="<% if (toDisplayException != null) {toDisplayException.printStackTrace(new PrintWriter(out));}%>">
+			<form name="formulaire" method="post">
+				<input type="hidden" name="message" value="<% if (exStr != null){out.print(exStr);}%>"/>
+				<input type="hidden" name="detailedMessage" value="<% if (detailedString != null){out.print(detailedString);}%>"/>
+				<input type="hidden" name="pile" value="<% if (toDisplayException != null) {toDisplayException.printStackTrace(new PrintWriter(out));}%>"/>
 			</form>
 		</center>
 	</body>

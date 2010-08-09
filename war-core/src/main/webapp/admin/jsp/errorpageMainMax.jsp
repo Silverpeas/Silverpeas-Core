@@ -51,52 +51,53 @@ String message = (String) request.getParameter("message");
 String detailedMessage = (String) request.getParameter("detailedMessage");
 String pile = (String) request.getParameter("pile");
 %>
-<HTML>
-<HEAD>
-<TITLE><%= generalMessage.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%= generalMessage.getString("GML.popupTitle")%></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
-</HEAD>
-
-<BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5>
+</head>
+<body>
 <%
-          Window window = gef.getWindow();
-					out.println(window.printBefore());
-					Frame frame = gef.getFrame();
-					out.println(frame.printBefore());
+    Window window = gef.getWindow();
+	out.println(window.printBefore());
+	Frame frame = gef.getFrame();
+	out.println(frame.printBefore());
 %>
-<CENTER>
-<table CELLPADDING=0 CELLSPACING=2 BORDER=0 WIDTH="98%" CLASS=intfdcolor>
-	<form name="formError" action="<%=m_context%>/admin/jsp/errorpageMainMin.jsp" method="post">
-	<input type="Hidden" name="message" value="<%=message %>">
-  <input type="Hidden" name="detailedMessage" value="<%=detailedMessage %>">
-	<input type="Hidden" name="pile" value="<%=pile %>">
+<center>
+<form name="formError" action="<%=m_context%>/admin/jsp/errorpageMainMin.jsp" method="post">
+	<input type="hidden" name="message" value="<%=message %>"/>
+  	<input type="hidden" name="detailedMessage" value="<%=detailedMessage %>"/>
+	<input type="hidden" name="pile" value="<%=pile %>"/>
+<table cellpadding="0" cellspacing="2" border=0 width="98%" class="intfdcolor">
 	<tr>
-		<td CLASS=intfdcolor4 NOWRAP>
+		<td class="intfdcolor4" nowrap="nowrap">
 			<center>
-				<br>
+				<br/>
 				<span class="txtnav">
 				<%=detailedMessage %>
 				</span>
-				<br><br>
-				<textarea rows="12" cols="90" wrap="virtual" name="pile"><%=pile %></textarea>
+				<br/><br/>
+				<textarea rows="12" cols="90" name="pile"><%=pile %></textarea>
 			</center>
-			<br>
+			<br/>
 		</td>
 	</tr>
-	</form>
 </table>
-<br>
+</form>
+<br/>
 <%
-		  ButtonPane buttonPane = gef.getButtonPane();
-			buttonPane.addButton((Button) gef.getFormButton(generalMessage.getString("GML.minimize"), "javascript:document.formError.submit();", false));
-		  out.println(buttonPane.print());
+	ButtonPane buttonPane = gef.getButtonPane();
+	buttonPane.addButton((Button) gef.getFormButton(generalMessage.getString("GML.minimize"), "javascript:document.formError.submit();", false));
+	out.println(buttonPane.print());
 %>
-</CENTER>
+</center>
 <%
-				out.println(frame.printAfter());
-				out.println(window.printAfter());
+	out.println(frame.printAfter());
+	out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

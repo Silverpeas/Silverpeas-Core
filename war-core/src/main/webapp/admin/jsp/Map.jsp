@@ -23,8 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -81,9 +80,9 @@ private String printSpaceAndSubSpaces(String spaceId, int depth, String[] m_asPr
         if (depth==0) result += "<tr><td>&nbsp;</td></tr>\n";
             result += "<tr>\n";
         if (URLManager.displayUniversalLinks())
-            result += "<td class=\"txttitrecol\">&#149; <a href=\""+URLManager.getSimpleURL(URLManager.URL_SPACE, spaceInst.getId())+"\" target=\"_top\">"+spaceInst.getName(language)+"</a></td></tr>\n";
+            result += "<td class=\"txttitrecol\">&#8226; <a href=\""+URLManager.getSimpleURL(URLManager.URL_SPACE, spaceInst.getId())+"\" target=\"_top\">"+spaceInst.getName(language)+"</a></td></tr>\n";
         else
-            result += "<td class=\"txttitrecol\">&#149; "+spaceInst.getName(language)+"</td></tr>\n";
+            result += "<td class=\"txttitrecol\">&#8226; "+spaceInst.getName(language)+"</td></tr>\n";
 			
         result += "<tr><td>\n";
 
@@ -181,9 +180,11 @@ corner = "icons/corner.gif";
 sGenSpace = m_OrganizationController.getGeneralSpaceId();
 
 %>
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<title><%=message.getString("MyMap")%></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>

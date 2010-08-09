@@ -67,7 +67,7 @@ void displayAxisByType(boolean showAllAxis, String axisLabel, List axis, SearchC
 	String		sNbObjects			= "";
 	String		language			= resource.getLanguage();
 	
-    //out.println("<table width=\"10px\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">");
+    //out.println("<table width=\"10\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">");
 		// il peut y avoir aucun axe primaire dans un 1er temps
 		if (axis != null && axis.size()>0){
 		//	out.println("<tr>");
@@ -80,16 +80,16 @@ void displayAxisByType(boolean showAllAxis, String axisLabel, List axis, SearchC
                 if (nbPositions != 0)
                 {
                 	if (i > 0)
-                		out.println("<td nowrap=\"nowrap\" width=\"30px\">&nbsp;</td>");
+                		out.println("<td nowrap=\"nowrap\" width=\"30\">&nbsp;</td>");
                 	
-                    out.println("<td nowrap=\"nowrap\" width=\"10px\">");
+                    out.println("<td nowrap=\"nowrap\">");
                     if (axisTypeIcon != null)
-                    	out.println("<img src=\""+axisTypeIcon+"\" alt=\""+axisLabel+"\" align=\"absmiddle\">&nbsp;");
-                    out.println("<nobr>"+axisName+"&nbsp;:&nbsp;</nobr></td>");
+                    	out.println("<img src=\""+axisTypeIcon+"\" alt=\""+axisLabel+"\" align=\"middle\" alt=\"\" nowrap=\"nowrap\"/>&nbsp;");
+                    out.println(axisName+"&nbsp;:&nbsp;</td>");
                     if (showAllAxis)
-                    	out.println("<td width=\"10px\"><select name=\"Axis"+axisId+"\" size=\"1\">");
+                    	out.println("<td width=\"10\"><select name=\"Axis"+axisId+"\" size=\"1\">");
                     else
-                    	out.println("<td width=\"10px\"><select name=\"Axis"+axisId+"\" size=\"1\" onChange=\"javascript:addValue(this, '"+axisId+"');\">");
+                    	out.println("<td width=\"10\"><select name=\"Axis"+axisId+"\" size=\"1\" onchange=\"javascript:addValue(this, '"+axisId+"');\">");
                     out.println("<option value=\"\"></option>");
                     List values = searchAxis.getValues();
                     for (int v=0; v<values.size(); v++)
@@ -154,14 +154,15 @@ if (searchContext != null && searchContext.getCriterias().size() > 0){
 Button searchButton = (Button) gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
 %>
 
-
-<html>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
    out.println(gef.getLookStyleSheet());
 %>
-<script language="JavaScript1.2">
+<script type="text/javascript">
 function addValue(selectItem, axisId) 
 {
 	var valuePath = selectItem.value;
@@ -208,10 +209,10 @@ function init()
 		}
 	%>
 }
-</SCRIPT>
-</HEAD>
-<BODY id="pdcFrame" onload="init()">
-<CENTER>
+</script>
+</head>
+<body id="pdcFrame" onload="init()">
+<center>
 <form name="AdvancedSearch" action="ViewAdvancedSearch" method="post">
   <input type="hidden" name="AxisId"/>
   <input type="hidden" name="ValueId"/>
@@ -225,14 +226,13 @@ function init()
   
   <table width="100%" border="0" cellpadding="0" cellspacing="0">
   	<tr>
-  		<td class="viewGeneratorLines" width="100%"><img src="<%=resource.getIcon("pdcPeas.1px")%>" width="1" height="1"/></td>
+  		<td class="viewGeneratorLines" width="100%"><img src="<%=resource.getIcon("pdcPeas.1px")%>" width="1" height="1" alt=""/></td>
   	</tr>
   </table>
 
   <table border="0" align="center">
   	<tr>
-	<td><img src="<%=resource.getIcon("pdcPeas.noColorPix")%>" width="20px" height="1px"></td>
-	<!-- <td width="100%" align="center"> -->
+	<td><img src="<%=resource.getIcon("pdcPeas.noColorPix")%>" width="20" height="1" alt=""/></td>
 <%
 	String axisIcon = resource.getIcon("pdcPeas.icoPrimaryAxis");
 	displayAxisByType(false, resource.getString("pdcPeas.primaryAxis"), primaryAxis, searchContext, new Boolean(false), null, resource, null, out);
@@ -241,11 +241,10 @@ function init()
 		displayAxisByType(false, resource.getString("pdcPeas.secondaryAxis"), secondaryAxis, searchContext, new Boolean(false), null, resource, null, out);
 	}
 %>
-	<!-- </td> -->
-	<td><img src="<%=resource.getIcon("pdcPeas.noColorPix")%>" width="20px" height="1px"></td>
-	<td><%=searchButton.print()%></td><td><img src="<%=resource.getIcon("pdcPeas.1px")%>" width="0px" height="1px"></td><td><a href="javaScript:raz()"><img src="<%=m_context%>/admin/jsp/icons/silverpeasV5/refresh.gif" border="0" alt="Remise ï¿½ zï¿½ro"/></a></td>
+	<td><img src="<%=resource.getIcon("pdcPeas.noColorPix")%>" width="20" height="1" alt=""/></td>
+	<td><%=searchButton.print()%></td><td><img src="<%=resource.getIcon("pdcPeas.1px")%>" width="0" height="1" alt=""/></td><td><a href="javaScript:raz()"><img src="<%=m_context%>/admin/jsp/icons/silverpeasV5/refresh.gif" border="0" alt="Remise à zéro"/></a></td>
 	</tr></table>
 </form>
-</CENTER>
-</BODY>
-</HTML>
+</center>
+</body>
+</html>

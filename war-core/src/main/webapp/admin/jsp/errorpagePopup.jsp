@@ -64,51 +64,53 @@
     HomePageUtil.traceException(exception);
 %>
 
-<html> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title><%= generalMessage.getString("GML.popupTitle")%></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
-    <script language="JavaScript">
-        function displayPopup()
-        {
-            SP_openWindow("<%=m_context%>/admin/jsp/popupError.jsp?action=NOBack","popup","650","180","");
-        }
-    </script>
-    <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript">
+    function displayPopup()
+    {
+        SP_openWindow("<%=m_context%>/admin/jsp/popupError.jsp?action=NOBack","popup","650","180","");
+    }
+</script>
 </head>
-<BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5 onload="javascript:displayPopup()">
+<body onload="javascript:displayPopup()">
 <%
-          Window window = gef.getWindow();
-					out.println(window.printBefore());
-					Frame frame = gef.getFrame();
-					out.println(frame.printBefore());
+	Window window = gef.getWindow();
+	out.println(window.printBefore());
+	Frame frame = gef.getFrame();
+	out.println(frame.printBefore());
 %>
-<CENTER>
-    <form name="formulaire" action="Main.jsp" method="post">
-        <input type="Hidden" name="message" value="<% if (exStr != null){out.print(exStr);}%>">
-        <input type="Hidden" name="detailedMessage" value="<% if (detailedString != null){out.print(detailedString);}%>">
-        <input type="Hidden" name="pile" value="<% if (toDisplayException != null) {toDisplayException.printStackTrace(new PrintWriter(out));}%>">
+<center>
+    <form name="formulaire" method="post">
+        <input type="hidden" name="message" value="<% if (exStr != null){out.print(exStr);}%>"/>
+        <input type="hidden" name="detailedMessage" value="<% if (detailedString != null){out.print(detailedString);}%>"/>
+        <input type="hidden" name="pile" value="<% if (toDisplayException != null) {toDisplayException.printStackTrace(new PrintWriter(out));}%>"/>
     </form>
-<table CELLPADDING=0 CELLSPACING=2 BORDER=0 WIDTH="98%" CLASS=intfdcolor>
+<table cellpadding="0" cellspacing="2" border="0" width="98%" class="intfdcolor">
 	<tr>
-		<td CLASS=intfdcolor4 NOWRAP>
+		<td class="intfdcolor4" nowrap="nowrap">
 			<center>
-				<br>
+				<br/>
 				<span class="txtnav">
 					<% if (exStr != null){out.print(exStr);}%>
 				</span>
 			</center>
-			<br>
+			<br/>
 		</td>
 	</tr>
 </table>
-<br>
-</CENTER>
+<br/>
+</center>
 <%
-				out.println(frame.printAfter());
-				out.println(window.printAfter());
+	out.println(frame.printAfter());
+	out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

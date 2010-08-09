@@ -107,9 +107,13 @@ session.putValue("RedirectToSpaceId", null);
 %>
 
 
-<%@page import="com.silverpeas.util.StringUtil"%><html>
+<%@page import="com.silverpeas.util.StringUtil"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<script language="javascript">
+<title></title>
+<script type="text/javascript">
 var columntype=""
 var defaultsetting=""
 
@@ -145,7 +149,7 @@ function init(){
 setTimeout("init()",100);
 
 </script>
-<script language="javascript">
+<script type="text/javascript">
 <!--
 function MM_reloadPage(init) {  //reloads the window if Nav4 resized
   if (init==true) with (navigator) {if ((appName=="Netscape")&&(parseInt(appVersion)==4)) {
@@ -156,16 +160,11 @@ MM_reloadPage(true);
 //-->
 </script>
 </head>
-	<script language=javascript>
-		<!--
-		if (navigator.appName == 'Netscape')
-		  	document.write('<frameset cols="<%=framesetWidth-18%>,*">');
-		else
-			document.write('<frameset cols="<%=framesetWidth%>,*">');
-		-->
-	</script>
-	<frame src="DomainsBarSilverpeasV5.jsp<%=paramsForDomainsBar%>" marginwidth="0" marginheight="10" name="SpacesBar" frameborder="NO" scrolling="AUTO">
-	<frame src="<%=frameURL%>" marginwidth="10" name="MyMain" marginheight="10" frameborder="NO" scrolling="AUTO">
-  </frameset>
-<noframes></noframes>
+	<frameset cols="<%=framesetWidth%>,*">
+		<frame src="DomainsBarSilverpeasV5.jsp<%=paramsForDomainsBar%>" marginwidth="0" marginheight="10" name="SpacesBar" frameborder="0" scrolling="auto"/>
+		<frame src="<%=frameURL%>" marginwidth="0" name="MyMain" marginheight="0" frameborder="0" scrolling="auto"/>
+		<noframes>
+			<body>Votre navigateur ne prend pas en charge les frames</body>
+		</noframes>
+  	</frameset>
 </html>

@@ -64,50 +64,52 @@
 
     HomePageUtil.traceException(exception);
 %>
-<HTML>
-<HEAD>
-<TITLE><%= generalMessage.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%= generalMessage.getString("GML.popupTitle")%></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
-</HEAD>
+</head>
 
-<BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5>
+<body>
 <%
-          Window window = gef.getWindow();
-					out.println(window.printBefore());
-					Frame frame = gef.getFrame();
-					out.println(frame.printBefore());
+    Window window = gef.getWindow();
+	out.println(window.printBefore());
+	Frame frame = gef.getFrame();
+	out.println(frame.printBefore());
 %>
-<CENTER>
-<table CELLPADDING=0 CELLSPACING=2 BORDER=0 WIDTH="98%" CLASS=intfdcolor>
-	<form name="formError" action="<%=m_context%>/admin/jsp/errorpageMainMax.jsp" method="post">
-	<input type="Hidden" name="message" value="<% if (exStr != null){out.print(exStr);}%>">
-  <input type="Hidden" name="detailedMessage" value="<% if (detailedString != null){out.print(detailedString);}%>">
-	<input type="Hidden" name="pile" value="<% if (toDisplayException != null) {toDisplayException.printStackTrace(new PrintWriter(out));}%>">
+<center>
+<form name="formError" action="<%=m_context%>/admin/jsp/errorpageMainMax.jsp" method="post">
+	<input type="hidden" name="message" value="<% if (exStr != null){out.print(exStr);}%>"/>
+  	<input type="hidden" name="detailedMessage" value="<% if (detailedString != null){out.print(detailedString);}%>"/>
+	<input type="hidden" name="pile" value="<% if (toDisplayException != null) {toDisplayException.printStackTrace(new PrintWriter(out));}%>"/>
+<table cellpadding="0" cellspacing="2" border="0" width="98%" class="intfdcolor">
 	<tr>
-		<td CLASS=intfdcolor4 NOWRAP>
+		<td class="intfdcolor4" nowrap="nowrap">
 			<center>
-				<br>
+				<br/>
 				<span class="txtnav">
 					<% if (exStr != null){out.print(exStr);}%>
 				</span>
 			</center>
-			<br>
+			<br/>
 		</td>
 	</tr>
-	</form>
 </table>
-<br>
+</form>
+<br/>
 <%
 		  ButtonPane buttonPane = gef.getButtonPane();
 			buttonPane.addButton((Button) gef.getFormButton(generalMessage.getString("GML.detail"), "javascript:document.formError.submit();", false));
 		  out.println(buttonPane.print());
 %>
-</CENTER>
+</center>
 <%
 				out.println(frame.printAfter());
 				out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

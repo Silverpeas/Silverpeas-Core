@@ -51,14 +51,15 @@ if (wallPaper == null)
 boolean outilDisplayed = false;
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>entete</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <%
 	out.println(gef.getLookStyleSheet());
 %>
-<style>
+<style type="text/css">
 #shortcuts {
 	bottom: 25px;
 	position: absolute;
@@ -76,13 +77,12 @@ body {
 	background-position: left top;
 }
 </style>
-</style>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/ticker.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/connectedUsers.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/tools.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/lookV5/topBar.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 function goToHome()
 {
     top.bottomFrame.location.href = "frameBottomSilverpeasV5.jsp?FromTopBar=1";
@@ -128,19 +128,19 @@ function reloadTopBar()
 //-->
 </script>
 </head>
-<body bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" onload="loadThisPage()">
+<body bgcolor="#FFFFFF" onload="loadThisPage()">
 <div id="topBar">
-	<div style="position: absolute; right: 0px; top: 0px; background-color: #FFFFFF; width: 100%"><img src="icons/silverpeasV5/px.gif" border="0" height="0" id="space2Expand" align="absmiddle"/></div>
-	<div style="position: absolute; right: 0px; top: 2px"><a href="javascript:resizeFrame();"><img src="icons/silverpeasV5/reductTopBar.gif" border="0" align="absmiddle" name="expandReduce" alt="<%=helper.getString("lookSilverpeasV5.reductExtend")%>" title="<%=helper.getString("lookSilverpeasV5.reductExtend")%>"/></a></div>
+	<div style="position: absolute; right: 0px; top: 0px; background-color: #FFFFFF; width: 100%"><img src="icons/silverpeasV5/px.gif" border="0" height="0" id="space2Expand" align="middle" alt=""/></div>
+	<div style="position: absolute; right: 0px; top: 2px"><a href="javascript:resizeFrame();"><img src="icons/silverpeasV5/reductTopBar.gif" border="0" align="middle" name="expandReduce" alt="<%=helper.getString("lookSilverpeasV5.reductExtend")%>" title="<%=helper.getString("lookSilverpeasV5.reductExtend")%>"/></a></div>
     <div id="backHome">
-        <a href="javaScript:goToHome();"><img src="icons/silverpeasV5/px.gif" width="220" height="105" border="0" id="pxUrlHome"/></a></div>
+        <a href="javaScript:goToHome();"><img src="icons/silverpeasV5/px.gif" width="220" height="105" border="0" id="pxUrlHome" alt=""/></a></div>
         <script type="text/javascript">
 			var xmlfile="/weblib/ticker/tickercontent_<%=language%>.txt" //path to ticker txt file on your server.
 			//ajax_ticker(xmlfile, divId, divClass, delay, optionalfadeornot)
 			new ajax_ticker(xmlfile, "ticker", "someclass", 3500, "fade");
 		</script>
         <div id="outils">
-        	<a href="#" onClick="javascript:onClick=openConnectedUsers();" style="visibility:hidden" id="connectedUsers"></a> 
+        	<a href="#" onclick="javascript:onClick=openConnectedUsers();" style="visibility:hidden" id="connectedUsers"></a> 
 		<% if (helper.getSettings("glossaryVisible", false)) {
 				outilDisplayed = true; 
 		%>
@@ -171,7 +171,7 @@ function reloadTopBar()
 
     <% if (topItems.size() > 0) { %>
     <div id="shortcuts">
-        <table height="20" border="0" cellspacing="0" cellpadding="0">
+        <table border="0" cellspacing="0" cellpadding="0">
         	<tr>
               <td class="gaucheShortcuts">&nbsp;</td>
               <td nowrap="nowrap" align="center"><img src="icons/silverpeasV5/px.gif" width="40" height="1" border="0"/></td>
@@ -200,7 +200,7 @@ function reloadTopBar()
     
     <% if(helper.isBackOfficeVisible()) { %>
     <div id="administration">
-       <table height="20" border="0" cellspacing="0" cellpadding="0">
+       <table border="0" cellspacing="0" cellpadding="0">
        		<tr>
             	<td>
                 <a href="<%=m_sContext + URLManager.getURL(URLManager.CMP_JOBMANAGERPEAS)%>Main" target="_top"><%=helper.getString("lookSilverpeasV5.backOffice")%></a>
@@ -210,7 +210,7 @@ function reloadTopBar()
     </div>
     <% } %>
 </div>
-<form name="searchForm">
+<form name="searchForm" action="">
 <input type="hidden" name="query"/>
 </form>
 </body>

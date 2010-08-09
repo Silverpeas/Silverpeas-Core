@@ -44,14 +44,16 @@ if (url != null)
 	buttonAction = "javascript:onClick=location.href='"+url+"';";
 %>
 
-<HTML>
-<HEAD>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=generalMessage.getString("GML.DocumentNotFound")%></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
-</HEAD>
-<BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5>
-
+</head>
+<body>
 <%
 	Window window = gef.getWindow();
 	Frame frame = gef.getFrame();
@@ -62,17 +64,17 @@ out.println(gef.getLookStyleSheet());
 	out.println(board.printBefore());
 %>
 	<center>
-		<br>
+		<br/>
 		<h3><%=generalMessage.getString("GML.DocumentNotFound")%></h3>
 	</center>
 <%
 	out.println(board.printAfter());
 	
 	Button back = (Button) gef.getFormButton(generalMessage.getString("GML.back"), buttonAction, false);
-	out.println("<br><center>"+back.print()+"</center><br>");
+	out.println("<br/><center>"+back.print()+"</center><br/>");
 	
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-</BODY> 
+</body>
 </html>

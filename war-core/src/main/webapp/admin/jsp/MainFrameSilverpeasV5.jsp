@@ -32,7 +32,6 @@
 	response.setStatus( HttpServletResponse.SC_CREATED );
 %>
 <%@ include file="importFrameSet.jsp" %>
-<%@ include file="usefullFunctions.jsp" %>
 <%@ page import="com.silverpeas.util.StringUtil"%>
 <%@ page import="com.silverpeas.look.LookSilverpeasV5Helper"%>
 
@@ -52,7 +51,7 @@ boolean			login					= false;
 if (m_MainSessionCtrl == null)
 {
 %>
-	<script> 
+	<script type="text/javascript"> 
 		top.location="../../Login.jsp";
 	</script>
 <%
@@ -105,33 +104,35 @@ else
 	else
 	{
 		helper.setComponentIdAndSpaceIds(null, null, componentIdFromRedirect);
-		frameBottomParams 	= "?SpaceId=&ComponentId="+componentIdFromRedirect;
+		frameBottomParams 	= "?SpaceId=&amp;ComponentId="+componentIdFromRedirect;
 	}
 	
 	if (login)
-		frameBottomParams += "&Login=1";
+		frameBottomParams += "&amp;Login=1";
 	
 	if (!"MainFrameSilverpeasV5.jsp".equalsIgnoreCase(helper.getMainFrame()))
 	{
 		session.putValue("RedirectToSpaceId", spaceIdFromRedirect);
 		%>
-			<script>
+			<script type="text/javascript">
 				top.location="<%=helper.getMainFrame()%>";
 			</script>
 		<%
 	}
 	
-	String framesetRows = "0,115,*,0,0";
+	String framesetRows = "115,100%,*,*,*";
 	if (helper.displayPDCFrame())
-		framesetRows = "0,115,*,0,0,26";
+		framesetRows = "115,100%,26,*,*,*";
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=generalMessage.getString("GML.popupTitle")%></title>
-<link REL="SHORTCUT ICON" HREF="<%=request.getContextPath()%>/util/icons/favicon.ico">
+<link rel="SHORTCUT ICON" href="<%=request.getContextPath()%>/util/icons/favicon.ico"/>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/animation.js"></script>
-<script language="javascript">
+<script type="text/javascript">
 <!--
 var columntype=""
 var defaultsetting=""
@@ -166,38 +167,49 @@ function init(){
 }
 
 function showPdcFrame() {
-	resizeFrame("0,115,*,0,0,26");
+	resizeFrame("115,100%,26,*,*,*");
 }
 
 function hidePdcFrame() {
-	resizeFrame("0,115,*,0,0,0");
+	resizeFrame("115,100%,*,*,*,*");
 }
 
 setTimeout("init()",100);
 
 //-->
 </script>
+<style type="text/css">
+/* Nettoyage des balises */
+* {
+margin: 0px;
+padding: 0px;
+border: none;
+}
+</style>
 </head>
 <% if (attachmentId != null) 
    {
    	session.putValue("RedirectToAttachmentId", null);
    	String mapping = (String) session.getValue("RedirectToMapping");
 %>
-	<script language="javascript">
+	<script type="text/javascript">
 		SP_openWindow('<%=m_sContext%>/<%=mapping%>/<%=attachmentId%>', 'Fichier', '800', '600', 'directories=0,menubar=1,toolbar=1,scrollbars=1,location=1,alwaysRaised');
 	</script>
 <% } %>
 
-<frameset rows="<%=framesetRows%>" border="0" framespacing="0" frameborder="NO" id="mainFramesetId">
-  	<frame src="../../clipboard/jsp/IdleSilverpeasV5.jsp" name="IdleFrame" marginwidth="0" marginheight="0" scrolling="NO" noresize frameborder="NO">
-  	<frame src="TopBarSilverpeasV5.jsp" name="topFrame" marginwidth="0" marginheight="0" scrolling="NO" noresize frameborder="NO">
-  	<frame src="frameBottomSilverpeasV5.jsp<%=frameBottomParams%>" name="bottomFrame" marginwidth="0" marginheight="0" scrolling="NO" noresize frameborder="NO">
-	<frame src="javascript.htm" name="scriptFrame" marginwidth="0" marginheight="0" scrolling="NO" noresize frameborder="NO">
-	<frame src="<%=m_sContext%>/Ragenda/jsp/importCalendar" name="importFrame" marginwidth="0" marginheight="0" scrolling="NO" noresize frameborder="NO">
-	<% if (helper.displayPDCFrame()) { %>
-		<frame src="<%=m_sContext%>/RpdcSearch/jsp/ChangeSearchTypeToExpert?SearchPage=/admin/jsp/pdcSearchSilverpeasV5.jsp" name="pdcFrame" marginwidth="0" marginheight="0" scrolling="NO" noresize frameborder="0">
+<frameset rows="<%=framesetRows%>" id="mainFramesetId" border="0"> <!-- Do not remove frameset's attribute "border" -->
+  	<frame src="TopBarSilverpeasV5.jsp" name="topFrame" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" frameborder="0"/>
+  	<frame src="frameBottomSilverpeasV5.jsp<%=frameBottomParams%>" name="bottomFrame" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" frameborder="0"/>
+  	<% if (helper.displayPDCFrame()) { %>
+		<frame src="<%=m_sContext%>/RpdcSearch/jsp/ChangeSearchTypeToExpert?SearchPage=/admin/jsp/pdcSearchSilverpeasV5.jsp" name="pdcFrame" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" frameborder="0"/>
 	<% } %>
-</frameset><noframes></noframes>
+	<frame src="../../clipboard/jsp/IdleSilverpeasV5.jsp" name="IdleFrame" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" frameborder="0"/>
+	<frame src="javascript.htm" name="scriptFrame" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" frameborder="0"/>
+	<frame src="<%=m_sContext%>/Ragenda/jsp/importCalendar" name="importFrame" marginwidth="0" marginheight="0" scrolling="no" noresize="noresize" frameborder="0"/>
+	<noframes>
+		<body>Votre navigateur ne prend pas en charge les frames</body>
+	</noframes>
+</frameset>
 </html>
 <%
 }

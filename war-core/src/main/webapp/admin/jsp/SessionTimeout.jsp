@@ -23,26 +23,24 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-
-<html>
-<HEAD>
-<Script language="JavaScript">
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<script type="text/javascript">
 function gotoLogin()
 {
 	var errorCode = 3;
     window.top.location.replace("../../Login.jsp?ErrorCode="+errorCode);
 }
-
 </script>
-</HEAD>
-
-<body onLoad="gotoLogin();">
-  <BR>
-  <BR>
-  <BR>
-  <BR>
-  La session est terminï¿½e.<BR>
+</head>
+<body onload="gotoLogin();">
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  La session est terminée.<br/>
   Veuillez vous reconnecter.
 </body>
 </html>
