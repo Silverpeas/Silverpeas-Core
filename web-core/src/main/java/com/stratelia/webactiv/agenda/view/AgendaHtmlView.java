@@ -255,7 +255,7 @@ public class AgendaHtmlView {
       result +=
           "                  <table border=\"0\" cellpadding=\"0\" cellspacing=\"1\" class=\"intfdcolor\" width=\"100%\">\n";
       result += "                    <tr> \n";
-      result += "                      <td align=center class=\"grille\"> ";
+      result += "                      <td align=\"center\" class=\"grille\"> ";
 
       result += calendarHtmlView.getHtmlView(DateUtil.parse(startDate), agendaSessionController);
 
@@ -308,9 +308,9 @@ public class AgendaHtmlView {
     int month = 1;
 
     for (int i = 0; i < 3; i++) {
-      result += "<TR>";
+      result += "<tr>";
       for (int j = 0; j < 4; j++) {
-        result += "<TD bgcolor=\"#ffffff\" ALIGN=LEFT VALIGN=TOP>";
+        result += "<td bgcolor=\"#ffffff\" align=\"left\" valign=\"top\">";
         try {
           String m = String.valueOf(month);
 
@@ -326,9 +326,9 @@ public class AgendaHtmlView {
               "agenda.MSG_CANT_GET_VIEW_YEAR", "return= null", e);
           return "";
         }
-        result += "</TD>\n";
+        result += "</td>\n";
       }
-      result += "</TR>";
+      result += "</tr>";
     }
     result += "                  </table>";
     result += "                </td>";
@@ -362,65 +362,65 @@ public class AgendaHtmlView {
     SchedulableList dayList = new SchedulableList(DateUtil.date2SQLDate(day.getTime()), schedules);
 
     result +=
-        "<TABLE border=\"0\" align=\"center\" width=\"98%\" cellspacing=\"2\" cellpadding=\"0\" class=\"grille\">\n";
-    result += "<TR valign=\"top\">";
-    result += "<TD>";
+        "<table border=\"0\" width=\"98%\" cellspacing=\"2\" cellpadding=\"0\" class=\"grille\">\n";
+    result += "<tr valign=\"top\">";
+    result += "<td>";
     result +=
-        "<TABLE border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\n";
-    result += "  <TR nowrap>\n";
-    result += "    <TD width=\"100%\">";
+        "<table border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\n";
+    result += "  <tr>\n";
+    result += "    <td width=\"100%\">";
     Vector<Schedulable> all = dayList.getWithoutHourSchedules();
 
     result +=
-        "      <TABLE class=\"grille\" border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"1\" cellpadding=\"1\">";
+        "      <table class=\"grille\" border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"1\" cellpadding=\"1\">";
 
     if (all.size() > 0) {
 
       for (int i = 0; i < all.size(); i++) {
         Schedulable schedule = all.elementAt(i);
-        result += "  <TR><span class=\"txtnote\">";
+        result += "  <tr>";
         if (i == 0) {
-          result += "    <TD width=\"50\" rowspan=\"" + all.size()
-              + "\" align=\"right\" bgcolor=\"#FFFFFF\" nowrap valign=\"top\">";
-          result += "&nbsp;</TD>";
+          result += "    <td width=\"50\" rowspan=\"" + all.size()
+              + "\" align=\"right\" bgcolor=\"#FFFFFF\" nowrap=\"nowrap\" valign=\"top\">";
+          result += "&nbsp;</td>";
         }
 
         if (isOtherAgenda) {
           if (schedule.getClassification().isPrivate()) {
-            result += "    <TD class=\"privateEvent\" width=\"600\">";
+            result += "    <td class=\"privateEvent\" width=\"600\">";
           } else {
-            result += "    <TD class=\"publicEvent\" width=\"600\">";
+            result += "    <td class=\"publicEvent\" width=\"600\">";
           }
         } else {
-          result += "    <TD class=\"intfdcolor4\" width=\"600\">";
+          result += "    <td class=\"intfdcolor4\" width=\"600\">";
         }
 
         if (schedule.getClassification().isPublic() || !isOtherAgenda) {
-          result += "      <A HREF=\"" + "javascript:onClick=viewJournal('"
+          result += "      <a href=\"" + "javascript:onClick=viewJournal('"
               + schedule.getId() + "')\"";
           result += getInfoBulle(schedule);
-          result += EncodeHelper.javaStringToHtmlString(schedule.getName()) + "</A>";
+          result += EncodeHelper.javaStringToHtmlString(schedule.getName()) + "</a>";
         }
 
         result += " &nbsp;(" + agendaSessionController.getString("allDay")
-            + ")    </TD>";
-        result += "  </span></TR>\n";
+            + ")    </td>";
+        result += "</tr>\n";
       }
     } else {
-      result += "  <TR>";
-      result += "    <TD width=\"50\" align=\"right\" bgcolor=\"#FFFFFF\" nowrap valign=\"top\">";
-      result += "&nbsp;</TD>";
-      result += "    <TD class=\"intfdcolor4\" width=\"600\">";
+      result += "  <tr>";
+      result += "    <td width=\"50\" align=\"right\" bgcolor=\"#FFFFFF\" nowrap=\"nowrap\" valign=\"top\">";
+      result += "&nbsp;</td>";
+      result += "    <td class=\"intfdcolor4\" width=\"600\">";
       result += "&nbsp;";
-      result += "    </TD>";
-      result += "  </TR>\n";
+      result += "    </td>";
+      result += "  </tr>\n";
     }
-    result += "      </TABLE>\n";
-    result += "    </TD>";
-    result += "  </TR>\n";
+    result += "      </table>\n";
+    result += "    </td>";
+    result += "  </tr>\n";
 
     result += "<tr> ";
-    result += "<td class=\"intfdcolor3\"><img src=\"icons/1px.gif\" height=\"2\" width=\"1\"></td>";
+    result += "<td class=\"intfdcolor3\"><img src=\"icons/1px.gif\" height=\"2\" width=\"1\" alt=\"\"/></td>";
     result += "</tr>\n";
 
     int i = BEGINHOUR;
@@ -489,32 +489,32 @@ public class AgendaHtmlView {
 
       if (lastGoOn == null) {
         // ouverture de la table
-        result += "  <TR>";
-        result += "    <TD>";
+        result += "  <tr>";
+        result += "    <td>";
         result +=
-            "      <TABLE class=\"grille\" border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"1\" cellpadding=\"1\">\n";
+            "      <table class=\"grille\" border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"1\" cellpadding=\"1\">\n";
       } else {
         if (((goOn.size() != 0) && (lastGoOn.size() == 0))
             || ((goOn.size() == 0) && (lastGoOn.size() != 0))) {
-          result += "      </TABLE>\n";
-          result += "    </TD>";
-          result += "  </TR>\n";
-          result += "  <TR>";
-          result += "    <TD>";
+          result += "      </table>\n";
+          result += "    </td>";
+          result += "  </tr>\n";
+          result += "  <tr>";
+          result += "    <td>";
           result +=
-              "      <TABLE class=\"grille\" border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"1\" cellpadding=\"1\">\n";
+              "      <table class=\"grille\" border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"1\" cellpadding=\"1\">\n";
         }
       }
 
-      result += "       <TR>";
+      result += "       <tr>";
       result +=
-          "        <TD width=\"50\" align=\"right\" bgcolor=\"#FFFFFF\" nowrap valign=\"top\">";
-      result += "<A HREF=\"javascript:onClick=selectHour('" + i + "')\">";
-      result += String.valueOf(i) + "H</A>";
-      result += "        </TD>";
+          "        <td width=\"50\" align=\"right\" bgcolor=\"#FFFFFF\" nowrap=\"nowrap\" valign=\"top\">";
+      result += "<a href=\"javascript:onClick=selectHour('" + i + "')\">";
+      result += String.valueOf(i) + "H</a>";
+      result += "        </td>";
 
       if (goOn.isEmpty()) {
-        result += "        <TD class=\"intfdcolor4\" width=\"600\">&nbsp;</TD>";
+        result += "        <td class=\"intfdcolor4\" width=\"600\">&nbsp;</td>";
         maxColumns = 0;
       } else {
         for (int goOnIterator = 0; goOnIterator < goOn.size(); goOnIterator++) {
@@ -564,62 +564,62 @@ public class AgendaHtmlView {
               }
             }
 
-            result += "<TD width=\"" + ((int) (600 / maxColumns))
+            result += "<td width=\"" + ((int) (600 / maxColumns))
                 + "\" class=\"" + color + "\" rowspan=\"" + length + "\">";
             if (isOtherAgenda) {
               if (schedule.getClassification().isPrivate()) {
                 if (!schedule.getEndHour().equals(schedule.getStartHour())) {
                   result += schedule.getStartHour() + " - "
-                      + schedule.getEndHour() + "<BR>";
+                      + schedule.getEndHour() + "<br/>";
                 } else {
-                  result += schedule.getStartHour() + "<BR>";
+                  result += schedule.getStartHour() + "<br/>";
                 }
               } else {
-                result += "      <A HREF=\"javascript:onClick=viewJournal('"
+                result += "      <a href=\"javascript:onClick=viewJournal('"
                     + schedule.getId() + "')\"";
                 result += getInfoBulle(schedule);
                 if (!schedule.getEndHour().equals(schedule.getStartHour())) {
                   result += schedule.getStartHour() + " - "
-                      + schedule.getEndHour() + "<BR>";
+                      + schedule.getEndHour() + "<br/>";
                 } else {
-                  result += schedule.getStartHour() + "<BR>";
+                  result += schedule.getStartHour() + "<br/>";
                 }
                 result += EncodeHelper.javaStringToHtmlString(schedule.getName())
-                    + "</A>";
+                    + "</a>";
               }
             } else {
-              result += "      <A HREF=\"javascript:onClick=viewJournal('"
+              result += "      <a href=\"javascript:onClick=viewJournal('"
                   + schedule.getId() + "')\"";
               result += getInfoBulle(schedule);
               if (!schedule.getEndHour().equals(schedule.getStartHour())) {
                 result += schedule.getStartHour() + " - "
-                    + schedule.getEndHour() + "<BR>";
+                    + schedule.getEndHour() + "<br/>";
               } else {
-                result += schedule.getStartHour() + "<BR>";
+                result += schedule.getStartHour() + "<br/>";
               }
               result += EncodeHelper.javaStringToHtmlString(schedule.getName())
-                  + "</A>";
+                  + "</a>";
             }
-            result += "</TD>";
+            result += "</td>";
           }
         }
         for (int maxColumnsIterator = goOn.size(); maxColumnsIterator < maxColumns; maxColumnsIterator++) {
-          result += "        <TD class=\"intfdcolor4\" width=\""
-              + ((int) (600 / maxColumns)) + "\">&nbsp;</TD>";
+          result += "        <td class=\"intfdcolor4\" width=\""
+              + ((int) (600 / maxColumns)) + "\">&nbsp;</td>";
         }
       }
-      result += "       </TR>\n";
+      result += "       </tr>\n";
       lastGoOn = goOn;
       i++;
 
     }
     result += " </table></td></tr>\n";
-    result += "</TABLE>\n";
-    result += "</TD>";
+    result += "</table>\n";
+    result += "</td>";
     if (calendarVisible) {
-      result += "<TD width=\"100\" class=\"intfdcolor2\">\n";
+      result += "<td width=\"100\" class=\"intfdcolor2\">\n";
     } else {
-      result += "<TD width=\"10\" class=\"intfdcolor2\">\n";
+      result += "<td width=\"10\" class=\"intfdcolor2\">\n";
     }
 
     // display the calendar
@@ -632,10 +632,10 @@ public class AgendaHtmlView {
     result += "     <td align=\"right\" class=\"intfdcolor2\">";
     if (!calendarVisible) {
       result +=
-          "        <a href=\"javascript:onClick=openCalendar()\"><img src=\"icons/cal_open.gif\" width=\"16\" height=\"14\" border=\"0\" alt=\"Afficher le calendrier\" title=\"Afficher le calendrier\"></a> \n";
+          "        <a href=\"javascript:onClick=openCalendar()\"><img src=\"icons/cal_open.gif\" width=\"16\" height=\"14\" border=\"0\" alt=\"Afficher le calendrier\" title=\"Afficher le calendrier\"/></a> \n";
     } else {
       result +=
-          "        <a href=\"javascript:onClick=closeCalendar()\"><img src=\"icons/croix3.gif\" width=\"16\" height=\"14\" border=\"0\" alt=\"Fermer le calendrier\" title=\"Fermer le calendrier\"></a> \n";
+          "        <a href=\"javascript:onClick=closeCalendar()\"><img src=\"icons/croix3.gif\" width=\"16\" height=\"14\" border=\"0\" alt=\"Fermer le calendrier\" title=\"Fermer le calendrier\"/></a> \n";
     }
     result += "     </td>";
     result += "    </tr> ";
@@ -646,16 +646,16 @@ public class AgendaHtmlView {
           "       <table border=\"0\" cellpadding=\"0\" cellspacing=\"1\" class=\"intfdcolor\"> \n";
       result += "        <tr><td><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n";
       result += "         <tr>\n";
-      result += "            <td align=center class=\"txtbigdate\">"
+      result += "            <td align=\"center\" class=\"txtbigdate\">"
           + day.get(Calendar.DAY_OF_MONTH);
       result += "            </td></tr>";
-      result += "            <tr><td align=center class=\"txtnav3\">"
+      result += "            <tr><td align=\"center\" class=\"txtnav3\">"
           + agendaSessionController.getString("mois" + day.get(Calendar.MONTH));
       result += "            </td></tr>";
-      result += "            <tr><td align=center class=\"txtnav3\">"
+      result += "            <tr><td align=\"center\" class=\"txtnav3\">"
           + DateUtil.getInputDate(day.getTime(), agendaSessionController.getLanguage());
-      result += "            </TD></TR>\n";
-      result += "            <TR><TD>\n";
+      result += "            </td></tr>\n";
+      result += "            <tr><td>\n";
 
       try {
         result += (new CalendarHtmlView()).getHtmlView(DateUtil.parse(today),
@@ -663,18 +663,18 @@ public class AgendaHtmlView {
       } catch (Exception e) {
       }
 
-      result += "             </TD></TR>\n";
+      result += "             </td></tr>\n";
       result += "           </table></td></tr>\n";
       result += "         </table>\n";
-      result += "     </TD></TR>\n";
+      result += "     </td></tr>\n";
     }
     result += "    </table>\n";
-    result += " </TD></TR>\n";
+    result += " </td></tr>\n";
     result += "</table>\n";
     // end calendar
-    result += "</TD>";
-    result += "</TR>\n";
-    result += "</TABLE>";
+    result += "</td>";
+    result += "</tr>\n";
+    result += "</table>";
     return result;
 
   }
@@ -691,15 +691,15 @@ public class AgendaHtmlView {
     SchedulableList[] dayList = new SchedulableList[WEEKDAYNUMBER];
 
     result
-        .append("<TABLE border=\"0\" align=\"center\" width=\"98%\" cellspacing=\"0\" cellpadding=\"2\" class=\"grille\">\n");
-    result.append("<TR>");
-    result.append("<TD>");
+        .append("<table border=\"0\" width=\"98%\" cellspacing=\"0\" cellpadding=\"2\" class=\"grille\">\n");
+    result.append("<tr>");
+    result.append("<td>");
     result
-        .append("<TABLE border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"1\" cellpadding=\"1\">\n");
-    result.append("  <TR bgcolor=\"#ffffff\" nowrap>\n");
+        .append("<table border=\"0\" align=\"center\" width=\"100%\" cellspacing=\"1\" cellpadding=\"1\">\n");
+    result.append("  <tr bgcolor=\"#ffffff\">\n");
     result
-        .append("    <td rowspan=\"2\" align=\"right\" valign=\"bottom\"> <img src=\"icons/1px.gif\"><br>");
-    result.append("</TD>\n");
+        .append("    <td rowspan=\"2\" align=\"right\" valign=\"bottom\"> <img src=\"icons/1px.gif\" alt=\"\"/><br/>");
+    result.append("</td>\n");
     Calendar day = Calendar.getInstance();
 
     try {
@@ -714,7 +714,7 @@ public class AgendaHtmlView {
     for (int i = 0; i < WEEKDAYNUMBER; i++) {
       if (agendaSessionController.isHolidayDate(day.getTime())) {
         result
-            .append("<TD class=\"intfdcolor4\" valign=\"bottom\" width=\"14%\" align=\"center\">");
+            .append("<td class=\"intfdcolor4\" valign=\"bottom\" width=\"14%\" align=\"center\">");
         result.append("<span ");
         result.append(weekDayOffStyle).append(">").append(
             agendaSessionController.getString("jour" + day.get(Calendar.DAY_OF_WEEK)).substring(0,
@@ -722,72 +722,72 @@ public class AgendaHtmlView {
         result.append(" ").append(day.get(Calendar.DAY_OF_MONTH)).append("</span>");
       } else {
         result
-            .append("    <TD class=\"intfdcolor2\" valign=\"bottom\" width=\"14%\" align=\"center\">");
-        result.append("<A HREF=\"javascript:onClick=selectDay('").append(
+            .append("    <td class=\"intfdcolor2\" valign=\"bottom\" width=\"14%\" align=\"center\">");
+        result.append("<a href=\"javascript:onClick=selectDay('").append(
             DateUtil.getInputDate(day.getTime(), agendaSessionController.getLanguage())).append(
             "')\" class=\"txtnav\">");
         result.append(agendaSessionController.getString(
             "jour" + day.get(Calendar.DAY_OF_WEEK)).substring(0, 3));
         result.append(" ").append(day.get(Calendar.DAY_OF_MONTH));
-        result.append("</A>");
+        result.append("</a>");
         dayList[i] = new SchedulableList(DateUtil.date2SQLDate(day.getTime()),
             schedules);
       }
-      result.append("</TD>\n");
+      result.append("</td>\n");
       day.add(Calendar.DATE, 1);
     }
-    result.append("  </TR>\n");
+    result.append("  </tr>\n");
 
-    result.append("  <TR>");
+    result.append("  <tr>");
 
     for (int j = 0; j < WEEKDAYNUMBER; j++) {
-      result.append("    <TD class=\"intfdcolor4\"><span class=\"txtnote\">");
+      result.append("    <td class=\"intfdcolor4\">");
       List<Schedulable> all = new ArrayList<Schedulable>();
       if (dayList[j] != null) {
         all = dayList[j].getWithoutHourSchedules();
       }
       if (all.size() > 0) {
-        result.append("      <TABLE>");
+        result.append("      <table>");
         for (int i = 0; i < all.size(); i++) {
           Schedulable schedule = all.get(i);
-          result.append("  <TR>");
+          result.append("  <tr>");
           if (isOtherAgenda && schedule.getClassification().isPrivate()) {
-            result.append("    <TD class=privateEvent>").append(
+            result.append("    <td class=\"privateEvent\">").append(
                 agendaSessionController.getString("privateEvent"));
           } else {
             if (isOtherAgenda) {
-              result.append("    <TD class=publicEvent>");
+              result.append("    <td class=\"publicEvent\">");
             } else {
-              result.append("    <TD>");
+              result.append("    <td>");
             }
 
-            result.append("      <A HREF=\"javascript:onClick=viewJournal('").append(
+            result.append("      <a href=\"javascript:onClick=viewJournal('").append(
                 schedule.getId()).append("')\"");
             result.append(getInfoBulle(schedule));
             result.append(EncodeHelper.javaStringToHtmlString(schedule.getName()));
-            result.append("      </A>");
+            result.append("      </a>");
           }
-          result.append("  </TD></TR>\n");
+          result.append("  </td></tr>\n");
         }
-        result.append("      </TABLE>");
+        result.append("      </table>");
       } else {
         result.append("&nbsp;");
       }
-      result.append("    </span></TD>");
+      result.append("    </td>");
     }
-    result.append("  </TR>\n");
+    result.append("  </tr>\n");
 
     result.append("<tr> ");
     result
-        .append("<td colspan=\"8\" class=\"intfdcolor3\"><img src=\"icons/1px.gif\" height=\"2\" width=\"1\"></td>");
+        .append("<td colspan=\"8\" class=\"intfdcolor3\"><img src=\"icons/1px.gif\" height=\"2\" width=\"1\" alt=\"\"/></td>");
     result.append("</tr>\n");
 
     for (int i = BEGINHOUR; i < ENDHOUR; i++) {
-      result.append(" <TR>");
-      result.append("<TD align=\"right\" bgcolor=\"#FFFFFF\" nowrap valign=\"top\">");
+      result.append(" <tr>");
+      result.append("<td align=\"right\" bgcolor=\"#FFFFFF\" nowrap=\"nowrap\" valign=\"top\">");
       result.append("<span class=\"intfdcolor4\">");
       result.append(String.valueOf(i)).append("H");
-      result.append("</span></TD>");
+      result.append("</span></td>");
       // }
       String hour = Schedulable.quaterCountToHourString(i * 4);
       String nextHour = Schedulable.quaterCountToHourString(i * 4 + 4);
@@ -802,10 +802,10 @@ public class AgendaHtmlView {
           if (dayList[j] != null) {
             Vector goOn = dayList[j].getGoOnSchedules(hour, nextHour);
             if (goOn.isEmpty()) {
-              result.append("<TD class=\"intfdcolor4\">&nbsp;</TD>");
+              result.append("<td class=\"intfdcolor4\">&nbsp;</td>");
             }
           } else {
-            result.append("<TD class=\"intfdcolor51\">&nbsp;</TD>");
+            result.append("<td class=\"intfdcolor51\">&nbsp;</td>");
           }
         } else {
           String color = "intfdcolor2";
@@ -824,21 +824,21 @@ public class AgendaHtmlView {
               }
               if (isOtherAgenda && schedule.getClassification().isPrivate()) {
                 if (starting.size() == 1) {
-                  tmpResult.append(schedule.getStartHour()).append("<BR>");
+                  tmpResult.append(schedule.getStartHour()).append("<br/>");
                 }
                 color = "privateEvent";
               } else {
                 if (isOtherAgenda) {
                   color = "publicEvent";
                 }
-                tmpResult.append("<A HREF=\"javascript:onClick=viewJournal('").append(
+                tmpResult.append("<a href=\"javascript:onClick=viewJournal('").append(
                     schedule.getId()).append("')\"");
                 tmpResult.append(getInfoBulle(schedule));
                 if (starting.size() == 1) {
-                  tmpResult.append(schedule.getStartHour()).append("<BR>");
+                  tmpResult.append(schedule.getStartHour()).append("<br/>");
                 }
                 tmpResult.append(EncodeHelper.javaStringToHtmlString(schedule.getName())).append(
-                    "</A>");
+                    "</a>");
               }
 
             } else if (startObj instanceof SchedulableGroup) {
@@ -857,21 +857,21 @@ public class AgendaHtmlView {
                     color = "publicEvent";
                   }
 
-                  tmpResult.append("<A HREF=\"javascript:onClick=viewJournal('").append(
+                  tmpResult.append("<a href=\"javascript:onClick=viewJournal('").append(
                       schedule.getId()).append("')\"");
                   tmpResult.append(getInfoBulle(schedule));
                   tmpResult.append(EncodeHelper.javaStringToHtmlString(schedule.getName())).append(
-                      "</A>\n");
+                      "</a>\n");
                 }
 
                 if (k + 1 < group.getContent().size()) {
-                  tmpResult.append("<BR>");
+                  tmpResult.append("<br/>");
                 }
               }
             }
 
             if (m + 1 < starting.size()) {
-              tmpResult.append("<BR>");
+              tmpResult.append("<br/>");
             }
           }
           maxRowSpan = ((maxRowSpan + 3) >> 2);
@@ -882,20 +882,20 @@ public class AgendaHtmlView {
           if ((nextStarting.size() > 0) && (maxRowSpan > 1)) {
             maxRowSpan--;
           }
-          result.append("<TD class=\"").append(color).append("\" rowspan=\"").append(maxRowSpan)
+          result.append("<td class=\"").append(color).append("\" rowspan=\"").append(maxRowSpan)
               .append("\">");
           result.append(tmpResult);
-          result.append("</TD>");
+          result.append("</td>");
         }
       }
-      result.append("  </TR>\n");
+      result.append("  </tr>\n");
     }
 
     // redisplay the date
-    result.append("  <TR bgcolor=\"#ffffff\" nowrap>\n");
+    result.append("  <tr bgcolor=\"#ffffff\">\n");
     result
-        .append("    <td rowspan=\"2\" align=\"right\" valign=\"bottom\"> <img src=\"icons/1px.gif\"><br>");
-    result.append("</TD>\n");
+        .append("    <td rowspan=\"2\" align=\"right\" valign=\"bottom\"> <img src=\"icons/1px.gif\" alt=\"\"/><br/>");
+    result.append("</td>\n");
 
     try {
       day.setTime(DateUtil.parse(firstDay));
@@ -908,7 +908,7 @@ public class AgendaHtmlView {
     }
 
     for (int i = 0; i < WEEKDAYNUMBER; i++) {
-      result.append("    <TD valign=\"bottom\" width=\"14%\" align=\"center\">");
+      result.append("    <td valign=\"bottom\" width=\"14%\" align=\"center\">");
       if (agendaSessionController.isHolidayDate(day.getTime())) {
         result.append("<span ");
         result.append(dayOffStyle).append(">").append(
@@ -917,24 +917,24 @@ public class AgendaHtmlView {
         result.append(" ").append(day.get(Calendar.DAY_OF_MONTH));
         result.append("</span>");
       } else {
-        result.append("<A HREF=\"javascript:onClick=selectDay('").append(
+        result.append("<a href=\"javascript:onClick=selectDay('").append(
             DateUtil.getInputDate(day.getTime(), agendaSessionController.getLanguage())).append(
             "')\">");
         result.append(agendaSessionController.getString(
             "jour" + day.get(Calendar.DAY_OF_WEEK)).substring(0, 3));
         result.append(" ").append(day.get(Calendar.DAY_OF_MONTH));
-        result.append("</A>");
+        result.append("</a>");
         dayList[i] = new SchedulableList(DateUtil.date2SQLDate(day.getTime()),
             schedules);
       }
-      result.append("</TD>\n");
+      result.append("</td>\n");
       day.add(Calendar.DATE, 1);
     }
-    result.append("  </TR>\n");
-    result.append("</TABLE>");
-    result.append("</TD>");
-    result.append("</TR>\n");
-    result.append("</TABLE>");
+    result.append("  </tr>\n");
+    result.append("</table>");
+    result.append("</td>");
+    result.append("</tr>\n");
+    result.append("</table>");
     return result.toString();
   }
 

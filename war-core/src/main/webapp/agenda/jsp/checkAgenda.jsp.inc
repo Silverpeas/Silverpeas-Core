@@ -26,12 +26,6 @@
 <%!
 String m_context         	= GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
-// JavaScript
-String javaScriptSrc 		= m_context + "/util/javaScript/animation.js";
-
-// Body
-String bodyMarginSrc        = "marginwidth=5 marginheight=5 topmargin=5 leftmargin=5";
-
 // Icones operationBar
 String agendaAddSrc         = m_context + "/util/icons/agenda_to_add.gif";
 String agendaDelSrc         = m_context + "/util/icons/agenda_to_del.gif";
@@ -48,7 +42,7 @@ String synchroIcalSrc	= "icons/synchroIcal.gif";
 // Pixels
 String orangePix            = m_context + "/util/icons/colorPix/orange.gif";
 String noColorPix           = m_context + "/util/icons/colorPix/1px.gif";
-String separator            = "<TABLE CELLPADDING=2 CELLSPACING=0 BORDER=0><TR><TD><img src="+noColorPix+"></TD></TR></TABLE>";
+String separator            = "<table cellpadding=\"2\" cellspacing=\"0\" border=\"0\"><tr><td><img src=\""+noColorPix+"\" alt=\"\"/></td></tr></table>";
 
 // Divers
 String btOk                 = m_context + "/util/icons/almanach_ok.gif";

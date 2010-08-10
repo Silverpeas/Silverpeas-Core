@@ -60,18 +60,19 @@
   	}
 %>
 
-<HTML>
-<HEAD>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
 <%
 out.println(graphicFactory.getLookStyleSheet());
 %>
-<SCRIPT LANGUAGE="JAVASCRIPT" SRC="<%=javaScriptSrc%>"></SCRIPT>
-
-<TITLE></TITLE>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<Script language="JavaScript">
+<script type="text/javascript">
 var dayWin = window ;
 var freeBusyWin = window ;
 var diffusion = window ;
@@ -261,7 +262,7 @@ function editDay(nameElem)
 {
 		if (dayWin == "calendrier_agenda")
 			dayWin.close();
-		dayWin = window.SP_openWindow('calendar.jsp?indiceForm=0&nameElem='+nameElem,'calendrier_agenda', 200, 200,'alwaysRaised');
+		dayWin = window.SP_openWindow('calendar.jsp?indiceForm=0&amp;nameElem='+nameElem,'calendrier_agenda', 200, 200,'alwaysRaised');
 }
 
 function viewFreeBusyTime(formIndex)
@@ -270,7 +271,7 @@ function viewFreeBusyTime(formIndex)
 			freeBusyWin.close();
     var date = document.journalForm.elements[formIndex].value;
     if ((date != null) && (date.length > 0 )) {
-	    freeBusyWin = window.SP_openWindow('busyTime.jsp?Form=' + formIndex + '&Date=' + date, 'Free_Busy_Win',800, 220,'alwaysRaised,scrollbars=yes,resizable');
+	    freeBusyWin = window.SP_openWindow('busyTime.jsp?Form=' + formIndex + '&amp;Date=' + date, 'Free_Busy_Win',800, 220,'alwaysRaised,scrollbars=yes,resizable');
     } else {
 	    freeBusyWin = window.SP_openWindow('busyTime.jsp?Form=' + formIndex, 'Free_Busy_Win',800, 220,'alwaysRaised,scrollbars=yes,resizable');
     }
@@ -311,7 +312,7 @@ function setBeginDateAndHour(date, hour, minutes)
 }
 
 </script>
-</HEAD>
+</head>
 
 <%
 
@@ -446,7 +447,7 @@ function setBeginDateAndHour(date, hour, minutes)
             autoFocus = false;
 	    	%>
 	   
-			<Script language="JavaScript">
+			<script type="text/javascript">
 				SP_openWindow('diffusion.jsp','diffusion','750','550','scrollbars=yes, resizable, alwaysRaised');
 			</Script>
 			<%  
@@ -456,7 +457,7 @@ function setBeginDateAndHour(date, hour, minutes)
 	      action = "View";
 	      autoFocus = false;
 	      %>
-	      <Script language="JavaScript">
+	      <script type="text/javascript">
 	           window.SP_openWindow('category.jsp','category',500, 320,'alwaysRaised,scrollbars=yes,resizable')
 	      </Script>
 	      <%  
@@ -541,8 +542,8 @@ function setBeginDateAndHour(date, hour, minutes)
 			}
 			agenda.setJournalAttendees(journalId, selectedUsers);
 			agenda.setJournalCategories(journalId, selectedCategories);
-			out.println("<BODY onLoad=gotoAgenda()>");
-			out.println("</BODY>");
+			out.println("<body onLoad=gotoAgenda()>");
+			out.println("</body>");
 			out.println("</html>");
 			return;
     }
@@ -556,8 +557,8 @@ function setBeginDateAndHour(date, hour, minutes)
   else if (action.equals("ReallyRemove")) {
     journalId = request.getParameter("JournalId");
     agenda.removeJournal(journalId);
-    out.println("<BODY BGCOLOR=FFFFFF MARGINWIDTH=5 MARGINHEIGHT=5 LEFTMARGIN=5 TOPMARGIN=5 onLoad=gotoAgenda()>");
-    out.println("</BODY>");
+    out.println("<body BGCOLOR=FFFFFF MARGINWIDTH=5 MARGINHEIGHT=5 LEFTMARGIN=5 TOPMARGIN=5 onLoad=gotoAgenda()>");
+    out.println("</body>");
     out.println("</html>");
     return;
   }
@@ -576,23 +577,23 @@ function setBeginDateAndHour(date, hour, minutes)
 if (autoFocus && !readOnly)
 {
 %>
-<BODY id="agenda" onLoad="document.forms[0].Name.focus();">
+<body id="agenda" onload="document.forms[0].Name.focus();">
 <%
 }
 else
 {
 %>
-<BODY id="agenda">
+<body id="agenda">
 <%
 }
 %>
 
-<FORM NAME="journalForm" action="journal.jsp" METHOD=POST>
-      <input type="hidden" name="Action">
-      <input type="hidden" name="UserId">
-      <input type="hidden" name="Status">
-      <input type="hidden" name="selectedCategories">
-      <input type="hidden" name="JournalId" <%if (journal.getId() != null) out.println("VALUE=\""+journal.getId()+"\"");%>>
+<form name="journalForm" action="journal.jsp" method="post">
+      <input type="hidden" name="Action"/>
+      <input type="hidden" name="UserId"/>
+      <input type="hidden" name="Status"/>
+      <input type="hidden" name="selectedCategories"/>
+      <input type="hidden" name="JournalId" <%if (journal.getId() != null) out.println("value=\""+journal.getId()+"\"");%>/>
     
     <!-- Barre de titre du composant -->
 
@@ -631,9 +632,9 @@ else
     out.println(board.printBefore());
 
 %>
-<TABLE width="98%" cellspacing="0" cellpadding="0" border="0">
-  <TR> 
-    <TD valign="top" width="100%">
+<table width="98%" cellspacing="0" cellpadding="0" border="0">
+  <tr> 
+    <td valign="top" width="100%">
     
 <%
   if (toPrint != null) {
@@ -666,11 +667,11 @@ else
           </tr>
 		  <tr>
             <td class="txtlibform"><%= agenda.getString("nomNote") %> :</td>
-			<td><input type="text" name="Name" size="62" maxlength="<%=DBUtil.TextFieldLength%>" <% if (journal.getName() != null) out.println("VALUE=\""+Encode.javaStringToHtmlString(journal.getName())+"\"");%> <% if (readOnly) out.print("disabled");%>>&nbsp;<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5" align="absmiddle"></td>
+			<td><input type="text" name="Name" size="62" maxlength="<%=DBUtil.TextFieldLength%>" <% if (journal.getName() != null) out.println("value=\""+Encode.javaStringToHtmlString(journal.getName())+"\"");%> <% if (readOnly) out.print("disabled");%>/>&nbsp;<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5" align="top" alt=""/></td>
           </tr>
 		  <tr>
             <td class="txtlibform"><%=agenda.getString("descriptionNote")%> :</td>
-	        <td><textarea name="Description" wrap="VIRTUAL" rows="6" cols="60"  <% if (readOnly) out.print("disabled");%>><%if (journal.getDescription() != null) out.println(Encode.javaStringToHtmlString(journal.getDescription()));%></textarea></td>
+	        <td><textarea name="Description" rows="6" cols="60"  <% if (readOnly) out.print("disabled=\"disabled\"");%>><%if (journal.getDescription() != null) out.println(Encode.javaStringToHtmlString(journal.getDescription()));%></textarea></td>
           </tr>
 		  <tr>
 		    <!-- affichage de la date de d�but de note -->
@@ -678,12 +679,12 @@ else
 			<td><input type="text" name="StartDate" id="StartDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" <%
                 if (journal != null) 
                   if (journal.getStartDate() != null)
-                    out.println("VALUE=\""+resources.getInputDate(journal.getStartDate())+"\"");%> <% if (readOnly) out.print("disabled");%>>&nbsp;<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5" align=absmiddle>&nbsp;<a href="javascript:onClick=editDay('StartDate')"><img src="icons/calendrier.gif" border="0" alt="<%=agenda.getString("afficherCalendrier")%>" align=absmiddle title="<%=agenda.getString("afficherCalendrier")%>"></a> <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)
+                    out.println("value=\""+resources.getInputDate(journal.getStartDate())+"\"");%> <% if (readOnly) out.print("disabled=\"disabled\"");%>/>&nbsp;<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5" align="bottom" alt=""/>&nbsp;<a href="javascript:onClick=editDay('StartDate')"><img src="icons/calendrier.gif" border="0" alt="<%=agenda.getString("afficherCalendrier")%>" align="top" title="<%=agenda.getString("afficherCalendrier")%>"/></a> <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
 			</td>
 		  </tr>
 		  <tr>
 			<td class="txtlibform"><%=agenda.getString("heureDebutNote")%> :</td>
-			<td><SELECT name="StartHour" id="StartHour" onChange="javascript:hourModified();"  <% if (readOnly) out.print("disabled");%>>
+			<td><select name="StartHour" id="StartHour" onchange="javascript:hourModified();"  <% if (readOnly) out.print("disabled=\"disabled\"");%>>
               <%
               		boolean readOnlyMinute = false;
                 int beginHour = new Integer(settings.getString("beginHour")).intValue();
@@ -705,14 +706,14 @@ else
 						              }
 						            }
                   if (selected)
-                    out.println("<OPTION value='"+s+"' SELECTED>" + s);
+                    out.println("<option value='"+s+"' selected=\"selected\">" + s+"</option>");
                   else
-                    out.println("<OPTION value='"+s+"'>" + s);
+                    out.println("<option value='"+s+"'>" + s+"</option>");
                 }
               %>
-              </SELECT>
+              </select>
               :
-              <SELECT name="StartMinute" id="StartMinute" onChange="javascript:hourModified();"  <% if (readOnly || readOnlyMinute) out.print("disabled");%>>
+              <select name="StartMinute" id="StartMinute" onchange="javascript:hourModified();"  <% if (readOnly || readOnlyMinute) out.print("disabled=\"disabled\"");%>>
               <%
                 for (int i = 0; i < 4; i++) {
                   String s = String.valueOf(i * 15);
@@ -723,12 +724,12 @@ else
                       if (journal.getStartHour().endsWith(s))
                         selected = true;
                   if (selected)
-                    out.println("<OPTION value='"+s+"' SELECTED>" + s);
+                    out.println("<option value='"+s+"' selected=\"selected\">" + s+"</option>");
                   else
-                    out.println("<OPTION value='"+s+"'>" + s);
+                    out.println("<option value='"+s+"'>" + s+"</option>");
                 }
               %>
-              </SELECT></td>
+              </select></td>
 		  </tr>
 		  <tr>
 			<td class="txtlibform"><%=agenda.getString("dateFinNote")%> :</td>
@@ -736,15 +737,15 @@ else
                 if (journal != null) {
                   if (journal.getEndDay() != null) {
                     if (journal.getStartDay() == null)
-                      out.println("VALUE=\""+resources.getInputDate(journal.getEndDate())+"\"");
+                      out.println("value=\""+resources.getInputDate(journal.getEndDate())+"\"");
                     else if (! journal.getEndDay().equals(journal.getStartDay()))
-                      out.println("VALUE=\""+resources.getInputDate(journal.getEndDate())+"\"");
+                      out.println("value=\""+resources.getInputDate(journal.getEndDate())+"\"");
                   }
-                } %> <% if (readOnly) out.print("disabled");%>>&nbsp;<a href="javascript:onClick=editDay('EndDate')"><img src="icons/calendrier.gif" width="13" height="15" border="0" alt="<%=agenda.getString("afficherCalendrier")%>" align=absmiddle title="<%=agenda.getString("afficherCalendrier")%>"></a> <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</td>
+                } %> <% if (readOnly) out.print("disabled=\"disabled\"");%>/>&nbsp;<a href="javascript:onClick=editDay('EndDate')"><img src="icons/calendrier.gif" width="13" height="15" border="0" alt="<%=agenda.getString("afficherCalendrier")%>" align="top" title="<%=agenda.getString("afficherCalendrier")%>"/></a> <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span></td>
 		  </tr>
 		  <tr>
 			<td class="txtlibform"><%=agenda.getString("heureFinNote")%> :</td>
-			<td><SELECT name="EndHour" onChange="javascript:hourModified();" <% if (readOnly) out.print("disabled");%>>
+			<td><select name="EndHour" onchange="javascript:hourModified();" <% if (readOnly) out.print("disabled=\"disabled\"");%>>
               <%
                 for (int i = beginHour; i <= endHour; i++) {
                   String s = String.valueOf(i);
@@ -763,14 +764,14 @@ else
                   		}
                   }
                   if (selected)
-                    out.println("<OPTION value='"+s+"' SELECTED>" + s);
+                    out.println("<option value='"+s+"' selected=\"selected\">" + s+"</option>");
                   else
-                    out.println("<OPTION value='"+s+"'>" + s);
+                    out.println("<option value='"+s+"'>" + s+"</option>");
                 }
               %>
-              </SELECT>
+              </select>
               :
-              <SELECT name="EndMinute" onChange="javascript:hourModified();" <% if (readOnly || readOnlyMinute) out.print("disabled");%>>
+              <select name="EndMinute" onchange="javascript:hourModified();" <% if (readOnly || readOnlyMinute) out.print("disabled=\"disabled\"");%>>
               <%
                 for (int i = 0; i < 4; i++) {
                   String s = String.valueOf(i * 15);
@@ -781,26 +782,26 @@ else
                       if (journal.getEndHour().endsWith(s))
                         selected = true;
                   if (selected)
-                    out.println("<OPTION value='"+s+"' SELECTED>" + s);
+                    out.println("<option value='"+s+"' selected=\"selected\">" + s+"</option>");
                   else
-                    out.println("<OPTION value='"+s+"'>" + s);
+                    out.println("<option value='"+s+"'>" + s+"</option>");
                 }
               %>
-              </SELECT></td>
+              </select></td>
 		  </tr>
 		  <tr>
 			<td class="txtlibform"><%=agenda.getString("sansHoraireSpecifique")%> :</td>
 			<td><input type="checkbox" name="CompleteDay" 
               <%
                 if (journal.getStartHour() == null && journal.getEndHour() == null) 
-              		out.println("CHECKED");
+              		out.println("checked=\"checked\"");
               	if (readOnly) 
-              		out.print("disabled");%>>
+              		out.print("disabled=\"disabled\"");%>/>
 			</td>
 		  </tr>
 	      <tr>
 			<td class="txtlibform"><%=agenda.getString("classification")%> :</td>
-			<td><SELECT name="Classification" <% if (readOnly) out.print("disabled");%>>
+			<td><select name="Classification" <% if (readOnly) out.print("disabled=\"disabled\"");%>>
               <%
                 String[] classifications = Classification.getAllClassificationsWithoutConfidential();
                 for (int i = 0; i < classifications.length; i++) {
@@ -809,16 +810,16 @@ else
                     if (journal.getClassification().getString().equals(classifications[i]))
                       selected = true;
                   if (selected)
-                    out.println("<OPTION SELECTED VALUE=\"" + classifications[i] +"\">" + agenda.getString(classifications[i]));
+                    out.println("<option selected=\"selected\" value=\"" + classifications[i] +"\">" + agenda.getString(classifications[i])+"</option>");
                   else
-                    out.println("<OPTION VALUE=\"" + classifications[i] +"\">" + agenda.getString(classifications[i]));
+                    out.println("<option value=\"" + classifications[i] +"\">" + agenda.getString(classifications[i])+"</option>");
                 }
               %>
-              </SELECT></td>
+              </select></td>
 		  </tr>
 		  <tr>
 			<td class="txtlibform"><%=agenda.getString("priorite")%> :</td>
-			<td><SELECT name="Priority" <% if (readOnly) out.print("disabled");%>>
+			<td><select name="Priority" <% if (readOnly) out.print("disabled=\"disabled\"");%>>
               <%
                 int[] priorities = Priority.getAllPriorities();
                 for (int i = 0; i < priorities.length; i++) {
@@ -827,15 +828,15 @@ else
                     if (journal.getPriority().getValue() == priorities[i])
                       selected = true;
                   if (selected)
-                    out.println("<OPTION SELECTED VALUE=\"" + priorities[i] +"\">" + agenda.getString("priorite" + priorities[i]));
+                    out.println("<option selected=\"selected\" value=\"" + priorities[i] +"\">" + agenda.getString("priorite" + priorities[i])+"</option>");
                   else
-                    out.println("<OPTION VALUE=\"" + priorities[i] +"\">" + agenda.getString("priorite" +priorities[i]));
+                    out.println("<option value=\"" + priorities[i] +"\">" + agenda.getString("priorite" +priorities[i])+"</option>");
                 }
               %>
-              </SELECT></td>
+              </select></td>
 		  </tr>
           <tr>
-			<td class="txtlibform" nowrap>
+			<td class="txtlibform" nowrap="nowrap">
               <%=agenda.getString("listeDiffusion")%> :
             </td>
 			<td>
@@ -848,41 +849,43 @@ else
 	            }
 				else
 				{
-					out.println("<TABLE width=\"100%\" cellspacing=\"1\" border=\"0\" cellpadding=\"1\">");
+					out.println("<table width=\"100%\" cellspacing=\"1\" border=\"0\" cellpadding=\"1\">");
                       
                     Iterator i = attendees.iterator();
                     while (i.hasNext()) 
                     {
-                    	out.println("<TR><TD NOWRAP>");
+                    	out.println("<tr><td nowrap=\"nowrap\">");
                         Attendee attendee = (Attendee) i.next();
                         UserDetail user = agenda.getUserDetail(attendee.getUserId());
-                        out.print("<img src=\"icons/pixel_CCCCCC.gif\" width=\"5\" height=\"5\">");
+                        out.print("<img src=\"icons/pixel_CCCCCC.gif\" width=\"5\" height=\"5\" alt=\"\"/>");
                         if (user != null)
                         	out.print("&nbsp;"+user.getDisplayedName()+"&nbsp;"); 
                         else
                            out.println(agenda.getString("utilisateurInconnu"));
-                        out.println("</TD><TD width=\"100%\">");
+                        out.println("</td><td width=\"100%\">");
                         if (attendee.getUserId().equals(agenda.getUserId()) && journal.getId() != null)
                         {
-                           out.println("<select name=\"ParticipationStatus\" onChange=\"javascript:setParticipationStatus('"+
+                           out.println("<select name=\"ParticipationStatus\" onchange=\"javascript:setParticipationStatus('"+
                               journal.getId() + "', '" + attendee.getUserId()+"', document.journalForm.ParticipationStatus.value);\">");
                            String[] all = ParticipationStatus.getJournalParticipationStatus();
                            for (int iP = 0; iP < all.length; iP++) 
                            {
-                           	 out.print("<OPTION VALUE=\""+all[iP]+"\"");
-                             if (all[iP].equals(attendee.getParticipationStatus().getString()))
-                               out.print(" SELECTED");
-                             out.println(">" + agenda.getString(all[iP]));
+                           	 out.print("<option value=\""+all[iP]+"\"");
+                             if (all[iP].equals(attendee.getParticipationStatus().getString())) {
+                               out.print(" selected=\"selected\"");
+                             }
+                             out.print(">" + agenda.getString(all[iP]));
+                             out.println("</option>");
                            }
-                           out.println("</SELECT>");
+                           out.println("</select>");
                          }
                          else
                          {
                            	out.print(agenda.getString(attendee.getParticipationStatus().getString()));
                          }
-                         out.println("</TD></TR>");
+                         out.println("</td></tr>");
                     }
-                    out.println("</TABLE>");
+                    out.println("</table>");
             	}
 			}
 			%>
@@ -901,7 +904,7 @@ else
 	                      Iterator i = categories.iterator();
 	                      while (i.hasNext()) {
 	                        Category category = (Category) i.next();
-							out.print(category.getName() + "</BR>");
+							out.print(category.getName() + "<br/>");
 	                      }
                       }
                     }
@@ -909,8 +912,8 @@ else
 			 </td>
 			 </tr>
 		<tr>
-	  	  <td colspan="2" nowrap>
-	    	<span class="txtlnote">(<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5"/>&nbsp;:&nbsp;<%=generalMessage.getString("GML.requiredField")%>) <img src="icons/1px.gif" width="20" height="1"></span> 
+	  	  <td colspan="2" nowrap="nowrap">
+	    	<span class="txtlnote">(<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5" alt="<%=generalMessage.getString("GML.requiredField")%>"/>&nbsp;:&nbsp;<%=generalMessage.getString("GML.requiredField")%>) <img src="icons/1px.gif" width="20" height="1" alt=""/></span> 
           </td>
         </tr>
         </table>
@@ -921,9 +924,9 @@ else
   	out.println("Erreur : Action inconnu = '"+ action+"'");
 %>
 
-  </TD>
-  </TR>
- </TABLE>
+  </td>
+  </tr>
+ </table>
 <%
 		out.println(board.printAfter());
   
@@ -950,8 +953,8 @@ else
 		out.println(frame.printAfter());
 	    out.println(window.printAfter());
 %>
-	<input type="hidden" name="WithoutHour" value="false">
-</FORM>
+	<input type="hidden" name="WithoutHour" value="false"/>
+</form>
 
-</BODY>
-</HTML>
+</body>
+</html>

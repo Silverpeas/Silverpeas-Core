@@ -41,24 +41,25 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	boolean doSynchroNotes = ( doSynchro && (importSettings.getSynchroType() == CalendarImportSettings.TYPE_NOTES_IMPORT) );
 	boolean doSynchroOutlook = ( doSynchro && (importSettings.getSynchroType() == CalendarImportSettings.TYPE_OUTLOOK_IMPORT) );
 %>
-<HTML>
-<HEAD>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
 <% if ( doSynchro ) {%>
-	<meta http-equiv="refresh" content="<%=importSettings.getSynchroDelay() * 60%>; URL=<%=m_context + "/Ragenda/jsp/importCalendar"%>">
+	<meta http-equiv="refresh" content="<%=importSettings.getSynchroDelay() * 60%>; URL=<%=m_context + "/Ragenda/jsp/importCalendar"%>"/>
 <% } %>
-<TITLE></TITLE>
-</HEAD>
+<title></title>
+</head>
 
-<BODY id="agenda">
-
+<body id="agenda">
 <%
 	if ( doSynchroOutlook ) {%>
 
-    	<APPLET Code="com.silverpeas.importCalendar.importOutlook.AppletImportEvents.class" Archive="<%=request.getScheme()%>://<%=request.getServerName()%>:<%=request.getServerPort()%>/weblib/applets/importOutlook.jar" Width=1 Height=1>
-    		<param name="SESSIONID" value="<%=session.getId()%>">
-    		<param name="SERVLETURL" value="<%=request.getScheme()%>://<%=request.getServerName()%>:<%=request.getServerPort()+m_context%>/ImportCalendar/">
+    	<applet code="com.silverpeas.importCalendar.importOutlook.AppletImportEvents.class" archive="<%=request.getScheme()%>://<%=request.getServerName()%>:<%=request.getServerPort()%>/weblib/applets/importOutlook.jar" width="1" height="1">
+    		<param name="SESSIONID" value="<%=session.getId()%>"/>
+    		<param name="SERVLETURL" value="<%=request.getScheme()%>://<%=request.getServerName()%>:<%=request.getServerPort()+m_context%>/ImportCalendar/"/>
 			Votre navigateur ne supporte pas les applets.
-        </APPLET>
+        </applet>
 <% } %>
-</BODY>
-</HTML>
+</body>
+</html>

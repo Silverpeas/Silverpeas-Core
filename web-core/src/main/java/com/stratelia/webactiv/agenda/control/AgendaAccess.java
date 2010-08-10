@@ -30,6 +30,7 @@ import java.util.Date;
 
 import com.stratelia.webactiv.calendar.control.CalendarBm;
 import com.stratelia.webactiv.calendar.control.CalendarBmHome;
+import com.stratelia.webactiv.calendar.model.JournalHeader;
 import com.stratelia.webactiv.calendar.model.ParticipationStatus;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -130,7 +131,7 @@ public class AgendaAccess {
     return currentCalendar.getTime();
   }
 
-  static public Collection getDaySchedulables(String userId)
+  static public Collection<JournalHeader> getDaySchedulables(String userId)
       throws AgendaException {
     try {
       return getEJB().getDaySchedulablesForUser(
@@ -143,7 +144,7 @@ public class AgendaAccess {
     }
   }
 
-  static public Collection getNextDaySchedulables(String userId)
+  static public Collection<JournalHeader> getNextDaySchedulables(String userId)
       throws AgendaException {
     try {
       return getEJB().getNextDaySchedulablesForUser(
@@ -156,13 +157,12 @@ public class AgendaAccess {
     }
   }
 
-  static public Collection getJournalHeadersForUserAfterDate(
+  static public Collection<JournalHeader> getJournalHeadersForUserAfterDate(
       String userIdAgenda, java.util.Date startDate, int nbReturned)
       throws AgendaException {
     try {
-      Collection events = getEJB().getJournalHeadersForUserAfterDate(
+      return getEJB().getJournalHeadersForUserAfterDate(
           userIdAgenda, startDate, nbReturned);
-      return events;
     } catch (Exception e) {
       throw new AgendaException(
           "AgendaAccess.getJournalHeadersForUserAfterDate()",

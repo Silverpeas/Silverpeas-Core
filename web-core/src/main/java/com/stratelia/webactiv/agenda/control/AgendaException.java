@@ -28,6 +28,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class AgendaException extends SilverpeasException {
 
+  private static final long serialVersionUID = 1L;
+
   public AgendaException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }

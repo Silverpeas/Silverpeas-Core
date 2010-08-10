@@ -49,7 +49,7 @@
 	{
 		synchroDone = true;
 		%>
-		<script language="javascript">
+		<script type="text/javascript">
 				window.opener.location.href = "<%=agenda.getCurrentViewType()%>";
 		</script>
 		<%
@@ -64,22 +64,24 @@
 	}
 %>
 
-<HTML>
-<HEAD>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
 <%
 out.println(graphicFactory.getLookStyleSheet());
 %>
-<TITLE></TITLE>
-<link href="<%=m_context%>/util/styleSheets/modal-message.css" rel="stylesheet"  type="text/css">
+<link href="<%=m_context%>/util/styleSheets/modal-message.css" rel="stylesheet"  type="text/css"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/modal-message.js"></script>
-<Script language="JavaScript">
+<script type="text/javascript">
 		messageObj = new DHTML_modalMessage();	// We only create one object of this class
 		messageObj.setShadowOffset(5);	// Large shadow
 
 		function displayStaticMessage()
 		{
-			messageObj.setHtmlContent("<center><table border=0><tr><td align=\"center\"><br><b><%=resources.getString("agenda.SynchroInProgress")%></b></td></tr><tr><td><br/></td></tr><tr><td align=\"center\"><img src=\"<%=m_context%>/util/icons/inProgress.gif\"/></td></tr></table></center>");
+			messageObj.setHtmlContent("<center><table border=\"0\"><tr><td align=\"center\"><br/><b><%=resources.getString("agenda.SynchroInProgress")%></b></td></tr><tr><td><br/></td></tr><tr><td align=\"center\"><img src=\"<%=m_context%>/util/icons/inProgress.gif\"/></td></tr></table></center>");
 			messageObj.setSize(200,150);
 			messageObj.setCssClassMessageBox(false);
 			messageObj.setShadowDivVisible(true);	// Disable shadow for these boxes
@@ -101,9 +103,8 @@ out.println(graphicFactory.getLookStyleSheet());
 		}
 		
 </script>
-</HEAD>
-	  
-<BODY id="agenda">
+</head>
+<body id="agenda">
 <%
 	Window window = graphicFactory.getWindow();
 
@@ -116,8 +117,7 @@ out.println(graphicFactory.getLookStyleSheet());
   out.println(frame.printBefore());
   out.println(board.printBefore());
 %>
-<CENTER>
-<form name="synchroIcalForm" action="SynchroIcal" METHOD="POST">
+<form name="synchroIcalForm" action="SynchroIcal" method="post">
 <% if (synchroDone) { %>
              <table width="100%" cellpadding="5" cellspacing="2" border="0">
 					      <tr>
@@ -133,8 +133,8 @@ out.println(graphicFactory.getLookStyleSheet());
 						      	<span class="txtlibform"><%=resources.getString("agenda.SynchroRemoteUrl")%></span>
 						      </td>
 						      <td>
-						      	<input maxlength="200" size="80" type="text" name="UrlIcalendar" value="<%=urlIcalendar%>">
-										<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5" align=absmiddle>
+						      	<input maxlength="200" size="80" type="text" name="UrlIcalendar" value="<%=urlIcalendar%>"/>
+								<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5" align="top" alt=""/>
 						      </td>
 						    </tr>
 					      <tr>
@@ -142,7 +142,7 @@ out.println(graphicFactory.getLookStyleSheet());
 						      	<span class="txtlibform"><%=resources.getString("agenda.SynchroRemoteLogin")%></span>
 						      </td>
 						      <td>
-						      	<input maxlength="50" size="50" type="text" name="LoginIcalendar" value="<%=loginIcalendar%>">
+						      	<input maxlength="50" size="50" type="text" name="LoginIcalendar" value="<%=loginIcalendar%>"/>
 						      </td>
 						    </tr>
 					      <tr>
@@ -150,7 +150,7 @@ out.println(graphicFactory.getLookStyleSheet());
 						      	<span class="txtlibform"><%=resources.getString("agenda.SynchroRemotePwd")%></span>
 						      </td>
 						      <td>
-						      	<input maxlength="50" size="50" type="password" name="PwdIcalendar" value="<%=pwdIcalendar%>">
+						      	<input maxlength="50" size="50" type="password" name="PwdIcalendar" value="<%=pwdIcalendar%>"/>
 						      </td>
 						    </tr>
 					      <tr>
@@ -159,15 +159,15 @@ out.println(graphicFactory.getLookStyleSheet());
 						      </td>
 						      <td>
 						      	<select name="Charset">
-						      		<option value="ISO-8859-1">ISO-8859-1
-						      		<option value="UTF-8">UTF-8
-						      		<option value="US-ASCII">US-ASCII
+						      		<option value="ISO-8859-1">ISO-8859-1</option>
+						      		<option value="UTF-8">UTF-8</option>
+						      		<option value="US-ASCII">US-ASCII</option>
 						      	</select>
 						      </td>
 						    </tr>
 								<tr>
-			            <td colspan="2" nowrap>
-								    <span class="txtlnote">(<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5">&nbsp;:&nbsp;<%=resources.getString("GML.requiredField")%>) <img src="icons/1px.gif" width="20" height="1"></span> 
+			            <td colspan="2" nowrap="nowrap">
+								    <span class="txtlnote">(<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5" alt=""/>&nbsp;:&nbsp;<%=resources.getString("GML.requiredField")%>) <img src="icons/1px.gif" width="20" height="1" alt=""/></span> 
             			</td>
 			         </tr>
 						 </table>
@@ -184,12 +184,8 @@ out.println(graphicFactory.getLookStyleSheet());
 	Button buttonClose = graphicFactory.getFormButton(resources.getString("GML.close"), "javascript:window.close();", false);
 	buttonPane.addButton(buttonClose);
 	out.print("<br/><center>"+buttonPane.print()+"</center>");
-
-%>
-</CENTER>
-<%
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

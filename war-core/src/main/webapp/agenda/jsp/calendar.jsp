@@ -84,13 +84,15 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 	ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(agenda.getLanguage());
 %>
-<HTML>
-<HEAD>
-<TITLE><%=generalMessage.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=generalMessage.getString("GML.popupTitle")%></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
-<Script language="JavaScript">
+<script type="text/javascript">
 function selectDay(day) 
 {
   var indiceF = "<%=form%>";
@@ -143,8 +145,8 @@ function MM_swapImage() { //v3.0
 }
 
 </script>
-</HEAD>
-<BODY id="agenda">
+</head>
+<body id="agenda">
 <%
 	out.println(board.printBefore());
 %>
@@ -181,14 +183,14 @@ function MM_swapImage() { //v3.0
   out.println(button.print());
 %>
 </center>
-<FORM NAME="calendarForm" ACTION="<%=m_context+URLManager.getURL(URLManager.CMP_AGENDA)%>calendar.jsp" METHOD="POST">
-  <input type="hidden" name="Action">
-  <input type="hidden" name="indiceForm" value="<%=form%>">
-  <input type="hidden" name="indiceElem" value="<%=elem%>">
-  <input type="hidden" name="nameElem" value="<%=nameElem%>">
-  <input type="hidden" name="idElem" value="<%=idElem%>">
-  <input type="hidden" name="JSCallback" value="<%=jsFunction%>">
-</FORM>
+<form name="calendarForm" action="<%=m_context+URLManager.getURL(URLManager.CMP_AGENDA)%>calendar.jsp" method="post">
+  <input type="hidden" name="Action"/>
+  <input type="hidden" name="indiceForm" value="<%=form%>"/>
+  <input type="hidden" name="indiceElem" value="<%=elem%>"/>
+  <input type="hidden" name="nameElem" value="<%=nameElem%>"/>
+  <input type="hidden" name="idElem" value="<%=idElem%>"/>
+  <input type="hidden" name="JSCallback" value="<%=jsFunction%>"/>
+</form>
 </div>
-</BODY>
-</HTML>
+</body>
+</html>

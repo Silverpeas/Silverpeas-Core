@@ -44,6 +44,8 @@ import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 public class SubscribeAgenda extends HttpServlet {
+  
+  private static final long serialVersionUID = -7864790793422182001L;
   HttpSession session;
   PrintWriter out;
 

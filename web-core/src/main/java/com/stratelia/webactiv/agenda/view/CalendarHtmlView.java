@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
-
 package com.stratelia.webactiv.agenda.view;
 
 import java.rmi.RemoteException;
@@ -32,7 +29,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -44,78 +40,13 @@ import com.stratelia.webactiv.calendar.model.SchedulableCount;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-/*
- * CVS Informations
- *
- * $Id: CalendarHtmlView.java,v 1.10 2009/02/27 17:00:57 xdelorme Exp $
- *
- * $Log: CalendarHtmlView.java,v $
- * Revision 1.10  2009/02/27 17:00:57  xdelorme
- * lookPDA
- * - dans le cas pda, on n'utilise pas les onMouseOver sur le calendrier.
- *
- * Revision 1.9  2008/04/16 14:09:06  dlesimple
- * Calendrier: Bug nom du jour en gris si tous les memes jours du mois courant sont non ouvrés. (ex: L en gris si tous les Lundi non ouvrés, L en noir si au moins un Lundi est ouvré dans le mois)
- *
- * Revision 1.8  2008/04/16 07:23:19  neysseri
- * no message
- *
- * Revision 1.7.4.5  2008/04/15 09:19:33  neysseri
- * no message
- *
- * Revision 1.7.4.4  2008/04/08 15:14:44  dlesimple
- * Correction look jours ouvrés
- *
- * Revision 1.7.4.3  2008/03/31 11:43:38  dlesimple
- * Synchro feed rss + traces et messages
- *
- * Revision 1.7.4.2  2008/03/26 16:39:27  dlesimple
- * Gestion visibilité jours non ouvrés
- *
- * Revision 1.7.4.1  2008/03/25 15:21:36  dlesimple
- * Gestion des jours non ouvrés
- *
- * Revision 1.7  2007/04/20 14:10:15  neysseri
- * no message
- *
- * Revision 1.6  2006/06/30 15:12:58  dlesimple
- * Evènements sur plusieurs jours et/ou mois apparait maintenant bien surlignés
- * en vue par Mois ou Année
- *
- * Revision 1.5  2006/02/23 18:28:07  dlesimple
- * Agenda partagé
- *
- * Revision 1.4  2005/09/30 14:15:59  neysseri
- * Centralisation de la gestion des dates
- *
- * Revision 1.3  2004/12/22 15:18:31  neysseri
- * Possibilité d'indiquer les jours non sélectionnables
- * + nettoyage sources
- * + précompilation jsp
- *
- * Revision 1.2  2002/12/26 09:36:25  scotte
- * Correction : Ajouter l'année au calendrier général
- *
- * Revision 1.1.1.1  2002/08/06 14:47:40  nchaix
- * no message
- *
- * Revision 1.4  2002/01/21 13:57:47  mguillem
- * Stabilisation Lot2
- * Réorganisation des Router et SessionController
- *
- * Revision 1.3  2002/01/18 15:43:18  mguillem
- * Stabilisation Lot2
- * Réorganisation des Router et SessionController
- *
- */
-
 /**
  * Class declaration
  * @author
  */
 public class CalendarHtmlView {
 
-  private Vector scheduleCounts = new Vector();
+  private Vector<SchedulableCount> scheduleCounts = new Vector<SchedulableCount>();
   private boolean navigationBar = true;
   private boolean shortName = true;
   private boolean monthVisible = true;
@@ -157,7 +88,7 @@ public class CalendarHtmlView {
 
     }
     for (int i = 0; i < scheduleCounts.size(); i++) {
-      SchedulableCount count = (SchedulableCount) scheduleCounts.elementAt(i);
+      SchedulableCount count = scheduleCounts.elementAt(i);
 
       if (count.getDay().endsWith(d)) {
         return count;
@@ -260,8 +191,8 @@ public class CalendarHtmlView {
         .getCurrentDisplayType());
 
     StringBuffer result = new StringBuffer(255);
-    List nonSelectableDays = agendaSessionController.getNonSelectableDays();
-    List hiddenDays = null;
+    List<Date> nonSelectableDays = agendaSessionController.getNonSelectableDays();
+    List<String> hiddenDays = null;
     try {
       hiddenDays = agendaSessionController.getHolidaysDates();
     } catch (RemoteException e) {
@@ -274,10 +205,10 @@ public class CalendarHtmlView {
 
     if (!shortName) {
       result
-          .append("<TABLE width=\"100%\" BORDER=0 CELLSPACING=\"1\" CELLPADDING=\"2\">");
+          .append("<table width=\"100%\" border=\"0\" cellspacing=\"1\" cellpadding=\"2\">");
     } else {
       result
-          .append("<TABLE width=\"100%\" BORDER=0 CELLSPACING=\"0\" CELLPADDING=\"1\">");
+          .append("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"1\">");
     }
 
     Calendar calendar = Calendar.getInstance();
@@ -310,9 +241,9 @@ public class CalendarHtmlView {
 
     // Display Months name
     if (monthVisible) {
-      result.append("<TR class=\"txtnav2\"><TD COLSPAN=7>\n");
+      result.append("<tr class=\"txtnav2\"><td colspan=\"7\">\n");
       result
-          .append("<TABLE width=\"100%\" BORDER=0 CELLSPACING=\"0\" CELLPADDING=\"0\"><TR>");
+          .append("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr>");
       if (navigationBar) {
         result
             .append("<td class=\"intfdcolor3\" align=\"right\"><a href=\"javascript:onClick=gotoPreviousMonth()\"");
@@ -320,41 +251,40 @@ public class CalendarHtmlView {
         if (forPda)
           result
               .append(
-              " onMouseOut=\"MM_swapImgRestore()\" onMouseOver=\"MM_swapImage('fle-2','','")
+              " onmouseout=\"MM_swapImgRestore()\" onmouseover=\"MM_swapImage('fle-2','','")
               .append(getContext()).append("icons/cal_fle-gon.gif',1)\"");
 
         result.append("><img name=\"fle-2\" border=\"0\" src=\"").append(
             getContext()).append(
-            "icons/cal_fle-goff.gif\" width=\"8\" height=\"14\"></a></td> \n");
-
+            "icons/cal_fle-goff.gif\" width=\"8\" height=\"14\" alt=\"\"/></a></td> \n");
       }
       result.append(
-          "<TD class=\"intfdcolor3\" ALIGN=\"center\"><span class=txtNav4>")
+          "<td class=\"intfdcolor3\" align=\"center\"><span class=\"txtNav4\">")
           .append(agendaSessionController.getString("mois" + month))
-          .append(" ").append(year).append("</span></TD>");
+          .append(" ").append(year).append("</span></td>");
       if (navigationBar) {
         result
             .append("<td class=\"intfdcolor3\" align=\"left\"><a href=\"javascript:onClick=gotoNextMonth()\"");
         if (forPda)
           result
               .append(
-              " onMouseOut=\"MM_swapImgRestore()\" onMouseOver=\"MM_swapImage('fle-1','','")
+              " onmouseout=\"MM_swapImgRestore()\" onmouseover=\"MM_swapImage('fle-1','','")
               .append(getContext()).append("icons/cal_fle-don.gif',1)\"");
         result.append("><img name=\"fle-1\" border=\"0\" src=\"").append(
             getContext()).append(
-            "icons/cal_fle-doff.gif\" width=\"8\" height=\"14\"></a></td>\n");
+            "icons/cal_fle-doff.gif\" width=\"8\" height=\"14\" alt=\"\"/></a></td>\n");
       }
-      result.append("</TR></TABLE>\n");
-      result.append("</TD></tr>");
+      result.append("</tr></table>\n");
+      result.append("</td></tr>");
     }
-    result.append("<TR class=\"intfdcolor2\">\n");
+    result.append("<tr class=\"intfdcolor2\">\n");
 
     // Display Months days name
     do {
       if (agendaSessionController.isSameDaysAreHolidays(calendar, month))
-        result.append("<TH ").append(weekDayOffStyle).append(">");
+        result.append("<th ").append(weekDayOffStyle).append(">");
       else
-        result.append("<TH ").append(weekDayStyle).append(">");
+        result.append("<th ").append(weekDayStyle).append(">");
 
       if (shortName) {
         result.append(agendaSessionController.getString("shortJour"
@@ -363,31 +293,29 @@ public class CalendarHtmlView {
         result.append(agendaSessionController.getString("jour"
             + calendar.get(Calendar.DAY_OF_WEEK)));
       }
-      result.append("</TH>");
+      result.append("</th>");
       calendar.add(Calendar.DATE, 1);
     } while (calendar.get(Calendar.DAY_OF_WEEK) != firstDayOfWeek);
 
-    result.append("</TR>\n");
+    result.append("</tr>\n");
 
     // put blank table entries for days of week before beginning of the month
-    result.append("<TR>\n");
+    result.append("<tr>\n");
     int column = 0;
 
     for (int i = 0; i < startDay - 1; i++) {
-      result.append("<TD ").append(monthDayStyle).append(
-          " width=\"14%\">&nbsp;</TD>");
+      result.append("<td ").append(monthDayStyle).append(
+          " width=\"14%\">&nbsp;</td>");
       column++;
     }
 
     // Record in HashSet all the days of the month with an event
     calendar.setTime(date);
     String dayStyle = monthDayStyle;
-    HashSet dayWithEvents = new HashSet();
+    HashSet<Integer> dayWithEvents = new HashSet<Integer>();
     try {
-      Collection events = agendaSessionController.getMonthSchedulables(date);
-      for (Iterator i = events.iterator(); i.hasNext();) {
-        JournalHeader event = (JournalHeader) i.next();
-
+      Collection<JournalHeader> events = agendaSessionController.getMonthSchedulables(date);
+      for (JournalHeader event : events) {
         Calendar calendarEvents = Calendar.getInstance();
         calendarEvents.setTime(event.getStartDate());
         int currentMonth = calendar.get(Calendar.MONTH);
@@ -395,7 +323,7 @@ public class CalendarHtmlView {
         while (calendarEvents.getTime().compareTo(event.getEndDate()) <= 0) {
           if (calendarEvents.get(Calendar.MONTH) == currentMonth) {
             int dayNumber = calendarEvents.get(Calendar.DAY_OF_MONTH);
-            dayWithEvents.add(new Integer(dayNumber));
+            dayWithEvents.add(Integer.valueOf(dayNumber));
           }
           calendarEvents.add(Calendar.DATE, 1);
         }
@@ -446,89 +374,85 @@ public class CalendarHtmlView {
         if (count.getCount() > 0) {
           if (isVisibleDate) {
             if (isSelectableDate)
-              result.append("<TD width=\"14%\" ").append(dayStyle).append(
-                  " align=\"center\"><A ").append(dayStyle).append(
-                  " HREF=\"javascript:selectDay('").append(d).append("')\">")
-                  .append(i).append("</A></TD>\n");
+              result.append("<td width=\"14%\" ").append(dayStyle).append(
+                  " align=\"center\"><a ").append(dayStyle).append(
+                  " href=\"javascript:selectDay('").append(d).append("')\">")
+                  .append(i).append("</a></td>\n");
             else
               result.append(
-                  "<TD width=\"14%\" class=\"intfdcolor3\" align=\"center\">")
-                  .append(i).append("</TD>\n");
+                  "<td width=\"14%\" class=\"intfdcolor3\" align=\"center\">")
+                  .append(i).append("</td>\n");
           } else {
             // Day off
             if (viewByDay) {
               result
-                  .append("<TD width=\"14%\" class=\"intfdcolor3\" align=\"center\">");
+                  .append("<td width=\"14%\" class=\"intfdcolor3\" align=\"center\">");
               dayOffStyle = dayOffStyleDayView;
             } else
               result
-                  .append("<TD width=\"14%\" class=\"intfdcolor4\" align=\"center\">");
+                  .append("<td width=\"14%\" class=\"intfdcolor4\" align=\"center\">");
             result.append("<span ").append(dayOffStyle).append(">").append(i)
-                .append("</span></TD>\n");
+                .append("</span></td>\n");
           }
         } else {
           if (isVisibleDate) {
             if (isSelectableDate)
-              result.append("<TD width=\"14%\" ").append(dayStyle).append(
-                  " align=\"center\"><A ").append(dayStyle).append(
-                  " HREF=\"javascript:selectDay('").append(d).append("')\">")
-                  .append(i).append("</A></TD>\n");
+              result.append("<td width=\"14%\" ").append(dayStyle).append(
+                  " align=\"center\"><a ").append(dayStyle).append(
+                  " href=\"javascript:selectDay('").append(d).append("')\">")
+                  .append(i).append("</a></td>\n");
             else
               result.append(
-                  "<TD width=\"14%\" class=\"intfdcolor3\" align=\"center\">")
-                  .append(i).append("</TD>\n");
+                  "<td width=\"14%\" class=\"intfdcolor3\" align=\"center\">")
+                  .append(i).append("</td>\n");
           } else {
             // Day off
             if (viewByDay) {
               result
-                  .append("<TD width=\"14%\" class=\"intfdcolor3\" align=\"center\">");
+                  .append("<td width=\"14%\" class=\"intfdcolor3\" align=\"center\">");
               dayOffStyle = dayOffStyleDayView;
             } else
               result
-                  .append("<TD width=\"14%\" class=\"intfdcolor4\" align=\"center\">");
+                  .append("<td width=\"14%\" class=\"intfdcolor4\" align=\"center\">");
             result.append("<span ").append(dayOffStyle).append(">").append(i)
-                .append("</span></TD>\n");
+                .append("</span></td>\n");
           }
         }
       } else {
         if (isVisibleDate) {
           if (isSelectableDate)
-            result.append("<TD width=\"14%\" ").append(dayStyle).append(
-                " align=\"center\"><A ").append(dayStyle).append(
-                " HREF=\"javascript:selectDay('").append(d).append("')\">")
-                .append(i).append("</A></TD>\n");
+            result.append("<td width=\"14%\" ").append(dayStyle).append(
+                " align=\"center\"><a ").append(dayStyle).append(
+                " href=\"javascript:selectDay('").append(d).append("')\">")
+                .append(i).append("</a></td>\n");
           else
             result.append(
-                "<TD width=\"14%\" class=\"intfdcolor3\" align=\"center\">")
-                .append(i).append("</TD>\n");
+                "<td width=\"14%\" class=\"intfdcolor3\" align=\"center\">")
+                .append(i).append("</td>\n");
         } else {
           // Day off
           if (viewByDay) {
             result
-                .append("<TD width=\"14%\" class=\"intfdcolor3\" align=\"center\">");
+                .append("<td width=\"14%\" class=\"intfdcolor3\" align=\"center\">");
             dayOffStyle = dayOffStyleDayView;
           } else
             result
-                .append("<TD width=\"14%\" class=\"intfdcolor4\" align=\"center\">");
+                .append("<td width=\"14%\" class=\"intfdcolor4\" align=\"center\">");
           result.append("<span ").append(dayOffStyle).append(">").append(i)
-              .append("</span></TD>\n");
+              .append("</span></td>\n");
         }
       }
 
       // Check for end of week/row
       if ((++column == 7) && (numDays > i)) {
-        result.append("</TR>\n<TR>");
+        result.append("</tr>\n<tr>");
         column = 0;
       }
     }
     for (int i = column; i <= 6; i++) {
-      result.append("<TD ").append(monthDayStyle).append(">&nbsp;</TD>\n");
+      result.append("<td ").append(monthDayStyle).append(">&nbsp;</td>\n");
     }
-    result.append("</TR></TABLE>\n");
-
-    // SilverTrace.debug("agenda",
-    // "CalendarHtmlView.getHtmlView(Date, AgendaSessionController)",
-    // "result="+result);
+    result.append("</tr></table>\n");
 
     return result.toString();
   }

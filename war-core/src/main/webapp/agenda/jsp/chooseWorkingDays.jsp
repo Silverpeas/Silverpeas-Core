@@ -35,7 +35,7 @@ String getHTMLMonthCalendar(Date date, ResourcesWrapper resource, List holidays,
 
      	StringBuffer result = new StringBuffer(255);
 
-     	result.append("<TABLE width=\"100%\" BORDER=0 CELLSPACING=\"0\" CELLPADDING=\"1\">");
+     	result.append("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"1\">");
 
         Calendar calendar = Calendar.getInstance();
         
@@ -62,30 +62,30 @@ String getHTMLMonthCalendar(Date date, ResourcesWrapper resource, List holidays,
             startDay++;
         }
 
-        result.append("<TR class=\"txtnav2\"><TD COLSPAN=7>\n");
-        result.append("<TABLE width=\"100%\" BORDER=0 CELLSPACING=\"0\" CELLPADDING=\"0\"><TR>");
-        result.append("<TD class=\"intfdcolor3\" ALIGN=\"center\"><span class=txtNav4>").append(resource.getString("GML.mois" + month)).append(" ").append(year).append("</span></TD>");
-        result.append("</TR></TABLE>\n");
-        result.append("</TD></tr>");
+        result.append("<tr class=\"txtnav2\"><td colspan=\"7\">\n");
+        result.append("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr>");
+        result.append("<td class=\"intfdcolor3\" align=\"center\"><span class=\"txtNav4\">").append(resource.getString("GML.mois" + month)).append(" ").append(year).append("</span></td>");
+        result.append("</tr></table>\n");
+        result.append("</td></tr>");
 
-        result.append("<TR class=\"intfdcolor2\">\n");
+        result.append("<tr class=\"intfdcolor2\">\n");
 
         do
         {
- 	        result.append("<TH ").append(weekDayStyle).append("><a href=\"javaScript:changeDayStatus('").append(year).append("', '").append(month).append("', '").append(calendar.get(Calendar.DAY_OF_WEEK)).append("');\">").append("<span class=\"txtnav\">").append(resource.getString("GML.shortJour" + calendar.get(Calendar.DAY_OF_WEEK))).append("</a></TH>");
+ 	        result.append("<th ").append(weekDayStyle).append("><a href=\"javaScript:changeDayStatus('").append(year).append("', '").append(month).append("', '").append(calendar.get(Calendar.DAY_OF_WEEK)).append("');\">").append("<span class=\"txtnav\">").append(resource.getString("GML.shortJour" + calendar.get(Calendar.DAY_OF_WEEK))).append("</span></a></th>");
           calendar.add(Calendar.DATE, 1);
         }
         while (calendar.get(Calendar.DAY_OF_WEEK) != firstDayOfWeek);
 
-        result.append("</TR>\n");
+        result.append("</tr>\n");
 
         // put blank table entries for days of week before beginning of the month
-        result.append("<TR>\n");
+        result.append("<tr>\n");
         int column = 0;
 
         for (int i = 0; i < startDay - 1; i++)
         {
-            result.append("<TD width=\"14%\">&nbsp;</TD>");
+            result.append("<td width=\"14%\">&nbsp;</td>");
             column++;
         }
 
@@ -111,20 +111,20 @@ String getHTMLMonthCalendar(Date date, ResourcesWrapper resource, List holidays,
 							nextStatus			= 1;
 						}
 				
-            result.append("<TD width=\"14%\" align=\"center\" ").append(">").append("<A HREF=\"javascript:changeDateStatus('").append(sCurrentDate).append("','").append(nextStatus).append("');\">").append("<span ").append(currentDateStyle).append(">"+i).append("</span></A></TD>\n");
+            result.append("<td width=\"14%\" align=\"center\" ").append(">").append("<a href=\"javascript:changeDateStatus('").append(sCurrentDate).append("','").append(nextStatus).append("');\">").append("<span ").append(currentDateStyle).append(">"+i).append("</span></a></td>\n");
 
             // Check for end of week/row
             if ((++column == 7) && (numDays > i))
             {
-                result.append("</TR>\n<TR>");
+                result.append("</tr>\n<tr>");
                 column = 0;
             }
         }
         for (int i = column; i <= 6; i++)
         {
-            result.append("<TD>&nbsp;</TD>\n");
+            result.append("<td>&nbsp;</td>\n");
         }
-        result.append("</TR></TABLE>\n");
+        result.append("</tr></table>\n");
 
         return result.toString();
     }
@@ -135,15 +135,16 @@ Date 				beginDate 	= (Date) request.getAttribute("BeginDate");
 Date 				endDate		= (Date) request.getAttribute("EndDate");
 List			 	holidays	= (List) request.getAttribute("HolidayDates");
 %>
-<HTML>
-<HEAD>
-<TITLE></TITLE>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
 <%
     out.println(graphicFactory.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="javascript">
+<script type="text/javascript">
 function changeDateStatus(day, status)
 {
 	document.calendarForm.Date.value = day;
@@ -192,11 +193,9 @@ function gotoPrevious()
     document.calendarForm.action = "PreviousYear";
     document.calendarForm.submit();
 }
-
 </script>
-
-</HEAD>
-<BODY id="agenda">
+</head>
+<body id="agenda">
 <%
 	 	Window window = graphicFactory.getWindow();
 		BrowseBar browseBar = window.getBrowseBar();
@@ -219,43 +218,39 @@ function gotoPrevious()
     
     %>
 <center>
-<TABLE CELLPADDING=0 CELLSPACING=0 width="98%" border=0>
-    <TR>
-		<TD bgcolor="#000000">
-			<table cellpadding=2 cellspacing=1 border=0 height=28>
+<table cellpadding="0" cellspacing="0" width="98%" border="0">
+    <tr>
+		<td bgcolor="#000000">
+			<table cellpadding="2" cellspacing="1" border="0">
 				<tr>
-					<td class=intfdcolor align=center nowrap nowrap>
-					<table cellpadding=0 cellspacing=0 border=0 width=200><tr><td width="12" align="right"><a href="javascript:onClick=gotoPrevious()"><img src="<%=arrLeft%>" border="0"></a></td>
-		        <td align="center" nowrap><span class="txtnav"><%=agenda.getStartYear()%></span></td>
-          <td width="12"><a href="javascript:onClick=gotoNext()"><img src="<%=arrRight%>" border="0"></a></td>
+					<td class="intfdcolor" align="center" nowrap="nowrap">
+					<table cellpadding="0" cellspacing="0" border="0" width="12"><tr><td width="12" align="right"><a href="javascript:onClick=gotoPrevious()"><img src="<%=arrLeft%>" border="0" alt=""/></a></td>
+		        <td align="center" nowrap="nowrap"><span class="txtnav"><%=agenda.getStartYear()%></span></td>
+          <td width="12"><a href="javascript:onClick=gotoNext()"><img src="<%=arrRight%>" border="0" alt=""/></a></td>
           <td align="right"></td></tr></table>
 					</td>
 				</tr>
 			</table>
-		 </TD>
-		 <TD><img src="<%=noColorPix%>" width=2></TD>
-		 <td width=95% align="left" class="txt1">&nbsp;<%=resources.getString("agenda.ChooseDaysOff")%><span class="txtdayoff2"><%=resources.getString("agenda.DaysOffSilver")%></span></td>
+		 </td>
+		 <td><img src="<%=noColorPix%>" width="2" alt=""/></td>
+		 <td width="95%" align="left" class="txt1"><span class="txtdayoff2">&nbsp;<%=resources.getString("agenda.ChooseDaysOff")%> <%=resources.getString("agenda.DaysOffSilver")%></span></td>
 		</tr>
 </table>		
-<br>
-
-<table CELLPADDING=0 CELLSPACING=0 width="98%" border=0>	
+<br/>
+<table cellpadding="0" cellspacing="0" width="98%" border="0">	
 	<tr>
 		<td>
-			<table CELLPADDING=2 CELLSPACING=0 width="100%" border=0>	
-        <tr>
-        	<td class="intfdcolor">
-						<table border="0" cellpadding="1" cellspacing="1" width="100%">
+			<table cellpadding="2" cellspacing="0" width="100%" border="0">	
+        		<tr>
+        		<td class="intfdcolor">
+					<table border="0" cellpadding="1" cellspacing="1" width="100%">
+						<tr>
 						<%
 						    int i = 1;
 						    while (beginDate.before(endDate))
 						    {
-						    	if (i==1)
-						    		out.println("<tr>");
-						    		
-						    	if (i-4 > 0)
-						    	{
-						    		out.println("</tr>");
+						    	if (i-4 > 0) {
+						    		out.println("</tr><tr>");
 						    		i = 1;
 						    	}
 						    		
@@ -270,12 +265,13 @@ function gotoPrevious()
 						    	i++;
 						    }
 						    %>
+						  </tr>
 					 </table>
 				 </td>
 			 </tr>
 		 </table>
-		</tr>
-	</td>
+		</td>
+	</tr>
 </table>
 </center>
 <%
@@ -283,14 +279,14 @@ function gotoPrevious()
     out.println(window.printAfter());
 %>
 
-<form name="calendarForm" action="ChangeDateStatus" method="POST">
-	<input type="hidden" name="Date">
-	<input type="hidden" name="Status">
+<form name="calendarForm" action="ChangeDateStatus" method="post">
+	<input type="hidden" name="Date"/>
+	<input type="hidden" name="Status"/>
 </form>
-<form name="calendarDayForm" action="ChangeDayOfWeekStatus" method="POST">
-	<input type="hidden" name="DayOfWeek">
-	<input type="hidden" name="Month">
-	<input type="hidden" name="Year">
+<form name="calendarDayForm" action="ChangeDayOfWeekStatus" method="post">
+	<input type="hidden" name="DayOfWeek"/>
+	<input type="hidden" name="Month"/>
+	<input type="hidden" name="Year"/>
 </form>
-</BODY>
-</HTML>
+</body>
+</html>

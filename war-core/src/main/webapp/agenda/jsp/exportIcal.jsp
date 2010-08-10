@@ -25,6 +25,7 @@
 --%>
 
 <%@ include file="checkAgenda.jsp.inc" %>
+<%@page import="com.stratelia.webactiv.servlets.TempFileServer"%>
 
 <%
 
@@ -49,28 +50,29 @@
 	}
 %>
 
-
-<%@page import="com.stratelia.webactiv.servlets.TempFileServer"%><HTML>
-<HEAD>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
 <%
 out.println(graphicFactory.getLookStyleSheet());
 %>
-<TITLE></TITLE>
-<link href="<%=m_context%>/util/styleSheets/modal-message.css" rel="stylesheet"  type="text/css">
+<link href="<%=m_context%>/util/styleSheets/modal-message.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/modal-message.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<Script language="JavaScript">
+<script type="text/javascript">
 	function calendar(indexForm, nameElement) {
-		SP_openWindow('<%=m_context+URLManager.getURL(URLManager.CMP_AGENDA)%>calendar.jsp?indiceForm='+indexForm+'&nameElem='+nameElement,'Calendrier',200,200,'');
+		SP_openWindow('<%=m_context+URLManager.getURL(URLManager.CMP_AGENDA)%>calendar.jsp?indiceForm='+indexForm+'&amp;nameElem='+nameElement,'Calendrier',200,200,'');
 	}
 		messageObj = new DHTML_modalMessage();	// We only create one object of this class
 		messageObj.setShadowOffset(5);	// Large shadow
 
 		function displayStaticMessage()
 		{
-			messageObj.setHtmlContent("<center><table border=0><tr><td align=\"center\"><br><b><%=resources.getString("agenda.ExportInProgress")%></b></td></tr><tr><td><br/></td></tr><tr><td align=\"center\"><img src=\"<%=m_context%>/util/icons/inProgress.gif\"/></td></tr></table></center>");
+			messageObj.setHtmlContent("<center><table border=\"0\"><tr><td align=\"center\"><br/><b><%=resources.getString("agenda.ExportInProgress")%></b></td></tr><tr><td><br/></td></tr><tr><td align=\"center\"><img src=\"<%=m_context%>/util/icons/inProgress.gif\" alt=\"\"/></td></tr></table></center>");
 			messageObj.setSize(200,150);
 			messageObj.setCssClassMessageBox(false);
 			messageObj.setShadowDivVisible(true);	// Disable shadow for these boxes
@@ -148,9 +150,9 @@ out.println(graphicFactory.getLookStyleSheet());
 			  return result; 
 		}
 </script>
-</HEAD>
+</head>
 	  
-<BODY id="agenda">
+<body id="agenda">
 <%
 	Window window = graphicFactory.getWindow();
 
@@ -163,8 +165,7 @@ out.println(graphicFactory.getLookStyleSheet());
   out.println(frame.printBefore());
   out.println(board.printBefore());
 %>
-<CENTER>
-<form name="exportIcalForm" action="ExportIcal" METHOD=POST>
+<form name="exportIcalForm" action="ExportIcal" method="post">
 <% if (exportDone) { %>
 	<table width="100%" cellpadding="2" cellspacing="2" border="0">
 		<tr>
@@ -177,16 +178,16 @@ out.println(graphicFactory.getLookStyleSheet());
 <% } else { %>
      <table width="100%" cellpadding="2" cellspacing="2" border="0">
 		    <tr>
-		    	<td align="left">
-		    		<span class="txtlibform"><%=resources.getString("dateDebutNote")%></span> :
-					    <input type="text" name="StartDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>">
-					      &nbsp;<a href="javascript:onClick=calendar('0','StartDate')"><img src="icons/calendrier.gif" width="13" height="15" border="0" alt="<%=resources.getString("afficherCalendrier")%>" align=absmiddle title="<%=resources.getString("afficherCalendrier")%>"></a>
+		    	<td align="left" class="txtlibform" width="150"><%=resources.getString("dateDebutNote")%> :</td>
+		    	<td><input type="text" name="StartDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>"/>
+					      &nbsp;<a href="javascript:onClick=calendar('0','StartDate')"><img src="icons/calendrier.gif" width="13" height="15" border="0" alt="<%=resources.getString("afficherCalendrier")%>" align="top" title="<%=resources.getString("afficherCalendrier")%>"/></a>
 				      <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
 				  </td>
-		    	<td align="left">
-		    	<span class="txtlibform"><%=resources.getString("dateFinNote")%></span> :
-						    <input type="text" name="EndDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>">
-					      &nbsp;<a href="javascript:onClick=calendar('0','EndDate')"><img src="icons/calendrier.gif" width="13" height="15" border="0" alt="<%=resources.getString("afficherCalendrier")%>" align=absmiddle title="<%=resources.getString("afficherCalendrier")%>"></a>
+			</tr>
+			<tr>
+		    	<td align="left" class="txtlibform"><%=resources.getString("dateFinNote")%> :</td>
+				<td><input type="text" name="EndDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>"/>
+					      &nbsp;<a href="javascript:onClick=calendar('0','EndDate')"><img src="icons/calendrier.gif" width="13" height="15" border="0" alt="<%=resources.getString("afficherCalendrier")%>" align="top" title="<%=resources.getString("afficherCalendrier")%>"/></a>
 				      <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
 				  </td>
 		    </tr>
@@ -197,16 +198,14 @@ out.println(graphicFactory.getLookStyleSheet());
 	out.println(board.printAfter());
 
 	Button button = null;
-	if (exportDone)
+	if (exportDone) {
 		button = graphicFactory.getFormButton(resources.getString("GML.close"), "javascript:window.close()", false);
-	else
+	} else {
 		button = graphicFactory.getFormButton(resources.getString("GML.validate"), "javascript:exportIcal()", false);
+	}
 	out.print("<br/><center>"+button.print()+"</center>");
-%>
-</CENTER>
-<%
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

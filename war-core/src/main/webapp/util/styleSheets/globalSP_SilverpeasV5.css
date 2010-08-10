@@ -300,6 +300,84 @@ Definition des class de style Silverpeas
 	vertical-align: top;
 }
 
+#agenda #agendaView {
+	float: left;
+	width: 100%;
+	margin-left: 10px;
+}
+
+#agenda #navigation {
+	float: left;
+	margin-left: 10px;
+	margin-bottom: 10px;
+}
+
+#agenda #currentScope,
+#agenda #jump,
+#agenda #today {
+	float: left;
+	border: 1px solid;
+	margin-right: 10px;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
+	background-repeat: repeat-x;
+	white-space: nowrap;
+	padding: 5px;
+}
+
+#agenda #currentScope {
+	width: 200px;
+	text-align: center;
+}
+
+#agenda #currentScope img {
+	margin-top: 2px;
+}
+
+#agenda #jump form,
+#agenda #footer form
+{
+	margin: 0px;
+	padding: 0px;
+}
+
+#agenda #others {
+	float: left;
+	padding: 7px;
+}
+
+#agenda #footer {
+	float: left;
+	margin-left: 10px;
+	margin-top: 10px;
+}
+
+#agenda #categories,
+#agenda #invitations,
+#agenda #alert,
+#agenda #caption,
+#agenda #rss {
+	float: left;
+	border: 1px solid;
+	margin-right: 10px;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
+	background-repeat: repeat-x;
+	white-space: nowrap;
+	padding: 5px;
+	white-space: nowrap;
+}
+
+#agenda #today a {
+	font-size: 10pt;
+	font-weight: bold;
+	color: #000000
+}
+
+#agenda #today a:hover {
+	text-decoration: underline;
+}
+
 .txtbigdate {
 	font-size: 25pt;
 	font-weight: bold;

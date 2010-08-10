@@ -35,7 +35,7 @@
 	{
 		importDone = true;
 		%>
-		<script language="javascript">
+		<script type="text/javascript">>
 				window.opener.location.href = "<%=agenda.getCurrentViewType()%>";
 		</script>
 		<%
@@ -49,23 +49,25 @@
 	}
 %>
 
-<HTML>
-<HEAD>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resources.getString("agenda.ImportIcalCalendar") %></title>
 <%
 out.println(graphicFactory.getLookStyleSheet());
 %>
-<TITLE></TITLE>
-<link href="<%=m_context%>/util/styleSheets/modal-message.css" rel="stylesheet"  type="text/css">
+<link href="<%=m_context%>/util/styleSheets/modal-message.css" rel="stylesheet"  type="text/css"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/modal-message.js"></script>
-<Script language="JavaScript">
+<script type="text/javascript">
 	
 		messageObj = new DHTML_modalMessage();	// We only create one object of this class
 		messageObj.setShadowOffset(5);	// Large shadow
 
 		function displayStaticMessage()
 		{
-			messageObj.setHtmlContent("<center><table border=0><tr><td align=\"center\"><br><b><%=resources.getString("agenda.ImportInProgress")%></b></td></tr><tr><td><br/></td></tr><tr><td align=\"center\"><img src=\"<%=m_context%>/util/icons/inProgress.gif\"/></td></tr></table></center>");
+			messageObj.setHtmlContent("<center><table border=\"0\"><tr><td align=\"center\"><br/><b><%=resources.getString("agenda.ImportInProgress")%></b></td></tr><tr><td><br/></td></tr><tr><td align=\"center\"><img src=\"<%=m_context%>/util/icons/inProgress.gif\"/></td></tr></table></center>");
 			messageObj.setSize(200,150);
 			messageObj.setCssClassMessageBox(false);
 			messageObj.setShadowDivVisible(true);	// Disable shadow for these boxes
@@ -84,12 +86,10 @@ out.println(graphicFactory.getLookStyleSheet());
 				displayStaticMessage();
 				setTimeout("document.importIcalForm.submit();", 200);
 			}
-		}	
-
+		}
 </script>
-</HEAD>
-	  
-<BODY id="agenda">
+</head>
+<body id="agenda">
 <%
 	Window window = graphicFactory.getWindow();
 
@@ -102,8 +102,7 @@ out.println(graphicFactory.getLookStyleSheet());
   out.println(frame.printBefore());
   out.println(board.printBefore());
 %>
-<CENTER>
-<form name="importIcalForm" action="ImportIcal" METHOD="POST" ENCTYPE="multipart/form-data">
+<form name="importIcalForm" action="ImportIcal" method="post" enctype="multipart/form-data">
 <% if (importDone) { %>
              <table width="100%" cellpadding="5" cellspacing="2" border="0">
 					      <tr>
@@ -114,40 +113,35 @@ out.println(graphicFactory.getLookStyleSheet());
 						 </table>
 	<% } else { %>
              <table width="100%" cellpadding="5" cellspacing="2" border="0">
-					      <tr>
-						      <td align="left" colspan="2">
-						      	<span class="txtlibform">
-						      		<%=resources.getString("agenda.ImportFileCalendar")%>
-						      			<br><br>
-												<input type="file" name="fileCalendar" size="50" value="">
-												<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5" align=absmiddle>
-						      		<br>
-						      	</span>
-						      </td>
-						    </tr>
-								<tr>
-			            <td colspan="2" nowrap>
-								    <span class="txtlnote">(<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5">&nbsp;:&nbsp;<%=resources.getString("GML.requiredField")%>) <img src="icons/1px.gif" width="20" height="1"></span> 
-            			</td>
-			         </tr>
-					  </table>
+			      <tr>
+				      <td align="left" colspan="2">
+					      	<span class="txtlibform"><%=resources.getString("agenda.ImportFileCalendar")%></span>
+					      	<br/><br/>
+							<input type="file" name="fileCalendar" size="50" value=""/>
+							<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5" align="bottom" alt="<%=resources.getString("GML.requiredField")%>"/>
+				      </td>
+ 			  	 </tr>
+				<tr>
+			    	<td colspan="2" nowrap="nowrap">
+						<span class="txtnote">(<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5" alt="<%=resources.getString("GML.requiredField")%>"/>&nbsp;:&nbsp;<%=resources.getString("GML.requiredField")%>) <img src="icons/1px.gif" width="20" height="1" alt=""/></span>
+            		</td>
+			    </tr>
+			</table>
 	<% } %>
 </form>
 <%
 	out.println(board.printAfter());
 
 	Button button = null;
-	if (importDone)
+	if (importDone) {
 		button = graphicFactory.getFormButton(resources.getString("GML.close"), "javascript:window.close()", false);
-	else
+	} else {
 		button = graphicFactory.getFormButton(resources.getString("GML.validate"), "javascript:importIcal()", false);
+	}
 	
 	out.print("<br/><center>"+button.print()+"</center>");
-%>
-</CENTER>
-<%
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

@@ -76,27 +76,25 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 %>
 
-<HTML>
-<HEAD>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
 <%= graphicFactory.getLookStyleSheet() %>
-<TITLE></TITLE>
-
-<SCRIPT language="Javascript">
+<script type="text/javascript">
 function updateHostName()
 {
 	document.importSettingsForm.hostName.value = '<%=request.getRemoteHost()%>';
 }
-</SCRIPT>
-
-</HEAD>
-
-<BODY id="agenda">
-
+</script>
+</head>
+<body id="agenda">
 <%= window.printBefore() %>
 <%= frame.printBefore() %>
 <%= board.printBefore() %>
 
-<form Method="POST" name="importSettingsForm" action="<%=action%>">
+<form method="post" name="importSettingsForm" action="<%=action%>">
 	<table border="0" cellspacing="0" cellpadding="5" width="100%">
 
 	<%-- Synchro type --%>
@@ -106,16 +104,16 @@ function updateHostName()
         <%
 		if ("yes".equals(settings.getString("importOutlookCalendarAvailable")))
 		{  %>
-			<input name="synchroType" type="radio" value="<%=CalendarImportSettings.TYPE_OUTLOOK_IMPORT%>" <%= ( importSettings.getSynchroType() == CalendarImportSettings.TYPE_OUTLOOK_IMPORT ) ? "checked" : ""%> >&nbsp;<%=agenda.getString("agenda.outlookSynchro")%><br>
+			<input name="synchroType" type="radio" value="<%=CalendarImportSettings.TYPE_OUTLOOK_IMPORT%>" <%= ( importSettings.getSynchroType() == CalendarImportSettings.TYPE_OUTLOOK_IMPORT ) ? "checked=\"checked\"" : ""%>/>&nbsp;<%=agenda.getString("agenda.outlookSynchro")%><br/>
 		<%
 		} 
        
 		if ("yes".equals(settings.getString("importNotesCalendarAvailable")))
 		{  %>
-			<input name="synchroType" type="radio" value="<%=CalendarImportSettings.TYPE_NOTES_IMPORT%>" <%= ( importSettings.getSynchroType() == CalendarImportSettings.TYPE_NOTES_IMPORT ) ? "checked" : ""%> >&nbsp;<%=agenda.getString("agenda.notesSynchro")%><br>
+			<input name="synchroType" type="radio" value="<%=CalendarImportSettings.TYPE_NOTES_IMPORT%>" <%= ( importSettings.getSynchroType() == CalendarImportSettings.TYPE_NOTES_IMPORT ) ? "checked=\"checked\"" : ""%>/>&nbsp;<%=agenda.getString("agenda.notesSynchro")%><br/>
 		<%
 		} %>
- 			<input name="synchroType" type="radio" value="<%=CalendarImportSettings.TYPE_NO_IMPORT%>" <%= ( importSettings.getSynchroType() == CalendarImportSettings.TYPE_NO_IMPORT ) ? "checked" : ""%> >&nbsp;<%=agenda.getString("agenda.noSynchro")%>
+ 			<input name="synchroType" type="radio" value="<%=CalendarImportSettings.TYPE_NO_IMPORT%>" <%= ( importSettings.getSynchroType() == CalendarImportSettings.TYPE_NO_IMPORT ) ? "checked=\"checked\"" : ""%>/>&nbsp;<%=agenda.getString("agenda.noSynchro")%>
         </td>
     </tr>
 
@@ -123,7 +121,7 @@ function updateHostName()
     <tr>
         <td align="left" valign="baseline" class="txtlibform" nowrap="nowrap"><%=agenda.getString("agenda.synchroDelay")%> :</td>
         <td align="left" valign="baseline">
-        	<input name="synchroDelay" type="text" size="3" maxlength="3" value="<%=importSettings.getSynchroDelay()%>">&nbsp;&nbsp; <%=agenda.getString("agenda.minutes")%>
+        	<input name="synchroDelay" type="text" size="3" maxlength="3" value="<%=importSettings.getSynchroDelay()%>"/>&nbsp;&nbsp; <%=agenda.getString("agenda.minutes")%>
         </td>
     </tr>
 
@@ -131,18 +129,17 @@ function updateHostName()
     <tr>
         <td align="left" valign="baseline" class="txtlibform" nowrap="nowrap"><%=agenda.getString("agenda.hostName")%> :</td>
         <td align="left" valign="baseline">
-        	<input name="hostName" type="text" size="20" maxlength="50" value="<%=importSettings.getHostName()%>">&nbsp;&nbsp; <input type="button" value="<%=request.getRemoteHost()%>" onClick="updateHostName()">
+        	<input name="hostName" type="text" size="20" maxlength="50" value="<%=importSettings.getHostName()%>"/>&nbsp;&nbsp; <input type="button" value="<%=request.getRemoteHost()%>" onclick="updateHostName()"/>
         </td>
     </tr>
 
   </table>
+</form>
 <%= board.printAfter() %>
-<BR><center>
+<br/><center>
 <%= buttonPane.print() %>
 </center>
-</form>
 <%= frame.printAfter() %>
 <%= window.printAfter() %>
-
-</BODY>
-</HTML>
+</body>
+</html>

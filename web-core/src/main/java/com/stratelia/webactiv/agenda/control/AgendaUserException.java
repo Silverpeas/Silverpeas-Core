@@ -26,6 +26,8 @@ package com.stratelia.webactiv.agenda.control;
 
 public class AgendaUserException extends Exception {
 
+  private static final long serialVersionUID = 1L;
+
   public AgendaUserException(String message) {
     super(message);
   }

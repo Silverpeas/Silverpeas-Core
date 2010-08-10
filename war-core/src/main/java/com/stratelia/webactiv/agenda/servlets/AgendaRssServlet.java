@@ -44,6 +44,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 public class AgendaRssServlet extends RssServlet {
 
+  private static final long serialVersionUID = -1303827067989958404L;
+
   /*
    * (non-Javadoc)
    * @see com.silverpeas.peasUtil.RssServlet#isComponentRss(java.lang.String)
@@ -65,9 +67,9 @@ public class AgendaRssServlet extends RssServlet {
   public String getChannelTitle(String userId) {
     OrganizationController orga = new OrganizationController();
     UserDetail user = orga.getUserDetail(userId);
-    List userIds = new ArrayList();
+    List<String> userIds = new ArrayList<String>();
     userIds.add(userId);
-    String lang = (String) orga.getUsersLanguage(userIds).get(userId);
+    String lang = orga.getUsersLanguage(userIds).get(userId);
     ResourceLocator message = new ResourceLocator(
         "com.stratelia.webactiv.agenda.multilang.agenda", lang);
     return message.getStringWithParam("agenda.userAgenda", user.getLastName());
@@ -77,19 +79,17 @@ public class AgendaRssServlet extends RssServlet {
    * (non-Javadoc)
    * @see com.silverpeas.peasUtil.RssServlet#getListElements(java.lang.String, int)
    */
-  public Collection getListElements(String userIdAgenda, int nbReturned)
+  public Collection<JournalHeader> getListElements(String userIdAgenda, int nbReturned)
       throws RemoteException {
     // récupération de la liste des 10 prochains événements de l'Agenda du
     // user
     // passé en paramètre
-    Collection events;
     try {
-      events = AgendaAccess.getJournalHeadersForUserAfterDate(userIdAgenda,
+      return AgendaAccess.getJournalHeadersForUserAfterDate(userIdAgenda,
           new Date(), nbReturned);
     } catch (AgendaException e) {
       throw new RemoteException("AgendaRssServlet.getListElements()", e);
     }
-    return events;
   }
 
   /*

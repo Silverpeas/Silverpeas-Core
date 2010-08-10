@@ -24,41 +24,45 @@
 
 package com.stratelia.webactiv.agenda.servlets;
 
-import javax.servlet.http.*;
-
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
 
 import com.silverpeas.ical.ImportIcalManager;
 import com.silverpeas.ical.PasswordEncoder;
 import com.silverpeas.ical.StringUtils;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.*;
+import com.silverpeas.util.web.servlet.FileUploadUtil;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.ComponentSessionController;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import com.stratelia.webactiv.agenda.control.*;
-import com.stratelia.webactiv.agenda.model.*;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.agenda.control.AgendaSessionController;
+import com.stratelia.webactiv.agenda.model.CalendarImportSettings;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.calendar.model.Attendee;
 import com.stratelia.webactiv.calendar.model.Category;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
-import org.apache.commons.fileupload.DiskFileUpload;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
 
 /**
  * Class declaration
  * @author
  */
 public class AgendaRequestRouter extends ComponentRequestRouter {
+
+  private static final long serialVersionUID = -3636409715447616873L;
 
   /**
    * Constructor declaration
@@ -167,7 +171,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
         destination = scc.initSelectionPeas();
       } else if (function.startsWith("saveMembers")) {
         // retour du userPanel
-        Collection attendees = scc.getUserSelected();
+        Collection<Attendee> attendees = scc.getUserSelected();
         scc.setCurrentAttendees(attendees);
         destination = "/agenda/jsp/journal.jsp?Action=DiffusionListOK";
       } else if (function.startsWith("ChooseOtherAgenda")) {
@@ -355,8 +359,8 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
         String selectedCategories = request.getParameter("selectedCategories");
         StringTokenizer st = new StringTokenizer(selectedCategories, ",");
         String[] categoryIds = new String[st.countTokens()];
-        Collection selectedCategoryIds = new ArrayList();
-        Collection categories = new ArrayList();
+        Collection<Integer> selectedCategoryIds = new ArrayList<Integer>();
+        Collection<Category> categories = new ArrayList<Category>();
         int i = 0;
         while (st.hasMoreTokens()) {
           String categIcal = st.nextToken();
@@ -366,7 +370,6 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
           categories.add(categ);
           i++;
         }
-        String journalId = request.getParameter("JournalId");
         scc.setCurrentCategories(categories);
 
         request.setAttribute("FromCategories", "1");
@@ -387,24 +390,6 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
     request.setAttribute("RSSUrl", controller.getRSSUrl());
   }
 
-  private List getRequestItems(HttpServletRequest request)
-      throws FileUploadException {
-    DiskFileUpload dfu = new DiskFileUpload();
-    List items = dfu.parseRequest(request);
-    return items;
-  }
-
-  private FileItem getUploadedFile(List items, String parameterName) {
-    Iterator iter = items.iterator();
-    while (iter.hasNext()) {
-      FileItem item = (FileItem) iter.next();
-      if (!item.isFormField() && parameterName.equals(item.getFieldName())) {
-        return item;
-      }
-    }
-    return null;
-  }
-
   private File processFormUpload(AgendaSessionController agendaSc,
       HttpServletRequest request) throws FileUploadException {
     String logicalName = "";
@@ -412,11 +397,10 @@ public class AgendaRequestRouter extends ComponentRequestRouter {
     String tempFolderPath = "";
     String fileType = "";
     long fileSize = 0;
-    FileItem fileItem = null;
     File fileUploaded = null;
     try {
-      List items = getRequestItems(request);
-      fileItem = getUploadedFile(items, "fileCalendar");
+      List<FileItem> items = FileUploadUtil.parseRequest(request);
+      FileItem fileItem = FileUploadUtil.getFile(items, "fileCalendar");
       if (fileItem != null) {
         logicalName = fileItem.getName();
         if (logicalName != null) {

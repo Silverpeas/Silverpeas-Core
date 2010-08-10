@@ -36,3 +36,11 @@
 .pageNavContent {
 	text-align: left; display: inline; zoom: 1; 
 }
+
+#agenda #jump {
+	padding: 4px;
+}
+
+#agenda #jump img {
+	margin-top: 1px;
+}

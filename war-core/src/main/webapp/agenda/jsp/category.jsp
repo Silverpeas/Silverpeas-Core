@@ -72,23 +72,27 @@ boolean notIn(String id, Collection categories) {
 ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(agenda.getLanguage());
 %>
 
-<HTML>
-<HEAD>
-<% out.println(graphicFactory.getLookStyleSheet()); %>
-<SCRIPT LANGUAGE="JAVASCRIPT" SRC="<%=javaScriptSrc%>"></SCRIPT>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<TITLE><%=generalMessage.getString("GML.popupTitle")%></TITLE>
-<Script language="JavaScript">
+
+<%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%><html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=generalMessage.getString("GML.popupTitle")%></title>
+<% out.println(graphicFactory.getLookStyleSheet()); %>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript">
 function reallyEditCategories()
 {
-      ValidateCategories();
-      window.opener.document.journalForm.action = "ReallyEditCategories";
-			var valueCategories = "";      
-      for (var i=0; i<document.journalForm.selectedCategories.length; i++)
-	      valueCategories = valueCategories + document.journalForm.selectedCategories[i].value + ",";
-   	  window.opener.document.journalForm.selectedCategories.value = valueCategories;
-      window.opener.document.journalForm.submit();
-      window.close();
+	validateCategories();
+	window.opener.document.journalForm.action = "ReallyEditCategories";	
+	var valueCategories = "";      
+	for (var i=0; i<document.journalForm.selectedCategories.length; i++) {
+		valueCategories = valueCategories + document.journalForm.selectedCategories[i].value + ",";
+	}
+	window.opener.document.journalForm.selectedCategories.value = valueCategories;
+	window.opener.document.journalForm.submit();
+	window.close();
 }
 
 function move_groups(btn) {
@@ -142,13 +146,13 @@ function moveall_groups(select_actors, actors)
    }
 }
 
-function ValidateCategories() {
+function validateCategories() {
     nbr = document.journalForm.selectedCategories.length;
     for (j=0;j < nbr;j++)
         document.journalForm.selectedCategories[j].selected = true;
 }
 </script>
-</HEAD>
+</head>
 
 <%
   String action = null;
@@ -157,7 +161,7 @@ function ValidateCategories() {
   Collection categories = agenda.getCurrentCategories();
   
 %>
-<BODY id="agenda">
+<body id="agenda">
 <%
 	Window window = graphicFactory.getWindow();
 	BrowseBar browseBar = window.getBrowseBar();
@@ -165,61 +169,56 @@ function ValidateCategories() {
 	browseBar.setPath(agenda.getString("editionCategories"));
 	out.println(window.printBefore());
 	Frame frame=graphicFactory.getFrame();
-  out.println(frame.printBefore());
-
+  	out.println(frame.printBefore());
+  	out.println(board.printBefore());
 %>
 
-<CENTER>
-<table border="0" align="center" width="98%" cellspacing="2" cellpadding="5" class="intfdcolor">
-<FORM NAME="journalForm" METHOD=POST >
-        <tr valign="top">
-          <td width="100%" align="center" class="intfdcolor4">
-	       <input type="hidden" name="Action"> 
+<center>
+<form name="journalForm" method="post" action="">
+<input type="hidden" name="Action"/>
              <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
-                  <td class="intfdcolor4"> 
+                  <td> 
                     <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
                       <tr> 
-                        <td class="intfdcolor4" align="right"><span class="txtlibform"><%=agenda.getString("categoriesDispo")%> :</span></td>
-                        <td class="intfdcolor4">&nbsp;</td>
-                        <td class="intfdcolor4"><span class="txtlibform"><%=agenda.getString("categories")%> :</span></td>
+                        <td align="right"><span class="txtlibform"><%=agenda.getString("categoriesDispo")%> :</span></td>
+                        <td>&nbsp;</td>
+                        <td><span class="txtlibform"><%=agenda.getString("categories")%> :</span></td>
                       </tr>
                       <tr> 
-                        <td colspan="3" class="intfdcolor4"><img border="0" src="icons/1px.gif" width="1" height="15"></td>
+                        <td colspan="3"><img border="0" src="icons/1px.gif" width="1" height="15" alt=""/></td>
                       </tr>
                       <tr> 
-                        <td class="intfdcolor4" align="right" valign="top" width="50%"> 
+                        <td align="right" valign="top" width="50%"> 
                           <span class="selectNS">
-                          <select name="availableCategories" multiple size="10">
-                            
+                          <select name="availableCategories" multiple="multiple" size="10">
                           <%
                             Collection dispoCategories = agenda.getAllCategories();
                             Iterator iC = dispoCategories.iterator();
                             while (iC.hasNext()) {
                               Category category = (Category) iC.next();
                               if  (notIn(category.getId(), categories))
-                                out.println("<option value=" + category.getId() + ">" + 
+                                out.println("<option value=\"" + category.getId() + "\">" + 
                                         category.getName() + "</option>");
                             }
                           %>
                           </select>
                           </span>
                         </td>
-                        <td width="1" valign="top" align="center" class="intfdcolor4"> 
+                        <td width="1" valign="top" align="center"> 
                           <table border="0" cellpadding="0" cellspacing="0" width="37">
                             <tr> 
-                              <td class="intfdcolor" width="37"><a href="javascript:onClick=move_groups('+')"><image src="icons/bt_fleche-d.gif" width="37" height="24" border="0"></A><a href="javascript:onClick=move_groups('-')"><image src="icons/bt_fleche-g.gif" width="37" height="24" border="0"></A></td>
+                              <td class="intfdcolor" width="37"><a href="javascript:onClick=move_groups('+')"><img src="icons/bt_fleche-d.gif" width="37" height="24" border="0" alt=""/></a><br/><a href="javascript:onClick=move_groups('-')"><img src="icons/bt_fleche-g.gif" width="37" height="24" border="0" alt=""/></a></td>
                             </tr>
                           </table>
                         </td>
-                        <td class="intfdcolor4" valign="top" width="50%"> <span class="selectNS">
-                          <select name="selectedCategories" multiple size="10">
+                        <td valign="top" width="50%"> <span class="selectNS">
+                          <select name="selectedCategories" multiple="multiple" size="10">
                           <%
-                          
                             if (categories != null) {
                               Iterator i = categories.iterator();
                               while (i.hasNext()) {
                                 Category category = (Category) i.next();
-                                out.println("<option value=" + category.getId() + ">" + category.getName() + "</option>");
+                                out.println("<option value=\"" + category.getId() + "\">" + category.getName() + "</option>");
                               }
                             }
                           
@@ -230,42 +229,25 @@ function ValidateCategories() {
                       <tr>
                         <td>&nbsp;</td>
                       </tr><tr> 
-                        <td colspan="3" class="intfdcolor4"><img border="0" src="icons/1px.gif" width="1" height="4"></td>
+                        <td colspan="3"><img border="0" src="icons/1px.gif" width="1" height="4" alt=""/></td>
                       </tr>
                     </table>
-                  </td>
-                </tr></table>
       </td>
     </tr>
-</FORM>
   </table>
+  </form>
 <%=separator%>		  
-   <table width="100%" cellpadding=0 cellspacing=0 border=0>
-      <tr>
-        <td align="right">
-      <%
-      Button button = null;
-      button = graphicFactory.getFormButton(generalMessage.getString("GML.validate"), "javascript:onClick=reallyEditCategories()", false);
-      out.print(button.print());
-      %>
-        </td>
-				<td>&nbsp;</td>
-        <td align="left">
-      <%
-      button = graphicFactory.getFormButton(generalMessage.getString("GML.cancel"), "javascript:onClick=window.close()", false);
-      out.print(button.print());
-      %>
-        </td>
-       </tr>
-    </table>
-</CENTER>
+</center>
 <%
-	out.println(frame.printMiddle());
-    out.println(separator);
+	ButtonPane buttonPane = graphicFactory.getButtonPane();
+	Button button = graphicFactory.getFormButton(generalMessage.getString("GML.validate"), "javascript:onClick=reallyEditCategories()", false);
+	buttonPane.addButton(button);
+	button = graphicFactory.getFormButton(generalMessage.getString("GML.cancel"), "javascript:onClick=window.close()", false);
+	buttonPane.addButton(button);
+	out.println("<center>"+buttonPane.print()+"</center>");
+	out.println(board.printAfter());
     out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
-
-
+</body>
+</html>

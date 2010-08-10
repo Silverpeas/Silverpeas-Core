@@ -75,13 +75,14 @@ ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(ag
 	agenda.selectDay(day);
 %>
 
-<HTML>
-<HEAD>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
 <% out.println(graphicFactory.getLookStyleSheet()); %>
-<SCRIPT LANGUAGE="JAVASCRIPT" SRC="<%=javaScriptSrc%>"></SCRIPT>
-
-<TITLE><%=generalMessage.getString("GML.popupTitle")%></TITLE>
-<Script language="JavaScript">
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<title><%=agenda.getString("trouverCreneau")%></title>
+<script type="text/javascript">
 
 function selectHour(hour,minute,date) 
 {
@@ -101,8 +102,8 @@ function gotoPrevious()
     document.busyTimeForm.submit();
 }
 </script>
-</HEAD>
-<BODY id="agenda">
+</head>
+<body id="agenda">
 
 <%
 	Window window = graphicFactory.getWindow();
@@ -112,7 +113,7 @@ function gotoPrevious()
 	browseBar.setPath(agenda.getString("trouverCreneau"));
 
 	String navigation =  "<table><tr><td width=\"12\" align=\"right\"><a href=\"javascript:onClick=gotoPrevious()\">" +
-			"<img src=\"icons/topnav_l.gif\" width=\"6\" height=\"11\" border=\"0\"></a></td>" +
+			"<img src=\"icons/topnav_l.gif\" width=\"6\" height=\"11\" border=\"0\" alt=\"\"/></a></td>" +
 		        "<td align=\"center\" width=\"340\"><span class=\"txtnav\">";
 	
 	navigation += agenda.getString("jour"+agenda.getStartDayInWeek()) + " " + 
@@ -121,7 +122,7 @@ function gotoPrevious()
 		    agenda.getStartYear();
 
 	navigation += "</span></td>" +
-          "<td width=\"12\"><a href=\"javascript:onClick=gotoNext()\"><img src=\"icons/topnav_r.gif\" width=\"6\" height=\"11\" border=\"0\"></a></td>" +
+          "<td width=\"12\"><a href=\"javascript:onClick=gotoNext()\"><img src=\"icons/topnav_r.gif\" width=\"6\" height=\"11\" border=\"0\" alt=\"\"/></a></td>" +
           "<td align=\"right\">&nbsp;</td></tr></table>";
 
 	out.println(window.printBefore());
@@ -131,14 +132,14 @@ function gotoPrevious()
 %>
 
   <table border="0" cellpadding="0" cellspacing="0"><tr><td>&nbsp;&nbsp;</td><td>
-	 <table cellpadding=2 cellspacing=1 border=0 width="300" class=line>
+	 <table cellpadding="2" cellspacing="1" border="0" width="300" class="line">
 			  <tr>
-			    <td class=intfdcolor align=center nowrap width="100%" nowrap height=24><%out.println(navigation);%></td>
+			    <td class="intfdcolor" align="center" nowrap="nowrap" width="100%" height="24"><%out.println(navigation);%></td>
 			  </tr>
 			</table>
 			</td></tr></table>
   <%= separator %>
-  <CENTER>
+  <center>
   <table border="0" cellpadding="0" cellspacing="0"><tr><td>&nbsp;&nbsp;</td><td>
      <table width="98%" class="intfdcolor" border="0" cellpadding="0" cellspacing="2">
       <tr> 
@@ -148,12 +149,12 @@ function gotoPrevious()
          <td> 
           <table border="0" cellpadding="0" cellspacing="1" class="intfdcolor" width="100%">
            <tr>
-            <td align=center class="intfdcolor2" rowspan="2">&nbsp;</td>
+            <td align="center" class="intfdcolor2" rowspan="2">&nbsp;</td>
           <%
             int beginHour = new Integer(settings.getString("beginHour")).intValue();
             int endHour = new Integer(settings.getString("endHour")).intValue();
             for (int i = beginHour; i < endHour; i++) {
-              out.println("<td align=center class=\"intfdcolor2\" colspan=4>" +i + "H" + "</td>");
+              out.println("<td align=\"center\" class=\"intfdcolor2\" colspan=\"4\">" +i + "H" + "</td>");
             }
           %>
         </tr>
@@ -167,9 +168,9 @@ function gotoPrevious()
               String hour = String.valueOf(i >> 2);
               if (hour.length() < 2) hour = "0" + hour;
               String date = resources.getInputDate(agenda.getCurrentDay());
-              out.print("<A HREF=\"javascript:onClick=selectHour('"+ hour
+              out.print("<a href=\"javascript:onClick=selectHour('"+ hour
                 +"','"+minute+"','"+date+"')\">" + minute);
-              out.print("</A>");
+              out.print("</a>");
               out.println("</td>");
             }
           %>
@@ -191,7 +192,7 @@ function gotoPrevious()
             Attendee attendee = (Attendee) i.next();
             UserDetail user = agenda.getUserDetail(attendee.getUserId());
             out.println("<tr class=\"intfdcolor2\">");
-            out.println("<td class=\"txtnav\" nowrap>");
+            out.println("<td class=\"txtnav\" nowrap=\"nowrap\">");
             out.println(user.getLastName() + " " + user.getFirstName());
             out.println("</td>");
 						
@@ -230,12 +231,12 @@ function gotoPrevious()
 		              }
 		              else {
 		                if (nbBusy != 0) {
-		                  out.println("<td colspan="+nbBusy+" class=\"intfdcolor6\">&nbsp;</td>");
+		                  out.println("<td colspan=\""+nbBusy+"\" class=\"intfdcolor6\">&nbsp;</td>");
 		                  nbBusy = 0;
 		                  nbFree++;
 		                }
 		                else {
-		                  out.println("<td colspan="+nbFree+" class=\"intfdcolor4\">&nbsp;</td>");
+		                  out.println("<td colspan=\""+nbFree+"\" class=\"intfdcolor4\">&nbsp;</td>");
 		                  nbFree = 0;
 		                  nbBusy++;
 		                }
@@ -245,11 +246,11 @@ function gotoPrevious()
             } //end hour
 
             if (nbBusy != 0) {
-                out.println("<td colspan="+nbBusy+" class=\"intfdcolor6\">&nbsp;</td>");
+                out.println("<td colspan=\""+nbBusy+"\" class=\"intfdcolor6\">&nbsp;</td>");
                 nbBusy = 0;
             } else
             if (nbFree != 0) {
-                out.println("<td colspan="+nbFree+" class=\"intfdcolor4\">&nbsp;</td>");
+                out.println("<td colspan=\""+nbFree+"\" class=\"intfdcolor4\">&nbsp;</td>");
                 nbFree = 0;
             }
 
@@ -261,19 +262,19 @@ function gotoPrevious()
        </td>
       </tr>
       <tr>
-				      <td>
-    				  				<table align=center>
-																  <tr><td class="intfdcolor6outline" width=12>&nbsp;</td><td>&nbsp;<%=agenda.getString("busy")%></td></tr>
-				      				</table>
-											</td>								  
-						</tr>
+		<td>
+    		<table align="center">
+				<tr><td class="intfdcolor6outline" width="12">&nbsp;</td><td>&nbsp;<%=agenda.getString("busy")%></td></tr>
+			</table>
+		</td>								  
+		</tr>
      </table>
     </td>
    </tr>
   </table>
   </td><td>&nbsp;&nbsp;</td></tr>
   </table>
-</CENTER>
+</center>
 
 <%
 	out.println(frame.printMiddle());
@@ -282,9 +283,9 @@ function gotoPrevious()
 	out.println(window.printAfter());
 %>
 
-<FORM NAME="busyTimeForm" ACTION="busyTime.jsp" METHOD="POST">
+<form name="busyTimeForm" action="busyTime.jsp" method="post">
   <input type="hidden" name="Action"/>
   <input type="hidden" name="Form" value="<%=String.valueOf(formIndex)%>"/>
-</FORM>
-</BODY>
-</HTML>
+</form>
+</body>
+</html>

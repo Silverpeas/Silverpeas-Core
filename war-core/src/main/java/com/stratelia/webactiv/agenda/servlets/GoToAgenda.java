@@ -34,6 +34,9 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class GoToAgenda extends GoTo {
+  
+  private static final long serialVersionUID = -6521628766331966518L;
+
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
     String url = "ViewOtherAgenda?Id=" + objectId;

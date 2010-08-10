@@ -84,10 +84,13 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 %>
 
-<HTML>
-<HEAD>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
 <% out.println(graphicFactory.getLookStyleSheet()); %>
-<Script language="JavaScript">
+<script type="text/javascript">
 
 function viewJournal(journalId)
 {
@@ -122,12 +125,12 @@ function updateAgendaDay(day)
 }
 
 </script>
-</HEAD>
+</head>
 <%
   if (updateAgendaDay != null)
-    out.println("<BODY id=\"agenda\" onLoad=\"updateAgendaDay('"+updateAgendaDay+"')\">");
+    out.println("<body id=\"agenda\" onload=\"updateAgendaDay('"+updateAgendaDay+"')\">");
   else
-    out.println("<BODY id=\"agenda\">");
+    out.println("<body id=\"agenda\">");
 
  String acceptIcon = m_context + "/util/icons/ok.gif";
  String refuseIcon =  m_context + "/util/icons/refus.gif";
@@ -144,7 +147,7 @@ function updateAgendaDay(day)
 
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
   <tr>
-    <td valign=top> 
+    <td valign="top"> 
       <table border="0" align="center" width="98%" cellspacing="1" cellpadding="1" class="intfdcolor">
         <tr valign="top">
           <td width="100%" align="center" class="intfdcolor4">
@@ -153,58 +156,58 @@ function updateAgendaDay(day)
             <%
             Iterator i = tentatives.iterator();
             while (i.hasNext()) {
-              out.print("<TR>");
+              out.print("<tr>");
               Schedulable schedule = (Schedulable) i.next();
-              out.print("<TD>");
+              out.print("<td>");
               out.print("<a href=\"javascript:onClick=viewJournal('"+schedule.getId()+"')\">");
               out.print(schedule.getName());
               out.println("</a>");
-              out.print("</TD>");
+              out.print("</td>");
               
               if (schedule.getStartDay().equals(schedule.getEndDay())) {
-                out.print("<TD nowrap>");
+                out.print("<td nowrap=\"nowrap\">");
                 String startDay = resources.getInputDate(schedule.getStartDate());
-                out.print("<A HREF=\"javascript:onClick=viewAgenda('"+startDay+"')\">");
+                out.print("<a href=\"javascript:onClick=viewAgenda('"+startDay+"')\">");
                 out.print(resources.getOutputDate(schedule.getStartDate()));
-                out.print("</A>");
-                out.print("</TD>");
-                out.print("<TD class=\"txtnote\" nowrap>");
+                out.print("</a>");
+                out.print("</td>");
+                out.print("<td class=\"txtnote\" nowrap=\"nowrap\">");
                 if (schedule.getStartHour() != null) {
                   out.print(schedule.getStartHour());
                   if (schedule.getEndHour() != null) {
                     out.print(" - " +schedule.getEndHour());
                   }
                 }
-                out.print("</TD>");
+                out.print("</td>");
               }
               else {
-                out.print("<TD class=\"txtnote\" nowrap>");
+                out.print("<td class=\"txtnote\" nowrap=\"nowrap\">");
                 String startDay = resources.getInputDate(schedule.getStartDate());
-                out.print("<A HREF=\"javascript:onClick=viewAgenda('"+startDay+"')\">");
+                out.print("<a href=\"javascript:onClick=viewAgenda('"+startDay+"')\">");
                 out.print(resources.getOutputDate(schedule.getStartDate()));
-                out.print("</A>");
+                out.print("</a>");
                 if (schedule.getStartHour() != null) {
                   out.print(" - " + schedule.getStartHour());
                 }
-                out.print("</TD>");
-                out.print("<TD class=\"txtnote\" nowrap>");
+                out.print("</td>");
+                out.print("<td class=\"txtnote\" nowrap=\"nowrap\">");
                 out.print(resources.getOutputDate(schedule.getEndDate()));
                 if (schedule.getEndHour() != null) {
                   out.print(" - " +schedule.getEndHour());
                 }
-                out.println("</TD>");
+                out.println("</td>");
               }
-              out.print("<TD><a href=\"javascript:onClick=setParticipationStatus('"+
+              out.print("<td><a href=\"javascript:onClick=setParticipationStatus('"+
                 schedule.getId()+"','"+agenda.getUserId()+"','"+
                 ParticipationStatus.ACCEPTED+"','"+resources.getInputDate(schedule.getStartDate())+"')\">");
-              out.print("<img title=\"" + agenda.getString("accepterInvitation") + "\" src=\"" + acceptIcon + "\" border=0");
-              out.print("</img></a></td>");
-              out.print("<TD><a href=\"javascript:onClick=setParticipationStatus('"+
+              out.print("<img title=\"" + agenda.getString("accepterInvitation") + "\" src=\"" + acceptIcon + "\" border=\"0\"/>");
+              out.print("</a></td>");
+              out.print("<td><a href=\"javascript:onClick=setParticipationStatus('"+
                 schedule.getId()+"','"+agenda.getUserId()+"','"+
                 ParticipationStatus.DECLINED+"','"+resources.getInputDate(schedule.getStartDate())+"')\">");
-              out.print("<img title=\"" + agenda.getString("refuserInvitation") + "\" src=\"" + refuseIcon + "\" border=0");
-              out.println("</img></a></td>");
-              out.println("</TR>");
+              out.print("<img title=\"" + agenda.getString("refuserInvitation") + "\" src=\"" + refuseIcon + "\" border=\"0\"/>");
+              out.println("</a></td>");
+              out.println("</tr>");
             }
             %>
             <tr><td>&nbsp;</td></tr>
@@ -215,7 +218,7 @@ function updateAgendaDay(day)
     </td>
   </tr>
 </table>
-<br>
+<br/>
 <center>				
 <%
 				Button button = graphicFactory.getFormButton(agenda.getString("fermer"), "javascript:onClick=window.close()", false);
@@ -228,13 +231,13 @@ out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 
-<FORM NAME="journalForm" ACTION="tentative.jsp" METHOD=POST >
-  <input type="hidden" name="Action">
-  <input type="hidden" name="UserId">
-  <input type="hidden" name="Status">
-  <input type="hidden" name="JournalId">
-  <input type="hidden" name="Day">
-</FORM>
+<form name="journalForm" action="tentative.jsp" method="post">
+  <input type="hidden" name="Action"/>
+  <input type="hidden" name="UserId"/>
+  <input type="hidden" name="Status"/>
+  <input type="hidden" name="JournalId"/>
+  <input type="hidden" name="Day"/>
+</form>
 
-</BODY>
-</HTML>
+</body>
+</html>

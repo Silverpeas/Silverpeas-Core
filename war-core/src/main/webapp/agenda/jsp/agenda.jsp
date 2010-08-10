@@ -58,7 +58,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
   ResourceLocator settings = agenda.getSettings();
   ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(agenda.getLanguage());
 				
-  String action = (String) request.getParameter("Action");
+  String action = request.getParameter("Action");
 
   if (action == null) {
     action = "View";
@@ -82,15 +82,16 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     agenda.previousMonth();
   }
   else if (action.equals("ViewCategory")) {
-    String categoryId = (String) request.getParameter("Category");
-    if (categoryId.equals("0")) 
+    String categoryId = request.getParameter("Category");
+    if (categoryId.equals("0")) {
       agenda.setCategory(null);
-    else
+    } else {
       agenda.setCategory(agenda.getCategory(categoryId));
+    }
     action = "View";
   }
   else if (action.equals("ViewParticipation")) {
-    String participation = (String) request.getParameter("Participation");
+    String participation = request.getParameter("Participation");
     agenda.getParticipationStatus().setString(participation);
     action = "View";
   }
@@ -100,25 +101,18 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
   String subscribeAgendaUrl = (String) request.getAttribute("MyAgendaUrl");
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=generalMessage.getString("GML.popupTitle")%></TITLE>
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=generalMessage.getString("GML.popupTitle")%></title>
 <% if (StringUtil.isDefined(rssURL)) { %>
 	<link rel="alternate" type="application/rss+xml" title="<%=resources.getString("agenda.agenda")%> : <%=resources.getString("agenda.rssNext")%>" href="<%=m_context+rssURL%>"/>
 <% } %>
 <% out.println(graphicFactory.getLookStyleSheet()); %>
-<SCRIPT LANGUAGE="JAVASCRIPT" SRC="<%=javaScriptSrc%>"></SCRIPT>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/overlib.js"></script>
-<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
-<Script language="JavaScript">
-
-function viewAgenda()
-{
-    document.agendaForm.Action.value = "View";
-    document.agendaForm.submit();
-}
-
+<script type="text/javascript">
 function viewByYear()
 {
     document.agendaForm.action = "ViewByYear";
@@ -237,8 +231,9 @@ function viewCurrentAgenda()
     document.mainForm.submit();
 }
 </script>
-</HEAD>
-<BODY id="agenda">
+</head>
+<body id="agenda">
+<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 <%
 	Window window = graphicFactory.getWindow();
 
@@ -252,14 +247,15 @@ function viewCurrentAgenda()
 	if ("yes".equals(settings.getString("sharingModeAvailable")))
 	{
 		operationPane.addOperation(viewOtherAgenda, agenda.getString("viewOtherAgenda"), "javascript:onClick=viewOtherAgenda()");
-		if (agenda.isOtherAgendaMode())
+		if (agenda.isOtherAgendaMode()) {
 			operationPane.addOperation(viewCurrentAgenda, agenda.getString("viewCurrentAgenda"), "javascript:onClick=viewCurrentAgenda()");
+		}
 	}
 
 	if ("yes".equals(settings.getString("importCalendarAvailable")) && !agenda.isOtherAgendaMode())
 	{
-					operationPane.addLine();
-					operationPane.addOperation(importSettingsSrc, agenda.getString("agenda.importSettings"), "ImportSettings");						
+		operationPane.addLine();
+		operationPane.addOperation(importSettingsSrc, agenda.getString("agenda.importSettings"), "ImportSettings");						
 	}
 
 	if (!agenda.isOtherAgendaMode())
@@ -285,152 +281,94 @@ function viewCurrentAgenda()
     out.println(frame.printBefore());
 
 //Navigation de la browsbar
-
-	String navigation = "<table cellpadding=0 cellspacing=0 border=0 width=200><tr><td width=\"12\" align=\"right\"><a href=\"javascript:onClick=gotoPrevious()\"><img src="+ arrLeft +" border=\"0\"></a></td>" +
-		        "<td align=\"center\" nowrap><span class=\"txtnav\">";
+	String navigationLabel = "";
 	if (agenda.getCurrentDisplayType() == AgendaHtmlView.BYDAY) {
-  	  navigation += agenda.getString("jour"+agenda.getStartDayInWeek()) + " " + 
+	  navigationLabel += agenda.getString("jour"+agenda.getStartDayInWeek()) + " " + 
 		    agenda.getStartDayInMonth() + " " +
 		    agenda.getString("mois"+agenda.getStartMonth()) + " " +
 		    agenda.getStartYear();
 	}
 	else if (agenda.getCurrentDisplayType() == AgendaHtmlView.BYWEEK) {
-	  navigation += agenda.getStartDayInMonth();
+	  navigationLabel += agenda.getStartDayInMonth();
 	  if ( agenda.getStartMonth() != agenda.getEndMonth() ) {
-	     navigation += " " +  agenda.getString("mois"+agenda.getStartMonth());
+	    navigationLabel += " " +  agenda.getString("mois"+agenda.getStartMonth());
 	     if ( agenda.getStartYear() != agenda.getEndYear() )
-		 navigation += " " +  agenda.getStartYear();
+	       navigationLabel += " " +  agenda.getStartYear();
 	  }
-	  navigation += " - " +
+	  navigationLabel += " - " +
 		    agenda.getEndDayInMonth() + " " +
 		    agenda.getString("mois"+agenda.getEndMonth()) + " " +
 		    agenda.getEndYear();
 	} 
 	else if (agenda.getCurrentDisplayType() == AgendaHtmlView.BYMONTH) {
-	  navigation += agenda.getString("mois"+agenda.getStartMonth()) + " " + agenda.getStartYear();
+	  navigationLabel += agenda.getString("mois"+agenda.getStartMonth()) + " " + agenda.getStartYear();
 	}
 	else if (agenda.getCurrentDisplayType() == AgendaHtmlView.BYYEAR) {
-	  navigation += agenda.getStartYear();
+	  navigationLabel += agenda.getStartYear();
 	}
-
-	navigation += "</span></td>" +
-          "<td width=\"12\"><a href=\"javascript:onClick=gotoNext()\"><img src="+ arrRight +" border=\"0\"></a></td>" +
-          "<td align=\"right\"></td></tr></table>";
-		  %>
-
-<CENTER>
-
-<TABLE CELLPADDING=0 CELLSPACING=0 width="98%" border=0>
-    <TR>
-		<TD bgcolor=000000>
-			<table cellpadding=2 cellspacing=1 border=0 height=28>
-				<tr>
-					<td class=intfdcolor align=center nowrap nowrap><%out.println(navigation);%></td>
-				</tr>
-			</table>
-		 </TD>
-		 <TD><img src="<%=noColorPix%>" width=2></TD>
-		 <TD bgcolor=000000>
-		 	<table cellpadding=2 cellspacing=1 width="90%" height=28>
-		 		<form method="post" name="gotoDateForm" action="#">
-		 			<tr>
-		 				<td class=intfdcolor align=center nowrap width="120">
-		 					<input type="text" name="Date" size="12" maxlength="10" align="middle" value="<%=DateUtil.getInputDate(new Date(), agenda.getLanguage())%>" onClick="this.value='';">
-		 					<a href="javascript:onClick=selectDay(document.gotoDateForm.Date.value)">
-		 					<img src="<%=btOk%>" border="0" align="top"></a>
-		 				</td>
-		 			</tr>
-		 		</form>
-		 	</table>
-		 </TD>
-		 <TD><img src="<%=noColorPix%>" width=2></TD>
-		 <TD bgcolor=000000>
-		 	<table cellpadding=2 cellspacing=1 width="100" height=28>
-		 		<tr>
-		 			<td class=intfdcolor align=center nowrap width="100%">
-		 				<a class="hrefComponentName" href="javascript:onClick=selectDay('<%=resources.getInputDate(new java.util.Date())%>')"><%=agenda.getString("aujourdhui")%></a>
-		 			</td>
-		 		</tr>
-		 	</table>
-		 </TD>
-		 <%
-		 //Other agenda ?
-		 if (agenda.isOtherAgendaMode())
-		 {		
-		 %>
-		 <td width=95%>
-		 	<table align="center">
-		 		<tr>
-		 			<td>
-		 				&nbsp;<%=resources.getStringWithParam("userAgenda", agenda.getAgendaUserDetail().getDisplayedName())%>
-		 				&nbsp;<a href=<%=link%> ><img src=<%=iconLink%> border="0" alt="<%=resources.getString("agenda.CopyAgendaLink")%>" title="<%=resources.getString("agenda.CopyAgendaLink")%>" ></a></td>
-
-		 			</td>
-		 		</tr>
-		 	</table>
-		 </td>
-		 <%
-		 }
-		 else
-		 { %>
-		 <td width=95%>&nbsp;</td>
-		 <%
-		 }
-	%>
-	</tr>
-  </TABLE>
-
+  %>
+<div id="navigation">
+	<div id="currentScope">
+		<a href="javascript:onClick=gotoPrevious()"><img src="<%=arrLeft %>" border="0" alt="" align="top"/></a>
+		<span class="txtnav"><%=navigationLabel %></span>
+		<a href="javascript:onClick=gotoNext()"><img src="<%=arrRight %>" border="0" alt="" align="top"/></a>
+	</div>
+	<div id="jump">
+		<form method="post" name="gotoDateForm" action="#">
+			<input type="text" name="Date" size="12" maxlength="10" align="middle" value="<%=DateUtil.getInputDate(new Date(), agenda.getLanguage())%>" onclick="this.value='';"/>
+			<a href="javascript:onClick=selectDay(document.gotoDateForm.Date.value)"><img src="<%=btOk%>" border="0" align="top" alt="OK"/></a>
+		 </form>
+	</div>
+	<div id="today">
+		<a href="javascript:onClick=selectDay('<%=resources.getInputDate(new java.util.Date())%>')"><%=agenda.getString("aujourdhui")%></a>
+	</div>
+	<% if (agenda.isOtherAgendaMode()) { %>
+		<div id="others">
+			<%=resources.getStringWithParam("userAgenda", agenda.getAgendaUserDetail().getDisplayedName())%>
+			&nbsp;<a href="<%=link%>"><img src="<%=iconLink%>" border="0" alt="<%=resources.getString("agenda.CopyAgendaLink")%>" title="<%=resources.getString("agenda.CopyAgendaLink")%>"/></a>
+		</div>		
+	<% } %>
+</div>
+<div id="agendaView">
  <%
-      out.println(separator);
       AgendaHtmlView view = agenda.getCurrentHtmlView();
       String html =  view.getHtmlView();
       out.println(html);
-	  out.println(separator);
- %>    
-
-<TABLE CELLPADDING=0 CELLSPACING=0 width="98%" border=0>
-        <TR>
-				<FORM NAME="categoryForm" ACTION="agenda.jsp" METHOD="POST">
-				<input type="hidden" name="Action" value="ViewCategory">
-          <TD nowrap bgcolor=000000>
-            <table cellpadding=1 cellspacing=1 border=0 width="100%">
-							<tr>
-								<td class=intfdcolor align=center nowrap width="100%" height="24">
-	              <span class="txtnav"><%=agenda.getString("categories")%> : </span>
-                  <SELECT name="Category" onChange="document.categoryForm.submit();">
-                  <OPTION VALUE="0"><%=agenda.getString("toutesCategories")%></option>
+ %>
+ </div>
+ 	<div id="footer">
+ 		<div id="categories">
+ 			<form name="categoryForm" action="agenda.jsp" method="post">
+				<input type="hidden" name="Action" value="ViewCategory"/>
+				<span class="txtnav"><%=agenda.getString("categories")%> : </span>
+                <select name="Category" onchange="document.categoryForm.submit();">
+                  <option value="0"><%=agenda.getString("toutesCategories")%></option>
 <%
                 Collection categories = agenda.getAllCategories();
                 Iterator i = categories.iterator();
                 while (i.hasNext()) {
                   Category category = (Category) i.next();
                   boolean selected = false;
-                  if (agenda.getCategory() != null)
-                    if (agenda.getCategory().getId().equals(category.getId()))
+                  if (agenda.getCategory() != null) {
+                    if (agenda.getCategory().getId().equals(category.getId())) {
                       selected = true;
-                  if (selected)
-                    out.println("<OPTION SELECTED VALUE=\""+category.getId()+"\">" + category.getName() + "</option>");
-                  else
-                    out.println("<OPTION VALUE=\""+category.getId()+"\">" + category.getName() + "</option>");
+                    }
+                  }
+                  if (selected) {
+                    out.println("<option selected=\"selected\" value=\""+category.getId()+"\">" + category.getName() + "</option>");
+                  } else {
+                    out.println("<option value=\""+category.getId()+"\">" + category.getName() + "</option>");
+                  }
                 }
 %>
-                  </SELECT>
-
-								</td>
-							</tr>
-
-						</table>
-          </TD>
-          </FORM>
-					<TD><img src="<%=noColorPix%>" width=2></TD>
-				<FORM NAME="participationForm" ACTION="agenda.jsp" METHOD="POST">
-				<input type="hidden" name="Action" value="ViewParticipation">
-      <TD bgcolor=000000>
-										<table cellpadding=1 cellspacing=1 border=0 width="100%">
-														<tr>
-																		<td class=intfdcolor align=center nowrap width="100%" height="24" >
-					              <span class="txtnav"><%=agenda.getString("participations")%> : </span>
-				                  <SELECT name="Participation" onChange="document.participationForm.submit();">
+                  </select>
+             </form>
+ 		</div>
+ 		<div id="invitations">
+ 			<form name="participationForm" action="agenda.jsp" method="post">
+				<input type="hidden" name="Action" value="ViewParticipation"/>
+				<span class="txtnav"><%=agenda.getString("participations")%> : </span>
+				<select name="Participation" onchange="document.participationForm.submit();">
 <%
                 String[] participations = ParticipationStatus.getJournalParticipationStatus();
                 
@@ -439,78 +377,65 @@ function viewCurrentAgenda()
                   if (agenda.getParticipationStatus().getString().equals(participations[pi]) )
                     selected = true;
                   if (selected)
-                    out.println("<OPTION SELECTED VALUE=\""+participations[pi]+"\">" + agenda.getString("participations" + participations[pi]) + "</option>");
+                    out.println("<option selected=\"selected\" value=\""+participations[pi]+"\">" + agenda.getString("participations" + participations[pi]) + "</option>");
                   else
-                    out.println("<OPTION VALUE=\""+participations[pi]+"\">" + agenda.getString("participations" + participations[pi]) + "</option>");
+                    out.println("<option value=\""+participations[pi]+"\">" + agenda.getString("participations" + participations[pi]) + "</option>");
                 }
 %>
-                  </SELECT>
-																</td>
-											</tr>
-						</table>
-    </TD>	 
-				<%
-				if (agenda.hasTentativeSchedulables()) { %>
-						<TD><img src="<%=noColorPix%>" width=1>
-											<a href="javascript:onClick=viewTentative()"><img name="addnote" border="0" src="icons/alarm_bell.gif" alt="Voir les invitations" title="Voir les invitations"></a>
-						</TD>
-		 	<% } 
-				//Other agenda ?
-				if (agenda.isOtherAgendaMode() && (agenda.getCurrentDisplayType()==AgendaHtmlView.BYDAY || agenda.getCurrentDisplayType()==AgendaHtmlView.BYWEEK))
-				{		%>
-								<td width=50%>
-												<table align="center">
-																<tr>
-																				<td width=20>&nbsp;</td>
-																				<td class="publicEventOutline" width=12>&nbsp;</td>
-																				<td>
-																								&nbsp;<%=agenda.getString("publicEventLabel")%>
-																				</td>
-																				<td width=12>&nbsp;</td>
-																				<td class="privateEventOutline" width=12>&nbsp;</td>
-																				<td>
-																								&nbsp;<%=agenda.getString("privateEventLabel")%>
-																				</td>
-																</tr>
-												</table>
-									</td>
-			<% }	else { %>
-								<td width=50%>&nbsp;</td>
+                  </select>
+            </form>
+ 		</div>
+ 		<% if (agenda.hasTentativeSchedulables()) { %>
+ 			<div id="alert">
+ 				<a href="javascript:onClick=viewTentative()"><img name="addnote" border="0" src="icons/alarm_bell.gif" alt="Voir les invitations" title="Voir les invitations"/></a>
+ 			</div>
+ 		<% } %>
+ 		<% if (agenda.isOtherAgendaMode() && (agenda.getCurrentDisplayType()==AgendaHtmlView.BYDAY || agenda.getCurrentDisplayType()==AgendaHtmlView.BYWEEK)) {	%>
+ 			<div id="caption">
+	 			<table align="center" cellpadding="0">
+					<tr>
+						<td width="12">&nbsp;</td>
+						<td class="publicEventOutline" width="12">&nbsp;</td>
+						<td>
+							&nbsp;<%=agenda.getString("publicEventLabel")%>
+						</td>
+						<td width="12">&nbsp;</td>
+						<td class="privateEventOutline" width="12">&nbsp;</td>
+						<td>
+							&nbsp;<%=agenda.getString("privateEventLabel")%>
+						</td>
+					</tr>
+				</table>
+			</div>
+ 		<% } %>
+ 		<div id="rss">
+ 			<% if (StringUtil.isDefined(rssURL)) { %>
+				<a href="<%=m_context+rssURL%>"><img src="icons/rss.gif" border="0" alt="RSS"/></a>
 			<% } %>
-        </TR>
-      </TABLE>
-		</FORM>
-		<% if (StringUtil.isDefined(rssURL) || !agenda.isOtherAgendaMode()) { %>
-			<table>
-			<tr>
-				<% if (StringUtil.isDefined(rssURL)) { %>
-					<td><a href="<%=m_context+rssURL%>"><img src="icons/rss.gif" border="0"></a><link rel="alternate" type="application/rss+xml" title="<%=resources.getString("agenda.agenda")%> : <%=resources.getString("agenda.rssNext")%>" href="<%=m_context+rssURL%>"></td>
-				<% } %>
-				<% if (!agenda.isOtherAgendaMode()) { %>
-					<td><a href="<%=m_context+subscribeAgendaUrl%>" title="<%=agenda.getString("agenda.Subscribe")%>"><img valign="middle" src="icons/ical.gif" border="0"></a></td>
-				<% } %>
-			</tr>
-			</table>
-		<% } %>	
-</CENTER>
+			<% if (!agenda.isOtherAgendaMode()) { %>
+				<a href="<%=m_context+subscribeAgendaUrl%>" title="<%=agenda.getString("agenda.Subscribe")%>"><img align="top" src="icons/ical.gif" border="0" alt=""/></a>
+			<% } %>
+ 		</div>
+ 	</div>
+	
 <%		
       out.println(frame.printAfter());
       out.println(window.printAfter());
 %>
 
-<FORM NAME="agendaForm" METHOD="POST">
-  <input type="hidden" name="Action">
-  <input type="hidden" name="Day">
-</FORM>
-
-<FORM NAME="journalForm" METHOD="POST">
-  <input type="hidden" name="JournalId">
-  <input type="hidden" name="Hour">
-  <input type="hidden" name="Action">
-</FORM>
-
-<form NAME="mainForm" ACTION="ViewCurrentAgenda" METHOD="POST">
+<form name="agendaForm" method="post" action="">
+  <input type="hidden" name="Action"/>
+  <input type="hidden" name="Day"/>
 </form>
 
-</BODY>
-</HTML>
+<form name="journalForm" method="post" action="">
+  <input type="hidden" name="JournalId"/>
+  <input type="hidden" name="Hour"/>
+  <input type="hidden" name="Action"/>
+</form>
+
+<form name="mainForm" action="ViewCurrentAgenda" method="post">
+</form>
+
+</body>
+</html>
