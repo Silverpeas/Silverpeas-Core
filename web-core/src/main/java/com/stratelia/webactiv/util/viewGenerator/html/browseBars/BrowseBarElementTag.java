@@ -31,7 +31,7 @@ public class BrowseBarElementTag extends TagSupport {
 
   private String label;
   private String link;
-  private String id;
+  private String eltId;
   /**
    * 
    */
@@ -46,13 +46,13 @@ public class BrowseBarElementTag extends TagSupport {
   }
 
   public void setId(String id) {
-    this.id = id;
+    this.eltId = id;
   }
 
   @Override
   public int doEndTag() throws JspException {
-    BrowseBarElement element = new BrowseBarElement(label, link, id);
-    BrowseBarTag browseBar = (BrowseBarTag) getParent();
+    BrowseBarElement element = new BrowseBarElement(label, link, eltId);
+    BrowseBarTag browseBar = (BrowseBarTag) findAncestorWithClass(this, BrowseBarTag.class);
     browseBar.addElement(element);
     return EVAL_PAGE;
   }

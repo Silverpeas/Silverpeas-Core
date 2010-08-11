@@ -25,7 +25,6 @@ package com.stratelia.webactiv.util.viewGenerator.html.buttonPanes;
 
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.buttons.Button;
-import com.stratelia.webactiv.util.viewGenerator.html.frame.Frame;
 import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
@@ -37,6 +36,8 @@ import javax.servlet.jsp.tagext.TagSupport;
 public class ButtonPaneTag  extends TagSupport {
   
   private static final String BUTTON_PANE_ATT = "pageContextButtonPane";
+  
+  private static final long serialVersionUID = 1L;
 
 
   @Override
