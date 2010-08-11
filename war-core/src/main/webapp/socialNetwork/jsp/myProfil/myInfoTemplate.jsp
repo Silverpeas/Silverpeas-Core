@@ -27,73 +27,8 @@
 <html>
   <head>
     <view:looknfeel />
+    <link rel="stylesheet" type="text/css" href="<c:url value="/socialNetwork/jsp/myProfil/myProfil.css"/>"/>
     <title><fmt:message key="invitation.action.title" /> </title>
-    <style type="text/css">
-      #mask {
-        position:absolute;
-        left:0;
-        top:0;
-        z-index:9000;
-        background-color:#000;
-        display:none;
-      }
-
-      #boxes .window {
-        position:absolute;
-        left:0;
-        top:0;
-        width:440px;
-        height:200px;
-        display:none;
-        z-index:9999;
-        padding:20px;
-      }
-
-      #boxes #dialog {
-        background-color:#FFFFFF;
-        height:150px;
-        padding:10px;
-        width:500px;
-      }
-
-      #page{
-        width : 100%;
-        border : 0;
-      }
-
-      #profil80{
-        height : 600px;
-        vertical-align: top;
-      }
-
-      #profilHead {
-        height:120px;
-        vertical-align:top;
-        width:auto;
-      }
-
-      #profilCore{
-        float : left;
-        height : auto;
-        width : 100%;
-        vertical-align: top;
-      }
-
-      #navigation{
-        width : 20%;
-        float:left;
-      }
-
-      #headAndCore{
-        float: left;
-        width : 75%;
-      }
-
-      .format{
-        width:100%;
-        border: 0; 
-      }
-    </style>
     <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-1.3.2.min.js" />" ></script>
     <script type="text/javascript"
     src="<c:url value="/util/javaScript/animation.js"/>"></script>
@@ -238,7 +173,7 @@
       <view:operation action="javascript:enableFields()" altText="Changer mes infos" icon="" />
     </view:operationPane>
     <view:window>
-      <div id="page">
+<!--      <div id="myInfotemplate">-->
         <div id ="navigation">
           <view:board>
             <%@include file="myProfilNavigation.jsp" %>
@@ -254,7 +189,7 @@
                 <%@include file="myInfosBody.jsp" %>
              </div>
         </div>
-      </div>
+<!--      </div>-->
     </view:window>
 
   </body>

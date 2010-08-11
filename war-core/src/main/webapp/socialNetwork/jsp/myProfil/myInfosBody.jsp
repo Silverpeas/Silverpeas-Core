@@ -1,32 +1,6 @@
 <%--<%@ include file="check.jsp" %>--%>
-
 <style type="text/css">
-#informations{
-width: 100%;
-}
 
-.fixe{
-width : 100%;
-height:25px;
-}
-
-.define{
-float:left;
-width:25%;
-font-weight:bold;
-
-}
-
-#myInfoAction{
-text-align: center;
-padding-left: 40%;
-
-}
-
-.button {
-float:left;
-margin: 4px;
-}
 
 
 </style>
@@ -50,31 +24,25 @@ margin: 4px;
             <view:board>
                 <form method="POST" name="myInfoUpdateForm" action="">
                     <div id="informations">
-                      <div class="fixe">
-                          <div class="define"><fmt:message key="GML.position" bundle="${GML}"/></div>
-                            <div>
+                      <div id="form">
+                          <div class="attribut"><fmt:message key="GML.position" bundle="${GML}"/></div>
                                 <fmt:message key="${snUserFull.userFull.accessLevel}" var="position" />
                                 <fmt:message key="${position}" bundle="${GML}"/>
-                            </div>
                       </div>
                         
-                      <div class="fixe">
-                        <div class="define"><fmt:message key="GML.eMail" bundle="${GML}"/></div>
-                            <div >
+                      <div id="form">
+                        <div class="attribut"><fmt:message key="GML.eMail" bundle="${GML}"/></div>
                                 ${snUserFull.userFull.eMail}
-                            </div>
                       </div>
                        
 
                         <c:forEach items="${propertiesKey}" var="propertys" varStatus="status">
 
-                             <div class="fixe">
-                                <div class="define">
+                             <div id="form">
+                                <div class="attribut">
                                     ${propertiesKey[status.index]}
                                 </div>
-                                <div>
                                     <input type="text" id="${properties[status.index]}" name="prop_${properties[status.index]}" size="50" maxlength="99" value="${propertiesValue[status.index]}">
-                                </div>
                             </div>
                         </c:forEach>
                     

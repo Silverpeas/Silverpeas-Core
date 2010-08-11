@@ -1,70 +1,9 @@
 <%--<%@ include file="check.jsp" %>--%>
 
-<style type="text/css">
-
-  #principal{
-    width: 100%;
-    border : 0;
-  }
-
-  #principal #profilHeadPhote{
-    height: 100px;
-    width :100px;
-    vertical-align: top;
-    background-repeat: no-repeat;
-    background-image:url("http://localhost:8000/silverpeas/directory/jsp/icons/Photo_profil.jpg");
-    float:left;
-  }
-
-  #principal #profilHeadPhote .photo{
-    width  : 90px;
-    height : 90px;
-  }
-
-  #principal #profilHeadinfo{
-    height : 100;
-    width :40%;
-    float : left;
-    vertical-align: middle;
-  }
-
-
-  #principal #profilHeadAction{
-    width: 45%;
-    height : 100px;
-    float: right;
-    vertical-align: top;
-  }
- 
-  #principal #profilHeadAction #status {
-    float:right;
-    width:80%;
-  }
-  #principal #profilHeadAction #actionStatus {
-    float:right;
-    vertical-align:top;
-  }
-  
-
-  #boxes #dialog .barre{
-    float : right;
-    height: 25px;
-
-  }
-
-  #boxes #dialog #formButton .button{
-    font-size:0;
-    font-weight:bold;
-    padding-left:170px;
-    text-align:left;
-
-  }
-
-</style>
-<div id="principal">
+<div id="photoAndInfo">
   <!--  <div id ="photoandInfo">-->
   <div id="profilHeadPhote">
-    <img src="<c:url value="${snUserFull.profilPhoto}"/>" class="photo"/>
+    <img src="<c:url value="${snUserFull.profilPhoto}"/>" style="vertical-align: top" width="80" height="90" border="0" alt="viewUser" />
   </div>
 
   <div id="profilHeadinfo">
@@ -122,14 +61,14 @@
         </div>
       </form>
     </view:board>
-    <div id="formButton">
-      <div class="button"><!--
+    <div class="formButton">
+<!--      <div class="button">-->
        <br>
        <br>
         --><fmt:message key="directory.buttonValid" var="valid"/>
         <view:button label="${valid}" action="javascript:document.photoForm.submit();" disabled="false" />
         <%--<input type="submit" value="Valider" >--%>
-      </div>
+<!--      </div>-->
     </div>
   </div>
   <!-- Mask to cover the whole screen -->
