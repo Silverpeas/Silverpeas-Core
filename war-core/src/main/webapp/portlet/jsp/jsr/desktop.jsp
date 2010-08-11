@@ -81,14 +81,6 @@
 	out.println(window.printAfter());
 %>
 
-<script type="text/javascript" src="<%=m_context%>/portlet/jsp/jsr/js/jquery-1.2.6.js"></script>
-<script type="text/javascript" src="<%=m_context%>/portlet/jsp/jsr/js/ui.core.js"></script>
-<script type="text/javascript" src="<%=m_context%>/portlet/jsp/jsr/js/ui.dialog.js"></script>
-<script type="text/javascript" src="<%=m_context%>/portlet/jsp/jsr/js/ui.resizable.js"></script>
-<script type="text/javascript" src="<%=m_context%>/portlet/jsp/jsr/js/ui.draggable.js"></script>
-<script type="text/javascript" src="<%=m_context%>/portlet/jsp/jsr/js/ui.droppable.js"></script>
-<script type="text/javascript" src="<%=m_context%>/portlet/jsp/jsr/js/ui.sortable.js"></script>
-
 <% if (!disableMove.booleanValue()) { %>
 	<script type="text/javascript" src="<%=m_context%>/portlet/jsp/jsr/js/demo.js"></script>
 <% } %>

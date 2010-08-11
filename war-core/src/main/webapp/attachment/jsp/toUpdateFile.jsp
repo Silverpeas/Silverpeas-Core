@@ -52,16 +52,17 @@
 
       Window window = gef.getWindow();
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title><%=attResources.getString("GML.popupTitle")%></title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <% out.println(gef.getLookStyleSheet());%>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <script type="text/javascript" src="<%=m_Context%>/util/javaScript/animation.js"></script>
     <script type="text/javascript" src="<%=m_Context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=m_Context%>/util/javaScript/i18n.js"></script>
-    <script type="text/javascript" src="<%=m_Context%>/util/javaScript/jquery/jquery-1.3.2.min.js"></script>
-    <script type="text/javascript" language='Javascript'>
+    <script type="text/javascript">
       var attachmentMandatory = false;
 
       function update()
@@ -125,31 +126,31 @@
           out.println("<center>");
           out.println(board.printBefore());
     %>
-
+	
+	<form name="updateForm" action="<%=m_Context%>/attachment/jsp/updateFile.jsp" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
     <table border="0" cellspacing="0" cellpadding="5" width="100%">
-      <form name="updateForm" action="<%=m_Context%>/attachment/jsp/updateFile.jsp" method="POST" enctype="multipart/form-data" accept-charset="UTF-8">
         <%=I18NHelper.getFormLine(attResources, attachment, attResources.getLanguage())%>
         <tr align="justify">
-          <td class="txtlibform" nowrap align="left"><%=attResources.getString("GML.file")%> :</td>
+          <td class="txtlibform" nowrap="nowrap" align="left"><%=attResources.getString("GML.file")%> :</td>
           <td id="fileName"><%=fileName%></td>
         </tr>
         <tr>
-          <td class="txtlibform" nowrap align="left"><%=messages.getString("fichierJoint")%> :</td>
+          <td class="txtlibform" nowrap="nowrap" align="left"><%=messages.getString("fichierJoint")%> :</td>
           <td>
-            <input type="file" name="file_upload" size="60" class="INPUT">
-            <input type="hidden" name="IdAttachment" value="<%=attachmentId%>">
+            <input type="file" name="file_upload" size="60" class="INPUT"/>
+            <input type="hidden" name="IdAttachment" value="<%=attachmentId%>"/>
           </td>
         </tr>
         <tr>
-          <td class="txtlibform" nowrap><%=messages.getString("Title")%> :</td>
-          <td><input type="text" name="Title" size="60" id="fileTitle" value="<%=title%>"></td>
+          <td class="txtlibform" nowrap="nowrap"><%=messages.getString("Title")%> :</td>
+          <td><input type="text" name="Title" size="60" id="fileTitle" value="<%=title%>"/></td>
         </tr>
         <tr>
-          <td class="txtlibform" nowrap align="left" valign="top"><%=attResources.getString("GML.description")%> :</td>
+          <td class="txtlibform" nowrap="nowrap" align="left" valign="top"><%=attResources.getString("GML.description")%> :</td>
           <td><textarea name="Description" cols="60" rows="3" id="fileDesc"><%=info%></textarea></td>
         </tr>
-      </form>
     </table>
+    </form>
     <%
           out.println(board.printAfter());
           out.println("<br />" + buttonPane.print());

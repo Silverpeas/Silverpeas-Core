@@ -215,7 +215,7 @@ function viewOtherAgenda()
 
 function exportIcal()
 {
-	SP_openWindow('ToExportIcal','ToExportIcal','345','200','scrollbars=no, noresize, alwaysRaised');
+	SP_openWindow('ToExportIcal','ToExportIcal','500','230','scrollbars=no, noresize, alwaysRaised');
 }
 function importIcal()
 {

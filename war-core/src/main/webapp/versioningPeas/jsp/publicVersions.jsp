@@ -29,9 +29,6 @@
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
-<script src="<%=m_context %>/attachment/jsp/jquery-1.3.2.min.js" type="text/javascript"></script>
-<script src="<%=m_context %>/attachment/jsp/jquery.qtip-1.0.0-rc3.min.js" type="text/javascript"></script>
-
 <%
     ResourceLocator messages = new ResourceLocator("com.stratelia.silverpeas.versioningPeas.multilang.versioning", m_MainSessionCtrl.getFavoriteLanguage());
 
@@ -48,6 +45,7 @@
 <%
 out.println(gef.getLookStyleSheet());
 %>
+<script src="<%=m_context %>/attachment/jsp/jquery.qtip-1.0.0-rc3.min.js" type="text/javascript"></script>
 </head>
 <body>
 <%

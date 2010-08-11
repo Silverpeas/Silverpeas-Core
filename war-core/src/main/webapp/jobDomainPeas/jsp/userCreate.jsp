@@ -53,7 +53,6 @@
 <head>
 <% out.println(gef.getLookStyleSheet()); %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-1.2.6.js"></script>
 <script language="JavaScript">
 function SubmitWithVerif()
 {
@@ -97,7 +96,7 @@ function SubmitWithVerif()
 						}
 						else
 						{
-							alert("Crï¿½ation impossible...\nUn utilisateur de mï¿½me nom, mï¿½me prï¿½nom et mï¿½me email existe dï¿½jï¿½ !");
+							alert("Création impossible...\nUn utilisateur de même nom, même prénom et même email existe déjà !");
 						}
 					});
 		<% } else { %>

@@ -105,7 +105,6 @@
 
 <link type="text/css" rel="stylesheet" href="<%=m_Context%>/util/styleSheets/modal-message.css">
 
-<script type="text/javascript" src="<%=m_Context%>/util/javaScript/jquery/jquery-1.3.2.min.js"></script>
 <script type="text/javascript" src="<%=m_Context%>/util/javaScript/modalMessage/ajax-dynamic-content.js"></script>
 <script type="text/javascript" src="<%=m_Context%>/util/javaScript/modalMessage/modal-message.js"></script>
 <script type="text/javascript" src="<%=m_Context%>/util/javaScript/modalMessage/ajax.js"></script>
@@ -315,9 +314,8 @@
     <% } //end if dragAndDropEnable %>
     <tr>
       <td><!--formulaire de gestion des fichiers joints -->
-        <table border="0" cellspacing="3" cellpadding="0" width="100%">
-          <form name="attachmentForm" action="<%=m_Context%>/attachment/jsp/removeFile.jsp" method="POST">
-            <input type="hidden" name="Id" value="<%=id%>" />
+      	<form name="attachmentForm" action="<%=m_Context%>/attachment/jsp/removeFile.jsp" method="post">
+      		<input type="hidden" name="Id" value="<%=id%>" />
             <input type="hidden" name="ComponentId" value="<%=componentId%>" />
             <input type="hidden" name="Context" value="<%=context%>" />
             <input type="hidden" name="Url" value="<%=url%>" />
@@ -329,8 +327,9 @@
             <input type="hidden" name="FileLanguage" value="<%=contentLanguage%>" />
             <input type="hidden" name="update_attachment" value="false" />
             <input type="hidden" name="force_release" value="false" />
+        <table border="0" cellspacing="3" cellpadding="0" width="100%">
             <tr>
-              <td colspan="8" align="center" class="intfdcolor" height="1"><img src="<%=noColorPix%>"></td>
+              <td colspan="8" align="center" class="intfdcolor" height="1"><img src="<%=noColorPix%>" alt=""/></td>
             </tr>
             <tr>
               <td align="center"><b><%=messages.getString("type")%></b></td>
@@ -342,7 +341,7 @@
               <td align="center"><b><%=attResources.getString("GML.operations")%></b></td>
             </tr>
             <tr>
-              <td colspan="8" align="center" class="intfdcolor" height="1"><img src="<%=noColorPix%>"></td>
+              <td colspan="8" align="center" class="intfdcolor" height="1"><img src="<%=noColorPix%>" alt=""/></td>
             </tr>
             <%
                   String nameWritten;
@@ -376,12 +375,12 @@
                 <c:url var="webdavUrl" value="${pageScope.httpServerBase}/attachment/jsp/launch.jsp">
                   <c:param name="documentUrl" value="${pageScope.ooo_url}" />
                 </c:url>
-                <a href="<c:out value="${webdavUrl}"/>" id="webdav"><img src="<%=attachmentDetail.getAttachmentIcon(contentLanguage)%>" border="0"></a>
+                <a href="<c:out value="${webdavUrl}"/>" id="webdav"><img src="<%=attachmentDetail.getAttachmentIcon(contentLanguage)%>" border="0" alt=""/></a>
               </td>
               <%
                         } else {
               %>
-            <a id="other" href="<%=urlAttachment%>" target="_blank"><img src="<%=attachmentDetail.getAttachmentIcon(contentLanguage)%>" border="0"></a>
+            <a id="other" href="<%=urlAttachment%>" target="_blank"><img src="<%=attachmentDetail.getAttachmentIcon(contentLanguage)%>" border="0" alt=""/></a>
             </td>
             <%
                         }
@@ -550,11 +549,11 @@
             <%
                   }
             %>
-          </form>
           <tr>
-            <td colspan="8" align="center" class="intfdcolor" height="1"><img src="<%=noColorPix%>"></td>
+            <td colspan="8" align="center" class="intfdcolor" height="1"><img src="<%=noColorPix%>" alt=""/></td>
           </tr>
         </table>
+        </form>
       </td>
     </tr>
   </table>

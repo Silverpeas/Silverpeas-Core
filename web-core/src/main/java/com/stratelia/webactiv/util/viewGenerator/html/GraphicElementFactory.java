@@ -94,6 +94,10 @@ public class GraphicElementFactory extends Object {
   private String componentId = null;
   private MainSessionController mainSessionController = null;
 
+  private static final String JQUERY_JS = "jquery-1.3.2.min.js";
+  private static final String JQUERYUI_JS = "jquery-ui-1.7.3.custom.min.js";
+  private static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.7.3.custom.css";
+
   /**
    * Creates new GraphicElementFactory
    */
@@ -119,7 +123,7 @@ public class GraphicElementFactory extends Object {
 
   public static ResourceLocator getGeneralSettings() {
     if (generalSettings == null) {
-      generalSettings = new ResourceLocator("com.stratelia.webactiv.general", 
+      generalSettings = new ResourceLocator("com.stratelia.webactiv.general",
           I18NHelper.defaultLanguage);
     }
     return generalSettings;
@@ -285,7 +289,13 @@ public class GraphicElementFactory extends Object {
     code.append(charset);
     code.append("\"/>\n");
 
+    String specificJS = null;
+
     if (externalStylesheet == null) {
+
+      code.append("<link type=\"text/css\" href=\"").append(contextPath).append(
+          "/util/styleSheets/jquery/").append(JQUERYUI_CSS).append("\" rel=\"stylesheet\"/>\n");
+
       code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(contextPath);
       code.append(standardStyle).append("\"/>\n");
 
@@ -315,21 +325,27 @@ public class GraphicElementFactory extends Object {
             code.append(specificStyle).append("\"/>\n");
           }
 
-          String specificJS = getFavoriteLookSettings().getString("JavaScript." + componentName);
-          if (StringUtil.isDefined(specificJS)) {
-            code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append("/util/javaScript/jquery/jquery-1.3.2.min.js\"></script>\n");
-            code.append("<script type=\"text/javascript\" src=\"");
-            code.append(specificJS).append("\"></script>\n");
-          }
+          specificJS = getFavoriteLookSettings().getString("JavaScript." + componentName);
         }
       }
 
     } else {
       code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(externalStylesheet).append("\"/>\n");
     }
-    
-    //include specific browseBar javaScript
-    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append("/util/javaScript/browseBarComplete.js\"></script>\n");
+
+    // append javascript
+    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
+        "/util/javaScript/jquery/").append(JQUERY_JS).append("\"></script>\n");
+    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
+        "/util/javaScript/jquery/").append(JQUERYUI_JS).append("\"></script>\n");
+    if (StringUtil.isDefined(specificJS)) {
+      code.append("<script type=\"text/javascript\" src=\"").append(specificJS).append(
+          "\"></script>\n");
+    }
+
+    // include specific browseBar javaScript
+    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
+        "/util/javaScript/browseBarComplete.js\"></script>\n");
 
     if (getFavoriteLookSettings() != null
         && getFavoriteLookSettings().getString("OperationPane").toLowerCase()

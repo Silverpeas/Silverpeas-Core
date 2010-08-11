@@ -58,37 +58,34 @@
 <%
 out.println(graphicFactory.getLookStyleSheet());
 %>
-<link href="<%=m_context%>/util/styleSheets/modal-message.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/modal-message.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+
 <script type="text/javascript">
 	function calendar(indexForm, nameElement) {
 		SP_openWindow('<%=m_context+URLManager.getURL(URLManager.CMP_AGENDA)%>calendar.jsp?indiceForm='+indexForm+'&amp;nameElem='+nameElement,'Calendrier',200,200,'');
 	}
-		messageObj = new DHTML_modalMessage();	// We only create one object of this class
-		messageObj.setShadowOffset(5);	// Large shadow
 
-		function displayStaticMessage()
-		{
-			messageObj.setHtmlContent("<center><table border=\"0\"><tr><td align=\"center\"><br/><b><%=resources.getString("agenda.ExportInProgress")%></b></td></tr><tr><td><br/></td></tr><tr><td align=\"center\"><img src=\"<%=m_context%>/util/icons/inProgress.gif\" alt=\"\"/></td></tr></table></center>");
-			messageObj.setSize(200,150);
-			messageObj.setCssClassMessageBox(false);
-			messageObj.setShadowDivVisible(true);	// Disable shadow for these boxes
-			messageObj.display();
-		}
-
-		function closeMessage()
-		{
-			messageObj.close();
-		}
+	$(function() {
+		$("#exportMessage").dialog({
+			autoOpen: false,
+			height: 150,
+			width: 200,
+			modal: true,
+			draggable: false,
+			resizable: false,
+			//title: "<%=resources.getString("agenda.ExportIcalCalendar")%>",
+			open: function(event, ui) { 
+					$(".ui-dialog-titlebar-close").hide();
+					$(".ui-dialog-titlebar").hide();}
+		});
+	});
 		
-		function exportIcal()
-		{
+		function exportIcal() {
 			if (isCorrectForm()) {
-			 displayStaticMessage();
-			 setTimeout("document.exportIcalForm.submit();", 500);
+				$('#exportMessage').dialog('open');
+				setTimeout("document.exportIcalForm.submit();", 500);
 			}
 		}
 
@@ -172,7 +169,7 @@ out.println(graphicFactory.getLookStyleSheet());
 			<td align="center"><span class="txtlibform"><%=statusMessage%></span></td>
 	    </tr>
 	    <tr>
-	    	<td align="center"><a href="<%=urlFileCalendar%>"><%=calendarIcsFileName%></a>
+	    	<td align="center"><a href="<%=urlFileCalendar%>"><%=calendarIcsFileName%></a></td>
 	    </tr>
 	 </table>
 <% } else { %>
@@ -207,5 +204,10 @@ out.println(graphicFactory.getLookStyleSheet());
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
+<div id="exportMessage" style="display:none">
+	<center>
+		<table border="0"><tr><td align="center"><br/><b><%=resources.getString("agenda.ExportInProgress")%></b></td></tr><tr><td><br/></td></tr><tr><td align="center"><img src="<%=m_context%>/util/icons/inProgress.gif" alt=""/></td></tr></table>
+	</center>
+</div>
 </body>
 </html>

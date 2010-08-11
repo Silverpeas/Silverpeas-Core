@@ -46,7 +46,6 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/overlib.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-1.2.6.js"></script>
 <script language="JavaScript">
 <!--
 function removeItem(id) {	
@@ -71,7 +70,7 @@ function restore() {
 
 function jqCheckAll2(id, name)
 {
-   $("INPUT[@name=" + name + "][type='checkbox']").attr('checked', $('#' + id).is(':checked'));
+   $("input[name='" + name + "'][type='checkbox']").attr('checked', $('#' + id).is(':checked'));
 }
 
 -->

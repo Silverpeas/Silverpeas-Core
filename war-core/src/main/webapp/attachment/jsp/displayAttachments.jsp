@@ -28,10 +28,7 @@
 <%@page import="java.io.IOException"%>
 <%@ include file="checkAttachment.jsp"%>
 
-<script type="text/javascript" src="<%=m_Context%>/util/javaScript/jquery/jquery-1.3.2.min.js"></script>
 <script src="<%=m_Context%>/attachment/jsp/jquery.qtip-1.0.0-rc3.min.js" type="text/javascript"></script>
-<script src="<%=m_Context%>/util/javaScript/jquery/ui.core.js" type="text/javascript"></script>
-<script src="<%=m_Context%>/util/javaScript/jquery/ui.sortable.js" type="text/javascript"></script>
 
 <link type="text/css" rel="stylesheet" href="<%=m_Context%>/util/styleSheets/modal-message.css">
 
@@ -49,7 +46,7 @@
 
 <link rel="stylesheet" type="text/css" href="<%=m_Context%>/util/yui/menu/assets/menu.css"/>
 
-<style>
+<style type="text/css">
   <!--
   a.yuimenuitemlabel-disabled:hover {
     color: #B9B9B9;
@@ -345,7 +342,7 @@
     %>
 
 <% if (spinfireViewerEnable) {%>
-<script language="javascript">
+<script type="text/javascript">
   if (navigator.appName=='Microsoft Internet Explorer')
   {
     for (i=0; i<document.getElementsByName("switchView").length; i++)

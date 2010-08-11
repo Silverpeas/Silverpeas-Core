@@ -43,13 +43,15 @@
 
       Window window = gef.getWindow();
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title><%=attResources.getString("GML.popupTitle")%></title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <% out.println(gef.getLookStyleSheet());%>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <script type="text/javascript" src="<%=m_Context%>/util/javaScript/animation.js"></script>
-    <script type="text/javascript"  language='Javascript'>
+    <script type="text/javascript">
 
       function rtrim(texte){
         while (texte.substring(0,1) == ' '){
@@ -132,19 +134,19 @@
           out.println(board.printBefore());
     %>
 
+	<form name="addForm" action="<%=m_Context%>/attachment/jsp/saveFile.jsp" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
     <table border="0" cellspacing="0" cellpadding="5" width="100%">
-      <form name="addForm" action="<%=m_Context%>/attachment/jsp/saveFile.jsp" method="POST" enctype="multipart/form-data" accept-charset="UTF-8">
         <%=I18NHelper.getFormLine(attResources)%>
         <tr align="justify">
-          <td class="txtlibform" nowrap align="left"><%=messages.getString("fichierJoint")%> :</td>
-          <td><input type="file" name="file_upload" size="60" class="INPUT"></td>
+          <td class="txtlibform" nowrap="nowrap" align="left"><%=messages.getString("fichierJoint")%> :</td>
+          <td><input type="file" name="file_upload" size="60" class="INPUT"/></td>
         </tr>
         <tr>
-          <td class="txtlibform" nowrap align="left"><%=messages.getString("Title")%> :</td>
-          <td><input type="text" name="Title" size="60"></td>
+          <td class="txtlibform" nowrap="nowrap" align="left"><%=messages.getString("Title")%> :</td>
+          <td><input type="text" name="Title" size="60"/></td>
         </tr>
         <tr>
-          <td class="txtlibform" nowrap align="left" valign="top"><%=attResources.getString("GML.description")%> :</td>
+          <td class="txtlibform" nowrap="nowrap" align="left" valign="top"><%=attResources.getString("GML.description")%> :</td>
           <td><textarea name="Description" cols="60" rows="3"></textarea></td>
         </tr>
         <tr>
@@ -155,21 +157,21 @@
             </div>
           </td>
         </tr>
-      </form>
     </table>
+    </form>
     <%
           out.println(board.printAfter());
           out.println("<br/>" + buttonPane.print());
           out.println("</center>");
           out.println(frame.printAfter());
     %>
-    <form name="linkForm" action="<%=m_Context%>/attachment/jsp/saveLink.jsp" method="POST">
-      <input type="hidden" name="Id" value="<%=id%>">
-      <input type="hidden" name="ComponentId" value="<%=componentId%>">
-      <input type="hidden" name="Context" value="<%=context%>">
-      <input type="hidden" name="Url" value="<%=url%>">
-      <input type="hidden" name="Title">
-      <input type="hidden" name="Description">
+    <form name="linkForm" action="<%=m_Context%>/attachment/jsp/saveLink.jsp" method="post">
+      <input type="hidden" name="Id" value="<%=id%>"/>
+      <input type="hidden" name="ComponentId" value="<%=componentId%>"/>
+      <input type="hidden" name="Context" value="<%=context%>"/>
+      <input type="hidden" name="Url" value="<%=url%>"/>
+      <input type="hidden" name="Title"/>
+      <input type="hidden" name="Description"/>
     </form>
   </body>
 </html>
