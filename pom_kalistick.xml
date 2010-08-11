@@ -55,9 +55,6 @@
             <goals>
               <goal>copy-dependencies</goal>
             </goals>
-            <configuration>
-              <outputDirectory>/tmp/dependency</outputDirectory>
-            </configuration>
           </execution>
         </executions>
       </plugin>
