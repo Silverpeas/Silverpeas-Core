@@ -42,14 +42,23 @@
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"  />
 
+<c:set var="id" value="${user.userId}"></c:set>
+<c:url var="urlProfil" value="/Rprofil/jsp/Main?userId=" />
+<c:url var="urlDirectory" value="/Rdirectory/jsp/Main" />
+<c:url var="urlContactsDirectory" value="/Rdirectory/jsp/Main?ContactId=${id}" />
+<c:url var="urlNewsFeed" value="/RnewsFeed/jsp/Main" />
 
 
 
 
 
-<%         ResourceLocator multilang = new ResourceLocator("com.silverpeas.socialNetwork.multilang.socialNetworkBundle", request.getLocale());
-            GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-            List invitationUsers = (List) request.getAttribute("InvitationUsers");
-            String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+
+
+
+<%
+ResourceLocator multilang = new ResourceLocator("com.silverpeas.socialNetwork.multilang.socialNetworkBundle", request.getLocale());
+GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
+List invitationUsers = (List) request.getAttribute("InvitationUsers");
+String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
 %>

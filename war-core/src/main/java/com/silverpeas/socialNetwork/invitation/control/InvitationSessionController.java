@@ -26,6 +26,7 @@ package com.silverpeas.socialNetwork.invitation.control;
 import com.silverpeas.socialNetwork.invitation.Invitation;
 import com.silverpeas.socialNetwork.invitation.InvitationService;
 import com.silverpeas.socialNetwork.invitation.model.InvitationUser;
+import com.silverpeas.socialNetwork.user.model.SNContactUser;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -80,7 +81,7 @@ public class InvitationSessionController extends AbstractComponentSessionControl
     List<InvitationUser> invitationUsers = new ArrayList<InvitationUser>();
     List<Invitation> invitations = invitationService.getAllMyInvitationsSent(myId);
     for (Invitation varI : invitations) {
-      invitationUsers.add(new InvitationUser(varI, this.getUserDetail(varI.getReceiverId() + "")));
+      invitationUsers.add(new InvitationUser(varI, new SNContactUser(varI.getReceiverId() + "")));
     }
     return invitationUsers;
   }
@@ -89,7 +90,7 @@ public class InvitationSessionController extends AbstractComponentSessionControl
     List<InvitationUser> invitationUsers = new ArrayList<InvitationUser>();
     List<Invitation> invitations = invitationService.getAllMyInvitationsReceive(myId);
     for (Invitation varI : invitations) {
-      invitationUsers.add(new InvitationUser(varI, this.getUserDetail(varI.getSenderId() + "")));
+      invitationUsers.add(new InvitationUser(varI, new SNContactUser(varI.getSenderId() + "")));
     }
     return invitationUsers;
 

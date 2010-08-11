@@ -25,105 +25,104 @@
 --%>
 <%@ include file="check.jsp" %>
 <html>
-    <head>
-        <view:looknfeel />
-        <title><fmt:message key="invitation.action.title" /> </title>
-        <script type="text/javascript" src="/silverpeas/util/javaScript/animation.js"></script>
-        <script type="text/javascript" src="/silverpeas/util/javaScript/checkForm.js"></script>
+  <head>
+    <view:looknfeel />
+    <style type="text/css">
+      #navigation {
+        float: left;
+        width: 20%;
+        margin: 2px;
+        padding: 2px;
+      }
+      #content {
+        float: left;
+        width: 75%;
+        margin: 2px;
+        padding: 2px;
+      }
+      #navigation #myInfo{
+        float: right;
+      }
 
-        <script language="JavaScript">
+      #navigation .box {
+        background-color:#FFFFFF;
+        background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
+        background-position:right top;
+        background-repeat:no-repeat;
+        margin-left:auto;
+        margin-right:auto;
+        margin-bottom: 15px;
+      }
+      #navigation ul {
+        margin: 0;
+        padding: 0;
+      }
+     
+      #navigation li{
+        display:list-item;
+        list-style-type:none;
+        padding: 5px;
+      }
+      #navigation li A:hover {
+       font-weight: bold;
+      }
+    </style>
+    <title><fmt:message key="invitation.action.title" /> </title>
+    <script type="text/javascript" src="/silverpeas/util/javaScript/animation.js"></script>
+    <script type="text/javascript" src="/silverpeas/util/javaScript/checkForm.js"></script>
+    <script language="JavaScript">
 
-            function enableField()
-            {
-                if(document.getElementById("enabledStat").disabled==false)
-                {
-                    document.getElementById("enabledStat").style.backgroundColor="#DEDEDE"
-                    document.getElementById("enabledStat").disabled=true;
+      function enableField()
+      {
+        if(document.getElementById("enabledStat").disabled==false)
+        {
+          document.getElementById("enabledStat").style.backgroundColor="#DEDEDE"
+          document.getElementById("enabledStat").disabled=true;
                   
 
-                }
-                else{
+        }
+        else{
                    
-                    document.getElementById("enabledStat").style.backgroundColor="#FFFFFF";
-                    document.getElementById("enabledStat").focus();
-                    document.getElementById("enabledStat").disabled=false;
-                }
+          document.getElementById("enabledStat").style.backgroundColor="#FFFFFF";
+          document.getElementById("enabledStat").focus();
+          document.getElementById("enabledStat").disabled=false;
+        }
                
-            }
-            function desabledField()
-            {
-                document.getElementById("enabledStat").style.backgroundColor="#F2F2F2";
-                document.getElementById("enabledStat").disabled=true;
-                document.statForm.submit();
+      }
+      function desabledField()
+      {
+        document.getElementById("enabledStat").style.backgroundColor="#F2F2F2";
+        document.getElementById("enabledStat").disabled=true;
+        document.statForm.submit();
 
 
-            }
+      }
             
-            function toggleZoneMessage() {
-                if( document.getElementById("zoneMessage").style.display=='none' ){
-                    document.getElementById("actionZoneMessage").style.display = 'none';
-                    document.getElementById("zoneMessage").style.display = '';
-                }else{
-                    document.getElementById("actionZoneMessage").style.display = '';
-                    document.getElementById("zoneMessage").style.display = 'none';
+      function toggleZoneMessage() {
+        if( document.getElementById("zoneMessage").style.display=='none' ){
+          document.getElementById("actionZoneMessage").style.display = 'none';
+          document.getElementById("zoneMessage").style.display = '';
+        }else{
+          document.getElementById("actionZoneMessage").style.display = '';
+          document.getElementById("zoneMessage").style.display = 'none';
                     
-                }
-            }
+        }
+      }
 
-        </script>
-    </head>
-
-
-
-
-    <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" onload="javasript:enableField()">
-
-
-
-
-        <view:window>
-            <table width="100%" border="0">
-                <tr>
-                    <td width="20%" >
-                        <view:frame>
-                            <view:board>
-                                <%@include file="invitationNavigation.jsp" %>
-                            </view:board>
-                        </view:frame>
-                    </td>
-                    <td width="80%" >
-                        <view:frame>
-                            <table width="100%"  border="0"  >
-                                <tr><td id="profil80" height="600px" style="vertical-align: top">
-                                        <table width="100%"  border="0" >
-                                            <tr>
-                                                <td id="profilHead" height="100" width="100%" style="vertical-align: top">
-                                                    <view:board>
-
-                                                        <%@include file="invitationHead.jsp" %>
-
-                                                    </view:board>
-
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td id="profilCore" align="left" height="500" width="100%" style="vertical-align: top">
-
-                                                    <view:board>
-                                                        <%@include file="invitationBody.jsp" %>
-                                                    </view:board>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td></tr>
-
-                            </table>
-
-                        </view:frame>
-                    </td>
-                </tr>
-            </table>
-        </view:window>
-
-    </body>
+    </script>
+  </head>
+  <body  onload="javasript:enableField()">
+    <view:window>
+      <div id="navigation">
+        <view:board>
+          <%@include file="invitationNavigation.jsp" %>
+        </view:board>
+      </div>
+      <div id="content">
+        <view:board>
+          <%@include file="invitationBody.jsp" %>
+        </view:board>
+      </div>
+    </view:window>
+  </body>
 </html>

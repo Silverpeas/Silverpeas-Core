@@ -27,6 +27,51 @@
 <html>
     <head>
         <view:looknfeel />
+            <style type="text/css">
+      #navigation {
+        float: left;
+        width: 20%;
+        margin: 2px;
+        padding: 2px;
+      }
+      #content {
+        float: left;
+        width: 75%;
+        margin: 2px;
+        padding: 2px;
+      }
+      #navigation #myInfo{
+        float: right;
+      }
+
+      #navigation .box {
+        background-color:#FFFFFF;
+        background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
+        background-position:right top;
+        background-repeat:no-repeat;
+        margin-left:auto;
+        margin-right:auto;
+        margin-bottom: 15px;
+      }
+      #navigation ul {
+        margin: 0;
+        padding: 0;
+      }
+
+      #navigation li{
+        display:list-item;
+        list-style-type:none;
+        padding: 3px;
+      }
+       #navigation li{
+        display:list-item;
+        list-style-type:none;
+        padding: 5px;
+      }
+      #navigation li A:hover {
+       font-weight: bold;
+      }
+    </style>
         <title><fmt:message key="invitation.action.title" /> </title>
         <script type="text/javascript" src="/silverpeas/util/javaScript/animation.js"></script>
         <script type="text/javascript" src="/silverpeas/util/javaScript/checkForm.js"></script>
@@ -80,64 +125,18 @@
 
         </script>
     </head>
-
-
-
-
-
-
-
-
-   <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" onload="javasript:enableField()">
-
-
-
-
-
-
-        <view:window>
-            <table width="100%" border="0">
-                <tr>
-                    <td width="20%" >
-                        <view:frame>
-                            <view:board>
-                                <%@include file="invitationNavigation.jsp" %>
-                                   </view:board>
-                        </view:frame>
-                    </td>
-                    <td width="80%" >
-                        <view:frame>
-                            <table width="100%"  border="0"  >
-                                <tr><td id="profil80" height="600px" style="vertical-align: top">
-                                        <table width="100%"  border="0" >
-                                            <tr>
-                                                <td id="profilHead" height="100" width="100%" style="vertical-align: top">
-                                                    <view:board>
-
-                                                        <%@include file="invitationHead.jsp" %>
-
-                                                    </view:board>
-
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td id="profilCore" align="left" height="500" width="100%" style="vertical-align: top">
-
-                                                    <view:board>
-                                                        <%@include file="invitationSentBody.jsp" %>
-                                                    </view:board>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td></tr>
-
-                            </table>
-
-                        </view:frame>
-                    </td>
-                </tr>
-            </table>
-        </view:window>
-
+   <body onload="javasript:enableField()">
+<view:window>
+      <div id="navigation">
+        <view:board>
+          <%@include file="invitationNavigation.jsp" %>
+        </view:board>
+      </div>
+      <div id="content">
+        <view:board>
+          <%@include file="invitationSentBody.jsp" %>
+        </view:board>
+      </div>
+    </view:window>
     </body>
 </html>

@@ -24,6 +24,7 @@
 package com.silverpeas.socialNetwork.invitation.servlets;
 
 import com.silverpeas.socialNetwork.invitation.control.InvitationSessionController;
+import com.silverpeas.socialNetwork.user.model.SNContactUser;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
@@ -61,6 +62,7 @@ public class InvitationRequestRouter extends ComponentRequestRouter {
       request.setAttribute("statu", invitationSC.getStat());
       int myId = Integer.parseInt(invitationSC.getUserId());
       request.setAttribute("InvitationUsers", invitationSC.getAllMyInvitationsReceive(myId));
+      request.setAttribute("user",new SNContactUser(myId+""));
       destination = "/socialNetwork/jsp/invitation/invitationTemplate.jsp";
 
     }
@@ -70,10 +72,10 @@ public class InvitationRequestRouter extends ComponentRequestRouter {
       request.setAttribute("statu", invitationSC.getStat());
       int myId = Integer.parseInt(invitationSC.getUserId());
       request.setAttribute("InvitationUsers", invitationSC.getAllMyInvitationsSent(myId));
+      request.setAttribute("user",new SNContactUser(invitationSC.getUserId()));
       destination = "/socialNetwork/jsp/invitation/invitationSentTemplate.jsp";
 
     } else if (function.equalsIgnoreCase("invite")) {
-
       destination = "/directory/jsp/invitationUser.jsp?Recipient="
           + request.getParameter("Recipient") + "&Name=" + request.getParameter("Name");
     } else if (function.equalsIgnoreCase("SendInvitation")) {
@@ -109,10 +111,7 @@ public class InvitationRequestRouter extends ComponentRequestRouter {
 
       return getDestination("Main", componentSC, request);
 
-    } else if (function.equalsIgnoreCase("TestNabil")) {
-      invitationSC.changeStat();
-      return getDestination(invitationSC.lastMainAction, componentSC, request);
-    }
+    } 
 
 
     return destination;
