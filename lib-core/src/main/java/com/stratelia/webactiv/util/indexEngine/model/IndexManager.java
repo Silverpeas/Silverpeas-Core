@@ -21,26 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.indexEngine.model;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.MissingResourceException;
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.Term;
 
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -51,12 +34,32 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.SearchEnginePropertiesManager;
 import com.stratelia.webactiv.util.indexEngine.parser.Parser;
 import com.stratelia.webactiv.util.indexEngine.parser.ParserManager;
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.MissingResourceException;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Field.Index;
+import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriter.MaxFieldLength;
+import org.apache.lucene.index.Term;
 
 /**
  * An IndexManager manage all the web'activ's index. An IndexManager is NOT thread safe : to share
  * an IndexManager between several threads use an IndexerThread.
  */
 public class IndexManager {
+
   /**
    * The fields names used by lucene to store each element of an index entry.
    */
@@ -77,7 +80,6 @@ public class IndexManager {
   public static final String THUMBNAIL = "thumbnail";
   public static final String THUMBNAIL_MIMETYPE = "thumbnailMimeType";
   public static final String THUMBNAIL_DIRECTORY = "thumbnailDirectory";
-
   /**
    * Exhaustive list of indexation's operations Used by objects which must be indexed
    */
@@ -85,8 +87,7 @@ public class IndexManager {
   public static final int ADD = 0;
   public static final int REMOVE = 1;
   public static final int READD = 2;
-
-  private Hashtable<String, IndexWriter> indexWriters = new Hashtable<String, IndexWriter>();
+  private Map<String, IndexWriter> indexWriters = new HashMap<String, IndexWriter>();
 
   /**
    * The constructor takes no parameters and all the index engine parameters are taken from the
@@ -122,23 +123,19 @@ public class IndexManager {
         "indexEngine.INFO_STARTS_INDEX_OPTIMIZATION",
         "# of index to optimize = " + indexWriters.size());
 
-    Iterator writerPaths = indexWriters.entrySet().iterator();
+    Iterator<Entry<String, IndexWriter>> writerPaths = indexWriters.entrySet().iterator();
     while (writerPaths.hasNext()) {
-      Map.Entry writerEntry = (Map.Entry) writerPaths.next();
-
-      String writerPath = (String) writerEntry.getKey();
-
+      Entry<String, IndexWriter> writerEntry = writerPaths.next();
+      String writerPath = writerEntry.getKey();
       SilverTrace.debug("indexEngine", "IndexManager",
           "indexEngine.INFO_STARTS_INDEX_OPTIMIZATION", "writerPath = "
           + writerPath);
 
       if (writerPath != null) {
-        IndexWriter writer = (IndexWriter) writerEntry.getValue();
-
+        IndexWriter writer = writerEntry.getValue();
         if (writer != null) {
           SilverTrace.debug("indexEngine", "IndexManager.optimize()",
               "root_MSG_GEN_PARAM_VALUE", "try to optimize " + writerPath);
-
           // First, optimize
           try {
             writer.optimize();
@@ -150,7 +147,7 @@ public class IndexManager {
 
           SilverTrace.info("indexEngine", "IndexManager.optimize()",
               "root_MSG_GEN_PARAM_VALUE", "# of documents indexed in "
-              + writerPath + " = " + writer.docCount());
+              + writerPath + " = " + writer.maxDoc());
 
           // Then, close the writer
           try {
@@ -189,7 +186,6 @@ public class IndexManager {
   public void removeIndexEntry(IndexEntryPK indexEntry) {
     String indexPath = getIndexDirectoryPath(indexEntry);
     IndexWriter writer = getIndexWriter(indexPath, "");
-    ;
     if (writer != null) {
       removeIndexEntry(writer, indexEntry);
     } else {
@@ -235,8 +231,9 @@ public class IndexManager {
    */
   public Analyzer getAnalyzer(String language) {
     Analyzer analyzer = WAAnalyzer.getAnalyzer(language);
-    if (analyzer == null)
+    if (analyzer == null) {
       analyzer = new StandardAnalyzer();
+    }
     return analyzer;
   }
 
@@ -292,16 +289,16 @@ public class IndexManager {
       }
 
       try {
-        stringValue = resource.getString("lucene.RAMBufferSizeMB", Double
-            .toString(IndexWriter.DEFAULT_RAM_BUFFER_SIZE_MB));
+        stringValue = resource.getString("lucene.RAMBufferSizeMB", Double.toString(
+            IndexWriter.DEFAULT_RAM_BUFFER_SIZE_MB));
         RAMBufferSizeMB = Double.parseDouble(stringValue);
       } catch (MissingResourceException e) {
       } catch (NumberFormatException e) {
       }
 
       try {
-        stringValue = resource.getString("lucene.RAMBufferSizeMB", Double
-            .toString(IndexWriter.DEFAULT_RAM_BUFFER_SIZE_MB));
+        stringValue = resource.getString("lucene.RAMBufferSizeMB", Double.toString(
+            IndexWriter.DEFAULT_RAM_BUFFER_SIZE_MB));
         RAMBufferSizeMB = Double.parseDouble(stringValue);
       } catch (MissingResourceException e) {
       } catch (NumberFormatException e) {
@@ -337,7 +334,7 @@ public class IndexManager {
           createIndex = !IndexReader.indexExists(file);
         }
 
-        writer = new IndexWriter(path, getAnalyzer(language), createIndex);
+        writer = new IndexWriter(path, getAnalyzer(language), createIndex, MaxFieldLength.UNLIMITED);
         writer.setMaxFieldLength(maxFieldLength);
         writer.setMergeFactor(mergeFactor);
         writer.setMaxMergeDocs(maxMergeDocs);
@@ -356,8 +353,9 @@ public class IndexManager {
         SilverTrace.error("indexEngine", "IndexManager.getIndexWriter",
             "indexEngine.MSG_UNKNOWN_INDEX_FILE", path, e);
       }
-      if (writer != null)
+      if (writer != null) {
         indexWriters.put(path, writer);
+      }
     }
     return writer;
   }
@@ -384,71 +382,73 @@ public class IndexManager {
   private Document makeDocument(FullIndexEntry indexEntry) {
     Document doc = new Document();
     // fields creation
-    doc.add(new Field(KEY, indexEntry.getPK().toString(), Field.Store.YES,
-        Field.Index.UN_TOKENIZED));
+    doc.add(new Field(KEY, indexEntry.getPK().toString(), Store.YES,
+        Index.NOT_ANALYZED));
 
-    Iterator languages = indexEntry.getLanguages();
+    Iterator<String> languages = indexEntry.getLanguages();
     if (indexEntry.getObjectType() != null
         && indexEntry.getObjectType().startsWith("Attachment")) {
-      doc.add(new Field(getFieldName(TITLE, indexEntry.getLang()), indexEntry
-          .getTitle(indexEntry.getLang()), Field.Store.YES,
-          Field.Index.UN_TOKENIZED));
+      doc.add(new Field(getFieldName(TITLE, indexEntry.getLang()), indexEntry.getTitle(indexEntry.
+          getLang()), Store.YES,
+          Index.NOT_ANALYZED));
     } else {
       while (languages.hasNext()) {
-        String language = (String) languages.next();
+        String language = languages.next();
         if (indexEntry.getTitle(language) != null) {
-          doc.add(new Field(getFieldName(TITLE, language), indexEntry
-              .getTitle(language), Field.Store.YES, Field.Index.TOKENIZED));
-          doc.add(new Field(getFieldName(TITLE, language), indexEntry
-              .getTitle(language), Field.Store.YES, Field.Index.UN_TOKENIZED));
+          doc.add(new Field(getFieldName(TITLE, language), indexEntry.getTitle(language),
+              Store.YES, Index.NOT_ANALYZED));
+          doc.add(new Field(getFieldName(TITLE, language), indexEntry.getTitle(language),
+              Store.YES, Index.NOT_ANALYZED));
         }
       }
     }
 
     // index description
     // doc.add(new Field(PREVIEW, indexEntry.getPreView(), Field.Store.YES,
-    // Field.Index.TOKENIZED));
+    // Field.Index.ANALYZED));
     languages = indexEntry.getLanguages();
     while (languages.hasNext()) {
-      String language = (String) languages.next();
-      if (indexEntry.getPreview(language) != null)
-        doc.add(new Field(getFieldName(PREVIEW, language), indexEntry
-            .getPreview(language), Field.Store.YES, Field.Index.TOKENIZED));
-      if (indexEntry.getKeywords(language) != null)
-        doc.add(new Field(getFieldName(KEYWORDS, language), indexEntry
-            .getKeywords(language), Field.Store.YES, Field.Index.NO));
+      String language = languages.next();
+      if (indexEntry.getPreview(language) != null) {
+        doc.add(new Field(getFieldName(PREVIEW, language), indexEntry.getPreview(language),
+            Store.YES, Index.ANALYZED));
+      }
+      if (indexEntry.getKeywords(language) != null) {
+        doc.add(new Field(getFieldName(KEYWORDS, language), indexEntry.getKeywords(language),
+            Store.YES, Index.NO));
+      }
     }
 
     // doc.add(new Field(KEYWORDS, indexEntry.getKeyWords(), Field.Store.YES,
     // Field.Index.NO));
     doc.add(new Field(CREATIONDATE, indexEntry.getCreationDate(),
-        Field.Store.YES, Field.Index.UN_TOKENIZED));
+        Store.YES, Index.NOT_ANALYZED));
     doc.add(new Field(CREATIONUSER, indexEntry.getCreationUser(),
-        Field.Store.YES, Field.Index.UN_TOKENIZED));
+        Store.YES, Index.NOT_ANALYZED));
     doc.add(new Field(LASTUPDATEDATE, indexEntry.getLastModificationDate(),
-        Field.Store.YES, Field.Index.UN_TOKENIZED));
+        Store.YES, Index.NOT_ANALYZED));
     doc.add(new Field(LASTUPDATEUSER, indexEntry.getLastModificationUser(),
-        Field.Store.YES, Field.Index.UN_TOKENIZED));
-    doc.add(new Field(STARTDATE, indexEntry.getStartDate(), Field.Store.YES,
-        Field.Index.UN_TOKENIZED));
-    doc.add(new Field(ENDDATE, indexEntry.getEndDate(), Field.Store.YES,
-        Field.Index.UN_TOKENIZED));
+        Store.YES, Index.NOT_ANALYZED));
+    doc.add(new Field(STARTDATE, indexEntry.getStartDate(), Store.YES,
+        Index.NOT_ANALYZED));
+    doc.add(new Field(ENDDATE, indexEntry.getEndDate(), Store.YES,
+        Index.NOT_ANALYZED));
     if (indexEntry.getThumbnail() != null
         && indexEntry.getThumbnailMimeType() != null) {
-      doc.add(new Field(THUMBNAIL, indexEntry.getThumbnail(), Field.Store.YES,
-          Field.Index.NO));
+      doc.add(new Field(THUMBNAIL, indexEntry.getThumbnail(), Store.YES,
+          Index.NO));
       doc.add(new Field(THUMBNAIL_MIMETYPE, indexEntry.getThumbnailMimeType(),
-          Field.Store.YES, Field.Index.NO));
+          Store.YES, Index.NO));
       doc.add(new Field(THUMBNAIL_DIRECTORY,
-          indexEntry.getThumbnailDirectory(), Field.Store.YES, Field.Index.NO));
+          indexEntry.getThumbnailDirectory(), Store.YES, Index.NO));
     }
 
     String componentId = indexEntry.getComponent();
 
-    if (indexEntry.isIndexId())
-      doc.add(new Field(CONTENT, indexEntry.getObjectId(), Field.Store.NO,
-          Field.Index.UN_TOKENIZED));
-
+    if (indexEntry.isIndexId()) {
+      doc.add(new Field(CONTENT, indexEntry.getObjectId(), Store.NO,
+          Index.NOT_ANALYZED));
+    }
     if ("Wysiwyg".equals(indexEntry.getObjectType())
         && (componentId.startsWith("kmelia") || componentId.startsWith("kmax"))) {
       // Added by NEY - 22/01/2004
@@ -469,89 +469,92 @@ public class IndexManager {
           && indexEntry.getObjectType().startsWith("Attachment")) {
         doc.add(new Field(getFieldName(HEADER, indexEntry.getLang()),
             indexEntry.getTitle(indexEntry.getLang()).toLowerCase(),
-            Field.Store.NO, Field.Index.UN_TOKENIZED));
+            Store.NO, Index.NOT_ANALYZED));
       } else {
         languages = indexEntry.getLanguages();
         while (languages.hasNext()) {
-          String language = (String) languages.next();
+          String language = languages.next();
           if (indexEntry.getTitle(language) != null) {
-            doc.add(new Field(getFieldName(HEADER, language), indexEntry
-                .getTitle(language).toLowerCase(), Field.Store.NO,
-                Field.Index.TOKENIZED));
-            doc.add(new Field(getFieldName(HEADER, language), indexEntry
-                .getTitle(language).toLowerCase(), Field.Store.NO,
-                Field.Index.UN_TOKENIZED));
+            doc.add(new Field(getFieldName(HEADER, language), indexEntry.getTitle(language).
+                toLowerCase(), Store.NO,
+                Index.ANALYZED));
+            doc.add(new Field(getFieldName(HEADER, language), indexEntry.getTitle(language).
+                toLowerCase(), Store.NO,
+                Index.NOT_ANALYZED));
           }
         }
       }
       languages = indexEntry.getLanguages();
       while (languages.hasNext()) {
-        String language = (String) languages.next();
-        if (indexEntry.getPreview(language) != null)
-          doc.add(new Field(getFieldName(HEADER, language), indexEntry
-              .getPreview(language).toLowerCase(), Field.Store.NO,
-              Field.Index.TOKENIZED));
-        if (indexEntry.getKeywords(language) != null)
-          doc.add(new Field(getFieldName(HEADER, language), indexEntry
-              .getKeywords(language).toLowerCase(), Field.Store.NO,
-              Field.Index.TOKENIZED));
+        String language = languages.next();
+        if (indexEntry.getPreview(language) != null) {
+          doc.add(new Field(getFieldName(HEADER, language), indexEntry.getPreview(language).
+              toLowerCase(), Store.NO,
+              Index.ANALYZED));
+        }
+        if (indexEntry.getKeywords(language) != null) {
+          doc.add(new Field(getFieldName(HEADER, language), indexEntry.getKeywords(language).
+              toLowerCase(), Store.NO,
+              Index.ANALYZED));
+        }
       }
       if (indexEntry.getObjectType() != null
-          && indexEntry.getObjectType().startsWith("Attachment"))
+          && indexEntry.getObjectType().startsWith("Attachment")) {
         doc.add(new Field(getFieldName(HEADER, indexEntry.getLang()),
             indexEntry.getTitle(indexEntry.getLang()).toLowerCase(),
-            Field.Store.NO, Field.Index.UN_TOKENIZED));
-      else
+            Store.NO, Index.NOT_ANALYZED));
+      } else {
         doc.add(new Field(CONTENT, indexEntry.getTitle().toLowerCase(),
-            Field.Store.NO, Field.Index.TOKENIZED));
+            Store.NO, Index.ANALYZED));
+      }
       languages = indexEntry.getLanguages();
       while (languages.hasNext()) {
-        String language = (String) languages.next();
+        String language = languages.next();
 
-        if (indexEntry.getTitle(language) != null)
-          doc.add(new Field(getFieldName(CONTENT, language), indexEntry
-              .getTitle(language), Field.Store.NO, Field.Index.UN_TOKENIZED));
-        if (indexEntry.getPreview(language) != null)
-          doc.add(new Field(getFieldName(CONTENT, language), indexEntry
-              .getPreview(language).toLowerCase(), Field.Store.NO,
-              Field.Index.TOKENIZED));
-        if (indexEntry.getKeywords(language) != null)
-          doc.add(new Field(getFieldName(CONTENT, language), indexEntry
-              .getKeywords(language).toLowerCase(), Field.Store.NO,
-              Field.Index.TOKENIZED));
+        if (indexEntry.getTitle(language) != null) {
+          doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getTitle(language),
+              Store.NO, Index.NOT_ANALYZED));
+        }
+        if (indexEntry.getPreview(language) != null) {
+          doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getPreview(language).
+              toLowerCase(), Store.NO,
+              Index.ANALYZED));
+        }
+        if (indexEntry.getKeywords(language) != null) {
+          doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getKeywords(language).
+              toLowerCase(), Store.NO,
+              Index.ANALYZED));
+        }
       }
     }
-
-    List list1 = indexEntry.getTextContentList();
-    for (int i = 0; i < list1.size(); i++) {
-      TextDescription t = (TextDescription) list1.get(i);
+    List<TextDescription> list1 = indexEntry.getTextContentList();
+    for (TextDescription t : list1) {
       if (t != null) {
-        if (t.getContent() != null)
+        if (t.getContent() != null) {
           doc.add(new Field(getFieldName(CONTENT, t.getLang()), t.getContent(),
-              Field.Store.NO, Field.Index.TOKENIZED));
+              Store.NO, Index.ANALYZED));
+        }
       }
     }
 
-    List list2 = indexEntry.getFileContentList();
-    for (int i = 0; i < list2.size(); i++) {
-      FileDescription f = (FileDescription) list2.get(i);
+    List<FileDescription> list2 = indexEntry.getFileContentList();
+    for (FileDescription f : list2) {
       addFile(doc, f);
     }
 
-    List list3 = indexEntry.getFields();
+    List<FieldDescription> list3 = indexEntry.getFields();
     Store storeAction = null;
-    for (int i = 0; i < list3.size(); i++) {
-      FieldDescription field = (FieldDescription) list3.get(i);
-      if (StringUtil.isDefined(field.getContent())){
+    for (FieldDescription field : list3) {
+      if (StringUtil.isDefined(field.getContent())) {
         // if a field is used for the sort it's stored in the lucene index
-        if(SearchEnginePropertiesManager.getFieldsNameList().contains(field.getFieldName())){
-          storeAction =Field.Store.YES;
-        }else {
-          storeAction =Field.Store.NO;
+        if (SearchEnginePropertiesManager.getFieldsNameList().contains(field.getFieldName())) {
+          storeAction = Store.YES;
+        } else {
+          storeAction = Store.NO;
         }
         doc.add(new Field(getFieldName(field.getFieldName(), field.getLang()),
-            field.getContent(), storeAction, Field.Index.TOKENIZED));
-    }
+            field.getContent(), storeAction, Index.ANALYZED));
+      }
     }
 
     if ("Wysiwyg".equals(indexEntry.getObjectType())
@@ -568,30 +571,32 @@ public class IndexManager {
       // some key words are not indexed !!!)
       languages = indexEntry.getLanguages();
       while (languages.hasNext()) {
-        String language = (String) languages.next();
-        if (indexEntry.getTitle(language) != null)
-          doc.add(new Field(getFieldName(CONTENT, language), indexEntry
-              .getTitle(language).toLowerCase(), Field.Store.NO,
-              Field.Index.TOKENIZED));
-        if (indexEntry.getPreview(language) != null)
-          doc.add(new Field(getFieldName(CONTENT, language), indexEntry
-              .getPreview(language).toLowerCase(), Field.Store.NO,
-              Field.Index.TOKENIZED));
-        if (indexEntry.getKeywords(language) != null)
-          doc.add(new Field(getFieldName(CONTENT, language), indexEntry
-              .getKeywords(language).toLowerCase(), Field.Store.NO,
-              Field.Index.TOKENIZED));
+        String language = languages.next();
+        if (indexEntry.getTitle(language) != null) {
+          doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getTitle(language).
+              toLowerCase(), Store.NO,
+              Index.ANALYZED));
+        }
+        if (indexEntry.getPreview(language) != null) {
+          doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getPreview(language).
+              toLowerCase(), Store.NO,
+              Index.ANALYZED));
+        }
+        if (indexEntry.getKeywords(language) != null) {
+          doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getKeywords(language).
+              toLowerCase(), Store.NO,
+              Index.ANALYZED));
+        }
       }
     }
-    indexEntry = null;
     return doc;
   }
 
   private String getFieldName(String name, String language) {
-    if (!I18NHelper.isI18N || I18NHelper.isDefaultLanguage(language))
+    if (!I18NHelper.isI18N || I18NHelper.isDefaultLanguage(language)) {
       return name;
-    else
-      return name + "_" + language;
+    }
+    return name + "_" + language;
   }
 
   /**
@@ -632,5 +637,4 @@ public class IndexManager {
   private double RAMBufferSizeMB = IndexWriter.DEFAULT_RAM_BUFFER_SIZE_MB;
   // enable the "Did you mean " indexing
   private boolean enableDymIndexing = false;
-
 }

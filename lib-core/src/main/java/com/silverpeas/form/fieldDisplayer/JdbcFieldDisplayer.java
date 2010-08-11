@@ -60,6 +60,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer {
    * Constructeur
    */
   public JdbcFieldDisplayer() {
+    super();
   }
 
   /**

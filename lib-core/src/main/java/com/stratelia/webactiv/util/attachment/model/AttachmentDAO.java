@@ -51,6 +51,15 @@ public class AttachmentDAO {
       + "attachmentSize, attachmentContext, attachmentForeignkey, instanceId, attachmentCreationDate, attachmentAuthor, "
       + "attachmentTitle, attachmentInfo, attachmentOrderNum, workerId, cloneId, lang, reservationDate, alertDate, expiryDate, xmlForm ";
   private final static int nameMaxLength = 100;
+  
+  
+  
+  private static final String SELECT_BY_PRIMARY_KEY = "SELECT attachmentId, attachmentPhysicalName," +
+  		" attachmentLogicalName, attachmentDescription, attachmentType, attachmentSize, " +
+  		"attachmentContext, attachmentForeignkey, instanceId, attachmentCreationDate, " +
+  		"attachmentAuthor, attachmentTitle, attachmentInfo, attachmentOrderNum, workerId, cloneId, " +
+  		"lang, reservationDate, alertDate, expiryDate, xmlForm FROM sb_attachment_attachment WHERE " +
+  		"attachmentId = ? ";
 
   public AttachmentDAO() {
   }
@@ -309,27 +318,16 @@ public class AttachmentDAO {
       AttachmentPK pk) throws SQLException {
     ResultSet rs = null;
     PreparedStatement prepStmt = null;
-
-    AttachmentDetail attachDetail;
+    AttachmentDetail attachDetail = null;
     try {
-      StringBuffer selectQuery = new StringBuffer();
-      selectQuery.append("select ").append(attachmentTableColumns);
-      selectQuery.append(" from ").append(attachmentTableName);
-      selectQuery.append(" where attachmentId = ? ");
-
       SilverTrace.info("attachment", "AttachmentDAO.loadRow()",
-          "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery.toString()
+          "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + SELECT_BY_PRIMARY_KEY
           + " with attachmentId = " + pk.getId());
-
-      attachDetail = null;
-
-      prepStmt = con.prepareStatement(selectQuery.toString());
+      prepStmt = con.prepareStatement(SELECT_BY_PRIMARY_KEY);
       prepStmt.setInt(1, Integer.parseInt(pk.getId()));
-
       rs = prepStmt.executeQuery();
       if (rs.next()) {
         attachDetail = result2AttachmentDetail(rs);
-
         // set translations
         setTranslations(con, attachDetail);
       }

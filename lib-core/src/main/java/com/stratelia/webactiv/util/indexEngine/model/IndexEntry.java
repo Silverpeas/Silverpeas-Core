@@ -26,8 +26,9 @@ package com.stratelia.webactiv.util.indexEngine.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -67,9 +68,9 @@ public class IndexEntry implements Serializable {
   private String thumbnailMimeType = null;
   private String thumbnailDirectory = null;
 
-  private Hashtable<String, String> titles = null;
-  private Hashtable<String, String> previews = null;
-  private Hashtable<String, String> keywordsI18N = null;
+  private Map<String, String> titles = null;
+  private Map<String, String> previews = null;
+  private Map<String, String> keywordsI18N = null;
 
   /**
    * This constructor set the key part of the IndexEntry but leave empty the object type. This
@@ -392,23 +393,23 @@ public class IndexEntry implements Serializable {
     this.thumbnailMimeType = thumbnailMimeType;
   }
 
-  private Hashtable<String, String> getTitles() {
+  private Map<String, String> getTitles() {
     if (titles == null) {
-      titles = new Hashtable<String, String>();
+      titles = new HashMap<String, String>();
     }
     return titles;
   }
 
-  private Hashtable<String, String> getPreviews() {
+  private Map<String, String> getPreviews() {
     if (previews == null) {
-      previews = new Hashtable<String, String>();
+      previews = new HashMap<String, String>();
     }
     return previews;
   }
 
-  private Hashtable<String, String> getKeywords() {
+  private Map<String, String> getKeywords() {
     if (keywordsI18N == null) {
-      keywordsI18N = new Hashtable<String, String>();
+      keywordsI18N = new HashMap<String, String>();
     }
     return keywordsI18N;
   }
