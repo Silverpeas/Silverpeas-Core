@@ -1,4 +1,35 @@
 <%--<%@ include file="check.jsp" %>--%>
+
+<style type="text/css">
+#informations{
+width: 100%;
+}
+
+.fixe{
+width : 100%;
+height:25px;
+}
+
+.define{
+float:left;
+width:25%;
+font-weight:bold;
+
+}
+
+#myInfoAction{
+text-align: center;
+padding-left: 40%;
+
+}
+
+.button {
+float:left;
+margin: 4px;
+}
+
+
+</style>
 <view:tabs >
     <view:tab label="${wall}" action="ALL" selected="false" />
     <view:tab label="${infos}" action="MyInfos" selected="true" />
@@ -7,85 +38,66 @@
     <view:tab label="${photos}" action="MyPhotos" selected="false" />
 </view:tabs>
 
-<view:board  >
+<!--<view:board  >-->
     <view:frame >
 
-        <view:frame title="Informations personnelles">
-
-            <view:board >
-
-                <table border="0" cellspacing="0" cellpadding="5" width="100%">
-
-
-                    <tr>
-                        <td class="txtlibform" valign="baseline" width="30%"><fmt:message key="GML.lastName" bundle="${GML}"/></td>
-                        <td >
-                            ${snUserFull.userFull.lastName}
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td class="txtlibform" valign="baseline" width="30%"><fmt:message key="GML.firstName" bundle="${GML}"/></td>
-                        <td >
-                            ${snUserFull.userFull.firstName}
-                        </td>
-                    </tr>
-
-                </table>
-
-
-            </view:board>
-        </view:frame>
-        <view:frame title="Informations professionnelles & Coordonnées ">
+      
+      <view:frame title="Informations professionnelles & Coordonnées ">
             <a  id="myInfoUpdate" href="#"  onclick="javascript:enableFields()">
                 <img  src=" <c:url value="/directory/jsp/icons/edit_button.gif" />" width="15" height="15"
                       alt="connected"/>
             </a>
             <view:board>
                 <form method="POST" name="myInfoUpdateForm" action="">
-                    <table border="0" cellspacing="0" cellpadding="5" width="100%">
-
-                        <tr>
-                            <td class="txtlibform" valign="baseline" width="30%"><fmt:message key="GML.position" bundle="${GML}"/></td>
-                            <td valign="baseline">
+                    <div id="informations">
+                      <div class="fixe">
+                          <div class="define"><fmt:message key="GML.position" bundle="${GML}"/></div>
+                            <div>
                                 <fmt:message key="${snUserFull.userFull.accessLevel}" var="position" />
                                 <fmt:message key="${position}" bundle="${GML}"/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="txtlibform" valign="baseline" width="30%"><fmt:message key="GML.eMail" bundle="${GML}"/></td>
-                            <td >
+                            </div>
+                      </div>
+                        
+                      <div class="fixe">
+                        <div class="define"><fmt:message key="GML.eMail" bundle="${GML}"/></div>
+                            <div >
                                 ${snUserFull.userFull.eMail}
-                            </td>
-                        </tr>
+                            </div>
+                      </div>
+                       
+
                         <c:forEach items="${propertiesKey}" var="propertys" varStatus="status">
 
-                            <tr>
-                                <td class="txtlibform" valign="baseline" width="30%">
+                             <div class="fixe">
+                                <div class="define">
                                     ${propertiesKey[status.index]}
-                                </td>
-                                <td >
+                                </div>
+                                <div>
                                     <input type="text" id="${properties[status.index]}" name="prop_${properties[status.index]}" size="50" maxlength="99" value="${propertiesValue[status.index]}">
-                                </td>
-                            </tr>
+                                </div>
+                            </div>
                         </c:forEach>
+                    
+                    </div>
+                    <!--<table border="0" cellspacing="0" cellpadding="5" width="100%">
+
+                       
                  </table>
-                </form>
+                --></form>
             </view:board>
-            <table border="0" align="center" id="myInfoAction">
-                <tr>
-                    <td>
+            <div id="myInfoAction">
+                    <div class="button">
                         <fmt:message key="GML.validate" bundle="${GML}" var="validate" />
                         <view:button label="${validate}" action="javascript:submitUpdate()"  />
-                    </td>
-                    <td > <fmt:message key="GML.cancel" bundle="${GML}" var="cancel" />
+                    </div>
+                    <div class="button">
+                     <fmt:message key="GML.cancel" bundle="${GML}" var="cancel" />
                         <view:button label="${cancel}" action="MyInfos"  />
-                    </td>
-                </tr>
-            </table>
+                    </div>
+            </div>
         </view:frame>
     </view:frame>
-</view:board>
+<!--</view:board>-->
 <script>
     desabledFields();
 </script>

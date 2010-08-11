@@ -50,10 +50,47 @@
       }
 
       #boxes #dialog {
-        width:375px; 
-        height:203px;
-        padding:10px;
-        background-color:#ffffff;
+       background-color:#FFFFFF;
+       height:150px;
+       padding:10px;
+       width:500px;
+      }
+      
+      #page{
+        width : 100%;
+        border : 0;
+      }
+      
+      #profil80{
+        height : 600px;
+        vertical-align: top;
+      }
+      
+    #profilHead {
+        height:120px;
+        vertical-align:top;
+        width:auto;
+    }
+      
+      #profilCore{
+        float : left;
+        height : auto;
+        width : 100%;
+        vertical-align: top;
+      }
+      
+      #navigation{
+        width : 20%;
+        float:left;
+      }
+      
+      #headAndCore{
+        width : 80%;
+      }
+      
+      .format{
+        width:100%;
+        border: 0; 
       }
     </style>
     <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-1.3.2.min.js" />" ></script>
@@ -200,48 +237,35 @@
       <view:operation action="javascript:enableFields()" altText="Changer mes infos" icon="" />
     </view:operationPane>
     <view:window>
-      <table width="100%" border="0">
-        <tr>
-          <td width="20%" >
+    <div id="page">
+          <div id ="navigation">
             <view:frame>
               <view:board>
                 <%@include file="myProfilNavigation.jsp" %>
               </view:board>
             </view:frame>
-          </td>
-          <td width="80%" >
+          </div>
+          <div id="headAndCore">
             <view:frame>
-              <table width="100%"  border="0"  >
-                <tr><td id="profil80" height="600px" style="vertical-align: top">
-                    <table width="100%"  border="0" >
-                      <tr>
-                        <td id="profilHead" height="100" width="100%" style="vertical-align: top">
+                <div id="profil80">
+                    <div class="format" > 
+                        <div id="profilHead" >
                           <view:board>
-
                             <%@include file="myProfilHead.jsp" %>
-
                           </view:board>
-
-                        </td>
-                      </tr>
-                      <tr>
-                        <td id="profilCore" align="left" height="500" width="100%" style="vertical-align: top">
+                        </div>                
+                        <div id="profilCore"><!--
 
                           <view:board>
-                            <%@include file="myInfosBody.jsp" %>
+                            --><%@include file="myInfosBody.jsp" %><!--
                           </view:board>
-                        </td>
-                      </tr>
-                    </table>
-                  </td></tr>
-
-              </table>
-
+                        --></div>
+                    </div>
+                  </div>
             </view:frame>
-          </td>
-        </tr>
-      </table>
-    </view:window>
+          </div>    
+    </div>
+     </view:window>
 
   </body>
 </html>

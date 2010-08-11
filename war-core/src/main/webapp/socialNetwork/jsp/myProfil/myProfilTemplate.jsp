@@ -76,10 +76,52 @@
         padding:10px;
         background-color:#ffffff;
       }
+      
+      #page{
+        width: 100%;
+        border: 0;
+      }
+      
+       #profil80{
+        height : 600px;
+        vertical-align: top;
+      }
+      
+    #profilHead {
+        height:120px;
+        vertical-align:top;
+        width:auto;
+    }
+      
+      #profilCore{
+        float : left;
+        height : auto;
+        width : 100%;
+        vertical-align: top;
+      }
+      
+      #navigation{
+        width : 20%;
+        float:left;
+      }
+      
+      #headAndCore{
+        width : 80%;
+      }
+      
+      .format{
+        width:100%;
+        border: 0; 
+      }
+      
+      #bloc{
+         border:0; 
+         width:98%; 
+      }
     </style>
     <title><fmt:message key="invitation.action.title" /> </title>
     <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-1.3.2.min.js" />" ></script>
-    <script language="JavaScript">
+    <script language="JavaScript"><!--
 
 
       <%--*****************   profil Body *******************************************--%>
@@ -145,8 +187,9 @@
                   });
                 }
               });
-              html+='</li>';
+            
               html+='</td></tr></table>';
+              html+='</li>';
 
 
 
@@ -303,7 +346,7 @@
 
 
 
-    </script>
+    --></script>
   </head>
   <body  bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" >
     <view:operationPane>
@@ -313,47 +356,48 @@
 
     </view:operationPane>
     <view:window>
-      <table width="100%" border="0">
-        <tr>
-          <td width="20%" >
+    <div id="page">     
+        <div>
+          <div id="navigation" >
             <view:frame>
               <view:board>
                 <%@include file="myProfilNavigation.jsp" %>
               </view:board>
             </view:frame>
-          </td>
-          <td width="80%">
+          </div>
+          <div id="headAndCore">
             <view:frame>
-              <table width="100%"  border="0"  >
-                <tr><td id="profil80" height="600px" style="vertical-align: top">
-                    <table width="100%"  border="0" >
-                      <tr>
-                        <td id="profilHead" height="100" width="100%" style="vertical-align: top">
+<!--              <div class="format">-->
+                <div><div id="profil80">
+                   <div class="format" >
+                      <div>
+                        <div id="profilHead" >
                           <view:board>
 
                             <%@include file="myProfilHead.jsp" %>
 
                           </view:board>
 
-                        </td>
-                      </tr>
-                      <tr>
-                        <td id="profilCore" align="left" height="500" width="100%" style="vertical-align: top">
+                        </div>
+                      </div>
+                      <div>
+                        <div id="profilCore">
 
-                          <view:board>
-                            <%@include file="myProfilBody.jsp" %>
+<!--                          <view:board>-->
+                            <%@include file="myProfilBody.jsp" %><!--
                           </view:board>
-                        </td>
-                      </tr>
-                    </table>
-                  </td></tr>
+                        --></div>
+                      </div>
+                    </div>
+                  </div></div>
 
-              </table>
+              </div>
 
             </view:frame>
-          </td>
-        </tr>
-      </table>
+          </div>
+        </div>    
+    </div>
+      
     </view:window>
 
   </body>
