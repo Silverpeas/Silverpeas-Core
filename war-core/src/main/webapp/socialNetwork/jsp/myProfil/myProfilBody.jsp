@@ -6,7 +6,7 @@
   <view:tab label="${publications}" action="MyPubs" selected="${type=='PUBLICATION'}" />
   <view:tab label="${photos}" action="MyPhotos" selected="${type=='PHOTO'}" />
 </view:tabs>
-<div class="SocialInformations" id="SocialInformationsId">
+<div class="SocialInformations" id="SocialInformations">
 
 </div>
 <div id="socialIconsZone">

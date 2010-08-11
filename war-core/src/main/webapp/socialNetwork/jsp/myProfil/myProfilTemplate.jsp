@@ -61,44 +61,45 @@
 	                {
 	                  $.each(listSocialInfo, function(index,socialInfo){
 	
-	                    html+='<table border="0">';
-	                    html+='<tr ><td>';
-	                    if(socialInfo.type=='RELATIONSHIP')
-	                    {
-	                      html+='<img src="'+socialInfo.icon+'" width="32" height="32" />';
-	                      html+='</td>';
-	                      html+='<td>';
-	                      html+='<b>'+socialInfo.author+' ${relationShipSuffix} '+'<a href="'+socialInfo.url+
-	                        '" style="color: blue" >'+socialInfo.title+'</a>'+' ${relationShipPrefix} '+'</b>  '+socialInfo.hour;
-	                      html+='</td></tr><tr><td></td>';
-	                      html+='</tr> </table>'
-	                    }else  if(socialInfo.type=='STATUS')
-	                    {
-	                      html+='<img src="'+socialInfo.icon+'" width="32" height="32" />';
-	                      html+='</td>';
-	                      html+='<td>';
-	                      html+='<b><a href="#" style="color: blue" >'+socialInfo.title+'</a>'+' ${statusSuffix} '+'</b>  '+socialInfo.hour;
-	                      html+='</td></tr><tr><td></td>';
-	                      html+='<td>'+socialInfo.description;
-	                      html+='</td> </tr> </table>'
-	                    }else
-	                    {
-	                      html+='<img src="'+socialInfo.icon+'" width="32" height="32" />';
-	                      html+='</td>';
-	                      html+='<td>';
-	                      html+='<a href="'+socialInfo.url+'" style="color: blue" ><b>'+socialInfo.title+'</b></a>  '+socialInfo.hour;
-	                      html+='</td></tr><tr><td></td>';
-	                      html+='<td>'+socialInfo.description;
-	                      html+='</td> </tr> </table>'
-	                    }
-	                    html+=' <br>';
+	                	  html+='<table class="socialTable">';
+	                      html+='<tr ><td class="socialIcon">';
+	                      if(socialInfo.type=='RELATIONSHIP')
+	                      {
+	                        html+='<img src="'+socialInfo.icon+'" id="socialIcon" />';
+	                        html+='</td>';
+	                        html+='<td class="socialTitle">';
+	                        html+=socialInfo.author+' ${relationShipSuffix} '+'<a href="'+socialInfo.url+
+	                          '" >'+socialInfo.title+'</a>'+' ${relationShipPrefix} ';
+	                        html+='</td><td>'+socialInfo.hour+'</td></tr>';
+	                        html+='</table>'
+	                      }else  if(socialInfo.type=='STATUS')
+	                      {
+	                        html+='<img src="'+socialInfo.icon+'"  />';
+	                        html+='</td>';
+	                        html+='<td class="socialTitle">';
+	                        html+='<a href="#" >'+socialInfo.title+'</a>'+' ${statusSuffix} ';
+	                        html+='</td><td>'+socialInfo.hour+'</td></tr>';
+	                        html+='<td colspan="3">'+socialInfo.description;
+	                        html+='</td> </tr> </table>'
+	                      }else
+	                      {
+	                        html+='<img src="'+socialInfo.icon+'" id="socialIcon" />';
+	                        html+='</td>';
+	                        html+='<td class="socialTitle">';
+	                        html+='<a href="'+socialInfo.url+'" >'+socialInfo.title+'</a>  ';
+	                        html+='</td><td>'+socialInfo.hour+'</td></tr>';
+	                        html+='<td colspan="3">'+socialInfo.description;
+	                        html+='</td> </tr> </table>'
+	                      }
+	                      html+=' <br>';
+
 	
 	                  });
 	                }
 	              });
 	            
-	              html+='</td></tr></table>';
 	              html+='</li>';
+	              html+='</td></tr></table>';
 	
 	
 	
