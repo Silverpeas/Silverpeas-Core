@@ -50,44 +50,45 @@
       }
 
       #boxes #dialog {
-       background-color:#FFFFFF;
-       height:150px;
-       padding:10px;
-       width:500px;
+        background-color:#FFFFFF;
+        height:150px;
+        padding:10px;
+        width:500px;
       }
-      
+
       #page{
         width : 100%;
         border : 0;
       }
-      
+
       #profil80{
         height : 600px;
         vertical-align: top;
       }
-      
-    #profilHead {
+
+      #profilHead {
         height:120px;
         vertical-align:top;
         width:auto;
-    }
-      
+      }
+
       #profilCore{
         float : left;
         height : auto;
         width : 100%;
         vertical-align: top;
       }
-      
+
       #navigation{
         width : 20%;
         float:left;
       }
-      
+
       #headAndCore{
-        width : 80%;
+        float: left;
+        width : 75%;
       }
-      
+
       .format{
         width:100%;
         border: 0; 
@@ -146,7 +147,7 @@
             $('.StatusDiv').empty();
             var html='';
             html+='<textarea onblur="javascript:updateStatus(\'${urlUpdateStatus}\')" id="enabledStat"';
-            html+='type="text" cols="50" rows="3" >'+data.status+'</textarea>';
+            html+='type="text"  rows="3" >'+data.status+'</textarea>';
 
             $('.StatusDiv').append(html);
             desableStatusZone();
@@ -160,7 +161,7 @@
             $('.StatusDiv').empty();
             var html='';
             html+='<textarea onblur="javascript:updateStatus(\'${urlUpdateStatus}\')" id="enabledStat" ';
-            html+='type="text" cols="50" rows="3" >'+data.status+'</textarea>';
+            html+='type="text"  >'+data.status+'</textarea>';
             $('.StatusDiv').append(html);
             desableStatusZone();
           });
@@ -222,7 +223,7 @@
           //if mask is clicked
           $('#mask').click(function () {
             $(this).hide();
-            $('.window').hide();
+            $('.window').s.hide();
           });
          
         });
@@ -237,35 +238,24 @@
       <view:operation action="javascript:enableFields()" altText="Changer mes infos" icon="" />
     </view:operationPane>
     <view:window>
-    <div id="page">
-          <div id ="navigation">
-            <view:frame>
+      <div id="page">
+        <div id ="navigation">
+          <view:board>
+            <%@include file="myProfilNavigation.jsp" %>
+          </view:board>
+        </div>
+        <div id="headAndCore">
+            <div id="profilHead" >
               <view:board>
-                <%@include file="myProfilNavigation.jsp" %>
+                <%@include file="myProfilHead.jsp" %>
               </view:board>
-            </view:frame>
-          </div>
-          <div id="headAndCore">
-            <view:frame>
-                <div id="profil80">
-                    <div class="format" > 
-                        <div id="profilHead" >
-                          <view:board>
-                            <%@include file="myProfilHead.jsp" %>
-                          </view:board>
-                        </div>                
-                        <div id="profilCore"><!--
-
-                          <view:board>
-                            --><%@include file="myInfosBody.jsp" %><!--
-                          </view:board>
-                        --></div>
-                    </div>
-                  </div>
-            </view:frame>
-          </div>    
-    </div>
-     </view:window>
+            </div>
+            <div id="profilCore">
+                <%@include file="myInfosBody.jsp" %>
+             </div>
+        </div>
+      </div>
+    </view:window>
 
   </body>
 </html>

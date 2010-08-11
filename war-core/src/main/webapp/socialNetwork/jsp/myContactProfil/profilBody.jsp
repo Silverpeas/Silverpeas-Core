@@ -6,11 +6,11 @@
      <view:tab label="${publications}" action="MyPubs?userId=${id}" selected="${type=='PUBLICATION'}" />
     <view:tab label="${photos}" action="MyPhotos?userId=${id}" selected="${type=='PHOTO'}" />
 </view:tabs>
-<div class="SocialInformations" id="SocialInformationsId">
+<div id="SocialInformations">
 
 </div>
 
-<div align="center">
+<div id="socialIconsZone">
   <table cellpadding="10">
     <tr>
 

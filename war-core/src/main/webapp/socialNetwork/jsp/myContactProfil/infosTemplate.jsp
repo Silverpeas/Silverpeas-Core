@@ -27,13 +27,16 @@
 <html>
   <head>
     <view:looknfeel />
+    <link rel="stylesheet" type="text/css" href="<c:url value="/socialNetwork/jsp/myContactProfil/myContactProfil.css"/>"/>
+    <link rel="stylesheet" type="text/css" href="<c:url value="/directory/jsp/directoryPopup.css"/>"/>
     <title><fmt:message key="invitation.action.title" /> </title>
-   <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-1.3.2.min.js" />" ></script>
+    <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-1.3.2.min.js" />" ></script>
+    <script type="text/javascript" src="<c:url value="/directory/jsp/directory.js" />" ></script>
 
     <script language="JavaScript">
       var properties =new Array();
-        <c:forEach items="${properties}" var="property" varStatus="status">
-          properties.push("<c:out value='${properties[status.index]}' escapeXml='false' />");
+      <c:forEach items="${properties}" var="property" varStatus="status">
+        properties.push("<c:out value='${properties[status.index]}' escapeXml='false' />");
       </c:forEach>
 
 
@@ -80,58 +83,50 @@
 
     </script>
   </head>
-
-
-
-
-
-
-
-
-  <body  bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" >
+  <body>
     <view:window>
-      <table width="100%" border="0">
-        <tr>
-          <td width="20%" >
-            <view:frame>
-              <view:board>
-                <%@include file="profilNavigation.jsp" %>
-              </view:board>
-            </view:frame>
-          </td>
-          <td width="80%" >
-            <view:frame>
-              <table width="100%"  border="0"  >
-                <tr><td id="profil80" height="600px" style="vertical-align: top">
-                    <table width="100%"  border="0" >
-                      <tr>
-                        <td id="profilHead" height="100" width="100%" style="vertical-align: top">
-                          <view:board>
+      <div id="navigation">
 
-                            <%@include file="profilHead.jsp" %>
+        <%@include file="profilNavigation.jsp" %>
 
-                          </view:board>
+      </div>
+      <div id="contentAndHeader">
+        <div id="header">
+          <view:board>
+            <%@include file="profilHead.jsp" %>
+          </view:board>
+        </div>
+        <div id="content">
+          <view:board>
+            <%@include file="infosBody.jsp" %>
+          </view:board>
+        </div>
+      </div>
 
-                        </td>
-                      </tr>
-                      <tr>
-                        <td id="profilCore" align="left" height="500" width="100%" style="vertical-align: top">
 
-                          <view:board>
-                            <%@include file="infosBody.jsp" %>
-                          </view:board>
-                        </td>
-                      </tr>
-                    </table>
-                  </td></tr>
 
-              </table>
+      <div id="boxes">
+        <div class="window" id="directory" >
+          <div id="directoryHeader">
+            <a href="#"class="close">Fermer</a>
+          </div>
+          <div id="indexAndSearch"><div id="search">
+              <form name="search" action="javascript:directory('searchByKey')" method="post">
+                <input type="text" name="key" value="" id="key" size="40" maxlength="60"
+                       style="height: 20px"  />
+                <img
+                  src="<c:url value="/directory/jsp/icons/advsearch.jpg"/>"
+                  width="10" height="10" alt="advsearch" />
+              </form>
+            </div>
+          </div>
+          <div id="users">
 
-            </view:frame>
-          </td>
-        </tr>
-      </table>
+          </div>
+        </div>
+                  <!-- Mask to cover the whole screen -->
+        <div id="mask"></div>
+      </div>
     </view:window>
-
   </body>
 </html>

@@ -39,10 +39,16 @@
 <fmt:message key="profil.relationShip.suffix"  var="relationShipSuffix"/>
 <fmt:message key="profil.relationShip.prefix"  var="relationShipPrefix"/>
 <fmt:message key="profil.status.suffix"  var="statusSuffix"/>
+<%--**********************Profil navigation******************************--%>
+<fmt:message key="profil.contacts" var="keyContacts" />
+<fmt:message key="profil.commonContacts" var="keyCommonContacts" />
+<fmt:message key="profil.showAll" var="showAll" />
 
 <c:set var="id" value="${snUserFull.userFull.id}"></c:set>
 <c:url var="urlGetLastStatus" value="/RmyContactJSON?Action=getLastStatus&userId=${id}" />
-
+<c:url var="urlProfil" value="/Rprofil/jsp/Main?userId=" />
+<c:url var="urlContactsDirectory" value="/RdirectoryServlet/jsp?ContactId=${id}&Action=" />
+<c:url var="urlCommonContactsDirectory" value="/RdirectoryServlet/jsp?CommonContactId=${id}&Action=" />
 
 
 

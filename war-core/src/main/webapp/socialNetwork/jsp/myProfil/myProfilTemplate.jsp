@@ -83,7 +83,6 @@
       }
       
        #profil80{
-        height : 600px;
         vertical-align: top;
       }
       
@@ -106,7 +105,7 @@
       }
       
       #headAndCore{
-        width : 80%;
+        width : 75%;
       }
       
       .format{
@@ -180,8 +179,6 @@
                       html+='<td>'+socialInfo.description;
                       html+='</td> </tr> </table>'
                     }
-
-                                    
                     html+=' <br>';
 
                   });
@@ -264,7 +261,7 @@
             $('.StatusDiv').empty();
             var html='';
             html+='<textarea onblur="javascript:updateStatus(\'${urlUpdateStatus}\')" id="enabledStat"';
-            html+='type="text" cols="50" rows="3" >'+data.status+'</textarea>';
+            html+='type="text"  rows="3" >'+data.status+'</textarea>';
 
             $('.StatusDiv').append(html);
             desableStatusZone();
@@ -278,7 +275,7 @@
             $('.StatusDiv').empty();
             var html='';
             html+='<textarea onblur="javascript:updateStatus(\'${urlUpdateStatus}\')" id="enabledStat" ';
-            html+='type="text" cols="50" rows="3" >'+data.status+'</textarea>';
+            html+='type="text"  rows="3" >'+data.status+'</textarea>';
             $('.StatusDiv').append(html);
             desableStatusZone();
           });

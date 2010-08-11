@@ -27,33 +27,11 @@
 <html>
   <head>
     <view:looknfeel />
-    <style type="text/css">
-
-
-      /* message display page */
-      .message_list {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        width: 100%;
-      }
-
-      .message_list li {
-        padding: 0px;
-        margin: 3px;
-      }
-
-      table.PHOTO td img {
-        width: 32px; height: 32px; /* Set the small thumbnail size */
-        -ms-interpolation-mode: bicubic; /* IE Fix for Bicubic Scaling */
-        left: 0; top: 0;
-
-
-      }
-
-    </style>
+    <link rel="stylesheet" type="text/css" href="<c:url value="/socialNetwork/jsp/myContactProfil/myContactProfil.css"/>"/>
+    <link rel="stylesheet" type="text/css" href="<c:url value="/directory/jsp/directoryPopup.css"/>"/>
     <title><fmt:message key="invitation.action.title" /> </title>
     <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-1.3.2.min.js" />" ></script>
+    <script type="text/javascript" src="<c:url value="/directory/jsp/directory.js" />" ></script>
     <script language="JavaScript">
 
 
@@ -82,34 +60,34 @@
                 }else
                 {
                   $.each(listSocialInfo, function(index,socialInfo){
-                    html+='<table border="0">';
-                    html+='<tr ><td>';
+                    html+='<table class="socialTable">';
+                    html+='<tr ><td class="socialIcon">';
                     if(socialInfo.type=='RELATIONSHIP')
                     {
-                      html+='<img src="'+socialInfo.icon+'" width="32" height="32" />';
+                      html+='<img src="'+socialInfo.icon+'" id="socialIcon" />';
                       html+='</td>';
-                      html+='<td>';
-                      html+='<b>'+socialInfo.author+' ${relationShipSuffix} '+'<a href="'+socialInfo.url+
-                        '" style="color: blue" >'+socialInfo.title+'</a>'+' ${relationShipPrefix} '+'</b>  '+socialInfo.hour;
-                      html+='</td></tr><tr><td></td>';
-                      html+='</tr> </table>'
+                      html+='<td class="socialTitle">';
+                      html+=socialInfo.author+' ${relationShipSuffix} '+'<a href="'+socialInfo.url+
+                        '" >'+socialInfo.title+'</a>'+' ${relationShipPrefix} ';
+                      html+='</td><td>'+socialInfo.hour+'</td></tr>';
+                      html+='</table>'
                     }else  if(socialInfo.type=='STATUS')
                     {
-                      html+='<img src="'+socialInfo.icon+'" width="32" height="32" />';
+                      html+='<img src="'+socialInfo.icon+'"  />';
                       html+='</td>';
-                      html+='<td>';
-                      html+='<b><a href="#" style="color: blue" >'+socialInfo.title+'</a>'+' ${statusSuffix} '+'</b>  '+socialInfo.hour;
-                      html+='</td></tr><tr><td></td>';
-                      html+='<td>'+socialInfo.description;
+                      html+='<td class="socialTitle">';
+                      html+='<a href="#" >'+socialInfo.title+'</a>'+' ${statusSuffix} ';
+                      html+='</td><td>'+socialInfo.hour+'</td></tr>';
+                      html+='<td colspan="3">'+socialInfo.description;
                       html+='</td> </tr> </table>'
                     }else
                     {
-                      html+='<img src="'+socialInfo.icon+'" width="32" height="32" />';
+                      html+='<img src="'+socialInfo.icon+'" id="socialIcon" />';
                       html+='</td>';
-                      html+='<td>';
-                      html+='<a href="'+socialInfo.url+'" style="color: blue" ><b>'+socialInfo.title+'</b></a>  '+socialInfo.hour;
-                      html+='</td></tr><tr><td></td>';
-                      html+='<td>'+socialInfo.description;
+                      html+='<td class="socialTitle">';
+                      html+='<a href="'+socialInfo.url+'" >'+socialInfo.title+'</a>  ';
+                      html+='</td><td>'+socialInfo.hour+'</td></tr>';
+                      html+='<td colspan="3">'+socialInfo.description;
                       html+='</td> </tr> </table>'
                     }
                     html+=' <br>';
@@ -119,13 +97,10 @@
               });
               html+='</li>';
               html+='</td></tr></table>';
-
-
-
             });
             html+='</ol>';
 
-            $('.SocialInformations').append(html);
+            $('#SocialInformations').append(html);
 
             window.scrollTo(hscroll, vscroll);
 
@@ -208,59 +183,47 @@
 
     </script>
   </head>
+  <body>
+   <view:window>
+      <div id="navigation">
 
+        <%@include file="profilNavigation.jsp" %>
 
+      </div>
+      <div id="contentAndHeader">
+        <div id="header">
+          <view:board>
+            <%@include file="profilHead.jsp" %>
+          </view:board>
+        </div>
+        <div id="content">
+          <view:board>
+            <%@include file="profilBody.jsp" %>
+          </view:board>
+        </div>
+      </div>
+      <div id="boxes">
+        <div class="window" id="directory" >
+          <div id="directoryHeader">
+            <a href="#"class="close">Fermer</a>
+          </div>
+          <div id="indexAndSearch"><div id="search">
+              <form name="search" action="javascript:directory('searchByKey')" method="post">
+                <input type="text" name="key" value="" id="key" size="40" maxlength="60"
+                       style="height: 20px"  />
+                <img
+                  src="<c:url value="/directory/jsp/icons/advsearch.jpg"/>"
+                  width="10" height="10" alt="advsearch" />
+              </form>
+            </div>
+          </div>
+          <div id="users">
 
-
-
-
-
-
-
-  <body  bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" >
-    <view:window>
-      <table width="100%" border="0">
-        <tr>
-          <td width="20%" >
-            <view:frame>
-              <view:board>
-                <%@include file="profilNavigation.jsp" %>
-              </view:board>
-            </view:frame>
-          </td>
-          <td width="80%">
-            <view:frame>
-              <table width="100%"  border="0"  >
-                <tr><td id="profil80" height="600px" style="vertical-align: top">
-                    <table width="100%"  border="0" >
-                      <tr>
-                        <td id="profilHead" height="100" width="100%" style="vertical-align: top">
-                          <view:board>
-
-                            <%@include file="profilHead.jsp" %>
-
-                          </view:board>
-
-                        </td>
-                      </tr>
-                      <tr>
-                        <td id="profilCore" align="left" height="500" width="100%" style="vertical-align: top">
-
-                          <view:board>
-                            <%@include file="profilBody.jsp" %>
-                          </view:board>
-                        </td>
-                      </tr>
-                    </table>
-                  </td></tr>
-
-              </table>
-
-            </view:frame>
-          </td>
-        </tr>
-      </table>
+          </div>
+        </div>
+                  <!-- Mask to cover the whole screen -->
+        <div id="mask"></div>
+      </div>
     </view:window>
-
   </body>
 </html>
