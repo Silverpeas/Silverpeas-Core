@@ -48,7 +48,6 @@ Iterator languages = attachment.getLanguages();
 		<table>
 			<tr>
 				<td align="center">
-					<br/>
 					<% if (I18NHelper.isI18N && nbTranslations > 1) { %>
 						<table border="0">
 						<tr><td colspan="2"><%=attResources.getStringWithParam("attachment.suppressionWhichTranslations", attachmentName)%></td></tr>
@@ -65,9 +64,10 @@ Iterator languages = attachment.getLanguages();
 						%>
 						</table>
 					<% } else { %>
+						<br/>
 						<%=Encode.convertHTMLEntities(attResources.getStringWithParam("attachment.suppressionConfirmation", attachmentName))%><br/>
+						<br/>
 					<% } %>
-					<br/>
 					<%=buttonPane.print()%>
 				</td>
 			</tr>

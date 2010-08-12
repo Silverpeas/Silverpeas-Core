@@ -51,8 +51,6 @@
 <html>
 <head>
 <% out.println(gef.getLookStyleSheet()); %>
-<link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/modal-message.css">
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/modal-message.js"></script> 
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/overlib.js"></script>
@@ -69,7 +67,7 @@ function SubmitWithVerif(verifParams)
     }
     if (errorMsg == "")
     {
-    	displayStaticMessage();
+    	$('#modalDialog').dialog('open');
     	setTimeout("document.userForm.submit();", 500);       
     }
     else
@@ -150,6 +148,18 @@ function checkSubmitToSearch(ev)
 	if (touche == 13)
 		SubmitWithVerif(false);
 }
+
+$(document).ready(function(){
+    $("#modalDialog").dialog({
+  	  	autoOpen: false,
+        modal: true,
+        height: 'auto',
+        width: 200,
+        open: function(event, ui) { 
+			$(".ui-dialog-titlebar-close").hide();
+			$(".ui-dialog-titlebar").hide();}
+        });
+  });
 </script>
 </head>
 <body marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
@@ -275,27 +285,9 @@ out.println(board.printBefore());
 out.println(frame.printAfter());
 out.println(window.printAfter());
 	%>
-	
-<script type="text/javascript">
-	messageObj = new DHTML_modalMessage();	// We only create one object of this class
-	messageObj.setShadowOffset(5);	// Large shadow
-
-	<!-- avec le script modal-message.js -->
-	function displayStaticMessage()
-	{
-		messageObj.setHtmlContent("<center><table><tr><td align=\"center\" class=\"txtnote\"><%=resource.getString("JDP.inProgress")%></td></tr><tr><td><br/></td></tr><tr><td align=\"center\"><img src=\"<%=resource.getIcon("JDP.inProgress")%>\"/></td></tr></table></center>");
-		messageObj.setSize(300,120);
-		messageObj.setCssClassMessageBox(false);
-		messageObj.setShadowDivVisible(true);	// Disable shadow for these boxes	
-		messageObj.display();
-	}
-
-	function closeMessage()
-	{
-		messageObj.close();	
-	}
-</script>
-	
+<div id="modalDialog" style="display:none">
+	<center><table><tr><td align="center" class="txtnote"><%=resource.getString("JDP.inProgress")%></td></tr><tr><td><br/></td></tr><tr><td align="center"><img src="<%=resource.getIcon("JDP.inProgress")%>" alt=""/></td></tr></table></center>
+</div>
 </body>
 <script language=javascript>
 	myForm = document.userForm;

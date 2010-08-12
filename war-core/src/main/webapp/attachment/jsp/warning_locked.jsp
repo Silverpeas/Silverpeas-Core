@@ -32,18 +32,8 @@
 <%@ include file="checkAttachment.jsp"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <fmt:setLocale value="${userLanguage}" />
 <view:setBundle basename="com.stratelia.webactiv.util.attachment.multilang.attachment" var="attachmentMessages"  />
-<html>
-<head>
-<%
-out.println(gef.getLookStyleSheet());
-%>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title><fmt:message key="attachment.warning.checkin.locked" bundle="${attachmentMessages}" /></title>
-</head>
-<body>
  <%
   ButtonPane warningButtonPane = gef.getButtonPane();
    if( "A".equals(m_MainSessionCtrl.getCurrentUserDetail().getAccessLevel())) {
@@ -53,5 +43,3 @@ out.println(gef.getLookStyleSheet());
 %>
 <p><fmt:message key="attachment.warning.checkin.locked" bundle="${attachmentMessages}" /></p>
 <p style="text-align:center;"><%=warningButtonPane.print()%></p>
-</body>
-</html>

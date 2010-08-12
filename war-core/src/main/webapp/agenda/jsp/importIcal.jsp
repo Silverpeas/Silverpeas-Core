@@ -57,36 +57,28 @@
 <%
 out.println(graphicFactory.getLookStyleSheet());
 %>
-<link href="<%=m_context%>/util/styleSheets/modal-message.css" rel="stylesheet"  type="text/css"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/modal-message.js"></script>
 <script type="text/javascript">
-	
-		messageObj = new DHTML_modalMessage();	// We only create one object of this class
-		messageObj.setShadowOffset(5);	// Large shadow
-
-		function displayStaticMessage()
-		{
-			messageObj.setHtmlContent("<center><table border=\"0\"><tr><td align=\"center\"><br/><b><%=resources.getString("agenda.ImportInProgress")%></b></td></tr><tr><td><br/></td></tr><tr><td align=\"center\"><img src=\"<%=m_context%>/util/icons/inProgress.gif\"/></td></tr></table></center>");
-			messageObj.setSize(200,150);
-			messageObj.setCssClassMessageBox(false);
-			messageObj.setShadowDivVisible(true);	// Disable shadow for these boxes
-			messageObj.display();
-		}
-
-		function closeMessage()
-		{
-			messageObj.close();
-		}
+$(function() {
+	$("#importMessage").dialog({
+		autoOpen: false,
+		height: 150,
+		width: 200,
+		modal: true,
+		draggable: false,
+		resizable: false,
+		open: function(event, ui) { 
+				$(".ui-dialog-titlebar-close").hide();
+				$(".ui-dialog-titlebar").hide();}
+	});
+});
 		
-		function importIcal()
-		{
-			if (document.importIcalForm.fileCalendar.value != "")
-			{
-				displayStaticMessage();
-				setTimeout("document.importIcalForm.submit();", 200);
-			}
-		}
+function importIcal() {
+	if (document.importIcalForm.fileCalendar.value != "") {
+		$('#importMessage').dialog('open');
+		document.importIcalForm.submit();
+	}
+}
 </script>
 </head>
 <body id="agenda">
@@ -143,5 +135,10 @@ out.println(graphicFactory.getLookStyleSheet());
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
+<div id="importMessage" style="display:none">
+	<center>
+		<table border="0"><tr><td align="center"><br/><b><%=resources.getString("agenda.ImportInProgress")%></b></td></tr><tr><td><br/></td></tr><tr><td align="center"><img src="<%=m_context%>/util/icons/inProgress.gif" alt=""/></td></tr></table>
+	</center>
+</div>
 </body>
 </html>

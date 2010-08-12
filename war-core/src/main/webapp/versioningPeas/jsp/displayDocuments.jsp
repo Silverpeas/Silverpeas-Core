@@ -40,12 +40,6 @@
 <script type="text/javascript" src="<%=m_context%>/util/yui/animation/animation-min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/yui/menu/menu-min.js"></script>
 
-<link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/modal-message.css">
-
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/ajax-dynamic-content.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/modal-message.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/ajax.js"></script>
-
 <link rel="stylesheet" type="text/css" href="<%=m_context %>/util/yui/menu/assets/menu.css"/>
 <script src="<%=m_context%>/versioningPeas/jsp/javaScript/dragAndDrop.js" type="text/javascript"></script>
 <script src="<%=m_context%>/util/javaScript/upload_applet.js" type="text/javascript"></script>
@@ -459,6 +453,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 	          out.println(board.printAfter());
      }
 %>
+<div id="attachmentModalDialog" style="display: none"/>
 <script language="JavaScript">
 	var publicVersionsWindow = window;
 	function viewPublicVersions(docId) {
@@ -690,27 +685,27 @@ function updateAttachment(attachmentId)
 }
 
 // Suppression du fichier
-messageObj = new DHTML_modalMessage();	// We only create one object of this class
-messageObj.setShadowOffset(5);	// Large shadow
-
 var forceRelease = "false";
 function closeMessage(force)
 {
 	forceRelease = force;
-	messageObj.close(); 
+	$("#attachmentModalDialog").dialog("close");
 }
 
 function displayWarning()
 {
-	messageObj.setSize(300,80);
-	messageObj.setCssClassMessageBox(false);   
-	messageObj.setSource('<%=m_context%>/attachment/jsp/warning_locked.jsp?profile=<%=profile%>' );
-	messageObj.setShadowDivVisible(false);  // Disable shadow for these boxes
-	messageObj.display();
+	var url = "<%=m_context%>/attachment/jsp/warning_locked.jsp?profile=<%=profile%>";
+    $("#attachmentModalDialog").dialog("open").load(url);
 }
 
 $(document).ready(function(){
-	$("#attachmentList").sortable({opacity: 0.4, axis: 'y', cursor: 'hand', handle: 'img'}); 
+	$("#attachmentList").sortable({opacity: 0.4, axis: 'y', cursor: 'hand', handle: 'img'});
+
+	$("#attachmentModalDialog").dialog({
+  	  autoOpen: false,
+        modal: true,
+        height: 'auto',
+        width: 400});
 });
 
 $('#attachmentList').bind('sortupdate', function(event, ui) {

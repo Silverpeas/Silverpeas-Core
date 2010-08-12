@@ -295,9 +295,7 @@ ResourceLocator resourceSearchEngine = new ResourceLocator(
 <%
    out.println(gef.getLookStyleSheet());
 %>
-<link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/modal-message.css">
 <link rel="stylesheet" type="text/css" href="<%=m_context%>/util/styleSheets/jquery.autocomplete.css" media="screen">
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/modal-message.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
@@ -305,7 +303,6 @@ ResourceLocator resourceSearchEngine = new ResourceLocator(
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.bgiframe.min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.autocomplete.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/thickbox-compressed.js"></script>
-
 
 <script language="JavaScript1.2">
 var icWindow = window;
@@ -423,7 +420,7 @@ function sendQuery() {
 		top.topFrame.document.searchForm.query.value = "";
 		document.AdvancedSearch.action = "AdvancedSearch";
 		
-		displayStaticMessage();
+		$('#modalDialog').dialog('open');
     	setTimeout("document.AdvancedSearch.submit();", 500);
 	}
 }
@@ -600,23 +597,32 @@ function deleteUser()
 
 	document.getElementById("deleteURL").style.visibility = "hidden";
 }
-//used for keywords autocompletion
-<%  if(SilverpeasSettings.readBoolean(resourceSearchEngine, "enableAutocompletion", false)){ %>
-	 $(document).ready(function(){
-	        $("#query").autocomplete("<%=m_context%>/AutocompleteServlet", {
-	                    minChars: <%=autocompletionMinChars%>,
-	                    max: 50,
-	                    autoFill: false,
-	                    mustMatch: false,
-	                    matchContains: false,
-	                    scrollHeight: 220
-	
-	            });
-	      });
- <%}%>
+
+ $(document).ready(function(){
+		//used for keywords autocompletion
+	    <%  if(SilverpeasSettings.readBoolean(resourceSearchEngine, "enableAutocompletion", false)){ %>
+	    $("#query").autocomplete("<%=m_context%>/AutocompleteServlet", {
+	            minChars: <%=autocompletionMinChars%>,
+	            max: 50,
+	            autoFill: false,
+	            mustMatch: false,
+	            matchContains: false,
+	            scrollHeight: 220
+	    });
+	    <%}%>
+	    
+	    $("#modalDialog").dialog({
+	  	  	autoOpen: false,
+	        modal: true,
+	        height: 'auto',
+	        width: 200,
+	        open: function(event, ui) { 
+				$(".ui-dialog-titlebar-close").hide();
+				$(".ui-dialog-titlebar").hide();}
+	        });
+	  });
  
 </script>
-
 </HEAD>
 <BODY onLoad="onLoadStart();">
 <%
@@ -957,6 +963,8 @@ out.println(frame.printAfter());
 <%
 	out.println(window.printAfter());
 %>
-<%@ include file="modalMessage.jsp.inc" %>
+<div id="modalDialog" style="display:none">
+	<center><table><tr><td align="center" class="txtnote"><%=resource.getString("pdcPeas.inProgress")%></td></tr><tr><td><br/></td></tr><tr><td align="center"><img src="<%=resource.getIcon("pdcPeas.inProgress")%>" alt=""/></td></tr></table></center>
+</div>
 </BODY>
 </HTML>

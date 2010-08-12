@@ -31,9 +31,6 @@
 <%
 out.println(gef.getLookStyleSheet());
 %>
-<link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/modal-message.css">
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/modal-message.js"></script> 
-
 <script language='Javascript'>
 function QuitAndRefresh()
 {
@@ -51,36 +48,30 @@ function QuitAndRefresh()
     else
     {
     %>
-    	displayStaticMessage();
+    	$('#modalDialog').dialog('open');
     	document.redirection.action = url;
     	setTimeout("document.redirection.submit();", 500);
     <%
     }
     %>
 }
+$(document).ready(function(){
+	$("#modalDialog").dialog({
+  	  	autoOpen: false,
+        modal: true,
+        height: 'auto',
+        width: 200,
+        open: function(event, ui) { 
+			$(".ui-dialog-titlebar-close").hide();
+			$(".ui-dialog-titlebar").hide();}
+        });
+  });
 </script>
 </HEAD>
 <BODY onload="javascript:QuitAndRefresh()">
-
-<script type="text/javascript">
-messageObj = new DHTML_modalMessage();	// We only create one object of this class
-messageObj.setShadowOffset(5);	// Large shadow
-
-<!-- avec le script modal-message.js -->
-function displayStaticMessage()
-{
-	messageObj.setHtmlContent("<center><table><tr><td align=\"center\" class=\"txtnote\"><%=resource.getString("selectionPeas.inProgress")%></td></tr><tr><td><br/></td></tr><tr><td align=\"center\"><img src=\"<%=resource.getIcon("selectionPeas.inProgress")%>\"/></td></tr></table></center>");
-	messageObj.setSize(300,120);
-	messageObj.setCssClassMessageBox(false);
-	messageObj.setShadowDivVisible(true);	// Disable shadow for these boxes	
-	messageObj.display();
-}
-
-function closeMessage()
-{
-	messageObj.close();	
-}
-</script>
+<div id="modalDialog" style="display:none">
+	<center><table><tr><td align="center" class="txtnote"><%=resource.getString("selectionPeas.inProgress")%></td></tr><tr><td><br/></td></tr><tr><td align="center"><img src="<%=resource.getIcon("selectionPeas.inProgress")%>" alt=""/></td></tr></table></center>
+</div>
 <form name="redirection" method="POST">
 </form>
 </BODY>

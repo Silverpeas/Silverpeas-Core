@@ -108,10 +108,8 @@
 <%
 out.println(gef.getLookStyleSheet());
 %>
-<link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/modal-message.css">
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/modal-message.js"></script>
 <script language="JavaScript">
 <!--
 var currentLanguage = "<%=space.getLanguage()%>";
@@ -147,7 +145,7 @@ function openPopup(action, larg, haut)
     if (isUserAdmin || (m_SubSpace != null)) { %>
 		function deleteSpace() {
 		    if (window.confirm("<%=resource.getString("JSPP.MessageSuppressionSpaceBegin")+" "+Encode.javaStringToJsString(m_SpaceName)+" "+resource.getString("JSPP.MessageSuppressionSpaceEnd")%>")) {
-		    	displayStaticMessage();
+		    	$('#modalDialog').dialog('open');
 		    	setTimeout("location.href = \"DeleteSpace?Id=<%=space.getId()%>\";", 500);
 			}
 		}
@@ -163,6 +161,18 @@ function openPopup(action, larg, haut)
 function clipboardPaste() {
     top.IdleFrame.document.location.replace('../..<%=URLManager.getURL(URLManager.CMP_CLIPBOARD)%>paste?compR=RjobStartPagePeas&JSPPage=<%=response.encodeURL("StartPageInfo")%>&TargetFrame=TopFrame&message=REFRESH');
 }
+
+$(document).ready(function(){
+    $("#modalDialog").dialog({
+  	  	autoOpen: false,
+        modal: true,
+        height: 'auto',
+        width: 200,
+        open: function(event, ui) { 
+			$(".ui-dialog-titlebar-close").hide();
+			$(".ui-dialog-titlebar").hide();}
+        });
+  });
 
 -->
 </script>
@@ -261,6 +271,8 @@ out.println(board.printAfter());
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-<%@ include file="modalMessage.jsp.inc" %>
+<div id="modalDialog" style="display:none">
+	<center><table><tr><td align="center" class="txtnote"><%=resource.getString("JSPP.inProgress")%></td></tr><tr><td><br/></td></tr><tr><td align="center"><img src="<%=resource.getIcon("JSPP.inProgress")%>" alt=""/></td></tr></table></center>
+</div>
 </BODY>
 </HTML>

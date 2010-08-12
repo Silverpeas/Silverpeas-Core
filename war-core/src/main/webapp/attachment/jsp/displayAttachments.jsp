@@ -30,12 +30,6 @@
 
 <script src="<%=m_Context%>/attachment/jsp/jquery.qtip-1.0.0-rc3.min.js" type="text/javascript"></script>
 
-<link type="text/css" rel="stylesheet" href="<%=m_Context%>/util/styleSheets/modal-message.css">
-
-<script type="text/javascript" src="<%=m_Context%>/util/javaScript/modalMessage/ajax-dynamic-content.js"></script>
-<script type="text/javascript" src="<%=m_Context%>/util/javaScript/modalMessage/modal-message.js"></script>
-<script type="text/javascript" src="<%=m_Context%>/util/javaScript/modalMessage/ajax.js"></script>
-
 <script type="text/javascript" src="<%=m_Context%>/attachment/jsp/javaScript/dragAndDrop.js"></script>
 <script type="text/javascript" src="<%=m_Context%>/util/javaScript/upload_applet.js"></script>
 
@@ -340,7 +334,7 @@
             out.println(board.printAfter());
           }
     %>
-
+<div id="attachmentModalDialog" style="display: none"/>
 <% if (spinfireViewerEnable) {%>
 <script type="text/javascript">
   if (navigator.appName=='Microsoft Internet Explorer')
@@ -519,10 +513,8 @@
 
     function deleteAttachment(attachmentName, attachmentId)
     {
-      messageObj.setCssClassMessageBox(false);
-      messageObj.setSource('<%=m_Context%>/attachment/jsp/suppressionDialog.jsp?IdAttachment='+attachmentId+'&Name='+attachmentName);
-      messageObj.setShadowDivVisible(true);	// Disable shadow for these boxes
-      messageObj.display();
+      var url = "<%=m_Context%>/attachment/jsp/suppressionDialog.jsp?IdAttachment="+attachmentId+"&Name="+attachmentName;
+      $("#attachmentModalDialog").dialog("open").load(url);
     }
 
     function removeAttachment(attachmentId)
@@ -593,26 +585,24 @@
     }
   <% }%>
 
-    // Suppression du fichier
-    messageObj = new DHTML_modalMessage();	// We only create one object of this class
-    messageObj.setShadowOffset(5);	// Large shadow
-
-    function closeMessage()
-    {
-      messageObj.close();
+    function closeMessage() {
+    	$("#attachmentModalDialog").dialog("close");
     }
 
-    function displayWarning(attachmentId)
-    {
-      messageObj.setSize(300,80);
-      messageObj.setCssClassMessageBox(false);
-      messageObj.setSource('<%=m_Context%>/attachment/jsp/warning_locked.jsp?id=' + attachmentId );
-      messageObj.setShadowDivVisible(false);  // Disable shadow for these boxes
-      messageObj.display();
-    }
+    function displayWarning(attachmentId) {
+    	var url = "<%=m_Context%>/attachment/jsp/warning_locked.jsp?id=" + attachmentId;
+        $("#attachmentModalDialog").dialog("open").load(url);
+    }  
 
     $(document).ready(function(){
       $("#attachmentList").sortable({opacity: 0.4, axis: 'y', cursor: 'hand', handle: 'img'});
+
+      $("#attachmentModalDialog").dialog({
+    	  autoOpen: false,
+          modal: true,
+          title: "<%=attResources.getString("attachment.dialog.delete")%>",
+          height: 'auto',
+          width: 400});
     });
 
     $('#attachmentList').bind('sortupdate', function(event, ui) {

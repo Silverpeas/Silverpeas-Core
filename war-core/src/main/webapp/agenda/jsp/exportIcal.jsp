@@ -85,7 +85,7 @@ out.println(graphicFactory.getLookStyleSheet());
 		function exportIcal() {
 			if (isCorrectForm()) {
 				$('#exportMessage').dialog('open');
-				setTimeout("document.exportIcalForm.submit();", 500);
+				document.exportIcalForm.submit();
 			}
 		}
 

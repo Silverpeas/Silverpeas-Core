@@ -62,30 +62,35 @@ if ( (alreadyExist != null) && (alreadyExist.equals("1")) ){
 <%
    out.println(gef.getLookStyleSheet());
 %>
-<link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/modal-message.css">
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
 <script type="text/javascript" src="<%=m_context%>/pdcPeas/jsp/javascript/formUtil.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/modal-message.js"></script>
 
 <script language="Javascript">
-function sendData(action) 
-{
+function sendData(action) {
 	document.moveValue.action = action;
-	if (action == 'MoveValue')
-	{
-		if (window.confirm("<%=resource.getString("pdcPeas.confirmMoveValue")%>"))
-		{
-			displayStaticMessage();
+	if (action == 'MoveValue') {
+		if (window.confirm("<%=resource.getString("pdcPeas.confirmMoveValue")%>")) {
+			$('#modalDialog').dialog('open');
 			document.moveValue.submit();		
 		}
-	}
-	else
-	{
+	} else {
 		document.moveValue.submit();	
 	}	
 }
+
+$(document).ready(function(){
+	$("#modalDialog").dialog({
+  	  	autoOpen: false,
+        modal: true,
+        height: 'auto',
+        width: 200,
+        open: function(event, ui) { 
+			$(".ui-dialog-titlebar-close").hide();
+			$(".ui-dialog-titlebar").hide();}
+        });
+  });
 </script>
 </HEAD>
 <BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
@@ -212,6 +217,8 @@ out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 
-<%@ include file="modalMessage.jsp.inc" %>
+<div id="modalDialog" style="display:none">
+	<center><table><tr><td align="center" class="txtnote"><%=resource.getString("pdcPeas.inProgress")%></td></tr><tr><td><br/></td></tr><tr><td align="center"><img src="<%=resource.getIcon("pdcPeas.inProgress")%>" alt=""/></td></tr></table></center>
+</div>
 </BODY>
 </HTML>

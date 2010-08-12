@@ -194,9 +194,7 @@ if (!StringUtil.isDefined(pageId)) {
 		}
 	</style>
 <% } %>
-<link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/modal-message.css">
 <link rel="stylesheet" type="text/css" href="<%=m_context%>/util/styleSheets/jquery.autocomplete.css" media="screen">
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/modal-message.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/pdcPeas/jsp/javascript/formUtil.js"></script>
@@ -353,7 +351,7 @@ if (!StringUtil.isDefined(pageId)) {
 		top.topFrame.document.searchForm.query.value = "";
 		document.AdvancedSearch.action 		= "AdvancedSearch";
 		
-		displayStaticMessage();
+		$('#modalDialog').dialog('open');
     	setTimeout("document.AdvancedSearch.submit();", 500);
 	}
 
@@ -366,7 +364,7 @@ if (!StringUtil.isDefined(pageId)) {
 			$("#componentFilterId").val(value);
 		}
 		$("#changeFilterId").val("change");
-		displayStaticMessage();
+		$('#modalDialog').dialog('open');
     	setTimeout("document.AdvancedSearch.submit();", 500);
 	}
 
@@ -379,7 +377,7 @@ if (!StringUtil.isDefined(pageId)) {
 			$("#componentFilterId").val("");
 		}
 		$("#changeFilterId").val("change");
-		displayStaticMessage();
+		$('#modalDialog').dialog('open');
     	setTimeout("document.AdvancedSearch.submit();", 500);
 	}
 	
@@ -393,20 +391,7 @@ if (!StringUtil.isDefined(pageId)) {
 		document.AdvancedSearch.action = "SortResults";
 		document.AdvancedSearch.submit();
 	}
-       //used for keywords autocompletion
-    <%  if(autoCompletion){ %>
-		 $(document).ready(function(){
-		        $("#query").autocomplete("<%=m_context%>/AutocompleteServlet", {
-		                    minChars: <%=autocompletionMinChars%>,
-		                    max: 50,
-		                    autoFill: false,
-		                    mustMatch: false,
-		                    matchContains: false,
-		                    scrollHeight: 220
-		
-		            });
-		      });
-    <%}%>
+       
 
     //used for mark as read functionality
   	<%  if(markResult){ %>  
@@ -423,6 +408,30 @@ if (!StringUtil.isDefined(pageId)) {
 			document.AdvancedSearch.submit();
 		}
 	<% } %>
+
+	$(document).ready(function(){
+		//used for keywords autocompletion
+	    <%  if(autoCompletion){ %>
+			        $("#query").autocomplete("<%=m_context%>/AutocompleteServlet", {
+			                    minChars: <%=autocompletionMinChars%>,
+			                    max: 50,
+			                    autoFill: false,
+			                    mustMatch: false,
+			                    matchContains: false,
+			                    scrollHeight: 220
+			            });
+	    <%}%>
+	    
+	    $("#modalDialog").dialog({
+	  	  	autoOpen: false,
+	        modal: true,
+	        height: 'auto',
+	        width: 200,
+	        open: function(event, ui) { 
+				$(".ui-dialog-titlebar-close").hide();
+				$(".ui-dialog-titlebar").hide();}
+	        });
+	  });
 </script>
 </HEAD>
 <BODY class="searchEngine" id="<%=pageId %>">
@@ -862,6 +871,8 @@ if (!StringUtil.isDefined(pageId)) {
 	<input type="hidden" name="ShowResults" value="<%=resultsDisplayMode%>"/>
 	<input type="hidden" name="ResultPageId" value="<%=pageId %>"/>
 </form>
-<%@ include file="modalMessage.jsp.inc" %>
+<div id="modalDialog" style="display:none">
+	<center><table><tr><td align="center" class="txtnote"><%=resource.getString("pdcPeas.inProgress")%></td></tr><tr><td><br/></td></tr><tr><td align="center"><img src="<%=resource.getIcon("pdcPeas.inProgress")%>" alt=""/></td></tr></table></center>
+</div>
 </body>
 </html>

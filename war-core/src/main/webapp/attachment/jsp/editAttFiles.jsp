@@ -103,11 +103,6 @@
       Board board = gef.getBoard();
 %>
 
-<link type="text/css" rel="stylesheet" href="<%=m_Context%>/util/styleSheets/modal-message.css">
-
-<script type="text/javascript" src="<%=m_Context%>/util/javaScript/modalMessage/ajax-dynamic-content.js"></script>
-<script type="text/javascript" src="<%=m_Context%>/util/javaScript/modalMessage/modal-message.js"></script>
-<script type="text/javascript" src="<%=m_Context%>/util/javaScript/modalMessage/ajax.js"></script>
 <script type="text/javascript" src="<%=m_Context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_Context%>/attachment/jsp/javaScript/dragAndDrop.js"></script>
 <script type="text/javascript" src="<%=m_Context%>/util/javaScript/upload_applet.js"></script>
@@ -196,18 +191,13 @@
             window.close() ;
           }
 	
-          messageObj = new DHTML_modalMessage();	// We only create one object of this class
-          messageObj.setShadowOffset(5);	// Large shadow
-
-          function closeMessage()
-          {
-            messageObj.close();
+          function closeMessage() {
+			$("#attachmentModalDialog").dialog("close");
           }
 
-          function closeMessage(force)
-          {
-            document.attachmentForm.force_release.value=force;
-            messageObj.close();
+          function closeMessage(force) {
+          	document.attachmentForm.force_release.value=force;
+          	$("#attachmentModalDialog").dialog("close");
           }
 	
           var attachmentId 	= "-1";
@@ -224,14 +214,8 @@
             attachmentId 	= id;
             attachmentName	= t;
 		
-            if (languages.length > 4) //at least two translations
-              messageObj.setSize(500,200);
-            else
-              messageObj.setSize(500,100);
-            messageObj.setCssClassMessageBox(false);
-            messageObj.setSource('<%=m_Context%>/attachment/jsp/suppressionDialog.jsp?ComponentId=<%=componentId%>&Id=<%=id%>&Url=<%=url%>&IdAttachment='+id+'&Name='+t+'&Languages='+languages+'&IndexIt=<%=indexIt%>');
-            messageObj.setShadowDivVisible(false);	// Disable shadow for these boxes
-            messageObj.display();
+            var url = '<%=m_Context%>/attachment/jsp/suppressionDialog.jsp?ComponentId=<%=componentId%>&Id=<%=id%>&Url=<%=url%>&IdAttachment='+id+'&Name='+t+'&Languages='+languages+'&IndexIt=<%=indexIt%>';
+            $("#attachmentModalDialog").dialog("open").load(url);
           }
 	
           function ShareAttachment(id)
@@ -242,11 +226,8 @@
 	
           function displayWarning()
           {
-            messageObj.setSize(300,80);
-            messageObj.setCssClassMessageBox(false);
-            messageObj.setSource('<%=m_Context%>/attachment/jsp/warning_locked.jsp?profile=<%=profile%>' );
-            messageObj.setShadowDivVisible(false);  // Disable shadow for these boxes
-            messageObj.display();
+        	  var url = "<%=m_Context%>/attachment/jsp/warning_locked.jsp?profile=<%=profile%>";
+              $("#attachmentModalDialog").dialog("open").load(url);
           }
 
           function removeAttachment(attachmentId)
@@ -289,6 +270,14 @@
             });
           }
 
+          $(document).ready(function(){
+              $("#attachmentModalDialog").dialog({
+            	  autoOpen: false,
+                  modal: true,
+                  title: "<%=attResources.getString("attachment.dialog.delete")%>",
+                  height: 'auto',
+                  width: 400});
+            });
 </script>
 <CENTER>
   <%
@@ -581,3 +570,4 @@
   setTimeout("displayWarning();", 500);
 </script>
 <% }%>
+<div id="attachmentModalDialog" style="display: none"/>

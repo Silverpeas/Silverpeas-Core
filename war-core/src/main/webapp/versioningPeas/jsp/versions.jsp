@@ -77,11 +77,6 @@
 	<%
 		out.println(gef.getLookStyleSheet());
 	%>
-  <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/modal-message.css" />
-  <script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/ajax-dynamic-content.js"></script>
-  <script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/modal-message.js"></script>
-  <script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/ajax.js"></script>
-
 	<script language="Javascript">
 	function rtrim(texte){
 		while (texte.substring(0,1) == ' '){
@@ -225,13 +220,8 @@ function perfAction(action, fileName)
     else
     {
         if (action == "checkin" &&  <%=webdavEditingEnable%> && <%=isOpenOffice%>) {
-            messageObj = new DHTML_modalMessage();  // We only create one object of this class
-            messageObj.setShadowOffset(5);  // Large shadow
-            //messageObj.setSize(550,300);
-            messageObj.setCssClassMessageBox(false);
-            messageObj.setSource('<%=m_context%>/RVersioningPeas/jsp/AddNewOnlineVersion?Id=<%=id%>&ComponentId=<%=document.getPk().getInstanceId()%>&SpaceId=<%=document.getPk().getSpaceId()%>&documentId=<%=document.getPk().getId()%>');
-            messageObj.setShadowDivVisible(false);  // Disable shadow for these boxes
-            messageObj.display();
+            var url = "<%=m_context%>/RVersioningPeas/jsp/AddNewOnlineVersion?Id=<%=id%>&ComponentId=<%=document.getPk().getInstanceId()%>&SpaceId=<%=document.getPk().getSpaceId()%>&documentId=<%=document.getPk().getId()%>";
+            $("#attachmentModalDialog").dialog("open").load(url);
         } else if (action == "checkin") {
         	document.forms[0].Action.value="checkin";
         	toSubmit = true;
@@ -247,6 +237,15 @@ function perfAction(action, fileName)
 		document.forms[0].action="Update";
 		document.forms[0].submit();
 	}
+
+$(document).ready(function(){
+	$("#attachmentModalDialog").dialog({
+  	  	autoOpen: false,
+        modal: true,
+        height: 'auto',
+        width: 400});
+});
 </script>
+<div id="attachmentModalDialog" style="display: none"/>
 </body>
 </html>
