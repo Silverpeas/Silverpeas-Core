@@ -39,14 +39,16 @@ import com.stratelia.silverpeas.util.JoinStatement;
  * (PDC, ....)
  */
 public class ContainerManager extends Object implements java.io.Serializable {
+
+  private static final long serialVersionUID = 3059920239753917851L;
   // Container peas
   private static boolean s_bDescriptorsRead = false;
-  private static ArrayList s_acContainerPeas = null;
+  private static List<ContainerPeas> s_acContainerPeas = null;
 
   // Association componentId instanceId association (cache)
   // private static List s_asAssoInstanceId = null;
   // private static List s_asAssoComponentId = null;
-  private static Hashtable assoComponentIdInstanceId = null;
+  private static Hashtable<String, String> assoComponentIdInstanceId = null;
 
   // Datebase properties
   private static String m_dbName = JNDINames.CONTAINERMANAGER_DATASOURCE;
@@ -55,7 +57,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
 
   static {
     try {
-      assoComponentIdInstanceId = new Hashtable(loadAsso(null));
+      assoComponentIdInstanceId = new Hashtable<String, String>(loadAsso(null));
     } catch (ContainerManagerException e) {
       SilverTrace.error("containerManager", "ContainerManager.initStatic",
           "root.EX_CLASS_NOT_INITIALIZED",
@@ -77,7 +79,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
       ContainerPeas containerPDC = new ContainerPeas("containerPDC");
 
       // Put the PDC container in the array of containers
-      s_acContainerPeas = new ArrayList(); // Only PDC
+      s_acContainerPeas = new ArrayList<ContainerPeas>(); // Only PDC
       s_acContainerPeas.add(containerPDC);
 
       // Set the read flag to true
@@ -142,7 +144,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
           SilverpeasException.ERROR,
           "containerManager.EX_CANT_REGISTER_CONTAINER_INSTANCE",
           "sComponentId: " + sComponentId + "    sContainerType: "
-          + sContainerType, e);
+              + sContainerType, e);
     } finally {
       DBUtil.close(prepStmt);
       if (bCloseConnection)
@@ -194,7 +196,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
           SilverpeasException.ERROR,
           "containerManager.EX_CANT_UNREGISTER_CONTAINER_INSTANCE",
           "sComponentId: " + sComponentId + "    sContainerType: "
-          + sContainerType, e);
+              + sContainerType, e);
     } finally {
       DBUtil.close(prepStmt);
       if (bCloseConnection)
@@ -367,7 +369,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
     return instanceId;
   }
 
-  private Hashtable getAsso() throws ContainerManagerException {
+  private Hashtable<String, String> getAsso() throws ContainerManagerException {
     /*
      * synchronized (assoComponentIdInstanceId) { if (assoComponentIdInstanceId.isEmpty())
      * assoComponentIdInstanceId.putAll(loadAsso(null)); }
@@ -395,13 +397,13 @@ public class ContainerManager extends Object implements java.io.Serializable {
    * @param connection
    * @throws ContainerManagerException
    */
-  private static Hashtable loadAsso(Connection connection)
+  private static Hashtable<String, String> loadAsso(Connection connection)
       throws ContainerManagerException {
     boolean bCloseConnection = false;
 
     PreparedStatement prepStmt = null;
     ResultSet resSet = null;
-    Hashtable tempAsso = new Hashtable();
+    Hashtable<String, String> tempAsso = new Hashtable<String, String>();
     try {
       if (connection == null) {
         // Open connection
@@ -419,7 +421,6 @@ public class ContainerManager extends Object implements java.io.Serializable {
       prepStmt = connection.prepareStatement(sSQLStatement);
       resSet = prepStmt.executeQuery();
 
-      tempAsso = new Hashtable();
       // Fetch the results
       while (resSet.next()) {
         tempAsso.put(resSet.getString(2), Integer.toString(resSet.getInt(1)));
@@ -467,15 +468,14 @@ public class ContainerManager extends Object implements java.io.Serializable {
       // Call the remove on the ContainerInterface
       ContainerInterface containerInterface = containerPeas
           .getContainerInterface();
-      List alPositions = containerInterface.removePosition(connection,
+      List<Integer> alPositions = containerInterface.removePosition(connection,
           nSilverContentId);
 
       // Remove the links Positions-ContainerInstanceId
       if (alPositions.size() > 0) {
         sSQLStatement.append("DELETE FROM " + m_sLinksTable + " WHERE ");
         for (int nI = 0; nI < alPositions.size(); nI++) {
-          sSQLStatement.append("(positionId = "
-              + ((Integer) alPositions.get(nI)).toString() + ")");
+          sSQLStatement.append("(positionId = " + alPositions.get(nI).toString() + ")");
           if (nI < alPositions.size() - 1) {
             sSQLStatement.append(" OR ");
           }
@@ -497,8 +497,8 @@ public class ContainerManager extends Object implements java.io.Serializable {
       throw new ContainerManagerException(
           "ContainerManager.silverContentIsRemoved", SilverpeasException.ERROR,
           "containerManager.EX_CANT_REMOVE_SILVERCONTENT", "nSilverContentId: "
-          + nSilverContentId + "   nContainerInstanceId: "
-          + nContainerInstanceId, e);
+              + nSilverContentId + "   nContainerInstanceId: "
+              + nContainerInstanceId, e);
     } finally {
       DBUtil.close(prepStmt);
       if (bCloseConnection)
@@ -600,7 +600,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
       throw new ContainerManagerException(
           "ContainerManager.getFirstStringValue", SilverpeasException.ERROR,
           "containerManager.EX_CANT_QUERY_DATABASE", "sSQLStatement: "
-          + sSQLStatement, e);
+              + sSQLStatement, e);
     } finally {
       DBUtil.close(resSet, prepStmt);
       closeConnection(connection);
@@ -679,7 +679,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
    * Remove all the links for the given positionIds Ex: Called when empty positions are removed from
    * the ClassifyEngine
    */
-  public void removeAllPositionIdsLink(Connection connection, List alPositionIds)
+  public void removeAllPositionIdsLink(Connection connection, List<Integer> alPositionIds)
       throws ContainerManagerException {
     StringBuffer sSQLStatement = new StringBuffer(1000);
     PreparedStatement prepStmt = null;
@@ -688,8 +688,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
         // Set the delete statement
         sSQLStatement.append("DELETE FROM " + m_sLinksTable + " WHERE ");
         for (int nI = 0; nI < alPositionIds.size(); nI++) {
-          sSQLStatement.append("(positionId = "
-              + ((Integer) alPositionIds.get(nI)).intValue() + ")");
+          sSQLStatement.append("(positionId = " + alPositionIds.get(nI).intValue() + ")");
           if (nI < alPositionIds.size() - 1) {
             sSQLStatement.append(" OR ");
           }
@@ -717,14 +716,14 @@ public class ContainerManager extends Object implements java.io.Serializable {
    * Return the statement to get only the positions that belongs to the given componentId
    */
   public JoinStatement getFilterPositionsByComponentIdStatement(
-      List alPositions, List alComponentId) throws ContainerManagerException {
+      List<Integer> alPositions, List<String> alComponentId) throws ContainerManagerException {
     StringBuffer sSQLStatement = new StringBuffer(1000);
 
     JoinStatement joinStatement = new JoinStatement();
 
-    List alGivenTables = (List) new ArrayList();
-    List alGivenKeys = (List) new ArrayList();
-    List notUsedComponents = (List) new ArrayList();
+    List<String> alGivenTables = new ArrayList<String>();
+    List<String> alGivenKeys = new ArrayList<String>();
+    List<String> notUsedComponents = new ArrayList<String>();
 
     alGivenTables.add(m_sLinksTable);
     alGivenKeys.add("positionId");
@@ -743,7 +742,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
 
       sSQLStatement.append("( ");
       for (int nI = 0; nI < alComponentId.size(); nI++) {
-        component = (String) alComponentId.get(nI);
+        component = alComponentId.get(nI);
         // Get the containerInstanceId corresponding to the given componentId
         nContainerInstanceId = this.getContainerInstanceId(component);
         // We need only components in a container
@@ -772,26 +771,14 @@ public class ContainerManager extends Object implements java.io.Serializable {
       sSQLStatement.append(" AND (");
     }
     for (int nI = 0; alPositions != null && nI < alPositions.size(); nI++) {
-      sSQLStatement.append("CML.positionId = "
-          + ((Integer) alPositions.get(nI)).toString());
+      sSQLStatement.append("CML.positionId = " + alPositions.get(nI).toString());
       if (nI < alPositions.size() - 1) {
         sSQLStatement.append(" OR ");
       } else {
         sSQLStatement.append(")");
       }
     }
-    // works on the componentId List
-    /*
-     * if (alComponentId != null && alComponentId.size() > 0) { sSQLStatement.append(" AND ( ");
-     * String oneComponent = ""; for (int nI = 0; nI < alComponentId.size(); nI++) { oneComponent =
-     * (String) alComponentId.get(nI); if (!notUsedComponents.contains(oneComponent)) {
-     * sSQLStatement.append("CMI.componentId = '" + oneComponent + "'"); if (nI <
-     * alComponentId.size() - 1) { sSQLStatement.append(" OR "); } else { sSQLStatement.append(")");
-     * } } } // retire le dernier " OR )" s'il existe !! et le remplace par " ) " String
-     * strSQLStatement = sSQLStatement.toString(); int len = sSQLStatement.length(); if
-     * (strSQLStatement.endsWith(" OR ")) { sSQLStatement.replace(len - 3, len, ")"); // ajoute une
-     * parenthese } }
-     */
+
     notUsedComponents = null;
     joinStatement.setWhere(sSQLStatement.toString());
     SilverTrace.info("containerManager",
@@ -805,7 +792,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
    * Return only the positions that belongs to the given componentId ATTENTION: this function is
    * slow, use it only for a few positions (for one SilverContentId)
    */
-  public List filterPositionsByComponentId(List alPositions, String sComponentId)
+  public List<Integer> filterPositionsByComponentId(List<Integer> alPositions, String sComponentId)
       throws ContainerManagerException {
     StringBuffer sSQLStatement = new StringBuffer(1000);
     Connection connection = null;
@@ -826,8 +813,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
         sSQLStatement.append(" AND (");
       }
       for (int nI = 0; alPositions != null && nI < alPositions.size(); nI++) {
-        sSQLStatement.append("positionId = "
-            + ((Integer) alPositions.get(nI)).toString());
+        sSQLStatement.append("positionId = " + alPositions.get(nI).toString());
         if (nI < alPositions.size() - 1) {
           sSQLStatement.append(" OR ");
         } else {
@@ -855,7 +841,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
           "ContainerManager.filterPositionsByComponentId",
           SilverpeasException.ERROR,
           "containerManager.EX_CANT_FILTER_POSITIONS", "sComponentId: "
-          + sComponentId, e);
+              + sComponentId, e);
     } finally {
       DBUtil.close(resSet, prepStmt);
       closeConnection(connection);

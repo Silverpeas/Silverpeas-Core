@@ -36,7 +36,7 @@ public interface ContainerInterface {
   public String getCallParameters(String sComponentId, String sSilverContentId);
 
   /** Remove all the positions of the given content */
-  public List removePosition(Connection connection, int nSilverContentId)
+  public List<Integer> removePosition(Connection connection, int nSilverContentId)
       throws ContainerManagerException;
 
   /** Find the search Context for the given SilverContentId */
@@ -45,12 +45,12 @@ public interface ContainerInterface {
       throws ContainerManagerException;
 
   /** Find all the SilverContentId with the given position */
-  public List findSilverContentIdByPosition(
-      ContainerPositionInterface containerPosition, List alComponentId)
+  public List<Integer> findSilverContentIdByPosition(
+      ContainerPositionInterface containerPosition, List<String> alComponentId)
       throws ContainerManagerException;
 
-  public List findSilverContentIdByPosition(
-      ContainerPositionInterface containerPosition, List alComponentId,
+  public List<Integer> findSilverContentIdByPosition(
+      ContainerPositionInterface containerPosition, List<String> alComponentId,
       String authorId, String afterDate, String beforeDate)
       throws ContainerManagerException;
 }

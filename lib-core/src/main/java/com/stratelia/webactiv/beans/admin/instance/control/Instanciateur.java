@@ -238,11 +238,13 @@ public class Instanciateur extends Object {
     }
   }
 
+  @SuppressWarnings("unchecked")
   private static Collection<File> getFileList() {
     Collection<File> list = FileUtils.listFiles(new File(xmlPackage), new String[]{"xml"}, true);
     return list;
   }
 
+  @SuppressWarnings("unchecked")
   private static String getDescriptorFullPath(String componentName) throws IOException {
     IOFileFilter filter = new NameFileFilter(componentName + ".xml");
     List<File> list = new ArrayList<File>(FileUtils.listFiles(new File(xmlPackage), filter,

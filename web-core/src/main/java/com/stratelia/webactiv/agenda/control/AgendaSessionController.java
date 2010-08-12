@@ -25,6 +25,7 @@
 package com.stratelia.webactiv.agenda.control;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.rmi.RemoteException;
@@ -105,7 +106,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   private String agendaUserId = getUserId();
   private UserDetail agendaUserDetail = getUserDetail();
 
-  private CalendarImportSettingsDao importSettingsDao = new CalendarImportSettingsDaoJdbc();
+  private final CalendarImportSettingsDao importSettingsDao = new CalendarImportSettingsDaoJdbc();
 
   public final static String ICALENDAR_MIME_TYPE = "text/calendar";
 
@@ -119,8 +120,8 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   public final static String SYNCHRO_SUCCEEDED = "0";
   public final static String SYNCHRO_FAILED = "1";
   public final static String AGENDA_FILENAME_PREFIX = "agenda";
-  public static int WORKING_DAY = 0;
-  public static int HOLIDAY_DAY = 1;
+  public final static int WORKING_DAY = 0;
+  public final static int HOLIDAY_DAY = 1;
 
   /**
    * Constructor declaration
@@ -142,16 +143,23 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   }
 
   public String getRSSUrl() {
-    if (isUseRss())
-      return "/rssAgenda/"
-          + getAgendaUserId()
-          + "?userId="
-          + getUserId()
-          + "&amp;login="
-          + URLEncoder.encode(getUserDetail().getLogin())
-          + "&amp;password="
-          + URLEncoder.encode(getOrganizationController().getUserFull(
-          getUserId()).getPassword());
+    if (isUseRss()) {
+      try {
+        return "/rssAgenda/"
+            + getAgendaUserId()
+            + "?userId="
+            + getUserId()
+            + "&amp;login="
+            + URLEncoder.encode(getUserDetail().getLogin(), "UTF-8")
+            + "&amp;password="
+            + URLEncoder.encode(getOrganizationController().getUserFull(
+            getUserId()).getPassword(), "UTF-8");
+      } catch (UnsupportedEncodingException e) {
+        SilverTrace.error("agenda", "AgendaSessionController.getRSSUrl()",
+            "agenda.MSG_CANT_DEFINE_URL", e);
+        return null;
+      }
+    }
     return null;
   }
 

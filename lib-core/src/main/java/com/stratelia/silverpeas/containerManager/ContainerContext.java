@@ -48,6 +48,6 @@ public interface ContainerContext {
   /*
    * Get All the SilverContentIds corresponding to the given position in the given Components
    */
-  public List getSilverContentIdByPosition(
-      ContainerPositionInterface containerPosition, List alComponentIds);
+  public List<Integer> getSilverContentIdByPosition(
+      ContainerPositionInterface containerPosition, List<String> alComponentIds);
 }

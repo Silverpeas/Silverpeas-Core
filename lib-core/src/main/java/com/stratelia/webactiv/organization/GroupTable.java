@@ -584,10 +584,6 @@ public class GroupTable extends Table {
    * Updates a group row.
    */
   public void updateGroup(GroupRow group) throws AdminPersistenceException {
-    GroupRow oldGroup = null;
-
-    oldGroup = getGroup(group.id);
-
     SynchroReport.debug("GroupTable.updateGroup()", "Maj de " + group.name
         + ", Id=" + group.id + ", requête : " + UPDATE_GROUP, null);
     updateRow(UPDATE_GROUP, group);

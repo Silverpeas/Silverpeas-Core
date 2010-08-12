@@ -28,6 +28,9 @@ package com.stratelia.silverpeas.scheduler;
  * This exception is thrown by the scheduler framework. Could be used for exception classification.
  */
 public class SchedulerException extends Exception {
+  
+  private static final long serialVersionUID = 8770810910927989722L;
+
   public SchedulerException() {
     super();
   }

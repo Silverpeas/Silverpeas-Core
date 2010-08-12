@@ -110,6 +110,7 @@ public class SpaceTable extends Table {
   static final private String SELECT_SPACE_BY_ID = "select " + SPACE_COLUMNS
       + " from ST_Space where id = ?";
 
+  @SuppressWarnings("unchecked")
   public SpaceRow getPersonalSpace(String userId) throws AdminPersistenceException {
     int[] ids = new int[2];
     ids[0] = 1;

@@ -29,31 +29,14 @@ package com.stratelia.silverpeas.containerManager;
 
 import com.stratelia.webactiv.util.exception.*;
 
-/*
- * CVS Informations
- * 
- * $Id: ContainerManagerException.java,v 1.1.1.1 2002/08/06 14:47:47 nchaix Exp $
- * 
- * $Log: ContainerManagerException.java,v $
- * Revision 1.1.1.1  2002/08/06 14:47:47  nchaix
- * no message
- *
- * Revision 1.1  2002/02/21 16:32:24  nchaix
- * no message
- *
- * Revision 1.1  2002/02/19 14:05:12  nchaix
- * no message
- *
- * Revision 1.1  2002/01/18 18:04:07  tleroi
- * Centralize URLS + Stabilisation Lot 2 - SilverTrace et Exceptions
- *
- */
-
 /**
  * Class declaration
  * @author n.chaix
  */
 public class ContainerManagerException extends SilverpeasException {
+  
+  private static final long serialVersionUID = -4426734498770573263L;
+
   /**
    * -------------------------------------------------------------------------- constructor
    * constructor

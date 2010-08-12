@@ -28,6 +28,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class ParseRuntimeException extends SilverpeasRuntimeException {
 
+  private static final long serialVersionUID = 495937612252426558L;
+
   /**
    * method of interface FromModule
    */

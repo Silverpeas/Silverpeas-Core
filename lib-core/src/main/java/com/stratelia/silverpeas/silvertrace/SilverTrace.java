@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -717,7 +718,7 @@ public class SilverTrace {
   static public void resetAll() {
     String pathFiles = null; // Path to the properties files
     String languageMessage = null;
-    ArrayList theFiles = null;
+    List<File> theFiles = null;
     int nbFiles;
     int i;
     InputStream is = null;

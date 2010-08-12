@@ -189,7 +189,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
 
         // we search all silverContent ids according to the search context and the component
         // instance list
-        List<String> alSilverContentIds =
+        List<Integer> alSilverContentIds =
             containerInterface.findSilverContentIdByPosition(pdcSC.getContainerPosition(),
             (List) alComponentIds);
         SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.getDestination", "SearchView",

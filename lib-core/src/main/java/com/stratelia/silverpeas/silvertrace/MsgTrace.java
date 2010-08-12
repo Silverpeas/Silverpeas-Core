@@ -24,14 +24,16 @@
 
 package com.stratelia.silverpeas.silvertrace;
 
-import com.silverpeas.util.StringUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
+
+import com.silverpeas.util.StringUtil;
 
 /**
  * Class declaration
@@ -63,7 +65,7 @@ public class MsgTrace {
     int nbFiles;
     int i;
     InputStream is = null;
-    ArrayList theFiles = null;
+    List<File> theFiles = null;
 
     allMessages.clear();
     pathMessages = filePath + "/messages";
@@ -77,7 +79,7 @@ public class MsgTrace {
     nbFiles = theFiles.size();
     for (i = 0; i < nbFiles; i++) {
       try {
-        is = new FileInputStream((File) theFiles.get(i));
+        is = new FileInputStream(theFiles.get(i));
         allMessages.load(is);
         is.close();
       } catch (IOException e) {
@@ -201,8 +203,8 @@ public class MsgTrace {
    * @return
    * @see
    */
-  public ArrayList getPropertyFiles(String pathFiles, String suffix) {
-    ArrayList valret = new ArrayList();
+  public List<File> getPropertyFiles(String pathFiles, String suffix) {
+    List<File> valret = new ArrayList<File>();
     File[] messageFiles = null;
     File pathMessagesFile = null;
     int nbFiles;

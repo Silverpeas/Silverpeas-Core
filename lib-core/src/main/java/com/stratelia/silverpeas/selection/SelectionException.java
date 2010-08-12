@@ -35,6 +35,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  */
 public class SelectionException extends SilverpeasException {
 
+  private static final long serialVersionUID = 6354091413107342494L;
+
   /**
    * Constructor declaration
    * @param callingClass

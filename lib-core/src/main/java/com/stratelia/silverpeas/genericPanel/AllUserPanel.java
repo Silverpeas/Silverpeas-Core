@@ -45,7 +45,7 @@ public class AllUserPanel extends PanelProvider {
 
   protected OrganizationController m_oc = new OrganizationController();
 
-  protected Hashtable m_AllUserDetail = new Hashtable();
+  protected Hashtable<String, UserDetail> m_AllUserDetail = new Hashtable<String, UserDetail>();
 
   public AllUserPanel(String language, String title) {
     initAll(language, title);

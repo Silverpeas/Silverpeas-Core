@@ -30,6 +30,9 @@ import com.stratelia.webactiv.util.exception.*;
  * Thrown by the form components.
  */
 public class PublicationTemplateException extends SilverpeasException {
+  
+  private static final long serialVersionUID = 6950156686943300437L;
+
   /**
    * Returns the module name (as known by SilverTrace).
    */

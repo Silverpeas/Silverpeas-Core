@@ -35,6 +35,8 @@ import com.stratelia.webactiv.util.exception.*;
  */
 public class GenericPanelException extends SilverpeasException {
 
+  private static final long serialVersionUID = 6890775214009925039L;
+
   /**
    * Constructor declaration
    * @param callingClass

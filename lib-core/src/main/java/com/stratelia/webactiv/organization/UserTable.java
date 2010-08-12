@@ -27,15 +27,14 @@ package com.stratelia.webactiv.organization;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import com.stratelia.silverpeas.domains.ldapdriver.LDAPUtility;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import java.util.ArrayList;
 
 /**
  * A UserTable object manages the ST_User table.
@@ -443,18 +442,6 @@ public class UserTable extends Table {
   static final private String SELECT_SEARCH_USERSID =
       "select DISTINCT ST_User.id, UPPER(ST_User.lastName) "
       + "from ST_User";
-
-  static final private String SELECT_SEARCH_USERSID_IN_GROUP =
-      "select DISTINCT ST_User.id, UPPER(ST_User.lastName) "
-      + "from ST_User,ST_UserSet_User_Rel";
-
-  static final private String SELECT_SEARCH_USERSID_IN_COMPONENT =
-      "select DISTINCT ST_User.id, UPPER(ST_User.lastName) "
-      + "from ST_User,ST_UserSet_User_Rel";
-
-  static final private String SELECT_SEARCH_USERSID_IN_ROLE =
-      "select DISTINCT ST_User.id, UPPER(ST_User.lastName) "
-      + "from ST_User,ST_UserSet_User_Rel";
 
   /**
    * Returns all the Users satiffying the model

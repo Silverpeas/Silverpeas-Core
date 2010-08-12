@@ -30,6 +30,7 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 
 public class SilverpeasBean implements SilverpeasBeanIntf, Serializable {
 
+  private static final long serialVersionUID = -7843189803570333207L;
   private WAPrimaryKey pk;
 
   public SilverpeasBean() {

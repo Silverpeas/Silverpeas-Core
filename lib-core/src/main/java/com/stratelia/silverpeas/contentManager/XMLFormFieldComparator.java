@@ -25,8 +25,6 @@ package com.stratelia.silverpeas.contentManager;
 
 import java.util.Comparator;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  * class used to compare GlobalSilverContent according to the XML form sortable field
  * @author David Derigent

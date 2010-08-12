@@ -38,7 +38,7 @@ public class ContainerPeas extends Object {
   // ContainerInterface
   ContainerInterface m_containerInterface = null; // The object
   // (class.forName(m_sContainerInterface))
-  List m_asUserRoles = null; // User roles of the container
+  List<String> m_asUserRoles = null; // User roles of the container
   String m_sReturnURL = null; // URL to call when the content want to get back
   // on the container
   String m_sSessionControlBeanName = null; // Name of the bean in the session
@@ -56,7 +56,7 @@ public class ContainerPeas extends Object {
       this
           .setContainerInterface("com.stratelia.silverpeas.pdc.control.PdcBmImpl");
 
-      ArrayList asUserRoles = new ArrayList();
+      List<String> asUserRoles = new ArrayList<String>();
       asUserRoles.add("containerPDC_admin");
       asUserRoles.add("containerPDC_user");
       this.setUserRoles(asUserRoles);
@@ -94,11 +94,11 @@ public class ContainerPeas extends Object {
     return m_containerInterface;
   }
 
-  public void setUserRoles(List asUserRoles) {
+  public void setUserRoles(List<String> asUserRoles) {
     m_asUserRoles = asUserRoles;
   }
 
-  public List getUserRoles() {
+  public List<String> getUserRoles() {
     return m_asUserRoles;
   }
 

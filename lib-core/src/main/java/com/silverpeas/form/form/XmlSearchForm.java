@@ -24,7 +24,6 @@
 
 package com.silverpeas.form.form;
 
-import com.silverpeas.form.AbstractForm;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -35,6 +34,7 @@ import javax.servlet.jsp.JspWriter;
 
 import org.apache.commons.fileupload.FileItem;
 
+import com.silverpeas.form.AbstractForm;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -44,7 +44,6 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.TypeManager;
 import com.silverpeas.form.Util;
-import com.silverpeas.form.fieldType.UserField;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 

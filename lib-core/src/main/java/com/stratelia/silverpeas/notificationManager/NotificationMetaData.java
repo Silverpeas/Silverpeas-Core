@@ -41,6 +41,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 
 public class NotificationMetaData implements java.io.Serializable {
 
+  private static final long serialVersionUID = 6004274748540324759L;
   private int messageType;
   private Date date;
   private String sender;

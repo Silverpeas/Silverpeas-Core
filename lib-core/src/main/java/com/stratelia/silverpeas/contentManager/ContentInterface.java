@@ -32,7 +32,7 @@ import java.util.List;
  */
 public interface ContentInterface {
   /** Find all the SilverContents with the given SilverContentIds */
-  public List getSilverContentById(List alSilverContentId, String sComponentId,
-      String sUserId, List alContentUserRoles);
+  public List<SilverContentInterface> getSilverContentById(List<Integer> alSilverContentId, String sComponentId,
+      String sUserId, List<String> alContentUserRoles);
 
 }

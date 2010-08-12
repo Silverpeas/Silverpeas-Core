@@ -31,7 +31,7 @@ import com.stratelia.webactiv.persistence.database.SilverpeasBeanDAOImpl;
 
 public class SilverpeasBeanDAOFactory {
 
-  private static Map silverpeasBeanDAOs = new HashMap();
+  private static Map<String, SilverpeasBeanDAO> silverpeasBeanDAOs = new HashMap<String, SilverpeasBeanDAO>();
 
   public static SilverpeasBeanDAO getDAO(String beanName)
       throws PersistenceException {

@@ -42,7 +42,7 @@ public class AllGroupPanel extends PanelProvider {
 
   protected OrganizationController m_oc = new OrganizationController();
 
-  protected Hashtable m_AllGroup = new Hashtable();
+  protected Hashtable<String, Group> m_AllGroup = new Hashtable<String, Group>();
 
   public AllGroupPanel(String language, String title) {
     initAll(language, title);

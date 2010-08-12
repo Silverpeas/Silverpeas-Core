@@ -28,6 +28,8 @@ import com.stratelia.webactiv.util.exception.*;
 
 public class WysiwygException extends SilverpeasException {
 
+  private static final long serialVersionUID = -2342836745839231341L;
+
   public WysiwygException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }

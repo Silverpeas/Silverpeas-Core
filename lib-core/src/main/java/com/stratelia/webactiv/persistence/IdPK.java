@@ -28,6 +28,8 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 
 public class IdPK extends WAPrimaryKey {
 
+  private static final long serialVersionUID = -5451371913200985128L;
+
   /**
    * IdPK()
    */
