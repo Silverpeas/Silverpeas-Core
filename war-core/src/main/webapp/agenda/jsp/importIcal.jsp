@@ -25,7 +25,7 @@
 --%>
 
 <%@ include file="checkAgenda.jsp.inc" %>
-
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <%
 
   ResourceLocator settings = agenda.getSettings();
@@ -59,23 +59,9 @@ out.println(graphicFactory.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
-$(function() {
-	$("#importMessage").dialog({
-		autoOpen: false,
-		height: 150,
-		width: 200,
-		modal: true,
-		draggable: false,
-		resizable: false,
-		open: function(event, ui) { 
-				$(".ui-dialog-titlebar-close").hide();
-				$(".ui-dialog-titlebar").hide();}
-	});
-});
-		
 function importIcal() {
 	if (document.importIcalForm.fileCalendar.value != "") {
-		$('#importMessage').dialog('open');
+		$.progressMessage();
 		document.importIcalForm.submit();
 	}
 }
@@ -135,10 +121,6 @@ function importIcal() {
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-<div id="importMessage" style="display:none">
-	<center>
-		<table border="0"><tr><td align="center"><br/><b><%=resources.getString("agenda.ImportInProgress")%></b></td></tr><tr><td><br/></td></tr><tr><td align="center"><img src="<%=m_context%>/util/icons/inProgress.gif" alt=""/></td></tr></table>
-	</center>
-</div>
+<view:progressMessage/>
 </body>
 </html>

@@ -351,7 +351,7 @@ if (!StringUtil.isDefined(pageId)) {
 		top.topFrame.document.searchForm.query.value = "";
 		document.AdvancedSearch.action 		= "AdvancedSearch";
 		
-		$('#modalDialog').dialog('open');
+		$.progressMessage();
     	setTimeout("document.AdvancedSearch.submit();", 500);
 	}
 
@@ -364,7 +364,7 @@ if (!StringUtil.isDefined(pageId)) {
 			$("#componentFilterId").val(value);
 		}
 		$("#changeFilterId").val("change");
-		$('#modalDialog').dialog('open');
+		$.progressMessage();
     	setTimeout("document.AdvancedSearch.submit();", 500);
 	}
 
@@ -377,7 +377,7 @@ if (!StringUtil.isDefined(pageId)) {
 			$("#componentFilterId").val("");
 		}
 		$("#changeFilterId").val("change");
-		$('#modalDialog').dialog('open');
+		$.progressMessage();
     	setTimeout("document.AdvancedSearch.submit();", 500);
 	}
 	
@@ -421,16 +421,6 @@ if (!StringUtil.isDefined(pageId)) {
 			                    scrollHeight: 220
 			            });
 	    <%}%>
-	    
-	    $("#modalDialog").dialog({
-	  	  	autoOpen: false,
-	        modal: true,
-	        height: 'auto',
-	        width: 200,
-	        open: function(event, ui) { 
-				$(".ui-dialog-titlebar-close").hide();
-				$(".ui-dialog-titlebar").hide();}
-	        });
 	  });
 </script>
 </HEAD>
@@ -871,8 +861,6 @@ if (!StringUtil.isDefined(pageId)) {
 	<input type="hidden" name="ShowResults" value="<%=resultsDisplayMode%>"/>
 	<input type="hidden" name="ResultPageId" value="<%=pageId %>"/>
 </form>
-<div id="modalDialog" style="display:none">
-	<center><table><tr><td align="center" class="txtnote"><%=resource.getString("pdcPeas.inProgress")%></td></tr><tr><td><br/></td></tr><tr><td align="center"><img src="<%=resource.getIcon("pdcPeas.inProgress")%>" alt=""/></td></tr></table></center>
-</div>
+<view:progressMessage/>
 </body>
 </html>

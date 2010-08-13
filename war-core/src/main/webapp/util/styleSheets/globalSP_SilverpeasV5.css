@@ -2330,3 +2330,17 @@ td.browsebar a:hover {
 .attachments .dragNdrop {
 	text-align: right;
 }
+
+#gef-progressMessage {
+	text-align: center;
+}
+
+#gef-progressMessage img {
+	margin-top: 15px;
+}
+
+#gef-progress-message1,
+#gef-progress-message1 {
+	margin-top: 15px;
+	font-weight: bold;
+}

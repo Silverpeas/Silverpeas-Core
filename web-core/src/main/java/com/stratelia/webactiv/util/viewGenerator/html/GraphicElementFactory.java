@@ -32,6 +32,7 @@ package com.stratelia.webactiv.util.viewGenerator.html;
 
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 
 import com.silverpeas.util.StringUtil;
@@ -66,6 +67,8 @@ import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPa
 import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPaneSilverpeasV5Web20;
 import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
 import com.stratelia.webactiv.util.viewGenerator.html.pagination.PaginationSP;
+import com.stratelia.webactiv.util.viewGenerator.html.progressMessage.ProgressMessage;
+import com.stratelia.webactiv.util.viewGenerator.html.progressMessage.ProgressMessageSilverpeasV5;
 import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane;
 import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPaneSilverpeasV5;
 import com.stratelia.webactiv.util.viewGenerator.html.window.Window;
@@ -236,7 +239,7 @@ public class GraphicElementFactory extends Object {
 
     SilverTrace.info("viewgenerator", "GraphicElementFactory.setLook()",
         "root.MSG_GEN_PARAM_VALUE", " look = " + look
-        + " | corresponding settings = " + selectedLook);
+            + " | corresponding settings = " + selectedLook);
     this.favoriteLookSettings = new ResourceLocator(selectedLook, "");
 
     currentLookName = look;
@@ -249,7 +252,7 @@ public class GraphicElementFactory extends Object {
   public void setExternalStylesheet(String externalStylesheet) {
     this.externalStylesheet = externalStylesheet;
   }
-  
+
   public String getExternalStylesheet() {
     return this.externalStylesheet;
   }
@@ -266,7 +269,7 @@ public class GraphicElementFactory extends Object {
   public String getLookFrame() {
     SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookFrame()",
         "root.MSG_GEN_PARAM_VALUE", " FrameJSP = "
-        + getFavoriteLookSettings().getString("FrameJSP"));
+            + getFavoriteLookSettings().getString("FrameJSP"));
     return getFavoriteLookSettings().getString("FrameJSP");
   }
 
@@ -330,7 +333,8 @@ public class GraphicElementFactory extends Object {
       }
 
     } else {
-      code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(externalStylesheet).append("\"/>\n");
+      code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(externalStylesheet)
+          .append("\"/>\n");
     }
 
     // append javascript
@@ -342,6 +346,9 @@ public class GraphicElementFactory extends Object {
       code.append("<script type=\"text/javascript\" src=\"").append(specificJS).append(
           "\"></script>\n");
     }
+    // include javascript to manage in-progress message
+    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
+        "/util/javaScript/progressMessage.js\"></script>\n");
 
     // include specific browseBar javaScript
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
@@ -349,12 +356,12 @@ public class GraphicElementFactory extends Object {
 
     if (getFavoriteLookSettings() != null
         && getFavoriteLookSettings().getString("OperationPane").toLowerCase()
-        .endsWith("web20"))
+            .endsWith("web20"))
       code.append(getYahooElements());
 
     SilverTrace
         .info("viewgenerator", "GraphicElementFactory.getLookStyleSheet()",
-        "root.MSG_GEN_EXIT_METHOD");
+            "root.MSG_GEN_EXIT_METHOD");
     return code.toString();
   }
 
@@ -792,6 +799,25 @@ public class GraphicElementFactory extends Object {
     pagination.init(nbItems, nbItemsPerPage, firstItemIndex);
     pagination.setMultilang(getMultilang());
     return pagination;
+  }
+
+  public ProgressMessage getProgressMessage(List<String> messages) {
+    String progressClassName = getFavoriteLookSettings().getString("Progress");
+    ProgressMessage progress = null;
+    if (progressClassName == null) {
+      progressClassName =
+          "com.stratelia.webactiv.util.viewGenerator.html.progressMessage.ProgressMessageSilverpeasV5";
+    }
+    try {
+      progress = (ProgressMessage) Class.forName(progressClassName).newInstance();
+    } catch (Exception e) {
+      SilverTrace.info("viewgenerator", "GraphicElementFactory.getProgressMessage()",
+          "viewgenerator.EX_CANT_GET_PROGRESSMESSAGE", "", e);
+      progress = new ProgressMessageSilverpeasV5();
+    }
+    progress.init(messages);
+    progress.setMultilang(getMultilang());
+    return progress;
   }
 
   public void setComponentId(String componentId) {

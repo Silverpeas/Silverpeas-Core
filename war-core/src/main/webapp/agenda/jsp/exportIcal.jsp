@@ -25,6 +25,7 @@
 --%>
 
 <%@ include file="checkAgenda.jsp.inc" %>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <%@page import="com.stratelia.webactiv.servlets.TempFileServer"%>
 
 <%
@@ -66,25 +67,10 @@ out.println(graphicFactory.getLookStyleSheet());
 	function calendar(indexForm, nameElement) {
 		SP_openWindow('<%=m_context+URLManager.getURL(URLManager.CMP_AGENDA)%>calendar.jsp?indiceForm='+indexForm+'&amp;nameElem='+nameElement,'Calendrier',200,200,'');
 	}
-
-	$(function() {
-		$("#exportMessage").dialog({
-			autoOpen: false,
-			height: 150,
-			width: 200,
-			modal: true,
-			draggable: false,
-			resizable: false,
-			//title: "<%=resources.getString("agenda.ExportIcalCalendar")%>",
-			open: function(event, ui) { 
-					$(".ui-dialog-titlebar-close").hide();
-					$(".ui-dialog-titlebar").hide();}
-		});
-	});
 		
 		function exportIcal() {
 			if (isCorrectForm()) {
-				$('#exportMessage').dialog('open');
+				$.progressMessage();
 				document.exportIcalForm.submit();
 			}
 		}
@@ -204,10 +190,6 @@ out.println(graphicFactory.getLookStyleSheet());
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-<div id="exportMessage" style="display:none">
-	<center>
-		<table border="0"><tr><td align="center"><br/><b><%=resources.getString("agenda.ExportInProgress")%></b></td></tr><tr><td><br/></td></tr><tr><td align="center"><img src="<%=m_context%>/util/icons/inProgress.gif" alt=""/></td></tr></table>
-	</center>
-</div>
+<view:progressMessage/>
 </body>
 </html>

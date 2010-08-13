@@ -25,7 +25,7 @@
 --%>
 
 <%@ include file="check.jsp" %>
-
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <HTML>
 <HEAD>
 <%
@@ -48,30 +48,17 @@ function QuitAndRefresh()
     else
     {
     %>
-    	$('#modalDialog').dialog('open');
+    	$.progressMessage();
     	document.redirection.action = url;
     	setTimeout("document.redirection.submit();", 500);
     <%
     }
     %>
 }
-$(document).ready(function(){
-	$("#modalDialog").dialog({
-  	  	autoOpen: false,
-        modal: true,
-        height: 'auto',
-        width: 200,
-        open: function(event, ui) { 
-			$(".ui-dialog-titlebar-close").hide();
-			$(".ui-dialog-titlebar").hide();}
-        });
-  });
 </script>
 </HEAD>
 <BODY onload="javascript:QuitAndRefresh()">
-<div id="modalDialog" style="display:none">
-	<center><table><tr><td align="center" class="txtnote"><%=resource.getString("selectionPeas.inProgress")%></td></tr><tr><td><br/></td></tr><tr><td align="center"><img src="<%=resource.getIcon("selectionPeas.inProgress")%>" alt=""/></td></tr></table></center>
-</div>
+<view:progressMessage/>
 <form name="redirection" method="POST">
 </form>
 </BODY>

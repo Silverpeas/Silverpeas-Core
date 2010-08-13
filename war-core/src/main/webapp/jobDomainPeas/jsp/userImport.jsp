@@ -25,6 +25,7 @@
 --%>
 
 <%@ include file="check.jsp" %>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <%
     Board board = gef.getBoard();
 
@@ -67,7 +68,7 @@ function SubmitWithVerif(verifParams)
     }
     if (errorMsg == "")
     {
-    	$('#modalDialog').dialog('open');
+    	$.progressMessage();
     	setTimeout("document.userForm.submit();", 500);       
     }
     else
@@ -148,18 +149,6 @@ function checkSubmitToSearch(ev)
 	if (touche == 13)
 		SubmitWithVerif(false);
 }
-
-$(document).ready(function(){
-    $("#modalDialog").dialog({
-  	  	autoOpen: false,
-        modal: true,
-        height: 'auto',
-        width: 200,
-        open: function(event, ui) { 
-			$(".ui-dialog-titlebar-close").hide();
-			$(".ui-dialog-titlebar").hide();}
-        });
-  });
 </script>
 </head>
 <body marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
@@ -285,9 +274,7 @@ out.println(board.printBefore());
 out.println(frame.printAfter());
 out.println(window.printAfter());
 	%>
-<div id="modalDialog" style="display:none">
-	<center><table><tr><td align="center" class="txtnote"><%=resource.getString("JDP.inProgress")%></td></tr><tr><td><br/></td></tr><tr><td align="center"><img src="<%=resource.getIcon("JDP.inProgress")%>" alt=""/></td></tr></table></center>
-</div>
+<view:progressMessage/>
 </body>
 <script language=javascript>
 	myForm = document.userForm;

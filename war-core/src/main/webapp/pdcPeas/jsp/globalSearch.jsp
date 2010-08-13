@@ -31,6 +31,7 @@
          com.silverpeas.pdcSubscription.model.PDCSubscription"%>
 
 <%@ include file="checkAdvancedSearch.jsp"%>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <%!
 
 String displaySynonymsAxis(Boolean activeThesaurus, Jargon jargon, int axisId) throws ThesaurusException {
@@ -420,7 +421,7 @@ function sendQuery() {
 		top.topFrame.document.searchForm.query.value = "";
 		document.AdvancedSearch.action = "AdvancedSearch";
 		
-		$('#modalDialog').dialog('open');
+		$.progressMessage();
     	setTimeout("document.AdvancedSearch.submit();", 500);
 	}
 }
@@ -610,17 +611,7 @@ function deleteUser()
 	            scrollHeight: 220
 	    });
 	    <%}%>
-	    
-	    $("#modalDialog").dialog({
-	  	  	autoOpen: false,
-	        modal: true,
-	        height: 'auto',
-	        width: 200,
-	        open: function(event, ui) { 
-				$(".ui-dialog-titlebar-close").hide();
-				$(".ui-dialog-titlebar").hide();}
-	        });
-	  });
+ });
  
 </script>
 </HEAD>
@@ -963,8 +954,6 @@ out.println(frame.printAfter());
 <%
 	out.println(window.printAfter());
 %>
-<div id="modalDialog" style="display:none">
-	<center><table><tr><td align="center" class="txtnote"><%=resource.getString("pdcPeas.inProgress")%></td></tr><tr><td><br/></td></tr><tr><td align="center"><img src="<%=resource.getIcon("pdcPeas.inProgress")%>" alt=""/></td></tr></table></center>
-</div>
+<view:progressMessage/>
 </BODY>
 </HTML>
