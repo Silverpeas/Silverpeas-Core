@@ -23,6 +23,7 @@
  */
 
 (function ($) {
+	var dlg;
     var Defaults = function () {};
     $.extend(Defaults.prototype, {
         msg1: "useless",
@@ -35,7 +36,7 @@
         var opts = new Defaults();
         $.extend(opts, options);
 
-        var dlg = $("#gef-progressMessage")
+        dlg = $("#gef-progressMessage")
 		         .dialog({
                     autoOpen: false,
                     modal: true,
@@ -58,6 +59,15 @@
 		//$("#modalDialog #message1").html(opts.msg1);
 		//$("#modalDialog #message2").html(opts.msg2);
         dlg.dialog('open');
+    }
+    
+    $.closeProgressMessage = function (options, callback) {
+        // Pass the options and a callback to execute if affirmative user
+        // response.
+        var opts = new Defaults();
+        $.extend(opts, options);
+       
+        dlg.dialog('close');
     }
     
     $.progressMessage.defaults = function (options) {
