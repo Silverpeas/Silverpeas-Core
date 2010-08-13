@@ -55,7 +55,7 @@ public class RepositoryIndexer {
     indexManager = new IndexManager();
   }
 
-  public void setSpaceId(String spaceId) {
+  public final void setSpaceId(String spaceId) {
     this.spaceId = spaceId;
   }
 
@@ -63,7 +63,7 @@ public class RepositoryIndexer {
     return spaceId;
   }
 
-  public void setComponentId(String componentId) {
+  public final void setComponentId(String componentId) {
     this.componentId = componentId;
   }
 

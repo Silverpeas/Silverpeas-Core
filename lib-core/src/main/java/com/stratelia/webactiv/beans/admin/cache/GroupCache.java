@@ -33,7 +33,7 @@ public class GroupCache {
   private static ConcurrentMap<String, List<String>> map =
       new ConcurrentHashMap<String, List<String>>();
 
-  public static void clearCache() {
+  public synchronized static void clearCache() {
     map.clear();
   }
 
@@ -42,9 +42,9 @@ public class GroupCache {
   }
 
   public static void setAllGroupIdsOfUser(String userId, List<String> groupIds) {
-    map.put(userId, groupIds);
+    map.putIfAbsent(userId, groupIds);
   }
-  
+
   public static void removeCacheOfUser(String userId) {
     map.remove(userId);
   }

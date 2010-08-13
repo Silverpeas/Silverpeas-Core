@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.beans.admin.cache;
 
 import java.util.ArrayList;
@@ -36,12 +35,12 @@ public class TreeCache {
 
   private static ConcurrentMap<String, Space> map = new ConcurrentHashMap<String, Space>();
 
-  public static void clearCache() {
+  public synchronized static void clearCache() {
     map.clear();
   }
 
   public static SpaceInstLight getSpaceInstLight(String spaceId) {
-    Space space = map.get(spaceId);
+    Space space = getSpace(spaceId);
     if (space != null) {
       return space.getSpace();
     }
@@ -49,10 +48,10 @@ public class TreeCache {
   }
 
   public static void addSpace(String spaceId, Space space) {
-    map.put(spaceId, space);
+    map.putIfAbsent(spaceId, space);
   }
 
-  public static void removeSpace(String spaceId) {
+  public synchronized static void removeSpace(String spaceId) {
     Space space = map.get(spaceId);
     if (space != null) {
       for (SpaceInstLight subspace : space.getSubspaces()) {
@@ -64,7 +63,7 @@ public class TreeCache {
 
   public static void setSubspaces(String spaceId, List<SpaceInstLight> subspaces) {
     // add subspaces in spaces list
-    Space space = map.get(spaceId);
+    Space space = getSpace(spaceId);
     if (space != null) {
       space.getSubspaces().clear();
       space.getSubspaces().addAll(subspaces);
@@ -72,27 +71,24 @@ public class TreeCache {
   }
 
   public static List<ComponentInstLight> getComponents(String spaceId) {
-    Space space = map.get(spaceId);
+    Space space = getSpace(spaceId);
     if (space != null) {
       return space.getComponents();
-    } else {
-      return new ArrayList<ComponentInstLight>();
     }
+    return new ArrayList<ComponentInstLight>();
   }
 
   public static List<SpaceInstLight> getSubSpaces(String spaceId) {
-    Space space = map.get(spaceId);
+    Space space = getSpace(spaceId);
     if (space != null) {
       return space.getSubspaces();
-    } else {
-      return new ArrayList<SpaceInstLight>();
     }
+    return new ArrayList<SpaceInstLight>();
   }
 
   public static boolean isSpaceContainsComponent(String spaceId, String componentId) {
     boolean contains = false;
-
-    Space space = map.get(spaceId);
+    Space space = getSpace(spaceId);
     if (space != null) {
       contains = space.containsComponent(componentId);
       if (!contains) {
@@ -111,7 +107,7 @@ public class TreeCache {
 
   public static void addComponent(String componentId, ComponentInstLight component, String spaceId) {
     // add component in spaces list
-    Space space = map.get(spaceId);
+    Space space = getSpace(spaceId);
     if (space != null) {
       space.addComponent(component);
     }
@@ -119,7 +115,7 @@ public class TreeCache {
 
   public static void removeComponent(String spaceId, String componentId) {
     // remove component from spaces list
-    Space space = map.get(spaceId);
+    Space space = getSpace(spaceId);
     if (space != null) {
       ComponentInstLight component = space.getComponent(componentId);
       if (component != null) {
@@ -130,7 +126,7 @@ public class TreeCache {
 
   public static void setComponents(String spaceId, List<ComponentInstLight> components) {
     // add components in spaces list
-    Space space = map.get(spaceId);
+    Space space = getSpace(spaceId);
     if (space != null) {
       space.getComponents().clear();
       space.getComponents().addAll(components);
@@ -163,7 +159,7 @@ public class TreeCache {
     return path;
   }
 
-  public static ComponentInstLight getComponent(String componentId) {
+  public synchronized static ComponentInstLight getComponent(String componentId) {
     ComponentInstLight component = null;
     for (Space space : map.values()) {
       component = space.getComponent(componentId);
@@ -182,4 +178,7 @@ public class TreeCache {
     return new ArrayList<SpaceInstLight>();
   }
 
+  private static synchronized Space getSpace(String spaceId) {
+    return map.get(spaceId);
+  }
 }

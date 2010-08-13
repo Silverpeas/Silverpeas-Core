@@ -41,12 +41,9 @@ public class CallBackManager {
   public final static int ACTION_AFTER_CREATE_GROUP = 2; // [groupId,,]
   public final static int ACTION_BEFORE_REMOVE_GROUP = 3; // [groupId,,]
   public final static int ACTION_AFTER_CREATE_SPACE = 4; // [spaceId(ex : 59),,]
-  public final static int ACTION_BEFORE_REMOVE_SPACE = 5; // [spaceId(ex :
-  // 59),,]
-  public final static int ACTION_AFTER_CREATE_COMPONENT = 6; // [componentId(ex
-  // : 59),,]
-  public final static int ACTION_BEFORE_REMOVE_COMPONENT = 7; // [componentId(ex
-  // : 59),,]
+  public final static int ACTION_BEFORE_REMOVE_SPACE = 5; // [spaceId(ex: 59),,]
+  public final static int ACTION_AFTER_CREATE_COMPONENT = 6; // [componentId(ex: 59),,]
+  public final static int ACTION_BEFORE_REMOVE_COMPONENT = 7; // [componentId(ex: 59),,]
   public final static int ACTION_ON_WYSIWYG = 8;
   public final static int ACTION_ATTACHMENT_ADD = 9;
   public final static int ACTION_ATTACHMENT_UPDATE = 10;
@@ -74,38 +71,36 @@ public class CallBackManager {
 
   // Subscriptions functions
   // -----------------------
-  static public void subscribeAction(int action, CallBack theObj) {
+  static synchronized public void subscribeAction(int action, CallBack theObj) {
     subscribers[action].add(theObj);
   }
 
-  static public void unsubscribeAction(int action, CallBack theObj) {
+  static synchronized public void unsubscribeAction(int action, CallBack theObj) {
     subscribers[action].remove(theObj);
   }
 
-  static public void subscribeAll(CallBack theObj) {
+  static synchronized public void subscribeAll(CallBack theObj) {
     for (int i = 0; i < ACTION_LAST; i++) {
       subscribers[i].add(theObj);
     }
   }
 
-  static public void unsubscribeAll(CallBack theObj) {
+  static synchronized public void unsubscribeAll(CallBack theObj) {
     for (int i = 0; i < ACTION_LAST; i++) {
       subscribers[i].remove(theObj);
     }
   }
 
-  static public void invoke(final int action, final int iParam, final String sParam, final
+  static synchronized public void invoke(final int action, final int iParam, final String sParam, final
       Object extraParam) {
     for (CallBack callback : subscribers[action]) {
-      synchronized (callback) {
         callback.doInvoke(action, iParam, sParam, extraParam);
-      }
     }
   }
 
   static public String getInvokeString(int action, int iParam, String sParam,
       Object extraParam) {
-    StringBuffer sb = new StringBuffer("Invoke Action = ");
+    StringBuilder sb = new StringBuilder("Invoke Action = ");
     switch (action) {
       case ACTION_AFTER_CREATE_USER:
         sb.append("ACTION_AFTER_CREATE_USER");
