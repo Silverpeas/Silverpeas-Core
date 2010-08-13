@@ -605,7 +605,7 @@ public class VersioningDAO {
   }
 
   public static final String CHECKIN_DOCUMENT_QUERY = "UPDATE "
-      + documentTableName + " SET"
+      + documentTableName + " SET documentownerid = -1, "
       + " documentStatus = 0 , alertDate = null , expiryDate = null "
       + " WHERE documentId = ?";
 
@@ -1615,7 +1615,7 @@ public class VersioningDAO {
   }
 
   /**
-	 * 
+	 *
 	 */
   public static final String SELECT_ACCESS_LIST_USERS = "select t2.settypeid from "
       + accessListTableName
@@ -1632,7 +1632,7 @@ public class VersioningDAO {
       + " where t1.componentid = ? and t2.accessId = t1.id and t2.settype = 'U'";
 
   /**
-	 * 
+	 *
 	 */
   public static final String SELECT_ACCESS_LIST_GROUPS = "select t2.settypeid from "
       + accessListTableName
@@ -1649,26 +1649,26 @@ public class VersioningDAO {
       + " where t1.componentid = ? and t2.accessId = t1.id and t2.settype = 'G'";
 
   /**
-	 * 
+	 *
 	 */
   public static final String INSERT_ACCESS_LIST = "insert into "
       + accessListTableName + " (id, componentid) values (?,?)";
 
   /**
-	 * 
+	 *
 	 */
   public static final String DELETE_ACCESS_LIST = "delete from "
       + accessListTableName + " where componentid = ?";
 
   /**
-	 * 
+	 *
 	 */
   public static final String INSERT_ACCESS_LIST_CONTENT = "insert into "
       + accessListContentTableName
       + " (id, settype, settypeid, accessid) values (?,?,?,?)";
 
   /**
-	 * 
+	 *
 	 */
   public static final String DELETE_ACCESS_LIST_CONTENT = "delete from "
       + accessListContentTableName + " where accessid in (select id from "
