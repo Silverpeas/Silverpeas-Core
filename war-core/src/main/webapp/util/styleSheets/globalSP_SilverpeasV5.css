@@ -2333,14 +2333,25 @@ td.browsebar a:hover {
 
 #gef-progressMessage {
 	text-align: center;
+	/*min-height: 70px;*/
+	background-color: #FFFFFF;
 }
 
 #gef-progressMessage img {
-	margin-top: 15px;
+	margin-top: 25px;
 }
 
-#gef-progress-message1,
 #gef-progress-message1 {
+	display: none;
+}
+
+#gef-progress-message2 {
 	margin-top: 15px;
-	font-weight: bold;
+	font-color: gray;
+}
+
+.ui-widget-header {
+	background: none;
+	background-color:#9BD94A;
+	border:1px solid #9BD94A;
 }
