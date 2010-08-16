@@ -129,7 +129,8 @@ if (m_MainSessionCtrl == null || !"A".equals(m_MainSessionCtrl.getUserAccessLeve
 		<center>- Liste des fichiers lus dans la table <b>sb_attachment_attachment</b> -</center>
 
 		<display:table export="true" name="listAttachments" id="row" pagesize="<%=nbItemsPerPage%>" defaultsort="2" defaultorder="ascending">
-			<display:setProperty name="paging.banner.all_items_found"><b>{0} {1}</b> trouvés,  <b>{2}</b> affichés.</display:setProperty>
+			<display:setProperty name="paging.banner.one_item_found">1 {0} trouvé.</display:setProperty>
+			<display:setProperty name="paging.banner.all_items_found"><b>{0} {1}</b> trouvés.</display:setProperty>
 			<display:setProperty name="paging.banner.some_items_found"><b>{0} {1}</b> trouvés, Affichés: <b>{2} à {3}</b>.</display:setProperty>
 			<display:setProperty name="paging.banner.full"><span class="pagelinks">[<a href="{1}">Premier</a> / <a href="{2}">Précédent</a>] {0} [<a href="{3}">Suivant</a> / <a href="{4}">Dernier</a>]</span></display:setProperty>
 			<display:setProperty name="paging.banner.first"><span class="pagelinks">[Premier/Précédent] {0} [<a href="{3}">Suivant</a> / <a href="{4}">Dernier</a>]</span></display:setProperty>
@@ -159,7 +160,8 @@ if (m_MainSessionCtrl == null || !"A".equals(m_MainSessionCtrl.getUserAccessLeve
 	<% } else { %>
 		<center>- Liste des fichiers lus sur le serveur, n'ayant pas de correspondance dans la table <b>sb_attachment_attachment</b> -</center>
 		<display:table export="true" name="listOrphans" pagesize="<%=nbItemsPerPage%>" defaultsort="2" defaultorder="ascending">
-			<display:setProperty name="paging.banner.all_items_found"><b>{0} {1}</b> trouvés,  <b>{2}</b> affichés.</display:setProperty>
+			<display:setProperty name="paging.banner.one_item_found">1 {0} trouvé.</display:setProperty>
+			<display:setProperty name="paging.banner.all_items_found"><b>{0} {1}</b> trouvés.</display:setProperty>
 			<display:setProperty name="paging.banner.some_items_found"><b>{0} {1}</b> trouvés, Affichés: <b>{2} à {3}</b>.</display:setProperty>
 			<display:setProperty name="paging.banner.full"><span class="pagelinks">[<a href="{1}">Premier</a> / <a href="{2}">Précédent</a>] {0} [<a href="{3}">Suivant</a> / <a href="{4}">Dernier</a>]</span></display:setProperty>
 			<display:setProperty name="paging.banner.first"><span class="pagelinks">[Premier/Précédent] {0} [<a href="{3}">Suivant</a> / <a href="{4}">Dernier</a>]</span></display:setProperty>

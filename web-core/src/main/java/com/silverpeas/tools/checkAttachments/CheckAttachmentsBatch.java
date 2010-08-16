@@ -248,6 +248,10 @@ public class CheckAttachmentsBatch
                   actionsDate += "- Revu par "+ orgaController.getUserDetail(pubDetail.getUpdaterId()).getDisplayedName() + " le " + DateUtil.getOutputDate(pubDetail.getUpdateDate(), language);
                 cad.setActionsDate(actionsDate);
               }
+              else
+              {
+               cad.setPublicationPath("Publication introuvable pubPK="+pubPK.toString()); 
+              }
               
             }
             String pathFile = FileRepositoryManager.getAbsolutePath(attDetail.getInstanceId())
@@ -325,9 +329,15 @@ public class CheckAttachmentsBatch
 	
 	public PublicationDetail getPublicationDetail(PublicationPK pubPK) throws RemoteException
 	{
-    CompletePublication completePublication = getPublicationBm().getCompletePublication(pubPK);
-    PublicationDetail pubDetail = completePublication.getPublicationDetail();
-
+	  PublicationDetail pubDetail = null;
+	  try {
+	    CompletePublication completePublication = getPublicationBm().getCompletePublication(pubPK);
+      pubDetail = completePublication.getPublicationDetail();
+	    
+	  } catch (Exception e)
+	  {
+	    SilverTrace.error("admin", "CheckAttachmentBatch.getPublicationDetail()","publication.GETTING_PUBLICATION_DETAIL_FAILED"+" pubPK="+pubPK.toString(), e);
+	  }
 	  return pubDetail;
 	}
 	
@@ -344,7 +354,7 @@ public class CheckAttachmentsBatch
         newPath.add(pathInReverse.get(i));
       }
     } catch (Exception e) {
-      SilverTrace.error("admin", "KmeliaBmEjb.getPath()","admin.EX_IMPOSSIBLE_DOBTENIR_LE_CHEMIN", e);
+      SilverTrace.error("admin", "CheckAttachmentBatch.getPath()","admin.EX_IMPOSSIBLE_DOBTENIR_LE_CHEMIN", e);
     }
     return newPath;
   }
