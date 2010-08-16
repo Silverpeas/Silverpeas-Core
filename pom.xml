@@ -30,7 +30,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>parent</artifactId>
-    <version>13-SNAPSHOT</version>
+    <version>14-SNAPSHOT</version>
   </parent>
 
   <scm>
@@ -53,7 +53,7 @@
       </snapshots>
     </repository>
   </repositories>
-  
+
   <groupId>com.silverpeas</groupId>
   <artifactId>core</artifactId>
   <version>5.3-SNAPSHOT</version>
@@ -106,8 +106,8 @@
       </plugin>
       <plugin>
         <artifactId>maven-site-plugin</artifactId>
-        <version>2.1</version>        
-      </plugin>      
+        <version>2.1</version>
+      </plugin>
     </plugins>
   </build>
 
@@ -125,5 +125,5 @@
     <installer_stable_version>5.2.1</installer_stable_version>
     <installer_version>${project.version}</installer_version>
   </properties>
-  
+
 </project>
