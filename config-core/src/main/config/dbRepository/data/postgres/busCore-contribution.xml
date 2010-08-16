@@ -30,31 +30,31 @@
     <requirement>
     </requirement>
 
-    <current version="024">
+    <current version="025">
         <create_table>
-            <file name="postgres\busCore\024\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-            <file name="postgres\busCore\024\create_table_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="postgres\busCore\025\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="postgres\busCore\025\create_table_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </create_table>
         <create_constraint>
-            <file name="postgres\busCore\024\create_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-            <file name="postgres\busCore\024\create_constraint_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="postgres\busCore\025\create_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="postgres\busCore\025\create_constraint_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </create_constraint>
         <init>
-            <file name="postgres\busCore\024\init.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-            <file name="postgres\busCore\024\init_production.sql" type="sqlstatementlist" delimiter="\nGO" keepdelimiter="NO"/>
+            <file name="postgres\busCore\025\init.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="postgres\busCore\025\init_production.sql" type="sqlstatementlist" delimiter="\nGO" keepdelimiter="NO"/>
             <file name="java\dbBuilder_ep.jar" type="javalib" classname="com.silverpeas.dbbuilder_ep.DbBuilder_ep" methodname="run"/>
         </init>
         <drop_table>
-            <file name="postgres\busCore\024\drop_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-            <file name="postgres\busCore\024\drop_table_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="postgres\busCore\025\drop_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="postgres\busCore\025\drop_table_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </drop_table>
         <drop_constraint>
-            <file name="postgres\busCore\024\drop_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-            <file name="postgres\busCore\024\drop_constraint_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="postgres\busCore\025\drop_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="postgres\busCore\025\drop_constraint_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </drop_constraint>
         <clean>
-            <file name="postgres\busCore\024\clean.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-            <file name="postgres\busCore\024\clean_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="postgres\busCore\025\clean.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="postgres\busCore\025\clean_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </clean>
     </current>
 
@@ -124,7 +124,7 @@
             <file name="postgres\busCore\up011\create_constraint_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </create_constraint>
     </upgrade>
-	
+
 	<upgrade version="012">
          <create_table>
             <file name="postgres\busCore\up012\create_table_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
@@ -197,6 +197,12 @@
   <upgrade version="023">
        <create_table>
             <file name="postgres\busCore\up023\alter_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+        </create_table>
+  </upgrade>
+
+   <upgrade version="024">
+       <create_table>
+            <file name="postgres\busCore\up024\alter_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </create_table>
   </upgrade>
 
