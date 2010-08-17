@@ -21,17 +21,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.organization;
 
 import java.util.Date;
-import java.util.Vector;
 
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
 import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
+import com.stratelia.silverpeas.scheduler.SchedulerJob;
 import com.stratelia.silverpeas.scheduler.SimpleScheduler;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
+import java.util.List;
 
 public class ScheduledDBReset implements SchedulerEventHandler {
 
@@ -41,30 +41,27 @@ public class ScheduledDBReset implements SchedulerEventHandler {
 
   /**
    * Initialize timeout manager
+   * @param cronString
    */
   public void initialize(String cronString) {
     try {
-      Vector jobList = SimpleScheduler.getJobList(this);
-
-      if (jobList.size() != 0) {
-        // Remove previous scheduled job
-        SimpleScheduler.removeJob(this, DBRESET_JOB_NAME);
-      }
+      // Remove previous scheduled job
+      SimpleScheduler.removeJob(this, DBRESET_JOB_NAME);
       if ((cronString != null) && (cronString.length() > 0)) {
         // Create new scheduled job
-        SimpleScheduler.getJob(this, DBRESET_JOB_NAME, cronString, this,
-            "doDBReset");
+        SimpleScheduler.getJob(this, DBRESET_JOB_NAME, cronString, this, "doDBReset");
       }
     } catch (Exception e) {
-      SilverTrace.error("admin", "ScheduledDBReset.initialize",
-          "admin.EX_ERR_INITIALIZE", e);
+      SilverTrace.error("admin", "ScheduledDBReset.initialize", "admin.EX_ERR_INITIALIZE", e);
     }
 
   }
 
   /**
    * Scheduler Event handler
+   * @param aEvent
    */
+  @Override
   public void handleSchedulerEvent(SchedulerEvent aEvent) {
     switch (aEvent.getType()) {
       case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
@@ -91,7 +88,7 @@ public class ScheduledDBReset implements SchedulerEventHandler {
    * of these peas that have the "timeout" states actives are read to check if timeout interval has
    * been reached. In that case, the administrator can be notified, the active state and the
    * instance are marked as timeout
-   * @param currentDate the date when the method is called by the scheduler
+   * @param date the date when the method is called by the scheduler
    * @see SimpleScheduler for parameters,
    */
   public void doDBReset(Date date) {

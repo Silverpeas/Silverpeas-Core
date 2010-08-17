@@ -42,48 +42,28 @@ import com.stratelia.webactiv.util.DBUtil;
 
 public class WorkListDAO {
 
-  public final static String workListTableName = "SB_Document_WorkList";
-
-  public final static String ADD_WORKERS =
-      "INSERT INTO "
-          +
-          workListTableName
-          +
-          " ( documentId , "
-          +
-          " userid, orderBy, writer, approval, instanceId, settype, saved, used, listtype ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
-
-  public final static String SAVE_WORKERS = "UPDATE " + workListTableName
-      + " set saved = 1, listtype = ? "
-      + " where instanceid = ? and documentId = ?";
-
-  public final static String GET_WORKERS_ACCESS_LIST_USERS = "SELECT * from "
-      + workListTableName
-      + " where instanceid = ? and saved = 1 and settype='U' order by orderby";
-
-  public final static String GET_WORKERS_ACCESS_LIST_GROUPS = "SELECT * from "
-      + workListTableName
-      + " where instanceid = ? and saved = 1 and settype='G' order by orderby";
-
-  public final static String REMOVE_ALL_WORKERS = "delete from "
-      + workListTableName + " where documentId = ? ";
-  public final static String REMOVE_WORKERS_NOT_SAVED = "delete from "
-      + workListTableName + " where documentId = ? and saved = 0";
-
+  public final static String ADD_WORKERS = "INSERT INTO sb_document_workList (documentId , userid, "
+      + "orderby, writer, approval, instanceId, settype, saved, used, listtype ) VALUES "
+      + "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+  public final static String SAVE_WORKERS = "UPDATE sb_document_workList SET saved = 1, l"
+      + "isttype = ? WHERE instanceid = ? AND documentId = ?";
+  public final static String GET_WORKERS_ACCESS_LIST_USERS = "SELECT * FROM sb_document_workList "
+      + "WHERE instanceid = ? AND saved = 1 AND settype='U' ORDER BY orderby";
+  public final static String GET_WORKERS_ACCESS_LIST_GROUPS = "SELECT * FROM sb_document_workList "
+      + " WHERE instanceid = ? AND saved = 1 AND settype='G' ORDER BY orderby";
+  public final static String REMOVE_ALL_WORKERS =
+      "DELETE FROM sb_document_workList WHERE documentId = ? ";
+  public final static String REMOVE_WORKERS_NOT_SAVED =
+      "DELETE FROM sb_document_workList WHERE documentId = ? AND saved = 0";
   public final static String GET_WORKERS_QUERY = "SELECT a.documentId, a.userid, "
       + " a.orderBy, a.writer,  a.approval, a.instanceId, a.settype, a.saved, a.used, a.listtype"
-      + " FROM "
-      + workListTableName
-      + " a WHERE a.documentId = ? order by orderby";
-
-  public final static String GET_SAVED_LIST_TYPE = "SELECT listtype from "
-      + workListTableName + " where instanceid = ? and saved = 1";
-
-  public final static String REMOVE_SAVED_LIST = "delete from "
-      + workListTableName + " where instanceid = ? and saved = 1 and used = 0";
-
-  public final static String UPDATE_OLD_SAVED_LIST = "update "
-      + workListTableName + " set saved=0 where instanceid = ?";
+      + " FROM sb_document_workList a WHERE a.documentId = ? ORDER BY orderby";
+  public final static String GET_SAVED_LIST_TYPE =
+      "SELECT listtype FROM sb_document_workList WHERE instanceid = ? AND saved = 1";
+  public final static String REMOVE_SAVED_LIST =
+      "DELETE FROM sb_document_workList WHERE instanceid = ? AND saved = 1 AND used = 0";
+  public final static String UPDATE_OLD_SAVED_LIST =
+      "UPDATE sb_document_workList SET saved= 0 WHERE instanceid = ?";
 
   /**
    * @param conn
@@ -97,16 +77,14 @@ public class WorkListDAO {
       throw new VersioningRuntimeException("WorkListDAO.addWorkers",
           SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_NO_CONNECTION");
     }
-    if (workers == null || ((workers != null) && workers.size() == 0)) {
+    if (workers == null || workers.isEmpty()) {
       return;
     }
     PreparedStatement prepStmt = null;
-
     try {
       prepStmt = conn.prepareStatement(ADD_WORKERS);
-
       for (int i = 0; i < workers.size(); i++) {
-        Worker worker = (Worker) workers.get(i);
+        Worker worker = workers.get(i);
         if (worker == null) {
           throw new VersioningRuntimeException("WorkListDAO.addWorkers",
               SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_NULL_VALUE_OBJECT");
@@ -168,17 +146,17 @@ public class WorkListDAO {
     PreparedStatement prepStmt = null;
 
     try {
-      if (keepSaved)
+      if (keepSaved) {
         prepStmt = conn.prepareStatement(REMOVE_WORKERS_NOT_SAVED);
-      else
+      } else {
         prepStmt = conn.prepareStatement(REMOVE_ALL_WORKERS);
+      }
 
       try {
         prepStmt.setInt(1, Integer.parseInt(documentPK.getId()));
       } catch (NumberFormatException e) {
         throw new VersioningRuntimeException("WorkListDAO.removeAllWorkers",
-            SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_WRONG_PK", documentPK
-            .toString(), e);
+            SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_WRONG_PK", documentPK.toString(), e);
       }
 
       prepStmt.executeUpdate();
@@ -216,8 +194,7 @@ public class WorkListDAO {
         prepStmt.setInt(1, Integer.parseInt(documentPK.getId()));
       } catch (NumberFormatException e) {
         throw new VersioningRuntimeException("WorkListDAO.getWorkers",
-            SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_WRONG_PK", documentPK
-            .toString(), e);
+            SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_WRONG_PK", documentPK.toString(), e);
       }
 
       rs = prepStmt.executeQuery();
@@ -294,8 +271,7 @@ public class WorkListDAO {
       } catch (NumberFormatException e) {
         throw new VersioningRuntimeException(
             "WorkListDAO.getWorkersAccessListUsers",
-            SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_WRONG_PK", componentId
-            .toString(), e);
+            SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_WRONG_PK", componentId.toString(), e);
       }
 
       rs = prepStmt.executeQuery();
@@ -341,12 +317,9 @@ public class WorkListDAO {
       } catch (NumberFormatException e) {
         throw new VersioningRuntimeException(
             "WorkListDAO.getWorkersAccessListUsers",
-            SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_WRONG_PK", componentId
-            .toString(), e);
+            SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_WRONG_PK", componentId.toString(), e);
       }
-
       rs = prepStmt.executeQuery();
-
       while (rs.next()) {
         Worker worker = new Worker();
         worker.setDocumentId(rs.getInt(1));
@@ -387,13 +360,13 @@ public class WorkListDAO {
         prepStmt.setString(1, componentId);
       } catch (NumberFormatException e) {
         throw new VersioningRuntimeException("WorkListDAO.getSavedListType()",
-            SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_WRONG_PK", componentId
-            .toString(), e);
+            SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_WRONG_PK", componentId.toString(), e);
       }
 
       rs = prepStmt.executeQuery();
-      if (rs.next())
+      if (rs.next()) {
         listType = rs.getInt(1);
+      }
     } finally {
       DBUtil.close(rs, prepStmt);
     }
@@ -428,5 +401,4 @@ public class WorkListDAO {
       DBUtil.close(prepStmt);
     }
   }
-
 }

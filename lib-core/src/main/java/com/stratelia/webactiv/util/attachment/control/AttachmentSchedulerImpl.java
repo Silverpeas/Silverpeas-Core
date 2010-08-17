@@ -21,17 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.attachment.control;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
-import java.util.Vector;
 
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
 import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
-import com.stratelia.silverpeas.scheduler.SchedulerJob;
 import com.stratelia.silverpeas.scheduler.SimpleScheduler;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -41,9 +38,9 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 public class AttachmentSchedulerImpl implements SchedulerEventHandler {
+
   public static final String ATTACHMENT_JOB_NAME_PROCESS_ACTIFY = "A_ProcessActify";
   public static final String ATTACHMENT_JOB_NAME_PURGE_ACTIFY = "A_PurgeActify";
-
   private ResourceLocator resources = new ResourceLocator(
       "com.stratelia.webactiv.util.attachment.Attachment", "");
 
@@ -53,19 +50,14 @@ public class AttachmentSchedulerImpl implements SchedulerEventHandler {
   public void initialize() {
     if (resources.getBoolean("ActifyPublisherEnable", false)) {
       try {
-        String cronScheduleProcess = resources
-            .getString("ScheduledProcessActify");
+        String cronScheduleProcess = resources.getString("ScheduledProcessActify");
         String cronSchedulePurge = resources.getString("ScheduledPurgeActify");
-
-        Vector<SchedulerJob> jobList = SimpleScheduler.getJobList(this);
-        if (jobList != null && jobList.size() > 0) {
-          SimpleScheduler.removeJob(this, ATTACHMENT_JOB_NAME_PROCESS_ACTIFY);
-          SimpleScheduler.removeJob(this, ATTACHMENT_JOB_NAME_PURGE_ACTIFY);
-        }
-        SimpleScheduler.getJob(this, ATTACHMENT_JOB_NAME_PROCESS_ACTIFY,
-            cronScheduleProcess, this, "doProcessActify");
-        SimpleScheduler.getJob(this, ATTACHMENT_JOB_NAME_PURGE_ACTIFY,
-            cronSchedulePurge, this, "doPurgeActify");
+        SimpleScheduler.removeJob(this, ATTACHMENT_JOB_NAME_PROCESS_ACTIFY);
+        SimpleScheduler.removeJob(this, ATTACHMENT_JOB_NAME_PURGE_ACTIFY);
+        SimpleScheduler.getJob(this, ATTACHMENT_JOB_NAME_PROCESS_ACTIFY, cronScheduleProcess, this,
+            "doProcessActify");
+        SimpleScheduler.getJob(this, ATTACHMENT_JOB_NAME_PURGE_ACTIFY, cronSchedulePurge, this,
+            "doPurgeActify");
       } catch (Exception e) {
         SilverTrace.error("Attachment", "Attachment.initialize()", "", e);
       }

@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.peasCore;
 
 import com.silverpeas.util.FileUtil;
@@ -180,13 +179,11 @@ public class SessionManager implements SchedulerEventHandler {
     if (si != null) {
       si.m_DateLastAccess = new Date().getTime();
     } else {
-      SilverTrace
-          .debug(
-              "peasCore",
-              "SessionManager.setLastAccess",
-              "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! - sessionId = "
-                  +
-                  session.getId());
+      SilverTrace.debug(
+          "peasCore",
+          "SessionManager.setLastAccess",
+          "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! - sessionId = "
+          + session.getId());
     }
     // reset previous notification
     userNotificationSessions.remove(session.getId());
@@ -211,13 +208,10 @@ public class SessionManager implements SchedulerEventHandler {
     }
 
     // Remove previous scheduled job
-    Vector jobList = SimpleScheduler.getJobList(myInstance);
-    if (!jobList.isEmpty()) {
-      SimpleScheduler.removeJob(myInstance, SESSION_MANAGER_JOB_NAME);
-    }
+    SimpleScheduler.removeJob(myInstance, SESSION_MANAGER_JOB_NAME);
 
     // Create new scheduled job
-    Vector<Integer> startMinutes = new Vector<Integer>();
+    List<Integer> startMinutes = new ArrayList<Integer>();
     if (60 % minute == 0) {
       startMinutes.add(Integer.valueOf(0));
     }
@@ -295,13 +289,11 @@ public class SessionManager implements SchedulerEventHandler {
       removeSession(si);
       si = null;
     } else {
-      SilverTrace
-          .debug(
-              "peasCore",
-              "SessionManager.removeSession",
-              "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! (sessionId = "
-                  +
-                  sessionId + ")");
+      SilverTrace.debug(
+          "peasCore",
+          "SessionManager.removeSession",
+          "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! (sessionId = "
+          + sessionId + ")");
     }
   }
 
@@ -373,13 +365,11 @@ public class SessionManager implements SchedulerEventHandler {
     if (si != null) {
       si.m_DateIsAlive = new Date().getTime();
     } else {
-      SilverTrace
-          .debug(
-              "peasCore",
-              "SessionManager.setIsAlived",
-              "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! - sessionId = "
-                  +
-                  session.getId());
+      SilverTrace.debug(
+          "peasCore",
+          "SessionManager.setIsAlived",
+          "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! - sessionId = "
+          + session.getId());
     }
   }
 
@@ -500,16 +490,8 @@ public class SessionManager implements SchedulerEventHandler {
    */
   public void shutdown() {
     SilverTrace.debug("peasCore", "SessionManager.shutdown()", "");
-    try {
-      // Remove previous scheduled job
-      Vector jobList = SimpleScheduler.getJobList(myInstance);
-      if (!jobList.isEmpty()) {
-        SimpleScheduler.removeJob(myInstance, SESSION_MANAGER_JOB_NAME);
-      }
-    } catch (SchedulerException ex) {
-      SilverTrace.error("peasCore", "SessionManager.shutdown",
-          "root.EX_NO_MESSAGE", ex);
-    }
+    // Remove previous scheduled job
+    SimpleScheduler.removeJob(myInstance, SESSION_MANAGER_JOB_NAME);
     Collection<SessionInfo> allSI = userDataSessions.values();
     for (SessionInfo si : allSI) {
       removeSession(si);

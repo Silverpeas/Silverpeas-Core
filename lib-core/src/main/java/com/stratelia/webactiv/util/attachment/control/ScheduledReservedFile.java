@@ -29,14 +29,12 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.Vector;
 
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
 import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
-import com.stratelia.silverpeas.scheduler.SchedulerJob;
 import com.stratelia.silverpeas.scheduler.SimpleScheduler;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -56,11 +54,8 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
   public void initialize() {
     try {
       String cron = resources.getString("cronScheduledReservedFile");
-      Vector<SchedulerJob> jobList = SimpleScheduler.getJobList(this);
-      if (jobList != null && jobList.size() > 0)
-        SimpleScheduler.removeJob(this, ATTACHMENT_JOB_NAME_PROCESS);
-      SimpleScheduler.getJob(this, ATTACHMENT_JOB_NAME_PROCESS, cron, this,
-          "doScheduledReservedFile");
+      SimpleScheduler.removeJob(this, ATTACHMENT_JOB_NAME_PROCESS);
+      SimpleScheduler.getJob(this, ATTACHMENT_JOB_NAME_PROCESS, cron, this, "doScheduledReservedFile");
     } catch (Exception e) {
       SilverTrace.error("attachment", "ScheduledReservedFile.initialize()",
           "attachment.EX_CANT_INIT_SCHEDULED_RESERVED_FILE", e);

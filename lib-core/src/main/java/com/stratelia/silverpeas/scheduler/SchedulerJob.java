@@ -21,13 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.scheduler;
 
 import java.text.*;
 import java.util.*;
 
 import com.stratelia.silverpeas.silvertrace.*;
+import java.util.ArrayList;
 
 /**
  * This is the base class of all scheduler job classes. This class is abstract. If you will
@@ -36,26 +36,24 @@ import com.stratelia.silverpeas.silvertrace.*;
  */
 abstract public class SchedulerJob extends Thread {
   // Environment variables
+
   protected SimpleDateFormat logDateFormat;
   private SchedulerEventHandler theOwner;
   // private File theLogBaseFile;
   private String sJobName;
   // private String sJobLogFileName;
-
   // Converted cron string
-  private Vector vMinutes;
-  private Vector vHours;
-  private Vector vDaysOfMonth;
-  private Vector vMonths;
-  private Vector vDaysOfWeek;
-
+  private List<Integer> vMinutes;
+  private List<Integer> vHours;
+  private List<Integer> vDaysOfMonth;
+  private List<Integer> vMonths;
+  private List<Integer> vDaysOfWeek;
   // Next timestamp
   private Integer currentMinute;
   private Integer currentHour;
   private Integer currentDayOfMonth;
   private Integer currentMonth;
   private Integer currentYear;
-
   // Runtime variables
   private long nextTimeStamp = 0;
   private volatile boolean bRunnable;
@@ -69,10 +67,11 @@ abstract public class SchedulerJob extends Thread {
   }
 
   public void initTimeStamp(long nextTime) {
-    if (nextTime != 0)
+    if (nextTime != 0) {
       nextTimeStamp = nextTime;
-    else
+    } else {
       nextTimeStamp = getNextTimeStamp();
+    }
   }
 
   public long readNextTimeStamp() {
@@ -90,12 +89,14 @@ abstract public class SchedulerJob extends Thread {
   /**
    * This method handles the thread execution
    */
+  @Override
   public void run() {
     long sleepTime;
 
     // Get next schedule time
-    if (nextTimeStamp == 0)
+    if (nextTimeStamp == 0) {
       nextTimeStamp = getNextTimeStamp();
+    }
 
     SilverTrace.info("scheduler", "SchedulerJob.run",
         "root.MSG_GEN_PARAM_VALUE", ": Job '" + sJobName
@@ -103,16 +104,6 @@ abstract public class SchedulerJob extends Thread {
     SilverTrace.info("scheduler", "SchedulerJob.run",
         "root.MSG_GEN_PARAM_VALUE", ": Next schedule time: "
         + logDateFormat.format(new Date(nextTimeStamp)));
-    /*
-     * // Write a header into the log file try { logStream = new PrintStream (new FileOutputStream
-     * (theLogBaseFile.getAbsolutePath () + System.getProperties ().getProperty ("file.separator") +
-     * sJobName + ".log", true)); logStream.println (logDateFormat.format (new Date ()) + ": Job '"
-     * + sJobName + "' starts without errors."); logStream.println (logDateFormat.format (new Date
-     * ()) + ": Next schedule time: " + logDateFormat.format (new Date (nextTimeStamp)) + "\n");
-     * logStream.close (); } catch (Exception aException) { System.out.println
-     * ("SchedulerJob.run: Exception while writing the log header occured (Reason: " +
-     * aException.toString () + ")"); }
-     */
 
     while (bRunnable) {
       try {
@@ -129,11 +120,6 @@ abstract public class SchedulerJob extends Thread {
           sleep(sleepTime);
         }
       } catch (InterruptedException aException) {
-        /*
-         * // Suppress mesages while shutdown if (bRunnable) { System.out.println(
-         * "SchedulerJob.run: InterruptedException while sleeping occured (Reason: " +
-         * aException.toString () + ")"); }
-         */
       }
 
       if (bRunnable && ((new Date()).getTime() >= nextTimeStamp)) {
@@ -141,14 +127,6 @@ abstract public class SchedulerJob extends Thread {
           SilverTrace.info("scheduler", "SchedulerJob.run",
               "root.MSG_GEN_PARAM_VALUE", ": ---------------- Start of job '"
               + sJobName + "' -------------------");
-          // Open a new Stream to the log file
-          /*
-           * logStream = new PrintStream (new FileOutputStream (theLogBaseFile.getAbsolutePath () +
-           * System.getProperties ().getProperty ("file.separator") + sJobName + ".log", true));
-           * logStream.println (logDateFormat.format (new Date ()) +
-           * ": ---------------- Start of job '" + sJobName + "' -------------------");
-           */
-
           // Execute the functionality of the job and gets a new schedule time
           try {
             nextTimeStamp = getNextTimeStamp();
@@ -168,32 +146,12 @@ abstract public class SchedulerJob extends Thread {
           SilverTrace.info("scheduler", "SchedulerJob.run",
               "root.MSG_GEN_PARAM_VALUE", ": Next schedule time: "
               + logDateFormat.format(new Date(nextTimeStamp)));
-          /*
-           * logStream.println (logDateFormat.format (new Date ()) +
-           * ": ---------------- End of job '" + sJobName + "' -------------------");
-           * logStream.println (logDateFormat.format (new Date ()) + ": Next schedule time: " +
-           * logDateFormat.format (new Date (nextTimeStamp)) + ".\n"); logStream.close ();
-           */
         } catch (Exception aException) {
-          // System.out.println
-          // ("SchedulerJob.run: Exception while job execution occured (Reason: "
-          // + aException.toString () + ")");
           SilverTrace.error("scheduler", "SchedulerJob.run",
               "root.EX_NO_MESSAGE", aException);
         }
       }
     }
-
-    /*
-     * // Write a footer into the log file try { logStream = new PrintStream (new FileOutputStream
-     * (theLogBaseFile.getAbsolutePath () + System.getProperties ().getProperty ("file.separator") +
-     * sJobName + ".log", true)); logStream.println (logDateFormat.format (new Date ()) + ": Job '"
-     * + sJobName + "' terminates without errors.\n\n"); logStream.close (); } catch (Exception
-     * aException) { System.out.println
-     * ("SchedulerJob.run: Exception while writing the log footer occured (Reason: " +
-     * aException.toString () + ")"); }
-     */
-
     theOwner = null;
     sJobName = null;
   }
@@ -210,6 +168,7 @@ abstract public class SchedulerJob extends Thread {
    * This method holds the logic of the job. It has to be overwriten in subclasses of this class
    * @param log A PrintStream for text writings in the log file for this job
    * @param theExecutionDate The date of the execution
+   * @throws SchedulerException
    */
   abstract protected void execute(Date theExecutionDate)
       throws SchedulerException;
@@ -249,23 +208,13 @@ abstract public class SchedulerJob extends Thread {
     vDaysOfMonth = new Vector();
     vMonths = new Vector();
     vDaysOfWeek = new Vector();
-
-    /*
-     * currentMinute = new Integer (0); currentHour = new Integer (0); currentDayOfMonth = new
-     * Integer (1); currentMonth = new Integer (0); currentYear = new Integer ((Calendar.getInstance
-     * ()).get (Calendar.YEAR));
-     */
-
     // Instead
     Calendar calInit = Calendar.getInstance();
     currentMinute = new Integer(0);
     currentHour = new Integer(0);
-    if (calInit.getActualMinimum(Calendar.DAY_OF_MONTH) == calInit
-        .get(Calendar.DAY_OF_MONTH)) {
-      currentDayOfMonth = new Integer(calInit
-          .getActualMaximum(Calendar.DAY_OF_MONTH));
-      if (calInit.getActualMinimum(Calendar.MONTH) == calInit
-          .get(Calendar.MONTH)) {
+    if (calInit.getActualMinimum(Calendar.DAY_OF_MONTH) == calInit.get(Calendar.DAY_OF_MONTH)) {
+      currentDayOfMonth = new Integer(calInit.getActualMaximum(Calendar.DAY_OF_MONTH));
+      if (calInit.getActualMinimum(Calendar.MONTH) == calInit.get(Calendar.MONTH)) {
         currentMonth = new Integer(calInit.getActualMaximum(Calendar.MONTH));
         currentYear = new Integer(calInit.get(Calendar.YEAR) - 1);
       } else {
@@ -297,23 +246,22 @@ abstract public class SchedulerJob extends Thread {
    * @param startMonths A list of months (1-12; starts with 1 for January)
    * @param startDaysOfWeek A list of day of a week (0-6; starts with 0 for Sunday)
    */
-  protected synchronized void setSchedulingParameter(Vector startMinutes,
-      Vector startHours, Vector startDaysOfMonth, Vector startMonths,
-      Vector startDaysOfWeek) throws SchedulerException {
+  protected synchronized void setSchedulingParameter(List<Integer> startMinutes,
+      List<Integer> startHours, List<Integer> startDaysOfMonth, List<Integer> startMonths,
+      List<Integer> startDaysOfWeek) throws SchedulerException {
     Enumeration vectorEnumerator;
 
-    Vector workVector;
+    List<Integer> workVector;
     int workInt;
 
     // Check minute values
     if (startMinutes == null) {
-      startMinutes = new Vector();
+      startMinutes = new ArrayList<Integer>();
     }
 
-    for (vectorEnumerator = startMinutes.elements(); vectorEnumerator
-        .hasMoreElements();) {
+    for (Integer minute : startMinutes) {
       try {
-        workInt = ((Integer) vectorEnumerator.nextElement()).intValue();
+        workInt = minute.intValue();
 
         if ((workInt < 0) || (workInt > 59)) {
           throw new SchedulerException(
@@ -327,13 +275,12 @@ abstract public class SchedulerJob extends Thread {
 
     // Check hour values
     if (startHours == null) {
-      startHours = new Vector();
+      startHours = new ArrayList<Integer>();
     }
 
-    for (vectorEnumerator = startHours.elements(); vectorEnumerator
-        .hasMoreElements();) {
+    for (Integer hours : startHours) {
       try {
-        workInt = ((Integer) vectorEnumerator.nextElement()).intValue();
+        workInt = hours.intValue();
 
         if ((workInt < 0) || (workInt > 23)) {
           throw new SchedulerException(
@@ -347,13 +294,12 @@ abstract public class SchedulerJob extends Thread {
 
     // Check day of month values
     if (startDaysOfMonth == null) {
-      startDaysOfMonth = new Vector();
+      startDaysOfMonth = new ArrayList<Integer>();
     }
 
-    for (vectorEnumerator = startDaysOfMonth.elements(); vectorEnumerator
-        .hasMoreElements();) {
+     for (Integer days : startDaysOfMonth) {
       try {
-        workInt = ((Integer) vectorEnumerator.nextElement()).intValue();
+        workInt = days.intValue();
 
         if ((workInt < 1) || (workInt > 31)) {
           throw new SchedulerException(
@@ -367,14 +313,13 @@ abstract public class SchedulerJob extends Thread {
 
     // Check month values and normalize them for internal usage
     if (startMonths == null) {
-      startMonths = new Vector();
+      startMonths = new ArrayList<Integer>();
     }
 
-    workVector = new Vector();
-    for (vectorEnumerator = startMonths.elements(); vectorEnumerator
-        .hasMoreElements();) {
+    workVector = new ArrayList<Integer>();
+    for (Integer month : startMonths) {
       try {
-        workInt = ((Integer) vectorEnumerator.nextElement()).intValue();
+        workInt = month.intValue();
 
         if ((workInt < 1) || (workInt > 12)) {
           throw new SchedulerException(
@@ -391,14 +336,13 @@ abstract public class SchedulerJob extends Thread {
 
     // Check day of week values
     if (startDaysOfWeek == null) {
-      startDaysOfWeek = new Vector();
+      startDaysOfWeek = new ArrayList<Integer>();
     }
 
-    workVector = new Vector();
-    for (vectorEnumerator = startDaysOfWeek.elements(); vectorEnumerator
-        .hasMoreElements();) {
+    workVector = new ArrayList<Integer>();
+    for (Integer daysOfWeek : startDaysOfWeek) {
       try {
-        workInt = ((Integer) vectorEnumerator.nextElement()).intValue();
+        workInt = daysOfWeek.intValue();
 
         if ((workInt < 0) || (workInt > 6)) {
           throw new SchedulerException(
@@ -409,25 +353,25 @@ abstract public class SchedulerJob extends Thread {
         // implementation .... :-))
         switch (workInt) {
           case 0:
-            workVector.add(new Integer(Calendar.SUNDAY));
+            workVector.add(Integer.valueOf(Calendar.SUNDAY));
             break;
           case 1:
-            workVector.add(new Integer(Calendar.MONDAY));
+            workVector.add(Integer.valueOf(Calendar.MONDAY));
             break;
           case 2:
-            workVector.add(new Integer(Calendar.TUESDAY));
+            workVector.add(Integer.valueOf(Calendar.TUESDAY));
             break;
           case 3:
-            workVector.add(new Integer(Calendar.WEDNESDAY));
+            workVector.add(Integer.valueOf(Calendar.WEDNESDAY));
             break;
           case 4:
-            workVector.add(new Integer(Calendar.THURSDAY));
+            workVector.add(Integer.valueOf(Calendar.THURSDAY));
             break;
           case 5:
-            workVector.add(new Integer(Calendar.FRIDAY));
+            workVector.add(Integer.valueOf(Calendar.FRIDAY));
             break;
           case 6:
-            workVector.add(new Integer(Calendar.SATURDAY));
+            workVector.add(Integer.valueOf(Calendar.SATURDAY));
             break;
         }
       } catch (ClassCastException aException) {
@@ -455,9 +399,9 @@ abstract public class SchedulerJob extends Thread {
    * months (1-12; starts with 1 for January), day of a week (0-6; starts with 0 for Sunday).
    * Currently the parsing of the cron string ist not done by a state machine but by
    * StringTokenizers so this method is <B>very</B> sensitive for syntax failures!
+   * @param aCronString
    */
-  protected synchronized void setSchedulingParameter(String aCronString)
-      throws SchedulerException {
+  protected synchronized void setSchedulingParameter(String aCronString) throws SchedulerException {
     StringTokenizer fieldSeparator;
     StringTokenizer fieldContentSeparator;
     String workString;
@@ -469,11 +413,11 @@ abstract public class SchedulerJob extends Thread {
     }
 
     // Reset current values
-    vMinutes = new Vector();
-    vHours = new Vector();
-    vDaysOfMonth = new Vector();
-    vMonths = new Vector();
-    vDaysOfWeek = new Vector();
+    vMinutes = new ArrayList<Integer>();
+    vHours = new ArrayList<Integer>();
+    vDaysOfMonth = new ArrayList<Integer>();
+    vMonths = new ArrayList<Integer>();
+    vDaysOfWeek = new ArrayList<Integer>();
 
     // This StringTokenizer splits the cron string into time fields
     fieldSeparator = new StringTokenizer(aCronString);
@@ -481,14 +425,13 @@ abstract public class SchedulerJob extends Thread {
     // Get minute values
     if (fieldSeparator.hasMoreTokens()) {
       // This StringTokenizer splits each timefield list into single numbers
-      fieldContentSeparator = new StringTokenizer(fieldSeparator.nextToken(),
-          ",");
+      fieldContentSeparator = new StringTokenizer(fieldSeparator.nextToken(), ",");
       while (fieldContentSeparator.hasMoreTokens()) {
         workString = fieldContentSeparator.nextToken();
 
         // Check ingnore token
         if (workString.equals("*")) {
-          vMinutes = new Vector();
+          vMinutes = new ArrayList<Integer>();
           break;
         }
 
@@ -511,14 +454,13 @@ abstract public class SchedulerJob extends Thread {
 
     // Get hour values
     if (fieldSeparator.hasMoreTokens()) {
-      fieldContentSeparator = new StringTokenizer(fieldSeparator.nextToken(),
-          ",");
+      fieldContentSeparator = new StringTokenizer(fieldSeparator.nextToken(), ",");
       while (fieldContentSeparator.hasMoreTokens()) {
         workString = fieldContentSeparator.nextToken();
 
         // Check ingnore token
         if (workString.equals("*")) {
-          vHours = new Vector();
+          vHours = new ArrayList<Integer>();
           break;
         }
 
@@ -541,14 +483,13 @@ abstract public class SchedulerJob extends Thread {
 
     // Get day of month values and normalize them for internal usage
     if (fieldSeparator.hasMoreTokens()) {
-      fieldContentSeparator = new StringTokenizer(fieldSeparator.nextToken(),
-          ",");
+      fieldContentSeparator = new StringTokenizer(fieldSeparator.nextToken(), ",");
       while (fieldContentSeparator.hasMoreTokens()) {
         workString = fieldContentSeparator.nextToken();
 
         // Check ingnore token
         if (workString.equals("*")) {
-          vDaysOfMonth = new Vector();
+          vDaysOfMonth = new ArrayList<Integer>();
           break;
         }
 
@@ -571,14 +512,13 @@ abstract public class SchedulerJob extends Thread {
 
     // Get month values
     if (fieldSeparator.hasMoreTokens()) {
-      fieldContentSeparator = new StringTokenizer(fieldSeparator.nextToken(),
-          ",");
+      fieldContentSeparator = new StringTokenizer(fieldSeparator.nextToken(), ",");
       while (fieldContentSeparator.hasMoreTokens()) {
         workString = fieldContentSeparator.nextToken();
 
         // Check ingnore token
         if (workString.equals("*")) {
-          vMonths = new Vector();
+          vMonths = new ArrayList<Integer>();
           break;
         }
 
@@ -608,7 +548,7 @@ abstract public class SchedulerJob extends Thread {
 
         // Check ingnore token
         if (workString.equals("*")) {
-          vDaysOfWeek = new Vector();
+          vDaysOfWeek = new ArrayList<Integer>();
           break;
         }
 
@@ -667,6 +607,7 @@ abstract public class SchedulerJob extends Thread {
 
   /**
    * Generates a new timestamp
+   * @return
    */
   protected long getNextTimeStamp() {
     Calendar calcCalendar;
@@ -708,15 +649,8 @@ abstract public class SchedulerJob extends Thread {
 
     while (!validTimeStamp) {
       // Get new minute
-      if (vMinutes.size() == 0) // Default ('*') -> Hit every minute
-      {
-        /*
-         * if (currentMinute.intValue () < calcCalendar.getActualMaximum (Calendar.MINUTE)) {
-         * currentMinute = new Integer (currentMinute.intValue () + 1); carryMinute = false;
-         * carryHour = false; carryDayOfMonth = false; carryMonth = false; } else { currentMinute =
-         * new Integer (calcCalendar.getActualMinimum (Calendar.MINUTE)); carryMinute = true; }
-         */
-
+      if (vMinutes.isEmpty()) {
+// Default ('*') -> Hit every minute
         // If the cron setting for minutes is *, we don't have to care about
         // incrementing minutes
         // So do a carryHour
@@ -724,7 +658,7 @@ abstract public class SchedulerJob extends Thread {
       } else {
         // Special handling for lists with one element
         if (vMinutes.size() == 1) {
-          currentMinute = (Integer) vMinutes.elementAt(0);
+          currentMinute = vMinutes.get(0);
           carryMinute = !carryMinute;
           if (!carryMinute) {
             carryHour = false;
@@ -735,10 +669,10 @@ abstract public class SchedulerJob extends Thread {
           int indexOfMinutes = vMinutes.indexOf(currentMinute);
           if ((indexOfMinutes == -1)
               || (indexOfMinutes == (vMinutes.size() - 1))) {
-            currentMinute = (Integer) vMinutes.elementAt(0);
+            currentMinute = vMinutes.get(0);
             carryMinute = true;
           } else {
-            currentMinute = (Integer) vMinutes.elementAt(indexOfMinutes + 1);
+            currentMinute = vMinutes.get(indexOfMinutes + 1);
             carryMinute = false;
             carryHour = false;
             carryDayOfMonth = false;
@@ -747,12 +681,10 @@ abstract public class SchedulerJob extends Thread {
         }
       }
       calcCalendar.set(Calendar.MINUTE, currentMinute.intValue());
-      // SilverTrace.debug("scheduler", "SchedulerJob.getNextTimeStamp",
-      // "MINUTE: " + Integer.toString(currentMinute.intValue()));
 
       // Get new hour
       if (carryMinute) {
-        if (vHours.size() == 0) // Default ('*') -> Hit every hour
+        if (vHours.isEmpty()) // Default ('*') -> Hit every hour
         {
           int maxHour = calcCalendar.getActualMaximum(Calendar.HOUR_OF_DAY);
           if (currentHour.intValue() < maxHour) {
@@ -761,14 +693,13 @@ abstract public class SchedulerJob extends Thread {
             carryDayOfMonth = false;
             carryMonth = false;
           } else {
-            currentHour = new Integer(calcCalendar
-                .getActualMinimum(Calendar.HOUR_OF_DAY));
+            currentHour = new Integer(calcCalendar.getActualMinimum(Calendar.HOUR_OF_DAY));
             carryHour = true;
           }
         } else {
           // Special handling for lists with one element
           if (vHours.size() == 1) {
-            currentHour = (Integer) vHours.elementAt(0);
+            currentHour = vHours.get(0);
             carryHour = !carryHour;
             if (!carryHour) {
               carryDayOfMonth = false;
@@ -777,10 +708,10 @@ abstract public class SchedulerJob extends Thread {
           } else {
             int indexOfHours = vHours.indexOf(currentHour);
             if ((indexOfHours == -1) || (indexOfHours == (vHours.size() - 1))) {
-              currentHour = (Integer) vHours.elementAt(0);
+              currentHour = vHours.get(0);
               carryHour = true;
             } else {
-              currentHour = (Integer) vHours.elementAt(indexOfHours + 1);
+              currentHour = vHours.get(indexOfHours + 1);
               carryHour = false;
               carryDayOfMonth = false;
               carryMonth = false;
@@ -788,13 +719,11 @@ abstract public class SchedulerJob extends Thread {
           }
         }
         calcCalendar.set(Calendar.HOUR_OF_DAY, currentHour.intValue());
-        // SilverTrace.debug("scheduler", "SchedulerJob.getNextTimeStamp",
-        // "HOUR: " + Integer.toString(currentHour.intValue()));
       }
 
       // Get new day of month
       if (carryHour) {
-        if (vDaysOfMonth.size() == 0) // Default ('*') -> Hit every month
+        if (vDaysOfMonth.isEmpty()) // Default ('*') -> Hit every month
         {
           int maxMonth = calcCalendar.getActualMaximum(Calendar.DAY_OF_MONTH);
           if (currentDayOfMonth.intValue() < maxMonth) {
@@ -802,70 +731,62 @@ abstract public class SchedulerJob extends Thread {
             carryDayOfMonth = false;
             carryMonth = false;
           } else {
-            currentDayOfMonth = new Integer(calcCalendar
-                .getActualMinimum(Calendar.DAY_OF_MONTH));
+            currentDayOfMonth = new Integer(calcCalendar.getActualMinimum(Calendar.DAY_OF_MONTH));
             carryDayOfMonth = true;
           }
         } else {
           // Special handling for lists with one element
           if (vMinutes.size() == 1) {
-            currentDayOfMonth = (Integer) vDaysOfMonth.elementAt(0);
+            currentDayOfMonth = vDaysOfMonth.get(0);
             carryDayOfMonth = !carryDayOfMonth;
             if (!carryDayOfMonth) {
               carryMonth = false;
             }
           } else {
             int indexOfMonths = vDaysOfMonth.indexOf(currentDayOfMonth);
-            if ((indexOfMonths == -1)
-                || (indexOfMonths == (vDaysOfMonth.size() - 1))) {
-              currentDayOfMonth = (Integer) vDaysOfMonth.elementAt(0);
+            if ((indexOfMonths == -1) || (indexOfMonths == (vDaysOfMonth.size() - 1))) {
+              currentDayOfMonth = vDaysOfMonth.get(0);
               carryDayOfMonth = true;
             } else {
-              currentDayOfMonth = (Integer) vDaysOfMonth
-                  .elementAt(indexOfMonths + 1);
+              currentDayOfMonth = vDaysOfMonth.get(indexOfMonths + 1);
               carryDayOfMonth = false;
               carryMonth = false;
             }
           }
         }
         calcCalendar.set(Calendar.DAY_OF_MONTH, currentDayOfMonth.intValue());
-        // SilverTrace.debug("scheduler", "SchedulerJob.getNextTimeStamp",
-        // "DAY_OF_MONTH: " + Integer.toString(currentDayOfMonth.intValue()));
       }
 
       // Get new month
       if (carryDayOfMonth) {
-        if (vMonths.size() == 0) // Default ('*') -> Hit every month
+        if (vMonths.isEmpty()) // Default ('*') -> Hit every month
         {
           int maxMonth = calcCalendar.getActualMaximum(Calendar.MONTH);
           if (currentMonth.intValue() < maxMonth) {
             currentMonth = new Integer(currentMonth.intValue() + 1);
             carryMonth = false;
           } else {
-            currentMonth = new Integer(calcCalendar
-                .getActualMinimum(Calendar.MONTH));
+            currentMonth = new Integer(calcCalendar.getActualMinimum(Calendar.MONTH));
             carryMonth = true;
           }
         } else {
           // Special handling for lists with one element
           if (vMinutes.size() == 1) {
-            currentMonth = (Integer) vMonths.elementAt(0);
+            currentMonth = vMonths.get(0);
             carryMonth = !carryMonth;
           } else {
             int indexOfMonths = vMonths.indexOf(currentMonth);
             if ((indexOfMonths == -1)
                 || (indexOfMonths == (vMonths.size() - 1))) {
-              currentMonth = (Integer) vMonths.elementAt(0);
+              currentMonth = vMonths.get(0);
               carryMonth = true;
             } else {
-              currentMonth = (Integer) vMonths.elementAt(indexOfMonths + 1);
+              currentMonth = vMonths.get(indexOfMonths + 1);
               carryMonth = false;
             }
           }
         }
         calcCalendar.set(Calendar.MONTH, currentMonth.intValue());
-        // SilverTrace.debug("scheduler", "SchedulerJob.getNextTimeStamp",
-        // "MONTH: " + Integer.toString(currentMonth.intValue()));
       }
 
       // Get new year
@@ -874,13 +795,10 @@ abstract public class SchedulerJob extends Thread {
         if ((!firstYearAccess)
             || ((currentMinute.intValue() == 0)
             && (currentHour.intValue() == 0)
-            && (currentDayOfMonth.intValue() == 1) && (currentMonth
-            .intValue() == 0))) {
+            && (currentDayOfMonth.intValue() == 1) && (currentMonth.intValue() == 0))) {
           // Hit every year
           currentYear = new Integer(currentYear.intValue() + 1);
           calcCalendar.set(Calendar.YEAR, currentYear.intValue());
-          // SilverTrace.debug("scheduler", "SchedulerJob.getNextTimeStamp",
-          // "YEAR: " + Integer.toString(currentYear.intValue()));
         }
 
         firstYearAccess = false;
@@ -889,46 +807,31 @@ abstract public class SchedulerJob extends Thread {
       // If time stamp is greater than the current time check the day of week
       if (getMillisecondsOfCalendar(calcCalendar) > currentTime) {
         // Check eventualy day movement while calculations
-        if (calcCalendar.get(Calendar.DAY_OF_MONTH) == currentDayOfMonth
-            .intValue()) {
+        if (calcCalendar.get(Calendar.DAY_OF_MONTH) == currentDayOfMonth.intValue()) {
           // Check for correct day of week
-          if (vDaysOfWeek.size() == 0) {
+          if (vDaysOfWeek.isEmpty()) {
             validTimeStamp = true;
           } else {
-            for (Enumeration vectorEnumerator = vDaysOfWeek.elements(); vectorEnumerator
-                .hasMoreElements();) {
-              if (calcCalendar.get(Calendar.DAY_OF_WEEK) == ((Integer) vectorEnumerator
-                  .nextElement()).intValue()) {
+            for (Integer dayOfWeek : vDaysOfWeek) {
+              if (calcCalendar.get(Calendar.DAY_OF_WEEK) == dayOfWeek.intValue()) {
                 validTimeStamp = true;
                 break;
               }
             }
-            // SilverTrace.debug("scheduler", "SchedulerJob.getNextTimeStamp",
-            // "!!! Invalid Day Of Week" + " : " +
-            // calcCalendar.get(Calendar.DAY_OF_WEEK));
           }
-        } else {
-          // SilverTrace.debug("scheduler", "SchedulerJob.getNextTimeStamp",
-          // "!!! calcCalendar.get(Calendar.DAY_OF_MONTH) != currentDayOfMonth.intValue()"
-          // + " : " + calcCalendar.get(Calendar.DAY_OF_MONTH) + " != " +
-          // currentDayOfMonth.intValue());
         }
-      } else {
-        // SilverTrace.debug("scheduler", "SchedulerJob.getNextTimeStamp",
-        // "!!! getMillisecondsOfCalendar (calcCalendar) <= currentTime" + " : "
-        // + getMillisecondsOfCalendar(calcCalendar) + " <= " + currentTime);
       }
     } // while (getMillisecondsOfCurrentTimeStamp (calcCalendar) < currentTime)
 
-    SilverTrace.debug("scheduler", "SchedulerJob.getNextTimeStamp",
-        "New TimeStamp: "
-        + logDateFormat.format(new Date(
-        getMillisecondsOfCalendar(calcCalendar))));
+    SilverTrace.debug("scheduler", "SchedulerJob.getNextTimeStamp", "New TimeStamp: "
+        + logDateFormat.format(new Date(getMillisecondsOfCalendar(calcCalendar))));
     return getMillisecondsOfCalendar(calcCalendar);
   }
 
   /**
    * Wraps calender date access
+   * @param aCalendar
+   * @return
    */
   protected long getMillisecondsOfCalendar(Calendar aCalendar) {
     return aCalendar.getTime().getTime();
@@ -955,11 +858,10 @@ abstract public class SchedulerJob extends Thread {
   /**
    * Removes doubled entries (Comparable) , if the list is sorted
    */
-  private void removeDoubled(List aList) {
-    Comparable lastComparable;
+  private void removeDoubled(List<? extends Comparable> aList) {
     Comparable currentComparable;
 
-    lastComparable = null;
+    Comparable lastComparable = null;
     for (Iterator listIterator = aList.iterator(); listIterator.hasNext();) {
       try {
         if (lastComparable == null) {

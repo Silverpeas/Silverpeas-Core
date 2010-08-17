@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.versioning.control;
 
 import java.util.Calendar;
@@ -29,7 +28,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.Vector;
 
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -50,7 +48,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 public class ScheduledReservedFile implements SchedulerEventHandler {
 
   public static final String VERSIONING_JOB_NAME_PROCESS = "A_ProcessReservedFileVersioning";
-
   private ResourceLocator resources = new ResourceLocator(
       "com.stratelia.webactiv.util.versioning.Versioning", "");
   private ResourceLocator generalMessage = new ResourceLocator(
@@ -59,9 +56,7 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
   public void initialize() {
     try {
       String cron = resources.getString("cronScheduledReservedFile");
-      Vector jobList = SimpleScheduler.getJobList(this);
-      if (jobList != null && jobList.size() > 0)
-        SimpleScheduler.removeJob(this, VERSIONING_JOB_NAME_PROCESS);
+      SimpleScheduler.removeJob(this, VERSIONING_JOB_NAME_PROCESS);
       SimpleScheduler.getJob(this, VERSIONING_JOB_NAME_PROCESS, cron, this,
           "doScheduledReservedFile");
     } catch (Exception e) {
@@ -70,6 +65,7 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
     }
   }
 
+  @Override
   public void handleSchedulerEvent(SchedulerEvent aEvent) {
     switch (aEvent.getType()) {
       case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
@@ -127,8 +123,7 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
         Document doc = (Document) it.next();
         messageBody.append(message.getString("versioning.notifName")).append(
             " '").append(doc.getName()).append("'");
-        messageBody_en.append(message_en.getString("versioning.notifName"))
-            .append(" '").append(doc.getName()).append("'");
+        messageBody_en.append(message_en.getString("versioning.notifName")).append(" '").append(doc.getName()).append("'");
         SilverTrace.info("versioning",
             "ScheduledReservedFile.doScheduledReservedFile()",
             "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
@@ -161,8 +156,7 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
         Document doc = (Document) itA.next();
         messageBody.append(message.getString("versioning.notifName")).append(
             " '").append(doc.getName()).append("'");
-        messageBody_en.append(message_en.getString("versioning.notifName"))
-            .append(" '").append(doc.getName()).append("'");
+        messageBody_en.append(message_en.getString("versioning.notifName")).append(" '").append(doc.getName()).append("'");
         SilverTrace.info("versioning",
             "ScheduledReservedFile.doScheduledReservedFile()",
             "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
@@ -198,8 +192,7 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
         // envoyer une notif
         messageBody.append(message.getString("versioning.notifName")).append(
             " '").append(doc.getName()).append("'");
-        messageBody_en.append(message_en.getString("versioning.notifName"))
-            .append(" '").append(doc.getName()).append("'");
+        messageBody_en.append(message_en.getString("versioning.notifName")).append(" '").append(doc.getName()).append("'");
         SilverTrace.info("versioning",
             "ScheduledReservedFile.doScheduledReservedFile()",
             "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
@@ -246,19 +239,16 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
     if (lib) {
       subject = message.getString("versioning.notifSubjectLib");
       body = messageBody.append(" ").append(
-          message.getString("versioning.notifUserLib")).append("\n\n")
-          .toString();
+          message.getString("versioning.notifUserLib")).append("\n\n").toString();
     } else {
       if (alert) {
         subject = message.getString("versioning.notifSubjectAlert");
         body = messageBody.append(" ").append(
-            message.getString("versioning.notifUserAlert")).append(" (")
-            .append(date).append(") ").append("\n\n").toString();
+            message.getString("versioning.notifUserAlert")).append(" (").append(date).append(") ").append("\n\n").toString();
       } else {
         subject = message.getString("versioning.notifSubjectExpiry");
         body = messageBody.append(" ").append(
-            message.getString("versioning.notifUserExpiry")).append("\n\n")
-            .toString();
+            message.getString("versioning.notifUserExpiry")).append("\n\n").toString();
       }
     }
 
@@ -268,19 +258,16 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
     if (lib) {
       subject_en = message_en.getString("versioning.notifSubjectLib");
       body_en = messageBody.append(" ").append(
-          message_en.getString("versioning.notifUserLib")).append("\n\n")
-          .toString();
+          message_en.getString("versioning.notifUserLib")).append("\n\n").toString();
     } else {
       if (alert) {
         subject_en = message_en.getString("versioning.notifSubjectAlert");
         body_en = messageBody_en.append(" ").append(
-            message_en.getString("versioning.notifUserAlert")).append(" (")
-            .append(date).append(") ").append("\n\n").toString();
+            message_en.getString("versioning.notifUserAlert")).append(" (").append(date).append(") ").append("\n\n").toString();
       } else {
         subject_en = message_en.getString("versioning.notifSubjectExpiry");
         body_en = messageBody_en.append(" ").append(
-            message_en.getString("versioning.notifUserExpiry")).append("\n\n")
-            .toString();
+            message_en.getString("versioning.notifUserExpiry")).append("\n\n").toString();
       }
     }
 
@@ -324,8 +311,7 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
   public VersioningBm getVersioningBm() {
     VersioningBm versioning_bm = null;
     try {
-      VersioningBmHome vscEjbHome = (VersioningBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.VERSIONING_EJBHOME, VersioningBmHome.class);
+      VersioningBmHome vscEjbHome = (VersioningBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.VERSIONING_EJBHOME, VersioningBmHome.class);
       versioning_bm = vscEjbHome.create();
     } catch (Exception e) {
       throw new VersioningRuntimeException(

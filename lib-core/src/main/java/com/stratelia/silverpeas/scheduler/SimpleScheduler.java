@@ -23,18 +23,24 @@
  */
 
 /*
- 12/02/2002 Marc Guillemin :
- rename package,
- replace the logging functions with SilverTrace,
- delete the SchedulerShellJob and TreadedInputStream (because logging).
+12/02/2002 Marc Guillemin :
+rename package,
+replace the logging functions with SilverTrace,
+delete the SchedulerShellJob and TreadedInputStream (because logging).
  */
-
 package com.stratelia.silverpeas.scheduler;
 
-import java.util.*;
-import java.io.*;
-import java.text.*;
-import com.stratelia.silverpeas.silvertrace.*;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * <P>
@@ -94,44 +100,28 @@ import com.stratelia.silverpeas.silvertrace.*;
  */
 public class SimpleScheduler {
   // Global constants
+
   /**
    * This date format is used for writing a timestamp into the log files. It could be used by
    * external methods, so the log files have a consistent layout.
    */
   public static final SimpleDateFormat LOG_DATE_FORMAT = new SimpleDateFormat(
       "yyyy-MM-dd HH:mm");
-
   // Local constants
-
   // Class variables
   private static SimpleScheduler theSimpleScheduler;
-
   // Object variables
-  private Hashtable htJobs;
+  private final Map<SchedulerEventHandler, List<SchedulerJob>> htJobs;
+  private final Set<String> jobNames = new HashSet<String>();
 
-  /**
-   * For the garabage collector
-   */
-  public void finalize() {
-    // shutdown ();
+  private static void initScheduler() {
+    synchronized (SimpleScheduler.class) {
+      if (theSimpleScheduler == null) {
+        theSimpleScheduler = new SimpleScheduler();
+      }
+    }
   }
 
-  /**
-   * This method sets the base dirctory, where the logfiles of the jobs will be created. It has to
-   * be called before any job is installed.
-   * @param aBasePath The path to the directory where the logfiles will be created
-   * @return True, if the setting of the base directory with the given directory was successful
-   */
-  /*
-   * public static void setLogDirectory (String aBasePath) throws SchedulerException { File
-   * workFile; if (aBasePath == null) { throw new SchedulerException
-   * ("SimpleScheduler.setLogDirectory: Parameter 'aBasePath' is null"); } if (theSimpleScheduler !=
-   * null) { throw new SchedulerException(
-   * "SimpleScheduler.setLogDirectory: Method 'setLogDirectory' was not the first called method" );
-   * } // Check the the given directory workFile = new File (aBasePath); if ((workFile != null) &&
-   * workFile.exists() && workFile.isDirectory () && workFile.canWrite ()) { theSimpleScheduler =
-   * new SimpleScheduler (workFile); } else { theSimpleScheduler = new SimpleScheduler (); } }
-   */
   /**
    * This method creates a job that fires a SchedulerEvent of the type 'EXECUTION'. The timestamp is
    * given in minutes
@@ -139,33 +129,25 @@ public class SimpleScheduler {
    * @param aJobName The name of the created job
    * @param iMinutes The minutes
    * @return A new job
+   * @throws SchedulerException
    */
   public static SchedulerJob getJob(SchedulerEventHandler aJobOwner,
       String aJobName, int iMinutes) throws SchedulerException {
-    SchedulerEventJob newJob;
-
-    if (theSimpleScheduler == null) {
-      theSimpleScheduler = new SimpleScheduler();
-    }
-
+    initScheduler();
     if (aJobOwner == null) {
       throw new SchedulerException(
           "SimpleScheduler.getJob: Parameter 'aJobOwner' is null");
     }
-
     if (aJobName == null) {
       throw new SchedulerException(
           "SimpleScheduler.getJob: Parameter 'aJobName' is null");
     }
-
     if (!theSimpleScheduler.checkJobName(aJobName)) {
       throw new SchedulerException(
           "SimpleScheduler.getJob: Parameter 'aJobName' conflicts with other job names");
     }
-
-    newJob = new SchedulerEventJobMinute(theSimpleScheduler, aJobOwner,
+    SchedulerEventJob newJob = new SchedulerEventJobMinute(theSimpleScheduler, aJobOwner,
         aJobName, iMinutes);
-
     return theSimpleScheduler.addJob(aJobOwner, newJob);
   }
 
@@ -185,30 +167,21 @@ public class SimpleScheduler {
    */
   public static SchedulerJob getJob(SchedulerEventHandler aJobOwner,
       String aJobName, String aCronString) throws SchedulerException {
-    SchedulerEventJob newJob;
-
-    if (theSimpleScheduler == null) {
-      theSimpleScheduler = new SimpleScheduler();
-    }
-
+    initScheduler();
     if (aJobOwner == null) {
       throw new SchedulerException(
           "SimpleScheduler.getJob: Parameter 'aJobOwner' is null");
     }
-
     if (aJobName == null) {
       throw new SchedulerException(
           "SimpleScheduler.getJob: Parameter 'aJobName' is null");
     }
-
     if (!theSimpleScheduler.checkJobName(aJobName)) {
       throw new SchedulerException(
           "SimpleScheduler.getJob: Parameter 'aJobName' conflicts with other job names");
     }
-
-    newJob = new SchedulerEventJob(theSimpleScheduler, aJobOwner, aJobName);
+    SchedulerEventJob newJob = new SchedulerEventJob(theSimpleScheduler, aJobOwner, aJobName);
     newJob.setSchedulingParameter(aCronString);
-
     return theSimpleScheduler.addJob(aJobOwner, newJob);
   }
 
@@ -225,36 +198,28 @@ public class SimpleScheduler {
    * @param startMonths A list of months (1-12; starts with 1 for January)
    * @param startDaysOfWeek A list of day of a week (0-6; starts with 0 for Sunday)
    * @return A new job
+   * @throws SchedulerException
    */
   public static SchedulerJob getJob(SchedulerEventHandler aJobOwner,
-      String aJobName, Vector startMinutes, Vector startHours,
-      Vector startDaysOfMonth, Vector startMonths, Vector startDaysOfWeek)
+      String aJobName, List<Integer> startMinutes, List<Integer> startHours,
+      List<Integer> startDaysOfMonth, List<Integer> startMonths, List<Integer> startDaysOfWeek)
       throws SchedulerException {
-    SchedulerEventJob newJob;
-
-    if (theSimpleScheduler == null) {
-      theSimpleScheduler = new SimpleScheduler();
-    }
-
+    initScheduler();
     if (aJobOwner == null) {
       throw new SchedulerException(
           "SimpleScheduler.getJob: Parameter 'aJobOwner' is null");
     }
-
     if (aJobName == null) {
       throw new SchedulerException(
           "SimpleScheduler.getJob: Parameter 'aJobName' is null");
     }
-
     if (!theSimpleScheduler.checkJobName(aJobName)) {
       throw new SchedulerException(
           "SimpleScheduler.getJob: Parameter 'aJobName' conflicts with internal names");
     }
-
-    newJob = new SchedulerEventJob(theSimpleScheduler, aJobOwner, aJobName);
-    newJob.setSchedulingParameter(startMinutes, startHours, startDaysOfMonth,
-        startMonths, startDaysOfWeek);
-
+    SchedulerEventJob newJob = new SchedulerEventJob(theSimpleScheduler, aJobOwner, aJobName);
+    newJob.setSchedulingParameter(startMinutes, startHours, startDaysOfMonth, startMonths,
+        startDaysOfWeek);
     return theSimpleScheduler.addJob(aJobOwner, newJob);
   }
 
@@ -273,71 +238,57 @@ public class SimpleScheduler {
    * @param aExecutionMethodName The name of a method for the execution logic (Arguments must be
    * PrintStream and Date)
    * @return A new job
+   * @throws SchedulerException
    */
-  public static SchedulerJob getJob(SchedulerEventHandler aJobOwner,
-      String aJobName, String aCronString, Object aMethodOwner,
-      String aExecutionMethodName) throws SchedulerException
-
-  {
-    SchedulerMethodJob newJob;
-
-    if (theSimpleScheduler == null) {
-      theSimpleScheduler = new SimpleScheduler();
-    }
-
+  public static SchedulerJob getJob(SchedulerEventHandler aJobOwner, String aJobName,
+      String aCronString, Object aMethodOwner, String aExecutionMethodName) throws SchedulerException {
+    initScheduler();
     if (aJobOwner == null) {
       throw new SchedulerException(
           "SimpleScheduler.getJob: Parameter 'aJobOwner' is null");
     }
-
     if (aJobName == null) {
       throw new SchedulerException(
           "SimpleScheduler.getJob: Parameter 'aJobName' is null");
     }
-
     if (!theSimpleScheduler.checkJobName(aJobName)) {
       throw new SchedulerException(
           "SimpleScheduler.getJob: Parameter 'aJobName' conflicts with other job names");
     }
-
-    newJob = new SchedulerMethodJob(theSimpleScheduler, aJobOwner, aJobName);
+    SchedulerMethodJob newJob = new SchedulerMethodJob(theSimpleScheduler, aJobOwner, aJobName);
     newJob.setSchedulingParameter(aCronString);
     newJob.setExecutionParameter(aMethodOwner, aExecutionMethodName);
-
     return theSimpleScheduler.addJob(aJobOwner, newJob);
   }
 
   /**
    * Same as previous but the job's first nextTime can be initialized or 0
+   * @param aJobOwner
+   * @param aJobName
+   * @param aCronString
+   * @param initialNextTime
+   * @param aExecutionMethodName
+   * @param aMethodOwner
+   * @return
+   * @throws SchedulerException
    */
-  public static SchedulerJob getJob(SchedulerEventHandler aJobOwner,
-      String aJobName, String aCronString, Object aMethodOwner,
-      String aExecutionMethodName, long initialNextTime)
-      throws SchedulerException
-
-  {
-    SchedulerMethodJob newJob;
-
-    if (theSimpleScheduler == null) {
-      theSimpleScheduler = new SimpleScheduler();
-    }
-
+  public static SchedulerJob getJob(SchedulerEventHandler aJobOwner, String aJobName,
+      String aCronString, Object aMethodOwner, String aExecutionMethodName, long initialNextTime)
+      throws SchedulerException {
+    initScheduler();
     if (aJobOwner == null) {
       throw new SchedulerException(
           "SimpleScheduler.getJob: Parameter 'aJobOwner' is null");
     }
-
     if (aJobName == null) {
       throw new SchedulerException(
           "SimpleScheduler.getJob: Parameter 'aJobName' is null");
     }
-
     if (!theSimpleScheduler.checkJobName(aJobName)) {
       throw new SchedulerException(
           "SimpleScheduler.getJob: Parameter 'aJobName' conflicts with other job names");
     }
-
-    newJob = new SchedulerMethodJob(theSimpleScheduler, aJobOwner, aJobName);
+    SchedulerMethodJob newJob = new SchedulerMethodJob(theSimpleScheduler, aJobOwner, aJobName);
     newJob.setSchedulingParameter(aCronString);
     newJob.setExecutionParameter(aMethodOwner, aExecutionMethodName);
     newJob.initTimeStamp(initialNextTime);
@@ -349,44 +300,32 @@ public class SimpleScheduler {
    * The given execution method has to handle two parameter (PrintStream, Date)
    * @param aJobOwner The owner of the created job
    * @param aJobName The name of the created job
-   * @param startMinutes A list of minutes (0-59)
-   * @param startHours A list of hours (0-23)
-   * @param startDaysOfMonth A list of days of a month (1-31)
-   * @param startMonths A list of months (1-12; starts with 1 for January)
-   * @param startDaysOfWeek A list of day of a week (0-6; starts with 0 for Sunday)
+   * @param iMinutes
    * @param aMethodOwner The owner object of the execution method
    * @param aExecutionMethodName The name of a method for the execution logic (Arguments must be
    * PrintStream and Date)
    * @return A new job
+   * @throws SchedulerException
    */
   public static SchedulerJob getJob(SchedulerEventHandler aJobOwner,
       String aJobName, int iMinutes, Object aMethodOwner,
       String aExecutionMethodName) throws SchedulerException {
-    SchedulerMethodJob newJob;
-
-    if (theSimpleScheduler == null) {
-      theSimpleScheduler = new SimpleScheduler();
-    }
-
+    initScheduler();
     if (aJobOwner == null) {
       throw new SchedulerException(
           "SimpleScheduler.getJob: Parameter 'aJobOwner' is null");
     }
-
     if (aJobName == null) {
       throw new SchedulerException(
           "SimpleScheduler.getJob: Parameter 'aJobName' is null");
     }
-
     if (!theSimpleScheduler.checkJobName(aJobName)) {
       throw new SchedulerException(
           "SimpleScheduler.getJob: Parameter 'aJobName' conflicts with internal names");
     }
-
-    newJob = new SchedulerMethodJobMinute(theSimpleScheduler, aJobOwner,
+    SchedulerMethodJob newJob = new SchedulerMethodJobMinute(theSimpleScheduler, aJobOwner,
         aJobName, iMinutes);
     newJob.setExecutionParameter(aMethodOwner, aExecutionMethodName);
-
     return theSimpleScheduler.addJob(aJobOwner, newJob);
   }
 
@@ -406,38 +345,30 @@ public class SimpleScheduler {
    * @param aExecutionMethodName The name of a method for the execution logic (Arguments must be
    * PrintStream and Date)
    * @return A new job
+   * @throws SchedulerException
    */
-  public static SchedulerJob getJob(SchedulerEventHandler aJobOwner,
-      String aJobName, Vector startMinutes, Vector startHours,
-      Vector startDaysOfMonth, Vector startMonths, Vector startDaysOfWeek,
-      Object aMethodOwner, String aExecutionMethodName)
-      throws SchedulerException {
-    SchedulerMethodJob newJob;
-
-    if (theSimpleScheduler == null) {
-      theSimpleScheduler = new SimpleScheduler();
-    }
+  public static SchedulerJob getJob(SchedulerEventHandler aJobOwner, String aJobName,
+      List<Integer> startMinutes, List<Integer> startHours, List<Integer> startDaysOfMonth,
+      List<Integer> startMonths, List<Integer> startDaysOfWeek, Object aMethodOwner,
+      String aExecutionMethodName) throws SchedulerException {
+    initScheduler();
 
     if (aJobOwner == null) {
       throw new SchedulerException(
           "SimpleScheduler.getJob: Parameter 'aJobOwner' is null");
     }
-
     if (aJobName == null) {
       throw new SchedulerException(
           "SimpleScheduler.getJob: Parameter 'aJobName' is null");
     }
-
     if (!theSimpleScheduler.checkJobName(aJobName)) {
       throw new SchedulerException(
           "SimpleScheduler.getJob: Parameter 'aJobName' conflicts with internal names");
     }
-
-    newJob = new SchedulerMethodJob(theSimpleScheduler, aJobOwner, aJobName);
+    SchedulerMethodJob newJob = new SchedulerMethodJob(theSimpleScheduler, aJobOwner, aJobName);
     newJob.setSchedulingParameter(startMinutes, startHours, startDaysOfMonth,
         startMonths, startDaysOfWeek);
     newJob.setExecutionParameter(aMethodOwner, aExecutionMethodName);
-
     return theSimpleScheduler.addJob(aJobOwner, newJob);
   }
 
@@ -445,17 +376,15 @@ public class SimpleScheduler {
    * This method returns a list of the jobs of the given job owner
    * @param aJobOwner A job owner
    * @return A list of the jobs of the given job owner
+   * @throws SchedulerException
    */
-  public static Vector getJobList(SchedulerEventHandler aJobOwner)
-      throws SchedulerException {
-    if (theSimpleScheduler == null) {
-      theSimpleScheduler = new SimpleScheduler();
-    }
-
-    if (theSimpleScheduler.htJobs.get(aJobOwner) != null) {
-      return (Vector) theSimpleScheduler.htJobs.get(aJobOwner);
-    } else {
-      return new Vector();
+  public static List<SchedulerJob> getJobList(SchedulerEventHandler aJobOwner) throws SchedulerException {
+    initScheduler();
+    synchronized (SimpleScheduler.class) {
+      if (theSimpleScheduler.htJobs.get(aJobOwner) != null) {
+        return new ArrayList<SchedulerJob>(theSimpleScheduler.htJobs.get(aJobOwner));
+      }
+      return new ArrayList<SchedulerJob>();
     }
   }
 
@@ -464,24 +393,16 @@ public class SimpleScheduler {
    * @param aJobOwner A job owner
    * @param aJobName A job name
    */
-  public static void removeJob(SchedulerEventHandler aJobOwner, String aJobName)
-      throws SchedulerException {
-    Vector jobList;
-    SchedulerJob workJob;
-
-    if (theSimpleScheduler == null) {
-      theSimpleScheduler = new SimpleScheduler();
-    }
-
-    jobList = (Vector) theSimpleScheduler.htJobs.get(aJobOwner);
-
-    if (jobList != null) {
-      for (Enumeration vectorEnumerator = jobList.elements(); vectorEnumerator
-          .hasMoreElements();) {
-        workJob = (SchedulerJob) vectorEnumerator.nextElement();
-        if (workJob.getJobName().equals(aJobName)) {
-          theSimpleScheduler.removeJob(workJob);
-          return;
+  public static void removeJob(SchedulerEventHandler aJobOwner, String aJobName) {
+    initScheduler();
+    synchronized (SimpleScheduler.class) {
+      List<SchedulerJob> jobList = theSimpleScheduler.htJobs.get(aJobOwner);
+      if (jobList != null && !jobList.isEmpty()) {
+        for (SchedulerJob workJob : jobList) {
+          if (workJob.getJobName().equals(aJobName)) {
+            theSimpleScheduler.removeJob(workJob);
+            return;
+          }
         }
       }
     }
@@ -490,48 +411,25 @@ public class SimpleScheduler {
   /**
    * This method removes a job
    * @param aJobOwner A job owner
-   * @param aJobName A job name
+   * @param aJob the job to be removed.
    */
-  public static void removeJob(SchedulerEventHandler aJobOwner,
-      SchedulerJob aJob) throws SchedulerException {
-    Vector jobList;
-    SchedulerJob workJob;
-
-    if (theSimpleScheduler == null) {
-      theSimpleScheduler = new SimpleScheduler();
-    }
-
-    jobList = (Vector) theSimpleScheduler.htJobs.get(aJobOwner);
-
-    if (jobList != null) {
-      for (Enumeration vectorEnumerator = jobList.elements(); vectorEnumerator
-          .hasMoreElements();) {
-        workJob = (SchedulerJob) vectorEnumerator.nextElement();
-        if (workJob == aJob) {
-          theSimpleScheduler.removeJob(workJob);
-          return;
-        }
-      }
-    }
+  public static void removeJob(SchedulerEventHandler aJobOwner, SchedulerJob aJob) {
+    initScheduler();
+    theSimpleScheduler.removeJob(aJob);
   }
 
   /**
    * This method removes all jobs of the given job owner
    * @param aJobOwner The job owner, whitch jobs should be removed
    */
-  public static void removeAllJobs(SchedulerEventHandler aJobOwner)
-      throws SchedulerException {
-    Vector jobList;
-
-    if (theSimpleScheduler == null) {
-      theSimpleScheduler = new SimpleScheduler();
-    }
-
-    jobList = (Vector) theSimpleScheduler.htJobs.get(aJobOwner);
-
-    if (jobList != null) {
-      while (!jobList.isEmpty()) {
-        theSimpleScheduler.removeJob((SchedulerJob) jobList.get(0));
+  public static void removeAllJobs(SchedulerEventHandler aJobOwner) {
+    initScheduler();
+    synchronized (SimpleScheduler.class) {
+      List<SchedulerJob> jobList = theSimpleScheduler.htJobs.get(aJobOwner);
+      if (jobList != null) {
+        while (!jobList.isEmpty()) {
+          theSimpleScheduler.removeJob(jobList.get(0));
+        }
       }
     }
   }
@@ -546,8 +444,6 @@ public class SimpleScheduler {
         new Exception("ForStack"));
     if (theSimpleScheduler != null) {
       theSimpleScheduler.stopAllJobs();
-      // theSimpleScheduler.log
-      // ("-------------------- SimpleScheduler stopped --------------------\n");
       theSimpleScheduler = null;
     }
   }
@@ -555,7 +451,7 @@ public class SimpleScheduler {
   /**
    * The constructor is private because it will be created internal.
    */
-  private SimpleScheduler() throws SchedulerException {
+  private SimpleScheduler() {
     this(null);
   }
 
@@ -563,8 +459,8 @@ public class SimpleScheduler {
    * The constructor is private because it will be created internal
    * @param aBasePath The path to the directory where the logfiles will be created
    */
-  private SimpleScheduler(File aBasePath) throws SchedulerException {
-    htJobs = new Hashtable();
+  private SimpleScheduler(File aBasePath) {
+    htJobs = new HashMap<SchedulerEventHandler, List<SchedulerJob>>();
     SilverTrace.debug("scheduler", "SimpleScheduler",
         "-------------------- SimpleScheduler started --------------------");
   }
@@ -574,30 +470,18 @@ public class SimpleScheduler {
    * @param aJobOwner A job owner
    * @param aNewJob A new job
    */
-  private SchedulerJob addJob(SchedulerEventHandler aJobOwner,
-      SchedulerJob aNewJob) throws SchedulerException {
-    Vector jobList;
-
-    try {
-      jobList = (Vector) htJobs.get(aJobOwner);
-      if (jobList == null) {
-        jobList = new Vector();
-        jobList.add(aNewJob);
-        htJobs.put(aJobOwner, jobList);
-      } else {
-        jobList.add(aNewJob);
-      }
-
-      aNewJob.start();
-
-      // log ("Job '" + aNewJob.getJobName () + "' added");
-
-      return aNewJob;
-    } catch (Exception aException) {
-      throw new SchedulerException(
-          "SimpleScheduler.addJob: Could add the job to the job list (Reason: "
-          + aException.getMessage() + ")");
+  private synchronized SchedulerJob addJob(SchedulerEventHandler aJobOwner, SchedulerJob aNewJob) {
+    List<SchedulerJob> jobList = htJobs.get(aJobOwner);
+    if (jobList == null) {
+      jobList = new ArrayList<SchedulerJob>();
+      jobList.add(aNewJob);
+      htJobs.put(aJobOwner, jobList);
+    } else {
+      jobList.add(aNewJob);
     }
+    jobNames.add(aNewJob.getName());
+    aNewJob.start();
+    return aNewJob;
   }
 
   /**
@@ -605,31 +489,23 @@ public class SimpleScheduler {
    * @param aJob A job object
    */
   private void removeJob(SchedulerJob aJob) {
-    Enumeration elementEnumerator;
-    Enumeration keyEnumerator;
-    Vector workVector;
-    SchedulerJob workJob;
-    SchedulerEventHandler workHandler;
+    jobNames.remove(aJob.getName());
 
-    elementEnumerator = htJobs.elements();
-    keyEnumerator = htJobs.keys();
-    for (; elementEnumerator.hasMoreElements();) {
-      workVector = (Vector) elementEnumerator.nextElement();
-      workHandler = (SchedulerEventHandler) keyEnumerator.nextElement();
-      for (Enumeration vectorEnumerator = workVector.elements(); vectorEnumerator
-          .hasMoreElements();) {
-        workJob = (SchedulerJob) vectorEnumerator.nextElement();
+    for (Map.Entry<SchedulerEventHandler, List<SchedulerJob>> jobs : htJobs.entrySet()) {
+      Iterator<SchedulerJob> workIter = jobs.getValue().iterator();
+      while (workIter.hasNext()) {
+        SchedulerJob workJob = workIter.next();
         if (workJob == aJob) {
           workJob.stopThread();
-          workVector.remove(workJob);
+          jobNames.remove(workJob.getName());
+          workIter.remove();
           // log ("Job '" + workJob.getJobName () + "' removed");
           break;
         }
       }
-
       // Is job list for owner empty?
-      if (workVector.size() == 0) {
-        htJobs.remove(workHandler);
+      if (jobs.getValue().isEmpty()) {
+        htJobs.remove(jobs.getKey());
       }
     }
   }
@@ -639,50 +515,22 @@ public class SimpleScheduler {
    * @param aJobName A new job name
    * @return True, if the name does not exist
    */
-  private boolean checkJobName(String aJobName) {
-    for (Enumeration elementEnumerator = htJobs.elements(); elementEnumerator
-        .hasMoreElements();) {
-      for (Enumeration vectorEnumerator = ((Vector) elementEnumerator
-          .nextElement()).elements(); vectorEnumerator.hasMoreElements();) {
-        if (((SchedulerJob) vectorEnumerator.nextElement()).getJobName()
-            .equals(aJobName)) {
-          return false;
-        }
-      }
-    }
-
-    return true;
+  private synchronized boolean checkJobName(String aJobName) {
+    return !jobNames.contains(aJobName);
   }
 
   /**
    * This method stops all scheduling jobs
    */
-  private void stopAllJobs() {
-    SchedulerJob workJob;
-    Vector workVector;
-
-    for (Enumeration elementEnumerator = htJobs.elements(); elementEnumerator
-        .hasMoreElements();) {
-      workVector = (Vector) elementEnumerator.nextElement();
-      for (Enumeration vectorEnumerator = workVector.elements(); vectorEnumerator
-          .hasMoreElements();) {
-        workJob = (SchedulerJob) vectorEnumerator.nextElement();
+  private synchronized void stopAllJobs() {
+    for (List<SchedulerJob> jobs : htJobs.values()) {
+      for (SchedulerJob workJob : jobs) {
         workJob.stopThread();
       }
-
       // Clear references
-      workVector.clear();
+      jobs.clear();
+      htJobs.clear();
+      jobNames.clear();
     }
   }
-
-  /**
-   * This method logs messages into the controller log file
-   */
-  /*
-   * private void log (String aLogMessage) { PrintStream logStream; try { logStream = new
-   * PrintStream (new FileOutputStream (theLogBaseFile.getAbsolutePath () + System.getProperties
-   * ().getProperty ("file.separator") + MAIN_LOG_FILE_NAME + ".log", true)); logStream.println
-   * (LOG_DATE_FORMAT.format (new Date ()) + ": " + aLogMessage); logStream.close (); } catch
-   * (Exception aException) { // Do nothing } }
-   */
 }

@@ -21,13 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.beans.admin;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
 import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
@@ -37,7 +35,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 public class SynchroGroupScheduler implements SchedulerEventHandler {
 
   public static final String ADMINSYNCHROGROUP_JOB_NAME = "AdminSynchroGroupJob";
-
   private List<String> synchronizedGroupIds = null;
   private Admin admin = null;
 
@@ -45,18 +42,15 @@ public class SynchroGroupScheduler implements SchedulerEventHandler {
     try {
       this.admin = admin;
       this.synchronizedGroupIds = synchronizedGroupIds;
-
-      Vector jobList = SimpleScheduler.getJobList(this);
-      if (jobList != null && jobList.size() > 0)
-        SimpleScheduler.removeJob(this, ADMINSYNCHROGROUP_JOB_NAME);
-      SimpleScheduler.getJob(this, ADMINSYNCHROGROUP_JOB_NAME, cron, this,
-          "doSynchroGroup");
+      SimpleScheduler.removeJob(this, ADMINSYNCHROGROUP_JOB_NAME);
+      SimpleScheduler.getJob(this, ADMINSYNCHROGROUP_JOB_NAME, cron, this, "doSynchroGroup");
     } catch (Exception e) {
       SilverTrace.error("admin", "SynchroGroupScheduler.initialize()",
           "importExport.EX_CANT_INIT_SCHEDULED_IMPORT", e);
     }
   }
 
+  @Override
   public void handleSchedulerEvent(SchedulerEvent aEvent) {
     switch (aEvent.getType()) {
       case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
@@ -103,13 +97,15 @@ public class SynchroGroupScheduler implements SchedulerEventHandler {
   }
 
   public void addGroup(String groupId) {
-    if (synchronizedGroupIds == null)
+    if (synchronizedGroupIds == null) {
       synchronizedGroupIds = new ArrayList<String>();
+    }
     synchronizedGroupIds.add(groupId);
   }
 
   public void removeGroup(String groupId) {
-    if (synchronizedGroupIds != null)
+    if (synchronizedGroupIds != null) {
       synchronizedGroupIds.remove(groupId);
+    }
   }
 }

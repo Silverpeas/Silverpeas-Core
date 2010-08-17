@@ -55,13 +55,8 @@ public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventHandler
     try {
       ResourceLocator settings = new ResourceLocator(
           "com.silverpeas.workflow.engine.schedulerSettings", "");
-      Vector jobList = SimpleScheduler.getJobList(this);
-
-      if (jobList.size() != 0) {
         // Remove previous scheduled job
-        SimpleScheduler.removeJob(this, TIMEOUT_MANAGER_JOB_NAME);
-      }
-
+      SimpleScheduler.removeJob(this, TIMEOUT_MANAGER_JOB_NAME);
       // Create new scheduled job
       String cronString = settings.getString("timeoutSchedule");
       SimpleScheduler.getJob(this, TIMEOUT_MANAGER_JOB_NAME, cronString, this,

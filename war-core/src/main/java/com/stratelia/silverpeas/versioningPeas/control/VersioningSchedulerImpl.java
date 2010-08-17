@@ -57,27 +57,21 @@ public class VersioningSchedulerImpl implements SchedulerEventHandler {
   public void initialize() {
     if (resourcesAttachment.getBoolean("ActifyPublisherEnable", false)) {
       try {
-        String cronScheduleProcess = resourcesAttachment
-            .getString("ScheduledProcessActify");
-        String cronSchedulePurge = resourcesAttachment
-            .getString("ScheduledPurgeActify");
-
-        Vector jobList = SimpleScheduler.getJobList(this);
-        if (jobList != null && jobList.size() > 0) {
+        String cronScheduleProcess = resourcesAttachment.getString("ScheduledProcessActify");
+        String cronSchedulePurge = resourcesAttachment.getString("ScheduledPurgeActify");
           SimpleScheduler.removeJob(this, VERSIONING_JOB_NAME_PROCESS_ACTIFY);
           SimpleScheduler.removeJob(this, VERSIONING_JOB_NAME_PURGE_ACTIFY);
-        }
-        SimpleScheduler.getJob(this, VERSIONING_JOB_NAME_PROCESS_ACTIFY,
-            cronScheduleProcess, this, "doProcessActify");
-        SimpleScheduler.getJob(this, VERSIONING_JOB_NAME_PURGE_ACTIFY,
-            cronSchedulePurge, this, "doPurgeActify");
+        SimpleScheduler.getJob(this, VERSIONING_JOB_NAME_PROCESS_ACTIFY, cronScheduleProcess,
+            this, "doProcessActify");
+        SimpleScheduler.getJob(this, VERSIONING_JOB_NAME_PURGE_ACTIFY, cronSchedulePurge, this,
+            "doPurgeActify");
       } catch (Exception e) {
-        SilverTrace.error("versioningPeas",
-            "VersioningScheduleImpl.initialize()", "", e);
+        SilverTrace.error("versioningPeas", "VersioningScheduleImpl.initialize()", "", e);
       }
     }
   }
 
+  @Override
   public void handleSchedulerEvent(SchedulerEvent aEvent) {
     switch (aEvent.getType()) {
       case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
