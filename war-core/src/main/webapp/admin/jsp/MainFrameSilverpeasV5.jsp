@@ -167,11 +167,11 @@ function init(){
 }
 
 function showPdcFrame() {
-	resizeFrame("115,100%,26,*,*,*");
+	setframevalue(columntype, "115,100%,26,*,*,*");
 }
 
 function hidePdcFrame() {
-	resizeFrame("115,100%,*,*,*,*");
+	setframevalue(columntype, "115,100%,*,*,*,*");
 }
 
 setTimeout("init()",100);

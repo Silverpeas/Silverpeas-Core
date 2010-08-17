@@ -93,7 +93,7 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_sContext%>/util/ajax/ricoAjax.js"></script>
  
 <!-- Add jQuery javascript library -->
-<script type="text/javascript" src="<%=m_sContext %>/util/javaScript/jquery/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="/silverpeas/util/javaScript/jquery/jquery-1.3.2.min.js"></script> <!-- do not remove this line while rico is used -->
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/jquery/jquery.loadmask.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/jquery/jquery.ajaxQueue.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/jquery/jquery.autocomplete.js"></script>
@@ -220,7 +220,7 @@ out.println(gef.getLookStyleSheet());
     function getFooterPage()
     {
         //return getContext()+"/RpdcSearch/jsp/ChangeSearchTypeToExpert?mode=clear&amp;SearchPage=/admin/jsp/pdcSearchSilverpeasV5.jsp&";
-    	return getContext()+"/RpdcSearch/jsp/ChangeSearchTypeToExpert?SearchPage=/admin/jsp/pdcSearchSilverpeasV5.jsp&amp;";
+    	return getContext()+"/RpdcSearch/jsp/ChangeSearchTypeToExpert?SearchPage=/admin/jsp/pdcSearchSilverpeasV5.jsp&";
     }
 
     /**
