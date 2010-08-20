@@ -197,12 +197,6 @@ Definition des class de style Silverpeas
 	text-decoration: none
 }
 
-.txtnote:hover {
-	font-size: 11px;
-	color: #000000;
-	text-decoration: underline
-}
-
 .txttitrecol {
 	font-size: 11px;
 	color: #000000;
@@ -2354,4 +2348,10 @@ td.browsebar a:hover {
 	background: none;
 	background-color:#9BD94A;
 	border:1px solid #9BD94A;
+}
+
+.ui-datepicker-trigger {
+	margin-left: 5px;
+	cursor: pointer;
+	vertical-align: bottom;
 }
