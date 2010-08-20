@@ -134,15 +134,20 @@ public class GraphicElementFactory extends Object {
 
   public ResourceLocator getMultilang() {
     if (multilang == null) {
-      String language = I18NHelper.defaultLanguage;
-      if (mainSessionController != null) {
-        language = mainSessionController.getFavoriteLanguage();
-      }
+      String language = getLanguage();
       multilang = new ResourceLocator(
           "com.stratelia.webactiv.util.viewGenerator.multilang.graphicElementFactoryBundle",
           language);
     }
     return multilang;
+  }
+  
+  private String getLanguage() {
+    String language = I18NHelper.defaultLanguage;
+    if (mainSessionController != null) {
+      language = mainSessionController.getFavoriteLanguage();
+    }
+    return language;
   }
 
   /**
@@ -346,6 +351,12 @@ public class GraphicElementFactory extends Object {
       code.append("<script type=\"text/javascript\" src=\"").append(specificJS).append(
           "\"></script>\n");
     }
+    
+    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
+    		"/util/javaScript/jquery/jquery.ui.datepicker-").append(getLanguage()).append(".js\"></script>");
+    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
+        "/util/javaScript/silverpeas-defaultDatePicker.js\"></script>");
+    
     // include javascript to manage in-progress message
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/progressMessage.js\"></script>\n");
