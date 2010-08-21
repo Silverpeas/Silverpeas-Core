@@ -64,10 +64,6 @@ out.println(graphicFactory.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 
 <script type="text/javascript">
-	function calendar(indexForm, nameElement) {
-		SP_openWindow('<%=m_context+URLManager.getURL(URLManager.CMP_AGENDA)%>calendar.jsp?indiceForm='+indexForm+'&amp;nameElem='+nameElement,'Calendrier',200,200,'');
-	}
-		
 		function exportIcal() {
 			if (isCorrectForm()) {
 				$.progressMessage();
@@ -162,16 +158,12 @@ out.println(graphicFactory.getLookStyleSheet());
      <table width="100%" cellpadding="2" cellspacing="2" border="0">
 		    <tr>
 		    	<td align="left" class="txtlibform" width="150"><%=resources.getString("dateDebutNote")%> :</td>
-		    	<td><input type="text" name="StartDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>"/>
-					      &nbsp;<a href="javascript:onClick=calendar('0','StartDate')"><img src="icons/calendrier.gif" width="13" height="15" border="0" alt="<%=resources.getString("afficherCalendrier")%>" align="top" title="<%=resources.getString("afficherCalendrier")%>"/></a>
-				      <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
+		    	<td><input type="text" class="dateToPick" name="StartDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>"/><span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
 				  </td>
 			</tr>
 			<tr>
 		    	<td align="left" class="txtlibform"><%=resources.getString("dateFinNote")%> :</td>
-				<td><input type="text" name="EndDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>"/>
-					      &nbsp;<a href="javascript:onClick=calendar('0','EndDate')"><img src="icons/calendrier.gif" width="13" height="15" border="0" alt="<%=resources.getString("afficherCalendrier")%>" align="top" title="<%=resources.getString("afficherCalendrier")%>"/></a>
-				      <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
+				<td><input type="text" class="dateToPick" name="EndDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>"/><span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
 				  </td>
 		    </tr>
 	  </table>

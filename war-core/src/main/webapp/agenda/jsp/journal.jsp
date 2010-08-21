@@ -258,13 +258,6 @@ function deleteConfirm(name)
     }
 }
 
-function editDay(nameElem)
-{
-		if (dayWin == "calendrier_agenda")
-			dayWin.close();
-		dayWin = window.SP_openWindow('calendar.jsp?indiceForm=0&amp;nameElem='+nameElem,'calendrier_agenda', 200, 200,'alwaysRaised');
-}
-
 function viewFreeBusyTime(formIndex)
 {
 		if ( freeBusyWin == "Free_Busy_Win" )
@@ -676,10 +669,10 @@ else
 		  <tr>
 		    <!-- affichage de la date de d�but de note -->
             <td class="txtlibform"><%= agenda.getString("dateDebutNote") %> :</td>
-			<td><input type="text" name="StartDate" id="StartDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" <%
+			<td><input type="text" class="dateToPick" name="StartDate" id="StartDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" <%
                 if (journal != null) 
                   if (journal.getStartDate() != null)
-                    out.println("value=\""+resources.getInputDate(journal.getStartDate())+"\"");%> <% if (readOnly) out.print("disabled=\"disabled\"");%>/>&nbsp;<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5" align="bottom" alt=""/>&nbsp;<a href="javascript:onClick=editDay('StartDate')"><img src="icons/calendrier.gif" border="0" alt="<%=agenda.getString("afficherCalendrier")%>" align="top" title="<%=agenda.getString("afficherCalendrier")%>"/></a> <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
+                    out.println("value=\""+resources.getInputDate(journal.getStartDate())+"\"");%> <% if (readOnly) out.print("disabled=\"disabled\"");%>/>&nbsp;<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5" align="bottom" alt=""/> <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
 			</td>
 		  </tr>
 		  <tr>
@@ -733,7 +726,7 @@ else
 		  </tr>
 		  <tr>
 			<td class="txtlibform"><%=agenda.getString("dateFinNote")%> :</td>
-			<td><input type="text" name="EndDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" <%
+			<td><input type="text" class="dateToPick" name="EndDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" <%
                 if (journal != null) {
                   if (journal.getEndDay() != null) {
                     if (journal.getStartDay() == null)
@@ -741,7 +734,7 @@ else
                     else if (! journal.getEndDay().equals(journal.getStartDay()))
                       out.println("value=\""+resources.getInputDate(journal.getEndDate())+"\"");
                   }
-                } %> <% if (readOnly) out.print("disabled=\"disabled\"");%>/>&nbsp;<a href="javascript:onClick=editDay('EndDate')"><img src="icons/calendrier.gif" width="13" height="15" border="0" alt="<%=agenda.getString("afficherCalendrier")%>" align="top" title="<%=agenda.getString("afficherCalendrier")%>"/></a> <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span></td>
+                } %> <% if (readOnly) out.print("disabled=\"disabled\"");%>/> <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span></td>
 		  </tr>
 		  <tr>
 			<td class="txtlibform"><%=agenda.getString("heureFinNote")%> :</td>

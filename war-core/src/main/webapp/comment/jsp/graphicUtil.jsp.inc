@@ -33,7 +33,6 @@ String folderSrc                              = m_context + "/util/icons/folder.
 String starOn                                 = m_context + "/util/icons/starFilled.gif";
 String starOff                                = m_context + "/util/icons/starEmpty.gif";
 String buletPoint                             = m_context + "/util/icons/buletGrey.gif";
-String calendarSrc							  = m_context + "/util/icons/calendrier.gif";
 
 // Pixels
 String orangePix                              = m_context + "/util/icons/colorPix/orange.gif";

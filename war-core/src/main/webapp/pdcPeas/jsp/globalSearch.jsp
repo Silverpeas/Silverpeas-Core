@@ -374,14 +374,6 @@ function positionOfInput(inputName){
 	return ret;
 }
 
-function editDate(inputName)
-{
-	chemin = "<%=m_context%><%=URLManager.getURL(URLManager.CMP_AGENDA)%>calendar.jsp?indiceForm=0&indiceElem="+positionOfInput(inputName);
-	largeur = "180";
-	hauteur = "200";
-	SP_openWindow(chemin,"Calendrier_Debut",largeur,hauteur,"");
-}
-
 function viewAdvancedSearch(){
 	document.AdvancedSearch.submit();
 }
@@ -859,18 +851,14 @@ if (!activeSelection.booleanValue() && !isPDCSubscription)
         </tr>
         <tr align="center">
           <td valign="top" nowrap align="left" class="txtlibform"><%=resource.getString("pdcPeas.CreateAfterDate")%></td>
-          <td align="left"><input type="text" name="createafterdate" size="12" value="<%=createAfterDate%>">&nbsp;
-            <a href="javascript:onClick=editDate('createafterdate')"><img src="<%=resource.getIcon("pdcPeas.calendrier")%>" align="absmiddle" border="0" alt="<%=resource.getString("pdcPeas.calendrier")%>" title="<%=resource.getString("pdcPeas.calendrier")%>"></a>
-            <span class="txtlibform"> <%=resource.getString("pdcPeas.BeforeDate")%></span><input type="text" name="createbeforedate" size="12" value="<%=createBeforeDate%>">&nbsp;
-            <a href="javascript:onClick=editDate('createbeforedate')"><img src="<%=resource.getIcon("pdcPeas.calendrier")%>" align="absmiddle" border="0" alt="<%=resource.getString("pdcPeas.calendrier")%>" title="<%=resource.getString("pdcPeas.calendrier")%>"></a> <span class="txtnote"><%=resource.getString("GML.dateFormatExemple")%></span>
+          <td align="left"><input type="text" class="dateToPick" name="createafterdate" size="12" value="<%=createAfterDate%>"/>
+            <span class="txtlibform"> <%=resource.getString("pdcPeas.BeforeDate")%></span><input type="text" class="dateToPick" name="createbeforedate" size="12" value="<%=createBeforeDate%>"/> <span class="txtnote"><%=resource.getString("GML.dateFormatExemple")%></span>
           </td>
         </tr>
         <tr align="center">
           <td valign="top" nowrap align="left" class="txtlibform"><%=resource.getString("pdcPeas.UpdateAfterDate")%></td>
-          <td align="left"><input type="text" name="updateafterdate" size="12" value="<%=updateAfterDate%>">&nbsp;
-            <a href="javascript:onClick=editDate('updateafterdate')"><img src="<%=resource.getIcon("pdcPeas.calendrier")%>" align="absmiddle" border="0" alt="<%=resource.getString("pdcPeas.calendrier")%>" title="<%=resource.getString("pdcPeas.calendrier")%>"></a>
-            <span class="txtlibform"> <%=resource.getString("pdcPeas.BeforeDate")%></span><input type="text" name="updatebeforedate" size="12" value="<%=updateBeforeDate%>">&nbsp;
-            <a href="javascript:onClick=editDate('updatebeforedate')"><img src="<%=resource.getIcon("pdcPeas.calendrier")%>" align="absmiddle" border="0" alt="<%=resource.getString("pdcPeas.calendrier")%>" title="<%=resource.getString("pdcPeas.calendrier")%>"></a> <span class="txtnote"><%=resource.getString("GML.dateFormatExemple")%></span>
+          <td align="left"><input type="text" class="dateToPick" name="updateafterdate" size="12" value="<%=updateAfterDate%>">
+            <span class="txtlibform"> <%=resource.getString("pdcPeas.BeforeDate")%></span><input type="text" class="dateToPick" name="updatebeforedate" size="12" value="<%=updateBeforeDate%>"/> <span class="txtnote"><%=resource.getString("GML.dateFormatExemple")%></span>
           </td>
         </tr>
         <tr align="center">

@@ -142,7 +142,7 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
     String cssClass = null;
 
     if (parameters.containsKey("class")) {
-      cssClass = (String) parameters.get("class");
+      cssClass = parameters.get("class");
       if (StringUtil.isDefined(cssClass))
         cssClass = "class=\"" + cssClass + "\"";
     }
@@ -158,7 +158,7 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
 
     input inputField = new input();
     inputField.setID(fieldName);
-    inputField.setName(fieldName);
+    inputField.setName(fieldName);	
     inputField.setValue(EncodeHelper.javaStringToHtmlString(value));
     inputField.setType(template.isHidden() ? input.hidden : input.text);
     inputField.setMaxlength(parameters.containsKey("maxLength") ? parameters.get("maxLength") : "10");
@@ -173,27 +173,11 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
     }
 
     if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {
+		inputField.setClass("dateToPick");
       ElementContainer container = new ElementContainer();
       container.addElement(inputField);
 
-      container.addElement("&nbsp;");
-
-      a link = new a();
-      link.setHref("javascript:calendar('" + fieldName + "');");
-      img calendarImg = new img();
-      calendarImg.setSrc(Util.getIcon("calendar"));
-      calendarImg.setWidth(15);
-      calendarImg.setHeight(15);
-      calendarImg.setBorder(0);
-      String calendarLab = Util.getString("GML.viewCalendar", language);
-      calendarImg.setAlt(calendarLab);
-      calendarImg.setTitle(calendarLab);
-      calendarImg.setAlign(AlignType.top);
-      link.addElement(calendarImg);
-      container.addElement(link);
-
-      container.addElement("&nbsp;");
-      span spanCSS = new span();
+	  span spanCSS = new span();
       if (StringUtil.isDefined(cssClass)) {
         spanCSS.setClass(cssClass);
       } else {

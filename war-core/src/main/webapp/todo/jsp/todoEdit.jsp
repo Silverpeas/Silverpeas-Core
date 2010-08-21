@@ -196,14 +196,6 @@ function deleteConfirm(name)
     }
 }
 
-function editDay(idField)
-{
-                chemin = "<%=m_context%><%=URLManager.getURL(URLManager.CMP_AGENDA)%>calendar.jsp?idElem="+idField;
-                largeur = "180";
-                hauteur = "200";
-                SP_openWindow(chemin,"Calendrier_Todo",largeur,hauteur,"");
-}
-
 function test(){
         document.todoEditForm.Action.value = "EditDiffusionList";
         document.todoEditForm.Name.disabled = false;
@@ -561,15 +553,16 @@ function test(){
                                         </td>
                                 <td class="intfdcolor4" nowrap valign="baseline" align=left>
                                         <input type="text" name="StartDate" id="StartDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" <%
-                                                if (! todo.getUserId().equals(todoHeader.getDelegatorId()))
-                                                        out.print("disabled ");
+                                                if (! todo.getUserId().equals(todoHeader.getDelegatorId())) {
+													out.print("disabled ");
+												} else {
+													out.print("class=\"dateToPick\" ");
+												}
                                                 if (todoHeader != null) 
                                                         if (todoHeader.getStartDate() != null)
                                                                 out.println("VALUE=\""+resources.getInputDate(todoHeader.getStartDate())+"\"");%>>
 
                                         <%if (todo.getUserId().equals(todoHeader.getDelegatorId())) { %>
-                                                &nbsp;<a href="javascript:onClick=editDay('StartDate')"><img src="icons/calendrier.gif" width="13" height="15" border="0" alt="<%=todo.getString("affichierCalendrier")%>" title="<%=todo.getString("affichierCalendrier")%>"></a>
-                                                &nbsp;
                                                 <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
                                         <%}%>
                                         </td>
@@ -581,8 +574,11 @@ function test(){
                                 </td>
                                 <td class="intfdcolor4" nowrap valign="baseline" align=left>
                                                 <input type="text" name="EndDate" id="EndDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" <%
-                                                if (! todo.getUserId().equals(todoHeader.getDelegatorId()))
-                                                        out.print("disabled ");
+                                                if (! todo.getUserId().equals(todoHeader.getDelegatorId())) {
+													out.print("disabled ");
+												} else {
+													out.print("class=\"dateToPick\" ");
+												}
                                                 if (todoHeader != null) {
                                                         if (todoHeader.getEndDay() != null) {
                                                                 if (todoHeader.getStartDay() == null)
@@ -593,8 +589,6 @@ function test(){
                                                 }
                                                 %>>
                                                 <%if (todo.getUserId().equals(todoHeader.getDelegatorId())) { %>
-                                                        &nbsp;<a href="javascript:onClick=editDay('EndDate')"><img src="icons/calendrier.gif" width="13" height="15" border="0" alt="<%=todo.getString("affichierCalendrier")%>" title="<%=todo.getString("affichierCalendrier")%>"></a>
-                                                        &nbsp;
                                                         <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span></p>
                                                 <%}%>
                                 </td>
