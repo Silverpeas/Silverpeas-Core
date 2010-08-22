@@ -154,4 +154,24 @@ public class StatusService {
     }
     return status_list;
   }
+
+  List<SocialInformationStatus> getSocialInformationsListOfMyContacts(List<String> myContactsIds,
+      int numberOfElement, int firstIndex) {
+    Connection connection = null;
+    List<SocialInformationStatus> status_list = new ArrayList<SocialInformationStatus>();
+
+    try {
+      connection = getConnection();
+      status_list = this.statusDao.getSocialInformationsListOfMyContacts(connection, myContactsIds, numberOfElement, firstIndex);
+      connection.commit();
+    } catch (Exception ex) {
+      SilverTrace.error("Silverpeas.Bus.SocialNetwork.Status",
+          "StatusService.getAllStatus", "",
+          ex);
+      DBUtil.rollback(connection);
+    } finally {
+      DBUtil.close(connection);
+    }
+    return status_list;
+  }
 }

@@ -31,19 +31,50 @@ import java.util.Date;
  */
 public interface SocialInformation extends Comparable<SocialInformation> {
 
+  /**
+   * return the Title of this SocialInformation
+   * @return String
+   */
   public String getTitle();
 
+  /**
+   * return the Description of this SocialInformation
+   * @return String
+   */
   public String getDescription();
 
+  /**
+   * return the Author of this SocialInfo
+   * @return String
+   */
   public String getAuthor();
 
+  /**
+   * return the Url of this SocialInfo
+   * @return String
+   */
   public String getUrl();
-
+/**
+   * return the Date of this SocialInfo
+   * @return
+   */
   public Date getDate();
 
+  /**
+   * return the Type of this SocialInfo
+   * @return
+   */
   public String getType();
 
+  /**
+   * return icon name of this SocialInfo
+   * @return String
+   */
   public String getIcon();
 
-  public boolean getSocialInformationWasUpdeted();
+  /**
+   * return if this socialInfo was updtated or not
+   * @return boolean
+   */
+  public boolean isUpdeted();
 }

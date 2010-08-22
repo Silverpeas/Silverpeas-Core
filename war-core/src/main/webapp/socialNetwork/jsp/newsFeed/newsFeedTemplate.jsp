@@ -48,7 +48,7 @@
         margin: 2px;
         padding: 2px;
       }
-      #myInfo{
+     #navigation #myInfo{
         float: right;
       }
 
@@ -113,6 +113,8 @@
         var offset=0;
         var hscroll ;var vscroll;
         var type='ALL';
+        var urlDirectory='${urlDirectory}';
+        var inprogress = '<img id="inprogress" src="/silverpeas/util/icons/inProgress.gif" alt=""/>';
         function getNext(url)
         {
           url=url+'&type='+type+'&offset='+offset;
@@ -122,6 +124,7 @@
           // make user DIV emty and div directory invisible
           $('#user').empty();
           $('.directory').hide();
+          $('.SocialInformations').append(inprogress);
           $.getJSON(url,
           function(data){
             var listEmpty=true;
@@ -178,7 +181,9 @@
                       html+='</td>';
 
                       html+='<td>';
-                      html+='<a href="'+socialInfo.url+'"><b>'+socialInfo.title+'</b></a>  '+socialInfo.hour;
+                     
+                       html+='<b><a href="'+urlProfil+'">'+socialInfo.author.lastName+' '+socialInfo.author.firstName+'</a> '+ socialInfo.label +' <a href="'+socialInfo.url+
+                        '" >'+socialInfo.title+'</a></b>  '+socialInfo.hour;
                       html+='</td></tr><tr>';
                       html+='<td colspan="2">'+socialInfo.description;
                       html+='</td> </tr> </table>'
@@ -196,6 +201,7 @@
             });
             html+='</ol>';
 
+            $("#inprogress").remove();
             $('.SocialInformations').append(html);
 
             window.scrollTo(hscroll, vscroll);
@@ -255,7 +261,7 @@
           }, 400);
         }
         $(document).ready(function(){
-            $("#relationshipActionNewsFeed a").click(function(){
+          $("#relationshipActionNewsFeed a").click(function(){
             $("#relationshipActionNewsFeed a").parent().removeClass("ItemOn");
             $("#actionNewsFeed a").parent().removeClass("ItemOn");
             $(this).parent().toggleClass("ItemOn");
@@ -269,47 +275,55 @@
             $(".newsFeedBodyTitle").empty();
             $(this).parent().clone().appendTo(".newsFeedBodyTitle");
       <%--initialiser tout--%>
-                      offset=0;
-                      type=$(this).attr('name');
-                      $('.SocialInformations').empty();
-                      getNext('${urlServlet}');
-                    });
+            offset=0;
+            type=$(this).attr('name');
+            $('.SocialInformations').empty();
+            getNext('${urlServlet}');
+          });
 
-                  });
-                  function indexDirectory(index){
-                    var action='pagination&currentPage='+index;
-                    directory(action);
-                  }
-                  function directory(action){
-                    var urlDirectory='${urlDirectory}';
-                    urlDirectory+=action+'&key='+$('#key').attr("value");
-                    $('.SocialInformations').empty();
-                    $('#getNext').hide();
-                    $('#users').empty();
-                    $('#directory').show();
-                    $('#key').attr("value",'');
-                    $.ajax({ // Requete ajax
-                      dataType: "html",
-                      type: "GET",
-                      url: urlDirectory,
-                      async: true,
-                      success: function(data){
-                        $('#users').append(data);
-                      }
-                    });
-                  }
-function OpenPopup(usersId,name ){
+        });
+        function indexDirectory(index){
+          var action='pagination&currentPage='+index;
+          directory(action);
+        }
+         function getAllUsersDirectory(){
+          urlDirectory='${urlDirectory}';
+          directory('Main');
+        }
+          function getAllContactsDirectory(){
+          urlDirectory='${urlContactsDirectory}';
+          directory('Main');
+        }
 
-        usersId=usersId+'&Name='+name
-        options="location=no, menubar=no,toolbar=no,scrollbars=yes, resizable        , alwaysRaised"
-        SP_openWindow('<c:url value="/Rdirectory/jsp/NotificationView?Recipient=" />'+usersId , 'strWindowName', '500', '200',options );
+        function directory(action){
+          var url=urlDirectory+action+'&key='+$('#key').attr("value");
+          $('.SocialInformations').empty();
+          $('#getNext').hide();
+          $('#users').empty();
+          $('#directory').show();
+          $('#key').attr("value",'');
+          $.ajax({ // Requete ajax
+            dataType: "html",
+            type: "GET",
+            url: url,
+            async: true,
+            success: function(data){
+              $('#users').append(data);
+            }
+          });
+        }
+        function OpenPopup(usersId,name ){
 
-      }
-      function OpenPopupInvitaion(usersId,name){
-        usersId=usersId+'&Name='+name
-        options="directories=no, menubar=no,toolbar=no,scrollbars=yes, resizable=no ,alwaysRaised"
-        SP_openWindow('<c:url value="/Rinvitation/jsp/invite?Recipient="/>'+usersId, 'strWindowName', '350', '200','directories=no, menubar=no,toolbar=no,scrollbars=yes, resizable=no ,alwaysRaised');
-      }
+          usersId=usersId+'&Name='+name
+          options="location=no, menubar=no,toolbar=no,scrollbars=yes, resizable        , alwaysRaised"
+          SP_openWindow('<c:url value="/Rdirectory/jsp/NotificationView?Recipient=" />'+usersId , 'strWindowName', '500', '200',options );
+
+        }
+        function OpenPopupInvitaion(usersId,name){
+          usersId=usersId+'&Name='+name
+          options="directories=no, menubar=no,toolbar=no,scrollbars=yes, resizable=no ,alwaysRaised"
+          SP_openWindow('<c:url value="/Rinvitation/jsp/invite?Recipient="/>'+usersId, 'strWindowName', '350', '200','directories=no, menubar=no,toolbar=no,scrollbars=yes, resizable=no ,alwaysRaised');
+        }
        
     
 
@@ -327,7 +341,6 @@ function OpenPopup(usersId,name ){
           <%@include file="newsFeedBody.jsp" %>
         </view:board>
       </div>
-
     </view:window>
 
   </body>

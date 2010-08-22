@@ -45,9 +45,7 @@ public class StatusDao {
   private static final String SELECT_LAST_STATUS_BY_USERID = " SELECT * FROM sb_sn_status WHERE userid = ? ORDER BY creationdate DESC";
   private static final String UPDATE_STATUS_BY_ID =
       "UPDATE sb_sn_status  SET  description = ? WHERE id = ? ";
-  private static final String SELECT_ALL_STATUS_POSTGRES =
-      "SELECT id,userid, creationdate, description FROM sb_sn_status  WHERE userid = ? ORDER BY creationdate DESC limit ? offset ?";
-
+  
   /**
    * Change and create Status
    * @param:Connection connection, Status status
@@ -155,7 +153,8 @@ public class StatusDao {
     ResultSet rs = null;
     List<SocialInformationStatus> status_list = new ArrayList<SocialInformationStatus>();
     try {
-      pstmt = connection.prepareStatement(SELECT_ALL_STATUS_POSTGRES);
+      String query ="SELECT id,userid, creationdate, description FROM sb_sn_status  WHERE userid = ? ORDER BY creationdate DESC limit ? offset ?";
+      pstmt = connection.prepareStatement(query);
       pstmt.setInt(1, userId);
       pstmt.setInt(2, nbElement);
       pstmt.setInt(3, firstIndex);
@@ -183,5 +182,48 @@ public class StatusDao {
     }
     return null;
 
+  }
+
+  List<SocialInformationStatus> getSocialInformationsListOfMyContacts(Connection connection,
+      List<String> myContactsIds, int numberOfElement, int firstIndex) throws SQLException {
+    PreparedStatement pstmt = null;
+    ResultSet rs = null;
+    List<SocialInformationStatus> status_list = new ArrayList<SocialInformationStatus>();
+    try {
+     String query ="SELECT id,userid, creationdate, description FROM sb_sn_status  WHERE userid in ("+listToSqlString(myContactsIds)+") ORDER BY creationdate DESC limit ? offset ?";
+
+      pstmt = connection.prepareStatement(query);
+      pstmt.setInt(1, numberOfElement);
+      pstmt.setInt(2, firstIndex);
+      rs = pstmt.executeQuery();
+
+      while (rs.next()) {
+        Status status = new Status();
+        status.setId(rs.getInt(1));
+        status.setUserId(rs.getInt(2));
+        status.setCreationDate(new Date(rs.getTimestamp(3).getTime()));
+        status.setDescription(rs.getString(4));
+        status_list.add(new SocialInformationStatus(status));
+      }
+    } finally {
+      DBUtil.close(rs, pstmt);
+    }
+    return status_list;
+  }
+  private static String listToSqlString(List<String> list) {
+    String result = "";
+    if (list == null || list.size() == 0) {
+      return "''";
+    }
+    int size = list.size();
+    int i = 0;
+    for (String var : list) {
+      i++;
+      result += "'" + var + "'";
+      if (i != size) {
+        result += ",";
+      }
+    }
+    return result;
   }
 }

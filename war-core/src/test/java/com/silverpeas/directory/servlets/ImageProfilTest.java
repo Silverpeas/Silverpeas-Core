@@ -24,7 +24,7 @@ import com.silverpeas.util.PathTestUtil;
 
   @AfterClass
   public static void cleanDir() throws IOException {
-    FileUtils.forceDelete(new File(TEMP_DIRECTORY));
+   // FileUtils.forceDelete(new File(TEMP_DIRECTORY));
   }
 	@Test
 	public void testIsImage() {

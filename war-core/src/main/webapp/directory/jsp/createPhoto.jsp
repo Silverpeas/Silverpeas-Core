@@ -28,115 +28,56 @@
 <%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 
 <c:set var="browseContext" value="${requestScope.browseContext}" />
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
 <html>
-    <head>
+  <head>
     <view:looknfeel />
 
 
 
     <style type="text/css">
-        * {
-            margin: 0;
-            padding: 0;
-        }
-
-        /* message display page */
-        .message_list {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-
-            width: 100%;
-        }
-        .message_list li {
-            padding: 0px;
-            margin: 3px;
+      * {
+        margin: 0;
+        padding: 0;
+      }
 
 
-        }
-        .message_table rd {
-            padding: 0px;
-            margin: 3px;
-
-
-        }
-        #recherche {
-            background-image:
-                url(/silverpeas/admin/jsp/icons/silverpeasV5/recherche.jpg);
-            background-repeat: no-repeat;
-
-        }
-        .index {
-            text-decoration: underline;
-            color: black;
-        }
-        .active {
-
-            color:blue
-        }
-        .mail {
-
-            color: blue;
-        }
-        .accordion {
-            width: 480px;
-            border-bottom: solid 1px #c4c4c4;
-        }
-        .accordion h3 {
-            background: #e9e7e7 url(/silverpeas/directory/jsp/icons/arrow-square.gif) no-repeat right -51px;
-            padding: 7px 15px;
-            margin: 0;
-            font: bold 120%/100% Arial, Helvetica, sans-serif;
-            border: solid 1px #c4c4c4;
-            border-bottom: none;
-            cursor: pointer;
-        }
-        .accordion h3:hover {
-            background-color: #e3e2e2;
-        }
-        .accordion h3.active {
-            background-position: right 5px;
-        }
-        .accordion p {
-            background: #f7f7f7;
-            margin: 0;
-            padding: 10px 15px 20px;
-            border-left: solid 1px #c4c4c4;
-            border-right: solid 1px #c4c4c4;
-        }
 
     </style>
-</head>
+  </head>
 
 
 
 
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
-<c:url value="/Rdirectory/Directory" var="Directory" />
-<view:window>
+  <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+    <c:url value="/Rdirectory/Directory" var="Directory" />
+    <view:window>
 
-    <view:frame >
+      <view:frame >
 
         <view:board>
-           <FORM Name="photoForm" action="validation" Method="POST" ENCTYPE="multipart/form-data" accept-charset="UTF-8">
-             <table CELLPADDING="5" WIDTH="100%">
-	       <tr>
-		  <td class="txtlibform"> Image :</td>
-      	          <td><input type="file" name="WAIMGVAR0" size="60"></td>
-	        </tr>
-               <tr>
-                <td class="txtlibform" colspan="2">
-                   <fmt:message key="directory.buttonValid" var="valid"/>
-                   <view:button label="${valid}" action="javascript:document.photoForm.submit();" disabled="false" />
+          <form Name="photoForm" action="validation" Method="POST" ENCTYPE="multipart/form-data" accept-charset="UTF-8">
+            <table cellpadding="5" width="100%">
+              <tr>
+                <td class="txtlibform"><fmt:message key="directory.photo" />:</td>
+                <td><input type="file" name="WAIMGVAR0" size="60"></td>
+              </tr>
+              <tr>
+                <td class="txtlibform" colspan="2" align="center">
+                  <br>
+                  <br>
+                  <fmt:message key="directory.buttonValid" var="valid"/>
+                  <view:button label="${valid}" action="javascript:document.photoForm.submit();" disabled="false" />
                 </td>
               </tr>	
-              </table>
-           </form>
+            </table>
+          </form>
         </view:board>
-    </view:frame>
+      </view:frame>
 
-</view:window>
+    </view:window>
 
-</body>
+  </body>
 </html>

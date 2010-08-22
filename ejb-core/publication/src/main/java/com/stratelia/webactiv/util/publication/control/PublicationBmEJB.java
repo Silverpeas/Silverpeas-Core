@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.util.publication.control;
 
+import java.lang.reflect.Array;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -34,6 +35,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
@@ -1993,7 +1996,15 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
    */
   public void setSessionContext(SessionContext sc) {
   }
-
+/**
+   * get my list of SocialInformationPublication
+   * according to options and number of Item and the first Index
+   * @return: List <SocialInformation>
+   * @param : String myId
+   * @param :List<String> myContactsIds
+   * @param :List<String> options list of Available Components name
+   * @param int numberOfElement, int firstIndex
+   */
   @Override
   public List<SocialInformationPublication> getAllPublicationsWithStatusbyUserid(String userId,
       int firstIndex, int nbElement) throws RemoteException {
@@ -2001,7 +2012,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
     List<SocialInformationPublication> publications = new ArrayList<SocialInformationPublication>();
     try {
       con = getConnection();
-      publications = PublicationDAO.getAllPublicationsIDbyUserid(con, userId, firstIndex,  nbElement);
+      publications = PublicationDAO.getAllPublicationsIDbyUserid(con, userId, firstIndex, nbElement);
 
 
     } catch (SQLException e) {
@@ -2015,7 +2026,65 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
     return publications;
   }
 
- 
+  /**
+   * gets the available component for a given users list
+   * @param myId
+   * @param myContactsId
+   * @return List<String>
+   */
+  @Override
+  public List<String> getAvailableComponents(String myId, List<String> myContactsId) {
+    List<String> listAvailableComponents = null;
+    Connection con = null;
+    try {
 
-  
+      con = getConnection();
+      listAvailableComponents = PublicationDAO.getAvailableComponents(con, myId, myContactsId);
+    } catch (SQLException ex) {
+      throw new PublicationRuntimeException(
+          "PublicationBmEJB.getAvailableComponents",
+          SilverpeasRuntimeException.ERROR,
+          "publication.GETTING_PUBLICATION_HEADER_FAILED", "myId = " + myId + " myContactsId= " + myContactsId.
+          toString(), ex);
+    } finally {
+      freeConnection(con);
+    }
+    return listAvailableComponents;
+  }
+
+  /**
+   * get list of SocialInformationPublication of my contacts
+   * according to options and number of Item and the first Index
+   * @return: List <SocialInformation>
+   * @param : String myId
+   * @param :List<String> myContactsIds
+   * @param :List<String> options list of Available Components name
+   * @param int numberOfElement, int firstIndex
+   */
+  @Override
+  public List<SocialInformationPublication> getSocialInformationsListOfMyContacts(
+      List<String> myContactsIds,
+      List<String> options, int numberOfElement, int firstIndex) throws RemoteException {
+    Connection con = null;
+    List<SocialInformationPublication> publications = new ArrayList<SocialInformationPublication>();
+    try {
+      con = getConnection();
+      publications = PublicationDAO.getSocialInformationsListOfMyContacts(con, myContactsIds,
+          options, numberOfElement, firstIndex);
+
+
+    } catch (SQLException e) {
+      throw new PublicationRuntimeException(
+          "PublicationBmEJB.getAllPublicationsWithStatusbyUserid",
+          SilverpeasRuntimeException.ERROR,
+          "publication.GETTING_PUBLICATION_HEADER_FAILED",
+          " myContactsIds=" + myContactsIds.toString() + " options=" + options.
+          toString() + " numberOfElement= " + numberOfElement + " firstIndex=" + firstIndex, e);
+    } finally {
+      freeConnection(con);
+    }
+    return publications;
+  }
+
+
 }

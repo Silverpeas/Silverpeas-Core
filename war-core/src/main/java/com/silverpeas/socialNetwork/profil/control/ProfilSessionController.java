@@ -28,18 +28,10 @@ import com.silverpeas.socialNetwork.SocialNetworkException;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.silverpeas.socialNetwork.model.SocialInformationType;
-import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.calendar.control.CalendarException;
-import com.stratelia.webactiv.util.exception.UtilException;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Hashtable;
 import com.silverpeas.socialNetwork.relationShip.RelationShipService;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -59,10 +51,12 @@ public class ProfilSessionController extends AbstractComponentSessionController 
     
   }
 
- 
-
+/**
+ * get this user with full information
+ * @param userId
+ * @return UserFull
+ */
   public UserFull getUserFul(String userId) {
-
     return this.getOrganizationController().getUserFull(userId);
   }
 

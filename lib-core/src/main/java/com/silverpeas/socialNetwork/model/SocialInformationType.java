@@ -28,6 +28,5 @@ package com.silverpeas.socialNetwork.model;
  * @author Bensalem Nabil
  */
 public enum SocialInformationType {
-
-  ALL, EVENT, PUBLICATION, PHOTO, STATUS;
+  ALL, EVENT, PUBLICATION, PHOTO, STATUS,RELATIONSHIP,LASTEVENT;
 }

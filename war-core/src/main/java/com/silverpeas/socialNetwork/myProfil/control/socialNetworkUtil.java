@@ -45,12 +45,12 @@ public class socialNetworkUtil {
 
   public socialNetworkUtil() {
   }
-  /*
+  /**
    * Convert the list of socialInformation to Map
    * limit is the numbre of element
    * offset the last index of element was called
-   * @param: List<SocialInformation> listEvents,  int limit, int offset
-
+   * @param listEvents
+   * @return Map<Date, List<SocialInformation>>
    */
 
   Map<Date, List<SocialInformation>> toLinkedHashMap(List<SocialInformation> listEvents) {
@@ -72,12 +72,14 @@ public class socialNetworkUtil {
     }
     return hashtable;
   }
-  /*
+  /**
    * Convert the list of socialInformation to Map whene the type is ALL
    * limit is the numbre of element
    * offset the last index of element was called
-   * @param: List<SocialInformation> listEvents,  int limit, int offset
-
+   * @param listEvents
+   * @param limit
+   * @param offset
+   * @return Map<Date, List<SocialInformation>>
    */
 
   Map<Date, List<SocialInformation>> toLinkedHashMapWhenTypeIsALL(List<SocialInformation> listEvents,

@@ -43,6 +43,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationWithStatus;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
+import java.lang.reflect.Array;
 
 /**
  * Interface declaration
@@ -461,12 +462,30 @@ public interface PublicationBmBusinessSkeleton {
    */
   public void addLinks(PublicationPK pubPK, List<ForeignPK> links) throws RemoteException;
 
-   /**
+  /**
    *
    **/
- public List<SocialInformationPublication> getAllPublicationsWithStatusbyUserid(String userId,
+  public List<SocialInformationPublication> getAllPublicationsWithStatusbyUserid(String userId,
       int firstIndex, int nbElement) throws RemoteException;
 
+  /**
+   * gets the available component for a given users list
+   * @param:Array usersId,int firstIndex
+   * @return a list of ComponentName
+   *
+   */
+  public List<String> getAvailableComponents(String myId, List<String> myContactsId) throws
+      RemoteException;
 
-
+  /**
+   * get list of socialInformation of my contacts according to options and number of Item and the first Index
+   * @return: List <SocialInformation>
+   * @param:  myId
+   * @param :List<String> myContactsIds
+   * @param :List<String> options list of Available Components name
+   * @param int numberOfElement, int firstIndex
+   */
+  public List<SocialInformationPublication> getSocialInformationsListOfMyContacts(
+      List<String> myContactsIds, List<String> options, int numberOfElement,
+      int firstIndex) throws RemoteException;
 }

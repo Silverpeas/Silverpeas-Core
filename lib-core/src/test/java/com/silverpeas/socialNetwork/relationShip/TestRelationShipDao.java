@@ -60,7 +60,7 @@ public class TestRelationShipDao extends AbstractTestDao {
 
 
     RelationShip newRelationShip = new RelationShip(5, 6, 0, toDate(2010, Calendar.FEBRUARY, 01, 10,
-        34, 15));
+        34, 15),6);
     try {
       connexion = getConnection();
       int id = dao.createRelationShip(connexion.getConnection(), newRelationShip);
@@ -87,7 +87,7 @@ public class TestRelationShipDao extends AbstractTestDao {
     IDatabaseConnection connexion = null;
 
     RelationShip expectedRelationShip = new RelationShip(1, 2, 0, toDate(2010, Calendar.FEBRUARY, 01,
-        10, 34, 15));
+        10, 34, 15),2);
     expectedRelationShip.setId(1);
     try {
       connexion = getConnection();
@@ -112,7 +112,7 @@ public class TestRelationShipDao extends AbstractTestDao {
     IDatabaseConnection connexion = null;
 
     RelationShip expectedRelationShip = new RelationShip(1, 2, 0, toDate(2010, Calendar.FEBRUARY, 01,
-        10, 34, 15));
+        10, 34, 15),2);
     expectedRelationShip.setId(1);
     try {
       connexion = getConnection();
@@ -139,10 +139,10 @@ public class TestRelationShipDao extends AbstractTestDao {
     IDatabaseConnection connexion = null;
 
     RelationShip expectedRelationShip1 = new RelationShip(1, 2, 0, toDate(2010, Calendar.FEBRUARY,
-        01, 10, 34, 15));
+        01, 10, 34, 15),2);
     expectedRelationShip1.setId(1);
     RelationShip expectedRelationShip2 = new RelationShip(1, 3, 0, toDate(2010, Calendar.MAY, 11, 15,
-        25, 32));
+        25, 32),3);
     expectedRelationShip2.setId(4);
     int myId = 1;
     try {
@@ -152,10 +152,15 @@ public class TestRelationShipDao extends AbstractTestDao {
       assertEquals("Should have 2 relationships in db", 2, relationShips.size());
       assertEquals("First should be 1 et 2", expectedRelationShip1, relationShips.get(0));
       assertEquals("Second should be 1 et 3", expectedRelationShip2, relationShips.get(1));
+      List<SocialInformationRelationShip> listSIR=dao.getAllMyRelationShips(connexion.getConnection(), myId+"",
+          4, 0);
+      assertNotNull("Relationships should exist", listSIR);
     } finally {
       closeConnection(connexion);
     }
   }
+
+
 
   private Date toDate(int year, int month, int day, int hour, int minute, int second) {
 

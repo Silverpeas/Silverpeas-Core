@@ -51,7 +51,7 @@
     </div>    
     <br>
     <view:board>
-      <form Name="photoForm" action="valdateChangePhoto" Method="post" ENCTYPE="multipart/form-data" accept-charset="UTF-8">
+      <form Name="photoForm" action="validateChangePhoto" Method="post" ENCTYPE="multipart/form-data" accept-charset="UTF-8">
         <div>
 
           <div class="txtlibform"><fmt:message key="directory.photo" />:</div>

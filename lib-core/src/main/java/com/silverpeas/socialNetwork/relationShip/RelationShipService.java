@@ -45,11 +45,11 @@ public class RelationShipService {
     connection.setAutoCommit(false);
     return connection;
   }
-  /*
+  /**
    * remove RelationShip (if this relationShips is deleted return true)
+   * @param idUser1
+   * @param idUser2
    * @return boolean
-   * @param: RelationShip relationShip
-   *
    */
 
   public boolean removeRelationShip(int idUser1, int idUser2) {
@@ -63,7 +63,7 @@ public class RelationShipService {
       endAction = true;
     } catch (Exception ex) {
       SilverTrace.error("com.silverpeas.socialNetwork.relationShip",
-          "RelationShipService.ignoreremoveRelationShipInvitation", "",
+          "RelationShipService.removeRelationShip", "",
           ex);
       DBUtil.rollback(connection);
     } finally {
@@ -71,18 +71,20 @@ public class RelationShipService {
     }
     return endAction;
   }
-  /*
+
+  /**
    * these two users in relationship
-   * @return:boolean
-   * @param: int user1Id, int user2Id
-   *
+   * @param user1Id
+   * @param user2Id
+   * @return boolean
+   * @throws SQLException
    */
   public boolean isInRelationShip(int user1Id, int user2Id) throws SQLException {
     Connection connection = null;
     boolean isInRelationShip = false;
     try {
       connection = getConnection();
-     isInRelationShip= relationShipDao.isInRelationShip(connection, user1Id, user2Id);
+      isInRelationShip = relationShipDao.isInRelationShip(connection, user1Id, user2Id);
     } catch (Exception ex) {
       SilverTrace.error("com.silverpeas.socialNetwork.relationShip",
           "RelationShipService.isInRelationShip", "",
@@ -93,13 +95,13 @@ public class RelationShipService {
     }
     return isInRelationShip;
   }
-  /*
-   * get all my RelationShips
-   * @return:List<RelationShip>
-   * @param: int myId
-   *
-   */
 
+  /**
+   * get all my RelationShips
+   * @param myId
+   * @return List<RelationShip>
+   * @throws SQLException
+   */
   public List<RelationShip> getAllMyRelationShips(int myId) throws SQLException {
     Connection connection = null;
     List<RelationShip> listMyRelation = new ArrayList<RelationShip>();
@@ -108,7 +110,7 @@ public class RelationShipService {
       listMyRelation = relationShipDao.getAllMyRelationShips(connection, myId);
     } catch (Exception ex) {
       SilverTrace.error("com.silverpeas.socialNetwork.relationShip",
-          "RelationShipService.isInRelationShip", "",
+          "RelationShipService.getAllMyRelationShips", "",
           ex);
       DBUtil.rollback(connection);
     } finally {
@@ -116,13 +118,118 @@ public class RelationShipService {
     }
     return listMyRelation;
   }
-  /*
-   * get RelationShip
-   * @return:RelationShip
-   * @param: int user1Id, int user2Id
-   *
-   */
 
+  /**
+   * get all my RelationShips ids
+   * @param myId
+   * @return List<String>
+   * @throws SQLException
+   */
+  public List<String> getMyContactsIds(int myId) throws SQLException {
+    Connection connection = null;
+    List<String> myContactsIds = new ArrayList<String>();
+    try {
+      connection = getConnection();
+      myContactsIds = relationShipDao.getMyContactsIds(connection, myId);
+    } catch (Exception ex) {
+      SilverTrace.error("com.silverpeas.socialNetwork.relationShip",
+          "RelationShipService.getAllMyRelationShips", "",
+          ex);
+      DBUtil.rollback(connection);
+    } finally {
+      DBUtil.close(connection);
+    }
+    return myContactsIds;
+  }
+  /**
+   * get all common contacts Ids between usre1 and user2
+   * @param user1Id
+   * @param user2Id
+   * @return List<String>
+   * @throws SQLException
+   */
+  public List<String> getAllCommonContactsIds(int user1Id, int user2Id) throws SQLException {
+    Connection connection = null;
+    List<String> myContactsIds = new ArrayList<String>();
+    try {
+      connection = getConnection();
+      myContactsIds = relationShipDao.getAllCommonContactsIds(connection, user1Id,user2Id);
+    } catch (Exception ex) {
+      SilverTrace.error("com.silverpeas.socialNetwork.relationShip",
+          "RelationShipService.getAllMyRelationShips", "",
+          ex);
+      DBUtil.rollback(connection);
+    } finally {
+      DBUtil.close(connection);
+    }
+    return myContactsIds;
+  }
+
+
+  /**
+   * Get list of  my socialInformationRelationShip (relationShips)
+   * according to number of Item and the first Index
+   * @param userId
+   * @param numberOfElement
+   * @param firstIndex
+   * @return List<SocialInformationRelationShip>
+   * @throws SQLException
+   */
+  public List<SocialInformationRelationShip> getAllMyRelationShips(String userId,
+      int numberOfElement, int firstIndex) throws SQLException {
+    Connection connection = null;
+    List<SocialInformationRelationShip> listMyRelation = new ArrayList<SocialInformationRelationShip>();
+    try {
+      connection = getConnection();
+      listMyRelation = relationShipDao.getAllMyRelationShips(connection, userId, numberOfElement,
+          firstIndex);
+    } catch (Exception ex) {
+      SilverTrace.error("com.silverpeas.socialNetwork.relationShip",
+          "RelationShipService.getAllMyRelationShips", "",
+          ex);
+      DBUtil.rollback(connection);
+    } finally {
+      DBUtil.close(connection);
+    }
+    return listMyRelation;
+  }
+
+  /**
+   * Get list socialInformationRelationShip (relationShips) of my Contacts
+   * according to number of Item and the first Index
+   * @param myId
+   * @param myContactsIds
+   * @param numberOfElement
+   * @param firstIndex
+   * @return List<SocialInformationRelationShip>
+   * @throws SQLException
+   */
+  public List<SocialInformationRelationShip> getAllRelationShipsOfMyContact(String myId,
+      List<String> myContactsIds, int numberOfElement, int firstIndex) throws SQLException {
+    Connection connection = null;
+    List<SocialInformationRelationShip> listMyRelation = new ArrayList<SocialInformationRelationShip>();
+    try {
+      connection = getConnection();
+      listMyRelation = relationShipDao.getAllRelationShipsOfMyContact(connection, myId,myContactsIds, numberOfElement,
+          firstIndex);
+    } catch (Exception ex) {
+      SilverTrace.error("com.silverpeas.socialNetwork.relationShip",
+          "RelationShipService.getAllRelationShipsOfMyContact", "",
+          ex);
+      DBUtil.rollback(connection);
+    } finally {
+      DBUtil.close(connection);
+    }
+    return listMyRelation;
+  }
+
+  /**
+   * get RelationShip witch is betwwen user1 and user2
+   * @param user1Id
+   * @param user2Id
+   * @return RelationShip
+   * @throws SQLException
+   */
   public RelationShip getRelationShip(int user1Id, int user2Id) throws SQLException {
     Connection connection = null;
     RelationShip relation = null;
@@ -131,7 +238,7 @@ public class RelationShipService {
       relation = relationShipDao.getRelationShip(connection, user1Id, user2Id);
     } catch (Exception ex) {
       SilverTrace.error("com.silverpeas.socialNetwork.relationShip",
-          "RelationShipService.isInRelationShip", "",
+          "RelationShipService.getRelationShip", "",
           ex);
       DBUtil.rollback(connection);
     } finally {

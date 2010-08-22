@@ -44,11 +44,13 @@ public class InvitationDao {
   private static final String SELECT_ALL_INVITATIONS_SENT = "SELECT id, senderID, receiverId, message, invitationDate FROM sb_sn_invitation  WHERE senderID = ?";
   private static final String SELECT_ALL_INVITATIONS_RECEIVE = "SELECT id, senderID, receiverId, message, invitationDate FROM sb_sn_invitation  WHERE receiverId= ?";
 
-  /*
-   * Create invitation
-   *
-   * @param:Connection connection, Invitation invitation
-   *
+  /**
+   * Create new invitation
+   * @param connection
+   * @param invitation
+   * @return int the id of invitation
+   * @throws UtilException
+   * @throws SQLException
    */
   public int createInvitation(Connection connection, Invitation invitation) throws UtilException,
       SQLException {
@@ -71,11 +73,12 @@ public class InvitationDao {
 
   }
 
-  /*
+  /**
    * Delete  invitation rturn true whene this invitation was deleting
-   *
-   * @param:Connection connection, int id
-   *
+   * @param connection
+   * @param id
+   * @return boolean
+   * @throws SQLException
    */
   public boolean deleteInvitation(Connection connection, int id) throws SQLException {
     PreparedStatement pstmt = null;
@@ -91,11 +94,13 @@ public class InvitationDao {
     return endAction;
   }
 
-  /*
-   * rturn invitation
-   *
-   * @param:Connection connection, int senderId, int receiverId
-   *
+  /**
+   * rturn invitation between 2 users
+   * @param connection
+   * @param senderId
+   * @param receiverId
+   * @return Invitation
+   * @throws SQLException
    */
   public Invitation getInvitation(Connection connection, int senderId, int receiverId) throws
       SQLException {
@@ -114,7 +119,6 @@ public class InvitationDao {
         invitation.setReceiverId(rs.getInt(3));
         invitation.setMessage(rs.getString(4));
         invitation.setInvitationDate(new Date(rs.getTimestamp(5).getTime()));
-
       }
 
     } finally {
@@ -122,11 +126,13 @@ public class InvitationDao {
     }
     return invitation;
   }
-  /*
+  /**
+   *
    * rturn invitation
-   *
-   * @param:Connection connection, int id
-   *
+   * @param connection
+   * @param id
+   * @return Invitation
+   * @throws SQLException
    */
 
   public Invitation getInvitation(Connection connection, int id) throws SQLException {
@@ -152,21 +158,25 @@ public class InvitationDao {
     }
     return invitation;
   }
-  /*
-   * rturn boolean
-   *
-   * @param:Connection connection, int  senderId, int receiverId
-   *
+
+  /**
+   * return true if this invitation exist between 2 users
+   * @param connection
+   * @param senderId
+   * @param receiverId
+   * @return boolean
+   * @throws SQLException
    */
 
   public boolean isExists(Connection connection, int senderId, int receiverId) throws SQLException {
     return (getInvitation(connection, senderId, receiverId) != null);
   }
-  /*
-   * return All invitations sented
-   *
-   * @param:Connection connection, int myId ,
-   *
+  /**
+   * return All  my invitations sented
+   * @param connection
+   * @param myId
+   * @return List<Invitation>
+   * @throws SQLException
    */
 
   public List<Invitation> getAllMyInvitationsSent(Connection connection, int myId) throws
@@ -195,11 +205,12 @@ public class InvitationDao {
     return invitation_list;
   }
 
-  /*
-   * return All invitations received
-   *
-   * @param:Connection connection, int myId ,
-   *
+  /**
+   *  return All my invitations received
+   * @param connection
+   * @param myId
+   * @return List<Invitation>
+   * @throws SQLException
    */
   public List<Invitation> getAllMyInvitationsReceive(Connection connection, int myId) throws
       SQLException {

@@ -952,8 +952,16 @@ public class PublicationDAOTest extends AbstractTestDao {
     list200DOA=PublicationDAO.getAllPublicationsIDbyUserid(con, user200,
         0, 1);
      assertEquals("Must be equal", list200.get(0),list200DOA.get(0));
-   
-
-  }
+   List<String> options=new ArrayList<String>();
+   options.add("kmelia200");
+   List<String> myContactsIds=new ArrayList<String>();
+   myContactsIds.add(user100);
+   myContactsIds.add(user200);
+   list200DOA=PublicationDAO.getSocialInformationsListOfMyContacts(con, myContactsIds,
+       options, 4, 0);
+   assertNotNull("SocialInformationPublication of my contact must be not null", list200DOA);
+   assertTrue(
+       "SocialInformationPublication of my contact must be not empty", list200DOA.size()>0);
+     }
 }
 

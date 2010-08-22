@@ -33,7 +33,7 @@
 
 
 <fmt:message key="newsFeed.newsFeed" var="newsFeed" />
-<fmt:message key="newsFeed.contacts" var="contacts" />
+<fmt:message key="newsFeed.relations" var="relations" />
 <fmt:message key="profil.events" var="events" />
 <fmt:message key="profil.publications" var="publications" />
 <fmt:message key="profil.photos"  var="photos"/>
@@ -41,14 +41,19 @@
 <fmt:message key="profil.relationShip.suffix"  var="relationShipSuffix"/>
 <fmt:message key="profil.relationShip.prefix"  var="relationShipPrefix"/>
 <fmt:message key="profil.status.suffix"  var="statusSuffix"/>
-<fmt:message key="newsFeed.pub.suffix"  var="statusSuffix"/>
-
-
+<fmt:message key="newsFeed.publication.apdated.true"  var="newsFeed.publication.true"/>
+<fmt:message key="newsFeed.publication.apdated.false"  var="newsFeed.publication.false"/>
+<fmt:message key="newsFeed.photo.apdated.true"  var="newsFeed.photo.true"/>
+<fmt:message key="newsFeed.photo.apdated.false"  var="newsFeed.photo.false"/>
+<fmt:message key="event.event.apdated.false"  var="newsFeed.event.false"/>
 
 <c:set var="id" value="${user.userId}"></c:set>
 <c:url var="urlServlet" value="/RnewsFeedJSONServlet?userId=${id}" />
 <c:url var="urlDirectory" value="/RdirectoryServlet/jsp?Action=" />
-<c:url var="urlProfil" value="/Rprofil/jsp?Action=Main" />
+<c:url var="urlContactsDirectory" value="/RdirectoryServlet/jsp?ContactId=${id}&Action=" />
+<c:url var="urlProfil" value="/Rprofil/jsp/Main?userId="/>
+<c:url var="urlInvitationSent" value="/Rinvitation/jsp/InvitationsSent" />
+<c:url var="urlInvitationReceived" value="/Rinvitation/jsp/Main" />
 
 
 

@@ -1,36 +1,26 @@
- <div id="profil80">
-            <div id="bloc">
-                    <div id="profilHead">
-<!--                <view:board></view:board>-->
-                   </div>
+<div class="box">
+  <div class="boxTitle">
+    <span>${keyContacts}</span>
+  </div>
+  <div class="boxAction">
+    <div class="boxActionLeft">
+      <a href="javascript:getAllContactsDirectory('${urlContactsDirectory}')"><span>${contactsNumber} ${keyContacts}</span></a>
+    </div>
+    <div class="boxActionRight">
+      <a href="javascript:getAllContactsDirectory('${urlContactsDirectory}')"><span>${showAll}</span></a>
+    </div>
 
-                    <div id="profilCore">
-<!--    <view:board></view:board>-->
-        </div>
+  </div>
 
+  <div class="boxContent">
+    <c:forEach items="${contacts}" var="contact">
+      <div class="boxContact">
+        <a href="${urlProfil}${contact.userId}">
+          <img src="<c:url value="${contact.profilPhoto}" />" >
+               <br><span>${contact.lastName}</span><br>
+          <span>${contact.firstName}</span>
+        </a>
+      </div>
+    </c:forEach>
+  </div>
 </div>
-</div>
-
-
-
-<!--<table width="100%"  border="0" >
-    <tr>
-        <td id="profil80" height="600px" style="vertical-align: top">
-            <table width="100%"  border="0" >
-                <tr>
-                    <td id="profilHead" height="20%" style="vertical-align: top">
-                <view:board></view:board>
-
-        </td>
-    </tr>
-    <tr>
-        <td id="profilCore" height="80%" style="vertical-align: top">
-    <view:board></view:board>
-
-</td>
-</tr>
-</table>
-</td>
-</tr>
-
-</table>-->

@@ -32,8 +32,10 @@ public class RelationShip {
   private int user2Id;
   private int typeRelationShipId;
   private Date acceptanceDate;
+  private int inviterId;
 
-  public RelationShip(int user1Id, int user2Id, int typeRelationShipId, Date acceptanceDate) {
+  public RelationShip(int user1Id, int user2Id, int typeRelationShipId, Date acceptanceDate,
+      int inviterId) {
     this.user1Id = user1Id;
     this.user2Id = user2Id;
     this.typeRelationShipId = typeRelationShipId;
@@ -44,46 +46,108 @@ public class RelationShip {
     // TODO Auto-generated constructor stub
   }
 
+  /**
+   * get id of relationShip
+   * @return int
+   */
   public int getId() {
     return idRelationShip;
   }
 
+  /**
+   * get date of relationShip
+   * @return date
+   */
   public Date getAcceptanceDate() {
     return acceptanceDate;
   }
 
+  /**
+   * get the id of this ralationShip type
+   * @return int
+   */
   public int getTypeRelationShipId() {
     return typeRelationShipId;
   }
 
+  /**
+   * get the first user of this Invitation (the inviter)
+   * @return int
+   */
   public int getUser1Id() {
     return user1Id;
   }
 
+  /**
+   * get the second user of this Invitation
+   * @return int
+   */
   public int getUser2Id() {
     return user2Id;
   }
 
+  /**
+   * set the id of relationShip
+   * @param int id
+   */
   public void setId(int id) {
     this.idRelationShip = id;
   }
 
+  /**
+   * set the date of relationShip
+   * @param Date acceptanceDate
+   */
   public void setAcceptanceDate(Date acceptanceDate) {
     this.acceptanceDate = acceptanceDate;
   }
 
+  /**
+   * set the date of relationShip
+   * @param int typeRelationShipId
+   */
   public void setTypeRelationShipId(int typeRelationShipId) {
     this.typeRelationShipId = typeRelationShipId;
   }
 
+  /**
+   * set the first user of relationShip
+   * @param int user1Id
+   */
   public void setUser1Id(int user1Id) {
     this.user1Id = user1Id;
   }
 
+  /**
+   * set the second user of relationShip
+   * @param int user2Id
+   */
   public void setUser2Id(int user2Id) {
     this.user2Id = user2Id;
   }
 
+  /**
+   * set the inviter user
+   * @param int inviterId
+   */
+  public void setInviterId(int inviterId) {
+    this.inviterId = inviterId;
+  }
+
+  /**
+   * get the inviter
+   * @return int
+   */
+  public int getInviterId() {
+    return inviterId;
+  }
+
+  /**
+   * Indicates whether some other object is "equal to" this one.
+   *@param   obj   the reference object with which to compare.
+   *@return  <code>true</code> if this object is the same as the obj
+   *          argument; <code>false</code> otherwise.
+   */
   @Override
   public boolean equals(Object obj) {
     if (obj == null) {

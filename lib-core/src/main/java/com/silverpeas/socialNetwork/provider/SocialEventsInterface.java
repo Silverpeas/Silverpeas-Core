@@ -23,16 +23,59 @@
  */
 package com.silverpeas.socialNetwork.provider;
 
+import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.util.List;
 
 public interface SocialEventsInterface {
 
-  /*
-   * get list of socialInformation according to the type of information and number of Item and the first Index
+  /**
+   * get list of socialInformation according to  number of Item and the first Index
    * @return List <SocialInformation>
-   * @para String type, int limit  ,int offset
+   * @param userId
+   * @param classification (private or public)
+   * @param limit
+   * @param offset
+   * @throws SilverpeasException
    */
   public List getSocialInformationsList(String userId, String classification, int limit, int offset)
       throws SilverpeasException;
+
+  /**
+   * get the next Events of my contacts according to  number of Item and the first Index
+   * @return: List <SocialInformation>
+   * @param myId
+   * @param myContactsIds
+   * @param numberOfElement
+   * @param firstIndex
+   * @throws SilverpeasException
+   */
+  public List getSocialInformationsListOfMyContacts(String myId, List<String> myContactsIds,
+      int numberOfElement, int firstIndex) throws
+      SilverpeasException;
+
+  /**
+   * get the Last Events of my contacts  according to number of Item and the first Index
+   * @return: List <SocialInformation>
+   * @param myId
+   * @param myContactsIds
+   * @param numberOfElement
+   * @param firstIndex
+   * @throws SilverpeasException
+   */
+  public List getLastSocialInformationsListOfMyContacts(String myId, List<String> myContactsIds,
+      int numberOfElement, int firstIndex) throws
+      SilverpeasException;
+
+  /**
+   * get the my last Events  according to  number of Item and the first Index
+   * @return: List <SocialInformation>
+   * @param myId
+   * @param numberOfElement
+   * @param firstIndex
+   * @throws SilverpeasException
+   */
+  public List getMyLastSocialInformationsList(String myId, int numberOfElement, int firstIndex)
+      throws
+      SilverpeasException;
 }

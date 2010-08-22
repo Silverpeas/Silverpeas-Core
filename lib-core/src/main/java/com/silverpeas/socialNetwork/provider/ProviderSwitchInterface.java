@@ -24,6 +24,8 @@
 package com.silverpeas.socialNetwork.provider;
 
 import com.silverpeas.socialNetwork.model.SocialInformationType;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.lang.reflect.Array;
 import java.util.List;
 
 /**
@@ -32,28 +34,94 @@ import java.util.List;
  */
 public interface ProviderSwitchInterface {
 
-  /*
-   * get the List of social Information according the type of social information
+  /**
+   * get my social Informations list  according to the social information type
    * and the UserId
-   *
-   * @param:SocialInformationType socialInformationType, String userId,String classification, int limit  ,int offset
+   * @param socialInformationType
+   * @param userId
+   * @param String classification
+   * @param limit nb of element
+   * @param offset firstIndex
+   * @return List<SocialInformation>
+   * @exception SilverpeasException
    */
   public List getSocialInformationsList(SocialInformationType socialInformationType, String userId,
-      String classification, int limit, int offset);
+      String classification, int limit, int offset)throws SilverpeasException;
 
+  /**
+   * get the List of social Informations of my contatcs according to the social information type
+   * and  the ids of my contacts
+   * @param socialInformationType
+   * @param myId
+   * @param myContactsIds the ids of my contacts
+   * @param limit nb of element
+   * @param offset firstIndex
+   * @return List<SocialInformation>
+   * @exception SilverpeasException
+   */
+  public List getSocialInformationsListOfMyContacts(SocialInformationType socialInformationType,
+      String myId,List<String>myContactsIds,
+       int limit, int offset) throws SilverpeasException;
+
+  
+  /**
+   * return the SocialEvent providor  (by using Inversion of Control Containers )
+   * @return SocialEventsInterface
+   */
   public SocialEventsInterface getSocialEventsInterface();
+
+  /**
+   *  set SocialEvent providor  (by using Inversion of Control Containers )
+   * @param socialGalleryInterface
+   */
 
   public void setSocialEventsInterface(SocialEventsInterface socialEventsInterface);
 
+  /**
+   * return the SocialGallery providor  (by using Inversion of Control Containers )
+   * @return SocialEventsInterface
+   */
   public SocialGalleryInterface getSocialGalleryInterface();
 
+  /**
+   *  set SocialGallery providor  (by using Inversion of Control Containers )
+   * @param socialGalleryInterface
+   */
   public void setSocialGalleryInterface(SocialGalleryInterface socialGalleryInterface);
 
+ /**
+   * return the SocialPublications providor  (by using Inversion of Control Containers )
+   * @return SocialEventsInterface
+   */
   public SocialPublicationsInterface getSocialPublicationsInterface();
 
+  /**
+   * set SocialPublications providor  (by using Inversion of Control Containers )
+   * @param socialPublicationsInterface
+   */
   public void setSocialPublicationsInterface(SocialPublicationsInterface socialPublicationsInterface);
 
-   public SocialStatusInterface getSocialStatusInterface();
+ /**
+   * return  SocialStatus providor  (by using Inversion of Control Containers )
+   * @return SocialEventsInterface
+   */
+  public SocialStatusInterface getSocialStatusInterface();
 
+ /**
+   * set SocialStatus providor  (by using Inversion of Control Containers )
+   * @param socialPublicationsInterface
+   */
   public void setSocialStatusInterface(SocialStatusInterface socialStatusInterface);
+
+ /**
+   * return the SocialRelationShips providor  (by using Inversion of Control Containers )
+   * @return SocialEventsInterface
+   */
+  public SocialRelationShipsInterface getSocialRelationShipsInterface();
+
+  /**
+   * set SocialRelationShips providor  (by using Inversion of Control Containers )
+   * @param socialPublicationsInterface
+   */
+  public void setSocialRelationShipsInterface(SocialRelationShipsInterface socialRelationShipsInterface);
 }

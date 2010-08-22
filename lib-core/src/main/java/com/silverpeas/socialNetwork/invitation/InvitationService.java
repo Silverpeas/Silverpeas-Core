@@ -129,11 +129,13 @@ public class InvitationService {
         ship1.setUser1Id(invitation.getSenderId());
         ship1.setUser2Id(invitation.getReceiverId());
         ship1.setAcceptanceDate(new java.sql.Timestamp(new Date().getTime()));
+        ship1.setInviterId(invitation.getSenderId());
 
         RelationShip ship2 = new RelationShip();
         ship2.setUser1Id(invitation.getReceiverId());
         ship2.setUser2Id(invitation.getSenderId());
         ship2.setAcceptanceDate(new java.sql.Timestamp(new Date().getTime()));
+        ship2.setInviterId(invitation.getSenderId());
 
         invitationDao.deleteInvitation(connection, idInvitation);
         resultAccepteInvitation = relationShipDao.createRelationShip(connection, ship1);
@@ -152,11 +154,10 @@ public class InvitationService {
     return resultAccepteInvitation;
   }
 
-  /*
-   * return All invitations sented
-   *
-   * @param: int myId
-   *
+  /**
+   * return All my invitations sented
+   * @param myId
+   * @return List<Invitation>
    */
   public List<Invitation> getAllMyInvitationsSent(int myId) {
     Connection connection = null;
@@ -176,13 +177,12 @@ public class InvitationService {
     }
     return invitations;
   }
-  /*
-   * return All invitations received
-   *
-   * @param: int myId ,
-   *
-   */
 
+  /**
+   * return All my invitations received
+   * @param myId
+   * @return
+   */
   public List<Invitation> getAllMyInvitationsReceive(int myId) {
     Connection connection = null;
     List<Invitation> invitations = new ArrayList<Invitation>();
@@ -202,11 +202,11 @@ public class InvitationService {
     return invitations;
   }
 
-  /*
-   * rturn invitation
-   *
-   * @param: int invitationId
-   *
+  /**
+   * rturn invitation by her id
+   * @param senderId
+   * @param receiverId
+   * @return Invitation
    */
   public Invitation getInvitation(int id) {
     Connection connection = null;
@@ -227,11 +227,11 @@ public class InvitationService {
     return invitation;
   }
 
-  /*
-   * rturn invitation
-   *
-   * @param: int senderId, int receiverId
-   *
+  /**
+   * rturn invitation between 2 users
+   * @param senderId
+   * @param receiverId
+   * @return Invitation
    */
   public Invitation getInvitation(int senderId, int receiverId) {
     Connection connection = null;
@@ -252,11 +252,13 @@ public class InvitationService {
     return invitation;
   }
 
-  /*
-   * get Connection
-   * rturn Connection
-   *
+  /**
+   * initialize the Connection to database 
+   * @return Connection
+   * @throws UtilException
+   * @throws SQLException
    */
+
   private Connection getConnection() throws UtilException, SQLException {
     Connection connection = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
     connection.setAutoCommit(false);

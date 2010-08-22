@@ -116,57 +116,7 @@ public class TestSatusDao extends AbstractTestDao {
 
   }
   
- /* @Test
-  public void testGetAllStatus_PostgreSQL() throws Exception{
-    IDatabaseConnection connexion = null;
-    Status status1 = new Status(1, toDate(2010, Calendar.FEBRUARY, 01, 10, 34, 15), "je suis là");
-    Status status2 = new Status(1, toDate(2010, Calendar.MARCH, 02, 10, 33, 10), "travaille tout simplement");
-    Status status3 = new Status(1, toDate(2010, Calendar.JULY, 02, 10, 33, 10), "travaille sur readmine");
-    status1.setId(1);
-    status2.setId(2);
-    status3.setId(4);
-   
-    int iduser = 1;
-    try {
-      connexion = getConnection();
-    List<Status> status_list = dao.getAllStatus_PostgreSQL(connexion.getConnection(), iduser, 0, 2);
-    assertNotNull("Status should exist", status_list);
-    assertEquals("Should have 2 invitations in db", 2, status_list.size());
-    assertEquals(status3, status_list.get(0));
-    assertEquals(status2, status_list.get(1));
-    
-    } finally {
-      closeConnection(connexion);
-    }
-
-    
-  }*/
-  
-//  public void testGetAllStatus() throws Exception{
-//    IDatabaseConnection connexion = null;
-//    Status status1 = new Status(1, toDate(2010, Calendar.FEBRUARY, 01, 10, 34, 15), "je suis là");
-//    Status status2 = new Status(1, toDate(2010, Calendar.MARCH, 02, 10, 33, 10), "travaille tout simplement");
-//    Status status3 = new Status(1, toDate(2010, Calendar.JULY, 02, 10, 33, 10), "travaille sur readmine");
-//    status1.setId(1);
-//    status2.setId(2);
-//    status3.setId(4);
-//
-//    int iduser = 1;
-//    try {
-//      connexion = getConnection();
-//    List<Status> status_list = dao.getAllStatus(connexion.getConnection(), iduser, 0, 2);
-//    assertNotNull("Status should exist", status_list);
-//    assertEquals("Should have 2 invitations in db", 2, status_list.size());
-//    assertEquals(status3, status_list.get(0));
-//    assertEquals(status2, status_list.get(1));
-//
-//    } finally {
-//      closeConnection(connexion);
-//    }
-//
-//  }
-
-  @Override
+   @Override
   protected String getDatasetFileName() {
     // TODO Auto-generated method stub
     return "socialNetwork_Status-dataset.xml";

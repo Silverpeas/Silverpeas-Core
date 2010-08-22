@@ -48,7 +48,13 @@ public class InvitationRequestRouter extends ComponentRequestRouter {
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new InvitationSessionController(mainSessionCtrl, componentContext);
   }
-
+/**
+ * 
+ * @param function
+ * @param componentSC
+ * @param request
+ * @return
+ */
   @Override
   public String getDestination(String function, ComponentSessionController componentSC,
       HttpServletRequest request) {
@@ -59,7 +65,6 @@ public class InvitationRequestRouter extends ComponentRequestRouter {
     if (function.equalsIgnoreCase("Main")) {
       //Invitations reçues
       invitationSC.lastMainAction = function;
-      request.setAttribute("statu", invitationSC.getStat());
       int myId = Integer.parseInt(invitationSC.getUserId());
       request.setAttribute("InvitationUsers", invitationSC.getAllMyInvitationsReceive(myId));
       request.setAttribute("user",new SNContactUser(myId+""));
@@ -69,7 +74,6 @@ public class InvitationRequestRouter extends ComponentRequestRouter {
     if (function.equalsIgnoreCase("InvitationsSent")) {
       //Invitations envoyés
       invitationSC.lastMainAction = function;
-      request.setAttribute("statu", invitationSC.getStat());
       int myId = Integer.parseInt(invitationSC.getUserId());
       request.setAttribute("InvitationUsers", invitationSC.getAllMyInvitationsSent(myId));
       request.setAttribute("user",new SNContactUser(invitationSC.getUserId()));
@@ -88,7 +92,6 @@ public class InvitationRequestRouter extends ComponentRequestRouter {
       }
       destination = "/directory/jsp/invitationUser.jsp?popupMode=Yes&Action=SendInvitation";
 
-
     } else if (function.equalsIgnoreCase("CancelSendInvitation")) {
       destination = "/directory/jsp/invitationUser.jsp?popupMode=Yes&Action=CancelSendInvitation";
 
@@ -99,7 +102,6 @@ public class InvitationRequestRouter extends ComponentRequestRouter {
         int myId = Integer.parseInt(request.getParameter("UserId"));
         invitationSC.ignoreInvitation(myId);
       }
-
       return getDestination("Main", componentSC, request);
 
     } else if (function.equalsIgnoreCase("AcceptInvitation")) {
@@ -108,12 +110,8 @@ public class InvitationRequestRouter extends ComponentRequestRouter {
         int myId = Integer.parseInt(request.getParameter("UserId"));
         invitationSC.acceptInvitation(myId);
       }
-
       return getDestination("Main", componentSC, request);
-
     } 
-
-
     return destination;
 
   }

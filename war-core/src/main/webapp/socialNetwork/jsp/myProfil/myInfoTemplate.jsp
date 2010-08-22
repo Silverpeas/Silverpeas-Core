@@ -28,10 +28,11 @@
   <head>
     <view:looknfeel />
     <link rel="stylesheet" type="text/css" href="<c:url value="/socialNetwork/jsp/myProfil/myProfil.css"/>"/>
+    <link rel="stylesheet" type="text/css" href="<c:url value="/directory/jsp/directoryPopup.css"/>"/>
     <title><fmt:message key="invitation.action.title" /> </title>
-    <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-1.3.2.min.js" />" ></script>
     <script type="text/javascript"
     src="<c:url value="/util/javaScript/animation.js"/>"></script>
+     <script type="text/javascript" src="<c:url value="/directory/jsp/directory.js" />" ></script>
     <script language="JavaScript">
       var properties =new Array();
       <c:forEach items="${properties}" var="property" varStatus="status">
@@ -175,9 +176,7 @@
     <view:window>
 <!--      <div id="myInfotemplate">-->
         <div id ="navigation">
-          <view:board>
             <%@include file="myProfilNavigation.jsp" %>
-          </view:board>
         </div>
         <div id="headAndCore">
             <div id="profilHead" >
@@ -189,8 +188,28 @@
                 <%@include file="myInfosBody.jsp" %>
              </div>
         </div>
-<!--      </div>-->
     </view:window>
+<div id="boxes">
+        <div class="window" id="directory" >
+          <div id="directoryHeader">
+            <a href="#"class="close">Fermer</a>
+          </div>
+          <div id="indexAndSearch"><div id="search">
+              <form name="search" action="javascript:directory('searchByKey')" method="post">
+                <input type="text" name="key" value="" id="key" size="40" maxlength="60"
+                       style="height: 20px"  />
+                <img
+                  src="<c:url value="/directory/jsp/icons/advsearch.jpg"/>"
+                  width="10" height="10" alt="advsearch" />
+              </form>
+            </div>
+          </div>
+          <div id="users">
 
+          </div>
+        </div>
+                  <!-- Mask to cover the whole screen -->
+        <div id="mask"></div>
+      </div>
   </body>
 </html>

@@ -64,7 +64,7 @@ public abstract class AbstractSocialInformation implements SocialInformation {
   }
 
   @Override
-  public boolean getSocialInformationWasUpdeted() {
+  public boolean isUpdeted() {
     return socialInformationWasupdated;
   }
 

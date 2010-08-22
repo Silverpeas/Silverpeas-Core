@@ -23,12 +23,10 @@
  */
 package com.silverpeas.socialNetwork.myContactProfil.servlets;
 
-
-
 import com.silverpeas.socialNetwork.model.SocialInformationType;
 import com.silverpeas.socialNetwork.myContactProfil.control.MyContactProfilSessionController;
 import com.silverpeas.socialNetwork.user.model.SNFullUser;
-
+import com.silverpeas.socialNetwork.user.model.SNContactUser;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -41,6 +39,7 @@ import java.util.ArrayList;
 
 
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
@@ -50,6 +49,9 @@ import javax.servlet.http.HttpServletRequest;
  * @author azzedine
  */
 public class MyContactProfilRequestRouter extends ComponentRequestRouter {
+
+  private MyContactProfilSessionController myContactProfillSC;
+  private final int NUMBER_CONTACTS_TO_DISPLAY = 3;
 
   @Override
   public String getSessionControlBeanName() {
@@ -62,12 +64,18 @@ public class MyContactProfilRequestRouter extends ComponentRequestRouter {
     return new MyContactProfilSessionController(mainSessionCtrl, componentContext);
   }
 
+  /**
+   *
+   * @param function
+   * @param componentSC
+   * @param request
+   * @return
+   */
   @Override
   public String getDestination(String function, ComponentSessionController componentSC,
       HttpServletRequest request) {
     String destination = "#";
-
-    MyContactProfilSessionController MyContactProfillSC = (MyContactProfilSessionController) componentSC;
+    myContactProfillSC = (MyContactProfilSessionController) componentSC;
     String userId = request.getParameter("userId");
     SNFullUser snUserFull = new SNFullUser(userId);
     if (function.equalsIgnoreCase("MyEvents")) {
@@ -79,7 +87,7 @@ public class MyContactProfilRequestRouter extends ComponentRequestRouter {
       destination = "/socialNetwork/jsp/myContactProfil/profilTemplate.jsp";
     } else if (function.equalsIgnoreCase("ALL")) {
       request.setAttribute("type", SocialInformationType.ALL);
-     destination = "/socialNetwork/jsp/myContactProfil/profilTemplate.jsp";
+      destination = "/socialNetwork/jsp/myContactProfil/profilTemplate.jsp";
     } else if (function.equalsIgnoreCase("MyPhotos")) {
       request.setAttribute("type", SocialInformationType.PHOTO);
       destination = "/socialNetwork/jsp/myContactProfil/profilTemplate.jsp";
@@ -89,7 +97,7 @@ public class MyContactProfilRequestRouter extends ComponentRequestRouter {
     } else if (function.equalsIgnoreCase("MyInfos") || function.equalsIgnoreCase("Main")) {
 
       UserFull uf = snUserFull.getUserFull();
-      
+
       request.setAttribute("specificLabels", uf.getSpecificLabels(componentSC.getLanguage()));
       String[] array = uf.getPropertiesNames();
       List<String> propertiesKey = new ArrayList<String>();
@@ -98,7 +106,7 @@ public class MyContactProfilRequestRouter extends ComponentRequestRouter {
       for (int i = 0; i < array.length; i++) {
         if (!array[i].startsWith("password")) {
           properties.add(array[i]);
-          propertiesKey.add(uf.getSpecificLabel(MyContactProfillSC.getLanguage(), array[i]));
+          propertiesKey.add(uf.getSpecificLabel(myContactProfillSC.getLanguage(), array[i]));
           propertiesValue.add(uf.getValue(array[i]));
         }
       }
@@ -107,7 +115,46 @@ public class MyContactProfilRequestRouter extends ComponentRequestRouter {
       request.setAttribute("propertiesValue", propertiesValue);
       destination = "/socialNetwork/jsp/myContactProfil/infosTemplate.jsp";
     }
+
     request.setAttribute("snUserFull", snUserFull);
+    List<String> contactIds = myContactProfillSC.getContactsIdsForUser(userId);
+    request.setAttribute("contacts", chooseContactsToDisplay(contactIds));
+    request.setAttribute("contactsNumber", contactIds.size());
+    contactIds = myContactProfillSC.getCommonContactsIdsForUser(userId);
+    request.setAttribute("commonContacts", chooseContactsToDisplay(contactIds));
+    request.setAttribute("commonContactsNumber", contactIds.size());
     return destination;
+  }
+
+  /**
+   * methode to choose (x) contacts for display it in the page profil
+   * x is the number of contacts
+   * the methode use Random rule
+   * @param contactIds
+   * @return List<SNContactUser>
+   */
+  private List<SNContactUser> chooseContactsToDisplay(List<String> contactIds) {
+    int numberOfContactsTodisplay;
+    List<SNContactUser> contacts = new ArrayList<SNContactUser>();
+    try {
+      numberOfContactsTodisplay = Integer.parseInt(myContactProfillSC.getSettings().getString(
+          "numberOfContactsTodisplay"));
+    } catch (NumberFormatException ex) {
+      numberOfContactsTodisplay = NUMBER_CONTACTS_TO_DISPLAY;
+    }
+    if (contactIds.size() <= numberOfContactsTodisplay) {
+      for (int i = 0; i < contactIds.size(); i++) {
+        contacts.add(new SNContactUser(contactIds.get(i)));
+      }
+    } else {
+      Random random = new Random();
+      int indexContactsChoosed = (random.nextInt(contactIds.size()));
+      for (int i = 0; i < numberOfContactsTodisplay; i++) {
+        contacts.add(new SNContactUser(contactIds.get(
+            (indexContactsChoosed + i) % numberOfContactsTodisplay)));
+      }
+    }
+
+    return contacts;
   }
 }

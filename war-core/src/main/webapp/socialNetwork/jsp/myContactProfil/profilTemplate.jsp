@@ -38,12 +38,13 @@
       <%--*****************   profil Body *******************************************--%>
         var offset=0;
         var hscroll ;var vscroll
-
+        var inprogress = '<img id="inprogress" src="/silverpeas/util/icons/inProgress.gif" alt=""/>';
         function getNext(url)
         {
 
           hscroll = (document.all ? document.scrollLeft : window.pageXOffset);
           vscroll = (document.all ? document.scrollTop : window.pageYOffset);
+          $('.SocialInformations').append(inprogress);
           $.getJSON(url+offset,
           function(data){
             var listEmpty=true;
@@ -90,7 +91,6 @@
                       html+='<td colspan="3">'+socialInfo.description;
                       html+='</td> </tr> </table>'
                     }
-                    html+=' <br>';
 
                   });
                 }
@@ -100,6 +100,7 @@
             });
             html+='</ol>';
 
+            $("#inprogress").remove();
             $('#SocialInformations').append(html);
 
             window.scrollTo(hscroll, vscroll);
@@ -184,7 +185,7 @@
     </script>
   </head>
   <body>
-   <view:window>
+    <view:window>
       <div id="navigation">
 
         <%@include file="profilNavigation.jsp" %>
@@ -221,7 +222,7 @@
 
           </div>
         </div>
-                  <!-- Mask to cover the whole screen -->
+        <!-- Mask to cover the whole screen -->
         <div id="mask"></div>
       </div>
     </view:window>

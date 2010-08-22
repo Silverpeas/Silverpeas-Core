@@ -25,58 +25,62 @@ package com.stratelia.webactiv.publication.socialNetwork;
 
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.List;
 
-import com.silverpeas.socialNetwork.model.SocialInformation;
+
 import com.silverpeas.socialNetwork.provider.SocialPublicationsInterface;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmEJB;
+
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
-import com.stratelia.webactiv.util.publication.model.PublicationWithStatus;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-public class SocialPublications implements SocialPublicationsInterface  {
-  private static int firstIndex = 0;
-  
+
+public class SocialPublications implements SocialPublicationsInterface {
+
+
   /**
-   * @param user
-   * @return the list of publications that the user has been created or updated
-   * @see UserDetail
-   * @see SocialInformation
-   * @see SocialInformationPublication
-   **/
-
-
-
+   * get the my  SocialInformationPublication  according
+   * to number of Item and the first Index
+   * @param userId
+   * @param limit
+   * @param offset
+   * @return List
+   * @throws SilverpeasException
+   */
   @Override
-  public List getSocialInformationsList(String userId , int limit ,int offset) throws SilverpeasException {
-   
-     List<SocialInformationPublication> publications = null ;
-     //limit==nbElements
-     //offset=firstIndex
+  public List getSocialInformationsList(String userId, int limit, int offset) throws
+      SilverpeasException {
+
+    List<SocialInformationPublication> publications = null;
+    //limit==nbElements
+    //offset=firstIndex
     try {
       publications = getEJB().
           getAllPublicationsWithStatusbyUserid(userId, offset, limit);
-    
+
 
     } catch (RemoteException ex) {
-      Logger.getLogger(SocialPublications.class.getName()).log(Level.SEVERE, null, ex);
+      throw new PublicationRuntimeException(
+          "PublicationBmEJB.getSocialInformationsList()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
+          ex);
     }
     return publications;
   }
 
- private PublicationBm getEJB() {
+  /**
+   * getEJB
+   * @return instance of CalendarBmHome
+   */
+  private PublicationBm getEJB() {
     PublicationBm currentPublicationBm = null;
     try {
-      PublicationBmHome publicationBmHome = (PublicationBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+      PublicationBmHome publicationBmHome = (PublicationBmHome) EJBUtilitaire.getEJBObjectRef(
+          JNDINames.PUBLICATIONBM_EJBHOME,
           PublicationBmHome.class);
       currentPublicationBm = publicationBmHome.create();
     } catch (Exception e) {
@@ -86,5 +90,52 @@ public class SocialPublications implements SocialPublicationsInterface  {
           e);
     }
     return currentPublicationBm;
+  }
+/**
+ * get the   SocialInformationPublication of my contatcs according to number of Item and the first Index
+ * @param myId
+ * @param myContactsIds
+ * @param numberOfElement
+ * @param firstIndex
+ * @return List
+ * @throws SilverpeasException
+ */
+  @Override
+  public List getSocialInformationsListOfMyContacts(String myId, List<String> myContactsIds,
+      int numberOfElement,
+      int firstIndex) throws SilverpeasException {
+    List<String> options = getAvailableComponents(myId, myContactsIds, firstIndex);
+    List<SocialInformationPublication> publications = null;
+    //limit==nbElements
+    //offset=firstIndex
+    try {
+      publications = getEJB().
+          getSocialInformationsListOfMyContacts(myContactsIds, options, numberOfElement, firstIndex);
+    } catch (RemoteException ex) {
+      throw new PublicationRuntimeException(
+          "PublicationBmEJB.getSocialInformationsList()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
+          ex);
+    }
+    return publications;
+
+  }
+
+  /**
+   * gets the available component for a given users list
+   * @param myId
+   * @param myContactsIds
+   * @param firstIndex
+   * @return List<String>
+   */
+  public List<String> getAvailableComponents(String myId, List<String> myContactsIds, int firstIndex) {
+    try {
+      return getEJB().getAvailableComponents(myId, myContactsIds);
+    } catch (RemoteException ex) {
+      throw new PublicationRuntimeException(
+          "SocialPublications.getAvailableComponents",
+          SilverpeasRuntimeException.ERROR,
+          "publication.GETTING_PUBLICATION_HEADER_FAILED", "", ex);
+    }
   }
 }

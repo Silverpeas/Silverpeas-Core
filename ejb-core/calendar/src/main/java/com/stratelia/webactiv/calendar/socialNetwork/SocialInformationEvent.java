@@ -34,67 +34,112 @@ import java.util.Date;
 
 /**
  *
- * @author azzedine
+ * @author Bensalem Nabil
  */
 public class SocialInformationEvent implements SocialInformation {
 
   private String classification = "public";
-  private final SocialInformationType type = EVENT;
+  private  SocialInformationType type = EVENT;
   private Schedulable schedulable = null;
+  private boolean isMyEvent=true;
 
   public SocialInformationEvent(Schedulable schedulable) {
-
     this.schedulable = schedulable;
     this.classification = schedulable.getClassification().getString();
-  }
+    if(schedulable.getEndDate().after(new Date()))
+    type=EVENT;
+    else
+    type=LASTEVENT;
 
+  }
+  public SocialInformationEvent(Schedulable schedulable,boolean isMyEvent ) {
+    this.isMyEvent=isMyEvent;
+    this.schedulable = schedulable;
+    this.classification = schedulable.getClassification().getString();
+    if(schedulable.getEndDate().after(new Date()))
+    type=EVENT;
+    else
+    type=LASTEVENT;  
+  }
+/**
+   * return the type of this SocialInformation
+   * @return String
+   */
   @Override
   public String getType() {
     return type.toString();
   }
-
+/**
+   * return the icon of this SocialInformation
+   * @return String
+   */
   @Override
   public String getIcon() {
     if ("private".equals(classification)) {
-      return type + "_private.gif";
+      return SocialInformationType.EVENT + "_private.gif";
     }
-    return type + "_public.gif";
+    return SocialInformationType.EVENT + "_public.gif";
   }
-
+ /**
+   * return the Title of this SocialInformation
+   * @return String
+   */
   @Override
   public String getTitle() {
     return schedulable.getName();
   }
-
+/**
+   * return the Description of this SocialInformation
+   * @return String
+   */
   @Override
   public String getDescription() {
     return schedulable.getDescription();
   }
-
+/**
+   * return the Author of this SocialInfo
+   * @return String
+   */
   @Override
   public String getAuthor() {
     return schedulable.getDelegatorId();
   }
-
+ /**
+   * return the Url of this SocialInfo
+   * @return String
+   */
   @Override
   public String getUrl() {
-
+    if(isMyEvent)
     return URLManager.getURL(URLManager.CMP_AGENDA) + "SelectDay?Day=" + DateUtil.getInputDate(
         getDate(), "FR");
+    return URLManager.getURL(URLManager.CMP_AGENDA) +"ViewOtherAgenda?Id="+getAuthor();
   }
-
+/**
+   * return the Date of this SocialInfo
+   * @return
+   */
   @Override
   public Date getDate() {
     return schedulable.getStartDate();
   }
-
+/**
+   * return if this socialInfo was updtated or not
+   * @return boolean
+   */
   @Override
-  public boolean getSocialInformationWasUpdeted() {
+  public boolean isUpdeted() {
     return false;
   }
-
+/**
+   *Indicates whether some other SocialInformation date is befor or after the date of this one.
+   *@param   obj   the reference object with which to compare.
+   * @return int
+   */
   @Override
-  public int compareTo(SocialInformation o) {
-    return getDate().compareTo(o.getDate());
+  public int compareTo(SocialInformation si) {
+    if(SocialInformationType.LASTEVENT==type)//event in the passe
+       return getDate().compareTo(si.getDate())*-1;
+    return getDate().compareTo(si.getDate());//futer Event
   }
 }

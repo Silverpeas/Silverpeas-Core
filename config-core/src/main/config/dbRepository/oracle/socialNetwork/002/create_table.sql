@@ -11,7 +11,8 @@ create table sb_sn_relationship (
   user1id integer not null,
   user2id integer not null,
   typerelationshipid integer ,
-  acceptancedate timestamp not null
+  acceptancedate timestamp not null,
+  inviterid integer not null
 );
 
 create table sb_sn_typerelationship (

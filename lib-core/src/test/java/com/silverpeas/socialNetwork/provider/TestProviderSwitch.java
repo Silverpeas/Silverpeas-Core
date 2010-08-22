@@ -83,11 +83,13 @@ public class TestProviderSwitch {
     SocialGalleryInterface galleryInterface = mock(SocialGalleryInterface.class);
     SocialPublicationsInterface publicationsInterface = mock(SocialPublicationsInterface.class);
     SocialStatusInterface statusInterface = mock(SocialStatusInterface.class);
+    SocialRelationShipsInterface socialRelationShipsInterface = mock(SocialRelationShipsInterface.class);
     ProviderSwitch switch1 = new ProviderSwitch();
     switch1.setSocialEventsInterface(eventsInterface);
     switch1.setSocialGalleryInterface(galleryInterface);
     switch1.setSocialPublicationsInterface(publicationsInterface);
     switch1.setSocialStatusInterface(statusInterface);
+    switch1.setSocialRelationShipsInterface(socialRelationShipsInterface);
     when(switch1.getSocialEventsInterface().getSocialInformationsList(null, null, 0, 0)).thenReturn(
         listEvent);
     when(switch1.getSocialGalleryInterface().getSocialInformationsList(null, 0, 0)).thenReturn(
@@ -96,6 +98,9 @@ public class TestProviderSwitch {
         listPub);
      when(switch1.getSocialStatusInterface().getSocialInformationsList(null, 0, 0)).thenReturn(
         null);
+     when(switch1.getSocialRelationShipsInterface().getSocialInformationsList(null, 0, 0)).thenReturn(
+        null);
+     
     List list = (List) switch1.getSocialInformationsList(SocialInformationType.EVENT, null,
         null, 0, 0);
     assertEquals("must be equal 4", list.size(), 4);

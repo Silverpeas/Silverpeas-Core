@@ -26,18 +26,18 @@ package com.silverpeas.socialNetwork.myProfil.control;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.silverpeas.socialNetwork.model.SocialInformationType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.calendar.control.CalendarException;
-import com.stratelia.webactiv.util.exception.UtilException;
 import com.silverpeas.socialNetwork.SocialNetworkException;
+import com.silverpeas.socialNetwork.relationShip.RelationShipService;
 import java.util.List;
 
 
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
@@ -49,7 +49,7 @@ import java.util.Set;
 public class MyProfilSessionController extends AbstractComponentSessionController {
 
   private AdminController m_AdminCtrl = null;
-  private long domainActions = -1;
+  private RelationShipService relationShipService = new RelationShipService();
 
   public MyProfilSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
@@ -61,28 +61,34 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
     m_AdminCtrl = new AdminController(getUserId());
   }
 
-  public Hashtable getSocialInformation(SocialInformationType type, int limit, int offset) throws
-      CalendarException, UtilException {
-
-    List list = null;
-    switch (type) {
-      case EVENT:
-        // list = new SocialEvent().getSocialInformationsList(getUserId(), null, limit, offset);
-        break;
-      default:
-      //    list = new SocialEvent().getSocialInformationsList(getUserId(), null, limit, offset);
+  /**
+   * get all  RelationShips ids for this user
+   * @return:List<String>
+   * @param: int myId
+   *
+   */
+  public List<String> getContactsIdsForUser(String userId) {
+    try {
+      return relationShipService.getMyContactsIds(Integer.parseInt(userId));
+    } catch (SQLException ex) {
+      SilverTrace.error("MyContactProfilSessionController",
+          "MyContactProfilSessionController.getContactsForUser", "", ex);
     }
-    return null;
+    return new ArrayList<String>();
   }
-
+/**
+ * get this user with full information
+ * @param userId
+ * @return UserFull
+ */
   public UserFull getUserFul(String userId) {
-
     return this.getOrganizationController().getUserFull(userId);
   }
-  /*
-   * modify the properties of user
-   *
-   * @param: String idUser, Hashtable<String, String> properties
+  /**
+   * update the properties of user
+   * @param idUser
+   * @param properties
+   * @throws SocialNetworkException
    */
 
   public void modifyUser(String idUser, Hashtable<String, String> properties) throws
@@ -100,31 +106,25 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
           "MyProfilSessionController.modifyUser()",
           SilverpeasException.ERROR, "admin.EX_ERR_UNKNOWN_USER");
     }
+    // process extra properties
+    Set<String> keys = properties.keySet();
+    Iterator<String> iKeys = keys.iterator();
+    String key = null;
+    String value = null;
+    while (iKeys.hasNext()) {
+      key = iKeys.next();
+      value = properties.get(key);
 
-    
+      theModifiedUser.setValue(key, value);
+    }
 
+    idRet = m_AdminCtrl.updateUserFull(theModifiedUser);
+    if (idRet == null || idRet.length() <= 0) {
+      throw new SocialNetworkException(
+          "MyProfilSessionController.modifyUser()",
+          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "UserId="
+          + idUser);
+    }
 
-      // process extra properties
-      Set<String> keys = properties.keySet();
-      Iterator<String> iKeys = keys.iterator();
-      String key = null;
-      String value = null;
-      while (iKeys.hasNext()) {
-        key = iKeys.next();
-        value = properties.get(key);
-
-        theModifiedUser.setValue(key, value);
-      }
-
-      idRet = m_AdminCtrl.updateUserFull(theModifiedUser);
-      if (idRet == null || idRet.length() <= 0) {
-        throw new SocialNetworkException(
-            "MyProfilSessionController.modifyUser()",
-            SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "UserId="
-            + idUser);
-      }
-   
   }
-
-  
 }

@@ -40,26 +40,36 @@ public class SocialInformationStatus implements SocialInformation {
   private String icon;
 
   public SocialInformationStatus(Status status) {
-    this.title = "statusChanged";
+    
     this.description = status.getDescription();
     this.author = new Integer(status.getUserId()).toString();
+    this.title = author;
     this.date = new java.sql.Timestamp(status.getCreationDate().getTime());
     this.url = "#";
     this.icon = type.toString() + ".gif";
   }
 
+  /**
+   * return the Author of this SocialInfo
+   * @return String
+   */
   @Override
   public String getAuthor() {
-    // TODO Auto-generated method stub
     return author;
   }
-
+/**
+   * return the Date of this SocialInfo
+   * @return
+   */
   @Override
   public Date getDate() {
     // TODO Auto-generated method stub
     return date;
   }
-
+/**
+   * return the Description of this SocialInformation
+   * @return String
+   */
   @Override
   public String getDescription() {
     // TODO Auto-generated method stub
@@ -71,19 +81,28 @@ public class SocialInformationStatus implements SocialInformation {
     // TODO Auto-generated method stub
     return icon;
   }
-
+/**
+   * return if this socialInfo was updtated or not
+   * @return boolean
+   */
   @Override
-  public boolean getSocialInformationWasUpdeted() {
+  public boolean isUpdeted() {
     // TODO Auto-generated method stub
     return false;
   }
-
+/**
+   * return the Title of this SocialInformation
+   * @return String
+   */
   @Override
   public String getTitle() {
     // TODO Auto-generated method stub
     return title;
   }
-
+ /**
+   * return the Url of this SocialInfo
+   * @return String
+   */
   @Override
   public String getUrl() {
     // TODO Auto-generated method stub
@@ -180,7 +199,11 @@ public class SocialInformationStatus implements SocialInformation {
     }
     return true;
   }
-
+/**
+   *Indicates whether some other SocialInformation date is befor the date of this one.
+   *@param   obj   the reference object with which to compare.
+   * @return int
+   */
   @Override
   public int compareTo(SocialInformation o) {
     return getDate().compareTo(o.getDate()) * -1;

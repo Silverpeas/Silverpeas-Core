@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.util.publication.ejb;
 
+import java.lang.reflect.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -42,6 +43,7 @@ import java.util.Map;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.publication.socialNetwork.SocialInformationPublication;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
@@ -1906,29 +1908,39 @@ public class PublicationDAO {
   }
 
   /**
-   * Method
-   * @param
+   * get my SocialInformationPublication  accordint to
+   * the type of data base used(PostgreSQL,Oracle,MMS) .
+   * @param con
+   * @param userId
+   * @param firstIndex
+   * @param nbElement
+   * @return List<SocialInformationPublication>
    * @throws SQLException
-   * */
+   */
   public static List<SocialInformationPublication> getAllPublicationsIDbyUserid(Connection con,
       String userId, int firstIndex, int nbElement) throws SQLException {
     String DatabaseProductName = con.getMetaData().getDatabaseProductName().toUpperCase();
-    if (DatabaseProductName.contains("PostgreSQL".toUpperCase())) {
+    if (DatabaseProductName.contains("POSTGRESQL")) {
       return getAllPublicationsIDbyUserid_PostgreSQL(con, userId, firstIndex, nbElement);
 
-    } else if (DatabaseProductName.contains("oracle".toUpperCase())) {
+    } else if (DatabaseProductName.contains("ORACLE")) {
       return getAllPublicationsIDbyUserid_Oracle(con, userId, firstIndex, nbElement);
-    } else //MSSQL
-    {
-      return getAllPublicationsIDbyUserid_MMSQL(con, userId, firstIndex, nbElement);
     }
+    //MSSQL
+    return getAllPublicationsIDbyUserid_MMSQL(con, userId, firstIndex, nbElement);
+
   }
 
   /**
-   * Method  return SocialInformationPublication list whene the data base is PostgreSQL
-   * @param
+   * get my SocialInformationPublication  accordint to number of elements and the first index
+   * when data base is PostgreSQL
+   * @param con
+   * @param userId
+   * @param firstIndex
+   * @param nbElement
+   * @return List<SocialInformationPublication>
    * @throws SQLException
-   * */
+   */
   public static List<SocialInformationPublication> getAllPublicationsIDbyUserid_PostgreSQL(
       Connection con,
       String userId, int firstIndex, int nbElement) throws SQLException {
@@ -1961,10 +1973,15 @@ public class PublicationDAO {
   }
 
   /**
-   * Method  return SocialInformationPublication list whene the data base is Oracle
-   * @param
+   * get my SocialInformationPublication  accordint to number of elements and the first index
+   * when data base is Oracle
+   * @param con
+   * @param userId
+   * @param firstIndex
+   * @param nbElement
+   * @return List<SocialInformationPublication>
    * @throws SQLException
-   * */
+   */
   public static List<SocialInformationPublication> getAllPublicationsIDbyUserid_Oracle(
       Connection con,
       String userId, int firstIndex, int nbElement) throws SQLException {
@@ -1999,10 +2016,15 @@ public class PublicationDAO {
   }
 
   /**
-   * Method  return SocialInformationPublication list whene the data base is PostgreSQL
-   * @param
+   * get my SocialInformationPublication  accordint to number of elements and the first index
+   * when data base is MMS
+   * @param con
+   * @param userId
+   * @param firstIndex
+   * @param nbElement
+   * @return List<SocialInformationPublication>
    * @throws SQLException
-   * */
+   */
   public static List<SocialInformationPublication> getAllPublicationsIDbyUserid_MMSQL(Connection con,
       String userId, int firstIndex, int nbElement) throws SQLException {
     List<SocialInformationPublication> listPublications = new ArrayList<SocialInformationPublication>();
@@ -2036,9 +2058,12 @@ public class PublicationDAO {
   }
 
   /**
-   *
-   *@param
-   * */
+   *  get publication by her id
+   * @param con
+   * @param pubId
+   * @return
+   * @throws SQLException
+   */
   public static PublicationDetail getPublication(Connection con, int pubId) throws SQLException {
     PublicationDetail pub = new PublicationDetail();
     String query = "select * from sb_publication_publi where pubid = ? ";
@@ -2056,5 +2081,158 @@ public class PublicationDAO {
     }
     return pub;
 
+  }
+
+  /**
+   * gets the available component for a given users list
+   * @param:Connection con, String myId,List<String> myContactsId
+   * @return a list of ComponentName
+   *
+   */
+  public static List<String> getAvailableComponents(Connection con, String myId,
+      List<String> myContactsId) throws SQLException {
+    String query = "SELECT  distinct  instanceid"
+        + " FROM sb_publication_publi ";
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    List<String> listAvailableComponents = new ArrayList<String>();
+    OrganizationController oc = new OrganizationController();
+    try {
+      prepStmt = con.prepareStatement(query);
+      rs = prepStmt.executeQuery();
+      while (rs.next()) {
+        String componentId = rs.getString(1);
+        if (oc.isComponentAvailable(componentId, myId)) {
+          listAvailableComponents.add(componentId);
+        }
+
+      }
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+    return listAvailableComponents;
+  }
+
+  /**
+   * get list of socialInformation of my contacts according to
+   * the type of data base used(PostgreSQL,Oracle,MMS) .
+   * @return: List <SocialInformation>
+   * @param : String myId
+   * @param :List<String> myContactsIds
+   * @param :List<String> options list of Available Components name
+   * @param int numberOfElement, int firstIndex
+   */
+  public static List<SocialInformationPublication> getSocialInformationsListOfMyContacts(
+      Connection con,
+      List<String> myContactsIds,
+      List<String> options, int numberOfElement, int firstIndex) throws SQLException {
+    String DatabaseProductName = con.getMetaData().getDatabaseProductName().toUpperCase();
+    if (DatabaseProductName.contains("POSTGRESQL")) {
+      return getSocialInformationsListOfMyContacts_PostgreSQL(con, myContactsIds,
+          options, numberOfElement, firstIndex);
+
+    } else if (DatabaseProductName.contains("ORACLE")) {
+      return getSocialInformationsListOfMyContacts_Oracle(con, myContactsIds,
+          options, numberOfElement, firstIndex);
+    }
+    //MSSQL
+    return getSocialInformationsListOfMyContacts_MMSQL(con, myContactsIds,
+        options, numberOfElement, firstIndex);
+  }
+
+  /**
+   * When data base is PostgreSQL get list of socialInformation of my contacts
+   * according to options and number of Item and the first Index
+   * @return: List <SocialInformation>
+   * @param : String myId
+   * @param :List<String> myContactsIds
+   * @param :List<String> options list of Available Components name
+   * @param int numberOfElement, int firstIndex
+   */
+  private static List<SocialInformationPublication> getSocialInformationsListOfMyContacts_PostgreSQL(
+      Connection con,
+      List<String> myContactsIds,
+      List<String> options, int numberOfElement, int firstIndex) throws SQLException {
+    List<SocialInformationPublication> listPublications = new ArrayList<SocialInformationPublication>();
+
+    String query = "(SELECT pubcreationdate AS dateinformation, pubid, 'false' as type  FROM sb_publication_publi  WHERE pubcreatorid in(" + toSqlString(
+        myContactsIds) + ") and instanceid in(" + toSqlString(options) + ") and pubstatus = 'Valid')"
+        + "UNION (SELECT  pubupdatedate AS dateinformation, pubid, 'true' as type FROM sb_publication_publi  WHERE  pubupdaterid in(" + toSqlString(
+        myContactsIds) + ")  and instanceid in(" + toSqlString(options) + ")and pubstatus = 'Valid')"
+        + "ORDER BY dateinformation DESC, type DESC limit ? offset ? ";
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+
+      prepStmt = con.prepareStatement(query);
+
+      prepStmt.setInt(1, numberOfElement);
+      prepStmt.setInt(2, firstIndex);
+      rs = prepStmt.executeQuery();
+      while (rs.next()) {
+
+        PublicationDetail pd = getPublication(con, rs.getInt(2));
+        PublicationWithStatus withStatus = new PublicationWithStatus(pd, rs.getBoolean(3));
+
+        listPublications.add(new SocialInformationPublication(withStatus));
+      }
+
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+    return listPublications;
+  }
+/**
+ * tronsform the list of string to String for using in query sql
+ * @param list
+ * @return String
+ */
+  private static String toSqlString(List<String> list) {
+    String result = "";
+    if (list == null || list.size() == 0) {
+      return "''";
+    }
+    int size = list.size();
+    int i = 0;
+    for (String var : list) {
+      i++;
+      result += "'" + var + "'";
+      if (i != size) {
+        result += ",";
+      }
+    }
+
+
+    return result;
+  }
+
+  /**
+   * When data base is Oracle get list of socialInformation of my contacts according to options and number of Item and the first Index
+   * @return: List <SocialInformation>
+   * @param : String myId
+   * @param :List<String> myContactsIds
+   * @param :List<String> options list of Available Components name
+   * @param int numberOfElement, int firstIndex
+   */
+  private static List<SocialInformationPublication> getSocialInformationsListOfMyContacts_Oracle(
+      Connection con,
+      List<String> myContactsIds,
+      List<String> options, int numberOfElement, int firstIndex) {
+    throw new UnsupportedOperationException("Not yet implemented");
+  }
+
+  /**
+   * When data base is MMSQL get list of socialInformation of my contacts according to options and number of Item and the first Index
+   * @return: List <SocialInformation>
+   * @param : String myId
+   * @param :List<String> myContactsIds
+   * @param :List<String> options list of Available Components name
+   * @param int numberOfElement, int firstIndex
+   */
+  private static List<SocialInformationPublication> getSocialInformationsListOfMyContacts_MMSQL(
+      Connection con,
+      List<String> myContactsIds,
+      List<String> options, int numberOfElement, int firstIndex) {
+    throw new UnsupportedOperationException("Not yet implemented");
   }
 }

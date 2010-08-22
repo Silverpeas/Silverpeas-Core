@@ -28,18 +28,13 @@ import com.silverpeas.socialNetwork.SocialNetworkException;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.silverpeas.socialNetwork.model.SocialInformationType;
-import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.calendar.control.CalendarException;
-import com.stratelia.webactiv.util.exception.UtilException;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Hashtable;
 import com.silverpeas.socialNetwork.relationShip.RelationShipService;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
 
 /**
  *
@@ -47,8 +42,8 @@ import java.util.logging.Logger;
  */
 public class MyContactProfilSessionController extends AbstractComponentSessionController {
 
-  private AdminController m_AdminCtrl = null;
-  private long domainActions = -1;
+  
+  private RelationShipService relationShipService = new RelationShipService();
 
   public MyContactProfilSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
@@ -57,29 +52,20 @@ public class MyContactProfilSessionController extends AbstractComponentSessionCo
         "com.silverpeas.socialNetwork.multilang.socialNetworkBundle",
         "com.silverpeas.socialNetwork.settings.socialNetworkIcons",
         "com.silverpeas.socialNetwork.settings.socialNetworkSettings");
-    m_AdminCtrl = new AdminController(getUserId());
   }
 
-  public Hashtable getSocialInformation(SocialInformationType type, int limit, int offset) throws
-      CalendarException, UtilException {
-
-    List list = null;
-    switch (type) {
-      case EVENT:
-        // list = new SocialEvent().getSocialInformationsList(getUserId(), null, limit, offset);
-        break;
-      default:
-      //    list = new SocialEvent().getSocialInformationsList(getUserId(), null, limit, offset);
-    }
-    return null;
-  }
-
+  
+/**
+ * get this user with full information
+ * @param userId
+ * @return UserFull
+ */
   public UserFull getUserFul(String userId) {
 
     return this.getOrganizationController().getUserFull(userId);
   }
 
-  /*
+  /**
    * this userId is in my Contacts
    * @param: int userId
    * @return true if this user  in my Contacts
@@ -93,5 +79,35 @@ public class MyContactProfilSessionController extends AbstractComponentSessionCo
           "ProfilSessionController.isInMyContact(String userId)",
           SilverpeasException.ERROR, "root.EX_NO_MESSAGE", ex);
     }
+  }
+/**
+   * get all  RelationShips ids for this user
+   * @return:List<String>
+   * @param: int myId
+   *
+   */
+  public List<String> getContactsIdsForUser(String userId) {
+    try {
+      return relationShipService.getMyContactsIds(Integer.parseInt(userId));
+    } catch (SQLException ex) {
+       SilverTrace.error("MyContactProfilSessionController",
+          "MyContactProfilSessionController.getContactsForUser", "", ex);
+    }
+    return new ArrayList<String>();
+  }
+  /**
+   * get all  RelationShips ids for this user
+   * @return:List<String>
+   * @param: int myId
+   *
+   */
+  public List<String> getCommonContactsIdsForUser(String userId) {
+    try {
+      return relationShipService.getAllCommonContactsIds(Integer.parseInt(userId),Integer.parseInt(this.getUserId()));
+    } catch (SQLException ex) {
+       SilverTrace.error("MyContactProfilSessionController",
+          "MyContactProfilSessionController.getContactsForUser", "", ex);
+    }
+    return new ArrayList<String>();
   }
 }

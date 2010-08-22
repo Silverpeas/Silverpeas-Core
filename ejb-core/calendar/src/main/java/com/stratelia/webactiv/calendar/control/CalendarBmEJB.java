@@ -24,6 +24,7 @@
 // TODO : reporter dans CVS (done)
 package com.stratelia.webactiv.calendar.control;
 
+import com.stratelia.webactiv.calendar.socialNetwork.SocialInformationEvent;
 import java.util.*;
 import java.util.Date;
 
@@ -1337,8 +1338,13 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
 
   /**
    * Method for getting the next events of userId ,the result is limited
-   * @param String day, String userId, String classification, int limit, int offset
-   * @return Collection
+   * @param day
+   * @param userId
+   * @param classification
+   * @param limit
+   * @param offset
+   * @return List<JournalHeader>
+   * @throws RemoteException
    */
   @Override
   public List<JournalHeader> getNextEventsForUser(String day, String userId, String classification,
@@ -1358,5 +1364,79 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
     } finally {
       freeConnection(con);
     }
+  }
+
+  /**
+   * get Next Social Events for a given list of my Contacts . This includes all kinds of events
+   * @param day
+   * @param myId
+   * @param myContactsIds
+   * @param numberOfElement
+   * @param firstIndex
+   * @return List<SocialInformationEvent>
+   * @throws RemoteException
+   */
+  @Override
+  public List<SocialInformationEvent> getNextEventsForMyContacts(String day,String myId,
+      List<String> myContactsIds, int numberOfElement, int firstIndex) throws RemoteException {
+    Connection con = getConnection();
+    try {
+      return JournalDAO.getNextEventsForMyContacts(con,day, myId, myContactsIds, numberOfElement, firstIndex);
+    } catch (Exception e) {
+      throw new CalendarRuntimeException(
+          "CalendarBmEJB.getNextEventsForUser(String day,String userId,String classification,int limit, int offset)",
+          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_JOURNALS", e);
+    } finally {
+      freeConnection(con);
+    }    
+  }
+  /**
+   * get Last Social Events for a given list of my Contacts . This includes all kinds of events
+   * @param day
+   * @param myId
+   * @param myContactsIds
+   * @param numberOfElement
+   * @param firstIndex
+   * @return List<SocialInformationEvent>
+   * @throws RemoteException
+   */
+  @Override
+  public List<SocialInformationEvent> getLastEventsForMyContacts(String day,String myId,
+      List<String> myContactsIds, int numberOfElement, int firstIndex) throws RemoteException {
+    Connection con = getConnection();
+    try {
+      return JournalDAO.getLastEventsForMyContacts(con,day, myId, myContactsIds, numberOfElement, firstIndex);
+    } catch (Exception e) {
+      throw new CalendarRuntimeException(
+          "CalendarBmEJB.getNextEventsForUser(String day,String userId,String classification,int limit, int offset)",
+          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_JOURNALS", e);
+    } finally {
+      freeConnection(con);
+    }
+  }
+  /**
+   * get the my last Events  of information and number of Item and the first Index
+   * @param day
+   * @param myId
+   * @param numberOfElement
+   * @param firstIndex
+   * @return List<SocialInformationEvent>
+   * @throws RemoteException
+   */
+   @Override
+  public List<SocialInformationEvent> getMyLastEvents(String day, String myId,
+       int numberOfElement, int firstIndex) throws RemoteException
+  {
+    Connection con = getConnection();
+    try {
+      return JournalDAO.getMyLastEvents(con,day, myId, numberOfElement, firstIndex);
+    } catch (Exception e) {
+      throw new CalendarRuntimeException(
+          "CalendarBmEJB.getNextEventsForUser(String day,String userId,String classification,int limit, int offset)",
+          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_JOURNALS", e);
+    } finally {
+      freeConnection(con);
+    }
+
   }
 }

@@ -42,34 +42,37 @@
 
 
 <%          // récupérer les paramettre de config
-            ResourceLocator settings = (ResourceLocator) request.getAttribute("Settings");
-            // récupérer les paramettre de Multilang
-           
-            String language = request.getLocale().getLanguage();
-            ResourceLocator multilang = new ResourceLocator("com.silverpeas.socialNetwork.multilang.socialNetworkBundle", language);
-            ResourceLocator multilangG = new ResourceLocator("com.stratelia.webactiv.multilang.generalMultilang", language);
-            // récupérer le user avec le maximun de détail
-            UserFull userFull = (UserFull) request.getAttribute("userFull");
+    ResourceLocator settings = (ResourceLocator) request.getAttribute("Settings");
+    // récupérer les paramettre de Multilang
 
-            String gml = "GML.";
-            String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+    String language = request.getLocale().getLanguage();
+    ResourceLocator multilang = new ResourceLocator(
+        "com.silverpeas.socialNetwork.multilang.socialNetworkBundle", language);
+    ResourceLocator multilangG = new ResourceLocator(
+        "com.stratelia.webactiv.multilang.generalMultilang", language);
+    // récupérer le user avec le maximun de détail
+    UserFull userFull = (UserFull) request.getAttribute("userFull");
+
+    String gml = "GML.";
+    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
+        "ApplicationURL");
 
 %>
 
 <html>
-    <head>
-        <view:looknfeel />
+  <head>
+    <view:looknfeel />
     <script type="text/javascript" src="/silverpeas/util/javaScript/animation.js"></script>
-        <script type="text/javascript" src="/silverpeas/util/javaScript/checkForm.js"></script>
-        <script language="JavaScript">
+    <script type="text/javascript" src="/silverpeas/util/javaScript/checkForm.js"></script>
+    <script language="JavaScript">
 
 
-            function OpenPopup(usersId,name ){
-                usersId=usersId+'&Name='+name
-                SP_openWindow('<%=m_context + "/Rdirectory/jsp/NotificationView"%>?Recipient='+usersId , 'strWindowName', '500', '250', 'true');
+      function OpenPopup(usersId,name ){
+            usersId=usersId+'&Name='+name
+        SP_openWindow('<%=m_context + "/Rdirectory/jsp/NotificationView"%>?Recipient='+usersId , 'strWindowName', '500', '250', 'true');
 
-            }
-            function OpenPopupInvitaion(usersId,name){
+      }
+      function OpenPopupInvitaion(usersId,name){
         usersId=usersId+'&Name='+name
             options="directories=no, menubar=no,toolbar=no,scrollbars=yes, resizable=no        , alwaysRaised"
         SP_openWindow('<%=m_context + "/Rinvitation/jsp/invite"%>?Recipient='+usersId, 'strWindowName', '350', '200',options);
@@ -78,200 +81,179 @@
 
 
 
-        </script>
+    </script>
+  </head>
+  <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+    <view:browseBar extraInformations="Profil public"></view:browseBar>
+    <view:window>
+      <view:board  >
+        <view:frame >
+          <view:board >
+            <table border="0" cellspacing="0" cellpadding="0" width="100%">
+              <tr>
+                <td width="50">
+                  <img src="<%=m_context + "/directory/jsp/icons/Photo_profil.jpg"%>" width="50" height="60" border="0" alt="viewUser" />
+                </td>
+                <td>
+                  <table border="0" cellspacing="0" cellpadding="5" width="100%">
 
-    </head>
+                    <%      // afficher le  "Nom" si n'est pas null et n'est pas interdit de l'afficher
+                        if (StringUtil.isDefined(userFull.getLastName()) && settings.
+                            getBoolean("GML.lastname", true)) {
+                    %>
+                    <tr>
+                      <td class="txtlibform" valign="baseline">
+                        <%=userFull.getLastName()%>
+                        <%
+                            }
+                            // afficher le  "Prenom" si  n'est pas null et n'est pas interdit de l'afficher
+                            if (StringUtil.isDefined(userFull.getFirstName()) && settings.
+                                getBoolean("GML.firstname", true)) {
+                        %>
+                        <%=userFull.getFirstName()%>
+                      </td>
+                    </tr>
 
+                    <%                                       }
 
+                    %>
+                    <%
+                        // afficher leur  "eMail" si n'est pas null et n'est pas interdit de l'afficher
+                        if (StringUtil.isDefined(userFull.geteMail()) && settings.
+                            getBoolean("eMail", true)) {
+                    %>
+                    <tr>
+                      <td class="txtlibform" valign="baseline" >
+                        <a style="color: blue; text-decoration: underline" href="mailto:<%=userFull.geteMail()%> "><%=userFull.geteMail()%></a>
+                      </td>
+                    </tr>
+                    <%
+                        }
+                    %>
+                    <%
+                        // afficher leur  "Droit" si n'est pas null et n'est pas interdit de l'afficher
+                        if (StringUtil.isDefined(userFull.getAccessLevel()) && settings.
+                            getBoolean("position", true)) {
+                    %>
+                    <tr>
+                      <td class="txtlibform" valign="baseline" >
+                        <%=multilangG.getString(multilang.getString(userFull.getAccessLevel()))%>
+                      </td>
+                    </tr>
+                    <%                                       }
 
+                    %>
+                  </table>
+                </td>
+                <td align="right">
+                  <a href="#" class="link" onclick="OpenPopupInvitaion(<%=userFull.getId()%>,'<%=userFull.getDisplayedName() %>');">
+                    Envoyer une invitation</a><br />
+                  <br />
+                  <a href="#" style="color: blue" onclick="OpenPopup(<%=userFull.getId()%>,'<%=userFull.getDisplayedName() %>')">Envoyer un message</a>
+                </td>
+              </tr>
+            </table>
+          </view:board>
+          <view:frame title="Informations personnelles">
+            <view:board >
+              <table border="0" cellspacing="0" cellpadding="5" width="100%">
 
-    <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+                <%      // afficher le  "Nom" si n'est pas null et n'est pas interdit de l'afficher
+                    if (StringUtil.isDefined(userFull.getLastName()) && settings.
+                        getBoolean("lastName", true)) {
+                %>
+                <tr>
+                  <td class="txtlibform" valign="baseline" width="30%"><%=multilangG.getString(gml + "lastName")%></td>
+                  <td >
+                    <%=userFull.getLastName()%>
+                  </td>
+                </tr>
+                <%
+                    }
+                    // afficher le  "Prenom" si  n'est pas null et n'est pas interdit de l'afficher
+                    if (StringUtil.isDefined(userFull.getFirstName()) && settings.
+                        getBoolean("firstName", true)) {
+                %>
+                <tr>
+                  <td class="txtlibform" valign="baseline" width="30%"><%=multilangG.getString(gml + "firstName")%></td>
+                  <td >
+                    <%=userFull.getFirstName()%>
+                  </td>
+                </tr>
+                <%                                       }
 
-
-        <view:browseBar extraInformations="Profil public"></view:browseBar>
-
-        <view:window>
-
-
-
-
-
-
-            <view:board  >
-                <view:frame >
-                    <view:board >
-                        <table border="0" cellspacing="0" cellpadding="0" width="100%">
-                            <tr>
-
-                                <td width="50">
-                                    <img src="<%=m_context+"/directory/jsp/icons/Photo_profil.jpg"%>" width="50" height="60" border="0" alt="viewUser" />
-                                </td>
-
-
-                                <td>
-                                    <table border="0" cellspacing="0" cellpadding="5" width="100%">
-
-                                        <%      // afficher le  "Nom" si n'est pas null et n'est pas interdit de l'afficher
-                                                    if (StringUtil.isDefined(userFull.getLastName()) && settings.getBoolean("GML.lastname", true)) {
-                                        %>
-                                        <tr>
-
-                                            <td class="txtlibform" valign="baseline">
-                                                <%=userFull.getLastName()%>
-                                                <%
-                                                            }
-                                                            // afficher le  "Prenom" si  n'est pas null et n'est pas interdit de l'afficher
-                                                            if (StringUtil.isDefined(userFull.getFirstName()) && settings.getBoolean("GML.firstname", true)) {
-                                                %>
-                                                <%=userFull.getFirstName()%>
-                                            </td>
-                                        </tr>
-
-
-                                        <%                                       }
-
-                                        %>
-                                        <%
-                                                    // afficher leur  "eMail" si n'est pas null et n'est pas interdit de l'afficher
-                                                    if (StringUtil.isDefined(userFull.geteMail()) && settings.getBoolean("eMail", true)) {
-                                        %>
-                                        <tr>
-                                            <td class="txtlibform" valign="baseline" >
-                                                <a style="color: blue; text-decoration: underline" href="mailto:<%=userFull.geteMail()%> "><%=userFull.geteMail()%></a>
-                                            </td>
-                                        </tr>
-                                        <%
-                                                    }
-                                        %>
-                                        <%
-                                                    // afficher leur  "Droit" si n'est pas null et n'est pas interdit de l'afficher
-                                                    if (StringUtil.isDefined(userFull.getAccessLevel()) && settings.getBoolean("position", true)) {
-                                        %>
-                                        <tr>
-                                            <td class="txtlibform" valign="baseline" >
-                                                <%=multilangG.getString(multilang.getString(userFull.getAccessLevel()))%>
-                                            </td>
-                                        </tr>
-                                        <%                                       }
-
-                                        %>
-                                    </table>
-                                </td>
-                                <td align="right">
-
-                                   <a href="#" class="link" onclick="OpenPopupInvitaion(<%=userFull.getId()%>,'<%=userFull.getLastName() + " " + userFull.getFirstName()%>');">
-                          Envoyer une invitation</a><br />
-                        <br />
-                                 <a href="#" style="color: blue" onclick="OpenPopup(<%=userFull.getId() %>,'<%=userFull.getFirstName()+" "+userFull.getFirstName() %>')">Envoyer un message</a>
-
-                                </td>
-                            </tr>
-                        </table>
-                    </view:board>
-                    <view:frame title="Informations personnelles">
-
-                        <view:board >
-
-                            <table border="0" cellspacing="0" cellpadding="5" width="100%">
-
-                                <%      // afficher le  "Nom" si n'est pas null et n'est pas interdit de l'afficher
-                                            if (StringUtil.isDefined(userFull.getLastName()) && settings.getBoolean("lastName", true)) {
-                                %>
-                                <tr>
-                                    <td class="txtlibform" valign="baseline" width="30%"><%=multilangG.getString(gml + "lastName")%></td>
-                                    <td >
-                                        <%=userFull.getLastName()%>
-                                    </td>
-                                </tr>
-                                <%
-                                            }
-                                            // afficher le  "Prenom" si  n'est pas null et n'est pas interdit de l'afficher
-                                            if (StringUtil.isDefined(userFull.getFirstName()) && settings.getBoolean("firstName", true)) {
-                                %>
-                                <tr>
-                                    <td class="txtlibform" valign="baseline" width="30%"><%=multilangG.getString(gml + "firstName")%></td>
-                                    <td >
-                                        <%=userFull.getFirstName()%>
-                                    </td>
-                                </tr>
-                                <%                                       }
-
-                                %>
-                            </table>
-
-
-                        </view:board>
-                    </view:frame>
-                    <view:frame title="Informations professionnelles & Coordonnées ">
-                        <view:board>
-
-                            <table border="0" cellspacing="0" cellpadding="5" width="100%">
-                                <%
-                                            // afficher leur  "Droit" si n'est pas null et n'est pas interdit de l'afficher
-                                            if (StringUtil.isDefined(userFull.getAccessLevel()) && settings.getBoolean("position", true)) {
-                                %>
-                                <tr>
-                                    <td class="txtlibform" valign="baseline" width="30%"><%=multilangG.getString(gml + "position")%></td>
-                                    <td valign="baseline">
-                                        <%=multilangG.getString(multilang.getString(userFull.getAccessLevel()))%>
-                                    </td>
-                                </tr>
-                                <%                                       }
-
-                                %>
-
-
-                                <%
-                                            //  récupérer toutes les propriétés de ce User
-                                            String[] properties = userFull.getPropertiesNames();
-
-                                            String property = null;
-                                            for (int p = 0; p < properties.length; p++) {
-
-                                                property = properties[p];
-                                                // afficher toutes   les propriétés de User  si ne sont pas null et ne sont pas interdit de les afficher
-
-                                                if (StringUtil.isDefined(userFull.getValue(property)) && settings.getBoolean(property, true)) {
-
-
-
-
-                                %>
-                                <tr>
-                                    <td class="txtlibform" valign="baseline" width="30%"><%= userFull.getSpecificLabel(language, property)%></td>
-                                    <td >
-                                        <%=userFull.getValue(property)%>
-                                    </td>
-                                </tr>
-                                <%
-                                                }
-                                            }
-                                %>
-
-                                <%
-                                            // afficher leur  "eMail" si n'est pas null et n'est pas interdit de l'afficher
-                                            if (StringUtil.isDefined(userFull.geteMail()) && settings.getBoolean("eMail", true)) {
-                                %>
-                                <tr>
-                                    <td class="txtlibform" valign="baseline" width="30%"><%=multilangG.getString(gml + "eMail")%></td>
-                                    <td >
-                                        <%=userFull.geteMail()%>
-                                    </td>
-                                </tr>
-                                <%
-                                            }
-                                %>
-                            </table>
-
-
-                        </view:board>
-                    </view:frame>
-                </view:frame>
+                %>
+              </table>
             </view:board>
+          </view:frame>
+          <view:frame title="Informations professionnelles & Coordonnées ">
+            <view:board>
+
+              <table border="0" cellspacing="0" cellpadding="5" width="100%">
+                <%
+                    // afficher leur  "Droit" si n'est pas null et n'est pas interdit de l'afficher
+                    if (StringUtil.isDefined(userFull.getAccessLevel()) && settings.
+                        getBoolean("position", true)) {
+                %>
+                <tr>
+                  <td class="txtlibform" valign="baseline" width="30%"><%=multilangG.getString(gml + "position")%></td>
+                  <td valign="baseline">
+                    <%=multilangG.getString(multilang.getString(userFull.getAccessLevel()))%>
+                  </td>
+                </tr>
+                <%                                       }
+
+                %>
+
+
+                <%
+                    //  récupérer toutes les propriétés de ce User
+                    String[] properties = userFull.getPropertiesNames();
+
+                    String property = null;
+                    for (int p = 0; p < properties.length; p++) {
+
+                      property = properties[p];
+                      // afficher toutes   les propriétés de User  si ne sont pas null et ne sont pas interdit de les afficher
+
+                      if (StringUtil.isDefined(userFull.getValue(property)) && settings.
+                          getBoolean(property, true)) {
 
 
 
-        </view:window>
 
-    </body>
+                %>
+                <tr>
+                  <td class="txtlibform" valign="baseline" width="30%"><%= userFull.getSpecificLabel(language, property)%></td>
+                  <td >
+                    <%=userFull.getValue(property)%>
+                  </td>
+                </tr>
+                <%
+                      }
+                    }
+                %>
+
+                <%
+                    // afficher leur  "eMail" si n'est pas null et n'est pas interdit de l'afficher
+                    if (StringUtil.isDefined(userFull.geteMail()) && settings.
+                        getBoolean("eMail", true)) {
+                %>
+                <tr>
+                  <td class="txtlibform" valign="baseline" width="30%"><%=multilangG.getString(gml + "eMail")%></td>
+                  <td >
+                    <%=userFull.geteMail()%>
+                  </td>
+                </tr>
+                <%
+                    }
+                %>
+              </table>
+            </view:board>
+          </view:frame>
+        </view:frame>
+      </view:board>
+    </view:window>
+
+  </body>
 </html>

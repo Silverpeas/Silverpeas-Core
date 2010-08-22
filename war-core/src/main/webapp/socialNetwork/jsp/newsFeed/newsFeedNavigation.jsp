@@ -30,14 +30,12 @@
     <li>
       <div id="myInfo">
         <a href="${urlProfil}${id}">
-          <span>${user.firstName} ${user.lastName}</span>
+          <span>${user.lastName} ${user.firstName}</span>
         </a>
       </div>
       <a href="${urlProfil}${id}">
         <img src="<c:url value="${user.profilPhoto}" />" width="70px" height="80px">
       </a>
-
-      
     </li>
 
   </ul>
@@ -58,23 +56,28 @@
       <a href="#" name="PHOTO"><span>${photos}</span></a>
     </li>
     <li>
-      <a href="#" name="RELATIONSHIP"><span>${contacts}</span></a>
+      <a href="#" name="RELATIONSHIP"><span>${relations}</span></a>
     </li>
   </ul>
 
 </div>
-   <div class="box" id="relationshipActionNewsFeed">
+<div class="box" id="relationshipActionNewsFeed">
   <ul>
-    <li >
-      <a href="#"><span>Mes invitations</span></a>
+    <li>
+      <a href="#" onclick="javascript:getAllUsersDirectory()"><span><fmt:message key="newsFeed.directory" /></span></a>
     </li>
     <li>
-       <a href="#"><span>Mes Realations</span></a>
+      <a href="#" onclick="javascript:getAllContactsDirectory()"><span><fmt:message key="newsFeed.contacts" /></span></a>
     </li>
-     <li>
-       <a href="#" onclick="javascript:directory('Main')"><span>Annuaire</span></a>
+    <li >
+      <a href="${urlInvitationReceived}"><span><fmt:message key="invitation.tab.receive" /></span></a>
     </li>
-   
+    <li>
+      <a href="${urlInvitationSent}"><span><fmt:message key="invitation.tab.sent" /></span></a>
+    </li>
+
+
+
   </ul>
 
 </div>

@@ -60,6 +60,29 @@ public interface CalendarBmBusinessSkeleton {
       String classification, int limit, int offset) throws RemoteException;
 
   /**
+   * get Next Social Events for a given list of my Contacts returns the next events (SocialInformationEvent). This
+   * includes all kinds of events
+   */
+  public List<SocialInformationEvent> getNextEventsForMyContacts(String day, String myId,
+      List<String> myContactsIds, int numberOfElement, int firstIndex) throws RemoteException;
+
+  /**
+   * get Last Social Events for a given list of my Contacts returns the next events (SocialInformationEvent). This
+   * includes all kinds of events
+   */
+  public List<SocialInformationEvent> getLastEventsForMyContacts(String day, String myId,
+      List<String> myContactsIds, int numberOfElement, int firstIndex) throws RemoteException;
+
+  /**
+   * get the my last Events  of information and number of Item and the first Index
+   * includes all kinds of events
+   * @return: List <SocialInformation>
+   * @param :String day,String myId , int numberOfElement, int firstIndex
+   */
+  public List<SocialInformationEvent> getMyLastEvents(String day, String myId,
+       int numberOfElement, int firstIndex) throws RemoteException;
+
+  /**
    * getPeriodSchedulablesForUser() for a particular user returns all the events scheduled during a
    * particular period. This includes all kinds of events
    */

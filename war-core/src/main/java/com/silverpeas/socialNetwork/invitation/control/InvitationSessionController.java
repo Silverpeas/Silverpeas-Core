@@ -68,15 +68,25 @@ public class InvitationSessionController extends AbstractComponentSessionControl
     Invitation invitation = new Invitation(senderId, receiveId, message, new Date());
     invitationService.invite(invitation);
   }
-
+/**
+ * ignore Invitation
+ * @param id
+ */
   public void ignoreInvitation(int id) {
     invitationService.ignoreInvitation(id);
   }
-
+/**
+ * accept Invitation
+ * @param id
+ */
   public void acceptInvitation(int id) {
     invitationService.accepteInvitation(id);
   }
-
+/**
+ * return my invitation list sent
+ * @param myId
+ * @return List<InvitationUser>
+ */
   public List<InvitationUser> getAllMyInvitationsSent(int myId) {
     List<InvitationUser> invitationUsers = new ArrayList<InvitationUser>();
     List<Invitation> invitations = invitationService.getAllMyInvitationsSent(myId);
@@ -85,7 +95,11 @@ public class InvitationSessionController extends AbstractComponentSessionControl
     }
     return invitationUsers;
   }
-
+/**
+ * return my invitation list Received
+ * @param myId
+ * @return List<InvitationUser>
+ */
   public List<InvitationUser> getAllMyInvitationsReceive(int myId) {
     List<InvitationUser> invitationUsers = new ArrayList<InvitationUser>();
     List<Invitation> invitations = invitationService.getAllMyInvitationsReceive(myId);
@@ -96,13 +110,4 @@ public class InvitationSessionController extends AbstractComponentSessionControl
 
   }
 
-  public String getStat() {
-
-    return i + "";
-  }
-
-  public void changeStat() {
-    i++;
-
-  }
 }

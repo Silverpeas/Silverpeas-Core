@@ -34,6 +34,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import com.stratelia.webactiv.beans.admin.UserFull;
 
 /**
  *
@@ -42,8 +43,6 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 public class ProfilRequestRouter extends ComponentRequestRouter {
 
   private ProfilSessionController myProfilSC;
-  private String m_context="http://localhost:8000/silverpeas/";
-  
 
   @Override
   public String getSessionControlBeanName() {
@@ -66,19 +65,31 @@ public class ProfilRequestRouter extends ComponentRequestRouter {
 
     myProfilSC = (ProfilSessionController) componentSC;
     String userId = request.getParameter("userId");
+    String m_context = request.getScheme() + "://" + request.getServerName() + ":" + request.
+        getServerPort() + request.getContextPath();
+
    if (function.equalsIgnoreCase("Main")) {
 
-     
       if (myProfilSC.getUserId().equals(userId)) {//go to my Profile
 
-        destination =m_context+"RMyProfil/jsp/MyInfos";
+        destination = m_context + "/RMyProfil/jsp/MyInfos";
 
       } else if (isInMyContact(userId)) {// this is  in my contacts
 
 
-        destination = m_context + "RmyContactProfil/jsp/MyInfos?userId="+userId;
+
+        destination = m_context + "/RmyContactProfil/jsp/MyInfos?userId=" + userId;
 
       } else {// this is not in my contacts
+        UserFull userFull = myProfilSC.getUserFul(userId);
+        String[] properties = userFull.getPropertiesNames();
+
+        String property = null;
+        for (int p = 0; p < properties.length; p++) {
+          property = properties[p];
+          System.out.println("ProfilRequestRouter property=" + userFull.getValue(property));
+        }
+
         request.setAttribute("userFull", myProfilSC.getUserFul(userId));
         request.setAttribute("Settings", myProfilSC.getSettings());
         destination = "/socialNetwork/jsp/profil/profilPublic.jsp";
@@ -87,15 +98,11 @@ public class ProfilRequestRouter extends ComponentRequestRouter {
     }
     return destination;
   }
-  /*
-   * this userId is in my Contacts
+
+  /**
+   * return true if this userId is in my Contacts
    * @param: int userId
-   * @return true if this user  in my Contacts
-   */
-  /*
-   * this userId is in my Contacts
-   * @param: int userId
-   * @return true if this user  in my Contacts
+   * @return  boolean
    */
 
   public boolean isInMyContact(String userId) {
