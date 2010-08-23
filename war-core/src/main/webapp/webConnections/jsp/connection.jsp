@@ -28,14 +28,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
 <%@page import="com.silverpeas.external.webConnections.model.ConnectionDetail"%>
 <%@page import="com.silverpeas.util.StringUtil"%>
-<%@page import="java.util.Hashtable"%>
-<%@page import="java.util.Enumeration"%>
+<%@page import="java.util.Map"%>
+<%@page import="java.util.Set"%>
+<%@page import="java.util.Iterator"%>
 
 <%
 	// récupération des paramètres
 	ConnectionDetail connection = (ConnectionDetail) request.getAttribute("Connection");	
 	String methodType			= (String) request.getAttribute("Method");
 %>
+
 
 <html>
 <head>
@@ -49,10 +51,11 @@ function sendForm() {
 <body onload="javascript:sendForm()">
 <form name="connectionForm" action="<%=connection.getUrl()%>" method="<%=methodType%>">
 	<%
-	Hashtable param = connection.getParam();
-	Enumeration keys = param.keys();
-	while (keys.hasMoreElements()) {
-		String name = (String) keys.nextElement();
+	Map param = connection.getParam();
+	Set keys = param.keySet();
+	Iterator iKeys = keys.iterator();
+	while (iKeys.hasNext()) {
+		String name = (String) iKeys.next();
 		String value = (String) param.get(name);
 		%>
 		<input type="hidden" name="<%=name%>" value="<%=value%>"/>
