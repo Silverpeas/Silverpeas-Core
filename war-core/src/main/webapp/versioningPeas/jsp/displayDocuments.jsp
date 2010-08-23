@@ -590,7 +590,7 @@ function checkoutAndEdit(id)
 	checkout(id, true);
 
 	var url = "<%=httpServerBase+m_context%>/attachment/jsp/launch.jsp?documentUrl="+eval("webDav"+id);
-	window.open(url);
+	window.open(url,'_self');
 }
 
 function checkin(id, force) {
