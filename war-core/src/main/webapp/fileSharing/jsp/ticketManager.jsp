@@ -103,9 +103,6 @@
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>	
 <script language="javascript">
-
-var calendarWindow = window ;
-
 function sendData() 
 {
 	if (isCorrectForm()) 
@@ -188,17 +185,7 @@ function isDateOK(input)
      }
      return true;
 }
-
-function editDate(nameElem)
-{
-		chemin = "<%=m_context%><%=URLManager.getURL(URLManager.CMP_AGENDA)%>calendar.jsp?indiceForm=0&nameElem="+nameElem;
-		largeur = "180";
-		hauteur = "200";
-		SP_openWindow(chemin,calendarWindow,largeur,hauteur,"");
-}
-
-</script>
-		
+</script>		
 </head>
 <body>
 <%
@@ -244,9 +231,7 @@ function editDate(nameElem)
 	<% } %>
 	<tr>
 		<td class="txtlibform"><%=resource.getString("fileSharing.endDate")%> :</td>
-		<TD><input type="text" name="EndDate" size="12" maxlength="10" value="<%=endDate%>">
-			&nbsp;
-			<a href="javascript:onClick=editDate('EndDate')"><img src=<%=resource.getIcon("fileSharing.calendrier")%> border="0" alt="<%=resource.getString("fileSharing.afficherCalendrier")%>" align=absmiddle title="<%=resource.getString("afficherCalendrier")%>"></a> <span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)
+		<TD><input type="text" class="dateToPick" name="EndDate" size="12" maxlength="10" value="<%=endDate%>"/><span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)
 			<img border="0" src=<%=resource.getIcon("fileSharing.obligatoire")%> width="5" height="5">
 		</TD>
 	</tr>
