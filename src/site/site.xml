@@ -29,7 +29,7 @@
   <bannerLeft>
     <name>Silverpeas</name>
     <src>images/bandeauTop-.jpg</src>
-    <href>http://repository.silverpeas.org/</href>
+    <href>http://www.silverpeas.org/</href>
   </bannerLeft>
   <publishDate position="right" format="yyyy-MM-dd" />
   <version position="right" />
@@ -41,9 +41,9 @@
   <!-- Powered By -->
   <poweredBy>
     <logo name="Netbeans 6.8" href="http://netbeans.org/downloads/index.html" img="http://netbeans.org/images_www/collateral/68/netbeans-110x32.png" />
-    <logo name="Eclipse 3.5"  href="http://www.eclipse.org" img="/images/eclipse_bckgr_logo_fc_xsm.jpg" />
-    <logo name="Maven2.2.x" href="http://maven.apache.org/" img="/images/logos/maven-feather.png" />
-    <logo name="Zeroturnaround" href="http://www.zeroturnaround.com/" img="/images/zeroturnaround.gif" />
+    <logo name="Eclipse 3.5"  href="http://www.eclipse.org" img="http://www.silverpeas.org/docs/core/images/eclipse_bckgr_logo_fc_xsm.jpg" />
+    <logo name="Maven2.2.x" href="http://maven.apache.org/" img="http://www.silverpeas.org/docs/core/images/logos/maven-feather.png" />
+    <logo name="Zeroturnaround" href="http://www.zeroturnaround.com/" img="http://www.silverpeas.org/docs/core/images/zeroturnaround.gif" />
   </poweredBy>
   <body>
     <head>
@@ -58,20 +58,23 @@ pageTracker._trackPageview();
 } catch(err) {}
       </script>
     </head>
-    <breadcrumbs><item name="Silverpeas" href="http://www.silverpeas.com"/></breadcrumbs>
-    <menu name="Overview" collapse="false">
+    <breadcrumbs>
+      <item name="Silverpeas" href="http://www.silverpeas.com"/>
+    </breadcrumbs>
+    <menu name="Overview" collapse="false" inherit="none">
       <item name="Introduction" href="index.html"/>
       <item name="Roadmap" href="https://www.silverpeas.org/redmine/projects/silverpeas/roadmap?completed=1"/>
       <item name="Changelog" href="changelog.html"/>
       <item name="Installation" href="installation.html"/>
       <item name="Migration" href="migration.html"/>
     </menu>
-    <menu name="CAS" collapse="true">
+    <menu name="CAS" collapse="true" inherit="none">
       <item name="Introduction" href="cas/SSO-CAS.html" collapse="false"/>
       <item name="Certificates Configuration" href="cas/certificates.html" collapse="false" />
       <item name="Tomcat as CAS Server Configuration" href="cas/configuring_tomcat.html" collapse="false" />
       <item name="Silverpeas Configuration" href="cas/configuring_silverpeas.html" collapse="false" />
     </menu>
     <menu ref="reports" />
+    <menu ref="modules" />
   </body>
 </project>
