@@ -97,9 +97,8 @@ public class FileServer extends HttpServlet {
         physicalName, mimeType, archiveIt, pubId, nodeId, subDirectory);
   }
 
-  public static String getUrlToTempDir(String logicalName, String physicalName,
-      String mimeType) {
-    return FileServerUtils.getUrlToTempDir(logicalName, physicalName, mimeType);
+  public static String getUrlToTempDir(String logicalName) {
+    return FileServerUtils.getUrlToTempDir(logicalName);
   }
 
   public void init(ServletConfig config) {

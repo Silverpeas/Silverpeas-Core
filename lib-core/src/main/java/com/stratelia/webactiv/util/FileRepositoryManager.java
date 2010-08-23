@@ -62,6 +62,9 @@ public class FileRepositoryManager extends Object {
       s_sApplicationURL = generalSettings.getString("ApplicationURL");
       s_sUpLoadPath = generalSettings.getString("uploadsPath");
       s_sTempPath = generalSettings.getString("tempPath");
+      if(!s_sTempPath.endsWith(File.separator)) {
+        s_sTempPath = s_sTempPath + File.separator;
+      }
       s_sIndexUpLoadPath = generalSettings.getString("uploadsIndexPath");
       uploadSettings = new ResourceLocator(
           "com.stratelia.webactiv.util.uploads.uploadSettings", "");
@@ -347,7 +350,7 @@ public class FileRepositoryManager extends Object {
     long fileDownloadEstimation = ((size * theoricDownloadTime) / fileSizeReference) / 60;
     if (fileDownloadEstimation < 1) {
       return "t < 1 min";
-    } 
+    }
     if ((fileDownloadEstimation >= 1) && (fileDownloadEstimation < 5)) {
       return "1 < t < 5 mins";
     }

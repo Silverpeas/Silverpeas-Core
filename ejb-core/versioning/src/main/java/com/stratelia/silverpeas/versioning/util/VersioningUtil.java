@@ -48,6 +48,7 @@ import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.model.DocumentVersionPK;
 import com.stratelia.silverpeas.versioning.model.Reader;
 import com.stratelia.silverpeas.versioning.model.Worker;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.Group;
@@ -180,16 +181,17 @@ public class VersioningUtil {
 
   public HashMap getAllUsersReader(Document document, String nameProfile)
       throws RemoteException {
-    HashMap mapRead = new HashMap();
-    Reader reader;
-    ArrayList no_readers = getAllNoReader(document);
+    HashMap<String, Reader> mapRead = new HashMap<String, Reader>();
+    @SuppressWarnings("unchecked")
+    ArrayList<Reader> no_readers = getAllNoReader(document);
     for (int i = 0; i < no_readers.size(); i++) {
-      reader = (Reader) no_readers.get(i);
+      Reader reader = no_readers.get(i);
       mapRead.put(String.valueOf(reader.getUserId()), reader);
     }
-    ArrayList readers = document.getReadList();
+    @SuppressWarnings("unchecked")
+    ArrayList<Reader> readers = document.getReadList();
     for (int i = 0; i < readers.size(); i++) {
-      reader = (Reader) readers.get(i);
+      Reader reader = readers.get(i);
       mapRead.put(String.valueOf(reader.getUserId()), reader);
     }
 
@@ -198,11 +200,11 @@ public class VersioningUtil {
 
   public ArrayList getAllNoReader(Document document) throws RemoteException {
     noReaderMap.clear();
-    noReaderMap.putAll(getAllUsersForProfile(document, "publisher"));
-    noReaderMap.putAll(getAllUsersForProfile(document, "admin"));
+    noReaderMap.putAll(getAllUsersForProfile(document, SilverpeasRole.publisher.toString()));
+    noReaderMap.putAll(getAllUsersForProfile(document, SilverpeasRole.admin.toString()));
 
     ArrayList writers = new ArrayList();
-    writers.addAll(getAllUsersForProfile(document, "writer").values());
+    writers.addAll(getAllUsersForProfile(document, SilverpeasRole.writer.toString()).values());
     int creator_id = getDocumentCreator(document.getPk());
     for (int i = 0; i < writers.size(); i++) {
       Reader user = (Reader) writers.get(i);
@@ -211,7 +213,6 @@ public class VersioningUtil {
         break;
       }
     }
-
     ArrayList users = new ArrayList(noReaderMap.values());
     return users;
   }
@@ -240,9 +241,7 @@ public class VersioningUtil {
 
   public HashMap getAllUsersForProfile(Document document, String nameProfile) {
     OrganizationController orgCntr = new OrganizationController();
-
-    ComponentInst componentInst = orgCntr.getComponentInst(document
-        .getForeignKey().getComponentName());
+    ComponentInst componentInst = orgCntr.getComponentInst(document .getForeignKey().getComponentName());
 
     HashMap mapRead = new HashMap();
     ProfileInst profileInst = null;
@@ -353,30 +352,34 @@ public class VersioningUtil {
   }
 
   public boolean isWriter(Document document, int userID) {
-    Worker worker;
-    ArrayList writeList = document.getWorkList();
-
-    for (int i = 0; i < writeList.size(); i++) {
-      worker = (Worker) writeList.get(i);
-
+    ArrayList<Worker> writeList = document.getWorkList();
+    for (Worker worker : writeList) {
       if (worker.getId() == userID) {
         return true;
       }
     }
+    return false;
+  }
 
+  public boolean isReader(Document document, int userID) {
+    if(isWriter(document, userID)) {
+      return true;
+    }
+    ArrayList<Reader> readList = document.getReadList();
+    for (Reader reader : readList) {
+      if (reader.getUserId() == userID) {
+        return true;
+      }
+    }
     return false;
   }
 
   public void indexDocumentsByForeignKey(ForeignPK foreignPK)
       throws RemoteException {
-    List documents = getVersioningBm().getDocuments(foreignPK);
-    Document document = null;
-    DocumentVersion version = null;
-    for (int d = 0; d < documents.size(); d++) {
-      document = (Document) documents.get(d);
-      version = getVersioningBm()
-          .getLastPublicDocumentVersion(document.getPk());
-      createIndex(document, version);
+    List<Document> documents = getVersioningBm().getDocuments(foreignPK);
+    for (Document currentDocument :  documents) {
+      DocumentVersion version = getVersioningBm().getLastPublicDocumentVersion(currentDocument.getPk());
+      createIndex(currentDocument, version);
     }
   }
 

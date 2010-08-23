@@ -53,4 +53,16 @@ public class FileServerUtilsTest {
     assertEquals("/attached_file/componentId/myComponent12/attachmentId/18512/lang/fr/name/toto_le_beau.JPG",
         url);
   }
+
+  @Test
+  public void testGetUrlToTempDir()
+      throws Exception {
+    String url =  FileServerUtils.getUrlToTempDir("hello_world.pdf");
+    assertEquals("/silverpeas/TempFileServer/hello_world.pdf", url);
+    url =  FileServerUtils.getUrlToTempDir("Mon œuvre.pdf");
+    assertEquals("/silverpeas/TempFileServer/Mon%20œuvre.pdf", url);
+    url =  FileServerUtils.getUrlToTempDir("Mon œuvre & mon été.pdf");
+    assertEquals("/silverpeas/TempFileServer/Mon%20œuvre%20&%20mon%20été.pdf", url);
+  }
+
 }

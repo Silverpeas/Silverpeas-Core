@@ -21,13 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util;
 
+import java.net.URISyntaxException;
 import java.util.Map;
 
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.net.URI;
 import java.util.HashMap;
 
 /**
@@ -134,8 +135,8 @@ public class FileServerUtils extends Object {
       String attachmentId, String lang) {
     SilverTrace.debug("util", "FileServerUtils.getRestAttachmentURL",
         "root.MSG_GEN_ENTER_METHOD",
-        "componentId = " + componentId + ", logicalName = " + logicalName + ", " +
-        "attachmentId = " + attachmentId + ", lang = " + lang);
+        "componentId = " + componentId + ", logicalName = " + logicalName + ", "
+        + "attachmentId = " + attachmentId + ", lang = " + lang);
     StringBuilder url = new StringBuilder();
     String language = lang;
     if (language == null) {
@@ -229,12 +230,19 @@ public class FileServerUtils extends Object {
     return url.toString();
   }
 
-  public static String getUrlToTempDir(String logicalName, String physicalName,
-      String mimeType) {
-    StringBuilder url = new StringBuilder();
-    String newLogicalName = replaceSpecialChars(logicalName);
-    url.append(getApplicationContext()).append("/TempFileServer/").append(newLogicalName);
-    return url.toString();
+  public static String getUrlToTempDir(String logicalName) {
+    StringBuilder path = new StringBuilder();
+    path.append(getApplicationContext()).append("/TempFileServer/").append(logicalName);
+    try {
+      URI uri = new URI(null, null, path.toString(), null);
+      return uri.toString();
+    } catch (URISyntaxException ex) {
+      path = new StringBuilder();
+      String newLogicalName = replaceSpecialChars(logicalName);
+      path.append(getApplicationContext()).append("/TempFileServer/").append(newLogicalName);
+      return path.toString();
+    }
+
   }
 
   /**

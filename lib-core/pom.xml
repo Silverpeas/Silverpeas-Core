@@ -89,11 +89,6 @@
       <artifactId>jldap</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.samba.jcifs</groupId>
-      <artifactId>jcifs</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
       <groupId>javax.jcr</groupId>
       <artifactId>jcr</artifactId>
     </dependency>
@@ -207,8 +202,12 @@
     </dependency>
     <dependency>
       <groupId>org.antlr</groupId>
-      <artifactId>stringtemplate</artifactId>    
-    </dependency>    
+      <artifactId>stringtemplate</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

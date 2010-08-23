@@ -696,8 +696,7 @@ public class ImportExport {
             + zipFileName);
         exportReport.setZipFileName(zipFileName);
         exportReport.setZipFileSize(zipFileSize);
-        exportReport.setZipFilePath(FileServerUtils.getUrlToTempDir(zipFileName, zipFileName,
-            "application/zip"));
+        exportReport.setZipFilePath(FileServerUtils.getUrlToTempDir(zipFileName));
       } catch (Exception ex) {
       }
       // Stockage de la date de fin de l'export dans l'objet rapport
@@ -812,8 +811,7 @@ public class ImportExport {
 
     report.setPdfFileName(pdfFileName.getName());
     report.setPdfFileSize(pdfFileName.length());
-    report.setPdfFilePath(FileServerUtils.getUrlToTempDir(pdfFileName.getName(), pdfFileName
-        .getName(), "application/pdf"));
+    report.setPdfFilePath(FileServerUtils.getUrlToTempDir(pdfFileName.getName()));
 
     report.setDateFin(new Date());
 
@@ -1193,8 +1191,7 @@ public class ImportExport {
             + zipFileName);
         exportReport.setZipFileName(zipFileName);
         exportReport.setZipFileSize(zipFileSize);
-        exportReport.setZipFilePath(FileServerUtils.getUrlToTempDir(zipFileName, zipFileName,
-            "application/zip"));
+        exportReport.setZipFilePath(FileServerUtils.getUrlToTempDir(zipFileName));
       } catch (Exception ex) {
       }
       // Stockage de la date de fin de l'export dans l'objet rapport
