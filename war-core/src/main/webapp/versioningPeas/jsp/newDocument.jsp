@@ -40,7 +40,6 @@
       String name = "";
       String description = "";
       String versionType = new Integer(VersioningSessionController.WORK_VERSION).toString();
-      String comments = "";
       String mimeType = "";
       File dir = null;
       int size = 0;
@@ -49,7 +48,6 @@
       String descriptionLabel = messages.getString("description");
       String documentPathLabel = messages.getString("document");
       String versionTypeLabel = messages.getString("typeOfVersion");
-      String commentsLabel = messages.getString("comments");
       String[] radioButtonLabel = {messages.getString("public"), messages.getString("archive")};
       String requiredFieldLabel = messages.getString("required");
 
@@ -72,50 +70,21 @@
   <head>
     <title><%=messages.getString("popupTitle")%></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <script type="text/javascript" language="Javascript">
-      function rtrim(texte){
-        while (texte.substring(0,1) == ' '){
-          texte = texte.substring(1, texte.length);
-        }
-        return texte;
-      }
-
-      function ltrim(texte){
-        while (texte.substring(texte.length-1,texte.length) == ' ') {
-          texte = texte.substring(0, texte.length-1);
-        }
-
-        return texte;
-      }
-      function isFormFilled(){
-
-        var isEmpty = false;
-        if (trim(document.addForm.name.value) == "")
-          isEmpty = true;
-        return isEmpty;
-      }
-
-      function trim(texte){
-        var len = texte.length;
-        if (len == 0){
-          texte = "";
-        }
-        else {
-          texte = rtrim(texte);
-          texte = ltrim(texte);
-        }
-        return texte;
-      }
-
-      function addFile()
-      {
-        if (!isFormFilled() && isCorrectForm()) {
-          document.addForm.submit();
+    <script type="text/javascript">
+      function addFile() {
+    	var documentName = document.addForm.name.value;
+        if ($.trim(documentName) != "" && isCorrectForm()) {
+            if ($("#documentDesc").val().length > 255) {
+            	var errorMsg =" <%=descriptionLabel%> : <%=attResources.getString("GML.nbCarMax")%> 255 <%= resources.getString("GML.caracteres")%>\n";
+            	alert(errorMsg);
+        	} else {
+        		document.addForm.submit();
+        	}
         } else {
           alert("<%=pleaseFill%>");
         }
       }
-    </script>
+</script>
     <% if (formUpdate != null) {%>
     <script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
     <% formUpdate.displayScripts(out, context);%>
@@ -142,11 +111,11 @@
       <table cellpadding="2" cellspacing="0" border="0" width="100%" >
         <tr>
           <td class="txtlibform"><%=documentNameLabel%> :</td>
-          <td align="left" valign="baseline"><input type="text" name="name" size="50" maxlength="100" value="<%=name%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5" alt="<%=requiredFieldLabel%>"></td>
+          <td align="left" valign="baseline"><input type="text" id="documentName" name="name" size="50" maxlength="100" value="<%=name%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5" alt="<%=requiredFieldLabel%>"></td>
         </tr>
         <tr>
           <td class="txtlibform"><%=descriptionLabel%> :</td>
-          <td align="left" valign="baseline"><textarea name="description" rows="3" cols="50" ><%=description%></textarea></td>
+          <td align="left" valign="baseline"><textarea id="documentDesc" name="description" rows="3" cols="50" ><%=description%></textarea></td>
         </tr>
         <tr>
           <td class="txtlibform"><%=documentPathLabel%> :</td>
@@ -157,10 +126,6 @@
           <td align="left" valign="baseline">
             <input value="0" type="radio" name="versionType"><%=radioButtonLabel[0]%><input type="radio" value="1" name="versionType" checked><%=radioButtonLabel[1]%>
           </td>
-        </tr>
-        <tr>
-          <td class="txtlibform"><%=commentsLabel%> :</td>
-          <td align="left" valign="baseline"><textarea name="comments" rows="5" cols="50" ><%=comments%></textarea></td>
         </tr>
         <tr>
           <td colspan="2">(<img alt="<%=requiredFieldLabel%>"  border="0" src="<%=mandatoryField%>" width="5" height="5">: <%=requiredFieldLabel%>)</td>
