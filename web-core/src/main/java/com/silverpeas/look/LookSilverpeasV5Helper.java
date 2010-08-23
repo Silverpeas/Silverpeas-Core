@@ -580,7 +580,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
   private PublicationHelper getPublicationHelper() throws ClassNotFoundException,
       InstantiationException, IllegalAccessException {
     if (kmeliaTransversal == null) {
-      String helperClassName = resources.getString("publicationHelper");
+      String helperClassName = resources.getString("publicationHelper", "com.stratelia.webactiv.kmelia.KmeliaTransversal");
       Class<?> helperClass = Class.forName(helperClassName);
       kmeliaTransversal = (PublicationHelper) helperClass.newInstance();
       kmeliaTransversal.setMainSessionController(mainSC);
