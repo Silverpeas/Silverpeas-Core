@@ -25,9 +25,7 @@
 package com.stratelia.silverpeas.notificationserver.channel.silvermail;
 
 import java.util.Date;
-import java.util.Hashtable;
 
-import javax.ejb.CreateException;
 import javax.jms.Message;
 
 import com.stratelia.silverpeas.notificationserver.NotificationData;
@@ -35,6 +33,7 @@ import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.util.Map;
 
 public class SILVERMAILListener extends AbstractListener {
 
@@ -47,6 +46,7 @@ public class SILVERMAILListener extends AbstractListener {
   /**
    * listener of NotificationServer JMS message
    */
+  @Override
   public void onMessage(Message msg) {
     try {
       SilverTrace.info("silvermail", "SILVERMAILListener.onMessage()",
@@ -59,10 +59,11 @@ public class SILVERMAILListener extends AbstractListener {
     }
   }
 
+  @Override
   public void send(NotificationData p_Message)
       throws NotificationServerException {
     try {
-      Hashtable keyValue = p_Message.getTargetParam();
+      Map<String, Object> keyValue = p_Message.getTargetParam();
       String tmpSubjectString = (String) keyValue.get("SUBJECT"); // retrieves
       // the SUBJECT
       // key value.
