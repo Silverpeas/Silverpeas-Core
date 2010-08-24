@@ -24,7 +24,6 @@
 
 package com.silverpeas.util.clipboard;
 
-
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
@@ -60,7 +59,7 @@ public abstract class ClipboardSelection implements Serializable, ClipboardOwner
 
   /**
    * Add a new DataFlavor to the list of supported DataFlavors.
-   * @param parFlavor 
+   * @param parFlavor
    */
   protected void addFlavor(DataFlavor parFlavor) {
     supportedFlavorsList.add(parFlavor);
@@ -73,10 +72,10 @@ public abstract class ClipboardSelection implements Serializable, ClipboardOwner
    */
   @Override
   public boolean isDataFlavorSupported(DataFlavor parFlavor) {
-    if(parFlavor == null) {
+    if (parFlavor == null) {
       return false;
     }
-    return supportedFlavorsList.contains(parFlavor); 
+    return supportedFlavorsList.contains(parFlavor);
   }
 
   /**
@@ -92,7 +91,7 @@ public abstract class ClipboardSelection implements Serializable, ClipboardOwner
   /**
    * Return the data stored into the DataFlavor.
    * @param parFlavor
-   * @return 
+   * @return
    */
   @Override
   public synchronized Object getTransferData(DataFlavor parFlavor)
@@ -109,7 +108,7 @@ public abstract class ClipboardSelection implements Serializable, ClipboardOwner
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * @return 
+   * @return
    */
   public boolean isSelected() {
     return selected;
@@ -118,7 +117,7 @@ public abstract class ClipboardSelection implements Serializable, ClipboardOwner
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * @param setIt 
+   * @param setIt
    */
   public void setSelected(boolean setIt) {
     selected = setIt;
@@ -127,7 +126,7 @@ public abstract class ClipboardSelection implements Serializable, ClipboardOwner
   /**
    * Does nothing.
    * @param parClipboard
-   * @param parTransferable 
+   * @param parTransferable
    */
   @Override
   public void lostOwnership(Clipboard parClipboard, Transferable parTransferable) {
@@ -136,14 +135,14 @@ public abstract class ClipboardSelection implements Serializable, ClipboardOwner
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * @return 
+   * @return
    */
   abstract protected IndexEntry getIndexEntry();
 
   /**
    * --------------------------------------------------------------------------
    * ------------------------------
-   * @return 
+   * @return
    */
   abstract protected SilverpeasKeyData getKeyData();
 

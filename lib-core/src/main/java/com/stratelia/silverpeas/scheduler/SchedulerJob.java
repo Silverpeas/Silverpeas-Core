@@ -297,7 +297,7 @@ abstract public class SchedulerJob extends Thread {
       startDaysOfMonth = new ArrayList<Integer>();
     }
 
-     for (Integer days : startDaysOfMonth) {
+    for (Integer days : startDaysOfMonth) {
       try {
         workInt = days.intValue();
 
@@ -650,7 +650,7 @@ abstract public class SchedulerJob extends Thread {
     while (!validTimeStamp) {
       // Get new minute
       if (vMinutes.isEmpty()) {
-// Default ('*') -> Hit every minute
+        // Default ('*') -> Hit every minute
         // If the cron setting for minutes is *, we don't have to care about
         // incrementing minutes
         // So do a carryHour

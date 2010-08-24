@@ -194,7 +194,6 @@ public abstract class Schema {
 
   /**
    * Return the value of the managed property.
-   *
    * @return the value of managed.
    */
   public boolean isManaged() {

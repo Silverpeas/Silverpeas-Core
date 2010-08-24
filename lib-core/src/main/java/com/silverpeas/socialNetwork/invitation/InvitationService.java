@@ -36,7 +36,6 @@ import java.util.Date;
 import java.util.List;
 
 /**
- *
  * @author Bensalem Nabil
  */
 public class InvitationService {
@@ -50,20 +49,17 @@ public class InvitationService {
   }
 
   /*
-   * send invitation
-   *return -1 if the invitation already exists
-   * return -2 if the relationShip already exists
-   * return the id of inviation if the adding done
+   * send invitationreturn -1 if the invitation already exists return -2 if the relationShip already
+   * exists return the id of inviation if the adding done
    * @param: int id
-   *
    */
   public int invite(Invitation invitation) {
     int resultRnvitation = 0;
     Connection connection = null;
     try {
       connection = getConnection();
-      if ((invitationDao.isExists(connection, invitation.getSenderId(), invitation.getReceiverId())
-          || invitationDao.isExists(connection, invitation.getReceiverId(), invitation.getSenderId()))) {
+      if ((invitationDao.isExists(connection, invitation.getSenderId(), invitation.getReceiverId()) || invitationDao
+          .isExists(connection, invitation.getReceiverId(), invitation.getSenderId()))) {
         resultRnvitation = -1;
       } else if (relationShipDao.isInRelationShip(connection, invitation.getSenderId(), invitation.
           getReceiverId())) {
@@ -81,11 +77,10 @@ public class InvitationService {
     }
     return resultRnvitation;
   }
+
   /*
    * ignore this invitation
-   *
    * @param: int id
-   *
    */
 
   public void ignoreInvitation(int id) {
@@ -103,13 +98,12 @@ public class InvitationService {
       DBUtil.close(connection);
     }
   }
+
   /*
-   * accepte this invitation that the sender an receiver   become in Relation
-   *return -1 if this Invitation not exists
-   *return -2 if the RelationShip already exists
-   * return the id of RelationShip if the adding done
+   * accepte this invitation that the sender an receiver become in Relationreturn -1 if this
+   * Invitation not existsreturn -2 if the RelationShip already exists return the id of RelationShip
+   * if the adding done
    * @param: int idInvitation
-   *
    */
 
   public int accepteInvitation(int idInvitation) {
@@ -253,7 +247,7 @@ public class InvitationService {
   }
 
   /**
-   * initialize the Connection to database 
+   * initialize the Connection to database
    * @return Connection
    * @throws UtilException
    * @throws SQLException

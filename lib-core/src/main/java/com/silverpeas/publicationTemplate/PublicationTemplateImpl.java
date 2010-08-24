@@ -93,12 +93,10 @@ public class PublicationTemplateImpl implements PublicationTemplate {
 
   /**
    * Return the RecordTemplate of the publication data item.
-   * 
    * @param loadIfNull
-   * @return the record template, or a dummy record template if not found (never
-   *         return <code>null</code> if <code>loadIfNull</code> is
-   *         <code>true</code>), or <code>null</code> if not loaded and
-   *         <code>loadIfNull</code> is <code>false</code>.
+   * @return the record template, or a dummy record template if not found (never return
+   * <code>null</code> if <code>loadIfNull</code> is <code>true</code>), or <code>null</code> if not
+   * loaded and <code>loadIfNull</code> is <code>false</code>.
    * @throws PublicationTemplateException
    */
   public RecordTemplate getRecordTemplate(boolean loadIfNull)
@@ -123,9 +121,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
 
   /**
    * Return the RecordSet of all the records built from this template.
-   *
-   * @return the record set or a dummy record set if not found (never return
-   *         <code>null</code>).
+   * @return the record set or a dummy record set if not found (never return <code>null</code>).
    * @throws PublicationTemplateException
    */
   @Override

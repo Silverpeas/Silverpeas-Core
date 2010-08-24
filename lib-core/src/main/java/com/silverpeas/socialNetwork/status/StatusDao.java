@@ -42,10 +42,11 @@ public class StatusDao {
   private static final String DELETE_STATUS = "DELETE FROM sb_sn_status WHERE id = ?";
   private static final String SELECT_STATUS_BY_ID =
       "SELECT id,userid, creationdate, description FROM sb_sn_status  WHERE id = ? ";
-  private static final String SELECT_LAST_STATUS_BY_USERID = " SELECT * FROM sb_sn_status WHERE userid = ? ORDER BY creationdate DESC";
+  private static final String SELECT_LAST_STATUS_BY_USERID =
+      " SELECT * FROM sb_sn_status WHERE userid = ? ORDER BY creationdate DESC";
   private static final String UPDATE_STATUS_BY_ID =
       "UPDATE sb_sn_status  SET  description = ? WHERE id = ? ";
-  
+
   /**
    * Change and create Status
    * @param:Connection connection, Status status
@@ -123,7 +124,6 @@ public class StatusDao {
         status.setDescription(rs.getString(4));
       }
 
-
     } finally {
       DBUtil.close(pstmt);
     }
@@ -153,7 +153,8 @@ public class StatusDao {
     ResultSet rs = null;
     List<SocialInformationStatus> status_list = new ArrayList<SocialInformationStatus>();
     try {
-      String query ="SELECT id,userid, creationdate, description FROM sb_sn_status  WHERE userid = ? ORDER BY creationdate DESC limit ? offset ?";
+      String query =
+          "SELECT id,userid, creationdate, description FROM sb_sn_status  WHERE userid = ? ORDER BY creationdate DESC limit ? offset ?";
       pstmt = connection.prepareStatement(query);
       pstmt.setInt(1, userId);
       pstmt.setInt(2, nbElement);
@@ -174,7 +175,8 @@ public class StatusDao {
     return status_list;
   }
 
-  public List<SocialInformationStatus> getAllStatus(Connection connection, int userId, int nbElement,
+  public List<SocialInformationStatus> getAllStatus(Connection connection, int userId,
+      int nbElement,
       int firstIndex) throws SQLException {
     String DatabaseProductName = connection.getMetaData().getDatabaseProductName().toUpperCase();
     if (DatabaseProductName.contains("PostgreSQL".toUpperCase())) {
@@ -190,7 +192,9 @@ public class StatusDao {
     ResultSet rs = null;
     List<SocialInformationStatus> status_list = new ArrayList<SocialInformationStatus>();
     try {
-     String query ="SELECT id,userid, creationdate, description FROM sb_sn_status  WHERE userid in ("+listToSqlString(myContactsIds)+") ORDER BY creationdate DESC limit ? offset ?";
+      String query =
+          "SELECT id,userid, creationdate, description FROM sb_sn_status  WHERE userid in (" +
+              listToSqlString(myContactsIds) + ") ORDER BY creationdate DESC limit ? offset ?";
 
       pstmt = connection.prepareStatement(query);
       pstmt.setInt(1, numberOfElement);
@@ -210,6 +214,7 @@ public class StatusDao {
     }
     return status_list;
   }
+
   private static String listToSqlString(List<String> list) {
     String result = "";
     if (list == null || list.size() == 0) {

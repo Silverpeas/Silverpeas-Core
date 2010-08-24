@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author Bensalem Nabil
  */
 public class ProviderSwitch implements ProviderSwitchInterface {
@@ -43,7 +42,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
   private SocialRelationShipsInterface socialRelationShipsInterface;
 
   /**
-   * return the SocialEvent providor  (by using Inversion of Control Containers )
+   * return the SocialEvent providor (by using Inversion of Control Containers )
    * @return SocialEventsInterface
    */
   @Override
@@ -52,7 +51,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
   }
 
   /**
-   *  set SocialEvent providor  (by using Inversion of Control Containers )
+   * set SocialEvent providor (by using Inversion of Control Containers )
    * @param socialGalleryInterface
    */
   @Override
@@ -61,7 +60,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
   }
 
   /**
-   * return the SocialGallery providor  (by using Inversion of Control Containers )
+   * return the SocialGallery providor (by using Inversion of Control Containers )
    * @return SocialEventsInterface
    */
   @Override
@@ -70,7 +69,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
   }
 
   /**
-   *  set SocialGallery providor  (by using Inversion of Control Containers )
+   * set SocialGallery providor (by using Inversion of Control Containers )
    * @param socialGalleryInterface
    */
   @Override
@@ -79,8 +78,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
   }
 
   /**
-   * get my social Informations list  according to the social information type
-   * and the UserId
+   * get my social Informations list according to the social information type and the UserId
    * @param socialInformationType
    * @param userId
    * @param String classification
@@ -123,7 +121,6 @@ public class ProviderSwitch implements ProviderSwitchInterface {
               offset);
           break;
 
-
         case ALL:
           for (SocialInformationType type : SocialInformationType.values()) {
             if (socialInformationType.ALL != type && socialInformationType.EVENT != type) {
@@ -146,13 +143,12 @@ public class ProviderSwitch implements ProviderSwitchInterface {
           SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", ex);
     }
 
-
     return listResult;
 
   }
 
   /**
-   * return the SocialPublications providor  (by using Inversion of Control Containers )
+   * return the SocialPublications providor (by using Inversion of Control Containers )
    * @return SocialEventsInterface
    */
   @Override
@@ -161,7 +157,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
   }
 
   /**
-   * set SocialPublications providor  (by using Inversion of Control Containers )
+   * set SocialPublications providor (by using Inversion of Control Containers )
    * @param socialPublicationsInterface
    */
   @Override
@@ -170,7 +166,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
   }
 
   /**
-   * return  SocialStatus providor  (by using Inversion of Control Containers )
+   * return SocialStatus providor (by using Inversion of Control Containers )
    * @return SocialEventsInterface
    */
   @Override
@@ -179,7 +175,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
   }
 
   /**
-   * set SocialStatus providor  (by using Inversion of Control Containers )
+   * set SocialStatus providor (by using Inversion of Control Containers )
    * @param socialPublicationsInterface
    */
   @Override
@@ -188,7 +184,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
   }
 
   /**
-   * set SocialRelationShips providor  (by using Inversion of Control Containers )
+   * set SocialRelationShips providor (by using Inversion of Control Containers )
    * @param socialPublicationsInterface
    */
   @Override
@@ -198,7 +194,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
   }
 
   /**
-   * return the SocialRelationShips providor  (by using Inversion of Control Containers )
+   * return the SocialRelationShips providor (by using Inversion of Control Containers )
    * @return SocialEventsInterface
    */
   @Override
@@ -207,8 +203,8 @@ public class ProviderSwitch implements ProviderSwitchInterface {
   }
 
   /**
-   * get the List of social Informations of my contatcs according to the social information type
-   * and  the ids of my contacts
+   * get the List of social Informations of my contatcs according to the social information type and
+   * the ids of my contacts
    * @param socialInformationType
    * @param myId
    * @param myContactsIds the ids of my contacts

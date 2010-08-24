@@ -26,7 +26,6 @@ package com.silverpeas.util.template;
 
 import java.util.Properties;
 
-
 public class SilverpeasTemplateFactory {
 
   public static SilverpeasTemplate createSilverpeasTemplate(Properties configuration) {

@@ -35,7 +35,7 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
  * A MatchingIndexEntry is an IndexEntry completed with a score by the search engine.
  */
 public class MatchingIndexEntry extends IndexEntry implements Serializable {
-  
+
   /**
    * list of XML form fields used to sort results
    */
@@ -103,7 +103,6 @@ public class MatchingIndexEntry extends IndexEntry implements Serializable {
   public void setSortableXMLFormFields(HashMap<String, String> sortableXMLFormFields) {
     this.sortableXMLFormFields = sortableXMLFormFields;
   }
-
 
   /**
    * The score defaults to 0 as if the entry wasn't a matching entry.

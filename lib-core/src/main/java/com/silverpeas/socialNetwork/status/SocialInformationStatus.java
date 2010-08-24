@@ -40,7 +40,7 @@ public class SocialInformationStatus implements SocialInformation {
   private String icon;
 
   public SocialInformationStatus(Status status) {
-    
+
     this.description = status.getDescription();
     this.author = new Integer(status.getUserId()).toString();
     this.title = author;
@@ -57,7 +57,8 @@ public class SocialInformationStatus implements SocialInformation {
   public String getAuthor() {
     return author;
   }
-/**
+
+  /**
    * return the Date of this SocialInfo
    * @return
    */
@@ -66,7 +67,8 @@ public class SocialInformationStatus implements SocialInformation {
     // TODO Auto-generated method stub
     return date;
   }
-/**
+
+  /**
    * return the Description of this SocialInformation
    * @return String
    */
@@ -81,7 +83,8 @@ public class SocialInformationStatus implements SocialInformation {
     // TODO Auto-generated method stub
     return icon;
   }
-/**
+
+  /**
    * return if this socialInfo was updtated or not
    * @return boolean
    */
@@ -90,7 +93,8 @@ public class SocialInformationStatus implements SocialInformation {
     // TODO Auto-generated method stub
     return false;
   }
-/**
+
+  /**
    * return the Title of this SocialInformation
    * @return String
    */
@@ -99,7 +103,8 @@ public class SocialInformationStatus implements SocialInformation {
     // TODO Auto-generated method stub
     return title;
   }
- /**
+
+  /**
    * return the Url of this SocialInfo
    * @return String
    */
@@ -115,7 +120,8 @@ public class SocialInformationStatus implements SocialInformation {
     return type.toString();
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see java.lang.Object#hashCode()
    */
   @Override
@@ -132,7 +138,8 @@ public class SocialInformationStatus implements SocialInformation {
     return result;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see java.lang.Object#equals(java.lang.Object)
    */
   @Override
@@ -199,9 +206,10 @@ public class SocialInformationStatus implements SocialInformation {
     }
     return true;
   }
-/**
+
+  /**
    *Indicates whether some other SocialInformation date is befor the date of this one.
-   *@param   obj   the reference object with which to compare.
+   *@param obj the reference object with which to compare.
    * @return int
    */
   @Override

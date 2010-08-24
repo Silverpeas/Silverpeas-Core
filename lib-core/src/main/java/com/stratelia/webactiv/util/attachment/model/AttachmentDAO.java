@@ -48,18 +48,22 @@ public class AttachmentDAO {
   private static String attachmentTableName = "SB_Attachment_Attachment";
   private static String attachmentTableColumns =
       " attachmentId, attachmentPhysicalName, attachmentLogicalName, attachmentDescription, attachmentType, "
-      + "attachmentSize, attachmentContext, attachmentForeignkey, instanceId, attachmentCreationDate, attachmentAuthor, "
-      + "attachmentTitle, attachmentInfo, attachmentOrderNum, workerId, cloneId, lang, reservationDate, alertDate, expiryDate, xmlForm ";
+          + "attachmentSize, attachmentContext, attachmentForeignkey, instanceId, attachmentCreationDate, attachmentAuthor, "
+          + "attachmentTitle, attachmentInfo, attachmentOrderNum, workerId, cloneId, lang, reservationDate, alertDate, expiryDate, xmlForm ";
   private final static int nameMaxLength = 100;
-  
-  
-  
-  private static final String SELECT_BY_PRIMARY_KEY = "SELECT attachmentId, attachmentPhysicalName," +
-  		" attachmentLogicalName, attachmentDescription, attachmentType, attachmentSize, " +
-  		"attachmentContext, attachmentForeignkey, instanceId, attachmentCreationDate, " +
-  		"attachmentAuthor, attachmentTitle, attachmentInfo, attachmentOrderNum, workerId, cloneId, " +
-  		"lang, reservationDate, alertDate, expiryDate, xmlForm FROM sb_attachment_attachment WHERE " +
-  		"attachmentId = ? ";
+
+  private static final String SELECT_BY_PRIMARY_KEY =
+      "SELECT attachmentId, attachmentPhysicalName,"
+          +
+          " attachmentLogicalName, attachmentDescription, attachmentType, attachmentSize, "
+          +
+          "attachmentContext, attachmentForeignkey, instanceId, attachmentCreationDate, "
+          +
+          "attachmentAuthor, attachmentTitle, attachmentInfo, attachmentOrderNum, workerId, cloneId, "
+          +
+          "lang, reservationDate, alertDate, expiryDate, xmlForm FROM sb_attachment_attachment WHERE "
+          +
+          "attachmentId = ? ";
 
   public AttachmentDAO() {
   }
@@ -85,7 +89,8 @@ public class AttachmentDAO {
       } catch (java.text.ParseException e) {
         throw new SQLException(
             "AttachmentDAO.result2AttachmentDetail() : internal error : creationDate format unknown for attachment.pk = "
-            + pk + " : " + e.toString());
+                +
+                pk + " : " + e.toString());
       }
     } else {
       attachDetail.setCreationDate(new Date());
@@ -112,7 +117,8 @@ public class AttachmentDAO {
       } catch (java.text.ParseException e) {
         throw new SQLException(
             "AttachmentDAO.result2AttachmentDetail() : internal error : reservationDate format unknown for attachment.pk = "
-            + pk + " : " + e.toString());
+                +
+                pk + " : " + e.toString());
       }
     } else {
       attachDetail.setReservationDate(null);
@@ -126,7 +132,8 @@ public class AttachmentDAO {
       } catch (java.text.ParseException e) {
         throw new SQLException(
             "AttachmentDAO.result2AttachmentDetail() : internal error : alertDate format unknown for attachment.pk = "
-            + pk + " : " + e.toString());
+                +
+                pk + " : " + e.toString());
       }
     } else {
       attachDetail.setAlertDate(null);
@@ -140,7 +147,8 @@ public class AttachmentDAO {
       } catch (java.text.ParseException e) {
         throw new SQLException(
             "AttachmentDAO.result2AttachmentDetail() : internal error : expiryDate format unknown for attachment.pk = "
-            + pk + " : " + e.toString());
+                +
+                pk + " : " + e.toString());
       }
     } else {
       attachDetail.setExpiryDate(null);
@@ -224,7 +232,8 @@ public class AttachmentDAO {
       throws SQLException {
     StringBuilder updateQuery = new StringBuilder();
     updateQuery.append("UPDATE ").append(attachmentTableName).append(" SET attachmentTitle = ?, ");
-    updateQuery.append("attachmentInfo = ?, attachmentPhysicalName = ?, attachmentLogicalName = ?, ");
+    updateQuery
+        .append("attachmentInfo = ?, attachmentPhysicalName = ?, attachmentLogicalName = ?, ");
     updateQuery.append("attachmentDescription = ?, attachmentSize = ?, attachmentType = ?, ");
     updateQuery.append("attachmentContext = ?, attachmentCreationDate = ?, attachmentAuthor = ?, ");
     updateQuery.append("attachmentOrderNum = ?, workerId = ?, instanceId = ?, lang = ?, ");

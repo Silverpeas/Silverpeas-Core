@@ -144,9 +144,9 @@ public class RelationShip {
 
   /**
    * Indicates whether some other object is "equal to" this one.
-   *@param   obj   the reference object with which to compare.
-   *@return  <code>true</code> if this object is the same as the obj
-   *          argument; <code>false</code> otherwise.
+   *@param obj the reference object with which to compare.
+   *@return <code>true</code> if this object is the same as the obj argument; <code>false</code>
+   * otherwise.
    */
   @Override
   public boolean equals(Object obj) {
@@ -169,8 +169,9 @@ public class RelationShip {
     if (this.typeRelationShipId != other.typeRelationShipId) {
       return false;
     }
-    if (this.acceptanceDate != other.acceptanceDate && (this.acceptanceDate == null || !this.acceptanceDate.
-        equals(other.acceptanceDate))) {
+    if (this.acceptanceDate != other.acceptanceDate &&
+        (this.acceptanceDate == null || !this.acceptanceDate.
+            equals(other.acceptanceDate))) {
       return false;
     }
     return true;

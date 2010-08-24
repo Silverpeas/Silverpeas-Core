@@ -47,7 +47,7 @@ public class SilverpeasStringTemplate implements SilverpeasTemplate {
     StringTemplateGroup group = new StringTemplateGroup(fileName, customersRootDir);
     String physicalName = group.getFileNameFromTemplateName(fileName);
     File file = new File(customersRootDir, physicalName);
-    if (!file.exists() ||  !file.isFile()) {
+    if (!file.exists() || !file.isFile()) {
       group = new StringTemplateGroup(fileName, templateConfig.getProperty(TEMPLATE_ROOT_DIR));
     }
     group.setFileCharEncoding("UTF-8");

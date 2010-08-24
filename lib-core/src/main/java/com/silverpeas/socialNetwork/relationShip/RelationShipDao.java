@@ -36,10 +36,14 @@ import java.util.List;
 
 public class RelationShipDao {
 
-  private static final String INSERT_RELATIONSHIP = "INSERT INTO sb_sn_RelationShip (id, user1Id, user2Id, typeRelationShipId, acceptanceDate,inviterid) VALUES (?, ?, ?, ?, ?,?)";
-  private static final String DELETE_RELATIONSHIP = "DELETE FROM sb_sn_RelationShip WHERE user1Id = ? and user2Id= ? ";
-  private static final String SELECT_RELATIONSHIP = "SELECT id, user1Id, user2Id, typeRelationShipId, acceptanceDate,inviterId FROM sb_sn_RelationShip  WHERE user1Id = ? and user2Id= ?";
-  private static final String SELECT_ALL_MY_RELATIONSHIP = "SELECT id, user1Id, user2Id, typeRelationShipId, acceptanceDate,inviterId FROM sb_sn_RelationShip  WHERE user1Id = ?";
+  private static final String INSERT_RELATIONSHIP =
+      "INSERT INTO sb_sn_RelationShip (id, user1Id, user2Id, typeRelationShipId, acceptanceDate,inviterid) VALUES (?, ?, ?, ?, ?,?)";
+  private static final String DELETE_RELATIONSHIP =
+      "DELETE FROM sb_sn_RelationShip WHERE user1Id = ? and user2Id= ? ";
+  private static final String SELECT_RELATIONSHIP =
+      "SELECT id, user1Id, user2Id, typeRelationShipId, acceptanceDate,inviterId FROM sb_sn_RelationShip  WHERE user1Id = ? and user2Id= ?";
+  private static final String SELECT_ALL_MY_RELATIONSHIP =
+      "SELECT id, user1Id, user2Id, typeRelationShipId, acceptanceDate,inviterId FROM sb_sn_RelationShip  WHERE user1Id = ?";
 
   /**
    * rturn int (the id of this new relationShip)
@@ -70,8 +74,7 @@ public class RelationShipDao {
   }
 
   /**
-   * delete this relationShip
-   * rturn boolean (if this relationShips is deleted return true)
+   * delete this relationShip rturn boolean (if this relationShips is deleted return true)
    * @param connection
    * @param user1Id
    * @param user2Id
@@ -95,8 +98,7 @@ public class RelationShipDao {
   }
 
   /**
-   * delete this relationShip
-   * rturn boolean (if this relationShips is deleted return true)
+   * delete this relationShip rturn boolean (if this relationShips is deleted return true)
    * @param connection
    * @param relationShip
    * @return boolean
@@ -142,6 +144,7 @@ public class RelationShipDao {
     }
     return relationShip;
   }
+
   /**
    * rturn if this relationShip exist or not
    * @param connection
@@ -191,8 +194,7 @@ public class RelationShipDao {
   }
 
   /**
-   * get list of  my socialInformation (relationShip) according to
-   * number of Item and the first Index
+   * get list of my socialInformation (relationShip) according to number of Item and the first Index
    * @param con
    * @param userId
    * @param numberOfElement
@@ -212,8 +214,8 @@ public class RelationShipDao {
   }
 
   /**
-   * when the data base is PostgreSQL get list of  my socialInformation (relationShip)
-   * according to  number of Item and the first Index
+   * when the data base is PostgreSQL get list of my socialInformation (relationShip) according to
+   * number of Item and the first Index
    * @param connection
    * @param userId
    * @param numberOfElement
@@ -225,7 +227,8 @@ public class RelationShipDao {
       String userId, int numberOfElement, int firstIndex) throws SQLException {
     ResultSet rs = null;
     PreparedStatement pstmt = null;
-    List<SocialInformationRelationShip> listMyRelation = new ArrayList<SocialInformationRelationShip>();
+    List<SocialInformationRelationShip> listMyRelation =
+        new ArrayList<SocialInformationRelationShip>();
     String query = "SELECT id, user1Id, user2Id, typeRelationShipId, acceptanceDate,inviterId "
         + "FROM sb_sn_RelationShip  WHERE user1Id = ? order by acceptanceDate desc ";
     if (numberOfElement > 0) {
@@ -258,9 +261,8 @@ public class RelationShipDao {
   }
 
   /**
-   * 
-   * when the data base is Oracle get list of  my socialInformation (relationShip)
-   * according to  number of Item and the first Index
+   * when the data base is Oracle get list of my socialInformation (relationShip) according to
+   * number of Item and the first Index
    * @param connection
    * @param userId
    * @param numberOfElement
@@ -269,14 +271,15 @@ public class RelationShipDao {
    * @throws SQLException
    */
 
-   
   List<SocialInformationRelationShip> getAllMyRelationShips_Oracle(Connection connection,
       String userId, int numberOfElement, int firstIndex) throws SQLException {
     ResultSet rs = null;
     PreparedStatement pstmt = null;
-    List<SocialInformationRelationShip> listMyRelation = new ArrayList<SocialInformationRelationShip>();
-    String query = "select * from (ROWNUM num , table_oracle.* from (SELECT id, user1Id, user2Id, typeRelationShipId, acceptanceDate,,inviterId "
-        + "FROM sb_sn_RelationShip  WHERE user1Id = ? order by acceptanceDate desc ) table_oracle) ";
+    List<SocialInformationRelationShip> listMyRelation =
+        new ArrayList<SocialInformationRelationShip>();
+    String query =
+        "select * from (ROWNUM num , table_oracle.* from (SELECT id, user1Id, user2Id, typeRelationShipId, acceptanceDate,,inviterId "
+            + "FROM sb_sn_RelationShip  WHERE user1Id = ? order by acceptanceDate desc ) table_oracle) ";
     if (numberOfElement > 0) {
       query += " where num between ? and ? ";
     }
@@ -305,10 +308,9 @@ public class RelationShipDao {
     return listMyRelation;
   }
 
-
   /**
-   * when the data base is Oracle get list of  my socialInformation (relationShip)
-   * according to number of Item and the first Index
+   * when the data base is Oracle get list of my socialInformation (relationShip) according to
+   * number of Item and the first Index
    * @param connection
    * @param userId
    * @param numberOfElement
@@ -320,7 +322,8 @@ public class RelationShipDao {
       String userId, int numberOfElement, int firstIndex) throws SQLException {
     ResultSet rs = null;
     PreparedStatement pstmt = null;
-    List<SocialInformationRelationShip> listMyRelation = new ArrayList<SocialInformationRelationShip>();
+    List<SocialInformationRelationShip> listMyRelation =
+        new ArrayList<SocialInformationRelationShip>();
     String query = "SELECT id, user1Id, user2Id, typeRelationShipId, acceptanceDate,inviterId "
         + "FROM sb_sn_RelationShip  WHERE user1Id = ? order by acceptanceDate desc ";
 
@@ -349,8 +352,8 @@ public class RelationShipDao {
   }
 
   /**
-   * Get list socialInformationRelationShip (relationShips) of my Contacts
-   * according to number of Item and the first Index
+   * Get list socialInformationRelationShip (relationShips) of my Contacts according to number of
+   * Item and the first Index
    * @param con
    * @param myId
    * @param myContactsIds
@@ -391,8 +394,8 @@ public class RelationShipDao {
   }
 
   /**
-   * When data base is PostgreSQL get list socialInformationRelationShip (relationShips)
-   * of my Contacts according to number of Item and the first Index
+   * When data base is PostgreSQL get list socialInformationRelationShip (relationShips) of my
+   * Contacts according to number of Item and the first Index
    * @param con
    * @param myId
    * @param myContactsIds
@@ -406,9 +409,12 @@ public class RelationShipDao {
       throws SQLException {
     ResultSet rs = null;
     PreparedStatement pstmt = null;
-    List<SocialInformationRelationShip> listMyRelation = new ArrayList<SocialInformationRelationShip>();
-    String query = "SELECT id, user1Id, user2Id, typeRelationShipId, acceptanceDate,inviterId "
-        + "FROM sb_sn_RelationShip  WHERE user1Id in(" + listToSqlString(myContactsIds) + ")and inviterid=user1Id order by acceptanceDate desc ";
+    List<SocialInformationRelationShip> listMyRelation =
+        new ArrayList<SocialInformationRelationShip>();
+    String query =
+        "SELECT id, user1Id, user2Id, typeRelationShipId, acceptanceDate,inviterId "
+            + "FROM sb_sn_RelationShip  WHERE user1Id in(" + listToSqlString(myContactsIds) +
+            ")and inviterid=user1Id order by acceptanceDate desc ";
     if (numberOfElement > 0) {
       query += "limit ? offset ? ";
     }
@@ -437,19 +443,25 @@ public class RelationShipDao {
   }
 
   /**
-   * When data base is Oracle get list socialInformationRelationShip (relationShips)
-   * of my Contacts according to number of Item and the first Index
+   * When data base is Oracle get list socialInformationRelationShip (relationShips) of my Contacts
+   * according to number of Item and the first Index
    * @return: List <SocialInformationRelationShip>
-   * @param: Connection connection,String myId,List<String> myContactsIds, int numberOfElement, int firstIndex
+   * @param: Connection connection,String myId,List<String> myContactsIds, int numberOfElement, int
+   * firstIndex
    */
   private List<SocialInformationRelationShip> getAllRelationShipsOfMyContact_Oracle(Connection con,
       String myId, List<String> myContactsIds, int numberOfElement, int firstIndex) throws
       SQLException {
     ResultSet rs = null;
     PreparedStatement pstmt = null;
-    List<SocialInformationRelationShip> listMyRelation = new ArrayList<SocialInformationRelationShip>();
-    String query = "select * from (ROWNUM num , table_oracle.* from (SELECT id, user1Id, user2Id, typeRelationShipId, acceptanceDate,inviterId "
-        + "FROM sb_sn_RelationShip  WHERE user1Id in(" + listToSqlString(myContactsIds) + ")and inviterid=user1Id order by acceptanceDate desc ) table_oracle) ";
+    List<SocialInformationRelationShip> listMyRelation =
+        new ArrayList<SocialInformationRelationShip>();
+    String query =
+        "select * from (ROWNUM num , table_oracle.* from (SELECT id, user1Id, user2Id, typeRelationShipId, acceptanceDate,inviterId "
+            +
+            "FROM sb_sn_RelationShip  WHERE user1Id in(" +
+            listToSqlString(myContactsIds) +
+            ")and inviterid=user1Id order by acceptanceDate desc ) table_oracle) ";
     if (numberOfElement > 0) {
       query += " where num between ? and ? ";
     }
@@ -478,8 +490,8 @@ public class RelationShipDao {
   }
 
   /**
-   * When data base is PostgreSQL get list socialInformationRelationShip (relationShips)
-   * of my Contacts according to number of Item and the first Index
+   * When data base is PostgreSQL get list socialInformationRelationShip (relationShips) of my
+   * Contacts according to number of Item and the first Index
    * @param con
    * @param myId
    * @param myContactsIds
@@ -488,14 +500,17 @@ public class RelationShipDao {
    * @return List<SocialInformationRelationShip>
    * @throws SQLException
    */
-   private List<SocialInformationRelationShip> getAllRelationShipsOfMyContact_MMS(Connection con,
+  private List<SocialInformationRelationShip> getAllRelationShipsOfMyContact_MMS(Connection con,
       String myId,
       List<String> myContactsIds, int numberOfElement, int firstIndex) throws SQLException {
     ResultSet rs = null;
     PreparedStatement pstmt = null;
-    List<SocialInformationRelationShip> listMyRelation = new ArrayList<SocialInformationRelationShip>();
-    String query = "SELECT id, user1Id, user2Id, typeRelationShipId, acceptanceDate,inviterId "
-        + "FROM sb_sn_RelationShip  WHERE user1Id in(" + listToSqlString(myContactsIds) + ")and inviterid=user1Id order by acceptanceDate desc ";
+    List<SocialInformationRelationShip> listMyRelation =
+        new ArrayList<SocialInformationRelationShip>();
+    String query =
+        "SELECT id, user1Id, user2Id, typeRelationShipId, acceptanceDate,inviterId "
+            + "FROM sb_sn_RelationShip  WHERE user1Id in(" + listToSqlString(myContactsIds) +
+            ")and inviterid=user1Id order by acceptanceDate desc ";
 
     try {
       pstmt = con.prepareStatement(query);
@@ -551,7 +566,7 @@ public class RelationShipDao {
    * @param connection
    * @param user1Id
    * @param user2Id
-   * @return  List<String>
+   * @return List<String>
    * @throws SQLException
    */
   List<String> getAllCommonContactsIds(Connection connection, int user1Id, int user2Id) throws

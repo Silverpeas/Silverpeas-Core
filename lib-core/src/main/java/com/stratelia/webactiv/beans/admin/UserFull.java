@@ -23,7 +23,6 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.util.HashMap;
 import java.util.Map.Entry;

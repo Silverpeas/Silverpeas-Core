@@ -486,10 +486,24 @@ public class NotificationData implements Serializable {
     hash = 83 * hash + (this.mTargetName != null ? this.mTargetName.hashCode() : 0);
     hash = 83 * hash + (this.mTargetParam != null ? this.mTargetParam.hashCode() : 0);
     hash = 83 * hash + (this.mPrioritySpeed != null ? this.mPrioritySpeed.hashCode() : 0);
-    hash = 83 * hash + (this.mReportToSenderStatus != null ? this.mReportToSenderStatus.hashCode() : 0);
-    hash = 83 * hash + (this.mReportToSenderTargetChannel != null ? this.mReportToSenderTargetChannel.hashCode() : 0);
-    hash = 83 * hash + (this.mReportToSenderTargetReceipt != null ? this.mReportToSenderTargetReceipt.hashCode() : 0);
-    hash = 83 * hash + (this.mReportToSenderTargetParam != null ? this.mReportToSenderTargetParam.hashCode() : 0);
+    hash =
+        83 * hash +
+            (this.mReportToSenderStatus != null ? this.mReportToSenderStatus.hashCode() : 0);
+    hash =
+        83 *
+            hash +
+            (this.mReportToSenderTargetChannel != null ? this.mReportToSenderTargetChannel
+                .hashCode() : 0);
+    hash =
+        83 *
+            hash +
+            (this.mReportToSenderTargetReceipt != null ? this.mReportToSenderTargetReceipt
+                .hashCode() : 0);
+    hash =
+        83 *
+            hash +
+            (this.mReportToSenderTargetParam != null ? this.mReportToSenderTargetParam.hashCode()
+                : 0);
     hash = 83 * hash + (this.mReportToLogStatus != null ? this.mReportToLogStatus.hashCode() : 0);
     return hash;
   }

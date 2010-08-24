@@ -28,14 +28,12 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.util.List;
 
 /**
- *
  * @author Bensalem Nabil
  */
 public interface SocialRelationShipsInterface {
 
-   /**
-   * get list of socialInformation
-   * according to  number of Item and the first Index
+  /**
+   * get list of socialInformation according to number of Item and the first Index
    * @param userId
    * @param numberOfElement
    * @param firstIndex
@@ -45,9 +43,10 @@ public interface SocialRelationShipsInterface {
 
   public List getSocialInformationsList(String userId, int numberOfElement, int firstIndex) throws
       SilverpeasException;
+
   /**
-   * get list of socialInformation of my contacts
-   * according to ids of my contacts , number of Item and the first Index
+   * get list of socialInformation of my contacts according to ids of my contacts , number of Item
+   * and the first Index
    * @param myId
    * @param myContactsIds
    * @param numberOfElement
@@ -56,6 +55,7 @@ public interface SocialRelationShipsInterface {
    * @throws SilverpeasException
    */
 
-  public List getSocialInformationsListOfMyContacts(String myId , List<String> myContactsIds , int numberOfElement, int firstIndex) throws
+  public List getSocialInformationsListOfMyContacts(String myId, List<String> myContactsIds,
+      int numberOfElement, int firstIndex) throws
       SilverpeasException;
 }

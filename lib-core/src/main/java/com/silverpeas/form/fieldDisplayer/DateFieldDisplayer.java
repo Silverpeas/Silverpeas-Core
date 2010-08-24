@@ -158,10 +158,11 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
 
     input inputField = new input();
     inputField.setID(fieldName);
-    inputField.setName(fieldName);	
+    inputField.setName(fieldName);
     inputField.setValue(EncodeHelper.javaStringToHtmlString(value));
     inputField.setType(template.isHidden() ? input.hidden : input.text);
-    inputField.setMaxlength(parameters.containsKey("maxLength") ? parameters.get("maxLength") : "10");
+    inputField.setMaxlength(parameters.containsKey("maxLength") ? parameters.get("maxLength")
+        : "10");
     inputField.setSize(parameters.containsKey("size") ? parameters.get("size") : "13");
     if (parameters.containsKey("border")) {
       inputField.setBorder(Integer.parseInt(parameters.get("border")));
@@ -173,11 +174,11 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
     }
 
     if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {
-		inputField.setClass("dateToPick");
+      inputField.setClass("dateToPick");
       ElementContainer container = new ElementContainer();
       container.addElement(inputField);
 
-	  span spanCSS = new span();
+      span spanCSS = new span();
       if (StringUtil.isDefined(cssClass)) {
         spanCSS.setClass(cssClass);
       } else {

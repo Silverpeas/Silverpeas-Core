@@ -37,12 +37,17 @@ import java.util.List;
 
 public class InvitationDao {
 
-  private static final String INSERT_INVITATION = "INSERT INTO sb_sn_invitation (id, senderID, receiverId, message, invitationDate) VALUES (?, ?, ?, ?, ?)";
+  private static final String INSERT_INVITATION =
+      "INSERT INTO sb_sn_invitation (id, senderID, receiverId, message, invitationDate) VALUES (?, ?, ?, ?, ?)";
   private static final String DELETE_INVITATION = "DELETE FROM sb_sn_invitation WHERE id = ?";
-  private static final String SELECT_INVITATION = "SELECT id, senderID, receiverId, message, invitationDate FROM sb_sn_invitation  WHERE senderID = ? and receiverId= ?";
-  private static final String SELECT_INVITATION_BY_ID = "SELECT id, senderID, receiverId, message, invitationDate FROM sb_sn_invitation  WHERE id = ? ";
-  private static final String SELECT_ALL_INVITATIONS_SENT = "SELECT id, senderID, receiverId, message, invitationDate FROM sb_sn_invitation  WHERE senderID = ?";
-  private static final String SELECT_ALL_INVITATIONS_RECEIVE = "SELECT id, senderID, receiverId, message, invitationDate FROM sb_sn_invitation  WHERE receiverId= ?";
+  private static final String SELECT_INVITATION =
+      "SELECT id, senderID, receiverId, message, invitationDate FROM sb_sn_invitation  WHERE senderID = ? and receiverId= ?";
+  private static final String SELECT_INVITATION_BY_ID =
+      "SELECT id, senderID, receiverId, message, invitationDate FROM sb_sn_invitation  WHERE id = ? ";
+  private static final String SELECT_ALL_INVITATIONS_SENT =
+      "SELECT id, senderID, receiverId, message, invitationDate FROM sb_sn_invitation  WHERE senderID = ?";
+  private static final String SELECT_ALL_INVITATIONS_RECEIVE =
+      "SELECT id, senderID, receiverId, message, invitationDate FROM sb_sn_invitation  WHERE receiverId= ?";
 
   /**
    * Create new invitation
@@ -74,7 +79,7 @@ public class InvitationDao {
   }
 
   /**
-   * Delete  invitation rturn true whene this invitation was deleting
+   * Delete invitation rturn true whene this invitation was deleting
    * @param connection
    * @param id
    * @return boolean
@@ -126,8 +131,8 @@ public class InvitationDao {
     }
     return invitation;
   }
+
   /**
-   *
    * rturn invitation
    * @param connection
    * @param id
@@ -171,8 +176,9 @@ public class InvitationDao {
   public boolean isExists(Connection connection, int senderId, int receiverId) throws SQLException {
     return (getInvitation(connection, senderId, receiverId) != null);
   }
+
   /**
-   * return All  my invitations sented
+   * return All my invitations sented
    * @param connection
    * @param myId
    * @return List<Invitation>
@@ -206,7 +212,7 @@ public class InvitationDao {
   }
 
   /**
-   *  return All my invitations received
+   * return All my invitations received
    * @param connection
    * @param myId
    * @return List<Invitation>

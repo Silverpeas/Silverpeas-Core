@@ -250,10 +250,10 @@ public class SpaceUserRoleTable extends Table {
     if (spaceUserRole == null)
       return;
 
-    //delete all users attached to profile
+    // delete all users attached to profile
     removeAllUsersFromSpaceUserRole(id);
 
-    //delete all groups attached to profile
+    // delete all groups attached to profile
     removeAllGroupsFromSpaceUserRole(id);
 
     updateRelation(DELETE_SPACEUSERROLE, id);

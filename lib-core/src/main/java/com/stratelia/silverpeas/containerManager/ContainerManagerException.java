@@ -34,7 +34,7 @@ import com.stratelia.webactiv.util.exception.*;
  * @author n.chaix
  */
 public class ContainerManagerException extends SilverpeasException {
-  
+
   private static final long serialVersionUID = -4426734498770573263L;
 
   /**

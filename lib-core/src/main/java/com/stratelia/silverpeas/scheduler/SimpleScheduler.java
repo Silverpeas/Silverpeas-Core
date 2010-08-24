@@ -23,10 +23,10 @@
  */
 
 /*
-12/02/2002 Marc Guillemin :
-rename package,
-replace the logging functions with SilverTrace,
-delete the SchedulerShellJob and TreadedInputStream (because logging).
+ 12/02/2002 Marc Guillemin :
+ rename package,
+ replace the logging functions with SilverTrace,
+ delete the SchedulerShellJob and TreadedInputStream (because logging).
  */
 package com.stratelia.silverpeas.scheduler;
 
@@ -241,7 +241,8 @@ public class SimpleScheduler {
    * @throws SchedulerException
    */
   public static SchedulerJob getJob(SchedulerEventHandler aJobOwner, String aJobName,
-      String aCronString, Object aMethodOwner, String aExecutionMethodName) throws SchedulerException {
+      String aCronString, Object aMethodOwner, String aExecutionMethodName)
+      throws SchedulerException {
     initScheduler();
     if (aJobOwner == null) {
       throw new SchedulerException(
@@ -378,7 +379,8 @@ public class SimpleScheduler {
    * @return A list of the jobs of the given job owner
    * @throws SchedulerException
    */
-  public static List<SchedulerJob> getJobList(SchedulerEventHandler aJobOwner) throws SchedulerException {
+  public static List<SchedulerJob> getJobList(SchedulerEventHandler aJobOwner)
+      throws SchedulerException {
     initScheduler();
     synchronized (SimpleScheduler.class) {
       if (theSimpleScheduler.htJobs.get(aJobOwner) != null) {

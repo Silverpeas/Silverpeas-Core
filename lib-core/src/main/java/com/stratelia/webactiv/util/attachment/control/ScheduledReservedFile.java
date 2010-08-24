@@ -55,7 +55,8 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
     try {
       String cron = resources.getString("cronScheduledReservedFile");
       SimpleScheduler.removeJob(this, ATTACHMENT_JOB_NAME_PROCESS);
-      SimpleScheduler.getJob(this, ATTACHMENT_JOB_NAME_PROCESS, cron, this, "doScheduledReservedFile");
+      SimpleScheduler.getJob(this, ATTACHMENT_JOB_NAME_PROCESS, cron, this,
+          "doScheduledReservedFile");
     } catch (Exception e) {
       SilverTrace.error("attachment", "ScheduledReservedFile.initialize()",
           "attachment.EX_CANT_INIT_SCHEDULED_RESERVED_FILE", e);

@@ -160,7 +160,8 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer {
 
     if (!template.isHidden()) {
       html.append("<textarea name=\"").append(fieldName)
-          .append("$$name\" disabled=\"disabled\" rows=\"").append(rows).append("\" cols=\"").append(cols)
+          .append("$$name\" disabled=\"disabled\" rows=\"").append(rows).append("\" cols=\"")
+          .append(cols)
           .append("\">")
           .append(EncodeHelper.javaStringToHtmlString(userNames)).append("</textarea>");
     }

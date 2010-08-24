@@ -373,7 +373,7 @@ public class UserTable extends Table {
    */
   public String[] getDirectUserIdsOfGroupUserRole(int groupUserRoleId)
       throws AdminPersistenceException {
-    return  getIds(SELECT_USER_IDS_IN_GROUPUSERROLE, groupUserRoleId).toArray(new String[0]);
+    return getIds(SELECT_USER_IDS_IN_GROUPUSERROLE, groupUserRoleId).toArray(new String[0]);
   }
 
   static final private String SELECT_USER_IDS_IN_GROUPUSERROLE =
@@ -431,13 +431,13 @@ public class UserTable extends Table {
     for (int i = 0; i < ids.size(); i++) {
       idsArray[i] = ids.get(i).intValue();
     }
-    List<String> result = getIds(theQuery.toString(), idsArray, params.toArray(new String[params.size()]));
-    if(manualFiltering) {
+    List<String> result =
+        getIds(theQuery.toString(), idsArray, params.toArray(new String[params.size()]));
+    if (manualFiltering) {
       result.retainAll(userIds);
     }
     return result.toArray(new String[result.size()]);
   }
-
 
   static final private String SELECT_SEARCH_USERSID =
       "select DISTINCT ST_User.id, UPPER(ST_User.lastName) "
@@ -445,8 +445,8 @@ public class UserTable extends Table {
 
   /**
    * Returns all the Users satiffying the model
-   * @param userModel 
-   * @param isAnd 
+   * @param userModel
+   * @param isAnd
    * @return
    * @throws AdminPersistenceException
    */

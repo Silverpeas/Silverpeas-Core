@@ -95,7 +95,7 @@ public class GlobalSilverContent extends AbstractI18NBean implements java.io.Ser
         .getComponent(), mie.getLastModificationDate(), null, mie.getCreationUser());
     setCreationDate(mie.getCreationDate());
 
-    //add the sortable feld from XML form   
+    // add the sortable feld from XML form
     sortableXMLFormFields = mie.getSortableXMLFormFields();
 
     Iterator<String> languages = mie.getLanguages();
@@ -298,6 +298,7 @@ public class GlobalSilverContent extends AbstractI18NBean implements java.io.Ser
   public void setThumbnailMimeType(String thumbnailMimeType) {
     this.thumbnailMimeType = thumbnailMimeType;
   }
+
   /**
    * gets the list of Sortable fields if the content is a form XML
    * @return the sortableXMLFormFields

@@ -1215,12 +1215,10 @@ public class NotificationManager implements NotificationParameterNames {
         addressIds[0] = m_DefaultDefaultAddress;
       }
 
-    }
-    else {
+    } else {
       // notification avec choix du canal
       addressIds[0] = addressId;
     }
-      
 
     nars = new NotifAddressRow[addressIds.length];
     for (int i = 0; i < addressIds.length; i++) {

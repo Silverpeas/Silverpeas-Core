@@ -54,9 +54,10 @@ public class LDAPUtility {
   public final static int MAX_NB_RETRY_CONNECT = 10;
   public final static int MAX_NB_RETRY_TIMELIMIT = 5;
   public final static String BASEDN_SEPARATOR = ";;";
-  
+
   final static Map<String, LDAPConnectInfos> connectInfos = new HashMap<String, LDAPConnectInfos>();
   static int connexionsLastId = 0;
+
   /**
    * Method declaration
    * @param driverSettings
@@ -165,7 +166,8 @@ public class LDAPUtility {
         valret = new LDAPConnection();
       }
       valret.connect(driverSettings.getLDAPHost(), driverSettings.getLDAPPort());
-      valret.bind(driverSettings.getLDAPProtocolVer(), driverSettings.getLDAPAccessLoginDN(), driverSettings.getLDAPAccessPasswd());
+      valret.bind(driverSettings.getLDAPProtocolVer(), driverSettings.getLDAPAccessLoginDN(),
+          driverSettings.getLDAPAccessPasswd());
       valret.setConstraints(driverSettings.getSearchConstraints(false));
       (connectInfos.get(connectionId)).connection = valret;
     } catch (LDAPException e) {
@@ -362,7 +364,7 @@ public class LDAPUtility {
     }
   }
 
-   public static String dblBackSlashesForDNInFilters(String theDN) {
+  public static String dblBackSlashesForDNInFilters(String theDN) {
     return escapeDN(theDN);
   }
 
@@ -371,8 +373,8 @@ public class LDAPUtility {
   }
 
   /**
-   * Escaping DN to prevent LDAP injection.
-   * Based on http://blogs.sun.com/shankar/entry/what_is_ldap_injection
+   * Escaping DN to prevent LDAP injection. Based on
+   * http://blogs.sun.com/shankar/entry/what_is_ldap_injection
    * @param name the DN to be espaced.
    * @return the escaped DN.
    */
@@ -416,16 +418,10 @@ public class LDAPUtility {
   }
 
   /**
-   * Escaping search filter to prevent LDAP injection.
-   * Based on http://blogs.sun.com/shankar/entry/what_is_ldap_injection
-   * rfc 2254 actually adresses how to fix these ldap injection bugs in section 4 on page 4
-   * Character ASCII value
-   * ---------------------------
-   * * 0x2a
-   * ( 0x28
-   * ) 0x29
-   * \ 0x5c
-   * NUL 0x00
+   * Escaping search filter to prevent LDAP injection. Based on
+   * http://blogs.sun.com/shankar/entry/what_is_ldap_injection rfc 2254 actually adresses how to fix
+   * these ldap injection bugs in section 4 on page 4 Character ASCII value
+   * --------------------------- * 0x2a ( 0x28 ) 0x29 \ 0x5c NUL 0x00
    * @param filter the search filter to be espaced.
    * @return the escaped search filter.
    */
@@ -623,7 +619,8 @@ public class LDAPUtility {
       // order. BUT most LDAP server can't performs this type of order (like
       // Active Directory)
       // So, it may be ordered in the opposite way....
-      AbstractLDAPTimeStamp firstVal = driverSettings.newLDAPTimeStamp(getFirstAttributeValue(theEntries[0], timeStampVar));
+      AbstractLDAPTimeStamp firstVal =
+          driverSettings.newLDAPTimeStamp(getFirstAttributeValue(theEntries[0], timeStampVar));
       AbstractLDAPTimeStamp lastVal = driverSettings.newLDAPTimeStamp(getFirstAttributeValue(
           theEntries[theEntries.length - 1], timeStampVar));
       if (firstVal.compareTo(lastVal) >= 0) {

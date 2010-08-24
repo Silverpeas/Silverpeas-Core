@@ -50,7 +50,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public abstract class AbstractListener implements INotificationServerChannel, MessageDrivenBean,
     MessageListener {
-  
+
   private static final long serialVersionUID = -5838215003969093865L;
   protected String m_channel;
   protected String m_payload;

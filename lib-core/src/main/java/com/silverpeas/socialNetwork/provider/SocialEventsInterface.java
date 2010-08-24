@@ -30,7 +30,7 @@ import java.util.List;
 public interface SocialEventsInterface {
 
   /**
-   * get list of socialInformation according to  number of Item and the first Index
+   * get list of socialInformation according to number of Item and the first Index
    * @return List <SocialInformation>
    * @param userId
    * @param classification (private or public)
@@ -42,7 +42,7 @@ public interface SocialEventsInterface {
       throws SilverpeasException;
 
   /**
-   * get the next Events of my contacts according to  number of Item and the first Index
+   * get the next Events of my contacts according to number of Item and the first Index
    * @return: List <SocialInformation>
    * @param myId
    * @param myContactsIds
@@ -55,7 +55,7 @@ public interface SocialEventsInterface {
       SilverpeasException;
 
   /**
-   * get the Last Events of my contacts  according to number of Item and the first Index
+   * get the Last Events of my contacts according to number of Item and the first Index
    * @return: List <SocialInformation>
    * @param myId
    * @param myContactsIds
@@ -68,7 +68,7 @@ public interface SocialEventsInterface {
       SilverpeasException;
 
   /**
-   * get the my last Events  according to  number of Item and the first Index
+   * get the my last Events according to number of Item and the first Index
    * @return: List <SocialInformation>
    * @param myId
    * @param numberOfElement

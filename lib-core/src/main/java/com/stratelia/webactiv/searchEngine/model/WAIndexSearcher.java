@@ -142,18 +142,18 @@ public class WAIndexSearcher {
     SpaceComponentPair pair = new SpaceComponentPair(null, component);
     HashSet<SpaceComponentPair> set = new HashSet<SpaceComponentPair>();
     set.add(pair);
-    
+
     IndexEntryPK indexEntryPK = new IndexEntryPK(component, objectType, objectId);
     MatchingIndexEntry matchingIndexEntry = null;
     Searcher searcher = getSearcher(set);
     try {
       TopDocs topDocs = null;
       Term term = new Term(IndexManager.KEY, indexEntryPK.toString());
-      
+
       TermQuery query = new TermQuery(term);
       topDocs = searcher.search(query, maxNumberResult);
       ScoreDoc scoreDoc = topDocs.scoreDocs[0];
-      
+
       matchingIndexEntry = createMatchingIndexEntry(scoreDoc, "*", searcher);
     } catch (IOException ioe) {
       SilverTrace.fatal("searchEngine", "WAIndexSearcher.search()",
@@ -169,6 +169,7 @@ public class WAIndexSearcher {
     }
     return matchingIndexEntry;
   }
+
   /**
    * Search the documents of the given component's set. All entries found whose startDate is not
    * reached or whose endDate is passed are pruned from the results set.
@@ -409,17 +410,18 @@ public class WAIndexSearcher {
   }
 
   /**
-   * 
    * @param scoreDoc occurence of Lucene search result
    * @param requestedLanguage
    * @param searcher
    * @return MatchingIndexEntry wraps the Lucene search result
    * @throws IOException if there is a problem when searching Lucene index
    */
-  private MatchingIndexEntry createMatchingIndexEntry(ScoreDoc scoreDoc, String requestedLanguage, Searcher searcher)
+  private MatchingIndexEntry createMatchingIndexEntry(ScoreDoc scoreDoc, String requestedLanguage,
+      Searcher searcher)
       throws IOException {
     Document doc = searcher.doc(scoreDoc.doc);
-    MatchingIndexEntry indexEntry = new MatchingIndexEntry(IndexEntryPK.create(doc.get(IndexManager.KEY)));
+    MatchingIndexEntry indexEntry =
+        new MatchingIndexEntry(IndexEntryPK.create(doc.get(IndexManager.KEY)));
 
     Iterator<String> languages = I18NHelper.getLanguages();
     while (languages.hasNext()) {
@@ -448,7 +450,7 @@ public class WAIndexSearcher {
     indexEntry.setEndDate(doc.get(IndexManager.ENDDATE));
     indexEntry.setScore(scoreDoc.score); // TODO check the score.
     // Checks the content to see if it contains sortable field
-    // and puts them in MatchingIndexEntry object 
+    // and puts them in MatchingIndexEntry object
     if ("Publication".equals(indexEntry.getObjectType())) {
       HashMap<String, String> sortableField = new HashMap<String, String>();
       String fieldValue = null;
@@ -468,7 +470,7 @@ public class WAIndexSearcher {
 
     return indexEntry;
   }
-  
+
   /**
    * Makes a List of MatchingIndexEntry from a lucene hits. All entries found whose startDate is not
    * reached or whose endDate is passed are pruned from the results list.
@@ -482,7 +484,8 @@ public class WAIndexSearcher {
 
       for (int i = 0; i < topDocs.scoreDocs.length; i++) {
         scoreDoc = topDocs.scoreDocs[i];
-        MatchingIndexEntry indexEntry = createMatchingIndexEntry(scoreDoc, query.getRequestedLanguage(), searcher);
+        MatchingIndexEntry indexEntry =
+            createMatchingIndexEntry(scoreDoc, query.getRequestedLanguage(), searcher);
         results.add(indexEntry);
       }
     }

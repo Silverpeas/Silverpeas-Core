@@ -23,7 +23,6 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
@@ -86,7 +85,7 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
 
   /**
    * Get user id as stored in database
-   * @return 
+   * @return
    */
   public String getId() {
     return m_sId;
@@ -94,7 +93,7 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
 
   /**
    * Set user id
-   * @param sId 
+   * @param sId
    */
   public void setId(String sId) {
     m_sId = sId;
@@ -102,7 +101,7 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
 
   /**
    * Get specific user id
-   * @return 
+   * @return
    */
   public String getSpecificId() {
     return m_sSpecificId;
@@ -110,7 +109,7 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
 
   /**
    * Set specific user id
-   * @param sSpecificId 
+   * @param sSpecificId
    */
   public void setSpecificId(String sSpecificId) {
     m_sSpecificId = sSpecificId;
@@ -126,7 +125,7 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
 
   /**
    * Set user domain id
-   * @param sDomainId 
+   * @param sDomainId
    */
   public void setDomainId(String sDomainId) {
     m_sDomainId = sDomainId;
@@ -142,7 +141,7 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
 
   /**
    * Set user login
-   * @param sLogin 
+   * @param sLogin
    */
   public void setLogin(String sLogin) {
     if (sLogin != null) {
@@ -174,7 +173,7 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
 
   /**
    * Get user's last name
-   * @return user's last name 
+   * @return user's last name
    */
   public String getLastName() {
     return m_sLastName;
@@ -194,7 +193,7 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
 
   /**
    * Set user's email
-   * @param seMail 
+   * @param seMail
    */
   public void seteMail(String seMail) {
     if (seMail != null) {
@@ -206,7 +205,7 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
 
   /**
    * Get user's email
-   * @return 
+   * @return
    */
   public String geteMail() {
     return m_seMail;
@@ -214,7 +213,7 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
 
   /**
    * Get user's access level
-   * @return 
+   * @return
    */
   public String getAccessLevel() {
     return m_sAccessLevel;
@@ -222,7 +221,7 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
 
   /**
    * Set user access level
-   * @param sAccessLevel 
+   * @param sAccessLevel
    */
   public void setAccessLevel(String sAccessLevel) {
     if (sAccessLevel != null) {
@@ -235,9 +234,8 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
 
   public boolean isDomainAdminRestricted() {
     return ((GeneralPropertiesManager.getDomainVisibility() != GeneralPropertiesManager.DVIS_ALL)
-        && (!isAccessAdmin())
-        && ((GeneralPropertiesManager.getDomainVisibility() != GeneralPropertiesManager.DVIS_ONE) 
-        || (!"0".equals(getDomainId()))));
+        && (!isAccessAdmin()) && ((GeneralPropertiesManager.getDomainVisibility() != GeneralPropertiesManager.DVIS_ONE) || (!"0"
+        .equals(getDomainId()))));
   }
 
   public boolean isBackOfficeVisible() {
@@ -279,10 +277,10 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
     }
     return valret;
   }
-  
+
   @Override
   public boolean equals(Object other) {
-    if(other instanceof UserDetail) {
+    if (other instanceof UserDetail) {
       return this.equals((UserDetail) other);
     }
     return false;
@@ -305,9 +303,9 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
   public boolean equals(UserDetail cmpUser) {
     return StringUtil.areStringEquals(m_sId, cmpUser.getId())
         && StringUtil.areStringEquals(m_sSpecificId, cmpUser.getSpecificId())
-        && StringUtil.areStringEquals(m_sDomainId, cmpUser.getDomainId()) 
+        && StringUtil.areStringEquals(m_sDomainId, cmpUser.getDomainId())
         && StringUtil.areStringEquals(m_sLogin, cmpUser.getLogin())
-        && StringUtil.areStringEquals(m_sFirstName, cmpUser.getFirstName()) 
+        && StringUtil.areStringEquals(m_sFirstName, cmpUser.getFirstName())
         && StringUtil.areStringEquals(m_sLastName, cmpUser.getLastName())
         && StringUtil.areStringEquals(m_seMail, cmpUser.geteMail())
         && StringUtil.areStringEquals(m_sAccessLevel, cmpUser.getAccessLevel());

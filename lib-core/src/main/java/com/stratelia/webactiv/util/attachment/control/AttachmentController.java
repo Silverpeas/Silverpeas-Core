@@ -207,7 +207,7 @@ public class AttachmentController {
       if ((userId != null) && (userId.length() > 0) && invokeCallback) {
         CallBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_UPDATE,
             Integer.parseInt(attachDetail.getAuthor()), attachDetail.getInstanceId(), attachDetail
-                .getForeignKey().getId());
+            .getForeignKey().getId());
       }
       if (indexIt) {
         createIndex(attachDetail.getPK());
@@ -304,7 +304,7 @@ public class AttachmentController {
       boolean indexIt) throws AttachmentException {
     SilverTrace.debug("attachment", "AttachmentController.moveAttachments",
         "root.MSG_GEN_ENTER_METHOD", "fromPK = " + fromPK.toString()
-            + ", toPK = " + toPK.toString() + ", indexIt = " + indexIt);
+        + ", toPK = " + toPK.toString() + ", indexIt = " + indexIt);
 
     String toAbsolutePath = FileRepositoryManager.getAbsolutePath(toPK.getInstanceId());
     String fromAbsolutePath = FileRepositoryManager.getAbsolutePath(fromPK.getInstanceId());
@@ -318,7 +318,7 @@ public class AttachmentController {
     if (attachments != null) {
       SilverTrace.debug("attachment", "AttachmentController.moveAttachments",
           "root.MSG_GEN_PARAM_VALUE", "# of attachments to move = "
-              + attachments.size());
+          + attachments.size());
     }
 
     AttachmentDetail attachment = null;
@@ -338,7 +338,7 @@ public class AttachmentController {
 
       SilverTrace.debug("attachment", "AttachmentController.moveAttachments",
           "root.MSG_GEN_PARAM_VALUE", "fromFile = " + fromFile.getPath()
-              + ", toFile = " + toFile.getPath());
+          + ", toFile = " + toFile.getPath());
 
       // ensure directory exists
       String testPath = createPath(toPK.getInstanceId(), attachment.getContext());
@@ -348,7 +348,7 @@ public class AttachmentController {
       if (fromFile != null) {
         SilverTrace.debug("attachment", "AttachmentController.moveAttachments",
             "root.MSG_GEN_PARAM_VALUE", "fromFile exists ? "
-                + fromFile.exists());
+            + fromFile.exists());
       }
 
       boolean fileMoved = false;
@@ -363,7 +363,7 @@ public class AttachmentController {
       } else {
         SilverTrace.error("attachment", "AttachmentController.moveAttachments",
             "root.MSG_GEN_PARAM_VALUE", "file unsuccessfully moved ! from "
-                + fromFile.getPath() + " to " + toFile.getPath());
+            + fromFile.getPath() + " to " + toFile.getPath());
       }
 
       // change foreignKey
@@ -395,7 +395,7 @@ public class AttachmentController {
             SilverTrace.debug("attachment",
                 "AttachmentController.moveAttachments",
                 "root.MSG_GEN_PARAM_VALUE", "move translation fromFile = "
-                    + fromFile.getPath() + ", toFile = " + toFile.getPath());
+                + fromFile.getPath() + ", toFile = " + toFile.getPath());
 
             if ((fromFile != null) && fromFile.exists()) {
               fromFile.renameTo(toFile);
@@ -876,7 +876,7 @@ public class AttachmentController {
     String[] ctx = FileRepositoryManager.getAttachmentContext(attachDetail.getContext());
     String filePath =
         FileRepositoryManager.getAbsolutePath(attachDetail.getPK().getComponentName(), ctx)
-            + attachDetail.getPhysicalName();
+        + attachDetail.getPhysicalName();
 
     try {
       File d = new File(filePath);
@@ -997,8 +997,8 @@ public class AttachmentController {
       String objectType = "Attachment";
       PublicationTemplate pub =
           PublicationTemplateManager.getPublicationTemplate(indexEntry.getComponent() + ":" +
-              objectType
-              + ":" + xmlFormName);
+          objectType
+          + ":" + xmlFormName);
       RecordSet set = pub.getRecordSet();
       set.indexRecord(pk.getId(), xmlFormName, indexEntry);
     } catch (Exception e) {
@@ -1026,7 +1026,7 @@ public class AttachmentController {
 
       IndexEntryPK indexEntry =
           new IndexEntryPK(detail.getPK().getComponentName(), objectType, detail.getForeignKey()
-              .getId());
+          .getId());
 
       IndexEngineProxy.removeIndexEntry(indexEntry);
     } catch (Exception e) {
@@ -1052,7 +1052,7 @@ public class AttachmentController {
     SilverTrace.debug("attachment",
         "AttachmentController.copyAttachmentByCustomerPK",
         "root.MSG_GEN_ENTER_METHOD", "foreignKeyFrom = " + foreignKeyFrom
-            + ", foreignKeyTo=" + foreignKeyTo);
+        + ", foreignKeyTo=" + foreignKeyTo);
 
     Vector<AttachmentDetail> attsToCopy = searchAttachmentByCustomerPK(foreignKeyFrom);
 
@@ -1065,7 +1065,7 @@ public class AttachmentController {
     SilverTrace.debug("attachment",
         "AttachmentController.copyAttachmentByCustomerPK",
         "root.MSG_GEN_ENTER_METHOD", "foreignKeyFrom = " + foreignKeyFrom
-            + ", foreignKeyTo=" + foreignKeyTo);
+        + ", foreignKeyTo=" + foreignKeyTo);
 
     Vector<AttachmentDetail> attsToCopy = searchAttachmentByPKAndContext(foreignKeyFrom, context);
 
@@ -1085,7 +1085,7 @@ public class AttachmentController {
       throws AttachmentRuntimeException {
     SilverTrace.debug("attachment", "AttachmentController.copyAttachments",
         "root.MSG_GEN_ENTER_METHOD", "foreignKeyFrom = " + foreignKeyFrom
-            + ", foreignKeyTo=" + foreignKeyTo);
+        + ", foreignKeyTo=" + foreignKeyTo);
 
     Hashtable<String, String> ids = new Hashtable<String, String>();
 
@@ -1102,10 +1102,10 @@ public class AttachmentController {
 
         copy =
             new AttachmentDetail(atPK, attToCopy.getPhysicalName(),
-                attToCopy.getLogicalName(), attToCopy.getDescription(), attToCopy.getType(),
-                attToCopy.getSize(), attToCopy.getContext(),
-                attToCopy.getCreationDate(), foreignKeyTo, attToCopy.getTitle(),
-                attToCopy.getInfo(), attToCopy.getOrderNum());
+            attToCopy.getLogicalName(), attToCopy.getDescription(), attToCopy.getType(),
+            attToCopy.getSize(), attToCopy.getContext(),
+            attToCopy.getCreationDate(), foreignKeyTo, attToCopy.getTitle(),
+            attToCopy.getInfo(), attToCopy.getOrderNum());
 
         if (!"link".equalsIgnoreCase(attToCopy.getDescription())) {
 
@@ -1126,11 +1126,11 @@ public class AttachmentController {
         // Copy translations
         Iterator translations = attToCopy.getTranslations().values().iterator();
         AttachmentDetailI18N translation = (AttachmentDetailI18N) translations.next(); // skip
-                                                                                       // default
-                                                                                       // attachment.
-                                                                                       // It has
-                                                                                       // been
-                                                                                       // copied
+        // default
+        // attachment.
+        // It has
+        // been
+        // copied
         // earlier.
         AttachmentDetail translationCopy = null;
 
@@ -1172,17 +1172,17 @@ public class AttachmentController {
       AttachmentDetail attDetailTo) {
     String filePathFrom =
         FileRepositoryManager.getAbsolutePath(attDetailFrom.getPK().getComponentName(),
-            FileRepositoryManager.getAttachmentContext(attDetailFrom.getContext()));
+        FileRepositoryManager.getAttachmentContext(attDetailFrom.getContext()));
     String filePathTo =
         FileRepositoryManager.getAbsolutePath(attDetailTo.getPK().getComponentName(),
-            FileRepositoryManager.getAttachmentContext(attDetailTo.getContext()));
+        FileRepositoryManager.getAttachmentContext(attDetailTo.getContext()));
     String fileNameFrom = attDetailFrom.getPhysicalName();
     String fileNameTo = attDetailTo.getPhysicalName();
 
     try {
       SilverTrace.debug("attachment", "AttachmentController.copyFileOnServer",
           "root.MSG_GEN_ENTER_METHOD", "From " + filePathFrom + fileNameFrom
-              + " To " + filePathTo + fileNameTo);
+          + " To " + filePathTo + fileNameTo);
 
       File directoryToTest = new File(filePathTo);
 
@@ -1223,7 +1223,7 @@ public class AttachmentController {
       if (attachmentDetail.isOpenOfficeCompatible()
           && !force
           && RepositoryHelper.getJcrAttachmentService().isNodeLocked(
-              attachmentDetail, language)) {
+          attachmentDetail, language)) {
         SilverTrace.warn("attachment", "AttachmentController.checkinOfficeFile()",
             "attachment.NODE_LOCKED");
         return false;

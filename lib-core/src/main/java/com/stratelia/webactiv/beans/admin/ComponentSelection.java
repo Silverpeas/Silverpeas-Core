@@ -23,7 +23,6 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-
 import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.silverpeas.util.clipboard.SilverpeasKeyData;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
@@ -34,14 +33,13 @@ import java.io.Serializable;
 public class ComponentSelection extends ClipboardSelection implements Serializable {
 
   private static final long serialVersionUID = 4750709802063183409L;
-  public static final DataFlavor ComponentDetailFlavor = new DataFlavor(ComponentInst.class, 
+  public static final DataFlavor ComponentDetailFlavor = new DataFlavor(ComponentInst.class,
       "Component");
   private ComponentInst componentInst;
 
- /**
-  * 
-  * @param component the component selected.
-  */
+  /**
+   * @param component the component selected.
+   */
   public ComponentSelection(ComponentInst component) {
     super();
     componentInst = component;
@@ -70,19 +68,20 @@ public class ComponentSelection extends ClipboardSelection implements Serializab
     return transferedData;
   }
 
- /**
-  * Returns the IndexEntry for the component being copeid.
-  * @return an IndexEntry for this component
-  */
+  /**
+   * Returns the IndexEntry for the component being copeid.
+   * @return an IndexEntry for this component
+   */
   @Override
   public IndexEntry getIndexEntry() {
-    IndexEntry indexEntry = new IndexEntry(componentInst.getId(), "Component", componentInst.getId());
+    IndexEntry indexEntry =
+        new IndexEntry(componentInst.getId(), "Component", componentInst.getId());
     indexEntry.setTitle(componentInst.getLabel());
     return indexEntry;
   }
 
   /**
-   * Tranforms the dat into a SilverpeasKeyData.   
+   * Tranforms the dat into a SilverpeasKeyData.
    */
   @Override
   public SilverpeasKeyData getKeyData() {

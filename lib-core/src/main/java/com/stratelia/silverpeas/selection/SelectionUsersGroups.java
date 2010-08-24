@@ -39,10 +39,10 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 
 public class SelectionUsersGroups implements SelectionExtraParams {
   static OrganizationController m_oc = new OrganizationController();
-  
+
   public final static int USER = 0;
   public final static int GROUP = 1;
-  
+
   String m_domainId = null;
   String m_componentId = null;
   List<String> profileIds = null;
@@ -116,7 +116,7 @@ public class SelectionUsersGroups implements SelectionExtraParams {
       String[] selectedGroups) {
     int g, u;
     HashSet<String> usersSet = new HashSet<String>();
-    
+
     if (selectedUsers != null && selectedUsers.length > 0) {
       for (u = 0; u < selectedUsers.length; u++) {
         usersSet.add(selectedUsers[u]);

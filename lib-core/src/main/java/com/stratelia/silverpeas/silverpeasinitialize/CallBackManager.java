@@ -23,7 +23,6 @@
  */
 package com.stratelia.silverpeas.silverpeasinitialize;
 
-
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -91,10 +90,10 @@ public class CallBackManager {
     }
   }
 
-  static synchronized public void invoke(final int action, final int iParam, final String sParam, final
-      Object extraParam) {
+  static synchronized public void invoke(final int action, final int iParam, final String sParam,
+      final Object extraParam) {
     for (CallBack callback : subscribers[action]) {
-        callback.doInvoke(action, iParam, sParam, extraParam);
+      callback.doInvoke(action, iParam, sParam, extraParam);
     }
   }
 

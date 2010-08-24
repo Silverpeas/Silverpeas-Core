@@ -33,8 +33,8 @@ public interface SilverpeasTemplate {
   public void setAttribute(String name, Object value);
 
   public String applyFileTemplate(String fileName);
-  
+
   public String applyStringTemplate(String label);
-  
+
   public Map<String, Object> getAttributes();
 }

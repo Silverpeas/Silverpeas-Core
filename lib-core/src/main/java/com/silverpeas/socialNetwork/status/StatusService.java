@@ -162,7 +162,9 @@ public class StatusService {
 
     try {
       connection = getConnection();
-      status_list = this.statusDao.getSocialInformationsListOfMyContacts(connection, myContactsIds, numberOfElement, firstIndex);
+      status_list =
+          this.statusDao.getSocialInformationsListOfMyContacts(connection, myContactsIds,
+              numberOfElement, firstIndex);
       connection.commit();
     } catch (Exception ex) {
       SilverTrace.error("Silverpeas.Bus.SocialNetwork.Status",

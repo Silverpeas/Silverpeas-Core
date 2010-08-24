@@ -29,14 +29,12 @@ import java.lang.reflect.Array;
 import java.util.List;
 
 /**
- *
  * @author Bensalem Nabil
  */
 public interface ProviderSwitchInterface {
 
   /**
-   * get my social Informations list  according to the social information type
-   * and the UserId
+   * get my social Informations list according to the social information type and the UserId
    * @param socialInformationType
    * @param userId
    * @param String classification
@@ -46,11 +44,11 @@ public interface ProviderSwitchInterface {
    * @exception SilverpeasException
    */
   public List getSocialInformationsList(SocialInformationType socialInformationType, String userId,
-      String classification, int limit, int offset)throws SilverpeasException;
+      String classification, int limit, int offset) throws SilverpeasException;
 
   /**
-   * get the List of social Informations of my contatcs according to the social information type
-   * and  the ids of my contacts
+   * get the List of social Informations of my contatcs according to the social information type and
+   * the ids of my contacts
    * @param socialInformationType
    * @param myId
    * @param myContactsIds the ids of my contacts
@@ -60,68 +58,68 @@ public interface ProviderSwitchInterface {
    * @exception SilverpeasException
    */
   public List getSocialInformationsListOfMyContacts(SocialInformationType socialInformationType,
-      String myId,List<String>myContactsIds,
-       int limit, int offset) throws SilverpeasException;
+      String myId, List<String> myContactsIds,
+      int limit, int offset) throws SilverpeasException;
 
-  
   /**
-   * return the SocialEvent providor  (by using Inversion of Control Containers )
+   * return the SocialEvent providor (by using Inversion of Control Containers )
    * @return SocialEventsInterface
    */
   public SocialEventsInterface getSocialEventsInterface();
 
   /**
-   *  set SocialEvent providor  (by using Inversion of Control Containers )
+   * set SocialEvent providor (by using Inversion of Control Containers )
    * @param socialGalleryInterface
    */
 
   public void setSocialEventsInterface(SocialEventsInterface socialEventsInterface);
 
   /**
-   * return the SocialGallery providor  (by using Inversion of Control Containers )
+   * return the SocialGallery providor (by using Inversion of Control Containers )
    * @return SocialEventsInterface
    */
   public SocialGalleryInterface getSocialGalleryInterface();
 
   /**
-   *  set SocialGallery providor  (by using Inversion of Control Containers )
+   * set SocialGallery providor (by using Inversion of Control Containers )
    * @param socialGalleryInterface
    */
   public void setSocialGalleryInterface(SocialGalleryInterface socialGalleryInterface);
 
- /**
-   * return the SocialPublications providor  (by using Inversion of Control Containers )
+  /**
+   * return the SocialPublications providor (by using Inversion of Control Containers )
    * @return SocialEventsInterface
    */
   public SocialPublicationsInterface getSocialPublicationsInterface();
 
   /**
-   * set SocialPublications providor  (by using Inversion of Control Containers )
+   * set SocialPublications providor (by using Inversion of Control Containers )
    * @param socialPublicationsInterface
    */
   public void setSocialPublicationsInterface(SocialPublicationsInterface socialPublicationsInterface);
 
- /**
-   * return  SocialStatus providor  (by using Inversion of Control Containers )
+  /**
+   * return SocialStatus providor (by using Inversion of Control Containers )
    * @return SocialEventsInterface
    */
   public SocialStatusInterface getSocialStatusInterface();
 
- /**
-   * set SocialStatus providor  (by using Inversion of Control Containers )
+  /**
+   * set SocialStatus providor (by using Inversion of Control Containers )
    * @param socialPublicationsInterface
    */
   public void setSocialStatusInterface(SocialStatusInterface socialStatusInterface);
 
- /**
-   * return the SocialRelationShips providor  (by using Inversion of Control Containers )
+  /**
+   * return the SocialRelationShips providor (by using Inversion of Control Containers )
    * @return SocialEventsInterface
    */
   public SocialRelationShipsInterface getSocialRelationShipsInterface();
 
   /**
-   * set SocialRelationShips providor  (by using Inversion of Control Containers )
+   * set SocialRelationShips providor (by using Inversion of Control Containers )
    * @param socialPublicationsInterface
    */
-  public void setSocialRelationShipsInterface(SocialRelationShipsInterface socialRelationShipsInterface);
+  public void setSocialRelationShipsInterface(
+      SocialRelationShipsInterface socialRelationShipsInterface);
 }

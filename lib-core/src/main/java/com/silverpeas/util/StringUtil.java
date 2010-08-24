@@ -61,7 +61,7 @@ public class StringUtil {
   public static float convertFloat(String value) {
     if (StringUtil.isFloat(value)) {
       return Float.valueOf(value);
-    } else if(value != null) {
+    } else if (value != null) {
       String charge = value.replace(',', '.');
       if (StringUtil.isFloat(charge)) {
         return Float.valueOf(charge);

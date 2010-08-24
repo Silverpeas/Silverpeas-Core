@@ -240,7 +240,7 @@ public class Instanciateur extends Object {
 
   @SuppressWarnings("unchecked")
   private static Collection<File> getFileList() {
-    Collection<File> list = FileUtils.listFiles(new File(xmlPackage), new String[]{"xml"}, true);
+    Collection<File> list = FileUtils.listFiles(new File(xmlPackage), new String[] { "xml" }, true);
     return list;
   }
 
@@ -249,7 +249,7 @@ public class Instanciateur extends Object {
     IOFileFilter filter = new NameFileFilter(componentName + ".xml");
     List<File> list = new ArrayList<File>(FileUtils.listFiles(new File(xmlPackage), filter,
         TrueFileFilter.INSTANCE));
-    if(! list.isEmpty()) {
+    if (!list.isEmpty()) {
       return list.get(0).getCanonicalPath();
     }
     return new File(xmlPackage, componentName + ".xml").getCanonicalPath();

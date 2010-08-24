@@ -45,6 +45,7 @@ public class RelationShipService {
     connection.setAutoCommit(false);
     return connection;
   }
+
   /**
    * remove RelationShip (if this relationShips is deleted return true)
    * @param idUser1
@@ -141,6 +142,7 @@ public class RelationShipService {
     }
     return myContactsIds;
   }
+
   /**
    * get all common contacts Ids between usre1 and user2
    * @param user1Id
@@ -153,7 +155,7 @@ public class RelationShipService {
     List<String> myContactsIds = new ArrayList<String>();
     try {
       connection = getConnection();
-      myContactsIds = relationShipDao.getAllCommonContactsIds(connection, user1Id,user2Id);
+      myContactsIds = relationShipDao.getAllCommonContactsIds(connection, user1Id, user2Id);
     } catch (Exception ex) {
       SilverTrace.error("com.silverpeas.socialNetwork.relationShip",
           "RelationShipService.getAllMyRelationShips", "",
@@ -165,10 +167,9 @@ public class RelationShipService {
     return myContactsIds;
   }
 
-
   /**
-   * Get list of  my socialInformationRelationShip (relationShips)
-   * according to number of Item and the first Index
+   * Get list of my socialInformationRelationShip (relationShips) according to number of Item and
+   * the first Index
    * @param userId
    * @param numberOfElement
    * @param firstIndex
@@ -178,7 +179,8 @@ public class RelationShipService {
   public List<SocialInformationRelationShip> getAllMyRelationShips(String userId,
       int numberOfElement, int firstIndex) throws SQLException {
     Connection connection = null;
-    List<SocialInformationRelationShip> listMyRelation = new ArrayList<SocialInformationRelationShip>();
+    List<SocialInformationRelationShip> listMyRelation =
+        new ArrayList<SocialInformationRelationShip>();
     try {
       connection = getConnection();
       listMyRelation = relationShipDao.getAllMyRelationShips(connection, userId, numberOfElement,
@@ -195,8 +197,8 @@ public class RelationShipService {
   }
 
   /**
-   * Get list socialInformationRelationShip (relationShips) of my Contacts
-   * according to number of Item and the first Index
+   * Get list socialInformationRelationShip (relationShips) of my Contacts according to number of
+   * Item and the first Index
    * @param myId
    * @param myContactsIds
    * @param numberOfElement
@@ -207,11 +209,14 @@ public class RelationShipService {
   public List<SocialInformationRelationShip> getAllRelationShipsOfMyContact(String myId,
       List<String> myContactsIds, int numberOfElement, int firstIndex) throws SQLException {
     Connection connection = null;
-    List<SocialInformationRelationShip> listMyRelation = new ArrayList<SocialInformationRelationShip>();
+    List<SocialInformationRelationShip> listMyRelation =
+        new ArrayList<SocialInformationRelationShip>();
     try {
       connection = getConnection();
-      listMyRelation = relationShipDao.getAllRelationShipsOfMyContact(connection, myId,myContactsIds, numberOfElement,
-          firstIndex);
+      listMyRelation =
+          relationShipDao.getAllRelationShipsOfMyContact(connection, myId, myContactsIds,
+              numberOfElement,
+              firstIndex);
     } catch (Exception ex) {
       SilverTrace.error("com.silverpeas.socialNetwork.relationShip",
           "RelationShipService.getAllRelationShipsOfMyContact", "",
@@ -247,4 +252,3 @@ public class RelationShipService {
     return relation;
   }
 }
-

@@ -146,8 +146,9 @@ public class Invitation {
     if ((this.message == null) ? (other.message != null) : !this.message.equals(other.message)) {
       return false;
     }
-    if (this.invitationDate != other.invitationDate && (this.invitationDate == null || !this.invitationDate.
-        equals(other.invitationDate))) {
+    if (this.invitationDate != other.invitationDate &&
+        (this.invitationDate == null || !this.invitationDate.
+            equals(other.invitationDate))) {
       return false;
     }
     return true;

@@ -107,7 +107,6 @@ public class NotificationServerUtil {
   }
 
   /**
-   *
    * @param p_XML
    * @return
    * @throws NotificationServerException
@@ -137,7 +136,6 @@ public class NotificationServerUtil {
   }
 
   /**
-   *
    * @param keyvaluestring
    * @return
    */
@@ -233,7 +231,6 @@ public class NotificationServerUtil {
   }
 
   /**
-   *
    * @param keyValues
    * @return
    */

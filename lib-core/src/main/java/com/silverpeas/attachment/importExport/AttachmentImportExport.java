@@ -151,7 +151,8 @@ public class AttachmentImportExport {
     return copyFiles(componentId, attachments, getPath(componentId));
   }
 
-  public List<AttachmentDetail> copyFiles(String componentId, List<AttachmentDetail> attachments, String path) {
+  public List<AttachmentDetail> copyFiles(String componentId, List<AttachmentDetail> attachments,
+      String path) {
     List<AttachmentDetail> copiedAttachments = new ArrayList<AttachmentDetail>();
     for (AttachmentDetail attDetail : attachments) {
       this.copyFile(componentId, attDetail, path);

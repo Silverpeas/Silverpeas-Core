@@ -62,7 +62,7 @@ public class FileRepositoryManager extends Object {
       s_sApplicationURL = generalSettings.getString("ApplicationURL");
       s_sUpLoadPath = generalSettings.getString("uploadsPath");
       s_sTempPath = generalSettings.getString("tempPath");
-      if(!s_sTempPath.endsWith(File.separator)) {
+      if (!s_sTempPath.endsWith(File.separator)) {
         s_sTempPath = s_sTempPath + File.separator;
       }
       s_sIndexUpLoadPath = generalSettings.getString("uploadsIndexPath");

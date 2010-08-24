@@ -28,7 +28,6 @@ import com.silverpeas.socialNetwork.model.SocialInformationType;
 import java.util.Date;
 
 /**
- *
  * @author Bensalem Nabil
  */
 public class SocialInformationRelationShip implements SocialInformation {
@@ -40,18 +39,17 @@ public class SocialInformationRelationShip implements SocialInformation {
   private Date date;
 
   /**
-   *
    * @param relationShip
    */
   public SocialInformationRelationShip(RelationShip relationShip) {
-    author = relationShip.getUser1Id() + "";//myFriend
-    title = relationShip.getUser2Id() + "";//Friend of my Friend
+    author = relationShip.getUser1Id() + "";// myFriend
+    title = relationShip.getUser2Id() + "";// Friend of my Friend
     date = relationShip.getAcceptanceDate();
     this.url = "/Rprofil/jsp/Main?userId=" + relationShip.getUser2Id();
 
   }
 
- /**
+  /**
    * return the Title of this SocialInformation
    * @return String
    */
@@ -125,7 +123,7 @@ public class SocialInformationRelationShip implements SocialInformation {
 
   /**
    *Indicates whether some other SocialInformation date is befor the date of this one.
-   *@param   obj   the reference object with which to compare.
+   *@param obj the reference object with which to compare.
    * @return int
    */
   @Override

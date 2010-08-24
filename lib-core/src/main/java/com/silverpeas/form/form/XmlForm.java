@@ -279,13 +279,14 @@ public class XmlForm extends AbstractForm {
       String language = pagesContext.getLanguage();
       StringWriter sw = new StringWriter();
       PrintWriter out = new PrintWriter(sw, true);
-      
+
       if (record != null) {
         out.println("<input type=\"hidden\" name=\"id\" value=\"" + record.getId() + "\"/>");
       }
 
       if (pagesContext.getPrintTitle() && getTitle() != null && getTitle().length() > 0) {
-        out.println("<table cellpadding=\"0\" cellspacing=\"2\" border=\"0\" width=\"98%\" class=\"intfdcolor\">");
+        out
+            .println("<table cellpadding=\"0\" cellspacing=\"2\" border=\"0\" width=\"98%\" class=\"intfdcolor\">");
         out.println("<tr>");
         out.println("<td class=\"intfdcolor4\" nowrap=\"nowrap\">");
         out.println("<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">");

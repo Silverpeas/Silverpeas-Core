@@ -35,7 +35,7 @@ package com.stratelia.silverpeas.authentication;
  * @version
  */
 public class AuthenticationBadCredentialException extends AuthenticationException {
-  
+
   private static final long serialVersionUID = -6224596419804291843L;
 
   /**

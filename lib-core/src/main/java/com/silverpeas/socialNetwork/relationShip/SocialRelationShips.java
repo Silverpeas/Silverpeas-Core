@@ -34,14 +34,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
  * @author Bensalem Nabil
  */
 public class SocialRelationShips implements SocialRelationShipsInterface {
 
   /**
-   * Get list of  my socialInformationRelationShip (relationShips)
-   * according to number of Item and the first Index
+   * Get list of my socialInformationRelationShip (relationShips) according to number of Item and
+   * the first Index
    * @param userId
    * @param numberOfElement
    * @param firstIndex
@@ -63,8 +62,8 @@ public class SocialRelationShips implements SocialRelationShipsInterface {
   }
 
   /**
-   * Get list socialInformationRelationShip (relationShips) of my Contacts
-   * according to number of Item and the first Index
+   * Get list socialInformationRelationShip (relationShips) of my Contacts according to number of
+   * Item and the first Index
    * @param myId
    * @param myContactsIds
    * @param numberOfElement

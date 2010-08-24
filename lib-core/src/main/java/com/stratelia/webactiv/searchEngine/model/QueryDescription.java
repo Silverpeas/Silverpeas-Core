@@ -34,7 +34,6 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Set;
 
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -370,5 +369,4 @@ public class QueryDescription implements Serializable {
     this.requestedUpdatedAfter = requestedUpdatedAfter;
   }
 
-  
 }

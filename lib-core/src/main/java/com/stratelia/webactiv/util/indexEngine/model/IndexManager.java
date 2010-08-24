@@ -23,8 +23,6 @@
  */
 package com.stratelia.webactiv.util.indexEngine.model;
 
-
-
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -334,7 +332,8 @@ public class IndexManager {
           createIndex = !IndexReader.indexExists(file);
         }
 
-        writer = new IndexWriter(path, getAnalyzer(language), createIndex, MaxFieldLength.UNLIMITED);
+        writer =
+            new IndexWriter(path, getAnalyzer(language), createIndex, MaxFieldLength.UNLIMITED);
         writer.setMaxFieldLength(maxFieldLength);
         writer.setMergeFactor(mergeFactor);
         writer.setMaxMergeDocs(maxMergeDocs);

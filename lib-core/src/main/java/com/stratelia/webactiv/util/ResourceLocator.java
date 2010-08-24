@@ -183,7 +183,7 @@ public class ResourceLocator implements Serializable {
   }
 
   public String getStringWithParam(String resName, String param) {
-    String[] params = {param};
+    String[] params = { param };
     return getStringWithParams(resName, params);
   }
 
@@ -512,17 +512,18 @@ public class ResourceLocator implements Serializable {
 
   private static InputStream getPrivileged(final ClassLoader l, final String s) {
     InputStream stream =
-        (InputStream) java.security.AccessController.doPrivileged(new java.security.PrivilegedAction<Object>() {
+        (InputStream) java.security.AccessController
+            .doPrivileged(new java.security.PrivilegedAction<Object>() {
 
-      @Override
-      public Object run() {
-        if (l != null) {
-          return l.getResourceAsStream(s);
-        } else {
-          return ClassLoader.getSystemResourceAsStream(s);
-        }
-      }
-    });
+              @Override
+              public Object run() {
+                if (l != null) {
+                  return l.getResourceAsStream(s);
+                } else {
+                  return ClassLoader.getSystemResourceAsStream(s);
+                }
+              }
+                        });
     return (stream);
   }
 }

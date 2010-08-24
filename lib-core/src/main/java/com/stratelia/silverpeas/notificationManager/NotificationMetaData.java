@@ -81,12 +81,12 @@ public class NotificationMetaData implements java.io.Serializable {
     addLanguage(I18NHelper.defaultLanguage, title, content);
   }
 
-  public NotificationMetaData(int messageType, String title, 
+  public NotificationMetaData(int messageType, String title,
       Map<String, SilverpeasTemplate> templates, String fileName) {
     this(messageType, title, "");
     reset();
     this.templates = templates;
-    this.fileName = fileName;    
+    this.fileName = fileName;
   }
 
   /**
@@ -172,14 +172,14 @@ public class NotificationMetaData implements java.io.Serializable {
 
   public String getTitle(String language) {
     String result = "";
-    if(templates != null && ! templates.isEmpty()) {
+    if (templates != null && !templates.isEmpty()) {
       SilverpeasTemplate template = templates.get(language);
-      if(template != null) {
+      if (template != null) {
         result = template.applyStringTemplate(titles.get(language));
       }
     } else {
-     result = titles.get(language);
-    }    
+      result = titles.get(language);
+    }
     return result;
   }
 
@@ -213,13 +213,13 @@ public class NotificationMetaData implements java.io.Serializable {
         "NotificationMetaData.getContent()", "root.MSG_GEN_ENTER_METHOD",
         "language = " + language);
     String result = "";
-    if(templates != null && ! templates.isEmpty()) {
+    if (templates != null && !templates.isEmpty()) {
       SilverpeasTemplate template = templates.get(language);
-      if(template != null) {
+      if (template != null) {
         result = template.applyFileTemplate(fileName + '_' + language);
       }
     } else {
-     result = (String) contents.get(language);
+      result = (String) contents.get(language);
     }
     SilverTrace.info("notificationManager",
         "NotificationMetaData.getContent()", "root.MSG_GEN_EXIT_METHOD",
@@ -401,7 +401,7 @@ public class NotificationMetaData implements java.io.Serializable {
   }
 
   public void addExtraMessage(String message, String label, String language) {
-    if (templates != null && ! templates.isEmpty()) {
+    if (templates != null && !templates.isEmpty()) {
       templates.get(language).setAttribute("senderMessage", message);
     } else {
       StringBuffer content = new StringBuffer(getContent(language));

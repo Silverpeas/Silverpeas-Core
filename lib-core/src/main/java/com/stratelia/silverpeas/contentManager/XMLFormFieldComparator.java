@@ -53,35 +53,31 @@ public class XMLFormFieldComparator implements Comparator<GlobalSilverContent> {
     String firstFieldValue = null;
     String secondFieldValue = null;
     int result = 0;
-    
+
     if (firstContent.getSortableXMLFormFields() != null) {
       firstFieldValue = firstContent.getSortableXMLFormFields().get(fieldName);
     }
-    
+
     if (secondContent.getSortableXMLFormFields() != null) {
       secondFieldValue = secondContent.getSortableXMLFormFields().get(fieldName);
     }
-    
+
     if (firstFieldValue == null) {
       if (secondFieldValue == null) {
         result = 0;
-      }
-      else {
+      } else {
         // firstFieldValue (null) > secondFieldValue (not null)
         result = 1;
       }
-    }
-    else {
+    } else {
       if (secondFieldValue == null) {
         // firstFieldValue (not null) < secondFieldValue (null)
         result = -1;
-      }
-      else {
+      } else {
         result = firstFieldValue.compareTo(secondFieldValue);
       }
     }
-    
-    
+
     if (SORT_ORDER_ASC.equals(sortOrder)) {
       return result;
     } else {

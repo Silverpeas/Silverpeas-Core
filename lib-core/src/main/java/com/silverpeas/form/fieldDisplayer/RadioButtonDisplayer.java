@@ -208,7 +208,7 @@ public class RadioButtonDisplayer extends AbstractFieldDisplayer {
           html += "<span " + cssClass + ">";
         html +=
             "<input type=\"radio\" id=\"" + fieldName + "_" + i + "\" name=\"" + fieldName +
-                "\" value=\"" + optKey + "\" ";
+            "\" value=\"" + optKey + "\" ";
 
         if (template.isDisabled() || template.isReadOnly()) {
           html += " disabled=\"disabled\" ";

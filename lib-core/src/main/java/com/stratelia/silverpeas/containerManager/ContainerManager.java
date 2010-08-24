@@ -144,7 +144,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
           SilverpeasException.ERROR,
           "containerManager.EX_CANT_REGISTER_CONTAINER_INSTANCE",
           "sComponentId: " + sComponentId + "    sContainerType: "
-              + sContainerType, e);
+          + sContainerType, e);
     } finally {
       DBUtil.close(prepStmt);
       if (bCloseConnection)
@@ -196,7 +196,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
           SilverpeasException.ERROR,
           "containerManager.EX_CANT_UNREGISTER_CONTAINER_INSTANCE",
           "sComponentId: " + sComponentId + "    sContainerType: "
-              + sContainerType, e);
+          + sContainerType, e);
     } finally {
       DBUtil.close(prepStmt);
       if (bCloseConnection)
@@ -497,8 +497,8 @@ public class ContainerManager extends Object implements java.io.Serializable {
       throw new ContainerManagerException(
           "ContainerManager.silverContentIsRemoved", SilverpeasException.ERROR,
           "containerManager.EX_CANT_REMOVE_SILVERCONTENT", "nSilverContentId: "
-              + nSilverContentId + "   nContainerInstanceId: "
-              + nContainerInstanceId, e);
+          + nSilverContentId + "   nContainerInstanceId: "
+          + nContainerInstanceId, e);
     } finally {
       DBUtil.close(prepStmt);
       if (bCloseConnection)
@@ -600,7 +600,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
       throw new ContainerManagerException(
           "ContainerManager.getFirstStringValue", SilverpeasException.ERROR,
           "containerManager.EX_CANT_QUERY_DATABASE", "sSQLStatement: "
-              + sSQLStatement, e);
+          + sSQLStatement, e);
     } finally {
       DBUtil.close(resSet, prepStmt);
       closeConnection(connection);
@@ -841,7 +841,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
           "ContainerManager.filterPositionsByComponentId",
           SilverpeasException.ERROR,
           "containerManager.EX_CANT_FILTER_POSITIONS", "sComponentId: "
-              + sComponentId, e);
+          + sComponentId, e);
     } finally {
       DBUtil.close(resSet, prepStmt);
       closeConnection(connection);

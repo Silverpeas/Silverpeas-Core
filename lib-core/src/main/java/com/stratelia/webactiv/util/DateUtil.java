@@ -23,7 +23,6 @@
  */
 package com.stratelia.webactiv.util;
 
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.text.ParseException;
@@ -42,10 +41,12 @@ public class DateUtil {
 
   private static final long millisPerHour = 60l * 60l * 1000l;
   private static final long millisPerMinute = 60l * 1000l;
-  private static Map<String, FastDateFormat> outputFormatters = new HashMap<String, FastDateFormat>(
-      5);
-  private static Map<String, SimpleDateFormat> inputParsers = new HashMap<String, SimpleDateFormat>(
-      5);
+  private static Map<String, FastDateFormat> outputFormatters =
+      new HashMap<String, FastDateFormat>(
+          5);
+  private static Map<String, SimpleDateFormat> inputParsers =
+      new HashMap<String, SimpleDateFormat>(
+          5);
   /**
    * Format and parse dates.
    */
@@ -257,7 +258,7 @@ public class DateUtil {
    * Parse a special String into a Date.
    * @param date (String) the format of this date must be yyyy/MM/dd
    * @return a java object Date
-   * @throws ParseException 
+   * @throws ParseException
    */
   public static Date parse(String date) throws ParseException {
     synchronized (DATE_PARSER) {
@@ -270,7 +271,7 @@ public class DateUtil {
    * @param date (String) the format of this date must be yyyy/MM/dd
    * @param format (String) the whished format in according to the date parameter
    * @return a java object Date
-   * @throws ParseException 
+   * @throws ParseException
    */
   public static Date parse(String date, String format) throws ParseException {
     SimpleDateFormat sdf = new SimpleDateFormat(format);

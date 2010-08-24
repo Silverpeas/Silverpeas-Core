@@ -184,7 +184,9 @@ public class DynamicValueReplacement {
     // get the dynamic value corresponding to a key
     SilverTrace.debug("wysiwyg", DynamicValueReplacement.class.toString(),
         " key to use to get the dynamic value" + matcher.group(1));
-    DynamicValue value = DynamicValueDAO.getValidDynamicValue(conn, EncodeHelper.htmlStringToJavaString(matcher.group(1)));
+    DynamicValue value =
+        DynamicValueDAO.getValidDynamicValue(conn, EncodeHelper.htmlStringToJavaString(matcher
+            .group(1)));
 
     if (value != null) {
       SilverTrace.debug("wysiwyg", DynamicValueReplacement.class.toString(), "key : " +

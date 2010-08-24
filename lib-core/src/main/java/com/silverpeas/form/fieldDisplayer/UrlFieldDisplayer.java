@@ -177,7 +177,8 @@ public class UrlFieldDisplayer extends AbstractFieldDisplayer {
       inputField.setID(template.getFieldName());
       inputField.setValue(EncodeHelper.javaStringToHtmlString(value));
       inputField.setType(template.isHidden() ? input.hidden : input.text);
-      inputField.setMaxlength(parameters.containsKey("maxLength") ? (String) parameters.get("maxLength")
+      inputField.setMaxlength(parameters.containsKey("maxLength") ? (String) parameters
+          .get("maxLength")
           : "1000");
       inputField.setSize(parameters.containsKey("size") ? (String) parameters.get("size") : "50");
       if (parameters.containsKey("border")) {
