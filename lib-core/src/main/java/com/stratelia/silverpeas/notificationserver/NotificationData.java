@@ -21,16 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.silverpeas.notificationserver;
 
 import java.io.Serializable;
-import java.util.Hashtable;
 
+import com.google.common.base.Objects;
+import com.google.common.collect.Maps;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.util.Map;
 
 /**
  * Title: Notification Server Description: contains a Notification structure Copyright: Copyright
@@ -38,10 +36,10 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * @author : eDurand
  * @version 1.0
  */
-
 public class NotificationData implements Serializable {
+
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
   // private fields
@@ -56,7 +54,7 @@ public class NotificationData implements Serializable {
   private String mTargetChannel;
   private String mTargetReceipt;
   private String mTargetName;
-  private Hashtable mTargetParam = null;
+  private Map<String, Object> mTargetParam = null;
   private String mPrioritySpeed;
   private String mReportToSenderStatus;
   private String mReportToSenderTargetChannel;
@@ -155,7 +153,7 @@ public class NotificationData implements Serializable {
    * getters
    * @return mTargetParam
    */
-  public Hashtable getTargetParam() {
+  public Map<String, Object> getTargetParam() {
     return mTargetParam;
   }
 
@@ -281,7 +279,7 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
-   * @param pTargetChannel
+   * @param pTargetReceipt
    */
   public void setTargetReceipt(String pTargetReceipt) {
     mTargetReceipt = pTargetReceipt;
@@ -299,7 +297,7 @@ public class NotificationData implements Serializable {
    * setters
    * @param pTargetParam
    */
-  public void setTargetParam(Hashtable pTargetParam) {
+  public void setTargetParam(Map<String, Object> pTargetParam) {
     mTargetParam = pTargetParam;
   }
 
@@ -353,7 +351,7 @@ public class NotificationData implements Serializable {
 
   /**
    * setters
-   * @param mAnswerAllowed
+   * @param answerAllowed
    */
   public void setAnswerAllowed(boolean answerAllowed) {
     mAnswerAllowed = answerAllowed;
@@ -409,4 +407,90 @@ public class NotificationData implements Serializable {
     }
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    NotificationData that = (NotificationData) o;
+    if (!Objects.equal(mAnswerAllowed, that.mAnswerAllowed)) {
+      return false;
+    }
+    if (!Objects.equal(mComment, that.mComment)) {
+      return false;
+    }
+    if (!Objects.equal(mLoginPassword, that.mLoginPassword)) {
+      return false;
+    }
+    if (!Objects.equal(mLoginUser, that.mLoginUser)) {
+      return false;
+    }
+    if (!Objects.equal(mMessage, that.mMessage)) {
+      return false;
+    }
+    if (!Objects.equal(mPrioritySpeed, that.mPrioritySpeed)) {
+      return false;
+    }
+    if (!Objects.equal(mReportToLogStatus, that.mReportToLogStatus)) {
+      return false;
+    }
+    if (!Objects.equal(mReportToSenderStatus, that.mReportToSenderStatus)) {
+      return false;
+    }
+    if (!Objects.equal(mReportToSenderTargetChannel, that.mReportToSenderTargetChannel)) {
+      return false;
+    }
+    if (!Objects.equal(mReportToSenderTargetParam, that.mReportToSenderTargetParam)) {
+      return false;
+    }
+    if (!Objects.equal(mReportToSenderTargetReceipt, that.mReportToSenderTargetReceipt)) {
+      return false;
+    }
+    if (!Objects.equal(mSenderId, that.mSenderId)) {
+      return false;
+    }
+    if (!Objects.equal(mSenderName, that.mSenderName)) {
+      return false;
+    }
+    if (!Objects.equal(mTargetChannel, that.mTargetChannel)) {
+      return false;
+    }
+    if (!Objects.equal(mTargetName, that.mTargetName)) {
+      return false;
+    }
+    if (Maps.difference(mTargetParam, that.mTargetParam).areEqual()) {
+      return false;
+    }
+    if (!Objects.equal(mTargetReceipt, that.mTargetReceipt)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 5;
+    hash = 83 * hash + (this.mLoginUser != null ? this.mLoginUser.hashCode() : 0);
+    hash = 83 * hash + (this.mLoginPassword != null ? this.mLoginPassword.hashCode() : 0);
+    hash = 83 * hash + (this.mMessage != null ? this.mMessage.hashCode() : 0);
+    hash = 83 * hash + (this.mSenderId != null ? this.mSenderId.hashCode() : 0);
+    hash = 83 * hash + (this.mSenderName != null ? this.mSenderName.hashCode() : 0);
+    hash = 83 * hash + (this.mAnswerAllowed ? 1 : 0);
+    hash = 83 * hash + (this.mComment != null ? this.mComment.hashCode() : 0);
+    hash = 83 * hash + (this.mTargetChannel != null ? this.mTargetChannel.hashCode() : 0);
+    hash = 83 * hash + (this.mTargetReceipt != null ? this.mTargetReceipt.hashCode() : 0);
+    hash = 83 * hash + (this.mTargetName != null ? this.mTargetName.hashCode() : 0);
+    hash = 83 * hash + (this.mTargetParam != null ? this.mTargetParam.hashCode() : 0);
+    hash = 83 * hash + (this.mPrioritySpeed != null ? this.mPrioritySpeed.hashCode() : 0);
+    hash = 83 * hash + (this.mReportToSenderStatus != null ? this.mReportToSenderStatus.hashCode() : 0);
+    hash = 83 * hash + (this.mReportToSenderTargetChannel != null ? this.mReportToSenderTargetChannel.hashCode() : 0);
+    hash = 83 * hash + (this.mReportToSenderTargetReceipt != null ? this.mReportToSenderTargetReceipt.hashCode() : 0);
+    hash = 83 * hash + (this.mReportToSenderTargetParam != null ? this.mReportToSenderTargetParam.hashCode() : 0);
+    hash = 83 * hash + (this.mReportToLogStatus != null ? this.mReportToLogStatus.hashCode() : 0);
+    return hash;
+  }
 }

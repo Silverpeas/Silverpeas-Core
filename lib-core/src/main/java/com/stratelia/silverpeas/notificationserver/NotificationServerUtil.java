@@ -21,66 +21,83 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.notificationserver;
 
-import java.io.StringReader;
+import com.google.common.base.Charsets;
+import com.stratelia.silverpeas.notificationserver.xml.NotifyContentHandler;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
-import org.xml.sax.InputSource;
-
-import com.silverpeas.util.EncodeHelper;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 public class NotificationServerUtil {
+
+  private static final SAXParserFactory parserFactory;
+
+  static {
+    parserFactory = SAXParserFactory.newInstance();
+    parserFactory.setNamespaceAware(false);
+    parserFactory.setValidating(false);
+  }
+
   public static String convertNotificationDataToXML(NotificationData p_Data)
       throws NotificationServerException {
-    StringBuffer xml = new StringBuffer();
+    StringBuilder xml = new StringBuilder();
 
     if (p_Data != null) {
-      xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-      // xml.append( "<!DOCTYPE NOTIFY SYSTEM \"notification.dtd\">");
+      xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
       xml.append("<NOTIFY>");
       xml.append("	<LOGIN>");
-      xml.append("		<USER>"
-          + EncodeHelper.javaStringToXmlString(p_Data.getLoginUser())
-          + "</USER>");
-      xml.append("		<PASSWORD>"
-          + EncodeHelper.javaStringToXmlString(p_Data.getLoginPassword())
-          + "</PASSWORD>");
+      xml.append("		<USER><![CDATA[");
+      xml.append(p_Data.getLoginUser());
+      xml.append("]]></USER>");
+      xml.append("		<PASSWORD><![CDATA[");
+      xml.append(p_Data.getLoginPassword());
+      xml.append("]]></PASSWORD>");
       xml.append("	</LOGIN>");
-      xml.append("	<MESSAGE>"
-          + EncodeHelper.javaStringToXmlString(p_Data.getMessage())
-          + "</MESSAGE>");
+      xml.append("	<MESSAGE><![CDATA[");
+      xml.append(p_Data.getMessage());
+      xml.append("]]></MESSAGE>");
       xml.append("	<SENDER>");
-      xml.append("		<ID>"
-          + EncodeHelper.javaStringToXmlString(p_Data.getSenderId()) + "</ID>");
-      xml.append("		<NAME>"
-          + EncodeHelper.javaStringToXmlString(p_Data.getSenderName())
-          + "</NAME>");
-      xml.append("		<ANSWERALLOWED>" + p_Data.isAnswerAllowed()
-          + "</ANSWERALLOWED>");
+      xml.append("		<ID><![CDATA[");
+      xml.append(p_Data.getSenderId());
+      xml.append("]]></ID>");
+      xml.append("		<NAME><![CDATA[");
+      xml.append(p_Data.getSenderName());
+      xml.append("]]></NAME>");
+      xml.append("		<ANSWERALLOWED>");
+      xml.append(p_Data.isAnswerAllowed());
+      xml.append("</ANSWERALLOWED>");
       xml.append("	</SENDER>");
-      xml.append("	<COMMENT>"
-          + EncodeHelper.javaStringToXmlString(p_Data.getComment())
-          + "</COMMENT>");
-      xml.append("	<TARGET CHANNEL=\""
-          + EncodeHelper.javaStringToXmlString(p_Data.getTargetChannel())
-          + "\">");
-      xml.append("		<NAME>"
-          + EncodeHelper.javaStringToXmlString(p_Data.getTargetName())
-          + "</NAME>");
-      xml.append("		<RECEIPT>"
-          + EncodeHelper.javaStringToXmlString(p_Data.getTargetReceipt())
-          + "</RECEIPT>");
-      xml.append("		<PARAM>"
-          + EncodeHelper.javaStringToXmlString(packKeyValues(p_Data
-          .getTargetParam())) + "</PARAM>");
+      xml.append("	<COMMENT><![CDATA[");
+      xml.append(p_Data.getComment());
+      xml.append("]]></COMMENT>");
+      xml.append("	<TARGET CHANNEL=\"");
+      xml.append(p_Data.getTargetChannel());
+      xml.append("\">");
+      xml.append("		<NAME><![CDATA[");
+      xml.append(p_Data.getTargetName());
+      xml.append("]]></NAME>");
+      xml.append("		<RECEIPT><![CDATA[");
+      xml.append(p_Data.getTargetReceipt());
+      xml.append("]]></RECEIPT>");
+      xml.append("		<PARAM><![CDATA[");
+      xml.append(packKeyValues(p_Data.getTargetParam()));
+      xml.append("]]></PARAM>");
       xml.append("	</TARGET>");
-      xml.append("	<PRIORITY SPEED=\""
-          + EncodeHelper.javaStringToXmlString(p_Data.getPrioritySpeed())
-          + "\"/>");
+      xml.append("	<PRIORITY SPEED=\"");
+      xml.append(p_Data.getPrioritySpeed());
+      xml.append("\"/>");
       xml.append("	<REPORT>");
       xml.append("	</REPORT>");
       xml.append("</NOTIFY>");
@@ -90,24 +107,42 @@ public class NotificationServerUtil {
   }
 
   /**
-	 * 
-	 */
+   *
+   * @param p_XML
+   * @return
+   * @throws NotificationServerException
+   */
   public static NotificationData convertXMLToNotificationData(String p_XML)
       throws NotificationServerException {
-    NotificationDataXML ndXML = new NotificationDataXML();
-    InputSource is;
-
-    is = new InputSource(new StringReader(p_XML));
-    ndXML.ParseXML(is);
-
-    return ndXML.getNotificationData();
+    NotificationData data = new NotificationData();
+    InputStream xml = new ByteArrayInputStream(p_XML.getBytes(Charsets.UTF_8));
+    try {
+      SAXParser parser = parserFactory.newSAXParser();
+      DefaultHandler handler = new NotifyContentHandler(data, parser.getXMLReader());
+      parser.parse(xml, handler);
+    } catch (SAXException e) {
+      throw new NotificationServerException("NotificationDataXML()",
+          SilverpeasException.ERROR,
+          "notificationServer.EX_ERROR_IN_XML_PARSING", e);
+    } catch (IOException e) {
+      throw new NotificationServerException("NotificationDataXML()",
+          SilverpeasException.ERROR,
+          "notificationServer.EX_ERROR_IN_XML_PARSING", e);
+    } catch (ParserConfigurationException e) {
+      throw new NotificationServerException("NotificationDataXML()",
+          SilverpeasException.ERROR,
+          "notificationServer.EX_ERROR_IN_XML_PARSING", e);
+    }
+    return data;
   }
 
   /**
-	 * 
-	 */
-  static public Hashtable unpackKeyValues(String keyvaluestring) {
-    Hashtable result = new Hashtable();
+   *
+   * @param keyvaluestring
+   * @return
+   */
+  static public Map<String, Object> unpackKeyValues(String keyvaluestring) {
+    Map<String, Object> result = new HashMap<String, Object>();
     char c;
     StringBuffer key = new StringBuffer();
     StringBuffer value = new StringBuffer();
@@ -129,8 +164,7 @@ public class NotificationServerUtil {
             String strValue = value.toString();
             if (strValue.startsWith("#DATE#")) {
               strValue = strValue.substring(6, strValue.length());
-              result.put(key.toString(), new Date(Long.valueOf(strValue)
-                  .longValue()));
+              result.put(key.toString(), new Date(Long.valueOf(strValue).longValue()));
             } else {
               result.put(key.toString(), strValue);
             }
@@ -157,8 +191,7 @@ public class NotificationServerUtil {
       String strValue = value.toString();
       if (strValue.startsWith("#DATE#")) {
         strValue = strValue.substring(6);
-        result
-            .put(key.toString(), new Date(Long.valueOf(strValue).longValue()));
+        result.put(key.toString(), new Date(Long.valueOf(strValue).longValue()));
       } else {
         result.put(key.toString(), strValue);
       }
@@ -176,36 +209,41 @@ public class NotificationServerUtil {
     if (theValue == null) {
       return "";
     }
-    StringBuffer sb = new StringBuffer(theValue.length() + 5);
-    char c;
+    StringBuilder sb = new StringBuilder(theValue.length() + 5);
     int i;
-
-    for (i = 0; i < theValue.length(); i++) {
-      c = theValue.charAt(i);
-      if (c == ';') {
-        sb.append(";;");
-      } else if (c == '=') {
-        sb.append("==");
-      } else {
-        sb.append(c);
+    char[] chars = theValue.toCharArray();
+    for (i = 0; i < chars.length; i++) {
+      char c = chars[i];
+      switch (c) {
+        case '=': {
+          sb.append("==");
+          break;
+        }
+        case ';': {
+          sb.append(";;");
+          break;
+        }
+        default: {
+          sb.append(c);
+          break;
+        }
       }
     }
     return sb.toString();
   }
 
   /**
-	 * 
-	 */
-  static public String packKeyValues(Hashtable keyValues) {
-    StringBuffer sb = new StringBuffer();
-    Enumeration theKeys;
-    String theKey;
+   *
+   * @param keyValues
+   * @return
+   */
+  static public String packKeyValues(Map<String, Object> keyValues) {
+    StringBuilder sb = new StringBuilder();
     boolean bNotTheFirst = false;
 
     if (keyValues != null) {
-      theKeys = keyValues.keys();
-      while (theKeys.hasMoreElements()) {
-        theKey = (String) theKeys.nextElement();
+      Set<String> theKeys = keyValues.keySet();
+      for (String theKey : theKeys) {
         if (bNotTheFirst) {
           sb.append(';');
         }
@@ -232,14 +270,11 @@ public class NotificationServerUtil {
         }
 
         if (success) {
-          sb
-              .append(doubleSeparators(theKey) + "="
-              + doubleSeparators(keyValue));
+          sb.append(doubleSeparators(theKey)).append('=').append(doubleSeparators(keyValue));
           bNotTheFirst = true;
         }
       }
     }
     return sb.toString();
   }
-
 }
