@@ -90,7 +90,7 @@
             <tr>
               <td class="intfdcolor4" NOWRAP>
                 <form name="silvermailForm" Action="" Method="POST">
-                  <table cellpadding="5" cellspacing="0" border="0" width="100%">                  
+                  <table cellpadding="5" cellspacing="0" border="0" width="100%">
                     <tr>
                       <td valign="baseline" align=left class="txtlibform"><fmt:message key="date" />:&nbsp;</td>
                       <td align=left valign="baseline"><fmt:formatDate value="${msg.date}" pattern="dd/MM/yyyy HH:mm:ss" /></td>
@@ -118,7 +118,7 @@
                     </tr>
                     <tr>
                       <td valign="baseline" align=left  class="txtlibform"></td>
-                      <td align=left valign="baseline"><c:out value="${msg.body}" /></td>
+                      <td align=left valign="baseline"><c:out value="${msg.body}" escapeXml="false" /></td>
                     </tr>
                   </table>
                 </form>
