@@ -323,6 +323,17 @@ public class DateUtil {
     return result;
   }
 
+  /**
+   * Returns the first date of month according to given date (ex. 26/08/2010)
+   * @param date any date
+   * @return first date of month in sql format (ie. 2010/08/01)
+   */
+  public static String firstDayOfMonth2SQLDate(Date date) {
+    String sqlDate = DATE_FORMATTER.format(date);
+    sqlDate = sqlDate.substring(0, sqlDate.length() - 2) + "01";
+    return sqlDate;
+  }
+
   public static String formatDuration(long duration) {
     long hourDuration = duration / millisPerHour;
     long minuteDuration = (duration % millisPerHour) / millisPerMinute;
