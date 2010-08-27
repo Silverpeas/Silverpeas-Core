@@ -44,12 +44,16 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import com.stratelia.webactiv.util.exception.UtilException;
+import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 /**
  * Class declaration
  * @author
  */
 public class DragAndDrop extends HttpServlet {
+
+  private static final long serialVersionUID = 1L;
 
   /**
    * Method declaration
@@ -118,31 +122,28 @@ public class DragAndDrop extends HttpServlet {
         SilverTrace
             .info("attachment", "DragAndDrop.doPost",
                 "root.MSG_GEN_PARAM_VALUE", "item = " + item.getName() + "; " +
-                item.getString("UTF-8"));
+                    item.getString("UTF-8"));
 
         if (!item.isFormField()) {
           String fileName = item.getName();
           if (fileName != null) {
-            fileName = fileName.replace('\\', File.separatorChar);
-            fileName = fileName.replace('/', File.separatorChar);
-            SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
-                "file = " + fileName);
-
+            String physicalName = saveFileOnDisk(item, componentId, context);
+            String mimeType = AttachmentController.getMimeType(fileName);
             long size = item.getSize();
             SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
                 "item size = " + size);
-
-            String type = FileRepositoryManager.getFileExtension(fileName);
-            String physicalName = new Date().getTime() + "." + type;
-            item.write(
-                new File(AttachmentController.createPath(componentId, context) + physicalName));
-            String mimeType = AttachmentController.getMimeType(fileName);
             // create AttachmentDetail Object
             AttachmentDetail attachment = new AttachmentDetail(new AttachmentPK(null, "useless",
                 componentId), physicalName, fileName, null, mimeType, size, context, new Date(),
                 new AttachmentPK(id, "useless", componentId));
             attachment.setAuthor(userId);
-            AttachmentController.createAttachment(attachment, bIndexIt);
+            try {
+              AttachmentController.createAttachment(attachment, bIndexIt);
+            } catch (Exception e) {
+              // storing data into DB failed, delete file just added on disk
+              deleteFileOnDisk(physicalName, componentId, context);
+              throw e;
+            }
             // Specific case: 3d file to convert by Actify Publisher
             if (actifyPublisherEnable) {
               String extensions = settings.getString("Actify3dFiles");
@@ -151,7 +152,8 @@ public class DragAndDrop extends HttpServlet {
               boolean fileForActify = false;
               SilverTrace.info("attachment", "DragAndDrop.doPost",
                   "root.MSG_GEN_PARAM_VALUE", "nb tokenizer ="
-                  + tokenizer.countTokens());
+                      + tokenizer.countTokens());
+              String type = FileRepositoryManager.getFileExtension(fileName);
               while (tokenizer.hasMoreTokens() && !fileForActify) {
                 String extension = tokenizer.nextToken();
                 fileForActify = type.equalsIgnoreCase(extension);
@@ -182,5 +184,32 @@ public class DragAndDrop extends HttpServlet {
       return;
     }
     res.getOutputStream().println("SUCCESS");
+  }
+
+  private String saveFileOnDisk(FileItem item, String componentId, String context) throws Exception {
+    String fileName = item.getName();
+    if (fileName != null) {
+      fileName = fileName.replace('\\', File.separatorChar);
+      fileName = fileName.replace('/', File.separatorChar);
+      SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
+          "file = " + fileName);
+
+      String type = FileRepositoryManager.getFileExtension(fileName);
+      String physicalName = new Date().getTime() + "." + type;
+      File file = new File(AttachmentController.createPath(componentId, context) + physicalName);
+      item.write(file);
+      return physicalName;
+    }
+    return null;
+  }
+
+  private void deleteFileOnDisk(String physicalName, String componentId, String context) {
+    String path = AttachmentController.createPath(componentId, context) + physicalName;
+    try {
+      FileFolderManager.deleteFile(path);
+    } catch (UtilException e) {
+      SilverTrace.error("attachment", "DragAndDrop.deleteFileOnDisk", "ERREUR",
+          "Can't delete file : " + path);
+    }
   }
 }

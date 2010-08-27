@@ -49,6 +49,8 @@ import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.model.DocumentVersionPK;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
+import com.stratelia.webactiv.util.exception.UtilException;
+import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 /**
  * Class declaration
@@ -111,15 +113,8 @@ public class DragAndDrop extends HttpServlet {
             long size = item.getSize();
             SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
                 "item #" + fullFileName + " size = " + size);
-            String type = FileRepositoryManager.getFileExtension(fileName);
             String mimeType = AttachmentController.getMimeType(fileName);
-            String physicalName = new Date().getTime() + "." + type;
-            File savedFile = new File(vie.getVersioningPath(componentId) + physicalName);
-            File parent = savedFile.getParentFile();
-            if (!parent.exists()) {
-              parent.mkdirs();
-            }
-            item.write(savedFile);
+            String physicalName = saveFileOnDisk(item, componentId, vie);
             DocumentPK documentPK = new DocumentPK(-1, componentId);
             if (StringUtil.isDefined(documentId)) {
               documentPK.setId(documentId);
@@ -142,7 +137,13 @@ public class DragAndDrop extends HttpServlet {
             List<Document> documents = new ArrayList<Document>();
             documents.add(document);
 
-            vie.importDocuments(foreignPK, documents, userId, bIndexIt);
+            try {
+              vie.importDocuments(foreignPK, documents, userId, bIndexIt);
+            } catch (Exception e) {
+              // storing data into DB failed, delete file just added on disk
+              deleteFileOnDisk(physicalName, componentId, vie);
+              throw e;
+            }
           } else {
             SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
                 "item " + item.getFieldName() + "=" + item.getString());
@@ -155,5 +156,37 @@ public class DragAndDrop extends HttpServlet {
       return;
     }
     res.getOutputStream().println("SUCCESS");
+  }
+
+  private String saveFileOnDisk(FileItem item, String componentId, VersioningImportExport vie)
+      throws Exception {
+    String fileName = item.getName();
+    if (fileName != null) {
+      fileName = fileName.replace('\\', File.separatorChar);
+      fileName = fileName.replace('/', File.separatorChar);
+      SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
+          "file = " + fileName);
+
+      String type = FileRepositoryManager.getFileExtension(fileName);
+      String physicalName = new Date().getTime() + "." + type;
+      File savedFile = new File(vie.getVersioningPath(componentId) + physicalName);
+      File parent = savedFile.getParentFile();
+      if (!parent.exists()) {
+        parent.mkdirs();
+      }
+      item.write(savedFile);
+      return physicalName;
+    }
+    return null;
+  }
+
+  private void deleteFileOnDisk(String physicalName, String componentId, VersioningImportExport vie) {
+    String path = vie.getVersioningPath(componentId) + physicalName;
+    try {
+      FileFolderManager.deleteFile(path);
+    } catch (UtilException e) {
+      SilverTrace.error("versioningPeas", "DragAndDrop.deleteFileOnDisk", "ERREUR",
+          "Can't delete file : " + path);
+    }
   }
 }
