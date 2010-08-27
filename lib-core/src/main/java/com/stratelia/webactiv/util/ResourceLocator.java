@@ -53,6 +53,7 @@ public class ResourceLocator implements Serializable {
   final static String m_DefaultExtension = ".properties";
   private String m_sPropertiesFile = null;
   private Locale m_sPropertiesLocale = null;
+  private ResourceLocator defaultResource = null;
   static private Map<String, Map<Locale, ResourceBundle>> m_hPropertiesCache =
       new HashMap<String, Map<Locale, ResourceBundle>>();
 
@@ -66,8 +67,15 @@ public class ResourceLocator implements Serializable {
   /**
    * Create a resource locator with the given property file (Ex: com.stratelia.webactiv.util.util)
    * Use the function getString to get the parameters from this instance
+   * @param sPropertyFile
+   * @param sLanguage
    */
   public ResourceLocator(String sPropertyFile, String sLanguage) {
+    this(sPropertyFile, sLanguage, null);
+  }
+
+  public ResourceLocator(String sPropertyFile, String sLanguage, ResourceLocator defaultResource) {
+    this.defaultResource = defaultResource;
     m_sPropertiesFile = sPropertyFile;
     if (sLanguage != null) {
       m_sPropertiesLocale = new Locale(sLanguage);
@@ -92,6 +100,8 @@ public class ResourceLocator implements Serializable {
 
   /**
    * Set properties of a SilverPeas component.
+   * @param sPropertyFile
+   * @param sLanguage
    */
   public void setPropertyLocation(String sPropertyFile, String sLanguage) {
     m_sPropertiesFile = sPropertyFile;
@@ -144,11 +154,15 @@ public class ResourceLocator implements Serializable {
   /**
    * Return the value of the given attribut in the Property created with the ResourceLocator
    * constructor
+   * @param sAttribut
+   * @return
    */
   public String getString(String sAttribut) {
-    ResourceBundle bundle = this.getResourceBundle(m_sPropertiesFile,
-        m_sPropertiesLocale);
+    ResourceBundle bundle = this.getResourceBundle(m_sPropertiesFile, m_sPropertiesLocale);
     try {
+      if (!bundle.containsKey(sAttribut) && this.defaultResource != null) {
+        return this.defaultResource.getString(sAttribut);
+      }
       return bundle.getString(sAttribut);
     } catch (MissingResourceException msrex) {
       SilverTrace.warn("util", "ResourceLocator.getString",
@@ -161,10 +175,13 @@ public class ResourceLocator implements Serializable {
   /**
    * Return the value of the given attribut in the Property created with the ResourceLocator
    * constructor
+   * @param sAttribut
+   * @param defaultValue
+   * @return
    */
   public String getString(String sAttribut, String defaultValue) {
     String sReturn = getString(sAttribut);
-    if (sReturn == null || sReturn.length() == 0) {
+    if (!StringUtil.isDefined(sReturn)) {
       sReturn = defaultValue;
     }
     return sReturn;
@@ -173,6 +190,9 @@ public class ResourceLocator implements Serializable {
   /**
    * Return the value of the given attribut in the Property created with the ResourceLocator
    * constructor
+   * @param sAttribut
+   * @param defaultValue
+   * @return
    */
   public boolean getBoolean(String sAttribut, boolean defaultValue) {
     String value = getString(sAttribut);
@@ -183,7 +203,7 @@ public class ResourceLocator implements Serializable {
   }
 
   public String getStringWithParam(String resName, String param) {
-    String[] params = { param };
+    String[] params = {param};
     return getStringWithParams(resName, params);
   }
 
@@ -212,10 +232,11 @@ public class ResourceLocator implements Serializable {
     return null;
   }
 
-  /** Return an enumeration of all keys in the property file loaded */
+  /** Return an enumeration of all keys in the property file loaded
+   * @return
+   */
   public Enumeration<String> getKeys() {
-    ResourceBundle bundle = this.getResourceBundle(m_sPropertiesFile,
-        m_sPropertiesLocale);
+    ResourceBundle bundle = this.getResourceBundle(m_sPropertiesFile, m_sPropertiesLocale);
     return bundle.getKeys();
   }
 
@@ -223,11 +244,17 @@ public class ResourceLocator implements Serializable {
     return this.getResourceBundle(m_sPropertiesFile, m_sPropertiesLocale);
   }
 
-  /** Return the properties * */
+  /** Return the properties *
+   * @return
+   */
   public Properties getProperties() {
-    ResourceBundle bundle = this.getResourceBundle(m_sPropertiesFile,
-        m_sPropertiesLocale);
-    Properties props = new Properties();
+    ResourceBundle bundle = this.getResourceBundle(m_sPropertiesFile, m_sPropertiesLocale);
+    Properties props;
+    if (this.defaultResource != null) {
+      props = new Properties(this.defaultResource.getProperties());
+    } else {
+      props = new Properties();
+    }
     Enumeration<String> keys = bundle.getKeys();
     while (keys.hasMoreElements()) {
       String key = keys.nextElement();
@@ -275,21 +302,22 @@ public class ResourceLocator implements Serializable {
     return url;
   }
 
-  public static InputStream getResourceAsStream(Object object, Locale loc,
-      String configFile, String extension) {
+  public static InputStream getResourceAsStream(Object object, Locale loc, String configFile,
+      String extension) {
+    String fileExtension = extension;
     if (extension == null) {
-      extension = m_DefaultExtension;
+      fileExtension = m_DefaultExtension;
     }
-    if (!extension.startsWith(".")) {
-      extension = '.' + extension;
+    if (!fileExtension.startsWith(".")) {
+      fileExtension = '.' + fileExtension;
     }
     SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
         "Starting with args:Object = " + object + ", loc=" + loc + ", ConfigFile="
-        + configFile + ", extension=" + extension);
-    InputStream inputStream = locateResourceAsStream(object, loc, configFile, extension);
+        + configFile + ", extension=" + fileExtension);
+    InputStream inputStream = locateResourceAsStream(object, loc, configFile, fileExtension);
     if (inputStream == null) {
       if (loc != null) {
-        inputStream = locateResourceAsStream(object, null, configFile, extension);
+        inputStream = locateResourceAsStream(object, null, configFile, fileExtension);
       }
       if (inputStream == null) {
         if (object != null) {
@@ -300,7 +328,7 @@ public class ResourceLocator implements Serializable {
               "calling getResourceAsStream(" + configFile + ")");
           inputStream = clazz.getResourceAsStream(configFile);
           if (inputStream == null) {
-            String extendedFile = configFile + extension;
+            String extendedFile = configFile + fileExtension;
             SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
                 "calling getResourceAsStream(" + extendedFile + ")");
             inputStream = clazz.getResourceAsStream(extendedFile);
@@ -322,8 +350,7 @@ public class ResourceLocator implements Serializable {
         }
       }
     }
-    SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
-        "returning " + inputStream);
+    SilverTrace.debug("util", "ResourceLocator.getResourceAsStream", "returning " + inputStream);
     return inputStream;
   }
 
@@ -511,19 +538,17 @@ public class ResourceLocator implements Serializable {
   }
 
   private static InputStream getPrivileged(final ClassLoader l, final String s) {
-    InputStream stream =
-        (InputStream) java.security.AccessController
-            .doPrivileged(new java.security.PrivilegedAction<Object>() {
+    InputStream stream = (InputStream) java.security.AccessController.doPrivileged(new java.security.PrivilegedAction<Object>() {
 
-              @Override
-              public Object run() {
-                if (l != null) {
-                  return l.getResourceAsStream(s);
-                } else {
-                  return ClassLoader.getSystemResourceAsStream(s);
-                }
-              }
-                        });
+      @Override
+      public Object run() {
+        if (l != null) {
+          return l.getResourceAsStream(s);
+        } else {
+          return ClassLoader.getSystemResourceAsStream(s);
+        }
+      }
+    });
     return (stream);
   }
 }
