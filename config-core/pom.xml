@@ -6,7 +6,7 @@
     <artifactId>core</artifactId>
     <version>5.3-SNAPSHOT</version>
   </parent>
-	
+
   <groupId>com.silverpeas.core</groupId>
   <artifactId>config-core</artifactId>
   <packaging>pom</packaging>
