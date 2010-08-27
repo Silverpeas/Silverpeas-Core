@@ -22,17 +22,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- 12/02/2002 Marc Guillemin :
- rename package,
- replace the logging functions with SilverTrace,
- delete the SchedulerShellJob and TreadedInputStream (because logging).
- */
 package com.stratelia.silverpeas.scheduler;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,7 +33,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * <P>
@@ -99,16 +91,7 @@ import java.util.Vector;
  * </P>
  */
 public class SimpleScheduler {
-  // Global constants
 
-  /**
-   * This date format is used for writing a timestamp into the log files. It could be used by
-   * external methods, so the log files have a consistent layout.
-   */
-  public static final SimpleDateFormat LOG_DATE_FORMAT = new SimpleDateFormat(
-      "yyyy-MM-dd HH:mm");
-  // Local constants
-  // Class variables
   private static SimpleScheduler theSimpleScheduler;
   // Object variables
   private final Map<SchedulerEventHandler, List<SchedulerJob>> htJobs;
@@ -162,8 +145,8 @@ public class SimpleScheduler {
    * @param aJobName The name of the created job
    * @param aCronString A cron like string ([*|NUM{,NUM}] [*|NUM{,NUM}] [*|NUM{,NUM}] [*|NUM{,NUM}]
    * [*|NUM{,NUM}])
-   * @param aCommand A shell command with space separated parameters
    * @return A new job
+   * @throws SchedulerException 
    */
   public static SchedulerJob getJob(SchedulerEventHandler aJobOwner,
       String aJobName, String aCronString) throws SchedulerException {
@@ -490,9 +473,9 @@ public class SimpleScheduler {
    * This method removes a job
    * @param aJob A job object
    */
-  private void removeJob(SchedulerJob aJob) {
+  private synchronized void removeJob(SchedulerJob aJob) {
     jobNames.remove(aJob.getName());
-
+    SchedulerEventHandler event = null;
     for (Map.Entry<SchedulerEventHandler, List<SchedulerJob>> jobs : htJobs.entrySet()) {
       Iterator<SchedulerJob> workIter = jobs.getValue().iterator();
       while (workIter.hasNext()) {
@@ -507,8 +490,11 @@ public class SimpleScheduler {
       }
       // Is job list for owner empty?
       if (jobs.getValue().isEmpty()) {
-        htJobs.remove(jobs.getKey());
+        event = jobs.getKey();
       }
+    }
+    if (event != null) {
+      htJobs.remove(event);
     }
   }
 

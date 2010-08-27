@@ -24,9 +24,11 @@
 
 package com.stratelia.silverpeas.scheduler;
 
-import java.util.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Date;
 
-import java.lang.reflect.*;
+
 
 /**
  * This class extends the class 'SchedulerJob' for the functionality of a scheduled execution of a
@@ -76,13 +78,11 @@ public class SchedulerMethodJob extends SchedulerJob {
 
     // Get the execution method
     try {
-      Class argumentTypes[] = { Class.forName("java.util.Date") };
-      executionMethod = methodOwner.getClass().getMethod(aExecutionMethodName,
-          argumentTypes);
+      Class argumentTypes[] = new Class[]{ java.util.Date.class };
+      executionMethod = methodOwner.getClass().getMethod(aExecutionMethodName, argumentTypes);
       if (executionMethod == null) {
         throw new Exception("There is no method '" + aExecutionMethodName
-            + " (java.io.PrintStream,java.util.Date)' in the class '"
-            + methodOwner.getClass().getName() + "'");
+            + " (java.util.Date)' in the class '" + methodOwner.getClass().getName() + "'");
       }
     } catch (Exception aException) {
       throw new SchedulerException(
@@ -97,6 +97,7 @@ public class SchedulerMethodJob extends SchedulerJob {
    * @param log A PrintStream for text writings in the log file for this job
    * @param theExecutionDate The date of the execution
    */
+  @Override
   protected void execute(Date theExecutionDate) throws SchedulerException {
     Object parameters[] = { theExecutionDate };
 

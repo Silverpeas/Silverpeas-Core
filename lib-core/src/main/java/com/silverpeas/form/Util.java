@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form;
 
 import java.io.PrintWriter;
@@ -38,8 +37,7 @@ public class Util {
       "com.silverpeas.form.settings.formIcons", "");
   private static final ResourceLocator settings = new ResourceLocator(
       "com.silverpeas.form.settings.form", "");
-  private static final String path = GeneralPropertiesManager
-      .getGeneralResourceLocator().getString("ApplicationURL");
+  private static final String path = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
   private static ResourceLocator generalMessage;
   private static ResourceLocator message;
   private static String language = null;
@@ -57,52 +55,56 @@ public class Util {
   }
 
   public static String getString(String msg, String language) {
-    String s = "";
     setLanguage(language);
-    if (msg.startsWith("GML."))
-      s = generalMessage.getString(msg);
-    else
-      s = message.getString(msg);
-    return s;
+    if (msg.startsWith("GML.")) {
+      return generalMessage.getString(msg);
+    }
+    return message.getString(msg);
   }
 
   public static String getJavascriptIncludes() {
-    String includes = "";
-
+    StringBuilder includes = new StringBuilder();
+    addSilverpeasScript(includes, "/util/javaScript/dateUtils.js");
+    addSilverpeasScript(includes, "/util/javaScript/checkForm.js");
+    addSilverpeasScript(includes, "/util/javaScript/animation.js");
     // includes home made scripts
-    includes += "<script type=\"text/javascript\" src=\"" + path
-        + "/util/javaScript/dateUtils.js" + "\"></script>\n";
-    includes += "<script type=\"text/javascript\" src=\"" + path
-        + "/util/javaScript/checkForm.js" + "\"></script>\n";
-    includes += "<script type=\"text/javascript\" src=\"" + path
-        + "/util/javaScript/animation.js" + "\"></script>\n";
-    includes += "<script type=\"text/javascript\">\n";
-    includes += "function calendar(idField) {\n";
-    includes += "	SP_openWindow('" + path
-        + URLManager.getURL(URLManager.CMP_AGENDA)
-        + "calendar.jsp?idElem='+idField,'Calendrier',180,200,'');\n";
-    includes += "}\n";
-    includes += "</script>\n";
+    includes.append("<script type=\"text/javascript\" src=\"").append(path);
+    includes.append("/util/javaScript/dateUtils.js\"></script>\n");
+
+    includes.append("<script type=\"text/javascript\">\n");
+    includes.append("function calendar(idField) {\n	SP_openWindow('").append(path);
+    includes.append(URLManager.getURL(URLManager.CMP_AGENDA));
+    includes.append("calendar.jsp?idElem='+idField,'Calendrier',180,200,'');\n");
+    includes.append("}\n</script>\n");
 
     // includes external scripts once because
     // including several times the same script (once per field) can provide
     // dysfunction on this fields
-    String m_context =
+    String webContext =
         GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-    includes += "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + m_context +
-        "/util/yui/fonts/fonts-min.css\" />\n";
-    includes += "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + m_context +
-        "/util/yui/autocomplete/assets/skins/sam/autocomplete.css\" />\n";
-    includes += "<script type=\"text/javascript\" src=\"" + m_context +
-        "/util/yui/yahoo-dom-event/yahoo-dom-event.js\"></script>\n";
-    includes += "<script type=\"text/javascript\" src=\"" + m_context +
-        "/util/yui/animation/animation-min.js\"></script>\n";
-    includes += "<script type=\"text/javascript\" src=\"" + m_context +
-        "/util/yui/datasource/datasource-min.js\"></script>\n";
-    includes += "<script type=\"text/javascript\" src=\"" + m_context +
-        "/util/yui/autocomplete/autocomplete-min.js\"></script>\n";
-    return includes;
+    addExternalStyleSheet(includes, webContext, "/util/yui/fonts/fonts-min.css");
+    addExternalStyleSheet(includes, webContext,"/util/yui/autocomplete/assets/skins/sam/autocomplete.css");
+    addExternalScript(includes, webContext, "/util/yui/yahoo-dom-event/yahoo-dom-event.js");
+    addExternalScript(includes, webContext, "/util/yui/animation/animation-min.js");
+    addExternalScript(includes, webContext, "/util/yui/datasource/datasource-min.js");
+    addExternalScript(includes, webContext, "/util/yui/autocomplete/autocomplete-min.js");
+    return includes.toString();
 
+  }
+
+  private static void addSilverpeasScript(StringBuilder includes, String script) {
+    includes.append("<script type=\"text/javascript\" src=\"").append(path);
+    includes.append(script).append("\"></script>\n");
+  }
+
+  private static void addExternalStyleSheet(StringBuilder includes, String webContext, String styleSheet) {
+    includes.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(webContext);
+    includes.append(styleSheet).append("\" />\n");
+  }
+
+  private static void addExternalScript(StringBuilder includes, String webContext, String script) {
+    includes.append("<script type=\"text/javascript\" src=\"").append(webContext);
+    includes.append(script).append("\"></script>\n");
   }
 
   public static void getJavascriptChecker(String fieldName,
@@ -132,13 +134,12 @@ public class Util {
    */
   public static String getMandatorySnippet() {
     return "&nbsp;<img src=\"" + getIcon("mandatoryField")
-        + "\" width=\"5\" height=\"5\" border=\"0\" alt=\"" +
-        Util.getString("GML.requiredField", language) + "\"/>";
+        + "\" width=\"5\" height=\"5\" border=\"0\" alt=\""
+        + Util.getString("GML.requiredField", language) + "\"/>";
   }
 
   public static boolean getBooleanValue(Map<String, String> parameters, String parameter) {
     String paramValue = parameters.containsKey(parameter) ? parameters.get(parameter) : "false";
     return Boolean.valueOf(paramValue).booleanValue();
   }
-
 }

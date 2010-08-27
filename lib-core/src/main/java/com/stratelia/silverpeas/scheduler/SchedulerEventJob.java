@@ -24,7 +24,9 @@
 
 package com.stratelia.silverpeas.scheduler;
 
-import java.util.*;
+import java.util.Date;
+
+
 
 /**
  * This class extends the class 'SchedulerJob' for the functionality of the scheduled execution of

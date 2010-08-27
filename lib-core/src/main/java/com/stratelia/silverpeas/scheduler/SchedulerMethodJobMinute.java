@@ -24,30 +24,33 @@
 
 package com.stratelia.silverpeas.scheduler;
 
-import java.util.*;
+import java.util.Date;
+
 
 /**
  * This class extends the class 'SchedulerJob' for the functionality of a scheduled execution of a
  * class method.
  */
 public class SchedulerMethodJobMinute extends SchedulerMethodJob {
-  long m_iMs = 1000;
+  private long m_iMs = 1000l;
 
-  /**
+ /**
    * The constructor has proteceted access, because the generation of jobs should be done in a
    * central way by the class 'SimpleScheduler'
-   * @param aController The controller, that controls all job executions
-   * @param aOwner The owner of the job
-   * @param aJobName The name of the job
-   * @param aLogBaseFile The log file for the job
-   */
+  * @param theJobController The controller, that controls all job executions
+  * @param theJobOwner The owner of the job
+  * @param theJobName The name of the job
+  * @param iMinutes theperiod between each job
+  * @throws SchedulerException
+  */
   protected SchedulerMethodJobMinute(SimpleScheduler theJobController,
       SchedulerEventHandler theJobOwner, String theJobName, int iMinutes)
       throws SchedulerException {
     super(theJobController, theJobOwner, theJobName);
-    m_iMs = (long) iMinutes * (long) 60 * (long) 1000;
+    m_iMs = iMinutes * 60000l;
   }
 
+  @Override
   protected long getNextTimeStamp() {
     return ((new Date()).getTime() + m_iMs);
   }

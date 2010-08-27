@@ -141,7 +141,7 @@ public class GraphicElementFactory extends Object {
     }
     return multilang;
   }
-  
+
   private String getLanguage() {
     String language = I18NHelper.defaultLanguage;
     if (mainSessionController != null) {
@@ -172,17 +172,18 @@ public class GraphicElementFactory extends Object {
     SilverTrace.info("viewgenerator",
         "GraphicElementFactory.getLookSettings()", "root.MSG_GEN_ENTER_METHOD");
     if (lookSettings == null) {
+      ResourceLocator silverpeasSettings = getSilverpeasLookSettings();
       SilverTrace.info("viewgenerator",
           "GraphicElementFactory.getLookSettings()",
           "root.MSG_GEN_EXIT_METHOD", "lookSettings == null");
       // get the customer lookSettings
       try {
         lookSettings = new ResourceLocator(
-            "com.stratelia.webactiv.util.viewGenerator.settings.lookSettings", "");
+            "com.stratelia.webactiv.util.viewGenerator.settings.lookSettings", "", silverpeasSettings);
       } catch (java.util.MissingResourceException e) {
         // the customer lookSettings is undefined
         // get the default silverpeas looks
-        lookSettings = getSilverpeasLookSettings();
+        lookSettings = silverpeasSettings;
       }
     }
     SilverTrace.info("viewgenerator",
@@ -351,12 +352,12 @@ public class GraphicElementFactory extends Object {
       code.append("<script type=\"text/javascript\" src=\"").append(specificJS).append(
           "\"></script>\n");
     }
-    
+
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
     		"/util/javaScript/jquery/jquery.ui.datepicker-").append(getLanguage()).append(".js\"></script>");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/silverpeas-defaultDatePicker.js\"></script>");
-    
+
     // include javascript to manage in-progress message
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/progressMessage.js\"></script>\n");

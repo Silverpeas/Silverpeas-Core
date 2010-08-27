@@ -227,7 +227,7 @@ public class NotificationMetaData implements java.io.Serializable {
         result = template.applyFileTemplate(fileName + '_' + language);
       }
     } else {
-      result = (String) contents.get(language);
+      result = contents.get(language);
     }
     SilverTrace.info("notificationManager",
         "NotificationMetaData.getContent()", "root.MSG_GEN_EXIT_METHOD",

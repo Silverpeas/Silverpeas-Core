@@ -28,7 +28,6 @@ import static com.stratelia.silverpeas.silvertrace.SilverTrace.MODULE_ADMIN;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -68,6 +67,7 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.pool.ConnectionPool;
+import org.apache.commons.lang.time.FastDateFormat;
 
 /**
  * @author neysseri
@@ -110,8 +110,7 @@ public class Admin extends Object {
   static private String m_sDAPIGeneralAdminId = null;
   // User Logs
   static private Hashtable<String, UserLog> m_hUserLog = new Hashtable<String, UserLog>(0);
-  private static SimpleDateFormat formatter = new SimpleDateFormat(
-      "dd/MM/yyyy HH:mm:ss:S");
+  private static FastDateFormat formatter = FastDateFormat.getInstance("dd/MM/yyyy HH:mm:ss:S");
   // Cache management
   static private AdminCache m_Cache = new AdminCache();
   // static private TreeCache treeCache = new TreeCache();

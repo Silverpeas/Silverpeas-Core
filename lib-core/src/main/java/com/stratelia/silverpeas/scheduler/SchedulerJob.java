@@ -23,11 +23,19 @@
  */
 package com.stratelia.silverpeas.scheduler;
 
-import java.text.*;
-import java.util.*;
 
-import com.stratelia.silverpeas.silvertrace.*;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.text.Format;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.Vector;
+import org.apache.commons.lang.time.FastDateFormat;
 
 /**
  * This is the base class of all scheduler job classes. This class is abstract. If you will
@@ -37,7 +45,7 @@ import java.util.ArrayList;
 abstract public class SchedulerJob extends Thread {
   // Environment variables
 
-  protected SimpleDateFormat logDateFormat;
+  protected Format logDateFormat = FastDateFormat.getInstance("yyyy-MM-dd HH:mm");
   private SchedulerEventHandler theOwner;
   // private File theLogBaseFile;
   private String sJobName;
@@ -201,8 +209,6 @@ abstract public class SchedulerJob extends Thread {
     theOwner = aOwner;
 
     sJobName = aJobName;
-    logDateFormat = SimpleScheduler.LOG_DATE_FORMAT;
-
     vMinutes = new Vector();
     vHours = new Vector();
     vDaysOfMonth = new Vector();

@@ -44,8 +44,7 @@ public class I18NHelper {
 
   // "fr" - List of I18NLanguage : all available languages in french
   // "en" - List of I18NLanguage : all available languages in english
-  public static Hashtable<String, List<I18NLanguage>> allLanguages =
-      new Hashtable<String, List<I18NLanguage>>();
+  public final static Hashtable<String, List<I18NLanguage>> allLanguages = new Hashtable<String, List<I18NLanguage>>();
 
   private static int nbLanguages = 0;
   public static boolean isI18N = false;
@@ -67,9 +66,9 @@ public class I18NHelper {
       String language = tokenizer.nextToken();
       allCodes.add(language);
       nbLanguages++;
-
-      if (defaultLanguage == null)
+      if (defaultLanguage == null) {
         defaultLanguage = language;
+      }
 
       ResourceLocator rsLanguage = new ResourceLocator(
           "com.silverpeas.util.multilang.i18n", language);
@@ -90,9 +89,10 @@ public class I18NHelper {
   static public String getLanguageLabel(String code, String userLanguage) {
     List<I18NLanguage> labels = allLanguages.get(userLanguage);
     for (int l = 0; l < labels.size(); l++) {
-      I18NLanguage language = (I18NLanguage) labels.get(l);
-      if (language.getCode().equalsIgnoreCase(code))
+      I18NLanguage language = labels.get(l);
+      if (language.getCode().equalsIgnoreCase(code)) {
         return language.getLabel();
+      }
     }
     return "";
   }
@@ -105,27 +105,33 @@ public class I18NHelper {
     return allLanguages.keySet().iterator();
   }
 
+  static public Set<String> getAllSupportedLanguages() {
+    return allLanguages.keySet();
+  }
+
   static public int getNumberOfLanguages() {
     return allLanguages.size();
   }
 
   static public boolean isDefaultLanguage(String language) {
-    if (StringUtil.isDefined(language))
+    if (StringUtil.isDefined(language)) {
       return defaultLanguage.equalsIgnoreCase(language);
-    else
-      return true;
+    }
+    return true;
   }
 
   static public String checkLanguage(String language) {
-    if (!StringUtil.isDefined(language))
-      language = defaultLanguage;
-
-    return language;
+    String lang = language;
+    if (!StringUtil.isDefined(language)) {
+      lang = defaultLanguage;
+    }
+    return lang;
   }
 
   static public String getHTMLLinks(String url, String currentLanguage) {
-    if (!isI18N)
+    if (!isI18N) {
       return "";
+    }
 
     String links = "";
     String link = "";
@@ -136,17 +142,21 @@ public class I18NHelper {
     Iterator<String> it = allCodes.iterator();
     int i = 0;
     while (it.hasNext()) {
-      String code = (String) it.next();
+      String code = it.next();
       String className = "";
-      if (url.indexOf("?") != -1)
+      if (url.indexOf("?") != -1) {
         link = url + "&SwitchLanguage=" + code;
-      else
+      }
+      else {
         link = url + "?SwitchLanguage=" + code;
-      if (i != 0)
+      }
+      if (i != 0) {
         links += "&nbsp;";
+      }
 
-      if (code.equals(currentLanguage))
+      if (code.equals(currentLanguage)) {
         className = "ArrayNavigationOn";
+      }
 
       begin = "<a href=\"" + link + "\" class=\"" + className
           + "\" id=\"translation_" + code + "\">";
@@ -160,8 +170,9 @@ public class I18NHelper {
   }
 
   static public String getHTMLLinks(List<String> languages, String currentLanguage) {
-    if (!isI18N || languages == null)
+    if (!isI18N || languages == null) {
       return "";
+    }
 
     String links = "";
     String link = "";
@@ -173,15 +184,17 @@ public class I18NHelper {
     int i = 0;
     while (it.hasNext()) {
       String className = "";
-      String code = (String) it.next();
+      String code = it.next();
 
       if (languages.contains(code)) {
         link = "javaScript:showTranslation('" + code + "');";
-        if (i != 0)
+        if (i != 0) {
           links += "&nbsp;";
+        }
 
-        if (code.equals(currentLanguage) || languages.size() == 1)
+        if (code.equals(currentLanguage) || languages.size() == 1) {
           className = "ArrayNavigationOn";
+        }
 
         begin = "<a href=\"" + link + "\" class=\"" + className
             + "\" id=\"translation_" + code + "\">";
@@ -196,18 +209,19 @@ public class I18NHelper {
   }
 
   static public String getHTMLLinks(I18NBean bean, String currentLanguage) {
-    if (!isI18N || bean == null)
+    String lang = currentLanguage;
+    if (!isI18N || bean == null) {
       return "";
-
-    if (bean.getTranslation(currentLanguage) == null) {
-      Translation translation = bean.getNextTranslation();
-      if (translation != null)
-        currentLanguage = translation.getLanguage();
     }
 
+    if (bean.getTranslation(lang) == null) {
+      Translation translation = bean.getNextTranslation();
+      if (translation != null) {
+        lang = translation.getLanguage();
+      }
+    }
     List<String> languages = new ArrayList<String>(bean.getTranslations().keySet());
-
-    return getHTMLLinks(languages, currentLanguage);
+    return getHTMLLinks(languages, lang);
   }
 
   static public String getFormLine(ResourcesWrapper resources) {
@@ -216,10 +230,10 @@ public class I18NHelper {
 
   static public String getFormLine(ResourcesWrapper resources, I18NBean bean,
       String translation) {
-    if (nbLanguages == 1)
+    if (nbLanguages == 1) {
       return "";
-
-    StringBuffer tr = new StringBuffer(50);
+    }
+    StringBuilder tr = new StringBuilder(50);
     tr.append("<tr>\n");
     tr.append("<td class=\"txtlibform\">").append(
         resources.getString("GML.language")).append(" :</td>\n");
@@ -227,7 +241,6 @@ public class I18NHelper {
         getHTMLSelectObject(resources.getLanguage(), bean, translation))
         .append("</td>");
     tr.append("</tr>\n");
-
     return tr.toString();
   }
 
@@ -252,14 +265,15 @@ public class I18NHelper {
   static private String getHTMLSelectObject(List<I18NLanguage> toDisplay, I18NBean bean,
       String selectedTranslation, String userLanguage) {
     String list = "";
+    String currentTranslation = selectedTranslation;
 
     String onChangeJavascript = "";
     if (bean != null) {
       onChangeJavascript = "onChange= \"javaScript:showTranslation(this.value.substring(0,2));\"";
-      if (bean.getTranslation(selectedTranslation) == null) {
+      if (bean.getTranslation(currentTranslation) == null) {
         Translation translation = bean.getNextTranslation();
         if (translation != null) {
-          selectedTranslation = translation.getLanguage();
+          currentTranslation = translation.getLanguage();
         }
       }
     }
@@ -269,8 +283,9 @@ public class I18NHelper {
       I18NLanguage language = toDisplay.get(l);
 
       String selected = "";
-      if (language.getCode().equals(selectedTranslation))
+      if (language.getCode().equals(currentTranslation)) {
         selected = "selected";
+      }
 
       list += "<option value=\"" + language.getCode() + "_"
           + language.getTranslationId() + "\" " + selected + ">"
@@ -285,13 +300,14 @@ public class I18NHelper {
           .getString("GML.translationRemove");
 
       list += "&nbsp;<span id=\"delTranslationLink\">";
-      if (bean.getTranslations().size() >= 2) // cannot remove last translation
+      if (bean.getTranslations().size() >= 2) {
         list += "<a href=\"javaScript:document.getElementById('"
             + HTMLHiddenRemovedTranslationMode
             + "').value='true';removeTranslation();\"><img src=\""
             + path
             + "/util/icons/delete.gif\" border=\"0\" valign=\"absmiddle\" title=\""
             + text + "\" alt=\"" + text + "\"></a>";
+      }
       list += "</span>";
 
       list += "<input type=\"hidden\" id=\"" + HTMLHiddenRemovedTranslationMode
