@@ -155,7 +155,7 @@ public class ComponentInstManager {
           "ComponentInstManager.restoreComponentFromBasket",
           SilverpeasException.ERROR,
           "admin.EX_ERR_RESTORE_COMPONENT_FROM_BASKET", "componentId = "
-          + componentId, e);
+              + componentId, e);
     }
   }
 
@@ -399,7 +399,7 @@ public class ComponentInstManager {
       throw new AdminException("ComponentInstManager.updateComponentOrder",
           SilverpeasException.ERROR,
           "admin.EX_ERR_UPDATE_COMPONENT_INHERITANCE", "Component Id : '"
-          + sComponentId + "'", e);
+              + sComponentId + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -643,16 +643,22 @@ public class ComponentInstManager {
 
   public List<String> getAllowedComponentIds(int userId, List<String> groupIds, String spaceId)
       throws AdminException {
+    return getAllowedComponentIds(userId, groupIds, spaceId, null);
+  }
+
+  public List<String> getAllowedComponentIds(int userId, List<String> groupIds, String spaceId,
+      String componentName) throws AdminException {
     Connection con = null;
     try {
       con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
 
       if (StringUtil.isDefined(spaceId)) {
         // getting componentIds available for user in given space (not subspaces)
-        return ComponentDAO.getAvailableComponentIdsInSpace(con, groupIds, userId, spaceId);
+        return ComponentDAO.getAvailableComponentIdsInSpace(con, groupIds, userId, spaceId,
+            componentName);
       } else {
         // getting all componentIds available for user
-        return ComponentDAO.getAllAvailableComponentIds(con, groupIds, userId);
+        return ComponentDAO.getAllAvailableComponentIds(con, groupIds, userId, componentName);
       }
 
     } catch (Exception e) {

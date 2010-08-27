@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.DBUtil;
 
@@ -130,17 +131,22 @@ public class ComponentDAO {
 
   public static List<String> getAllAvailableComponentIds(Connection con, List<String> groupIds,
       int userId) throws SQLException {
+    return getAllAvailableComponentIds(con, groupIds, userId, null);
+  }
+
+  public static List<String> getAllAvailableComponentIds(Connection con, List<String> groupIds,
+      int userId, String componentName) throws SQLException {
     Set<String> componentIds = new HashSet<String>();
     componentIds.addAll(getAllPublicComponentIds(con));
     if (groupIds != null && groupIds.size() > 0) {
-      componentIds.addAll(getAllAvailableComponentIds(con, groupIds));
+      componentIds.addAll(getAllAvailableComponentIds(con, groupIds, componentName));
     }
-    componentIds.addAll(getAllAvailableComponentIds(con, userId));
+    componentIds.addAll(getAllAvailableComponentIds(con, userId, componentName));
     return new ArrayList<String>(componentIds);
   }
 
-  private static List<String> getAllAvailableComponentIds(Connection con, List<String> groupIds)
-      throws SQLException {
+  private static List<String> getAllAvailableComponentIds(Connection con, List<String> groupIds,
+      String componentName) throws SQLException {
     Statement stmt = null;
     ResultSet rs = null;
     try {
@@ -158,7 +164,11 @@ public class ComponentDAO {
       rs = stmt.executeQuery(queryAllAvailableComponentIds);
 
       while (rs.next()) {
-        ids.add(rs.getString(2) + Integer.toString(rs.getInt(1)));
+        String cName = rs.getString(2);
+        if (!StringUtil.isDefined(componentName) ||
+            (StringUtil.isDefined(componentName) && componentName.equalsIgnoreCase(cName))) {
+          ids.add(cName + Integer.toString(rs.getInt(1)));
+        }
       }
 
       return ids;
@@ -169,15 +179,15 @@ public class ComponentDAO {
 
   private final static String queryAllAvailableComponentIds =
       " select distinct(c.id), c.componentName"
-      + " from st_componentinstance c, st_userrole r, st_userrole_user_rel ur"
-      + " where c.id=r.instanceId"
-      + " and c.componentstatus is null"
-      + " and r.id=ur.userroleid"
-      + " and r.objectId is null"
-      + " and ur.userId = ? ";
+          + " from st_componentinstance c, st_userrole r, st_userrole_user_rel ur"
+          + " where c.id=r.instanceId"
+          + " and c.componentstatus is null"
+          + " and r.id=ur.userroleid"
+          + " and r.objectId is null"
+          + " and ur.userId = ? ";
 
-  private static List<String> getAllAvailableComponentIds(Connection con, int userId)
-      throws SQLException {
+  private static List<String> getAllAvailableComponentIds(Connection con, int userId,
+      String componentName) throws SQLException {
     PreparedStatement stmt = null;
     ResultSet rs = null;
     try {
@@ -189,7 +199,11 @@ public class ComponentDAO {
       rs = stmt.executeQuery();
 
       while (rs.next()) {
-        ids.add(rs.getString(2) + Integer.toString(rs.getInt(1)));
+        String cName = rs.getString(2);
+        if (!StringUtil.isDefined(componentName) ||
+            (StringUtil.isDefined(componentName) && componentName.equalsIgnoreCase(cName))) {
+          ids.add(cName + Integer.toString(rs.getInt(1)));
+        }
       }
 
       return ids;
@@ -226,13 +240,18 @@ public class ComponentDAO {
 
   public static List<String> getAvailableComponentIdsInSpace(Connection con, List<String> groupIds,
       int userId, String spaceId) throws SQLException {
+    return getAvailableComponentIdsInSpace(con, groupIds, userId, spaceId, null);
+  }
+
+  public static List<String> getAvailableComponentIdsInSpace(Connection con, List<String> groupIds,
+      int userId, String spaceId, String componentName) throws SQLException {
     // get available components
     Set<ComponentInstLight> componentsSet = new HashSet<ComponentInstLight>();
     componentsSet.addAll(getPublicComponentsInSpace(con, spaceId));
     if (groupIds != null && groupIds.size() > 0) {
-      componentsSet.addAll(getAvailableComponentsInSpace(con, groupIds, spaceId));
+      componentsSet.addAll(getAvailableComponentsInSpace(con, groupIds, spaceId, componentName));
     }
-    componentsSet.addAll(getAvailableComponentsInSpace(con, userId, spaceId));
+    componentsSet.addAll(getAvailableComponentsInSpace(con, userId, spaceId, componentName));
 
     // sort components according to ordernum
     List<ComponentInstLight> components = new ArrayList<ComponentInstLight>(componentsSet);
@@ -245,7 +264,7 @@ public class ComponentDAO {
   }
 
   private static List<ComponentInstLight> getAvailableComponentsInSpace(Connection con,
-      List<String> groupIds, String spaceId)
+      List<String> groupIds, String spaceId, String componentName)
       throws SQLException {
     Statement stmt = null;
     ResultSet rs = null;
@@ -254,9 +273,12 @@ public class ComponentDAO {
 
       String queryAvailableComponentIdsInSpace =
           "select distinct(c.id), c.componentName, c.ordernum"
-          + " from st_componentinstance c, st_userrole r, st_userrole_group_rel gr"
-          + " where c.id=r.instanceId"
-          + " and c.componentstatus is null"
+              + " from st_componentinstance c, st_userrole r, st_userrole_group_rel gr"
+              + " where c.id=r.instanceId";
+      if (StringUtil.isDefined(componentName)) {
+        queryAvailableComponentIdsInSpace += " and c.componentName = '" + componentName + "'";
+      }
+      queryAvailableComponentIdsInSpace += " and c.componentstatus is null"
           + " and c.spaceId = " + spaceId
           + " and r.id=gr.userroleid"
           + " and r.objectId is null"
@@ -279,29 +301,29 @@ public class ComponentDAO {
     }
   }
 
-  private final static String queryAvailableComponentIdsInSpace =
-      " select distinct(c.id), c.componentName, c.ordernum"
-      + " from st_componentinstance c, st_userrole r, st_userrole_user_rel ur"
-      + " where c.spaceId = ? "
-      + " and c.id=r.instanceId"
-      + " and c.componentstatus is null"
-      + " and r.id=ur.userroleid"
-      + " and r.objectId is null"
-      + " and ur.userId = ? ";
-
   private static List<ComponentInstLight> getAvailableComponentsInSpace(Connection con, int userId,
-      String spaceId)
-      throws SQLException {
-    PreparedStatement stmt = null;
+      String spaceId, String componentName) throws SQLException {
+    Statement stmt = null;
     ResultSet rs = null;
     try {
       List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
 
-      stmt = con.prepareStatement(queryAvailableComponentIdsInSpace);
-      stmt.setInt(1, Integer.parseInt(spaceId));
-      stmt.setInt(2, userId);
+      String queryAvailableComponentIdsInSpace =
+          " select distinct(c.id), c.componentName, c.ordernum"
+              + " from st_componentinstance c, st_userrole r, st_userrole_user_rel ur"
+              + " where c.spaceId = " + Integer.parseInt(spaceId);
+      if (StringUtil.isDefined(componentName)) {
+        queryAvailableComponentIdsInSpace += " and c.componentName = '" + componentName + "'";
+      }
+      queryAvailableComponentIdsInSpace += " and c.id=r.instanceId"
+          + " and c.componentstatus is null"
+          + " and r.id=ur.userroleid"
+          + " and r.objectId is null"
+          + " and ur.userId = " + userId;
 
-      rs = stmt.executeQuery();
+      stmt = con.createStatement();
+
+      rs = stmt.executeQuery(queryAvailableComponentIdsInSpace);
 
       while (rs.next()) {
         ComponentInstLight component = new ComponentInstLight();
@@ -318,10 +340,10 @@ public class ComponentDAO {
 
   private final static String queryPublicComponentIdsInSpace =
       " select c.id, c.componentName, c.ordernum"
-      + " from st_componentinstance c"
-      + " where c.ispublic=1"
-      + " and c.spaceId = ?"
-      + " and c.componentstatus is null";
+          + " from st_componentinstance c"
+          + " where c.ispublic=1"
+          + " and c.spaceId = ?"
+          + " and c.componentstatus is null";
 
   private static List<ComponentInstLight> getPublicComponentsInSpace(Connection con, String spaceId)
       throws SQLException {
