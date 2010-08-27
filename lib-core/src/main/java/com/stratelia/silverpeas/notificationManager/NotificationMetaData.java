@@ -117,6 +117,14 @@ public class NotificationMetaData implements java.io.Serializable {
     return titles.keySet();
   }
 
+  public Map<String, SilverpeasTemplate> getTemplates() {
+    return templates;
+  }
+  
+  public Boolean isTemplateUsed() {
+    return !templates.isEmpty();
+  }
+  
   /**
    * Set message type
    * @param messageType the message type to be set
