@@ -23,6 +23,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+
+
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
 <%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
 <%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
@@ -38,7 +42,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" var="LML" />
 <view:setBundle basename="com.stratelia.webactiv.multilang.generalMultilang" var="GML" />
 <c:set var="browseContext" value="${requestScope.browseContext}" />
-
+ <c:url value="/RprofilPublic/ProfilPublic" var="profilPublic" />
 
 
 <%
@@ -49,12 +53,9 @@
 
 %>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <view:looknfeel />
-
-
-
     <style type="text/css">
       * {
         margin: 0;
@@ -188,7 +189,7 @@
     src="<%=m_context%>/util/javaScript/animation.js"></script>
     <script type="text/javascript"
     src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-    <script language="JavaScript">
+    <script type="text/javascript">
       function OpenPopup(usersId,name ){
 
         usersId=usersId+'&Name='+name
@@ -205,13 +206,7 @@
 
   </head>
   <body id="directory">
-    <%--  <a href="${GroupUrl}" >Annuiare</a>--%>
-    <c:url value="/RprofilPublic/ProfilPublic" var="profilPublic" />
-
-    <%--<view:browseBar extraInformations="Annuaire Interne"></view:browseBar>--%>
-
     <view:window>
-
       <view:frame>
         <div id="indexAndSearch">
           <div id="index">
@@ -263,10 +258,10 @@
                   <div id="info">
                     <ul>
                       <li> <a class="userName" href="<%=m_context%>/Rprofil/jsp/Main?userId=<%=member.getId()%>"
-                              class="link"><%=member.getLastName() + " " + member.getFirstName()%></a>
+                              ><%=member.getLastName() + " " + member.getFirstName()%></a>
                       </li>
                       <li>
-                        <a  class="userMail"class="link" href="#" class="link" onclick="OpenPopup(<%=member.getId()%>,'<%=member.getLastName() + " "
+                        <a  class="userMail" href="#"  onclick="OpenPopup(<%=member.getId()%>,'<%=member.getLastName() + " "
                                                + member.getFirstName()%>')"><%=member.geteMail()%>
                         </a>
                       </li>

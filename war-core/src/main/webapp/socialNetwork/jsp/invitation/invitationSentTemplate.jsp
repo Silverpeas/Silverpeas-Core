@@ -23,11 +23,16 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@ include file="check.jsp" %>
-<html>
-    <head>
-        <view:looknfeel />
-            <style type="text/css">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+
+    <title><fmt:message key="invitation.action.title" /> </title>
+    <view:looknfeel />
+    <style type="text/css">
       #navigation {
         float: left;
         width: 20%;
@@ -53,6 +58,10 @@
         margin-right:auto;
         margin-bottom: 15px;
       }
+      #navigation .box img {
+       width: 70px;
+       height: 80px;
+      }
       #navigation ul {
         margin: 0;
         padding: 0;
@@ -61,72 +70,94 @@
       #navigation li{
         display:list-item;
         list-style-type:none;
-        padding: 3px;
-      }
-       #navigation li{
-        display:list-item;
-        list-style-type:none;
         padding: 5px;
       }
       #navigation li A:hover {
-       font-weight: bold;
+        font-weight: bold;
       }
+       #listBody {
+    list-style:none outside none;
+    padding-left:0;
+  }
+
+  #listBody #photo{
+    float :left;
+    margin-right:4px;
+
+  }
+
+  #listBody #information a{
+    color: blue;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 3px;
+  }
+   #listBody #information {
+    vertical-align: top;
+    float :left;
+  }
+  #listBody #button {
+    float:right;
+    margin-top:10px;
+  }
+
+  #listBody #button #message{
+    /*width: 40%;*/
+    text-align: right;
+
+  }
     </style>
-        <title><fmt:message key="invitation.action.title" /> </title>
-        <script type="text/javascript" src="/silverpeas/util/javaScript/animation.js"></script>
-        <script type="text/javascript" src="/silverpeas/util/javaScript/checkForm.js"></script>
+    <script type="text/javascript" src="/silverpeas/util/javaScript/animation.js"></script>
+    <script type="text/javascript">
 
-        <script language="JavaScript">
-
-            function enableField()
-            {
-                if(document.getElementById("enabledStat").disabled==false)
-                {
-                    document.getElementById("enabledStat").style.backgroundColor="#DEDEDE"
-                    document.getElementById("enabledStat").disabled=true;
+      function enableField()
+      {
+        if(document.getElementById("enabledStat").disabled==false)
+        {
+          document.getElementById("enabledStat").style.backgroundColor="#DEDEDE"
+          document.getElementById("enabledStat").disabled=true;
 
 
-                }
-                else{
+        }
+        else{
 
-                    document.getElementById("enabledStat").style.backgroundColor="#FFFFFF";
-                    document.getElementById("enabledStat").focus();
-                     document.getElementById("enabledStat").disabled=false;
-                }
+          document.getElementById("enabledStat").style.backgroundColor="#FFFFFF";
+          document.getElementById("enabledStat").focus();
+          document.getElementById("enabledStat").disabled=false;
+        }
 
-            }
-             function desabledField()
-            {
+      }
+      function desabledField()
+      {
 
-                    document.getElementById("enabledStat").style.backgroundColor="#F2F2F2"
-                    document.getElementById("enabledStat").disabled=true;
-                    document.statForm.submit();
-
-
-            }
-            afficheButtonEdit(visible)
-            {
-
-                document.getElementById("actionEditStat").style.display = 'none';
+        document.getElementById("enabledStat").style.backgroundColor="#F2F2F2"
+        document.getElementById("enabledStat").disabled=true;
+        document.statForm.submit();
 
 
+      }
+      afficheButtonEdit(visible)
+      {
+        document.getElementById("actionEditStat").style.display = 'none';
+      }
+      function toggleZoneMessage() {
+        if( document.getElementById("zoneMessage").style.display=='none' ){
+          document.getElementById("actionZoneMessage").style.display = 'none';
+          document.getElementById("zoneMessage").style.display = '';
+        }else{
+          document.getElementById("actionZoneMessage").style.display = '';
+          document.getElementById("zoneMessage").style.display = 'none';
 
-            }
-            function toggleZoneMessage() {
-                if( document.getElementById("zoneMessage").style.display=='none' ){
-                    document.getElementById("actionZoneMessage").style.display = 'none';
-                    document.getElementById("zoneMessage").style.display = '';
-                }else{
-                    document.getElementById("actionZoneMessage").style.display = '';
-                    document.getElementById("zoneMessage").style.display = 'none';
+        }
+      }
 
-                }
-            }
-
-        </script>
-    </head>
-   <body onload="javasript:enableField()">
-<view:window>
+    </script>
+  </head>
+  <body>
+    <script type="text/javascript">
+      enableField()
+    </script>
+    <view:window>
       <div id="navigation">
         <view:board>
           <%@include file="invitationNavigation.jsp" %>
@@ -138,5 +169,5 @@
         </view:board>
       </div>
     </view:window>
-    </body>
+  </body>
 </html>

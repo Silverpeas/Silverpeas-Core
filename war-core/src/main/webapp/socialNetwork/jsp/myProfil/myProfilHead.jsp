@@ -7,9 +7,9 @@
   </div>
 
   <div id="profilHeadinfo">
-    <b>${snUserFull.userFull.lastName} ${snUserFull.userFull.firstName}</b><br><br>
-    ${snUserFull.phone}<br><br>
-    ${snUserFull.userFull.eMail}<br><br>
+    <b>${snUserFull.userFull.lastName} ${snUserFull.userFull.firstName}</b><br/><br/>
+    ${snUserFull.phone}<br/><br/>
+    ${snUserFull.userFull.eMail}<br/><br/>
     <c:if test="${snUserFull.connected=='true'}">
       <img  src="<c:url value="/directory/jsp/icons/connected.jpg" />" border="1" width="10" height="10"
             alt="connected"/> <fmt:message key="directory.connected"  /> ${snUserFull.duration}
@@ -21,21 +21,21 @@
 
     </c:if>
 
-    <br>
+    <br/>
   </div>
   <div id="profilHeadAction">
 
     <div class="StatusDiv" id="status">
     </div>
-    <script>
+    <script type="text/javascript">
       getLastStatus('${urlGetLastStatus}');
     </script>
     <div id="actionStatus">
 
       <a  href="#"  onclick="javascript:enableStatusZone()">
 
-        <img  src=" <c:url value="/directory/jsp/icons/edit_button.gif" />" width="10" height="10"
-              alt="connected"/>
+        <img  src="<c:url value="/directory/jsp/icons/edit_button.gif" />" width="10" height="10"
+              alt="connected" />
       </a>
     </div>
     <!-- </div>-->
@@ -49,13 +49,13 @@
     <div class="barre">
       <a href="#"class="close">Fermer</a>
     </div>    
-    <br>
+    <br/>
     <view:board>
-      <form Name="photoForm" action="validateChangePhoto" Method="post" ENCTYPE="multipart/form-data" accept-charset="UTF-8">
+      <form name="photoForm" action="validateChangePhoto" Method="post" ENCTYPE="multipart/form-data" accept-charset="UTF-8">
         <div>
 
           <div class="txtlibform"><fmt:message key="directory.photo" />:</div>
-          <div><input type="file" name="WAIMGVAR0" size="60"></div>
+          <div><input type="file" name="WAIMGVAR0" size="60"/></div>
 
 
         </div>
@@ -63,12 +63,11 @@
     </view:board>
     <div class="formButton">
 <!--      <div class="button">-->
-       <br>
-       <br>
+       <br/>
+       <br/>
         --><fmt:message key="directory.buttonValid" var="valid"/>
         <view:button label="${valid}" action="javascript:document.photoForm.submit();" disabled="false" />
-        <%--<input type="submit" value="Valider" >--%>
-<!--      </div>-->
+       
     </div>
   </div>
   <!-- Mask to cover the whole screen -->

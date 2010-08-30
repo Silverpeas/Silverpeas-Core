@@ -23,7 +23,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
 <%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
 <%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
@@ -46,7 +45,7 @@
 <fmt:message key="newsFeed.photo.apdated.true"  var="newsFeed.photo.true"/>
 <fmt:message key="newsFeed.photo.apdated.false"  var="newsFeed.photo.false"/>
 <fmt:message key="event.event.apdated.false"  var="newsFeed.event.false"/>
-
+<%--**********************Url Servlet******************************--%>
 <c:set var="id" value="${user.userId}"></c:set>
 <c:url var="urlServlet" value="/RnewsFeedJSONServlet?userId=${id}" />
 <c:url var="urlDirectory" value="/RdirectoryServlet/jsp?Action=" />
@@ -54,6 +53,8 @@
 <c:url var="urlProfil" value="/Rprofil/jsp/Main?userId="/>
 <c:url var="urlInvitationSent" value="/Rinvitation/jsp/InvitationsSent" />
 <c:url var="urlInvitationReceived" value="/Rinvitation/jsp/Main" />
+<%--************************Bar progress***********************--%>
+<c:url var="progress" value="/util/icons/inProgress.gif" />
 
 
 

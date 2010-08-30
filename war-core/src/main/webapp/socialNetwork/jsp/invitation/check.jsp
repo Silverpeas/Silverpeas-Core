@@ -23,7 +23,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
 <%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
 <%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
@@ -47,13 +46,6 @@
 <c:url var="urlDirectory" value="/Rdirectory/jsp/Main" />
 <c:url var="urlContactsDirectory" value="/Rdirectory/jsp/Main?ContactId=${id}" />
 <c:url var="urlNewsFeed" value="/RnewsFeed/jsp/Main" />
-
-
-
-
-
-
-
 
 <%
 ResourceLocator multilang = new ResourceLocator("com.silverpeas.socialNetwork.multilang.socialNetworkBundle", request.getLocale());

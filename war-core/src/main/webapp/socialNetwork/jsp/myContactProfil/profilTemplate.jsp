@@ -23,29 +23,31 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@ include file="check.jsp" %>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <title><fmt:message key="invitation.action.title" /> </title>
     <view:looknfeel />
+     <link rel="stylesheet" type="text/css" href="<c:url value="/socialNetwork/jsp/css/socialNetwork.css"/>"/>
     <link rel="stylesheet" type="text/css" href="<c:url value="/socialNetwork/jsp/myContactProfil/myContactProfil.css"/>"/>
     <link rel="stylesheet" type="text/css" href="<c:url value="/directory/jsp/directoryPopup.css"/>"/>
-    <title><fmt:message key="invitation.action.title" /> </title>
     <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-1.3.2.min.js" />" ></script>
     <script type="text/javascript" src="<c:url value="/directory/jsp/directory.js" />" ></script>
-    <script language="JavaScript">
+    <script type="text/javascript">
 
 
       <%--*****************   profil Body *******************************************--%>
         var offset=0;
-        var hscroll ;var vscroll
-        var inprogress = '<img id="inprogress" src="/silverpeas/util/icons/inProgress.gif" alt=""/>';
-        function getNext(url)
+        var hscroll ;var vscroll;
+        var inprogress = '<img id="inprogress" src="'+'${progress}'+'" alt=""/>';
+        function getNext(url,id,socialType)
         {
-
           hscroll = (document.all ? document.scrollLeft : window.pageXOffset);
           vscroll = (document.all ? document.scrollTop : window.pageYOffset);
           $('.SocialInformations').append(inprogress);
-          $.getJSON(url+offset,
+          $.getJSON(url,{userId:id,type:socialType,offset:offset},
           function(data){
             var listEmpty=true;
             var html='<ol class="message_list">';
@@ -57,48 +59,87 @@
                 listEmpty=false;
                 if(i==0)
                 {
-                  html+='<b>'+listSocialInfo.day+'</b><br>'
+                   html+='<div class="socialDate">'+listSocialInfo.day+'<\/div>'
                 }else
                 {
                   $.each(listSocialInfo, function(index,socialInfo){
-                    html+='<table class="socialTable">';
-                    html+='<tr ><td class="socialIcon">';
+
+                    html+='<div class="socialTable">';
                     if(socialInfo.type=='RELATIONSHIP')
                     {
-                      html+='<img src="'+socialInfo.icon+'" id="socialIcon" />';
-                      html+='</td>';
-                      html+='<td class="socialTitle">';
-                      html+=socialInfo.author+' ${relationShipSuffix} '+'<a href="'+socialInfo.url+
-                        '" >'+socialInfo.title+'</a>'+' ${relationShipPrefix} ';
-                      html+='</td><td>'+socialInfo.hour+'</td></tr>';
-                      html+='</table>'
+                      html+='<div class="titleAndDes">';
+                      html+='<div class="socialTitle">';
+                      html+='<span class="socialIcon">';
+                      html+='<img src="'+socialInfo.icon+'" width="16" height="16" />';
+                      html+='<\/span>';
+                      html+='<span class="socialActivity">';
+                      html+=socialInfo.author+' ${relationShipSuffix} '+'  <a href="'+socialInfo.url+
+                        '" >'+socialInfo.title+'<\/a>'+' ${relationShipPrefix} ';
+                      html+='<\/span>';
+
+                      html+='<span class="socialHour">';
+                      html+=socialInfo.hour;
+                      html+='<\/span>';
+                      html+='<\/div>';
+                      html+='<\/div>';
+
                     }else  if(socialInfo.type=='STATUS')
                     {
-                      html+='<img src="'+socialInfo.icon+'"  />';
-                      html+='</td>';
-                      html+='<td class="socialTitle">';
-                      html+='<a href="#" >'+socialInfo.title+'</a>'+' ${statusSuffix} ';
-                      html+='</td><td>'+socialInfo.hour+'</td></tr>';
-                      html+='<td colspan="3">'+socialInfo.description;
-                      html+='</td> </tr> </table>'
+                      html+='<div class="titleAndDes">';
+                      html+='<div class="socialTitle">';
+
+                      html+='<span class="socialIcon">';
+                      html+='<img  src="'+socialInfo.icon+'" width="16" height="16" />';
+                      html+='<\/span>';
+
+                      html+='<span class="socialActivity">';
+                      html+=' <a href="#"><span>'+socialInfo.title+'<\/span><\/a>'+' ${statusSuffix} ';
+                      html+='<\/span>';
+
+                      html+='<span class="socialHour">';
+                      html+=socialInfo.hour;
+                      html+='<\/span>';
+
+                      html+='<\/div>';
+
+                      html+='<div class="socialDescription"  >';
+                      html+=socialInfo.description;
+                      html+='<\/div>';
+
+                      html+='<\/div>';
                     }else
                     {
-                      html+='<img src="'+socialInfo.icon+'" id="socialIcon" />';
-                      html+='</td>';
-                      html+='<td class="socialTitle">';
-                      html+='<a href="'+socialInfo.url+'" >'+socialInfo.title+'</a>  ';
-                      html+='</td><td>'+socialInfo.hour+'</td></tr>';
-                      html+='<td colspan="3">'+socialInfo.description;
-                      html+='</td> </tr> </table>'
+
+                      html+='<div class="titleAndDes">';
+                      html+='<div class="socialTitle">';
+                      html+='<span class="socialIcon">';
+                      html+='<img src="'+socialInfo.icon+'" class="'+socialInfo.type+'" width="16" height="16" />';
+                      html+='<\/span>';
+
+                      html+='<span class="socialActivity">';
+                      html+='<a href="'+socialInfo.url+'" >'+socialInfo.title+'<\/a>  ';
+                      html+='<\/span>';
+
+                      html+='<span class="socialHour">';
+                      html+=socialInfo.hour;
+                      html+='<\/span>';
+
+                      html+='<\/div>';
+                      html+='<div class="socialDescription" >';
+                      html+=socialInfo.description;
+                      html+='<\/div>';
+
+                      html+='<\/div>';
                     }
+                    html+='<\/div>';
 
                   });
                 }
               });
-              html+='</li>';
-              html+='</td></tr></table>';
+              html+='<\/li>';
+              html+='<\/td><\/tr><\/table>';
             });
-            html+='</ol>';
+            html+='<\/ol>';
 
             $("#inprogress").remove();
             $('#SocialInformations').append(html);
@@ -125,7 +166,6 @@
 
         function zoom(test)
         {
-          alert(test);
           var event =  window.event;
           var Id='PHOTO'+event.target.id ;
 
@@ -168,7 +208,7 @@
             $('.StatusDiv').empty();
             var html='';
             html+='<textarea onblur="javascript:updateStatus(\'${urlUpdateStatus}\')" id="enabledStat" ';
-            html+='type="text" cols="50" rows="3" >'+data.status+'</textarea>';
+            html+='type="text" cols="50" rows="3" >'+data.status+'<\/textarea>';
             $('.StatusDiv').append(html);
             desableStatusZone();
           });
@@ -203,27 +243,26 @@
           </view:board>
         </div>
       </div>
-      <div id="boxes">
-        <div class="window" id="directory" >
-          <div id="directoryHeader">
-            <a href="#"class="close">Fermer</a>
-          </div>
-          <div id="indexAndSearch"><div id="search">
-              <form name="search" action="javascript:directory('searchByKey')" method="post">
-                <input type="text" name="key" value="" id="key" size="40" maxlength="60"
-                       style="height: 20px"  />
-                <img
-                  src="<c:url value="/directory/jsp/icons/advsearch.jpg"/>"
-                  width="10" height="10" alt="advsearch" />
-              </form>
-            </div>
-          </div>
-          <div id="users">
-
+      <div id="boxesDirectory">
+       <div class="windowDirectory" id="directory" >
+        <div id="directoryHeader">
+          <a href="#"class="close">Fermer</a>
+        </div>
+        <div id="indexAndSearch"><div id="search">
+            <form name="search1" action="javascript:directory('searchByKey')" method="post">
+              <input type="text" name="key" value="" id="key" size="40" maxlength="60"
+                     style="height: 20px"  />
+              <img src="<c:url value="/directory/jsp/icons/advsearch.jpg"/>"
+                width="10" height="10" alt="advsearch" />
+            </form>
           </div>
         </div>
-        <!-- Mask to cover the whole screen -->
-        <div id="mask"></div>
+        <div id="users">
+
+        </div>
+      </div>
+                  <!-- Mask to cover the whole screen -->
+                  <div id="maskDirectory" class="maskClass"></div>
       </div>
     </view:window>
   </body>

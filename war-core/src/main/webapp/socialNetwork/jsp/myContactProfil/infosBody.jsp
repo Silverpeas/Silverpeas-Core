@@ -5,7 +5,7 @@
   <view:tab label="${publications}" action="MyPubs?userId=${id}" selected="false" />
   <view:tab label="${photos}" action="MyPhotos?userId=${id}" selected="false" />
 </view:tabs> 
-<view:frame title="Informations professionnelles & Coordonnées ">           
+<view:frame title="Informations professionnelles &amp; Coordonnées ">
   <view:board>
     <table id="userFullInfo" border="0" cellspacing="0" cellpadding="5" width="100%">
       <tr>
@@ -27,14 +27,14 @@
             ${propertiesKey[status.index]}
           </td>
           <td >
-            <input type="text" id="${properties[status.index]}" name="prop_${properties[status.index]}" size="50" maxlength="99" value="${propertiesValue[status.index]}">
+            <input type="text" id="${properties[status.index]}" name="prop_${properties[status.index]}" size="50" maxlength="99" value="${propertiesValue[status.index]}" />
           </td>
         </tr>
       </c:forEach>
     </table>
   </view:board>
 </view:frame> 
-<script>
+          <script type="text/javascript">
   desabledFields();
 </script>
 

@@ -23,9 +23,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@ include file="check.jsp" %>
-<html>
+
+<html xmlns="http://ww<w.w3.org/1999/xhtml">
   <head>
+    <title><fmt:message key="invitation.action.title" /> </title>
     <view:looknfeel />
     <style type="text/css">
       #navigation {
@@ -53,32 +57,63 @@
         margin-right:auto;
         margin-bottom: 15px;
       }
+      #navigation .box img {
+       width: 70px;
+       height: 80px;
+      }
       #navigation ul {
         margin: 0;
         padding: 0;
       }
-     
+
       #navigation li{
         display:list-item;
         list-style-type:none;
         padding: 5px;
       }
       #navigation li A:hover {
-       font-weight: bold;
+        font-weight: bold;
       }
+       #listBody {
+    list-style:none outside none;
+    padding-left:0;
+  }
+
+  #listBody #photo{
+    float :left;
+    margin-right:4px;
+
+  }
+
+  #listBody #information a{
+    color: blue;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 3px;
+  }
+   #listBody #information {
+    vertical-align: top;
+    float :left;
+  }
+  #listBody #button {
+    float:right;
+    margin-top:10px;
+  }
+
+  #listBody #button #message{
+    /*width: 40%;*/
+    text-align: right;
+
+  }
     </style>
-    <title><fmt:message key="invitation.action.title" /> </title>
     <script type="text/javascript" src="/silverpeas/util/javaScript/animation.js"></script>
-    <script type="text/javascript" src="/silverpeas/util/javaScript/checkForm.js"></script>
-    <script language="JavaScript">
+    <script type="text/javascript">
 
       function enableField()
       {
-        if(document.getElementById("enabledStat").disabled==false)
-        {
+        if(document.getElementById("enabledStat").disabled==false)        {
           document.getElementById("enabledStat").style.backgroundColor="#DEDEDE"
-          document.getElementById("enabledStat").disabled=true;
-                  
+          document.getElementById("enabledStat").disabled=true;                
 
         }
         else{
@@ -111,7 +146,10 @@
 
     </script>
   </head>
-  <body  onload="javasript:enableField()">
+  <body>
+    <script type="text/javascript">
+      enableField()
+    </script>
     <view:window>
       <div id="navigation">
         <view:board>

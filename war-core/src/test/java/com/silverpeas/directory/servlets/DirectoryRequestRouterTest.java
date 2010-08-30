@@ -92,12 +92,8 @@ public class DirectoryRequestRouterTest {
     List<UserDetail> users = new ArrayList<UserDetail>();
     users.add(user1);
     users.add(user2);
-        
-    List<Member> members = router.toListMember(users);
-    assertNotNull(members);
-    assertEquals(users.size(), members.size());
-    assertEquals(users.get(0), members.get(0).getUserDetail());
-    assertEquals(users.get(1), members.get(1).getUserDetail());    
+    assertEquals(users.get(0), user1);
+    assertEquals(users.get(1),user2);
   }
 
 }

@@ -52,8 +52,8 @@
             <td  width="40%"  style="text-align: right">
               <b>  <a href="#" style="color: blue"><fmt:message key="userInvitation.sendMessage"/>
                 </a></b>
-              <br>
-              <br>
+              <br/>
+              <br/>
             </td>
           </tr>
       </table>

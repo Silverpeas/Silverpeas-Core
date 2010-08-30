@@ -7,7 +7,7 @@
         </a>
       </div>
       <a href="${urlProfil}${id}">
-        <img src="<c:url value="${user.profilPhoto}" />" width="70px" height="80px">
+        <img src="<c:url value="${user.profilPhoto}" />"  alt="viewUser" />
       </a>
     </li>
   </ul>

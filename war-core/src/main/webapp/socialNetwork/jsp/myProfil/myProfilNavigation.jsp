@@ -16,8 +16,8 @@
     <c:forEach items="${contacts}" var="contact">
       <div class="boxContact">
         <a href="${urlProfil}${contact.userId}">
-          <img src="<c:url value="${contact.profilPhoto}" />" >
-               <br><span>${contact.lastName}</span><br>
+          <img src="<c:url value="${contact.profilPhoto}" />" />
+               <br/><span>${contact.lastName}</span><br/>
           <span>${contact.firstName}</span>
         </a>
       </div>

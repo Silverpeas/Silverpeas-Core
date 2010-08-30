@@ -191,31 +191,7 @@ table.PHOTO td img {
   margin-right:auto;
 }
 /***********Style de table générer par getJSON ""SocialInformation"*******************/
-#content #SocialInformations .socialIcon
-{
-  width: 15px;
-}
-#content #SocialInformations .socialTitle a
-{
-  color: blue;
-}
-#content #SocialInformations .socialTitle
-{
-  font-weight: bold;
-}
-#content #getNext
-{
-  float: left;
-  width: 100%;
-  margin: 2px;
-  padding: 2px;
-}
 
-
-#content #SocialInformations .socialTable td
-{ 
-  padding: 4px;
-}
 /***************************************************************************************/
 
 

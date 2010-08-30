@@ -140,22 +140,22 @@
   font-weight:bold;
   height:20px;
 }
-#mask {
-  width:590px;
-  height:500px;
+#boxesDirectory #maskDirectory {
+  width:600px;
+  height:510px;
   position:absolute;
   z-index:9000;
   background-color:#000;
   display:none;
 }
 
-#boxes .window {
+#boxesDirectory .windowDirectory {
   position:absolute;
   display:none;
   z-index:9999;
 }
 
-#boxes #directory {
+#boxesDirectory #directory {
   
   background-color:#FFFFFF;
   background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);

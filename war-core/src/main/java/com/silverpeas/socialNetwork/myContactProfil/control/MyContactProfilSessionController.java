@@ -44,7 +44,11 @@ public class MyContactProfilSessionController extends AbstractComponentSessionCo
 
   
   private RelationShipService relationShipService = new RelationShipService();
-
+/**
+ *
+ * @param mainSessionCtrl
+ * @param componentContext
+ */
   public MyContactProfilSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl,

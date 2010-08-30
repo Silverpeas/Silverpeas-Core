@@ -375,7 +375,11 @@ public class RelationShipDao {
     }
     return getAllRelationShipsOfMyContact_MMS(con, myId, myContactsIds, numberOfElement, firstIndex);
   }
-
+/**
+ * convert list of contact ids to string for using in the query SQL
+ * @param list
+ * @return String
+ */
   private static String listToSqlString(List<String> list) {
     String result = "";
     if (list == null || list.size() == 0) {

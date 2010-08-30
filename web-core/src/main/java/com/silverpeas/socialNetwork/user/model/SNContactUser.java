@@ -19,6 +19,9 @@ public class SNContactUser {
   private String firstName;
   private String lastName;
   private String profilPhoto;
+  private String displayedName;
+
+
 
   public SNContactUser(String userId) {
 
@@ -26,6 +29,7 @@ public class SNContactUser {
     this.userId=userId;
     this.lastName=userDetail.getLastName();
     this.firstName=userDetail.getFirstName();
+    this.displayedName=userDetail.getDisplayedName();
 
     //return the url of profil Photo
     String avatar = userDetail.getLogin() + ".jpg";
@@ -54,5 +58,7 @@ public class SNContactUser {
   public String getUserId() {
     return userId;
   }
-
+public String getDisplayedName() {
+    return displayedName;
+  }
 }

@@ -37,10 +37,15 @@ public class NewsFeedService {
 
   private List<String> myContactsIds = new ArrayList<String>();
   private int myId;
-
+/**
+ *
+ */
   public NewsFeedService() {
   }
-
+/**
+ * get my conact
+ * @return List<String>
+ */
   public List<String> getMyContactsIds() {
     if(myContactsIds.size()<=0)
     try {
@@ -52,11 +57,17 @@ public class NewsFeedService {
     }
     return myContactsIds;
   }
-
+/**
+ * get my id
+ * @return
+ */
   public int getMyId() {
     return myId;
   }
-
+/**
+ * set my id
+ * @param myId
+ */
   public void setMyId(int myId) {
     this.myId = myId;
   }

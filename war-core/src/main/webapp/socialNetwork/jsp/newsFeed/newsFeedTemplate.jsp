@@ -23,11 +23,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
 <%@ include file="check.jsp" %>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <title><fmt:message key="invitation.action.title" /> </title>
     <view:looknfeel />
     <link rel="stylesheet" type="text/css" href="<c:url value="/directory/jsp/directory.css"/>"/>
+    <link rel="stylesheet" type="text/css" href="<c:url value="/socialNetwork/jsp/css/socialNetwork.css"/>"/>
     <style type="text/css">
 
       .message_list {
@@ -44,11 +48,11 @@
 
       #navigation {
         float: left;
-        width: 20%;
+        width: 200px;
         margin: 2px;
         padding: 2px;
       }
-     #navigation #myInfo{
+      #navigation #myInfo{
         float: right;
       }
 
@@ -100,21 +104,20 @@
         font-weight: bold;
 
       }
+      
+
+
     </style>
-
-
-    <title><fmt:message key="invitation.action.title" /> </title>
     <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-1.3.2.min.js" />" ></script>
     <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />" ></script>
-    <script language="JavaScript">
-
-
+    <script type="text/javascript">
+      
       <%--*****************   profil Body *******************************************--%>
         var offset=0;
         var hscroll ;var vscroll;
         var type='ALL';
         var urlDirectory='${urlDirectory}';
-        var inprogress = '<img id="inprogress" src="/silverpeas/util/icons/inProgress.gif" alt=""/>';
+        var inprogress = '<img id="inprogress" src="'+'${progress}'+'" alt=""/>';
         function getNext(url)
         {
           url=url+'&type='+type+'&offset='+offset;
@@ -137,69 +140,85 @@
                 listEmpty=false;
                 if(i==0)
                 {
-                  html+='<b>'+listSocialInfo.day+'</b><br>'
+                  html+='<div class="socialDate">'+listSocialInfo.day+'<\/div>'
                 }else
                 {
                   $.each(listSocialInfo, function(index,socialInfo){
                     var urlProfil='${urlProfil}'+socialInfo.author.id;
-                    html+='<table  cellspacing="0" cellpadding="4">';
-                    html+='<tr>';
+                    html+='<div class="socialTable">';
+                    html+='<div class="profilPhoto">';
+                    html+=' <a href="'+urlProfil+'"><img src="'+socialInfo.author.profilPhoto+'" /><\/a>';
+                    html+='<\/div>';
                     if(socialInfo.type=='RELATIONSHIP')
                     {
-                      html+='<td rowspan="1">';
-                      html+=' <a href="'+urlProfil+'"><img src="'+socialInfo.author.profilPhoto+'" width="32" height="32" /></a>';
-                      html+='</td>';
-                      html+='<td style="width: 16px;">';
+                      html+='<div class="titleAndDes">';
+                      html+='<div class="socialTitle">';
+                      
+                      html+='<span class="socialActivity">';
+                      html+='<a href="'+urlProfil+'"><span>'+socialInfo.author.displayedName+'<\/span><\/a> ${relationShipSuffix} '+'<a href="'+socialInfo.url+
+                        '" >'+socialInfo.title.displayedName+'<\/a>'+' ${relationShipPrefix} ';
+                      html+='<\/span>';
+                      html+='<span class="socialIcon">';
                       html+='<img src="'+socialInfo.title.profilPhoto+'" width="16" height="16" />';
-                      html+='</td>';
-                      html+='<td>';
-                      html+='<b><a href="'+urlProfil+'">'+socialInfo.author.lastName+' '+socialInfo.author.firstName+'</a> ${relationShipSuffix} '+'<a href="'+socialInfo.url+
-                        '" >'+socialInfo.title.lastName+' '+socialInfo.title.firstName+'</a>'+' ${relationShipPrefix} '+'</b>  '+socialInfo.hour;
-                      html+='</td></tr></table>'
+                      html+='<\/span>';
+                      html+='<span class="socialHour">';
+                      html+=socialInfo.hour;
+                      html+='<\/span>';
+                      html+='<\/div>';
+                      html+='<\/div>';
                     }else  if(socialInfo.type=='STATUS')
                     {
-                      html+='<td rowspan="2">';
-                      html+=' <a href="'+urlProfil+'"><img src="'+socialInfo.author.profilPhoto+'" width="32" height="32" /></a>';
-                      html+='</td>';
-
-                      html+='<td style="width: 16px;">';
-                      html+='<img src="'+socialInfo.icon+'" width="16" height="16" />';
-                      html+='</td>';
-
-                      html+='<td>';
-                      html+='<b><a href="#"  >'+socialInfo.title+'</a>'+' ${statusSuffix} '+'</b>  '+socialInfo.hour;
-                      html+='</td></tr><tr>';
-                      html+='<td colspan="2">'+socialInfo.description;
-                      html+='</td> </tr> </table>'
-                    }else
-                    { html+='<td rowspan="2">';
-                      html+=' <a href="'+urlProfil+'"><img src="'+socialInfo.author.profilPhoto+'" width="32" height="32" /></a>';
-                      html+='</td>';
-
-                      html+='<td style="width: 16px;">';
-                      html+='<img src="'+socialInfo.icon+'" width="16" height="16" />';
-                      html+='</td>';
-
-                      html+='<td>';
+                      html+='<div class="titleAndDes">';
+                      html+='<div class="socialTitle">';
                      
-                       html+='<b><a href="'+urlProfil+'">'+socialInfo.author.lastName+' '+socialInfo.author.firstName+'</a> '+ socialInfo.label +' <a href="'+socialInfo.url+
-                        '" >'+socialInfo.title+'</a></b>  '+socialInfo.hour;
-                      html+='</td></tr><tr>';
-                      html+='<td colspan="2">'+socialInfo.description;
-                      html+='</td> </tr> </table>'
+                      html+='<span class="socialActivity">';
+                      html+=' <a href="#"><span>'+socialInfo.title+'<\/span><\/a>'+'${statusSuffix} ';
+                      html+='<\/span>';
+                      html+='<span class="socialIcon">';
+                      html+='<img  src="'+socialInfo.icon+'" width="16" height="16" />';
+                      html+='<\/span>';
+                      html+='<span class="socialHour">';
+                      html+=socialInfo.hour;
+                      html+='<\/span>';
+                      html+='<\/div>';
+                      html+='<div class="socialDescription"  >';
+                      html+=socialInfo.description;
+                      html+='<\/div>';
+                      html+='<\/div>';
+                      html+='<\/div>';
+                    }else
+                    { html+='<div class="titleAndDes">';
+                      html+='<div class="socialTitle">';
+                      html+='<span class="socialActivity">';
+                      html+=' <a href="'+urlProfil+'"><span>'+socialInfo.author.displayedName+'<\/a> '+ socialInfo.label +' <a href="'+socialInfo.url+
+                        '" >'+socialInfo.title+'<\/span><\/a>';
+                      html+='<\/span>';
+                      html+='<span class="socialIcon">';
+                      html+='<img src="'+socialInfo.icon+'" class="'+socialInfo.type+'" width="16" height="16" />';
+                      html+='<\/span>';
+                      html+='<span class="socialHour">';
+                      html+=socialInfo.hour;
+                      html+='<\/span>';
+                      html+='<\/div>';
+                      html+='<div class="socialDescription" >';
+                      html+=socialInfo.description;
+                      html+='<\/div>';
+                      html+='<\/div>';
+                      html+='<\/div>';
                     }
-                    html+=' <br>';
+                    html+='<\/div>';
+                    //html+=' <br />';
 
                   });
                 }
               });
-              html+='</li>';
-              html+='</td></tr></table>';
+              html+='<\/li>';
+              html+='<\/td><\/tr><\/table>';
 
 
 
             });
-            html+='</ol>';
+            html+='<\/ol>';
 
             $("#inprogress").remove();
             $('.SocialInformations').append(html);
@@ -209,7 +228,7 @@
             if(listEmpty){
               $('#getNext').hide();
             }else {
-              $('#getNext').show()();
+              $('#getNext').show();
             }
 
 
@@ -227,7 +246,6 @@
 
         function zoom(test)
         {
-          alert(test);
           var event =  window.event;
           var Id='PHOTO'+event.target.id ;
 
@@ -282,21 +300,38 @@
           });
 
         });
-        function indexDirectory(index){
-          var action='pagination&currentPage='+index;
-          directory(action);
+        function doPaganation(index)
+        {
+          directoryPagination('Pagination',index);
         }
-         function getAllUsersDirectory(){
+        function getAllUsersDirectory(){
           urlDirectory='${urlDirectory}';
           directory('Main');
         }
-          function getAllContactsDirectory(){
+        function getAllContactsDirectory(){
           urlDirectory='${urlContactsDirectory}';
           directory('Main');
         }
 
         function directory(action){
           var url=urlDirectory+action+'&key='+$('#key').attr("value");
+          $('.SocialInformations').empty();
+          $('#getNext').hide();
+          $('#users').empty();
+          $('#directory').show();
+          $('#key').attr("value",'');
+          $.ajax({ // Requete ajax
+            dataType: "html",
+            type: "GET",
+            url: url,
+            async: true,
+            success: function(data){
+              $('#users').append(data);
+            }
+          });
+        }
+        function directoryPagination(action,index){
+          var url=urlDirectory+action+'&Index='+index;
           $('.SocialInformations').empty();
           $('#getNext').hide();
           $('#users').empty();
@@ -324,12 +359,12 @@
           options="directories=no, menubar=no,toolbar=no,scrollbars=yes, resizable=no ,alwaysRaised"
           SP_openWindow('<c:url value="/Rinvitation/jsp/invite?Recipient="/>'+usersId, 'strWindowName', '350', '200','directories=no, menubar=no,toolbar=no,scrollbars=yes, resizable=no ,alwaysRaised');
         }
-       
-    
+
+      
 
     </script>
   </head>
-  <body  bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" >
+  <body>
     <view:window>
       <div id="navigation">
         <view:board>

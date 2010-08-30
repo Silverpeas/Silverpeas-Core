@@ -50,23 +50,27 @@ import org.json.JSONArray;
 
 public class ContactJSONServlet extends HttpServlet {
 
-  public static final int DEFAULT_OFFSET = 0;
-  public static final int DEFAULT_ELEMENT_PER_PAGE = 3;
-  public int elements_per_page;
-  String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-  String iconURL = m_context + "/socialNetwork/jsp/icons/";
-  SocialInformationType type;
+  private static final int DEFAULT_OFFSET = 0;
+  private static final int DEFAULT_ELEMENT_PER_PAGE = 3;
+  private String mContext = GeneralPropertiesManager.getGeneralResourceLocator().getString(
+      "ApplicationURL");
+  private String iconURL = mContext + "/socialNetwork/jsp/icons/";
+  private SocialInformationType type;
   private SocialNetworkService socialNetworkService = new SocialNetworkService();
-/**
- * servlet method for returning JSON format 
- * @param request
- * @param response
- * @throws ServletException
- * @throws IOException
- */
+  private Locale locale;
+  private ResourceLocator multilang;
+
+  /**
+   * servlet method for returning JSON format
+   * @param request
+   * @param response
+   * @throws ServletException
+   * @throws IOException
+   */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
+    locale = request.getLocale();
     HttpSession session = request.getSession();
     MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(
         "SilverSessionController");
@@ -82,7 +86,7 @@ public class ContactJSONServlet extends HttpServlet {
     socialNetworkService.setMyContactsIds(myContactsIds);
     String action = request.getParameter("Action");
     if ("getLastStatus".equalsIgnoreCase(action)) {
-      String status = socialNetworkService.getLastStatusService();
+      String status = socialNetworkService.getLastStatusOfMyContact();
       JSONObject jsonStatus = new JSONObject();
       jsonStatus.put("status", status);
       PrintWriter out = response.getWriter();
@@ -90,8 +94,10 @@ public class ContactJSONServlet extends HttpServlet {
 
     } else {
       Map<Date, List<SocialInformation>> map = new LinkedHashMap<Date, List<SocialInformation>>();
-      ResourceLocator multilang = new ResourceLocator(
-          "com.silverpeas.socialNetwork.multilang.socialNetworkBundle", Locale.getDefault());
+      multilang = new ResourceLocator(
+          "com.silverpeas.socialNetwork.multilang.socialNetworkBundle", locale);
+      ResourceLocator settings = new ResourceLocator(
+          "com.silverpeas.socialNetwork.settings.socialNetworkSettings", locale);
       try {
         //recover the type
         type = SocialInformationType.valueOf(request.getParameter("type"));
@@ -102,9 +108,9 @@ public class ContactJSONServlet extends HttpServlet {
         }
         //recover the numbre elements per page
         int limit = DEFAULT_ELEMENT_PER_PAGE;
-        if (StringUtil.isInteger(multilang.getString("profil.elements_per_page." + type.toString()))) {
+        if (StringUtil.isInteger(settings.getString("profil.elements_per_page"))) {
           limit = Integer.parseInt(
-              multilang.getString("profil.elements_per_page." + type.toString()));
+              settings.getString("profil.elements_per_page"));
         }
 
         map = socialNetworkService.getSocialInformationOfMyContacts(type, limit, offset);
@@ -124,38 +130,66 @@ public class ContactJSONServlet extends HttpServlet {
    * @return JSONObject
    */
   private JSONObject toJson(SocialInformation event) {
-    SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm", Locale.getDefault());
+    SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm", locale);
 
     JSONObject valueObj = new JSONObject();
     if (event.getType().equals(SocialInformationType.RELATIONSHIP.toString())) {
       SNContactUser contactUser1 = new SNContactUser(event.getAuthor());
       SNContactUser contactUser2 = new SNContactUser(event.getTitle());
       valueObj.put("type", event.getType());
-      valueObj.put("author", contactUser1.getLastName() + " " + contactUser1.getFirstName());
-      valueObj.put("title", contactUser2.getFirstName() + " " + contactUser2.getFirstName());
+      valueObj.put("author", contactUser1.getDisplayedName());
+      valueObj.put("title", contactUser2.getDisplayedName());
       valueObj.put("description", event.getDescription());
       valueObj.put("hour", formatTime.format(event.getDate()));
-      valueObj.put("url", m_context + event.getUrl());
-      valueObj.put("icon", m_context + contactUser2.getProfilPhoto());
+      valueObj.put("url", mContext + event.getUrl());
+      valueObj.put("icon", mContext + contactUser2.getProfilPhoto());
       return valueObj;
+    } else if (event.getType().endsWith(SocialInformationType.EVENT.toString())) {
+      return eventSocialToJSON(event);
     }
     valueObj.put("type", event.getType());
     valueObj.put("author", event.getAuthor());
     if (event.getType().equals(SocialInformationType.STATUS.toString())) {
       SNContactUser contactUser = new SNContactUser(event.getTitle());
-      valueObj.put("title", contactUser.getLastName() + " " + contactUser.getFirstName());
+      valueObj.put("title", contactUser.getDisplayedName());
     } else {
       valueObj.put("title", event.getTitle());
     }
-    valueObj.put("description", event.getDescription() + " ");
+    valueObj.put("description", event.getDescription());
     if ("00:00".equalsIgnoreCase(formatTime.format(event.getDate()))) {
       valueObj.put("hour", "");
     } else {
       valueObj.put("hour", formatTime.format(event.getDate()));
     }
-    valueObj.put("url", m_context + event.getUrl());
+    valueObj.put("url", mContext + event.getUrl());
     valueObj.put("icon",
         getIconUrl(SocialInformationType.valueOf(event.getType())) + event.getIcon());
+    return valueObj;
+  }
+
+  /**
+   * convert socailInformationEvent to JSONObject
+   * @param event
+   * @return JSONObject
+   */
+  private JSONObject eventSocialToJSON(SocialInformation event) {
+    SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm", locale);
+    JSONObject valueObj = new JSONObject();
+    valueObj.put("type", event.getType());
+    valueObj.put("author", event.getAuthor());
+
+    valueObj.put("hour", formatTime.format(event.getDate()));
+    valueObj.put("url", mContext + event.getUrl());
+    valueObj.put("icon",
+        getIconUrl(SocialInformationType.valueOf(event.getType())) + event.getIcon());
+    if (!event.isUpdeted() && event.getIcon().startsWith(event.getType() + "_private")) {
+      valueObj.put("title", multilang.getString("profil.icon.private.event"));
+      valueObj.put("description", "");
+    } else {
+      valueObj.put("title", event.getTitle());
+      valueObj.put("description", event.getDescription());
+    }
+
     return valueObj;
   }
 
@@ -165,7 +199,7 @@ public class ContactJSONServlet extends HttpServlet {
    * @return JSONArray
    */
   private JSONArray toJsonS(Map<Date, List<SocialInformation>> map) {
-    SimpleDateFormat formatDate = new SimpleDateFormat("EEEE, dd MMMM yyyy", Locale.getDefault());
+    SimpleDateFormat formatDate = new SimpleDateFormat("EEEE, dd MMMM yyyy", locale);
     JSONArray result = new JSONArray();
     for (Map.Entry<Date, List<SocialInformation>> entry : map.entrySet()) {
       JSONArray jsonArrayDateWithValues = new JSONArray();
@@ -176,6 +210,7 @@ public class ContactJSONServlet extends HttpServlet {
       jsonObject.put("day", formatDate.format(key));
       List<SocialInformation> events = entry.getValue();
       for (SocialInformation event : events) {
+        System.out.print("SocialInformation="+event.getDescription());
         jsonArray.put(toJson(event));
       }
       jsonArrayDateWithValues.put(jsonObject);
@@ -184,15 +219,16 @@ public class ContactJSONServlet extends HttpServlet {
     }
     return result;
   }
-/**
- * return the url of icon
- * @param SocialInformationType type
- * @return String
- */
+
+  /**
+   * return the url of icon
+   * @param SocialInformationType type
+   * @return String
+   */
   private String getIconUrl(SocialInformationType type) {
     String url = iconURL;
     if (type.equals(SocialInformationType.PHOTO)) {
-      url = m_context;
+      url = mContext;
     }
     return url;
   }

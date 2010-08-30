@@ -36,16 +36,34 @@ function getAllUsersDirectory(url){
 }
 function getAllContactsDirectory(url){
   urlDirectory=url;
-  openPopupDiretory()
+  openPopupDiretory();
   directory('Main');
 }
-
+function doPaganation(index)
+{
+  openPopupDiretory();
+  directoryPagination('Pagination',index);
+}
 function getCommonContactsDirectory(url){
+
   urlDirectory=url;
-  openPopupDiretory()
+  openPopupDiretory();
   directory('Main');
 }
-
+function directoryPagination(action,index){
+  var url=urlDirectory+action+'&Index='+index;
+  $('#users').empty();
+  $('#key').attr("value",'');
+  $.ajax({ // Requete ajax
+    dataType: "html",
+    type: "GET",
+    url: url,
+    async: true,
+    success: function(data){
+      $('#users').append(data);
+    }
+  });
+}
 function directory(action){
   var url=urlDirectory+action+'&key='+$('#key').attr("value");
   $('#users').empty();
@@ -74,32 +92,32 @@ function directory(action){
           var topH=winH/2-$(id).height()/2;
           var topW=winW/2-$(id).width()/2
           //Set the popup window to center
-          $('#mask').css('top', topH-5 );
-          $('#mask').css('left',topW-5);
+          $('#maskDirectory').css('top', topH-5 );
+          $('#maskDirectory').css('left',topW-5);
           $(id).css('top', topH );
           $(id).css('left',topW);
 
           //transition effect
-          $('#mask').fadeIn(1000);
-          $('#mask').fadeTo("slow",0.8);
+          $('#maskDirectory').fadeIn(1000);
+          $('#maskDirectory').fadeTo("slow",0.8);
           $(id).fadeIn(2000);
 
         }
         $(document).ready(function() {
           //if close button is clicked
-          $('.window .close').click(function (e) {
+          $('.windowDirectory .close').click(function (e) {
             //Cancel the link behavior
             e.preventDefault();
             $('#users').empty();
-            $('#mask').hide();
-            $('.window').hide();
+            $('#maskDirectory').hide();
+            $('.windowDirectory').hide();
           });
 
           //if mask is clicked
-          $('#mask').click(function () {
+          $('#maskDirectory').click(function () {
           $('#users').empty();
             $(this).hide();
-            $('.window').hide();
+            $('.windowDirectory').hide();
           });
 
         });

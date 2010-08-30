@@ -1,38 +1,4 @@
-<%--<%@ include file="check.jsp" %>--%>
-<style type="text/css">
 
-  #listBody {
-    list-style:none outside none;
-    padding-left:0;
-  }
-
-  #listBody #photo{
-    float :left;
-    margin-right:4px;
-
-  }
-
-  #listBody #information a{
-    color: blue;
-    font-size: 12px;
-    font-weight: bold;
-    margin-bottom: 3px;
-  }
-   #listBody #information {
-    vertical-align: top;
-    float :left;
-  }
-  #listBody #button {
-    float:right;
-    margin-top:10px;
-  }
-
-  #listBody #button #message{
-    /*width: 40%;*/
-    text-align: right;
-
-  }
-</style>
 <view:tabs >
   <view:tab label="<%=multilang.getString("invitation.tab.receive")%>" action="Main" selected="true" />
   <view:tab label="<%=multilang.getString("invitation.tab.sent")%>" action="InvitationsSent" selected="false" />
@@ -61,12 +27,12 @@
            class="link"><%=invitationUser.getUserDetail().getLastName() + " " + invitationUser.
                      getUserDetail().getFirstName()%>
         </a>
-      </b><br>
+      </b><br/>
       <b>
       <fmt:message key="invitation.dateInvitation" /></b><%=" " + DateUtil.formatDate(new java.util.Date(invitationUser.getInvitation().
                 getInvitationDate().getTime())) + " "%><b><fmt:message key="invitation.dateInvitationSuffix"/></b> <%=" " + DateUtil.formatTime(new java.util.Date(invitationUser.getInvitation().
                         getInvitationDate().getTime()))%>
-      <br>
+      <br/>
 
       <%if (StringUtil.isDefined(
                   invitationUser.getInvitation().getMessage().trim())) {
@@ -83,7 +49,7 @@
     <!--            </div>-->
     <div id="button">
       <div id="message">
-        <b>  <a href="#" style="color: blue"><fmt:message key="userInvitation.sendMessage" /></a></b><br><br>
+        <b>  <a href="#" style="color: blue"><fmt:message key="userInvitation.sendMessage" /></a></b><br/><br/>
       </div>
 
 

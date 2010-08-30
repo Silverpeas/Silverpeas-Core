@@ -92,20 +92,22 @@ public class SocialNetworkService {
     //recupirer la list a partir TemporaryStorage au lieu la base de donnée
     return getFromTemporaryStorage(type, limit, firstIndex);
   }
-/**
- * update my status
- * @param textStatus
- * @return String
- */
+
+  /**
+   * update my status
+   * @param textStatus
+   * @return String
+   */
   public String changeStatusService(String textStatus) {
     Status status = new Status(Integer.parseInt(myId), new Date(), textStatus);
     return new StatusService().changeStatusService(status);
 
   }
-/**
- * get my last status
- * @return String
- */
+
+  /**
+   * get my last status
+   * @return String
+   */
   public String getLastStatusService() {
     Status status = new StatusService().getLastStatusService(Integer.parseInt(myId));
     if (StringUtil.isDefined(status.getDescription())) {
@@ -113,10 +115,30 @@ public class SocialNetworkService {
     }
     return " ";
   }
-  /*
+
+  /**
+   * get  last status of my contact
+   * @return String
+   */
+  public String getLastStatusOfMyContact() {
+    int contactId = -1;
+    if (StringUtil.isInteger(myContactsIds.get(0))) {
+      contactId = Integer.parseInt(myContactsIds.get(0));
+    }
+    Status status = new StatusService().getLastStatusService(contactId);
+    if (StringUtil.isDefined(status.getDescription())) {
+      return status.getDescription();
+    }
+    return " ";
+  }
+  /**
    * the TemporaryStorage pour eviter le vas et viens a la base de donneés et aussi
    *  eviter de obtenir toutes la resulta  de la base de donnés qui sera une opération couteuse
    *  FACTEUR: c'est un facteur d'optimisation
+   * @param type
+   * @param userId
+   * @param limit
+   * @param firstIndex
    */
 
   private void fillInTemporaryStorage(SocialInformationType type, String userId,
@@ -127,12 +149,15 @@ public class SocialNetworkService {
       Collections.sort(socialInformationsFull);
     }
   }
+
   /**
    * the TemporaryStorage pour eviter le vas et viens a la base de donneés et aussi
    *  eviter de obtenir toutes la resulta  de la base de donnés qui sera une opération couteuse
    *  FACTEUR: c'est un facteur d'optimisation
+   * @param type
+   * @param limit
+   * @param firstIndex
    */
-
   private void fillInTemporaryStorageOfMyContacts(SocialInformationType type,
       int limit, int firstIndex) {
     socialInformationsFull = new ProviderService().getSocialInformationsListOfMyContact(type, myId,
@@ -141,8 +166,12 @@ public class SocialNetworkService {
       Collections.sort(socialInformationsFull);
     }
   }
-  /*
+  /**
    * recupirer la resulta à partir de  TemporaryStorage et pas la base de donnes
+   * @param type
+   * @param limit
+   * @param firstIndex
+   * @return Map<Date, List<SocialInformation>>
    */
 
   private Map<Date, List<SocialInformation>> getFromTemporaryStorage(SocialInformationType type,
@@ -172,24 +201,27 @@ public class SocialNetworkService {
     }
     return map;
   }
-/**
- *
- * @param myId
- */
+
+  /**
+   *
+   * @param myId
+   */
   public void setMyId(String myId) {
     this.myId = myId;
   }
-/**
- *
- * @param myContactsIds
- */
+
+  /**
+   *
+   * @param myContactsIds
+   */
   public void setMyContactsIds(List<String> myContactsIds) {
     this.myContactsIds = myContactsIds;
   }
-/**
- * 
- * @param elementPerPage
- */
+
+  /**
+   *
+   * @param elementPerPage
+   */
   public void setElementPerPage(int elementPerPage) {
     this.elementPerPage = elementPerPage;
   }

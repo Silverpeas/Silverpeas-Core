@@ -23,7 +23,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
 <%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
 <%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
@@ -45,8 +44,8 @@
 <fmt:message key="profil.showAll" var="showAll" />
 
 <c:set var="id" value="${snUserFull.userFull.id}" />
-<c:url var="urlContactsDirectory" value="/RdirectoryServlet/jsp?ContactId=${id}&Action=" />
-<c:url var="urlContactsDirectory" value="/RdirectoryServlet/jsp?ContactId=${id}&Action=" />
+<c:url var="urlContactsDirectory" value="/RdirectoryServlet/jsp?ContactId=${id}&amp;amp;Action=" />
+<c:url var="urlContactsDirectory" value="/RdirectoryServlet/jsp?ContactId=${id}&amp;Action=" />
 <c:url var="urlGetLastStatus" value="/RmyProfilJSON?Action=getLastStatus" />
 <c:url var="urlUpdateStatus" value="/RmyProfilJSON?Action=updateStatus" />
 <c:url var="urlChangePhoto" value="/RmyProfilJSON?Action=valdateChangePhoto" />

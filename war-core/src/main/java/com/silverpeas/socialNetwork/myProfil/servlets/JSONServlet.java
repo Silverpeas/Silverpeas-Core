@@ -102,7 +102,8 @@ public class JSONServlet extends HttpServlet {
 
       ResourceLocator multilang = new ResourceLocator(
           "com.silverpeas.socialNetwork.multilang.socialNetworkBundle", locale);
-
+ ResourceLocator settings = new ResourceLocator(
+        "com.silverpeas.socialNetwork.settings.socialNetworkSettings", Locale.getDefault());
       try {
         //recover the type
         type = SocialInformationType.valueOf(request.getParameter("type"));
@@ -114,9 +115,9 @@ public class JSONServlet extends HttpServlet {
         }
         //recover the numbre elements per page
         int elementsPerPage = DEFAULT_ELEMENT_PER_PAGE;
-        if (StringUtil.isInteger(multilang.getString("profil.elements_per_page." + type.toString()))) {
+        if (StringUtil.isInteger(settings.getString("profil.elements_per_page"))) {
           elementsPerPage = Integer.parseInt(
-              multilang.getString("profil.elements_per_page." + type.toString()));
+              settings.getString("profil.elements_per_page"));
         }
         socialNetworkService.setElementPerPage(elementsPerPage);
         map = socialNetworkService.getSocialInformation(type, elementsPerPage, paginationIndex);

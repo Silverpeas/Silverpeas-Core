@@ -56,6 +56,7 @@ public class DirectoryServlet extends HttpServlet {
   private DirectoryService directorySC = new DirectoryService();
   private Pagination pagination;
   List<Member> membersToDisplay;
+  private final String SERVLETNAME="/RdirectoryServlet/jsp";
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -100,7 +101,7 @@ public class DirectoryServlet extends HttpServlet {
       } else if (StringUtil.isInteger(contactId)) {
         users = directorySC.getAllContatcsOfUuser(contactId);
       } else if (StringUtil.isInteger(commonContactId)) {
-        users = directorySC.getCommonContacts(directorySC.getUserId(),commonContactId);
+        users = directorySC.getCommonContacts(directorySC.getUserId(), commonContactId);
       } else {
         users = directorySC.getAllUsers();
       }
@@ -129,13 +130,13 @@ public class DirectoryServlet extends HttpServlet {
    *
    */
   String doPagination(HttpServletRequest request) {
-      GraphicElementFactory gef = (GraphicElementFactory) request.getSession().getAttribute(
+    GraphicElementFactory gef = (GraphicElementFactory) request.getSession().getAttribute(
         GraphicElementFactory.GE_FACTORY_SESSION_ATT);
 
     int currentPage = 0;
     if (StringUtil.isInteger(request.getParameter("Index"))) {
       //request.getParameter("currentPage")=currentPage*ELEMENTS_PER_PAGE
-      currentPage = Integer.parseInt(request.getParameter("Index")) ;
+      currentPage = Integer.parseInt(request.getParameter("Index"));
     }
     pagination = gef.getPagination(users.size(), ELEMENTS_PER_PAGE, currentPage);
     membersToDisplay = new ArrayList<Member>();
@@ -222,11 +223,13 @@ public class DirectoryServlet extends HttpServlet {
       html += viewBoard.printAfter() + "\n";
       html += "</li>" + "\n";
     }
-   
-      html += "<li>" + "\n";
-      html += pagination.printIndex();
-      html += "</li>" + "\n";
-  
+
+    html += "<li>" + "\n";
+    String pag=pagination.printIndex("doPaganation");
+     html +=pag;
+     System.out.println(pag);
+    html += "</li>" + "\n";
+
     html += "</ol>" + "\n";
     html += "</div>" + "\n";
 

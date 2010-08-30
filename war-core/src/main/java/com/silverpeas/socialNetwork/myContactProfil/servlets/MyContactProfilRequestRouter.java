@@ -53,11 +53,20 @@ public class MyContactProfilRequestRouter extends ComponentRequestRouter {
   private MyContactProfilSessionController myContactProfillSC;
   private final int NUMBER_CONTACTS_TO_DISPLAY = 3;
 
+  /**
+   * get Session ControlBeanName
+   * @return String
+   */
   @Override
   public String getSessionControlBeanName() {
     return "myContactProfil";
   }
-
+/**
+ * create ComponentSession Controller
+ * @param mainSessionCtrl
+ * @param componentContext
+ * @return ComponentSessionController
+ */
   @Override
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
@@ -65,7 +74,7 @@ public class MyContactProfilRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   *
+   *get Destination
    * @param function
    * @param componentSC
    * @param request

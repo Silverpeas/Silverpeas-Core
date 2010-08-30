@@ -58,7 +58,7 @@ function QuitAndRefresh()
 </script>
 </HEAD>
 <BODY onload="javascript:QuitAndRefresh()">
-<view:progressMessage/>
+  <view:progressMessage />
 <form name="redirection" method="POST">
 </form>
 </BODY>

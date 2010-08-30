@@ -23,17 +23,21 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@ include file="check.jsp" %>
-<html>
+
+<html xmlns="http://ww<w.w3.org/1999/xhtml">
   <head>
-    <view:looknfeel />
-    <link rel="stylesheet" type="text/css" href="<c:url value="/socialNetwork/jsp/myProfil/myProfil.css"/>"/>
-    <link rel="stylesheet" type="text/css" href="<c:url value="/directory/jsp/directoryPopup.css"/>"/>
     <title><fmt:message key="invitation.action.title" /> </title>
-    <script type="text/javascript"
-    src="<c:url value="/util/javaScript/animation.js"/>"></script>
-     <script type="text/javascript" src="<c:url value="/directory/jsp/directory.js" />" ></script>
-    <script language="JavaScript">
+    <view:looknfeel />
+    <link rel="stylesheet" type="text/css" href="<c:url value="/directory/jsp/directoryPopup.css"/>"/>    
+    <link rel="stylesheet" type="text/css" href="<c:url value="/socialNetwork/jsp/myProfil/myProfil.css"/>"/>
+    
+    <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-1.3.2.min.js" />"></script>
+    <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js"/>"></script>
+    <script type="text/javascript" src="<c:url value="/directory/jsp/directory.js" />" ></script>
+    <script type="text/javascript">
       var properties =new Array();
       <c:forEach items="${properties}" var="property" varStatus="status">
         properties.push("<c:out value='${properties[status.index]}' escapeXml='false' />");
@@ -78,12 +82,12 @@
         function updateStatus(url)
         {
           var status = $('textarea').val();
-          url+='&status='+status;
+          url+='&amp;amp;status='+status;
           $.getJSON(url, function(data) {
             $('.StatusDiv').empty();
             var html='';
             html+='<textarea onblur="javascript:updateStatus(\'${urlUpdateStatus}\')" id="enabledStat"';
-            html+='type="text"  rows="3" >'+data.status+'</textarea>';
+            html+='type="text"  rows="3" >'+data.status+'<\/textarea>';
 
             $('.StatusDiv').append(html);
             desableStatusZone();
@@ -97,7 +101,7 @@
             $('.StatusDiv').empty();
             var html='';
             html+='<textarea onblur="javascript:updateStatus(\'${urlUpdateStatus}\')" id="enabledStat" ';
-            html+='type="text"  >'+data.status+'</textarea>';
+            html+='type="text"  >'+data.status+'<\/textarea>';
             $('.StatusDiv').append(html);
             desableStatusZone();
           });
@@ -167,11 +171,16 @@
         
     </script>
   </head>
-  <body  bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" >
+  <body>
+   <fmt:message key="profil.actions.changePhoto" var="changePhoto"/>
+    <fmt:message key="profil.actions.changeStatus" var="changeStatus"/>
+    <fmt:message key="profil.actions.changeInfos" var="changeInfos"/>
     <view:operationPane>
-      <view:operation action="javascript:openPopupChangePhoto()" altText="Changer mon photo" icon="" />
-      <view:operation action="javascript:enableStatusZone()" altText="Changer mon statut" icon="" />
-      <view:operation action="javascript:enableFields()" altText="Changer mes infos" icon="" />
+      <view:operation action="javascript:openPopupChangePhoto()"
+                      altText="${changePhoto}" icon="" />
+      <view:operation action="javascript:enableStatusZone()"
+                      altText="${changeStatus}" icon="" />
+      <view:operation action="javascript:enableFields()" altText="${changeInfos}" icon="" />
     </view:operationPane>
     <view:window>
 <!--      <div id="myInfotemplate">-->
@@ -189,27 +198,26 @@
              </div>
         </div>
     </view:window>
-<div id="boxes">
-        <div class="window" id="directory" >
-          <div id="directoryHeader">
-            <a href="#"class="close">Fermer</a>
-          </div>
-          <div id="indexAndSearch"><div id="search">
-              <form name="search" action="javascript:directory('searchByKey')" method="post">
-                <input type="text" name="key" value="" id="key" size="40" maxlength="60"
-                       style="height: 20px"  />
-                <img
-                  src="<c:url value="/directory/jsp/icons/advsearch.jpg"/>"
-                  width="10" height="10" alt="advsearch" />
-              </form>
-            </div>
-          </div>
-          <div id="users">
-
+<div id="boxesDirectory">
+       <div class="windowDirectory" id="directory" >
+        <div id="directoryHeader">
+          <a href="#"class="close">Fermer</a>
+        </div>
+        <div id="indexAndSearch"><div id="search">
+            <form name="search1" action="javascript:directory('searchByKey')" method="post">
+              <input type="text" name="key" value="" id="key" size="40" maxlength="60"
+                     style="height: 20px"  />
+              <img src="<c:url value="/directory/jsp/icons/advsearch.jpg" />"
+                width="10" height="10" alt="advsearch" />
+            </form>
           </div>
         </div>
+        <div id="users">
+
+        </div>
+      </div>
                   <!-- Mask to cover the whole screen -->
-        <div id="mask"></div>
+        <div id="maskDirectory"></div>
       </div>
   </body>
 </html>
