@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.versioning.ejb;
 
 import java.sql.Connection;
@@ -70,10 +69,8 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
 
 public class VersioningBmEJB implements SessionBean {
 
-  private static final long serialVersionUID = 1L;
-
+  private static final long serialVersionUID = 4838684224693087726L;
   public final static String DATE_FORMAT = "yyyy/MM/dd";
-
   private static ResourceLocator resources = new ResourceLocator(
       "com.stratelia.webactiv.util.versioning.Versioning", "");
 
@@ -100,12 +97,11 @@ public class VersioningBmEJB implements SessionBean {
     return result;
   }
 
-  public ArrayList<Document> getDocuments(ForeignPK foreignPK) {
+  public List<Document> getDocuments(ForeignPK foreignPK) {
     Connection con = openConnection();
-    ArrayList<Document> result = null;
-
+    List<Document> result = null;
     try {
-      result = (ArrayList<Document>) VersioningDAO.getDocuments(con, foreignPK);
+      result =  VersioningDAO.getDocuments(con, foreignPK);
     } catch (Exception re) {
       throw new VersioningRuntimeException("VersioningBmEJB.getDocuments",
           SilverpeasRuntimeException.ERROR,
@@ -196,8 +192,7 @@ public class VersioningBmEJB implements SessionBean {
     // mise à jour de la date d'alerte
 
     // 1. rechercher le % dans le properties
-    int delayReservedFile = Integer.parseInt(resources
-        .getString("DelayReservedFile"));
+    int delayReservedFile = Integer.parseInt(resources.getString("DelayReservedFile"));
     if (delayReservedFile >= 0 && delayReservedFile <= 100) {
       // calculer le nombre de jours
       if (StringUtil.isDefined(day)) {
@@ -225,7 +220,7 @@ public class VersioningBmEJB implements SessionBean {
 
     try {
       Document doc = getDocument(documentPK);
-      if(doc.getOwnerId() > 0) {
+      if (doc.getOwnerId() > 0) {
         return false;
       }
       updateDates(doc);
@@ -887,8 +882,7 @@ public class VersioningBmEJB implements SessionBean {
     int nextUserID = -1;
     int currWorker = doc.getOwnerId();
 
-    Worker nextWorker = getNextWorker(doc.getWorkList(), doc
-        .getCurrentWorkListOrder(), true);
+    Worker nextWorker = getNextWorker(doc.getWorkList(), doc.getCurrentWorkListOrder(), true);
 
     if (nextWorker == null) {
       isPublic = true;
@@ -1212,8 +1206,7 @@ public class VersioningBmEJB implements SessionBean {
     }
     int currWorkerid = doc.getOwnerId();
 
-    Worker prevWorker = getPrevWorker(doc.getWorkList(), doc
-        .getCurrentWorkListOrder(), true);
+    Worker prevWorker = getPrevWorker(doc.getWorkList(), doc.getCurrentWorkListOrder(), true);
     int nextUserID = -1;
 
     if (prevWorker == null) {
@@ -1297,8 +1290,7 @@ public class VersioningBmEJB implements SessionBean {
     } catch (SQLException e) {
       throw new VersioningRuntimeException(
           "VersioninBmEJB.getCurrentDocumentVersion",
-          SilverTrace.TRACE_LEVEL_ERROR, "root.EX_SQL_QUERY_FAILED", doc
-          .getPk());
+          SilverTrace.TRACE_LEVEL_ERROR, "root.EX_SQL_QUERY_FAILED", doc.getPk());
     } finally {
       closeConnection(con);
     }
@@ -1306,8 +1298,7 @@ public class VersioningBmEJB implements SessionBean {
     if (result == null) {
       throw new VersioningRuntimeException(
           "VersioninBmEJB.getCurrentDocumentVersion",
-          SilverTrace.TRACE_LEVEL_ERROR, "root.EX_SQL_QUERY_FAILED", doc
-          .getPk());
+          SilverTrace.TRACE_LEVEL_ERROR, "root.EX_SQL_QUERY_FAILED", doc.getPk());
     }
     return result;
   }
@@ -1334,8 +1325,9 @@ public class VersioningBmEJB implements SessionBean {
 
     if (spaceInst != null) {
       space_label = spaceInst.getName();
-    } else
+    } else {
       space_label = spaceId;
+    }
 
     ComponentInst componentInst = null;
     componentInst = orgCtr.getComponentInst(doc.getPk().getComponentName());
@@ -1343,10 +1335,12 @@ public class VersioningBmEJB implements SessionBean {
     if (componentInst != null) {
       if (componentInst.getLabel().length() > 0) {
         component_label = componentInst.getLabel();
-      } else
+      } else {
         component_label = componentInst.getName();
-    } else
+      }
+    } else {
       component_label = doc.getPk().getComponentName();
+    }
 
     message.append(resources.getString(notificationMessageKey));
     message.append("\n");
@@ -1378,11 +1372,9 @@ public class VersioningBmEJB implements SessionBean {
     String[] notifUserList = new String[1];
     notifUserList[0] = Integer.toString(userID);
 
-    NotificationSender notifSender = new NotificationSender(doc.getPk()
-        .getComponentName());
+    NotificationSender notifSender = new NotificationSender(doc.getPk().getComponentName());
     NotificationMetaData notifMetaData = new NotificationMetaData(
-        NotificationParameters.NORMAL, resources
-        .getString("notification.title"), message.toString());
+        NotificationParameters.NORMAL, resources.getString("notification.title"), message.toString());
 
     int adminId = getFirstAdministrator(orgCtr, userID);
 
@@ -1391,9 +1383,9 @@ public class VersioningBmEJB implements SessionBean {
     notifMetaData.setSource(resources.getString("notification.title"));
 
     if ((documentUrl != null)
-        && (documentUrl.length() > URLManager.getApplicationURL().length()))
-      notifMetaData.setLink(documentUrl.substring(URLManager
-          .getApplicationURL().length())); // Remove the application element
+        && (documentUrl.length() > URLManager.getApplicationURL().length())) {
+      notifMetaData.setLink(documentUrl.substring(URLManager.getApplicationURL().length())); // Remove the application element
+    }
     notifSender.notifyUser(notifMetaData);
   }
 
@@ -1403,8 +1395,7 @@ public class VersioningBmEJB implements SessionBean {
   private int getFirstAdministrator(
       OrganizationController organizationController, int userId) {
     int fromUserID = -1;
-    String[] admins = organizationController.getAdministratorUserIds(Integer
-        .toString(userId));
+    String[] admins = organizationController.getAdministratorUserIds(Integer.toString(userId));
     if (admins != null && admins.length > 0) {
       fromUserID = Integer.parseInt(admins[0]);
     }
@@ -1431,8 +1422,7 @@ public class VersioningBmEJB implements SessionBean {
   protected String getDefaultUserLanguage(int userID) {
     String lang = "fr";
     try {
-      PersonalizationBmHome personalizationBmHome = (PersonalizationBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.PERSONALIZATIONBM_EJBHOME,
+      PersonalizationBmHome personalizationBmHome = (PersonalizationBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PERSONALIZATIONBM_EJBHOME,
           PersonalizationBmHome.class);
       PersonalizationBm personalizationBm = personalizationBmHome.create();
       personalizationBm.setActor(String.valueOf(userID));
@@ -1523,16 +1513,13 @@ public class VersioningBmEJB implements SessionBean {
         "root.MSG_GEN_ENTER_METHOD", "documentPK = "
         + document.getPk().toString());
 
-    IndexEntryPK indexEntry = new IndexEntryPK(document.getPk()
-        .getComponentName(), "Versioning" + document.getPk().getId(), document
-        .getForeignKey().getId());
+    IndexEntryPK indexEntry = new IndexEntryPK(document.getPk().getComponentName(), "Versioning" + document.getPk().getId(), document.getForeignKey().getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 
   private void deleteDocumentFiles(List<DocumentVersion> versions, DocumentPK documentPK) {
-    String[] ctx = { "Versioning" };
-    String path = FileRepositoryManager.getAbsolutePath(documentPK
-        .getInstanceId(), ctx);
+    String[] ctx = {"Versioning"};
+    String path = FileRepositoryManager.getAbsolutePath(documentPK.getInstanceId(), ctx);
 
     // for each version, we remove according file
     DocumentVersion version = null;
@@ -1603,8 +1590,9 @@ public class VersioningBmEJB implements SessionBean {
     try {
       notifMetaData.setConnection(con);
       if (notifMetaData.getSender() == null
-          || notifMetaData.getSender().length() == 0)
+          || notifMetaData.getSender().length() == 0) {
         notifMetaData.setSender(senderId);
+      }
       NotificationSender notifSender = new NotificationSender(componentId);
       notifSender.notifyUser(notifMetaData);
     } catch (NotificationManagerException e) {
@@ -1658,8 +1646,7 @@ public class VersioningBmEJB implements SessionBean {
       ArrayList<String> userIds) throws VersioningRuntimeException {
     Connection con = openConnection();
     try {
-      VersioningDAO
-          .insertReadersAccessList(con, componentId, groupIds, userIds);
+      VersioningDAO.insertReadersAccessList(con, componentId, groupIds, userIds);
     } catch (SQLException se) {
       throw new VersioningRuntimeException("VersioningBmEJB.saveAccessList()",
           SilverpeasException.ERROR, "versioning.EX_SAVE_ACCESSLIST_FAILED", se);

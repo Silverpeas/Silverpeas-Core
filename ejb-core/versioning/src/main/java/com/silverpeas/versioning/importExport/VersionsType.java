@@ -24,6 +24,7 @@
 
 package com.silverpeas.versioning.importExport;
 
+import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import java.util.List;
 
 /**
@@ -32,19 +33,19 @@ import java.util.List;
  */
 public class VersionsType {
 
-  private List listVersions; // DocumentVersion
+  private List<DocumentVersion> listVersions; // DocumentVersion
 
   /**
    * @return
    */
-  public List getListVersions() {
+  public List<DocumentVersion> getListVersions() {
     return listVersions;
   }
 
   /**
    * @param list
    */
-  public void setListVersions(List list) {
+  public void setListVersions(List<DocumentVersion> list) {
     listVersions = list;
   }
 

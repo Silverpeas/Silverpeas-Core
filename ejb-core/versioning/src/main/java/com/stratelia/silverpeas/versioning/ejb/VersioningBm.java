@@ -42,7 +42,7 @@ public interface VersioningBm extends javax.ejb.EJBObject {
 
   public Document getDocument(DocumentPK pk) throws RemoteException;
 
-  public ArrayList<Document> getDocuments(ForeignPK foreignPK) throws RemoteException;
+  public List<Document> getDocuments(ForeignPK foreignPK) throws RemoteException;
 
   public DocumentPK createDocument(Document docToCreate,
       DocumentVersion initialVersion) throws RemoteException;

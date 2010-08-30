@@ -97,21 +97,6 @@ public class DocumentPK extends WAPrimaryKey implements Serializable, Cloneable 
 
   /**
    * Method declaration
-   * @param other
-   * @return
-   * @see
-   */
-  public boolean equals(Object other) {
-    if (!(other instanceof DocumentPK)) {
-      return false;
-    }
-    return (id.equals(((DocumentPK) other).getId()))
-        && (space.equals(((DocumentPK) other).getSpace()))
-        && (componentName.equals(((DocumentPK) other).getComponentName()));
-  }
-
-  /**
-   * Method declaration
    * @return
    * @see
    */
@@ -120,13 +105,7 @@ public class DocumentPK extends WAPrimaryKey implements Serializable, Cloneable 
         + ", componentName = " + getComponentName() + ")";
   }
 
-  /**
-   * Returns a hash code for the key
-   * @return A hash code for this object
-   */
-  public int hashCode() {
-    return toString().hashCode();
-  }
+
 
   /**
    * Support Cloneable Interface
@@ -137,6 +116,39 @@ public class DocumentPK extends WAPrimaryKey implements Serializable, Cloneable 
     } catch (CloneNotSupportedException e) {
       return null; // this should never happened
     }
+  }
+
+  @Override
+  public
+  boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    DocumentPK that = (DocumentPK) o;
+    if (componentName != null ? !componentName.equals(that.componentName) :
+        that.componentName != null) {
+      return false;
+    }
+    if (id != null ? !id.equals(that.id) : that.id != null) {
+      return false;
+    }
+    if (space != null ? !space.equals(that.space) : that.space != null) {
+      return false;
+    }
+
+    return true;
+  }
+
+  @Override
+  public
+  int hashCode() {
+    int result = id != null ? id.hashCode() : 0;
+    result = 31 * result + (space != null ? space.hashCode() : 0);
+    result = 31 * result + (componentName != null ? componentName.hashCode() : 0);
+    return result;
   }
 
 }

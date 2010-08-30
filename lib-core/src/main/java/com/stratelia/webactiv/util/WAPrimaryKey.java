@@ -180,13 +180,6 @@ public abstract class WAPrimaryKey implements Serializable {
    * @since 1.0
    */
   public String getTableName() {
-    /*
-     * if ((space == null) || (componentName == null)) {Debug.println(
-     * "WAPrimaryKey.getTableName() : error : some column of the primary key are null: " +
-     * toString() + " Impossible to give a table name."); throw new EJBException(
-     * "WAPrimaryKey.getTableName() : error : some column of the primary key are null: " +
-     * toString() + " Impossible to give a table name."); }
-     */
     return space + componentName + getRootTableName();
   }
 

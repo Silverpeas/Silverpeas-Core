@@ -244,4 +244,88 @@ public class Document implements java.io.Serializable, Cloneable {
   public void setOrderNumber(int orderNumber) {
     this.orderNumber = orderNumber;
   }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final Document other = (Document) obj;
+    if (this.pk != other.pk && (this.pk == null || !this.pk.equals(other.pk))) {
+      return false;
+    }
+    if (this.foreignKey != other.foreignKey && (this.foreignKey == null || !this.foreignKey.equals(other.foreignKey))) {
+      return false;
+    }
+    if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
+      return false;
+    }
+    if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {
+      return false;
+    }
+    if (this.status != other.status) {
+      return false;
+    }
+    if (this.ownerId != other.ownerId) {
+      return false;
+    }
+    if (this.lastCheckOutDate != other.lastCheckOutDate && (this.lastCheckOutDate == null || !this.lastCheckOutDate.equals(other.lastCheckOutDate))) {
+      return false;
+    }
+    if ((this.additionalInfo == null) ? (other.additionalInfo != null) : !this.additionalInfo.equals(other.additionalInfo)) {
+      return false;
+    }
+    if ((this.instanceId == null) ? (other.instanceId != null) : !this.instanceId.equals(other.instanceId)) {
+      return false;
+    }
+    if (this.workList != other.workList && (this.workList == null || !this.workList.equals(other.workList))) {
+      return false;
+    }
+    if (this.readList != other.readList && (this.readList == null || !this.readList.equals(other.readList))) {
+      return false;
+    }
+    if (this.typeWorkList != other.typeWorkList) {
+      return false;
+    }
+    if (this.currentWorkListOrder != other.currentWorkListOrder) {
+      return false;
+    }
+    if (this.orderNumber != other.orderNumber) {
+      return false;
+    }
+    if (this.alertDate != other.alertDate && (this.alertDate == null || !this.alertDate.equals(other.alertDate))) {
+      return false;
+    }
+    if (this.expiryDate != other.expiryDate && (this.expiryDate == null || !this.expiryDate.equals(other.expiryDate))) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 3;
+    hash = 41 * hash + (this.pk != null ? this.pk.hashCode() : 0);
+    hash = 41 * hash + (this.foreignKey != null ? this.foreignKey.hashCode() : 0);
+    hash = 41 * hash + (this.name != null ? this.name.hashCode() : 0);
+    hash = 41 * hash + (this.description != null ? this.description.hashCode() : 0);
+    hash = 41 * hash + this.status;
+    hash = 41 * hash + this.ownerId;
+    hash = 41 * hash + (this.lastCheckOutDate != null ? this.lastCheckOutDate.hashCode() : 0);
+    hash = 41 * hash + (this.additionalInfo != null ? this.additionalInfo.hashCode() : 0);
+    hash = 41 * hash + (this.instanceId != null ? this.instanceId.hashCode() : 0);
+    hash = 41 * hash + (this.workList != null ? this.workList.hashCode() : 0);
+    hash = 41 * hash + (this.readList != null ? this.readList.hashCode() : 0);
+    hash = 41 * hash + this.typeWorkList;
+    hash = 41 * hash + this.currentWorkListOrder;
+    hash = 41 * hash + this.orderNumber;
+    hash = 41 * hash + (this.alertDate != null ? this.alertDate.hashCode() : 0);
+    hash = 41 * hash + (this.expiryDate != null ? this.expiryDate.hashCode() : 0);
+    return hash;
+  }
+
+  
 }

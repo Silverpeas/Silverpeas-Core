@@ -143,9 +143,7 @@ public class VersioningUtil {
   }
 
   public ArrayList getDocuments(ForeignPK foreignID) throws RemoteException {
-    ArrayList documents = new ArrayList();
-    documents = getVersioningBm().getDocuments(foreignID);
-
+    ArrayList documents = new ArrayList(getVersioningBm().getDocuments(foreignID));
     return documents;
   }
 
