@@ -42,7 +42,10 @@ public class SocialInformationEvent implements SocialInformation {
   private  SocialInformationType type = EVENT;
   private Schedulable schedulable = null;
   private boolean isMyEvent=true;
-
+/**
+ * Constructor with on Param
+ * @param schedulable
+ */
   public SocialInformationEvent(Schedulable schedulable) {
     this.schedulable = schedulable;
     this.classification = schedulable.getClassification().getString();
@@ -52,6 +55,13 @@ public class SocialInformationEvent implements SocialInformation {
     type=LASTEVENT;
 
   }
+  /**
+   * * Constructor with Tow Params
+   *
+   * @param schedulable
+   * @param isMyEvent
+   */
+
   public SocialInformationEvent(Schedulable schedulable,boolean isMyEvent ) {
     this.isMyEvent=isMyEvent;
     this.schedulable = schedulable;
@@ -129,7 +139,7 @@ public class SocialInformationEvent implements SocialInformation {
    */
   @Override
   public boolean isUpdeted() {
-    return false;
+    return isMyEvent;
   }
 /**
    *Indicates whether some other SocialInformation date is befor or after the date of this one.

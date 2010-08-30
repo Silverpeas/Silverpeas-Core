@@ -134,8 +134,12 @@ System.out.println("listEvent size="+list.size());
 
   /**
    * get the Last socialEvents of my contacts according to number of Item and the first Index
-   * @return: List <SocialInformation>
-   * @param :String myId , List<String> myContactsIds , int numberOfElement, int firstIndex
+   * @param myId
+   * @param myContactsIds
+   * @param numberOfElement
+   * @param firstIndex
+   * @return
+   * @throws SilverpeasException
    */
   @Override
   public List getLastSocialInformationsListOfMyContacts(String myId,
