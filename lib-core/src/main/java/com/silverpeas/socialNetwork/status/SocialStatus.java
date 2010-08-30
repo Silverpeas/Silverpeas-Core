@@ -23,7 +23,6 @@
  */
 package com.silverpeas.socialNetwork.status;
 
-import com.silverpeas.socialNetwork.model.SocialInformation;
 import java.util.List;
 
 import com.silverpeas.socialNetwork.provider.SocialStatusInterface;
@@ -37,6 +36,14 @@ public class SocialStatus implements SocialStatusInterface {
     return statusService;
   }
 
+  /**
+   * Get list of  my socialInformationStatus 
+   * according to number of Item and the first Index
+   * @param userid
+   * @param nbElement
+   * @param firstIndex
+   * @return List
+   */
   @Override
   public List getSocialInformationsList(String userid, int nbElement, int firstIndex) {
 
@@ -47,15 +54,21 @@ public class SocialStatus implements SocialStatusInterface {
 
     return list_status;
   }
-
+/**
+ * Get list of   socialInformationStatus of my contacts
+   * according to number of Item and the first Index
+ * @param myContactsIds
+ * @param numberOfElement
+ * @param firstIndex
+ * @return List
+ */
   @Override
   public List<SocialInformationStatus> getSocialInformationsListOfMyContacts(
       List<String> myContactsIds,
       int numberOfElement, int firstIndex) {
-    List<SocialInformationStatus> list_status =
-        this.getStatusService().getSocialInformationsListOfMyContacts(myContactsIds,
-            numberOfElement, firstIndex);
 
-    return list_status;
+    List<SocialInformationStatus> list_status = this.getStatusService().
+        getSocialInformationsListOfMyContacts(myContactsIds,
+        numberOfElement, firstIndex); return list_status;
   }
 }

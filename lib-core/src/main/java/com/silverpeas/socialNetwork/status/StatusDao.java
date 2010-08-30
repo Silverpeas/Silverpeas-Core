@@ -48,8 +48,12 @@ public class StatusDao {
       "UPDATE sb_sn_status  SET  description = ? WHERE id = ? ";
 
   /**
-   * Change and create Status
-   * @param:Connection connection, Status status
+   *  Change my Status
+   * @param connection
+   * @param status
+   * @return int
+   * @throws UtilException
+   * @throws SQLException
    */
   public int changeStatus(Connection connection, Status status) throws UtilException,
       SQLException {
@@ -69,7 +73,13 @@ public class StatusDao {
     }
     return id;
   }
-
+/**
+ * delete my status
+ * @param connection
+ * @param id
+ * @return boolean
+ * @throws SQLException
+ */
   public boolean deleteStatus(Connection connection, int id) throws SQLException {
     PreparedStatement pstmt = null;
     boolean endAction = false;
@@ -83,7 +93,13 @@ public class StatusDao {
     }
     return endAction;
   }
-
+/**
+ * get Status for user
+ * @param connection
+ * @param id
+ * @return Status
+ * @throws SQLException
+ */
   public Status getStatus(Connection connection, int id) throws SQLException {
     Status status = null;
     ResultSet rs = null;
@@ -107,7 +123,13 @@ public class StatusDao {
     }
     return status;
   }
-
+/**
+ * get last status for user
+ * @param connection
+ * @param userid
+ * @return Status
+ * @throws SQLException
+ */
   public Status getLastStatus(Connection connection, int userid) throws SQLException {
     Status status = new Status();
     ResultSet rs = null;
@@ -129,7 +151,13 @@ public class StatusDao {
     }
     return status;
   }
-
+/**
+ * UpdateStatus
+ * @param connection
+ * @param status
+ * @return boolean
+ * @throws SQLException
+ */
   public boolean UpdateStatus(Connection connection, Status status) throws SQLException {
     PreparedStatement pstmt = null;
     boolean endAction = false;
@@ -145,7 +173,16 @@ public class StatusDao {
     }
     return endAction;
   }
-
+/**
+ * when data base is PostgreSQL get all my SocialInformation
+ * according to number of Item and the first Index
+ * @param connection
+ * @param userId
+ * @param nbElement
+ * @param firstIndex
+ * @return List<SocialInformationStatus>
+ * @throws SQLException
+ */
   public static List<SocialInformationStatus> getAllStatus_PostgreSQL(Connection connection,
       int userId, int nbElement, int firstIndex) throws
       SQLException {
@@ -174,7 +211,18 @@ public class StatusDao {
     }
     return status_list;
   }
-
+/**
+ * get all my SocialInformation
+ * according to the type of data bes (PostgreSQL,Oracle,MMS)
+ *
+ * @throws SQLException
+ * @param connection
+ * @param userId
+ * @param nbElement
+ * @param firstIndex
+ * @return List<SocialInformationStatus>
+ * @throws SQLException
+ */
   public List<SocialInformationStatus> getAllStatus(Connection connection, int userId,
       int nbElement,
       int firstIndex) throws SQLException {
@@ -185,7 +233,16 @@ public class StatusDao {
     return null;
 
   }
-
+/**
+ *  when data base is PostgreSQL get SocialInformation of my conatct
+ * according to number of Item and the first Index
+ * @param connection
+ * @param myContactsIds
+ * @param numberOfElement
+ * @param firstIndex
+ * @return List<SocialInformationStatus>
+ * @throws SQLException
+ */
   List<SocialInformationStatus> getSocialInformationsListOfMyContacts(Connection connection,
       List<String> myContactsIds, int numberOfElement, int firstIndex) throws SQLException {
     PreparedStatement pstmt = null;
@@ -214,6 +271,12 @@ public class StatusDao {
     }
     return status_list;
   }
+
+  /**
+ * convert list of contact ids to string for using in the query SQL
+ * @param list
+ * @return String
+ */
 
   private static String listToSqlString(List<String> list) {
     String result = "";

@@ -40,13 +40,22 @@ public class StatusService {
   public StatusService() {
     this.statusDao = new StatusDao();
   }
-
+/**
+ * get Connection
+ * @return Connection
+ * @throws UtilException
+ * @throws SQLException
+ */
   private Connection getConnection() throws UtilException, SQLException {
     Connection connection = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
     connection.setAutoCommit(false);
     return connection;
   }
-
+/**
+ * Change my Staus
+ * @param status
+ * @return String
+ */
   public String changeStatusService(Status status) {
     Connection connection = null;
     int id = -1;
@@ -66,7 +75,11 @@ public class StatusService {
     }
     return null;
   }
-
+/**
+ * delete my Status
+ * @param id
+ * @return boolean
+ */
   public boolean deleteStatusService(int id) {
     Connection connection = null;
     boolean delete_status = false;
@@ -83,7 +96,11 @@ public class StatusService {
     }
     return delete_status;
   }
-
+/**
+ * get Status for user
+ * @param id
+ * @return Status
+ */
   public Status getStatusService(int id) {
     Connection connection = null;
     Status status = new Status();
@@ -100,7 +117,11 @@ public class StatusService {
     }
     return status;
   }
-
+/**
+ * get last status for user
+ * @param userid
+ * @return
+ */
   public Status getLastStatusService(int userid) {
     Connection connection = null;
     Status status = new Status();
@@ -118,7 +139,11 @@ public class StatusService {
     return status;
 
   }
-
+/**
+ * update status
+ * @param status
+ * @return boolean
+ */
   public boolean UpdateStatusService(Status status) {
     Connection connection = null;
     boolean update_status = false;
@@ -135,7 +160,14 @@ public class StatusService {
     }
     return update_status;
   }
-
+/**
+ * get all my SocialInformation
+ * according to number of Item and the first Index
+ * @param userId
+ * @param nbElement
+ * @param firstIndex
+ * @return List<SocialInformationStatus>
+ */
   public List<SocialInformationStatus> getAllStatusService(int userId, int nbElement, int firstIndex) {
     Connection connection = null;
     List<SocialInformationStatus> status_list = new ArrayList<SocialInformationStatus>();
@@ -154,7 +186,14 @@ public class StatusService {
     }
     return status_list;
   }
-
+/**
+ * when data base is PostgreSQL get SocialInformation of my conatct
+ * according to number of Item and the first Index
+ * @param myContactsIds
+ * @param numberOfElement
+ * @param firstIndex
+ * @return List<SocialInformationStatus>
+ */
   List<SocialInformationStatus> getSocialInformationsListOfMyContacts(List<String> myContactsIds,
       int numberOfElement, int firstIndex) {
     Connection connection = null;
