@@ -38,7 +38,11 @@ public class SocialInformationPublication implements SocialInformation {
   private  String author;
   private  Date  date;
   private  String url;
-  
+
+  /**
+   * Constructor with one param
+   * @param publication
+   */
   public SocialInformationPublication (PublicationWithStatus publication) {
     this.publication=publication;
     if(publication.isUpdate()){
@@ -122,7 +126,11 @@ this.url=URLManager.getURL("kmelia", null, publication.getPublication().getPK().
   public boolean isUpdeted() {
     return publication.isUpdate();
   }
-
+/**
+ * compare to SocialInformationPublication if are iquals or not
+ * @param obj
+ * @return boolean
+ */
   @Override
   public boolean equals(Object obj) {
     if (obj == null||getClass() != obj.getClass()) {
