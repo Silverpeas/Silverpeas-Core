@@ -25,6 +25,8 @@
 package com.silverpeas.form.record;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
@@ -44,6 +46,7 @@ public class GenericDataRecord implements DataRecord, Serializable {
   private Field[] fields = null;
   private RecordTemplate template = null;
   private String language = null;
+  private Map<String, Field> fieldsByName = null;
 
   /**
    * A GenericDataRecord is built from a RecordTemplate.
@@ -54,25 +57,17 @@ public class GenericDataRecord implements DataRecord, Serializable {
     String[] fieldNames = template.getFieldNames();
     int size = fieldNames.length;
     fields = new Field[size];
+    fieldsByName = new HashMap<String, Field>();
 
     String fieldName;
     FieldTemplate fieldTemplate;
     Field field;
     for (int i = 0; i < size; i++) {
       fieldName = fieldNames[i];
-      // SilverTrace.info("form", "GenericDataRecord.GenericDataRecord",
-      // "root.MSG_GEN_PARAM_VALUE", "fieldName="+fieldName);
       fieldTemplate = template.getFieldTemplate(fieldName);
       field = fieldTemplate.getEmptyField();
-      // SilverTrace.info("form", "GenericDataRecord.GenericDataRecord",
-      // "root.MSG_GEN_PARAM_VALUE", "fieldType="+field.getTypeName());
       fields[i] = field;
-    }
-
-    for (int i = 0; i < fields.length; i++) {
-      field = fields[i];
-      // SilverTrace.info("form", "GenericDataRecord.GenericDataRecord",
-      // "root.MSG_GEN_PARAM_VALUE", "fieldType="+field.getTypeName());
+      fieldsByName.put(fieldName, field);
     }
   }
 
@@ -103,26 +98,15 @@ public class GenericDataRecord implements DataRecord, Serializable {
    * @throw FormException when the fieldName is unknown.
    */
   public Field getField(String fieldName) throws FormException {
-    // SilverTrace.info("form", "GenericDataRecord.getField",
-    // "root.MSG_GEN_PARAM_VALUE", "fieldName="+fieldName);
-    // int index = template.getFieldIndex(fieldName);
-    // return fields[index];
+    Field result = fieldsByName.get(fieldName);
 
-    String[] fieldNames = template.getFieldNames();
-    int size = fieldNames.length;
-
-    String theFieldName;
-
-    for (int i = 0; i < size; i++) {
-      theFieldName = fieldNames[i];
-      if (theFieldName.equalsIgnoreCase(fieldName))
-        return fields[i];
+    if (result == null) {
+      SilverTrace.warn("form", "GenericDataRecord.getField",
+          "form.EXP_UNKNOWN_FIELD", "fieldName '" + fieldName
+          + "' in DB not found in XML descriptor");
     }
-    SilverTrace.warn("form", "GenericDataRecord.getField",
-        "form.EXP_UNKNOWN_FIELD", "fieldName '" + fieldName
-        + "' in DB not found in XML descriptor");
-    return null;
-    // throw new FormException("DataRecord", "form.EXP_UNKNOWN_FIELD");
+    
+    return result;
   }
 
   /**
