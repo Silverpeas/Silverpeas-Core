@@ -48,6 +48,7 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import static com.stratelia.silverpeas.notificationManager.NotificationTemplateKey.*;
 
 /**
  * Cette classe est utilisee par les composants pour envoyer une notification a un (ou des)
@@ -162,9 +163,18 @@ public class NotificationSender implements java.io.Serializable {
                     new ResourceLocator(
                         "com.stratelia.silverpeas.notificationManager.settings.notificationManagerSettings",
                         "");
-                template.setAttribute("receiver", addReceivers(getUserSet(metaData, settings),
-                    getGroupSet(metaData, settings),
-                    lang, settings));
+                String receiver_users =
+                    addReceiverUsers(getUserSet(metaData, settings),
+                        getGroupSet(metaData, settings), lang, settings);
+                if (receiver_users != null && receiver_users.trim().length() > 0) {
+                  template.setAttribute(notification_receiver_users.toString(), receiver_users);
+                }
+                String receiver_groups =
+                    addReceiverGroups(getUserSet(metaData, settings), getGroupSet(metaData,
+                        settings), lang, settings);
+                if (receiver_groups != null && receiver_groups.trim().length() > 0) {
+                  template.setAttribute(notification_receiver_groups.toString(), receiver_groups);
+                }
               } catch (NotificationManagerException e) {
                 SilverTrace.warn("alertUserPeas",
                     "AlertUserPeasSessionController.prepareNotification()",
@@ -237,17 +247,44 @@ public class NotificationSender implements java.io.Serializable {
     return groupsSet;
   }
 
-  private String addReceivers(Set<String> usersSet, Set<String> groupsSet, String language,
+  private String addReceiverUsers(Set<String> usersSet, Set<String> groupsSet, String language,
       ResourceLocator settings) {
     OrganizationController orgaController = new OrganizationController();
-    ResourceLocator m_Multilang = new ResourceLocator(
-        "com.stratelia.silverpeas.notificationserver.channel.silvermail.multilang.silvermail",
-        language);
-    String listReceivers = "";
+    String users = "";
     if (settings.getBoolean("addReceiversInBody", false)) {
-      listReceivers = createListReceivers(usersSet, groupsSet, m_Multilang, orgaController);
+      String userName = "";
+      boolean first = true;
+      Iterator<String> it = usersSet.iterator();
+      while (it.hasNext()) {
+        if (!first) {
+          users = users + ", ";
+        }
+        userName = orgaController.getUserDetail(it.next()).getDisplayedName();
+        users = users + userName;
+        first = false;
+      }
     }
-    return listReceivers;
+    return users;
+  }
+
+  private String addReceiverGroups(Set<String> usersSet, Set<String> groupsSet, String language,
+      ResourceLocator settings) {
+    OrganizationController orgaController = new OrganizationController();
+    String groups = "";
+    if (settings.getBoolean("addReceiversInBody", false)) {
+      String groupName = "";
+      boolean first = true;
+      Iterator<String> itG = groupsSet.iterator();
+      while (itG.hasNext()) {
+        if (!first) {
+          groups = groups + ", ";
+        }
+        groupName = orgaController.getGroup(itG.next()).getName();
+        groups = groups + groupName;
+        first = false;
+      }
+    }
+    return groups;
   }
 
   private synchronized List<String> getAllLanguages() {
@@ -299,16 +336,7 @@ public class NotificationSender implements java.io.Serializable {
     ResourceLocator m_Multilang = new ResourceLocator(
         "com.stratelia.silverpeas.notificationserver.channel.silvermail.multilang.silvermail",
         language);
-    String result = "";
-
-    result = content + createListReceivers(usersSet, groupsSet, m_Multilang, orgaController);
-    return result;
-  }
-
-  private String createListReceivers(Set<String> usersSet, Set<String> groupsSet,
-      ResourceLocator m_Multilang, OrganizationController orgaController) {
-    String listReceivers = "\n\n" + m_Multilang.getString("NameOfReceivers");
-    listReceivers = "\n" + m_Multilang.getString("NameOfReceivers");
+    String listReceivers = "";
     String userName = "";
     String groupName = "";
     boolean first = true;
@@ -316,6 +344,10 @@ public class NotificationSender implements java.io.Serializable {
     while (it.hasNext()) {
       if (!first) {
         listReceivers = listReceivers + ", ";
+      }
+      else
+      {
+        listReceivers = listReceivers + "\n" + m_Multilang.getString("NameOfReceivers");
       }
       userName = orgaController.getUserDetail(it.next()).getDisplayedName();
       listReceivers = listReceivers + userName;
@@ -333,7 +365,7 @@ public class NotificationSender implements java.io.Serializable {
       listReceivers = listReceivers + groupName;
       first = false;
     }
-    return listReceivers;
+    return content + listReceivers;
   }
 
   private void saveNotification(NotificationMetaData metaData, Set<String> usersSet)
