@@ -24,10 +24,13 @@
 package com.stratelia.silverpeas.versioning;
 
 import com.silverpeas.components.model.AbstractTestDao;
+import com.silverpeas.jcrutil.RandomGenerator;
 import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.MimeTypes;
 import com.stratelia.silverpeas.versioning.ejb.VersioningDAO;
 import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentPK;
+import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.model.Worker;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -93,7 +96,7 @@ public class TestVersioningDAO extends AbstractTestDao {
     assertEquals(new ForeignPK("4", INSTANCE_ID), doc.getForeignKey());
     assertEquals(0, doc.getTypeWorkList());
     assertEquals(0, doc.getCurrentWorkListOrder());
-     assertEquals(INSTANCE_ID, doc.getInstanceId());
+    assertEquals(INSTANCE_ID, doc.getInstanceId());
   }
 
   @Test
@@ -149,6 +152,46 @@ public class TestVersioningDAO extends AbstractTestDao {
     assertThat("Result shoud contain the document 1", docs, hasItem(doc1));
     assertThat("Result shoud contain the document 2", docs, hasItem(doc2));
     assertThat("Result shoud contain the document 3", docs, hasItem(doc3));
+
+  }
+
+  @Test
+  public void testCreateNewDocument() throws Exception {
+    Document doc = new Document();
+    doc.setPk(new DocumentPK(1, INSTANCE_ID));
+    doc.setAdditionalInfo("Additional Infos");
+    doc.setCurrentWorkListOrder(0);
+    doc.setDescription("Document created");
+    doc.setInstanceId(INSTANCE_ID);
+    doc.setForeignKey(new ForeignPK("18", INSTANCE_ID));
+    Calendar lastCheckOutDate = RandomGenerator.getFuturCalendar();
+    lastCheckOutDate.set(Calendar.HOUR_OF_DAY, 0);
+    lastCheckOutDate.set(Calendar.MINUTE, 0);
+    lastCheckOutDate.set(Calendar.SECOND, 0);
+    lastCheckOutDate.set(Calendar.MILLISECOND, 0);
+    doc.setLastCheckOutDate(lastCheckOutDate.getTime());
+    doc.setStatus(Document.STATUS_CHECKOUTED);
+    doc.setTypeWorkList(0);
+    doc.setWorkList(new ArrayList<Worker>());
+    doc.setOwnerId(RandomGenerator.getRandomInt());
+    doc.setName("creation");
+    doc.setOrderNumber(1);
+
+    DocumentVersion initialVersion = new DocumentVersion();
+    initialVersion.setMimeType(MimeTypes.DEFAULT_MIME_TYPE);
+    initialVersion.setAuthorId(doc.getOwnerId());
+    initialVersion.setMajorNumber(RandomGenerator.getRandomInt());
+    initialVersion.setMinorNumber(RandomGenerator.getRandomInt());
+    initialVersion.setPhysicalName(System.currentTimeMillis() + ".bin");
+    initialVersion.setLogicalName("test.bin");
+    initialVersion.setInstanceId(INSTANCE_ID);
+
+    DocumentPK pk = VersioningDAO.createDocument(getConnection().getConnection(), doc, initialVersion);
+    doc.setPk(pk);
+
+    Document result = VersioningDAO.getDocument(getConnection().getConnection(), pk);
+
+    assertEquals(doc, result);
 
   }
 }

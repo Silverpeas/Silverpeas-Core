@@ -30,7 +30,6 @@ package com.stratelia.silverpeas.versioning.model;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.versioning.importExport.VersionsType;
@@ -327,5 +326,5 @@ public class Document implements java.io.Serializable, Cloneable {
     return hash;
   }
 
-  
+
 }

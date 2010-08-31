@@ -282,7 +282,7 @@ public class VersioningDAO {
     return doc;
   }
   public final static String CREATE_DOCUMENT_QUERY =
-      "INSERT INTO sb_version_version (documentId, documentName, documentDescription, "
+      "INSERT INTO sb_version_document (documentId, documentName, documentDescription, "
       + "documentStatus, documentOwnerId, documentCheckoutDate, documentInfo, foreignId, "
       + "instanceId, typeWorkList, currentWorkListOrder, alertDate, expiryDate, documentordernum) "
       + " VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
