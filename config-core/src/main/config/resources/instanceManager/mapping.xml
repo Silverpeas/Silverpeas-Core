@@ -173,9 +173,13 @@
       <sql name="backstatus" />
       <bind-xml name="backStatus" />
     </field>
-    <field name="timeoutStatus" type="integer" get-method="getTimeoutStatusCastor" set-method="setTimeoutStatusCastor">
+    <field name="timeoutStatus" type="integer">
       <sql name="timeoutstatus" />
       <bind-xml name="timeoutStatus" />
+    </field>
+    <field name="timeoutDate" type="date">
+      <sql type="timestamp" name="timeoutdate" dirty="ignore"/>
+      <bind-xml name="timeoutDate" />
     </field>
   </class>
   <class name="com.silverpeas.workflow.engine.instance.HistoryStepImpl" depends="com.silverpeas.workflow.engine.instance.ProcessInstanceImpl" key-generator="MAX" identity="id">

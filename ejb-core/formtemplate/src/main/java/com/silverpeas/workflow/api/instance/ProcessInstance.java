@@ -29,6 +29,7 @@ import java.util.*;
 import com.silverpeas.workflow.api.model.*;
 import com.silverpeas.workflow.api.user.*;
 import com.silverpeas.workflow.api.*;
+import com.silverpeas.workflow.engine.instance.ActionAndState;
 import com.silverpeas.form.*;
 
 public interface ProcessInstance {
@@ -320,4 +321,10 @@ public interface ProcessInstance {
    * Returns this instance title.
    */
   public String getTitle(String role, String lang);
+  
+  /**
+   * Returns the timeout action to be launched after given date
+   * @throws WorkflowException 
+   */
+  public ActionAndState getTimeOutAction(Date dateRef) throws WorkflowException;
 }

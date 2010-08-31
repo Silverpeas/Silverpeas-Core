@@ -26,6 +26,7 @@ package com.silverpeas.workflow.engine.instance;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -60,6 +61,7 @@ import com.silverpeas.workflow.api.instance.Participant;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
 import com.silverpeas.workflow.api.instance.Question;
 import com.silverpeas.workflow.api.instance.UpdatableProcessInstance;
+import com.silverpeas.workflow.api.model.Action;
 import com.silverpeas.workflow.api.model.Form;
 import com.silverpeas.workflow.api.model.Input;
 import com.silverpeas.workflow.api.model.Presentation;
@@ -68,6 +70,7 @@ import com.silverpeas.workflow.api.model.QualifiedUsers;
 import com.silverpeas.workflow.api.model.RelatedGroup;
 import com.silverpeas.workflow.api.model.RelatedUser;
 import com.silverpeas.workflow.api.model.State;
+import com.silverpeas.workflow.api.model.TimeOutAction;
 import com.silverpeas.workflow.api.model.UserInRole;
 import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.workflow.engine.WorkflowHub;
@@ -197,7 +200,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @set-method castor_setActiveStates
    * @get-method castor_getActiveStates
    */
-  private Vector activeStates = null;
+  private Vector<ActiveState> activeStates = null;
 
   /**
    * The DataRecord where are stored all the folder fields.
@@ -280,16 +283,48 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @param state State to be activated
    */
   public void addActiveState(State state) throws WorkflowException {
-    this.addActiveState(state.getName());
+    Date timeOutDate = computeTimeOutDate(state, 1);
+    this.addActiveState(state.getName(), timeOutDate);
+  }
+  
+  private Date computeTimeOutDate(State state, int order) {
+    // checks if timeout actions have been defined on the state to add
+    TimeOutAction[] timeOutActions = state.getTimeOutActions();
+    Date timeOutDate = null;
+    if (timeOutActions!=null && timeOutActions.length>0) {
+      for (TimeOutAction timeOutAction : timeOutActions) {
+        if (timeOutAction.getOrder()==order) {
+          Calendar now = Calendar.getInstance();
+          String delay = timeOutAction.getDelay();
+          if ( (StringUtil.isDefined(delay)) && (delay.endsWith("d")) ) {
+            now.add(Calendar.DAY_OF_YEAR, Integer.parseInt(delay.substring(0, delay.length()-1)));
+            timeOutDate = now.getTime();
+          }
+          else if ( (StringUtil.isDefined(delay)) && (delay.endsWith("h")) ) {
+            now.add(Calendar.HOUR, Integer.parseInt(delay.substring(0, delay.length()-1)));
+            timeOutDate = now.getTime();
+          }
+          else {
+            SilverTrace.warn("workflowEngine", "ProcessInstanceImpl.addActiveState",
+                "root.ERR_BAD_DELAY_FORMAT", "delay =" + delay);
+          }
+          
+          break;
+        }
+      }
+    }
+    
+    return timeOutDate;
   }
 
   /**
    * Set a state active for this instance
    * @param state The name of state to be activated
    */
-  private void addActiveState(String state) throws WorkflowException {
+  private void addActiveState(String state, Date timeOutDate) throws WorkflowException {
     ActiveState activeState = new ActiveState(state);
     activeState.setProcessInstance(this);
+    activeState.setTimeoutDate(timeOutDate);
 
     // if this active state is add in a "question" context, it must be marked as
     // in back status for a special treatment
@@ -343,7 +378,9 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
       activeState = (ActiveState) activeStates.get(i);
       if (activeState.getState().equals(state.getName())) {
         found = true;
-        activeState.setTimeoutStatus(true);
+        activeState.setTimeoutStatus(activeState.getTimeoutStatus()+1);
+        Date nextTimeOutDate = computeTimeOutDate(state, activeState.getTimeoutStatus()+1);
+        activeState.setTimeoutDate(nextTimeOutDate);
         this.setTimeoutStatus(true);
       }
     }
@@ -368,8 +405,8 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
           "root.MSG_GEN_ENTER_METHOD", "activeState ="
           + activeState.getState());
       if (activeState.getState().equals(state.getName())) {
-        activeState.setTimeoutStatus(false);
-      } else if (activeState.getTimeoutStatus())
+        activeState.setTimeoutStatus(0);
+      } else if (activeState.getTimeoutStatus()>0)
         found = true;
     }
 
@@ -1034,11 +1071,16 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
     HistoryStep savedStep = null;
     HistoryStep step = null;
 
+    SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getSavedStep",
+        "root.MSG_GEN_ENTER_METHOD", "userId =" + userId);
+
     for (int i = 0; i < historySteps.size(); i++) {
       step = (HistoryStep) historySteps.get(i);
 
       // if step matches the searched action, tests if the step is most recent
       if ((step.getActionStatus() == 3) && (step.getUser().getUserId().equals(userId))) {
+        SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getSavedStep",
+            "root.MSG_GEN_ENTER_METHOD", "step found, action = " + step.getAction());
         savedStep = step;
         break;
       }
@@ -1164,14 +1206,22 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
   public String[] getActiveStates() {
     String[] states = null;
 
+    SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getActiveStates",
+        "root.MSG_GEN_ENTER_METHOD");
+
     if (activeStates == null || activeStates.size() == 0)
-      return new String[0];
+      states = new String[0];
 
-    states = new String[activeStates.size()];
-    for (int i = 0; i < activeStates.size(); i++) {
-      states[i] = ((ActiveState) activeStates.get(i)).getState();
+    else {
+      states = new String[activeStates.size()];
+      for (int i = 0; i < activeStates.size(); i++) {
+        states[i] = ((ActiveState) activeStates.get(i)).getState();
+      }
     }
-
+    
+    SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getActiveStates",
+        "root.MSG_GEN_ENTER_METHOD", "nb active states founds : " + states.length);
+    
     return states;
   }
 
@@ -1289,11 +1339,18 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    */
   public String[] getAssignedStates(User user, String roleName)
       throws WorkflowException {
+    SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getAssignedStates",
+        "root.MSG_GEN_ENTER_METHOD", "user : " + user.getUserId() + ", roleName="+roleName);
     Vector<String> stateNames = new Vector<String>();
     String userId = user.getUserId();
 
     for (int i = 0; i < workingUsers.size(); i++) {
       WorkingUser wkUser = (WorkingUser) workingUsers.get(i);
+
+      SilverTrace.debug("workflowEngine",
+          "ProcessInstanceImpl.getAssignedStates",
+          "root.MSG_GEN_PARAM_VALUE", "processing working user no : "+i+", role:" + wkUser.getRole());
+
       boolean userMatch = wkUser.getUserId() != null && wkUser.getUserId().equals(userId);
       boolean usersRoleMatch =
           wkUser.getUsersRole() != null && wkUser.getUsersRole().equals(roleName);
@@ -1304,9 +1361,20 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
           userGroupsMatch = user.getGroupIds().contains(wkUser.getGroupId());
         }
       }
+      
+      SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getAssignedStates", "root.MSG_GEN_PARAM_VALUE", "User match ? : "+userMatch);
+      SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getAssignedStates", "root.MSG_GEN_PARAM_VALUE", "usersRole match ? : "+usersRoleMatch);
+      SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getAssignedStates", "root.MSG_GEN_PARAM_VALUE", "userGroups match ? : "+userGroupsMatch);
       boolean wkUserMatch = userMatch || usersRoleMatch || userGroupsMatch;
-      if (wkUserMatch && wkUser.getRoles().contains(roleName))
-        stateNames.add(wkUser.getState());
+
+      if (wkUserMatch) {
+        for (String role : wkUser.getRole().split(",")) {
+          if (role.equals(roleName)) {
+            stateNames.add(wkUser.getState());
+          }
+        }
+      }
+        
     }
 
     return stateNames.toArray(new String[0]);
@@ -1317,6 +1385,9 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @return User
    */
   public User getLockingUser(String state) throws WorkflowException {
+    SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getLockingUser",
+        "root.MSG_GEN_ENTER_METHOD", "state : " + state);
+
     // Constructs a new LockingUser to proceed search
     LockingUser searchedUser = new LockingUser();
     searchedUser.setState(state);
@@ -1324,8 +1395,12 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
     int indexUser = lockingUsers.indexOf(searchedUser);
     if (indexUser != -1) {
       LockingUser foundUser = (LockingUser) lockingUsers.get(indexUser);
+      SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getLockingUser",
+          "root.MSG_GEN_ENTER_METHOD", "Locking user found for state : " + state + ", userId = "+foundUser.getUserId());
       return WorkflowHub.getUserManager().getUser(foundUser.getUserId());
     } else
+      SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getLockingUser",
+          "root.MSG_GEN_ENTER_METHOD", "no locking user for state : " + state);
       return null;
   }
 
@@ -1685,7 +1760,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
 
         else if (action.equals("removeActiveState")) {
           String state = undoStep.getParameters();
-          this.addActiveState(state);
+          this.addActiveState(state, null);
         }
 
         else if (action.equals("addWorkingUser")) {
@@ -2170,9 +2245,41 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
     return title;
   }
 
+  /**
+   * Returns the timeout action to be launched after given date
+   * @throws WorkflowException 
+   */
+  public ActionAndState getTimeOutAction(Date dateRef) throws WorkflowException {
+    
+    // Parse active states
+    if (this.activeStates!=null && !this.activeStates.isEmpty()) {
+      for (ActiveState activeState : activeStates) {
+        
+        // Look for an active state with a timeoutDate in the past
+        if (activeState.getTimeoutDate()!=null && activeState.getTimeoutDate().before(dateRef)) {
+          
+          // found, now look which timeout is concerned
+          int timeoutStatus = activeState.getTimeoutStatus();
+          
+          // then parse all timeoutAction to return the right one (the one with order = timeoutstatus+1)
+          State state = getProcessModel().getState(activeState.getState());
+          TimeOutAction[] actions = state.getTimeOutActions();
+          for (int i=0; actions!=null && i<actions.length; i++) {
+            if (actions[i].getOrder()==(timeoutStatus+1)) {
+              return new ActionAndState(actions[i].getAction(), state);
+            }
+          }
+        }
+      }
+    }
+    
+    return null;
+  }
+
   public boolean equals(Object obj) {
     ProcessInstance instance = (ProcessInstance) obj;
     return instance.getInstanceId().equals(this.instanceId);
   }
 
+  
 }

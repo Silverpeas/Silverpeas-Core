@@ -34,6 +34,8 @@ import com.silverpeas.workflow.api.model.ContextualDesignation;
 import com.silverpeas.workflow.api.model.ContextualDesignations;
 import com.silverpeas.workflow.api.model.QualifiedUsers;
 import com.silverpeas.workflow.api.model.State;
+import com.silverpeas.workflow.api.model.TimeOutAction;
+import com.silverpeas.workflow.api.model.TimeOutActions;
 import com.silverpeas.workflow.engine.AbstractReferrableObject;
 
 /**
@@ -49,7 +51,8 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
   private QualifiedUsers interestedUsers;
   private AllowedActions allowedActions;
   private AllowedActions filteredActions;
-  private Action timeoutAction;
+  private TimeOutActions timeOutActions;
+  private Action timeOutAction;
   private int timeoutInterval;
   private boolean timeoutNotifyAdmin;
 
@@ -83,7 +86,7 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
     labels = new SpecificLabelListHelper();
     descriptions = new SpecificLabelListHelper();
     activities = new SpecificLabelListHelper();
-    timeoutAction = null;
+    timeOutAction = null;
     timeoutInterval = -1;
     timeoutNotifyAdmin = true;
   }
@@ -223,6 +226,21 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
     return allowedActions.getAllowedActions();
   }
 
+  /**
+   * Get timeout actions for this state
+   * @return timeout actions
+   */
+  public TimeOutAction[] getTimeOutActions() {
+    if (timeOutActions == null)
+      return null;
+
+    return timeOutActions.getTimeOutActions();
+  }
+  
+  public TimeOutActions getTimeOutActionsEx() {
+    return timeOutActions;
+  }
+
   /*
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.State#getAllAllowedActions()
@@ -233,6 +251,10 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
 
   public AllowedActions createAllowedActions() {
     return new ActionRefs();
+  }
+
+  public TimeOutActions createTimeOutActions() {
+    return new TimeOutActionsImpl();
   }
 
   public Action[] getFilteredActions() {
@@ -299,6 +321,13 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
    */
   public QualifiedUsers getWorkingUsersEx() {
     return workingUsers;
+  }
+
+  /**
+   * 
+   */
+  public void setTimeOutActions(TimeOutActions timeOutActions) {
+    this.timeOutActions = timeOutActions;
   }
 
   /*
@@ -396,7 +425,7 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
    * @return timeout action
    */
   public Action getTimeoutAction() {
-    return timeoutAction;
+    return timeOutAction;
   }
 
   /*
@@ -406,7 +435,7 @@ public class StateImpl extends AbstractReferrableObject implements State, Abstra
    * Action)
    */
   public void setTimeoutAction(Action timeoutAction) {
-    this.timeoutAction = timeoutAction;
+    this.timeOutAction = timeoutAction;
   }
 
   /**

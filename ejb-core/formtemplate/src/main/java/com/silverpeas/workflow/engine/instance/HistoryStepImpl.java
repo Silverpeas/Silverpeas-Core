@@ -329,6 +329,13 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable {
     String formId = id;
     try {
       RecordSet formSet = model.getFormRecordSet(form.getName());
+      // In case of draft step, have to delete previous record if it exists
+      if (this.actionStatus == 3) {
+        DataRecord previousRecord = formSet.getRecord(formId);
+        if (previousRecord != null) {
+          formSet.delete(previousRecord);
+        }
+      }
       data.setId(formId);
       formSet.save(data);
     } catch (FormException e) {

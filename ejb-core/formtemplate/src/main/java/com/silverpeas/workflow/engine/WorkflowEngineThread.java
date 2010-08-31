@@ -1003,7 +1003,7 @@ class TimeoutRequest implements Request {
       // Do workflow stuff
       try {
         boolean removeInstance = processEvent(instance, step.getId());
-        if (removeInstance)
+        if (removeInstance) {
           SilverTrace.info("workflowEngine", "workflowEngineThread.process()",
               "root.MSG_GEN_PARAM_VALUE", "DELETE INSTANCE "+instance.getInstanceId());
           // remove data associated to forms and tasks
@@ -1016,6 +1016,7 @@ class TimeoutRequest implements Request {
           // remove errors
           WorkflowHub.getErrorManager().removeErrorsOfInstance(
               instance.getInstanceId());
+        }
       } catch (WorkflowException we) {
         db.rollback();
 

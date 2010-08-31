@@ -26,9 +26,13 @@
 package com.silverpeas.workflow.engine.instance;
 
 import java.sql.Connection;
+import java.util.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import org.exolab.castor.jdo.Database;
@@ -193,7 +197,15 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
           selectQuery.append(getSQLClauseIn(userGroupIds));
           selectQuery.append("))");
         }
-        selectQuery.append(") and wkUser.role = ? ");
+        selectQuery.append(") and ");
+        
+        // role can be multiple (e.g: "role1,role2,...,roleN")
+        selectQuery.append("( wkUser.role = ? ");
+        selectQuery.append(" or wkUser.role like ? ");
+        selectQuery.append(" or wkUser.role like ? ");
+        selectQuery.append(" or wkUser.role like ? ");
+        selectQuery.append(")");
+
         selectQuery.append(")");
         selectQuery.append("order by I.instanceId desc");
         
@@ -206,6 +218,9 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
         prepStmt.setString(3, role);
         prepStmt.setString(4, user.getUserId());
         prepStmt.setString(5, role);
+        prepStmt.setString(6, "%,"+role);
+        prepStmt.setString(7, role+",%");
+        prepStmt.setString(8, "%,"+role+",%");
       }
       rs = prepStmt.executeQuery();
 
@@ -268,7 +283,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
           state.setId(String.valueOf(rs.getInt(1)));
           state.setState(rs.getString(3));
           state.setBackStatus(rs.getBoolean(4));
-          state.setTimeoutStatus(rs.getBoolean(5));
+          state.setTimeoutStatus(rs.getInt(5));
           state.setProcessInstance(instance);
 
           states.add(state);
@@ -659,4 +674,94 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
     }
     return versioningBm;
   }
+
+  /**
+   * Get the list of process instances for which timeout date is over
+   * @return an array of ProcessInstance objects
+   * @throws WorkflowException 
+   */
+  public ProcessInstance[] getTimeOutProcessInstances() throws WorkflowException {
+    Database db = null;
+    Connection con = null;
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    String selectQuery = "";
+    OQLQuery query = null;
+    QueryResults results;
+    List<ProcessInstance> instances = new ArrayList<ProcessInstance>();
+
+    try {
+      // Constructs the query
+      db = WorkflowJDOManager.getDatabase(false);
+      db.begin();
+
+      // Need first to make a SQL query to find all concerned instances ids
+      con = this.getConnection();
+
+      selectQuery = "SELECT DISTINCT activeState.instanceId ";
+      selectQuery +=
+          "FROM SB_Workflow_ActiveState activeState ";
+      selectQuery += "WHERE activeState.timeoutDate < ? ";
+
+      prepStmt = con.prepareStatement(selectQuery);
+      prepStmt.setTimestamp(1, new Timestamp((new Date()).getTime()));
+      rs = prepStmt.executeQuery();
+
+      StringBuffer queryBuf = new StringBuffer();
+      queryBuf
+          .append("SELECT distinct instance FROM com.silverpeas.workflow.engine.instance.ProcessInstanceImpl instance");
+      queryBuf.append(" WHERE instanceId IN LIST(");
+
+      while (rs.next()) {
+        String instanceId = rs.getString(1);
+        queryBuf.append("\"");
+        queryBuf.append(instanceId);
+        queryBuf.append("\"");
+        queryBuf.append(" ,");
+      }
+      queryBuf.append(" \"-1\")");
+
+      query = db.getOQLQuery(queryBuf.toString());
+
+      // Execute the query
+      try {
+        results = query.execute(org.exolab.castor.jdo.Database.ReadOnly);
+
+        // get the instance if any
+        while (results.hasMore()) {
+          ProcessInstance instance = (ProcessInstance) results.next();
+          instances.add(instance);
+        }
+      } catch (Exception ex) {
+        SilverTrace.warn("workflowEngine", "ProcessInstanceManagerImpl.getTimeOutProcessInstances",
+            "workflowEngine.EX_PROBLEM_GETTING_INSTANCES", ex);
+      }
+
+      db.commit();
+
+      return (ProcessInstance[]) instances.toArray(new ProcessInstance[0]);
+    } catch (SQLException se) {
+      throw new WorkflowException(
+          "ProcessInstanceManagerImpl.getTimeOutProcessInstances",
+          "EX_ERR_CASTOR_GET_TIMEOUT_INSTANCES", "sql query : " + selectQuery,
+          se);
+    } catch (PersistenceException pe) {
+      throw new WorkflowException(
+          "ProcessInstanceManagerImpl.getTimeOutProcessInstances",
+          "EX_ERR_CASTOR_GET_TIMEOUT_INSTANCES", pe);
+    } finally {
+      WorkflowJDOManager.closeDatabase(db);
+
+      try {
+        DBUtil.close(rs, prepStmt);
+        if (con != null)
+          con.close();
+      } catch (SQLException se) {
+        SilverTrace.error("workflowEngine",
+            "ProcessInstanceManagerImpl.getTimeOutProcessInstances",
+            "root.EX_RESOURCE_CLOSE_FAILED", se);
+      }
+    }
+  }  
+  
 }

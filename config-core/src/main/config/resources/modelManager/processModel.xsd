@@ -267,7 +267,7 @@
 				<xs:element ref="relatedUser" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="userInRole" minOccurs="0" maxOccurs="unbounded"/> <!-- plusieurs possible -->
 			</xs:sequence>
-			<xs:attribute name="role" type="xs:IDREF"/>
+			<xs:attribute name="role" type="xs:string" />
 		</xs:complexType>
 	</xs:element>
 	<!-- ...................................................................... DEFINITION DES UTILISATEURS IMPACTES -->
@@ -277,7 +277,7 @@
 				<xs:element ref="relatedUser" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="userInRole" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name="role" type="xs:IDREF"/>
+			<xs:attribute name="role" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 	<!-- ...................................................................... DEFINITION D'UNE PRESENTATION -->

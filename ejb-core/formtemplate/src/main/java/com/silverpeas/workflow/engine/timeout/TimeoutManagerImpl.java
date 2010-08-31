@@ -24,7 +24,7 @@
 
 package com.silverpeas.workflow.engine.timeout;
 
-import java.util.Vector;
+import java.util.List;
 import java.util.Date;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -38,6 +38,7 @@ import com.silverpeas.workflow.api.model.*;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
 import com.silverpeas.workflow.api.instance.HistoryStep;
 import com.silverpeas.workflow.engine.event.TimeoutEventImpl;
+import com.silverpeas.workflow.engine.instance.ActionAndState;
 import com.silverpeas.workflow.engine.WorkflowEngineThread;
 
 /**
@@ -55,8 +56,13 @@ public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventHandler
     try {
       ResourceLocator settings = new ResourceLocator(
           "com.silverpeas.workflow.engine.schedulerSettings", "");
+      List jobList = SimpleScheduler.getJobList(this);
+
+      if (jobList.size() != 0) {
         // Remove previous scheduled job
-      SimpleScheduler.removeJob(this, TIMEOUT_MANAGER_JOB_NAME);
+        SimpleScheduler.removeJob(this, TIMEOUT_MANAGER_JOB_NAME);
+      }
+
       // Create new scheduled job
       String cronString = settings.getString("timeoutSchedule");
       SimpleScheduler.getJob(this, TIMEOUT_MANAGER_JOB_NAME, cronString, this,
@@ -106,69 +112,26 @@ public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventHandler
 
     try {
       // parse all "process manager" peas
-      String[] peasIds = Workflow.getProcessModelManager().getAllPeasIds();
-      SilverTrace.debug("workflowEngine",
-          "TimeoutManagerImpl.doTimeoutManagement", "", "peas Id found : '"
-          + peasIds.length);
-      for (int i = 0; i < peasIds.length; i++) {
-        // load abstract model
-        ProcessModel model = null;
+      ProcessInstance[] instances = Workflow.getProcessInstanceManager().getTimeOutProcessInstances();
+      Date now = new Date();
+
+      for (int k = 0; k < instances.length; k++) {
         try {
-          model = Workflow.getProcessModelManager().getProcessModel(peasIds[i]);
-        } catch (WorkflowException we) {
-          continue;
+          ActionAndState timeoutActionAndState = instances[k].getTimeOutAction(now);
+          TimeoutEvent event = new TimeoutEventImpl(instances[k],
+              timeoutActionAndState.getState(), timeoutActionAndState.getAction());
+          WorkflowEngineThread.addTimeoutRequest(event);
+          SilverTrace.info("workflowEngine",
+              "TimeoutManagerImpl.doTimeoutManagement",
+              "workflowEngine.WARN_TIMEOUT_DETECTED", "instance Id : '"
+              + instances[k].getInstanceId() + "' state : '"
+              + timeoutActionAndState.getState().getName());
         }
-
-        // parse all states
-        State[] states = model.getStates();
-        SilverTrace.debug("workflowEngine",
-            "TimeoutManagerImpl.doTimeoutManagement", "", states.length
-            + " states found in model" + model.getName());
-        for (int j = 0; j < states.length; j++) {
-          // Check if the state has a defined timeout action
-          Action timeoutAction = states[j].getTimeoutAction();
-          int timeoutInterval = states[j].getTimeoutInterval();
-          states[j].getTimeoutNotifyAdmin();
-
-          try {
-            if (timeoutAction != null && timeoutInterval != -1) {
-              // parse all instances with this state activated
-              ProcessInstance[] instances = Workflow
-                  .getProcessInstanceManager().getProcessInstancesInState(
-                  peasIds[i], states[j]);
-              SilverTrace.debug("workflowEngine",
-                  "TimeoutManagerImpl.doTimeoutManagement", "",
-                  "instances found : '" + instances.length);
-              for (int k = 0; k < instances.length; k++) {
-                HistoryStep step = instances[k].getMostRecentStep(states[j]);
-                if (step != null) {
-                  Date today = new Date();
-                  Date actionDate = step.getActionDate();
-
-                  long interval = today.getTime() - actionDate.getTime();
-                  long timeout = timeoutInterval * 60 * 1000;
-
-                  SilverTrace.debug("workflowEngine",
-                      "TimeoutManagerImpl.doTimeoutManagement", "",
-                      "Action if interval=" + interval + "> timeout="+timeout);
-                  if (interval > timeout) {
-                    TimeoutEvent event = new TimeoutEventImpl(instances[k],
-                        states[j], timeoutAction);
-                    WorkflowEngineThread.addTimeoutRequest(event);
-                    SilverTrace.warn("workflowEngine",
-                        "TimeoutManagerImpl.doTimeoutManagement",
-                        "workflowEngine.WARN_TIMEOUT_DETECTED", "model Id : '"
-                        + peasIds[i] + "' instance Id : '"
-                        + instances[k].getInstanceId() + "' state : '"
-                        + states[j].getName() + "interval : "
-                        + (interval / (60 * 1000)));
-                  }
-                }
-              }
-            }
-          } catch (WorkflowException we) {
-            continue;
-          }
+        catch (WorkflowException e) {
+          SilverTrace.error("workflowEngine",
+              "TimeoutManagerImpl.doTimeoutManagement",
+              "workflowEngine.EX_ERR_TIMEOUT_MANAGEMENT", e);
+          continue;
         }
       }
     } catch (Exception e) {

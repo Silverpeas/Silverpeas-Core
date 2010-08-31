@@ -211,6 +211,11 @@
             create-method="createAllowedActions">
             <bind-xml name="allowedActions" node="element" />
         </field>
+        <field name="timeoutActions" type="com.silverpeas.workflow.api.model.TimeOutActions"
+            get-method="getTimeOutActionsEx" set-method="setTimeOutActions" 
+            create-method="createTimeOutActions">
+            <bind-xml name="timeOutActions" node="element" />
+        </field>
     </class>
     
     <!-- Class implements StateSetter -->
@@ -262,6 +267,28 @@
             collection="vector" get-method="iterateAllowedAction" set-method="addAllowedAction"
             create-method="createAllowedAction">
             <bind-xml name="allow" node="element" />
+        </field>
+    </class>
+
+    <class name="com.silverpeas.workflow.engine.model.TimeOutActionsImpl">
+        <field name="timeOutActionList" type="com.silverpeas.workflow.api.model.TimeOutAction"
+            collection="vector" get-method="iterateTimeOutAction" set-method="addTimeOutAction"
+            create-method="createTimeOutAction">
+            <bind-xml name="timeOutAction" node="element" />
+        </field>
+    </class>
+
+    <!-- Class implements TimeOutAction -->
+    <class name="com.silverpeas.workflow.engine.model.TimeOutActionImpl">
+        <field name="action" type="com.silverpeas.workflow.api.model.Action">
+            <bind-xml name="action" node="attribute" reference="true" />
+        </field>
+        <field name="delay" type="string">
+            <bind-xml name="delay" node="attribute" />
+        </field>
+        <field name="order" type="string" get-method="castor_getOrder" 
+               set-method="castor_setOrder">
+            <bind-xml name="order" node="attribute" />
         </field>
     </class>
 

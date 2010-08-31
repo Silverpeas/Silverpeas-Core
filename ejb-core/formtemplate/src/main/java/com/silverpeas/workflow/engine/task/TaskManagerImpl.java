@@ -204,7 +204,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
         notifMetaData.addUserRecipient(userId);
         String link = "/RprocessManager/" + componentId
             + "/searchResult?Type=ProcessInstance&Id="
-            + task.getProcessInstance().getInstanceId();
+            + task.getProcessInstance().getInstanceId() + "&role=" + task.getUserRoleName();
         notifMetaData.setLink(link);
         notifSender.notifyUser(notifMetaData);
       } catch (WorkflowException e) {

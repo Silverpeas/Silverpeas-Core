@@ -24,6 +24,7 @@
 
 package com.silverpeas.workflow.engine.task;
 
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.workflow.api.TaskManager;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.instance.Actor;
@@ -34,6 +35,7 @@ import com.silverpeas.workflow.api.model.ProcessModel;
 import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.workflow.api.task.Task;
 import com.silverpeas.workflow.api.user.User;
+import com.silverpeas.workflow.engine.model.StateImpl;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
@@ -89,7 +91,14 @@ abstract public class AbstractTaskManager implements TaskManager {
           .getSentQuestions(stateNames[i]);
       Question[] relevantQuestions = processInstance
           .getRelevantQuestions(stateNames[i]);
-      state = model.getState(stateNames[i]);
+      
+      if (StringUtil.isDefined(stateNames[i])) {
+        state = model.getState(stateNames[i]);
+      }
+      else {
+        state = new StateImpl("");
+      }
+      
       if (state == null) {
         throw new WorkflowException("TaskManager.getTasks",
             "workflowEngine.EXP_UNKNOWN_STATE");

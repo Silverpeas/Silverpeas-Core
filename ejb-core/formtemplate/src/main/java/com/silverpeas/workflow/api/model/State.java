@@ -137,12 +137,34 @@ public interface State {
   public AllowedActions createAllowedActions();
 
   /**
+   * Create and return an object implementing TimeOutActions
+   */
+  public TimeOutActions createTimeOutActions();
+  
+  /**
+   * Get timeout actions for this state
+   * @return timeout actions
+   */
+  public TimeOutAction[] getTimeOutActions();
+
+  /**
    * Get actions available in this state
    * @return allowedActions allowed actions
    */
   public Action[] getAllowedActions();
 
   public Action[] getFilteredActions();
+
+  /**
+   * Get all the timeout actions
+   * @return an object containing the collection of the timeout actions
+   */
+  public TimeOutActions getTimeOutActionsEx();
+
+  /**
+   * Set the timeout actions
+   */
+  public void setTimeOutActions(TimeOutActions timeOutActions);
 
   /**
    * Get all the allowed actions

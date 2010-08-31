@@ -182,6 +182,9 @@ public class LockingUser extends AbstractReferrableObject {
    * @return The unique key.
    */
   public String getKey() {
-    return this.getState();
+    if (this.getState() == null) 
+      return "";
+    else
+      return this.getState();
   }
 }

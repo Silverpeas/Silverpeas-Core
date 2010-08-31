@@ -24,6 +24,8 @@
 
 package com.silverpeas.workflow.engine.instance;
 
+import java.util.Date;
+
 import com.silverpeas.workflow.engine.*;
 
 /**
@@ -59,11 +61,18 @@ public class ActiveState extends AbstractReferrableObject {
   private boolean backStatus = false;
 
   /**
-   * Flag that indicates if this active state is there for a long long time
+   * Flag that indicates if this active state is there for a long long time 
+   * (As several timeout can be defined in chain, timeoutstatus numeric value N represent the Nth timeout
    * @field-name timeoutStatus
    */
-  private boolean timeoutStatus = false;
+  private int timeoutStatus = 0;
 
+  /**
+   * Date at which current state will be in timeout
+   * @field-name timeoutDate
+   */
+  private Date timeoutDate = null;
+  
   /**
    * Default Constructor
    */
@@ -157,27 +166,32 @@ public class ActiveState extends AbstractReferrableObject {
    * Get the timeout status of this active state
    * @return true if this an active state is there for a long long time
    */
-  public boolean getTimeoutStatus() {
+  public int getTimeoutStatus() {
     return timeoutStatus;
   }
 
-  public int getTimeoutStatusCastor() {
-    if (getTimeoutStatus())
-      return 1;
-    else
-      return 0;
+  /**
+   * Set the date at which current state will be in timeout
+   * @param timeoutDate the timeout Date to set
+   */
+  public void setTimeoutDate(Date timeoutDate) {
+    this.timeoutDate = timeoutDate;
   }
 
+  /**
+   * Get the date at which current state will be in timeout
+   * @return the timeout Date
+   */
+  public Date getTimeoutDate() {
+    return timeoutDate;
+  }
+  
   /**
    * Set the timeout status of this active state
    * @param timeoutStatus true if this active state is there for a long long time
    */
-  public void setTimeoutStatus(boolean timeoutStatus) {
+  public void setTimeoutStatus(int timeoutStatus) {
     this.timeoutStatus = timeoutStatus;
-  }
-
-  public void setTimeoutStatusCastor(int timeoutStatus) {
-    this.timeoutStatus = (timeoutStatus == 1);
   }
 
   /**
@@ -187,4 +201,5 @@ public class ActiveState extends AbstractReferrableObject {
   public String getKey() {
     return this.getState();
   }
+
 }

@@ -83,4 +83,11 @@ public interface ProcessInstanceManager {
    */
   public Actor createActor(User user, String roleName, State state);
 
+  /**
+   * Get the list of process instances for which timeout date is over
+   * @return an array of ProcessInstance objects
+   * @throws WorkflowException 
+   */
+  public ProcessInstance[] getTimeOutProcessInstances() throws WorkflowException;
+
 }
