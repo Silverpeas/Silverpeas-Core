@@ -133,7 +133,7 @@ public class PublicationTemplateManager {
               "externalId=" + externalId + ", templateFileName=" + templateFileName, e);
         }
       }
-      thePubTemplate = loadPublicationTemplate(templateFileName);
+      thePubTemplate = loadPublicationTemplate(currentTemplateFileName);
       thePubTemplate.setExternalId(externalId);
       pubTemplate.put(externalId, thePubTemplate);
     }
@@ -183,7 +183,7 @@ public class PublicationTemplateManager {
       // Unmarshall the process model
       publicationTemplate =
           (PublicationTemplateImpl) unmar.unmarshal(new InputSource(
-          new FileInputStream(xmlFilePath)));
+              new FileInputStream(xmlFilePath)));
       publicationTemplate.setFileName(xmlFileName);
 
       templates.put(xmlFileName, publicationTemplate);
@@ -196,7 +196,7 @@ public class PublicationTemplateManager {
     } catch (MarshalException me) {
       throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
           "form.EX_ERR_CASTOR_UNMARSHALL_PUBLICATION_TEMPLATE", "Publication Template FileName : " +
-          xmlFileName, me);
+              xmlFileName, me);
     } catch (ValidationException ve) {
       throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
           "form.EX_ERR_CASTOR_INVALID_XML_PUBLICATION_TEMPLATE",
@@ -204,7 +204,7 @@ public class PublicationTemplateManager {
     } catch (IOException ioe) {
       throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
           "form.EX_ERR_CASTOR_LOAD_PUBLICATION_TEMPLATE", "Publication Template FileName : " +
-          xmlFileName, ioe);
+              xmlFileName, ioe);
     }
   }
 
@@ -249,7 +249,7 @@ public class PublicationTemplateManager {
     } catch (MarshalException me) {
       throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
           "form.EX_ERR_CASTOR_UNMARSHALL_PUBLICATION_TEMPLATE", "Publication Template FileName : " +
-          xmlFileName, me);
+              xmlFileName, me);
     } catch (ValidationException ve) {
       throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
           "form.EX_ERR_CASTOR_INVALID_XML_PUBLICATION_TEMPLATE",
@@ -257,7 +257,7 @@ public class PublicationTemplateManager {
     } catch (IOException ioe) {
       throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
           "form.EX_ERR_CASTOR_LOAD_PUBLICATION_TEMPLATE", "Publication Template FileName : " +
-          xmlFileName, ioe);
+              xmlFileName, ioe);
     } finally {
       if (writer != null) {
         try {
@@ -300,7 +300,7 @@ public class PublicationTemplateManager {
         if ("xml".equalsIgnoreCase(extension)) {
           PublicationTemplate template =
               loadPublicationTemplate(fileName.substring(fileName.lastIndexOf(File.separator) + 1,
-              fileName.length()));
+                  fileName.length()));
           if (onlyVisibles) {
             if (template.isVisible()) {
               templates.add(template);
