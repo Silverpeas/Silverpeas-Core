@@ -45,6 +45,8 @@ public class CSVReader extends SilverpeasSettings {
   protected String[] m_colNames;
   protected String[] m_colTypes;
   protected String[] m_colDefaultValues;
+  protected String[] m_colMandatory;
+  
   protected String m_separator;
   protected ResourceLocator m_utilMessages;
 
@@ -71,6 +73,8 @@ public class CSVReader extends SilverpeasSettings {
     m_colTypes = readStringArray(rs, rootPropertyName, ".Type", m_nbCols);
     m_colDefaultValues = readStringArray(rs, rootPropertyName, ".Default",
         m_nbCols);
+    m_colMandatory = readStringArray(rs, rootPropertyName, ".Mandatory",
+        m_nbCols);
     m_separator = separator;
   }
 
@@ -83,6 +87,8 @@ public class CSVReader extends SilverpeasSettings {
     m_nbCols = m_colNames.length;
     m_colTypes = readStringArray(rs, rootPropertyName, ".Type", m_nbCols);
     m_colDefaultValues = readStringArray(rs, rootPropertyName, ".Default",
+        m_nbCols);
+    m_colMandatory = readStringArray(rs, rootPropertyName, ".Mandatory",
         m_nbCols);
     m_separator = separator;
 
@@ -172,7 +178,21 @@ public class CSVReader extends SilverpeasSettings {
       }
       try {
         if ((theValue == null) || (theValue.length() <= 0)) {
-          theValue = m_colDefaultValues[i];
+          if (Boolean.parseBoolean(m_colMandatory[i]))
+          {
+            listErrors.append(m_utilMessages.getString("util.ligne") + " = "
+                + Integer.toString(lineNumber) + ", ");
+            listErrors.append(m_utilMessages.getString("util.colonne") + " = "
+                + Integer.toString(i + 1) + ", ");
+            listErrors
+                .append(m_utilMessages.getString("util.errorMandatory")
+                + m_utilMessages.getString("util.valeur") + " = " + theValue
+                + ", ");
+            listErrors.append(m_utilMessages.getString("util.type") + " = "
+                + m_colTypes[i] + "<BR>");
+          }
+          else
+            theValue = m_colDefaultValues[i];
         }
         if (Variant.isArrayType(m_colTypes[i])) {
           valret[i] = new Variant(parseArrayValue(theValue), m_colTypes[i]);
@@ -238,9 +258,23 @@ public class CSVReader extends SilverpeasSettings {
       }
       try {
         valret[j] = new Variant(theValue, m_specificColTypes[i]);
-
         SilverTrace.info("util", "CSVReader.parseLine()",
             "root.MSG_PARAM_VALUE", "Token=" + theValue);
+        if ((theValue == null) || (theValue.length() <= 0)) {
+          if (Boolean.parseBoolean(m_colMandatory[i]))
+          {
+            listErrors.append(m_utilMessages.getString("util.ligne") + " = "
+                + Integer.toString(lineNumber) + ", ");
+            listErrors.append(m_utilMessages.getString("util.colonne") + " = "
+                + Integer.toString(i + 1) + ", ");
+            listErrors
+                .append(m_utilMessages.getString("util.errorMandatory")
+                + m_utilMessages.getString("util.valeur") + " = " + theValue
+                + ", ");
+            listErrors.append(m_utilMessages.getString("util.type") + " = "
+                + m_colTypes[i] + "<BR>");
+          }
+        }
       } catch (UtilException e) {
         listErrors.append(m_utilMessages.getString("util.ligne") + " = "
             + Integer.toString(lineNumber) + ", ");
@@ -352,6 +386,10 @@ public class CSVReader extends SilverpeasSettings {
    */
   public String[] getM_colDefaultValues() {
     return m_colDefaultValues;
+  }
+
+  public String[] getM_colMandatory() {
+    return m_colMandatory;
   }
 
   /**
