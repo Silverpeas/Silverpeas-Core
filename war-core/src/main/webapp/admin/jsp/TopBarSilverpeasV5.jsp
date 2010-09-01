@@ -36,6 +36,12 @@ ResourceLocator settings 		= gef.getFavoriteLookSettings();
 String currentComponentId 	= helper.getComponentId();
 String currentSpaceId		= helper.getSpaceId();
 
+boolean goToFavoriteSpaceOnHomeLink = settings.getBoolean("home.target.favoriteSpace", false);
+String goToHome = "frameBottomSilverpeasV5.jsp?FromTopBar=1";
+if (goToFavoriteSpaceOnHomeLink) {
+  goToHome += "&SpaceId="+m_MainSessionCtrl.getFavoriteSpace();
+}
+
 List topItems = helper.getTopItems();
 
 String homePage = new String (settings.getString("defaultHomepage"));
@@ -85,7 +91,7 @@ body {
 <script type="text/javascript">
 function goToHome()
 {
-    top.bottomFrame.location.href = "frameBottomSilverpeasV5.jsp?FromTopBar=1";
+	top.bottomFrame.location.href = "<%=goToHome%>";
 }
 
 function displayPDCFrame()

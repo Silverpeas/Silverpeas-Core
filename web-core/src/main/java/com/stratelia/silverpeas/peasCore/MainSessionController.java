@@ -330,20 +330,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
           }
         }
         if (!allowed) {
-          String[] allRootSpaces = m_Admin.getAllRootSpaceIds();
-          userSpace = null;
-          // the user is not allowed to access to this space or this space no
-          // longer exists or the default space is set to null
-          // we must change this space in Personalization
-          for (int i = 0; i < availableSpaces.length && userSpace == null; i++) {
-            for (int j = 0; j < allRootSpaces.length && userSpace == null; j++) {
-              if (allRootSpaces[j].equals(availableSpaces[i])) {
-                // the user is allowed to access to this space
-                userSpace = allRootSpaces[j];
-              }
-            }
-          }
-          getPersonalization().setPersonalWorkSpace(userSpace);
+          getPersonalization().setPersonalWorkSpace(null);
         }
       } catch (NoSuchObjectException nsoe) {
         initPersonalization();

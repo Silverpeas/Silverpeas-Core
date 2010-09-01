@@ -29,6 +29,8 @@ package com.stratelia.webactiv.personalization.control.ejb;
 
 import java.sql.*;
 import java.util.*;
+
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.personalization.model.PersonalizeDetail;
 import com.stratelia.silverpeas.silvertrace.*;
 
@@ -193,11 +195,15 @@ public class PersonalizationDAO {
   public static void setPersonalWorkSpace(Connection con, String userId,
       String spaceId) throws SQLException {
     String updateStatement = "update " + PERSONALTABLENAME
-        + " set personalWSpace = ? " + " where id = ? ";
+        + " set personalWSpace = ? where id = ? ";
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(updateStatement);
-      prepStmt.setString(1, spaceId);
+      if (StringUtil.isDefined(spaceId)) {
+        prepStmt.setString(1, spaceId);
+      } else {
+        prepStmt.setNull(1, Types.VARCHAR);
+      }
       prepStmt.setString(2, userId);
       prepStmt.executeUpdate();
     } finally {
