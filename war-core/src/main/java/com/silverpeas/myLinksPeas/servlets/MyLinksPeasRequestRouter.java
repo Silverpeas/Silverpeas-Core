@@ -27,10 +27,10 @@ package com.silverpeas.myLinksPeas.servlets;
 import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpUtils;
 
 import com.silverpeas.myLinks.model.LinkDetail;
 import com.silverpeas.myLinksPeas.control.MyLinksPeasSessionController;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -39,6 +39,7 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
+
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
@@ -106,7 +107,7 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
 
         destination = getDestination("ViewLinks", myLinksSC, request);
       } else if (function.equals("ViewLinks")) {
-        Collection links = null;
+        Collection<LinkDetail> links = null;
         int scope = myLinksSC.getScope();
         switch (scope) {
           case MyLinksPeasSessionController.SCOPE_COMPONENT:
@@ -189,21 +190,28 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
     String description = request.getParameter("Description");
     String url = request.getParameter("Url");
     // supprimer le context en début d'url
-    String sRequestURL = HttpUtils.getRequestURL(request).toString();
-    String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length()
-        - request.getRequestURI().length());
+    String sRequestURL = request.getRequestURL().toString();
+    String m_sAbsolute =
+        sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
     String urlServeur = m_sAbsolute;
-    if (url.startsWith(urlServeur))
+    if (url.startsWith(urlServeur)) {
       url = url.substring(urlServeur.length(), url.length());
+    }
     String context = URLManager.getApplicationURL();
-    if (url.startsWith(context))
+    if (url.startsWith(context)) {
       url = url.substring(context.length(), url.length());
+    }
     boolean visible = false;
-    if ("true".equals(request.getParameter("Visible")))
+    if ("true".equals(request.getParameter("Visible"))) {
       visible = true;
+    }
     boolean popup = false;
-    if ("true".equals(request.getParameter("Popup")))
+    if ("true".equals(request.getParameter("Popup"))) {
       popup = true;
+    }
+    if (!StringUtil.isDefined(name)) {
+      name = url;
+    }
     /*
      * String instanceId = request.getParameter("InstanceId"); if (instanceId != null) return new
      * LinkDetail(name, description,url,visible,popup, instanceId); else

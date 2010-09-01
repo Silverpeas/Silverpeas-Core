@@ -63,28 +63,25 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
         "com.silverpeas.mylinks.settings.myLinksIcons");
   }
 
-  public Collection getAllLinksByUser() {
-    Collection links = null;
+  public Collection<LinkDetail> getAllLinksByUser() {
+    Collection<LinkDetail> links = null;
     try {
       links = getMyLinksBm().getAllLinksByUser(getUserId());
-      SilverTrace.debug("myLinks",
-          "MyLinksPeasSessionController.getAllLinksByUser()",
+      SilverTrace.debug("myLinks", "MyLinksPeasSessionController.getAllLinksByUser()",
           "root.MSG_GEN_PARAM_VALUE", "nombre de liens = " + links.size());
     } catch (Exception e) {
       // traitement des exceptions
-      throw new MyLinksRuntimeException(
-          "MyLinksPeasSessionController.getAllLinksByUser",
+      throw new MyLinksRuntimeException("MyLinksPeasSessionController.getAllLinksByUser",
           SilverpeasException.ERROR, "root.EX_RECORD_NOT_FOUND", e);
     }
     return links;
   }
 
-  public Collection getAllLinksByInstance() {
-    Collection links = null;
+  public Collection<LinkDetail> getAllLinksByInstance() {
+    Collection<LinkDetail> links = null;
     try {
       links = getMyLinksBm().getAllLinksByInstance(instanceId);
-      SilverTrace.debug("myLinks",
-          "MyLinksPeasSessionController.getAllLinksByInstance()",
+      SilverTrace.debug("myLinks", "MyLinksPeasSessionController.getAllLinksByInstance()",
           "root.MSG_GEN_PARAM_VALUE", "nombre de liens = " + links.size()
           + " instanceId = " + instanceId);
     } catch (Exception e) {
@@ -96,17 +93,15 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
     return links;
   }
 
-  public Collection getAllLinksByObject() {
-    Collection links = null;
+  public Collection<LinkDetail> getAllLinksByObject() {
+    Collection<LinkDetail> links = null;
     try {
       links = getMyLinksBm().getAllLinksByObject(instanceId, objectId);
-      SilverTrace.debug("myLinks",
-          "MyLinksPeasSessionController.getAllLinksByObject()",
+      SilverTrace.debug("myLinks", "MyLinksPeasSessionController.getAllLinksByObject()",
           "root.MSG_GEN_PARAM_VALUE", "nombre de liens = " + links.size());
     } catch (Exception e) {
       // traitement des exceptions
-      throw new MyLinksRuntimeException(
-          "MyLinksPeasSessionController.getAllLinksByObject",
+      throw new MyLinksRuntimeException("MyLinksPeasSessionController.getAllLinksByObject",
           SilverpeasException.ERROR, "root.EX_RECORD_NOT_FOUND", e);
     }
     return links;

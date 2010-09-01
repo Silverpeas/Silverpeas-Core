@@ -24,22 +24,21 @@
 
 --%>
 
-<%@ include file="check.jsp" %>
-<% 
-Collection 	links 		= (Collection) request.getAttribute("Links");
-String 		url			= (String) request.getAttribute("UrlReturn");
-String		instanceId	= (String) request.getAttribute("InstanceId");
-
+<%@ include file="check.jsp"%>
+<%
+  Collection links = (Collection) request.getAttribute("Links");
+  String url = (String) request.getAttribute("UrlReturn");
+  String instanceId = (String) request.getAttribute("InstanceId");
 %>
+<%@page import="com.silverpeas.util.StringUtil"%>
 
 <html>
 
 <head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel />
 
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript"
+	src="<%=m_context%>/util/javaScript/animation.js"></script>
 
 <script language="javascript">
 
@@ -111,82 +110,90 @@ function areYouSure()
 
 </head>
 
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5"
+	marginheight="5">
 
 <form name="readForm" action="DeleteLinks" method="POST">
-<input type="hidden" name="mode">
+  <input type="hidden" name="mode"> 
 <%
-	String bBar = resource.getString("myLinks.links");
-	if (instanceId != null)
-		bBar = resource.getString("myLinks.linksByComponent");
-	browseBar.setComponentName(bBar);
-	
-	operationPane.addOperation(resource.getIcon("myLinks.addLink"),resource.getString("myLinks.addLink"),"javaScript:addLink()");
+   String bBar = resource.getString("myLinks.links");
+   if (instanceId != null)
+     bBar = resource.getString("myLinks.linksByComponent");
+   browseBar.setComponentName(bBar);
 
-	operationPane.addOperation(resource.getIcon("myLinks.deleteLinks"),resource.getString("myLinks.deleteLinks"),"javaScript:deleteSelectLinksConfirm()");
-	
-	ButtonPane buttonPane = gef.getButtonPane();
-	Button returnButton   = (Button) gef.getFormButton(resource.getString("myLinks.retour"), url, false);
+   operationPane.addOperation(resource.getIcon("myLinks.addLink"), resource.getString("myLinks.addLink"), "javaScript:addLink()");
 
-	out.println(window.printBefore());
-    out.println(frame.printBefore());
+   operationPane.addOperation(resource.getIcon("myLinks.deleteLinks"), resource
+       .getString("myLinks.deleteLinks"), "javaScript:deleteSelectLinksConfirm()");
 
-	ArrayPane arrayPane = gef.getArrayPane("linkList", "ViewLinks", request, session);
-	arrayPane.addArrayColumn(resource.getString("GML.nom"));
-	arrayPane.addArrayColumn(resource.getString("GML.description"));
-	ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("myLinks.operation"));
-		columnOp.setSortable(false);
-	
-	// remplissage de l'ArrayPane avec les liens
-	if ((links != null) && (links.size() != 0)) 
-	{
-		Iterator it = (Iterator) links.iterator();
-		while (it.hasNext()) 
-		{
-			ArrayLine line = arrayPane.addArrayLine();
-			LinkDetail link = (LinkDetail) it.next();
-			int linkId = link.getLinkId();
-			String lien = link.getUrl();
-			String name = link.getName();
-			if (name.equals(""))
-				name = lien;
-			// ajouter le context devant le lien si n�c�ssaire
-			if (lien.indexOf("://") == -1)
-			{
-				lien = m_context + lien;
-			}
-			ArrayCellLink monLien = line.addArrayCellLink(name,lien);
-			if (link.isPopup())
-				monLien.setTarget("_blank");
-			
-			line.addArrayCellText(link.getDescription());
-			
-			IconPane iconPane = gef.getIconPane();
-         	Icon updateIcon = iconPane.addIcon();
-          	updateIcon.setProperties(resource.getIcon("myLinks.update"), resource.getString("myLinks.updateLink") , "javaScript:onClick=editLink('"+ linkId + "')");
-        	line.addArrayCellText(updateIcon.print()+"&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"linkCheck\" value=\""+link.getLinkId()+"\">");
-		}
-	}
-			
-	out.println(arrayPane.print());
-	if (instanceId != null)
-	{
-   		buttonPane.addButton(returnButton);
-    	out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
-	}
-  	out.println(frame.printAfter());
-	out.println(window.printAfter());
-  %>
+   ButtonPane buttonPane = gef.getButtonPane();
+   Button returnButton =
+       (Button) gef.getFormButton(resource.getString("myLinks.retour"), url, false);
 
+   out.println(window.printBefore());
+   out.println(frame.printBefore());
+
+   ArrayPane arrayPane = gef.getArrayPane("linkList", "ViewLinks", request, session);
+   arrayPane.addArrayColumn(resource.getString("GML.nom"));
+   arrayPane.addArrayColumn(resource.getString("GML.description"));
+   ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("myLinks.operation"));
+   columnOp.setSortable(false);
+
+   // Fill ArrayPane with links
+   if ((links != null) && (links.size() != 0)) {
+     Iterator it = (Iterator) links.iterator();
+     while (it.hasNext()) {
+       ArrayLine line = arrayPane.addArrayLine();
+       LinkDetail link = (LinkDetail) it.next();
+       int linkId = link.getLinkId();
+       String lien = link.getUrl();
+       String name = link.getName();
+       String desc = link.getDescription();
+
+       if (!StringUtil.isDefined(name)) {
+         name = lien;
+       }
+       if (!StringUtil.isDefined(desc)) {
+         desc = "";
+       }
+       // Add context before link if needed
+       if (lien.indexOf("://") == -1) {
+         lien = m_context + lien;
+       }
+       ArrayCellLink monLien = line.addArrayCellLink(name, lien);
+       if (link.isPopup()) {
+         monLien.setTarget("_blank");
+       }
+
+       line.addArrayCellText(desc);
+
+       IconPane iconPane = gef.getIconPane();
+       Icon updateIcon = iconPane.addIcon();
+       updateIcon.setProperties(resource.getIcon("myLinks.update"), resource
+           .getString("myLinks.updateLink"), "javaScript:onClick=editLink('" + linkId + "')");
+       line.addArrayCellText(updateIcon.print() +
+           "&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"linkCheck\" value=\"" +
+           link.getLinkId() + "\">");
+     }
+   }
+
+   out.println(arrayPane.print());
+   if (instanceId != null) {
+     buttonPane.addButton(returnButton);
+     out.println("<BR><center>" + buttonPane.print() + "</center><BR>");
+   }
+   out.println(frame.printAfter());
+   out.println(window.printAfter());
+ %>
 </form>
-  
+
 <form name="linkForm" action="" Method="POST">
-	<input type="hidden" name="LinkId">
-	<input type="hidden" name="Name">
-	<input type="hidden" name="Description">
-	<input type="hidden" name="Url">
-	<input type="hidden" name="Visible">
-	<input type="hidden" name="Popup">
+  <input type="hidden" name="LinkId"> 
+  <input type="hidden" name="Name">
+  <input type="hidden" name="Description"> 
+  <input type="hidden" name="Url"> 
+  <input type="hidden" name="Visible"> 
+  <input type="hidden" name="Popup">
 </form>
 
 </body>

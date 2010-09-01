@@ -45,14 +45,14 @@ import com.stratelia.webactiv.util.exception.UtilException;
  */
 public class MyLinksBmEJB implements SessionBean {
 
-  public Collection getAllLinks(String userId) {
+  public Collection<LinkDetail> getAllLinks(String userId) {
     return getAllLinksByUser(userId);
   }
 
-  public Collection getAllLinksByUser(String userId) {
+  public Collection<LinkDetail> getAllLinksByUser(String userId) {
     Connection con = initCon();
     try {
-      Collection links = LinkDAO.getAllLinksByUser(con, userId);
+      Collection<LinkDetail> links = LinkDAO.getAllLinksByUser(con, userId);
       return links;
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksBmEJB.getAllLinksByUser()",
@@ -63,10 +63,10 @@ public class MyLinksBmEJB implements SessionBean {
     }
   }
 
-  public Collection getAllLinksByInstance(String instanceId) {
+  public Collection<LinkDetail> getAllLinksByInstance(String instanceId) {
     Connection con = initCon();
     try {
-      Collection links = LinkDAO.getAllLinksByInstance(con, instanceId);
+      Collection<LinkDetail> links = LinkDAO.getAllLinksByInstance(con, instanceId);
       return links;
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksBmEJB.getAllLinksByInstance()",
@@ -77,10 +77,10 @@ public class MyLinksBmEJB implements SessionBean {
     }
   }
 
-  public Collection getAllLinksByObject(String instanceId, String objectId) {
+  public Collection<LinkDetail> getAllLinksByObject(String instanceId, String objectId) {
     Connection con = initCon();
     try {
-      Collection links = LinkDAO.getAllLinksByObject(con, instanceId, objectId);
+      Collection<LinkDetail> links = LinkDAO.getAllLinksByObject(con, instanceId, objectId);
       return links;
     } catch (Exception e) {
       throw new MyLinksRuntimeException("MyLinksBmEJB.getAllLinksByObject()",

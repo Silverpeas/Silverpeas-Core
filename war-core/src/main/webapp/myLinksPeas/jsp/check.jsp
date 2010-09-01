@@ -66,6 +66,8 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="java.util.Iterator"%>
 <%@ page import="com.silverpeas.myLinks.model.LinkDetail"%>
 
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+
 <%
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 

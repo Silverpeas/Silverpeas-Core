@@ -27,11 +27,11 @@
 <%@ include file="check.jsp" %>
 
 <% 
-	// r�cup�ration des param�tres :
+	// Retrieve parameters
 	LinkDetail 	link			= (LinkDetail) request.getAttribute("Link");
 	Boolean		isVisibleB		= (Boolean) request.getAttribute("IsVisible");
 
-	// d�claration des variables :
+	// Variable declaration
 	boolean 	isVisible		= isVisibleB.booleanValue();
 	
 	int 		linkId 			= 0;
@@ -42,7 +42,7 @@
 	boolean 	popup			= false;
 	String		action 			= "CreateLink";
 	
-	// dans le cas d'une mise � jour, r�cup�ration des donn�es :
+	// Retrieve data if update existing link
 	if (link != null)
 	{
 		linkId 			= link.getLinkId();
@@ -55,7 +55,7 @@
 		popup			= link.isPopup();
 		action 			= "UpdateLink";
 	}
-	// d�claration des boutons
+	// Get buttons
 	Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
     Button cancelButton = (Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:window.close()", false);
 	

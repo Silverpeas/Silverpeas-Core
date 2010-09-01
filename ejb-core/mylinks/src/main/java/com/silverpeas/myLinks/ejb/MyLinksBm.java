@@ -35,14 +35,14 @@ import com.silverpeas.myLinks.model.LinkDetail;
  * @author
  */
 public interface MyLinksBm extends EJBObject {
-  public Collection getAllLinks(String userId) throws RemoteException;
+  public Collection<LinkDetail> getAllLinks(String userId) throws RemoteException;
 
-  public Collection getAllLinksByUser(String userId) throws RemoteException;
+  public Collection<LinkDetail> getAllLinksByUser(String userId) throws RemoteException;
 
-  public Collection getAllLinksByInstance(String instanceId)
+  public Collection<LinkDetail> getAllLinksByInstance(String instanceId)
       throws RemoteException;
 
-  public Collection getAllLinksByObject(String instanceId, String objectId)
+  public Collection<LinkDetail> getAllLinksByObject(String instanceId, String objectId)
       throws RemoteException;
 
   public void createLink(LinkDetail link) throws RemoteException;

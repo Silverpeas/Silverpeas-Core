@@ -29,17 +29,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 import com.silverpeas.myLinks.model.LinkDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 public class LinkDAO {
-  public static Collection getAllLinksByUser(Connection con, String userId)
+  public static List<LinkDetail> getAllLinksByUser(Connection con, String userId)
       throws SQLException {
     // récupérer toutes les liens d'un utilisateur
-    ArrayList listLink = null;
+    List<LinkDetail> listLink = null;
 
     String query =
         "select * from SB_MyLinks_Link where userId = ? and (instanceId IS NULL or instanceId = '') and (objectId IS NULL or objectId = '')";
@@ -49,7 +49,7 @@ public class LinkDAO {
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, userId);
       rs = prepStmt.executeQuery();
-      listLink = new ArrayList();
+      listLink = new ArrayList<LinkDetail>();
       while (rs.next()) {
         LinkDetail link = recupLink(rs);
         listLink.add(link);
@@ -61,10 +61,10 @@ public class LinkDAO {
     return listLink;
   }
 
-  public static Collection getAllLinksByInstance(Connection con,
+  public static List<LinkDetail> getAllLinksByInstance(Connection con,
       String instanceId) throws SQLException {
     // récupérer toutes les liens d'un utilisateur sur un composant
-    ArrayList listLink = null;
+    List<LinkDetail> listLink = null;
 
     String query = "select * from SB_MyLinks_Link where instanceId = ? ";
     PreparedStatement prepStmt = null;
@@ -73,7 +73,7 @@ public class LinkDAO {
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, instanceId);
       rs = prepStmt.executeQuery();
-      listLink = new ArrayList();
+      listLink = new ArrayList<LinkDetail>();
       while (rs.next()) {
         LinkDetail link = recupLink(rs);
         listLink.add(link);
@@ -85,10 +85,10 @@ public class LinkDAO {
     return listLink;
   }
 
-  public static Collection getAllLinksByObject(Connection con,
+  public static List<LinkDetail> getAllLinksByObject(Connection con,
       String instanceId, String objectId) throws SQLException {
     // récupérer toutes les liens d'un objet
-    ArrayList listLink = null;
+    List<LinkDetail> listLink = null;
 
     String query = "select * from SB_MyLinks_Link where instanceId = ? and objectId = ? ";
     PreparedStatement prepStmt = null;
@@ -98,7 +98,7 @@ public class LinkDAO {
       prepStmt.setString(1, instanceId);
       prepStmt.setString(2, objectId);
       rs = prepStmt.executeQuery();
-      listLink = new ArrayList();
+      listLink = new ArrayList<LinkDetail>();
       while (rs.next()) {
         LinkDetail link = recupLink(rs);
         listLink.add(link);
@@ -221,7 +221,7 @@ public class LinkDAO {
 
   private static LinkDetail recupLink(ResultSet rs) throws SQLException {
     LinkDetail link = new LinkDetail();
-    // recuperation des colonnes du resulSet et construction de l'objet link
+    // recuperation des colonnes du resulSet et construction de l'objet LinkDetail
     int linkId = rs.getInt(1);
     String name = rs.getString(2);
     String description = rs.getString(3);
