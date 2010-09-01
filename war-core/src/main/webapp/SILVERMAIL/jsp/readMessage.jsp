@@ -77,7 +77,7 @@
         }
     </script>
   </head>
-  <body marginwidth="5" marginheight="5" leftmargin="5" topmargin="5">
+  <body>
     <fmt:message key="silverMail" var="browseLabel" />
     <view:browseBar>
       <view:browseBarElt link="" label="${browseLabel}" />
@@ -85,52 +85,48 @@
     </view:browseBar>
     <view:window>
       <view:frame>
-        <center>
-          <table cellpadding="2" cellspacing="0" border="0" width="98%" class="intfdcolor">
-            <tr>
-              <td class="intfdcolor4" NOWRAP>
-                <form name="silvermailForm" Action="" Method="POST">
-                  <table cellpadding="5" cellspacing="0" border="0" width="100%">
-                    <tr>
-                      <td valign="baseline" align=left class="txtlibform"><fmt:message key="date" />:&nbsp;</td>
-                      <td align=left valign="baseline"><fmt:formatDate value="${msg.date}" pattern="dd/MM/yyyy HH:mm:ss" /></td>
-                    </tr>
-                    <tr>
-                      <td valign="baseline" align=left class="txtlibform"><fmt:message key="source" /> :&nbsp;</td>
-                      <td align=left valign="baseline"><c:out value="${msg.source}" /></td>
-                    </tr>
-                    <tr>
-                      <td valign="baseline" align=left  class="txtlibform"><fmt:message key="from" /> :&nbsp;</td>
-                      <td align=left valign="baseline"><c:out value="${msg.senderName}" /></td>
-                    </tr>
-                    <tr>
-                      <td valign="baseline" align=left  class="txtlibform"><fmt:message key="url" /> :&nbsp;</td>
-                      <td align=left valign="baseline">
-                        <c:if test="${!empty msg.url}">
-                          <fmt:message key="silvermail.link" bundle="${icons}" var="icon_url" />
-                          <a href="javaScript:goTo();"><img src="<c:url value="${icon_url}"/>" border="0"/></a>
-                          </c:if>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td valign="baseline" align=left  class="txtlibform"><fmt:message key="subject" /> :&nbsp;</td>
-                      <td align=left valign="baseline"><c:out value="${msg.subject}" /></td>
-                    </tr>
-                    <tr>
-                      <td valign="baseline" align=left  class="txtlibform"></td>
-                      <td align=left valign="baseline"><c:out value="${msg.body}" escapeXml="false" /></td>
-                    </tr>
-                  </table>
-                </form>
-              </td>
-            </tr>
-          </table><table cellpadding="2" cellspacing="0" border="0"><tr><td><img src="<c:url value="/util/icons/colorPix/1px.gif" />"/></td></tr></table>
+      <view:board>
+              <table cellpadding="5" cellspacing="0" border="0" width="100%">
+                <tr>
+                  <td class="txtlibform" nowrap="nowrap"><fmt:message key="date" /> :</td>
+                  <td><fmt:formatDate value="${msg.date}" pattern="dd/MM/yyyy HH:mm:ss" /></td>
+                </tr>
+                <tr>
+                  <td class="txtlibform" nowrap="nowrap"><fmt:message key="source" /> :</td>
+                  <td><c:out value="${msg.source}" /></td>
+                </tr>
+                <tr>
+                  <td class="txtlibform" nowrap="nowrap"><fmt:message key="from" /> :</td>
+                  <td><c:out value="${msg.senderName}" /></td>
+                </tr>
+                <tr>
+                  <td class="txtlibform" nowrap="nowrap"><fmt:message key="url" /> :</td>
+                  <td>
+                    <c:if test="${!empty msg.url}">
+                      <fmt:message key="silvermail.link" bundle="${icons}" var="icon_url" />
+                      <a href="javaScript:goTo();"><img src="<c:url value="${icon_url}"/>" border="0"/></a>
+                      </c:if>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="txtlibform" nowrap="nowrap"><fmt:message key="subject" /> :&nbsp;</td>
+                  <td><c:out value="${msg.subject}" /></td>
+                </tr>
+                <tr>
+                  <td class="txtlibform"></td>
+                  <td><c:out value="${msg.body}" escapeXml="false" /></td>
+                </tr>
+              </table>
+        </view:board>
+        <br/>
+        	<center>
+          <view:buttonPane>
                 <fmt:message var="closeLabel" key="close" />
+                <fmt:message var="deleteLabel" key="delete" />
                 <c:set var="deleteAction">javascript:onClick=deleteMessage(<c:out value="${sessionController.currentMessageId}"/>);</c:set>
-          <fmt:message var="deleteLabel" key="delete" />
-          <table cellpadding="2" cellspacing="0" border="0"><tr><td>
-                <view:button label="${deleteLabel}" action="${deleteAction}"/></td>
-              <td><view:button label="${closeLabel}" action="javascript:onClick=closeWindow();"/></td></tr></table>
+                <view:button label="${deleteLabel}" action="${deleteAction}"/>
+                <view:button label="${closeLabel}" action="javascript:onClick=closeWindow();"/>
+          </view:buttonPane>
         </center>
       </view:frame>
     </view:window>
