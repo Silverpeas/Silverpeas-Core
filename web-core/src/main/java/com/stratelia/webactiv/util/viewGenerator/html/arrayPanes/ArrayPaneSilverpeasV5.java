@@ -406,14 +406,6 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
       result.append("</td>");
       result.append("</tr>\n");
     }
-    if (getTitle() != null) {
-      result.append("<tr class=\"titleLine\">");
-      result.append("<td class=\"txttitrecol\" colspan=\"")
-          .append(columnsCount).append("\">");
-      result.append(getTitle());
-      result.append("</td>");
-      result.append("</tr>\n");
-    }
     result.append("<thead>\n");
     result.append("<tr>\n");
     if (m_CellsSpacing == 0) {
