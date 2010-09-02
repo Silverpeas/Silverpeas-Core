@@ -405,48 +405,52 @@
 
   <% if (contextualMenuEnabled) {%>
 
-    function checkout(id, webdav)
+    function checkout(id, webdav, edit, download)
     {
       if (id > 0) {
         $.get('<%=m_Context%>/Attachment', {Id:id,FileLanguage:'<%=contentLanguage%>',Action:'Checkout'},
         function(data){
-          if(data == 'ok') {
-          var oMenu = eval("oMenu"+id);
-          oMenu.getItem(3).cfg.setProperty("disabled", false);
-          oMenu.getItem(0).cfg.setProperty("disabled", true);
-          oMenu.getItem(1).cfg.setProperty("disabled", true);
-          if (!webdav)
-          {
-            oMenu.getItem(2).cfg.setProperty("disabled", true);
-          }
-          //disable delete
-  <% if (useXMLForm) {%>
-          oMenu.getItem(2,1).cfg.setProperty("disabled", true);
-  <% } else {%>
-          oMenu.getItem(1,1).cfg.setProperty("disabled", true);
-  <% }%>
-          $('#worker'+id).html("<%=attResources.getString("readOnly")%> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <%=attResources.getString("at")%> <%=DateUtil.getOutputDate(new Date(), language)%>");
-          $('#worker'+id).css({'visibility':'visible'});
-        }else{
-          window.location.href=window.location.href;
-        }});
+			if(data == 'ok') {
+          		var oMenu = eval("oMenu"+id);
+				oMenu.getItem(3).cfg.setProperty("disabled", false);
+		        oMenu.getItem(0).cfg.setProperty("disabled", true);
+		        oMenu.getItem(1).cfg.setProperty("disabled", true);
+          		if (!webdav)
+          		{
+            		oMenu.getItem(2).cfg.setProperty("disabled", true);
+          		}
+		        //disable delete
+				<% if (useXMLForm) {%>
+					oMenu.getItem(2,1).cfg.setProperty("disabled", true);
+				<% } else {%>
+				    oMenu.getItem(1,1).cfg.setProperty("disabled", true);
+				<% }%>
+				$('#worker'+id).html("<%=attResources.getString("readOnly")%> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <%=attResources.getString("at")%> <%=DateUtil.getOutputDate(new Date(), language)%>");
+          		$('#worker'+id).css({'visibility':'visible'});
+
+          		if (edit) {
+					var url = "<%=httpServerBase + m_Context%>/attachment/jsp/launch.jsp?documentUrl="+eval("webDav"+id);
+    				window.open(url,'_self');
+    			} else if (download) {
+    				var url = $('#url'+id).attr('href');
+    				window.open(url);
+    			}
+        	} else {
+        		alert("<%=attResources.getString("attachment.dialog.checkout.nok")%>");
+          		window.location.href=window.location.href;
+        	}
+        });
       }
     }
 
     function checkoutAndDownload(id, webdav)
     {
-      checkout(id, webdav);
-
-      var url = $('#url'+id).attr('href');
-      window.open(url);
+      checkout(id, webdav, false, true);
     }
 
     function checkoutAndEdit(id)
     {
-      checkout(id, true);
-
-      var url = "<%=httpServerBase + m_Context%>/attachment/jsp/launch.jsp?documentUrl="+eval("webDav"+id);
-      window.open(url,'_self');
+      checkout(id, true, true, false);
     }
 
     function checkin(id,webdav,forceRelease)

@@ -545,7 +545,7 @@ $(document).ready(function()
 
 <% if (contextualMenuEnabled) { %>
 
-function checkout(id, webdav)
+function checkout(id, webdav, edit, download)
 {
 	if (id > 0) {
 		$.get('<%=m_context%>/AjaxVersioning', {DocId:id,Action:'Checkout'}, 
@@ -564,10 +564,19 @@ function checkout(id, webdav)
 				
 				$('#worker'+id).html("<%=attResources.getString("lockedBy")%> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <%=attResources.getString("at")%> <%=DateUtil.getOutputDate(new Date(), language)%>");
 				$('#worker'+id).css({'visibility':'visible'});
+
+				if (edit) {
+					var url = "<%=httpServerBase+m_context%>/attachment/jsp/launch.jsp?documentUrl="+eval("webDav"+id);
+    				window.open(url,'_self');
+    			} else if (download) {
+    				var url = $('#url'+id).attr('href');
+    				window.open(url);
+    			}
 			}
 			else if (data == "alreadyCheckouted")
 			{
-				//do nothing
+				alert("<%=attResources.getString("versioning.dialog.checkout.nok")%>");
+          		window.location.href=window.location.href;
 			}
 			else
 			{
@@ -579,18 +588,12 @@ function checkout(id, webdav)
 
 function checkoutAndDownload(id, webdav)
 {
-	checkout(id, webdav);
-
-	var url = $('#url'+id).attr('href');
-	window.open(url);
+	checkout(id, webdav, false, true);
 }
 
 function checkoutAndEdit(id)
 {
-	checkout(id, true);
-
-	var url = "<%=httpServerBase+m_context%>/attachment/jsp/launch.jsp?documentUrl="+eval("webDav"+id);
-	window.open(url,'_self');
+	checkout(id, true, true, false);
 }
 
 function checkin(id, force) {
