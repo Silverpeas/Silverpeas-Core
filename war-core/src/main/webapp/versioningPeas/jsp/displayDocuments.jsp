@@ -237,6 +237,9 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 	String context 		= request.getParameter("Context");
 	String fromAlias	= request.getParameter("Alias");
 	String profile		= request.getParameter("Profile");
+	if (!StringUtil.isDefined(profile)) {
+	  profile = "user";
+	}
 	String nodeId		= request.getParameter("NodeId");
 	String versionningFileRightsMode = request.getParameter("VersionningFileRightsMode");
 	String s_topicRightsEnabled = request.getParameter("TopicRightsEnabled");
@@ -301,7 +304,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
     Document document;
     DocumentVersion document_version;
 	boolean attachmentsDisplayed = false;
-    if (iterator.hasNext() || (StringUtil.isDefined(profile) && !profile.equals("user"))) {
+    if (iterator.hasNext() || !profile.equals("user")) {
         Board		board	= gef.getBoard();
         out.println(board.printBefore());
         out.println("<table class=\"attachments\">");
@@ -314,7 +317,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
         	versioningSC.setEditingDocumentWithDefaultLists(document);
         	if (versioningSC.hasAccess(document, versioningSC.getUserId()))
 	        { 
-        		if (profile.equals("user"))
+        		if ("user".equals(profile))
         	  	{
 	        		document_version = versioning_util.getLastPublicVersion(document.getPk());
         	  	}
@@ -453,7 +456,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 	          out.println(board.printAfter());
      }
 %>
-<div id="attachmentModalDialog" style="display: none"/>
+<div id="attachmentModalDialog" style="display: none"></div>
 <script language="JavaScript">
 	var publicVersionsWindow = window;
 	function viewPublicVersions(docId) {
