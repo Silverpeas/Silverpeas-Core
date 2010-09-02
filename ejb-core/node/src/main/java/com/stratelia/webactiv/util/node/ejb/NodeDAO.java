@@ -55,8 +55,11 @@ public class NodeDAO {
 
   private static final String SELECT_NODE_BY_ID = "SELECT nodeid, nodename, nodedescription, "
       + "nodecreationdate, nodecreatorid, nodepath, nodelevelnumber, nodefatherid, modelid, "
-      + "nodestatus, instanceid, type, ordernumber, lang, rightsdependson FROM SB_Node_Node WHERE "
+      + "nodestatus, instanceid, type, ordernumber, lang, rightsdependson FROM sb_node_node WHERE "
       + "nodeId = ? AND instanceId = ?";
+
+  private static final String COUNT_NODES_PER_LEVEL =  "SELECT CoOUNT(nodeId) FROM sb_node_node WHERE nodeLevelNumber = ? "
+    + " AND nodeName = ? AND instanceId = ? ";
 
   private static Hashtable<String, ArrayList<NodeDetail>> alltrees =
       new Hashtable<String, ArrayList<NodeDetail>>();
@@ -99,7 +102,7 @@ public class NodeDAO {
     int level = nd.getLevel();
     String name = nd.getName();
 
-    StringBuffer selectQuery = new StringBuffer();
+    StringBuilder selectQuery = new StringBuilder();
     selectQuery.append("SELECT count(nodeId) FROM ").append(
         nd.getNodePK().getTableName());
     selectQuery.append(" WHERE nodeLevelNumber = ? ");
@@ -1142,12 +1145,12 @@ public class NodeDAO {
   /**
    * Store node attributes into database
    * @param con a connection to the database
-   * @param nodeDetail 
+   * @param nodeDetail
    * @throws java.sql.SQLException
    * @since 1.0
    */
   public static void storeRow(Connection con, NodeDetail nodeDetail) throws SQLException {
-    
+
     int rowCount = 0;
     StringBuffer updateStatement = new StringBuffer();
     updateStatement.append("update ").append(

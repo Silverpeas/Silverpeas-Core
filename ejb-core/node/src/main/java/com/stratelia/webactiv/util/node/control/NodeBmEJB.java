@@ -22,40 +22,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.webactiv.util.node.control;
 
-import java.util.*;
-import java.sql.Connection;
-import java.sql.SQLException;
-
-import javax.ejb.*;
-
-import java.rmi.RemoteException;
 
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.i18n.Translation;
-import com.stratelia.webactiv.util.*;
-import com.stratelia.webactiv.util.node.model.*;
-import com.stratelia.webactiv.util.node.ejb.*;
-
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-
-import com.stratelia.webactiv.util.exception.*;
-
-import com.stratelia.webactiv.beans.admin.*;
-
-import com.stratelia.silverpeas.silvertrace.*;
-
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
-
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import com.stratelia.webactiv.util.node.ejb.Node;
+import com.stratelia.webactiv.util.node.ejb.NodeDAO;
+import com.stratelia.webactiv.util.node.ejb.NodeHome;
+import com.stratelia.webactiv.util.node.ejb.NodeI18NDAO;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.util.node.model.NodeI18NDetail;
+import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import javax.ejb.CreateException;
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
 
 /**
  * This is the NodeBM EJB-tier controller. A node is composed by some another nodes (children) and

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+  <sb_node_node nodeid="0" nodename="Accueil" nodedescription="La Racine" nodecreationdate="2008/04/23"
+    nodecreatorid="0" nodepath="/" nodelevelnumber="1" nodefatherid="-1" modelid="" nodestatus="Visible" instanceid="kmelia60"
+    ordernumber="0" rightsdependson="-1" lang="fr" type="[NULL]" />
+  <sb_node_node nodeid="1" nodename="Corbeille" nodedescription="Vous trouvez ici les publications que vous avez supprimées"
+    nodecreationdate="2008/04/23" nodecreatorid="0" nodepath="/0/" nodelevelnumber="2" nodefatherid="0" modelid=""
+    nodestatus="Invisible" instanceid="kmelia60" ordernumber="2" rightsdependson="-1" />
+  <sb_node_node nodeid="2" nodename="Déclassées" nodedescription="Vos publications inaccessibles se retrouvent ici"
+    nodecreationdate="2008/04/23" nodecreatorid="0" nodepath="/0/" nodelevelnumber="2" nodefatherid="0" modelid=""
+    nodestatus="Invisible" instanceid="kmelia60" ordernumber="1" rightsdependson="-1" />
+  <sb_node_node nodeid="3" nodename="Theme de Test" nodedescription="Vos publications de test se retrouvent ici"
+    nodecreationdate="2008/04/30" nodecreatorid="7" nodepath="/0/" nodelevelnumber="2" nodefatherid="0" modelid=""
+    nodestatus="Visible" instanceid="kmelia60" ordernumber="3" lang="fr" rightsdependson="-1" type="default" />
+  <sb_node_node nodeid="4" nodename="Sous Theme de Test" nodedescription="Vos publications peuvent se retrouver ici"
+    nodecreationdate="2008/05/10" nodecreatorid="7" nodepath="/0/3/" nodelevelnumber="3" nodefatherid="3" modelid=""
+    nodestatus="Visible" instanceid="kmelia60" ordernumber="1" lang="fr" rightsdependson="-1" type="default" />
+</dataset>

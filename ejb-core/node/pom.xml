@@ -6,7 +6,7 @@
     <artifactId>ejb-core</artifactId>
     <version>5.3-SNAPSHOT</version>
   </parent>
-	
+
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>node</artifactId>
   <packaging>ejb</packaging>
@@ -25,9 +25,24 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.mockrunner</groupId>
+      <artifactId>mockrunner</artifactId>
+      <classifier>jdk1.6-j2ee1.4</classifier>
+    </dependency>
+    <dependency>
+      <groupId>com.mockrunner</groupId>
+      <artifactId>mockrunner-jdbc</artifactId>
+      <classifier>jdk1.6-j2ee1.4</classifier>
+    </dependency>
+    <dependency>
+      <groupId>oro</groupId>
+      <artifactId>oro</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
-  
-   <build>
+
+  <build>
     <testResources>
       <testResource>
         <directory>src/test/resources</directory>

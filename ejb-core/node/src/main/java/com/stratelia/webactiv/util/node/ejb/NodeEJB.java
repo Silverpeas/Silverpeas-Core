@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.node.ejb;
 
 import java.sql.Connection;
@@ -68,7 +67,6 @@ public class NodeEJB implements EntityBean {
   private int order;
   private String lang;
   private int rightsDependsOn;
-
   private boolean stored = false;
   // private Node father = null;
   private EntityContext context;
@@ -136,29 +134,38 @@ public class NodeEJB implements EntityBean {
    * @since 1.0
    */
   public void setDetail(NodeDetail nd) {
-    if (nd.getName() != null)
+    if (nd.getName() != null) {
       this.name = nd.getName();
-    if (nd.getDescription() != null)
+    }
+    if (nd.getDescription() != null) {
       this.description = nd.getDescription();
-    if (nd.getCreationDate() != null)
+    }
+    if (nd.getCreationDate() != null) {
       this.creationDate = nd.getCreationDate();
-    if (nd.getCreatorId() != null)
+    }
+    if (nd.getCreatorId() != null) {
       this.creatorId = nd.getCreatorId();
-    if (nd.getModelId() != null)
+    }
+    if (nd.getModelId() != null) {
       this.modelId = nd.getModelId();
-    if (nd.getStatus() != null)
+    }
+    if (nd.getStatus() != null) {
       this.status = nd.getStatus();
-    if (nd.getType() != null)
+    }
+    if (nd.getType() != null) {
       this.type = nd.getType();
+    }
     if (NodeDetail.FILE_LINK_TYPE.equals(nd.getType())) {
       this.path = nd.getPath();
     }
     if (nd.getFatherPK() != null
         && StringUtil.isInteger(nd.getFatherPK().getId())
-        && StringUtil.isDefined(nd.getFatherPK().getInstanceId()))
+        && StringUtil.isDefined(nd.getFatherPK().getInstanceId())) {
       this.fatherPK = nd.getFatherPK();
-    if (StringUtil.isDefined(nd.getPath()))
+    }
+    if (StringUtil.isDefined(nd.getPath())) {
       this.path = nd.getPath();
+    }
     this.order = nd.getOrder();
     this.lang = nd.getLanguage();
     // this.rightsDependsOn = nd.getRightsDependsOn();
@@ -187,13 +194,15 @@ public class NodeEJB implements EntityBean {
       // insert row in the database
       newNodePK = NodeDAO.insertRow(con, nd);
 
-      if (nd.getRightsDependsOn() == 0)
+      if (nd.getRightsDependsOn() == 0) {
         this.rightsDependsOn = Integer.parseInt(newNodePK.getId());
-      else
+      } else {
         this.rightsDependsOn = nd.getRightsDependsOn();
+      }
 
-      if (nd.haveRights())
+      if (nd.haveRights()) {
         NodeDAO.updateRightsDependency(con, newNodePK, rightsDependsOn);
+      }
 
       nd.setNodePK(newNodePK);
       createTranslations(con, nd);
@@ -212,10 +221,6 @@ public class NodeEJB implements EntityBean {
     this.description = nd.getDescription();
     this.creationDate = nd.getCreationDate();
     this.creatorId = nd.getCreatorId();
-    /*
-     * if (!NodeDetail.FILE_LINK_TYPE.equals(nd.getType())) { this.path = nd.getPath() +
-     * newNodePK.getId(); } else { this.path = nd.getPath(); }
-     */
     this.path = nd.getPath();
     this.level = nd.getLevel();
     this.fatherPK = nd.getFatherPK();
@@ -257,9 +262,7 @@ public class NodeEJB implements EntityBean {
    * @since 1.0
    */
   public NodePK ejbFindByPrimaryKey(NodePK pk) throws FinderException {
-
     Connection con = getConnection();
-
     try {
       NodePK primary = NodeDAO.selectByPrimaryKey(con, pk);
       if (primary != null) {
@@ -270,7 +273,6 @@ public class NodeEJB implements EntityBean {
         throw new ObjectNotFoundException("Cannot find node ID: " + pk);
       }
     } catch (SQLException e) {
-      /* SQLException is a real runtime error */
       throw new NodeRuntimeException("NodeEJB.ejbFindByPrimaryKey()",
           SilverpeasRuntimeException.ERROR,
           "root.EX_CANT_FIND_ENTITY", "NodeId = " + pk.getId(), e);
@@ -294,16 +296,13 @@ public class NodeEJB implements EntityBean {
             "root.EX_CANT_FIND_ENTITY",
             "name = " + name
             + ", component = " + pk.getComponentName() + ", parent ID = " + nodeFatherId);
-        throw new ObjectNotFoundException("Cannot find node named " + name + ", component " + pk.
-            getComponentName()
+        throw new ObjectNotFoundException("Cannot find node named " + name + ", component " + pk.getComponentName()
             + ", parent ID " + nodeFatherId);
       }
     } catch (SQLException e) {
-      /* SQLException is a real runtime error */
       throw new NodeRuntimeException("NodeEJB.ejbFindByNameAndFatherId()",
           SilverpeasRuntimeException.ERROR,
-          "root.EX_CANT_FIND_ENTITY", "name = " + name + ", component = " + pk.
-          getComponentName() + ", parent ID = "
+          "root.EX_CANT_FIND_ENTITY", "name = " + name + ", component = " + pk.getComponentName() + ", parent ID = "
           + nodeFatherId, e);
     } finally {
       freeConnection(con);
@@ -378,22 +377,9 @@ public class NodeEJB implements EntityBean {
    */
   @Override
   public void ejbLoad() {
-    // try fat pk
-    /*
-     * if (nodePK.nodeDetail != null) { NodeDetail nodeDetail = nodePK.nodeDetail; this.name =
-     * nodeDetail.getName(); this.description = nodeDetail.getDescription(); this.creatorId =
-     * nodeDetail.getCreatorId(); this.creationDate = nodeDetail.getCreationDate(); this.path =
-     * nodeDetail.getPath(); this.level = nodeDetail.getLevel(); this.fatherPK =
-     * nodeDetail.getFatherPK(); this.modelId = nodeDetail.getModelId(); this.status =
-     * nodeDetail.getStatus(); this.type = nodeDetail.getType(); this.order = nodeDetail.getOrder();
-     * this.lang = nodeDetail.getLanguage(); this.rightsDependsOn = nodeDetail.getRightsDependsOn();
-     * nodePK.nodeDetail = null; stored = true; return; }
-     */
-
-    Connection con = getConnection();
+        Connection con = getConnection();
     try {
       NodeDetail nodeDetail = NodeDAO.loadRow(con, nodePK);
-      // this.nodePK = nodePK;
       this.name = nodeDetail.getName();
       this.description = nodeDetail.getDescription();
       this.creatorId = nodeDetail.getCreatorId();
@@ -428,10 +414,6 @@ public class NodeEJB implements EntityBean {
     }
     Connection con = getConnection();
     try {
-      // Transform the 'special' caracters
-      // name = Encode.transformStringForBD(name);
-      // description = Encode.transformStringForBD(description);
-
       NodeDetail detail = new NodeDetail(this.nodePK, this.name,
           this.description, this.creationDate, this.creatorId, this.path,
           this.level, this.fatherPK, this.modelId, this.status, null, this.type);
@@ -471,5 +453,4 @@ public class NodeEJB implements EntityBean {
       }
     }
   }
-
 }
