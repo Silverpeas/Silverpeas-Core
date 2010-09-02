@@ -30,7 +30,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>parent</artifactId>
-    <version>14-SNAPSHOT</version>
+    <version>14</version>
   </parent>
 
   <description>
