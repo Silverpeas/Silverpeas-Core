@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.SilverpeasSettings;
@@ -55,6 +56,27 @@ public class CSVReader extends SilverpeasSettings {
   protected String[] m_specificColNames;
   protected String[] m_specificColTypes;
   protected String[] m_specificParameterNames;
+  
+  //Active control file columns/object columns
+  private boolean columnNumberControlEnabled = true;
+  //Active control file extra columns/object columns
+  private boolean extraColumnsControlEnabled = true;
+
+  public boolean isExtraColumnsControlEnabled() {
+    return extraColumnsControlEnabled;
+  }
+
+  public void setExtraColumnsControlEnabled(boolean extraColumnsControlEnabled) {
+    this.extraColumnsControlEnabled = extraColumnsControlEnabled;
+  }
+
+  public boolean isColumnNumberControlEnabled() {
+    return columnNumberControlEnabled;
+  }
+
+  public void setColumnNumberControlEnabled(boolean columnNumberControlEnabled) {
+    this.columnNumberControlEnabled = columnNumberControlEnabled;
+  }
 
   /**
    * Constructeur
@@ -125,6 +147,10 @@ public class CSVReader extends SilverpeasSettings {
     try {
       rb = new BufferedReader(new InputStreamReader(is));
       theLine = rb.readLine();
+      if (theLine != null && !isExtraColumnsControlEnabled()) {
+        StringTokenizer st = new StringTokenizer(theLine, m_separator);
+        setM_specificNbCols(st.countTokens()-m_nbCols);
+      }        
       while (theLine != null) {
         SilverTrace.info("util", "CSVReader.parseStream()",
             "root.MSG_PARAM_VALUE", "Line=" + lineNumber);
@@ -234,7 +260,7 @@ public class CSVReader extends SilverpeasSettings {
       } else {
         end = theLine.indexOf(m_separator, start);
       }
-      if ((i < m_nbCols - 2) && (end == -1)) { // Not enough columns
+      if (isColumnNumberControlEnabled() && (i < m_nbCols - 2) && (end == -1)) { // Not enough columns
         listErrors.append(m_utilMessages.getString("util.ligne") + " = "
             + Integer.toString(lineNumber) + ", ");
         listErrors.append(Integer.toString(i + 2) + " "
@@ -256,41 +282,52 @@ public class CSVReader extends SilverpeasSettings {
       } else {
         theValue = theLine.substring(start, end).trim();
       }
-      try {
-        valret[j] = new Variant(theValue, m_specificColTypes[i]);
-        SilverTrace.info("util", "CSVReader.parseLine()",
-            "root.MSG_PARAM_VALUE", "Token=" + theValue);
-        if ((theValue == null) || (theValue.length() <= 0)) {
-          if (Boolean.parseBoolean(m_colMandatory[i]))
-          {
-            listErrors.append(m_utilMessages.getString("util.ligne") + " = "
-                + Integer.toString(lineNumber) + ", ");
-            listErrors.append(m_utilMessages.getString("util.colonne") + " = "
-                + Integer.toString(i + 1) + ", ");
-            listErrors
-                .append(m_utilMessages.getString("util.errorMandatory")
-                + m_utilMessages.getString("util.valeur") + " = " + theValue
-                + ", ");
-            listErrors.append(m_utilMessages.getString("util.type") + " = "
-                + m_colTypes[i] + "<BR>");
+      if (isExtraColumnsControlEnabled())
+      {
+        try {
+          valret[j] = new Variant(theValue, m_specificColTypes[i]);
+          SilverTrace.info("util", "CSVReader.parseLine()",
+              "root.MSG_PARAM_VALUE", "Token=" + theValue);
+          if ((theValue == null) || (theValue.length() <= 0)) {
+            if (Boolean.parseBoolean(m_colMandatory[i]))
+            {
+              listErrors.append(m_utilMessages.getString("util.ligne") + " = "
+                  + Integer.toString(lineNumber) + ", ");
+              listErrors.append(m_utilMessages.getString("util.colonne") + " = "
+                  + Integer.toString(i + 1) + ", ");
+              listErrors
+                  .append(m_utilMessages.getString("util.errorMandatory")
+                  + m_utilMessages.getString("util.valeur") + " = " + theValue
+                  + ", ");
+              listErrors.append(m_utilMessages.getString("util.type") + " = "
+                  + m_colTypes[i] + "<BR>");
+            }
           }
+        } catch (UtilException e) {
+          listErrors.append(m_utilMessages.getString("util.ligne") + " = "
+              + Integer.toString(lineNumber) + ", ");
+          listErrors.append(m_utilMessages.getString("util.colonne") + " = "
+              + Integer.toString(j + 1) + ", ");
+          listErrors
+              .append(m_utilMessages.getString("util.errorType")
+              + m_utilMessages.getString("util.valeur") + " = " + theValue
+              + ", ");
+          listErrors.append(m_utilMessages.getString("util.type") + " = "
+              + m_specificColTypes[i] + "<BR>");
         }
-      } catch (UtilException e) {
-        listErrors.append(m_utilMessages.getString("util.ligne") + " = "
-            + Integer.toString(lineNumber) + ", ");
-        listErrors.append(m_utilMessages.getString("util.colonne") + " = "
-            + Integer.toString(j + 1) + ", ");
-        listErrors
-            .append(m_utilMessages.getString("util.errorType")
-            + m_utilMessages.getString("util.valeur") + " = " + theValue
-            + ", ");
-        listErrors.append(m_utilMessages.getString("util.type") + " = "
-            + m_specificColTypes[i] + "<BR>");
+      }
+      else {
+        try {
+          valret[j] = new Variant(theValue, "STRING");
+        } catch (UtilException e) {
+      SilverTrace.info("util", "CSVReader.parseLine()",
+          "root.MSG_PARAM_VALUE", "Token=" + theValue);
+        }
       }
       start = end + 1;
       if (start == 0)
         start = -1;
-      if ((i < m_specificNbCols - 1)
+      if (isExtraColumnsControlEnabled() && (i < m_specificNbCols - 1)
           && (Variant.isArrayType(m_specificColTypes[i + 1]))) { // End the
         // parse
         // putting the
@@ -301,7 +338,7 @@ public class CSVReader extends SilverpeasSettings {
       } else {
         end = theLine.indexOf(m_separator, start);
       }
-      if ((i < m_specificNbCols - 2) && (end == -1)) { // Not enough columns
+      if (isColumnNumberControlEnabled() && (i < m_specificNbCols - 2) && (end == -1)) { // Not enough columns
         listErrors.append(m_utilMessages.getString("util.ligne") + " = "
             + Integer.toString(lineNumber) + ", ");
         listErrors.append(Integer.toString(i + 2 + m_nbCols) + " "
@@ -323,7 +360,7 @@ public class CSVReader extends SilverpeasSettings {
       end = theLine.indexOf(m_separator, start);
     }
 
-    if (nbColonnes > nbColsTotal) {
+    if (isColumnNumberControlEnabled() && nbColonnes > nbColsTotal) {
       listErrors.append(m_utilMessages.getString("util.ligne") + " = "
           + Integer.toString(lineNumber) + ", ");
       listErrors.append(nbColonnes + " "
