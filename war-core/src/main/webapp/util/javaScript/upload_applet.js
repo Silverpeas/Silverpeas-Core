@@ -65,8 +65,6 @@ function loadApplet(divId, targetURL, message, max_upload, webcontext, altMessag
     addParam(objectDND, "code", "wjhk.jupload2.JUploadApplet");
     addParam(objectDND, "name", "Silverpeas Drag And Drop");
     addParam(objectDND, "codebase", webcontext + "/upload");
-    var alternatetext = document.createTextNode(altMessage);
-    objectDND.appendChild(alternatetext);
   }
   else
   {
@@ -98,6 +96,14 @@ function loadApplet(divId, targetURL, message, max_upload, webcontext, altMessag
   addParam(objectDND, "bgcolor_r", "245");
   addParam(objectDND, "bgcolor_g", "245");
   addParam(objectDND, "bgcolor_b", "245");
+  
+  if (win) {
+	  try {
+		  var alternatetext = document.createTextNode(altMessage);
+		  objectDND.appendChild(alternatetext);	
+	  } catch (e) {
+	  }
+  }
   
   divDND.appendChild(objectDND);
 
