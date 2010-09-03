@@ -63,10 +63,13 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 %>
 
-<html>
-<HEAD>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<Script language="JavaScript">
+<script type="text/javascript">
 var counter = 0;
 <%
    if (clipboardSC != null)
@@ -137,11 +140,9 @@ function test () {
   //window.alert ('clipboardName='+top.ClipboardWindow.name);
   status = top.ClipboardWindow.document.pasteform.compR.value;
 }
-
 </script>
-</HEAD>
-
-<body onLoad="DoTask();"><PRE>
+</head>
+<body onload="DoTask();"><pre>
 Frame cach�e, Time = <%if (clipboardSC != null) out.print (String.valueOf(clipboardSC.getCounter()));%> <a href="../../Rclipboard/jsp/IdleSilverpeasV5.jsp?message=IDLE">idle...</a>
 <%
 		Enumeration values = request.getParameterNames();
@@ -161,13 +162,11 @@ Frame cach�e, Time = <%if (clipboardSC != null) out.print (String.valueOf(clip
       }
 	%>
 	<a href="javascript:onClick=test()">test...</a>
-	</PRE>
+	</pre>
 <%if (clipboardSC != null) out.println (clipboardSC.getHF_HTMLForm(request));%>
-
 <!-- SessionId pour securisation pages Web -->
-<form name="ctrl">
-	<input type="hidden" name="sessionId" value="<%=session.getId()%>">
+<form name="ctrl" action="">
+	<input type="hidden" name="sessionId" value="<%=session.getId()%>"/>
 </form>
-
 </body>
 </html>

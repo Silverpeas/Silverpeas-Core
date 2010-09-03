@@ -45,7 +45,7 @@ if(com.silverpeas.util.StringUtil.isInteger(request.getParameter("DomainId"))) {
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=generalMultilang.getString("GML.popupTitle")%></title>
-<link REL="SHORTCUT ICON" HREF="<%=request.getContextPath()%>/util/icons/favicon.ico">
+<link rel="SHORTCUT ICON" href="<%=request.getContextPath()%>/util/icons/favicon.ico"/>
 <link type="text/css" rel="stylesheet" href="<%=styleSheet%>" />
 
 <!--[if lt IE 8]>
@@ -151,7 +151,7 @@ function checkSubmit(ev)
             <div id="background"> <!-- image de fond du formulaire -->    	
                 <div class="cadre">   
                     <div id="header">
-                        <img src="<%=logo%>" class="logo" />
+                        <img src="<%=logo%>" class="logo" alt="logo"/>
                         <p class="information">
 								<% if (!errorCode.equals("") && !errorCode.equals("4")) { %>  
 									<span><%=authenticationBundle.getString("authentication.logon."+errorCode)%></span>
@@ -192,7 +192,7 @@ function checkSubmit(ev)
 								</select>
                           </label></p> 									
                      <% } %>
-                     <p><a href="#" class="submit" onclick="checkForm();"><img src="<%=request.getContextPath()%>/images/bt-login.png" /></a></p>
+                     <p><a href="#" class="submit" onclick="checkForm();"><img src="<%=request.getContextPath()%>/images/bt-login.png" alt="login"/></a></p>
 					 <% if (rememberPwdActive || forgottenPwdActive) { %>
 						 <p>
 						 <% if (forgottenPwdActive) { %>
