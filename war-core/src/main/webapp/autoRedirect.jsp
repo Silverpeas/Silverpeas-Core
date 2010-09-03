@@ -43,14 +43,14 @@ String			domainId		= request.getParameter("domainId");
 String			componentGoTo	= request.getParameter("ComponentId");
 String			spaceGoTo		= request.getParameter("SpaceId");
 String			attachmentGoTo	= request.getParameter("AttachmentId");
-HttpSession 	Session 		= request.getSession();
+HttpSession 	mySession 		= request.getSession();
 
 String mainFrameParams 	= "";
 String componentId 		= null;
 String spaceId			= null;
 if (strGoTo != null)
 {
-	Session.putValue("gotoNew", strGoTo);
+	mySession.setAttribute("gotoNew", strGoTo);
 
 	//System.out.println("strGoTo = "+strGoTo);
 
@@ -79,13 +79,13 @@ if (strGoTo != null)
 	//System.out.println("componentId = "+componentId);
 
 	mainFrameParams = "?ComponentIdFromRedirect="+componentId;
-	Session.putValue("RedirectToComponentId", componentId);
+	mySession.setAttribute("RedirectToComponentId", componentId);
 }
 else if (componentGoTo != null)
 {
 	componentId = componentGoTo;
 	mainFrameParams = "?ComponentIdFromRedirect="+componentId;
-	Session.putValue("RedirectToComponentId", componentId);
+	mySession.setAttribute("RedirectToComponentId", componentId);
 	if (attachmentGoTo != null)
 	{
 		String foreignId = request.getParameter("ForeignId");
@@ -93,17 +93,17 @@ else if (componentGoTo != null)
 
 		//Contruit l'url vers l'objet du composant contenant le fichier
 		strGoTo = URLManager.getURL(null, componentId)+"searchResult?Type=Publication&Id="+foreignId;
-		Session.putValue("gotoNew", strGoTo);
+		mySession.setAttribute("gotoNew", strGoTo);
 
 		//Ajoute l'id de l'attachment pour ouverture automatique
-		Session.putValue("RedirectToAttachmentId", attachmentGoTo);
-		Session.putValue("RedirectToMapping", type);
+		mySession.setAttribute("RedirectToAttachmentId", attachmentGoTo);
+		mySession.setAttribute("RedirectToMapping", type);
 	}
 }
 else if (spaceGoTo != null)
 {
 	spaceId = spaceGoTo;
-	Session.putValue("RedirectToSpaceId", spaceId);
+	mySession.setAttribute("RedirectToSpaceId", spaceId);
 }
 
 SilverTrace.info("authentication", "autoRedirect.jsp", "root.MSG_GEN_PARAM_VALUE", "componentId = "+componentId+", spaceId = "+spaceId);
