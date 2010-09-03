@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="javax.ejb.RemoveException, javax.ejb.CreateException, javax.ejb.EJBException, java.sql.SQLException, javax.naming.NamingException, java.rmi.RemoteException, javax.ejb.FinderException"%>
 <%@ page import="java.util.Collection, java.util.Iterator, java.util.ArrayList, java.util.Date"%>

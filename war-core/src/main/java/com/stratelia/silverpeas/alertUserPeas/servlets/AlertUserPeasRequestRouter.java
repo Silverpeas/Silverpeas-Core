@@ -25,7 +25,6 @@
 package com.stratelia.silverpeas.alertUserPeas.servlets;
 
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.RequestHelper;
 import javax.servlet.http.HttpServletRequest;
 
 import com.stratelia.silverpeas.alertUserPeas.control.AlertUserPeasSessionController;
@@ -115,7 +114,7 @@ public class AlertUserPeasRequestRouter extends ComponentRequestRouter {
       } else if (function.startsWith("ToAlert")) {
         request.setAttribute("HostComponentName", scc.getHostComponentName());
         request.setAttribute("HostSpaceName", scc.getHostSpaceName());
-        String message = RequestHelper.getRequestParameter(request, "messageAux");
+        String message = request.getParameter("messageAux");
         scc.prepareNotification(message);
         destination = "/alertUserPeas/jsp/sendMessage.jsp";
       } else if (function.startsWith("Notify")) // Notification

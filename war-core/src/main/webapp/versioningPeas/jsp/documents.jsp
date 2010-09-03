@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="com.stratelia.silverpeas.versioning.model.DocumentVersion,com.stratelia.silverpeas.versioning.model.DocumentPK"%>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>

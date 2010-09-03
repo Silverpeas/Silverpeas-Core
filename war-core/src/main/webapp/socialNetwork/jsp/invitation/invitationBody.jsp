@@ -23,6 +23,7 @@
     <div id ="information" >
 
       <b>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
         <a href="${urlProfil}<%=invitationUser.getUserDetail().getUserId()%>"
            class="link"><%=invitationUser.getUserDetail().getLastName() + " " + invitationUser.
                      getUserDetail().getFirstName()%>

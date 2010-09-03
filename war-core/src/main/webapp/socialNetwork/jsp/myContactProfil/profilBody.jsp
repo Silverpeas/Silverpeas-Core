@@ -23,6 +23,7 @@
         </td>
         <td>
         <img src="${SNIcon}PUBLICATION_update.gif"  width="16" height="16" />  :<fmt:message key="profil.icon.update.pub"/>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
         </td>
         <td>
         <img src="${SNIcon}STATUS.gif" width="16" height="16" />  :<fmt:message key="profil.icon.staus"/>

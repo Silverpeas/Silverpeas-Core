@@ -30,7 +30,6 @@ import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import static com.silverpeas.util.web.RequestHelper.getRequestParameter;
 import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
 
@@ -131,12 +130,12 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
         String[] idUsers = request.getParameterValues("selectedUsers");
         String[] idGroups = request.getParameterValues("selectedGroups");
         // paramètres jsp
-        popupMode = getRequestParameter(request, "popupMode");
-        editTargets = getRequestParameter(request, "editTargets");
-        txtTitle = getRequestParameter(request, "txtTitle");
-        txtMessage = getRequestParameter(request, "txtMessage");
-        notificationId = getRequestParameter(request, "notificationId");
-        priorityId = getRequestParameter(request, "priorityId");
+        popupMode = request.getParameter("popupMode");
+        editTargets = request.getParameter("editTargets");
+        txtTitle = request.getParameter("txtTitle");
+        txtMessage = request.getParameter("txtMessage");
+        notificationId = request.getParameter( "notificationId");
+        priorityId = request.getParameter("priorityId");
         nuSC.setTxtTitle(txtTitle);
         nuSC.setTxtMessage(txtMessage);
         nuSC.setNotificationId(notificationId);
@@ -178,12 +177,12 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter {
               "NotificationUserRequestRouter.getDestination()",
               "root.MSG_GEN_PARAM_VALUE", "value=" + request.getParameter(nom));
         }
-        popupMode = getRequestParameter(request, "popupMode");
-        editTargets = getRequestParameter(request, "editTargets");
-        txtTitle = getRequestParameter(request, "txtTitle");
-        txtMessage = getRequestParameter(request, "txtMessage");
-        notificationId = getRequestParameter(request, "notificationId");
-        priorityId = getRequestParameter(request, "priorityId");
+        popupMode = request.getParameter("popupMode");
+        editTargets = request.getParameter("editTargets");
+        txtTitle = request.getParameter("txtTitle");
+        txtMessage = request.getParameter("txtMessage");
+        notificationId = request.getParameter("notificationId");
+        priorityId = request.getParameter("priorityId");
 
         SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
             "root.MSG_GEN_PARAM_VALUE", "notificationId=" + notificationId);

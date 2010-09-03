@@ -23,6 +23,7 @@
                   <td>
                     <b><a href="viewUser?UserId=<%=invitationUser.getUserDetail().getUserId()%>"
                           class="link"><%=invitationUser.getUserDetail().getLastName() + " " + invitationUser.
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
                                      getUserDetail().getFirstName()%>
                       </a></b>
                   </td>

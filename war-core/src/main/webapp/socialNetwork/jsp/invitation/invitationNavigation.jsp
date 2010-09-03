@@ -23,6 +23,7 @@
     <li>
       <a href="${urlDirectory}"><span><fmt:message key="newsFeed.directory" /></span></a>
     </li>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
   </ul>
 

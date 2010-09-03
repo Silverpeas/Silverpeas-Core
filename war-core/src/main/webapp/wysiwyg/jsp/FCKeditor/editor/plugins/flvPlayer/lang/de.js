@@ -1,4 +1,4 @@
-﻿// FLV Player Dialog
+// FLV Player Dialog
 FCKLang["DlgFLVPlayerTitle"]          = "FLV Media Player";
 FCKLang["DlgFLVPlayerURL"]            = "Movie/Media File" ;
 FCKLang["DlgFLVPlayerBtnBrowse"]      = "Browse..." ;

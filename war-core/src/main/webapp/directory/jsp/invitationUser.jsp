@@ -23,6 +23,7 @@
             GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
             String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
             String action = (String) request.getParameter("Action");
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
             String txtMessage = Encode.htmlStringToJavaString((String) request.getAttribute("txtMessage"));
             String popupMode = (String) request.getParameter("popupMode");
 

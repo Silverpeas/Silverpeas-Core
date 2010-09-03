@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%
 	response.setHeader( "Expires", "Tue, 21 Dec 1993 23:59:59 GMT" );

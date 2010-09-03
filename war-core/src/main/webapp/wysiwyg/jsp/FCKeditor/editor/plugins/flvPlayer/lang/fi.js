@@ -1,4 +1,4 @@
-﻿// FLV Player Dialog
+// FLV Player Dialog
 FCKLang["DlgFLVPlayerTitle"]          = "FLV Mediasoitin";
 FCKLang["DlgFLVPlayerURL"]            = "Video/Media tiedosto" ;
 FCKLang["DlgFLVPlayerBtnBrowse"]      = "Selaa..." ;

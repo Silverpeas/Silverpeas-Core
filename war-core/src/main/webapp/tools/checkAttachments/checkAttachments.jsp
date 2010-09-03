@@ -23,6 +23,7 @@ if (m_MainSessionCtrl == null || !"A".equals(m_MainSessionCtrl.getUserAccessLeve
     String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
 %>
 <script language="javascript">
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 	location.href="<%=request.getContextPath()+sessionTimeout%>";
 </script>
 <%

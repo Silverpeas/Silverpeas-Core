@@ -23,6 +23,7 @@
           </c:if>
           <c:if test="${snUserFull.connected=='false'}">
             <img  src="<c:url value="/directory/jsp/icons/deconnected.jpg" />" border="1" width="10" height="10"
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
                   alt="connected"/>
 
           </c:if>

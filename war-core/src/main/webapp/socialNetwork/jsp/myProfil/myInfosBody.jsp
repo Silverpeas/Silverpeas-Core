@@ -23,6 +23,7 @@
                                 <fmt:message key="${position}" bundle="${GML}"/>
                       </div>
                         
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
                       <div class="form">
                         <div class="attribut"><fmt:message key="GML.eMail" bundle="${GML}"/></div>
                                 ${snUserFull.userFull.eMail}

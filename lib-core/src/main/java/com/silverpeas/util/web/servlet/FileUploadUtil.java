@@ -50,7 +50,7 @@ import org.apache.commons.io.IOUtils;
  */
 public class FileUploadUtil {
 
-  public static final String DEFAULT_ENCODING = "ISO-8859-1";
+  public static final String DEFAULT_ENCODING = "UTF-8";
 
   public static boolean isRequestMultipart(HttpServletRequest request) {
     return ServletFileUpload.isMultipartContent(request);

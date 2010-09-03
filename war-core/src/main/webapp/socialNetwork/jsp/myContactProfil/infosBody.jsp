@@ -23,6 +23,7 @@
       </tr>
       <c:forEach items="${propertiesKey}" var="propertys" varStatus="status">
         <tr>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
           <td class="txtlibform" valign="baseline" width="30%">
             ${propertiesKey[status.index]}
           </td>

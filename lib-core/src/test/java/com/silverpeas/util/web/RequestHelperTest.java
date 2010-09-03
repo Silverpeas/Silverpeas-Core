@@ -63,23 +63,6 @@ public class RequestHelperTest {
   }
 
   /**
-   * Test of getRequestParameter method, of class RequestHelper.
-   */
-  @Test
-  public void testGetRequestParameter() throws Exception {
-    HttpServletRequest request = mock(HttpServletRequest.class);
-    when(request.getParameter("paramNotNull")).thenReturn("toto");
-    when(request.getParameter("paramNull")).thenReturn(null);
-    when(request.getParameter("paramEmpty")).thenReturn("");
-    String result = RequestHelper.getRequestParameter(request, "paramNotNull");
-    assertEquals("toto", result);
-    result = RequestHelper.getRequestParameter(request, "paramNull");
-    assertNull(result);
-    result = RequestHelper.getRequestParameter(request, "paramEmpty");
-    assertEquals("", result);
-  }
-
-  /**
    * Test of getIntParameter method, of class RequestHelper.
    */
   @Test

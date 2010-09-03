@@ -23,6 +23,7 @@ if (m_MainSessionCtrl == null || !"A".equals(m_MainSessionCtrl.getUserAccessLeve
 <head>
   <title>Utilitaires Silverpeas</title>
 	<script language="javascript">
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 		function launchTool()
 		{
 			location.href=document.getElementById('tool').value;

@@ -23,6 +23,7 @@
         "SessionGraphicElementFactory");
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
         "ApplicationURL");
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
     String action = (String) request.getParameter("Action");
     String txtTitle = Encode.htmlStringToJavaString((String) request.getAttribute("txtTitle"));
     String txtMessage = Encode.htmlStringToJavaString((String) request.getAttribute("txtMessage"));

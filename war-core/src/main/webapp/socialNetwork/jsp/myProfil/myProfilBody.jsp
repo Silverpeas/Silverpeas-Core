@@ -23,6 +23,7 @@
         <div class="icon">
         <img src="${SNIcon}STATUS.gif" width="16" height="16" />  :<fmt:message key="profil.icon.staus"/>
         </div>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
       </c:when>
       <c:when test="${type=='EVENT'}">
         <div class="icon">

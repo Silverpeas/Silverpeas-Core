@@ -24,7 +24,6 @@
 package com.silverpeas.util.web;
 
 import com.silverpeas.util.StringUtil;
-import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -32,15 +31,6 @@ import javax.servlet.http.HttpServletRequest;
  * @author ehugonnet
  */
 public class RequestHelper {
-
-  public static String getRequestParameter(HttpServletRequest request, String parameterName)
-      throws UnsupportedEncodingException {
-    String value = request.getParameter(parameterName);
-    if (StringUtil.isDefined(value)) {
-      value = new String(value.getBytes("ISO-8859-1"), "UTF-8");
-    }
-    return value;
-  }
 
   public static int getIntParameter(HttpServletRequest request, String name, int defaultValue) {
     String param = request.getParameter(name);
