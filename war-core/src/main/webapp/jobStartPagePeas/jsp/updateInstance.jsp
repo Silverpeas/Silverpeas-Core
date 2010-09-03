@@ -344,7 +344,7 @@ if (parameters.size() > 0)
 %>
 	<br>
 	<table width=100%>
-	<tr class="intfdcolor51"><td align="center" class="txtlibform"><img src="<%=resource.getIcon("JSPP.px")%>" height="20" width="1" align="absmiddle">Param�tres de l'instance</td></tr>
+	<tr class="intfdcolor51"><td align="center"><span class="txtlibform"><img src="<%=resource.getIcon("JSPP.px")%>" height="20" width="1" align="absmiddle"><%=resource.getString("JSPP.parameters") %></span></td></tr>
 	</table>
 <%
 }
