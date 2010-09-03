@@ -31,6 +31,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.ResourceBundle;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -235,6 +236,20 @@ public class ResourcesWrapper {
 
   public String getOutputDateAndHour(Date date) {
     return DateUtil.getOutputDateAndHour(date, language);
+  }
+  
+  /**
+   * Display first not null date
+   * @param date1 date to display
+   * @param date2 extra date to display if date1 is empty (or null)
+   * @return the formatted date
+   */
+  public String getOutputDateAndHour(Date date1, Date date2) {
+    String sDate = DateUtil.getOutputDateAndHour(date1, language);
+    if (!StringUtil.isDefined(sDate)) {
+      sDate = DateUtil.getOutputDateAndHour(date2, language);
+    }
+    return sDate;
   }
 
   public String getInputDate(Date date) {
