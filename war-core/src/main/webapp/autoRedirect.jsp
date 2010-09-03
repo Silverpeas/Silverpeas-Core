@@ -51,13 +51,13 @@ String spaceId			= null;
 if (strGoTo != null)
 {
 	Session.putValue("gotoNew", strGoTo);
-	
+
 	//System.out.println("strGoTo = "+strGoTo);
 
 	//deux cas, deux parsing diff�rents :
 	//1 - commence par /RpdcSearch --> PDC (moteur de recherche)
 	//2 - commence par /R****/kmelia124/searchResult.jsp?... --> composants (moteur de recherche || notifications)
-	
+
 	String urlToParse = strGoTo;
 	if (strGoTo.startsWith("/RpdcSearch/"))
 	{
@@ -68,7 +68,7 @@ if (strGoTo != null)
 	{
 		urlToParse = urlToParse.substring(1); //remove first "/"
 		int indexBegin 	= urlToParse.indexOf("/")+1;
-		int indexEnd 	= urlToParse.lastIndexOf("/");
+		int indexEnd 	= urlToParse.indexOf("/", indexBegin);
 		componentId = urlToParse.substring(indexBegin, indexEnd);
 		//Agenda
 		if (strGoTo.startsWith("/Ragenda/"))
@@ -77,7 +77,7 @@ if (strGoTo != null)
 		}
 	}
 	//System.out.println("componentId = "+componentId);
-	
+
 	mainFrameParams = "?ComponentIdFromRedirect="+componentId;
 	Session.putValue("RedirectToComponentId", componentId);
 }
@@ -90,11 +90,11 @@ else if (componentGoTo != null)
 	{
 		String foreignId = request.getParameter("ForeignId");
 		String type		 = request.getParameter("Mapping");
-		
+
 		//Contruit l'url vers l'objet du composant contenant le fichier
 		strGoTo = URLManager.getURL(null, componentId)+"searchResult?Type=Publication&Id="+foreignId;
 		Session.putValue("gotoNew", strGoTo);
-		
+
 		//Ajoute l'id de l'attachment pour ouverture automatique
 		Session.putValue("RedirectToAttachmentId", attachmentGoTo);
 		Session.putValue("RedirectToMapping", type);
@@ -115,7 +115,7 @@ GraphicElementFactory 	gef 				= (GraphicElementFactory) session.getAttribute("S
 if (m_MainSessionCtrl == null || (gef != null && gef.getFavoriteLookSettings().getString("guestId").equals(m_MainSessionCtrl.getUserId())))
 {
 %>
-	<script> 
+	<script>
 		top.location="Login.jsp?DomainId="+<%=domainId%>;
 	</script>
 <%
@@ -131,7 +131,7 @@ else
 	else if (m_MainSessionCtrl.isAppInMaintenance() && !m_MainSessionCtrl.getCurrentUserDetail().isAccessAdmin())
 	{
     %>
-        <script> 
+        <script>
         	top.location="admin/jsp/appInMaintenance.jsp";
         </script>
     <%
@@ -139,7 +139,7 @@ else
   	else
     {
     %>
-        <script> 
+        <script>
         	top.location="admin/jsp/<%=gef.getLookFrame()%><%=mainFrameParams%>";
         </script>
     <%
