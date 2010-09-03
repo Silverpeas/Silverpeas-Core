@@ -24,6 +24,7 @@
 
 package com.stratelia.silverpeas.notificationManager;
 
+import com.silverpeas.util.EncodeHelper;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -120,11 +121,11 @@ public class NotificationMetaData implements java.io.Serializable {
   public Map<String, SilverpeasTemplate> getTemplates() {
     return templates;
   }
-  
+
   public Boolean isTemplateUsed() {
     return !templates.isEmpty();
   }
-  
+
   /**
    * Set message type
    * @param messageType the message type to be set
@@ -232,7 +233,7 @@ public class NotificationMetaData implements java.io.Serializable {
     SilverTrace.info("notificationManager",
         "NotificationMetaData.getContent()", "root.MSG_GEN_EXIT_METHOD",
         "result = " + result);
-    return result;
+    return EncodeHelper.javaStringToHtmlParagraphe(result);
   }
 
   /**
