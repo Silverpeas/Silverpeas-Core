@@ -25,7 +25,7 @@
 --%>
 
 <%@ include file="check.jsp" %>
-<% 
+<%
 Collection 				subscribeThemes 	= (Collection) request.getAttribute("SubscribeThemeList");
 String 					userId 				= (String) request.getAttribute("userId");
 String 					action				= (String) request.getAttribute("action");
@@ -34,7 +34,7 @@ OrganizationController 	organizationCtrl 	= sessionController.getOrganizationCon
 final String 			rootPath			= resource.getString("Path");
 
 boolean isReadOnly = false;
-if ( action != null && action.equals("showUserSubscriptions")) 
+if ( action != null && action.equals("showUserSubscriptions"))
 {
     isReadOnly = true;
 }
@@ -48,7 +48,7 @@ String language = resource.getLanguage();
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language="javascript">
-function deleteSelectThemeConfirm() 
+function deleteSelectThemeConfirm()
 {
 	var boxItems = document.readForm.themeCheck;
 	if (boxItems != null)
@@ -64,7 +64,7 @@ function deleteSelectThemeConfirm()
             	}
             }
         }
-        
+
 		if (sendIt && areYouSure())
 		{
 	    	document.readForm.mode.value = 'delete';
@@ -87,31 +87,31 @@ function areYouSure()
 
 <%
 	browseBar.setComponentName(rootPath);
-	
+
 	TabbedPane tabbedPane = gef.getTabbedPane();
 	tabbedPane.addTab(resource.getString("pdc"), "subscriptionList.jsp?userId="+userId, false);
 	tabbedPane.addTab(resource.getString("thematique"), "#", true);
 
-	if (!isReadOnly) 
+	if (!isReadOnly)
 		operationPane.addOperation(resource.getIcon("icoDelete") , resource.getString("DeleteSC"),"javascript:deleteSelectThemeConfirm()");
-	
+
 	out.println(window.printBefore());
 	out.println(tabbedPane.print());
     out.println(frame.printBefore());
 
 	ArrayPane arrayPane = gef.getArrayPane("ViewSubscriptionTheme", "ViewSubscriptionTheme", request, session);
 	arrayPane.addArrayColumn(resource.getString("emplacement"));
-	if (!isReadOnly) 
+	if (!isReadOnly)
 	{
 		ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("Operations"));
 		columnOp.setSortable(false);
 	}
-		
+
 	// remplissage de l'ArrayPane avec les abonnements
-	if (subscribeThemes != null && subscribeThemes.size() != 0) 
+	if (subscribeThemes != null && subscribeThemes.size() != 0)
 	{
 		Iterator it = (Iterator) subscribeThemes.iterator();
-		while (it.hasNext()) 
+		while (it.hasNext())
 		{
 			Collection path = (Collection) it.next();
 			Iterator j = path.iterator();
@@ -133,14 +133,14 @@ function areYouSure()
 				}
 				if (node.getNodePK().getId().equals("0"))
 				{
-					// on est � la racine, on recherche le nom de l'espace et de l'instance du composant
+					// on est a la racine, on recherche le nom de l'espace et de l'instance du composant
 					componentId = node.getNodePK().getComponentName();
 					if (componentInst == null)
 	              		componentInst = organizationCtrl.getComponentInstLight(componentId);
 					SpaceInstLight spaceInst = organizationCtrl.getSpaceInstLightById(componentInst.getDomainFatherId());
 					name = spaceInst.getName() + " > " + componentInst.getLabel();
 				}
-				else 
+				else
 					name = node.getName(language);
 				if (rootName.length() == 0)
 					rootName = name;
@@ -152,13 +152,13 @@ function areYouSure()
 			else
 				line.addArrayCellText(rootName);
 			IconPane iconPane = gef.getIconPane();
-			if (!isReadOnly) 
+			if (!isReadOnly)
         		line.addArrayCellText("&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"themeCheck\" value=\""+ delete +"\">");
 		}
 	}
-			
+
 	out.println(arrayPane.print());
-  
+
   	out.println(frame.printAfter());
 	out.println(window.printAfter());
   %>

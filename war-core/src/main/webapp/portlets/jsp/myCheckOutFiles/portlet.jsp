@@ -164,7 +164,7 @@ boolean full = false;
                         }
                        else
                        {
-                         	// recherche du libellï¿½ du jour
+                         	// recherche du libelle du jour
                        		int day = veDate.get(Calendar.DAY_OF_WEEK);
                         	String jour = "GML.jour" + day;
 							// recherche du libellïe du mois

@@ -66,13 +66,13 @@ void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWrite
 		out.println("</td>");
 		out.println("<td class=\"intfdcolor4\" align=left valign=\"top\">");
 	}
-		
-	
+
+
 	String disabled = "disabled";
 	String sTemp = parameter.getUpdatable().toLowerCase();
 	if ((PARAM_UPDATE_ALWAYS.equals(sTemp)) || (PARAM_UPDATE_ONCREATION.equals(sTemp)) || ("".equals(sTemp)))
 		disabled = "";
-			   
+
 	if (isCheckbox) {
 		String checked = "";
 		if (parameter.getValue() != null && parameter.getValue().toLowerCase().equals("yes")) {
@@ -92,7 +92,7 @@ void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWrite
 				String name = (String) option.get(0);
 				String value = (String) option.get(1);
 				out.println("<option value=\""+value+"\">"+name);
-			}		
+			}
 			out.println("</select>");
 		}
 	}
@@ -111,7 +111,7 @@ void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWrite
 					checked = "checked";
 				out.println("<input type=\"radio\" name=\""+parameter.getName()+"\" value=\""+value+"\" "+checked+">");
 				out.println(name+"&nbsp;<br>");
-			}		
+			}
 		}
 	}
 	else {
@@ -124,8 +124,8 @@ void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWrite
 
 		out.println("<input type=\"text\" name=\""+parameter.getName()+"\" size=\""+sSize+"\" maxlength=\"399\" value=\""+Encode.javaStringToHtmlString(parameter.getValue())+"\" "+disabled+">");
 
-		if (mandatory) 
-		{ 
+		if (mandatory)
+		{
 			out.println("&nbsp;<img src=\""+resource.getIcon("mandatoryField")+"\" width=\"5\" height=\"5\" border=\"0\">");
 		}
 	}
@@ -222,7 +222,7 @@ function isCorrectForm() {
 	{
 		parameter = (SPParameter) parameters.get(nI);
 		boolean isRadio = PARAM_TYPE_RADIO.equals(parameter.getType());
-		if (parameter.isMandatory() && !isRadio) 
+		if (parameter.isMandatory() && !isRadio)
 		{
 		%>
 			var paramValue = stripInitialWhitespace(document.infoInstance.<%=parameter.getName()%>.value);
@@ -255,7 +255,7 @@ function isCorrectForm() {
 }
 
 function toDoOnLoad() {
-	<% 
+	<%
 		int height = 385;
 		if (parameters!=null)
 		{
@@ -309,13 +309,13 @@ out.println(board.printBefore());
 		</td>
 	</tr>
 </table>
-<% 
+<%
 if (parameters.size() > 0)
 {
 %>
 	<br>
 	<table width=100%>
-	<tr class="intfdcolor51"><td align="center"><span class="txtlibform"><img src="<%=resource.getIcon("JSPP.px")%>" height="20" width="1" align="middle">Paramï¿½tres de l'instance</span></td></tr>
+	<tr class="intfdcolor51"><td align="center"><span class="txtlibform"><img src="<%=resource.getIcon("JSPP.px")%>" height="20" width="1" align="middle">Paramètres de l'instance</span></td></tr>
 	</table>
 <%
 }
@@ -326,7 +326,7 @@ if (parameters.size() > 0)
 	boolean on2Columns = false;
 	if (parameters.size() >= 5)
 		on2Columns = true;
-	
+
 	if (on2Columns)
 	{
 		out.println("<td>");
@@ -360,11 +360,11 @@ if (parameters.size() > 0)
 			out.println("</tr>");
 		}
 	}
-	
+
 	for(int nI=0; hiddenParameters != null && nI < hiddenParameters.size(); nI++)
 	{
 		parameter = (SPParameter) hiddenParameters.get(nI);
-		
+
 		out.println("<input type=\"hidden\" name=\""+parameter.getName()+"\" value=\""+parameter.getValue()+"\"/>\n");
 	}
 %>
@@ -374,12 +374,12 @@ if (parameters.size() > 0)
 	</table>
 <%
 	out.println(board.printAfter());
-	out.println("<BR/>");
+	out.println("<br/>");
 	ButtonPane buttonPane = gef.getButtonPane();
 	buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false));
 	buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false));
 	out.println("<center>"+buttonPane.print()+"</center>");
-	
+
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
