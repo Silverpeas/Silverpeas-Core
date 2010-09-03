@@ -35,8 +35,8 @@
 <portlet:defineObjects/>
 
 <script type="text/javascript">
-function goTo(cUrl, componentId) 
-{	
+function goTo(cUrl, componentId)
+{
 	jumpToComponent(componentId);
 	location.href=cUrl;
 }
@@ -47,7 +47,7 @@ function jumpToComponent(componentId) {
 	parent.SpacesBar.document.privateDomainsForm.privateDomain.value="";
 	parent.SpacesBar.document.privateDomainsForm.privateSubDomain.value="";
 	parent.SpacesBar.document.privateDomainsForm.submit();
-	
+
 	//Reload Topbar
 	parent.SpacesBar.reloadTopBar(true);
 }
@@ -60,10 +60,10 @@ Iterator 		documents 	= (Iterator) pReq.getAttribute("Documents");
 
 ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(language);
 boolean full = false;
-      
+
 	if ((attachments != null && attachments.hasNext()) || (documents != null && documents.hasNext()))
 	{
-    	// convertir la date du jour 
+    	// convertir la date du jour
         Calendar today = Calendar.getInstance();
         today.setTime(new Date());
         today.set(Calendar.HOUR_OF_DAY, 0);
@@ -78,46 +78,46 @@ boolean full = false;
         tomorrow.set(Calendar.MINUTE, 0);
         tomorrow.set(Calendar.SECOND, 0);
         tomorrow.set(Calendar.MILLISECOND, 0);
-		                
+
 		// traitement des liens vers les fichiers joints
- 		if (attachments != null) 
+ 		if (attachments != null)
 		{
-			while (attachments.hasNext()) 
+			while (attachments.hasNext())
 			{
 				AttachmentDetail att = (AttachmentDetail) attachments.next();
 				String url 	= m_sContext+URLManager.getURL(null,null,att.getPK().getInstanceId())+"GoToFilesTab?Id="+att.getForeignKey().getId();
 				String name = Encode.convertHTMLEntities(att.getTitle());
 				if (StringUtil.isDefined(att.getLogicalName(language)))
 					name = Encode.convertHTMLEntities(att.getLogicalName(language));
-			
+
 				out.println("&#149; <a href=\"javaScript:goTo('"+url+"','"+att.getPK().getInstanceId()+"')\">"+name+"</a>");
-				
+
 				if (att.getExpiryDate() != null)
 				{
-					// convertir la date de l'ï¿½vï¿½nement
+					// convertir la date de l'evenement
                     Calendar atDate = Calendar.getInstance();
                     atDate.setTime(att.getExpiryDate());
                     atDate.set(Calendar.HOUR_OF_DAY, 0);
                     atDate.set(Calendar.MINUTE, 0);
-                    
-                    // formatage de la date sous forme jj/mm/aaaa 
+
+                    // formatage de la date sous forme jj/mm/aaaa
                     String date = DateUtil.getInputDate(att.getExpiryDate(), language);
                     if (today.equals(atDate))
                     {
-                    	// ï¿½vï¿½nement du jour
+                    	// evenement du jour
                    		out.println(" (" + message.getString("today") + ")");
                     }
                     else if (tomorrow.equals(atDate))
                     {
                     	// ï¿½vï¿½nement du lendemain
-                      	out.println(" (" + message.getString("tomorrow") + ")");    
+                      	out.println(" (" + message.getString("tomorrow") + ")");
                     }
-                    else          
+                    else
                     {
-                      	// recherche du libellï¿½ du jour
+                      	// recherche du libelle du jour
                     	int day = atDate.get(Calendar.DAY_OF_WEEK);
                      	String jour = "GML.jour" + day;
-						// recherche du libellï¿½ du mois
+						// recherche du libelle du mois
                     	int month = atDate.get(Calendar.MONTH);
                       	String mois = "GML.mois" + month;
                			out.println(" (" + generalMessage.getString(jour)+ " " + atDate.get(Calendar.DATE) +" " + generalMessage.getString(mois) + " " + atDate.get(Calendar.YEAR) + ")");
@@ -132,42 +132,42 @@ boolean full = false;
 			}
 		}
 		// traitement des liens vers les fichiers joints versionnï¿½s
-		if (documents != null && documents.hasNext()) 
+		if (documents != null && documents.hasNext())
 		{
-			while (documents.hasNext()) 
+			while (documents.hasNext())
 			{
 				Document doc = (Document) documents.next();
 				String url 	= m_sContext+URLManager.getURL(null,null,doc.getPk().getInstanceId())+"GoToFilesTab?Id="+doc.getForeignKey().getId();
-				String name = doc.getName(); 					
-				
+				String name = doc.getName();
+
 				out.println("&#149; <a href=\"javaScript:goTo('"+url+"','"+doc.getPk().getInstanceId()+"')\">"+name+"</a>");
-				
+
 				if (doc.getExpiryDate() != null)
 				{
-					// convertir la date de l'ï¿½vï¿½nement
+					// convertir la date de l'evenement
                        Calendar veDate = Calendar.getInstance();
                        veDate.setTime(doc.getExpiryDate());
                        veDate.set(Calendar.HOUR_OF_DAY, 0);
                        veDate.set(Calendar.MINUTE, 0);
 
-                       // formatage de la date sous forme jj/mm/aaaa 
+                       // formatage de la date sous forme jj/mm/aaaa
                        String date = DateUtil.getInputDate(doc.getExpiryDate(), language);
                        if (today.equals(veDate))
                        {
-                       		// ï¿½vï¿½nement du jour
+                       		//evenement du jour
                       		out.println(" (" + message.getString("today") + ")");
                        }
                        else if (tomorrow.equals(veDate))
                        {
-                       		// ï¿½vï¿½nement du lendemain
+                       		// evenement du lendemain
                       		out.println(" (" + message.getString("tomorrow") + ")");
                         }
-                       else          
+                       else
                        {
                          	// recherche du libellï¿½ du jour
                        		int day = veDate.get(Calendar.DAY_OF_WEEK);
                         	String jour = "GML.jour" + day;
-							// recherche du libellï¿½ du mois
+							// recherche du libellïe du mois
                        		int month = veDate.get(Calendar.MONTH);
                          	String mois = "GML.mois" + month;
                   			out.println(" ("+ generalMessage.getString(jour)+ " " + veDate.get(Calendar.DATE) +" " + generalMessage.getString(mois) + " " + veDate.get(Calendar.YEAR) + ")");
@@ -183,7 +183,7 @@ boolean full = false;
 	 }
 	 else
 	 {
-	 	out.println("Aucun fichier rï¿½servï¿½ !");
+	 	out.println(generalMessage.getString("GML.noLockedFile"));
 	 }
 	 out.flush();
 %>
