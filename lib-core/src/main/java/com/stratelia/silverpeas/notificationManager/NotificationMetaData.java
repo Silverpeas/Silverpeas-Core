@@ -31,7 +31,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,6 +38,7 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import java.util.Collections;
 
 public class NotificationMetaData implements java.io.Serializable {
 
@@ -55,8 +55,8 @@ public class NotificationMetaData implements java.io.Serializable {
   private String componentId;
   private boolean isAnswerAllowed = false;
   private String fileName;
-  private Hashtable<String, String> titles = new Hashtable<String, String>();
-  private Hashtable<String, String> contents = new Hashtable<String, String>(); // <"fr",
+  private Map<String, String> titles = new HashMap<String, String>();
+  private Map<String, String> contents = new HashMap<String, String>(); // <"fr",
   // "bonjour">,
   // <"en", "hello">
 
@@ -109,7 +109,7 @@ public class NotificationMetaData implements java.io.Serializable {
     this.templates = new HashMap<String, SilverpeasTemplate>();
   }
 
-  public void addLanguage(String language, String title, String content) {
+  public final void addLanguage(String language, String title, String content) {
     titles.put(language, title);
     contents.put(language, content);
   }
@@ -119,7 +119,7 @@ public class NotificationMetaData implements java.io.Serializable {
   }
 
   public Map<String, SilverpeasTemplate> getTemplates() {
-    return templates;
+    return Collections.unmodifiableMap(templates);
   }
 
   public Boolean isTemplateUsed() {
@@ -345,8 +345,9 @@ public class NotificationMetaData implements java.io.Serializable {
    * @param userIds user ids to be added as an array of String
    */
   public void addUserRecipients(String[] userIds) {
-    if (userIds != null)
+    if (userIds != null) {
       userRecipients.addAll(Arrays.asList(userIds));
+    }
   }
 
   /**
@@ -355,8 +356,9 @@ public class NotificationMetaData implements java.io.Serializable {
    */
   public void addUserRecipients(UserDetail[] users) {
     for (int i = 0; users != null && i < users.length; i++) {
-      if (users[i] != null)
+      if (users[i] != null) {
         userRecipients.add(users[i].getId());
+      }
     }
   }
 
@@ -373,7 +375,7 @@ public class NotificationMetaData implements java.io.Serializable {
    * @return the message group recipients
    */
   public Collection<String> getGroupRecipients() {
-    return groupRecipients;
+    return Collections.unmodifiableCollection(groupRecipients);
   }
 
   /**
@@ -389,8 +391,9 @@ public class NotificationMetaData implements java.io.Serializable {
    * @param groupIds group ids to be added as an array of String
    */
   public void addGroupRecipients(String[] groupIds) {
-    if (groupIds != null)
+    if (groupIds != null) {
       groupRecipients.addAll(Arrays.asList(groupIds));
+    }
   }
 
   public void setConnection(Connection con) {

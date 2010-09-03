@@ -63,6 +63,8 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class declaration
@@ -415,8 +417,9 @@ public class NotificationManager implements NotificationParameterNames {
       ndars = ndat.getAllByUserId(aUserId);
       if (ndars.length > 0) {
         addressId = ndars[0].getNotifAddressId();
-      } else
+      } else {
         addressId = m_DefaultDefaultAddress;
+      }
     } catch (UtilException e) {
       throw new NotificationManagerException(
           "NotificationManager.getDefaultAddress()", SilverpeasException.ERROR,
@@ -592,8 +595,9 @@ public class NotificationManager implements NotificationParameterNames {
     try {
       schema = new NotifSchema(0);
       NotifAddressTable nat = schema.notifAddress;
-      if (aUsage == null)
+      if (aUsage == null) {
         aUsage = NotificationParameters.USAGE_PRO;
+      }
 
       NotifAddressRow row = new NotifAddressRow(aNotificationAddressId,
           aUserId, aNotifName, aChannelId, aAddress, aUsage, 0);
@@ -810,10 +814,12 @@ public class NotificationManager implements NotificationParameterNames {
     }
 
     try {
-      if (params.connection != null)
+      if (params.connection != null) {
         schema = new NotifSchema(0, params.connection);
-      else
+      }
+      else {
         schema = new NotifSchema(0);
+      }
       params.traceObject();
       for (i = 0; i < aUserIds.length; i++) {
         try {
@@ -1000,10 +1006,10 @@ public class NotificationManager implements NotificationParameterNames {
     p.setProperty("priority", getSureString(m_Multilang
         .getString("messagePriority" + String.valueOf(npr.getMessageType()))));
 
-    p.setProperty("canEdit", new Boolean(canEdit).toString());
-    p.setProperty("canDelete", new Boolean(canDelete).toString());
-    p.setProperty("canTest", new Boolean(canTest).toString());
-    p.setProperty("isDefault", new Boolean(isDefault).toString());
+    p.setProperty("canEdit", String.valueOf(canEdit));
+    p.setProperty("canDelete", String.valueOf(canDelete));
+    p.setProperty("canTest", String.valueOf(canTest));
+    p.setProperty("isDefault", String.valueOf(isDefault));
 
     return p;
   }
@@ -1046,10 +1052,10 @@ public class NotificationManager implements NotificationParameterNames {
     }
     p.setProperty("address", theAddress);
 
-    p.setProperty("canEdit", new Boolean(canEdit).toString());
-    p.setProperty("canDelete", new Boolean(canDelete).toString());
-    p.setProperty("canTest", new Boolean(canTest).toString());
-    p.setProperty("isDefault", new Boolean(isDefault).toString());
+    p.setProperty("canEdit", String.valueOf(canEdit));
+    p.setProperty("canDelete", String.valueOf(canDelete));
+    p.setProperty("canTest", String.valueOf(canTest));
+    p.setProperty("isDefault", String.valueOf(isDefault));
 
     return p;
   }
@@ -1292,20 +1298,18 @@ public class NotificationManager implements NotificationParameterNames {
 
   public String getApplicationURL() {
     if (m_ApplicationURL == null) {
-      ResourceLocator resources = new ResourceLocator(
-          "com.stratelia.webactiv.general", "");
-
+      ResourceLocator resources = new ResourceLocator("com.stratelia.webactiv.general", "");
       m_ApplicationURL = resources.getString("ApplicationURL");
-      if (m_ApplicationURL == null)
+      if (m_ApplicationURL == null) {
         m_ApplicationURL = "/silverpeas";
+      }
     }
     return m_ApplicationURL;
   }
 
   public String getUserAutoRedirectURL(String userId, String target) {
     try {
-      return getUserAutoRedirectURL(userId)
-          + URLEncoder.encode(target, "UTF-8");
+      return getUserAutoRedirectURL(userId) + URLEncoder.encode(target, "UTF-8");
     } catch (Exception e) {
       SilverTrace.error("peasCore",
           "URLManager.getUserAutoRedirectURL(userId)", "root.EX_NO_MESSAGE",
@@ -1346,8 +1350,8 @@ public class NotificationManager implements NotificationParameterNames {
     NotificationData nd = new NotificationData();
     NotifAddressRow nar = null;
     NotifChannelRow ncr = null;
-    StringBuffer theMessage = new StringBuffer(100);
-    Hashtable theExtraParams = new Hashtable();
+    StringBuilder theMessage = new StringBuilder(100);
+    Map<String, Object> theExtraParams = new HashMap<String, Object>();
 
     nar = getNotifAddressRow(params, Integer.parseInt(aUserId), schema);
     ncr = schema.notifChannel.getNotifChannel(nar.getNotifChannelId());
@@ -1366,8 +1370,7 @@ public class NotificationManager implements NotificationParameterNames {
     if ("Y".equalsIgnoreCase(ncr.getSubjectAvailable())) {
       theExtraParams.put(NotificationParameterNames.SUBJECT, params.sTitle);
     } else if (params.iFromUserId < 0) {
-      theMessage.append(m_Multilang.getString("subject") + " : "
-          + params.sTitle + "\n\n");
+      theMessage.append(m_Multilang.getString("subject")).append(" : ").append(params.sTitle).append("\n\n");
     }
 
     String senderName;
@@ -1393,8 +1396,9 @@ public class NotificationManager implements NotificationParameterNames {
       if (!StringUtil.isValidEmailAddress(fromEmail) || params.iFromUserId >= 0) {
         fromEmail = getUserEmail(params.iFromUserId);
         if ("".equals(fromEmail)) {
-          if (m_Admin == null)
+          if (m_Admin == null) {
             m_Admin = new Admin();
+          }
           fromEmail = m_Admin.getAdministratorEmail();
         }
       }
@@ -1406,8 +1410,7 @@ public class NotificationManager implements NotificationParameterNames {
     } else if (FROM_NAME.equalsIgnoreCase(ncr.getFromAvailable())) {
       theExtraParams.put(NotificationParameterNames.FROM, senderName);
     } else {
-      theMessage.append(m_Multilang.getString("from") + " : " + senderName
-          + "\n\n");
+      theMessage.append(m_Multilang.getString("from")).append(" : ").append(senderName).append("\n\n");
     }
 
     // Set Url parameter
@@ -1483,7 +1486,7 @@ public class NotificationManager implements NotificationParameterNames {
     NotifAddressRow[] nars = null;
     NotifChannelRow[] ncrs = null;
     StringBuffer theMessage = new StringBuffer(100);
-    Hashtable theExtraParams = new Hashtable();
+    Map<String, Object> theExtraParams = new HashMap<String, Object>();
 
     nars = getAllNotifAddressRow(params, Integer.parseInt(aUserId), schema);
     nds = new NotificationData[nars.length];
@@ -1505,8 +1508,7 @@ public class NotificationManager implements NotificationParameterNames {
       if ("Y".equalsIgnoreCase(ncrs[i].getSubjectAvailable())) {
         theExtraParams.put(NotificationParameterNames.SUBJECT, params.sTitle);
       } else if (params.iFromUserId < 0) {
-        theMessage.append(m_Multilang.getString("subject") + " : "
-            + params.sTitle + "\n\n");
+        theMessage.append(m_Multilang.getString("subject")).append(" : ").append(params.sTitle).append("\n\n");
       }
 
       String senderName;
@@ -1532,8 +1534,9 @@ public class NotificationManager implements NotificationParameterNames {
         if (!StringUtil.isValidEmailAddress(fromEmail) || params.iFromUserId >= 0) {
           fromEmail = getUserEmail(params.iFromUserId);
           if ("".equals(fromEmail)) {
-            if (m_Admin == null)
+            if (m_Admin == null) {
               m_Admin = new Admin();
+            }
             fromEmail = m_Admin.getAdministratorEmail();
           }
         }
@@ -1545,8 +1548,7 @@ public class NotificationManager implements NotificationParameterNames {
       } else if (FROM_NAME.equalsIgnoreCase(ncrs[i].getFromAvailable())) {
         theExtraParams.put(NotificationParameterNames.FROM, senderName);
       } else {
-        theMessage.append(m_Multilang.getString("from") + " : " + senderName
-            + "\n\n");
+        theMessage.append(m_Multilang.getString("from")).append(" : ").append(senderName).append("\n\n");
       }
 
       // Set Url parameter

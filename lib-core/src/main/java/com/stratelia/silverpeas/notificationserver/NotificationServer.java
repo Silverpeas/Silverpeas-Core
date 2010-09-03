@@ -25,8 +25,6 @@
 package com.stratelia.silverpeas.notificationserver;
 
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Hashtable;
 
 import javax.jms.JMSException;
 import javax.jms.Queue;
@@ -41,19 +39,21 @@ import javax.naming.NamingException;
 
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class NotificationServer {
   private String m_JmsFactory = JNDINames.JMS_FACTORY;
   private String m_JmsQueue = JNDINames.JMS_QUEUE;
   private String m_JmsHeaderChannel = JNDINames.JMS_HEADER_CHANNEL;
-  private Hashtable m_JmsHeaders;
+  private Map<String, String> m_JmsHeaders;
 
   /**
    * Constructor declaration
    * @see
    */
   public NotificationServer() {
-    m_JmsHeaders = new Hashtable();
+    m_JmsHeaders = new HashMap<String, String>();
   }
 
   // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -73,15 +73,10 @@ public class NotificationServer {
   public long addNotification(NotificationData pData)
       throws NotificationServerException {
     long notificationid = 0; // a gerer plus tard (necessite une database)
-    String notificationAsXML;
-
     m_JmsHeaders.clear();
     m_JmsHeaders.put(m_JmsHeaderChannel, pData.getTargetChannel());
-
     pData.setNotificationId(notificationid);
-
-    notificationAsXML = NotificationServerUtil
-        .convertNotificationDataToXML(pData);
+    String notificationAsXML = NotificationServerUtil.convertNotificationDataToXML(pData);
     try {
       jmsSendToQueue(notificationAsXML, m_JmsFactory, m_JmsQueue, m_JmsHeaders);
     } catch (Exception e) {
@@ -95,40 +90,24 @@ public class NotificationServer {
   /**
    * Send the NotificationMessage in a JMS Queue
    */
-  private static void jmsSendToQueue(String notificationMessage,
-      String jmsFactory, String jmsQueue, Hashtable p_JmsHeaders)
-      throws JMSException, NamingException, IOException {
-    QueueConnectionFactory qconFactory;
-    QueueConnection qcon;
-    QueueSession qsession;
-    QueueSender qsender;
-    Queue queue;
-
+  private static void jmsSendToQueue(String notificationMessage, String jmsFactory, String jmsQueue,
+      Map<String, String> p_JmsHeaders) throws JMSException, NamingException, IOException {
     InitialContext ic = new InitialContext();
-
-    qconFactory = (QueueConnectionFactory) ic.lookup(jmsFactory);
-    qcon = qconFactory.createQueueConnection();
-    qsession = qcon.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
-    queue = (Queue) ic.lookup(jmsQueue);
-    qsender = qsession.createSender(queue);
-
-    TextMessage textMsg;
-
-    textMsg = qsession.createTextMessage();
+    QueueConnectionFactory qconFactory = (QueueConnectionFactory) ic.lookup(jmsFactory);
+    QueueConnection qcon = qconFactory.createQueueConnection();
+    QueueSession qsession = qcon.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
+    Queue queue = (Queue) ic.lookup(jmsQueue);
+    QueueSender qsender = qsession.createSender(queue);
+    TextMessage textMsg = qsession.createTextMessage();
     qcon.start();
 
     // Add notificationMessage as message
     textMsg.setText(notificationMessage);
     // Add property
-    for (Enumeration e = p_JmsHeaders.keys(); e.hasMoreElements();) {
-      Object key = e.nextElement();
-
-      textMsg.setStringProperty((String) key, (String) p_JmsHeaders
-          .get((String) key));
+    for (Map.Entry<String, String> entry : p_JmsHeaders.entrySet()) {
+      textMsg.setStringProperty(entry.getKey(), entry.getValue());
     }
-
     qsender.send(textMsg);
-
     qsender.close();
     qsession.close();
     qcon.close();

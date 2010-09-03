@@ -78,14 +78,7 @@ public class ProviderSwitch implements ProviderSwitchInterface {
   }
 
   /**
-<<<<<<< .mine
-   * get my social Informations list  according to the social information type
-   * , the UserId
-   * ,limit
-   * and index
-=======
    * get my social Informations list according to the social information type and the UserId
->>>>>>> .r2184
    * @param socialInformationType
    * @param userId
    * @param String classification

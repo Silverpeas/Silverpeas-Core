@@ -22,16 +22,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.silverpeas.notificationManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -58,16 +54,15 @@ import static com.stratelia.silverpeas.notificationManager.NotificationTemplateK
  * @version %I%, %G%
  */
 public class NotificationSender implements java.io.Serializable {
+
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 4165938893905145809L;
   private static ResourceLocator settings =
       new ResourceLocator(
-          "com.stratelia.silverpeas.notificationManager.settings.notificationManagerSettings", "");
-
+      "com.stratelia.silverpeas.notificationManager.settings.notificationManagerSettings", "");
   protected NotificationManager m_Manager = null;
-
   protected int m_instanceId = -1;
 
   /**
@@ -128,7 +123,7 @@ public class NotificationSender implements java.io.Serializable {
       usersSet.addAll(Arrays.asList(m_Manager.getUsersFromGroup(groupId)));
     }
     Set<String> languages = metaData.getLanguages();
-    Hashtable<String, String> usersLanguage =
+    Map<String, String> usersLanguage =
         orgaController.getUsersLanguage(new ArrayList<String>(usersSet));
 
     NotificationParameters params = null;
@@ -143,9 +138,7 @@ public class NotificationSender implements java.io.Serializable {
           "NotificationSender.notifyUser()", "root.MSG_GEN_PARAM_VALUE",
           "language = " + language);
       params = getNotificationParameters(aMediaType, metaData);
-
       params.sTitle = metaData.getTitle(language);
-
       // ajout des destinataires dans le corps du message
       if (!metaData.isTemplateUsed()) {
         // manageManualNotification(usersSet, languages, metaData, orgaController);
@@ -155,31 +148,24 @@ public class NotificationSender implements java.io.Serializable {
         Map<String, SilverpeasTemplate> templates = metaData.getTemplates();
         if (templates != null && !templates.isEmpty()) {
           // pour chaque langue
-          for (String lang : getAllLanguages()) {
-            SilverpeasTemplate template = templates.get(lang);
-            if (template != null) {
-              try {
-                ResourceLocator settings =
-                    new ResourceLocator(
-                        "com.stratelia.silverpeas.notificationManager.settings.notificationManagerSettings",
-                        "");
-                String receiver_users =
-                    addReceiverUsers(getUserSet(metaData, settings),
-                        getGroupSet(metaData, settings), lang, settings);
-                if (receiver_users != null && receiver_users.trim().length() > 0) {
-                  template.setAttribute(notification_receiver_users.toString(), receiver_users);
-                }
-                String receiver_groups =
-                    addReceiverGroups(getUserSet(metaData, settings), getGroupSet(metaData,
-                        settings), lang, settings);
-                if (receiver_groups != null && receiver_groups.trim().length() > 0) {
-                  template.setAttribute(notification_receiver_groups.toString(), receiver_groups);
-                }
-              } catch (NotificationManagerException e) {
-                SilverTrace.warn("alertUserPeas",
-                    "AlertUserPeasSessionController.prepareNotification()",
-                    "root.EX_ADD_USERS_FAILED", e);
+          SilverpeasTemplate template = templates.get(language);
+          if (template != null) {
+            try {
+              String receiver_users = addReceiverUsers(getUserSet(metaData, settings),
+                  getGroupSet(metaData, settings), language, settings);
+              if (StringUtil.isDefined(receiver_users)) {
+                template.setAttribute(notification_receiver_users.toString(), receiver_users);
               }
+              String receiver_groups =
+                  addReceiverGroups(getUserSet(metaData, settings), getGroupSet(metaData,
+                  settings), language, settings);
+              if (StringUtil.isDefined(receiver_groups)) {
+                template.setAttribute(notification_receiver_groups.toString(), receiver_groups);
+              }
+            } catch (NotificationManagerException e) {
+              SilverTrace.warn("alertUserPeas",
+                  "AlertUserPeasSessionController.prepareNotification()",
+                  "root.EX_ADD_USERS_FAILED", e);
             }
           }
         }
@@ -194,11 +180,11 @@ public class NotificationSender implements java.io.Serializable {
       SilverTrace.info("notificationManager",
           "NotificationSender.notifyUser()", "root.MSG_GEN_PARAM_VALUE",
           "allUserIds apres remove= " + allUserIds);
-      m_Manager.notifyUsers(params, (String[]) userIds.toArray(new String[0]));
+      m_Manager.notifyUsers(params, userIds.toArray(new String[0]));
     }
 
     // Notify other user in language of the sender.
-    m_Manager.notifyUsers(params, (String[]) allUserIds.toArray(new String[0]));
+    m_Manager.notifyUsers(params, allUserIds.toArray(new String[0]));
 
     SilverTrace.info("notificationManager", "NotificationSender.notifyUser()",
         "root.MSG_GEN_EXIT_METHOD");
@@ -250,60 +236,36 @@ public class NotificationSender implements java.io.Serializable {
   private String addReceiverUsers(Set<String> usersSet, Set<String> groupsSet, String language,
       ResourceLocator settings) {
     OrganizationController orgaController = new OrganizationController();
-    String users = "";
+    StringBuilder users = new StringBuilder();
     if (settings.getBoolean("addReceiversInBody", false)) {
-      String userName = "";
       boolean first = true;
       Iterator<String> it = usersSet.iterator();
       while (it.hasNext()) {
         if (!first) {
-          users = users + ", ";
+          users.append(", ");
         }
-        userName = orgaController.getUserDetail(it.next()).getDisplayedName();
-        users = users + userName;
-        first = false;
+        users.append(orgaController.getUserDetail(it.next()).getDisplayedName());
       }
     }
-    return users;
+    return users.toString();
   }
 
   private String addReceiverGroups(Set<String> usersSet, Set<String> groupsSet, String language,
       ResourceLocator settings) {
     OrganizationController orgaController = new OrganizationController();
-    String groups = "";
+    StringBuilder groups = new StringBuilder();
     if (settings.getBoolean("addReceiversInBody", false)) {
-      String groupName = "";
       boolean first = true;
       Iterator<String> itG = groupsSet.iterator();
       while (itG.hasNext()) {
-        if (!first) {
-          groups = groups + ", ";
+         if (!first) {
+          groups.append(", ");
         }
-        groupName = orgaController.getGroup(itG.next()).getName();
-        groups = groups + groupName;
+        groups.append(orgaController.getGroup(itG.next()).getName());
         first = false;
       }
     }
-    return groups;
-  }
-
-  private synchronized List<String> getAllLanguages() {
-    ResourceLocator resources = new ResourceLocator(
-        "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings",
-        "");
-    List<String> allLanguages = new ArrayList<String>();
-    try {
-      StringTokenizer st = new StringTokenizer(
-          resources.getString("languages"), ",");
-      while (st.hasMoreTokens()) {
-        String langue = st.nextToken();
-        allLanguages.add(langue);
-      }
-    } catch (Exception e) {
-      SilverTrace.error("alertUserPeas", "AlertUserPeasSessionController.getAllLanguages()",
-          "personalizationPeas.EX_CANT_GET_FAVORITE_LANGUAGE", e);
-    }
-    return allLanguages;
+    return groups.toString();
   }
 
   /**
@@ -323,7 +285,7 @@ public class NotificationSender implements java.io.Serializable {
         for (String language : languages) {
           String newContent =
               addReceiversInContent(usersSet, groupsSet, metaData.getContent(language), language,
-                  orgaController);
+              orgaController);
           metaData.setContent(newContent, language);
         }
       }
@@ -336,36 +298,33 @@ public class NotificationSender implements java.io.Serializable {
     ResourceLocator m_Multilang = new ResourceLocator(
         "com.stratelia.silverpeas.notificationserver.channel.silvermail.multilang.silvermail",
         language);
-    String listReceivers = "";
-    String userName = "";
-    String groupName = "";
+    StringBuilder listReceivers = new StringBuilder(500);
+    listReceivers.append(content);
     boolean first = true;
     Iterator<String> it = usersSet.iterator();
     while (it.hasNext()) {
-      if (!first) {
-        listReceivers = listReceivers + ", ";
+      if (first) {
+        listReceivers.append('\n');
+        listReceivers.append(m_Multilang.getString("NameOfReceivers"));
+      } else {
+        listReceivers.append(", ");
       }
-      else
-      {
-        listReceivers = listReceivers + "\n" + m_Multilang.getString("NameOfReceivers");
-      }
-      userName = orgaController.getUserDetail(it.next()).getDisplayedName();
-      listReceivers = listReceivers + userName;
+      listReceivers.append(orgaController.getUserDetail(it.next()).getDisplayedName());
       first = false;
     }
     first = true;
     Iterator<String> itG = groupsSet.iterator();
     while (itG.hasNext()) {
-      if (!first) {
-        listReceivers = listReceivers + ", ";
+      if (first) {
+        listReceivers.append('\n');
+        listReceivers.append(m_Multilang.getString("NameOfGroupReceivers"));
       } else {
-        listReceivers = listReceivers + "\n" + m_Multilang.getString("NameOfGroupReceivers");
+        listReceivers.append(", ");
       }
-      groupName = orgaController.getGroup(itG.next()).getName();
-      listReceivers = listReceivers + groupName;
+      listReceivers.append(orgaController.getGroup(itG.next()).getName());
       first = false;
     }
-    return content + listReceivers;
+    return listReceivers.toString();
   }
 
   private void saveNotification(NotificationMetaData metaData, Set<String> usersSet)
@@ -386,7 +345,7 @@ public class NotificationSender implements java.io.Serializable {
     return notificationInterface;
   }
 
-  private List<String> getUserIds(String lang, Hashtable<String, String> usersLanguage) {
+  private List<String> getUserIds(String lang, Map<String, String> usersLanguage) {
     List<String> userIds = new ArrayList<String>(usersLanguage.keySet());
     Iterator<String> languages = usersLanguage.values().iterator();
     List<String> result = new ArrayList<String>();
@@ -394,16 +353,16 @@ public class NotificationSender implements java.io.Serializable {
     int u = 0;
     while (languages.hasNext()) {
       language = languages.next();
-      SilverTrace.debug("notificationManager",
-          "NotificationSender.getUserIds()", "root.MSG_GEN_PARAM_VALUE",
-          "language = " + language);
-      if (lang.equalsIgnoreCase(language))
+      SilverTrace.debug("notificationManager", "NotificationSender.getUserIds()",
+          "root.MSG_GEN_PARAM_VALUE", "language = " + language);
+      if (lang.equalsIgnoreCase(language)) {
         result.add(userIds.get(u));
+      }
       u++;
     }
     SilverTrace.info("notificationManager", "NotificationSender.getUserIds()",
         "root.MSG_GEN_EXIT_METHOD", result.size() + " users for language '"
-            + lang + "' ");
+        + lang + "' ");
     return result;
   }
 
@@ -418,18 +377,20 @@ public class NotificationSender implements java.io.Serializable {
     params.sSource = metaData.getSource();
     params.sURL = metaData.getLink();
     params.sSessionId = metaData.getSessionId();
-    if (m_instanceId != -1)
+    if (m_instanceId != -1) {
       params.iComponentInstance = m_instanceId;
-    else
+    } else {
       params.iComponentInstance = extractLastNumber(metaData.getComponentId());
+    }
     params.iMediaType = aMediaType;
     params.connection = metaData.getConnection();
     params.bAnswerAllowed = metaData.isAnswerAllowed();
     String sender = metaData.getSender();
     if (aMediaType == NotificationParameters.ADDRESS_BASIC_POPUP
         || aMediaType == NotificationParameters.ADDRESS_BASIC_COMMUNICATION_USER) {
-      if (metaData.isAnswerAllowed() && StringUtil.isDefined(sender))
+      if (metaData.isAnswerAllowed() && StringUtil.isDefined(sender)) {
         params.iFromUserId = Integer.parseInt(metaData.getSender());
+      }
     } else if (StringUtil.isInteger(sender)) {
       SilverTrace.info("notificationManager",
           "NotificationSender.getNotificationParameters()",
@@ -472,23 +433,23 @@ public class NotificationSender implements java.io.Serializable {
         }
       }
     }
-    if (s.length() > 0)
+    if (s.length() > 0) {
       return Integer.parseInt(s);
-    else
+    } else {
       return -1;
+    }
   }
 
   // The next 4 static functions are for the use of NotificationUser component
   // as a popup window
   // -------------------------------------------------------------------------------------------
-
   static public String getIdsLineFromIdsArray(String[] asrc) {
-    StringBuffer toIds = new StringBuffer("");
+    StringBuilder toIds = new StringBuilder("");
 
     if (asrc != null) {
       for (int i = 0; i < asrc.length; i++) {
         if (i > 0) {
-          toIds.append("_");
+          toIds.append('_');
         }
         toIds.append(asrc[i]);
       }
@@ -497,12 +458,12 @@ public class NotificationSender implements java.io.Serializable {
   }
 
   static public String getIdsLineFromUserArray(UserDetail[] users) {
-    StringBuffer toIds = new StringBuffer("");
+    StringBuilder toIds = new StringBuilder("");
 
     if (users != null) {
       for (int i = 0; i < users.length; i++) {
         if (i > 0) {
-          toIds.append("_");
+          toIds.append('_');
         }
         toIds.append(users[i].getId());
       }
@@ -511,12 +472,12 @@ public class NotificationSender implements java.io.Serializable {
   }
 
   static public String getIdsLineFromGroupArray(Group[] groups) {
-    StringBuffer toIds = new StringBuffer("");
+    StringBuilder toIds = new StringBuilder("");
 
     if (groups != null) {
       for (int i = 0; i < groups.length; i++) {
         if (i > 0) {
-          toIds.append("_");
+          toIds.append('_');
         }
         toIds.append(groups[i].getId());
       }

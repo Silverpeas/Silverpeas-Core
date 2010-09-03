@@ -37,11 +37,8 @@ import java.util.Map;
  * @version 1.0
  */
 public class NotificationData implements Serializable {
+  private static final long serialVersionUID = -3772511721152323046L;
 
-  /**
-   *
-   */
-  private static final long serialVersionUID = 1L;
   // private fields
   private String mLoginUser;
   private String mLoginPassword;

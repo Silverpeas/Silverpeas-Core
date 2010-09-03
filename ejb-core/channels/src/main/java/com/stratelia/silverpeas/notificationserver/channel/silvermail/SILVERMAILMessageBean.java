@@ -30,6 +30,7 @@ import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 
 public class SILVERMAILMessageBean extends SilverpeasBean {
+  private static final long serialVersionUID = -3073514330044912996L;
 
   public SILVERMAILMessageBean() {
   }
