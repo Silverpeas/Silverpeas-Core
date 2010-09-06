@@ -245,6 +245,7 @@ public class NotificationSender implements java.io.Serializable {
           users.append(", ");
         }
         users.append(orgaController.getUserDetail(it.next()).getDisplayedName());
+        first = false;
       }
     }
     return users.toString();
