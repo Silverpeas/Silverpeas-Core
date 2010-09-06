@@ -27,22 +27,23 @@
 
 <%@ include file="check.jsp" %>
 <%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<%
+	String url = (String) request.getAttribute("HostUrl");
+%>
 <HTML>
 <HEAD>
 <%
 out.println(gef.getLookStyleSheet());
 %>
-<script language='Javascript'>
+<script type="text/javascript">
 function QuitAndRefresh()
 {
-	url = "<%=(String) request.getAttribute("HostUrl")%>";
-	
     <%
     boolean toPopup = ((Boolean)request.getAttribute("ToPopup")).booleanValue();
     if (toPopup)
     {
     %>
-    	window.opener.location.href=url;
+    	window.opener.location.href="<%=url%>";
         window.close();
     <%
     }
@@ -50,8 +51,7 @@ function QuitAndRefresh()
     {
     %>
     	$.progressMessage();
-    	document.redirection.action = url;
-    	setTimeout("document.redirection.submit();", 500);
+    	setTimeout("document.forms['redirection'].submit();", 500);
     <%
     }
     %>
@@ -59,8 +59,8 @@ function QuitAndRefresh()
 </script>
 </HEAD>
 <BODY onload="javascript:QuitAndRefresh()">
-  <view:progressMessage />
-<form name="redirection" method="POST">
+<form name="redirection" action="<%=url %>" method="post">
 </form>
+<view:progressMessage />
 </BODY>
 </HTML>
