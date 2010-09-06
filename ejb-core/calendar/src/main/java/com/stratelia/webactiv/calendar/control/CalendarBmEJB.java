@@ -431,43 +431,7 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
         "CalendarBmEJB.addJournal(JournalHeader journal)",
         "root.MSG_GEN_ENTER_METHOD");
     // verify the journal attributes are correctly set
-    if (journal.getName() == null) {
-      throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
-          "calendar.EX_PARAM_NULL", "name");
-    }
-    if (journal.getStartDate() == null) {
-      throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
-          "calendar.EX_PARAM_NULL", "startDate");
-    }
-    if (journal.getDelegatorId() == null) {
-      throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
-          "calendar.EX_PARAM_NULL", "delegatorId");
-    }
-    if (journal.getStartDate().compareTo(journal.getEndDate()) > 0) {
-      throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
-          "calendar.EX_DATE_FIN_ERROR");
-    }
-    if (journal.getStartHour() != null) {
-      if (journal.getEndHour() == null) {
-        throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
-            "calendar.EX_PARAM_NULL", "endHour");
-      }
-    }
-    if (journal.getEndHour() != null) {
-      if (journal.getStartHour() == null) {
-        throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
-            "calendar.EX_PARAM_NULL", "startHour");
-      }
-    }
-    if (journal.getStartDate().compareTo(journal.getEndDate()) == 0) {
-      if (journal.getStartHour() != null) {
-        if (journal.getStartHour().compareTo(journal.getEndHour()) > 0) {
-          throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
-              "calendar.EX_HOUR_FIN_ERRORR");
-        }
-      }
-    }
-
+    validateJournal(journal);
     // write in DB
     Connection con = getConnection();
     try {
@@ -496,6 +460,30 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
     SilverTrace.info("calendar",
         "CalendarBmEJB.updateJournal(JournalHeader journal)",
         "root.MSG_GEN_ENTER_METHOD");
+    validateJournal(journal);
+    Connection con = getConnection();
+    try {
+      JournalDAO.updateJournal(con, journal);
+      createIndex(journal, journal.getDelegatorId());
+      Collection<Attendee> attendees = getJournalAttendees(journal.getId());
+      for (Attendee attendee : attendees) {
+        createIndex(journal, attendee.getUserId());
+      }
+    } catch (SQLException se) {
+      throw new CalendarRuntimeException(
+          "CalendarBmEJB.updateJournal(JournalHeader journal)",
+          SilverpeasException.ERROR, "calendar.MSG_CANT_UPADATE_JOURNAL", se);
+    } catch (CalendarException ce) {
+      throw new CalendarRuntimeException(
+          "CalendarBmEJB.updateJournal(JournalHeader journal)",
+          SilverpeasException.ERROR, "calendar.EX_NOT_FOUND_JOURNAL", ce);
+    } finally {
+      freeConnection(con);
+    }
+  }
+
+
+  private void validateJournal(JournalHeader journal){
     // verify the journal attributes are correctly set
     if (journal.getName() == null) {
       throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
@@ -525,33 +513,13 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
             "calendar.EX_PARAM_NULL", "startHour");
       }
     }
-    if (journal.getStartDate().compareTo(journal.getEndDate()) == 0) {
+    if (journal.getStartDate().equals(journal.getEndDate())) {
       if (journal.getStartHour() != null) {
         if (journal.getStartHour().compareTo(journal.getEndHour()) > 0) {
           throw new CalendarRuntimeException("calendar", SilverpeasException.ERROR,
               "calendar.EX_HOUR_FIN_ERRORR");
         }
       }
-    }
-
-    Connection con = getConnection();
-    try {
-      JournalDAO.updateJournal(con, journal);
-      createIndex(journal, journal.getDelegatorId());
-      Collection<Attendee> attendees = getJournalAttendees(journal.getId());
-      for (Attendee attendee : attendees) {
-        createIndex(journal, attendee.getUserId());
-      }
-    } catch (SQLException se) {
-      throw new CalendarRuntimeException(
-          "CalendarBmEJB.updateJournal(JournalHeader journal)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_UPADATE_JOURNAL", se);
-    } catch (CalendarException ce) {
-      throw new CalendarRuntimeException(
-          "CalendarBmEJB.updateJournal(JournalHeader journal)",
-          SilverpeasException.ERROR, "calendar.EX_NOT_FOUND_JOURNAL", ce);
-    } finally {
-      freeConnection(con);
     }
   }
 
@@ -1388,7 +1356,7 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
           SilverpeasException.ERROR, "calendar.MSG_CANT_GET_JOURNALS", e);
     } finally {
       freeConnection(con);
-    }    
+    }
   }
   /**
    * get Last Social Events for a given list of my Contacts . This includes all kinds of events
