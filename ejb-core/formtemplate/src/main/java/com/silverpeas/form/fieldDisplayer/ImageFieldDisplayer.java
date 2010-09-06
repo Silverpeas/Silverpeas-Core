@@ -246,10 +246,10 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
       out.println("</div>");
 
       out.println("<div id=\"" + fieldName + "SelectionArea\">");
-      out.println("<input type=\"file\" size=\"50\" id=\"");
-      out.println(fieldName);
-      out.println("\" name=\"");
-      out.println(fieldName);
+      out.print("<input type=\"file\" size=\"50\" id=\"");
+      out.print(fieldName);
+      out.print("\" name=\"");
+      out.print(fieldName);
       out.println("\"/>");
       out.println("<input type=\"hidden\" name=\"" + fieldName + Field.FILE_PARAM_NAME_SUFFIX +
           "\" id=\"" + fieldName + "Hidden\" value=\"" + attachmentId + "\"/>");
