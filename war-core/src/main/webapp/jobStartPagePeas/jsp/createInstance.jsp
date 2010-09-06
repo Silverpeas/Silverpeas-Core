@@ -314,9 +314,9 @@ out.println(board.printBefore());
 if (parameters.size() > 0)
 {
 %>
-	<br>
-	<table width=100%>
-	<tr class="intfdcolor51"><td align="center"><span class="txtlibform"><img src="<%=resource.getIcon("JSPP.px")%>" height="20" width="1" align="middle">Paramètres de l'instance</span></td></tr>
+	<br/>
+	<table width="100%">
+	<tr class="intfdcolor51"><td align="center"><span class="txtlibform"><img src="<%=resource.getIcon("JSPP.px")%>" height="20" width="1" align="middle" alt=""/><%=resource.getString("JSPP.parameters") %></span></td></tr>
 	</table>
 <%
 }
