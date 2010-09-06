@@ -22,75 +22,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
-
 package com.stratelia.silverpeas.notificationserver.channel.silvermail;
 
+import com.stratelia.silverpeas.notificationserver.channel.SilverpeasMessage;
 import java.util.Date;
 
-public class SILVERMAILMessage {
+public class SILVERMAILMessage extends SilverpeasMessage {
   public SILVERMAILMessage() {
-  }
-
-  private long m_Id;
-
-  public void setId(long value) {
-    m_Id = value;
-  }
-
-  public long getId() {
-    return m_Id;
-  }
-
-  private long userId = -1;
-
-  public long getUserId() {
-    return userId;
-  }
-
-  public void setUserId(long value) {
-    userId = value;
-  }
-
-  private String m_UserLogin;
-
-  public void setUserLogin(String value) {
-    m_UserLogin = value;
-  }
-
-  public String getUserLogin() {
-    return m_UserLogin;
-  }
-
-  private String m_SenderName;
-
-  public void setSenderName(String value) {
-    m_SenderName = value;
-  }
-
-  public String getSenderName() {
-    return m_SenderName;
-  }
-
-  private String m_Subject;
-
-  public void setSubject(String value) {
-    m_Subject = value;
-  }
-
-  public String getSubject() {
-    return m_Subject;
-  }
-
-  private String m_Body;
-
-  public void setBody(String value) {
-    m_Body = value;
-  }
-
-  public String getBody() {
-    return m_Body;
+    super();
   }
 
   private String m_Url;

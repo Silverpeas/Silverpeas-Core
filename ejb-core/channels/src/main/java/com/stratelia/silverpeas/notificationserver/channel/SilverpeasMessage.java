@@ -22,66 +22,70 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.notificationserver.channel.popup;
+package com.stratelia.silverpeas.notificationserver.channel;
 
-import com.stratelia.silverpeas.notificationserver.channel.SilverpeasMessage;
+/**
+ *
+ * @author ehugonnet
+ */
+public class SilverpeasMessage {
+  private long m_Id;
 
-public class POPUPMessage extends SilverpeasMessage {
-  private String m_Date;
-  private String m_Time;
-
-  public POPUPMessage() {
+  public void setId(long value) {
+    m_Id = value;
   }
 
-
-
-  private String m_Source;
-
-  public void setSource(String source) {
-    m_Source = source;
+  public long getId() {
+    return m_Id;
   }
 
-  public String getSource() {
-    return m_Source;
+  private long userId = -1;
+
+  public long getUserId() {
+    return userId;
   }
 
-  private String m_senderId = null;
-
-  public String getSenderId() {
-    return m_senderId;
+  public void setUserId(long value) {
+    userId = value;
   }
 
-  public void setSenderId(String senderId) {
-    this.m_senderId = senderId;
+  private String m_UserLogin;
+
+  public void setUserLogin(String value) {
+    m_UserLogin = value;
   }
 
-  private boolean m_answerAllowed = false;
-
-  public boolean isAnswerAllowed() {
-    return m_answerAllowed;
+  public String getUserLogin() {
+    return m_UserLogin;
   }
 
-  public void setAnswerAllowed(boolean answerAllowed) {
-    this.m_answerAllowed = answerAllowed;
+  private String m_SenderName;
+
+  public void setSenderName(String value) {
+    m_SenderName = value;
   }
 
-  public void setAnswerAllowed(String answerAllowed) {
-    this.m_answerAllowed = "1".equals(answerAllowed);
+  public String getSenderName() {
+    return m_SenderName;
   }
 
-  public void setDate(String date) {
-    m_Date = date;
+  private String m_Subject;
+
+  public void setSubject(String value) {
+    m_Subject = value;
   }
 
-  public void setTime(String time) {
-    m_Time = time;
+  public String getSubject() {
+    return m_Subject;
   }
 
-  public String getDate() {
-    return m_Date;
+  private String m_Body;
+
+  public void setBody(String value) {
+    m_Body = value;
   }
 
-  public String getTime() {
-    return m_Time;
+  public String getBody() {
+    return m_Body;
   }
 }
