@@ -28,11 +28,11 @@
 <%@ include file="checkAttachment.jsp"%>
 
 <%
-String attachmentName 	= request.getParameter("Name");
 String attachmentId		= request.getParameter("IdAttachment");
 String componentId		= (String) session.getAttribute("Silverpeas_Attachment_ComponentId");
 
 AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(attachmentId, componentId));
+String attachmentName 	= attachment.getLogicalName(language);
 int nbTranslations = attachment.getTranslations().size();
 Iterator languages = attachment.getLanguages();
 %>

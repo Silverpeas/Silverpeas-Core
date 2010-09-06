@@ -94,9 +94,7 @@ public class MenuHelper {
           + resources.getString("attachment.xmlForm.Edit") + "</a></li>");
     }
     out.println(
-        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:deleteAttachment('"
-        + EncodeHelper.javaStringToJsString(attachment.getLogicalName(language))
-        + "',"
+        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:deleteAttachment("
         + attachmentId
         + ")\">"
         + resources.getString("GML.delete") + "</a></li>");

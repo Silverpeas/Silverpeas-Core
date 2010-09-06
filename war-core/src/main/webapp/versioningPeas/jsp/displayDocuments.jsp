@@ -146,7 +146,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 		out.println("</ul>");
 		out.println("<ul>");
 			out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:updateAttachment('"+documentId+"')\">"+resources.getString("GML.modify")+"</a></li>");
-			out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:deleteAttachment('"+EncodeHelper.javaStringToJsString(document.getName())+"',"+documentId+")\">"+resources.getString("GML.delete")+"</a></li>");
+			out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:deleteAttachment("+documentId+")\">"+resources.getString("GML.delete")+"</a></li>");
 		out.println("</ul>");
 		if (useFileSharing) 
 		{
@@ -439,7 +439,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
                 <td align="right">
                   <table width="100%">
                     <tr>
-                      <td colspan="3" class="dragNdrop"><a href="javascript:showDnD()" id="dNdActionLabel">Déposer rapidement un fichier...</a></td>
+                      <td colspan="3" class="dragNdrop"><a href="javascript:showDnD()" id="dNdActionLabel">Dï¿½poser rapidement un fichier...</a></td>
                     </tr>
                     <tr>
                       <td><div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px; width:100%"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div></td>
@@ -657,7 +657,7 @@ function AddAttachment()
 	<% } %>
 }
 
-function deleteAttachment(attachmentName, attachmentId)
+function deleteAttachment(attachmentId)
 {
 	if (window.confirm("<%=attResources.getString("confirmDelete")%>"))
 	{

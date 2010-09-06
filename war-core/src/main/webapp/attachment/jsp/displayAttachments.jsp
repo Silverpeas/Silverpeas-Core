@@ -515,9 +515,9 @@
       SP_openWindow("<%=m_Context%>/attachment/jsp/addAttFiles.jsp", "test", "600", "<%=winAddHeight%>","scrollbars=no, resizable, alwaysRaised");
     }
 
-    function deleteAttachment(attachmentName, attachmentId)
+    function deleteAttachment(attachmentId)
     {
-      var url = "<%=m_Context%>/attachment/jsp/suppressionDialog.jsp?IdAttachment="+attachmentId+"&Name="+attachmentName;
+      var url = "<%=m_Context%>/attachment/jsp/suppressionDialog.jsp?IdAttachment="+attachmentId;
       $("#attachmentModalDialog").dialog("open").load(url);
     }
 
