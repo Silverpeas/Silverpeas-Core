@@ -320,7 +320,7 @@ Definition des class de style Silverpeas
 }
 
 #agenda #currentScope {
-	width: 200px;
+	display: inline;
 	text-align: center;
 }
 
