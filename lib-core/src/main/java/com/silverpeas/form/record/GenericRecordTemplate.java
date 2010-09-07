@@ -35,6 +35,8 @@ import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordTemplate;
+import com.silverpeas.form.dummy.DummyFieldTemplate;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * A GenericRecordTemplate builds GenericDataRecord. It use a map : Map (FieldName ->
@@ -64,7 +66,7 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
 
   public Map<String, IndexedFieldTemplate> getFields() {
     if (fields == null || fields.size() == 0) {
-      Iterator fieldsIter = fieldList.iterator();
+      Iterator<FieldTemplate> fieldsIter = fieldList.iterator();
 
       while (fieldsIter.hasNext()) {
         GenericFieldTemplate field = (GenericFieldTemplate) fieldsIter.next();
@@ -93,17 +95,23 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
   }
 
   /**
-   * Returns all the field templates.
+   * Returns all the field templates using data.xml ordering
    */
   public FieldTemplate[] getFieldTemplates() {
     FieldTemplate[] fieldsArray = new FieldTemplate[getFields().keySet().size()];
-    Iterator<IndexedFieldTemplate> fieldsEnum = getFields().values().iterator();
-
-    while (fieldsEnum.hasNext()) {
-      IndexedFieldTemplate field = fieldsEnum.next();
-      fieldsArray[field.index] = field.fieldTemplate;
+    int i = 0;
+    for (FieldTemplate fieldTemplate : getFieldList()) {
+      FieldTemplate field;
+      try {
+        field = getFieldTemplate(fieldTemplate.getFieldName());
+      } catch (FormException e) {
+        SilverTrace.error("form", "GenericRecordTemplate.getFieldTemplates", "form.UNKNOWN_FIELD",
+            "fieldName = " + fieldTemplate.getFieldName(), e);
+        field = new DummyFieldTemplate();
+      }
+      fieldsArray[i] = field;
+      i++;
     }
-
     return fieldsArray;
   }
 
