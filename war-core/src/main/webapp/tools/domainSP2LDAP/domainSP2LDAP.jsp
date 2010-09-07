@@ -70,7 +70,8 @@ if (m_MainSessionCtrl == null || !"A".equals(m_MainSessionCtrl.getUserAccessLeve
       %>
 			<table>
   		<tr><td colspan="5">La migration se fait sur la comparaison du <b>prénom+nom</b></center></td></tr>
-			<tr><td colspan="5"><b><%=db.getNbLDAPUsers(domainLDAPId) %></b> utilisateurs dans le LDAP</td></tr>
+			<tr><td colspan="5"><b><%=db.getNbUsers(db.DOMAIN_SILVERPEAS_ID) %></b> utilisateurs dans le domaine Silverpeas</td></tr>
+			<tr><td colspan="5"><b><%=db.getNbUsers(domainLDAPId) %></b> utilisateurs dans le LDAP</td></tr>
 			<tr><td colspan="5"><b><%=usersLDAPProcessed.size() %></b> utilisateurs traités</td></tr>
 			<tr><td></td></tr>
 				<% if (usersLDAPProcessed.size() > 0) { %>

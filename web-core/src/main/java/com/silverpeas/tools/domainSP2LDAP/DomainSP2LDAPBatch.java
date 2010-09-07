@@ -46,7 +46,7 @@ public class DomainSP2LDAPBatch
 	  ArrayList<HashMap<String, UserDetail>> returnListLDAPUsers = new ArrayList<HashMap<String, UserDetail>>();
 	  
 	  HashMap<String,UserDetail> listLDAPUsers =  new HashMap<String, UserDetail>();
-	  HashMap<String,UserDetail> processedLDAPUsers = new HashMap<String, UserDetail>();
+	  HashMap<String,UserDetail> processedUsers = new HashMap<String, UserDetail>();
 	  
 		try
 		{
@@ -81,10 +81,9 @@ public class DomainSP2LDAPBatch
           userDetail.setSpecificId(userDetailLDAP.getSpecificId());
           userDetail.setDomainId(userDetailLDAP.getDomainId());
           userDetail.seteMail(userDetailLDAP.geteMail());
-          //userDetail.setLogin(userDetailLDAP.getLogin());
           getAdminController().updateUser(userDetail);
           //Users processed
-          processedLDAPUsers.put(keyName, userDetail);
+          processedUsers.put(keyName, userDetail);
           listLDAPUsers.remove(keyName);
         }
       }
@@ -99,7 +98,7 @@ public class DomainSP2LDAPBatch
     SynchroReport.info("DomainSP2LDAPBatch.processMigration()", "DEBUT Synchronisation post migration du domaine "+domainLDAP_Id, null);
     SynchroReport.info("DomainSP2LDAPBatch.processMigration()", getAdminController().synchronizeSilverpeasWithDomain(domainLDAP_Id),null);
     SynchroReport.info("DomainSP2LDAPBatch.processMigration()", "FIN Synchronisation post migration du domaine "+domainLDAP_Id,null);
-    returnListLDAPUsers.add(processedLDAPUsers);
+    returnListLDAPUsers.add(processedUsers);
     returnListLDAPUsers.add(listLDAPUsers);
     SynchroReport.info("DomainSP2LDAPBatch.processMigration()", "root.MSG_EXIT_METHOD", null);
     SynchroReport.setTraceLevel(SynchroReport.TRACE_LEVEL_UNKNOWN);
@@ -116,8 +115,8 @@ public class DomainSP2LDAPBatch
 	  return getOrganizationController().getAllDomains();
 	}
 	
-	public int getNbLDAPUsers(String domainLDAP_Id)
+	public int getNbUsers(String domainId)
 	{
-    return getAdminController().getUserIdsOfDomain(domainLDAP_Id).length;
+    return getAdminController().getUserIdsOfDomain(domainId).length;
 	}
 }
