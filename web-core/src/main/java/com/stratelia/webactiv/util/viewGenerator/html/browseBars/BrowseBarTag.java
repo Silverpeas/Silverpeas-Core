@@ -26,16 +26,25 @@ package com.stratelia.webactiv.util.viewGenerator.html.browseBars;
 
 import javax.servlet.jsp.JspException;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.viewGenerator.html.NeedWindowTag;
 import com.stratelia.webactiv.util.viewGenerator.html.window.Window;
 
 public class BrowseBarTag extends NeedWindowTag {
+  
+  private static final long serialVersionUID = 2496136938371562945L;
+
   private BrowseBar browseBar;
 
   private String extraInformations;
+  private String path;
 
   public void setExtraInformations(String extraInformations) {
     this.extraInformations = extraInformations;
+  }
+  
+  public void setPath(String path) {
+    this.path = path;
   }
 
   public int doEndTag() throws JspException {
@@ -51,6 +60,9 @@ public class BrowseBarTag extends NeedWindowTag {
     browseBar = window.getBrowseBar();
     if (extraInformations != null) {
       browseBar.setExtraInformation(extraInformations);
+    }
+    if (StringUtil.isDefined(path)) {
+      browseBar.setPath(path);
     }
     return EVAL_BODY_INCLUDE;
   }
