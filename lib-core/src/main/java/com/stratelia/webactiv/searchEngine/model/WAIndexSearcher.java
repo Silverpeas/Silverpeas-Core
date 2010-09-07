@@ -60,7 +60,6 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.SearchEnginePropertiesManager;
 import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
 import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
@@ -326,15 +325,16 @@ public class WAIndexSearcher {
       String xmlTitle = query.getXmlTitle();
 
       int nbFields = xmlQuery.size();
-      if (xmlTitle != null)
+      if (StringUtil.isDefined(xmlTitle)) {
         nbFields++;
+      }
 
       String[] fields = (String[]) xmlQuery.keySet().toArray(
           new String[nbFields]);
       String[] queries = (String[]) xmlQuery.values().toArray(
           new String[nbFields]);
 
-      if (xmlTitle != null) {
+      if (StringUtil.isDefined(xmlTitle)) {
         fields[nbFields - 1] = IndexManager.TITLE;
         queries[nbFields - 1] = xmlTitle;
       }

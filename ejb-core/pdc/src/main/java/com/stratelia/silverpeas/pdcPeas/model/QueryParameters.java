@@ -62,16 +62,21 @@ public class QueryParameters implements java.io.Serializable {
   public QueryParameters(String keywords, String spaceId, String instanceId,
       String creatorId, String afterDate, String beforeDate) {
     this.keywords = keywords;
-    if (spaceId != null && spaceId.length() > 0)
+    if (spaceId != null && spaceId.length() > 0) {
       this.spaceId = spaceId;
-    if (instanceId != null && instanceId.length() > 0)
+    }
+    if (instanceId != null && instanceId.length() > 0) {
       this.instanceId = instanceId;
-    if (creatorId != null && creatorId.length() > 0)
+    }
+    if (creatorId != null && creatorId.length() > 0) {
       this.creatorId = creatorId;
-    if (afterDate != null && afterDate.length() > 0)
+    }
+    if (afterDate != null && afterDate.length() > 0) {
       this.afterdate = afterDate;
-    if (beforeDate != null && beforeDate.length() > 0)
+    }
+    if (beforeDate != null && beforeDate.length() > 0) {
       this.beforedate = beforeDate;
+    }
   }
 
   public void clear() {
@@ -100,10 +105,11 @@ public class QueryParameters implements java.io.Serializable {
   }
 
   public void setSpaceId(String spaceId) {
-    if (!StringUtil.isDefined(spaceId) || spaceId.equals("*"))
+    if (!StringUtil.isDefined(spaceId) || spaceId.equals("*")) {
       this.spaceId = null;
-    else
+    } else {
       this.spaceId = spaceId;
+    }
   }
 
   public String getInstanceId() {
@@ -111,10 +117,11 @@ public class QueryParameters implements java.io.Serializable {
   }
 
   public void setInstanceId(String instanceId) {
-    if (!StringUtil.isDefined(instanceId) || instanceId.equals("*"))
+    if (!StringUtil.isDefined(instanceId) || instanceId.equals("*")) {
       this.instanceId = null;
-    else
+    } else {
       this.instanceId = instanceId;
+    }
   }
 
   public String getCreatorId() {
@@ -125,8 +132,9 @@ public class QueryParameters implements java.io.Serializable {
     if (creatorId == null || creatorId.length() == 0 || creatorId.equals("*")) {
       this.creatorId = null;
       this.creatorDetail = null;
-    } else
+    } else {
       this.creatorId = creatorId;
+    }
   }
 
   public String getAfterDate() {
@@ -178,8 +186,9 @@ public class QueryParameters implements java.io.Serializable {
   }
 
   public void addXmlSubQuery(String field, String query) {
-    if (xmlQuery == null)
+    if (xmlQuery == null) {
       xmlQuery = new Hashtable<String, String>();
+    }
 
     xmlQuery.put(field, query);
   }
@@ -199,40 +208,47 @@ public class QueryParameters implements java.io.Serializable {
     query.setSearchingUser(searchingUser);
     query.setRequestedLanguage(searchingLanguage);
 
-    if (getCreatorId() != null && !getCreatorId().equals(""))
+    if (getCreatorId() != null && !getCreatorId().equals("")) {
       query.setRequestedAuthor(getCreatorId());
-    else
+    } else {
       query.setRequestedAuthor(null);
+    }
 
-    if (getAfterDate() != null && !getAfterDate().equals(""))
+    if (getAfterDate() != null && !getAfterDate().equals("")) {
       query.setRequestedCreatedAfter(DateUtil.date2SQLDate(getAfterDate(),
           searchingLanguage));
-    else
+    } else {
       query.setRequestedCreatedAfter(null);
+    }
 
-    if (getBeforeDate() != null && !getBeforeDate().equals(""))
+    if (getBeforeDate() != null && !getBeforeDate().equals("")) {
       query.setRequestedCreatedBefore(DateUtil.date2SQLDate(getBeforeDate(),
           searchingLanguage));
-    else
+    } else {
       query.setRequestedCreatedBefore(null);
+    }
 
-    if (StringUtil.isDefined(getAfterUpdateDate()))
+    if (StringUtil.isDefined(getAfterUpdateDate())) {
       query.setRequestedUpdatedAfter(DateUtil.date2SQLDate(getAfterUpdateDate(),
           searchingLanguage));
-    else
+    } else {
       query.setRequestedUpdatedAfter(null);
+    }
 
-    if (StringUtil.isDefined(getBeforeUpdateDate()))
+    if (StringUtil.isDefined(getBeforeUpdateDate())) {
       query.setRequestedUpdatedBefore(DateUtil.date2SQLDate(getBeforeUpdateDate(),
           searchingLanguage));
-    else
+    } else {
       query.setRequestedUpdatedBefore(null);
+    }
 
-    if (xmlQuery != null)
+    if (xmlQuery != null) {
       query.setXmlQuery(xmlQuery);
+    }
 
-    if (xmlTitle != null)
+    if (xmlTitle != null) {
       query.setXmlTitle(xmlTitle);
+    }
 
     return query;
   }
@@ -249,8 +265,9 @@ public class QueryParameters implements java.io.Serializable {
     SilverTrace.info("pdcPeas", "QueryParameters.date2stringDate()",
         "root.MSG_GEN_ENTER_METHOD", "date = " + date);
     String stringDate = "";
-    if (date != null)
+    if (date != null) {
       stringDate = DateUtil.getInputDate(date, language);// formatter.format(date);
+    }
     return stringDate;
   }
 
@@ -259,13 +276,7 @@ public class QueryParameters implements java.io.Serializable {
   }
 
   public void setXmlTitle(String xmlTitle) {
-    if (isDefined(xmlTitle))
-      this.xmlTitle = xmlTitle;
-  }
-
-  private boolean isDefined(String param) {
-    return param != null && !"".equals(param.trim())
-        && !"null".equals(param.trim());
+    this.xmlTitle = xmlTitle;
   }
 
   public boolean isDefined() {

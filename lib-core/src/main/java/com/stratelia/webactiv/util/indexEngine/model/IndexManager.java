@@ -395,9 +395,7 @@ public class IndexManager {
         String language = languages.next();
         if (indexEntry.getTitle(language) != null) {
           doc.add(new Field(getFieldName(TITLE, language), indexEntry.getTitle(language),
-              Store.YES, Index.NOT_ANALYZED));
-          doc.add(new Field(getFieldName(TITLE, language), indexEntry.getTitle(language),
-              Store.YES, Index.NOT_ANALYZED));
+              Store.YES, Index.ANALYZED));
         }
       }
     }

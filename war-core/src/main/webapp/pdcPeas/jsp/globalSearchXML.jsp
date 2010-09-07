@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
 <%@ page import="com.stratelia.silverpeas.pdcPeas.Keys"%>
 <%@ page import="com.silverpeas.form.DataRecord"%>
@@ -34,10 +34,10 @@
 
 <%@ include file="checkAdvancedSearch.jsp"%>
 <%
-// TODO chercher les clés dans Keys
-String sortOrder = (String) request.getParameter("sortOrder");
-String sortImp = (String) request.getParameter("sortImp");
-String SortResXForm = (String) request.getParameter("SortResXForm");
+// TODO chercher les clÃ©s dans Keys
+String sortOrder = request.getParameter("sortOrder");
+String sortImp = request.getParameter("sortImp");
+String SortResXForm = request.getParameter("SortResXForm");
 
 List 				xmlForms 	= (List) request.getAttribute("XMLForms");
 PublicationTemplate template 	= (PublicationTemplate) request.getAttribute("Template");
@@ -84,6 +84,7 @@ if (!StringUtil.isDefined(pageId)) {
 function sendXMLRequest()
 {
 	if(document.XMLSearchForm != null) {
+		$.progressMessage();
 		document.XMLSearchForm.submit();
 	} else {
 		alert("<%=resource.getString("pdcPeas.choiceForm")%>");
@@ -92,20 +93,21 @@ function sendXMLRequest()
 function chooseTemplate()
 {
 	var valuePath = document.XMLTemplatesForm.xmlSearchSelectedForm.value;
-	if (valuePath.length > 0)
-	{
+	if (valuePath.length > 0) {
+		$.progressMessage();
 		document.XMLTemplatesForm.submit();
 	}
 }
 function viewXmlSearch(){
+	$.progressMessage();
 	document.XMLRestrictForm.submit();
 }
 
-$(document).ready(
+/*$(document).ready(
 	function(){
 		viewXmlSearch();
 	}
-)
+)*/
 </script>
 </head>
 <body class="yui-skin-sam" id="<%=pageId %>">
@@ -173,7 +175,7 @@ $(document).ready(
         <table border="0" cellspacing="0" cellpadding="5" width="100%">
         <form name="XMLRestrictForm" action="XMLRestrictSearch" method="post">
         <tr align="center" id="spaceList">
-          <td valign="top" nowrap="nowrap" align="left" class="txtlibform" width="200"><%=resource.getString("pdcPeas.DomainSelect")%></td>
+          <td nowrap="nowrap" class="txtlibform" width="200"><%=resource.getString("pdcPeas.DomainSelect")%></td>
           <td align="left" class="selectNS"><select name="spaces" size="1" onchange="javascript:viewXmlSearch()">
             <%
 				out.println("<option value=\"\">"+resource.getString("pdcPeas.AllAuthors")+"</option>");
@@ -195,7 +197,7 @@ $(document).ready(
              </select></td>
 	    </tr>
 		<tr align="center">
-			<td valign="top" nowrap="nowrap" align="left" class="txtlibform" width="200"><%=resource.getString("pdcPeas.ComponentSelect")%></td>
+			<td nowrap="nowrap" class="txtlibform" width="200"><%=resource.getString("pdcPeas.ComponentSelect")%></td>
 			<td align="left" class="selectNS">
 			<select name="componentSearch" size="1" onchange="javascript:viewXmlSearch()">
 			<option value=""><%=resource.getString("pdcPeas.AllAuthors")%></option>
@@ -246,5 +248,6 @@ $(document).ready(
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
+<view:progressMessage/>
 </body>
 </html>
