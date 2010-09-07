@@ -611,14 +611,14 @@ function checkin(id, force) {
       }
       else {
         if (data == "ok") {
-          SP_openWindow('<%=m_context%>/RVersioningPeas/jsp/AddNewOnlineVersion?Id='+id+'&ComponentId=<%=componentId%>&documentId='+id+'&force_release='+force+'&Callback=newVersionAdded', "test", "600", "400","scrollbars=no, resizable, alwaysRaised");
+          SP_openWindow('<%=m_context%>/RVersioningPeas/jsp/AddNewOnlineVersion?Id='+id+'&ComponentId=<%=componentId%>&documentId='+id+'&force_release='+force+'&Callback=newVersionAdded', "test", "600", "400","scrollbars=1, resizable, alwaysRaised");
         }
       }
     }, "html");
   }
   else
   {
-    SP_openWindow('<%=m_context%>/RVersioningPeas/jsp/AddNewOnlineVersion?Id='+id+'&ComponentId=<%=componentId%>&documentId='+id+'&force_release='+force+'&Callback=newVersionAdded', "test", "600", "400","scrollbars=no, resizable, alwaysRaised");
+    SP_openWindow('<%=m_context%>/RVersioningPeas/jsp/AddNewOnlineVersion?Id='+id+'&ComponentId=<%=componentId%>&documentId='+id+'&force_release='+force+'&Callback=newVersionAdded', "test", "600", "400","scrollbars=1, resizable, alwaysRaised");
   }
 }
 
@@ -643,7 +643,7 @@ function menuCheckin(id)
 function addVersion(id, webdav) {
 	checkout(id, webdav);
 	var url = "<%=httpServerBase+m_context%>/RVersioningPeas/jsp/AddNewVersion?documentId="+id+"&Id=<%=id%>&ComponentId=<%=componentId%>&Context=<%=context%>&IndexIt=<%=indexIt%>&ReturnURL=<%=URLEncoder.encode(m_context+callbackURL)%>";
-	SP_openWindow(url, "test", "700", "400","scrollbars=no, resizable, alwaysRaised");
+	SP_openWindow(url, "test", "700", "400","scrollbars=1, resizable, alwaysRaised");
 }
 
 function AddAttachment()
