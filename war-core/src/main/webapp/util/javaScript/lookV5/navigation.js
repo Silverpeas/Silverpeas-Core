@@ -143,6 +143,12 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
   	
   	refreshPDCFrame();
   	refreshTopFrame();
+  	
+  	try {
+  		openSpecificLookSpace(spaceId, spaceLevel);
+  	} catch (e) {
+  		//all looks don't need this callback function
+  	}
   }
 
   function refreshPDCFrame()
