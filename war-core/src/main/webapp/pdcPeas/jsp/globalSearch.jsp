@@ -25,12 +25,9 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager,
-				 java.net.URLEncoder,
-				 java.util.ArrayList,
-         java.util.StringTokenizer,
-         com.silverpeas.pdcSubscription.model.PDCSubscription"%>
-
+<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="com.silverpeas.pdcSubscription.model.PDCSubscription"%>
+<%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%@ include file="checkAdvancedSearch.jsp"%>
 <%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <%!
@@ -238,7 +235,7 @@ if (query != null)
 {
 	spaceSelected		= query.getSpaceId();
 	componentSelected	= query.getInstanceId();
-	keywords			= query.getKeywords();
+	keywords			= EncodeHelper.javaStringToHtmlString(query.getKeywords());
 	createAfterDate		= query.getAfterDate();
 	createBeforeDate	= query.getBeforeDate();
 	updateAfterDate		= query.getAfterUpdateDate();
@@ -290,6 +287,7 @@ ResourceLocator resourceSearchEngine = new ResourceLocator(
         int autocompletionMinChars = SilverpeasSettings.readInt(resourceSearchEngine, "autocompletion.minChars", 3);
 
 %>
+
 
 <html>
 <HEAD>
