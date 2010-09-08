@@ -41,16 +41,15 @@
           <tr>
             <td>
               <a href="createPhoto">
-                <img   src="<%=m_context + invitationUser.getUserDetail().getProfilPhoto()%>" width="60" height="70" border="0" alt="viewUser" />
+                <img src="<%=m_context + invitationUser.getUserDetail().getProfilPhoto()%>" width="60" height="70" border="0" alt="viewUser" />
               </a>
             </td>
             <td width="60%" style="vertical-align: top">
-              <table  width="100%"   >
+              <table width="100%">
                 <tr>
                   <td>
                     <b><a href="viewUser?UserId=<%=invitationUser.getUserDetail().getUserId()%>"
-                          class="link"><%=invitationUser.getUserDetail().getLastName() + " " + invitationUser.
-                                     getUserDetail().getFirstName()%>
+                          class="link"><%=invitationUser.getUserDetail().getDisplayedName()%>
                       </a></b>
                   </td>
                 </tr>
@@ -60,17 +59,8 @@
                                   getInvitationDate().getTime()))%></td>
                 </tr>
                 <tr>
-                  <%
-                          if (StringUtil.isDefined(
-                              invitationUser.getInvitation().getMessage().trim())) {
-                  %>
-                  <td>
-                    <textarea  rows="2" cols="59"
-                               style="font-weight:700; color:blue; "><%=invitationUser.getInvitation().getMessage().trim()%>
-
-                    </textarea>
-
-                  </td>
+                  <% if (StringUtil.isDefined(invitationUser.getInvitation().getMessage())) { %>
+                  	<td><%=invitationUser.getInvitation().getMessage()%></td>
                   <%
                           }
                   %>

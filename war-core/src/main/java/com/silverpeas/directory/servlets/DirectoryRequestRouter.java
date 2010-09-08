@@ -23,6 +23,17 @@
  */
 package com.silverpeas.directory.servlets;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.fileupload.FileItem;
+
 import com.silverpeas.directory.control.DirectorySessionController;
 import com.silverpeas.directory.model.Member;
 import com.silverpeas.util.StringUtil;
@@ -34,25 +45,16 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.exception.UtilException;
-
-
-import com.stratelia.webactiv.util.viewGenerator.html.pagination.PaginationSP;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.fileupload.FileItem;
+import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
 
 /**
- *
  * @author azzedine
  */
 public class DirectoryRequestRouter extends ComponentRequestRouter {
 
+  private static final long serialVersionUID = 1L;
   public static int ELEMENTS_PER_PAGE = 2;
   public static final String AVATAR_FOLDER = "avatar";
   public List<UserDetail> users;
@@ -74,15 +76,13 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
 
     String destination = "";
 
-
     try {
-      ELEMENTS_PER_PAGE = Integer.parseInt(componentSC.getSettings().getString("ELEMENTS_PER_PAGE"));
-
+      ELEMENTS_PER_PAGE =
+          Integer.parseInt(componentSC.getSettings().getString("ELEMENTS_PER_PAGE"));
     } catch (NumberFormatException nfex) {
     }
 
     DirectorySessionController directorySC = (DirectorySessionController) componentSC;
-
 
     SilverTrace.info("mytests", "DirectoryRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE",
@@ -95,14 +95,11 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
       String spaceId = request.getParameter("SpaceId");
       String domainId = request.getParameter("DomainId");
 
-
-
       if (StringUtil.isDefined(groupId)) {
         users = directorySC.getAllUsersByGroup(groupId);
       } else if (StringUtil.isDefined(spaceId)) {
         users = directorySC.getAllUsersBySpace(spaceId);
       } else if (StringUtil.isDefined(domainId)) {
-
         users = directorySC.getAllUsersByDomain(domainId);
       } else {
         users = directorySC.getAllUsers();
@@ -134,10 +131,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
     } else if (function.equalsIgnoreCase("viewUser")) {
       destination = "/Rprofil/jsp/Main?userId=" + request.getParameter("UserId");
 
-
     } else if (function.equalsIgnoreCase("NotificationView")) {
-
-
 
       destination = "/directory/jsp/notificationUser.jsp?Recipient=" + request.getParameter(
           "Recipient") + "&Name=" + request.getParameter("Name");
@@ -184,11 +178,10 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
 
   /**
    *return true if this searche by index
-   *
    */
   boolean isSearchByIndex(String lettre) {
     if (lettre != null && lettre.length() == 1) {
-      return Character.isLetter(lettre.charAt(0));//return true if "lettre is Letrre
+      return Character.isLetter(lettre.charAt(0));// return true if "lettre is Letrre
     } else {
       return false;
     }
@@ -214,18 +207,19 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
    *@param HttpServletRequest request
    */
   String doPagination(HttpServletRequest request) {
-    PaginationSP pagination = new PaginationSP();
-    int currentPage = 0;
-    if (StringUtil.isInteger(request.getParameter("currentPage"))) {
-      currentPage = Integer.parseInt(request.getParameter("currentPage"));
+    int index = 0;
+    if (StringUtil.isInteger(request.getParameter("Index"))) {
+      index = Integer.parseInt(request.getParameter("Index"));
     }
-    pagination.init(users.size(), ELEMENTS_PER_PAGE, currentPage * ELEMENTS_PER_PAGE);
+    HttpSession session = request.getSession();
+    GraphicElementFactory gef =
+        (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
+    Pagination pagination = gef.getPagination(users.size(), ELEMENTS_PER_PAGE, index);
     List<Member> membersToDisplay = new ArrayList<Member>();
     membersToDisplay = toListMember(users.subList(pagination.getFirstItemIndex(), pagination.
         getLastItemIndex()));
     request.setAttribute("Members", membersToDisplay);
-    request.setAttribute("nbPages", pagination.getNbPage());
-    request.setAttribute("currentPage", currentPage);
+    request.setAttribute("pagination", pagination);
     return "/directory/jsp/directory.jsp";
   }
 

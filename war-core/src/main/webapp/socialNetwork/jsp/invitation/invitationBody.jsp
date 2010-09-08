@@ -37,7 +37,6 @@
   %>
   <li style="margin: 3px; ">
 
-  <view:board >
     <!--      <div id="body">-->
     <!--        <tr>-->
     <div id="photo">
@@ -51,8 +50,7 @@
 
       <b>
         <a href="${urlProfil}<%=invitationUser.getUserDetail().getUserId()%>"
-           class="link"><%=invitationUser.getUserDetail().getLastName() + " " + invitationUser.
-                     getUserDetail().getFirstName()%>
+           class="link"><%=invitationUser.getUserDetail().getDisplayedName()%>
         </a>
       </b><br/>
       <b>
@@ -61,15 +59,9 @@
                         getInvitationDate().getTime()))%>
       <br/>
 
-      <%if (StringUtil.isDefined(
-                  invitationUser.getInvitation().getMessage().trim())) {
-      %>
-      <textarea id="bloctext" rows="3" cols="59" disabled><%=invitationUser.getInvitation().getMessage().trim()%>
-
-      </textarea>
-    <%
-            }
-    %>
+      <%if (StringUtil.isDefined(invitationUser.getInvitation().getMessage())) { %>
+      <%=invitationUser.getInvitation().getMessage()%>
+      <% } %>
     <!--              </tr>-->
 
     </div>
@@ -96,7 +88,6 @@
     </div>
     <!--        </tr>-->
     <!--      </div> -->
-  </view:board>
 </li>
 <%
     }

@@ -56,151 +56,26 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+  	<title></title>
     <view:looknfeel />
     <style type="text/css">
       * {
         margin: 0;
         padding: 0;
       }
-
-      /* message display page */
-      .message_list {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        width: 100%;
-      }
-
-      .message_list li {
-        padding: 0px;
-        margin: 3px;
-      }
-
-      .message_table rd {
-        padding: 0px;
-        margin: 3px;
-      }
-
-      #recherche {
-        background-image:
-          url(<c:url value="/admin/jsp/icons/silverpeasV5/recherche.jpg"/>);
-        background-repeat: no-repeat;
-      }
-
-      .mail {
-        text-decoration: underline;
-        color: blue;
-      }
-
-      .link {
-        color: blue;
-      }
-
-      .NameLink {
-        font-size: 14px;
-        color: blue;
-      }
-
-      #directory #index {
-
-        float:none;
-        margin:0 auto;
-        padding:4px;
-        text-align:center;
-        width:370px;
-      }
-
-      #directory #index a {
-        font-size: 12px;
-        text-decoration: none;
-      }
-
-      #directory #index a.active {
-        font-weight: bolder;
-        text-decoration: underline;
-      }
-
-      #directory #search {
-        float:left;
-        margin:5px 10px 10px auto;
-        padding:5px;
-        text-align:left;
-        width:230px;
-      }
-
-      #directory #indexAndSearch{
-        float: left;
-        width: 98%;
-      }
-      #directory #users {
-        float: left;
-        width: 98%;
-      }
-
-      #directory .avatar {
-        width: 60px;
-        height: 70px;
-        border: 0px;
-        margin: 5px;
-
-      }
-      #directory #users #infoAndPhoto #profilPhoto {
-        float:left;
-        width:80px;
-      }
-      #directory #users #infoAndPhoto #info {
-        float: left;
-        margin-top:   5px;
-      }
-      #directory #users #infoAndPhoto {
-        float:left;
-        width:65%;
-      }
-      #directory #users #action {
-        text-align: right;
-        float:right;
-        width:28%;
-        padding-top: 2%;
-      }
-      #directory #users #pagination {
-        text-align: center;
-      }
-      #info ul {
-        margin: 0;
-        padding: 0;
-      }
-
-      #info ul li {
-        display:list-item;
-        list-style-type:none;
-      }
-      #users a{
-        color:blue;
-        font-size:10px;
-        font-weight:normal;
-      }
-      #info ul li .userName{
-        color:blue;
-        font-size:14px;
-        font-weight:bold;
-      }
-
     </style>
-    <script type="text/javascript"
-    src="<%=m_context%>/util/javaScript/animation.js"></script>
-    <script type="text/javascript"
-    src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+    <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+    <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript">
       function OpenPopup(usersId,name ){
-
         usersId=usersId+'&Name='+name
-        options="location=no, menubar=no,toolbar=no,scrollbars=yes, resizable        , alwaysRaised"
+        options="location=no, menubar=no,toolbar=no,scrollbars=yes,resizable,alwaysRaised"
         SP_openWindow('<%=m_context + "/Rdirectory/jsp/NotificationView"%>?Recipient='+usersId , 'strWindowName', '500', '200',options );
 
       }
       function OpenPopupInvitaion(usersId,name){
         usersId=usersId+'&Name='+name
-        options="directories=no, menubar=no,toolbar=no,scrollbars=yes, resizable=no ,alwaysRaised"
+        options="directories=no, menubar=no,toolbar=no,scrollbars=yes,resizable=no,alwaysRaised"
         SP_openWindow('<%=m_context + "/Rinvitation/jsp/invite"%>?Recipient='+usersId, 'strWindowName', '350', '200','directories=no, menubar=no,toolbar=no,scrollbars=yes, resizable=no ,alwaysRaised');
       }
     </script>
@@ -262,7 +137,7 @@
                               ><%=member.getLastName() + " " + member.getFirstName()%></a>
                       </li>
                       <li>
-                        <a  class="userMail" href="#"  onclick="OpenPopup(<%=member.getId()%>,'<%=member.getLastName() + " "
+                        <a class="userMail" href="#"  onclick="OpenPopup(<%=member.getId()%>,'<%=member.getLastName() + " "
                                                + member.getFirstName()%>')"><%=member.geteMail()%>
                         </a>
                       </li>

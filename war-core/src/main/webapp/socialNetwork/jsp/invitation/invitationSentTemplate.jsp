@@ -165,9 +165,7 @@
         </view:board>
       </div>
       <div id="content">
-        <view:board>
-          <%@include file="invitationSentBody.jsp" %>
-        </view:board>
+	      <%@include file="invitationSentBody.jsp" %>
       </div>
     </view:window>
   </body>
