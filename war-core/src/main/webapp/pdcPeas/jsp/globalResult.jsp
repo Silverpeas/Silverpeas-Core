@@ -349,7 +349,12 @@ if (!StringUtil.isDefined(pageId)) {
 	}
 	
 	function sendQuery() {
-		top.topFrame.document.searchForm.query.value = "";
+		try {
+			 //empty query field
+			 top.topFrame.document.searchForm.query.value = "";
+		} catch (e) {
+			 //Topbar don't have waited form and/or field
+		}
 		document.AdvancedSearch.action 		= "AdvancedSearch";
 		
 		$.progressMessage();
