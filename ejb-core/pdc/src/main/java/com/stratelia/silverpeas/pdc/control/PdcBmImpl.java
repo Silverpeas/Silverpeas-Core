@@ -368,7 +368,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
     // récupération des autres traductions
     Connection con = null;
     try {
-      con = openConnection();
+      con = openConnection(false);
 
       List<AxisHeaderI18N> translations = axisHeaderI18NDAO.getTranslations(con, axisId);
       for (int t = 0; translations != null && t < translations.size(); t++) {
@@ -471,10 +471,10 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
         // build of the Value
         Value value =
             new Value(
-            "unknown", Integer.valueOf(axisHeader.getRootId()).toString(),
-            axisHeader.getName(), axisHeader.getDescription(), axisHeader
-            .getCreationDate(), axisHeader.getCreatorId(), "unknown", -1,
-            -1, "unknown");
+                "unknown", Integer.valueOf(axisHeader.getRootId()).toString(),
+                axisHeader.getName(), axisHeader.getDescription(), axisHeader
+                    .getCreationDate(), axisHeader.getCreatorId(), "unknown", -1,
+                -1, "unknown");
 
         value.setLanguage(axisHeader.getLanguage());
         value.setRemoveTranslation(axisHeader.isRemoveTranslation());
@@ -485,7 +485,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
         axisHeader.setRootId((new Integer(treeId)).intValue());
         SilverTrace
             .info("Pdc", "PdcBmImpl.createAxis()", "root.MSG_GEN_PARAM_VALUE",
-            "axisHeader = " + axisHeader.toString());
+                "axisHeader = " + axisHeader.toString());
         AxisHeaderPersistence ahp = new AxisHeaderPersistence(axisHeader);
         AxisPK axisPK = (AxisPK) dao.add(con, ahp);
 
@@ -571,13 +571,13 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
         // update root value linked to this axis
         SilverTrace.info("Pdc", "PdcBmImpl.updateAxis()",
             "root.MSG_GEN_PARAM_VALUE", "axisHeader.getPK().getId() = "
-            + axisHeader.getPK().getId());
+                + axisHeader.getPK().getId());
         AxisHeader oldAxisHeader = getAxisHeader(con, axisHeader.getPK()
             .getId());
 
         SilverTrace.info("Pdc", "PdcBmImpl.updateAxis()",
             "root.MSG_GEN_PARAM_VALUE", "oldAxisHeader.getRootId() = "
-            + oldAxisHeader.getRootId());
+                + oldAxisHeader.getRootId());
 
         // regarder si le nom et la description ont changé en fonction de la
         // langue
@@ -610,8 +610,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
           TreeNode root = tree.getRoot(con, treeId);
           TreeNode node = new TreeNode(root.getPK().getId(), root.getTreeId(),
               axisHeader.getName(), axisHeader.getDescription(), root
-              .getCreationDate(), root.getCreatorId(), root.getPath(), root
-              .getLevelNumber(), root.getOrderNumber(), root.getFatherId());
+                  .getCreationDate(), root.getCreatorId(), root.getPath(), root
+                  .getLevelNumber(), root.getOrderNumber(), root.getFatherId());
           node.setLanguage(axisHeader.getLanguage());
           node.setRemoveTranslation(axisHeader.isRemoveTranslation());
           node.setTranslationId(axisHeader.getTranslationId());
@@ -792,7 +792,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
     com.stratelia.silverpeas.pdc.model.Value value = null;
     TreeNode node = null;
 
-    Connection con = openConnection(true);
+    Connection con = openConnection(false);
 
     try {
       node = tree.getNode(con, new TreeNodePK(valueId), getTreeId(axisId));
@@ -816,7 +816,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
       String treeId) throws PdcException {
     com.stratelia.silverpeas.pdc.model.Value value = null;
 
-    Connection con = openConnection(true);
+    Connection con = openConnection(false);
 
     try {
       value = createValue(tree.getNode(con, new TreeNodePK(valueId), treeId));
@@ -839,7 +839,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
    */
   public List<Value> getAxisValuesByName(String valueName) throws PdcException {
     List<Value> listValues = null;
-    Connection con = openConnection(true);
+    Connection con = openConnection(false);
 
     try {
       List<TreeNode> listTreeNodes = tree.getNodesByName(con, valueName);
@@ -866,7 +866,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   public List<String> getDaughterValues(String axisId, String valueId)
       throws PdcException {
     List<String> listValuesString = new ArrayList<String>();
-    Connection con = openConnection(true);
+    Connection con = openConnection(false);
 
     try {
       List<Value> listValues = getDaughters(con, valueId, axisId);
@@ -926,7 +926,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
    */
   public com.stratelia.silverpeas.pdc.model.Value getRoot(String axisId)
       throws PdcException {
-    Connection con = openConnection(true);
+    Connection con = openConnection(false);
     SilverTrace.info("Pdc", "PdcBmImpl.getRoot", "root.MSG_GEN_PARAM_VALUE",
         "axisId = " + axisId);
     com.stratelia.silverpeas.pdc.model.Value root = null;
@@ -957,7 +957,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   private List<Value> getAxisValues(int treeId, AxisFilter filter) throws PdcException {
     List<Value> values = null;
 
-    Connection con = openConnection(true);
+    Connection con = openConnection(false);
 
     try {
       values = createValuesList(tree.getTree(con, new Integer(treeId)
@@ -1129,7 +1129,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   public List<List<String>> getManagers(String axisId, String valueId) throws PdcException {
     List<String> usersId;
     List<String> groupsId;
-    Connection con = openConnection();
+    Connection con = openConnection(false);
     try {
       usersId = PdcRightsDAO.getUserIds(con, axisId, valueId);
       groupsId = PdcRightsDAO.getGroupIds(con, axisId, valueId);
@@ -1147,7 +1147,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   }
 
   public boolean isUserManager(String userId) throws PdcException {
-    Connection con = openConnection();
+    Connection con = openConnection(false);
 
     if (!PdcSettings.delegationEnabled)
       return false;
@@ -1176,7 +1176,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   }
 
   private boolean isGroupManager(String[] groupIds) throws PdcException {
-    Connection con = openConnection();
+    Connection con = openConnection(false);
     try {
       return PdcRightsDAO.isGroupManager(con, groupIds);
     } catch (SQLException e) {
@@ -1195,7 +1195,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
    */
   public void setManagers(List<String> userIds, List<String> groupIds, String axisId,
       String valueId) throws PdcException {
-    Connection con = openConnection();
+    Connection con = openConnection(true);
 
     try {
       // supprime tous les droits sur la valeur
@@ -1218,7 +1218,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   }
 
   public void razManagers(String axisId, String valueId) throws PdcException {
-    Connection con = openConnection();
+    Connection con = openConnection(true);
     try {
       PdcRightsDAO.deleteRights(con, axisId, valueId);
     } catch (SQLException e) {
@@ -1235,7 +1235,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
    * @throws SQLException
    */
   public void deleteManager(String userId) throws PdcException {
-    Connection con = openConnection();
+    Connection con = openConnection(true);
     try {
       PdcRightsDAO.deleteManager(con, userId);
     } catch (SQLException e) {
@@ -1252,7 +1252,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
    * @throws SQLException
    */
   public void deleteGroupManager(String groupId) throws PdcException {
-    Connection con = openConnection();
+    Connection con = openConnection(true);
     try {
       PdcRightsDAO.deleteGroupManager(con, groupId);
     } catch (SQLException e) {
@@ -1436,8 +1436,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
         TreeNode node = new TreeNode(value.getPK().getId(), treeId, value
             .getName(), value.getDescription(), oldValue.getCreationDate(),
             oldValue.getCreatorId(), oldValue.getPath(), oldValue
-            .getLevelNumber(), value.getOrderNumber(), oldValue
-            .getFatherId());
+                .getLevelNumber(), value.getOrderNumber(), oldValue
+                .getFatherId());
         node.setLanguage(value.getLanguage());
         node.setRemoveTranslation(value.isRemoveTranslation());
         node.setTranslationId(value.getTranslationId());
@@ -1473,7 +1473,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
       SilverTrace.info("Pdc", "PdcBmImpl.deleteValueAndSubtree",
           "root.MSG_GEN_PARAM_VALUE", "oldPath.size() = " + oldPath.size()
-          + ", oldPath =" + oldPath.toString());
+              + ", oldPath =" + oldPath.toString());
 
       TreeNodePK treeNodePK = new TreeNodePK(valueId);
 
@@ -1613,7 +1613,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
    * and the treeId of the value in the path.
    */
   public List getFullPath(String valueId, String treeId) throws PdcException {
-    Connection con = openConnection(true);
+    Connection con = openConnection(false);
 
     List<Value> listValues = null;
     List<TreeNode> listTreeNode = null;
@@ -1798,8 +1798,9 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   public List<Value> getDaughters(String axisId, String valueId) {
     List<Value> daughters = new ArrayList<Value>();
-    Connection con = openConnection(true);
+    Connection con = null;
     try {
+      con = openConnection(false);
       AxisHeader axisHeader = getAxisHeader(axisId, false);
       int tId = axisHeader.getRootId();
       daughters = getAxisValues(tId);
@@ -1814,8 +1815,9 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   public List<Value> getSubAxisValues(String axisId, String valueId) {
     List<Value> daughters = new ArrayList<Value>();
-    Connection con = openConnection(true);
+    Connection con = null;
     try {
+      con = openConnection(false);
       AxisHeader axisHeader = getAxisHeader(axisId, false);
       int tId = axisHeader.getRootId();
 
@@ -1991,7 +1993,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
     pdcUtilizationBm.updateOrDeleteBaseValue(con,
         new Integer(baseValueToUpdate).intValue(), new Integer(newBaseValue)
-        .intValue(), new Integer(axisId).intValue(), treeId);
+            .intValue(), new Integer(axisId).intValue(), treeId);
   }
 
   /**
@@ -2438,7 +2440,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
     SilverTrace.info("Pdc",
         "PdcBmImpl.getPertinentDaughterValuesByInstanceIds",
         "root.MSG_GEN_ENTER_METHOD", "axisId = " + axisId + ", valueId = "
-        + valueId + ", userId = " + searchContext.getUserId());
+            + valueId + ", userId = " + searchContext.getUserId());
 
     // List pertinentValues = pdcClassifyBm.getPertinentValues(searchContext,
     // new Integer(axisId).intValue(),
@@ -2454,11 +2456,11 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
           .get(d);
       SilverTrace
           .debug(
-          "pdcPeas",
-          "PdcSearchSessionController.getPertinentDaughterValuesByInstanceIds()",
-          "root.MSG_GEN_PARAM_VALUE", "valueId = " + value.getPK().getId()
-          + ", valueName = " + value.getName() + ", nbObjects = "
-          + value.getNbObjects());
+              "pdcPeas",
+              "PdcSearchSessionController.getPertinentDaughterValuesByInstanceIds()",
+              "root.MSG_GEN_PARAM_VALUE", "valueId = " + value.getPK().getId()
+                  + ", valueName = " + value.getName() + ", nbObjects = "
+                  + value.getNbObjects());
     }
 
     return pertinentDaughters;
@@ -2494,8 +2496,8 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
       SilverTrace.debug("pdcPeas",
           "PdcSearchSessionController.getFirstLevelAxisValuesByInstanceIds()",
           "root.MSG_GEN_PARAM_VALUE", "valueId = " + value.getPK().getId()
-          + ", valueName = " + value.getName() + ", nbObjects = "
-          + value.getNbObjects());
+              + ", valueName = " + value.getName() + ", nbObjects = "
+              + value.getNbObjects());
     }
 
     return pertinentDaughters;
@@ -2503,7 +2505,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   }
 
   private String getRootId(String axisId) throws PdcException {
-    Connection con = openConnection(true);
+    Connection con = openConnection(false);
     SilverTrace.info("Pdc", "PdcBmImpl.getRootId", "root.MSG_GEN_PARAM_VALUE",
         "axisId = " + axisId);
     String rootId = null;
@@ -2537,7 +2539,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
       throws PdcException {
     SilverTrace.info("Pdc", "PdcBmImpl.filterValues",
         "root.MSG_GEN_ENTER_METHOD", "axisId = " + axisId + ", motherId = "
-        + motherId);
+            + motherId);
     Connection con = openConnection(true);
     ArrayList<Value> descendants = null;
     ArrayList<String> emptyValues = new ArrayList<String>();
@@ -2727,7 +2729,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
   public void indexAllAxis() throws PdcException {
     Iterator<AxisHeader> axis = getAxis().iterator();
     AxisHeader a = null;
-    Connection con = openConnection();
+    Connection con = openConnection(false);
     try {
       while (axis.hasNext()) {
         a = (AxisHeader) axis.next();
@@ -2756,23 +2758,6 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
   /**
    * Method declaration
-   * @return
-   * @see
-   */
-  private Connection openConnection() throws PdcException {
-    try {
-      Connection con = DBUtil.makeConnection(JNDINames.PDC_DATASOURCE);
-      con.setAutoCommit(true);
-
-      return con;
-    } catch (Exception e) {
-      throw new PdcException("PdcBmImpl.openConnection()",
-          SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
-    }
-  }
-
-  /**
-   * Method declaration
    * @param con
    * @see
    */
@@ -2792,14 +2777,16 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
    * @param con
    * @see
    */
-  private Connection openConnection(boolean autoCommit) {
+  private Connection openConnection(boolean autoCommit) throws PdcException {
     Connection con = null;
     try {
-      con = openConnection();
-      con.setAutoCommit(autoCommit);
+      con = DBUtil.makeConnection(JNDINames.PDC_DATASOURCE);
+      if (autoCommit) {
+        con.setAutoCommit(autoCommit);
+      }
     } catch (Exception e) {
-      SilverTrace.error("Pdc", "PdcBmImpl.openConnection()",
-          "root.EX_CONNECTION_OPEN_FAILED", "", e);
+      throw new PdcException("PdcBmImpl.openConnection()",
+          SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
     }
     return con;
   }
@@ -2884,7 +2871,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
         for (int nI = 0; alValues != null && nI < alValues.size(); nI++) {
           com.stratelia.silverpeas.classifyEngine.Value value =
               (com.stratelia.silverpeas.classifyEngine.Value) alValues
-              .get(nI);
+                  .get(nI);
           if (value.getAxisId() != -1 && value.getValue() != null)
             searchContext.addCriteria(new SearchCriteria(value.getAxisId(),
                 value.getValue()));
