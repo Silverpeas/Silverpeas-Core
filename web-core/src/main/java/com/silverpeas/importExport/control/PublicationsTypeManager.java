@@ -29,7 +29,6 @@
 package com.silverpeas.importExport.control;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -63,7 +62,6 @@ import com.silverpeas.publication.importExport.PublicationContentType;
 import com.silverpeas.publication.importExport.XMLModelContentType;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.ZipManager;
 import com.silverpeas.versioning.importExport.VersioningImportExport;
 import com.silverpeas.wysiwyg.importExport.WysiwygContentType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -87,6 +85,9 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 
 /**
  * Classe manager des importations unitaires du moteur d'importExport de silverPeas
@@ -388,10 +389,10 @@ public class PublicationsTypeManager {
           + htmlNameIndex);
       SilverTrace.debug("importExport", "PublicationTypeManager.processExport",
           "root.MSG_GEN_PARAM_VALUE", "pubId = " + pubId);
-      FileWriter fileWriter = null;
+      Writer fileWriter = null;
       try {
         fileHTML.createNewFile();
-        fileWriter = new FileWriter(fileHTML.getPath());
+        fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML), "UTF-8");
         fileWriter.write(s.toHtml());
       } catch (IOException ex) {
         return null;
@@ -732,13 +733,13 @@ public class PublicationsTypeManager {
                     if (StringUtil.isDefined(coordinatePointType.getValue())) {
                       // Get NodeDetail by his name
                       NodeDetail nodeDetail = coordinateIE.getNodeDetailByName(
-                          coordinatePointType.getValue(), coordinatePointType.getAxisId(), 
+                          coordinatePointType.getValue(), coordinatePointType.getAxisId(),
                           componentId);
                       SilverTrace.debug("importExport", "PublicationsTypeManager.processImport",
                           "root.MSG_GEN_PARAM_VALUE", "nodeDetail avant= " + nodeDetail);
                       if (nodeDetail == null && createCoordinateAllowed) {
-                        NodeDetail position = new NodeDetail("toDefine", 
-                            coordinatePointType.getValue(), "", null, userDetail.getId(), null, 
+                        NodeDetail position = new NodeDetail("toDefine",
+                            coordinatePointType.getValue(), "", null, userDetail.getId(), null,
                             "0", String.valueOf(coordinatePointType.getAxisId()), null);
                         nodeDetail = coordinateIE.addPosition(position, String.valueOf(
                             coordinatePointType .getAxisId()), componentId);

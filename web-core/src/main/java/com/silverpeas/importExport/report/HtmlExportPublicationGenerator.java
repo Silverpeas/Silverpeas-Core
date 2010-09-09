@@ -69,20 +69,18 @@ public class HtmlExportPublicationGenerator {
   }
 
   public HtmlExportPublicationGenerator(PublicationType publicationType, /*
-                                                                          * DBModelContentType
-                                                                          * dbModelContent ,
-                                                                          */
+       * DBModelContentType
+       * dbModelContent ,
+       */
       ModelDetail modelDetail, String wysiwygText, String urlPub) {
     this.publicationDetail = publicationType.getPublicationDetail();
     if (publicationType.getPublicationContentType() != null) {
-      this.dbModelContent = publicationType.getPublicationContentType()
-          .getDBModelContentType();
-      this.xmlModelContent = publicationType.getPublicationContentType()
-          .getXMLModelContentType();
+      this.dbModelContent = publicationType.getPublicationContentType().getDBModelContentType();
+      this.xmlModelContent = publicationType.getPublicationContentType().getXMLModelContentType();
     }
-    if (publicationType.getAttachmentsType() != null)
-      this.listAttDetail = publicationType.getAttachmentsType()
-          .getListAttachmentDetail();
+    if (publicationType.getAttachmentsType() != null) {
+      this.listAttDetail = publicationType.getAttachmentsType().getListAttachmentDetail();
+    }
 
     this.modelDetail = modelDetail;
     this.wysiwygText = wysiwygText;
@@ -104,28 +102,27 @@ public class HtmlExportPublicationGenerator {
    */
   public String toHtmlSommairePublication(String target) {
 
-    String htmlPubName = HtmlExportGenerator
-        .encode(publicationDetail.getName());
-    String htmlPubDescription = HtmlExportGenerator.encode(publicationDetail
-        .getDescription());
-    String htmlCreatorName = HtmlExportGenerator.encode(publicationDetail
-        .getCreatorName());
-    String dateString = DateUtil.dateToString(publicationDetail
-        .getCreationDate(), "fr");
+    String htmlPubName = HtmlExportGenerator.encode(publicationDetail.getName());
+    String htmlPubDescription = HtmlExportGenerator.encode(publicationDetail.getDescription());
+    String htmlCreatorName = HtmlExportGenerator.encode(publicationDetail.getCreatorName());
+    String dateString = DateUtil.dateToString(publicationDetail.getCreationDate(), "fr");
 
     StringBuffer sb = new StringBuffer();
     sb.append("&#149;&nbsp;");
-    if (StringUtil.isDefined(target))
+    if (StringUtil.isDefined(target)) {
       sb.append("<a target=\"" + target + "\" href=\"").append(urlPub).append(
           "\">");
-    else
+    } else {
       sb.append("<a href=\"").append(urlPub).append("\">");
+    }
     sb.append("<B>").append(htmlPubName).append("</B>").append("</a>").append(
         "\n");
-    if (htmlCreatorName.length() != 0)
+    if (htmlCreatorName.length() != 0) {
       sb.append(" - ").append(htmlCreatorName);
-    if (dateString.length() != 0)
+    }
+    if (dateString.length() != 0) {
       sb.append(" (").append(dateString).append(")");
+    }
     sb.append("<BR />\n");
     if (htmlPubDescription.length() != 0) {
       sb.append("<I>").append(htmlPubDescription).append("</I>").append(
@@ -140,22 +137,18 @@ public class HtmlExportPublicationGenerator {
    */
   private String toHtmlEnTetePublication() {
 
-    String htmlPubName = HtmlExportGenerator
-        .encode(publicationDetail.getName());
-    String htmlPubDescription = HtmlExportGenerator.encode(publicationDetail
-        .getDescription());
-    String htmlCreatorName = HtmlExportGenerator.encode(publicationDetail
-        .getCreatorName());
-    String dateString = DateUtil.dateToString(publicationDetail
-        .getCreationDate(), "fr");
+    String htmlPubName = HtmlExportGenerator.encode(publicationDetail.getName());
+    String htmlPubDescription = HtmlExportGenerator.encode(publicationDetail.getDescription());
+    String htmlCreatorName = HtmlExportGenerator.encode(publicationDetail.getCreatorName());
+    String dateString = DateUtil.dateToString(publicationDetail.getCreationDate(), "fr");
 
     StringBuffer sb = new StringBuffer();
 
-    sb
-        .append("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"1\" bgcolor=\"#B3BFD1\">\n");
+    sb.append(
+        "<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"1\" bgcolor=\"#B3BFD1\">\n");
     sb.append("<tr><td>\n");
-    sb
-        .append("<table width=\"100%\" border=\"0\" cellpadding=\"3\" cellspacing=\"0\" bgcolor=\"#EFEFEF\"><tr>\n");
+    sb.append(
+        "<table width=\"100%\" border=\"0\" cellpadding=\"3\" cellspacing=\"0\" bgcolor=\"#EFEFEF\"><tr>\n");
     sb.append("<td><strong>").append(htmlPubName).append("</strong></td>\n");
     sb.append("<td><div align=\"right\">").append(htmlCreatorName).append(
         "</div></td> </tr>\n");
@@ -181,10 +174,12 @@ public class HtmlExportPublicationGenerator {
     Iterator textIterator = null;
     Iterator imageIterator = null;
 
-    if (textList != null)
+    if (textList != null) {
       textIterator = textList.iterator();
-    if (imageList != null)
+    }
+    if (imageList != null) {
       imageIterator = imageList.iterator();
+    }
 
     int posit = toParse.indexOf("%WA");
     while (posit != -1) {
@@ -202,14 +197,15 @@ public class HtmlExportPublicationGenerator {
         if (imageIterator != null && imageIterator.hasNext()) {
           String imagePath = (String) imageIterator.next();
           String type = FileRepositoryManager.getFileExtension(imagePath);
-          String imageName = imagePath.substring(imagePath
-              .lastIndexOf(File.separator) + 1, imagePath.length());
+          String imageName = imagePath.substring(imagePath.lastIndexOf(File.separator) + 1, imagePath.
+              length());
           if (type.equalsIgnoreCase("gif") || type.equalsIgnoreCase("jpg")
               || type.equalsIgnoreCase("jpe") || type.equalsIgnoreCase("jpeg")
               || type.equalsIgnoreCase("png")) {
             sb.append("<IMG BORDER=\"0\" SRC=\"" + imageName + "\">");
-          } else
+          } else {
             sb.append("<B>FileNotImage</B>");
+          }
         }
         toParse = toParse.substring(11);
       }
@@ -224,8 +220,8 @@ public class HtmlExportPublicationGenerator {
   public String toHtmlXMLModel() {
     PublicationTemplateImpl template = null;
     try {
-      template = (PublicationTemplateImpl) PublicationTemplateManager
-          .getPublicationTemplate(publicationDetail.getPK().getInstanceId()
+      template = (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(publicationDetail.
+          getPK().getInstanceId()
           + ":" + publicationDetail.getInfoId());
     } catch (Exception e) {
       return "Error getting publication template !";
@@ -235,8 +231,7 @@ public class HtmlExportPublicationGenerator {
       Form formView = template.getViewForm();
 
       RecordSet recordSet = template.getRecordSet();
-      DataRecord dataRecord = recordSet.getRecord(publicationDetail.getPK()
-          .getId());
+      DataRecord dataRecord = recordSet.getRecord(publicationDetail.getPK().getId());
 
       PagesContext context = new PagesContext();
       String htmlResult = formView.toString(context, dataRecord);
@@ -257,51 +252,47 @@ public class HtmlExportPublicationGenerator {
    * @return
    */
   public String toHtml() {
-
-    StringBuffer sb = new StringBuffer();
-    String htmlPubName = HtmlExportGenerator
-        .encode(publicationDetail.getName());
+    StringBuilder sb = new StringBuilder();
+    String htmlPubName = HtmlExportGenerator.encode(publicationDetail.getName());
 
     // Entête du fichier HTML
-    sb.append("<HTML>\n").append("<HEAD>\n");
+    sb.append("<html>\n").append("<head>\n");
+    sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>");
     // ajout du style
     sb.append(HtmlExportGenerator.getHtmlStyle());
-    sb.append("<TITLE>").append(htmlPubName).append("</TITLE>");
+    sb.append("<title>").append(htmlPubName).append("</title>");
 
-    sb.append("</HEAD>\n").append("<BODY>\n");
+    sb.append("</head>\n").append("<body>\n");
     // Titre de la publication
     sb.append(toHtmlEnTetePublication());
-    sb.append("<BR>").append("\n");
+    sb.append("<br/>").append("\n");
     // Contenu de la publication
-    sb
-        .append(
-        "<TABLE valign=\"top\" width=\"100%\" border=\"0\" cellpadding=\"5\" cellspacing=\"4\">")
-        .append("\n");
-    sb.append("<TR><TD>").append("\n");
+    sb.append("<table valign=\"top\" width=\"100%\" border=\"0\" cellpadding=\"5\"");
+    sb.append("cellspacing=\"4\">").append("\n");
+    sb.append("<tr><td>").append("\n");
 
-    if (dbModelContent != null)
+    if (dbModelContent != null) {
       sb.append(toHtmlInfoModel());
-    else if (wysiwygText != null)
+    } else if (wysiwygText != null) {
       sb.append(HtmlExportGenerator.encode(wysiwygText));
-    else if (xmlModelContent != null)
+    } else if (xmlModelContent != null) {
       sb.append(toHtmlXMLModel());
-
-    sb.append("</TD>").append("\n");
-
-    if ((listAttDetail != null) && (listAttDetail.size() != 0)) {
-      sb.append("<TD valign=\"top\" align=\"right\" width=\"20%\">");
-      sb
-          .append("<TABLE  border=\"0\" cellpadding=\"3\" cellspacing=\"1\" bgcolor=\"#B3BFD1\">");
-      sb.append("<TR><TD bgcolor=\"#FFFFFF\">");
-      sb.append(toHtmlAttachments());
-      sb.append("</TD></TR>");
-      sb.append("</TABLE>");
-      sb.append("</TD>");
     }
-    sb.append("</TR>").append("\n");
-    sb.append("</TABLE>").append("\n");
-    sb.append("</BODY>").append("\n");
-    sb.append("</HTML>").append("\n");
+
+    sb.append("</td>").append("\n");
+    if ((listAttDetail != null) && (listAttDetail.size() != 0)) {
+      sb.append("<td valign=\"top\" align=\"right\" width=\"20%\">");
+      sb.append("<table  border=\"0\" cellpadding=\"3\" cellspacing=\"1\" bgcolor=\"#B3BFD1\">");
+      sb.append("<tr><td bgcolor=\"#FFFFFF\">");
+      sb.append(toHtmlAttachments());
+      sb.append("</td></tr>");
+      sb.append("</table>");
+      sb.append("</td>");
+    }
+    sb.append("</tr>").append("\n");
+    sb.append("</table>").append("\n");
+    sb.append("</body>").append("\n");
+    sb.append("</html>").append("\n");
 
     return sb.toString();
   }
@@ -327,8 +318,8 @@ public class HtmlExportPublicationGenerator {
    */
   public static String toHtmlAttachmentInfos(AttachmentDetail attDetail) {
     String htmlLogicalName = attDetail.getLogicalName();
-    String htmlFormatedFileSize = HtmlExportGenerator
-        .encode(FileRepositoryManager.formatFileSize(attDetail.getSize()));
+    String htmlFormatedFileSize = HtmlExportGenerator.encode(FileRepositoryManager.formatFileSize(attDetail.
+        getSize()));
     StringBuffer sb = new StringBuffer();
 
     sb.append("&#149;&nbsp;");
@@ -339,13 +330,15 @@ public class HtmlExportPublicationGenerator {
     sb.append(htmlFormatedFileSize).append("<br>\n");
     if (attDetail.getTitle() != null) {
       sb.append("<I>").append(attDetail.getTitle()).append("<I>");
-      if (attDetail.getInfo() != null)
+      if (attDetail.getInfo() != null) {
         sb.append(" - ").append("<I>").append(
             HtmlExportGenerator.encode(attDetail.getInfo())).append("</I>");
+      }
       sb.append("<BR>\n");
-    } else if (attDetail.getInfo() != null)
-      sb.append("<I>").append(HtmlExportGenerator.encode(attDetail.getInfo()))
-          .append("</I>").append("<BR>\n");
+    } else if (attDetail.getInfo() != null) {
+      sb.append("<I>").append(HtmlExportGenerator.encode(attDetail.getInfo())).append("</I>").append(
+          "<BR>\n");
+    }
 
     return sb.toString();
   }
@@ -355,8 +348,9 @@ public class HtmlExportPublicationGenerator {
    * @return
    */
   public static String replaceImagesPathForExport(String htmlText) {
-    if (!StringUtil.isDefined(htmlText))
+    if (!StringUtil.isDefined(htmlText)) {
       return htmlText;
+    }
 
     String lowerHtml = htmlText.toLowerCase();
     int finPath = 0;
@@ -381,8 +375,9 @@ public class HtmlExportPublicationGenerator {
           int f = imageSrc.indexOf("?");
           imageSrc = imageSrc.substring(d, f);
           newHtmlText.append(imageSrc);
-        } else
+        } else {
           newHtmlText.append(htmlText.substring(debutPath, finPath));
+        }
       }
       newHtmlText.append(htmlText.substring(finPath, htmlText.length()));
     }
@@ -413,8 +408,9 @@ public class HtmlExportPublicationGenerator {
           int f = imageSrc.indexOf("?");
           imageSrc = imageSrc.substring(d, f);
           newHtmlText.append(imageSrc);
-        } else
+        } else {
           newHtmlText.append(htmlText.substring(debutPath, finPath));
+        }
       }
       newHtmlText.append(htmlText.substring(finPath, htmlText.length()));
     }
