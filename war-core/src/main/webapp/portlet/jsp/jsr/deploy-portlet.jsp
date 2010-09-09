@@ -25,7 +25,6 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@page contentType="text/html"%>
 <%@page import="com.sun.portal.portletcontainer.driver.admin.AdminConstants" %>
 
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory "%>
