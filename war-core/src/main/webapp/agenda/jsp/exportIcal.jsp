@@ -45,7 +45,8 @@
 		{
 			 statusMessage = resources.getString("agenda.ExportSucceeded");
 			 calendarIcsFileName = AgendaSessionController.AGENDA_FILENAME_PREFIX + agenda.getUserId() + ".ics";
-			 urlFileCalendar = FileServerUtils.getUrlToTempDir(calendarIcsFileName, calendarIcsFileName, "text/calendar");
+			 //urlFileCalendar = FileServerUtils.getUrlToTempDir(calendarIcsFileName, calendarIcsFileName, "text/calendar");
+       urlFileCalendar = FileServerUtils.getUrlToTempDir(calendarIcsFileName);
 		 }
 		else
 			 statusMessage = resources.getString("agenda.ExportEmpty");
