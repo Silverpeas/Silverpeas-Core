@@ -24,16 +24,17 @@
 
 package com.silverpeas.jcrutil.servlets;
 
+import com.stratelia.webactiv.util.ResourceLocator;
 import javax.jcr.Repository;
 
-import com.stratelia.webactiv.util.ResourceLocator;
-
 public class SimpleWebdavServlet extends org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet {
+
+  private static final long serialVersionUID = -1609493516113921269L;
+
+  @Override
   public String getAuthenticateHeaderValue() {
-    ResourceLocator resources = new ResourceLocator(
-        "com.stratelia.webactiv.util.jcr", "");
-    return "Basic realm=\"" + resources.getString("jcr.authentication.realm")
-        + "\"";
+    ResourceLocator resources = new ResourceLocator("com.stratelia.webactiv.util.jcr", "");
+    return "Basic realm=\"" + resources.getString("jcr.authentication.realm") + "\"";
   }
 
   /**
@@ -47,6 +48,7 @@ public class SimpleWebdavServlet extends org.apache.jackrabbit.webdav.simple.Sim
    * @return repository
    * @see RepositoryAccessServlet#getRepository(ServletContext)
    */
+  @Override
   public Repository getRepository() {
     if (repository == null) {
       repository = RepositoryAccessServlet.getRepository(getServletContext());

@@ -25,7 +25,6 @@
 package com.silverpeas.jcrutil.servlets;
 
 import com.silverpeas.jcrutil.BasicDaoFactory;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -56,9 +55,6 @@ import org.apache.jackrabbit.core.nodetype.compact.ParseException;
 import org.apache.jackrabbit.core.state.ItemStateException;
 import org.apache.jackrabbit.rmi.jackrabbit.JackrabbitServerAdapterFactory;
 import org.apache.jackrabbit.rmi.server.RemoteAdapterFactory;
-import org.springframework.util.StringUtils;
-import org.springframework.web.context.ConfigurableWebApplicationContext;
-import org.springframework.web.context.support.XmlWebApplicationContext;
 
 import com.silverpeas.jcrutil.model.SilverpeasRegister;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
