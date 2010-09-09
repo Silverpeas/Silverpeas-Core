@@ -98,6 +98,9 @@ public class AjaxServlet extends HttpServlet {
           versioningSC.getSpaceId(), versioningSC.getComponentId());
       Document document = versioningSC.getDocument(documentPK);
       if (document.getStatus() == Document.STATUS_CHECKOUTED) {
+        if(document.getOwnerId() == Integer.parseInt(userId)) {
+          return "ok";
+        }
         return "alreadyCheckouted";
       }
       document.setStatus(1);

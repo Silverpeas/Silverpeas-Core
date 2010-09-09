@@ -49,7 +49,7 @@
 <!--
 a.yuimenuitemlabel-disabled:hover {
 	color: #B9B9B9;
-} 
+}
 
 ul#attachmentList.ui-sortable {
 	cursor:default;
@@ -83,7 +83,7 @@ boolean isDocumentCheckinable(Document document, DocumentVersion version, String
 {
 	if ("admin".equals(flag))
 	  return true;
-	
+
 	int userId = user_Id;
 	if (document.getStatus() == Document.STATUS_CHECKOUTED)
 	{
@@ -121,7 +121,7 @@ boolean isDocumentCheckoutable(Document document, String flag, int user_Id, bool
     {
         Worker user = (Worker)document.getWorkList().get(document.getCurrentWorkListOrder());
         return (user.isWriter() && user.getUserId() == userId /*|| "admin".equals(flag)*/ );
-    }  
+    }
   }
   return false;
 }
@@ -132,7 +132,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 	String webDavOK = "false";
 	if (useWebDAV && version.isOpenOfficeCompatibleDocument())
 		webDavOK = "true";
-    
+
 	out.println("<div id=\"basicmenu"+documentId+"\" class=\"yuimenu\">");
 	out.println("<div class=\"bd\">");
 		out.println("<ul class=\"first-of-type\">");
@@ -148,7 +148,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 			out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:updateAttachment('"+documentId+"')\">"+resources.getString("GML.modify")+"</a></li>");
 			out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:deleteAttachment("+documentId+")\">"+resources.getString("GML.delete")+"</a></li>");
 		out.println("</ul>");
-		if (useFileSharing) 
+		if (useFileSharing)
 		{
 			out.println("<ul>");
 				out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:ShareAttachment('"+documentId+"')\">"+resources.getString("versioning.share")+"</a></li>");
@@ -158,37 +158,37 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 	out.println("</div>");
 
 	out.println("<script type=\"text/javascript\">");
-	    
+
 			out.println("var oMenu"+documentId+";");
 			out.println("var webDav"+documentId+" = \""+URLEncoder.encode(httpServerBase+version.getWebdavUrl())+"\";");
-			out.println("YAHOO.util.Event.onContentReady(\"basicmenu"+documentId+"\", function () {");			    
+			out.println("YAHOO.util.Event.onContentReady(\"basicmenu"+documentId+"\", function () {");
 				out.println("oMenu"+documentId+" = new YAHOO.widget.ContextMenu(\"basicmenu"+documentId+"\", { trigger: \"img_"+documentId+"\", hidedelay: 100, effect: { effect: YAHOO.widget.ContainerEffect.FADE, duration: 0.30}});");
 				out.println("oMenu"+documentId+".render();");
 				boolean is_user_writer = versioningSC.isWriter(document, userId);
-				
+
 				out.println("oMenu"+documentId+".getItem(5).cfg.setProperty(\"disabled\", true);"); //validate
 		  		out.println("oMenu"+documentId+".getItem(6).cfg.setProperty(\"disabled\", true);"); //refuse
 				if (document.getStatus()==Document.STATUS_CHECKOUTED)
 				{
 				  	//locked
-				  	if (useFileSharing) 
+				  	if (useFileSharing)
 					{
 						out.println("oMenu"+documentId+".getItem(0, 2).cfg.setProperty(\"disabled\", true);"); //share
 					}
 					out.println("oMenu"+documentId+".getItem(0).cfg.setProperty(\"disabled\", true);"); //checkout
 					out.println("oMenu"+documentId+".getItem(1).cfg.setProperty(\"disabled\", true);"); //checkout and download
-					
+
 					if (document.getOwnerId() != userId && "admin".equals(profile))
 					{
 					  	out.println("oMenu"+documentId+".getItem(2).cfg.setProperty(\"disabled\", true);"); //edit online
 						out.println("oMenu"+documentId+".getItem(3).cfg.setProperty(\"disabled\", true);"); //add version
 					}
-										
+
 					if (!isDocumentCheckinable(document, version, profile, userId, is_user_writer))
 					{
 						out.println("oMenu"+documentId+".getItem(4).cfg.setProperty(\"disabled\", true);"); //checkin
 					}
-					
+
 					if (document.getTypeWorkList() == 1)
 					{
 					  	if (isValidator(document.getWorkList(), userId) && version.getStatus() == DocumentVersion.STATUS_VALIDATION_REQUIRED)
@@ -211,7 +211,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 				{
 				    //libre
 				  	out.println("oMenu"+documentId+".getItem(4).cfg.setProperty(\"disabled\", true);"); //checkin
-				  	
+
 				  	if (!isDocumentCheckoutable(document, profile, userId, is_user_writer))
 				  	{
 				  	  	out.println("oMenu"+documentId+".getItem(0).cfg.setProperty(\"disabled\", true);"); //checkout
@@ -220,14 +220,14 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 						out.println("oMenu"+documentId+".getItem(4).cfg.setProperty(\"disabled\", true);"); //new version
 				  	}
 				}
-				
+
 				if (!useWebDAV || !version.isOpenOfficeCompatibleDocument())
 					out.println("oMenu"+documentId+".getItem(2).cfg.setProperty(\"disabled\", true);"); //edit online
-				  
+
 				out.println("YAHOO.util.Event.addListener(\"basicmenu"+documentId+"\", \"mouseover\", oMenu"+documentId+".show);");
 				out.println("YAHOO.util.Event.addListener(\"basicmenu"+documentId+"\", \"mouseout\", oMenu"+documentId+".hide);");
 			out.println("});");
-	    
+
 	out.println("</script>");
 }
 %>
@@ -249,14 +249,14 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 	String xmlForm 		= m_MainSessionCtrl.getOrganizationController().getComponentParameterValue(componentId, "XmlFormForFiles");
 	String sHideAllVersionsLink = m_MainSessionCtrl.getOrganizationController().getComponentParameterValue(componentId, "hideAllVersionsLink");
 	boolean hideAllVersionsLink = StringUtil.getBooleanValue(sHideAllVersionsLink) && profile.equals("user");
-	
+
 	boolean indexIt = "1".equals(sIndexIt);
 
 	boolean topicRightsEnabled = false;
 	if (StringUtil.isDefined(s_topicRightsEnabled))
 		topicRightsEnabled = new Boolean(s_topicRightsEnabled).booleanValue();
 	if (versioningSC == null)
-	{	
+	{
 		versioningSC = setComponentSessionController(session, m_MainSessionCtrl, componentId);
 		 versioningSC.setFileRightsMode(versionningFileRightsMode);
 		 versioningSC.setAttributesContext(nodeId, topicRightsEnabled);
@@ -294,8 +294,8 @@ void displayActions(Document document, DocumentVersion version, String profile, 
     	iconStyle = "style=\"cursor:move\"";
     String language = versioningSC.getLanguage();
     boolean useXMLForm 	= StringUtil.isDefined(xmlForm);
-    
-    
+
+
 
   ForeignPK foreignKey =  new ForeignPK(id, componentId);
   VersioningUtil versioning_util = new VersioningUtil();
@@ -317,7 +317,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
         	document = (Document) iterator.next();
         	versioningSC.setEditingDocumentWithDefaultLists(document);
         	if (versioningSC.hasAccess(document, versioningSC.getUserId()))
-	        { 
+	        {
         		if ("user".equals(profile))
         	  	{
 	        		document_version = versioning_util.getLastPublicVersion(document.getPk());
@@ -329,7 +329,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 	        	  if (document_version != null)
 	        	  {
 	             		String documentVersionUrl = m_context + versioning_util.getDocumentVersionURL(componentId, document_version.getLogicalName(), document.getPk().getId(), document_version.getPk().getId());
-	
+
 	             		if ("1".equals(fromAlias))
 	             		{
 							String contextFileServer = m_context+"/FileServer/";
@@ -364,7 +364,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 							    	out.println("<br/>");
 							    }
 								out.print("</span>");
-							
+
 								out.println("<span class=\"lineSize\">");
 								if (showFileSize && showDownloadEstimation)
 								{
@@ -382,7 +382,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 								out.println("</span>");
 								if (StringUtil.isDefined(document.getDescription()) && showInfo)
 									out.println("<br/><i>"+Encode.javaStringToHtmlParagraphe(document.getDescription())+"</i>");
-									
+
 								if (document_version.isSpinfireDocument() && spinfireViewerEnable)
 							    {
 									    %>
@@ -406,10 +406,10 @@ void displayActions(Document document, DocumentVersion version, String profile, 
                                           </OBJECT>
                                         </div>
 										<%
-							    }							   
+							    }
 								if (StringUtil.isDefined(document_version.getXmlForm()))
 								{
-									String xmlURL = m_context+"/RformTemplate/jsp/View?width=400&ObjectId="+document_version.getPk().getId()+"&ComponentId="+componentId+"&ObjectType=Versioning&XMLFormName="+URLEncoder.encode(document_version.getXmlForm());
+									String xmlURL = m_context+"/RformTemplate/jsp/View?width=400&ObjectId="+document_version.getPk().getId()+"&ComponentId="+componentId+"&ObjectType=Versioning&XMLFormName="+URLEncoder.encode(document_version.getXmlForm(), "UTF-8");
 									%>
 									<br/><a rel="<%=xmlURL%>" href="#" title="<%=document.getName()%>"><%=attMessages.getString("versioning.xmlForm.View")%></a>
 									<%
@@ -439,7 +439,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
                 <td align="right">
                   <table width="100%">
                     <tr>
-                      <td colspan="3" class="dragNdrop"><a href="javascript:showDnD()" id="dNdActionLabel">D�poser rapidement un fichier...</a></td>
+                      <td colspan="3" class="dragNdrop"><a href="javascript:showDnD()" id="dNdActionLabel"><%=resources.getString("GML.DragNDropExpand")%></a></td>
                     </tr>
                     <tr>
                       <td><div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding:0px; width:100%"><img src="<%=m_context%>/util/icons/colorPix/1px.gif" height="2"/></div></td>
@@ -504,7 +504,7 @@ function showDnD()
 	showHideDragDrop('<%=publicURL%>','<%=httpServerBase + m_context%>/upload/VersioningPublic_<%=language%>.html','<%=workURL%>','<%=httpServerBase + m_context%>/upload/VersioningWork_<%=language%>.html','<%=resources.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_context%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
 }
 // Create the tooltips only on document load
-$(document).ready(function() 
+$(document).ready(function()
 {
    // Use the each() method to gain access to each elements attributes
    $('a[rel]').each(function()
@@ -529,8 +529,8 @@ $(document).ready(function()
                screen: true // Keep the tooltip on-screen at all times
             }
          },
-         show: { 
-            when: 'click', 
+         show: {
+            when: 'click',
             solo: true // Only show one tooltip at a time
          },
          hide: 'unfocus',
@@ -552,7 +552,7 @@ $(document).ready(function()
 function checkout(id, webdav, edit, download)
 {
 	if (id > 0) {
-		$.get('<%=m_context%>/AjaxVersioning', {DocId:id,Action:'Checkout'}, 
+		$.get('<%=m_context%>/AjaxVersioning', {DocId:id,Action:'Checkout'},
 		function(data){
 			if (data == "ok")
 			{
@@ -565,7 +565,7 @@ function checkout(id, webdav, edit, download)
 				}
 				oMenu.getItem(3).cfg.setProperty("disabled", false); //add new version
 				oMenu.getItem(4).cfg.setProperty("disabled", false); //checkin
-				
+
 				$('#worker'+id).html("<%=attResources.getString("lockedBy")%> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <%=attResources.getString("at")%> <%=DateUtil.getOutputDate(new Date(), language)%>");
 				$('#worker'+id).css({'visibility':'visible'});
 
@@ -630,12 +630,12 @@ function newVersionAdded(documentId, majorNumber, minorNumber) {
 function menuCheckin(id)
 {
 	var oMenu = eval("oMenu"+id);
-	oMenu.getItem(0).cfg.setProperty("disabled", false); 
+	oMenu.getItem(0).cfg.setProperty("disabled", false);
 	oMenu.getItem(1).cfg.setProperty("disabled", false);
 	oMenu.getItem(2).cfg.setProperty("disabled", false);
 	oMenu.getItem(3).cfg.setProperty("disabled", false);
 	oMenu.getItem(4).cfg.setProperty("disabled", true);
-	
+
 	$('#worker'+id).html("");
 	$('#worker'+id).css({'visibility':'hidden'});
 }
@@ -661,7 +661,7 @@ function deleteAttachment(attachmentId)
 {
 	if (window.confirm("<%=attResources.getString("confirmDelete")%>"))
 	{
-		$.get('<%=m_context%>/AjaxVersioning', {Id:attachmentId,Action:'Delete'}, 
+		$.get('<%=m_context%>/AjaxVersioning', {Id:attachmentId,Action:'Delete'},
 				function(data){
 					data = data.replace(/^\s+/g,'').replace(/\s+$/g,'');
 					if (data == "ok")
@@ -717,7 +717,7 @@ $(document).ready(function(){
 
 $('#attachmentList').bind('sortupdate', function(event, ui) {
 	var reg=new RegExp("attachment", "g");
-	
+
 	var data = $('#attachmentList').sortable('serialize');
 	data += "#";
 	var tableau=data.split(reg);
@@ -726,7 +726,7 @@ $('#attachmentList').bind('sortupdate', function(event, ui) {
 	{
 		if (i != 0)
 			param += ","
-				
+
 		param += tableau[i].substring(3, tableau[i].length-1);
 	}
 	  sortAttachments(param);
@@ -735,7 +735,7 @@ $('#attachmentList').bind('sortupdate', function(event, ui) {
 function sortAttachments(orderedList)
 {
 	//alert(orderedList);
-	$.get('<%=m_context%>/AjaxVersioning', {orderedList:orderedList,Action:'Sort',ComponentId:'<%=componentId%>'}, 
+	$.get('<%=m_context%>/AjaxVersioning', {orderedList:orderedList,Action:'Sort',ComponentId:'<%=componentId%>'},
 			function(data){
 				data = data.replace(/^\s+/g,'').replace(/\s+$/g,'');
 				if (data != "ok")
