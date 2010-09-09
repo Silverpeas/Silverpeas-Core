@@ -12,21 +12,10 @@
 <%@page import="com.stratelia.webactiv.beans.admin.Domain"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="java.util.Iterator"%>
-<%@page import="java.util.ArrayList"%><html>
-
+<%@page import="java.util.ArrayList"%>
+<%@ include file="../check.jsp"%>
+<html>
 <%
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute("SilverSessionController");
-
-if (m_MainSessionCtrl == null || !"A".equals(m_MainSessionCtrl.getUserAccessLevel())) {
-    // No session controller in the request -> security exception
-    String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
-%>
-<script language="javascript">
-	location.href="<%=request.getContextPath()+sessionTimeout%>";
-</script>
-<%
-}
 	String domainLDAPId = null;
 
   boolean toLaunch = false;
@@ -44,40 +33,54 @@ if (m_MainSessionCtrl == null || !"A".equals(m_MainSessionCtrl.getUserAccessLeve
 
 <head>
 <title>Utilitaires Silverpeas</title>
-<link href="/silverpeas/util/styleSheets/globalSP_SilverpeasV5.css" rel="stylesheet" type="text/css" />
-<link href="/silverpeas/util/styleSheets/globalSP_SilverpeasV5-IE.css" rel="stylesheet" type="text/css" />
-<script language="javascript">
-	function submit()
-	{
-		if (confirm("Confirmer la migration ?"))
+	<%
+		out.println(gef.getLookStyleSheet());
+	%>
+	<script language="javascript">
+		function submit()
 		{
-			document.toolForm.toLaunch.value = true;
-			document.toolForm.submit();
+			if (confirm("Confirmer la migration ?"))
+			{
+				document.toolForm.toLaunch.value = true;
+				document.toolForm.submit();
+			}
 		}
-	}
-</script>
+	</script>
 </head>
 <body>
-<center>
-<center><h2><u>OUTIL DE MIGRATION DES UTILISATEURS SILVERPEAS VERS LE DOMAINE LDAP</h2></u></center>
 <%
+	// déclaration des boutons
+	Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=submit();", false);
+  Button homeButton = (Button) gef.getFormButton("Accueil Silverpeas", m_context+"/admin/jsp/MainFrameSilverpeasV5.jsp", false);
+  Button homeTools = (Button) gef.getFormButton("Accueil Outils", m_context+"/tools", false);
+
+	out.println(window.printBefore());
+
+%>
+
+<center><h2>Outil de migration des utilisateurs du domaine Silverpeas vers le domaine LDAP</h2></center>
+<center>
+<%
+	out.println(frame.printBefore());
+	out.println(board.printBefore());
 	DomainSP2LDAPBatch db = new DomainSP2LDAPBatch();
 	if (toLaunch) {
     try {
-    	ArrayList resultLDAPUsers = db.processMigration(domainLDAPId);
-      HashMap usersLDAPProcessed = (HashMap) resultLDAPUsers.get(0);
-      HashMap usersLDAPNotProcessed = (HashMap) resultLDAPUsers.get(1);
+    	ArrayList resultUsers = db.processMigration(domainLDAPId);
+      HashMap usersSPProcessed = (HashMap) resultUsers.get(0);
+      HashMap usersSPNotProcessed = (HashMap) resultUsers.get(1);
       %>
+      <center>
 			<table>
   		<tr><td colspan="5">La migration se fait sur la comparaison du <b>prénom+nom</b></center></td></tr>
 			<tr><td colspan="5"><b><%=db.getNbUsers(db.DOMAIN_SILVERPEAS_ID) %></b> utilisateurs dans le domaine Silverpeas</td></tr>
 			<tr><td colspan="5"><b><%=db.getNbUsers(domainLDAPId) %></b> utilisateurs dans le LDAP</td></tr>
-			<tr><td colspan="5"><b><%=usersLDAPProcessed.size() %></b> utilisateurs traités</td></tr>
+			<tr><td colspan="5"><b><%=usersSPProcessed.size() %></b> utilisateurs traités</td></tr>
 			<tr><td></td></tr>
-				<% if (usersLDAPProcessed.size() > 0) { %>
+				<% if (usersSPProcessed.size() > 0) { %>
 						<tr><td class="browseBar">DOMAIN ID</td><td class="browseBar">PRENOM</td><td class="browseBar">NOM</td><td class="browseBar">SPECIFIC_ID</td><td class="browseBar">EMAIL</td><td class="browseBar">LOGIN</td><td class="browseBar">DROITS</td></tr></b>
 			      <%
-			      	Iterator it = usersLDAPProcessed.values().iterator();
+			      	Iterator it = usersSPProcessed.values().iterator();
 			      	int i=0;
 			      	while (it.hasNext())
 			      	{
@@ -92,13 +95,12 @@ if (m_MainSessionCtrl == null || !"A".equals(m_MainSessionCtrl.getUserAccessLeve
 
 			<tr><td></td></tr>
 			<tr><td></td></tr>
-			<tr><td colspan="5"><b><%=usersLDAPNotProcessed.size() %></b> utilisateurs non traités (à traiter manuellement) :</td></tr>
-
+			<tr><td colspan="5"><b><%=usersSPNotProcessed.size() %></b> utilisateurs non traités (à traiter manuellement si nécessaire) :</td></tr>
 			<tr><td></td></tr>
-				<% if (usersLDAPNotProcessed.size() > 0) { %>
+				<% if (usersSPNotProcessed.size() > 0) { %>
 						<tr><td class="browseBar">DOMAIN ID</td><td class="browseBar">PRENOM</td><td class="browseBar">NOM</td><td class="browseBar">SPECIFIC_ID</td><td class="browseBar">EMAIL</td><td class="browseBar">LOGIN</td><td class="browseBar">DROITS</td></tr></b>
 			      <%
-			      	Iterator it = usersLDAPNotProcessed.values().iterator();
+			      	Iterator it = usersSPNotProcessed.values().iterator();
 			      	int i=0;
 			      	while (it.hasNext())
 			      	{
@@ -110,8 +112,8 @@ if (m_MainSessionCtrl == null || !"A".equals(m_MainSessionCtrl.getUserAccessLeve
 							}
 					}  %>
 					<tr><td></td></tr>
-		  		<tr><td colspan="3"></td><td><a href="<%=m_context%>/admin/jsp/MainFrameSilverpeasV5.jsp"><button>Accueil Silverpeas</button></a></td><td><a href="<%=m_context%>/tools"><button>Accueil outils</button></a></td></tr>
 			</table>
+			</center>
 			<%
     } catch (Exception e) {
       isError = true;
@@ -126,8 +128,11 @@ if (m_MainSessionCtrl == null || !"A".equals(m_MainSessionCtrl.getUserAccessLeve
  		<center>- La migration se fait sur la comparaison du prénom+nom</b> -</center>
  		<center><h3><span class="MessageReadHighPriority"><b>ATTENTION !!</b></span> Assurez-vous d'avoir effectué un backup de la base de données car cette opération met à jour la table des utilisateurs</h3><br></center>
 		<br>
+
+		<center>
 		<form action="domainSP2LDAP.jsp" name="toolForm">
-			Domaine LDAP à traiter :
+			<input type="hidden" name="toLaunch" value="false">
+			Domaine LDAP cible :
 			<select name="DomainLDAPId">
 			<% for (int i=0; i<domains.length; i++)
 			  {
@@ -139,11 +144,21 @@ if (m_MainSessionCtrl == null || !"A".equals(m_MainSessionCtrl.getUserAccessLeve
 				<% } %>
 			<% } %>
 			</select>
-			<input type="button" value="Lancer la migration" onClick="submit();">
 		</form>
+		</center>
 		<%
 	}
 %>
 </center>
+<%
+	out.println(board.printAfter());
+	ButtonPane buttonPane = gef.getButtonPane();
+  buttonPane.addButton(validateButton);
+  buttonPane.addButton(homeButton);
+  buttonPane.addButton(homeTools);
+	out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
+	out.println(frame.printAfter());
+	out.println(window.printAfter());
+%>
 </body>
 </html>

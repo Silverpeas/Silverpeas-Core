@@ -45,8 +45,9 @@ public class DomainSP2LDAPBatch
 
 	  ArrayList<HashMap<String, UserDetail>> returnListLDAPUsers = new ArrayList<HashMap<String, UserDetail>>();
 	  
-	  HashMap<String,UserDetail> listLDAPUsers =  new HashMap<String, UserDetail>();
-	  HashMap<String,UserDetail> processedUsers = new HashMap<String, UserDetail>();
+    HashMap<String,UserDetail> processedUsers = new HashMap<String, UserDetail>();
+    HashMap<String,UserDetail> notProcessedSPUsers =  new HashMap<String, UserDetail>();
+    HashMap<String,UserDetail> listLDAPUsers =  new HashMap<String, UserDetail>();
 	  
 		try
 		{
@@ -80,12 +81,13 @@ public class DomainSP2LDAPBatch
           //update silverpeas user entry (withe ldap infos)
           userDetail.setSpecificId(userDetailLDAP.getSpecificId());
           userDetail.setDomainId(userDetailLDAP.getDomainId());
-          userDetail.seteMail(userDetailLDAP.geteMail());
           getAdminController().updateUser(userDetail);
           //Users processed
           processedUsers.put(keyName, userDetail);
-          listLDAPUsers.remove(keyName);
         }
+        else
+          notProcessedSPUsers.put(keyName, userDetail);
+
       }
 		}
     catch (Exception e)
@@ -99,6 +101,7 @@ public class DomainSP2LDAPBatch
     SynchroReport.info("DomainSP2LDAPBatch.processMigration()", getAdminController().synchronizeSilverpeasWithDomain(domainLDAP_Id),null);
     SynchroReport.info("DomainSP2LDAPBatch.processMigration()", "FIN Synchronisation post migration du domaine "+domainLDAP_Id,null);
     returnListLDAPUsers.add(processedUsers);
+    returnListLDAPUsers.add(notProcessedSPUsers);
     returnListLDAPUsers.add(listLDAPUsers);
     SynchroReport.info("DomainSP2LDAPBatch.processMigration()", "root.MSG_EXIT_METHOD", null);
     SynchroReport.setTraceLevel(SynchroReport.TRACE_LEVEL_UNKNOWN);
