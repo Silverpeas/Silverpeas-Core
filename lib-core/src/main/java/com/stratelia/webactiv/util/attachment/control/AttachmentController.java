@@ -1315,7 +1315,7 @@ public class AttachmentController {
    * @param attachmentId
    * @param userId
    * @param language
-   * @return false if the attahcment is already checkout - true if the attachment was successfully
+   * @return false if the attachment is already checkout - true if the attachment was successfully
    * checked out.
    * @throws AttachmentException
    */
@@ -1328,7 +1328,7 @@ public class AttachmentController {
       AttachmentDetail attachmentDetail = getAttachmentBm().getAttachmentByPrimaryKey(
           new AttachmentPK(attachmentId));
       if (attachmentDetail.isReadOnly()) {
-        return false;
+        return attachmentDetail.getWorkerId().equals(userId);
       }
       // Check if user haven't check out another file with same name to prevent overwriting
       Iterator<AttachmentDetail> checkOutFiles = getAttachmentBm().getAttachmentsByWorkerId(
