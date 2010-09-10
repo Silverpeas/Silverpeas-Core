@@ -21,11 +21,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.jcrutil.servlets;
 
+import com.silverpeas.jcrutil.security.impl.SilverpeasBasicCredentialsProvider;
 import com.stratelia.webactiv.util.ResourceLocator;
 import javax.jcr.Repository;
+import org.apache.jackrabbit.server.CredentialsProvider;
 
 public class SimpleWebdavServlet extends org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet {
 
@@ -36,18 +37,12 @@ public class SimpleWebdavServlet extends org.apache.jackrabbit.webdav.simple.Sim
     ResourceLocator resources = new ResourceLocator("com.stratelia.webactiv.util.jcr", "");
     return "Basic realm=\"" + resources.getString("jcr.authentication.realm") + "\"";
   }
-
   /**
    * the jcr repository
    */
   private Repository repository;
 
-  /**
-   * Returns the <code>Repository</code>. If no repository has been set or created the repository
-   * initialized by <code>RepositoryAccessServlet</code> is returned.
-   * @return repository
-   * @see RepositoryAccessServlet#getRepository(ServletContext)
-   */
+  /** {@inheritDoc} */
   @Override
   public Repository getRepository() {
     if (repository == null) {
@@ -56,12 +51,14 @@ public class SimpleWebdavServlet extends org.apache.jackrabbit.webdav.simple.Sim
     return repository;
   }
 
-  /**
-   * Sets the <code>Repository</code>.
-   * @param repository
-   */
+  /** {@inheritDoc} */
   public void setRepository(Repository repository) {
     this.repository = repository;
   }
 
+  /** {@inheritDoc} */
+  @Override
+  protected CredentialsProvider getCredentialsProvider() {
+    return new SilverpeasBasicCredentialsProvider(getInitParameter(INIT_PARAM_MISSING_AUTH_MAPPING));
+  }
 }
