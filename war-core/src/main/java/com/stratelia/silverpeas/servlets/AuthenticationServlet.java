@@ -51,6 +51,7 @@ import org.jasig.cas.client.validation.Assertion;
 public class AuthenticationServlet extends HttpServlet {
 
   private static LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();
+  private static final long serialVersionUID = -8695946617361150513L;
   private final int keyMaxLength = 12;
 
   /**

@@ -27,5 +27,6 @@ package com.silverpeas.jcrutil.security.impl;
 import javax.jcr.Credentials;
 
 public class SilverpeasSystemCredentials implements Credentials {
+  private static final long serialVersionUID = -653693136458423645L;
 
 }
