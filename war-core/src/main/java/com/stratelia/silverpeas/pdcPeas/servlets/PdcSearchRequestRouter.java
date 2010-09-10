@@ -511,6 +511,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
           pdcSC.resetSearchPage();
           pdcSC.resetSearchPageId();
         }
+        processChangeSearchType(function, pdcSC, request);
 
         // Display classic result page or only PDC result page
         String showResults = request.getParameter("ShowResults");
@@ -518,7 +519,9 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
 
         pdcSC.setResultPage(request.getParameter("ResultPage"));
         pdcSC.setResultPageId(request.getParameter("ResultPageId"));
-
+        pdcSC.setXmlFormSortValue(request.getParameter("SortResXForm"));
+        pdcSC.setSortImplemtor(request.getParameter("sortImp"));
+        
         String searchType = request.getParameter("searchType");
         if (searchType != null && !"".equals(searchType)) {
           if ("Normal".equals(searchType)) {
@@ -1286,6 +1289,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
 
     request.setAttribute("ResultsDisplay", Integer.valueOf(pdcSC.getCurrentResultsDisplay()));
     request.setAttribute("ResultPageId", pdcSC.getResultPageId());
+    request.setAttribute("XmlFormSortValue", pdcSC.getXmlFormSortValue());
+    request.setAttribute("sortImp", pdcSC.getSortImplemtor());
   }
 
   /**

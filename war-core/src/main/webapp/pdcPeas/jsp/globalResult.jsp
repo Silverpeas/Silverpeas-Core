@@ -107,6 +107,9 @@ List choiceNbResToDisplay = (List) request.getAttribute("ChoiceNbResToDisplay");
 Integer nbResToDisplay		= (Integer) request.getAttribute("NbResToDisplay");
 Integer sortValue		= (Integer) request.getAttribute("SortValue");
 String sortOrder		= (String) request.getAttribute("SortOrder");
+String sortResXForm = (String) request.getAttribute("XmlFormSortValue");
+String sortImplementor = (String) request.getAttribute("sortImp");
+
 List	webTabs			= (List) request.getAttribute("WebTabs");
 // spelling words
 String [] spellingWords = (String []) request.getAttribute("spellingWords");
@@ -124,7 +127,7 @@ if (keywords == null)
 	keywords = "";
 else
 	keywords = Encode.javaStringToHtmlString(keywords);
-	
+
 Boolean activeSelection = (Boolean) request.getAttribute("ActiveSelection");
 if (activeSelection == null) {
 	activeSelection = new Boolean(false);
@@ -163,7 +166,7 @@ int autocompletionMinChars = Integer.parseInt(resource.getSetting("autocompletio
 boolean markResult 		= resource.getSetting("enableMarkAsRead", true);
 boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
 
-int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intValue(); 
+int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intValue();
 String pageId = (String) request.getAttribute("ResultPageId");
 if (!StringUtil.isDefined(pageId)) {
   pageId = "globalResult";
@@ -205,15 +208,15 @@ if (!StringUtil.isDefined(pageId)) {
 
 <script language="javascript">
 	function submitContent(cUrl, componentId) {
-	
+
 		jumpToComponent(componentId);
-		
+
 		document.AdvancedSearch.contentURL.value = cUrl;
 		document.AdvancedSearch.componentId.value = componentId;
 		document.AdvancedSearch.action = "GlobalContentForward";
 		document.AdvancedSearch.submit();
 	}
-	
+
 	function jumpToComponent(componentId) {
 		if (<%=refreshEnabled.booleanValue()%>)
 		{
@@ -222,12 +225,12 @@ if (!StringUtil.isDefined(pageId)) {
 			parent.SpacesBar.document.privateDomainsForm.privateDomain.value="";
 			parent.SpacesBar.document.privateDomainsForm.privateSubDomain.value="";
 			parent.SpacesBar.document.privateDomainsForm.submit();
-			
+
 			//Reload Topbar
 			parent.SpacesBar.reloadTopBar(true);
 		}
 	}
-	
+
 	function goToSpace(spaceId)
 	{
 		//Reload DomainsBar
@@ -235,7 +238,7 @@ if (!StringUtil.isDefined(pageId)) {
 		parent.SpacesBar.document.privateDomainsForm.privateDomain.value="";
 		parent.SpacesBar.document.privateDomainsForm.privateSubDomain.value="";
 		parent.SpacesBar.document.privateDomainsForm.submit();
-			
+
 		//Reload Topbar
 		parent.SpacesBar.reloadTopBar(true);
 	}
@@ -248,7 +251,7 @@ if (!StringUtil.isDefined(pageId)) {
 		hauteur = "500";
 		SP_openWindow(chemin,"Pdc_Pop",largeur,hauteur,"scrollbars=yes, resizable=yes");
 	}
-	
+
 	function getSelectedOjects()
 	{
 		return getObjects(true);
@@ -257,7 +260,7 @@ if (!StringUtil.isDefined(pageId)) {
 	{
 		return getObjects(false);
 	}
-	
+
 	function getObjects(selected)
 	{
 		var  items = "";
@@ -266,10 +269,10 @@ if (!StringUtil.isDefined(pageId)) {
 			// au moins une checkbox exist
 			var nbBox = boxItems.length;
 			if ( (nbBox == null) && (boxItems.checked == selected) ){
-				// il n'y a qu'une checkbox non selectionn�e
+				// il n'y a qu'une checkbox non selectionn?e
 				items += boxItems.value+",";
 			} else{
-				// search not checked boxes 
+				// search not checked boxes
 				for (i=0;i<boxItems.length ;i++ ){
 					if (boxItems[i].checked == selected){
 						items += boxItems[i].value+",";
@@ -279,14 +282,14 @@ if (!StringUtil.isDefined(pageId)) {
 		}
 		return items;
 	}
-	
-	// this function get all checked boxes by the user and sent 
+
+	// this function get all checked boxes by the user and sent
 	// data to the router
 	function getSelectedOjectsFromResultList()
 	{
 		var  selectItems 	= getSelectedOjects();
 		var  notSelectItems = getNotSelectedOjects();
-		
+
 		if ( selectItems.length > 0) {
 			// an axis has been selected !
 			document.AdvancedSearch.selectedIds.value = selectItems;
@@ -295,21 +298,21 @@ if (!StringUtil.isDefined(pageId)) {
 			document.AdvancedSearch.submit();
 		}
 	}
-	
+
 	function selectEveryResult(chkMaster) {
 		var boxItems = document.AdvancedSearch.resultObjects;
 		if (boxItems != null){
-			// r�f�rence
+			// r?f?rence
 			var selected = chkMaster.checked;
-			
+
 			// au moins une checkbox existe
 			var nbBox = boxItems.length;
 			if (nbBox == null) {
-				// il n'y a qu'une checkbox dont le "checked" est identique � la r�f�rence
+				// il n'y a qu'une checkbox dont le "checked" est identique ? la r?f?rence
 				boxItems.checked = selected;
-				
+
 			} else {
-				// on coche (ou d�coche) les checkboxs, en fonction de la valeur de r�f�rence
+				// on coche (ou d?coche) les checkboxs, en fonction de la valeur de r?f?rence
 				for (i=0; i<boxItems.length; i++ ){
 					if (!boxItems[i].disabled)
 						boxItems[i].checked = selected;
@@ -317,11 +320,11 @@ if (!StringUtil.isDefined(pageId)) {
 			}
 		}
 	}
-	
+
 	function openExportPopup() {
 		openPopup("ExportPublications");
 	}
-	
+
 	function openExportPDFPopup() {
 		openPopup("ExportAttachementsToPDF");
 	}
@@ -329,25 +332,25 @@ if (!StringUtil.isDefined(pageId)) {
 	function openPopup(url) {
 		var selectItems = getSelectedOjects();
 		var notSelectItems = getNotSelectedOjects();
-		
+
 		chemin = url + "?query=&selectedIds=" + selectItems + "&notSelectedIds=" + notSelectItems;
 		largeur = "700";
 		hauteur = "500";
 		SP_openWindow(chemin, "ExportWindow", largeur, hauteur, "scrollbars=yes, resizable=yes");
 	}
-	
+
 	function doPagination(index)
 	{
 		var  selectItems 	= getSelectedOjects();
 		var  notSelectItems = getNotSelectedOjects();
-		
+
 		document.AdvancedSearch.Index.value 			= index;
 		document.AdvancedSearch.selectedIds.value 		= selectItems;
 		document.AdvancedSearch.notSelectedIds.value 	= notSelectItems;
 		document.AdvancedSearch.action					= "Pagination";
 		document.AdvancedSearch.submit();
 	}
-	
+
 	function sendQuery() {
 		try {
 			 //empty query field
@@ -356,7 +359,7 @@ if (!StringUtil.isDefined(pageId)) {
 			 //Topbar don't have waited form and/or field
 		}
 		document.AdvancedSearch.action 		= "AdvancedSearch";
-		
+
 		$.progressMessage();
     	setTimeout("document.AdvancedSearch.submit();", 500);
 	}
@@ -386,7 +389,7 @@ if (!StringUtil.isDefined(pageId)) {
 		$.progressMessage();
     	setTimeout("document.AdvancedSearch.submit();", 500);
 	}
-	
+
 	function changeResDisplay() {
 		document.AdvancedSearch.action = "SortResults";
 		document.AdvancedSearch.submit();
@@ -397,10 +400,10 @@ if (!StringUtil.isDefined(pageId)) {
 		document.AdvancedSearch.action = "SortResults";
 		document.AdvancedSearch.submit();
 	}
-       
+
 
     //used for mark as read functionality
-  	<%  if(markResult){ %>  
+  	<%  if(markResult){ %>
 		function markAsRead(id) {
 			if(id!=""){
 				$.post('<%=m_context%>/RpdcSearch/jsp/markAsRead', {id:id});
@@ -439,14 +442,14 @@ if (!StringUtil.isDefined(pageId)) {
 		operationPane.addOperation(resource.getIcon("pdcPeas.folder_to_valid"), resource.getString("pdcPeas.tracker_to_select"), "javascript:getSelectedOjectsFromResultList()");
 
 	if (exportEnabled.booleanValue())
-	{		
+	{
 		//To export elements
 		operationPane.addOperation(resource.getIcon("pdcPeas.toExport"), resource.getString("pdcPeas.ToExport"), "javascript:openExportPopup();");
 		operationPane.addOperation(resource.getIcon("pdcPeas.exportPDF"), resource.getString("pdcPeas.exportPDF"), "javascript:openExportPDFPopup();");
 	}
 
 	out.println(window.printBefore());
-	
+
 	tabs = gef.getTabbedPane();
 	tabs.addTab(resource.getString("pdcPeas.SearchResult"), "#", true);
 	if (webTabs != null)
@@ -460,8 +463,8 @@ if (!StringUtil.isDefined(pageId)) {
 	tabs.addTab(resource.getString("pdcPeas.SearchSimple"), "ChangeSearchTypeToAdvanced", false);
 	tabs.addTab(resource.getString("pdcPeas.SearchAdvanced"), "ChangeSearchTypeToExpert", false);
 	if ( isXmlSearchVisible )
-		tabs.addTab(resource.getString("pdcPeas.SearchXml"), "ChangeSearchTypeToXml", false);	
-	
+		tabs.addTab(resource.getString("pdcPeas.SearchXml"), "ChangeSearchTypeToXml", false);
+
 	out.println("<div id=\"globalResultTab\">" + tabs.print() + "</div>");
 	out.println("<div id=\"globalResultFrame\">");
     out.println(frame.printBefore());
@@ -481,9 +484,9 @@ if (!StringUtil.isDefined(pageId)) {
           </td>
         </tr>
         </table>
- 
+
 <%
-	if ("All".equals(displayParamChoices) || "Res".equals(displayParamChoices)) 
+	if ("All".equals(displayParamChoices) || "Res".equals(displayParamChoices))
 	{
 %>
 		<table id="globalResultParamDisplay" border="0" cellspacing="0" cellpadding="5" width="100%">
@@ -496,7 +499,7 @@ if (!StringUtil.isDefined(pageId)) {
 		  		{
 		  			Iterator it = (Iterator) choiceNbResToDisplay.iterator();
 					String choice;
-		  			while (it.hasNext()) 
+		  			while (it.hasNext())
 			  		{
 						selected = "";
 						choice = (String) it.next();
@@ -510,7 +513,7 @@ if (!StringUtil.isDefined(pageId)) {
           </select>
 		  <span>&nbsp;&nbsp;&nbsp;<%=resource.getString("pdcPeas.SortResultSearch")%>&nbsp;&nbsp;&nbsp;</span>
 		  <select name="sortRes" size="1" onChange="javascript:changeResDisplay()">
-            <%		
+            <%
 				for (int i=1; i<=7; i++) {
 					selected = "";
 					if(sortValue.intValue() == i) {
@@ -540,7 +543,7 @@ if (!StringUtil.isDefined(pageId)) {
 			<tr id="globalResultSelectAllResult">
 				<td class="txtlibform"><%=resource.getString("pdcPeas.selectAll") %></td><td><input type="checkbox" name="selectAll" onClick="selectEveryResult(this);"></td></tr>
 			</tr>
-		<% }  %>	
+		<% }  %>
 		</table>
 <%
 	}
@@ -559,15 +562,15 @@ if (!StringUtil.isDefined(pageId)) {
 		out.println("<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\">");
 		displayItemsListHeader(keywords, pagination, resource, out);
 		out.println("<tr><td>");
-	if(spellingWords!= null && spellingWords[0]!= null && !spellingWords[0].equals("")){ 
+	if(spellingWords!= null && spellingWords[0]!= null && !spellingWords[0].equals("")){
 %>
 		<table border="0" cellspacing="0" cellpadding="0" width="100%" id="globalResultListDidYouMean">
 			<tr >
-				<td> 
-					<span class="spellText" > 		  
-						 &nbsp;&nbsp; <% out.println(resource.getString("pdcpeas.didYouMean"));%> 				
-						
-					</span>	
+				<td>
+					<span class="spellText" >
+						 &nbsp;&nbsp; <% out.println(resource.getString("pdcpeas.didYouMean"));%>
+
+					</span>
 					<a href="javascript:dymsend();"><b><span class="spellWord"> <%=spellingWords[0]%></span></b></a>
 					<p>&nbsp;</p>
 				</td>
@@ -576,7 +579,7 @@ if (!StringUtil.isDefined(pageId)) {
 <%  }
 		out.println("<table border=\"0\" id=\"globalResultListDetails\" cellspacing=\"0\" cellpadding=\"0\">");
 		GlobalSilverResult	gsr			= null;
-						
+
 		for(int nI=0; resultsOnThisPage != null && nI < resultsOnThisPage.size(); nI++){
 			gsr				= (GlobalSilverResult) resultsOnThisPage.get(nI);
 			sName			= EncodeHelper.javaStringToHtmlString(gsr.getName(language));
@@ -596,25 +599,25 @@ if (!StringUtil.isDefined(pageId)) {
 			} catch (Exception e) {
 				sCreationDate	= null;
 			}
-			
+
 			out.println("<tr class=\"lineResult " + gsr.getSpaceId() + " " + gsr.getInstanceId() + "\">");
-			
+
 			if (showPertinence)
 				out.println("<td valign=\"top\" class=\"pertinence\">"+displayPertinence(gsr.getRawScore(), fullStarSrc, emptyStarSrc)+"&nbsp;</td>");
-			
+
 			if (activeSelection.booleanValue() || exportEnabled.booleanValue()) {
 				if (gsr.isExportable())
 				{
 					String checked = "";
 					if (gsr.isSelected())
 						checked = "checked";
-				
+
 					out.println("<td valign=\"top\"><input type=\"checkbox\" "+checked+" name=\"resultObjects\" value=\""+gsr.getId()+"-"+gsr.getInstanceId()+"\"></td>");
 				}
-			   	else 
+			   	else
 			   		out.println("<td valign=\"top\"><input type=\"checkbox\" disabled name=\"resultObjects\" value=\""+gsr.getId()+"-"+gsr.getInstanceId()+"\"></td>");
 			}
-		
+
 			if (gsr.getType() != null && (gsr.getType().startsWith("Attachment")|| gsr.getType().startsWith("Versioning") || gsr.getType().equals("LinkedFile")) ) {
                 fileType	= sName.substring(sName.lastIndexOf(".")+1, sName.length());
 				fileIcon	= FileRepositoryManager.getFileIcon(fileType);
@@ -623,17 +626,17 @@ if (!StringUtil.isDefined(pageId)) {
 				if (gsr.getType().startsWith("Attachment") || gsr.getType().equals("LinkedFile"))
 					sDescription = null;
 			}
-			
+
 			out.println("<td>");
-			
+
 			out.println("<table cellspacing=\"0\" cellpadding=\"0\"><tr>");
-			
+
 			if (gsr.getThumbnailURL() != null && gsr.getThumbnailURL().length()>0)
 			{
 				out.println("<td><img src=\""+gsr.getThumbnailURL()+"\" border=0 width=\""+gsr.getThumbnailWidth()+"\" height=\""+gsr.getThumbnailHeight()+"\"></td>");
 				out.println("<td>&nbsp;</td>");
 			}
-			
+
 			out.println("<td valign=\"top\">");
 			if (activeSelection.booleanValue())
 				out.println("<span class=\"textePetitBold\">"+sName+"</span>");
@@ -644,36 +647,36 @@ if (!StringUtil.isDefined(pageId)) {
 			  	  cssClass="markedkAsRead";
 			  	  cssClassDisableVisited ="markedkAsReadDisableVisited";
 			  	}
-			  	
-			  	
+
+
 				out.println("<a href=\""+sURL+"\" class=\""+cssClassDisableVisited +"\"><span class=\""+ cssClass+ "\">"+sName+"</span></a>");
-			
+
 			} if (StringUtil.isDefined(sDownloadURL))
 			{
-				//affiche le lien pour le t�l�chargement
+				//affiche le lien pour le t?l?chargement
 				out.println("<a href=\""+sDownloadURL+"\" target=\"_blank\">"+downloadSrc+"</a>");
 			}
 			if (sCreatorName != null && sCreatorName.length()>0)
 				out.println(" - "+EncodeHelper.javaStringToHtmlString(sCreatorName));
 			if (sCreationDate != null && sCreationDate.length()>0)
 				out.print(" ("+sCreationDate + ")");
-							
+
 			if (sDescription != null && sDescription.length()>0)
 				out.println("<BR><i>"+EncodeHelper.javaStringToHtmlParagraphe(sDescription)+"</i>");
-			
+
 			if (sortValue.intValue() == 7 && gsr.getHits() >= 0) {
 			  	out.println("<br/><span class=\"popularity\">"+resource.getStringWithParam("pdcPeas.popularity", Integer.toString(gsr.getHits()))+"</span>");
 			}
-			
+
 			if (sLocation != null && sLocation.length()>0)
 				out.println("<BR>"+EncodeHelper.javaStringToHtmlString(sLocation));
 			out.println("<td>");
-				
+
 			out.println("</tr></table>");
-			
+
 			out.println("</td>");
 			out.println("</tr>");
-		}	
+		}
 		out.println("</table>");
 
 		out.println("</td></tr>");
@@ -687,7 +690,7 @@ if (!StringUtil.isDefined(pageId)) {
 			out.println("</td>");
 			out.println("</tr>");
 		}
-		
+
 		out.println("</table>");
 	} else {
 		out.println("<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\">");
@@ -698,7 +701,7 @@ if (!StringUtil.isDefined(pageId)) {
 	}
 	out.println(board.printAfter());
   	out.println("</div>");
- 	
+
     out.println("<div id=\"globalResultHelp\">");
 	out.println(board.printBefore());
     %>
@@ -736,13 +739,13 @@ if (!StringUtil.isDefined(pageId)) {
   	int facetResultLength = Integer.parseInt(resource.getSetting("searchengine.facet.max.length", "30"));
 	String filteredUserId = (String) request.getAttribute("FilteredUserId");
 	String filteredComponentId = (String) request.getAttribute("FilteredComponentId");
-	
+
   	if (resultGroup != null) {
     	%>
 	  <input type="hidden" name="changeFilter" id="changeFilterId" value="" />
 	  <input type="hidden" name="authorFilter" id="userFilterId" value="<%=filteredUserId%>"/>
 	  <input type="hidden" name="componentFilter" id="componentFilterId" value="<%=filteredComponentId%>"/>
-	  
+
       <div id="globalResultGroupDivId">
       	<div id="facetSearchDivId">
       	<%
@@ -751,7 +754,7 @@ if (!StringUtil.isDefined(pageId)) {
       	  %>
       	  <div id="facetAuthor">
       	  <div id="searchGroupTitle"><span class="author"><fmt:message key="pdcPeas.group.author" /></span></div>
-   		  <div id="searchGroupValues"> 
+   		  <div id="searchGroupValues">
    			<ul>
       	  <%
   	      for(int cpt=0; cpt < authors.size(); cpt++){
@@ -773,7 +776,7 @@ if (!StringUtil.isDefined(pageId)) {
 			<fmt:param value="<%=authorName%>"/>
 		  </fmt:message>
   	  				<li class="<%=lastClass%>"><a href="javascript:<%=jsAction%>;" title="${tooltip}"><%=displayAuthor%></a></li>
-  	        <%   	          
+  	        <%
   	        } else {
   	          jsAction = "filterResult('" + authorId + "', 'author')";
     	    %>
@@ -781,9 +784,9 @@ if (!StringUtil.isDefined(pageId)) {
 			<fmt:param value="<%=authorName%>"/>
 		  </fmt:message>
   	  				<li class="<%=lastClass%>"><a href="javascript:<%=jsAction%>;" title="${tooltip}"><%=displayAuthor%></a></li>
-  	        <%   	          
+  	        <%
   	        }
-  	       
+
   	      }
       	  %>
       		</ul>
@@ -821,7 +824,7 @@ if (!StringUtil.isDefined(pageId)) {
     			<fmt:param value="<%=compName%>"/>
     		  </fmt:message>
       	  				<li class="<%=lastClass%>"><a href="javascript:<%=jsAction%>;" title="${tooltip}"><%=displayComp%></a></li>
-      	        <%   	          
+      	        <%
   	        } else {
   	          jsAction = "filterResult('" + compId + "', 'component')";
   	    	    %>
@@ -829,7 +832,7 @@ if (!StringUtil.isDefined(pageId)) {
   				<fmt:param value="<%=compName%>"/>
   			  </fmt:message>
   	  	  				<li class="<%=lastClass%>"><a href="javascript:<%=jsAction%>;" title="${tooltip}"><%=displayComp%></a></li>
-  	  	        <%   	          
+  	  	        <%
   	        }
   	      }
       	  %>
@@ -839,7 +842,7 @@ if (!StringUtil.isDefined(pageId)) {
       	  <%
       	}
       	%>
-      	<%-- 
+      	<%--
       	  <div id="searchGroupTitle"><span class="file">Type de fichier</span></div>
    		  <div id="searchGroupValues">
    			<ul>
@@ -850,13 +853,11 @@ if (!StringUtil.isDefined(pageId)) {
         --%>
         </div>
       </div>
-    	<% 
+    	<%
     }
 
 	out.println(window.printAfter());
 %>
-
-
 
 	<input type="hidden" name="selectedIds"/>
 	<input type="hidden" name="notSelectedIds"/>
@@ -866,6 +867,9 @@ if (!StringUtil.isDefined(pageId)) {
 	<input type="hidden" name="sortOrder" value="<%=sortOrder%>"/>
 	<input type="hidden" name="ShowResults" value="<%=resultsDisplayMode%>"/>
 	<input type="hidden" name="ResultPageId" value="<%=pageId %>"/>
+	<input type="hidden" name="SortResXForm" value="<%=sortResXForm %>"/>
+	<input type="hidden" name="sortImp" value="<%=sortImplementor%>"/>
+
 </form>
 <view:progressMessage/>
 </body>
