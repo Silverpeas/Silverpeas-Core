@@ -41,7 +41,7 @@ function gotoLogin()
   <br/>
   <br/>
   <br/>
-  La session est terminée.<br/>
+  La session est terminÃ©e.<br/>
   Veuillez vous reconnecter.
 </body>
 </html>
