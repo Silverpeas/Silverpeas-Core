@@ -65,7 +65,7 @@ public class VersioningDAO {
       + " documentName, documentDescription, documentStatus, documentOwnerId, "
       + " documentCheckoutDate, documentInfo, foreignId, instanceId, typeWorkList, "
       + " currentWorkListOrder, alertDate, expiryDate, documentordernum "
-      + " FROM sb_version_document WHERE foreignId = ? and instanceId = ? ORDER BY documentId ";
+      + " FROM sb_version_document WHERE foreignId = ? and instanceId = ? ORDER BY documentordernum, documentId ";
   public final static String GET_DOCUMENTS_BYINSTANCEID_QUERY = "SELECT documentId, "
       + " documentName, documentDescription, documentStatus, documentOwnerId, "
       + " documentCheckoutDate, documentInfo, foreignId, instanceId, typeWorkList, "
