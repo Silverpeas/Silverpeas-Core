@@ -26,7 +26,6 @@ package com.silverpeas.util;
 
 import java.util.ArrayList;
 
-import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 public class PasswordGenerator {
@@ -35,7 +34,7 @@ public class PasswordGenerator {
   private static final char[] DEFAULT_SPECIAL_CHAR = {
       '%', '*', '!', '?', '$', '-', '.', '#', '&', '=' };
 
-  private ResourceLocator resource = new ResourceLocator(
+  private final ResourceLocator resource = new ResourceLocator(
       "com.silverpeas.util.passwordGenerator", "");
 
   // a - z : 97 - 122

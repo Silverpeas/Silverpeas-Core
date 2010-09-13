@@ -48,7 +48,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 public class FileUtil implements MimeTypes {
 
-  private static ResourceLocator MIME_TYPES_EXTENSIONS = new ResourceLocator(
+  private static final ResourceLocator MIME_TYPES_EXTENSIONS = new ResourceLocator(
       "com.stratelia.webactiv.util.attachment.mime_types", "");
 
   public static final String CONTEXT_TOKEN = ",";
@@ -73,9 +73,6 @@ public class FileUtil implements MimeTypes {
     } catch (MissingResourceException e) {
       SilverTrace.warn("attachment", "AttachmentController",
           "attachment.MSG_MISSING_MIME_TYPES_PROPERTIES", null, e);
-    } catch (NullPointerException e) {
-      SilverTrace.warn("attachment", "AttachmentController",
-          "attachment.MSG_FILE_LOGICAL_NAME_NULL", null, e);
     }
     if (mimeType == null) {
       MIME_TYPES.getContentType(fileName);

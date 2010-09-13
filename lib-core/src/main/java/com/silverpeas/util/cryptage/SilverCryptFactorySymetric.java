@@ -21,18 +21,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.util.cryptage;
-
-import java.security.NoSuchAlgorithmException;
-
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.security.NoSuchAlgorithmException;
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
 
 public class SilverCryptFactorySymetric {
+
   public static final String ALGORITHM = "Blowfish";
   // Singleton pour gèrer une seule Map de trousseaux de clés
   private static SilverCryptFactorySymetric factory = null;
@@ -46,16 +44,20 @@ public class SilverCryptFactorySymetric {
     try {
       cipher = Cipher.getInstance(ALGORITHM);
     } catch (NoSuchAlgorithmException e) {
-      e.printStackTrace();
+      SilverTrace.error("util", "SilverCryptFactorySymetric.NoSuchAlgorithm",
+          "root.MSG_GEN_PARAM_VALUE", "In init", e);
     } catch (NoSuchPaddingException e) {
-      e.printStackTrace();
+      SilverTrace.error("util", "SilverCryptFactorySymetric.NoSuchPadding",
+          "root.MSG_GEN_PARAM_VALUE", "In init", e);
     }
   }
 
   public static SilverCryptFactorySymetric getInstance() {
-    if (factory == null)
-      factory = new SilverCryptFactorySymetric();
-
+    synchronized (SilverCryptFactorySymetric.class) {
+      if (factory == null) {
+        factory = new SilverCryptFactorySymetric();
+      }
+    }
     return factory;
   }
 
@@ -71,10 +73,12 @@ public class SilverCryptFactorySymetric {
     byte[] cipherText = null;
     try {
       byte[] cipherBytes = stringUnCrypted.getBytes();
+      SilverCryptKeysSymetric keys = symetricKeys;
       // encrypt using the key and the plaintext
-      if (symetricKeys == null)
-        symetricKeys = this.getSymetricKeys();
-      cipher.init(Cipher.ENCRYPT_MODE, symetricKeys.getKey());
+      if (symetricKeys == null) {
+        keys = this.getSymetricKeys();
+      }
+      cipher.init(Cipher.ENCRYPT_MODE, keys.getKey());
       SilverTrace.debug("util", "SilverCryptFactorySymetric.goCrypting",
           "root.MSG_GEN_PARAM_VALUE", "After init");
       cipherText = cipher.doFinal(cipherBytes);
@@ -98,9 +102,11 @@ public class SilverCryptFactorySymetric {
         "root.MSG_GEN_ENTER_METHOD");
     String uncrypted = "";
     try {
-      if (symetricKeys == null)
-        symetricKeys = this.getSymetricKeys();
-      cipher.init(Cipher.DECRYPT_MODE, symetricKeys.getKey());
+      SilverCryptKeysSymetric keys = symetricKeys;
+      if (symetricKeys == null) {
+        keys = this.getSymetricKeys();
+      }
+      cipher.init(Cipher.DECRYPT_MODE, keys.getKey());
 
       SilverTrace.debug("util", "SilverCryptFactorySymetric.goUnCrypting",
           "root.MSG_GEN_PARAM_VALUE", "After init");

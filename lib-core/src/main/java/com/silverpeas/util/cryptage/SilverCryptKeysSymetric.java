@@ -46,7 +46,7 @@ public class SilverCryptKeysSymetric {
     }
   }
 
-  protected byte[] getKeyBytes(String keyCode) {
+  protected final byte[] getKeyBytes(String keyCode) {
     byte[] keybyte;
     try {
       keybyte = "ƒþX]Lh/‘".getBytes("ISO-8859-1");

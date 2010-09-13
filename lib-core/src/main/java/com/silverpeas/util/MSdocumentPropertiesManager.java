@@ -21,14 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.util;
 
+import com.google.common.io.Closeables;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Date;
-
 import org.apache.poi.hpsf.DocumentSummaryInformation;
 import org.apache.poi.hpsf.PropertySet;
 import org.apache.poi.hpsf.PropertySetFactory;
@@ -37,8 +37,6 @@ import org.apache.poi.poifs.filesystem.DirectoryEntry;
 import org.apache.poi.poifs.filesystem.DocumentEntry;
 import org.apache.poi.poifs.filesystem.DocumentInputStream;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class MSdocumentPropertiesManager {
 
@@ -60,8 +58,7 @@ public class MSdocumentPropertiesManager {
 
       // DirectoryEntry directory = fs.getRoot();
       DirectoryEntry directory = fs.getRoot();
-      DocumentEntry document = (DocumentEntry) directory
-          .getEntry("\005SummaryInformation");
+      DocumentEntry document = (DocumentEntry) directory.getEntry("\005SummaryInformation");
       stream = new DocumentInputStream(document);
       ps = PropertySetFactory.create(stream);
     } catch (Exception ex) {
@@ -69,16 +66,10 @@ public class MSdocumentPropertiesManager {
       // présence d'un fichier OLE2 (office)
       SilverTrace.warn("MSdocumentPropertiesManager.getSummaryInformation()",
           "SilverpeasException.WARNING",
-          "util.EXE_CANT_GET_SUMMARY_INFORMATION");
+          "util.EXE_CANT_GET_SUMMARY_INFORMATION", ex);
     } finally {
-      try {
-        stream.close();
-      } catch (Exception ex) {
-      }
-      try {
-        inputStream.close();
-      } catch (Exception ex) {
-      }
+      Closeables.closeQuietly(stream);
+      Closeables.closeQuietly(inputStream);
     }
     return (SummaryInformation) ps;
   }
@@ -102,10 +93,9 @@ public class MSdocumentPropertiesManager {
       inputStream = new FileInputStream(new File(fileName));
       POIFSFileSystem fs = new POIFSFileSystem(inputStream);
       DirectoryEntry directory = fs.getRoot();
-      DocumentEntry document = (DocumentEntry) directory
-          .getEntry("\005DocumentSummaryInformation");
+      DocumentEntry document = (DocumentEntry) directory.getEntry("\005DocumentSummaryInformation");
       stream = new DocumentInputStream(document);
-      ps = (PropertySet) PropertySetFactory.create(stream);
+      ps = PropertySetFactory.create(stream);
     } catch (Exception ex) {
       // on estime que l'exception est dû au fait que nous ne sommes pas en
       // présence d'un fichier OLE2 (office)
@@ -114,14 +104,8 @@ public class MSdocumentPropertiesManager {
           "util.EXE_CANT_GET_SUMMARY_INFORMATION" + ex.getMessage());
       // System.out.println("pb getDocumentSummaryInformation:"+ex.getMessage());
     } finally {
-      try {
-        stream.close();
-      } catch (Exception ex) {
-      }
-      try {
-        inputStream.close();
-      } catch (Exception ex) {
-      }
+      Closeables.closeQuietly(stream);
+      Closeables.closeQuietly(inputStream);
     }
     return (DocumentSummaryInformation) ps;
   }
@@ -223,9 +207,9 @@ public class MSdocumentPropertiesManager {
    */
   public boolean isSummaryInformation(String fileName) {
     boolean isSummaryInformation = false;
-    if (getSummaryInformation(fileName) != null)
-      isSummaryInformation = getSummaryInformation(fileName)
-          .isSummaryInformation();
+    if (getSummaryInformation(fileName) != null) {
+      isSummaryInformation = getSummaryInformation(fileName).isSummaryInformation();
+    }
     return isSummaryInformation;
   }
 
@@ -239,5 +223,4 @@ public class MSdocumentPropertiesManager {
   public String getPropertyValue(String fileName, String propertyName) {
     return "";
   }
-
 }

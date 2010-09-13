@@ -21,35 +21,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.util.cryptage;
 
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.io.FileInputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.bouncycastle.cms.CMSEnvelopedData;
 import org.bouncycastle.cms.CMSEnvelopedDataGenerator;
+import org.bouncycastle.cms.CMSEnvelopedGenerator;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.KeyTransRecipientInformation;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-
 public class SilverCryptFactoryAsymetric {
   // Singleton pour gèrer une seule Map de trousseaux de clés
+
   private static SilverCryptFactoryAsymetric factory = null;
 
   private SilverCryptFactoryAsymetric() {
   }
-
-  private Map<String, SilverCryptKeysAsymetric> keyMap =
+  private final Map<String, SilverCryptKeysAsymetric> keyMap =
       new HashMap<String, SilverCryptKeysAsymetric>();
 
   public static SilverCryptFactoryAsymetric getInstance() {
-    if (factory == null)
-      factory = new SilverCryptFactoryAsymetric();
-
+    synchronized (SilverCryptFactoryAsymetric.class) {
+      if (factory == null) {
+        factory = new SilverCryptFactoryAsymetric();
+      }
+    }
     return factory;
   }
 
@@ -64,14 +64,13 @@ public class SilverCryptFactoryAsymetric {
       // La variable cert correspond au certificat du destinataire
       // La clé publique de ce certificat servira à chiffrer la clé
       // symétrique
-      gen.addKeyTransRecipient((java.security.cert.X509Certificate) this
-          .getKeys(fileName).getCert());
+      gen.addKeyTransRecipient(this.getKeys(fileName).getCert());
 
       // Choix de l'algorithme à clé symétrique pour chiffrer le document.
       // AES est un standard. Vous pouvez donc l'utiliser sans crainte.
       // Il faut savoir qu'en france la taille maximum autorisée est de 128
       // bits pour les clés symétriques (ou clés secrètes)
-      String algorithm = CMSEnvelopedDataGenerator.AES128_CBC;
+      String algorithm = CMSEnvelopedGenerator.AES128_CBC;
       CMSEnvelopedData envData = gen.generate(new CMSProcessableByteArray(
           buffer), algorithm, "BC");
 
@@ -96,13 +95,12 @@ public class SilverCryptFactoryAsymetric {
 
       // Déchiffrement de la chaine
       CMSEnvelopedData ced = new CMSEnvelopedData(pkcs7envelopedData);
-      Collection recip = ced.getRecipientInfos().getRecipients();
+      @SuppressWarnings("unchecked")
+      Collection<KeyTransRecipientInformation> recip = ced.getRecipientInfos().getRecipients();
 
-      KeyTransRecipientInformation rinfo = (KeyTransRecipientInformation) recip
-          .iterator().next();
+      KeyTransRecipientInformation rinfo = recip.iterator().next();
       // privatekey est la clé privée permettant de déchiffrer la clé
-      // secrète
-      // (symétrique)
+      // secrète (symétrique)
       byte[] contents = rinfo.getContent(
           this.getKeys(fileName).getPrivatekey(), "BC");
 
@@ -116,29 +114,26 @@ public class SilverCryptFactoryAsymetric {
     }
   }
 
-  public void addKeys(String filename, String password)
+  public synchronized void addKeys(String filename, String password)
       throws CryptageException {// ajout d'une trousseau de clé à partir d'un
     // chemin d'un fichier p12 + password
-    synchronized (keyMap) {
-      if (this.keyMap.containsKey(filename)) {
+    if (this.keyMap.containsKey(filename)) {
+      throw new CryptageException("SilverCryptFactory.addKeys",
+          SilverpeasException.ERROR, "util.KEY_ALREADY_IN");
+    } else {
+      try {
+        FileInputStream file = new FileInputStream(filename);
+        SilverCryptKeysAsymetric silverkeys = new SilverCryptKeysAsymetric(
+            file, password);
+        this.keyMap.put(filename, silverkeys);
+      } catch (Exception e) {
         throw new CryptageException("SilverCryptFactory.addKeys",
-            SilverpeasException.ERROR, "util.KEY_ALREADY_IN");
-      } else {
-        try {
-          FileInputStream file = new FileInputStream(filename);
-          SilverCryptKeysAsymetric silverkeys = new SilverCryptKeysAsymetric(
-              file, password);
-
-          this.keyMap.put(filename, silverkeys);
-        } catch (Exception e) {
-          throw new CryptageException("SilverCryptFactory.addKeys",
-              SilverpeasException.ERROR, "util.KEYS_CREATION_FAILED");
-        }
+            SilverpeasException.ERROR, "util.KEYS_CREATION_FAILED");
       }
     }
   }
 
-  private SilverCryptKeysAsymetric getKeys(String filename)
+  private synchronized SilverCryptKeysAsymetric getKeys(String filename)
       throws CryptageException {// récupération du trousseau de clé!
     if (this.keyMap.containsKey(filename)) {
       return this.keyMap.get(filename);
@@ -156,5 +151,4 @@ public class SilverCryptFactoryAsymetric {
   private byte[] stringToByteArray(String theString) {
     return theString.getBytes();
   }
-
 }

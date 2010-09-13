@@ -21,9 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.util;
 
+import com.google.common.io.Closeables;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -42,6 +42,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import static org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream.UnicodeExtraFieldPolicy.NOT_ENCODEABLE;
 
 /**
  * Classe contenant des méthodes statiques de gestion des fichiers zip
@@ -57,7 +58,6 @@ public class ZipManager {
    * @throws FileNotFoundException
    * @throws IOException
    */
-  @SuppressWarnings("unchecked")
   public static long compressPathToZip(String filename, String outfilename)
       throws FileNotFoundException, IOException {
     ZipArchiveOutputStream zos = null;
@@ -66,9 +66,9 @@ public class ZipManager {
       // création du flux zip
       zos = new ZipArchiveOutputStream(new FileOutputStream(outfilename));
       zos.setFallbackToUTF8(true);
-      zos
-          .setCreateUnicodeExtraFields(ZipArchiveOutputStream.UnicodeExtraFieldPolicy.NOT_ENCODEABLE);
+      zos.setCreateUnicodeExtraFields(NOT_ENCODEABLE);
       zos.setEncoding("UTF-8");
+      @SuppressWarnings("unchecked")
       Collection<File> listcontenuPath = FileUtils.listFiles(file, null, true);
       for (File content : listcontenuPath) {
         String entryName = content.getPath().substring(file.getParent().length() + 1);
@@ -83,7 +83,7 @@ public class ZipManager {
       return fileZip.length();
     } finally {
       if (zos != null) {
-        IOUtils.closeQuietly(zos);
+        Closeables.closeQuietly(zos);
       }
     }
   }
@@ -105,15 +105,14 @@ public class ZipManager {
     try {
       zos = new ZipArchiveOutputStream(new FileOutputStream(outfilename));
       zos.setFallbackToUTF8(true);
-      zos
-          .setCreateUnicodeExtraFields(ZipArchiveOutputStream.UnicodeExtraFieldPolicy.NOT_ENCODEABLE);
+      zos.setCreateUnicodeExtraFields(NOT_ENCODEABLE);
       zos.setEncoding("UTF-8");
       zos.putArchiveEntry(new ZipArchiveEntry(filePathNameToCreate));
       IOUtils.copy(inputStream, zos);
       zos.closeArchiveEntry();
     } finally {
       if (zos != null) {
-        IOUtils.closeQuietly(zos);
+        Closeables.closeQuietly(zos);
       }
     }
   }
@@ -124,7 +123,6 @@ public class ZipManager {
    * @param dest the destination directory.
    * @throws UtilException
    */
-  @SuppressWarnings("unchecked")
   public static void extract(File source, File dest) throws UtilException {
     if (source == null) {
       throw new UtilException("Expand.execute()", SilverpeasException.ERROR,
@@ -137,6 +135,7 @@ public class ZipManager {
     ZipFile zf = null;
     try {
       zf = new ZipFile(source);
+      @SuppressWarnings("unchecked")
       Enumeration<ZipArchiveEntry> entries = (Enumeration<ZipArchiveEntry>) zf.getEntries();
       while (entries.hasMoreElements()) {
         ZipArchiveEntry ze = entries.nextElement();
@@ -174,12 +173,12 @@ public class ZipManager {
    * @param archive the archive whose content is analyzed.
    * @return the number of files (not directories) inside the archive.
    */
-  @SuppressWarnings("unchecked")
   public static int getNbFiles(File archive) {
     ZipFile zipFile = null;
     int nbFiles = 0;
     try {
       zipFile = new ZipFile(archive);
+      @SuppressWarnings("unchecked")
       Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
       while (entries.hasMoreElements()) {
         ZipArchiveEntry ze = entries.nextElement();
