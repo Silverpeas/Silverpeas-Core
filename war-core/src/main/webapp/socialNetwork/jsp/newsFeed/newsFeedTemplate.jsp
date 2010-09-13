@@ -31,84 +31,7 @@
   <head>
     <title><fmt:message key="invitation.action.title" /> </title>
     <view:looknfeel />
-    <link rel="stylesheet" type="text/css" href="<c:url value="/directory/jsp/directory.css"/>"/>
     <link rel="stylesheet" type="text/css" href="<c:url value="/socialNetwork/jsp/css/socialNetwork.css"/>"/>
-    <style type="text/css">
-
-      .message_list {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        width: 100%;
-      }
-
-      .message_list li {
-        padding: 0px;
-        margin: 3px;
-      }
-
-      #navigation {
-        float: left;
-        width: 200px;
-        margin: 2px;
-        padding: 2px;
-      }
-      #navigation #myInfo{
-        float: right;
-      }
-
-      #navigation .box {
-        background-color:#FFFFFF;
-        background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
-        background-position:right top;
-        background-repeat:no-repeat;
-        margin-left:auto;
-        margin-right:auto;
-        margin-bottom: 15px;
-        border:1px solid #CCCCCC;
-      }
-      #content {
-        float: left;
-        width: 75%;
-        margin: 2px;
-        padding: 2px;
-      }
-      * ul {
-        margin: 0;
-        padding: 0;
-      }
-      .ItemOn{
-        background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuOngletOff.gif);
-        background-repeat:repeat-x;
-        color:#FFFFFF;
-        font-size:11px;
-        font-weight:bold;
-        height:20px;
-        text-align:left;
-      }
-      * li{
-        display:list-item;
-        list-style-type:none;
-        padding: 3px;
-      }
-      .newsFeedBodyTitle li {
-        text-align:center;
-      }
-      .newsFeedBodyTitle li a{
-        font-size: 15px;
-        font-weight: bold;
-        text-align:center;
-
-      }
-      .SocialInformations a{
-        color: blue;
-        font-weight: bold;
-
-      }
-      
-
-
-    </style>
     <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-1.3.2.min.js" />" ></script>
     <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />" ></script>
     <script type="text/javascript">
@@ -365,7 +288,7 @@
 
     </script>
   </head>
-  <body>
+  <body id="newsFeed">
     <view:window>
       <div id="navigation">
         <view:board>

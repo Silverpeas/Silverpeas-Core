@@ -33,81 +33,6 @@
 
     <title><fmt:message key="invitation.action.title" /> </title>
     <view:looknfeel />
-    <style type="text/css">
-      #navigation {
-        float: left;
-        width: 20%;
-        margin: 2px;
-        padding: 2px;
-      }
-      #content {
-        float: left;
-        width: 75%;
-        margin: 2px;
-        padding: 2px;
-      }
-      #navigation #myInfo{
-        float: right;
-      }
-
-      #navigation .box {
-        background-color:#FFFFFF;
-        background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
-        background-position:right top;
-        background-repeat:no-repeat;
-        margin-left:auto;
-        margin-right:auto;
-        margin-bottom: 15px;
-      }
-      #navigation .box img {
-       width: 70px;
-       height: 80px;
-      }
-      #navigation ul {
-        margin: 0;
-        padding: 0;
-      }
-
-      #navigation li{
-        display:list-item;
-        list-style-type:none;
-        padding: 5px;
-      }
-      #navigation li A:hover {
-        font-weight: bold;
-      }
-       #listBody {
-    list-style:none outside none;
-    padding-left:0;
-  }
-
-  #listBody #photo{
-    float :left;
-    margin-right:4px;
-
-  }
-
-  #listBody #information a{
-    color: blue;
-    font-size: 12px;
-    font-weight: bold;
-    margin-bottom: 3px;
-  }
-   #listBody #information {
-    vertical-align: top;
-    float :left;
-  }
-  #listBody #button {
-    float:right;
-    margin-top:10px;
-  }
-
-  #listBody #button #message{
-    /*width: 40%;*/
-    text-align: right;
-
-  }
-    </style>
     <script type="text/javascript" src="/silverpeas/util/javaScript/animation.js"></script>
     <script type="text/javascript">
 
@@ -154,7 +79,7 @@
 
     </script>
   </head>
-  <body>
+  <body id="invitation">
     <script type="text/javascript">
       enableField()
     </script>

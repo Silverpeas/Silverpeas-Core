@@ -2477,6 +2477,79 @@ caption {
 }
 /*- [ invitations END ] --------------------------- */
 
+/*- [ newsFeed BEGIN ] ---------------------------- */
+#newsFeed .message_list {
+	list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+#newsFeed .message_list li {
+	padding: 0px;
+    margin: 3px;
+}
+
+#newsFeed #navigation {
+	float: left;
+    width: 200px;
+    margin: 2px;
+    padding: 2px;
+}
+
+#newsFeed #navigation #myInfo{
+	float: right;
+}
+
+#newsFeed #navigation .box {
+  	background-color:#FFFFFF;
+  	background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
+	background-position:right top;
+	background-repeat:no-repeat;
+	margin-left:auto;
+	margin-right:auto;
+	margin-bottom: 15px;
+	border:1px solid #CCCCCC;
+}
+#newsFeed #content {
+	float: left;
+	width: 75%;
+	margin: 2px;
+	padding: 2px;
+}
+#newsFeed * ul {
+	margin: 0;
+	padding: 0;
+}
+#newsFeed .ItemOn{
+	background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuOngletOff.gif);
+	background-repeat:repeat-x;
+	color:#FFFFFF;
+	font-size:11px;
+	font-weight:bold;
+	height:20px;
+	text-align:left;
+}
+#newsFeed * li{
+	display:list-item;
+	list-style-type:none;
+	padding: 3px;
+}
+#newsFeed .newsFeedBodyTitle li {
+	text-align:center;
+}
+#newsFeed .newsFeedBodyTitle li a{
+	font-size: 15px;
+	font-weight: bold;
+	text-align:center;
+}
+#newsFeed .SocialInformations a{
+	color: blue;
+	font-weight: bold;
+}
+/*- [ newsFeed END ] ---------------------------- */
+
+
 /*- [ attachments BEGIN ] ------------------------- */
 a.yuimenuitemlabel-disabled:hover {
 	color: #B9B9B9;
