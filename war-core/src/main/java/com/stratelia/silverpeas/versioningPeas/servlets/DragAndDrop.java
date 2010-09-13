@@ -57,6 +57,7 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
  * @author
  */
 public class DragAndDrop extends HttpServlet {
+  private static final long serialVersionUID = -4994428375938427492L;
 
   @Override
   public void init(ServletConfig config) {
@@ -78,6 +79,10 @@ public class DragAndDrop extends HttpServlet {
   public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException,
       IOException {
     SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_ENTER_METHOD");
+    if (!FileUploadUtil.isRequestMultipart(req)) {
+      res.getOutputStream().println("SUCCESS");
+      return;
+    }
     try {
       req.setCharacterEncoding("UTF-8");
       String componentId = req.getParameter("ComponentId");

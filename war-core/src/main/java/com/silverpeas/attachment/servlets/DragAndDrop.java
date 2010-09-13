@@ -96,7 +96,10 @@ public class DragAndDrop extends HttpServlet {
   public void doPost(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_ENTER_METHOD");
-
+    if (!FileUploadUtil.isRequestMultipart(req)) {
+      res.getOutputStream().println("SUCCESS");
+      return;
+    }
     ResourceLocator settings = new ResourceLocator(
         "com.stratelia.webactiv.util.attachment.Attachment", "");
     boolean actifyPublisherEnable = settings.getBoolean("ActifyPublisherEnable", false);
@@ -105,24 +108,23 @@ public class DragAndDrop extends HttpServlet {
       String componentId = req.getParameter("ComponentId");
       SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
           "componentId = "
-              + componentId);
+          + componentId);
       String id = req.getParameter("PubId");
-      SilverTrace
-          .info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE", "id = " + id);
+      SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE", "id = " + id);
       String userId = req.getParameter("UserId");
       SilverTrace.info("attachment", "DragAndDrop.doPost",
           "root.MSG_GEN_PARAM_VALUE", "userId = " + userId);
       String context = req.getParameter("Context");
       boolean bIndexIt = "1".equals(req.getParameter("IndexIt"));
 
+
       List<FileItem> items = FileUploadUtil.parseRequest(req);
       for (FileItem item : items) {
         SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE", "item = "
             + item.getFieldName());
-        SilverTrace
-            .info("attachment", "DragAndDrop.doPost",
-                "root.MSG_GEN_PARAM_VALUE", "item = " + item.getName() + "; " +
-                    item.getString("UTF-8"));
+        SilverTrace.info("attachment", "DragAndDrop.doPost",
+            "root.MSG_GEN_PARAM_VALUE", "item = " + item.getName() + "; "
+            + item.getString("UTF-8"));
 
         if (!item.isFormField()) {
           String fileName = item.getName();
@@ -152,7 +154,7 @@ public class DragAndDrop extends HttpServlet {
               boolean fileForActify = false;
               SilverTrace.info("attachment", "DragAndDrop.doPost",
                   "root.MSG_GEN_PARAM_VALUE", "nb tokenizer ="
-                      + tokenizer.countTokens());
+                  + tokenizer.countTokens());
               String type = FileRepositoryManager.getFileExtension(fileName);
               while (tokenizer.hasMoreTokens() && !fileForActify) {
                 String extension = tokenizer.nextToken();
@@ -171,8 +173,7 @@ public class DragAndDrop extends HttpServlet {
                     + File.separatorChar + fileName;
                 FileRepositoryManager.copyFile(AttachmentController.createPath(componentId,
                     "Images")
-                    +
-                    File.separatorChar + physicalName, destFile);
+                    + File.separatorChar + physicalName, destFile);
               }
             }
           }
