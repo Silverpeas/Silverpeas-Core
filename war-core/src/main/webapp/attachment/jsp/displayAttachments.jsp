@@ -40,38 +40,6 @@
 
 <link rel="stylesheet" type="text/css" href="<%=m_Context%>/util/yui/menu/assets/menu.css"/>
 
-<style type="text/css">
-  <!--
-  a.yuimenuitemlabel-disabled:hover {
-    color: #B9B9B9;
-  }
-
-  ul#attachmentList.ui-sortable {
-    cursor:default;
-  }
-
-  ul#attachmentList {
-    list-style-type: none;
-    margin-left: 0px;
-    padding-left: 0px;
-  }
-
-  ul#attachmentList li.attachmentListItem {
-    margin:0;
-    padding:10px;
-  }
-
-  ul#attachmentList li.attachmentListItem .lineSize {
-    white-space: nowrap;
-  }
-
-  ul#attachmentList li.attachmentListItem .lineMain {
-    white-space: nowrap;
-  }
-
-  -->
-</style>
-
 <%
       //initialisation des variables
       String id = request.getParameter("Id");

@@ -45,38 +45,6 @@
 <script src="<%=m_context%>/versioningPeas/jsp/javaScript/dragAndDrop.js" type="text/javascript"></script>
 <script src="<%=m_context%>/util/javaScript/upload_applet.js" type="text/javascript"></script>
 
-<style type="text/css">
-<!--
-a.yuimenuitemlabel-disabled:hover {
-	color: #B9B9B9;
-}
-
-ul#attachmentList.ui-sortable {
-	cursor:default;
-}
-
-ul#attachmentList {
-	list-style-type: none;
-	margin-left: 0px;
-	padding-left: 0px;
-}
-
-ul#attachmentList li.attachmentListItem {
-	margin:0;
-  	padding:10px;
-}
-
-ul#attachmentList li.attachmentListItem .lineSize {
-	white-space: nowrap;
-}
-
-ul#attachmentList li.attachmentListItem .lineMain {
-	white-space: nowrap;
-}
-
--->
-</style>
-
 <%!
 
 boolean isDocumentCheckinable(Document document, DocumentVersion version, String flag, int user_Id, boolean is_user_writer)
