@@ -429,7 +429,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 <script language="JavaScript">
 	var publicVersionsWindow = window;
 	function viewPublicVersions(docId) {
-		url = "<%=m_context+URLManager.getURL("VersioningPeas", "useless", componentId)%>ViewAllVersions?DocId="+docId+"&Alias=<%=fromAlias%>&ComponentId=<%=componentId%>";
+		url = "<%=m_context%>/RVersioningPeas/jsp/ViewAllVersions?DocId="+docId+"&Alias=<%=fromAlias%>&ComponentId=<%=componentId%>";
 		windowName = "publicVersionsWindow";
 		larg = "800";
 		haut = "475";
