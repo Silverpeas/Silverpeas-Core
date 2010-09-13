@@ -656,7 +656,7 @@ function reloadIncludingPage()
 function updateAttachment(attachmentId)
 {
 	var url = "<%=m_context%>/RVersioningPeas/jsp/versions.jsp";
-	SP_openWindow(url + "?DocId="+attachmentId+"&Id=<%=id%>&ComponentId=<%=componentId%>&Context=Images&IndexIt=1&profile=<%=profile%>", "", "750", "400","scrollbars=yes", "resizable", "alwaysRaised");
+	SP_openWindow(url + "?DocId="+attachmentId+"&ForeignId=<%=id%>&ComponentId=<%=componentId%>&Context=Images&IndexIt=1&profile=<%=profile%>", "", "750", "400","scrollbars=yes", "resizable", "alwaysRaised");
 }
 
 // Suppression du fichier

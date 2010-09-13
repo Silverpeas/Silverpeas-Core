@@ -45,7 +45,8 @@
     String componentId = request.getParameter("ComponentId");
     String url = request.getParameter("Url");
     String id = request.getParameter("DocId");
-		String from_action = request.getParameter("from_action");
+    String foreignId = request.getParameter("ForeignId");
+	String from_action = request.getParameter("from_action");
 
     String profile = (String) request.getAttribute("Profile");
 
@@ -139,11 +140,11 @@
 		<%
 		ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", "");
 		String maximumFileSize = uploadSettings.getString("MaximumFileSize", "10000000");
-		String language = versioningSC.getLanguage();		
+		String language = versioningSC.getLanguage();
 	  	String indexIt = "0";
 	  	if (versioningSC.isIndexable())
 	  		indexIt = "1";
-		String baseURL = httpServerBase+m_context+"/VersioningDragAndDrop/jsp/Drop?UserId="+user_id+"&ComponentId="+componentId+"&Id="+id+"&IndexIt="+indexIt+"&DocumentId="+document.getPk().getId();
+		String baseURL = httpServerBase+m_context+"/VersioningDragAndDrop/jsp/Drop?UserId="+user_id+"&ComponentId="+componentId+"&Id="+foreignId+"&IndexIt="+indexIt+"&DocumentId="+document.getPk().getId();
 		String publicURL 	= baseURL+"&Type="+DocumentVersion.TYPE_PUBLIC_VERSION;
 		String workURL 		= baseURL+"&Type="+DocumentVersion.TYPE_DEFAULT_VERSION;
 		%>
