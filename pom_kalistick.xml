@@ -27,13 +27,13 @@
       </snapshots>
     </repository>
   </repositories>
-  
+
   <groupId>com.silverpeas</groupId>
   <artifactId>core</artifactId>
   <version>5.3-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Silverpeas Core</name>
-
+<!--
   <build>
     <plugins>
       <plugin>
@@ -60,7 +60,7 @@
       </plugin>
     </plugins>
   </build>
-   
+
   <modules>
     <module>test-core</module>
     <module>lib-core</module>
@@ -70,5 +70,31 @@
     <module>war-core</module>
     <module>config-core</module>
   </modules>
-
+-->
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.kalistick.soa</groupId>
+        <artifactId>ks-agent</artifactId>
+        <version>1.5</version>
+        <configuration>
+          <configFile>${project.basedir}/src/config/agent_cockpit/kalistick.xml</configFile>
+          <version>${project.version}-${build.timestamp}</version>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
