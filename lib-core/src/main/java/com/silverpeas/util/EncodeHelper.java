@@ -43,7 +43,6 @@ public class EncodeHelper extends Object {
     if (javastring == null) {
       return "";
     }
-
     return StringEscapeUtils.escapeJavaScript(javastring);
   }
 
@@ -56,7 +55,6 @@ public class EncodeHelper extends Object {
     if (javastring == null) {
       return "";
     }
-
     return StringEscapeUtils.escapeHtml(javastring);
   }
 
@@ -69,49 +67,38 @@ public class EncodeHelper extends Object {
       return "";
     }
 
-    StringBuilder sb = new StringBuilder();
-
-    for (int i = 0; i < javastring.length(); ++i) {
+    StringBuilder sb = new StringBuilder(javastring.length());
+    for (int i = 0; i < javastring.length(); i++) {
       char ch = javastring.charAt(i);
-      if (((int) ch) > 128) { // check if is an extended character
-        if (((int) ch) == 158) {
-          sb.append("&#382;"); // zcaron
-        } else if (((int) ch) == 142) {
-          sb.append("&#381;"); // Zcaron
-        } else if (((int) ch) == 154) {
-          sb.append("&#353;"); // scaron
-        } else if (((int) ch) == 138) {
-          sb.append("&#352;"); // Scaron
-        } else if (((int) ch) == 156) {
-          sb.append("&#339;"); // oe
-        } else if (((int) ch) == 140) {
-          sb.append("&#338;"); // OE
-        } else if (((int) ch) == 146) {
-          sb.append("&#8217;"); // ’
-        } else {
-          sb.append("&#" + ((int) ch) + ";"); // convert extended character
+      if (ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z' || ch >= '0' && ch <= '9') {
+        // safe
+        sb.append(ch);
+      } else if (Character.isWhitespace(ch)) {
+        // paranoid version: whitespaces are unsafe - escape
+        // conversion of (int)ch is naive
+        sb.append("&#").append((int) ch).append(";");
+      } else if (Character.isISOControl(ch)) {
+        // paranoid version:isISOControl which are not isWhitespace removed !
+        // do nothing do not include in output !
+      } else if (Character.isHighSurrogate(ch)) {
+        int codePoint;
+        if (i + 1 < javastring.length() && Character.isSurrogatePair(ch, javastring.charAt(i + 1))
+            && Character.isDefined(codePoint = (Character.toCodePoint(ch, javastring.charAt(i + 1))))) {
+          sb.append("&#").append(codePoint).append(";");
         }
-      } else if (((int) ch) == 128) {
-        sb.append("&#8364;");
-      } else if (((int) ch) == 34) {
-        sb.append("&quot;");
-      } else if (((int) ch) == 38) {
-        sb.append("&amp;");
-      } else if (((int) ch) == 60) {
-        sb.append("&lt;");
-      } else if (((int) ch) == 62) {
-        sb.append("&gt;");
-      } else if (ch == 0x0009) {
-        sb.append(""); // Horizontal Tab (9)
-      } else if (ch == 0x000B) {
-        sb.append(""); // Vertical Tab (0B)
-      } else if (ch == 0x000C) {
-        sb.append(""); // Form feed (0C)
+        i++; //in both ways move forward
+      } else if (Character.isLowSurrogate(ch)) {
+        // wrong char[] sequence,
+        i++; // move forward,do nothing do not include in output !
       } else {
-        sb.append(ch); // append the character as is
+        if (Character.isDefined(ch)) {
+          // paranoid version
+          // the rest is unsafe, including <127 control chars
+          sb.append("&#").append((int) ch).append(";");
+        }
+        //do nothing do not include undefined in output!
       }
     }
-
     return sb.toString();
   }
 
@@ -161,7 +148,6 @@ public class EncodeHelper extends Object {
     if (htmlstring == null) {
       return "";
     }
-
     return StringEscapeUtils.unescapeHtml(htmlstring);
   }
 
@@ -189,7 +175,6 @@ public class EncodeHelper extends Object {
     if (javastring == null) {
       return "";
     }
-
     return javastring;
   }
 
@@ -236,11 +221,9 @@ public class EncodeHelper extends Object {
   public static String convertHTMLEntities(String text) {
     SilverTrace.info("util", "Encode.convertHTMLEntities()",
         "root.MSG_GEN_PARAM_VALUE", " text recu " + text);
-
-    text = StringEscapeUtils.escapeHtml(text);
-
+    String result = StringEscapeUtils.escapeHtml(text);
     SilverTrace.info("util", "Encode.convertHTMLEntities()",
-        "root.MSG_GEN_PARAM_VALUE", "text sortant = " + text);
-    return text;
+        "root.MSG_GEN_PARAM_VALUE", "text sortant = " + result);
+    return result;
   }
 }

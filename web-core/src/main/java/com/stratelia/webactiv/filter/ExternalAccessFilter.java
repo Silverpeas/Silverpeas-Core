@@ -21,11 +21,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.filter;
 
+import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
+import com.stratelia.silverpeas.authentication.security.SecurityData;
+import com.stratelia.silverpeas.authentication.security.SecurityHolder;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.SessionManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import java.io.IOException;
-
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -35,30 +41,32 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
-import com.stratelia.silverpeas.authentication.security.SecurityData;
-import com.stratelia.silverpeas.authentication.security.SecurityHolder;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.SessionManager;
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
-
 public class ExternalAccessFilter implements Filter {
 
+  private static ResourceLocator generalSettings = null;
+
+  @Override
   public void init(FilterConfig filterConfig) throws ServletException {
+    if (generalSettings == null) {
+      generalSettings = new ResourceLocator("com.stratelia.webactiv.general", "");
+    }
   }
 
+  @Override
   public void destroy() {
   }
 
+  @Override
   public void doFilter(ServletRequest request, ServletResponse response,
       FilterChain chain) throws IOException, ServletException {
     HttpServletRequest req = (HttpServletRequest) request;
-
+    String encoding = generalSettings.getString("charset", "UTF-8");
+    req.setCharacterEncoding(encoding);
     String securityId = req.getParameter("securityId");
     if (securityId != null) {
       HttpSession session = req.getSession(true);
-      MainSessionController controller = (MainSessionController) session
-          .getAttribute("SilverSessionController");
+      MainSessionController controller = (MainSessionController) session.getAttribute(
+          "SilverSessionController");
 
       SecurityData securityData = SecurityHolder.getData(securityId);
       if (securityData != null) {
@@ -72,19 +80,14 @@ public class ExternalAccessFilter implements Filter {
           try {
             controller = new MainSessionController(key, session.getId());
           } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            // Affichage page erreur
+            SilverTrace.error("util",
+                "ExternalAccessFilter.doFilter()", "root.MSG_GEN_EXIT_METHOD", e);
           }
-
           // Init session management and session object.
           SessionManager.getInstance().addSession(session, req, controller);
-
           // Put the main session controller in the session
           session.setAttribute("SilverSessionController", controller);
-
-          GraphicElementFactory gef = new GraphicElementFactory(controller
-              .getFavoriteLook());
+          GraphicElementFactory gef = new GraphicElementFactory(controller.getFavoriteLook());
           String stylesheet = req.getParameter("stylesheet");
           if (stylesheet != null) {
             // To use a specific stylesheet.
@@ -96,15 +99,6 @@ public class ExternalAccessFilter implements Filter {
         // Affichage page erreur
       }
     }
-
     chain.doFilter(request, response);
   }
-
-  public FilterConfig getFilterConfig() {
-    return null;
-  }
-
-  public void setFilterConfig(FilterConfig arg0) {
-  }
-
 }

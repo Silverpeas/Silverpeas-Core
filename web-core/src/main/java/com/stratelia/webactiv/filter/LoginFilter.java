@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.filter;
 
 import java.io.IOException;
@@ -40,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -49,32 +49,41 @@ public class LoginFilter implements Filter {
 
   private boolean isUserLoginQuestionMandatory;
   private String anonymousId;
+  private static ResourceLocator generalSettings = null;
 
+  @Override
   public void init(FilterConfig filterConfig) {
-    ResourceLocator general =
-        new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
+    ResourceLocator general = new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook",
+        "");
     isUserLoginQuestionMandatory =
-        "personalQuestion".equals(general.getString("forgottenPwdActive")) &&
-        "true".equals(general.getString("userLoginQuestionMandatory"));
+        "personalQuestion".equals(general.getString("forgottenPwdActive"))
+        && "true".equals(general.getString("userLoginQuestionMandatory"));
     anonymousId = general.getString("anonymousId");
+    if (generalSettings == null) {
+      generalSettings = new ResourceLocator("com.stratelia.webactiv.general", "");
+    }
   }
 
-  @SuppressWarnings("unchecked")
+  @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
       throws IOException, ServletException {
     HttpServletRequest req = (HttpServletRequest) request;
+    String encoding = generalSettings.getString("charset", "UTF-8");
+    req.setCharacterEncoding(encoding);
 
     HttpSession session = req.getSession(true);
+    @SuppressWarnings("unchecked")
     Map<String, String[]> parameters = req.getParameterMap();
     Iterator<Entry<String, String[]>> it = parameters.entrySet().iterator();
     while (it.hasNext()) {
       Entry<String, String[]> entry = it.next();
-      String paramName = (String) entry.getKey();
-      String[] paramValues = (String[]) entry.getValue();
-      if (paramValues.length == 1)
+      String paramName = entry.getKey();
+      String[] paramValues = entry.getValue();
+      if (paramValues.length == 1) {
         session.setAttribute("svplogin_" + paramName, paramValues[0]);
-      else
+      } else {
         session.setAttribute("svplogin_" + paramName, paramValues);
+      }
     }
 
     String destination = null;
@@ -93,11 +102,9 @@ public class LoginFilter implements Filter {
           destination = "/CredentialsServlet/ChangeQuestion";
         }
       } catch (AdminException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        SilverTrace.error("util", "LoginFilter.doFilter()", "root.MSG_GEN_EXIT_METHOD", e);
       }
     }
-
     // destination = "/CredentialsServlet/ForcePasswordChange";
     if (destination != null) {
       RequestDispatcher dispatcher = request.getRequestDispatcher(destination);
@@ -107,18 +114,8 @@ public class LoginFilter implements Filter {
     }
   }
 
-  public FilterConfig getFilterConfig() {
-    return null;
-  }
-
-  public void setFilterConfig(FilterConfig config) {
-    //
-  }
-
   @Override
   public void destroy() {
     // TODO Auto-generated method stub
-
   }
-
 }
