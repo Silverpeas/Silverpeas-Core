@@ -23,7 +23,6 @@
  */
 package com.silverpeas.attachment;
 
-import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
@@ -112,7 +111,7 @@ public class MenuHelper {
 
     out.println("var oMenu" + attachmentId + ";");
     out.println("var webDav" + attachmentId + " = \""
-        + URLEncoder.encode(httpServerBase + attachment.getWebdavUrl(language), "ISO-8859-1")
+        + URLEncoder.encode(httpServerBase + attachment.getWebdavUrl(language), "UTF-8")
         + "\";");
     out.println("YAHOO.util.Event.onContentReady(\"basicmenu" + attachmentId + "\", function () {");
     out.println(

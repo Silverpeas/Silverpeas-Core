@@ -51,7 +51,7 @@ public class PagesContext {
   boolean ignoreDefaultValues = false; // do not display default value
   String xmlFormName = "";
   int updatePolicy = ON_UPDATE_REPLACE_EMPTY_VALUES;
-  String encoding = "ISO-8859-1";
+  String encoding = "UTF-8";
 
   public PagesContext() {
   }

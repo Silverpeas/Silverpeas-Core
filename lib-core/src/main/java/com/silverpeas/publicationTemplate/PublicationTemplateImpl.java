@@ -507,7 +507,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
       mapping
           .loadMapping(PublicationTemplateManager.mappingRecordTemplateFilePath);
 
-      String encoding = "ISO-8859-1";
+      String encoding = "UTF-8";
 
       FileOutputStream fos = new FileOutputStream(xmlFilePath);
       OutputStreamWriter osw = new OutputStreamWriter(fos, encoding);

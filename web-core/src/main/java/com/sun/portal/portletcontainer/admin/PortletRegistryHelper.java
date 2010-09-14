@@ -112,7 +112,7 @@ public class PortletRegistryHelper implements PortletRegistryTags {
       TransformerFactory tFactory = TransformerFactory.newInstance();
       Transformer transformer = tFactory.newTransformer();
       transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-      transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1");
+      transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
       transformer.setOutputProperty(OutputKeys.INDENT, "yes");
       transformer.setOutputProperty(
           "{http://xml.apache.org/xslt}indent-amount", "5");

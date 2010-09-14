@@ -145,17 +145,12 @@ public class ImportExport {
       String mappingDir = settings.getString("mappingDir");
       String mappingFileName = settings.getString("importExportMapping");
       File mappingFile = new File(mappingDir, mappingFileName);
-      // String mappingFilePath = mappingDir + mappingFileName;
 
       // Load mapping and instantiate a Marshaller
       mapping.loadMapping(mappingFile.getPath());
 
       writer = new OutputStreamWriter(new FileOutputStream(xmlToExportPath), "UTF-8");
       Marshaller mar = new Marshaller(writer);
-      // mar.setEncoding("ISO-8859-1");
-      // mar.setSchemaLocation("http://intranoo.oevo.com/websilverpeas/exchange/v308 http://intranoo.oevo.com/websilverpeas/exchange/v308/SilverpeasExchange.xsd");
-      // mar.setNamespaceMapping("","http://intranoo.oevo.com/websilverpeas/exchange/v308");
-
       // URI du schéma et chemin du fichier XSD associé.
       String xsdPublicId = settings.getString("xsdPublicId");
       String xsdSystemId = settings.getString("xsdSystemId");

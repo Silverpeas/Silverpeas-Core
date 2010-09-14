@@ -130,7 +130,7 @@ public class PortletDeployerServlet extends HttpServlet {
     String language = getLanguage(request);
 
     DesktopMessages.init(request);
-    response.setContentType("text/html;charset=ISO-8859-1");
+    response.setContentType("text/html;charset=UTF-8");
     HttpSession session = AdminUtils.getClearedSession(request);
     PortletAdminData portletAdminData = null;
     try {
@@ -150,7 +150,7 @@ public class PortletDeployerServlet extends HttpServlet {
         session.setAttribute(AdminConstants.UNDEPLOYMENT_FAILED_ATTRIBUTE,
             message);
       } else {
-        StringBuffer messageBuffer = new StringBuffer();
+        StringBuilder messageBuffer = new StringBuilder();
         boolean success = false;
         for (int i = 0; i < portletsToUndeploy.length; i++) {
           String warName = portletsToUndeploy[i];
@@ -189,7 +189,7 @@ public class PortletDeployerServlet extends HttpServlet {
       try {
         AdminUtils.setPortletWindowAttributes(session, portletAdminData, null);
       } catch (Exception ex) {
-        StringBuffer messageBuffer = new StringBuffer(DesktopMessages
+        StringBuilder messageBuffer = new StringBuilder(DesktopMessages
             .getLocalizedString(AdminConstants.NO_WINDOW_DATA));
         messageBuffer.append(".");
         messageBuffer.append(ex.getMessage());

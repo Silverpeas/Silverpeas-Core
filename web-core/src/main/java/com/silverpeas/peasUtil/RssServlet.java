@@ -140,7 +140,7 @@ public abstract class RssServlet extends HttpServlet {
           channel.setLocation(componentUrl);
 
           // exportation du channel
-          String encoding = "ISO-8859-1";
+          String encoding = "UTF-8";
           res.setContentType("application/rss+xml");
           res.setHeader("Content-Disposition", "inline; filename=feeds.rss");
           Writer writer = res.getWriter();

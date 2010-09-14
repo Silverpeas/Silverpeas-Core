@@ -68,7 +68,7 @@ public class HtmlCleaner {
     writer.setWriter(content, "UTF-8");
     XMLInputSource source =
         new XMLInputSource("-//W3C//DTD HTML 4.01", null, null, new StringReader(html),
-        "ISO-8859-1");
+        "UTF-8");
     parser.parse(source);
     return content.toString();
   }

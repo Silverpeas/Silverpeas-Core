@@ -292,7 +292,7 @@ public class GraphicElementFactory extends Object {
     String standardStyleForIE = "/util/styleSheets/globalSP_SilverpeasV5-IE.css";
     String lookStyle = getFavoriteLookSettings().getString("StyleSheet");
     String contextPath = getGeneralSettings().getString("ApplicationURL");
-    String charset = getGeneralSettings().getString("charset", "ISO-8859-1");
+    String charset = getGeneralSettings().getString("charset", "UTF-8");
     StringBuilder code = new StringBuilder();
     code.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=");
     code.append(charset);

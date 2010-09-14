@@ -51,6 +51,7 @@ import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.record.GenericRecordSet;
 import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -228,7 +229,7 @@ public class PublicationTemplateManager {
       Mapping mapping = new Mapping();
       mapping.loadMapping(mappingPublicationTemplateFilePath);
 
-      String encoding = "ISO-8859-1";
+      String encoding = "UTF-8";
 
       FileOutputStream fos = new FileOutputStream(xmlFilePath);
       OutputStreamWriter osw = new OutputStreamWriter(fos, encoding);
@@ -270,17 +271,18 @@ public class PublicationTemplateManager {
   }
 
   public static String makePath(String dirName, String fileName) {
-    if (dirName == null || dirName.equals(""))
+    if (!StringUtil.isDefined(dirName)) {
       return fileName;
-    if (fileName == null || fileName.equals(""))
+    }
+    if (!StringUtil.isDefined(fileName)) {
       return dirName;
+    }
 
     if (dirName.charAt(dirName.length() - 1) == '/'
         || dirName.charAt(dirName.length() - 1) == '\\') {
       return dirName.replace('\\', '/') + fileName.replace('\\', '/');
-    } else {
-      return dirName.replace('\\', '/') + "/" + fileName.replace('\\', '/');
     }
+    return dirName.replace('\\', '/') + "/" + fileName.replace('\\', '/');
   }
 
   public static List<PublicationTemplate> getPublicationTemplates(boolean onlyVisibles)

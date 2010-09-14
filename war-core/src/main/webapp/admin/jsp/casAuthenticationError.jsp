@@ -30,7 +30,7 @@
 <%
 	ResourceLocator general = new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
 	ResourceLocator generalMultilang = new ResourceLocator("com.stratelia.webactiv.multilang.generalMultilang", "");
-	
+
 	String sURI = request.getRequestURI();
 	String sServletPath = request.getServletPath();
 	String sPathInfo = request.getPathInfo();
@@ -39,10 +39,10 @@
 	    sURI = sURI.substring(0, sURI.lastIndexOf(sPathInfo));
 	}
 	String m_context = "../../.." + sURI.substring(0, sURI.lastIndexOf(sServletPath));
-	
+
 	String styleSheet = general.getString("defaultStyleSheet", m_context + "/util/styleSheets/globalSP.css");
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>

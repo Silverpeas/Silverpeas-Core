@@ -127,7 +127,7 @@ public class SPDesktopServlet extends HttpServlet {
       DriverUtil.init(request);
       SilverTrace.debug("portlet", "SPDesktopServlet.doGetPost", "root.MSG_GEN_PARAM_VALUE",
           "DriverUtil initialized !");
-      response.setContentType("text/html;charset=ISO-8859-1");
+      response.setContentType("text/html;charset=UTF-8");
 
       // Get the list of visible portlets(sorted by the row number)
       try {
@@ -708,22 +708,22 @@ public class SPDesktopServlet extends HttpServlet {
             .getCurrentUserDetail().getLogin());
         destination =
             getParsedDestination(destination, s_sUserFullName, URLEncoder.encode(m_MainSessionCtrl
-            .getCurrentUserDetail().getDisplayedName(), "ISO-8859-1"));
+            .getCurrentUserDetail().getDisplayedName(), "UTF-8"));
         destination =
             getParsedDestination(destination, s_sUserId, URLEncoder.encode(m_MainSessionCtrl
-            .getUserId(), "ISO-8859-1"));
+            .getUserId(), "UTF-8"));
         destination =
             getParsedDestination(destination, s_sSessionId, URLEncoder.encode(request.getSession()
-            .getId(), "ISO-8859-1"));
+            .getId(), "UTF-8"));
         destination =
             getParsedDestination(destination, s_sUserEmail, m_MainSessionCtrl
             .getCurrentUserDetail().geteMail());
         destination =
             getParsedDestination(destination, s_sUserFirstName, URLEncoder.encode(m_MainSessionCtrl
-            .getCurrentUserDetail().getFirstName(), "ISO-8859-1"));
+            .getCurrentUserDetail().getFirstName(), "UTF-8"));
         destination =
             getParsedDestination(destination, s_sUserLastName, URLEncoder.encode(m_MainSessionCtrl
-            .getCurrentUserDetail().getLastName(), "ISO-8859-1"));
+            .getCurrentUserDetail().getLastName(), "UTF-8"));
 
         // !!!! Add the password : this is an uggly patch that use a session variable set in the
         // "AuthenticationServlet" servlet

@@ -46,7 +46,7 @@ public class ForgottenPasswordMailManager {
 
   private static final String TRANSPORT_SMTP = "smtp";
   private static final String TRANSPORT_SMTPS = "smtps";
-  private static final String SUBJECT_ENCODING = "ISO-8859-1";
+  private static final String SUBJECT_ENCODING = "UTF-8";
 
   private static final String PREFIX_RESET_PASSWORD_REQUEST = "resetPasswordRequest";
   private static final String PREFIX_NEW_PASSWORD = "newPassword";
