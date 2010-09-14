@@ -36,7 +36,7 @@ response.setDateHeader ("Expires",-1);        //prevents caching at the proxy se
 <html>
 <head>
 
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 </head>
 
 <frameset rows="25,1*" frameborder="NO" border="no" framespacing="5"> 

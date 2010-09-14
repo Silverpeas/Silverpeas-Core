@@ -50,7 +50,7 @@ ArrayList domainsIds = lpAuth.getDomainsIds();
 <html>
 <head>
 <title>silverpeas - Corporate portal organizer</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 </head>
 
 <body bgcolor="#FFFFFF" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">

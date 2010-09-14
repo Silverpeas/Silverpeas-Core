@@ -139,7 +139,7 @@ function synchroIcal() {
 						      <td>
 						      	<select name="Charset">
                       <option value="UTF-8">UTF-8</option>
-						      		<option value="ISO-8859-1">ISO-8859-1</option>
+						      		<option value="UTF-8">UTF-8</option>
 						      		<option value="US-ASCII">US-ASCII</option>
 						      	</select>
 						      </td>

@@ -65,7 +65,7 @@ response.setDateHeader ("Expires",-1);        //prevents caching at the proxy se
 <html>
 <head>
 <title>Untitled Document</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <script language="JavaScript">
 <!--
 function OnResizeUpdate()

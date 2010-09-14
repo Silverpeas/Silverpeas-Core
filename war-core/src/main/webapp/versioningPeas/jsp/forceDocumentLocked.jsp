@@ -38,7 +38,7 @@
 <%
 out.println(gef.getLookStyleSheet());
 %>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title><fmt:message key="versioning.warning.checkin.locked.title" bundle="${versioningMessages}" /></title>
 </head>
 <body>

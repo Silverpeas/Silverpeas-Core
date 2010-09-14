@@ -38,7 +38,7 @@ Button okButton		= (Button) gef.getFormButton(resource.getString("GML.ok"), "jav
   <HTML>
     <HEAD>
     <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <%
         out.println(gef.getLookStyleSheet());
     %>
