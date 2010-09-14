@@ -115,7 +115,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         ArrayList<Worker> workers = new ArrayList<Worker>();
         if (profile != null) {
           workers = document.getWorkList();
-          if (new Integer(document.getCurrentWorkListOrder()).toString().equals(
+          if (document.getCurrentWorkListOrder() == Integer.parseInt(
               VersioningSessionController.WRITERS_LIST_ORDERED)
               && !versioningSC.isAlreadyMerged()
               && !profile.getAllGroups().isEmpty()) {
@@ -233,8 +233,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         request.setAttribute("Document", versioningSC.getEditingDocument());
         destination = rootDestination + "versions.jsp";
       } else if (function.equals("SelectUsersGroupsProfileInstance")) {
-        String role = (String) request.getParameter("Role");
-        String listType = (String) request.getParameter("ListType");
+        String role = request.getParameter("Role");
+        String listType = request.getParameter("ListType");
         if (StringUtil.isDefined(listType)) {
           versioningSC.getEditingDocument().setCurrentWorkListOrder(
               new Integer(listType).intValue());
