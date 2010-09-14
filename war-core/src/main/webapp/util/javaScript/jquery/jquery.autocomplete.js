@@ -418,7 +418,7 @@ $.Autocompleter.defaults = {
 	max: 100,
 	mustMatch: false,
 	extraParams: {},
-	selectFirst: true,
+	selectFirst: false,
 	formatItem: function(row) { return row[0]; },
 	formatMatch: null,
 	autoFill: false,
