@@ -37,7 +37,7 @@ import com.stratelia.webactiv.util.DBUtil;
 public class UserDAO {
 
   static final private String USER_COLUMNS =
-      "id,specificId,domainId,login,firstName,lastName,loginMail,email,accessLevel,loginQuestion,loginAnswer";
+      "distinct(id),specificId,domainId,login,firstName,lastName,loginMail,email,accessLevel,loginQuestion,loginAnswer";
 
   public UserDAO() {
 
@@ -75,7 +75,7 @@ public class UserDAO {
     ResultSet rs = null;
 
     try {
-      String query = "select id"
+      String query = "select distinct(id)"
           + " from st_user u, st_group_user_rel g"
           + " where g.userid = u.id"
           + " and g.groupid IN (" + list2String(groupIds) + ")"
