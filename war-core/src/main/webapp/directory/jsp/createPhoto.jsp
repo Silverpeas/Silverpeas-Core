@@ -24,9 +24,10 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
-<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
-<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
@@ -72,7 +73,7 @@
                   <fmt:message key="directory.buttonValid" var="valid"/>
                   <view:button label="${valid}" action="javascript:document.photoForm.submit();" disabled="false" />
                 </td>
-              </tr>	
+              </tr>
             </table>
           </form>
         </view:board>

@@ -27,9 +27,9 @@
 
 <%@ include file="check.jsp" %>
 
-<%@ taglib uri="/WEB-INF/c.tld" prefix="c" %>
-<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt" %>
-<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <!-- Resource bundle configuration -->
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
@@ -48,7 +48,7 @@ String 			spaceId				= (String) request.getAttribute("CurrentSpaceId");
 Vector 			availableLooks		= gef.getAvailableLooks();
 String			spaceLook			= space.getLook();
 SpaceLookItem 	item 				= (SpaceLookItem) slh.getItem("wallPaper");
-	
+
 browseBar.setSpaceId(spaceId);
 browseBar.setExtraInformation(resource.getString("JSPP.SpaceAppearance"));
 %>
@@ -92,7 +92,7 @@ out.println(board.printBefore());
 %>
 	<table border="0" cellspacing="0" cellpadding="5" width="100%">
 		<% if (availableLooks.size() >= 2) { %>
-		<tr> 
+		<tr>
 			<td class="txtlibform"><%=resource.getString("JSPP.SpaceLook")%> :</td>
 			<% if (m_SpaceExtraInfos.isAdmin) { %>
 					<td>
@@ -121,7 +121,7 @@ out.println(board.printBefore());
 			<% } %>
 		</tr>
 		<% } %>
-		<tr> 
+		<tr>
 			<td class="txtlibform"><%=resource.getString("JSPP.WallPaper")%> :</td>
 			<% if (m_SpaceExtraInfos.isAdmin) { %>
 				<td>
@@ -139,7 +139,7 @@ out.println(board.printBefore());
 			<% } %>
 		</tr>
   <c:if test="${spacePositionOption}">
-    <tr> 
+    <tr>
       <td class="txtlibform" nowrap valign="top"><fmt:message key="JSPP.SpacePosition" /> :</td>
       <td valign="top" width="100%">
 	    <c:if test="${curSpace.displaySpaceFirst}">
@@ -158,13 +158,13 @@ out.println(board.printBefore());
 <%
 	out.println(board.printAfter());
 
-	if (m_SpaceExtraInfos.isAdmin) 
+	if (m_SpaceExtraInfos.isAdmin)
 	{
 		ButtonPane buttonPane = gef.getButtonPane();
 		buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false));
 		out.println("<br/><center>"+buttonPane.print()+"</center>");
 	}
-		
+
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>

@@ -27,9 +27,9 @@
 
 <%@ page isELIgnored="false"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
-<%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
-<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
-<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <view:setBundle basename="com.silverpeas.external.filesharing.multilang.fileSharingBundle"/>
 <view:setBundle basename="com.silverpeas.external.filesharing.settings.fileSharingIcons" var="icons" />
 <html>

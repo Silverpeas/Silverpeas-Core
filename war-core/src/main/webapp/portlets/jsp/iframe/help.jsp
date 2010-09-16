@@ -30,9 +30,9 @@
 <%@ page import="javax.portlet.PortletPreferences" %>
 <%@ page import="javax.portlet.PortletURL" %>
 
-<%@ taglib uri="/WEB-INF/portlet.tld" prefix="portlet" %>
-<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt" %>
-<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <portlet:defineObjects/>
 

@@ -25,9 +25,9 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
-<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
-<%@ taglib uri="/WEB-INF/fn.tld" prefix="fn"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <c:set value="${sessionScope['com.sun.portal.portletcontainer.driver.portletWindows']}" var="map"/>
 <c:set var="thinportlets" value='${map["thin"]}' />
@@ -38,7 +38,7 @@
 <c:set var="isMaximized" value="false" />
 
 <c:if test="${thickportlets != null}">
-	<c:forEach items="${thickportlets}" var="portlet2Test">     
+	<c:forEach items="${thickportlets}" var="portlet2Test">
     	<c:choose>
         	<c:when test="${portlet2Test.maximized==true}">
 				<c:set var="isMaximized" value="true" />
@@ -46,12 +46,12 @@
             </c:when>
             <c:otherwise>
             </c:otherwise>
-        </c:choose> 
+        </c:choose>
     </c:forEach>
 </c:if>
 
 <c:if test="${thinportlets != null}">
-	<c:forEach items="${thinportlets}" var="portlet2Test">     
+	<c:forEach items="${thinportlets}" var="portlet2Test">
     	<c:choose>
         	<c:when test="${portlet2Test.maximized==true}">
 				<c:set var="isMaximized" value="true" />
@@ -59,7 +59,7 @@
             </c:when>
             <c:otherwise>
             </c:otherwise>
-        </c:choose> 
+        </c:choose>
     </c:forEach>
 </c:if>
 
@@ -83,14 +83,14 @@
             	</c:otherwise>
 			  </c:choose>
 			  <c:if test="${thickportlets != null}">
-					<c:forEach items="${thickportlets}" var="portlet">     
+					<c:forEach items="${thickportlets}" var="portlet">
 	                  	  <dl id="portlet_<c:out value="${portlet.portletWindowName}"/>" class="sort">
 	                            <%@include file="portletSP.jsp"%>
                           </dl>
 	              </c:forEach>
 			   </c:if>
 			   </div>
-				
+
 			   <c:choose>
 				<c:when test="${disableMove==true}">
 					<div id="thin">
@@ -100,7 +100,7 @@
             	</c:otherwise>
 			   </c:choose>
 			  <c:if test="${thinportlets != null}">
-	               <c:forEach items="${thinportlets}" var="portlet">     
+	               <c:forEach items="${thinportlets}" var="portlet">
                        	<dl id="portlet_<c:out value="${portlet.portletWindowName}"/>" class="sort">
 			            	<%@include file="portletSP.jsp"%>
                        	</dl>
@@ -108,5 +108,5 @@
 			  </c:if>
 			</div>
         </c:otherwise>
-    </c:choose> 
+    </c:choose>
 </div>

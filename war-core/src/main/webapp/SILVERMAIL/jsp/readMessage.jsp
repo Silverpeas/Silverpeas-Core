@@ -27,9 +27,9 @@
 <%@ page isELIgnored="false"%>
 <%@ include file="graphicBox.jsp" %>
 <%@ include file="checkSilvermail.jsp" %>
-<%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
-<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
-<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <c:set var="componentId" value="${requestScope.componentId}" />
 <c:set var="sessionController" value="${requestScope.SILVERMAIL}" />
 <c:set var="from" value="${param.from}" />

@@ -30,8 +30,8 @@
 
 <%@ include file="../portletImport.jsp"%>
 
-<%@ taglib uri="/WEB-INF/portlet.tld" prefix="portlet" %>
-<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <portlet:defineObjects/>
 
@@ -168,7 +168,7 @@ boolean full = false;
                          	// recherche du libelle du jour
                        		int day = veDate.get(Calendar.DAY_OF_WEEK);
                         	String jour = "GML.jour" + day;
-							// recherche du libellïe du mois
+							// recherche du libellï¿½e du mois
                        		int month = veDate.get(Calendar.MONTH);
                          	String mois = "GML.mois" + month;
                   			out.println(" ("+ generalMessage.getString(jour)+ " " + veDate.get(Calendar.DATE) +" " + generalMessage.getString(mois) + " " + veDate.get(Calendar.YEAR) + ")");

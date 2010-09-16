@@ -55,7 +55,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="java.io.File"%>
 <%@ page import="javax.servlet.http.*"%>
 
-<%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%
     String spaceId = "";
     String componentId = "";

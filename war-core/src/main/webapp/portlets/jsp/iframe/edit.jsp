@@ -32,9 +32,9 @@
 <%@ page import="com.silverpeas.portlets.FormNames" %>
 <%@ page session="false" %>
 
-<%@ taglib uri="/WEB-INF/portlet.tld" prefix="portlet" %>
-<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt" %>
-<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <portlet:defineObjects/>
 <portlet:actionURL var="actionURL"/>

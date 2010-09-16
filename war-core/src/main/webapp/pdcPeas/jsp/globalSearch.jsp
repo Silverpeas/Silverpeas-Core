@@ -29,7 +29,7 @@
 <%@ page import="com.silverpeas.pdcSubscription.model.PDCSubscription"%>
 <%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%@ include file="checkAdvancedSearch.jsp"%>
-<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%!
 
 String displaySynonymsAxis(Boolean activeThesaurus, Jargon jargon, int axisId) throws ThesaurusException {

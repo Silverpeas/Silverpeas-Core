@@ -32,9 +32,9 @@
 <%@ page import="com.silverpeas.portlets.FormNames" %>
 <%@ page session="false" %>
 
-<%@ taglib uri="/WEB-INF/portlet.tld" prefix="portlet" %>
-<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt" %>
-<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <portlet:defineObjects/>
 <portlet:actionURL var="actionURL"/>
@@ -45,11 +45,11 @@
     RenderResponse rRes = (RenderResponse)request.getAttribute("javax.portlet.response");
     PortletPreferences pref = pReq.getPreferences();
     String error = pReq.getParameter(FormNames.ERROR_BAD_VALUE);
-%>               
+%>
     <!-- START error -->
 <%
     if (error != null) {
-%>      
+%>
       <div class="portlet-msg-error" style="color: red">
           <fmt:message key="portlets.portlet.nextEvents.error"/>
       </div>
@@ -66,7 +66,7 @@
                 <td><fmt:message key="portlets.portlet.nextEvents.pref.nbEvents" /> :</td>
                 <td><input class="portlet-form-input-field" name="<%=FormNames.TEXTBOX_NB_ITEMS%>" value="<%=pref.getValue("nbEvents","")%>" type="text" size="10"/></td>
             </tr>
-                     
+
             <!-- START "finished" and "cancel" buttons -->
             <tr>
                 <td colspan="2" style="text-align: center; vertical-align: top">

@@ -30,8 +30,8 @@
 
 <%@ include file="../portletImport.jsp"%>
 
-<%@ taglib uri="/WEB-INF/portlet.tld" prefix="portlet" %>
-<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <portlet:defineObjects/>
 

@@ -37,10 +37,10 @@
 
 <%@ page import="com.stratelia.silverpeas.authentication.*"%>
 
-<%@ taglib uri="/WEB-INF/c.tld" prefix="c" %>
-<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt" %>
-<%@ taglib uri="/WEB-INF/fn.tld" prefix="fn" %>
-<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <!-- Retrieve user menu display mode -->
 <c:set var="curHelper" value="${sessionScope.Silverpeas_LookHelper}" />
@@ -68,14 +68,14 @@ int autocompletionMinChars = SilverpeasSettings.readInt(resourceSearchEngine, "a
 //Is "forgotten password" feature active ?
 ResourceLocator authenticationBundle = new ResourceLocator("com.silverpeas.authentication.multilang.authentication", "");
 ResourceLocator general	= new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
-String pwdResetBehavior = general.getString("forgottenPwdActive", "reinit");    
+String pwdResetBehavior = general.getString("forgottenPwdActive", "reinit");
 boolean forgottenPwdActive = !pwdResetBehavior.equalsIgnoreCase("false");
 String urlToForgottenPwd = m_sContext+"/CredentialsServlet/ForgotPassword";
 if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
   urlToForgottenPwd = m_sContext+"/CredentialsServlet/LoginQuestion";
 }
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -92,7 +92,7 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_sContext%>/util/ajax/prototype.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/ajax/rico.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/ajax/ricoAjax.js"></script>
- 
+
 <!-- Add jQuery javascript library -->
 <script type="text/javascript" src="/silverpeas/util/javaScript/jquery/jquery-1.3.2.min.js"></script> <!-- do not remove this line while rico is used -->
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/jquery/jquery.loadmask.js"></script>
@@ -113,24 +113,24 @@ out.println(gef.getLookStyleSheet());
     if (reload)
       top.topFrame.location.href="<%=m_sContext%>/admin/jsp/TopBarSilverpeasV5.jsp";
   }
-    
+
     function checkSubmitToSearch(ev)
   {
     var touche = ev.keyCode;
     if (touche == 13)
       searchEngine();
   }
-    
+
     function notifyAdministrators(context,compoId,users,groups)
   {
       SP_openWindow('<%=m_sContext%>/RnotificationUser/jsp/Main.jsp?popupMode=Yes&amp;editTargets=No&amp;compoId=&amp;theTargetsUsers=Administrators&amp;theTargetsGroups=', 'notifyUserPopup', '700', '400', 'menubar=no,scrollbars=no,statusbar=no');
   }
-    
+
     function openClipboard()
   {
       document.clipboardForm.submit();
   }
-    
+
   function searchEngine() {
         if (document.searchForm.query.value != "")
         {
@@ -143,14 +143,14 @@ out.println(gef.getLookStyleSheet());
     document.searchForm.action = "<%=m_sContext%>/RpdcSearch/jsp/ChangeSearchTypeToExpert";
     document.searchForm.submit();
   }
-  
+
   var navVisible = true;
   function resizeFrame()
   {
     parent.resizeFrame('10,*');
     if (navVisible)
     {
-      document.body.scroll = "no"; 
+      document.body.scroll = "no";
       document.images['expandReduce'].src="icons/silverpeasV5/extend.gif";
     }
     else
@@ -161,13 +161,13 @@ out.println(gef.getLookStyleSheet());
     document.images['expandReduce'].blur();
     navVisible = !navVisible;
   }
-      
+
   // Callback methods to navigation.js
     function getContext()
     {
       return "<%=m_sContext%>";
     }
-    
+
     function getHomepage()
     {
       return "<%=gef.getFavoriteLookSettings().getString("defaultHomepage", "/dt")%>";
@@ -177,32 +177,32 @@ out.println(gef.getLookStyleSheet());
     {
       return "<%=gef.getFavoriteLookSettings().getString("persoHomepage", "/dt")%>";
     }
-    
+
     function getSpaceIdToInit()
     {
       return "<%=spaceId%>";
     }
-    
+
     function getComponentIdToInit()
     {
       return "<%=componentId%>";
     }
-       
+
     function displayComponentsIcons()
     {
       return <%=helper.getSettings("displayComponentIcons")%>;
     }
-    
+
     function getPDCLabel()
     {
       return '<fmt:message key="lookSilverpeasV5.pdc" />';
     }
-    
+
     function getLook()
     {
       return "<%=gef.getCurrentLookName()%>";
     }
-    
+
     function getWallpaper()
     {
       return "<%=helper.getWallPaper(spaceId)%>";
@@ -352,13 +352,13 @@ out.println(gef.getLookStyleSheet());
             </tr>
         </table>
     </div>
-            
+
     <div id="loginBox">
       <form name="authForm" id="authForm" action="<%=m_sContext%>/AuthenticationServlet" method="post" target="_top">
         <table width="100%">
         <tr>
-            <td align="right" valign="top"> 
-                <% if (helper.isAnonymousAccess()) { 
+            <td align="right" valign="top">
+                <% if (helper.isAnonymousAccess()) {
                     //------------------------------------------------------------------
                     // domains are used by 'selectDomain.jsp.inc'
                     // Get a LoginPasswordAuthentication object
@@ -388,7 +388,7 @@ out.println(gef.getLookStyleSheet());
 						<%} %>
 						</span>
 					 <% } %>
-                <% } else { 
+                <% } else {
                     Button button = gef.getFormButton(helper.getString("lookSilverpeasV5.logout"), "javaScript:logout();", false);
                 %>
                     <table border="0" cellpadding="0" cellspacing="2">

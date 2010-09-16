@@ -26,9 +26,9 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page isELIgnored="false"%>
-<%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
-<%@ taglib uri="/WEB-INF/jstl-fmt.tld" prefix="fmt"%>
 <%@ page import="com.silverpeas.util.i18n.I18NHelper"%>
 <%@ page import="com.stratelia.webactiv.util.ClientBrowserUtil"%>
 <%@ include file="checkAttachment.jsp"%>
@@ -89,7 +89,7 @@
       if (request.getParameter("OpenUrl") != null) {
         openUrl = Boolean.parseBoolean(request.getParameter("OpenUrl"));
       }
-      
+
       String dNdVisible = request.getParameter("DNDVisible");
 
       //recuperation des fichiers attaches a un evenement
@@ -121,7 +121,7 @@
     document.attachmentForm.IdAttachment.value = attachmentId;
     document.attachmentForm.submit();
   }
-  
+
   function checkinOpenOfficeFile(attachmentId, fileName) {
     if(confirm('<%=messages.getString("confirm.checkin.message")%>')) {
       document.attachmentForm.update_attachment.value='true';
@@ -181,7 +181,7 @@
             reloadPage();
           }
 
-          function reloadPage() 
+          function reloadPage()
 		  {
 			location.href="<%=m_Context%><%=url%>";
 		  }
@@ -191,7 +191,7 @@
             window.opener.SetUrl( fileUrl ) ;
             window.close() ;
           }
-	
+
           function closeMessage() {
 			$("#attachmentModalDialog").dialog("close");
           }
@@ -200,31 +200,31 @@
           	document.attachmentForm.force_release.value=force;
           	$("#attachmentModalDialog").dialog("close");
           }
-	
+
           var attachmentId 	= "-1";
           var attachmentName	= "";
-	
+
           function deleteAttachment()
           {
             document.attachmentForm.IdAttachment.value = id;
             document.attachmentForm.submit();
           }
-	
+
           function DeleteConfirmAttachment(t, id, languages)
           {
             attachmentId 	= id;
             attachmentName	= t;
-		
+
             var url = '<%=m_Context%>/attachment/jsp/suppressionDialog.jsp?ComponentId=<%=componentId%>&Id=<%=id%>&Url=<%=url%>&IdAttachment='+id+'&Name='+t+'&Languages='+languages+'&IndexIt=<%=indexIt%>';
             $("#attachmentModalDialog").dialog("open").load(url);
           }
-	
+
           function ShareAttachment(id)
           {
             var url = "<%=m_Context%>/RfileSharing/jsp/NewTicket?FileId="+id+"&ComponentId=<%=componentId%>";
             SP_openWindow(url, "NewTicket", "700", "300","scrollbars=no, resizable, alwaysRaised");
           }
-	
+
           function displayWarning()
           {
         	  var url = "<%=m_Context%>/attachment/jsp/warning_locked.jsp?profile=<%=profile%>";

@@ -24,9 +24,9 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
-<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
-<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserFull"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
@@ -42,16 +42,16 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
 
-<%          // récupérer les paramettre de config
+<%          // rï¿½cupï¿½rer les paramettre de config
     ResourceLocator settings = (ResourceLocator) request.getAttribute("Settings");
-    // récupérer les paramettre de Multilang
+    // rï¿½cupï¿½rer les paramettre de Multilang
 
     String language = request.getLocale().getLanguage();
     ResourceLocator multilang = new ResourceLocator(
         "com.silverpeas.socialNetwork.multilang.socialNetworkBundle", language);
     ResourceLocator multilangG = new ResourceLocator(
         "com.stratelia.webactiv.multilang.generalMultilang", language);
-    // récupérer le user avec le maximun de détail
+    // rï¿½cupï¿½rer le user avec le maximun de dï¿½tail
     UserFull userFull = (UserFull) request.getAttribute("userFull");
 
     String gml = "GML.";
@@ -187,7 +187,7 @@
               </table>
             </view:board>
           </view:frame>
-          <view:frame title="Informations professionnelles & Coordonnées ">
+          <view:frame title="Informations professionnelles & Coordonnï¿½es ">
             <view:board>
 
               <table border="0" cellspacing="0" cellpadding="5" width="100%">
@@ -208,14 +208,14 @@
 
 
                 <%
-                    //  récupérer toutes les propriétés de ce User
+                    //  rï¿½cupï¿½rer toutes les propriï¿½tï¿½s de ce User
                     String[] properties = userFull.getPropertiesNames();
 
                     String property = null;
                     for (int p = 0; p < properties.length; p++) {
 
                       property = properties[p];
-                      // afficher toutes   les propriétés de User  si ne sont pas null et ne sont pas interdit de les afficher
+                      // afficher toutes   les propriï¿½tï¿½s de User  si ne sont pas null et ne sont pas interdit de les afficher
 
                       if (StringUtil.isDefined(userFull.getValue(property)) && settings.
                           getBoolean(property, true)) {
