@@ -24,28 +24,26 @@
 
 package com.silverpeas.form.record;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.form.dummy.DummyFieldTemplate;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A GenericRecordTemplate builds GenericDataRecord. It use a map : Map (FieldName ->
  * (index,GenericFieldTemplate))
  */
 public class GenericRecordTemplate implements RecordTemplate, Serializable {
+  private static final long serialVersionUID = 5454875955919676819L;
 
-  private static final long serialVersionUID = 1L;
-  private Map<String, IndexedFieldTemplate> fields = new HashMap<String, IndexedFieldTemplate>();
+  private Map<String, IndexedFieldTemplate> fields = new LinkedHashMap<String, IndexedFieldTemplate>();
   private List<FieldTemplate> fieldList = new ArrayList<FieldTemplate>();
   private String templateName;
 
@@ -61,56 +59,47 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
   }
 
   public void setFieldList(List<FieldTemplate> fieldList) {
-    this.fieldList = fieldList;
+    this.fieldList = new ArrayList<FieldTemplate>(fieldList);
   }
 
-  public Map<String, IndexedFieldTemplate> getFields() {
-    if (fields == null || fields.size() == 0) {
+  Map<String, IndexedFieldTemplate> getFields() {
+    if (fields == null || fields.isEmpty()) {
       Iterator<FieldTemplate> fieldsIter = fieldList.iterator();
-
       while (fieldsIter.hasNext()) {
         GenericFieldTemplate field = (GenericFieldTemplate) fieldsIter.next();
         field.setTemplateName(templateName);
         addFieldTemplate(field);
       }
     }
-
-    return fields;
+    return Collections.unmodifiableMap(fields);
   }
 
   /**
    * Adds a new field template at the end of this record template.
    */
   public void addFieldTemplate(FieldTemplate fieldTemplate) {
-    IndexedFieldTemplate indexed = new IndexedFieldTemplate(fields.size(),
-        fieldTemplate);
+    IndexedFieldTemplate indexed = new IndexedFieldTemplate(fields.size(), fieldTemplate);
     fields.put(fieldTemplate.getFieldName(), indexed);
   }
 
   /**
    * Returns all the field names of the DataRecord built on this template.
    */
+  @Override
   public String[] getFieldNames() {
-    return (String[]) getFields().keySet().toArray(new String[0]);
+    return getFields().keySet().toArray(new String[getFields().size()]);
   }
 
   /**
-   * Returns all the field templates using data.xml ordering
+   * Returns all the field templates.
    */
+  @Override
   public FieldTemplate[] getFieldTemplates() {
     FieldTemplate[] fieldsArray = new FieldTemplate[getFields().keySet().size()];
-    int i = 0;
-    for (FieldTemplate fieldTemplate : getFieldList()) {
-      FieldTemplate field;
-      try {
-        field = getFieldTemplate(fieldTemplate.getFieldName());
-      } catch (FormException e) {
-        SilverTrace.error("form", "GenericRecordTemplate.getFieldTemplates", "form.UNKNOWN_FIELD",
-            "fieldName = " + fieldTemplate.getFieldName(), e);
-        field = new DummyFieldTemplate();
-      }
-      fieldsArray[i] = field;
-      i++;
+    Iterator<IndexedFieldTemplate> fieldsEnum = getFields().values().iterator();
+    while (fieldsEnum.hasNext()) {
+      IndexedFieldTemplate field = fieldsEnum.next();
+      fieldsArray[field.index] = field.fieldTemplate;
     }
     return fieldsArray;
   }
@@ -119,10 +108,9 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
    * Returns the FieldTemplate of the named field.
    * @throw FormException if the field name is unknown.
    */
+  @Override
   public FieldTemplate getFieldTemplate(String fieldName) throws FormException {
-    IndexedFieldTemplate indexed = (IndexedFieldTemplate) getFields().get(
-        fieldName);
-
+    IndexedFieldTemplate indexed = getFields().get(fieldName);
     if (indexed == null) {
       throw new FormException("GenericRecordTemplate",
           "form.EXP_UNKNOWN_FIELD", fieldName);
@@ -135,10 +123,9 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
    * Returns the field index of the named field.
    * @throw FormException if the field name is unknown.
    */
+  @Override
   public int getFieldIndex(String fieldName) throws FormException {
-    IndexedFieldTemplate indexed = (IndexedFieldTemplate) getFields().get(
-        fieldName);
-
+    IndexedFieldTemplate indexed = getFields().get(fieldName);
     if (indexed == null) {
       throw new FormException("GenericRecordTemplate",
           "form.EXP_UNKNOWN_FIELD", fieldName);
@@ -150,6 +137,7 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
   /**
    * Returns an empty DataRecord built on this template.
    */
+  @Override
   public DataRecord getEmptyRecord() throws FormException {
     return new GenericDataRecord(this);
   }
@@ -157,6 +145,7 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
   /**
    * Returns true if the data record is built on this template and all the constraints are ok.
    */
+  @Override
   public boolean checkDataRecord(DataRecord record) {
     return true; // xoxox à implémenter
   }
@@ -169,7 +158,8 @@ public class GenericRecordTemplate implements RecordTemplate, Serializable {
 
 final class IndexedFieldTemplate implements Serializable {
 
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 7951905766676133561L;
+
   public final int index;
   public final FieldTemplate fieldTemplate;
 

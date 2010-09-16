@@ -51,9 +51,10 @@ public class FormTemplateImportExport {
   public void importXMLModelContentType(ForeignPK pk, String objectType,
       XMLModelContentType xmlModel, String userId) throws Exception {
     String externalId = pk.getInstanceId() + ":" + xmlModel.getName();
-    if (StringUtil.isDefined(objectType))
+    if (StringUtil.isDefined(objectType)) {
       externalId = pk.getInstanceId() + ":" + objectType + ":"
           + xmlModel.getName();
+    }
 
     PublicationTemplateManager.addDynamicPublicationTemplate(externalId,
         xmlModel.getName());
@@ -88,10 +89,12 @@ public class FormTemplateImportExport {
               .getTypeName(), fieldTemplate.getDisplayerName());
           if (Field.TYPE_FILE.equals(field.getTypeName())) {
             String context = null;
-            if (fieldTemplate.getDisplayerName().equals("image"))
+            if (fieldTemplate.getDisplayerName().equals("image")) {
               context = AbstractForm.CONTEXT_FORM_IMAGE;
-            else
+            }
+            else {
               context = AbstractForm.CONTEXT_FORM_FILE;
+            }
 
             String imagePath = xmlFieldValue;
             String imageName = imagePath.substring(imagePath
@@ -142,8 +145,9 @@ public class FormTemplateImportExport {
     // create foreignKey with spaceId, componentId and id
     // use AttachmentPK to build the foreign key of customer object.
     AttachmentPK foreignKey = new AttachmentPK("-1", "useless", componentId);
-    if (objectId != null)
+    if (objectId != null) {
       foreignKey.setId(objectId);
+    }
 
     // create AttachmentDetail Object
     AttachmentDetail ad = new AttachmentDetail(atPK, physicalName, logicalName,

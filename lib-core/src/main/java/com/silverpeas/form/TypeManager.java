@@ -57,13 +57,12 @@ public class TypeManager {
    */
   static public Class<?> getFieldImplementation(String typeName)
       throws FormException {
-    Class<?> implementation = implementations.get(typeName);
-
-    if (implementation == null) {
+    if (!implementations.containsKey(typeName)) {
+      SilverTrace.fatal("form", "TypeManager.getFieldImplementation", "form.EXP_UNKNOWN_TYPE",
+          typeName);
       throw new FormException("TypeManager", "form.EXP_UNKNOWN_TYPE", typeName);
     }
-
-    return implementation;
+    return implementations.get(typeName);
   }
 
   /**
@@ -72,11 +71,11 @@ public class TypeManager {
    */
   static public String getDisplayerName(String typeName) throws FormException {
     List<String> displayerNames = typeName2displayerNames.get(typeName);
-
     if (displayerNames == null || displayerNames.isEmpty()) {
+      SilverTrace.fatal("form", "TypeManager.getDisplayerName", "form.EXP_UNKNOWN_TYPE",
+          typeName);
       throw new FormException("TypeManager", "form.EXP_UNKNOWN_TYPE", typeName);
     }
-
     return displayerNames.get(0);
   }
 
@@ -87,11 +86,9 @@ public class TypeManager {
   static public String[] getDisplayerNames(String typeName)
       throws FormException {
     List<String> displayerNames = typeName2displayerNames.get(typeName);
-
     if (displayerNames == null || displayerNames.isEmpty()) {
       throw new FormException("TypeManager", "form.EXP_UNKNOWN_TYPE", typeName);
     }
-
     return displayerNames.toArray(new String[displayerNames.size()]);
   }
 
@@ -108,16 +105,12 @@ public class TypeManager {
 
     if (displayerClass == null) {
       List<String> displayerNames = typeName2displayerNames.get(typeName);
-
       if (displayerNames == null || displayerNames.isEmpty()) {
-        throw new FormException("TypeManager", "form.EXP_UNKNOWN_TYPE",
-            typeName);
+        throw new FormException("TypeManager", "form.EXP_UNKNOWN_TYPE", typeName);
       } else {
-        throw new FormException("TypeManager", "form.EXP_UNKNOWN_DISPLAYER",
-            displayerName);
+        throw new FormException("TypeManager", "form.EXP_UNKNOWN_DISPLAYER", displayerName);
       }
     }
-
     return constructDisplayer(displayerClass);
   }
 
@@ -140,7 +133,6 @@ public class TypeManager {
 
     // binds ( typeName -> displayerName )
     List<String> displayerNames = typeName2displayerNames.get(typeName);
-
     if (displayerNames == null) {
       displayerNames = new ArrayList<String>();
       displayerNames.add(displayerName);
@@ -152,7 +144,6 @@ public class TypeManager {
         displayerNames.add(displayerName);
       }
     }
-
     // binds ( displayerId -> displayerClass )
     displayerId2displayerClass.put(displayerId, displayerClass);
   }
@@ -161,7 +152,7 @@ public class TypeManager {
    * Builds a displayer id from a type name and a displayer name.
    */
   static private String getDisplayerId(String typeName, String displayerName) {
-    return typeName + "." + displayerName;
+    return typeName + '.' + displayerName;
   }
 
   /**
@@ -169,11 +160,11 @@ public class TypeManager {
    * typeName.displayer.displayerName
    */
   static private String extractTypeName(String identifier) {
-    int dot = identifier.indexOf(".");
-    if (dot == -1)
+    int dot = identifier.indexOf('.');
+    if (dot <= 0) {
       return identifier.trim();
-    else
-      return identifier.substring(0, dot).trim();
+    }
+    return identifier.substring(0, dot).trim();
   }
 
   /**
@@ -181,17 +172,16 @@ public class TypeManager {
    * typeName.displayer typeName.displayer.displayerName
    */
   static private String extractClassKind(String identifier) {
-    int dot = identifier.indexOf(".");
-    if (dot == -1 || dot + 1 == identifier.length())
+    int dot = identifier.indexOf('.');
+    if (dot == -1 || dot + 1 == identifier.length()) {
       return "";
-    else {
-      String afterFirstDot = identifier.substring(dot + 1);
-      dot = afterFirstDot.indexOf(".");
-      if (dot == -1)
-        return afterFirstDot.trim();
-      else
-        return afterFirstDot.substring(0, dot).trim();
     }
+    String afterFirstDot = identifier.substring(dot + 1);
+    dot = afterFirstDot.indexOf('.');
+    if (dot == -1) {
+      return afterFirstDot.trim();
+    }
+    return afterFirstDot.substring(0, dot).trim();
   }
 
   /**
@@ -199,17 +189,17 @@ public class TypeManager {
    * typeName.displayer.displayerName
    */
   static private String extractDisplayerName(String identifier) {
-    int dot = identifier.indexOf(".");
-    if (dot == -1 || dot + 1 == identifier.length())
+    int dot = identifier.indexOf('.');
+    if (dot == -1 || dot + 1 == identifier.length()) {
       return "";
-    else {
-      String afterFirstDot = identifier.substring(dot + 1);
-      dot = afterFirstDot.indexOf(".");
-      if (dot == -1 || dot + 1 == afterFirstDot.length())
-        return "default";
-      else
-        return afterFirstDot.substring(dot + 1).trim();
     }
+
+    String afterFirstDot = identifier.substring(dot + 1);
+    dot = afterFirstDot.indexOf('.');
+    if (dot == -1 || dot + 1 == afterFirstDot.length()) {
+      return "default";
+    }
+    return afterFirstDot.substring(dot + 1).trim();
   }
 
   /**
@@ -217,21 +207,17 @@ public class TypeManager {
    */
   static private Field constructField(Class<?> fieldClass) throws FormException {
     try {
-      Class<?>[] noParameterClass = new Class[0];
+      Class<?>[] noParameterClass = new Class<?>[0];
       Constructor<?> constructor = fieldClass.getConstructor(noParameterClass);
-      Object[] noParameter = new Object[0];
-      Field field = (Field) constructor.newInstance(noParameter);
-
-      return field;
+      return (Field) constructor.newInstance(new Object[0]);
     } catch (NoSuchMethodException e) {
       throw new FormFatalException("TypeManager",
-          "form.EXP_MISSING_EMPTY_CONSTRUCTOR", fieldClass.getName());
+          "form.EXP_MISSING_EMPTY_CONSTRUCTOR", fieldClass.getName(), e);
     } catch (ClassCastException e) {
-      throw new FormFatalException("TypeManager", "form.EXP_NOT_A_FIELD",
-          fieldClass.getName());
+      throw new FormFatalException("TypeManager", "form.EXP_NOT_A_FIELD", fieldClass.getName(), e);
     } catch (Exception e) {
-      throw new FormFatalException("TypeManager",
-          "form.EXP_FIELD_CONSTRUCTION_FAILED", fieldClass.getName());
+      throw new FormFatalException("TypeManager", "form.EXP_FIELD_CONSTRUCTION_FAILED",
+          fieldClass.getName(), e);
     }
   }
 
@@ -241,23 +227,18 @@ public class TypeManager {
   static private FieldDisplayer constructDisplayer(Class<?> displayerClass)
       throws FormException {
     try {
-      Class<?>[] noParameterClass = new Class[0];
+      Class<?>[] noParameterClass = new Class<?>[0];
       Constructor<?> constructor = displayerClass.getConstructor(noParameterClass);
-
-      Object[] noParameter = new Object[0];
-      FieldDisplayer displayer = (FieldDisplayer) constructor
-          .newInstance(noParameter);
-
-      return displayer;
+      return (FieldDisplayer) constructor.newInstance(new Object[0]);
     } catch (NoSuchMethodException e) {
       throw new FormFatalException("TypeManager",
-          "form.EXP_MISSING_EMPTY_CONSTRUCTOR", displayerClass.getName());
+          "form.EXP_MISSING_EMPTY_CONSTRUCTOR", displayerClass.getName(), e);
     } catch (ClassCastException e) {
       throw new FormFatalException("TypeManager", "form.EXP_NOT_A_DISPLAYER",
-          displayerClass.getName());
+          displayerClass.getName(), e);
     } catch (Exception e) {
       throw new FormFatalException("TypeManager",
-          "form.EXP_DISPLAYER_CONSTRUCTION_FAILED", displayerClass.getName());
+          "form.EXP_DISPLAYER_CONSTRUCTION_FAILED", displayerClass.getName(), e);
     }
   }
 
@@ -268,15 +249,13 @@ public class TypeManager {
       throws FormException {
     try {
       Class<?> fieldClass = Class.forName(fieldClassName);
-
       // try to built a displayer from this class
       // and discards the constructed object.
       constructField(fieldClass);
-
       return fieldClass;
     } catch (ClassNotFoundException e) {
       throw new FormFatalException("TypeManager", "form.EXP_UNKNOWN_CLASS",
-          fieldClassName);
+          fieldClassName, e);
     }
   }
 
@@ -287,15 +266,13 @@ public class TypeManager {
       throws FormException {
     try {
       Class<?> displayerClass = Class.forName(displayerClassName);
-
       // try to built a displayer from this class
       // and discards the constructed object.
       constructDisplayer(displayerClass);
-
       return displayerClass;
     } catch (ClassNotFoundException e) {
       throw new FormFatalException("TypeManager", "form.EXP_UNKNOWN_CLASS",
-          displayerClassName);
+          displayerClassName, e);
     }
   }
 
@@ -304,40 +281,27 @@ public class TypeManager {
    * List(displayerName)) (the first is the default). (displayerId -> displayerClass).
    */
   static private void init() throws FormException {
-    String identifier;
-    String className;
-    String typeName;
-    String classKind;
-    String displayerName;
-    boolean isDefault;
-
     try {
-      ResourceLocator properties = new ResourceLocator(
-          "com.silverpeas.form.settings.types", "");
-
+      ResourceLocator properties = new ResourceLocator("com.silverpeas.form.settings.types", "");
       Enumeration<String> binds = properties.getKeys();
       while (binds.hasMoreElements()) {
-        identifier = binds.nextElement();
+        String identifier = binds.nextElement();
         SilverTrace.info("form", "TypeManager.init",
             "root.MSG_GEN_PARAM_VALUE", "identifier=" + identifier);
-        className = properties.getString(identifier);
-        SilverTrace.info("form", "TypeManager.init",
-            "root.MSG_GEN_PARAM_VALUE", "className=" + className);
-
-        typeName = extractTypeName(identifier);
-        classKind = extractClassKind(identifier);
-        displayerName = extractDisplayerName(identifier);
-
+        String className = properties.getString(identifier);
+        SilverTrace.info("form", "TypeManager.init", "root.MSG_GEN_PARAM_VALUE",
+            "className=" + className);
+        String typeName = extractTypeName(identifier);
+        String classKind = extractClassKind(identifier);
+        String displayerName = extractDisplayerName(identifier);
         if ("implementation".equals(classKind)) {
           setFieldImplementation(className, typeName);
         } else if ("displayer".equals(classKind)) {
-          isDefault = "default".equals(displayerName);
-          setDisplayer(className, typeName, displayerName, isDefault);
+          setDisplayer(className, typeName, displayerName, "default".equals(displayerName));
         }
       }
-    } catch (MissingResourceException e) {
-      throw new FormFatalException("TypeManager",
-          "form.EXP_MISSING_DISPLAYER_PROPERTIES",
+    }catch (MissingResourceException e) {
+      throw new FormFatalException("TypeManager", "form.EXP_MISSING_DISPLAYER_PROPERTIES",
           "com.silverpeas.form.settings.types");
     }
   }
@@ -365,8 +329,7 @@ public class TypeManager {
     try {
       init();
     } catch (FormException e) {
-      SilverTrace.fatal("form", "TypeManager.initialization",
-          "form.EXP_INITIALIZATION_FAILED", e);
+      SilverTrace.fatal("form", "TypeManager.initialization", "form.EXP_INITIALIZATION_FAILED", e);
     }
   }
 

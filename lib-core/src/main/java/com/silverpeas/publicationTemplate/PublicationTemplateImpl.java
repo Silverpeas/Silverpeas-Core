@@ -24,22 +24,6 @@
 
 package com.silverpeas.publicationTemplate;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import org.exolab.castor.mapping.Mapping;
-import org.exolab.castor.mapping.MappingException;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.InputSource;
-
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
@@ -57,16 +41,30 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import org.exolab.castor.mapping.Mapping;
+import org.exolab.castor.mapping.MappingException;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
+import org.xml.sax.InputSource;
 
 /**
  * A PublicationTemplate describes a set of publication records built on a same template. A
  * PublicationTemplate groups :
- * <OL>
- * <LI>a RecordTemplate which describes the built records.
- * <LI>a RecordSet of records built on this template,
- * <LI>an update Form used to create and update the publication items
- * <LI>a view Form used to show the publications.
- * </OL>
+ * <ol>
+ * <li>a RecordTemplate which describes the built records.</li>
+ * <li>a RecordSet of records built on this template,</li>
+ * <li>an update Form used to create and update the publication items</li>
+ * <li>a view Form used to show the publications.</li>
+ * </ol>
  */
 public class PublicationTemplateImpl implements PublicationTemplate {
   private String name = "";
@@ -149,18 +147,22 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   /**
    * Returns the Form used to create and update the records built from this template.
    */
+  @Override
   public Form getUpdateForm() throws PublicationTemplateException {
-    if (updateForm == null)
+    if (updateForm == null) {
       updateForm = getForm(updateFileName, updateTypeFile);
+    }
     return updateForm;
   }
 
   /**
    * Returns the Form used to view the records built from this template.
    */
+  @Override
   public Form getViewForm() throws PublicationTemplateException {
-    if (viewForm == null)
+    if (viewForm == null) {
       viewForm = getForm(viewFileName, viewTypeFile);
+    }
     return viewForm;
 
   }
@@ -170,8 +172,9 @@ public class PublicationTemplateImpl implements PublicationTemplate {
    */
   public RecordTemplate getSearchTemplate(boolean loadIfNull)
       throws PublicationTemplateException {
-    if (searchTemplate == null && loadIfNull)
+    if (searchTemplate == null && loadIfNull) {
       searchTemplate = loadRecordTemplate(searchFileName);
+    }
     return searchTemplate;
   }
 
@@ -200,17 +203,16 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     return getRecordTemplate(false);
   }
 
+  @Override
   public Form getSearchForm() throws PublicationTemplateException {
     if (searchForm == null) {
       if (isSearchable()) {
         RecordTemplate templateForm = loadRecordTemplate(searchFileName);
-
         try {
           searchForm = new XmlSearchForm(templateForm);
         } catch (FormException e) {
-          throw new PublicationTemplateException(
-              "PublicationTemplateImpl.getUpdateForm", "form.EX_CANT_GET_FORM",
-              null, e);
+          throw new PublicationTemplateException("PublicationTemplateImpl.getUpdateForm",
+              "form.EX_CANT_GET_FORM", null, e);
         }
       }
     }
@@ -220,6 +222,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   /**
    * Returns the Form witch name is name parameter the records built from this template.
    */
+  @Override
   public Form getEditForm(String name) throws PublicationTemplateException {
     SilverTrace.info("form", "PublicationTemplateImpl.getEditForm",
         "root.MSG_GEN_PARAM_VALUE", "name=" + name);
@@ -234,59 +237,54 @@ public class PublicationTemplateImpl implements PublicationTemplate {
         }
       }
     }
-    if (form == null)
-      throw new PublicationTemplateException(
-          "PublicationTemplateImpl.getEditForm", "form.EX_CANT_GET_FORM",
-          "name=" + name, null);
+    if (form == null) {
+      throw new PublicationTemplateException("PublicationTemplateImpl.getEditForm",
+          "form.EX_CANT_GET_FORM", "name=" + name, null);
+    }
     return form;
   }
 
-  private Form getForm(String fileName, String fileType)
-      throws PublicationTemplateException {
+  private Form getForm(String fileName, String fileType) throws PublicationTemplateException {
     Form form = null;
     RecordTemplate templateForm = null;
+    String currentFileName = fileName;
 
-    String typeFile = FileRepositoryManager.getFileExtension(fileName);
-    if (fileType != null && !fileType.equals(""))
+    String typeFile = FileRepositoryManager.getFileExtension(currentFileName);
+    if (StringUtil.isDefined(fileType)) {
       typeFile = fileType.trim().toLowerCase();
+    }
 
-    if (fileName != null && !fileName.equals("") && typeFile.equals("xml")) {
-      templateForm = loadRecordTemplate(fileName);
+    if (StringUtil.isDefined(currentFileName) && "xml".equals(typeFile)) {
+      templateForm = loadRecordTemplate(currentFileName);
       mergeTemplate(templateForm);
-
       try {
         form = (Form) new XmlForm(templateForm);
       } catch (FormException e) {
-        throw new PublicationTemplateException(
-            "PublicationTemplateImpl.getForm", "form.EX_CANT_GET_FORM", null, e);
+        throw new PublicationTemplateException("PublicationTemplateImpl.getForm",
+            "form.EX_CANT_GET_FORM", null, e);
       }
     } else {
       String htmlFileName = PublicationTemplateManager.makePath(
-          PublicationTemplateManager.templateDir, fileName);
-
-      fileName = fileName.replaceAll(".html", ".xml");
-
-      templateForm = loadRecordTemplate(fileName);
+          PublicationTemplateManager.templateDir, currentFileName);
+      currentFileName = currentFileName.replaceAll(".html", ".xml");
+      templateForm = loadRecordTemplate(currentFileName);
       mergeTemplate(templateForm);
-
       try {
         HtmlForm viewFormHtml = new HtmlForm(templateForm);
         viewFormHtml.setFileName(htmlFileName);
         form = (Form) viewFormHtml;
       } catch (FormException e) {
-        throw new PublicationTemplateException(
-            "PublicationTemplateImpl.getForm", "form.EX_CANT_GET_FORM", null, e);
+        throw new PublicationTemplateException("PublicationTemplateImpl.getForm",
+            "form.EX_CANT_GET_FORM", null, e);
       }
     }
-
     return form;
   }
 
   /**
    * merge the data template with the form template
    */
-  private void mergeTemplate(RecordTemplate formTemplate)
-      throws PublicationTemplateException {
+  private void mergeTemplate(RecordTemplate formTemplate) throws PublicationTemplateException {
     RecordTemplate dataTemplate = getRecordTemplate();
     if (formTemplate != null && dataTemplate != null) {
       String fieldNames[] = formTemplate.getFieldNames();
@@ -416,30 +414,23 @@ public class PublicationTemplateImpl implements PublicationTemplate {
    * @param xmlFileName the xml file name that contains process model definition
    * @return a RecordTemplate object
    */
-  private RecordTemplate loadRecordTemplate(String xmlFileName)
-      throws PublicationTemplateException {
-    if (!StringUtil.isDefined(xmlFileName))
+  public RecordTemplate loadRecordTemplate(String xmlFileName) throws PublicationTemplateException {
+    if (!StringUtil.isDefined(xmlFileName)) {
       return null;
-
+    }
     Mapping mapping = new Mapping();
-
     try {
       // Format these url
-      xmlFileName = PublicationTemplateManager.makePath(
-          PublicationTemplateManager.templateDir, xmlFileName);
-
+      String filePath = PublicationTemplateManager.makePath(PublicationTemplateManager.templateDir,
+          xmlFileName);
       // Load mapping and instantiate a Marshaller
-      mapping
-          .loadMapping(PublicationTemplateManager.mappingRecordTemplateFilePath);
+      mapping.loadMapping(PublicationTemplateManager.mappingRecordTemplateFilePath);
       Unmarshaller unmar = new Unmarshaller(mapping);
-
       // Unmarshall the process model
       GenericRecordTemplate recordTemplate = (GenericRecordTemplate) unmar
-          .unmarshal(new InputSource(new FileInputStream(xmlFileName)));
-      recordTemplate.setTemplateName(fileName.substring(0, fileName
-          .lastIndexOf(".")));
-
-      return (RecordTemplate) recordTemplate;
+          .unmarshal(new InputSource(new FileInputStream(filePath)));
+      recordTemplate.setTemplateName(fileName.substring(0, fileName.lastIndexOf('.')));
+      return recordTemplate;
     } catch (MappingException me) {
       throw new PublicationTemplateException(
           "PublicationTemplateImpl.loadPublicationTemplate",
@@ -464,16 +455,20 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   }
 
   public void saveRecordTemplates() throws PublicationTemplateException {
-    String subDir = fileName.substring(0, fileName.lastIndexOf("."))
+    String subDir = fileName.substring(0, fileName.lastIndexOf('.'))
         + File.separator;
-    if (template != null)
+    if (template != null) {
       saveRecordTemplate(template, subDir, "data.xml");
-    if (viewTemplate != null)
+    }
+    if (viewTemplate != null) {
       saveRecordTemplate(viewTemplate, subDir, "view.xml");
-    if (updateTemplate != null)
+    }
+    if (updateTemplate != null) {
       saveRecordTemplate(updateTemplate, subDir, "update.xml");
-    if (searchTemplate != null)
+    }
+    if (searchTemplate != null) {
       saveRecordTemplate(searchTemplate, subDir, "search.xml");
+    }
   }
 
   /**
@@ -484,13 +479,12 @@ public class PublicationTemplateImpl implements PublicationTemplate {
       String xmlFileName) throws PublicationTemplateException {
     // FileWriter writer = null;
     Mapping mapping = new Mapping();
-
     try {
       // Format these url
       String xmlDirPath = PublicationTemplateManager.makePath(
           PublicationTemplateManager.templateDir, subDir);
       File dir = new File(xmlDirPath);
-      if (!dir.exists())
+      if (!dir.exists()) {
         try {
           FileFolderManager.createFolder(dir);
         } catch (UtilException e) {
@@ -499,25 +493,17 @@ public class PublicationTemplateImpl implements PublicationTemplate {
               "form.EX_ERR_CASTOR_SAVE_PUBLICATION_TEMPLATE", "xmlDirPath = "
               + xmlDirPath, e);
         }
-
+      }
       String xmlFilePath = PublicationTemplateManager.makePath(
           PublicationTemplateManager.templateDir, subDir + xmlFileName);
-
       // Load mapping and instantiate a Marshaller
-      mapping
-          .loadMapping(PublicationTemplateManager.mappingRecordTemplateFilePath);
-
+      mapping.loadMapping(PublicationTemplateManager.mappingRecordTemplateFilePath);
       String encoding = "UTF-8";
-
       FileOutputStream fos = new FileOutputStream(xmlFilePath);
       OutputStreamWriter osw = new OutputStreamWriter(fos, encoding);
-
-      // writer = new FileWriter(xmlFilePath);
-
       Marshaller mar = new Marshaller(osw);
       mar.setEncoding(encoding);
       mar.setMapping(mapping);
-
       // Marshall the template
       mar.marshal(recordTemplate);
     } catch (MappingException me) {
@@ -543,6 +529,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     }
   }
 
+  @Override
   public String getName() {
     return name;
   }
@@ -551,6 +538,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     this.name = name;
   }
 
+  @Override
   public String getFileName() {
     return fileName;
   }
@@ -559,6 +547,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     this.fileName = fileName;
   }
 
+  @Override
   public String getDescription() {
     return description;
   }
@@ -567,6 +556,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     this.description = description;
   }
 
+  @Override
   public String getThumbnail() {
     return thumbnail;
   }
@@ -579,6 +569,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     this.visible = visible;
   }
 
+  @Override
   public boolean isVisible() {
     return visible;
   }
@@ -607,24 +598,25 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     this.viewTemplate = viewTemplate;
   }
 
+  @Override
   public boolean isSearchable() {
     return (searchFileName != null && searchFileName.trim().length() > 0);
   }
 
   public PublicationTemplateImpl basicClone() {
-    PublicationTemplateImpl template = new PublicationTemplateImpl();
-    template.setName(getName());
-    template.setDescription(getDescription());
-    template.setThumbnail(getThumbnail());
-    template.setFileName(getFileName());
-    template.setVisible(isVisible());
-    template.setViewFileName(getViewFileName());
-    template.setUpdateFileName(getUpdateFileName());
-    template.setSearchFileName(getSearchFileName());
-    template.setDataFileName(getDataFileName());
-    template.setViewTypeFile(getViewTypeFile());
-    template.setUpdateTypeFile(getUpdateTypeFile());
-    template.setExternalId(getExternalId());
-    return template;
+    PublicationTemplateImpl cloneTemplate = new PublicationTemplateImpl();
+    cloneTemplate.setName(getName());
+    cloneTemplate.setDescription(getDescription());
+    cloneTemplate.setThumbnail(getThumbnail());
+    cloneTemplate.setFileName(getFileName());
+    cloneTemplate.setVisible(isVisible());
+    cloneTemplate.setViewFileName(getViewFileName());
+    cloneTemplate.setUpdateFileName(getUpdateFileName());
+    cloneTemplate.setSearchFileName(getSearchFileName());
+    cloneTemplate.setDataFileName(getDataFileName());
+    cloneTemplate.setViewTypeFile(getViewTypeFile());
+    cloneTemplate.setUpdateTypeFile(getUpdateTypeFile());
+    cloneTemplate.setExternalId(getExternalId());
+    return cloneTemplate;
   }
 }
