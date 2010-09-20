@@ -40,8 +40,6 @@
 <div id="socialIconsZone">
   <table cellpadding="10">
     <tr>
-
-
     <c:url var="SNIcon" value="/socialNetwork/jsp/icons/" />
     <c:choose>
       <c:when test="${type=='ALL'}">

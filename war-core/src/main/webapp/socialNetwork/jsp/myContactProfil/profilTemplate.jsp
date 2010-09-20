@@ -31,10 +31,8 @@
   <head>
     <title><fmt:message key="invitation.action.title" /> </title>
     <view:looknfeel />
-     <link rel="stylesheet" type="text/css" href="<c:url value="/socialNetwork/jsp/css/socialNetwork.css"/>"/>
-    <link rel="stylesheet" type="text/css" href="<c:url value="/socialNetwork/jsp/myContactProfil/myContactProfil.css"/>"/>
+    <link rel="stylesheet" type="text/css" href="<c:url value="/socialNetwork/jsp/css/socialNetwork.css"/>"/>
     <link rel="stylesheet" type="text/css" href="<c:url value="/directory/jsp/directoryPopup.css"/>"/>
-    <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-1.3.2.min.js" />" ></script>
     <script type="text/javascript" src="<c:url value="/directory/jsp/directory.js" />" ></script>
     <script type="text/javascript">
 
@@ -164,73 +162,20 @@
 
         }
 
-
-        function zoom(test)
-        {
-          var event =  window.event;
-          var Id='PHOTO'+event.target.id ;
-
-
-          $("table#"+Id).css({'z-index' : '40'}); /*Add a higher z-index value so this image stays on top*/
-          $("table#"+Id).find('img').animate({
-            marginTop: '0px', /* The next 4 lines will vertically align this image */
-            marginLeft: '0px',
-            top: '50%',
-            left: '50%',
-            width: '174px', /* Set new width */
-            height: '174px' /* Set new height */
-
-          }, 200)
-        }
-        function backToDefault(test)
-        {
-          var event =  window.event;
-          var Id='PHOTO'+event.target.id ;
-
-          $("div#"+Id).css({'z-index' : '0'}); /* Set z-index back to 0 */
-          $("div#"+Id).find('img').animate({
-            marginTop: '0', /* Set alignment back to default */
-            marginLeft: '0',
-            top: '0',
-            left: '0',
-            width: '32px', /* Set width back to default */
-            height: '32px' /* Set height back to default */
-
-          }, 400);
-        }
-
-
       <%--*****************   profil Head *******************************************--%>
-
-        function getLastStatus(url)
+        function getLastStatus()
         {
-
-          $.getJSON(url, function(data) {
+          $.getJSON('${urlGetLastStatus}', function(data) {
             $('.StatusDiv').empty();
-            var html='';
-            html+='<textarea onblur="javascript:updateStatus(\'${urlUpdateStatus}\')" id="enabledStat" ';
-            html+='type="text" cols="50" rows="3" >'+data.status+'<\/textarea>';
-            $('.StatusDiv').append(html);
-            desableStatusZone();
+            $('.StatusDiv').append(data.status);
           });
         }
-      
-        function desableStatusZone()
-        {
-          document.getElementById("enabledStat").style.backgroundColor="#F2F2F2";
-          document.getElementById("enabledStat").disabled=true;
-
-        }
-     
-
     </script>
   </head>
-  <body>
+  <body id="privateProfile">
     <view:window>
       <div id="navigation">
-
         <%@include file="profilNavigation.jsp" %>
-
       </div>
       <div id="contentAndHeader">
         <div id="header">
@@ -239,9 +184,7 @@
           </view:board>
         </div>
         <div id="content">
-          <view:board>
             <%@include file="profilBody.jsp" %>
-          </view:board>
         </div>
       </div>
       <div id="boxesDirectory">

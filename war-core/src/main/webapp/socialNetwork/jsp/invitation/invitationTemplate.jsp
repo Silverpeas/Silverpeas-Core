@@ -55,8 +55,6 @@
         document.getElementById("enabledStat").style.backgroundColor="#F2F2F2";
         document.getElementById("enabledStat").disabled=true;
         document.statForm.submit();
-
-
       }
             
       function toggleZoneMessage() {
@@ -72,7 +70,7 @@
 
     </script>
   </head>
-  <body id="invitations">
+  <body id="invitation">
     <script type="text/javascript">
       enableField()
     </script>

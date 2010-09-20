@@ -23,6 +23,7 @@
  */
 package com.silverpeas.socialNetwork.invitation.servlets;
 
+import com.silverpeas.directory.model.Member;
 import com.silverpeas.socialNetwork.invitation.control.InvitationSessionController;
 import com.silverpeas.socialNetwork.user.model.SNContactUser;
 import com.silverpeas.util.StringUtil;
@@ -38,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class InvitationRequestRouter extends ComponentRequestRouter {
 
+  private static final long serialVersionUID = 1L;
   @Override
   public String getSessionControlBeanName() {
     return "invitation";
@@ -67,7 +69,7 @@ public class InvitationRequestRouter extends ComponentRequestRouter {
       invitationSC.lastMainAction = function;
       int myId = Integer.parseInt(invitationSC.getUserId());
       request.setAttribute("InvitationUsers", invitationSC.getAllMyInvitationsReceive(myId));
-      request.setAttribute("user",new SNContactUser(myId+""));
+      request.setAttribute("user",new SNContactUser(invitationSC.getUserId()));
       destination = "/socialNetwork/jsp/invitation/invitationTemplate.jsp";
 
     }
@@ -80,8 +82,9 @@ public class InvitationRequestRouter extends ComponentRequestRouter {
       destination = "/socialNetwork/jsp/invitation/invitationSentTemplate.jsp";
 
     } else if (function.equalsIgnoreCase("invite")) {
-      destination = "/directory/jsp/invitationUser.jsp?Recipient="
-          + request.getParameter("Recipient") + "&Name=" + request.getParameter("Name");
+      String userId = request.getParameter("Recipient");
+      request.setAttribute("User", new Member(invitationSC.getUserDetail(userId)));
+      destination = "/directory/jsp/invitationUser.jsp";
     } else if (function.equalsIgnoreCase("SendInvitation")) {
       int receiveId;
 

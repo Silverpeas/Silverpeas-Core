@@ -30,7 +30,6 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-
     <title><fmt:message key="invitation.action.title" /> </title>
     <view:looknfeel />
     <script type="text/javascript" src="/silverpeas/util/javaScript/animation.js"></script>
@@ -42,25 +41,17 @@
         {
           document.getElementById("enabledStat").style.backgroundColor="#DEDEDE"
           document.getElementById("enabledStat").disabled=true;
-
-
-        }
-        else{
-
+        } else{
           document.getElementById("enabledStat").style.backgroundColor="#FFFFFF";
           document.getElementById("enabledStat").focus();
           document.getElementById("enabledStat").disabled=false;
         }
-
       }
       function desabledField()
       {
-
         document.getElementById("enabledStat").style.backgroundColor="#F2F2F2"
         document.getElementById("enabledStat").disabled=true;
         document.statForm.submit();
-
-
       }
       afficheButtonEdit(visible)
       {

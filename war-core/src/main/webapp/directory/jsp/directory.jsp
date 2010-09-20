@@ -58,25 +58,17 @@
   <head>
   	<title></title>
     <view:looknfeel />
-    <style type="text/css">
-      * {
-        margin: 0;
-        padding: 0;
-      }
-    </style>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript">
-      function OpenPopup(usersId,name ){
-        usersId=usersId+'&Name='+name
+      function OpenPopup(usersId,name){
         options="location=no, menubar=no,toolbar=no,scrollbars=yes,resizable,alwaysRaised"
-        SP_openWindow('<%=m_context + "/Rdirectory/jsp/NotificationView"%>?Recipient='+usersId , 'strWindowName', '500', '200',options );
+        SP_openWindow('<%=m_context%>/Rdirectory/jsp/NotificationView?Recipient='+usersId , 'strWindowName', '500', '200',options );
 
       }
       function OpenPopupInvitaion(usersId,name){
-        usersId=usersId+'&Name='+name
         options="directories=no, menubar=no,toolbar=no,scrollbars=yes,resizable=no,alwaysRaised"
-        SP_openWindow('<%=m_context + "/Rinvitation/jsp/invite"%>?Recipient='+usersId, 'strWindowName', '350', '200','directories=no, menubar=no,toolbar=no,scrollbars=yes, resizable=no ,alwaysRaised');
+        SP_openWindow('<%=m_context%>/Rinvitation/jsp/invite?Recipient='+usersId, 'strWindowName', '500', '200','directories=no, menubar=no,toolbar=no,scrollbars=yes, resizable=no ,alwaysRaised');
       }
     </script>
 
@@ -109,11 +101,10 @@
           </div>
           <div id="search">
             <form name="search" action="searchByKey" method="post">
-              <input type="text" name="key" size="40" maxlength="60"
-                     style="height: 20px"  />
-              <img
-                src="<%=m_context%>/directory/jsp/icons/advsearch.jpg"
-                width="10" height="10" alt="advsearch" />
+            	<table cellpadding="0" cellspacing="0">
+              <tr><td><input type="text" name="key" size="40" maxlength="60" /></td><td>&nbsp;</td><td><view:button label="Rechercher" action="javascript:document.search.submit()"></view:button></td>
+              </tr>
+              </table>
             </form>
           </div>
         </div>
@@ -127,9 +118,11 @@
               <view:board>
                 <div id="infoAndPhoto">
                   <div id="profilPhoto">
-                    <a href="createPhoto"><img
-                        src="<%=m_context + member.getProfilPhoto()%>"
-                        alt="viewUser" class="avatar"/> </a>
+                  	<% if (!member.haveAvatar()) { %>
+                    	<a href="createPhoto"><img src="<%=m_context + member.getProfilPhoto()%>" alt="viewUser" class="defaultAvatar"/></a>
+                    <% } else { %>
+                    	<a href="createPhoto"><img src="<%=m_context + member.getProfilPhoto()%>" alt="viewUser" class="avatar"/></a>
+                    <% } %>
                   </div>
                   <div id="info">
                     <ul>
@@ -137,7 +130,7 @@
                               ><%=member.getLastName() + " " + member.getFirstName()%></a>
                       </li>
                       <li>
-                        <a class="userMail" href="#"  onclick="OpenPopup(<%=member.getId()%>,'<%=member.getLastName() + " "
+                        <a class="userMail" href="#" onclick="OpenPopup(<%=member.getId()%>,'<%=member.getLastName() + " "
                                                + member.getFirstName()%>')"><%=member.geteMail()%>
                         </a>
                       </li>
@@ -147,53 +140,32 @@
                         <fmt:message key="${carAccessLevel}" bundle="${GML}" />
                       </li>
                       <li>
-                        <% if (member.isConnected()) {
-                        %>
-                        <img src="<%=m_context%>/directory/jsp/icons/connected.jpg" width="10" height="10"
-                             alt="connected"/> <fmt:message key="directory.connected" bundle="${LML}" /><%=" " + member.getDuration()%>
-
-
-                        <%
-                         } else {
-                        %>
-                        <img src="<%=m_context%>/directory/jsp/icons/deconnected.jpg" width="10" height="10" alt="deconnected"/> <fmt:message key="directory.deconnected" bundle="${LML}" />
-
-
-                        <%          }
-                        %>
+                        <% if (member.isConnected()) { %>
+                        	<img src="<%=m_context%>/directory/jsp/icons/connected.jpg" width="10" height="10"
+                            	 alt="connected"/> <fmt:message key="directory.connected" bundle="${LML}" /> <%=member.getDuration()%>
+                        <% } else { %>
+                        	<img src="<%=m_context%>/directory/jsp/icons/deconnected.jpg" width="10" height="10" alt="deconnected"/> <fmt:message key="directory.deconnected" bundle="${LML}" />
+                        <% } %>
                       </li>
                     </ul>
                   </div>
                 </div>
-                <div id="action">
-                  <%                          if (!request.getAttribute(
-                                        "MyId").
-                                        equals(member.getId())) {
-                  %>
-                  <% if (!member.isRelationOrInvitation(request.
-                                                  getAttribute("MyId").toString())) {
-                  %>
-
-                  <a href="#" class="link" onclick="OpenPopupInvitaion(<%=member.getId()%>,'<%=member.getLastName() + " " + member.getFirstName()%>');">
-                    Envoyer une invitation</a><br />
-                  <br />
-                  <%
-                                              }
-                  %>
-                  <a href="#" class="link" onclick="OpenPopup(<%=member.getId()%>,'<%=member.getLastName() + " " + member.getFirstName()%>')">
-                    Envoyer un message</a>
-                    <%
-                                      }
-                    %>
+                <div class="action">
+                	
+                  <% if (!request.getAttribute("MyId").equals(member.getId())) { %>
+                  <ul>
+	                  <% if (!member.isRelationOrInvitation(request.getAttribute("MyId").toString())) { %>
+	                  	<li><a href="#" onclick="OpenPopupInvitaion(<%=member.getId()%>,'<%=member.getLastName() + " " + member.getFirstName()%>');">Envoyer une invitation</a></li>
+	                  <% } %>
+	                  	<li><a href="#" onclick="OpenPopup(<%=member.getId()%>,'<%=member.getLastName() + " " + member.getFirstName()%>')">Envoyer un message</a></li>
+	              </ul>
+                  <% } %>
                 </div>
               </view:board>
             </li>
             <%
                 }
-
             %>
-
-
           </ol>
           <div id="pagination">
             <%=pagination.printIndex()%>

@@ -107,7 +107,6 @@ public class InvitationSessionController extends AbstractComponentSessionControl
       invitationUsers.add(new InvitationUser(varI, new SNContactUser(varI.getSenderId() + "")));
     }
     return invitationUsers;
-
   }
 
 }

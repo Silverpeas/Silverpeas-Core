@@ -94,7 +94,7 @@ public class MyContactProfilRequestRouter extends ComponentRequestRouter {
         Logger.getLogger(MyContactProfilRequestRouter.class.getName()).log(Level.SEVERE, null, ex);
       }
       destination = "/socialNetwork/jsp/myContactProfil/profilTemplate.jsp";
-    } else if (function.equalsIgnoreCase("ALL")) {
+    } else if (function.equalsIgnoreCase("ALL") || function.equalsIgnoreCase("Main")) {
       request.setAttribute("type", SocialInformationType.ALL);
       destination = "/socialNetwork/jsp/myContactProfil/profilTemplate.jsp";
     } else if (function.equalsIgnoreCase("MyPhotos")) {
@@ -103,7 +103,7 @@ public class MyContactProfilRequestRouter extends ComponentRequestRouter {
     } else if (function.equalsIgnoreCase("MyPubs")) {
       request.setAttribute("type", SocialInformationType.PUBLICATION);
       destination = "/socialNetwork/jsp/myContactProfil/profilTemplate.jsp";
-    } else if (function.equalsIgnoreCase("MyInfos") || function.equalsIgnoreCase("Main")) {
+    } else if (function.equalsIgnoreCase("MyInfos")) {
 
       UserFull uf = snUserFull.getUserFull();
 

@@ -28,13 +28,13 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.silverpeas.directory.model.Member;
 import com.silverpeas.socialNetwork.SocialNetworkException;
 import com.silverpeas.socialNetwork.profil.control.ProfilSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import com.stratelia.webactiv.beans.admin.UserFull;
 
 /**
  *
@@ -42,6 +42,7 @@ import com.stratelia.webactiv.beans.admin.UserFull;
  */
 public class ProfilRequestRouter extends ComponentRequestRouter {
 
+  private static final long serialVersionUID = 1L;
   private ProfilSessionController myProfilSC;
 
   @Override
@@ -52,10 +53,7 @@ public class ProfilRequestRouter extends ComponentRequestRouter {
   @Override
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-
-
     return new ProfilSessionController(mainSessionCtrl, componentContext);
-
   }
 
   @Override
@@ -76,24 +74,13 @@ public class ProfilRequestRouter extends ComponentRequestRouter {
 
       } else if (isInMyContact(userId)) {// this is  in my contacts
 
-
-
         destination = m_context + "/RmyContactProfil/jsp/MyInfos?userId=" + userId;
 
       } else {// this is not in my contacts
-        UserFull userFull = myProfilSC.getUserFul(userId);
-        String[] properties = userFull.getPropertiesNames();
-
-        String property = null;
-        for (int p = 0; p < properties.length; p++) {
-          property = properties[p];
-          System.out.println("ProfilRequestRouter property=" + userFull.getValue(property));
-        }
-
         request.setAttribute("userFull", myProfilSC.getUserFul(userId));
+        request.setAttribute("Member", new Member(myProfilSC.getUserDetail(userId)));
         request.setAttribute("Settings", myProfilSC.getSettings());
         destination = "/socialNetwork/jsp/profil/profilPublic.jsp";
-
       }
     }
     return destination;

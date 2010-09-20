@@ -25,8 +25,10 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%--<%@ include file="check.jsp" %>--%>
-<view:tabs >
+<%@page import="com.silverpeas.util.EncodeHelper"%>
+
+
+<%@page import="com.stratelia.webactiv.util.DateUtil"%><view:tabs>
   <view:tab label="<%=multilang.getString("invitation.tab.receive")%>" action="Main" selected="false" />
   <view:tab label="<%=multilang.getString("invitation.tab.sent")%>" action="InvitationsSent" selected="true" />
 </view:tabs>
@@ -37,11 +39,11 @@
   %>
   <li style="margin: 3px; ">
     <view:board>
-      <table  width="100%" >
+      <table width="100%" >
           <tr>
             <td>
               <a href="createPhoto">
-                <img src="<%=m_context + invitationUser.getUserDetail().getProfilPhoto()%>" width="60" height="70" border="0" alt="viewUser" />
+                <img src="<%=m_context + invitationUser.getUserDetail().getProfilPhoto()%>" border="0" alt="viewUser" class="avatar"/>
               </a>
             </td>
             <td width="60%" style="vertical-align: top">
@@ -54,23 +56,16 @@
                   </td>
                 </tr>
                 <tr>
-                    <td><b><fmt:message key="invitation.dateInvitation" /></b><%=" " + DateUtil.formatDate(new java.util.Date(invitationUser.getInvitation().
-                          getInvitationDate().getTime())) + " "%><b><fmt:message key="invitation.dateInvitationSuffix"/></b> <%=" " + DateUtil.formatTime(new java.util.Date(invitationUser.getInvitation().
-                                  getInvitationDate().getTime()))%></td>
+                    <td><b><fmt:message key="invitation.dateInvitation" /></b> <%=DateUtil.getOutputDateAndHour(invitationUser.getInvitation().getInvitationDate(), "fr")%><br/></td>
                 </tr>
                 <tr>
                   <% if (StringUtil.isDefined(invitationUser.getInvitation().getMessage())) { %>
-                  	<td><%=invitationUser.getInvitation().getMessage()%></td>
-                  <%
-                          }
-                  %>
+                  	<td><%=EncodeHelper.javaStringToHtmlParagraphe(invitationUser.getInvitation().getMessage())%></td>
+                  <% } %>
                 </tr>
               </table>
-            <td  width="40%"  style="text-align: right">
-              <b>  <a href="#" style="color: blue"><fmt:message key="userInvitation.sendMessage"/>
-                </a></b>
-              <br/>
-              <br/>
+            <td width="40%" style="text-align: right">
+              <b>  <a href="#"><fmt:message key="userInvitation.sendMessage"/></a></b>
             </td>
           </tr>
       </table>

@@ -26,7 +26,8 @@
 
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<view:tabs >
+<%@page import="com.silverpeas.util.EncodeHelper"%>
+<view:tabs>
   <view:tab label="<%=multilang.getString("invitation.tab.receive")%>" action="Main" selected="true" />
   <view:tab label="<%=multilang.getString("invitation.tab.sent")%>" action="InvitationsSent" selected="false" />
 </view:tabs>
@@ -36,42 +37,32 @@
         InvitationUser invitationUser = (InvitationUser) invitationUsers.get(i);
   %>
   <li style="margin: 3px; ">
-
+	<view:board>
     <!--      <div id="body">-->
     <!--        <tr>-->
     <div id="photo">
       <a href="${urlProfil}<%=invitationUser.getUserDetail().getUserId()%>">
-        <img src="<%=m_context + invitationUser.getUserDetail().getProfilPhoto()%>"
-             width="60" height="70" border="0" alt="viewUser" />
+        <img src="<%=m_context + invitationUser.getUserDetail().getProfilPhoto()%>" border="0" alt="viewUser" class="avatar"/>
       </a>
     </div>
     <!--          <div id="information">-->
     <div id ="information" >
-
       <b>
         <a href="${urlProfil}<%=invitationUser.getUserDetail().getUserId()%>"
            class="link"><%=invitationUser.getUserDetail().getDisplayedName()%>
         </a>
       </b><br/>
       <b>
-      <fmt:message key="invitation.dateInvitation" /></b><%=" " + DateUtil.formatDate(new java.util.Date(invitationUser.getInvitation().
-                getInvitationDate().getTime())) + " "%><b><fmt:message key="invitation.dateInvitationSuffix"/></b> <%=" " + DateUtil.formatTime(new java.util.Date(invitationUser.getInvitation().
-                        getInvitationDate().getTime()))%>
-      <br/>
-
+      <fmt:message key="invitation.dateInvitation" /></b> <%=DateUtil.getOutputDateAndHour(invitationUser.getInvitation().getInvitationDate(), "fr")%>
+      <br/><br/>
       <%if (StringUtil.isDefined(invitationUser.getInvitation().getMessage())) { %>
-      <%=invitationUser.getInvitation().getMessage()%>
+      	<%=EncodeHelper.javaStringToHtmlParagraphe(invitationUser.getInvitation().getMessage())%>
       <% } %>
-    <!--              </tr>-->
-
     </div>
-    <!--            </div>-->
     <div id="button">
       <div id="message">
         <b>  <a href="#" style="color: blue"><fmt:message key="userInvitation.sendMessage" /></a></b><br/><br/>
       </div>
-
-
       <%
               ButtonPane buttonPane = gef.getButtonPane();
               buttonPane.addButton((Button) gef.getFormButton(multilang.getString(
@@ -86,9 +77,8 @@
                   "<table align=\"right\" "));
       %>
     </div>
-    <!--        </tr>-->
-    <!--      </div> -->
 </li>
+</view:board>
 <%
     }
 

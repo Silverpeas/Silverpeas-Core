@@ -36,7 +36,7 @@
 </view:tabs>
 
     <view:frame >  
-      <view:frame title="Informations professionnelles &amp; Coordonnées ">
+      <view:frame title="Informations professionnelles &amp; CoordonnÃ©es ">
             <a  id="myInfoUpdate" href="#"  onclick="javascript:enableFields()">
                 <img src="<c:url value="/directory/jsp/icons/edit_button.gif" />" width="15" height="15"
                       alt="connected" />

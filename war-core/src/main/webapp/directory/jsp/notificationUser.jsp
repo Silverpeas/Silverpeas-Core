@@ -35,47 +35,31 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
+<%@ page import="com.silverpeas.directory.model.Member"%>
+<%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.stratelia.silverpeas.notificationManager.NotificationParameters"%>
 
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"  />
 <view:setBundle basename="com.stratelia.webactiv.multilang.generalMultilang" var="GML" />
 
-
-
 <%
-
-    GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
-        "SessionGraphicElementFactory");
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-        "ApplicationURL");
-    String action = (String) request.getParameter("Action");
-    String txtTitle = Encode.htmlStringToJavaString((String) request.getAttribute("txtTitle"));
-    String txtMessage = Encode.htmlStringToJavaString((String) request.getAttribute("txtMessage"));
-    String popupMode = (String) request.getParameter("popupMode");
-    String editTargets = (String) request.getParameter("editTargets");
-    String recipient = Encode.htmlStringToJavaString((String) request.getParameter("Recipient"));
-    String name = ((String) request.getParameter("Name"));
+    GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
+    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+    String action = request.getParameter("Action");
+    String popupMode = request.getParameter("popupMode");
+    
+    Member user = (Member) request.getAttribute("User");
+    String name = user.getUserDetail().getDisplayedName();
+    
     String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 
     if (action == null) {
       action = "NotificationView";
     }
-    if (txtTitle == null) {
-      txtTitle = "123";
-    }
-    if (txtMessage == null) {
-      txtMessage = "123";
-    }
     if (popupMode == null) {
       popupMode = "Yes";
     }
-    if (editTargets == null) {
-      editTargets = "No";
-    }
-    System.out.println(
-        "action=" + action + "===========popupMode=" + popupMode + "====recipient=" + recipient);
     if ((action.equals("SendMessage") || action.equals("CancelSendMessage")) && popupMode.equals(
         "Yes")) {
 
@@ -88,10 +72,8 @@
 <% } else {%>
 <html>
   <head>
-
-    <title><fmt:message key="notificationUser.title" /> <%= " " + name%> </title>
+    <title><fmt:message key="notificationUser.title" /> <%=name%></title>
     <view:looknfeel />
-
   </head>
   <body onLoad="document.notificationSenderForm.txtTitle.focus();">
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
@@ -99,10 +81,8 @@
     <script type="text/javascript">
 
       function Submit(){
-
         SP_openUserPanel('about:blank', 'OpenUserPanel', 'menubar=no,scrollbars=no,statusbar=no');
 
-        //document.notificationSenderForm.action = "<%=m_context + URLManager.getURL(URLManager.CMP_NOTIFICATIONUSER)%>"+"SetTarget";
         document.notificationSenderForm.target = "OpenUserPanel";
         document.notificationSenderForm.submit();
       }
@@ -111,8 +91,6 @@
       }
       function OpenPopup(){
         SP_openWindow('<%=m_context + "/directory/jsp/notificationUser.jsp"%>', 'strWindowName', '400', '400', 'true');
-                 
-                 
       }
 
       function SubmitWithAction(action,verifParams)
@@ -136,19 +114,13 @@
           window.alert(errorMsg);
         }
       }
-
-
     </script>
-
-
     <center>
-
-
       <view:board>
-        <form name="notificationSenderForm" Action=""  Method="post">
-
+        <form name="notificationSenderForm" Action="" Method="post">
+        	<table>
           <tr>
-            <td valign="baseline" align=left  class="txtlibform">
+            <td valign="baseline" align=left class="txtlibform">
               <fmt:message key="notificationUser.object" /> :
             </td>
             <td align=left valign="baseline">
@@ -156,15 +128,12 @@
               <img border="0" src="<%=mandatoryField%>" width="5" height="5" alt="mandatoryField" />
             </td>
           </tr>
-
           <tr>
             <td class="txtlibform" valign="top">
               <fmt:message key="notificationUser.message" /> :
             </td>
             <td align=left valign="top" class="txtnav">
-              <textarea type="text" name="txtMessage"  value="" cols="49" rows="4">
-
-              </textarea>
+              <textarea name="txtMessage" cols="49" rows="4"></textarea>
             </td>
           </tr>
           <tr>
@@ -172,25 +141,19 @@
 	    (<img border="0" src="<%=mandatoryField%>" width="5" height="5" alt="mandatoryField" /> <fmt:message key="GML.requiredField" bundle="${GML}"/>)
             </td>
           </tr>
-          <input type="hidden" name="Recipient" value="<%=recipient%>">
-
-
+          <input type="hidden" name="Recipient" value="<%=user.getId()%>"/>
+          </table>
         </form>
+        </view:board>
         <div align="center">
           <%
-                        ButtonPane buttonPane = gef.getButtonPane();
-                        buttonPane.addButton((Button) gef.getFormButton("Envoyer",
-                            "javascript:SubmitWithAction('SendMessage',true)", false));
-                        buttonPane.addButton((Button) gef.getFormButton("Cancel",
-                            "javascript:SubmitWithAction('CancelSendMessage',false)",
-                            false));
-                        out.println(buttonPane.print());
+			ButtonPane buttonPane = gef.getButtonPane();
+			buttonPane.addButton((Button) gef.getFormButton("Envoyer", "javascript:SubmitWithAction('SendMessage',true)", false));
+			buttonPane.addButton((Button) gef.getFormButton("Cancel", "javascript:SubmitWithAction('CancelSendMessage',false)", false));
+			out.println(buttonPane.print());
           %>
         </div>
-      </view:board>
-
     </center>
-
   </body>
 </html>
 <% }%>

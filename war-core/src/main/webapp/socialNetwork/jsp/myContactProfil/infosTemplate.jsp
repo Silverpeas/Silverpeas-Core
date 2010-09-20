@@ -27,21 +27,17 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@ include file="check.jsp" %>
-<html xmlns="http://ww<w.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title><fmt:message key="invitation.action.title" /> </title>
     <view:looknfeel />
-    <link rel="stylesheet" type="text/css" href="<c:url value="/socialNetwork/jsp/myContactProfil/myContactProfil.css"/>"/>
     <link rel="stylesheet" type="text/css" href="<c:url value="/directory/jsp/directoryPopup.css"/>"/>    
-    <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-1.3.2.min.js" />" ></script>
     <script type="text/javascript" src="<c:url value="/directory/jsp/directory.js" />" ></script>
     <script type="text/javascript">
       var properties =new Array();
       <c:forEach items="${properties}" var="property" varStatus="status">
         properties.push("<c:out value='${properties[status.index]}' escapeXml='false' />");
       </c:forEach>
-
-
 
       <%--*****************   profil body *******************************************--%>
       
@@ -65,32 +61,17 @@
 
         function getLastStatus(url)
         {
-
           $.getJSON(url, function(data) {
             $('.StatusDiv').empty();
-            var html='';
-            html+='<textarea  id="enabledStat" ';
-            html+='type="text" cols="50" rows="3" >'+data.status+'<\/textarea>';
-            $('.StatusDiv').append(html);
-            desableStatusZone();
+            $('.StatusDiv').append(data.status);
           });
         }
-        
-        function desableStatusZone()
-        {
-          document.getElementById("enabledStat").style.backgroundColor="#F2F2F2";
-          document.getElementById("enabledStat").disabled=true;
-
-        }
-
     </script>
   </head>
-  <body>
+  <body id="privateProfile">
     <view:window>
       <div id="navigation">
-
         <%@include file="profilNavigation.jsp" %>
-
       </div>
       <div id="contentAndHeader">
         <div id="header">
@@ -99,9 +80,7 @@
           </view:board>
         </div>
         <div id="content">
-          <view:board>
             <%@include file="infosBody.jsp" %>
-          </view:board>
         </div>
       </div>
 <div id="boxesDirectory">

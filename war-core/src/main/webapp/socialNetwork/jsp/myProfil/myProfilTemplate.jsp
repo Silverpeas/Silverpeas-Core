@@ -29,16 +29,12 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@ include file="check.jsp" %>
 
-<html xmlns="http://ww<w.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title><fmt:message key="invitation.action.title" /></title>
     <view:looknfeel />
     <link rel="stylesheet" type="text/css" href="<c:url value="/socialNetwork/jsp/css/socialNetwork.css"/>"/>
-    <link rel="stylesheet" type="text/css"
-          href="<c:url value="/socialNetwork/jsp/myProfil/myProfil.css"/>" />
     <link rel="stylesheet" type="text/css" href="<c:url value="/directory/jsp/directoryPopup.css"/>"/>
-    <script type="text/javascript"
-    src="<c:url value="/util/javaScript/jquery/jquery-1.3.2.min.js" />"></script>
     <script type="text/javascript" src="<c:url value="/directory/jsp/directory.js" />" ></script>
     <script type="text/javascript">
 	
@@ -170,69 +166,30 @@
           }
 	
         }
-	       
-	       
-        function zoom(test)
-        {
-          alert(test);
-          var event =  window.event;
-          var Id='PHOTO'+event.target.id ;
-	        
-	
-          $("table#"+Id).css({'z-index' : '40'}); /*Add a higher z-index value so this image stays on top*/
-          $("table#"+Id).find('img').animate({
-            marginTop: '0px', /* The next 4 lines will vertically align this image */
-            marginLeft: '0px',
-            top: '50%',
-            left: '50%',
-            width: '174px', /* Set new width */
-            height: '174px' /* Set new height */
-	
-          }, 200)
-        }
-        function backToDefault(test)
-        {
-          var event =  window.event;
-          var Id='PHOTO'+event.target.id ;
-	
-          $("div#"+Id).css({'z-index' : '0'}); /* Set z-index back to 0 */
-          $("div#"+Id).find('img').animate({
-            marginTop: '0', /* Set alignment back to default */
-            marginLeft: '0',
-            top: '0',
-            left: '0',
-            width: '32px', /* Set width back to default */
-            height: '32px' /* Set height back to default */
-	
-          }, 400);
-        }
-	
 	
       <%--*****************   profil Head *******************************************--%>
-        function updateStatus(url)
+        function updateStatus()
         {
-	
-          var status = $('textarea').val();
-          url+='&status='+status;
+          var status = $('#enabledStat').val();
+          var url = '${urlUpdateStatus}';
+          url+='&status='+escape(status);
           $.getJSON(url, function(data) {
             $('.StatusDiv').empty();
-            var html='';
-            html+='<textarea onblur="javascript:updateStatus(\'${urlUpdateStatus}\')" id="enabledStat"';
-            html+='type="text"  rows="3" >'+data.status+'<\/textarea>';
-	
+            var html='<input onblur="javascript:updateStatus()" onfocus="javascript:enableStatusZone()" id="enabledStat"';
+            html+='type="text" value="'+data.status+'"/>';
             $('.StatusDiv').append(html);
             desableStatusZone();
           });
         }
 	
-        function getLastStatus(url)
-        {
-	           
+        function getLastStatus()
+        {  
+          var url = '${urlGetLastStatus}';
           $.getJSON(url, function(data) {
             $('.StatusDiv').empty();
             var html='';
-            html+='<textarea onblur="javascript:updateStatus(\'${urlUpdateStatus}\')" id="enabledStat" ';
-            html+='type="text"  rows="3" >'+data.status+'<\/textarea>';
+            html+='<input onblur="javascript:updateStatus()" onfocus="javascript:enableStatusZone()" id="enabledStat" ';
+            html+='type="text" value="'+data.status+'"/>';
             $('.StatusDiv').append(html);
             desableStatusZone();
           });
@@ -241,19 +198,17 @@
         {
           document.getElementById("enabledStat").style.backgroundColor="#FFFFFF";
           document.getElementById("enabledStat").value='';
-          document.getElementById("enabledStat").disabled=false;
+          //document.getElementById("enabledStat").disabled=false;
           document.getElementById("enabledStat").focus();
         }
         function desableStatusZone()
         {
           document.getElementById("enabledStat").style.backgroundColor="#F2F2F2";
-          document.getElementById("enabledStat").disabled=true;
-	        
+          //document.getElementById("enabledStat").disabled=true;   
         }
 	
         function openPopupChangePhoto()
         {
-	
           //Get the A tag
           var id ='#dialog'
 	
@@ -278,7 +233,6 @@
 	
           //transition effect
           $(id).fadeIn(2000);
-	
         }
         $(document).ready(function() {
           //if close button is clicked
@@ -297,12 +251,9 @@
           });
 	
         });
-	
-	
-	
     </script>
   </head>
-  <body>
+  <body id="myProfile">
     <fmt:message key="profil.actions.changePhoto" var="changePhoto"/>
     <fmt:message key="profil.actions.changeStatus" var="changeStatus"/>
     <fmt:message key="profil.actions.changeInfos" var="changeInfos"/>
@@ -314,22 +265,17 @@
 
     </view:operationPane>
     <view:window>
-
       <div id="navigation">
         <%@include file="myProfilNavigation.jsp"%>
       </div>
-
       <div id="headAndCore">
-
         <div id="profilHead">
           <view:board>
             <%@include file="myProfilHead.jsp"%>
           </view:board>
         </div>
         <div id="profilCore">
-          <view:board>
             <%@include file="myProfilBody.jsp"%>
-          </view:board>
         </div>
       </div>
     </view:window>

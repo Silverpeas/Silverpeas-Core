@@ -28,14 +28,11 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@ include file="check.jsp" %>
 
-<html xmlns="http://ww<w.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title><fmt:message key="invitation.action.title" /> </title>
     <view:looknfeel />
-    <link rel="stylesheet" type="text/css" href="<c:url value="/directory/jsp/directoryPopup.css"/>"/>    
-    <link rel="stylesheet" type="text/css" href="<c:url value="/socialNetwork/jsp/myProfil/myProfil.css"/>"/>
-    
-    <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-1.3.2.min.js" />"></script>
+    <link rel="stylesheet" type="text/css" href="<c:url value="/directory/jsp/directoryPopup.css"/>"/>
     <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js"/>"></script>
     <script type="text/javascript" src="<c:url value="/directory/jsp/directory.js" />" ></script>
     <script type="text/javascript">
@@ -47,9 +44,7 @@
            
 
       <%--*****************   profil body *******************************************--%>
-        function enableFields()
-
-        {
+        function enableFields() {
                 
           for( i=0; i<properties.length;i++)
           {
@@ -83,12 +78,12 @@
         function updateStatus(url)
         {
           var status = $('textarea').val();
-          url+='&amp;amp;status='+status;
+          url+='&amp;status='+status;
           $.getJSON(url, function(data) {
             $('.StatusDiv').empty();
             var html='';
             html+='<textarea onblur="javascript:updateStatus(\'${urlUpdateStatus}\')" id="enabledStat"';
-            html+='type="text"  rows="3" >'+data.status+'<\/textarea>';
+            html+='type="text" rows="3" >'+data.status+'<\/textarea>';
 
             $('.StatusDiv').append(html);
             desableStatusZone();
@@ -97,7 +92,6 @@
 
         function getLastStatus(url)
         {
-         
           $.getJSON(url, function(data) {
             $('.StatusDiv').empty();
             var html='';
@@ -172,7 +166,7 @@
         
     </script>
   </head>
-  <body>
+  <body id="myProfile">
    <fmt:message key="profil.actions.changePhoto" var="changePhoto"/>
     <fmt:message key="profil.actions.changeStatus" var="changeStatus"/>
     <fmt:message key="profil.actions.changeInfos" var="changeInfos"/>

@@ -25,14 +25,14 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<view:tabs >
+<view:tabs>
   <view:tab label="${wall}" action="ALL?userId=${id}" selected="false" />
   <view:tab label="${infos}" action="MyInfos?userId=${id}" selected="true" />
   <view:tab label="${events}" action="MyEvents?userId=${id}" selected="false" />
   <view:tab label="${publications}" action="MyPubs?userId=${id}" selected="false" />
   <view:tab label="${photos}" action="MyPhotos?userId=${id}" selected="false" />
 </view:tabs> 
-<view:frame title="Informations professionnelles &amp; Coordonnées ">
+<view:frame title="Informations professionnelles &amp; CoordonnÃ©es ">
   <view:board>
     <table id="userFullInfo" border="0" cellspacing="0" cellpadding="5" width="100%">
       <tr>
@@ -53,8 +53,8 @@
           <td class="txtlibform" valign="baseline" width="30%">
             ${propertiesKey[status.index]}
           </td>
-          <td >
-            <input type="text" id="${properties[status.index]}" name="prop_${properties[status.index]}" size="50" maxlength="99" value="${propertiesValue[status.index]}" />
+          <td>
+            ${propertiesValue[status.index]}
           </td>
         </tr>
       </c:forEach>

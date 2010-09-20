@@ -2295,8 +2295,8 @@ caption {
   color: blue;
 }
 
-#directory .link {
-  color: blue;
+#directory .action {
+	float: right;
 }
 
 #directory .NameLink {
@@ -2342,10 +2342,16 @@ caption {
 
 #directory .avatar {
   width: 60px;
-  height: 70px;
   border: 0px;
   margin: 5px;
+  border: 1px solid #AAAAAA;
+}
 
+#directory .defaultAvatar {
+  width: 60px;
+  height: 80px;
+  border: 0px;
+  margin: 5px;
 }
 
 #directory #users #infoAndPhoto #profilPhoto {
@@ -2385,12 +2391,10 @@ caption {
 }
 
 #directory #users a{
-  color:blue;
   font-size:10px;
   font-weight:normal;
 }
 #directory #info ul li .userName{
-  color:blue;
   font-size:14px;
   font-weight:bold;
 }
@@ -2401,11 +2405,12 @@ caption {
   width: 20%;
   margin: 2px;
   padding: 2px;
+  display: none;
 }
     
 #invitation #content {
   float: left;
-  width: 75%;
+  width: 100%;
   margin: 2px;
   padding: 2px;
 }
@@ -2427,6 +2432,7 @@ caption {
 #invitation #navigation .box img {
 	width: 70px;
    	height: 80px;
+	border: 1px solid #AAAAAA;
 }
 
 #invitation #navigation ul {
@@ -2450,7 +2456,7 @@ caption {
 }
 
 #invitation #listBody #photo{
-    float :left;
+    float: left;
     margin-right:4px;
 }
 
@@ -2474,6 +2480,11 @@ caption {
 #invitation #listBody #button #message{
     /*width: 40%;*/
     text-align: right;
+}
+
+#invitation .avatar {
+	width: 60px;
+	border: 1px solid #AAAAAA;
 }
 /*- [ invitations END ] --------------------------- */
 
@@ -2511,6 +2522,11 @@ caption {
 	margin-bottom: 15px;
 	border:1px solid #CCCCCC;
 }
+
+#newsFeed #relationshipActionNewsFeed {
+	display: none;
+}
+
 #newsFeed #content {
 	float: left;
 	width: 75%;
@@ -2522,12 +2538,11 @@ caption {
 	padding: 0;
 }
 #newsFeed .ItemOn{
-	background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuOngletOff.gif);
+	background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/topOff.jpg);
 	background-repeat:repeat-x;
 	color:#FFFFFF;
 	font-size:11px;
 	font-weight:bold;
-	height:20px;
 	text-align:left;
 }
 #newsFeed * li{
@@ -2549,6 +2564,487 @@ caption {
 }
 /*- [ newsFeed END ] ---------------------------- */
 
+.SocialInformations .socialIcon img {
+	width: 15px;
+	margin-left: 3px;
+	margin-right: 3px;
+}
+.SocialInformations .socialTitle a {
+	color: #5889BB;
+	font-size: 11px;
+	font-weight: bold;
+}
+
+.SocialInformations .socialTitle {
+	float:left;
+	font-weight:bold;
+	margin:5px;
+	margin-top:0px;
+	width:100%;
+	color:#333333;
+}
+
+.SocialInformations .socialDescription {
+	float: left;
+	margin-left:12px;
+	margin-top: -4px;
+	width:90%;
+	text-align: justify;
+}
+
+#getNext {
+	float: left;
+	width: 100%;
+	margin: 2px;
+	padding: 2px;
+}
+
+.SocialInformations .profilPhoto {
+	float: left;
+	width:  45px;
+}
+
+.SocialInformations .profilPhoto img {
+	width: 40px;
+	border: 1px solid #AAAAAA;
+}
+
+.SocialInformations .titleAndDes{
+	float: left;
+	width: 90%;
+	white-space: normal;
+}
+
+.SocialInformations .socialTable {
+	clear: left;
+	float: left;
+	width: 98%;
+	margin: 2px;
+}
+
+.SocialInformations .socialActivity {
+	font-size: 11px;
+	font-weight: bold;
+}
+
+.SocialInformations .socialHour {
+	font-size: 10px;
+	color: #999999;
+}
+
+.SocialInformations .socialDate {
+	font-size: 17px;
+	font-weight: normal;
+	color: #666666;
+	clear: right;
+	margin-bottom: 5px;
+	font-family: "Trebuchet MS",Verdana,sans-serif;
+}
+
+/* message display page */
+#privateProfile .message_list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+#privateProfile .message_list li {
+  padding: 0px;
+  margin: 3px;
+}
+/*****************************************Navigation*******************************/
+#privateProfile #navigation {
+  float: left;
+  width: 20%;
+  background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
+  background-position:right top;
+  background-repeat:no-repeat;
+  margin-left:auto;
+  margin-right:auto;
+  margin-bottom: 15px;
+  border:1px solid #CCCCCC;
+
+}
+#privateProfile #navigation .box
+{
+  background-color:#FFFFFF;
+  background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
+  background-position:right top;
+  background-repeat:no-repeat;
+  margin-left:auto;
+  margin-right:auto;
+  margin-bottom: 15px;
+  width: 100%;
+  float: left;
+}
+#privateProfile #navigation .boxTitle
+{
+  float: left;
+  width: 98%;
+  background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuOngletOff.gif);
+  background-repeat:repeat-x;
+  font-size:11px;
+  font-weight:bold;
+  height:20px;
+  text-align:center;
+}
+#privateProfile #navigation .boxAction
+{
+  z-index: 100;
+  float: left;
+  width: 98%;
+  margin: 2px;
+
+}
+#privateProfile #navigation .boxAction .boxActionLeft
+{
+  float: left;
+  width: 48%;
+}
+#privateProfile #navigation .boxAction .boxActionRight
+{ text-align: right;
+  float: left;
+  width: 48%;
+}
+#privateProfile #navigation .boxContent
+{
+  float: left;
+  width: 98%;
+  margin: 2px;
+  /*border:1px solid #CCCCCC;*/
+}
+#privateProfile #navigation .boxContent .boxContact
+{
+  float: left;
+  width: 45%;
+  margin: 2px;
+}
+#privateProfile #navigation .boxContent .boxContact img {
+  width: 70px;
+}
+/*****************************************Header and content*******************************/
+#privateProfile #contentAndHeader  {
+  float: left;
+  width: 75%;
+  margin: 0px;
+  padding: 0px;
+}
+/*****************************************Header*******************************/
+#privateProfile #contentAndHeader #header  {
+  float: left;
+  width: 100%;
+  margin: 2px;
+  padding: 2px;
+}
+#privateProfile #header #photoAndInfo {
+  float:left;
+  margin:0;
+  padding:0;
+  width:45%;
+}
+#privateProfile #header #photoAndInfo #photo{
+  float: left;
+  margin: 2px;
+  padding: 2px;
+}
+#privateProfile #header #photoAndInfo #info {
+  float: left;
+  margin: 2px;
+  padding: 2px;
+  width: 40%;
+}
+
+#privateProfile #header #status {
+  float: left;
+  position: absolute;
+  vertical-align: bottom;
+  top: 133px;
+  left: 336px;
+}
+
+#privateProfile #header #photoAndInfo #info .userName {
+  font-size: 17px;
+}
+
+#privateProfile #header #photoAndInfo #info .connection {
+  float: left;
+  padding-top: 10px;
+}
+/*****************************************content*******************************/
+#privateProfile #content  {
+  float: left;
+  width: 100%;
+  margin: 2px;
+  padding: 2px;
+}
+
+#privateProfile #content #userFullInfo
+{
+  border: 0px;
+  width: 100%;
+}
+#privateProfile #content #SocialInformations
+{
+  float: left;
+  width: 100%;
+  margin: 2px;
+  padding: 2px;
+}
+#privateProfile #content #SocialInformations img
+{
+  width: 15px;
+  height: 15px;
+}
+#privateProfile #content #socialIconsZone
+{
+  float: left;
+  width: 100%;
+  margin: 2px;
+  padding: 2px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+/**MyInfotemplate*/
+#myProfile #mask {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 9000;
+  background-color: #000;
+  display: none;
+}
+
+#myProfile #boxes .window {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 440px;
+  height: 200px;
+  display: none;
+  z-index: 9999;
+  padding: 20px;
+}
+
+#myProfile #boxes #dialog {
+  background-color: #FFFFFF;
+  height: 150px;
+  padding: 10px;
+  width: 500px;
+}
+
+#myProfile #headAndCore {
+  float: left;
+  width: 75%;
+  margin: 0px;
+  padding: 0px;
+}
+
+#myProfile #headAndCore #profilHead {
+  float: left;
+  width: 100%;
+  margin: 2px;
+  padding: 2px;
+}
+
+#myProfile #headAndCore #profilCore {
+  float: left;
+  width: 100%;
+  margin: 2px;
+  padding: 2px;
+}
+
+/********************MyInfosBody*****************************************************/
+#myProfile #headAndCore #profilCore #informations {
+  width: 100%;
+}
+
+#myProfile #headAndCore #profilCore #informations .form {
+  width: 100%;
+  height: 25px;
+}
+
+#myProfile #headAndCore #profilCore #informations .form .attribut {
+  float: left;
+  width: 25%;
+  font-weight: bold;
+}
+
+#myProfile #headAndCore #profilCore #myInfoAction {
+  text-align: center;
+  padding-left: 40%;
+}
+
+#myProfile #headAndCore #profilCore #myInfoAction .button {
+  float: left;
+  margin: 4px;
+}
+
+/************************************* ProfilHead***********************************/
+#myProfile #headAndCore #profilHead #photoAndInfo {
+  float: left;
+  width: 100%;
+}
+
+#myProfile #headAndCore #profilHead #photoAndInfo #profilHeadPhote {
+  float: left;
+  margin: 2px;
+  padding: 2px;
+}
+
+#myProfile #headAndCore #profilHead #photoAndInfo #profilHeadPhote img {
+  width: 90px;
+  border: 1px solid #AAAAAA;
+}
+
+#myProfile #headAndCore #profilHead #photoAndInfo #profilHeadinfo {
+  height: 100;
+  width: 40%;
+  float: left;
+  vertical-align: middle;
+}
+
+#myProfile #headAndCore #profilHead #photoAndInfo #profilHeadinfo .username {
+  font-size: 17px;
+}
+
+#myProfile #headAndCore #profilHead #photoAndInfo #profilHeadinfo .connection {
+  float: left;
+  margin-top: 10px;
+}
+
+#myProfile #headAndCore #profilHead #photoAndInfo #profilHeadAction {
+  float: left;
+  position: absolute;
+  vertical-align: bottom;
+  top: 133px;
+  left: 330px;
+}
+
+#myProfile #headAndCore #profilHead #photoAndInfo #profilHeadAction #status {
+  float: left;
+  width: auto;
+}
+
+#myProfile #boxes #dialog .barre {
+  float: right;
+  height: 25px;
+}
+
+#myProfile #boxes #dialog .formButton {
+  font-size: 0;
+  font-weight: bold;
+  padding-left: 170px;
+  text-align: left;
+}
+
+#myProfile #enabledStat {
+  width: 300px;
+  height: 20px;
+}
+
+/*****************************************MyProfilNavigation*******************************/
+#myProfile #navigation {
+  float: left;
+  width: 20%;
+  background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
+  background-position:right top;
+  background-repeat:no-repeat;
+  margin-left:auto;
+  margin-right:auto;
+  margin-bottom: 15px;
+  border:1px solid #CCCCCC;
+}
+
+#myProfile #navigation .box
+{
+  background-color:#FFFFFF;
+  background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
+  background-position:right top;
+  background-repeat:no-repeat;
+  margin-left:auto;
+  margin-right:auto;
+  margin-bottom: 15px;
+  width: 100%;
+  float: left;
+}
+#myProfile #navigation .boxTitle
+{
+  float: left;
+  width: 98%;
+  background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuOngletOff.gif);
+  background-repeat:repeat-x;
+  font-size:11px;
+  font-weight:bold;
+  height:20px;
+  text-align:center;
+}
+
+#myProfile #navigation .boxAction
+{
+  z-index: 100;
+  float: left;
+  width: 98%;
+  margin: 2px;
+}
+
+#myProfile #navigation .boxAction .boxActionLeft
+{
+  float: left;
+  width: 48%;
+}
+
+#myProfile #navigation .boxAction .boxActionRight
+{ text-align: right;
+  float: left;
+  width: 48%;
+}
+#myProfile #navigation .boxContent
+{
+  float: left;
+  width: 98%;
+  margin: 2px;
+  /*border:1px solid #CCCCCC;*/
+}
+#myProfile #navigation .boxContent .boxContact
+{
+  float: left;
+  width: 45%;
+  margin: 2px;
+}
+#myProfile #navigation .boxContent .boxContact img
+{
+  width: 70px;
+  height: 93px;
+  border: 1px solid #AAAAAA;
+}
+
+/******************************************MyProfilBody*******************/
+/* message display page */
+#myProfile .message_list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+#myProfile .message_list li {
+  padding: 0px;
+  margin: 3px;
+}
+
+/***********Style de table générer par getJSON ""SocialInformation"*******************/
+#myProfile #headAndCore #profilCore #socialIconsZone {
+  float: left;
+  width: 100%;
+  padding-left: 20%;
+}
+
+#myProfile #headAndCore #profilCore #socialIconsZone .icon {
+  float: left;
+  margin: 10px;
+}
 
 /*- [ attachments BEGIN ] ------------------------- */
 a.yuimenuitemlabel-disabled:hover {

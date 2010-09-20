@@ -44,6 +44,7 @@ public class Member {
   private boolean connected = false;
   private String duration;
   private String profilPhoto;
+  private boolean avatar = false;
 
   public void setUserDetail(UserDetail userDetail) {
 
@@ -57,6 +58,7 @@ public class Member {
         + File.separatorChar + avatar);
     if (image.exists()) {
       profilPhoto = "/display/avatar/" + avatar;
+      this.avatar = true;
     } else {
       profilPhoto = "/directory/jsp/icons/Photo_profil.jpg";
 
@@ -170,5 +172,9 @@ public class Member {
     }
     return false;
     
+  }
+  
+  public boolean haveAvatar() {
+    return avatar;
   }
 }

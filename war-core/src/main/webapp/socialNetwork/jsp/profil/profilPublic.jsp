@@ -24,15 +24,16 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
+<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserFull"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@page import="com.silverpeas.directory.control.DirectorySessionController"%>
 <%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager" %>
+<%@page import="com.silverpeas.directory.model.Member"%>
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <%--<c:set var="level" value="byGroup" />
  <c:url value="/Rdirectory/Main" var="GroupUrl" >
@@ -41,23 +42,20 @@
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
-
-<%          // r�cup�rer les paramettre de config
-    ResourceLocator settings = (ResourceLocator) request.getAttribute("Settings");
-    // r�cup�rer les paramettre de Multilang
-
+<%  
+	ResourceLocator settings = (ResourceLocator) request.getAttribute("Settings");
+    
     String language = request.getLocale().getLanguage();
     ResourceLocator multilang = new ResourceLocator(
         "com.silverpeas.socialNetwork.multilang.socialNetworkBundle", language);
     ResourceLocator multilangG = new ResourceLocator(
         "com.stratelia.webactiv.multilang.generalMultilang", language);
-    // r�cup�rer le user avec le maximun de d�tail
     UserFull userFull = (UserFull) request.getAttribute("userFull");
+    Member member = (Member) request.getAttribute("Member");
 
     String gml = "GML.";
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
         "ApplicationURL");
-
 %>
 
 <html>
@@ -66,34 +64,28 @@
     <script type="text/javascript" src="/silverpeas/util/javaScript/animation.js"></script>
     <script type="text/javascript" src="/silverpeas/util/javaScript/checkForm.js"></script>
     <script language="JavaScript">
-
-
-      function OpenPopup(usersId,name ){
-            usersId=usersId+'&Name='+name
-        SP_openWindow('<%=m_context + "/Rdirectory/jsp/NotificationView"%>?Recipient='+usersId , 'strWindowName', '500', '250', 'true');
-
+      function OpenPopup(usersId){
+        SP_openWindow('<%=m_context%>/Rdirectory/jsp/NotificationView?Recipient='+usersId , 'strWindowName', '500', '250', 'true');
       }
       function OpenPopupInvitaion(usersId,name){
-        usersId=usersId+'&Name='+name
-            options="directories=no, menubar=no,toolbar=no,scrollbars=yes, resizable=no        , alwaysRaised"
-        SP_openWindow('<%=m_context + "/Rinvitation/jsp/invite"%>?Recipient='+usersId, 'strWindowName', '350', '200',options);
+        options="directories=no, menubar=no,toolbar=no,scrollbars=yes, resizable=no, alwaysRaised";
+        SP_openWindow('<%=m_context%>/Rinvitation/jsp/invite?Recipient='+usersId, 'strWindowName', '350', '200',options);
       }
-
-
-
-
     </script>
   </head>
-  <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+  <body id="publicProfile">
     <view:browseBar extraInformations="Profil public"></view:browseBar>
     <view:window>
-      <view:board  >
-        <view:frame >
-          <view:board >
+        <view:frame>
+          <view:board>
             <table border="0" cellspacing="0" cellpadding="0" width="100%">
               <tr>
                 <td width="50">
-                  <img src="<%=m_context + "/directory/jsp/icons/Photo_profil.jpg"%>" width="50" height="60" border="0" alt="viewUser" />
+                	<% if (!member.haveAvatar()) { %>
+                    	<img src="<%=m_context + member.getProfilPhoto()%>" alt="viewUser" class="defaultAvatar"/>
+                    <% } else { %>
+                    	<img src="<%=m_context + member.getProfilPhoto()%>" alt="viewUser" class="avatar"/>
+                    <% } %>
                 </td>
                 <td>
                   <table border="0" cellspacing="0" cellpadding="5" width="100%">
@@ -120,8 +112,7 @@
                     %>
                     <%
                         // afficher leur  "eMail" si n'est pas null et n'est pas interdit de l'afficher
-                        if (StringUtil.isDefined(userFull.geteMail()) && settings.
-                            getBoolean("eMail", true)) {
+                        if (StringUtil.isDefined(userFull.geteMail()) && settings.getBoolean("eMail", true)) {
                     %>
                     <tr>
                       <td class="txtlibform" valign="baseline" >
@@ -147,49 +138,16 @@
                   </table>
                 </td>
                 <td align="right">
-                  <a href="#" class="link" onclick="OpenPopupInvitaion(<%=userFull.getId()%>,'<%=userFull.getDisplayedName() %>');">
+                  <a href="#" class="link" onclick="OpenPopupInvitaion(<%=userFull.getId()%>);">
                     Envoyer une invitation</a><br />
                   <br />
-                  <a href="#" style="color: blue" onclick="OpenPopup(<%=userFull.getId()%>,'<%=userFull.getDisplayedName() %>')">Envoyer un message</a>
+                  <a href="#" style="color: blue" onclick="OpenPopup(<%=userFull.getId()%>)">Envoyer un message</a>
                 </td>
               </tr>
             </table>
           </view:board>
-          <view:frame title="Informations personnelles">
-            <view:board >
-              <table border="0" cellspacing="0" cellpadding="5" width="100%">
-
-                <%      // afficher le  "Nom" si n'est pas null et n'est pas interdit de l'afficher
-                    if (StringUtil.isDefined(userFull.getLastName()) && settings.
-                        getBoolean("lastName", true)) {
-                %>
-                <tr>
-                  <td class="txtlibform" valign="baseline" width="30%"><%=multilangG.getString(gml + "lastName")%></td>
-                  <td >
-                    <%=userFull.getLastName()%>
-                  </td>
-                </tr>
-                <%
-                    }
-                    // afficher le  "Prenom" si  n'est pas null et n'est pas interdit de l'afficher
-                    if (StringUtil.isDefined(userFull.getFirstName()) && settings.
-                        getBoolean("firstName", true)) {
-                %>
-                <tr>
-                  <td class="txtlibform" valign="baseline" width="30%"><%=multilangG.getString(gml + "firstName")%></td>
-                  <td >
-                    <%=userFull.getFirstName()%>
-                  </td>
-                </tr>
-                <%                                       }
-
-                %>
-              </table>
-            </view:board>
-          </view:frame>
-          <view:frame title="Informations professionnelles & Coordonn�es ">
+          <view:frame title="Informations professionnelles & Coordonnées">
             <view:board>
-
               <table border="0" cellspacing="0" cellpadding="5" width="100%">
                 <%
                     // afficher leur  "Droit" si n'est pas null et n'est pas interdit de l'afficher
@@ -197,7 +155,7 @@
                         getBoolean("position", true)) {
                 %>
                 <tr>
-                  <td class="txtlibform" valign="baseline" width="30%"><%=multilangG.getString(gml + "position")%></td>
+                  <td class="txtlibform" valign="baseline" width="30%"><%=multilangG.getString("GML.position")%></td>
                   <td valign="baseline">
                     <%=multilangG.getString(multilang.getString(userFull.getAccessLevel()))%>
                   </td>
@@ -241,7 +199,7 @@
                         getBoolean("eMail", true)) {
                 %>
                 <tr>
-                  <td class="txtlibform" valign="baseline" width="30%"><%=multilangG.getString(gml + "eMail")%></td>
+                  <td class="txtlibform" valign="baseline" width="30%"><%=multilangG.getString("GML.eMail")%></td>
                   <td >
                     <%=userFull.geteMail()%>
                   </td>
@@ -253,8 +211,6 @@
             </view:board>
           </view:frame>
         </view:frame>
-      </view:board>
     </view:window>
-
   </body>
 </html>

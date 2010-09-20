@@ -132,9 +132,9 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
       destination = "/Rprofil/jsp/Main?userId=" + request.getParameter("UserId");
 
     } else if (function.equalsIgnoreCase("NotificationView")) {
-
-      destination = "/directory/jsp/notificationUser.jsp?Recipient=" + request.getParameter(
-          "Recipient") + "&Name=" + request.getParameter("Name");
+      String userId = request.getParameter("Recipient");
+      request.setAttribute("User", new Member(directorySC.getUserDetail(userId)));
+      destination = "/directory/jsp/notificationUser.jsp";
 
     } else if (function.equalsIgnoreCase("CancelSendMessage")) {
 

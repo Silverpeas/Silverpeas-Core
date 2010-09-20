@@ -31,8 +31,6 @@
   <head>
     <title><fmt:message key="invitation.action.title" /> </title>
     <view:looknfeel />
-    <link rel="stylesheet" type="text/css" href="<c:url value="/socialNetwork/jsp/css/socialNetwork.css"/>"/>
-    <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery-1.3.2.min.js" />" ></script>
     <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />" ></script>
     <script type="text/javascript">
       
@@ -96,7 +94,7 @@
                       html+='<div class="socialTitle">';
                      
                       html+='<span class="socialActivity">';
-                      html+=' <a href="#"><span>'+socialInfo.title+'<\/span><\/a>'+'${statusSuffix} ';
+                      html+=' <a href="#"><span>'+socialInfo.title+'<\/span><\/a> ${statusSuffix} ';
                       html+='<\/span>';
                       html+='<span class="socialIcon">';
                       html+='<img  src="'+socialInfo.icon+'" width="16" height="16" />';
@@ -291,14 +289,10 @@
   <body id="newsFeed">
     <view:window>
       <div id="navigation">
-        <view:board>
           <%@include file="newsFeedNavigation.jsp" %>
-        </view:board>
       </div>
       <div id="content">
-        <view:board>
           <%@include file="newsFeedBody.jsp" %>
-        </view:board>
       </div>
     </view:window>
 

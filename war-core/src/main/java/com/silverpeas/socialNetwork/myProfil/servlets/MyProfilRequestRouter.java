@@ -84,14 +84,14 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
 
      myProfilSC = (MyProfilSessionController) componentSC;
     SNFullUser snUserFull = new SNFullUser(myProfilSC.getUserId());
-    if (function.equalsIgnoreCase("MyEvents") || function.equalsIgnoreCase("Main")) {
+    if (function.equalsIgnoreCase("MyEvents")) {
       try {
         request.setAttribute("type", SocialInformationType.EVENT);
       } catch (Exception ex) {
         Logger.getLogger(MyProfilRequestRouter.class.getName()).log(Level.SEVERE, null, ex);
       }
       destination = "/socialNetwork/jsp/myProfil/myProfilTemplate.jsp";
-    } else if (function.equalsIgnoreCase("ALL")) {
+    } else if (function.equalsIgnoreCase("ALL") || function.equalsIgnoreCase("Main")) {
       request.setAttribute("type", SocialInformationType.ALL);
       destination = "/socialNetwork/jsp/myProfil/myProfilTemplate.jsp";
     } else if (function.equalsIgnoreCase("MyPhotos")) {
