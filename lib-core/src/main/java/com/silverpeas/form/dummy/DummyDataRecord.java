@@ -42,6 +42,7 @@ public class DummyDataRecord implements DataRecord {
   /**
    * Returns the data record id.
    */
+  @Override
   public String getId() {
     return "id";
   }
@@ -49,12 +50,14 @@ public class DummyDataRecord implements DataRecord {
   /**
    * Gives an id to the data record.
    */
+  @Override
   public void setId(String externalId) {
   }
 
   /**
    * Return true if this record has not been inserted in a RecordSet.
    */
+  @Override
   public boolean isNew() {
     return true;
   }
@@ -62,6 +65,7 @@ public class DummyDataRecord implements DataRecord {
   /**
    * Returns the named field.
    */
+  @Override
   public Field getField(String fieldName) {
     return field;
   }
@@ -69,18 +73,22 @@ public class DummyDataRecord implements DataRecord {
   /**
    * Returns the field at the index position in the record.
    */
+  @Override
   public Field getField(int fieldIndex) {
     return field;
   }
 
+  @Override
   public String[] getFieldNames() {
     return new String[0];
   }
 
+  @Override
   public String getLanguage() {
     return null;
   }
 
+  @Override
   public void setLanguage(String language) {
   }
 

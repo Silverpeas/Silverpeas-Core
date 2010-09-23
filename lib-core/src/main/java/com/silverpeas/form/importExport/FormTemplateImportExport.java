@@ -56,11 +56,11 @@ public class FormTemplateImportExport {
           + xmlModel.getName();
     }
 
-    PublicationTemplateManager.addDynamicPublicationTemplate(externalId,
-        xmlModel.getName());
+    PublicationTemplateManager publicationTemplateManager =
+            PublicationTemplateManager.getInstance();
+    publicationTemplateManager.addDynamicPublicationTemplate(externalId, xmlModel.getName());
 
-    PublicationTemplate pub = PublicationTemplateManager
-        .getPublicationTemplate(externalId);
+    PublicationTemplate pub = publicationTemplateManager.getPublicationTemplate(externalId);
 
     RecordSet set = pub.getRecordSet();
 

@@ -67,6 +67,7 @@ public class XmlForm extends AbstractForm {
    * <LI>a field has not the required type.
    * </UL>
    */
+  @Override
   public String toString(PagesContext pagesContext, DataRecord record) {
     SilverTrace.info("form", "XmlForm.toString", "root.MSG_GEN_ENTER_METHOD");
     StringWriter sw = new StringWriter();
@@ -273,6 +274,7 @@ public class XmlForm extends AbstractForm {
    * <LI>a field has not the required type.
    * </UL>
    */
+  @Override
   public void display(JspWriter jw, PagesContext pagesContext, DataRecord record) {
     SilverTrace.info("form", "XmlForm.display", "root.MSG_GEN_ENTER_METHOD");
     try {

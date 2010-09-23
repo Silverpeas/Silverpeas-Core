@@ -31,7 +31,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Iterator;
 
 import javax.servlet.jsp.JspWriter;
 
@@ -55,7 +54,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  */
 public class HtmlForm extends AbstractForm {
   private DataRecord record;
-  private PagesContext PagesContext;
+  private PagesContext pagesContext;
   private String m_FileName = null;
   private BufferedReader m_HtmlFile = null;
   private String currentLine = "";
@@ -63,14 +62,28 @@ public class HtmlForm extends AbstractForm {
   private static String TAG_BEGIN = "<%=";
   private static String TAG_END = "%>";
 
+  /**
+   * Creates a new HTML form from the specified template of records.
+   * @param template the record template from which the form is built.
+   * @throws FormException if an error occurs while setting up the form.
+   */
   public HtmlForm(RecordTemplate template) throws FormException {
     super(template);
   }
 
+  /**
+   * Sets the HTML file into which the form should be printed.
+   * @param fileName the HTML file.
+   */
   public void setFileName(String fileName) {
     m_FileName = fileName;
   }
 
+  /**
+   * Closes the HTML file.
+   * If the file is already closed, does nothing.
+   * @throws IOException if an error occurs while closing the file.
+   */
   private void closeHtmlFile() throws IOException {
     if (m_HtmlFile != null) {
       try {
@@ -84,21 +97,30 @@ public class HtmlForm extends AbstractForm {
     }
   }
 
+  /**
+   * Opens the underlying HTML file.
+   * If the file is already opened, it is then closed before opening it again.
+   * @throws FileNotFoundException if the file doesn't exist.
+   * @throws IOException if an error occurs while opening the file.
+   */
   private void openHtmlFile() throws FileNotFoundException, IOException {
     closeHtmlFile();
-
     m_HtmlFile = new BufferedReader(new FileReader(new File(m_FileName)));
 
   }
 
+  /**
+   * Parses the content of the HTML file in order to insert the form at the correct position.
+   * @param out the writer into which the content will be printed.
+   * @throws IOException if an error occurs while working with the HTML file.
+   * @throws FileNotFoundException if the underlying HTML file doesn't exist.
+   */
   private void parseFile(PrintWriter out) throws IOException,
       FileNotFoundException {
     openHtmlFile();
-
-    PagesContext pc = new PagesContext(PagesContext);
+    PagesContext pc = new PagesContext(pagesContext);
     boolean endOfFile = false;
     pc.incCurrentFieldIndex(1);
-
     do {
       endOfFile = printBeforeTag(out);
       if (!endOfFile)
@@ -108,8 +130,15 @@ public class HtmlForm extends AbstractForm {
     closeHtmlFile();
   }
 
+  /**
+   * Prints the content of the HTML file before the position at which the form has to be written.
+   * @param out the writer into which the content of the HTML file is printed with the form.
+   * @return true if the position at which the form should be printed is found. Actually the position
+   * is at the end of the underlying HTML file.
+   * @throws IOException if an error occurs while working with the HTML file or the writer.
+   */
   private boolean printBeforeTag(PrintWriter out) throws IOException {
-    if (currentLine == null || currentLine.length() == 0)
+    if (currentLine == null || currentLine.isEmpty())
       currentLine = m_HtmlFile.readLine();
 
     // Testing end of file
@@ -130,8 +159,14 @@ public class HtmlForm extends AbstractForm {
     }
   }
 
+  /**
+   * Prints the content of the form into the writer.
+   * @param out the writer.
+   * @param pc the page context
+   * @throws IOException if an error while printing the content of the form.
+   */
   private void processTag(PrintWriter out, PagesContext pc) throws IOException {
-    if (currentLine == null || currentLine.length() == 0)
+    if (currentLine == null || currentLine.isEmpty())
       currentLine = m_HtmlFile.readLine();
 
     // Testing end of file
@@ -172,66 +207,59 @@ public class HtmlForm extends AbstractForm {
         .length());
   }
 
+  /**
+   * Prints the field identified by its name.
+   * @param out the writer into which the field is printed.
+   * @param fieldName the name of the field.
+   * @param pc the page context.
+   * @throws IOException if an error occurs while printing the field.
+   */
   private void printField(PrintWriter out, String fieldName, PagesContext pc)
-      throws IOException {
+          throws IOException {
     try {
       Field field = record.getField(fieldName);
       if (field != null) {
-        boolean find = false;
-        Iterator<FieldTemplate> itFields = null;
-        if (getFieldTemplates() != null) {
-          itFields = getFieldTemplates().iterator();
-        }
-        if (itFields != null && itFields.hasNext()) {
-          FieldTemplate fieldTemplate;
+        for (FieldTemplate fieldTemplate : getFieldTemplates()) {
           String fieldType;
           String fieldDisplayerName;
+          fieldName = fieldName.substring(fieldName.indexOf(".") + 1,
+                  fieldName.length());
+          if (fieldTemplate != null
+                  && fieldTemplate.getFieldName().equalsIgnoreCase(fieldName)) {
+            fieldType = fieldTemplate.getTypeName();
+            fieldDisplayerName = fieldTemplate.getDisplayerName();
 
-          while (!find && itFields.hasNext()) {
-            fieldTemplate = itFields.next();
-            fieldName = fieldName.substring(fieldName.indexOf(".") + 1,
-                fieldName.length());
-            if (fieldTemplate != null
-                && fieldTemplate.getFieldName().equalsIgnoreCase(fieldName)) {
-              fieldType = fieldTemplate.getTypeName();
-              fieldDisplayerName = fieldTemplate.getDisplayerName();
+            FieldDisplayer fieldDisplayer = TypeManager.getDisplayer(
+                    fieldType, fieldDisplayerName);
 
-              FieldDisplayer fieldDisplayer = TypeManager.getDisplayer(
-                  fieldType, fieldDisplayerName);
-
-              if (fieldDisplayer != null) {
-                fieldDisplayer.display(out, field, fieldTemplate, pc);
-              }
-              find = true;
+            if (fieldDisplayer != null) {
+              fieldDisplayer.display(out, field, fieldTemplate, pc);
             }
+            break;
           }
         }
-        if (!find)
-          out.print(field.getValue(pc.getLanguage()));
+        out.print(field.getValue(pc.getLanguage()));
       }
     } catch (FormException fe) {
       SilverTrace.error("form", "HtmlForm.display", "form.EXP_UNKNOWN_FIELD",
-          fieldName);
+              fieldName);
     }
   }
 
+  /**
+   * Prints the label of the field identified by its name.
+   * @param out the writer into which the field should be written.
+   * @param fieldName the name of the field.
+   * @param pc the page context.
+   * @throws IOException if an error occurs while printing the field label.
+   */
   private void printFieldLabel(PrintWriter out, String fieldName,
       PagesContext pc) throws IOException {
-    boolean find = false;
-    Iterator<FieldTemplate> itFields = null;
-    if (getFieldTemplates() != null) {
-      itFields = getFieldTemplates().iterator();
-    }
-    if (itFields != null && itFields.hasNext()) {
-      FieldTemplate fieldTemplate;
-
-      while (!find && itFields.hasNext()) {
-        fieldTemplate = itFields.next();
-        if (fieldTemplate != null
-            && fieldTemplate.getFieldName().equalsIgnoreCase(fieldName)) {
-          out.print(fieldTemplate.getLabel(pc.getLanguage()));
-          find = true;
-        }
+    for (FieldTemplate fieldTemplate : getFieldTemplates()) {
+      if (fieldTemplate != null
+              && fieldTemplate.getFieldName().equalsIgnoreCase(fieldName)) {
+        out.print(fieldTemplate.getLabel(pc.getLanguage()));
+        break;
       }
     }
   }
@@ -245,9 +273,10 @@ public class HtmlForm extends AbstractForm {
    * <LI>a field has not the required type.
    * </UL>
    */
+  @Override
   public void display(JspWriter jw, PagesContext PagesContext, DataRecord record) {
     this.record = record;
-    this.PagesContext = PagesContext;
+    this.pagesContext = PagesContext;
     try {
       StringWriter sw = new StringWriter();
       PrintWriter out = new PrintWriter(sw, true);
@@ -276,9 +305,10 @@ public class HtmlForm extends AbstractForm {
    * <LI>a field has not the required type.
    * </UL>
    */
+  @Override
   public String toString(PagesContext PagesContext, DataRecord record) {
     this.record = record;
-    this.PagesContext = PagesContext;
+    this.pagesContext = PagesContext;
     StringWriter sw = new StringWriter();
     try {
       // StringWriter sw = new StringWriter();
@@ -287,9 +317,6 @@ public class HtmlForm extends AbstractForm {
       out.println("<input type=\"hidden\" name=\"id\" value=\"" + record.getId()
           + "\"/>");
       parseFile(out);
-
-      // out.flush();
-      // jw.write(sw.toString());
     } catch (FileNotFoundException fe) {
       SilverTrace.error("form", "HtmlForm.toString", "form.EX_CANT_OPEN_FILE",
           null, fe);
@@ -303,6 +330,7 @@ public class HtmlForm extends AbstractForm {
   /**
    * Get the form title No title for HTML form
    */
+  @Override
   public String getTitle() {
     return "";
   }

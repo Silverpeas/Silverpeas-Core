@@ -381,8 +381,8 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
         if (StringUtil.isDefined(infoId) && !isInteger(infoId)) {
           String xmlFormShortName = infoId;
 
-          PublicationTemplate pubTemplate = PublicationTemplateManager.getPublicationTemplate(detail.
-              getPK().getInstanceId() + ":"
+          PublicationTemplate pubTemplate = PublicationTemplateManager.getInstance()
+                  .getPublicationTemplate(detail.getPK().getInstanceId() + ":"
               + xmlFormShortName);
 
           RecordSet set = pubTemplate.getRecordSet();
@@ -1468,8 +1468,8 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
         + ", pubDetail.getInfoId() = " + pubDetail.getInfoId());
     if (!isInteger(pubDetail.getInfoId())) {
       try {
-        PublicationTemplate pub = PublicationTemplateManager.getPublicationTemplate(pubDetail.getPK().
-            getInstanceId() + ":"
+        PublicationTemplate pub = PublicationTemplateManager.getInstance()
+                .getPublicationTemplate(pubDetail.getPK().getInstanceId() + ":"
             + pubDetail.getInfoId());
 
         RecordSet set = pub.getRecordSet();

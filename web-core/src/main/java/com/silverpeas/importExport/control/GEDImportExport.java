@@ -377,6 +377,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
     // Is it the creation of the content or an update ?
     String infoId = pubDetail.getInfoId();
+    PublicationTemplateManager publicationTemplateManager =
+              PublicationTemplateManager.getInstance();
     if (infoId == null || "0".equals(infoId)) {
       String xmlFormShortName = xmlModel.getName();
 
@@ -385,13 +387,13 @@ public abstract class GEDImportExport extends ComponentImportExport {
       pubDetail.setInfoId(xmlFormShortName);
       pubDetail.setIndexOperation(IndexManager.NONE);
       getPublicationBm().setDetail(pubDetail);
-
-      PublicationTemplateManager.addDynamicPublicationTemplate(getCurrentComponentId() + ":"
+     
+      publicationTemplateManager.addDynamicPublicationTemplate(getCurrentComponentId() + ":"
           + xmlFormShortName, xmlFormShortName + ".xml");
     }
 
     PublicationTemplate pub =
-        PublicationTemplateManager.getPublicationTemplate(getCurrentComponentId()
+        publicationTemplateManager.getPublicationTemplate(getCurrentComponentId()
             + ":" + xmlModel.getName());
 
     RecordSet set = pub.getRecordSet();

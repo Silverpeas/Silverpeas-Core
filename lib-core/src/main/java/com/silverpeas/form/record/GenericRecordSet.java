@@ -60,6 +60,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
   /**
    * Returns the RecordTemplate shared by all the DataRecord of this RecordSet.
    */
+  @Override
   public RecordTemplate getRecordTemplate() {
     return recordTemplate;
   }
@@ -69,6 +70,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
    * RecordSet. This is only an empty record which must be filled and saved in order to become a
    * DataRecord of this RecordSet.
    */
+  @Override
   public DataRecord getEmptyRecord() throws FormException {
     return recordTemplate.getEmptyRecord();
   }
@@ -77,20 +79,21 @@ public class GenericRecordSet implements RecordSet, Serializable {
    * Returns the DataRecord with the given id.
    * @throw FormException when the id is unknown.
    */
+  @Override
   public DataRecord getRecord(String recordId) throws FormException {
-    return GenericRecordSetManager.getRecord(recordTemplate, recordId);
+    return getGenericRecordSetManager().getRecord(recordTemplate, recordId);
   }
 
   /**
    * Returns the DataRecord with the given id.
    * @throw FormException when the id is unknown.
    */
+  @Override
   public DataRecord getRecord(String recordId, String language)
       throws FormException {
     if (!I18NHelper.isI18N || I18NHelper.isDefaultLanguage(language))
       language = null;
-    return GenericRecordSetManager
-        .getRecord(recordTemplate, recordId, language);
+    return getGenericRecordSetManager().getRecord(recordTemplate, recordId, language);
   }
 
   /**
@@ -101,7 +104,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
    */
   private void insert(DataRecord record) throws FormException {
     recordTemplate.checkDataRecord(record);
-    GenericRecordSetManager.insertRecord(recordTemplate, record);
+    getGenericRecordSetManager().insertRecord(recordTemplate, record);
   }
 
   /**
@@ -112,7 +115,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
    */
   private void update(DataRecord record) throws FormException {
     recordTemplate.checkDataRecord(record);
-    GenericRecordSetManager.updateRecord(recordTemplate, record);
+    getGenericRecordSetManager().updateRecord(recordTemplate, record);
   }
 
   /**
@@ -124,6 +127,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
    * @throw FormException when the record has an unknown id.
    * @throw FormException when the insert or update fail.
    */
+  @Override
   public void save(DataRecord record) throws FormException {
     if (record.isNew())
       insert(record);
@@ -174,13 +178,14 @@ public class GenericRecordSet implements RecordSet, Serializable {
     }
   }
 
+  @Override
   public void indexRecord(String recordId, String formName, FullIndexEntry indexEntry)
       throws FormException {
     if (!I18NHelper.isI18N)
       indexRecord(recordId, formName, indexEntry, null);
     else {
       List<String> languages =
-          GenericRecordSetManager.getLanguagesOfRecord(recordTemplate, recordId);
+          getGenericRecordSetManager().getLanguagesOfRecord(recordTemplate, recordId);
       for (int l = 0; l < languages.size(); l++) {
         indexRecord(recordId, formName, indexEntry, languages.get(l));
       }
@@ -193,12 +198,14 @@ public class GenericRecordSet implements RecordSet, Serializable {
    * @throw FormException when the record has an unknown id.
    * @throw FormException when the delete fail.
    */
+  @Override
   public void delete(DataRecord record) throws FormException {
     if (record != null) {
-      GenericRecordSetManager.deleteRecord(recordTemplate, record);
+      getGenericRecordSetManager().deleteRecord(recordTemplate, record);
     }
   }
 
+  @Override
   public void clone(String originalExternalId, String originalComponentId, String cloneExternalId,
       String cloneComponentId) throws FormException {
     GenericDataRecord record = (GenericDataRecord) getRecord(originalExternalId);
@@ -212,11 +219,11 @@ public class GenericRecordSet implements RecordSet, Serializable {
       wysiwygDisplayer.cloneContents(originalComponentId, originalExternalId, cloneComponentId,
           cloneExternalId);
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      SilverTrace.error("form", "AbstractForm.clone", "form.EX_CLONE_FAILURE", null, e);
     }
   }
 
+  @Override
   public void merge(String fromExternalId, String fromComponentId, String toExternalId,
       String toComponentId) throws FormException {
     GenericDataRecord fromRecord = (GenericDataRecord) getRecord(fromExternalId);
@@ -231,9 +238,16 @@ public class GenericRecordSet implements RecordSet, Serializable {
     try {
       wysiwygDisplayer.mergeContents(fromComponentId, fromExternalId, toComponentId, toExternalId);
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      SilverTrace.error("form", "AbstractForm.clone", "form.EX_MERGE_FAILURE", null, e);
     }
+  }
+  
+  /**
+   * Gets an instance of a GenericRecordSet objects manager.
+   * @return a GenericRecordSetManager instance.
+   */
+  protected GenericRecordSetManager getGenericRecordSetManager() {
+    return GenericRecordSetManager.getInstance();
   }
 
 }

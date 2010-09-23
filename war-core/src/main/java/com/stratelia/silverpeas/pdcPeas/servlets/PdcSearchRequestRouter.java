@@ -1002,7 +1002,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
       }
       // get All Models
       List<PublicationTemplate> templates =
-          PublicationTemplateManager.getSearchablePublicationTemplates();
+          PublicationTemplateManager.getInstance().getSearchablePublicationTemplates();
       request.setAttribute("XMLForms", templates);
       PagesContext context = new PagesContext("XMLSearchForm", "2", pdcSC.getLanguage(), false,
           "useless", pdcSC.getUserId());

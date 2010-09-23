@@ -1350,7 +1350,7 @@ public class SilverTrace {
    */
   static protected String formatSpyMessage(String spaceId, String instanceId,
       String objectId, String userId, String actionId) {
-    StringBuffer valret = new StringBuffer("");
+    StringBuilder valret = new StringBuilder("");
 
     if (MsgTrace.stringValid(spaceId)) {
       valret.append(spaceId);
@@ -1412,22 +1412,22 @@ public class SilverTrace {
    */
   static protected String formatTraceMessage(String module, String classe,
       String messageID, String message, String extraInfos) {
-    StringBuffer valret = new StringBuffer("");
+    StringBuilder valret = new StringBuilder("");
 
     if (MsgTrace.stringValid(messageID)) {
-      valret.append(messageID + " | ");
+      valret.append(messageID).append(" | ");
     }
     if (MsgTrace.stringValid(classe)) {
-      valret.append("MODULE : " + module + "." + classe + " | ");
+      valret.append("MODULE : ").append(module).append(".").append(classe).append(" | ");
     } else {
-      valret.append("MODULE : " + module + " | ");
+      valret.append("MODULE : ").append(module).append(" | ");
     }
     if (MsgTrace.stringValid(message)) {
       valret.append(message);
     }
 
     if (MsgTrace.stringValid(extraInfos)) {
-      valret.append(" (" + extraInfos + ")");
+      valret.append(" (").append(extraInfos).append(")");
     }
     return valret.toString();
   }
@@ -1602,14 +1602,14 @@ public class SilverTrace {
    * @see
    */
   static protected void emergencyTrace(String msgToTrace, Throwable ex) {
-    StringBuffer sb = new StringBuffer(msgToTrace);
+    StringBuilder sb = new StringBuilder(msgToTrace);
 
     if (ex != null) {
-      sb.append("| Ex : " + ex.getMessage());
+      sb.append("| Ex : ").append(ex.getMessage());
     }
     System.err.println(sb.toString());
     if (ex != null) {
-      ex.printStackTrace();
+      System.err.println(ex);
     }
   }
 
@@ -1624,20 +1624,20 @@ public class SilverTrace {
    */
   static protected void emergencyTrace(String module, String classe,
       String msgToTrace, String extraInfos, Throwable ex) {
-    StringBuffer sb = new StringBuffer(
+    StringBuilder sb = new StringBuilder(
         "SilverTrace can't display normaly the message : ");
 
     if (module != null) {
-      sb.append(" Module : " + module);
+      sb.append(" Module : ").append(module);
     }
     if (classe != null) {
-      sb.append("| Classe : " + classe);
+      sb.append("| Classe : ").append(classe);
     }
     if (msgToTrace != null) {
-      sb.append("| Msg : " + msgToTrace);
+      sb.append("| Msg : ").append(msgToTrace);
     }
     if (extraInfos != null) {
-      sb.append(" (" + extraInfos + ")");
+      sb.append(" (").append(extraInfos).append(")");
     }
     emergencyTrace(sb.toString(), ex);
   }

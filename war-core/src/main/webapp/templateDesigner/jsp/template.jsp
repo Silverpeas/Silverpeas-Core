@@ -28,10 +28,9 @@
 <%@ include file="check.jsp" %>
 
 <%
-Form 				formUpdate 	= (Form) request.getAttribute("Form");
+Form 				 formUpdate = (Form) request.getAttribute("Form");
 DataRecord 			data 		= (DataRecord) request.getAttribute("Data");
-PagesContext		context		= (PagesContext) request.getAttribute("context"); 
-
+PagesContext		context	= (PagesContext) request.getAttribute("context"); 
 %>
 <HTML>
 <HEAD>

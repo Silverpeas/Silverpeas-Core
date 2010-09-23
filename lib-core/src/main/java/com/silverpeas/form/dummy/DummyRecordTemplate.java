@@ -43,6 +43,7 @@ public class DummyRecordTemplate implements RecordTemplate {
   /**
    * Returns all the field names of the DataRecord built on this template.
    */
+  @Override
   public String[] getFieldNames() {
     return new String[0];
   }
@@ -50,6 +51,7 @@ public class DummyRecordTemplate implements RecordTemplate {
   /**
    * Returns all the field templates.
    */
+  @Override
   public FieldTemplate[] getFieldTemplates() {
     return new FieldTemplate[0];
   }
@@ -57,6 +59,7 @@ public class DummyRecordTemplate implements RecordTemplate {
   /**
    * Returns the FieldTemplate of the named field.
    */
+  @Override
   public FieldTemplate getFieldTemplate(String fieldName) throws FormException {
     return fieldTemplate;
   }
@@ -65,6 +68,7 @@ public class DummyRecordTemplate implements RecordTemplate {
    * Returns the field index of the named field.
    * @throw FormException if the field name is unknown.
    */
+  @Override
   public int getFieldIndex(String fieldName) throws FormException {
     return 0;
   }
@@ -72,6 +76,7 @@ public class DummyRecordTemplate implements RecordTemplate {
   /**
    * Returns an empty DataRecord built on this template.
    */
+  @Override
   public DataRecord getEmptyRecord() throws FormException {
     return dataRecord;
   }
@@ -79,6 +84,7 @@ public class DummyRecordTemplate implements RecordTemplate {
   /**
    * Returns true if the data record is built on this template and all the constraints are ok.
    */
+  @Override
   public boolean checkDataRecord(DataRecord record) {
     return true;
   }

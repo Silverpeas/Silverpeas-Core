@@ -40,7 +40,7 @@ import java.util.List;
 
 /**
  * A AccessPathFieldDisplayer is an object which can display in a HTML field the current access path
- * of the form (space > subSpace > service > theme > subTheme to a end user and can retrieve via
+ * of the form (space > subSpace > service > theme > subTheme) to a end user and can retrieve via
  * HTTP any updated value.
  * @see Field
  * @see FieldTemplate
@@ -59,9 +59,7 @@ public class AccessPathFieldDisplayer extends AbstractFieldDisplayer {
    * Returns the name of the managed types.
    */
   public String[] getManagedTypes() {
-    String[] s = new String[0];
-    s[0] = AccessPathField.TYPE;
-    return s;
+    return new String[] { AccessPathField.TYPE };
   }
 
   /**
@@ -74,6 +72,7 @@ public class AccessPathFieldDisplayer extends AbstractFieldDisplayer {
    * <LI>the field type is not a managed type.
    * </UL>
    */
+  @Override
   public void displayScripts(PrintWriter out,
       FieldTemplate template,
       PagesContext PagesContext) throws java.io.IOException {
@@ -88,6 +87,7 @@ public class AccessPathFieldDisplayer extends AbstractFieldDisplayer {
    * <LI>the field type is not a managed type.
    * </UL>
    */
+  @Override
   public void display(PrintWriter out,
       Field field,
       FieldTemplate template,
@@ -98,7 +98,7 @@ public class AccessPathFieldDisplayer extends AbstractFieldDisplayer {
     String fieldName = template.getFieldName();
     AccessPathField accessPathField = null;
 
-    if (!field.getTypeName().equals(AccessPathField.TYPE)) {
+    if (!AccessPathField.TYPE.equals(field.getTypeName())) {
       SilverTrace.info("form", "AccessPathFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
           AccessPathField.TYPE);
     } else {
@@ -139,13 +139,14 @@ public class AccessPathFieldDisplayer extends AbstractFieldDisplayer {
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
+  @Override
   public List<String> update(String newValue,
       Field field,
       FieldTemplate template,
       PagesContext PagesContext)
       throws FormException {
 
-    if (!field.getTypeName().equals(AccessPathField.TYPE)) {
+    if (!AccessPathField.TYPE.equals(field.getTypeName())) {
       throw new FormException("AccessPathFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
           AccessPathField.TYPE);
     }
@@ -159,10 +160,12 @@ public class AccessPathFieldDisplayer extends AbstractFieldDisplayer {
     return new ArrayList<String>();
   }
 
+  @Override
   public boolean isDisplayedMandatory() {
     return false;
   }
 
+  @Override
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
     return 1;
   }

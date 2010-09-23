@@ -220,8 +220,8 @@ public class HtmlExportPublicationGenerator {
   public String toHtmlXMLModel() {
     PublicationTemplateImpl template = null;
     try {
-      template = (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(publicationDetail.
-          getPK().getInstanceId()
+      template = (PublicationTemplateImpl) PublicationTemplateManager.getInstance()
+              .getPublicationTemplate(publicationDetail.getPK().getInstanceId()
           + ":" + publicationDetail.getInfoId());
     } catch (Exception e) {
       return "Error getting publication template !";

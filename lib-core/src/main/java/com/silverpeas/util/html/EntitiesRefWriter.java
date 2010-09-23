@@ -69,6 +69,7 @@ public class EntitiesRefWriter extends Writer {
     super(writer, encoding);
   }
 
+  @Override
   protected void printEntity(String name) {
     char entity = (char) HTMLEntities.get(name);
     if (Character.isWhitespace(entity) || "nbsp".equalsIgnoreCase(name)) {

@@ -21,14 +21,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.jsp.JspWriter;
@@ -37,39 +35,54 @@ import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.util.Arrays;
 
+/**
+ * This abstract class implements the form interface and provides for all concretes classes a
+ * default implementation of some displaying methods.
+ */
 public abstract class AbstractForm implements Form {
 
-  private List<FieldTemplate> fieldTemplates = new ArrayList<FieldTemplate>();
+  private List<FieldTemplate> fieldTemplates;
   private String title = "";
   public static final String CONTEXT_FORM_FILE = "Images";
   public static final String CONTEXT_FORM_IMAGE = "XMLFormImages";
 
-  public AbstractForm(RecordTemplate template) throws FormException {
+  /**
+   * Creates a new form from the specified template of records.
+   * @param template the record template.
+   * @throws FormException if an error occurs while setting up the form.
+   */
+  public AbstractForm(final RecordTemplate template) throws FormException {
     if (template != null) {
-      FieldTemplate fields[] = template.getFieldTemplates();
-      int size = fields.length;
-      FieldTemplate fieldTemplate;
-      for (int i = 0; i < size; i++) {
-        fieldTemplate = fields[i];
-        this.fieldTemplates.add(fieldTemplate);
-      }
+      fieldTemplates = Arrays.asList(template.getFieldTemplates());
+    } else {
+      fieldTemplates = new ArrayList<FieldTemplate>();
     }
   }
 
+  /**
+   * Gets the template of all of the fields that made this form.
+   * @return
+   */
   public List<FieldTemplate> getFieldTemplates() {
     return fieldTemplates;
   }
 
+  /**
+   * Gets the title of this form.
+   * @return the title of this form or an empty string if it isn't set.
+   */
   @Override
   public String getTitle() {
-    return title;
+    return (title == null ? "": title);
   }
 
   /**
-   * Set the form title
+   * Sets the form title.
+   * @param title the new title of the form.
    */
-  public void setTitle(String title) {
+  public void setTitle(final String title) {
     this.title = title;
   }
 
@@ -82,104 +95,100 @@ public abstract class AbstractForm implements Form {
    * <LI>a field is unknown by the template.
    * <LI>a field has not the required type.
    * </UL>
+   * @param jw the JSP writer into which the javascript is written.
+   * @param pagesContext the JSP page context.
    */
   @Override
-  public void displayScripts(JspWriter jw, PagesContext pagesContext) {
+  public void displayScripts(final JspWriter jw, final PagesContext pagesContext) {
     try {
       String language = pagesContext.getLanguage();
+      PagesContext pc = null;
       StringWriter sw = new StringWriter();
       PrintWriter out = new PrintWriter(sw, true);
-      Iterator<FieldTemplate> itFields = null;
+      //Iterator<FieldTemplate> itFields = null;
 
-      if (fieldTemplates != null) {
-        itFields = this.fieldTemplates.iterator();
-      }
-
-      FieldTemplate fieldTemplate = null;
-      if (itFields != null && itFields.hasNext()) {
-        fieldTemplate = (FieldTemplate) itFields.next();
-
-        out.println(
-            "<script type=\"text/javascript\" src=\"/weblib/xmlforms/" +
-            fieldTemplate.getTemplateName() + ".js\"></script>");
-      }
-
-      out.println(Util.getJavascriptIncludes());
-      out.println("<script type=\"text/javascript\">");
-      out.println("	var errorNb = 0;");
-      out.println("	var errorMsg = \"\";");
-      out.println("function addXMLError(message) {");
-      out.println("	errorMsg+=\"  - \"+message+\"\\n\";");
-      out.println("	errorNb++;");
-      out.println("}");
-      out.println("function getXMLField(fieldName) {");
-      out.println("	return document.getElementById(fieldName);");
-      out.println("}");
-      out.println("function isCorrectForm() {");
-      out.println("	errorMsg = \"\";");
-      out.println("	errorNb = 0;");
-      out.println("	var field;");
-      out.println("	\n");
-      if (fieldTemplates != null) {
-        itFields = this.fieldTemplates.iterator();
-      }
-      if ((itFields != null) && (itFields.hasNext())) {
-        PagesContext pc = new PagesContext(pagesContext);
+      if (!fieldTemplates.isEmpty()) {
+        FieldTemplate fieldTemplate = fieldTemplates.get(0);
+        out.append("<script type=\"text/javascript\" src=\"/weblib/xmlforms/")
+                .append(fieldTemplate.getTemplateName())
+                .append(".js\"></script>\n");
+        pc = new PagesContext(pagesContext);
         pc.incCurrentFieldIndex(1);
-        while (itFields.hasNext()) {
-          fieldTemplate = (FieldTemplate) itFields.next();
+      }
+
+      out.append(Util.getJavascriptIncludes())
+              .append("\n<script type=\"text/javascript\">\n")
+              .append("	var errorNb = 0;\n")
+              .append("	var errorMsg = \"\";\n")
+              .append("function addXMLError(message) {\n")
+              .append("	errorMsg+=\"  - \"+message+\"\\n\";\n")
+              .append("	errorNb++;\n")
+              .append("}\n")
+              .append("function getXMLField(fieldName) {\n")
+              .append("	return document.getElementById(fieldName);\n")
+              .append("}\n")
+              .append("function isCorrectForm() {\n")
+              .append("	errorMsg = \"\";\n")
+              .append("	errorNb = 0;\n")
+              .append("	var field;\n")
+              .append("	\n\n");
+      
+      for (FieldTemplate fieldTemplate : fieldTemplates) {
           if (fieldTemplate != null) {
             String fieldDisplayerName = fieldTemplate.getDisplayerName();
             String fieldType = fieldTemplate.getTypeName();
             FieldDisplayer fieldDisplayer = null;
             try {
-              if ((fieldDisplayerName == null) || (fieldDisplayerName.equals(""))) {
+              if (fieldDisplayerName == null || fieldDisplayerName.isEmpty()) {
                 fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
               }
-
               fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
 
               if (fieldDisplayer != null) {
-                out.println("	field = document.getElementById(\"" + fieldTemplate.getFieldName() +
-                    "\");");
-                out.println("	if (field != null) {");
+                out.append("	field = document.getElementById(\"")
+                      .append(fieldTemplate.getFieldName())
+                      .append("\");\n")
+                      .append("	if (field != null) {\n");
                 fieldDisplayer.displayScripts(out, fieldTemplate, pc);
                 out.println("}\n");
-                pc
-                    .incCurrentFieldIndex(fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate,
-                    pc));
+                pc.incCurrentFieldIndex(fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate,
+                        pc));
               }
             } catch (FormException fe) {
               SilverTrace.error("form", "AbstractForm.display", "form.EXP_UNKNOWN_FIELD", null, fe);
             }
           }
-        }
       }
-      out.println("	\n");
-      out.println("	switch(errorNb)");
-      out.println("	{");
-      out.println("	case 0 :");
-      out.println("		result = true;");
-      out.println("		break;");
-      out.println("	case 1 :");
-      out.println("		errorMsg = \"" + Util.getString("GML.ThisFormContains", language) + " 1 " +
-          Util.getString(
-          "GML.error", language) + " : \\n \" + errorMsg;");
-      out.println("		window.alert(errorMsg);");
-      out.println("		result = false;");
-      out.println("		break;");
-      out.println("	default :");
-      out.println("		errorMsg = \"" + Util.getString("GML.ThisFormContains", language) +
-          "\" + errorNb + \" " + Util.
-          getString("GML.errors", language) + " :\\n \" + errorMsg;");
-      out.println("		window.alert(errorMsg);");
-      out.println("		result = false;");
-      out.println("		break;");
-      out.println("	}");
-      out.println("	return result;");
-      out.println("}");
-      out.println("	\n");
-      out.println("</script>");
+      
+      out.append("	\n\n")
+            .append("	switch(errorNb)\n")
+            .append("	{\n")
+            .append("	case 0 :\n")
+            .append("		result = true;\n")
+            .append("		break;\n")
+            .append("	case 1 :\n")
+            .append("		errorMsg = \"")
+            .append(Util.getString("GML.ThisFormContains", language))
+            .append(" 1 ")
+            .append(Util.getString("GML.error", language))
+            .append(" : \\n \" + errorMsg;\n")
+            .append("		window.alert(errorMsg);\n")
+            .append("		result = false;\n")
+            .append("		break;\n")
+            .append("	default :\n")
+            .append("		errorMsg = \"")
+            .append(Util.getString("GML.ThisFormContains", language))
+            .append("\" + errorNb + \" ")
+            .append(Util.getString("GML.errors", language))
+            .append(" :\\n \" + errorMsg;\n")
+            .append("		window.alert(errorMsg);\n")
+            .append("		result = false;\n")
+            .append("		break;\n")
+            .append("	}\n")
+            .append("	return result;\n")
+            .append("}\n")
+            .append("	\n\n")
+            .append("</script>\n");
       out.flush();
       jw.write(sw.toString());
     } catch (java.io.IOException fe) {
@@ -187,6 +196,13 @@ public abstract class AbstractForm implements Form {
     }
   }
 
+  /**
+   * Prints this form into the specified JSP writer according to the specified records of data that
+   * populate the form fields.
+   * @param out the JSP writer.
+   * @param pagesContext the JSP page context.
+   * @param record the record the data records embbed the form fields.
+   */
   @Override
   public abstract void display(JspWriter out, PagesContext pagesContext, DataRecord record);
 
@@ -194,9 +210,13 @@ public abstract class AbstractForm implements Form {
    * Updates the values of the dataRecord using the RecordTemplate to extra control information
    * (readOnly or mandatory status). The fieldName must be used to retrieve the HTTP parameter from
    * the request.
+   * @param items the item of a form in which is embbeded multipart data.
+   * @param record the record of data.
+   * @param pagesContext the page context.
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
+  @Override
   public List<String> update(List<FileItem> items, DataRecord record, PagesContext pagesContext) {
     return update(items, record, pagesContext, true);
   }
@@ -205,41 +225,39 @@ public abstract class AbstractForm implements Form {
    * Updates the values of the dataRecord using the RecordTemplate to extra control information
    * (readOnly or mandatory status). The fieldName must be used to retrieve the HTTP parameter from
    * the request.
+   * @param items the item of a form in which is embbeded multipart data.
+   * @param record the record of data.
+   * @param pagesContext the page context.
+   * @param updateWysiwyg flag indicating if all of WYSIWYG data can be updated.
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
+  @Override
   public List<String> update(List<FileItem> items, DataRecord record, PagesContext pagesContext,
-      boolean updateWysiwyg) {
+          boolean updateWysiwyg) {
     List<String> attachmentIds = new ArrayList<String>();
-    Iterator<FieldTemplate> itFields = null;
-    if (fieldTemplates != null) {
-      itFields = this.fieldTemplates.iterator();
-    }
-    if ((itFields != null) && (itFields.hasNext())) {
+      
+    for (FieldTemplate fieldTemplate : fieldTemplates) {
       FieldDisplayer fieldDisplayer = null;
-      FieldTemplate fieldTemplate = null;
-      while (itFields.hasNext()) {
-        fieldTemplate = itFields.next();
-        if (fieldTemplate != null) {
-          String fieldName = fieldTemplate.getFieldName();
-          String fieldType = fieldTemplate.getTypeName();
-          String fieldDisplayerName = fieldTemplate.getDisplayerName();
-          try {
-            if ((fieldDisplayerName == null) || (fieldDisplayerName.equals(""))) {
-              fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
-            }
-            if ((!"wysiwyg".equals(fieldDisplayerName) || updateWysiwyg)) {
-              fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
-              if (fieldDisplayer != null) {
-                attachmentIds.addAll(fieldDisplayer.update(items, record
-                    .getField(fieldName), fieldTemplate, pagesContext));
-              }
-            }
-          } catch (FormException fe) {
-            SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, fe);
-          } catch (Exception e) {
-            SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, e);
+      if (fieldTemplate != null) {
+        String fieldName = fieldTemplate.getFieldName();
+        String fieldType = fieldTemplate.getTypeName();
+        String fieldDisplayerName = fieldTemplate.getDisplayerName();
+        try {
+          if ((fieldDisplayerName == null) || (fieldDisplayerName.isEmpty())) {
+            fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
           }
+          if ((!"wysiwyg".equals(fieldDisplayerName) || updateWysiwyg)) {
+            fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
+            if (fieldDisplayer != null) {
+              attachmentIds.addAll(fieldDisplayer.update(items, record.getField(fieldName),
+                      fieldTemplate, pagesContext));
+            }
+          }
+        } catch (FormException fe) {
+          SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, fe);
+        } catch (Exception e) {
+          SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, e);
         }
       }
     }
@@ -250,110 +268,124 @@ public abstract class AbstractForm implements Form {
    * Updates the values of the dataRecord using the RecordTemplate to extra control information
    * (readOnly or mandatory status). The fieldName must be used to retrieve the HTTP parameter from
    * the request.
+   * @param items the item of a form in which is embbeded multipart data.
+   * @param record the record of data.
+   * @param pagesContext the page context.
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
+  @Override
   public List<String> updateWysiwyg(List<FileItem> items, DataRecord record,
-      PagesContext pagesContext) {
+          PagesContext pagesContext) {
     List<String> attachmentIds = new ArrayList<String>();
-    Iterator<FieldTemplate> itFields = null;
-    if (fieldTemplates != null) {
-      itFields = this.fieldTemplates.iterator();
-    }
-    if ((itFields != null) && (itFields.hasNext())) {
+    for (FieldTemplate fieldTemplate : fieldTemplates) {
       FieldDisplayer fieldDisplayer = null;
-      FieldTemplate fieldTemplate = null;
-      while (itFields.hasNext()) {
-        fieldTemplate = itFields.next();
-        if (fieldTemplate != null) {
-          String fieldName = fieldTemplate.getFieldName();
-          String fieldType = fieldTemplate.getTypeName();
-          String fieldDisplayerName = fieldTemplate.getDisplayerName();
-          try {
-            if ((fieldDisplayerName == null) || (fieldDisplayerName.equals(""))) {
-              fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
-            }
-            if ("wysiwyg".equals(fieldDisplayerName)) {
-              fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
-              if (fieldDisplayer != null) {
-                attachmentIds.addAll(fieldDisplayer.update(items, record
-                    .getField(fieldName), fieldTemplate, pagesContext));
-              }
-            }
-          } catch (FormException fe) {
-            SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, fe);
-          } catch (Exception e) {
-            SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, e);
+      if (fieldTemplate != null) {
+        String fieldName = fieldTemplate.getFieldName();
+        String fieldType = fieldTemplate.getTypeName();
+        String fieldDisplayerName = fieldTemplate.getDisplayerName();
+        try {
+          if ((fieldDisplayerName == null) || (fieldDisplayerName.isEmpty())) {
+            fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
           }
+          if ("wysiwyg".equals(fieldDisplayerName)) {
+            fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
+            if (fieldDisplayer != null) {
+              attachmentIds.addAll(fieldDisplayer.update(items, record.getField(fieldName),
+                      fieldTemplate, pagesContext));
+            }
+          }
+        } catch (FormException fe) {
+          SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, fe);
+        } catch (Exception e) {
+          SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, e);
         }
       }
     }
     return attachmentIds;
   }
 
+  /**
+   * Is the form is empty?
+   * A form is empty if all of its fields aren't valued (no data associated with them).
+   * @param items the items embbeding multipart data in the form.
+   * @param record the record of data.
+   * @param pagesContext the page context.
+   * @return true if one of the form field has no data.
+   */
   @Override
   public boolean isEmpty(List<FileItem> items, DataRecord record, PagesContext pagesContext) {
     boolean isEmpty = true;
-    Iterator<FieldTemplate> itFields = null;
-    if (fieldTemplates != null) {
-      itFields = this.fieldTemplates.iterator();
-    }
-    if (itFields != null && itFields.hasNext()) {
+    for (FieldTemplate fieldTemplate : fieldTemplates) {
       FieldDisplayer fieldDisplayer = null;
-      FieldTemplate fieldTemplate = null;
-      while (itFields.hasNext() && isEmpty) {
-        fieldTemplate = (FieldTemplate) itFields.next();
-        if (fieldTemplate != null) {
-          String fieldType = fieldTemplate.getTypeName();
-          String fieldDisplayerName = fieldTemplate.getDisplayerName();
-          try {
-            if (!StringUtil.isDefined(fieldDisplayerName)) {
-              fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
-            }
-            fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
-            if (fieldDisplayer != null) {
-              String itemName = fieldTemplate.getFieldName();
-              FileItem item = getParameter(items, itemName);
-              if (item != null && !item.isFormField() && StringUtil.isDefined(item.getName())) {
-                isEmpty = false;
-              } else {
-                String itemValue = getParameterValue(items, itemName, pagesContext.getEncoding());
-                isEmpty = !StringUtil.isDefined(itemValue);
-              }
-            }
-          } catch (FormException fe) {
-            SilverTrace.error("form", "AbstractForm.isEmpty", "form.EXP_UNKNOWN_FIELD", null, fe);
-          } catch (Exception e) {
-            SilverTrace.error("form", "AbstractForm.isEmpty", "form.EXP_UNKNOWN_FIELD", null, e);
+      if (fieldTemplate != null) {
+        String fieldType = fieldTemplate.getTypeName();
+        String fieldDisplayerName = fieldTemplate.getDisplayerName();
+        try {
+          if (!StringUtil.isDefined(fieldDisplayerName)) {
+            fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
           }
+          fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
+          if (fieldDisplayer != null) {
+            String itemName = fieldTemplate.getFieldName();
+            FileItem item = getParameter(items, itemName);
+            if (item != null && !item.isFormField() && StringUtil.isDefined(item.getName())) {
+              isEmpty = false;
+            } else {
+              String itemValue = getParameterValue(items, itemName, pagesContext.getEncoding());
+              isEmpty = !StringUtil.isDefined(itemValue);
+            }
+          }
+        } catch (FormException fe) {
+          SilverTrace.error("form", "AbstractForm.isEmpty", "form.EXP_UNKNOWN_FIELD", null, fe);
+        } catch (Exception e) {
+          SilverTrace.error("form", "AbstractForm.isEmpty", "form.EXP_UNKNOWN_FIELD", null, e);
         }
+      }
+      if (! isEmpty) {
+        break;
       }
     }
     return isEmpty;
   }
 
+  /**
+   * Gets the value of the specified parameter from the specified items.
+   * @param items the items of the form embbeding multipart data.
+   * @param parameterName the name of the parameter.
+   * @param encoding the encoding at which the value must be in.
+   * @return the value of the specified parameter in the given encoding. or null if no such parameter
+   * is defined in this form.
+   * @throws UnsupportedEncodingException if the encoding at which the value should be in
+   * isn't supported.
+   */
   private String getParameterValue(List<FileItem> items, String parameterName, String encoding)
-      throws UnsupportedEncodingException {
+          throws UnsupportedEncodingException {
     SilverTrace.debug("form", "AbstractForm.getParameterValue", "root.MSG_GEN_ENTER_METHOD",
-        "parameterName = " + parameterName);
+            "parameterName = " + parameterName);
     FileItem item = getParameter(items, parameterName);
     if (item != null && item.isFormField()) {
       SilverTrace.debug("form", "AbstractForm.getParameterValue", "root.MSG_GEN_EXIT_METHOD",
-          "parameterValue = " + item.getString());
+              "parameterValue = " + item.getString());
       return item.getString(encoding);
     }
     return null;
   }
 
-  private FileItem getParameter(List<FileItem> items, String parameterName) {
-    Iterator<FileItem> iter = items.iterator();
-    FileItem item = null;
-    while (iter.hasNext()) {
-      item = iter.next();
+  /**
+   * Gets the multipart data of the specified parameter.
+   * @param items the items of the form with all of the multipart data.
+   * @param parameterName the name of the parameter.
+   * @return the item corresponding to the specified parameter.
+   */
+  private FileItem getParameter(final List<FileItem> items, final String parameterName) {
+    FileItem fileItem = null;
+    for (FileItem item : items) {
       if (parameterName.equals(item.getFieldName())) {
-        return item;
+        fileItem = item;
+        break;
       }
     }
-    return null;
+    return fileItem;
   }
 }

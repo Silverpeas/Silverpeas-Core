@@ -45,7 +45,7 @@ if (template != null)
 	fileName = template.getFileName();
 	if (template.isVisible())
 		visible = "checked";
-	if (template.getSearchForm() != null)
+	if (template.isSearchable())
 		searchable = "checked";
 	action = "UpdateTemplate";
 }

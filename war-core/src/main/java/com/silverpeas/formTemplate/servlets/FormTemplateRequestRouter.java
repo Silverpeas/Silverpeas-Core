@@ -86,6 +86,9 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter {
     FormTemplateSessionController controller = (FormTemplateSessionController) componentSC;
 
     String destination = "";
+    
+    PublicationTemplateManager publicationTemplateManager =
+            PublicationTemplateManager.getInstance();
 
     try {
       if (function.equals("Edit")) {
@@ -111,11 +114,11 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter {
             xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
 
         // register xmlForm to object
-        PublicationTemplateManager.addDynamicPublicationTemplate(componentId + ":" + objectType +
+        publicationTemplateManager.addDynamicPublicationTemplate(componentId + ":" + objectType +
             ":" + xmlFormShortName, xmlFormName);
 
         PublicationTemplateImpl pubTemplate =
-            (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(
+            (PublicationTemplateImpl) publicationTemplateManager.getPublicationTemplate(
             componentId + ":" + objectType + ":" + xmlFormShortName, xmlFormName);
         Form formUpdate = pubTemplate.getUpdateForm();
         RecordSet recordSet = pubTemplate.getRecordSet();
@@ -151,7 +154,7 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter {
         String objectLanguage = controller.getObjectLanguage();
 
         PublicationTemplate pub =
-            PublicationTemplateManager.getPublicationTemplate(componentId + ":" + objectType + ":" +
+            publicationTemplateManager.getPublicationTemplate(componentId + ":" + objectType + ":" +
             xmlFormShortName);
 
         RecordSet set = pub.getRecordSet();
@@ -201,7 +204,7 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter {
 
         if (StringUtil.isDefined(xmlFormName) && StringUtil.isDefined(objectId)) {
           PublicationTemplateImpl pubTemplate =
-              (PublicationTemplateImpl) PublicationTemplateManager
+              (PublicationTemplateImpl) publicationTemplateManager
               .getPublicationTemplate(componentId + ":" + objectType + ":" + xmlFormName);
 
           Form formView = pubTemplate.getViewForm();

@@ -2244,8 +2244,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       throws PdcPeasRuntimeException {
     PublicationTemplateImpl template = null;
     try {
-      template = (PublicationTemplateImpl) PublicationTemplateManager.loadPublicationTemplate(
-          fileName);
+      template = (PublicationTemplateImpl) PublicationTemplateManager.getInstance()
+              .loadPublicationTemplate(fileName);
       this.xmlTemplate = template;
     } catch (PublicationTemplateException e) {
       throw new PdcPeasRuntimeException(

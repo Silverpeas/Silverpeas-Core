@@ -83,10 +83,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
    * Returns the name of the managed types.
    */
   public String[] getManagedTypes() {
-    String[] s = new String[0];
-
-    s[0] = FileField.TYPE;
-    return s;
+    return new String[] {FileField.TYPE};
   }
 
   /**
@@ -99,13 +96,14 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
    * <LI>the field type is not a managed type.
    * </UL>
    */
+  @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext)
       throws java.io.IOException {
     String language = PagesContext.getLanguage();
 
     String fieldName = template.getFieldName();
 
-    if (!template.getTypeName().equals(FileField.TYPE)) {
+    if (!FileField.TYPE.equals(template.getTypeName())) {
       SilverTrace.info("form", "FileFieldDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
           FileField.TYPE);
     }
@@ -156,7 +154,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
 
     String fieldName = template.getFieldName();
 
-    if (!field.getTypeName().equals(FileField.TYPE)) {
+    if (! FileField.TYPE.equals(template.getTypeName())) {
       SilverTrace.info("form", "FileFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
           FileField.TYPE);
     }
@@ -216,10 +214,11 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
     out.println(html);
   }
 
+  @Override
   public List<String> update(String attachmentId, Field field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
     List<String> attachmentIds = new ArrayList<String>();
-    if (field.getTypeName().equals(FileField.TYPE)) {
+    if (FileField.TYPE.equals(field.getTypeName())) {
       if (attachmentId == null || attachmentId.trim().equals("")) {
         field.setNull();
       } else {
@@ -237,6 +236,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
    * Method declaration
    * @return
    */
+  @Override
   public boolean isDisplayedMandatory() {
     return true;
   }
@@ -245,6 +245,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
    * Method declaration
    * @return
    */
+  @Override
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
     return 2;
   }

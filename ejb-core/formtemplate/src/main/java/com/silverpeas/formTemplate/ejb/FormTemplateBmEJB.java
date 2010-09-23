@@ -64,7 +64,7 @@ public class FormTemplateBmEJB implements javax.ejb.SessionBean {
   public PublicationTemplate getPublicationTemplate(String externalId) {
     PublicationTemplate pub = null;
     try {
-      pub = PublicationTemplateManager.getPublicationTemplate(externalId);
+      pub = PublicationTemplateManager.getInstance().getPublicationTemplate(externalId);
     } catch (Exception e) {
       throw new FormTemplateBmRuntimeException(
           "FormTemplateBmEJB.getPublicationTemplate",

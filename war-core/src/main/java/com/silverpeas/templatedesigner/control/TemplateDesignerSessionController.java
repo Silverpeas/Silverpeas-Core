@@ -80,7 +80,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
       updateInProgress = false;
       template = null;
 
-      return PublicationTemplateManager.getPublicationTemplates(false);
+      return getPublicationTemplateManager().getPublicationTemplates(false);
     } catch (PublicationTemplateException e) {
       throw new TemplateDesignerException(
           "TemplateDesignerSessionController.getTemplates",
@@ -97,7 +97,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
   public PublicationTemplate setTemplate(String fileName)
       throws TemplateDesignerException {
     try {
-      template = (PublicationTemplateImpl) PublicationTemplateManager
+      template = (PublicationTemplateImpl) getPublicationTemplateManager()
           .loadPublicationTemplate(fileName);
 
       // load data.xml
@@ -106,12 +106,10 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
       // load search.xml
       template.getSearchTemplate();
 
-      Iterator<FieldTemplate> it = getRecordTemplate(SCOPE_DATA).getFieldList().iterator();
-      GenericFieldTemplate field = null;
-      while (it.hasNext()) {
-        field = (GenericFieldTemplate) it.next();
+      List<FieldTemplate> templates = getRecordTemplate(SCOPE_DATA).getFieldList();
+      for (FieldTemplate field : templates) {
         if (getRecordTemplate(SCOPE_SEARCH).getFieldList().contains(field))
-          field.setSearchable(true);
+          ((GenericFieldTemplate)field).setSearchable(true);
       }
 
       return template;
@@ -227,8 +225,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     FieldTemplate field = getField(fieldName);
 
     int index = getRecordTemplate(SCOPE_DATA).getFieldList().indexOf(field);
-    field = (FieldTemplate) getRecordTemplate(SCOPE_DATA).getFieldList()
-        .remove(index);
+    field = (FieldTemplate) getRecordTemplate(SCOPE_DATA).getFieldList().remove(index);
 
     addField(field, index + direction);
 
@@ -339,7 +336,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
 
       if (resetCache) {
         // reset caches partially
-        PublicationTemplateManager.removePublicationTemplateFromCaches(template.getFileName());
+        getPublicationTemplateManager().removePublicationTemplateFromCaches(template.getFileName());
       }
 
       updateInProgress = false;
@@ -354,10 +351,10 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
   private void saveTemplateHeader() throws TemplateDesignerException {
     try {
       // Save main xml File
-      PublicationTemplateManager.savePublicationTemplate(template);
+      getPublicationTemplateManager().savePublicationTemplate(template);
 
       // reset caches partially
-      PublicationTemplateManager.removePublicationTemplateFromCaches(template.getFileName());
+      getPublicationTemplateManager().removePublicationTemplateFromCaches(template.getFileName());
     } catch (PublicationTemplateException e) {
       throw new TemplateDesignerException(
           "TemplateDesignerSessionController.saveTemplate",
@@ -372,5 +369,13 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
 
   public boolean isUpdateInProgress() {
     return updateInProgress;
+  }
+  
+  /**
+   * Gets a PublicationTemplateManager instance.
+   * @return a PublicationTemplateManager instance.
+   */
+  private PublicationTemplateManager getPublicationTemplateManager() {
+    return PublicationTemplateManager.getInstance();
   }
 }

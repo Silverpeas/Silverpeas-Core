@@ -60,14 +60,18 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 /**
  * The PublicationTemplateManager manages all the PublicationTemplate for all the Job'Peas.
+ * It is a singleton.
  */
 public class PublicationTemplateManager {
+  
+  private static final PublicationTemplateManager instance = new PublicationTemplateManager();
+  
   // map externalId -> PublicationTemplate
-  private static Map<String, PublicationTemplate> pubTemplate =
+  private Map<String, PublicationTemplate> pubTemplate =
       new HashMap<String, PublicationTemplate>();
 
   // map templateFileName -> PublicationTemplate to avoid multiple marshalling
-  private static Map<String, PublicationTemplateImpl> templates =
+  private Map<String, PublicationTemplateImpl> templates =
       new HashMap<String, PublicationTemplateImpl>();
 
   public static String mappingPublicationTemplateFilePath = null;
@@ -90,8 +94,35 @@ public class PublicationTemplateManager {
     mappingPublicationTemplateFilePath = makePath(mappingDir, mappingPublicationTemplateFileName);
     mappingRecordTemplateFilePath = makePath(mappingDir, mappingRecordTemplateFileName);
   }
+  
+  private PublicationTemplateManager() {
+    
+  }
+  
+  /**
+   * Gets the single instance of this manager.
+   * @return the single instance of PublicationTemplateManager.
+   */
+  public static PublicationTemplateManager getInstance() {
+    return instance;
+  }
+  
+  public static String makePath(String dirName, String fileName) {
+    if (!StringUtil.isDefined(dirName)) {
+      return fileName;
+    }
+    if (!StringUtil.isDefined(fileName)) {
+      return dirName;
+    }
 
-  static public GenericRecordSet addDynamicPublicationTemplate(String externalId,
+    if (dirName.charAt(dirName.length() - 1) == '/'
+        || dirName.charAt(dirName.length() - 1) == '\\') {
+      return dirName.replace('\\', '/') + fileName.replace('\\', '/');
+    }
+    return dirName.replace('\\', '/') + "/" + fileName.replace('\\', '/');
+  }
+
+  public GenericRecordSet addDynamicPublicationTemplate(String externalId,
       String templateFileName) throws PublicationTemplateException {
     try {
       if (!templateFileName.endsWith(".xml")) {
@@ -102,7 +133,7 @@ public class PublicationTemplateManager {
 
       RecordTemplate recordTemplate = thePubTemplate.getRecordTemplate();
 
-      return GenericRecordSetManager.createRecordSet(externalId, recordTemplate, templateFileName);
+      return getGenericRecordSetManager().createRecordSet(externalId, recordTemplate, templateFileName);
     } catch (FormException e) {
       throw new PublicationTemplateException(
           "PublicationTemplateManager.addDynamicPublicationTemplate", "form.EXP_INSERT_FAILED",
@@ -110,7 +141,7 @@ public class PublicationTemplateManager {
     }
   }
 
-  static public PublicationTemplate getPublicationTemplate(String externalId)
+   public PublicationTemplate getPublicationTemplate(String externalId)
       throws PublicationTemplateException {
     return getPublicationTemplate(externalId, null);
   }
@@ -118,14 +149,14 @@ public class PublicationTemplateManager {
   /**
    * Returns the PublicationTemplate having the given externalId.
    */
-  static public PublicationTemplate getPublicationTemplate(String externalId,
+   public PublicationTemplate getPublicationTemplate(String externalId,
       String templateFileName) throws PublicationTemplateException {
     String currentTemplateFileName = templateFileName;
     PublicationTemplate thePubTemplate = pubTemplate.get(externalId);
     if (thePubTemplate == null) {
       if (templateFileName == null) {
         try {
-          RecordSet set = GenericRecordSetManager.getRecordSet(externalId);
+          RecordSet set = getGenericRecordSetManager().getRecordSet(externalId);
           IdentifiedRecordTemplate template = (IdentifiedRecordTemplate) set.getRecordTemplate();
           currentTemplateFileName = template.getTemplateName();
         } catch (Exception e) {
@@ -145,12 +176,12 @@ public class PublicationTemplateManager {
   /**
    * Removes the PublicationTemplate having the given externalId.
    */
-  static public void removePublicationTemplate(String externalId)
+   public void removePublicationTemplate(String externalId)
       throws PublicationTemplateException {
     try {
       // pubTemplate.remove(externalId);
 
-      GenericRecordSetManager.removeRecordSet(externalId);
+      getGenericRecordSetManager().removeRecordSet(externalId);
     } catch (FormException e) {
       throw new PublicationTemplateException(
           "PublicationTemplateManager.removePublicationTemplate",
@@ -163,7 +194,7 @@ public class PublicationTemplateManager {
    * @param xmlFileName the xml file name that contains publication template definition
    * @return a PublicationTemplate object
    */
-  static public PublicationTemplate loadPublicationTemplate(String xmlFileName)
+   public PublicationTemplate loadPublicationTemplate(String xmlFileName)
       throws PublicationTemplateException {
     SilverTrace.info("form", "PublicationTemplateManager.loadPublicationTemplate",
         "root.MSG_GEN_ENTER_METHOD", "xmlFileName=" + xmlFileName);
@@ -213,7 +244,7 @@ public class PublicationTemplateManager {
    * save a publicationTemplate definition from java objects to xml file
    * @param template the PublicationTemplate to save
    */
-  static public void savePublicationTemplate(PublicationTemplate template)
+   public void savePublicationTemplate(PublicationTemplate template)
       throws PublicationTemplateException {
     SilverTrace.info("form", "PublicationTemplateManager.savePublicationTemplate",
         "root.MSG_GEN_ENTER_METHOD", "template = " + template.getFileName());
@@ -270,24 +301,9 @@ public class PublicationTemplateManager {
     }
   }
 
-  public static String makePath(String dirName, String fileName) {
-    if (!StringUtil.isDefined(dirName)) {
-      return fileName;
-    }
-    if (!StringUtil.isDefined(fileName)) {
-      return dirName;
-    }
-
-    if (dirName.charAt(dirName.length() - 1) == '/'
-        || dirName.charAt(dirName.length() - 1) == '\\') {
-      return dirName.replace('\\', '/') + fileName.replace('\\', '/');
-    }
-    return dirName.replace('\\', '/') + "/" + fileName.replace('\\', '/');
-  }
-
-  public static List<PublicationTemplate> getPublicationTemplates(boolean onlyVisibles)
+  public  List<PublicationTemplate> getPublicationTemplates(boolean onlyVisibles)
       throws PublicationTemplateException {
-    List<PublicationTemplate> templates = new ArrayList<PublicationTemplate>();
+    List<PublicationTemplate> publicationTemplates = new ArrayList<PublicationTemplate>();
     Collection<File> templateNames;
     try {
       templateNames = FileFolderManager.getAllFile(templateDir);
@@ -305,10 +321,10 @@ public class PublicationTemplateManager {
                   fileName.length()));
           if (onlyVisibles) {
             if (template.isVisible()) {
-              templates.add(template);
+              publicationTemplates.add(template);
             }
           } else {
-            templates.add(template);
+            publicationTemplates.add(template);
           }
         }
       } catch (Exception e) {
@@ -317,20 +333,20 @@ public class PublicationTemplateManager {
       }
     }
 
-    return templates;
+    return publicationTemplates;
   }
 
-  public static List<PublicationTemplate> getPublicationTemplates()
+  public  List<PublicationTemplate> getPublicationTemplates()
       throws PublicationTemplateException {
     return getPublicationTemplates(true);
   }
 
-  public static List<PublicationTemplate> getSearchablePublicationTemplates()
+  public  List<PublicationTemplate> getSearchablePublicationTemplates()
       throws PublicationTemplateException {
     List<PublicationTemplate> searchableTemplates = new ArrayList<PublicationTemplate>();
 
-    List<PublicationTemplate> templates = getPublicationTemplates();
-    Iterator<PublicationTemplate> iterator = templates.iterator();
+    List<PublicationTemplate> publicationTemplates = getPublicationTemplates();
+    Iterator<PublicationTemplate> iterator = publicationTemplates.iterator();
     PublicationTemplate template = null;
     while (iterator.hasNext()) {
       template = iterator.next();
@@ -349,12 +365,12 @@ public class PublicationTemplateManager {
     return searchableTemplates;
   }
 
-  public static void removePublicationTemplateFromCaches(String fileName) {
+  public  void removePublicationTemplateFromCaches(String fileName) {
     SilverTrace.info("form", "PublicationTemplateManager.removePublicationTemplateFromCaches",
         "root.MSG_GEN_ENTER_METHOD", "fileName = " + fileName);
     List<String> externalIdsToRemove = new ArrayList<String>();
-    Collection<PublicationTemplate> templates = pubTemplate.values();
-    for (PublicationTemplate template : templates) {
+    Collection<PublicationTemplate> publicationTemplates = pubTemplate.values();
+    for (PublicationTemplate template : publicationTemplates) {
       if (template.getFileName().equals(fileName)) {
         externalIdsToRemove.add(template.getExternalId());
       }
@@ -363,8 +379,16 @@ public class PublicationTemplateManager {
       pubTemplate.remove(externalId);
     }
 
-    templates.remove(fileName);
+    publicationTemplates.remove(fileName);
 
-    GenericRecordSetManager.removeTemplateFromCache(fileName);
+    getGenericRecordSetManager().removeTemplateFromCache(fileName);
+  }
+  
+  /**
+   * Gets an instance of a GenericRecordSet objects manager.
+   * @return a GenericRecordSetManager instance.
+   */
+  private static GenericRecordSetManager getGenericRecordSetManager() {
+    return GenericRecordSetManager.getInstance();
   }
 }

@@ -31,7 +31,6 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -51,11 +50,29 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
+import java.util.Map;
 
 /**
- * The GenericRecordSetManage all the GenericRecordSet
+ * The GenericRecordSetManage all the GenericRecordSet.
+ * It is a singleton.
  */
 public class GenericRecordSetManager {
+  
+  private static final GenericRecordSetManager instance = new GenericRecordSetManager();
+  
+  private Map<String, GenericRecordSet> cache = new HashMap<String, GenericRecordSet>();
+  
+  private GenericRecordSetManager() {
+    
+  }
+  
+  /**
+   * Gets the single instance of this manager.
+   * @return the single instance of GenericRecordSetManager.
+   */
+  public static GenericRecordSetManager getInstance() {
+    return instance;
+  }
 
   /**
    * Build and return a new record set.
@@ -64,7 +81,7 @@ public class GenericRecordSetManager {
    * @return
    * @throws FormException
    */
-  static public GenericRecordSet createRecordSet(String externalId,
+  public GenericRecordSet createRecordSet(String externalId,
       RecordTemplate template) throws FormException {
     return createRecordSet(externalId, template, null);
   }
@@ -72,7 +89,7 @@ public class GenericRecordSetManager {
   // public GenericRecordSet createRecordSet(String externalId, RecordTemplate
   // template, String templateName, boolean migration) throws FormException {
 
-  static public GenericRecordSet createRecordSet(String externalId,
+  public GenericRecordSet createRecordSet(String externalId,
       RecordTemplate template, String templateName) throws FormException {
 
     Connection con = null;
@@ -114,7 +131,7 @@ public class GenericRecordSetManager {
    * @return
    * @throws FormException when the id is unknown.
    */
-  static public RecordSet getRecordSet(String externalId) throws FormException {
+   public RecordSet getRecordSet(String externalId) throws FormException {
 
     SilverTrace.debug("form", "GenericRecordSetManager.getRecordSet",
         "root.MSG_GEN_ENTER_METHOD", "externalId = " + externalId);
@@ -158,7 +175,7 @@ public class GenericRecordSetManager {
    * @param externalId
    * @throws FormException when the id is unknown.
    */
-  static public void removeRecordSet(String externalId) throws FormException {
+   public void removeRecordSet(String externalId) throws FormException {
     removeCachedRecordSet(externalId);
 
     Connection con = null;
@@ -190,19 +207,19 @@ public class GenericRecordSetManager {
   /*
    * Cache manipulation
    */
-  static private GenericRecordSet getCachedRecordSet(String externalId) {
+   private GenericRecordSet getCachedRecordSet(String externalId) {
     return (GenericRecordSet) cache.get(externalId);
   }
 
-  static private void cacheRecordSet(String externalId, GenericRecordSet set) {
+   private void cacheRecordSet(String externalId, GenericRecordSet set) {
     cache.put(externalId, set);
   }
 
-  static private void removeCachedRecordSet(String externalId) {
+   private void removeCachedRecordSet(String externalId) {
     cache.remove(externalId);
   }
 
-  static public void removeTemplateFromCache(String templateName) {
+   public void removeTemplateFromCache(String templateName) {
     SilverTrace.debug("form", "GenericRecordSetManager.removeTemplateFromCache",
         "root.MSG_GEN_ENTER_METHOD", "templateName = " + templateName);
 
@@ -224,8 +241,6 @@ public class GenericRecordSetManager {
     }
   }
 
-  static private HashMap<String, GenericRecordSet> cache = new HashMap<String, GenericRecordSet>();
-
   /**
    * Return the DataRecord registered by the pair (templateId, recordId).
    * @param template the definition of the form template the record belongs to.
@@ -233,12 +248,12 @@ public class GenericRecordSetManager {
    * @return the form record or <code>null</code> if not found.
    * @throws FormException if the (templateId, recordId) pair is unknown.
    */
-  static public DataRecord getRecord(IdentifiedRecordTemplate template,
+   public DataRecord getRecord(IdentifiedRecordTemplate template,
       String recordId) throws FormException {
     return getRecord(template, recordId, null);
   }
 
-  static public DataRecord getRecord(IdentifiedRecordTemplate template,
+   public DataRecord getRecord(IdentifiedRecordTemplate template,
       String recordId, String language) throws FormException {
 
     SilverTrace.debug("form", "GenericRecordSetManager.getRecord",
@@ -266,7 +281,7 @@ public class GenericRecordSetManager {
     }
   }
 
-  static public List<String> getLanguagesOfRecord(IdentifiedRecordTemplate template,
+   public List<String> getLanguagesOfRecord(IdentifiedRecordTemplate template,
       String externalId) throws FormException {
     SilverTrace.debug("form", "GenericRecordSetManager.getLanguagesOfRecord",
         "root.MSG_GEN_PARAM_VALUE", "externalId = " + externalId);
@@ -290,7 +305,7 @@ public class GenericRecordSetManager {
    * @throws FormException if the (templateId, recordId) pair is already known or if the given
    * template is unknown.
    */
-  static public void insertRecord(IdentifiedRecordTemplate template,
+   public void insertRecord(IdentifiedRecordTemplate template,
       DataRecord insertedRecord) throws FormException {
     Connection con = null;
 
@@ -312,9 +327,9 @@ public class GenericRecordSetManager {
     }
   }
 
-  static public void cloneRecord(IdentifiedRecordTemplate templateFrom,
+   public void cloneRecord(IdentifiedRecordTemplate templateFrom,
       String recordIdFrom, IdentifiedRecordTemplate templateTo,
-      String recordIdTo, Hashtable<String, String> fileIds) throws FormException {
+      String recordIdTo, Map<String, String> fileIds) throws FormException {
     SilverTrace.debug("form", "GenericRecordSetManager.cloneRecord",
         "root.MSG_GEN_ENTER_METHOD", "recordIdFrom = " + recordIdFrom
         + ", recordIdTo = " + recordIdTo);
@@ -363,7 +378,7 @@ public class GenericRecordSetManager {
    * @param updatedRecord
    * @throws FormException when the (templateId, recordId) pair is unknown.
    */
-  static public void updateRecord(IdentifiedRecordTemplate template,
+   public void updateRecord(IdentifiedRecordTemplate template,
       DataRecord updatedRecord) throws FormException {
     Connection con = null;
 
@@ -390,7 +405,7 @@ public class GenericRecordSetManager {
    * @param deletedRecord
    * @throws FormException when the (templateId, recordId) pair is unknown.
    */
-  static public void deleteRecord(IdentifiedRecordTemplate template,
+   public void deleteRecord(IdentifiedRecordTemplate template,
       DataRecord deletedRecord) throws FormException {
     Connection con = null;
 
@@ -415,13 +430,13 @@ public class GenericRecordSetManager {
   /**
    * Get the template field declarations directly from the XML file.
    */
-  static private void selectTemplateFieldsFromXML(
+   private void selectTemplateFieldsFromXML(
       IdentifiedRecordTemplate template) throws FormException {
 
     GenericRecordTemplate genericRecordTemplate = null;
 
     try {
-      PublicationTemplate publicationTemplateImpl = PublicationTemplateManager
+      PublicationTemplate publicationTemplateImpl = PublicationTemplateManager.getInstance()
           .loadPublicationTemplate(template.getTemplateName());
       genericRecordTemplate = (GenericRecordTemplate) publicationTemplateImpl
           .getRecordTemplate();
@@ -454,7 +469,7 @@ public class GenericRecordSetManager {
   /**
    * Returns a connection.
    */
-  static private Connection getConnection() throws FormException {
+   private Connection getConnection() throws FormException {
 
     SilverTrace.info("formTemplate", "GenericRecordSetManager.getConnection()",
         "root.MSG_GEN_ENTER_METHOD");
@@ -470,7 +485,7 @@ public class GenericRecordSetManager {
   /**
    * Returns the next id in the named table.
    */
-  static private int getNextId(String tableName, String idColumn)
+   private int getNextId(String tableName, String idColumn)
       throws SQLException {
     int nextId = 0;
 
@@ -490,7 +505,7 @@ public class GenericRecordSetManager {
   /**
    * Creates the template declaration row in SB_FormTemplate_Template.
    */
-  static private void insertTemplateRow(Connection con,
+   private void insertTemplateRow(Connection con,
       IdentifiedRecordTemplate template) throws SQLException {
     PreparedStatement insert = null;
 
@@ -513,7 +528,7 @@ public class GenericRecordSetManager {
   /**
    * Creates a row for each template_fields.
    */
-  static private void insertTemplateFieldRows(Connection con,
+   private void insertTemplateFieldRows(Connection con,
       IdentifiedRecordTemplate template) throws SQLException, FormException {
     PreparedStatement insert = null;
 
@@ -566,7 +581,7 @@ public class GenericRecordSetManager {
   /**
    * Select the template header.
    */
-  static private IdentifiedRecordTemplate selectTemplateRow(Connection con,
+   private IdentifiedRecordTemplate selectTemplateRow(Connection con,
       String externalId) throws SQLException {
     PreparedStatement select = null;
     ResultSet rs = null;
@@ -595,7 +610,7 @@ public class GenericRecordSetManager {
   /**
    * Select the template field declarations.
    */
-  static private void selectTemplateFieldRows(Connection con,
+   private void selectTemplateFieldRows(Connection con,
       IdentifiedRecordTemplate template) throws SQLException, FormException {
     PreparedStatement select = null;
     ResultSet rs = null;
@@ -637,7 +652,7 @@ public class GenericRecordSetManager {
   /**
    * Deletes all the fields of the records built on this template.
    */
-  static private void deleteFieldRows(Connection con,
+   private void deleteFieldRows(Connection con,
       IdentifiedRecordTemplate template) throws SQLException {
     PreparedStatement delete = null;
 
@@ -655,7 +670,7 @@ public class GenericRecordSetManager {
   /**
    * Deletes all the records built on this template.
    */
-  static private void deleteRecordRows(Connection con,
+   private void deleteRecordRows(Connection con,
       IdentifiedRecordTemplate template) throws SQLException {
     PreparedStatement delete = null;
 
@@ -673,7 +688,7 @@ public class GenericRecordSetManager {
   /**
    * Deletes the templatefields.
    */
-  static private void deleteTemplateFieldRows(Connection con,
+   private void deleteTemplateFieldRows(Connection con,
       IdentifiedRecordTemplate template) throws SQLException {
     PreparedStatement delete = null;
 
@@ -691,7 +706,7 @@ public class GenericRecordSetManager {
   /**
    * Deletes the template.
    */
-  static private void deleteTemplateRow(Connection con,
+   private void deleteTemplateRow(Connection con,
       IdentifiedRecordTemplate template) throws SQLException {
     PreparedStatement delete = null;
 
@@ -709,7 +724,7 @@ public class GenericRecordSetManager {
   /**
    * Creates the record declaration row in SB_FormTemplate_Record.
    */
-  static private void insertRecordRow(Connection con,
+   private void insertRecordRow(Connection con,
       IdentifiedRecordTemplate template, GenericDataRecord record)
       throws SQLException {
     PreparedStatement insert = null;
@@ -743,7 +758,7 @@ public class GenericRecordSetManager {
   /**
    * Creates a row for each template_fields.
    */
-  static private void insertFieldRows(Connection con,
+   private void insertFieldRows(Connection con,
       IdentifiedRecordTemplate template, GenericDataRecord record)
       throws SQLException, FormException {
     PreparedStatement insert = null;
@@ -779,7 +794,7 @@ public class GenericRecordSetManager {
   /**
    * Select the template header.
    */
-  static private GenericDataRecord selectRecordRow(Connection con,
+   private GenericDataRecord selectRecordRow(Connection con,
       IdentifiedRecordTemplate template, String externalId, String language)
       throws SQLException, FormException {
     SilverTrace.debug("form", "GenericRecordSetManager.selectRecordRow",
@@ -824,7 +839,7 @@ public class GenericRecordSetManager {
   /**
    * Select the template field declarations.
    */
-  static private void selectFieldRows(Connection con,
+   private void selectFieldRows(Connection con,
       IdentifiedRecordTemplate template, GenericDataRecord record)
       throws SQLException, FormException {
     PreparedStatement select = null;
@@ -861,7 +876,7 @@ public class GenericRecordSetManager {
     }
   }
 
-  static private List<String> selectLanguagesOfRecord(Connection con,
+   private List<String> selectLanguagesOfRecord(Connection con,
       IdentifiedRecordTemplate template, String externalId)
       throws SQLException, FormException {
     PreparedStatement select = null;
@@ -892,7 +907,7 @@ public class GenericRecordSetManager {
   /**
    * Updates the records fields.
    */
-  static private void updateFieldRows(Connection con,
+   private void updateFieldRows(Connection con,
       IdentifiedRecordTemplate template, GenericDataRecord record)
       throws SQLException, FormException {
     PreparedStatement update = null;
@@ -941,7 +956,7 @@ public class GenericRecordSetManager {
   /**
    * Deletes the record fields.
    */
-  static private void deleteFieldRows(Connection con,
+   private void deleteFieldRows(Connection con,
       IdentifiedRecordTemplate template, GenericDataRecord record)
       throws SQLException {
     PreparedStatement delete = null;
@@ -960,7 +975,7 @@ public class GenericRecordSetManager {
   /**
    * Deletes the record.
    */
-  static private void deleteRecordRows(Connection con,
+   private void deleteRecordRows(Connection con,
       IdentifiedRecordTemplate template, GenericDataRecord record)
       throws SQLException {
     PreparedStatement delete = null;
@@ -976,7 +991,7 @@ public class GenericRecordSetManager {
     }
   }
 
-  static private void closeConnection(Connection con) throws FormException {
+   private void closeConnection(Connection con) throws FormException {
     if (con != null) {
       try {
         con.close();

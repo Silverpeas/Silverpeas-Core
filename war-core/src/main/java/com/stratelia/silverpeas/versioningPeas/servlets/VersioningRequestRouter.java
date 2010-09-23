@@ -735,10 +735,10 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
           + ":" + xmlFormShortName;
 
       // register xmlForm to object
-      PublicationTemplateManager.addDynamicPublicationTemplate(externalId,
+      getPublicationTemplateManager().addDynamicPublicationTemplate(externalId,
           xmlFormName);
 
-      PublicationTemplate pub = PublicationTemplateManager.getPublicationTemplate(externalId);
+      PublicationTemplate pub = getPublicationTemplateManager().getPublicationTemplate(externalId);
 
       RecordSet set = pub.getRecordSet();
       Form form = pub.getUpdateForm();
@@ -773,10 +773,10 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
           + ":" + xmlFormShortName;
 
       // register xmlForm to object
-      PublicationTemplateManager.addDynamicPublicationTemplate(externalId,
+      getPublicationTemplateManager().addDynamicPublicationTemplate(externalId,
           xmlFormName);
 
-      PublicationTemplate pub = PublicationTemplateManager.getPublicationTemplate(externalId);
+      PublicationTemplate pub = getPublicationTemplateManager().getPublicationTemplate(externalId);
 
       RecordSet set = pub.getRecordSet();
       Form form = pub.getUpdateForm();
@@ -809,11 +809,11 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
 
     // register xmlForm to object
-    PublicationTemplateManager.addDynamicPublicationTemplate(componentId + ":"
+    getPublicationTemplateManager().addDynamicPublicationTemplate(componentId + ":"
         + objectType + ":" + xmlFormShortName, xmlFormName);
 
     PublicationTemplateImpl pubTemplate =
-        (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(componentId
+        (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(componentId
         + ":" + objectType + ":"
         + xmlFormShortName, xmlFormName);
     Form formUpdate = pubTemplate.getUpdateForm();
@@ -865,5 +865,13 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
     request.setAttribute("Versions", versions);
     request.setAttribute("Alias", isAlias);
     return "/versioningPeas/jsp/publicVersions.jsp";
+  }
+  
+  /**
+   * Gets an instance of PublicationTemplateManager.
+   * @return an instance of PublicationTemplateManager.
+   */
+  private PublicationTemplateManager getPublicationTemplateManager() {
+    return PublicationTemplateManager.getInstance();
   }
 }

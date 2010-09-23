@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<recordTemplate>
+    <fieldTemplate>
+        <fieldName>civilite</fieldName>
+        <typeName>text</typeName>
+        <displayerName>listbox</displayerName>
+        <isMandatory>true</isMandatory>
+        <isReadOnly>false</isReadOnly>
+        <isDisabled>false</isDisabled>
+        <isHidden>false</isHidden>
+        <label>
+            <labelName>Civilité</labelName>
+            <language>fr</language>
+        </label>
+        <parameter>
+            <name>keys</name>
+            <value lang="fr">0##1##2</value>
+        </parameter>
+        <parameter>
+            <name>values</name>
+            <value lang="fr">Mademoiselle##Madame##Monsieur</value>
+        </parameter>
+    </fieldTemplate>
+    <fieldTemplate>
+        <fieldName>prenom</fieldName>
+        <typeName>text</typeName>
+        <displayerName>text</displayerName>
+        <isMandatory>true</isMandatory>
+        <isReadOnly>false</isReadOnly>
+        <isDisabled>false</isDisabled>
+        <isHidden>false</isHidden>
+        <label>
+            <labelName>Prénom</labelName>
+            <language>fr</language>
+        </label>
+    </fieldTemplate>
+    <fieldTemplate>
+        <fieldName>nom</fieldName>
+        <typeName>text</typeName>
+        <displayerName>text</displayerName>
+        <isMandatory>true</isMandatory>
+        <isReadOnly>false</isReadOnly>
+        <isDisabled>false</isDisabled>
+        <isHidden>false</isHidden>
+        <label>
+            <labelName>Nom</labelName>
+            <language>fr</language>
+        </label>
+    </fieldTemplate>
+    <fieldTemplate>
+        <fieldName>naissance</fieldName>
+        <typeName>date</typeName>
+        <displayerName>date</displayerName>
+        <isMandatory>true</isMandatory>
+        <isReadOnly>false</isReadOnly>
+        <isDisabled>false</isDisabled>
+        <isHidden>false</isHidden>
+        <label>
+            <labelName>Date de naissance</labelName>
+            <language>fr</language>
+        </label>
+    </fieldTemplate>
+    <fieldTemplate>
+        <fieldName>numSS</fieldName>
+        <typeName>text</typeName>
+        <displayerName>text</displayerName>
+        <isMandatory>true</isMandatory>
+        <isReadOnly>false</isReadOnly>
+        <isDisabled>false</isDisabled>
+        <isHidden>false</isHidden>
+        <label>
+            <labelName>N° sécurité sociale</labelName>
+            <language>fr</language>
+        </label>
+        <parameter>
+            <name>size</name>
+            <value lang="fr">20</value>
+        </parameter>
+        <parameter>
+            <name>maxLength</name>
+            <value lang="fr">15</value>
+        </parameter>
+    </fieldTemplate>
+</recordTemplate>

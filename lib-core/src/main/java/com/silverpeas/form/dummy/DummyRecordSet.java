@@ -43,6 +43,7 @@ public class DummyRecordSet implements RecordSet {
   /**
    * Returns the RecordTemplate shared by all the DataRecord of this RecordSet.
    */
+  @Override
   public RecordTemplate getRecordTemplate() {
     return recordTemplate;
   }
@@ -50,6 +51,7 @@ public class DummyRecordSet implements RecordSet {
   /**
    * Returns an empty DataRecord built on the RecordTemplate.
    */
+  @Override
   public DataRecord getEmptyRecord() throws FormException {
     return recordTemplate.getEmptyRecord();
   }
@@ -57,10 +59,12 @@ public class DummyRecordSet implements RecordSet {
   /**
    * This dummy record set always return a dummy record.
    */
+  @Override
   public DataRecord getRecord(String recordId) throws FormException {
     return recordTemplate.getEmptyRecord();
   }
 
+  @Override
   public DataRecord getRecord(String recordId, String language)
       throws FormException {
     return recordTemplate.getEmptyRecord();
@@ -81,23 +85,28 @@ public class DummyRecordSet implements RecordSet {
   /**
    * This dummy record set simply do nothing.
    */
+  @Override
   public void save(DataRecord record) throws FormException {
   }
 
   /**
    * This dummy record set simply do nothing.
    */
+  @Override
   public void delete(DataRecord record) throws FormException {
   }
 
+  @Override
   public void clone(String originalExternalId, String originalComponentId, String cloneExternalId,
       String cloneComponentId) throws FormException {
   }
 
+  @Override
   public void merge(String fromExternalId, String fromComponentId, String toExternalId,
       String toComponentId) throws FormException {
   }
 
+  @Override
   public void indexRecord(String recordId, String formName,
       FullIndexEntry indexEntry) throws FormException {
   }

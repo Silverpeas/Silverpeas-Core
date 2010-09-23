@@ -238,7 +238,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
       // Creates datafolder in database
       folder = model.getDataFolder();
       template = folder.toRecordTemplate(null, null, true);
-      GenericRecordSetManager.createRecordSet(model.getFolderRecordSetName(),
+      getGenericRecordSetManager().createRecordSet(model.getFolderRecordSetName(),
           template);
 
       // Creates forms in database
@@ -250,7 +250,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
         while (iterForm.hasNext()) {
           form = iterForm.next();
           template = form.toRecordTemplate(null, null);
-          GenericRecordSetManager.createRecordSet(model.getFormRecordSetName(form.getName()),
+          getGenericRecordSetManager().createRecordSet(model.getFormRecordSetName(form.getName()),
               template);
         }
       }
@@ -280,7 +280,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
 
       // delete the folder
       formName = model.getFolderRecordSetName();
-      GenericRecordSetManager.removeRecordSet(formName);
+      getGenericRecordSetManager().removeRecordSet(formName);
 
       // delete forms associated to actions
       forms = model.getForms();
@@ -289,7 +289,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
 
         while (iterForm.hasNext()) {
           formName = iterForm.next().getName();
-          GenericRecordSetManager.removeRecordSet(model.getFormRecordSetName(formName));
+          getGenericRecordSetManager().removeRecordSet(model.getFormRecordSetName(formName));
           SilverTrace.info("workflowEngine",
               "ProcessModelManagerImpl.deleteProcessModel",
               "root.MSG_GEN_PARAM_VALUE", instanceId + " : Removing form '"
@@ -582,5 +582,13 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
       processModelDir = processModelDir + '/';
     }
     return processModelDir + processFileName;
+  }
+  
+  /**
+   * Gets an instance of a GenericRecordSet objects manager.
+   * @return a GenericRecordSetManager instance.
+   */
+  private GenericRecordSetManager getGenericRecordSetManager() {
+    return GenericRecordSetManager.getInstance();
   }
 }

@@ -134,7 +134,7 @@ public class VersioningIndexer {
         "root.MSG_GEN_ENTER_METHOD", "indexEntry = " + indexEntry.toString());
     try {
       String objectType = "Versioning";
-      PublicationTemplate pub = PublicationTemplateManager
+      PublicationTemplate pub = PublicationTemplateManager.getInstance()
           .getPublicationTemplate(indexEntry.getComponent() + ":" + objectType
           + ":" + xmlFormName);
       RecordSet set = pub.getRecordSet();

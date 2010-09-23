@@ -565,8 +565,7 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
     IdentifiedRecordTemplate idTemplate;
     int templateId = -1;
     try {
-      RecordSet recordSet = GenericRecordSetManager
-          .getRecordSet(getFolderRecordSetName());
+      RecordSet recordSet = getGenericRecordSetManager().getRecordSet(getFolderRecordSetName());
       idTemplate = (IdentifiedRecordTemplate) recordSet.getRecordTemplate();
       templateId = idTemplate.getInternalId();
     } catch (FormException e) {
@@ -586,8 +585,8 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    */
   public RecordSet getFormRecordSet(String formName) throws WorkflowException {
     try {
-      RecordSet recordSet = GenericRecordSetManager
-          .getRecordSet(getFormRecordSetName(formName));
+      RecordSet recordSet =
+              getGenericRecordSetManager().getRecordSet(getFormRecordSetName(formName));
 
       /*
        * If recordset cannot be found, form is a new Form declared after peas instanciation : add it
@@ -595,9 +594,9 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
       if (recordSet instanceof DummyRecordSet) {
         Form form = getForm(formName);
         RecordTemplate template = form.toRecordTemplate(null, null);
-        GenericRecordSetManager.createRecordSet(getFormRecordSetName(formName),
+        getGenericRecordSetManager().createRecordSet(getFormRecordSetName(formName),
             template);
-        recordSet = GenericRecordSetManager.getRecordSet(getFormRecordSetName(formName));
+        recordSet = getGenericRecordSetManager().getRecordSet(getFormRecordSetName(formName));
       }
       
       IdentifiedRecordTemplate template = (IdentifiedRecordTemplate) recordSet
@@ -869,5 +868,13 @@ public class ProcessModelImpl implements ProcessModel, AbstractDescriptor, Seria
    */
   public boolean hasId() {
     return hasId;
+  }
+  
+  /**
+   * Gets an instance of a GenericRecordSet objects manager.
+   * @return a GenericRecordSetManager instance.
+   */
+  private GenericRecordSetManager getGenericRecordSetManager() {
+    return GenericRecordSetManager.getInstance();
   }
 }

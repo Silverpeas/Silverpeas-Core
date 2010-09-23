@@ -26,9 +26,6 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="check.jsp" %>
-<%
-Iterator templates = ((List) request.getAttribute("Templates")).iterator();
-%>
 <html>
 <head>
 <%
@@ -37,6 +34,8 @@ Iterator templates = ((List) request.getAttribute("Templates")).iterator();
 </head>
 <body>
 <%
+Iterator templates = (Iterator) ((List)request.getAttribute("Templates")).iterator();
+
 browseBar.setDomainName(resource.getString("templateDesigner.toolName"));
 browseBar.setComponentName(resource.getString("templateDesigner.templateList"));
 
@@ -50,10 +49,9 @@ arrayPane.addArrayColumn(resource.getString("GML.description"));
 ArrayColumn arrayColumn2 = arrayPane.addArrayColumn(resource.getString("templateDesigner.visibility"));
 arrayColumn2.setSortable(false);
 
-while (templates.hasNext())
-{
-	PublicationTemplate template = (PublicationTemplate) templates.next();
-	
+while(templates.hasNext())
+{	
+  PublicationTemplate template = (PublicationTemplate) templates.next();
 	ArrayLine ligne = arrayPane.addArrayLine();
 	
 	ligne.addArrayCellLink(template.getName(), "ViewTemplate?Template="+template.getFileName());

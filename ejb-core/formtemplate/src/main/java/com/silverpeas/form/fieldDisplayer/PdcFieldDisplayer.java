@@ -644,7 +644,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
     if (values.isEmpty()) {
       return pathSeparator;
     }
-    StringBuffer path = new StringBuffer();
+    StringBuilder path = new StringBuilder();
     for (int i = 0; i < values.size(); i++) {
       path.append(values.get(i).getName(language)).append(pathSeparator);
     }

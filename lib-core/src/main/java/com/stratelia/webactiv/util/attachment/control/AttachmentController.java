@@ -995,10 +995,9 @@ public class AttachmentController {
         "root.MSG_GEN_ENTER_METHOD", "indexEntry = " + indexEntry.toString());
     try {
       String objectType = "Attachment";
-      PublicationTemplate pub =
-          PublicationTemplateManager.getPublicationTemplate(indexEntry.getComponent() + ":" +
-          objectType
-          + ":" + xmlFormName);
+      PublicationTemplate pub = PublicationTemplateManager.getInstance()
+              .getPublicationTemplate(indexEntry.getComponent() + ":" + objectType + ":" +
+              xmlFormName);
       RecordSet set = pub.getRecordSet();
       set.indexRecord(pk.getId(), xmlFormName, indexEntry);
     } catch (Exception e) {

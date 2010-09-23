@@ -86,7 +86,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   private RecordSet recordSet = null;
   private Form updateForm = null;
   private Form viewForm = null;
-  private Form searchForm = null;
+  //private Form searchForm = null;
   private ArrayList<TemplateFile> templateFiles = new ArrayList<TemplateFile>();
 
   /**
@@ -130,7 +130,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
         return recordSet;
       }
 
-      RecordSet rs = GenericRecordSetManager.getRecordSet(this.externalId);
+      RecordSet rs = getGenericRecordSetManager().getRecordSet(this.externalId);
       if ((rs != null) && !(rs instanceof DummyRecordSet)) {
         recordSet = rs;
       }
@@ -205,7 +205,8 @@ public class PublicationTemplateImpl implements PublicationTemplate {
 
   @Override
   public Form getSearchForm() throws PublicationTemplateException {
-    if (searchForm == null) {
+    Form searchForm = null;
+//    if (searchForm == null) {
       if (isSearchable()) {
         RecordTemplate templateForm = loadRecordTemplate(searchFileName);
         try {
@@ -215,7 +216,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
               "form.EX_CANT_GET_FORM", null, e);
         }
       }
-    }
+    //}
     return searchForm;
   }
 
@@ -387,6 +388,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   /**
    *
    */
+  @Override
   public void setExternalId(String externalId) {
     this.externalId = externalId;
   }
@@ -394,6 +396,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   /**
    *
    */
+  @Override
   public String getExternalId() {
     return externalId;
   }
@@ -618,5 +621,13 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     cloneTemplate.setUpdateTypeFile(getUpdateTypeFile());
     cloneTemplate.setExternalId(getExternalId());
     return cloneTemplate;
+  }
+  
+  /**
+   * Gets an instance of a GenericRecordSet objects manager.
+   * @return a GenericRecordSetManager instance.
+   */
+  protected GenericRecordSetManager getGenericRecordSetManager() {
+    return GenericRecordSetManager.getInstance();
   }
 }

@@ -81,6 +81,7 @@ public class XmlSearchForm extends AbstractForm {
    * <LI>a field has not the required type.
    * </UL>
    */
+  @Override
   public void displayScripts(JspWriter jw, PagesContext PagesContext) {
   }
 
@@ -93,6 +94,7 @@ public class XmlSearchForm extends AbstractForm {
    * <LI>a field has not the required type.
    * </UL>
    */
+  @Override
   public String toString(PagesContext pagesContext, DataRecord record) {
     SilverTrace.info("form", "XmlSearchForm.toString",
         "root.MSG_GEN_ENTER_METHOD");
@@ -256,6 +258,7 @@ public class XmlSearchForm extends AbstractForm {
    * <LI>a field has not the required type.
    * </UL>
    */
+  @Override
   public void display(JspWriter jw, PagesContext pagesContext, DataRecord record) {
     SilverTrace.info("form", "XmlSearchForm.display",
         "root.MSG_GEN_ENTER_METHOD");
@@ -459,6 +462,7 @@ public class XmlSearchForm extends AbstractForm {
   /**
    * Get the form title
    */
+  @Override
   public String getTitle() {
     return title;
   }
@@ -466,10 +470,12 @@ public class XmlSearchForm extends AbstractForm {
   /**
    * Set the form title
    */
+  @Override
   public void setTitle(String title) {
     this.title = title;
   }
 
+  @Override
   public boolean isEmpty(List<FileItem> items, DataRecord record,
       PagesContext pagesContext) {
     boolean isEmpty = true;

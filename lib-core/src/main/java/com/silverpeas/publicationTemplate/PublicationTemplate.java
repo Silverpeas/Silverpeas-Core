@@ -32,10 +32,11 @@ import com.silverpeas.form.RecordTemplate;
  * A PublicationTemplate describes a set of publication records built on a same template. A
  * PublicationTemplate groups :
  * <OL>
- * <LI>a RecordTemplate which describes the built records.
- * <LI>a RecordSet of records built on this template,
- * <LI>an update Form used to create and update the publication items
- * <LI>a view Form used to show the publications.
+ * <LI>a RecordTemplate which describes the built records.</LI>
+ * <LI>a RecordSet of records built on this template,</LI>
+ * <LI>an update Form used to create and update the publication items</LI>
+ * <LI>a view Form used to show the publications.</LI>
+ * <LI>a search form used to search the publication records.</LI>
  * </OL>
  */
 public interface PublicationTemplate {
@@ -81,7 +82,15 @@ public interface PublicationTemplate {
 
   public String getFileName();
 
+  /**
+   * Is this publication template is visible to others?
+   * @return true if it is visible, false otherwise.
+   */
   public boolean isVisible();
 
+  /**
+   * Is the publication records described by this template can be searchable?
+   * @return true if the records are searchable, false othersise.
+   */
   public boolean isSearchable();
 }

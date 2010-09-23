@@ -55,6 +55,7 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
+  @Override
   public String getSessionControlBeanName() {
     return "TemplateDesigner";
   }
@@ -66,6 +67,7 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
    * @return
    * @see
    */
+  @Override
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new TemplateDesignerSessionController(mainSessionCtrl,
@@ -80,6 +82,7 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
+  @Override
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
     String destination = "";
@@ -148,8 +151,7 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
         destination = getDestination("Main", componentSC, request);
       } else if (function.equals("ViewFields")) {
         request.setAttribute("Fields", templateDesignerSC.getFields());
-        request.setAttribute("UpdateInProgress", new Boolean(templateDesignerSC
-            .isUpdateInProgress()));
+        request.setAttribute("UpdateInProgress", templateDesignerSC.isUpdateInProgress());
 
         destination = root + "fields.jsp";
       } else if (function.equals("NewField")) {
@@ -264,7 +266,7 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
   private PublicationTemplate request2Template(HttpServletRequest request) {
     String name = request.getParameter("Name");
     String description = request.getParameter("Description");
-    String visible = request.getParameter("Visible");
+    boolean visible = "true".equalsIgnoreCase(request.getParameter("Visible"));
     String thumbnail = request.getParameter("Thumbnail");
     boolean searchable = "true".equalsIgnoreCase(request
         .getParameter("Searchable"));
@@ -273,7 +275,7 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
     template.setName(name);
     template.setDescription(description);
     template.setThumbnail(thumbnail);
-    template.setVisible(isDefined(visible) && visible.equals("true"));
+    template.setVisible(visible);
 
     if (searchable)
       template.setSearchFileName("dummy");

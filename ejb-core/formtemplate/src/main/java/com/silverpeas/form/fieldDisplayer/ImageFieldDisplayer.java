@@ -136,7 +136,6 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
    * @param pagesContext
    * @throws FormException
    */
-
   public void display(PrintWriter out, Field field, FieldTemplate template,
       PagesContext pagesContext, String webContext) throws FormException {
     SilverTrace.info("form", "ImageFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
@@ -263,9 +262,9 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
 
           StringBuilder stringBuilder = new StringBuilder();
           stringBuilder.append(" ").append(Util.getString("GML.or", language)).append(" ");
-          stringBuilder.append("<select id=\"galleryFile_" + fieldName +
-              "\" name=\"componentId\" onchange=\"openGalleryFileManager" + fieldNameFunction +
-              "();this.selectedIndex=0\">");
+          stringBuilder.append("<select id=\"galleryFile_").append(fieldName).
+                  append("\" name=\"componentId\" onchange=\"openGalleryFileManager").
+                  append(fieldNameFunction).append("();this.selectedIndex=0\">");
           stringBuilder.append("<option value=\"\">");
           stringBuilder.append(Util.getString("GML.galleries", language));
           stringBuilder.append("</option>");
