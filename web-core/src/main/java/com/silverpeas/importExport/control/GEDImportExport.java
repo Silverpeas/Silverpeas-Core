@@ -419,8 +419,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
       if (field != null) {
         FieldTemplate fieldTemplate = pub.getRecordTemplate().getFieldTemplate(xmlFieldName);
         if (fieldTemplate != null) {
-          FieldDisplayer fieldDisplayer = TypeManager.getDisplayer(field.getTypeName(),
-              fieldTemplate.getDisplayerName());
+          FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(
+                  field.getTypeName(), fieldTemplate.getDisplayerName());
           if (field.getTypeName().equals(FileField.TYPE)) {
             String context = null;
             if (fieldTemplate.getDisplayerName().equals("image")) {

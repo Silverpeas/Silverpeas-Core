@@ -167,10 +167,10 @@ public class XmlSearchForm extends AbstractForm {
           fieldDisplayerName = fieldTemplate.getDisplayerName();
           try {
             if (fieldDisplayerName == null || fieldDisplayerName.equals("")) {
-              fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
+              fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
             }
 
-            fieldDisplayer = TypeManager.getDisplayer(fieldType,
+            fieldDisplayer = getTypeManager().getDisplayer(fieldType,
                 fieldDisplayerName);
             if (fieldDisplayer != null) {
               lastFieldIndex += fieldDisplayer.getNbHtmlObjectsDisplayed(
@@ -195,9 +195,9 @@ public class XmlSearchForm extends AbstractForm {
           fieldDisplayerName = fieldTemplate.getDisplayerName();
           try {
             if (fieldDisplayerName == null || fieldDisplayerName.equals(""))
-              fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
+              fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
 
-            fieldDisplayer = TypeManager.getDisplayer(fieldType,
+            fieldDisplayer = getTypeManager().getDisplayer(fieldType,
                 fieldDisplayerName);
           } catch (FormException fe) {
             SilverTrace.error("form", "XmlSearchForm.toString",
@@ -328,10 +328,10 @@ public class XmlSearchForm extends AbstractForm {
             fieldDisplayerName = fieldTemplate.getDisplayerName();
             try {
               if (fieldDisplayerName == null || fieldDisplayerName.equals("")) {
-                fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
+                fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
               }
 
-              fieldDisplayer = TypeManager.getDisplayer(fieldType,
+              fieldDisplayer = getTypeManager().getDisplayer(fieldType,
                   fieldDisplayerName);
               if (fieldDisplayer != null) {
                 lastFieldIndex += fieldDisplayer.getNbHtmlObjectsDisplayed(
@@ -356,9 +356,9 @@ public class XmlSearchForm extends AbstractForm {
             fieldDisplayerName = fieldTemplate.getDisplayerName();
             try {
               if (fieldDisplayerName == null || fieldDisplayerName.equals(""))
-                fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
+                fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
 
-              fieldDisplayer = TypeManager.getDisplayer(fieldType,
+              fieldDisplayer = getTypeManager().getDisplayer(fieldType,
                   fieldDisplayerName);
             } catch (FormException fe) {
               SilverTrace.error("form", "XmlSearchForm.display",
@@ -492,8 +492,8 @@ public class XmlSearchForm extends AbstractForm {
           String fieldDisplayerName = fieldTemplate.getDisplayerName();
           try {
             if (!StringUtil.isDefined(fieldDisplayerName))
-              fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
-            fieldDisplayer = TypeManager.getDisplayer(fieldType,
+              fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
+            fieldDisplayer = getTypeManager().getDisplayer(fieldType,
                 fieldDisplayerName);
             if (fieldDisplayer != null) {
               String itemName = fieldTemplate.getFieldName();
@@ -526,4 +526,9 @@ public class XmlSearchForm extends AbstractForm {
     }
     return isEmpty;
   }
+  
+  private TypeManager getTypeManager() {
+    return TypeManager.getInstance();
+  }
+     
 }

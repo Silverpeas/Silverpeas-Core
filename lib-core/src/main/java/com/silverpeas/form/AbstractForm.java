@@ -140,9 +140,9 @@ public abstract class AbstractForm implements Form {
             FieldDisplayer fieldDisplayer = null;
             try {
               if (fieldDisplayerName == null || fieldDisplayerName.isEmpty()) {
-                fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
+                fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
               }
-              fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
+              fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
 
               if (fieldDisplayer != null) {
                 out.append("	field = document.getElementById(\"")
@@ -245,10 +245,10 @@ public abstract class AbstractForm implements Form {
         String fieldDisplayerName = fieldTemplate.getDisplayerName();
         try {
           if ((fieldDisplayerName == null) || (fieldDisplayerName.isEmpty())) {
-            fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
+            fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
           }
           if ((!"wysiwyg".equals(fieldDisplayerName) || updateWysiwyg)) {
-            fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
+            fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
             if (fieldDisplayer != null) {
               attachmentIds.addAll(fieldDisplayer.update(items, record.getField(fieldName),
                       fieldTemplate, pagesContext));
@@ -286,10 +286,10 @@ public abstract class AbstractForm implements Form {
         String fieldDisplayerName = fieldTemplate.getDisplayerName();
         try {
           if ((fieldDisplayerName == null) || (fieldDisplayerName.isEmpty())) {
-            fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
+            fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
           }
           if ("wysiwyg".equals(fieldDisplayerName)) {
-            fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
+            fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
             if (fieldDisplayer != null) {
               attachmentIds.addAll(fieldDisplayer.update(items, record.getField(fieldName),
                       fieldTemplate, pagesContext));
@@ -323,9 +323,9 @@ public abstract class AbstractForm implements Form {
         String fieldDisplayerName = fieldTemplate.getDisplayerName();
         try {
           if (!StringUtil.isDefined(fieldDisplayerName)) {
-            fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
+            fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
           }
-          fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
+          fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
           if (fieldDisplayer != null) {
             String itemName = fieldTemplate.getFieldName();
             FileItem item = getParameter(items, itemName);
@@ -387,5 +387,9 @@ public abstract class AbstractForm implements Form {
       }
     }
     return fileItem;
+  }
+  
+  private TypeManager getTypeManager() {
+    return TypeManager.getInstance();
   }
 }

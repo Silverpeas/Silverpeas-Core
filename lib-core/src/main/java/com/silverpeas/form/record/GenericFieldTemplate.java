@@ -99,7 +99,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
    */
   private void init() throws FormException {
     if (fieldImpl == null) {
-      fieldImpl = TypeManager.getFieldImplementation(typeName);
+      fieldImpl = TypeManager.getInstance().getFieldImplementation(typeName);
     }
 
     // we build a dummy field to test if the class implements Field.
@@ -137,7 +137,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
    */
   public void setTypeName(String typeName) throws FormException {
     this.typeName = typeName;
-    this.fieldImpl = TypeManager.getFieldImplementation(typeName);
+    this.fieldImpl = TypeManager.getInstance().getFieldImplementation(typeName);
   }
 
   /**

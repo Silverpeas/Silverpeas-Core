@@ -157,8 +157,8 @@ public class GenericRecordSet implements RecordSet, Serializable {
             String fieldDisplayerName = fieldTemplate.getDisplayerName();
             try {
               if (fieldDisplayerName == null || fieldDisplayerName.equals(""))
-                fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
-              FieldDisplayer fieldDisplayer = TypeManager.getDisplayer(
+                fieldDisplayerName = TypeManager.getInstance().getDisplayerName(fieldType);
+              FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(
                   fieldType, fieldDisplayerName);
               if (fieldDisplayer != null) {
                 String key = formName + "$$" + fieldName;

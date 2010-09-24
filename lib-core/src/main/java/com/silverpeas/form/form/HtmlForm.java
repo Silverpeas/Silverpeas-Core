@@ -229,7 +229,7 @@ public class HtmlForm extends AbstractForm {
             fieldType = fieldTemplate.getTypeName();
             fieldDisplayerName = fieldTemplate.getDisplayerName();
 
-            FieldDisplayer fieldDisplayer = TypeManager.getDisplayer(
+            FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(
                     fieldType, fieldDisplayerName);
 
             if (fieldDisplayer != null) {

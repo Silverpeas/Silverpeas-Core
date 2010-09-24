@@ -85,7 +85,7 @@ public class FormTemplateImportExport {
         FieldTemplate fieldTemplate = pub.getRecordTemplate().getFieldTemplate(
             xmlFieldName);
         if (fieldTemplate != null) {
-          FieldDisplayer fieldDisplayer = TypeManager.getDisplayer(field
+          FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(field
               .getTypeName(), fieldTemplate.getDisplayerName());
           if (Field.TYPE_FILE.equals(field.getTypeName())) {
             String context = null;

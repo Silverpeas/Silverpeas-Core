@@ -66,10 +66,13 @@ public class PublicationTemplateManager {
   
   private static final PublicationTemplateManager instance = new PublicationTemplateManager();
   
+  // PublicationTemplates instances associated to silverpeas components. Theses templates should
+  // already exist and be loaded.
   // map externalId -> PublicationTemplate
-  private Map<String, PublicationTemplate> pubTemplate =
+  private Map<String, PublicationTemplate> externalTemplates =
       new HashMap<String, PublicationTemplate>();
 
+  // All of the PublicationTemplates loaded in silverpeas and identified by their XML file.
   // map templateFileName -> PublicationTemplate to avoid multiple marshalling
   private Map<String, PublicationTemplateImpl> templates =
       new HashMap<String, PublicationTemplateImpl>();
@@ -152,7 +155,7 @@ public class PublicationTemplateManager {
    public PublicationTemplate getPublicationTemplate(String externalId,
       String templateFileName) throws PublicationTemplateException {
     String currentTemplateFileName = templateFileName;
-    PublicationTemplate thePubTemplate = pubTemplate.get(externalId);
+    PublicationTemplate thePubTemplate = externalTemplates.get(externalId);
     if (thePubTemplate == null) {
       if (templateFileName == null) {
         try {
@@ -167,7 +170,7 @@ public class PublicationTemplateManager {
       }
       thePubTemplate = loadPublicationTemplate(currentTemplateFileName);
       thePubTemplate.setExternalId(externalId);
-      pubTemplate.put(externalId, thePubTemplate);
+      externalTemplates.put(externalId, thePubTemplate);
     }
 
     return thePubTemplate;
@@ -179,7 +182,7 @@ public class PublicationTemplateManager {
    public void removePublicationTemplate(String externalId)
       throws PublicationTemplateException {
     try {
-      // pubTemplate.remove(externalId);
+      // externalTemplates.remove(externalId);
 
       getGenericRecordSetManager().removeRecordSet(externalId);
     } catch (FormException e) {
@@ -369,17 +372,17 @@ public class PublicationTemplateManager {
     SilverTrace.info("form", "PublicationTemplateManager.removePublicationTemplateFromCaches",
         "root.MSG_GEN_ENTER_METHOD", "fileName = " + fileName);
     List<String> externalIdsToRemove = new ArrayList<String>();
-    Collection<PublicationTemplate> publicationTemplates = pubTemplate.values();
+    Collection<PublicationTemplate> publicationTemplates = externalTemplates.values();
     for (PublicationTemplate template : publicationTemplates) {
       if (template.getFileName().equals(fileName)) {
         externalIdsToRemove.add(template.getExternalId());
       }
     }
     for (String externalId : externalIdsToRemove) {
-      pubTemplate.remove(externalId);
+      externalTemplates.remove(externalId);
     }
 
-    publicationTemplates.remove(fileName);
+    templates.remove(fileName);
 
     getGenericRecordSetManager().removeTemplateFromCache(fileName);
   }

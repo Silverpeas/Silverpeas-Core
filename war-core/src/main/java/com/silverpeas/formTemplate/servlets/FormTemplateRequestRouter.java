@@ -24,7 +24,6 @@
 
 package com.silverpeas.formTemplate.servlets;
 
-import java.util.Hashtable;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,11 +46,14 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FormTemplateRequestRouter extends ComponentRequestRouter {
 
   private static final long serialVersionUID = 1L;
 
+  @Override
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext context) {
     return ((ComponentSessionController) new FormTemplateSessionController(
@@ -62,6 +64,7 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
+  @Override
   public String getSessionControlBeanName() {
     return "formTemplate";
   }
@@ -75,6 +78,7 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter {
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
+  @Override
   public String getDestination(
       String function,
       ComponentSessionController componentSC,
@@ -179,7 +183,7 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter {
         form.update(items, data, context);
         set.save(data);
 
-        Hashtable<String, String> params = new Hashtable<String, String>();
+        Map<String, String> params = new HashMap<String, String>();
         params.put("ObjectId", objectId);
         params.put("ObjectType", objectType);
         params.put("ObjectLanguage", objectLanguage);

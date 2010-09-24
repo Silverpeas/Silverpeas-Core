@@ -53,11 +53,12 @@ public class AbstractFormTest {
 
   @Before
   public void setUp() throws Exception {
-    TypeManager.setDisplayer(MyFieldDisplayer.class.getName(),
+    TypeManager typeManager = TypeManager.getInstance();
+    typeManager.setDisplayer(MyFieldDisplayer.class.getName(),
             FIELD_TYPE, FIELD_NAME1, true);
-    TypeManager.setDisplayer(MyFieldDisplayer.class.getName(),
+    typeManager.setDisplayer(MyFieldDisplayer.class.getName(),
             FIELD_TYPE, FIELD_NAME2, true);
-    TypeManager.setDisplayer(MyFieldDisplayer.class.getName(),
+    typeManager.setDisplayer(MyFieldDisplayer.class.getName(),
             FIELD_WYSIWYG_TYPE, FIELD_WYSIWYG, true);
   }
 

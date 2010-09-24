@@ -150,10 +150,10 @@ public class XmlForm extends AbstractForm {
           if (record == null || (record != null && field != null)) {
             try {
               if (fieldDisplayerName == null || fieldDisplayerName.equals("")) {
-                fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
+                fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
               }
 
-              fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
+              fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
               if (fieldDisplayer != null) {
                 lastFieldIndex += fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc);
               }
@@ -193,9 +193,9 @@ public class XmlForm extends AbstractForm {
           if (field != null) {
             try {
               if (fieldDisplayerName == null || fieldDisplayerName.equals(""))
-                fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
+                fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
 
-              fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
+              fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
             } catch (FormException fe) {
               SilverTrace.error("form", "XmlForm.toString", "form.EXP_UNKNOWN_DISPLAYER", null, fe);
             }
@@ -360,10 +360,10 @@ public class XmlForm extends AbstractForm {
             if (record == null || (record != null && field != null)) {
               try {
                 if (fieldDisplayerName == null || fieldDisplayerName.equals("")) {
-                  fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
+                  fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
                 }
 
-                fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
+                fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
                 if (fieldDisplayer != null) {
                   lastFieldIndex += fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc);
                 }
@@ -411,9 +411,9 @@ public class XmlForm extends AbstractForm {
             if (record == null || (record != null && field != null)) {
               try {
                 if (fieldDisplayerName == null || fieldDisplayerName.equals(""))
-                  fieldDisplayerName = TypeManager.getDisplayerName(fieldType);
+                  fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
 
-                fieldDisplayer = TypeManager.getDisplayer(fieldType, fieldDisplayerName);
+                fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
               } catch (FormException fe) {
                 SilverTrace
                     .error("form", "XmlForm.display", "form.EXP_UNKNOWN_DISPLAYER", null, fe);
@@ -487,5 +487,9 @@ public class XmlForm extends AbstractForm {
     } catch (java.io.IOException fe) {
       SilverTrace.error("form", "XmlForm.display", "form.EXP_CANT_WRITE", null, fe);
     }
+  }
+  
+  private TypeManager getTypeManager() {
+    return TypeManager.getInstance();
   }
 }
