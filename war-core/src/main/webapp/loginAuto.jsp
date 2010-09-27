@@ -32,19 +32,20 @@
 <%@ page import="com.stratelia.webactiv.kmelia.KmeliaSecurity"%>
 
 <%
-HttpSession 			httpSession		= request.getSession();
-//System.out.println("SessionId = "+httpSession.getId());
-String 					redirection 	= (String) httpSession.getValue("gotoNew");
-//System.out.println("redirection = "+redirection);
-ResourceLocator 		mesLook		= new ResourceLocator("com.silverpeas.lookSilverpeasV5.multilang.lookBundle", "fr");
-ResourceLocator authenticationBundle = new ResourceLocator("com.silverpeas.authentication.multilang.authentication", "");
+   HttpSession httpSession = request.getSession();
+    String redirection = (String) httpSession.getAttribute("gotoNew");
+    ResourceLocator mesLook = new ResourceLocator(
+        "com.silverpeas.lookSilverpeasV5.multilang.lookBundle", "fr");
+    ResourceLocator authenticationBundle = new ResourceLocator(
+        "com.silverpeas.authentication.multilang.authentication", "");
 
-String errorCode = request.getParameter("ErrorCode");
-if (errorCode == null || errorCode.equals("null"))
-	errorCode = "";
+    String errorCode = request.getParameter("ErrorCode");
+    if (errorCode == null || errorCode.equals("null")) {
+      errorCode = "";
+    }
 
-String componentId 	= (String) httpSession.getValue("RedirectToComponentId");
-String spaceId 		= (String) httpSession.getValue("RedirectToSpaceId");
+String componentId 	= (String) httpSession.getAttribute("RedirectToComponentId");
+String spaceId 		= (String) httpSession.getAttribute("RedirectToSpaceId");
 
 boolean isAnonymousAccessAuthorized = false;
 if (redirection == null && componentId == null && spaceId == null)
@@ -53,9 +54,10 @@ if (redirection == null && componentId == null && spaceId == null)
 }
 else
 {
-	OrganizationController 	organization		= new OrganizationController();
-	ResourceLocator 		settings		 	= new ResourceLocator("com.stratelia.webactiv.util.viewGenerator.settings.SilverpeasV5", "");
-	String 					guestId 			= settings.getString("guestId");
+	OrganizationController organization = new OrganizationController();
+    ResourceLocator settings = new ResourceLocator(
+        "com.stratelia.webactiv.util.viewGenerator.settings.SilverpeasV5", "");
+    String guestId = settings.getString("guestId");
 
 	if (guestId != null)
 	{
@@ -69,8 +71,6 @@ else
 			if (isAnonymousAccessAuthorized && redirection != null && componentId.startsWith("kmelia"))
 			{
 				String objectId = KmeliaHelper.extractObjectIdFromURL(redirection);
-				//System.out.println("objectId = "+objectId);
-				//System.out.println("objectType = "+KmeliaHelper.extractObjectTypeFromURL(redirection));
 				String objectType = KmeliaHelper.extractObjectTypeFromURL(redirection);
 				if ("Publication".equals(objectType))
 				{
@@ -88,8 +88,6 @@ else
 		}
 	}
 }
-
-//System.out.println("loginAuto.jsp : isAnonymousAccessAuthorized = "+isAnonymousAccessAuthorized);
 %>
 
 <html>
@@ -117,8 +115,6 @@ input{
 <![endif]-->
 
 <script type="text/javascript">
-// Bill Dortch, hIdaho Design
-// (bdortch@netw.com)
 function getCookieVal (offset) {
 	var endstr = document.cookie.indexOf (";", offset);
     if (endstr == -1)
@@ -207,9 +203,8 @@ if (isAnonymousAccessAuthorized) { %>
 		form.submit();
 	</script>
 <% } else {
-
 	// list of domains
-	ArrayList domainsIds = lpAuth.getDomainsIds();
+	java.util.List domainsIds = lpAuth.getDomainsIds();
 	//------------------------------------------------------------------
 %>
 <body>
