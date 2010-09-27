@@ -1117,7 +1117,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             + ", componentId = " + componentId);
 
     DocumentVersion version = versioningUtil.getLastPublicVersion(new DocumentPK(
-        new Integer(documentId).intValue(), "useless", componentId));
+        Integer.parseInt(documentId), "useless", componentId));
 
     String urlVersioning = versioningUtil.getDocumentVersionURL(componentId,
         version.getLogicalName(), documentId, version.getPk().getId());
