@@ -45,7 +45,7 @@
     String 			m_SpaceName 		= space.getName(resource.getLanguage());
     String 			m_Description 		= space.getDescription(resource.getLanguage());
     
-    Vector 		availableLooks			= gef.getAvailableLooks();
+    List 		availableLooks			= gef.getAvailableLooks();
     String		spaceLook				= space.getLook();
 
     if (spaceLook == null)

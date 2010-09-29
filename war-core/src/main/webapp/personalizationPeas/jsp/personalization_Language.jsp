@@ -45,7 +45,7 @@ if (framesetMustBeReloaded != null)
 }
 
 String favoriteFrame		= gef.getLookFrame();
-Vector availableLooks		= gef.getAvailableLooks();
+List availableLooks		= gef.getAvailableLooks();
 
 if (reloadFrameset)
 {

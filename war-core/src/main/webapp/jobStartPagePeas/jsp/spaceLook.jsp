@@ -45,7 +45,7 @@ boolean 		isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEna
 DisplaySorted 	m_SpaceExtraInfos 	= (DisplaySorted)request.getAttribute("SpaceExtraInfos");
 String 			spaceId				= (String) request.getAttribute("CurrentSpaceId");
 
-Vector 			availableLooks		= gef.getAvailableLooks();
+List 			availableLooks		= gef.getAvailableLooks();
 String			spaceLook			= space.getLook();
 SpaceLookItem 	item 				= (SpaceLookItem) slh.getItem("wallPaper");
 

@@ -37,7 +37,7 @@ Iterator fields = (Iterator) request.getAttribute("Fields");
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="javascript">
+<script language="javascript" type="text/javascript">
 	function openWindow(displayer) {
 	    openFieldWindow("NewField?Displayer=" + displayer, displayer);
 	}
@@ -88,6 +88,7 @@ operationPane.addOperation(resource.getIcon("templateDesigner.newFieldList"), re
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldDate"), resource.getString("templateDesigner.newFieldDate"), "javascript:openWindow('date')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldFile"), resource.getString("templateDesigner.newFieldFile"), "javascript:openWindow('file')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldImage"), resource.getString("templateDesigner.newFieldImage"), "javascript:openWindow('image')");
+operationPane.addOperation(resource.getIcon("templateDesigner.newFieldVideo"), resource.getString("templateDesigner.newFieldVideo"), "javascript:openWindow('video')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldUser"), resource.getString("templateDesigner.newFieldUser"), "javascript:openWindow('user')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldGroup"), resource.getString("templateDesigner.newFieldGroup"), "javascript:openWindow('group')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldList"), resource.getString("templateDesigner.newFieldLdap"), "javascript:openWindow('ldap')");

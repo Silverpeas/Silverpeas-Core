@@ -46,6 +46,7 @@ public class FileField implements Field {
   /**
    * Returns the type name.
    */
+  @Override
   public String getTypeName() {
     return TYPE;
   }
@@ -82,6 +83,7 @@ public class FileField implements Field {
   /**
    * Returns the string value of this field : aka the user name.
    */
+  @Override
   public String getValue() {
     SilverTrace.info("form", "FileField.getValue", "root.MSG_GEN_PARAM_VALUE",
         "attachmentId = " + getAttachmentId());
@@ -92,6 +94,7 @@ public class FileField implements Field {
    * Returns the local value of this field. There is no local format for a user field, so the
    * language parameter is unused.
    */
+  @Override
   public String getValue(String language) {
     return getValue();
   }
@@ -99,18 +102,21 @@ public class FileField implements Field {
   /**
    * Does nothing since a user reference can't be computed from a user name.
    */
+  @Override
   public void setValue(String value) throws FormException {
   }
 
   /**
    * Does nothing since a user reference can't be computed from a user name.
    */
+  @Override
   public void setValue(String value, String language) throws FormException {
   }
 
   /**
    * Always returns false since a user reference can't be computed from a user name.
    */
+  @Override
   public boolean acceptValue(String value) {
     return false;
   }
@@ -118,6 +124,7 @@ public class FileField implements Field {
   /**
    * Always returns false since a user reference can't be computed from a user name.
    */
+  @Override
   public boolean acceptValue(String value, String language) {
     return false;
   }
@@ -125,6 +132,7 @@ public class FileField implements Field {
   /**
    * Returns the User referenced by this field.
    */
+  @Override
   public Object getObjectValue() {
     return getAttachmentId();
   }
@@ -132,6 +140,7 @@ public class FileField implements Field {
   /**
    * Set user referenced by this field.
    */
+  @Override
   public void setObjectValue(Object value) throws FormException {
     if (value instanceof String) {
       setAttachmentId(value.toString());
@@ -146,6 +155,7 @@ public class FileField implements Field {
   /**
    * Returns true if the value is a String and this field isn't read only.
    */
+  @Override
   public boolean acceptObjectValue(Object value) {
     return (value instanceof String);
   }
@@ -153,6 +163,7 @@ public class FileField implements Field {
   /**
    * Returns this field value as a normalized String : a user id
    */
+  @Override
   public String getStringValue() {
     return getAttachmentId();
   }
@@ -160,6 +171,7 @@ public class FileField implements Field {
   /**
    * Set this field value from a normalized String : a user id
    */
+  @Override
   public void setStringValue(String value) {
     SilverTrace.info("form", "FileField.setStringValue",
         "root.MSG_GEN_ENTER_METHOD", "value = " + value);
@@ -169,6 +181,7 @@ public class FileField implements Field {
   /**
    * Returns true if this field isn't read only.
    */
+  @Override
   public boolean acceptStringValue(String value) {
     return !isReadOnly();
   }
@@ -176,6 +189,7 @@ public class FileField implements Field {
   /**
    * Returns true if this field is not set.
    */
+  @Override
   public boolean isNull() {
     return (getAttachmentId() == null);
   }
@@ -185,6 +199,7 @@ public class FileField implements Field {
    * @throw FormException when the field is mandatory.
    * @throw FormException when the field is read only.
    */
+  @Override
   public void setNull() throws FormException {
     setAttachmentId(null);
   }
@@ -192,6 +207,7 @@ public class FileField implements Field {
   /**
    * Tests equality beetwen this field and the specified field.
    */
+  @Override
   public boolean equals(Object o) {
     String s = getAttachmentId();
 
@@ -205,6 +221,7 @@ public class FileField implements Field {
   /**
    * Compares this field with the specified field.
    */
+  @Override
   public int compareTo(Object o) {
     String s = getValue();
     if (s == null)
@@ -229,6 +246,7 @@ public class FileField implements Field {
       return -1;
   }
 
+  @Override
   public int hashCode() {
     String s = getAttachmentId();
     return ("" + s).hashCode();

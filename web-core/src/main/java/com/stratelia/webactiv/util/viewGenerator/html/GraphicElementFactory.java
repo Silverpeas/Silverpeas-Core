@@ -33,7 +33,6 @@ package com.stratelia.webactiv.util.viewGenerator.html;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Vector;
 
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -73,6 +72,7 @@ import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane;
 import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPaneSilverpeasV5;
 import com.stratelia.webactiv.util.viewGenerator.html.window.Window;
 import com.stratelia.webactiv.util.viewGenerator.html.window.WindowWeb20V5;
+import java.util.ArrayList;
 
 /**
  * The GraphicElementFactory is the only class to instanciate in this package. You should have one
@@ -100,6 +100,9 @@ public class GraphicElementFactory extends Object {
   private static final String JQUERY_JS = "jquery-1.3.2.min.js";
   private static final String JQUERYUI_JS = "jquery-ui-1.7.3.custom.min.js";
   private static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.7.3.custom.css";
+  
+  private static final String FLOWPLAYER_JS = "flowplayer/flowplayer-3.2.4.min.js";
+  private static final String FLOWPLAYER_CSS = "flowplayer.css";
 
   /**
    * Creates new GraphicElementFactory
@@ -301,6 +304,9 @@ public class GraphicElementFactory extends Object {
     String specificJS = null;
 
     if (externalStylesheet == null) {
+      
+      code.append("<link type=\"text/css\" href=\"").append(contextPath).append(
+          "/util/styleSheets/").append(FLOWPLAYER_CSS).append("\" rel=\"stylesheet\"/>\n");
 
       code.append("<link type=\"text/css\" href=\"").append(contextPath).append(
           "/util/styleSheets/jquery/").append(JQUERYUI_CSS).append("\" rel=\"stylesheet\"/>\n");
@@ -365,6 +371,10 @@ public class GraphicElementFactory extends Object {
     // include specific browseBar javaScript
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/browseBarComplete.js\"></script>\n");
+    
+    // include the Flowplayer javascript code
+    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
+        "/util/javaScript/").append(FLOWPLAYER_JS).append("\"></script>\n");
 
     if (getFavoriteLookSettings() != null
         && getFavoriteLookSettings().getString("OperationPane").toLowerCase()
@@ -418,15 +428,14 @@ public class GraphicElementFactory extends Object {
    * @return
    * @see
    */
-  public Vector<String> getAvailableLooks() {
-    ResourceLocator lookSettings = getLookSettings();
-    Enumeration<String> keys = lookSettings.getKeys();
-    Vector<String> vector = new Vector<String>();
-
+  public List<String> getAvailableLooks() {
+    ResourceLocator theLookSettings = getLookSettings();
+    Enumeration<String> keys = theLookSettings.getKeys();
+    List<String> availableLooks = new ArrayList<String>();
     while (keys.hasMoreElements()) {
-      vector.add(keys.nextElement());
+      availableLooks.add(keys.nextElement());
     }
-    return vector;
+    return availableLooks;
   }
 
   /**

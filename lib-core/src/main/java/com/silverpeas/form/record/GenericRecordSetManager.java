@@ -60,7 +60,7 @@ public class GenericRecordSetManager {
   
   private static final GenericRecordSetManager instance = new GenericRecordSetManager();
   
-  private Map<String, GenericRecordSet> cache = new HashMap<String, GenericRecordSet>();
+  private final Map<String, GenericRecordSet> cache = new HashMap<String, GenericRecordSet>();
   
   private GenericRecordSetManager() {
     

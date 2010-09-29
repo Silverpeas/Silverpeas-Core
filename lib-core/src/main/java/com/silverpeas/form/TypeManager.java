@@ -315,20 +315,20 @@ public class TypeManager {
       }
     } catch (MissingResourceException e) {
       throw new FormFatalException("TypeManager", "form.EXP_MISSING_DISPLAYER_PROPERTIES",
-              "com.silverpeas.form.settings.types");
+              "com.silverpeas.form.settings.types", e);
     }
   }
   /**
    * The Map (typeName -> fieldClass)
    */
-  private Map<String, Class<?>> implementations = new HashMap<String, Class<?>>();
+  private final Map<String, Class<?>> implementations = new HashMap<String, Class<?>>();
   /**
    * The Map (typeName -> List(displayerName)) (the first is the default).
    */
-  private Map<String, List<String>> typeName2displayerNames =
+  private final Map<String, List<String>> typeName2displayerNames =
           new HashMap<String, List<String>>();
   /**
    * The Map (displayerId -> displayerClass).
    */
-  private Map<String, Class<?>> displayerId2displayerClass = new HashMap<String, Class<?>>();
+  private final Map<String, Class<?>> displayerId2displayerClass = new HashMap<String, Class<?>>();
 }

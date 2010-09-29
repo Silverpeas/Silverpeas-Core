@@ -41,6 +41,7 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.GalleryHelper;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
+import com.silverpeas.form.fieldDisplayer.AbstractFieldDisplayer;
 import com.silverpeas.form.fieldType.FileField;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.FileUtil;
@@ -73,9 +74,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer {
    * Returns the name of the managed types.
    */
   public String[] getManagedTypes() {
-    String[] s = new String[0];
-    s[0] = Field.TYPE_FILE;
-    return s;
+    return new String[] {FileField.TYPE};
   }
 
   /**

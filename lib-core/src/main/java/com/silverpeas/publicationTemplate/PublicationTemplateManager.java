@@ -69,12 +69,12 @@ public class PublicationTemplateManager {
   // PublicationTemplates instances associated to silverpeas components. Theses templates should
   // already exist and be loaded.
   // map externalId -> PublicationTemplate
-  private Map<String, PublicationTemplate> externalTemplates =
+  private final Map<String, PublicationTemplate> externalTemplates =
       new HashMap<String, PublicationTemplate>();
 
   // All of the PublicationTemplates loaded in silverpeas and identified by their XML file.
   // map templateFileName -> PublicationTemplate to avoid multiple marshalling
-  private Map<String, PublicationTemplateImpl> templates =
+  private final Map<String, PublicationTemplateImpl> templates =
       new HashMap<String, PublicationTemplateImpl>();
 
   public static String mappingPublicationTemplateFilePath = null;

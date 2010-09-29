@@ -245,6 +245,8 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
       return "fieldFile.jsp";
     else if (displayer.equals("image"))
       return "fieldImage.jsp";
+    else if (displayer.equals("video"))
+      return "fieldVideo.jsp";
     else if (displayer.equals("user"))
       return "fieldUser.jsp";
     else if (displayer.equals("multipleUser"))
@@ -306,7 +308,7 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
       fieldType = "multipleUser";
     else if (displayer.equals("date"))
       fieldType = "date";
-    else if (displayer.equals("image") || displayer.equals("file"))
+    else if (displayer.equals("image") || displayer.equals("file") || displayer.equals("video"))
       fieldType = "file";
     else if (displayer.equals("ldap"))
       fieldType = "ldap";

@@ -25,7 +25,6 @@
 package com.silverpeas.form.fieldDisplayer;
 
 import java.io.PrintWriter;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -80,6 +79,7 @@ public class TextDisplayer extends AbstractFieldDisplayer {
    * <LI>the field type is not a managed type.
    * </UL>
    */
+  @Override
   public void displayScripts(PrintWriter out,
       FieldTemplate template,
       PagesContext PagesContext) throws java.io.IOException {
@@ -93,6 +93,7 @@ public class TextDisplayer extends AbstractFieldDisplayer {
    * <LI>the field type is not a managed type.
    * </UL>
    */
+  @Override
   public void display(PrintWriter out,
       Field field,
       FieldTemplate template,
@@ -131,7 +132,7 @@ public class TextDisplayer extends AbstractFieldDisplayer {
     }
 
     if (parameters.containsKey("values") || parameters.containsKey("keys")) {
-      Hashtable<String, String> keyValuePairs =
+      Map<String, String> keyValuePairs =
           ((GenericFieldTemplate) template).getKeyValuePairs(language);
       String newValue = "";
       if (value.indexOf("##") != -1) {
@@ -212,6 +213,7 @@ public class TextDisplayer extends AbstractFieldDisplayer {
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
+  @Override
   public List<String> update(String newValue,
       Field field,
       FieldTemplate template,
@@ -220,10 +222,12 @@ public class TextDisplayer extends AbstractFieldDisplayer {
     return new ArrayList<String>();
   }
 
+  @Override
   public boolean isDisplayedMandatory() {
     return false;
   }
 
+  @Override
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
     return 0;
   }

@@ -31,9 +31,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ecs.AlignType;
 import org.apache.ecs.ElementContainer;
-import org.apache.ecs.xhtml.a;
 import org.apache.ecs.xhtml.img;
 import org.apache.ecs.xhtml.input;
 import org.apache.ecs.xhtml.span;
@@ -84,6 +82,7 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
    * <LI>the field type is not a managed type.
    * </UL>
    */
+  @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
       throws IOException {
     String language = pagesContext.getLanguage();
@@ -129,6 +128,7 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
    * <LI>the field type is not a managed type.
    * </UL>
    */
+  @Override
   public void display(PrintWriter out, Field field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
     if (!field.getTypeName().equals(DateField.TYPE)) {
@@ -211,6 +211,7 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
+  @Override
   public List<String> update(String newValue, Field field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
     if (field.acceptValue(newValue, pagesContext.getLanguage())) {
@@ -222,10 +223,12 @@ public class DateFieldDisplayer extends AbstractFieldDisplayer {
     return new ArrayList<String>();
   }
 
+  @Override
   public boolean isDisplayedMandatory() {
     return true;
   }
 
+  @Override
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
     return 1;
   }

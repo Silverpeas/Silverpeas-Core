@@ -28,7 +28,6 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +42,7 @@ import com.silverpeas.form.TypeManager;
 /**
  * A generic FieldTemplate implementation.
  */
-public class GenericFieldTemplate implements FieldTemplate, Serializable {
+public class GenericFieldTemplate implements FieldTemplate, Serializable, Cloneable {
 
   private static final long serialVersionUID = 1L;
   private String fieldName = null;
@@ -114,6 +113,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
   /**
    * Returns the field name of the Field built on this template.
    */
+  @Override
   public String getFieldName() {
     return fieldName;
   }
@@ -128,6 +128,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
   /**
    * Returns the type name of the described field.
    */
+  @Override
   public String getTypeName() {
     return typeName;
   }
@@ -143,6 +144,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
   /**
    * Returns the name of the FieldDisplayer to display the described field.
    */
+  @Override
   public String getDisplayerName() {
     return displayerName;
   }
@@ -157,6 +159,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
   /**
    * Returns the default label of the described field.
    */
+  @Override
   public String getLabel() {
     if (defaultLabel == null)
       return ""/* fieldName */;
@@ -167,6 +170,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
   /**
    * Returns the local label of the described field.
    */
+  @Override
   public String getLabel(String language) {
     String label = null;
     if (getLabels() != null)
@@ -225,6 +229,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
   /**
    * Returns true when the described field must have a value.
    */
+  @Override
   public boolean isMandatory() {
     return isMandatory;
   }
@@ -246,6 +251,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
   /**
    * Returns true when the described field can't be updated.
    */
+  @Override
   public boolean isReadOnly() {
     return isReadOnly;
   }
@@ -260,6 +266,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
   /**
    * Returns true when the described field must be disabled.
    */
+  @Override
   public boolean isDisabled() {
     return isDisabled;
   }
@@ -274,6 +281,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
   /**
    * Returns true when the described field must be hidden.
    */
+  @Override
   public boolean isHidden() {
     return isHidden;
   }
@@ -285,6 +293,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
     this.isHidden = isHidden;
   }
 
+  @Override
   public Map<String, String> getParameters(String language) {
     // if ((parameters == null) || (parameters.size()==0)) {
     Iterator<Parameter> parametersIter = parametersObj.iterator();
@@ -297,15 +306,15 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
     return parameters;
   }
 
-  public Hashtable<String, String> getKeyValuePairs(String language) {
-    Hashtable<String, String> keyValuePairs = new Hashtable<String, String>();
-    Map<String, String> parameters = getParameters(language);
+  public Map<String, String> getKeyValuePairs(String language) {
+    Map<String, String> keyValuePairs = new HashMap<String, String>();
+    Map<String, String> theParameters = getParameters(language);
 
-    if (parameters == null)
+    if (theParameters == null)
       return keyValuePairs;
 
-    String keys = parameters.get("keys");
-    String values = parameters.get("values");
+    String keys = theParameters.get("keys");
+    String values = theParameters.get("values");
     if (keys != null && values != null) {
       StringTokenizer kTokenizer = new StringTokenizer(keys, "##");
       StringTokenizer vTokenizer = new StringTokenizer(values, "##");
@@ -331,7 +340,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
   }
 
   public Map<String, String> getLabels() {
-    if (labels == null || labels.size() == 0) {
+    if (labels == null || labels.isEmpty()) {
       Iterator<Label> labelsIter = labelsObj.iterator();
       while (labelsIter.hasNext()) {
         Label label = labelsIter.next();
@@ -345,6 +354,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
    * Returns an empty Field built on this template.
    */
   @SuppressWarnings("unchecked")
+  @Override
   public Field getEmptyField() throws FormException {
     try {
       Class[] noParameterClass = new Class[0];
@@ -365,6 +375,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
     }
   }
 
+  @Override
   public boolean equals(Object obj) {
     try {
       if (obj instanceof String) {
@@ -379,10 +390,12 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
     }
   }
 
+  @Override
   public int hashCode() {
     return this.getFieldName().hashCode();
   }
 
+  @Override
   public String[] getLanguages() {
     if (labels == null)
       return new String[0];
@@ -426,6 +439,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
     this.parametersObj = parametersObj;
   }
 
+  @Override
   public boolean isSearchable() {
     return isSearchable;
   }
@@ -434,6 +448,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
     isSearchable = searchable;
   }
 
+  @Override
   public String getTemplateName() {
     return templateName;
   }
@@ -460,8 +475,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable {
       clone.setTemplateName(this.getTemplateName());
       clone.setTypeName(this.getTypeName());
     } catch (FormException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new RuntimeException(e);
     }
     return clone;
   }
