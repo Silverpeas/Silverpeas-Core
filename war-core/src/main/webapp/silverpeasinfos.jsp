@@ -31,6 +31,24 @@
   <head>
     <title>Infos</title>
     <link href="<c:url value="/style.css" />" rel="stylesheet" type="text/css">
+
+<!--[if lt IE 8]>
+<style>
+input{
+	background-color:#FAFAFA;
+	border:1px solid #DAD9D9;
+	width:448px;
+	text-align:left;
+    margin-left:-10px;
+    height:26px;
+    line-height:24px;
+    padding:0px 60px;
+    display:block;
+    padding:0px;
+}
+</style>
+<![endif]-->
+  
   </head>
   <body>
     <div id="top"></div>
