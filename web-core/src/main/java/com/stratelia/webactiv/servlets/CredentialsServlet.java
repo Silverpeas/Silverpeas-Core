@@ -52,20 +52,17 @@ import javax.servlet.http.HttpServletResponse;
 public class CredentialsServlet extends HttpServlet {
 
   private static final long serialVersionUID = -7586840606648226466L;
-  private Map<String, FunctionHandler> handlers = new HashMap<String, FunctionHandler>();
+  private static final Map<String, FunctionHandler> handlers = new HashMap<String, FunctionHandler>();
 
-  @Override
-  public void init(ServletConfig config) throws ServletException {
-    super.init(config);
+  static {
     initHandlers();
   }
-
 
 
   /**
    * Load mapping between functions and associated handlers
    */
-  private synchronized void initHandlers() {
+  private static void initHandlers() {
     //Password change management
     handlers.put("ForcePasswordChange", new ForcePasswordChangeHandler());
     handlers.put("EffectiveChangePassword", new EffectiveChangePasswordHandler());
