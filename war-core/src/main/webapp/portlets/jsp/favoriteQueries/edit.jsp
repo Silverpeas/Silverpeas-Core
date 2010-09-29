@@ -34,7 +34,7 @@
 
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
 <portlet:defineObjects/>
 <portlet:actionURL var="actionURL"/>
@@ -45,11 +45,11 @@
     RenderResponse rRes = (RenderResponse)request.getAttribute("javax.portlet.response");
     PortletPreferences pref = pReq.getPreferences();
     String error = pReq.getParameter(FormNames.ERROR_BAD_VALUE);
-%>               
+%>
     <!-- START error -->
 <%
     if (error != null) {
-%>      
+%>
       <div class="portlet-msg-error" style="color: red">
           <fmt:message key="portlets.portlet.lastPublis.error"/>
       </div>
@@ -66,7 +66,7 @@
                 <td><fmt:message key="portlets.portlet.lastPublis.pref.nbPublis" /> :</td>
                 <td><input class="portlet-form-input-field" name="<%=FormNames.TEXTBOX_NB_PUBLIS%>" value="<%=pref.getValue("nbPublis","")%>" type="text" size="10"/></td>
             </tr>
-                     
+
             <!-- START "finished" and "cancel" buttons -->
             <tr>
                 <td colspan="2" style="text-align: center; vertical-align: top">

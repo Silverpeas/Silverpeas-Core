@@ -46,7 +46,6 @@
 <%@ page import="com.stratelia.webactiv.homepage.*"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
@@ -60,15 +59,15 @@
 <%
 MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute("SilverSessionController");
 if (m_MainSessionCtrl == null)
-{	
+{
   String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
   getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
   return;
 }
 
-GraphicElementFactory 	gef 				= (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-String 					language 			= m_MainSessionCtrl.getFavoriteLanguage();
-ResourceLocator 		message 			= new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", language);
+GraphicElementFactory	gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
+String  language = m_MainSessionCtrl.getFavoriteLanguage();
+ResourceLocator message 			= new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", language);
 ResourceLocator 		homePageSettings 	= new ResourceLocator("com.stratelia.webactiv.homePage.homePageSettings", "");
 String 					m_sContext 			= GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 %>

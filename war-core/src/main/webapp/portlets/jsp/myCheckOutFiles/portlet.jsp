@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="com.stratelia.webactiv.util.attachment.model.AttachmentDetail"%>
@@ -87,9 +88,9 @@ boolean full = false;
 			{
 				AttachmentDetail att = (AttachmentDetail) attachments.next();
 				String url 	= m_sContext+URLManager.getURL(null,null,att.getPK().getInstanceId())+"GoToFilesTab?Id="+att.getForeignKey().getId();
-				String name = Encode.convertHTMLEntities(att.getTitle());
+				String name = EncodeHelper.convertHTMLEntities(att.getTitle());
 				if (StringUtil.isDefined(att.getLogicalName(language)))
-					name = Encode.convertHTMLEntities(att.getLogicalName(language));
+					name = EncodeHelper.convertHTMLEntities(att.getLogicalName(language));
 
 				out.println("&#149; <a href=\"javaScript:goTo('"+url+"','"+att.getPK().getInstanceId()+"')\">"+name+"</a>");
 
@@ -110,7 +111,7 @@ boolean full = false;
                     }
                     else if (tomorrow.equals(atDate))
                     {
-                    	// �v�nement du lendemain
+                    	// evenement du lendemain
                       	out.println(" (" + message.getString("tomorrow") + ")");
                     }
                     else
@@ -132,7 +133,7 @@ boolean full = false;
 				}
 			}
 		}
-		// traitement des liens vers les fichiers joints versionn�s
+		// traitement des liens vers les fichiers joints versionnes
 		if (documents != null && documents.hasNext())
 		{
 			while (documents.hasNext())
@@ -168,7 +169,7 @@ boolean full = false;
                          	// recherche du libelle du jour
                        		int day = veDate.get(Calendar.DAY_OF_WEEK);
                         	String jour = "GML.jour" + day;
-							// recherche du libell�e du mois
+							// recherche du libelle du mois
                        		int month = veDate.get(Calendar.MONTH);
                          	String mois = "GML.mois" + month;
                   			out.println(" ("+ generalMessage.getString(jour)+ " " + veDate.get(Calendar.DATE) +" " + generalMessage.getString(mois) + " " + veDate.get(Calendar.YEAR) + ")");

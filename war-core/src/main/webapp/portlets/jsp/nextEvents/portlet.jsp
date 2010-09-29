@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="com.stratelia.webactiv.calendar.model.Schedulable"%>
@@ -40,13 +41,13 @@ ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(la
 RenderRequest pReq = (RenderRequest)request.getAttribute("javax.portlet.request");
 Iterator events = (Iterator) pReq.getAttribute("Events");
 
-if (!events.hasNext()) 
+if (!events.hasNext())
 {
 	out.println(message.getString("NoEvents")+"<br/>");
-} 
-else 
-{ 
-  	// convertir la date du jour 
+}
+else
+{
+  	// convertir la date du jour
   	Calendar today = Calendar.getInstance();
   	today.setTime(new Date());
   	today.set(Calendar.HOUR_OF_DAY, 0);
@@ -61,15 +62,15 @@ else
   	tomorrow.set(Calendar.MINUTE, 0);
   	tomorrow.set(Calendar.SECOND, 0);
   	tomorrow.set(Calendar.MILLISECOND, 0);
-  
+
   	Schedulable task 		= null;
   	String 		taskname 	= null;
   	String		taskURL 	= null;
-  	while (events.hasNext()) 
+  	while (events.hasNext())
   	{
       	task 		= (Schedulable) events.next();
-      	taskname 	= Encode.convertHTMLEntities(task.getName());
-      	
+      	taskname 	= EncodeHelper.convertHTMLEntities(task.getName());
+
       	// convertir la date de l'�v�nement
     	Calendar taskDate = Calendar.getInstance();
     	taskDate.setTime(task.getStartDate());
@@ -77,9 +78,9 @@ else
     	taskDate.set(Calendar.MINUTE, 0);
     	// formatage de la date sous forme jj/mm/aaaa pour param�tre de agenda.jsp
     	String date = DateUtil.getInputDate(task.getStartDate(), language);
-    	
+
     	taskURL	= m_sContext+URLManager.getURL(URLManager.CMP_AGENDA)+"agenda.jsp?Action=SelectDay&Day="+date;
-    	
+
     	if (today.equals(taskDate))
     	{
     		// �v�nement du jour
@@ -92,17 +93,17 @@ else
     	{
     		// �v�nement du lendemain
     		if ( task.getStartHour() != null)
-    		  	out.println("&#149; " + message.getString("tomorrow") + ", "+task.getStartHour() + " - " + task.getEndHour() + " : <a href=\""+taskURL+"\">" + taskname + "</a>");    
+    		  	out.println("&#149; " + message.getString("tomorrow") + ", "+task.getStartHour() + " - " + task.getEndHour() + " : <a href=\""+taskURL+"\">" + taskname + "</a>");
     		else
        		  	out.println("&#149; " + message.getString("tomorrow") + " : <a href=\""+taskURL+"\">" + taskname + "</a>");
     	}
-    	else          
+    	else
     	{
     	  	int day = taskDate.get(Calendar.DAY_OF_WEEK);
     	 	String jour = "GML.jour" + day;
 			int month = taskDate.get(Calendar.MONTH);
     	  	String mois = "GML.mois" + month;
-    	  	
+
     	  	if (task.getStartHour() != null)
     	   		out.println("&#149; "+ generalMessage.getString(jour)+ " " + taskDate.get(Calendar.DATE) +" " + generalMessage.getString(mois) + " " + taskDate.get(Calendar.YEAR) + ", " + task.getStartHour() + " - " + task.getEndHour() + " : <a href=\""+taskURL+"\">" + taskname + "</a>");
     	  	else

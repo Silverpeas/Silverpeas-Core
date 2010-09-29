@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="com.stratelia.webactiv.calendar.model.ToDoHeader"%>
@@ -45,7 +46,7 @@ if (!todos.hasNext()) {
 	while (todos.hasNext()) {
 		todo = (ToDoHeader) todos.next();
 		if (todo.getPercentCompleted() != 100) {
-			out.println("&#149; <a href=\""+m_sContext+URLManager.getURL(URLManager.CMP_TODO)+"todo.jsp\">" + Encode.convertHTMLEntities(todo.getName()) + "</a>");
+			out.println("&#149; <a href=\""+m_sContext+URLManager.getURL(URLManager.CMP_TODO)+"todo.jsp\">" + EncodeHelper.convertHTMLEntities(todo.getName()) + "</a>");
 			if (todo.getPercentCompleted() != -1)
 				out.println(" <i>("+todo.getPercentCompleted()+"%)</i><br/>");
 			else

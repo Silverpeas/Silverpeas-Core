@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="com.stratelia.webactiv.util.publication.model.PublicationDetail" %>
@@ -32,6 +33,7 @@
 
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
 <portlet:defineObjects/>
 
@@ -43,8 +45,8 @@
 %>
 
 <script type="text/javascript">
-function goTo(cUrl, componentId) 
-{	
+function goTo(cUrl, componentId)
+{
 	jumpToComponent(componentId);
 	location.href=cUrl;
 }
@@ -55,7 +57,7 @@ function jumpToComponent(componentId) {
 	parent.SpacesBar.document.privateDomainsForm.privateDomain.value="";
 	parent.SpacesBar.document.privateDomainsForm.privateSubDomain.value="";
 	parent.SpacesBar.document.privateDomainsForm.submit();
-	
+
 	//Reload Topbar
 	parent.SpacesBar.reloadTopBar(true);
 }
@@ -64,21 +66,21 @@ function jumpToComponent(componentId) {
 <%
 Iterator publications = ((List) pReq.getAttribute("Publications")).iterator();
 
-	while (publications.hasNext()) 
+	while (publications.hasNext())
     {
         PublicationDetail 	pub 		= (PublicationDetail) publications.next();
 		UserDetail 			pubUpdater 	= m_MainSessionCtrl.getOrganizationController().getUserDetail(pub.getUpdaterId());
 		String 				url 		= m_sContext+URLManager.getURL("kmelia", null, pub.getPK().getInstanceId())+pub.getURL();
-        out.println("<a href=\"javaScript:goTo('"+url+"','"+pub.getPK().getInstanceId()+"')\"><b>"+Encode.convertHTMLEntities(pub.getName(language))+"</b></a>");
+        out.println("<a href=\"javaScript:goTo('"+url+"','"+pub.getPK().getInstanceId()+"')\"><b>"+EncodeHelper.convertHTMLEntities(pub.getName(language))+"</b></a>");
         if (pubUpdater != null && pub.getUpdateDate() != null)
-        	out.println("<br/>"+Encode.convertHTMLEntities(pubUpdater.getDisplayedName())+" - "+DateUtil.getOutputDate(pub.getUpdateDate(), language));
+        	out.println("<br/>"+EncodeHelper.convertHTMLEntities(pubUpdater.getDisplayedName())+" - "+DateUtil.getOutputDate(pub.getUpdateDate(), language));
         else if (pubUpdater != null && pub.getUpdateDate() == null)
-        	out.println("<br/>"+Encode.convertHTMLEntities(pubUpdater.getDisplayedName()));
+        	out.println("<br/>"+EncodeHelper.convertHTMLEntities(pubUpdater.getDisplayedName()));
         if (pubUpdater == null && pub.getUpdateDate() != null)
         	out.println("<br/>"+DateUtil.getOutputDate(pub.getUpdateDate(), language));
         if ("checked".equalsIgnoreCase(pref.getValue("displayDescription","")) && StringUtil.isDefined(pub.getDescription(language)))
-        	out.println("<br/>"+Encode.javaStringToHtmlParagraphe(Encode.convertHTMLEntities(pub.getDescription(language))));
-           
+        	out.println("<br/>"+EncodeHelper.javaStringToHtmlParagraphe(EncodeHelper.convertHTMLEntities(pub.getDescription(language))));
+
         if (publications.hasNext())
         	out.println("<br/><br/>");
     }

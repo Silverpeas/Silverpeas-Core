@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="java.net.URLEncoder"%>
@@ -54,7 +55,7 @@ else
 		InterestCenter ic = (InterestCenter) queries.next();
 		if (j == 0)
 			out.println("<tr>");
-		out.println("<td width='50%'>&#149; <a href='" + icLink + ic.getId() + "'>" + Encode.convertHTMLEntities(ic.getName()) + "</a></td>");
+		out.println("<td width='50%'>&#149; <a href='" + icLink + ic.getId() + "'>" + EncodeHelper.convertHTMLEntities(ic.getName()) + "</a></td>");
 		if (j != 0)
 		{
 			out.println("</tr>");

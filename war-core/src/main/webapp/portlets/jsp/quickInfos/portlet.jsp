@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="com.silverpeas.portlets.FormNames" %>
@@ -42,26 +43,26 @@ RenderRequest 	pReq 	= (RenderRequest)request.getAttribute("javax.portlet.reques
 Iterator 		infos 	= (Iterator) pReq.getAttribute("QuickInfos");
 
 String description = "";
-while (infos.hasNext()) 
+while (infos.hasNext())
 {
     PublicationDetail pub = (PublicationDetail) infos.next();
 	UserDetail pubCreator = m_MainSessionCtrl.getOrganizationController().getUserDetail(pub.getCreatorId());
-	    
+
     description = pub.getWysiwyg();
     if (!StringUtil.isDefined(description))
-    	description = Encode.javaStringToHtmlParagraphe(pub.getDescription(language));
-    
+    	description = EncodeHelper.javaStringToHtmlParagraphe(pub.getDescription(language));
+
     %>
-	
-	<table cellpadding="3" cellspacing="0" border="0" width="98%"><tr><td class="intfdcolor"><span class="textePetitBold"><%=Encode.convertHTMLEntities(pub.getName(language)) %></span><br><%=pubCreator.getDisplayedName()%> - <%=DateUtil.getOutputDate(pub.getCreationDate(), language)%></td></tr></table>
+
+	<table cellpadding="3" cellspacing="0" border="0" width="98%"><tr><td class="intfdcolor"><span class="textePetitBold"><%=EncodeHelper.convertHTMLEntities(pub.getName(language)) %></span><br><%=pubCreator.getDisplayedName()%> - <%=DateUtil.getOutputDate(pub.getCreationDate(), language)%></td></tr></table>
 	<table cellpadding="1" cellspacing="0" border="0" class="intfdcolor" width="98%"><tr><td>
-	<table cellpadding="3" cellspacing="0" border="0" class="intfdcolor4" width="100%"><tr><td>	
-    
+	<table cellpadding="3" cellspacing="0" border="0" class="intfdcolor4" width="100%"><tr><td>
+
 		<span class="txtnote"><%=description%></span>
 
 	</td></tr></table>
 	</td></tr></table>
-				            
+
 	<%
     if (infos.hasNext())
     	out.println("<br/>");

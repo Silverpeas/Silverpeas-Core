@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="com.silverpeas.myLinks.model.LinkDetail"%>
@@ -41,21 +42,21 @@ Iterator 		links 	= (Iterator) pReq.getAttribute("Links");
 if (!links.hasNext()) {
 	out.println(message.getString("NoFavorites"));
 }
-else 
+else
 {
 	//affichage des liens favoris de l'utilisateur
 	LinkDetail link = null;
-	while (links.hasNext()) 
+	while (links.hasNext())
 	{
 		link = (LinkDetail) links.next();
 		if (link.isVisible())
 		{
 			// afficher que les liens que l'utilisateur a top� "visible en page d'accueil"
 			String lien = link.getUrl();
-			String name = Encode.convertHTMLEntities(link.getName());
+			String name = EncodeHelper.convertHTMLEntities(link.getName());
 			if (!StringUtil.isDefined(name))
 				name = lien;
-			
+
 			// ajouter le context devant le lien si n�c�ssaire
 			if (lien.indexOf("://") == -1)
 				lien = URLManager.getApplicationURL() + lien;
