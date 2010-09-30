@@ -278,6 +278,8 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
     if (!videoURL.isEmpty()) {
       defaultOperation = Operation.UPDATE;
       Map<String, String> parameters = template.getParameters(pagesContext.getLanguage());
+      parameters.remove(PARAMETER_WIDTH);
+      parameters.remove(PARAMETER_HEIGHT);
       // a link to the video
       Element videoLink = createVideoElement(videoURL, parameters);
 
