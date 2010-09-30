@@ -39,13 +39,13 @@ import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.ecs.Element;
 import org.apache.ecs.ElementContainer;
@@ -60,11 +60,44 @@ import org.apache.ecs.xhtml.script;
  * The underlying video player is FlowPlayer (http://flowplayer.org/index.html).
  */
 public class VideoFieldDisplayer extends AbstractFieldDisplayer {
+  
+  /**
+   * The default width in pixels of the video display area.
+   */
+  public static final String DEFAULT_WIDTH = "425";
+  /**
+   * The default height in pixels of the video display area.
+   */
+  public static final String DEFAULT_HEIGHT = "300";
+  /**
+   * Should the video auto starts by default?
+   */
+  public static final boolean DEFAULT_AUTOPLAY = true;
+  /**
+   * The video display width parameter name.
+   */
+  public static final String PARAMETER_WIDTH = "width";
+  /**
+   * The video display height parameter name.
+   */
+  public static final String PARAMETER_HEIGHT = "height";
+  /**
+   * The video autostart parameter name.
+   */
+  public static final String PARAMETER_AUTOPLAY = "autoplay";
 
-  public static final String CONTEXT_FORM_VIDEO = "XMLFormVideo";
+  private static final String CONTEXT_FORM_VIDEO = "XMLFormVideo";
   private static final String SWF_PLAYER_PATH = "/util/flowplayer/flowplayer-3.2.4.swf";
   private static final String VIDEO_PLAYER_ID = "player";
+  private static final String OPERATION_KEY = "Operation";
   private static final int DISPLAYED_HTML_OBJECTS = 2;
+  
+  /**
+   * The different kinds of operation that can be applied into an attached video file.
+   */
+  private enum Operation {
+    ADD, UPDATE, DELETION;
+  }
 
   /**
    * Returns the name of the managed types.
@@ -104,13 +137,17 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
     if (!template.isHidden()) {
       ElementContainer xhtmlcontainer = new ElementContainer();
       if (template.isReadOnly()) {
-        displayVideo(attachmentId, xhtmlcontainer, pagesContext);
+        displayVideo(attachmentId, template, xhtmlcontainer, pagesContext);
       } else if (!template.isDisabled()) {
         displayVideoFormInput(attachmentId, template, xhtmlcontainer, pagesContext);
       }
+      
+      Map<String, String> parameters = template.getParameters(pagesContext.getLanguage());
+      boolean autoplay = (parameters.containsKey(PARAMETER_AUTOPLAY) ? 
+        Boolean.valueOf(parameters.get(PARAMETER_AUTOPLAY)): false);
       String playerPath = FileServerUtils.getApplicationContext() + SWF_PLAYER_PATH;
       script js = new script("flowplayer('" + VIDEO_PLAYER_ID + "', '" + playerPath +
-              "', {clip: { autoBuffering: true } });");
+              "', {clip: { autoBuffering: " + !autoplay + ", autoPlay: " + autoplay + " } });");
       js.setLanguage("javascript");
       js.setType("text/javascript");
       xhtmlcontainer.addElement(js);
@@ -139,26 +176,17 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
     List<String> attachmentIds = new ArrayList<String>();
     
     try {
-      String fieldName    = template.getFieldName();
-      String operation    = FileUploadUtil.getParameter(items, fieldName +
-              Field.FILE_PARAM_NAME_SUFFIX);
+      String fieldName = template.getFieldName();
       String attachmentId = uploadVideoFile(items, fieldName, pageContext);
-      if (operation != null) {
-        if (isDeletion(operation, attachmentId)) {
-          String currentAttachmentId = operation.substring("remove_".length());
-          deleteAttachment(currentAttachmentId, pageContext);
-          // the deletion operation can be accompanied by an update one
-          if (pageContext.getUpdatePolicy() != PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES
-                  || StringUtil.isDefined(attachmentId)) {
-            attachmentIds.addAll(update(attachmentId, field, template, pageContext));
-          }
-        } else if (isUpdate(operation, attachmentId)) {
-          String currentAttachmentId = operation;
-          deleteAttachment(currentAttachmentId, pageContext);
-          attachmentIds.addAll(update(attachmentId, field, template, pageContext));
-        } else if (isAdd(operation, attachmentId)) {
-          attachmentIds.addAll(update(attachmentId, field, template, pageContext));
-        }
+      Operation operation = Operation.valueOf(FileUploadUtil.getParameter(items,
+              fieldName + OPERATION_KEY));
+      String currentAttachmentId = FileUploadUtil.getParameter(items, fieldName
+              + Field.FILE_PARAM_NAME_SUFFIX);
+      if (isDeletion(operation, currentAttachmentId) || isUpdate(operation, attachmentId)) {
+        deleteAttachment(currentAttachmentId, pageContext);
+      }
+      if (StringUtil.isDefined(attachmentId)) {
+        attachmentIds.addAll(update(attachmentId, field, template, pageContext));
       }
     } catch (Exception ex) {
       SilverTrace.error("form", "VideoFieldDisplayer.update", "form.EXP_UNKNOWN_FIELD", null, ex);
@@ -218,13 +246,15 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
   /**
    * Displays the video refered by the specified URL into the specified XHTML container.
    * @param attachmentId the identifier of the attached file containing the video to display.
+   * @param template the template of the field to which is mapped the video.
    * @param xhtmlcontainer the XMLHTML container into which the video is displayed.
    */
-  private void displayVideo(final String attachmentId, final ElementContainer xhtmlcontainer,
-          final PagesContext pagesContext) {
+  private void displayVideo(final String attachmentId, final FieldTemplate template,
+          final ElementContainer xhtmlcontainer, final PagesContext pagesContext) {
     String videoURL = computeVideoURL(attachmentId, pagesContext);
     if (!videoURL.isEmpty()) {
-      Element videoLink = createVideoElement(videoURL);
+      Map<String, String> parameters = template.getParameters(pagesContext.getLanguage());
+      Element videoLink = createVideoElement(videoURL, parameters);
       xhtmlcontainer.addElement(videoLink);
     }
   }
@@ -243,10 +273,13 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
     String deletionIcon = Util.getIcon("delete");
     String deletionLab = Util.getString("removeFile", language);
     String videoURL = computeVideoURL(attachmentId, pagesContext);
+    Operation defaultOperation = Operation.ADD;
 
     if (!videoURL.isEmpty()) {
+      defaultOperation = Operation.UPDATE;
+      Map<String, String> parameters = template.getParameters(pagesContext.getLanguage());
       // a link to the video
-      Element videoLink = createVideoElement(videoURL);
+      Element videoLink = createVideoElement(videoURL, parameters);
 
       // a link to the deletion operation
       img deletionImage = new img();
@@ -257,7 +290,7 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
               .addElement(deletionImage)
               .setOnClick("javascript: document.getElementById('" + fieldName
               + "Video').style.display='none'; document." + pagesContext.getFormName() + "."
-              + fieldName + Field.FILE_PARAM_NAME_SUFFIX + ".value='remove_" + attachmentId + "';");
+              + fieldName + OPERATION_KEY + ".value='" + Operation.DELETION.name() + "';");
       div videoDiv = new div();
       videoDiv.setID(fieldName + "Video");
       videoDiv.setClass("video");
@@ -275,14 +308,16 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
     fileInput.setSize(50);
     fileInput.setName(fieldName);
     input attachmentInput = new input();
-    attachmentInput.setType("hidden");
-    attachmentInput.setID(fieldName + "Hidden");
-    attachmentInput.setName(fieldName + Field.FILE_PARAM_NAME_SUFFIX);
-    attachmentInput.setValue(attachmentId);
+    attachmentInput.setType("hidden").setName(fieldName + Field.FILE_PARAM_NAME_SUFFIX).setValue(
+            attachmentId).setID(fieldName + "Hidden");
+    input operationInput = new input();
+    operationInput.setType("hidden").setName(fieldName + OPERATION_KEY).setValue(defaultOperation.
+            name()).setID(fieldName + OPERATION_KEY);
     div selectionDiv = new div();
     selectionDiv.setID(fieldName + "Selection");
     selectionDiv.addElement(fileInput);
     selectionDiv.addElement(attachmentInput);
+    selectionDiv.addElement(operationInput);
     if (template.isMandatory() && pagesContext.useMandatory()) {
       selectionDiv.addElement(Util.getMandatorySnippet());
     }
@@ -294,9 +329,13 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
    * @param videoURL the URL of the video to display.
    * @return the XHTML element that displays the video.
    */
-  private Element createVideoElement(final String videoURL) {
+  private Element createVideoElement(final String videoURL, final Map<String, String> parameters) {
     a videoElement = new a();
-    videoElement.setStyle("display:block;width:425px;height:300px;");
+    String width = (parameters.containsKey(PARAMETER_WIDTH) ? parameters.get(PARAMETER_WIDTH):
+      DEFAULT_WIDTH);
+    String height = (parameters.containsKey(PARAMETER_HEIGHT) ? parameters.get(PARAMETER_HEIGHT):
+      DEFAULT_HEIGHT);
+    videoElement.setStyle("display:block;width:" + width + "px;height:" + height + "px;");
     videoElement.setHref(videoURL).setID(VIDEO_PLAYER_ID);
     return videoElement;
   }
@@ -333,22 +372,13 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
         String mimeType = item.getContentType();
         String physicalName = new Long(new Date().getTime()).toString() + "." + type;
         File dir = getVideoPath(componentId, physicalName);
-        long size = item.getSize();
         item.write(dir);
-        if (size > 0) {
-          AttachmentDetail attachmentDetail =
-                  createAttachmentDetail(objectId, componentId, physicalName, logicalName, mimeType,
-                  size,
-                  VideoFieldDisplayer.CONTEXT_FORM_VIDEO, userId);
-          attachmentDetail = AttachmentController.createAttachment(attachmentDetail, true);
-          attachmentId = attachmentDetail.getPK().getId();
-        } else {
-          // le fichier à tout de même été créé sur le serveur avec une taille 0!, il faut le
-          // supprimer
-          if (dir != null) {
-            FileFolderManager.deleteFolder(dir.getPath());
-          }
-        }
+        AttachmentDetail attachmentDetail =
+                createAttachmentDetail(objectId, componentId, physicalName, logicalName, mimeType,
+                item.getSize(),
+                VideoFieldDisplayer.CONTEXT_FORM_VIDEO, userId);
+        attachmentDetail = AttachmentController.createAttachment(attachmentDetail, true);
+        attachmentId = attachmentDetail.getPK().getId();
       }
     }
     
@@ -361,8 +391,8 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
    * @param attachmentId the identifier of the attachment on which the operation is.
    * @return true if the operation is a deletion, false otherwise.
    */
-  private boolean isDeletion(final String operation, final String attachmentId) {
-    return operation != null && operation.startsWith("remove_");
+  private boolean isDeletion(final Operation operation, final String attachmentId) {
+    return StringUtil.isDefined(attachmentId) && operation == Operation.DELETION;
   }
 
   /**
@@ -371,9 +401,8 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
    * @param attachmentId the identifier of the attachment on which the operation is.
    * @return true if the operation is an update, false otherwise.
    */
-  private boolean isUpdate(final String operation, final String attachmentId) {
-    return StringUtil.isDefined(operation) && StringUtil.isDefined(attachmentId) &&
-            StringUtil.isInteger(operation);
+  private boolean isUpdate(final Operation operation, final String attachmentId) {
+    return StringUtil.isDefined(attachmentId) && operation == Operation.UPDATE;
   }
   
   /**
@@ -382,8 +411,8 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
    * @param attachmentId the identifier of the attachment on which the operation is.
    * @return true if the operation is an add, false otherwise.
    */
-  private boolean isAdd(String operation, String attachmentId) {
-    return StringUtil.isDefined(attachmentId);
+  private boolean isAdd(final Operation operation, final String attachmentId) {
+    return StringUtil.isDefined(attachmentId) && operation == Operation.ADD;
   }
 
   /**

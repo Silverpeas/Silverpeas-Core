@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2009 Silverpeas
+    Copyright (C) 2000 - 2010 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -23,17 +23,47 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.form.fieldDisplayer.VideoFieldDisplayer"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="includeParamsField.jsp.inc" %>
 <script type="text/javascript">
-	function isCorrectForm() 
-	{
-     	checkFieldName();
-     	return checkErrors();
-	}
+  function isCorrectForm() 
+  {
+    checkFieldName();
+    return checkErrors();
+  }
 </script>
 </head>
 <body>
-<%@ include file="includeTopField.jsp.inc" %>
+  <%
+      String width = VideoFieldDisplayer.DEFAULT_WIDTH;
+      String height = VideoFieldDisplayer.DEFAULT_HEIGHT;
+      boolean autoplay = VideoFieldDisplayer.DEFAULT_AUTOPLAY;
+      if (field != null) {
+        if (parameters.containsKey(VideoFieldDisplayer.PARAMETER_WIDTH)) {
+          width = (String) parameters.get(VideoFieldDisplayer.PARAMETER_WIDTH);
+        }
+
+        if (parameters.containsKey(VideoFieldDisplayer.PARAMETER_HEIGHT)) {
+          height = (String) parameters.get(VideoFieldDisplayer.PARAMETER_HEIGHT);
+        }
+        
+        if (parameters.containsKey(VideoFieldDisplayer.PARAMETER_AUTOPLAY)) {
+          autoplay = (Boolean.valueOf((String) parameters.get(VideoFieldDisplayer.PARAMETER_AUTOPLAY))).booleanValue();
+        } else {
+          autoplay = false;
+        }
+      }
+  %>
+  <%@ include file="includeTopField.jsp.inc" %>
+<tr>
+  <td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.video.width")%> :</td><td><input type="text" name="Param_<%=VideoFieldDisplayer.PARAMETER_WIDTH%>" value="<%=width%>" size="5" maxLength="4"/></td>
+</tr>
+<tr>
+  <td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.video.height")%> :</td><td><input type="text" name="Param_<%=VideoFieldDisplayer.PARAMETER_HEIGHT%>" value="<%=height%>" size="5" maxLength="4"/></td>
+</tr>
+<tr>
+  <td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.video.autoplay")%> :</td><td><input type="checkbox" name="Param_<%=VideoFieldDisplayer.PARAMETER_AUTOPLAY%>" value="true" <%=(autoplay? "checked=\"checked\"": "")%> /></td>
+</tr>
 <%@ include file="includeBottomField.jsp.inc" %>

@@ -41,7 +41,6 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.GalleryHelper;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
-import com.silverpeas.form.fieldDisplayer.AbstractFieldDisplayer;
 import com.silverpeas.form.fieldType.FileField;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.FileUtil;

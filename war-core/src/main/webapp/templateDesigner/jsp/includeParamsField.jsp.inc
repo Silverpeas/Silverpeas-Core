@@ -22,7 +22,7 @@ if (field != null)
 	}
 	
 	if (actionForm.equals("UpdateField")) {
-		nameDisabled 	= "readOnly";
+		nameDisabled 	= "readOnly='readonly'";
 	}
 	
 	parameters = field.getParameters("fr");
