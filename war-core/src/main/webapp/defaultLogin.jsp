@@ -24,17 +24,16 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<%@page import="com.silverpeas.util.StringUtil"%>
 <%@ include file="headLog.jsp" %>
 
 <%
 ResourceLocator authenticationBundle = new ResourceLocator("com.silverpeas.authentication.multilang.authentication", "");
 
 String errorCode = request.getParameter("ErrorCode");
-if (errorCode == null || errorCode.equals("null"))
+if (!StringUtil.isDefined(errorCode)) {
 	errorCode = "";
+}
 
 String domainId = null;
 if(com.silverpeas.util.StringUtil.isInteger(request.getParameter("DomainId"))) {
@@ -43,6 +42,8 @@ if(com.silverpeas.util.StringUtil.isInteger(request.getParameter("DomainId"))) {
 }
 %>
 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=generalMultilang.getString("GML.popupTitle")%></title>
@@ -252,7 +253,7 @@ function checkSubmit(ev)
 			if (nbCookiesFound==2)
 			{
 				document.getElementById("EDform").cryptedPassword.value = "Yes";
-				<% if (request.getParameter("logout") == null && authenticationSettings.getBoolean("autoSubmit", false)) { %>
+				<% if (!StringUtil.isDefined(request.getParameter("logout")) && authenticationSettings.getBoolean("autoSubmit", false)) { %>
 					document.getElementById("EDform").submit();
 				<% } %>
 			}
