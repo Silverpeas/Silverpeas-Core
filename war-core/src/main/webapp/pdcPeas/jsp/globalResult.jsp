@@ -657,19 +657,19 @@ if (!StringUtil.isDefined(pageId)) {
 				out.println("<a href=\""+sDownloadURL+"\" target=\"_blank\">"+downloadSrc+"</a>");
 			}
 			if (sCreatorName != null && sCreatorName.length()>0)
-				out.println(" - "+EncodeHelper.javaStringToHtmlString(sCreatorName));
+				out.println(" <span id=\"creatorName\"> - "+EncodeHelper.javaStringToHtmlString(sCreatorName)+"</span>");
 			if (sCreationDate != null && sCreationDate.length()>0)
-				out.print(" ("+sCreationDate + ")");
+				out.print(" <span id=\"creationDate\"> ("+sCreationDate + ") </span>");
 
 			if (sDescription != null && sDescription.length()>0)
-				out.println("<BR><i>"+EncodeHelper.javaStringToHtmlParagraphe(sDescription)+"</i>");
+				out.println("<span id=\"descriptionId\"> <BR><i> "+EncodeHelper.javaStringToHtmlParagraphe(sDescription)+"</i></span>");
 
 			if (sortValue.intValue() == 7 && gsr.getHits() >= 0) {
 			  	out.println("<br/><span class=\"popularity\">"+resource.getStringWithParam("pdcPeas.popularity", Integer.toString(gsr.getHits()))+"</span>");
 			}
 
 			if (sLocation != null && sLocation.length()>0)
-				out.println("<BR>"+EncodeHelper.javaStringToHtmlString(sLocation));
+				out.println("<span id=\"descriptionId\"> <BR>"+EncodeHelper.javaStringToHtmlString(sLocation)+"</span>");
 			out.println("<td>");
 
 			out.println("</tr></table>");
