@@ -89,10 +89,10 @@ void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWrite
 				String name = (String) option.get(0);
 				String value = (String) option.get(1);
 				String selected = "";
-				if (parameter.getValue() != null && parameter.getValue().toLowerCase().equals(value)) {
-					selected = "selected";
+				if (parameter.getValue() != null && parameter.getValue().toLowerCase().equals(value.toLowerCase())) {
+					selected = "selected=\"selected\"";
 				}
-			out.println("<option value=\""+value+"\" "+selected+">"+name);
+				out.println("<option value=\""+value+"\" "+selected+">"+name+"</option>");
 			}		
 			out.println("</select>");
 		}
