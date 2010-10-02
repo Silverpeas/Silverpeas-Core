@@ -2089,11 +2089,20 @@ td.browsebar a:hover {
 }
 
 /* Class for search group facet */
-.lineResult td {
-	padding-left: 5px;
+.lineResult .pertinence, .lineResult .selection, .lineResult .content {
 	padding-top: 5px;
+	padding-left: 5px;
+	vertical-align: top;
 }
 
+.lineResult .selection {
+	padding-top: 2px;
+}
+
+.lineResult .content {
+	padding-top: 4px;
+	padding-bottom: 14px;
+}
 
 #globalResultFrame {
 	width:80%;

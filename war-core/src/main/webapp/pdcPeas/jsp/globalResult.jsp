@@ -603,19 +603,18 @@ if (!StringUtil.isDefined(pageId)) {
 			out.println("<tr class=\"lineResult " + gsr.getSpaceId() + " " + gsr.getInstanceId() + "\">");
 
 			if (showPertinence)
-				out.println("<td valign=\"top\" class=\"pertinence\">"+displayPertinence(gsr.getRawScore(), fullStarSrc, emptyStarSrc)+"&nbsp;</td>");
+				out.println("<td class=\"pertinence\">"+displayPertinence(gsr.getRawScore(), fullStarSrc, emptyStarSrc)+"&nbsp;</td>");
 
 			if (activeSelection.booleanValue() || exportEnabled.booleanValue()) {
-				if (gsr.isExportable())
-				{
+				if (gsr.isExportable()) {
 					String checked = "";
-					if (gsr.isSelected())
+					if (gsr.isSelected()) {
 						checked = "checked";
-
-					out.println("<td valign=\"top\"><input type=\"checkbox\" "+checked+" name=\"resultObjects\" value=\""+gsr.getId()+"-"+gsr.getInstanceId()+"\"></td>");
+					}
+					out.println("<td class=\"selection\"><input type=\"checkbox\" "+checked+" name=\"resultObjects\" value=\""+gsr.getId()+"-"+gsr.getInstanceId()+"\"></td>");
+				} else { 
+			   		out.println("<td class=\"selection\"><input type=\"checkbox\" disabled name=\"resultObjects\" value=\""+gsr.getId()+"-"+gsr.getInstanceId()+"\"></td>");
 				}
-			   	else
-			   		out.println("<td valign=\"top\"><input type=\"checkbox\" disabled name=\"resultObjects\" value=\""+gsr.getId()+"-"+gsr.getInstanceId()+"\"></td>");
 			}
 
 			if (gsr.getType() != null && (gsr.getType().startsWith("Attachment")|| gsr.getType().startsWith("Versioning") || gsr.getType().equals("LinkedFile")) ) {
@@ -623,21 +622,22 @@ if (!StringUtil.isDefined(pageId)) {
 				fileIcon	= FileRepositoryManager.getFileIcon(fileType);
 				sName = "<img src=\""+fileIcon+"\" border=\"0\" width=\"30\" heigth=\"30\" align=\"absmiddle\"/>"+sName;
 				//no preview, display this is an attachment
-				if (gsr.getType().startsWith("Attachment") || gsr.getType().equals("LinkedFile"))
+				if (gsr.getType().startsWith("Attachment") || gsr.getType().equals("LinkedFile")) {
 					sDescription = null;
+				}
 			}
 
-			out.println("<td>");
+			out.println("<td class=\"content\">");
 
 			out.println("<table cellspacing=\"0\" cellpadding=\"0\"><tr>");
 
 			if (gsr.getThumbnailURL() != null && gsr.getThumbnailURL().length()>0)
 			{
-				out.println("<td><img src=\""+gsr.getThumbnailURL()+"\" border=0 width=\""+gsr.getThumbnailWidth()+"\" height=\""+gsr.getThumbnailHeight()+"\"></td>");
+				out.println("<td><img src=\""+gsr.getThumbnailURL()+"\" border=\"0\" width=\""+gsr.getThumbnailWidth()+"\" height=\""+gsr.getThumbnailHeight()+"\"/></td>");
 				out.println("<td>&nbsp;</td>");
 			}
 
-			out.println("<td valign=\"top\">");
+			out.println("<td>");
 			if (activeSelection.booleanValue())
 				out.println("<span class=\"textePetitBold\">"+sName+"</span>");
 			else {
@@ -647,29 +647,31 @@ if (!StringUtil.isDefined(pageId)) {
 			  	  cssClass="markedkAsRead";
 			  	  cssClassDisableVisited ="markedkAsReadDisableVisited";
 			  	}
-
-
 				out.println("<a href=\""+sURL+"\" class=\""+cssClassDisableVisited +"\"><span class=\""+ cssClass+ "\">"+sName+"</span></a>");
-
-			} if (StringUtil.isDefined(sDownloadURL))
+			} 
+			if (StringUtil.isDefined(sDownloadURL))
 			{
-				//affiche le lien pour le t?l?chargement
+				//affiche le lien pour le téléchargement
 				out.println("<a href=\""+sDownloadURL+"\" target=\"_blank\">"+downloadSrc+"</a>");
 			}
-			if (sCreatorName != null && sCreatorName.length()>0)
-				out.println(" <span id=\"creatorName\"> - "+EncodeHelper.javaStringToHtmlString(sCreatorName)+"</span>");
-			if (sCreationDate != null && sCreationDate.length()>0)
-				out.print(" <span id=\"creationDate\"> ("+sCreationDate + ") </span>");
+			if (StringUtil.isDefined(sCreatorName)) {
+				out.println(" <span class=\"creatorName\"> - "+EncodeHelper.javaStringToHtmlString(sCreatorName)+"</span>");
+			}
+			if (StringUtil.isDefined(sCreationDate)) {
+				out.print(" <span class=\"creationDate\"> ("+sCreationDate + ") </span>");
+			}
 
-			if (sDescription != null && sDescription.length()>0)
-				out.println("<span id=\"descriptionId\"> <BR><i> "+EncodeHelper.javaStringToHtmlParagraphe(sDescription)+"</i></span>");
+			if (StringUtil.isDefined(sDescription)) {
+				out.println("<span class=\"description\"><br/><i> "+EncodeHelper.javaStringToHtmlParagraphe(sDescription)+"</i></span>");
+			}
 
 			if (sortValue.intValue() == 7 && gsr.getHits() >= 0) {
 			  	out.println("<br/><span class=\"popularity\">"+resource.getStringWithParam("pdcPeas.popularity", Integer.toString(gsr.getHits()))+"</span>");
 			}
 
-			if (sLocation != null && sLocation.length()>0)
-				out.println("<span id=\"descriptionId\"> <BR>"+EncodeHelper.javaStringToHtmlString(sLocation)+"</span>");
+			if (StringUtil.isDefined(sLocation)) {
+				out.println("<span class=\"location\"> <br/>"+EncodeHelper.javaStringToHtmlString(sLocation)+"</span>");
+			}
 			out.println("<td>");
 
 			out.println("</tr></table>");
