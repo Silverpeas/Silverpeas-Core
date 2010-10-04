@@ -360,7 +360,8 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
       String userId = pageContext.getUserId();
       String objectId = pageContext.getObjectId();
       String logicalName = item.getName();
-      if (StringUtil.isDefined(logicalName)) {
+      long size = item.getSize();
+      if (StringUtil.isDefined(logicalName) && size > 0) {
         if (!FileUtil.isWindows()) {
           logicalName = logicalName.replace('\\', File.separatorChar);
           SilverTrace.info("form", "VideoFieldDisplayer.uploadVideoFile", "root.MSG_GEN_PARAM_VALUE",
@@ -377,7 +378,7 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
         item.write(dir);
         AttachmentDetail attachmentDetail =
                 createAttachmentDetail(objectId, componentId, physicalName, logicalName, mimeType,
-                item.getSize(),
+                size,
                 VideoFieldDisplayer.CONTEXT_FORM_VIDEO, userId);
         attachmentDetail = AttachmentController.createAttachment(attachmentDetail, true);
         attachmentId = attachmentDetail.getPK().getId();
