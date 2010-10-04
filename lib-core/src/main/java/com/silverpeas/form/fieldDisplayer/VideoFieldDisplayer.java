@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.ecs.Element;
 import org.apache.ecs.ElementContainer;
@@ -142,15 +143,6 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
         displayVideoFormInput(attachmentId, template, xhtmlcontainer, pagesContext);
       }
       
-      Map<String, String> parameters = template.getParameters(pagesContext.getLanguage());
-      boolean autoplay = (parameters.containsKey(PARAMETER_AUTOPLAY) ? 
-        Boolean.valueOf(parameters.get(PARAMETER_AUTOPLAY)): false);
-      String playerPath = FileServerUtils.getApplicationContext() + SWF_PLAYER_PATH;
-      script js = new script("flowplayer('" + VIDEO_PLAYER_ID + "', '" + playerPath +
-              "', {clip: { autoBuffering: " + !autoplay + ", autoPlay: " + autoplay + " } });");
-      js.setLanguage("javascript");
-      js.setType("text/javascript");
-      xhtmlcontainer.addElement(js);
       out.println(xhtmlcontainer.toString());
     }
   }
@@ -254,9 +246,12 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
     String videoURL = computeVideoURL(attachmentId, pagesContext);
     if (!videoURL.isEmpty()) {
       Map<String, String> parameters = template.getParameters(pagesContext.getLanguage());
-      Element videoLink = createVideoElement(videoURL, parameters);
+      Element videoLink = createVideoLink(videoURL, parameters);
       xhtmlcontainer.addElement(videoLink);
     }
+    Element player = createVideoPlayer(videoURL,
+            template.getParameters(pagesContext.getLanguage()));
+    xhtmlcontainer.addElement(player);
   }
 
   /**
@@ -281,7 +276,7 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
       parameters.remove(PARAMETER_WIDTH);
       parameters.remove(PARAMETER_HEIGHT);
       // a link to the video
-      Element videoLink = createVideoElement(videoURL, parameters);
+      Element videoLink = createVideoLink(videoURL, parameters);
 
       // a link to the deletion operation
       img deletionImage = new img();
@@ -324,6 +319,10 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
       selectionDiv.addElement(Util.getMandatorySnippet());
     }
     xhtmlContainer.addElement(selectionDiv);
+    
+    Element player = createVideoPlayer(videoURL,
+            template.getParameters(pagesContext.getLanguage()));
+    xhtmlContainer.addElement(player);
   }
   
   /**
@@ -331,15 +330,35 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
    * @param videoURL the URL of the video to display.
    * @return the XHTML element that displays the video.
    */
-  private Element createVideoElement(final String videoURL, final Map<String, String> parameters) {
+  private Element createVideoLink(final String videoURL, final Map<String, String> parameters) {
     a videoElement = new a();
     String width = (parameters.containsKey(PARAMETER_WIDTH) ? parameters.get(PARAMETER_WIDTH):
       DEFAULT_WIDTH);
     String height = (parameters.containsKey(PARAMETER_HEIGHT) ? parameters.get(PARAMETER_HEIGHT):
       DEFAULT_HEIGHT);
     videoElement.setStyle("display:block;width:" + width + "px;height:" + height + "px;");
-    videoElement.setHref(videoURL).setID(VIDEO_PLAYER_ID);
+    String videoId = VIDEO_PLAYER_ID + videoURL.hashCode();
+    videoElement.setHref(videoURL).setID(videoId);
     return videoElement;
+  }
+  
+  /**
+   * Creates an XHTML element that represents the video player that will play the video located 
+   * at the specified URL.
+   * @param videoURL the URL of the video to play.
+   * @param parameters the parameters to pass to the video player.
+   * @return the XHTML representation of the video player.
+   */
+  private Element createVideoPlayer(String videoURL, Map<String, String> parameters) {
+    boolean autoplay = (parameters.containsKey(PARAMETER_AUTOPLAY)
+            ? Boolean.valueOf(parameters.get(PARAMETER_AUTOPLAY)) : false);
+    String playerPath = FileServerUtils.getApplicationContext() + SWF_PLAYER_PATH;
+    String videoId = VIDEO_PLAYER_ID + videoURL.hashCode();
+    script js = new script("flowplayer('" + videoId + "', '" + playerPath
+            + "', {clip: { autoBuffering: " + !autoplay + ", autoPlay: " + autoplay + " } });");
+    js.setLanguage("javascript");
+    js.setType("text/javascript");
+    return js;
   }
 
   /**
