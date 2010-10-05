@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.ecs.Element;
 import org.apache.ecs.ElementContainer;
@@ -355,7 +354,7 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
     String playerPath = FileServerUtils.getApplicationContext() + SWF_PLAYER_PATH;
     String videoId = VIDEO_PLAYER_ID + videoURL.hashCode();
     script js = new script("flowplayer('" + videoId + "', '" + playerPath
-            + "', {clip: { autoBuffering: " + !autoplay + ", autoPlay: " + autoplay + " } });");
+            + "', {wmode: 'opaque', clip: { autoBuffering: " + !autoplay + ", autoPlay: " + autoplay + " } });");
     js.setLanguage("javascript");
     js.setType("text/javascript");
     return js;
@@ -425,16 +424,6 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
    */
   private boolean isUpdate(final Operation operation, final String attachmentId) {
     return StringUtil.isDefined(attachmentId) && operation == Operation.UPDATE;
-  }
-  
-  /**
-   * Is the specified operation is an add?
-   * @param operation the operation.
-   * @param attachmentId the identifier of the attachment on which the operation is.
-   * @return true if the operation is an add, false otherwise.
-   */
-  private boolean isAdd(final Operation operation, final String attachmentId) {
-    return StringUtil.isDefined(attachmentId) && operation == Operation.ADD;
   }
 
   /**
