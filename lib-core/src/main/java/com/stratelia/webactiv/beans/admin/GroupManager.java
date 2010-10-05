@@ -29,6 +29,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.dao.GroupDAO;
 import com.stratelia.webactiv.organization.GroupRow;
 import com.stratelia.webactiv.util.DBUtil;
@@ -119,7 +120,7 @@ public class GroupManager {
       throw new AdminException("GroupManager.getGroupIdBySpecificIdAndDomain",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUP",
           "group specific Id: '" + sSpecificId + "', domain Id: '" + sDomainId
-          + "'", e);
+              + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -308,7 +309,7 @@ public class GroupManager {
     } catch (Exception e) {
       throw new AdminException("GroupManager.getGroup",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUP", "group Id: '"
-          + sGroupId + "'", e);
+              + sGroupId + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -372,7 +373,7 @@ public class GroupManager {
     } catch (Exception e) {
       throw new AdminException("GroupManager.getGroupByNameInDomain",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUP", "group Name: '"
-          + sGroupName + "'", e);
+              + sGroupName + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -489,12 +490,12 @@ public class GroupManager {
         groups[nI] = GroupRow2Group(grs[nI]);
         SynchroReport.debug("GroupManager.getGroupsOfDomain()",
             "Groupe trouvé no : " + Integer.toString(nI) + ", specificID : "
-            + groups[nI].getSpecificId() + ", desc. : "
-            + groups[nI].getDescription(), null);
+                + groups[nI].getSpecificId() + ", desc. : "
+                + groups[nI].getDescription(), null);
       }
       SynchroReport.info("GroupManager.getGroupsOfDomain()",
           "Récupération de " + grs.length
-          + " groupes du domaine LDAP dans la base", null);
+              + " groupes du domaine LDAP dans la base", null);
       return groups;
     } catch (Exception e) {
       throw new AdminException("GroupManager.getGroupsOfDomain",
@@ -508,26 +509,22 @@ public class GroupManager {
   public String[] searchGroupsIds(DomainDriverManager ddManager,
       boolean isRootGroup, String componentId, String[] aProfileId,
       Group modelGroup) throws AdminException {
-    String[] grids = null;
-    GroupRow model;
-    int[] aRoleId = null;
-
     try {
       // Get organization
       ddManager.getOrganizationSchema();
-      model = Group2GroupRow(modelGroup);
+      GroupRow model = Group2GroupRow(modelGroup);
       // The Ids could be equal to -1 !!!! Put it to -2 if null
-      if ((modelGroup.getId() == null) || (modelGroup.getId().length() <= 0)) {
+      if (!StringUtil.isDefined(modelGroup.getId())) {
         model.id = -2;
       }
-      if ((modelGroup.getDomainId() == null)
-          || (modelGroup.getDomainId().length() <= 0)) {
+      if (!StringUtil.isDefined(modelGroup.getDomainId())) {
         model.domainId = -2;
       }
-      if ((modelGroup.getSuperGroupId() == null)
-          || (modelGroup.getSuperGroupId().length() <= 0)) {
+      if (!StringUtil.isDefined(modelGroup.getSuperGroupId())) {
         model.superGroupId = -2;
       }
+
+      int[] aRoleId = null;
       if (aProfileId != null) {
         aRoleId = new int[aProfileId.length];
         for (int i = 0; i < aProfileId.length; i++) {
@@ -536,9 +533,8 @@ public class GroupManager {
       }
 
       // Get groups
-      grids = ddManager.organization.group.searchGroupsIds(isRootGroup,
+      return ddManager.organization.group.searchGroupsIds(isRootGroup,
           idAsInt(componentId), aRoleId, model);
-      return grids;
     } catch (Exception e) {
       throw new AdminException("GroupManager.searchGroupsIdsInGroup",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUPS_OF_DOMAIN", e);
@@ -602,7 +598,7 @@ public class GroupManager {
       if (group != null)
         SynchroReport.error("GroupManager.addGroup()",
             "Problème lors de l'ajout du groupe " + group.getSpecificId()
-            + " dans la base, ce groupe n'a pas de nom", null);
+                + " dans la base, ce groupe n'a pas de nom", null);
       return "";
     }
 
@@ -622,14 +618,14 @@ public class GroupManager {
       if (gr.superGroupId != -1)
         SynchroReport
             .info(
-            "GroupManager.addGroup()",
-            "Ajout du groupe "
-            + group.getName()
-            + " (père="
-            + getGroup(ddManager, group.getSuperGroupId())
-            .getSpecificId()
-            + ") dans la table ST_Group",
-            null);
+                "GroupManager.addGroup()",
+                "Ajout du groupe "
+                    + group.getName()
+                    + " (père="
+                    + getGroup(ddManager, group.getSuperGroupId())
+                        .getSpecificId()
+                    + ") dans la table ST_Group",
+                null);
       else
         // pas de père
         SynchroReport.info("GroupManager.addGroup()", "Ajout du groupe "
@@ -642,8 +638,8 @@ public class GroupManager {
       // Create the links group_user in Silverpeas
       SynchroReport.info("GroupManager.addGroup()",
           "Inclusion des utilisateurs directement associés au groupe "
-          + group.getName()
-          + " (table ST_Group_User_Rel)", null);
+              + group.getName()
+              + " (table ST_Group_User_Rel)", null);
       String[] asUserIds = group.getUserIds();
       int nUserAdded = 0;
       for (int nI = 0; nI < asUserIds.length; nI++)
@@ -659,10 +655,10 @@ public class GroupManager {
     } catch (Exception e) {
       SynchroReport.error("GroupManager.addGroup()",
           "problème lors de l'ajout du groupe " + group.getName() + " - "
-          + e.getMessage(), null);
+              + e.getMessage(), null);
       throw new AdminException("GroupManager.addGroup",
           SilverpeasException.ERROR, "admin.EX_ERR_ADD_GROUP", "group name: '"
-          + group.getName() + "'", e);
+              + group.getName() + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -696,10 +692,10 @@ public class GroupManager {
     } catch (Exception e) {
       SynchroReport.error("GroupManager.deleteGroupById()",
           "problème lors de la suppression du groupe " + group.getName()
-          + " - " + e.getMessage(), null);
+              + " - " + e.getMessage(), null);
       throw new AdminException("GroupManager.deleteGroupById",
           SilverpeasException.ERROR, "admin.EX_ERR_DELETE_GROUP", "group Id: '"
-          + group.getId() + "'", e);
+              + group.getId() + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -716,7 +712,7 @@ public class GroupManager {
       if (group != null)
         SynchroReport.error("GroupManager.updateGroup()",
             "Problème lors de maj du groupe " + group.getSpecificId()
-            + " dans la base, ce groupe n'a pas de nom", null);
+                + " dans la base, ce groupe n'a pas de nom", null);
       return "";
     }
 
@@ -734,21 +730,21 @@ public class GroupManager {
       if (group.getSuperGroupId() != null)
         strInfoSycnhro =
             "Maj du groupe "
-            +
-            group.getName()
-            +
-            " (père="
-            +
-            getGroup(ddManager, group.getSuperGroupId()).getSpecificId()
-            +
-            ") dans la base (table ST_Group)...";
+                +
+                group.getName()
+                +
+                " (père="
+                +
+                getGroup(ddManager, group.getSuperGroupId()).getSpecificId()
+                +
+                ") dans la base (table ST_Group)...";
       else
         strInfoSycnhro =
             "Maj du groupe "
-            +
-            group.getName()
-            +
-            " (groupe racine) dans la base (table ST_Group)...";
+                +
+                group.getName()
+                +
+                " (groupe racine) dans la base (table ST_Group)...";
       SynchroReport.info("GroupManager.updateGroup()", strInfoSycnhro, null);
       // Update the group node
       GroupRow gr = Group2GroupRow(group);
@@ -757,13 +753,13 @@ public class GroupManager {
       // Update the users if necessary
       SynchroReport
           .info(
-          "GroupManager.updateGroup()",
-          "Maj éventuelle des relations du groupe "
-          +
-          group.getName()
-          +
-          " avec les utilisateurs qui y sont directement inclus (tables ST_Group_User_Rel)",
-          null);
+              "GroupManager.updateGroup()",
+              "Maj éventuelle des relations du groupe "
+                  +
+                  group.getName()
+                  +
+                  " avec les utilisateurs qui y sont directement inclus (tables ST_Group_User_Rel)",
+              null);
 
       String[] asOldUsersId = ddManager.organization.user
           .getDirectUserIdsOfGroup(idAsInt(sGroupId));// ds ST_Group_User_Rel
@@ -808,10 +804,10 @@ public class GroupManager {
     } catch (Exception e) {
       SynchroReport.error("GroupManager.updateGroup()",
           "problème lors de la maj du groupe " + group.getName() + " - "
-          + e.getMessage(), null);
+              + e.getMessage(), null);
       throw new AdminException("GroupManager.updateGroup",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_GROUP", "group Id: '"
-          + group.getId() + "'", e);
+              + group.getId() + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -853,7 +849,7 @@ public class GroupManager {
         // Set the children group inst
         aAdminGroupInst[nI].setChildrenAdminGroupInst(this
             .getChildrenGroupInst(ddManager, aAdminGroupInst[nI].getGroup()
-            .getId(), aGroup));
+                .getId(), aGroup));
       }
 
       return aAdminGroupInst;

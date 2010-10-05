@@ -75,12 +75,12 @@ public class UserDAO {
     ResultSet rs = null;
 
     try {
-      String query = "select distinct(id)"
+      String query = "select distinct(u.id), u.lastname"
           + " from st_user u, st_group_user_rel g"
           + " where g.userid = u.id"
           + " and g.groupid IN (" + list2String(groupIds) + ")"
-          + " and accessLevel <> 'R'"
-          + " order by lastName";
+          + " and u.accessLevel <> 'R'"
+          + " order by u.lastName";
 
       stmt = con.createStatement();
       rs = stmt.executeQuery(query);

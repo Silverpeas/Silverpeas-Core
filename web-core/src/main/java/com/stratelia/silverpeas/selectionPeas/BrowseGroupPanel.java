@@ -111,9 +111,16 @@ public class BrowseGroupPanel extends BrowsePanelProvider {
     if (StringUtil.isDefined(m_ParentGroupId)) {
       m_Ids = m_oc.searchGroupsIds(false, null, null, modelGroup);
     } else {
+      boolean getOnlyRootGroups = true; // By default, display only root groups
+      if (StringUtil.isDefined(m_SelectionExtraParams.getComponentId())) {
+        // in case of use in a component (to send notifications by example)
+        // display all groups (whatever the level).
+        // This permit to select a subgroup.
+        getOnlyRootGroups = false;
+      }
       m_Ids = m_oc
-          .searchGroupsIds(false, m_SelectionExtraParams.getComponentId(),
-          m_SelectionExtraParams.getProfileIds(), modelGroup);
+          .searchGroupsIds(getOnlyRootGroups, m_SelectionExtraParams.getComponentId(),
+              m_SelectionExtraParams.getProfileIds(), modelGroup);
     }
 
     verifIndexes();
