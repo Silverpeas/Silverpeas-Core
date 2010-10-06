@@ -888,6 +888,12 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
 	   if (displayUserFavoriteSpace && $("#userMenuDisplayModeId").val() == "BOOKMARKS" && nbSpaces == 0) {
 		   $('#spaces').html("<span class='noFavoriteSpace'>" +$('#noFavoriteSpaceMsgId').val() +  "</span> ");
 	   }
+	   
+	   try {
+		   treeLoaded();
+	   } catch (e) {
+		   //all looks don't need this callback function
+	   }
      },
      displaySpaceTransverse: function(space) {
 		   document.getElementById("spaceTransverse").innerHTML = "";

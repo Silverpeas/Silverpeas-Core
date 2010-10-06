@@ -23,14 +23,15 @@
  */
 var navVisible = true;
 function resizeFrame()
-{
-	if (displayPDCFrame())
-	 	parent.resizeFrame('0,10,*,0,0,0');
-	else
-		parent.resizeFrame('0,10,*,0,0');
-	
+{		
 	 if (navVisible)
 	 {
+		 if (displayPDCFrame()) {
+			 parent.setframevalue("rows", "10,100%,*,*,*,*");
+		 } else {
+			 parent.setframevalue("rows", "10,100%,*,*,*");
+		 }
+		 
 		 document.body.scroll = "no"; 
 		 document.getElementById('space2Expand').height='10';
 		 document.images['expandReduce'].src="icons/silverpeasV5/extendTopBar.gif";
@@ -40,6 +41,12 @@ function resizeFrame()
 		 document.body.scroll = "no";
 		 document.getElementById('space2Expand').height='0';
 		 document.images['expandReduce'].src="icons/silverpeasV5/reductTopBar.gif";
+		 
+		 if (displayPDCFrame()) {
+			 parent.setframevalue("rows", "115,100%,26,*,*,*");
+		 } else {
+			 parent.setframevalue("rows", "115,100%,26,*,*");
+		 }
 	 }
 	 document.images['expandReduce'].blur();
 	 navVisible = !navVisible;
