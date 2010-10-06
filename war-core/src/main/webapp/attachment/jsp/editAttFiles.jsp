@@ -210,12 +210,9 @@
             document.attachmentForm.submit();
           }
 
-          function DeleteConfirmAttachment(t, id, languages)
+          function DeleteConfirmAttachment(id)
           {
-            attachmentId 	= id;
-            attachmentName	= t;
-
-            var url = '<%=m_Context%>/attachment/jsp/suppressionDialog.jsp?ComponentId=<%=componentId%>&Id=<%=id%>&Url=<%=url%>&IdAttachment='+id+'&Name='+t+'&Languages='+languages+'&IndexIt=<%=indexIt%>';
+            var url = '<%=m_Context%>/attachment/jsp/suppressionDialog.jsp?ComponentId=<%=componentId%>&Id=<%=id%>&Url=<%=url%>&IdAttachment='+id+'&IndexIt=<%=indexIt%>';
             $("#attachmentModalDialog").dialog("open").load(url);
           }
 
@@ -474,12 +471,6 @@
                           Icon deleteIcon = iconPane.addIcon();
                           Icon shareIcon = iconPane.addIcon();
 
-                          String attLanguages = "";
-                          Iterator itAttLanguages = attachmentDetail.getLanguages();
-                          while (itAttLanguages.hasNext()) {
-                            attLanguages += itAttLanguages.next() + ",";
-                          }
-
                           if (attachmentDetail.isReadOnly()) {
                             if (userId.equals(attachmentDetail.getWorkerId())) {
                               updateIcon.setProperties(m_Context + "/util/icons/update.gif",
@@ -497,8 +488,7 @@
                                     attResources.getString("GML.modify"),
                                     "javascript:onClick=updateAttachment('" + attachmentId + "')");
                             deleteIcon.setProperties(m_Context + "/util/icons/delete.gif", attResources.getString("GML.delete"),
-                                    "javascript:onClick=DeleteConfirmAttachment('" + Encode.javaStringToJsString(logicalName) + "','"
-                                    + attachmentId + "', '" + attLanguages + "')");
+                                    "javascript:onClick=DeleteConfirmAttachment('"+ attachmentId + "')");
 
                             if (isFileSharingEnable(m_MainSessionCtrl, componentId) && "admin".equalsIgnoreCase(profile)) {
                               shareIcon.setProperties(m_Context + "/util/icons/webLink.gif", messages.getString("attachment.share"),
