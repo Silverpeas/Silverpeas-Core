@@ -119,7 +119,7 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
+    <!--  <plugin>
         <artifactId>maven-site-plugin</artifactId>
         <version>3.0-beta-3-SNAPSHOT</version>
         <configuration>
@@ -140,7 +140,7 @@
             </plugin>
           </reportPlugins>
         </configuration> 
-      </plugin>
+      </plugin>-->
     </plugins>
   </build>
 
