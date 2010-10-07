@@ -53,6 +53,7 @@ import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.model.DocumentVersionPK;
+import com.stratelia.silverpeas.versioning.model.Worker;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -150,7 +151,7 @@ public class VersioningImportExport {
         // On crée un nouveau document
         DocumentPK docPK = new DocumentPK(-1, "useless", componentId);
         document = new Document(docPK, pubPK, attachment.getLogicalName(), "",
-            -1, userId, new Date(), null, componentId, null, null, 0, 0);
+            -1, userId, new Date(), null, componentId, new ArrayList<Worker>(), new ArrayList(), 0, 0);
         if (StringUtil.isDefined(attachment.getTitle())) {
           document.setName(attachment.getTitle());
         }
@@ -398,7 +399,7 @@ public class VersioningImportExport {
             DocumentPK docPK = new DocumentPK(-1, "useless", objectPK.getInstanceId());
             document = new Document(docPK, objectPK, document.getName(),
                 document.getDescription(), -1, userId, new Date(), null,
-                objectPK.getInstanceId(), null, null, 0, 0);
+                objectPK.getInstanceId(), new ArrayList<Worker>(), new ArrayList(), 0, 0);
 
             // et on y ajoute la première version
             if (version.getType() == DocumentVersion.TYPE_PUBLIC_VERSION) {

@@ -63,6 +63,8 @@ public class Document implements java.io.Serializable, Cloneable {
   private VersionsType versionsType; // used by import/export engine
 
   public Document() {
+    this.workList = new ArrayList<Worker>();
+    this.readList = new ArrayList();
   }
 
   public Document(DocumentPK pk, WAPrimaryKey foreignKey, String name,

@@ -251,11 +251,8 @@ public class VersioningDAO {
     doc.getPk().setComponentName(doc.getInstanceId());
     doc.getForeignKey().setComponentName(doc.getInstanceId());
 
-    // ArrayList readers = getReaders(con, doc.getPk());
     List<Worker> workers = WorkListDAO.getWorkers(con, doc.getPk());
-    // doc.setReadList(readers);
     doc.setWorkList((ArrayList<Worker>) workers);
-
     try {
       String alertDate = rs.getString("alertDate");
       if (StringUtil.isDefined(alertDate)) {
