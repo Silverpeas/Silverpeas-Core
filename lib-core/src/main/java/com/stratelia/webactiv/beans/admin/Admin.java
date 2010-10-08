@@ -2851,10 +2851,16 @@ public class Admin extends Object {
     return m_UserManager.getAllUsersIds(m_DDManager);
   }
 
-  /**
-   * Get the user detail corresponding to the given user Id
-   */
+ /**
+  * Get the user detail corresponding to the given user Id
+  * @param sUserId the user id.
+  * @return the user detail corresponding to the given user Id
+  * @throws AdminException
+  */
   public UserDetail getUserDetail(String sUserId) throws AdminException {
+    if(!StringUtil.isDefined(sUserId) || "-1".equals(sUserId)) {
+      return null;
+    }
     UserDetail ud = m_Cache.getUserDetail(sUserId);
     if (ud == null) {
       ud = m_UserManager.getUserDetail(m_DDManager, sUserId);

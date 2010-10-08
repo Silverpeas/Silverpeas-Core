@@ -37,6 +37,7 @@ public class TestClientBrowserUtil extends TestCase {
         "Microsoft Internet Explorer/4.0b1 (Windows 95)");
     assertTrue(ClientBrowserUtil.isInternetExplorer(request));
     assertFalse(ClientBrowserUtil.isFirefox(request));
+    assertFalse(ClientBrowserUtil.isChrome(request));
     assertFalse(ClientBrowserUtil.isOpera(request));
     assertFalse(ClientBrowserUtil.isSafari(request));
     assertTrue(ClientBrowserUtil.isWindows(request));
@@ -48,6 +49,7 @@ public class TestClientBrowserUtil extends TestCase {
         "Mozilla/1.22 (compatible; MSIE 1.5; Windows NT)");
     assertTrue(ClientBrowserUtil.isInternetExplorer(request));
     assertFalse(ClientBrowserUtil.isFirefox(request));
+    assertFalse(ClientBrowserUtil.isChrome(request));
     assertFalse(ClientBrowserUtil.isOpera(request));
     assertFalse(ClientBrowserUtil.isSafari(request));
     assertTrue(ClientBrowserUtil.isWindows(request));
@@ -59,6 +61,7 @@ public class TestClientBrowserUtil extends TestCase {
         "Mozilla/1.22 (compatible; MSIE 1.5; Windows NT)");
     assertTrue(ClientBrowserUtil.isInternetExplorer(request));
     assertFalse(ClientBrowserUtil.isFirefox(request));
+    assertFalse(ClientBrowserUtil.isChrome(request));
     assertFalse(ClientBrowserUtil.isOpera(request));
     assertFalse(ClientBrowserUtil.isSafari(request));
     assertTrue(ClientBrowserUtil.isWindows(request));
@@ -70,6 +73,7 @@ public class TestClientBrowserUtil extends TestCase {
         "Mozilla/2.0 (compatible; MSIE 3.01; Windows 98)");
     assertTrue(ClientBrowserUtil.isInternetExplorer(request));
     assertFalse(ClientBrowserUtil.isFirefox(request));
+    assertFalse(ClientBrowserUtil.isChrome(request));
     assertFalse(ClientBrowserUtil.isOpera(request));
     assertFalse(ClientBrowserUtil.isSafari(request));
     assertTrue(ClientBrowserUtil.isWindows(request));
@@ -81,6 +85,7 @@ public class TestClientBrowserUtil extends TestCase {
         "Mozilla/1.22 (compatible; MSIE 1.5; Windows NT)");
     assertTrue(ClientBrowserUtil.isInternetExplorer(request));
     assertFalse(ClientBrowserUtil.isFirefox(request));
+    assertFalse(ClientBrowserUtil.isChrome(request));
     assertFalse(ClientBrowserUtil.isOpera(request));
     assertFalse(ClientBrowserUtil.isSafari(request));
     assertTrue(ClientBrowserUtil.isWindows(request));
@@ -92,6 +97,7 @@ public class TestClientBrowserUtil extends TestCase {
         "Mozilla/4.0 (compatible; MSIE 5.23; Mac_PowerPC)");
     assertTrue(ClientBrowserUtil.isInternetExplorer(request));
     assertFalse(ClientBrowserUtil.isFirefox(request));
+    assertFalse(ClientBrowserUtil.isChrome(request));
     assertFalse(ClientBrowserUtil.isOpera(request));
     assertFalse(ClientBrowserUtil.isSafari(request));
     assertFalse(ClientBrowserUtil.isWindows(request));
@@ -103,6 +109,7 @@ public class TestClientBrowserUtil extends TestCase {
         "Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)");
     assertTrue(ClientBrowserUtil.isInternetExplorer(request));
     assertFalse(ClientBrowserUtil.isFirefox(request));
+    assertFalse(ClientBrowserUtil.isChrome(request));
     assertFalse(ClientBrowserUtil.isOpera(request));
     assertFalse(ClientBrowserUtil.isSafari(request));
     assertTrue(ClientBrowserUtil.isWindows(request));
@@ -114,6 +121,7 @@ public class TestClientBrowserUtil extends TestCase {
         "Mozilla/4.0 (compatible; MSIE 6.0; MSN 2.5; Windows 98)");
     assertTrue(ClientBrowserUtil.isInternetExplorer(request));
     assertFalse(ClientBrowserUtil.isFirefox(request));
+    assertFalse(ClientBrowserUtil.isChrome(request));
     assertFalse(ClientBrowserUtil.isOpera(request));
     assertFalse(ClientBrowserUtil.isSafari(request));
     assertTrue(ClientBrowserUtil.isWindows(request));
@@ -125,6 +133,7 @@ public class TestClientBrowserUtil extends TestCase {
         "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322)");
     assertTrue(ClientBrowserUtil.isInternetExplorer(request));
     assertFalse(ClientBrowserUtil.isFirefox(request));
+    assertFalse(ClientBrowserUtil.isChrome(request));
     assertFalse(ClientBrowserUtil.isOpera(request));
     assertFalse(ClientBrowserUtil.isSafari(request));
     assertTrue(ClientBrowserUtil.isWindows(request));
@@ -136,6 +145,7 @@ public class TestClientBrowserUtil extends TestCase {
         "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; SV1; .NET CLR 1.1.4322)");
     assertTrue(ClientBrowserUtil.isInternetExplorer(request));
     assertFalse(ClientBrowserUtil.isFirefox(request));
+    assertFalse(ClientBrowserUtil.isChrome(request));
     assertFalse(ClientBrowserUtil.isOpera(request));
     assertFalse(ClientBrowserUtil.isSafari(request));
     assertTrue(ClientBrowserUtil.isWindows(request));
@@ -147,6 +157,7 @@ public class TestClientBrowserUtil extends TestCase {
         "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)");
     assertTrue(ClientBrowserUtil.isInternetExplorer(request));
     assertFalse(ClientBrowserUtil.isFirefox(request));
+    assertFalse(ClientBrowserUtil.isChrome(request));
     assertFalse(ClientBrowserUtil.isOpera(request));
     assertFalse(ClientBrowserUtil.isSafari(request));
     assertTrue(ClientBrowserUtil.isWindows(request));
@@ -158,6 +169,7 @@ public class TestClientBrowserUtil extends TestCase {
         "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)");
     assertTrue(ClientBrowserUtil.isInternetExplorer(request));
     assertFalse(ClientBrowserUtil.isFirefox(request));
+    assertFalse(ClientBrowserUtil.isChrome(request));
     assertFalse(ClientBrowserUtil.isOpera(request));
     assertFalse(ClientBrowserUtil.isSafari(request));
     assertTrue(ClientBrowserUtil.isWindows(request));
@@ -169,6 +181,7 @@ public class TestClientBrowserUtil extends TestCase {
         "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.2)");
     assertTrue(ClientBrowserUtil.isInternetExplorer(request));
     assertFalse(ClientBrowserUtil.isFirefox(request));
+    assertFalse(ClientBrowserUtil.isChrome(request));
     assertFalse(ClientBrowserUtil.isOpera(request));
     assertFalse(ClientBrowserUtil.isSafari(request));
     assertTrue(ClientBrowserUtil.isWindows(request));
@@ -180,6 +193,7 @@ public class TestClientBrowserUtil extends TestCase {
         "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)");
     assertTrue(ClientBrowserUtil.isInternetExplorer(request));
     assertFalse(ClientBrowserUtil.isFirefox(request));
+    assertFalse(ClientBrowserUtil.isChrome(request));
     assertFalse(ClientBrowserUtil.isOpera(request));
     assertFalse(ClientBrowserUtil.isSafari(request));
     assertTrue(ClientBrowserUtil.isWindows(request));
@@ -191,6 +205,7 @@ public class TestClientBrowserUtil extends TestCase {
         "Mozilla/5.0 (Macintosh; U; PPC Mac OS X Mach-O; en-US; rv:1.5a) Gecko/20030728 Mozilla Firebird/0.6.1");
     assertFalse(ClientBrowserUtil.isInternetExplorer(request));
     assertTrue(ClientBrowserUtil.isFirefox(request));
+    assertFalse(ClientBrowserUtil.isChrome(request));
     assertFalse(ClientBrowserUtil.isOpera(request));
     assertFalse(ClientBrowserUtil.isSafari(request));
     assertFalse(ClientBrowserUtil.isWindows(request));
@@ -202,6 +217,7 @@ public class TestClientBrowserUtil extends TestCase {
         "Mozilla/5.0 (Windows; U; Windows NT 5.1; nl-NL; rv:1.7.5) Gecko/20041202 Firefox/1.0");
     assertFalse(ClientBrowserUtil.isInternetExplorer(request));
     assertTrue(ClientBrowserUtil.isFirefox(request));
+    assertFalse(ClientBrowserUtil.isChrome(request));
     assertFalse(ClientBrowserUtil.isOpera(request));
     assertFalse(ClientBrowserUtil.isSafari(request));
     assertTrue(ClientBrowserUtil.isWindows(request));
@@ -213,6 +229,7 @@ public class TestClientBrowserUtil extends TestCase {
         "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.7.6) Gecko/20050512 Firefox");
     assertFalse(ClientBrowserUtil.isInternetExplorer(request));
     assertTrue(ClientBrowserUtil.isFirefox(request));
+    assertFalse(ClientBrowserUtil.isChrome(request));
     assertFalse(ClientBrowserUtil.isOpera(request));
     assertFalse(ClientBrowserUtil.isSafari(request));
     assertFalse(ClientBrowserUtil.isWindows(request));
@@ -224,6 +241,7 @@ public class TestClientBrowserUtil extends TestCase {
         "Mozilla/5.0 (X11; U; FreeBSD i386; en-US; rv:1.7.8) Gecko/20050609 Firefox/1.0.4");
     assertFalse(ClientBrowserUtil.isInternetExplorer(request));
     assertTrue(ClientBrowserUtil.isFirefox(request));
+    assertFalse(ClientBrowserUtil.isChrome(request));
     assertFalse(ClientBrowserUtil.isOpera(request));
     assertFalse(ClientBrowserUtil.isSafari(request));
     assertFalse(ClientBrowserUtil.isWindows(request));
@@ -235,6 +253,7 @@ public class TestClientBrowserUtil extends TestCase {
         "Mozilla/5.0 (Windows; U; Windows NT 5.1; fr; rv:1.8.1) Gecko/20061010 Firefox/2.0");
     assertFalse(ClientBrowserUtil.isInternetExplorer(request));
     assertTrue(ClientBrowserUtil.isFirefox(request));
+    assertFalse(ClientBrowserUtil.isChrome(request));
     assertFalse(ClientBrowserUtil.isOpera(request));
     assertFalse(ClientBrowserUtil.isSafari(request));
     assertTrue(ClientBrowserUtil.isWindows(request));
@@ -246,6 +265,7 @@ public class TestClientBrowserUtil extends TestCase {
         "Mozilla/5.0 (X11; U; Linux i686; fr; rv:1.8.1.1) Gecko/20060601 Firefox/2.0.0.1 (Ubuntu-edgy)");
     assertFalse(ClientBrowserUtil.isInternetExplorer(request));
     assertTrue(ClientBrowserUtil.isFirefox(request));
+    assertFalse(ClientBrowserUtil.isChrome(request));
     assertFalse(ClientBrowserUtil.isOpera(request));
     assertFalse(ClientBrowserUtil.isSafari(request));
     assertFalse(ClientBrowserUtil.isWindows(request));
@@ -257,6 +277,18 @@ public class TestClientBrowserUtil extends TestCase {
         "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.8.1.6) Gecko/20071008 Ubuntu/7.10 (gutsy) Firefox/2.0.0.6");
     assertFalse(ClientBrowserUtil.isInternetExplorer(request));
     assertTrue(ClientBrowserUtil.isFirefox(request));
+    assertFalse(ClientBrowserUtil.isChrome(request));
+    assertFalse(ClientBrowserUtil.isOpera(request));
+    assertFalse(ClientBrowserUtil.isSafari(request));
+    assertFalse(ClientBrowserUtil.isWindows(request));
+    assertTrue(ClientBrowserUtil.isUnix(request));
+    assertFalse(ClientBrowserUtil.isMacintosh(request));
+    request = new MockHttpServletRequest();
+    request.setHeader("User-Agent","Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/534.3 "
+        + "(KHTML, like Gecko) Ubuntu/10.10 Chromium/6.0.472.63 Chrome/6.0.472.63 Safari/534.3");
+    assertFalse(ClientBrowserUtil.isInternetExplorer(request));
+    assertFalse(ClientBrowserUtil.isFirefox(request));
+    assertTrue(ClientBrowserUtil.isChrome(request));
     assertFalse(ClientBrowserUtil.isOpera(request));
     assertFalse(ClientBrowserUtil.isSafari(request));
     assertFalse(ClientBrowserUtil.isWindows(request));

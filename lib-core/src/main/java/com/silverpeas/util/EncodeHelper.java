@@ -23,9 +23,13 @@
  */
 package com.silverpeas.util;
 
+import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.lang.StringEscapeUtils;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * Util class to encode special string or characters
@@ -141,7 +145,7 @@ public class EncodeHelper extends Object {
 
   /**
    * Convert a html string to a java string Replace &quot
-   * @param HTML string to encode
+   * @param htmlstring HTML string to encode
    * @return html string JAVA encoded
    */
   public static String htmlStringToJavaString(String htmlstring) {
@@ -181,7 +185,7 @@ public class EncodeHelper extends Object {
   /**
    * This method transforms a string to replace the 'special' caracters to store them correctly in
    * the database
-   * @param text (String) a single text which may contains 'special' caracters
+   * @param sText a single text which may contains 'special' caracters
    * @return Returns the transformed text without specific codes.
    */
   public static String transformStringForBD(String sText) {
@@ -193,13 +197,9 @@ public class EncodeHelper extends Object {
         "root.MSG_GEN_ENTER_METHOD", " text = " + sText);
 
     int nStringLength = sText.length();
-    StringBuffer resSB = new StringBuffer(nStringLength + 10);
+    StringBuilder resSB = new StringBuilder(nStringLength + 10);
 
     for (int i = 0; i < nStringLength; i++) {
-      // SilverTrace.debug("util", "Encode.transformStringForBD",
-      // "root_dsklflkjsdh",
-      // "Char = '"+sText.charAt(i)+"' unicode ='"+escapeUnicodeString(Character.toString(sText.charAt(i)),
-      // true)+"'");
       switch (sText.charAt(i)) {
         case '€':
           resSB.append('\u20ac'); // Euro Symbol
@@ -225,5 +225,23 @@ public class EncodeHelper extends Object {
     SilverTrace.info("util", "Encode.convertHTMLEntities()",
         "root.MSG_GEN_PARAM_VALUE", "text sortant = " + result);
     return result;
+  }
+
+  /**
+   * Encode an UTF-8 filename in Base64 for the content-disposition header according to RFC2047.
+   * @see http://www.ietf.org/rfc/rfc2047.txt
+   * @param filename the UTF-8 filename to be encoded.
+   * @return the filename to be inserted in the content-disposition header.
+   */
+  public static String encodeFilename(String filename) {
+    try {
+      StringBuilder buffer = new StringBuilder(256);
+      buffer.append("=?UTF-8?B?");
+      buffer.append(new String(Base64.encodeBase64(filename.getBytes("UTF-8"))));
+      buffer.append("?=");
+      return buffer.toString();
+    } catch (UnsupportedEncodingException ex) {
+      return filename;
+    }
   }
 }
