@@ -46,7 +46,7 @@
       <plugin>
         <groupId>com.kalistick.soa</groupId>
         <artifactId>ks-agent</artifactId>
-        <version>2.1.1</version>
+        <version>2.2</version>
         <configuration>
           <configFile>${project.basedir}/src/config/agent_cockpit/kalistick-new.xml</configFile>
           <version>${project.version}-${build.timestamp}</version>
