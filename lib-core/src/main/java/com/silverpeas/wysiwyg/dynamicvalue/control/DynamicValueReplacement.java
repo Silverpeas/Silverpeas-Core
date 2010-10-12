@@ -152,6 +152,16 @@ public class DynamicValueReplacement {
       } catch (SQLException e) {
         SilverTrace.error("wysiwyg", DynamicValueReplacement.class.toString(),
             "root.EX_SQL_QUERY_FAILED", e);
+      } finally {
+        // close SQL connection
+        if (conn != null) {
+          try {
+            conn.close();
+          } catch (SQLException e) {
+            SilverTrace.error("wysiwig", DynamicValueReplacement.class.toString(),
+                "root.EX_CONNECTION_CLOSE_FAILED", e);
+          }
+        }
       }
     }
     SilverTrace.debug("wysiwyg", DynamicValueReplacement.class.toString(),
