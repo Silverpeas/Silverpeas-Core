@@ -219,6 +219,7 @@ public class HtmlForm extends AbstractForm {
     try {
       Field field = record.getField(fieldName);
       if (field != null) {
+        boolean fieldFound = false;
         for (FieldTemplate fieldTemplate : getFieldTemplates()) {
           String fieldType;
           String fieldDisplayerName;
@@ -235,10 +236,13 @@ public class HtmlForm extends AbstractForm {
             if (fieldDisplayer != null) {
               fieldDisplayer.display(out, field, fieldTemplate, pc);
             }
+            fieldFound = true;
             break;
           }
         }
-        out.print(field.getValue(pc.getLanguage()));
+        if (!fieldFound) {
+          out.print(field.getValue(pc.getLanguage()));
+        }
       }
     } catch (FormException fe) {
       SilverTrace.error("form", "HtmlForm.display", "form.EXP_UNKNOWN_FIELD",
