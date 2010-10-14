@@ -84,7 +84,7 @@ public class TopItem {
 
   public String getUrl() {
     if (isSpace())
-      return "/admin/jsp/MainSilverpeasV5.jsp?SpaceId=" + getSubSpaceId();
+      return "/dt?SpaceId=" + getSubSpaceId();
     else if (isComponent())
       return URLManager.getURL(null, getComponentId()) + "Main";
     else {
