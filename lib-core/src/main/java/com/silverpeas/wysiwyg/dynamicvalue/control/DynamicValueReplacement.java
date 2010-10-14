@@ -37,6 +37,7 @@ import com.silverpeas.wysiwyg.dynamicvalue.model.DynamicValue;
 import com.silverpeas.wysiwyg.dynamicvalue.pool.ConnectionPoolFactory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.SilverpeasSettings;
+import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
 
@@ -88,7 +89,7 @@ public class DynamicValueReplacement {
         try {
           message =
               new ResourceLocator("com.stratelia.silverpeas.wysiwyg.multilang.wysiwygBundle",
-              language);
+                  language);
           if (message != null) {
             firstOption = message.getString("DynamicValues");
           }
@@ -100,10 +101,10 @@ public class DynamicValueReplacement {
         // build the HTML select
         builder
             .append(
-            " <select id=\"dynamicValues_").append(fieldName).append(
-            "\" name=\"dynamicValues\" onchange=\"chooseDynamicValues" +
-            FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_')) +
-            "();this.selectedIndex=0;\">")
+                " <select id=\"dynamicValues_").append(fieldName).append(
+                "\" name=\"dynamicValues\" onchange=\"chooseDynamicValues" +
+                    FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_')) +
+                    "();this.selectedIndex=0;\">")
             .append("<option value=\"\">" + firstOption + "</option>");
         for (Iterator<DynamicValue> iterator = list.iterator(); iterator.hasNext();) {
           dynamicValue = iterator.next();
@@ -119,15 +120,7 @@ public class DynamicValueReplacement {
       SilverTrace.error("wysiwiy", DynamicValueReplacement.class.toString(),
           "root.EX_SQL_QUERY_FAILED", e);
     } finally {
-      // close SQL connection
-      if (conn != null) {
-        try {
-          conn.close();
-        } catch (SQLException e) {
-          SilverTrace.error("wysiwig", DynamicValueReplacement.class.toString(),
-              "root.EX_CONNECTION_CLOSE_FAILED", e);
-        }
-      }
+      DBUtil.close(conn);
     }
 
     return HTMLCodeFramgment;
@@ -153,15 +146,7 @@ public class DynamicValueReplacement {
         SilverTrace.error("wysiwyg", DynamicValueReplacement.class.toString(),
             "root.EX_SQL_QUERY_FAILED", e);
       } finally {
-        // close SQL connection
-        if (conn != null) {
-          try {
-            conn.close();
-          } catch (SQLException e) {
-            SilverTrace.error("wysiwig", DynamicValueReplacement.class.toString(),
-                "root.EX_CONNECTION_CLOSE_FAILED", e);
-          }
-        }
+        DBUtil.close(conn);
       }
     }
     SilverTrace.debug("wysiwyg", DynamicValueReplacement.class.toString(),
