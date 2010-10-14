@@ -81,6 +81,7 @@ public class PublicationTemplateManager {
   public static String mappingRecordTemplateFilePath = null;
 
   public static String templateDir = null;
+  public static String defaultTemplateDir = null;
 
   static {
     ResourceLocator templateSettings =
@@ -89,6 +90,7 @@ public class PublicationTemplateManager {
         new ResourceLocator("com.silverpeas.publicationTemplate.settings.mapping", "");
 
     templateDir = templateSettings.getString("templateDir");
+    defaultTemplateDir = System.getenv("SILVERPEAS_HOME")+"/data/templateRepository/";
 
     String mappingDir = mappingSettings.getString("mappingDir");
     String mappingPublicationTemplateFileName = mappingSettings.getString("templateFilesMapping");
@@ -204,11 +206,19 @@ public class PublicationTemplateManager {
     try {
       PublicationTemplateImpl publicationTemplate =
           (PublicationTemplateImpl) templates.get(xmlFileName);
-      if (publicationTemplate != null)
+      if (publicationTemplate != null) {
         return publicationTemplate.basicClone();
+      }
 
       // Format these url
       String xmlFilePath = makePath(templateDir, xmlFileName);
+      
+      File xmlFile = new File(xmlFilePath);
+      if (xmlFile == null || !xmlFile.exists()) {
+        //file does not exist in directory, try to locate it in default one
+        xmlFilePath = makePath(defaultTemplateDir, xmlFileName);
+        xmlFile = new File(xmlFilePath);
+      }
 
       // Load mapping and instantiate a Marshaller
       Mapping mapping = new Mapping();
@@ -218,7 +228,7 @@ public class PublicationTemplateManager {
       // Unmarshall the process model
       publicationTemplate =
           (PublicationTemplateImpl) unmar.unmarshal(new InputSource(
-              new FileInputStream(xmlFilePath)));
+              new FileInputStream(xmlFile)));
       publicationTemplate.setFileName(xmlFileName);
 
       templates.put(xmlFileName, publicationTemplate);
