@@ -42,9 +42,9 @@ public class MockedNodeDAOTest {
 
   @Test
   public void testDeleteRow() throws Exception {
-    JDBCMockObjectFactory factory = new JDBCMockObjectFactory();
-    JDBCTestModule module = new JDBCTestModule(factory);
-    MockConnection mockedConnection = factory.getMockConnection();
+    JDBCMockObjectFactory jdbcFactory = new JDBCMockObjectFactory();
+    JDBCTestModule module = new JDBCTestModule(jdbcFactory);
+    MockConnection mockedConnection = jdbcFactory.getMockConnection();
     StatementResultSetHandler statementHandler = mockedConnection.getStatementResultSetHandler();
     statementHandler.prepareGlobalUpdateCount(1);
     NodePK nodePk = new NodePK("4", INSTANCE_ID);
@@ -58,9 +58,9 @@ public class MockedNodeDAOTest {
 
   @Test
   public void testLoadRowConnectionNodePKStringInt() throws Exception {
-    JDBCMockObjectFactory factory = new JDBCMockObjectFactory();
-    JDBCTestModule module = new JDBCTestModule(factory);
-    MockConnection mockedConnection = factory.getMockConnection();
+    JDBCMockObjectFactory jdbcFactory = new JDBCMockObjectFactory();
+    JDBCTestModule module = new JDBCTestModule(jdbcFactory);
+    MockConnection mockedConnection = jdbcFactory.getMockConnection();
     PreparedStatementResultSetHandler statementHandler = mockedConnection.getPreparedStatementResultSetHandler();
     MockResultSet result = statementHandler.createResultSet();
     result.addRow(new Object[]{new Integer(4), "Sous Theme de Test",
@@ -104,9 +104,9 @@ public class MockedNodeDAOTest {
 
   @Test
   public void testStoreRow() throws Exception {
-    JDBCMockObjectFactory factory = new JDBCMockObjectFactory();
-    JDBCTestModule module = new JDBCTestModule(factory);
-    MockConnection mockedConnection = factory.getMockConnection();
+    JDBCMockObjectFactory jdbcFactory = new JDBCMockObjectFactory();
+    JDBCTestModule module = new JDBCTestModule(jdbcFactory);
+    MockConnection mockedConnection = jdbcFactory.getMockConnection();
     PreparedStatementResultSetHandler statementHandler = mockedConnection.getPreparedStatementResultSetHandler();
     statementHandler.prepareGlobalUpdateCount(1);
     NodeDetail detail = new NodeDetail();
@@ -157,9 +157,9 @@ public class MockedNodeDAOTest {
 
   @Test
   public void testMoveNode() throws Exception {
-    JDBCMockObjectFactory factory = new JDBCMockObjectFactory();
-    JDBCTestModule module = new JDBCTestModule(factory);
-    MockConnection mockedConnection = factory.getMockConnection();
+    JDBCMockObjectFactory jdbcFactory = new JDBCMockObjectFactory();
+    JDBCTestModule module = new JDBCTestModule(jdbcFactory);
+    MockConnection mockedConnection = jdbcFactory.getMockConnection();
     PreparedStatementResultSetHandler statementHandler = mockedConnection.getPreparedStatementResultSetHandler();
     statementHandler.prepareGlobalUpdateCount(1);
     NodeDetail detail = new NodeDetail();
@@ -210,9 +210,9 @@ public class MockedNodeDAOTest {
 
   @Test
   public void testUpdateRightsDependency() throws Exception {
-    JDBCMockObjectFactory factory = new JDBCMockObjectFactory();
-    JDBCTestModule module = new JDBCTestModule(factory);
-    MockConnection mockedConnection = factory.getMockConnection();
+    JDBCMockObjectFactory jdbcFactory = new JDBCMockObjectFactory();
+    JDBCTestModule module = new JDBCTestModule(jdbcFactory);
+    MockConnection mockedConnection = jdbcFactory.getMockConnection();
     PreparedStatementResultSetHandler statementHandler = mockedConnection.getPreparedStatementResultSetHandler();
     statementHandler.prepareGlobalUpdateCount(1);
     NodeDetail detail = new NodeDetail();

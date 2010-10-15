@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.node.ejb;
 
 import com.silverpeas.util.StringUtil;
@@ -57,10 +56,17 @@ public class NodeDAO {
       + "nodecreationdate, nodecreatorid, nodepath, nodelevelnumber, nodefatherid, modelid, "
       + "nodestatus, instanceid, type, ordernumber, lang, rightsdependson FROM sb_node_node WHERE "
       + "nodeId = ? AND instanceId = ?";
-
-  private static final String COUNT_NODES_PER_LEVEL =  "SELECT CoOUNT(nodeId) FROM sb_node_node WHERE nodeLevelNumber = ? "
-    + " AND nodeName = ? AND instanceId = ? ";
-
+  private static final String COUNT_NODES_PER_LEVEL = "SELECT COUNT(nodeid) as nb FROM sb_node_node "
+      + "WHERE nodelevelnumber = ? AND nodeName = ? AND instanceid = ? ";
+  private static final String COUNT_NODES_PER_LEVEL_WITHOUT_CURRENT = "SELECT COUNT(nodeid) as nb FROM sb_node_node "
+      + "WHERE nodeid <> ? AND nodelevelnumber = ? AND nodeName = ? AND instanceid = ? ";
+  private static final String SELECT_CHILDREN_IDS = "SELECT nodeid FROM sb_node_node WHERE "
+      + "nodefatherid = ? AND instanceId = ? ORDER BY nodeid";
+  private static final String SELECT_DESCENDANTS_PK = "SELECT nodepath FROM sb_node_node WHERE "
+      + "nodeid = ? AND instanceid = ?";
+  private static final String SELECT_DESCENDANTS_ID_BY_PATH =  "SELECT nodeid FROM sb_node_node "
+      + "WHERE nodePath LIKE ? AND instanceid = ? ORDER BY nodeid";
+  
   private static Hashtable<String, ArrayList<NodeDetail>> alltrees =
       new Hashtable<String, ArrayList<NodeDetail>>();
 
@@ -94,43 +100,30 @@ public class NodeDAO {
    * @exception java.sql.SQLException
    * @since 1.0
    */
-
-  public static boolean isSameNameSameLevelOnCreation(Connection con,
-      NodeDetail nd) throws SQLException {
-
-    int nbItems = 0;
-    int level = nd.getLevel();
-    String name = nd.getName();
-
-    StringBuilder selectQuery = new StringBuilder();
-    selectQuery.append("SELECT count(nodeId) FROM ").append(
-        nd.getNodePK().getTableName());
-    selectQuery.append(" WHERE nodeLevelNumber = ? ");
-    selectQuery.append(" AND nodeName = ? ");
-    selectQuery.append(" AND instanceId = ? ");
-
+  public static boolean isSameNameSameLevelOnCreation(Connection con, NodeDetail nd) throws
+      SQLException {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-
+    int nbItems = 0;
     try {
-      prepStmt = con.prepareStatement(selectQuery.toString());
-      prepStmt.setInt(1, level);
-      prepStmt.setString(2, name);
+      prepStmt = con.prepareStatement(COUNT_NODES_PER_LEVEL);
+      prepStmt.setInt(1, nd.getLevel());
+      prepStmt.setString(2, nd.getName());
       prepStmt.setString(3, nd.getNodePK().getComponentName());
       rs = prepStmt.executeQuery();
       if (rs.next()) {
-        nbItems = rs.getInt(1);
+        nbItems = rs.getInt("nb");
       }
     } catch (SQLException e) {
       SilverTrace.error("node", "NodeDAO.isSameNameSameLevelOnCreation()",
-          "root.EX_SQL_QUERY_FAILED", "selectQuery = " + selectQuery.toString()
-          + " level = " + level + " name = " + name + " compo name = "
+          "root.EX_SQL_QUERY_FAILED", "selectQuery = " + COUNT_NODES_PER_LEVEL
+          + " level = " + nd.getLevel() + " name = " + nd.getName() + " compo name = "
           + nd.getNodePK().getComponentName(), e);
       throw e;
     } finally {
       DBUtil.close(rs, prepStmt);
     }
-    return (nbItems != 0);
+    return nbItems != 0;
   }
 
   /**
@@ -142,39 +135,25 @@ public class NodeDAO {
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  public static boolean isSameNameSameLevelOnUpdate(Connection con,
-      NodeDetail nd) throws SQLException {
+  public static boolean isSameNameSameLevelOnUpdate(Connection con, NodeDetail nd) throws
+      SQLException {
     int nbItems = 0;
-    String id = nd.getNodePK().getId();
-    int level = nd.getLevel();
-    String name = nd.getName();
-
-    StringBuffer selectQuery = new StringBuffer();
-    selectQuery.append("SELECT count(nodeId) FROM ").append(
-        nd.getNodePK().getTableName());
-    selectQuery.append(" WHERE nodeId <> ? ");
-    selectQuery.append(" AND nodeLevelNumber = ? ");
-    selectQuery.append(" AND nodeName = ? ");
-    selectQuery.append(" AND instanceId = ? ");
-
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-
     try {
-      prepStmt = con.prepareStatement(selectQuery.toString());
-      prepStmt.setInt(1, new Integer(id).intValue());
-      prepStmt.setInt(2, level);
-      prepStmt.setString(3, name);
+      prepStmt = con.prepareStatement(COUNT_NODES_PER_LEVEL_WITHOUT_CURRENT);
+      prepStmt.setInt(1, Integer.parseInt(nd.getNodePK().getId()));
+      prepStmt.setInt(2, nd.getLevel());
+      prepStmt.setString(3, nd.getName());
       prepStmt.setString(4, nd.getNodePK().getComponentName());
-
       rs = prepStmt.executeQuery();
       if (rs.next()) {
         nbItems = rs.getInt(1);
       }
     } catch (SQLException e) {
-      SilverTrace.error("node", "NodeDAO.isSameNameSameLevelOnUpdate()",
-          "root.EX_SQL_QUERY_FAILED", "selectQuery = " + selectQuery.toString()
-          + " id = " + id + " level = " + level + " name = " + name
+      SilverTrace.error("node", "NodeDAO.isSameNameSameLevelOnUpdate()", "root.EX_SQL_QUERY_FAILED",
+          "selectQuery = " + COUNT_NODES_PER_LEVEL_WITHOUT_CURRENT + " id = "
+          + nd.getNodePK().getId() + " level = " + nd.getLevel() + " name = " + nd.getName()
           + " compo name = " + nd.getNodePK().getComponentName(), e);
       throw e;
     } finally {
@@ -196,34 +175,22 @@ public class NodeDAO {
   public static Collection<NodePK> getChildrenPKs(Connection con, NodePK nodePK)
       throws SQLException {
     ArrayList<NodePK> a = null;
-    StringBuffer childrenStatement = new StringBuffer();
-    childrenStatement.append("select nodeId from ").append(
-        nodePK.getTableName());
-    childrenStatement.append(" where nodeFatherId = ? ");
-    childrenStatement.append(" and instanceId = ? ");
-    childrenStatement.append(" order by nodeId");
-
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-
     try {
-      prepStmt = con.prepareStatement(childrenStatement.toString());
+      prepStmt = con.prepareStatement(SELECT_CHILDREN_IDS);
       prepStmt.setInt(1, new Integer(nodePK.getId()).intValue());
       prepStmt.setString(2, nodePK.getComponentName());
       rs = prepStmt.executeQuery();
       a = new ArrayList<NodePK>();
-      String nodeId = "";
-
       while (rs.next()) {
-        nodeId = new Integer(rs.getInt(1)).toString();
+        String nodeId = String.valueOf(rs.getInt("nodeid"));
         NodePK n = new NodePK(nodeId, nodePK);
-
         a.add(n); /* Stockage du sous thème */
       }
     } catch (SQLException e) {
-      SilverTrace.error("node", "NodeDAO.getChildrenPKs()",
-          "root.EX_SQL_QUERY_FAILED", "childrenStatement = "
-          + childrenStatement.toString() + " id = " + nodePK.getId()
+      SilverTrace.error("node", "NodeDAO.getChildrenPKs()", "root.EX_SQL_QUERY_FAILED", 
+          "childrenStatement = " + SELECT_CHILDREN_IDS + " id = " + nodePK.getId()
           + " compo name = " + nodePK.getComponentName(), e);
       throw e;
     } finally {
@@ -243,17 +210,13 @@ public class NodeDAO {
    */
   public static Collection<NodePK> getDescendantPKs(Connection con, NodePK nodePK)
       throws SQLException {
-
     String path = null;
-    StringBuffer selectQuery = new StringBuffer();
-    selectQuery.append("select nodePath from ").append(nodePK.getTableName())
-        .append(" where nodeId = ? and instanceId = ? ");
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
 
     try {
-      prepStmt = con.prepareStatement(selectQuery.toString());
-      prepStmt.setInt(1, new Integer(nodePK.getId()).intValue());
+      prepStmt = con.prepareStatement(SELECT_DESCENDANTS_PK);
+      prepStmt.setInt(1, Integer.parseInt(nodePK.getId()));
       prepStmt.setString(2, nodePK.getComponentName());
       rs = prepStmt.executeQuery();
       if (rs.next()) {
@@ -261,7 +224,7 @@ public class NodeDAO {
       }
     } catch (SQLException e) {
       SilverTrace.error("node", "NodeDAO.getDescendantPKs()",
-          "root.EX_SQL_QUERY_FAILED", "selectQuery = " + selectQuery.toString()
+          "root.EX_SQL_QUERY_FAILED", "selectQuery = " + SELECT_DESCENDANTS_PK
           + " id = " + nodePK.getId() + " compo name = "
           + nodePK.getComponentName(), e);
       throw e;
@@ -271,29 +234,22 @@ public class NodeDAO {
 
     ArrayList<NodePK> a = new ArrayList<NodePK>();
     if (path != null) {
-      // path = path + "/%";
       path = path + nodePK.getId() + "/%";
-
-      selectQuery = new StringBuffer();
-      selectQuery.append("select nodeId from ").append(nodePK.getTableName());
-      selectQuery.append(" where nodePath like '").append(path).append("'");
-      selectQuery.append(" and instanceId = ? order by nodeId");
-
       try {
-        prepStmt = con.prepareStatement(selectQuery.toString());
-        prepStmt.setString(1, nodePK.getComponentName());
+        prepStmt = con.prepareStatement(SELECT_DESCENDANTS_ID_BY_PATH);
+        prepStmt.setString(1, path);
+        prepStmt.setString(2, nodePK.getComponentName());
         rs = prepStmt.executeQuery();
         String nodeId = "";
         while (rs.next()) {
-          nodeId = new Integer(rs.getInt(1)).toString();
+          nodeId = String.valueOf(rs.getInt("nodeid"));
           NodePK n = new NodePK(nodeId, nodePK);
-
           a.add(n); /* Stockage du sous thème */
         }
       } catch (SQLException e) {
         SilverTrace.error("node", "NodeDAO.getDescendantPKs()",
             "root.EX_SQL_QUERY_FAILED", "selectQuery = "
-            + selectQuery.toString() + " compo name = "
+            + SELECT_DESCENDANTS_ID_BY_PATH + " compo name = "
             + nodePK.getComponentName(), e);
         throw e;
       } finally {
@@ -318,8 +274,8 @@ public class NodeDAO {
 
     String path = null;
     StringBuffer selectQuery = new StringBuffer();
-    selectQuery.append("SELECT nodePath from ").append(nodePK.getTableName())
-        .append(" where nodeId = ? and instanceId = ?");
+    selectQuery.append("SELECT nodePath from ").append(nodePK.getTableName()).append(
+        " where nodeId = ? and instanceId = ?");
     List<NodeDetail> a = new ArrayList<NodeDetail>();
 
     PreparedStatement prepStmt = null;
@@ -386,8 +342,7 @@ public class NodeDAO {
     String path = node.getPath() + node.getNodePK().getId() + "/%";
 
     StringBuffer selectQuery = new StringBuffer();
-    selectQuery.append("select * from ")
-        .append(node.getNodePK().getTableName());
+    selectQuery.append("select * from ").append(node.getNodePK().getTableName());
     selectQuery.append(" where nodePath like '").append(path).append("'");
     selectQuery.append(" and instanceId = ? order by nodePath");
 
@@ -434,8 +389,7 @@ public class NodeDAO {
     StringBuffer nodeStatement = new StringBuffer();
     nodeStatement.append("select * from ").append(nodePK.getTableName());
     nodeStatement.append(" where nodeLevelNumber=").append(level);
-    nodeStatement.append(" and instanceId='").append(nodePK.getComponentName())
-        .append("'");
+    nodeStatement.append(" and instanceId='").append(nodePK.getComponentName()).append("'");
     nodeStatement.append(" order by nodeId asc ");
     Statement stmt = null;
     ResultSet rs = null;
@@ -465,8 +419,8 @@ public class NodeDAO {
   private static void setTranslations(Connection con, NodeDetail node)
       throws SQLException {
     // Add default translation
-    Translation nodeI18NDetail = new NodeI18NDetail(node.getLanguage(), node
-        .getName(), node.getDescription());
+    Translation nodeI18NDetail = new NodeI18NDetail(node.getLanguage(), node.getName(), node.
+        getDescription());
     node.addTranslation(nodeI18NDetail);
 
     if (I18NHelper.isI18N) {
@@ -525,10 +479,11 @@ public class NodeDAO {
       nodeStatement.append(" and nodeLevelNumber = ").append(level);
     }
 
-    if (StringUtil.isDefined(sorting))
+    if (StringUtil.isDefined(sorting)) {
       nodeStatement.append(" order by ").append(sorting);
-    else
+    } else {
       nodeStatement.append(" order by nodePath, orderNumber");
+    }
 
     Statement stmt = null;
     ResultSet rs = null;
@@ -540,8 +495,8 @@ public class NodeDAO {
         NodeDetail nd = resultSet2NodeDetail(rs, nodePK);
 
         // Add default translation
-        Translation nodeI18NDetail = new NodeI18NDetail(nd.getLanguage(), nd
-            .getName(), nd.getDescription());
+        Translation nodeI18NDetail = new NodeI18NDetail(nd.getLanguage(), nd.getName(), nd.
+            getDescription());
         nd.addTranslation(nodeI18NDetail);
 
         List<Translation> translations = NodeI18NDAO.getTranslations(con, nd.getId());
@@ -643,7 +598,6 @@ public class NodeDAO {
   /**
    * ********************* Database Routines ***********************
    */
-
   /**
    * Create a NodeDetail from a ResultSet
    * @param rs the ResultSet which contains data
@@ -657,14 +611,14 @@ public class NodeDAO {
       throws SQLException {
 
     /* Récupération des données depuis la BD */
-    NodePK pk = new NodePK(new Integer(rs.getInt(1)).toString(), nodePK);
+    NodePK pk = new NodePK(String.valueOf(rs.getInt(1)), nodePK);
     String name = rs.getString(2);
     String description = rs.getString(3);
     String creationDate = rs.getString(4);
     String creatorId = rs.getString(5);
     String path = rs.getString(6);
     int level = rs.getInt(7);
-    NodePK fatherPK = new NodePK(new Integer(rs.getInt(8)).toString(), nodePK);
+    NodePK fatherPK = new NodePK(String.valueOf(rs.getInt(8)), nodePK);
     String modelId = rs.getString(9);
     String status = rs.getString(10);
     String type = rs.getString(12);
@@ -672,8 +626,9 @@ public class NodeDAO {
     String language = rs.getString(14);
     int rightsDependsOn = rs.getInt(15);
 
-    if (description == null)
+    if (description == null) {
       description = "";
+    }
 
     NodeDetail nd = new NodeDetail(pk, name, description, creationDate,
         creatorId, path, level, fatherPK, modelId, status, null, type);
@@ -722,8 +677,8 @@ public class NodeDAO {
       if (rs.next()) {
         nd = resultSet2NodeDetail(rs, nodePK);
         // Add default translation
-        Translation nodeI18NDetail = new NodeI18NDetail(nd.getLanguage(), nd
-            .getName(), nd.getDescription());
+        Translation nodeI18NDetail = new NodeI18NDetail(nd.getLanguage(), nd.getName(), nd.
+            getDescription());
         nd.addTranslation(nodeI18NDetail);
 
         List<Translation> translations = NodeI18NDAO.getTranslations(con, nd.getId());
@@ -766,7 +721,7 @@ public class NodeDAO {
 
     String nodeId = nodePK.getId();
     List<NodeDetail> a = null;
-    StringBuffer childrenStatement = new StringBuffer();
+    StringBuilder childrenStatement = new StringBuilder();
     childrenStatement.append("select * from ").append(nodePK.getTableName());
     childrenStatement.append(" where nodeFatherId = ? ");
     childrenStatement.append(" and instanceId = ? ");
@@ -775,17 +730,6 @@ public class NodeDAO {
     } else {
       childrenStatement.append(" order by orderNumber asc");
     }
-
-    /*
-     * childrenStatement.append("select * from ").append(nodePK.getTableName()).append (" n1 ");
-     * childrenStatement.append("LEFT OUTER JOIN ").append(NodeI18NDAO. TABLE_NAME).append(" n2");
-     * childrenStatement.append(" on (n1.nodeId = n2.nodeId)");
-     * childrenStatement.append(" where nodeFatherId = ? ");
-     * childrenStatement.append(" and instanceId = ? "); if (sorting != null) {
-     * childrenStatement.append(" order by ").append(sorting); } else {
-     * childrenStatement.append(" order by orderNumber, n2.id asc"); }
-     */
-
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
 
@@ -829,8 +773,8 @@ public class NodeDAO {
     int nbChildren = 0;
 
     StringBuffer selectQuery = new StringBuffer();
-    selectQuery.append("select count(*) from ").append(nodePK.getTableName())
-        .append(" where nodeFatherId = ? and instanceId = ?");
+    selectQuery.append("select count(*) from ").append(nodePK.getTableName()).append(
+        " where nodeFatherId = ? and instanceId = ?");
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -904,10 +848,7 @@ public class NodeDAO {
     }
 
     StringBuffer insertQuery = new StringBuffer();
-    insertQuery
-        .append("insert into ")
-        .append(nd.getNodePK().getTableName())
-        .append(
+    insertQuery.append("insert into ").append(nd.getNodePK().getTableName()).append(
         " values ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ? , ?, ? , ?)");
     PreparedStatement prepStmt = null;
     try {
@@ -954,8 +895,7 @@ public class NodeDAO {
     StringBuffer deleteQuery = new StringBuffer();
     deleteQuery.append("delete from ").append(nodePK.getTableName());
     deleteQuery.append(" where nodeId=").append(nodePK.getId());
-    deleteQuery.append(" and instanceId='").append(nodePK.getComponentName())
-        .append("'");
+    deleteQuery.append(" and instanceId='").append(nodePK.getComponentName()).append("'");
 
     Statement stmt = null;
 
@@ -1077,8 +1017,9 @@ public class NodeDAO {
       if (rs.next()) {
         detail = resultSet2NodeDetail(rs, nodePK);
 
-        if (getTranslations)
+        if (getTranslations) {
           setTranslations(con, detail);
+        }
       } else {
         // throw new NoSuchEntityException("Row for id " + nodePK.getId() +
         // " not found in database.");
@@ -1155,10 +1096,9 @@ public class NodeDAO {
     StringBuffer updateStatement = new StringBuffer();
     updateStatement.append("update ").append(
         nodeDetail.getNodePK().getTableName());
-    updateStatement
-        .append(" set nodeName =  ? , nodeDescription = ? , nodePath = ? , ");
-    updateStatement
-        .append(" nodeLevelNumber = ? , nodeFatherId = ? , modelId = ? , nodeStatus = ? , orderNumber = ?, lang = ?, rightsDependsOn = ? ");
+    updateStatement.append(" set nodeName =  ? , nodeDescription = ? , nodePath = ? , ");
+    updateStatement.append(
+        " nodeLevelNumber = ? , nodeFatherId = ? , modelId = ? , nodeStatus = ? , orderNumber = ?, lang = ?, rightsDependsOn = ? ");
     updateStatement.append(" where nodeId = ? and instanceId = ?");
     PreparedStatement prepStmt = null;
 
@@ -1168,15 +1108,13 @@ public class NodeDAO {
       prepStmt.setString(2, nodeDetail.getDescription());
       prepStmt.setString(3, nodeDetail.getPath());
       prepStmt.setInt(4, nodeDetail.getLevel());
-      prepStmt.setInt(5, new Integer(nodeDetail.getFatherPK().getId())
-          .intValue());
+      prepStmt.setInt(5, new Integer(nodeDetail.getFatherPK().getId()).intValue());
       prepStmt.setString(6, nodeDetail.getModelId());
       prepStmt.setString(7, nodeDetail.getStatus());
       prepStmt.setInt(8, nodeDetail.getOrder());
       prepStmt.setString(9, nodeDetail.getLanguage());
       prepStmt.setInt(10, nodeDetail.getRightsDependsOn());
-      prepStmt.setInt(11, new Integer(nodeDetail.getNodePK().getId())
-          .intValue());
+      prepStmt.setInt(11, new Integer(nodeDetail.getNodePK().getId()).intValue());
       prepStmt.setString(12, nodeDetail.getNodePK().getComponentName());
       rowCount = prepStmt.executeUpdate();
 
@@ -1200,8 +1138,8 @@ public class NodeDAO {
     updateStatement.append("update ").append(
         nodeDetail.getNodePK().getTableName());
     updateStatement.append(" set nodePath = ? , ");
-    updateStatement
-        .append(" nodeLevelNumber = ? , nodeFatherId = ? , instanceId = ? , orderNumber = ?, rightsDependsOn = ? ");
+    updateStatement.append(
+        " nodeLevelNumber = ? , nodeFatherId = ? , instanceId = ? , orderNumber = ?, rightsDependsOn = ? ");
     updateStatement.append(" where nodeId = ? ");
     PreparedStatement prepStmt = null;
 

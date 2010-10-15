@@ -156,8 +156,7 @@ public class NodeDAOTest extends AbstractTestDao {
     detail.setLevel(2);
     detail.setName("Corbeille");
     detail.setNodePK(pk);
-    assertTrue(NodeDAO.isSameNameSameLevelOnCreation(
-        connection, detail));
+    assertTrue(NodeDAO.isSameNameSameLevelOnCreation(connection, detail));
     detail = new NodeDetail();
     detail.setLevel(3);
     detail.setName("Corbeille");
@@ -188,8 +187,7 @@ public class NodeDAOTest extends AbstractTestDao {
     detail.setLevel(2);
     detail.setName("Corbeille");
     detail.setNodePK(pk);
-    assertTrue(NodeDAO.isSameNameSameLevelOnCreation(
-        connection, detail));
+    assertTrue(NodeDAO.isSameNameSameLevelOnCreation(connection, detail));
     detail = new NodeDetail();
     detail.setLevel(3);
     detail.setName("Corbeille");
