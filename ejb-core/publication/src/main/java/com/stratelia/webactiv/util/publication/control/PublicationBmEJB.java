@@ -23,11 +23,9 @@
  */
 package com.stratelia.webactiv.util.publication.control;
 
-import java.lang.reflect.Array;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,8 +33,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
@@ -104,7 +100,6 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationI18N;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
-import com.stratelia.webactiv.util.publication.model.PublicationWithStatus;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
 
 /**
