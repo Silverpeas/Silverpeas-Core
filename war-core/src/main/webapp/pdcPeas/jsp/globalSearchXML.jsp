@@ -80,6 +80,7 @@ if (!StringUtil.isDefined(pageId)) {
    out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
 function sendXMLRequest()
 {
