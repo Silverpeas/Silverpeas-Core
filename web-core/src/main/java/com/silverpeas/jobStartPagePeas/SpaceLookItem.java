@@ -27,6 +27,7 @@ package com.silverpeas.jobStartPagePeas;
 import java.io.File;
 import java.io.Serializable;
 
+import com.silverpeas.util.FileUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 
@@ -41,13 +42,7 @@ public class SpaceLookItem implements Serializable {
     name = file.getName();
     size = FileRepositoryManager.formatFileSize(file.length());
 
-    String mimeType = "text/plain";
-    if (FileRepositoryManager.getFileExtension(name).equalsIgnoreCase("gif"))
-      mimeType = "image/gif";
-    else if (FileRepositoryManager.getFileExtension(name).startsWith("jp"))
-      mimeType = "image/jpeg";
-
-    url = FileServerUtils.getOnlineURL(spaceId, name, name, mimeType, "look");
+    url = FileServerUtils.getOnlineURL(spaceId, name, name, FileUtil.getMimeType(name), "look");
   }
 
   public String getName() {

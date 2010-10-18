@@ -39,6 +39,7 @@ import javax.ejb.EJBException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SessionManager;
@@ -338,20 +339,9 @@ public class LookSilverpeasV5Helper implements LookHelper {
       return "0";
     }
 
-    String path =
-        FileRepositoryManager.getAbsolutePath("Space" + spaceId.substring(2),
-        new String[] { "look" });
-
-    File file = new File(path + "wallPaper.jpg");
-    if (file.isFile()) {
+    if (StringUtil.isDefined(getSpaceWallPaper(spaceId))) {
       return "1";
-    } else {
-      file = new File(path + "wallPaper.gif");
-      if (file.isFile()) {
-        return "1";
-      }
     }
-
     return "0";
   }
 
@@ -527,20 +517,24 @@ public class LookSilverpeasV5Helper implements LookHelper {
     String path =
         FileRepositoryManager.getAbsolutePath("Space" + id, new String[] { "look" });
 
-    File file = new File(path + "wallPaper.jpg");
-    if (file.isFile()) {
-      return FileServerUtils.getOnlineURL("Space" + id, file.getName(), file
-          .getName(), "image/jpeg", "look");
-    } else {
-      file = new File(path + "wallPaper.gif");
-      if (file.isFile()) {
-        return FileServerUtils.getOnlineURL("Space" + id, file.getName(),
-            file.getName(), "image/gif", "look");
+    String filePath = getWallPaper(path, id, "jpg");
+    if (!StringUtil.isDefined(filePath)) {
+      filePath = getWallPaper(path, id, "gif");
+      if (!StringUtil.isDefined(filePath)) {
+        filePath = getWallPaper(path, id, "png");
       }
     }
+    return filePath;
+  }
 
+  private String getWallPaper(String path, String spaceId, String extension) {
+    String image = "wallPaper." + extension;
+    File file = new File(path + image);
+    if (file.isFile()) {
+      return FileServerUtils.getOnlineURL("Space" + spaceId, file.getName(), file
+          .getName(), FileUtil.getMimeType(image), "look");
+    }
     return null;
-
   }
 
   public String getComponentURL(String key, String function) {
@@ -580,7 +574,9 @@ public class LookSilverpeasV5Helper implements LookHelper {
   private PublicationHelper getPublicationHelper() throws ClassNotFoundException,
       InstantiationException, IllegalAccessException {
     if (kmeliaTransversal == null) {
-      String helperClassName = resources.getString("publicationHelper", "com.stratelia.webactiv.kmelia.KmeliaTransversal");
+      String helperClassName =
+          resources.getString("publicationHelper",
+              "com.stratelia.webactiv.kmelia.KmeliaTransversal");
       Class<?> helperClass = Class.forName(helperClassName);
       kmeliaTransversal = (PublicationHelper) helperClass.newInstance();
       kmeliaTransversal.setMainSessionController(mainSC);
