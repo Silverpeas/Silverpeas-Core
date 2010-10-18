@@ -261,6 +261,8 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
       return "fieldPdc.jsp";
     else if (displayer.equals("group"))
       return "fieldGroup.jsp";
+    else if (displayer.equals("sequence"))
+      return "fieldSequence.jsp";
     else
       return "fieldText.jsp";
   }
@@ -320,6 +322,8 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
       fieldType = "pdc";
     else if (displayer.equals("group"))
       fieldType = "group";
+    else if (displayer.equals("sequence"))
+      fieldType = "sequence";
 
     GenericFieldTemplate field = new GenericFieldTemplate();
     field.setDisplayerName(displayer);

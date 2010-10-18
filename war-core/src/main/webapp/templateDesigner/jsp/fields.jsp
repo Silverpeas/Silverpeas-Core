@@ -95,6 +95,7 @@ operationPane.addOperation(resource.getIcon("templateDesigner.newFieldList"), re
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldText"), resource.getString("templateDesigner.newFieldAccessPath"), "javascript:openWindow('accessPath')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldList"), resource.getString("templateDesigner.newFieldJdbc"), "javascript:openWindow('jdbc')");
 operationPane.addOperation(resource.getIcon("templateDesigner.newFieldList"), resource.getString("templateDesigner.newFieldPdc"), "javascript:openWindow('pdc')");
+operationPane.addOperation(resource.getIcon("templateDesigner.newFieldText"), resource.getString("templateDesigner.newFieldSequence"), "javascript:openWindow('sequence')");
 
 ArrayPane arrayPane = gef.getArrayPane("fieldList", "ViewFields?Scope=0", request, session);
 ArrayColumn arrayColumn1 = arrayPane.addArrayColumn(resource.getString("GML.name"));
