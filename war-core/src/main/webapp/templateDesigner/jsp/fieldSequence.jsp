@@ -78,7 +78,7 @@
 </tr>
 <tr>
 	<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.sequence.startValue")%> :</td>
-	<td><input type="text" name="Param_startValue" value="<%=startValue%>" size="5" maxLength="2"/></td>
+	<td><input type="text" name="Param_startValue" value="<%=startValue%>" size="5" maxLength="5"/></td>
 </tr>
 <tr>
 	<td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.sequence.valueCreation")%> :</td>
