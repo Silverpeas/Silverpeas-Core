@@ -33,12 +33,10 @@ import javax.servlet.jsp.tagext.TagSupport;
  *
  * @author ehugonnet
  */
-public class ButtonPaneTag  extends TagSupport {
-  
-  private static final String BUTTON_PANE_ATT = "pageContextButtonPane";
-  
-  private static final long serialVersionUID = 1L;
+public class ButtonPaneTag extends TagSupport {
 
+  private static final String BUTTON_PANE_ATT = "pageContextButtonPane";
+  private static final long serialVersionUID = -3658916991820665360L;
 
   @Override
   public int doEndTag() throws JspException {
@@ -53,31 +51,39 @@ public class ButtonPaneTag  extends TagSupport {
 
   @Override
   public int doStartTag() throws JspException {
-    final GraphicElementFactory gef = (GraphicElementFactory) pageContext.getSession().getAttribute(
-        GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-    final ButtonPane buttonPane = gef.getButtonPane(); 
-    pageContext.setAttribute(BUTTON_PANE_ATT, buttonPane);
+    getCurrentButtonPane();
     return EVAL_BODY_INCLUDE;
   }
-  
-    
+
   public void addButton(Button button) {
-    ((ButtonPane)pageContext.getAttribute(BUTTON_PANE_ATT)).addButton(button);
+    getCurrentButtonPane().addButton(button);
   }
 
   public void setVerticalPosition(boolean vertical) {
-    if(vertical) {
-      ((ButtonPane)pageContext.getAttribute(BUTTON_PANE_ATT)).setVerticalPosition();
+    if (vertical) {
+      getCurrentButtonPane().setVerticalPosition();
     } else {
-      ((ButtonPane)pageContext.getAttribute(BUTTON_PANE_ATT)).setHorizontalPosition();
+      getCurrentButtonPane().setHorizontalPosition();
     }
   }
 
   public void setHeight(String width) {
-    ((ButtonPane)pageContext.getAttribute(BUTTON_PANE_ATT)).setVerticalWidth(width);
+    getCurrentButtonPane().setVerticalWidth(width);
   }
 
   public void setHorizontalPosition(boolean horizontal) {
     setVerticalPosition(!horizontal);
+  }
+
+  private synchronized ButtonPane getCurrentButtonPane() {
+    ButtonPane result = (ButtonPane) pageContext.getAttribute(BUTTON_PANE_ATT);
+    if (result == null) {
+      final GraphicElementFactory gef = (GraphicElementFactory) pageContext.getSession().
+          getAttribute(
+          GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+      result = gef.getButtonPane();
+      pageContext.setAttribute(BUTTON_PANE_ATT, result);
+    }
+    return result;
   }
 }

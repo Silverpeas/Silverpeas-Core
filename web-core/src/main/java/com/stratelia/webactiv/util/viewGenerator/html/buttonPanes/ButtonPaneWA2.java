@@ -27,12 +27,11 @@
  * 
  * Created on 10 octobre 2000, 16:11
  */
-
 package com.stratelia.webactiv.util.viewGenerator.html.buttonPanes;
 
-import java.util.Vector;
 
 import com.stratelia.webactiv.util.viewGenerator.html.buttons.Button;
+import java.util.List;
 
 /**
  * The default implementation of ArrayPane interface
@@ -54,22 +53,22 @@ public class ButtonPaneWA2 extends AbstractButtonPane {
    * @return
    * @see
    */
+  @Override
   public String horizontalPrint() {
-    StringBuffer result = new StringBuffer();
-    Vector<Button> buttons = getButtons();
+    StringBuilder result = new StringBuilder();
+    List<Button> buttons = getButtons();
 
-    result
-        .append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>");
+    result.append("<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>");
     result.append("<td width=\"100\">&nbsp;</td>");
     if (buttons.size() > 0) {
       result.append("<td>");
-      result.append(buttons.elementAt(0).print());
+      result.append(buttons.get(0).print());
       result.append("</td>");
     }
     for (int i = 1; i < buttons.size(); i++) {
       result.append("<td>&nbsp;</td>");
       result.append("<td>");
-      result.append(buttons.elementAt(i).print());
+      result.append(buttons.get(i).print());
       result.append("</td>");
     }
     result.append("<td width=\"100\">&nbsp;</td>");
@@ -83,23 +82,22 @@ public class ButtonPaneWA2 extends AbstractButtonPane {
    * @return
    * @see
    */
+  @Override
   public String verticalPrint() {
-    StringBuffer result = new StringBuffer();
-    Vector<Button> buttons = getButtons();
+    StringBuilder result = new StringBuilder();
+    List<Button> buttons = getButtons();
     String verticalWidth = getVerticalWidth();
-
     result.append(
-        "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"")
-        .append(verticalWidth).append("\">");
+        "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"").append(verticalWidth).
+        append("\">");
     result.append("<tr>");
     result.append("<td width=\"").append(verticalWidth).append("\">");
-    for (int i = 0; i < buttons.size(); i++) {
-      result.append(buttons.elementAt(i).print());
+    for (Button button : buttons) {
+      result.append(button.print());
     }
     result.append("</td>");
     result.append("</tr>");
     result.append("</table>");
-
     return result.toString();
   }
 
@@ -108,12 +106,11 @@ public class ButtonPaneWA2 extends AbstractButtonPane {
    * @return
    * @see
    */
+  @Override
   public String print() {
     if (getViewType() == VERTICAL_PANE) {
       return verticalPrint();
-    } else {
-      return horizontalPrint();
     }
+    return horizontalPrint();
   }
-
 }

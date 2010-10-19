@@ -24,9 +24,11 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.buttonPanes;
 
-import java.util.Vector;
 
 import com.stratelia.webactiv.util.viewGenerator.html.buttons.Button;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * The default implementation of ArrayPane interface
@@ -35,7 +37,7 @@ import com.stratelia.webactiv.util.viewGenerator.html.buttons.Button;
  */
 public abstract class AbstractButtonPane implements ButtonPane {
 
-  private Vector buttons = null;
+  private List<Button> buttons = null;
   private String verticalWidth = "50px";
   public final static int VERTICAL_PANE = 1;
   public final static int HORIZONTAL_PANE = 2;
@@ -47,7 +49,7 @@ public abstract class AbstractButtonPane implements ButtonPane {
    * @see
    */
   public AbstractButtonPane() {
-    buttons = new Vector();
+    buttons = new ArrayList<Button>();
   }
 
   /**
@@ -55,6 +57,7 @@ public abstract class AbstractButtonPane implements ButtonPane {
    * @param button
    * @see
    */
+  @Override
   public void addButton(Button button) {
     buttons.add(button);
   }
@@ -63,6 +66,7 @@ public abstract class AbstractButtonPane implements ButtonPane {
    * Method declaration
    * @see
    */
+  @Override
   public void setVerticalPosition() {
     viewType = VERTICAL_PANE;
   }
@@ -72,6 +76,7 @@ public abstract class AbstractButtonPane implements ButtonPane {
    * @param width
    * @see
    */
+  @Override
   public void setVerticalWidth(String width) {
     verticalWidth = width;
   }
@@ -80,6 +85,7 @@ public abstract class AbstractButtonPane implements ButtonPane {
    * Method declaration
    * @see
    */
+  @Override
   public void setHorizontalPosition() {
     viewType = HORIZONTAL_PANE;
   }
@@ -89,8 +95,8 @@ public abstract class AbstractButtonPane implements ButtonPane {
    * @return
    * @see
    */
-  public Vector getButtons() {
-    return this.buttons;
+  public List<Button> getButtons() {
+    return Collections.unmodifiableList(this.buttons);
   }
 
   /**
@@ -130,5 +136,6 @@ public abstract class AbstractButtonPane implements ButtonPane {
    * @return
    * @see
    */
+  @Override
   public abstract String print();
 }
