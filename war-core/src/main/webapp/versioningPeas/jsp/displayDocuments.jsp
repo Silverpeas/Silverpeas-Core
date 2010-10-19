@@ -393,7 +393,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 								}
 								%>
 								<% if (displayAllVersionsLink && !hideAllVersionsLink) { %>
-									<br/>>> <a href="javaScript:viewPublicVersions('<%=document.getPk().getId()%>')"><%=attMessages.getString("allVersions")%></a><br/>
+									<div class="linkAllVersions">>> <a href="javaScript:viewPublicVersions('<%=document.getPk().getId()%>')"><%=attMessages.getString("allVersions")%></a><div/>
 								<% } %>
 							</li>
 			<%
