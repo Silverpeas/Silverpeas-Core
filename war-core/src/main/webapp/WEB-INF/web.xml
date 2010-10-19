@@ -113,6 +113,9 @@
   <listener>
     <listener-class>com.stratelia.webactiv.servlets.SilverListener</listener-class>
   </listener>
+  <listener>
+    <listener-class>org.apache.commons.fileupload.servlet.FileCleanerCleanup</listener-class>
+  </listener>
   <servlet>
     <servlet-name>AuthenticationServlet</servlet-name>
     <servlet-class>com.stratelia.silverpeas.servlets.AuthenticationServlet</servlet-class>
