@@ -49,14 +49,12 @@ import javax.servlet.http.HttpSession;
 public class DirectoryServlet extends HttpServlet {
 
   private static int ELEMENTS_PER_PAGE = 2;
-  private List<UserDetail> users;
   private String m_context;
   private ResourceLocator multilangG;
   private ResourceLocator multilang;
   private DirectoryService directorySC = new DirectoryService();
   private Pagination pagination;
-  List<Member> membersToDisplay;
-  private final String SERVLETNAME="/RdirectoryServlet/jsp";
+  private static final String SERVLETNAME="/RdirectoryServlet/jsp";
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -79,19 +77,17 @@ public class DirectoryServlet extends HttpServlet {
 
     } catch (NumberFormatException nfex) {
     }
-    users = new ArrayList<UserDetail>();
+    List<UserDetail> users = new ArrayList<UserDetail>();
+    List<Member> membersToDisplay = new ArrayList<Member>();
     request.setAttribute("MyId", directorySC.getUserId());
     String function = request.getParameter("Action");
     if (function.equalsIgnoreCase("Main")) {
-
       String groupId = request.getParameter("GroupId");
       String spaceId = request.getParameter("SpaceId");
       String domainId = request.getParameter("DomainId");
       String contactId = request.getParameter("ContactId");
       // for display the common contact between me and  user who have userId equal CommonContactId
       String commonContactId = request.getParameter("CommonContactId");
-
-
       if (StringUtil.isDefined(groupId)) {
         users = directorySC.getAllUsersByGroup(groupId);
       } else if (StringUtil.isDefined(spaceId)) {
@@ -105,18 +101,13 @@ public class DirectoryServlet extends HttpServlet {
       } else {
         users = directorySC.getAllUsers();
       }
-
-      destination = doPagination(request);
+      destination = doPagination(request, users, membersToDisplay);
     } else if (function.equalsIgnoreCase("searchByKey")) {
-
       users = directorySC.getUsersByLastName(request.getParameter("key").toUpperCase());
-      destination = doPagination(request);
-
+      destination = doPagination(request, users, membersToDisplay);
     } else if (function.equalsIgnoreCase("Pagination")) {
-
       users = directorySC.getLastListOfUsersCallded();
-      destination = doPagination(request);
-
+      destination = doPagination(request, users, membersToDisplay);
     }
     destination = getHtml(membersToDisplay);
     response.setCharacterEncoding("UTF-8");
@@ -129,7 +120,7 @@ public class DirectoryServlet extends HttpServlet {
    *@param HttpServletRequest request.
    *
    */
-  String doPagination(HttpServletRequest request) {
+  String doPagination(HttpServletRequest request, List<UserDetail> users, List<Member> membersToDisplay) {
     GraphicElementFactory gef = (GraphicElementFactory) request.getSession().getAttribute(
         GraphicElementFactory.GE_FACTORY_SESSION_ATT);
 
@@ -139,9 +130,9 @@ public class DirectoryServlet extends HttpServlet {
       currentPage = Integer.parseInt(request.getParameter("Index"));
     }
     pagination = gef.getPagination(users.size(), ELEMENTS_PER_PAGE, currentPage);
-    membersToDisplay = new ArrayList<Member>();
-    membersToDisplay = toListMember(users.subList(pagination.getFirstItemIndex(), pagination.
-        getLastItemIndex()));
+    membersToDisplay.clear();
+    membersToDisplay.addAll(toListMember(users.subList(pagination.getFirstItemIndex(), pagination.
+        getLastItemIndex())));
 
     return "/directory/jsp/directory.jsp";
   }

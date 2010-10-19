@@ -26,8 +26,6 @@ package com.silverpeas.directory.servlets;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -54,10 +52,10 @@ import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
  */
 public class DirectoryRequestRouter extends ComponentRequestRouter {
 
-  private static final long serialVersionUID = 1L;
-  public static int ELEMENTS_PER_PAGE = 2;
+  private static int ELEMENTS_PER_PAGE = 2;
   public static final String AVATAR_FOLDER = "avatar";
-  public List<UserDetail> users;
+  
+  private static final long serialVersionUID = -1683812983096083815L;
 
   @Override
   public String getSessionControlBeanName() {
@@ -87,7 +85,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
     SilverTrace.info("mytests", "DirectoryRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE",
         "User=" + componentSC.getUserId() + " Function=" + function);
-    users = new ArrayList<UserDetail>();
+    List<UserDetail> users = new ArrayList<UserDetail>();
     request.setAttribute("MyId", componentSC.getUserId());
     if (function.equalsIgnoreCase("Main")) {
 
@@ -105,28 +103,28 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
         users = directorySC.getAllUsers();
       }
 
-      destination = doPagination(request);
+      destination = doPagination(request, users);
     } else if (function.equalsIgnoreCase("searchByKey")) {
 
       users = directorySC.getUsersByLastName(request.getParameter("key").toUpperCase());
-      destination = doPagination(request);
+      destination = doPagination(request, users);
 
     } else if (function.equalsIgnoreCase("tous")) {
 
       request.setAttribute("Index", function);
       users = directorySC.getLastListOfAllUsers();
-      destination = doPagination(request);
+      destination = doPagination(request, users);
 
     } else if (isSearchByIndex(function)) {
 
       request.setAttribute("Index", function);
       users = directorySC.getUsersByIndex(function);
-      destination = doPagination(request);
+      destination = doPagination(request, users);
 
     } else if (function.equalsIgnoreCase("pagination")) {
 
       users = directorySC.getLastListOfUsersCallded();
-      destination = doPagination(request);
+      destination = doPagination(request, users);
 
     } else if (function.equalsIgnoreCase("viewUser")) {
       destination = "/Rprofil/jsp/Main?userId=" + request.getParameter("UserId");
@@ -149,7 +147,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
         directorySC.sendMessage(null, txtTitle, txtMessage, selectedUsers);
         destination = "/directory/jsp/notificationUser.jsp?popupMode=Yes&Action=SendMessage";
       } catch (NotificationManagerException ex) {
-        Logger.getLogger(DirectoryRequestRouter.class.getName()).log(Level.SEVERE, null, ex);
+        SilverTrace.error("directory", "DirectoryRequestRouter.sendMessage", "ERROR", ex);
       }
 
     } else if ("ProfilPublic".equalsIgnoreCase(function)) {
@@ -165,11 +163,9 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
         request.setAttribute("user", user);
         destination = "/directory/jsp/" + this.saveAvatar(request, directorySC);
       } catch (UtilException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        SilverTrace.error("directory", "DirectoryRequestRouter.validation", "ERROR", e);
       } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        SilverTrace.error("directory", "DirectoryRequestRouter.validation", "ERROR", e);
       }
     }
     return destination;
@@ -206,7 +202,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
    *do pagination
    *@param HttpServletRequest request
    */
-  String doPagination(HttpServletRequest request) {
+  String doPagination(HttpServletRequest request, List<UserDetail> users) {
     int index = 0;
     if (StringUtil.isInteger(request.getParameter("Index"))) {
       index = Integer.parseInt(request.getParameter("Index"));
