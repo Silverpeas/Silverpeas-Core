@@ -679,7 +679,7 @@ public class VersioningDAO {
       prepStmt.setString(10, newVersion.getPhysicalName());
       prepStmt.setString(11, newVersion.getLogicalName());
       prepStmt.setString(12, newVersion.getMimeType());
-      prepStmt.setInt(13, newVersion.getSize());
+      prepStmt.setLong(13, newVersion.getSize());
       prepStmt.setString(14, newVersion.getInstanceId());
       prepStmt.setString(15, newVersion.getXmlForm());
 
@@ -748,7 +748,7 @@ public class VersioningDAO {
       prepStmt.setString(8, version.getPhysicalName());
       prepStmt.setString(9, version.getLogicalName());
       prepStmt.setString(10, version.getMimeType());
-      prepStmt.setInt(11, version.getSize());
+      prepStmt.setLong(11, version.getSize());
       prepStmt.setString(12, version.getInstanceId());
       prepStmt.setInt(13, Integer.parseInt(version.getPk().getId()));
 

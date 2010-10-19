@@ -46,6 +46,7 @@ import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  * Class declaration
@@ -169,11 +170,14 @@ public class DragAndDrop extends HttpServlet {
                 if (!new File(destPath).exists()) {
                   FileRepositoryManager.createGlobalTempPath(actifyWorkingPath);
                 }
+                String normalizedFileName = FilenameUtils.normalize(fileName);
+                if(normalizedFileName == null ) {
+                  normalizedFileName = FilenameUtils.getName(fileName);
+                }
                 String destFile = FileRepositoryManager.getTemporaryPath() + actifyWorkingPath
-                    + File.separatorChar + fileName;
+                    + File.separatorChar + normalizedFileName;
                 FileRepositoryManager.copyFile(AttachmentController.createPath(componentId,
-                    "Images")
-                    + File.separatorChar + physicalName, destFile);
+                    "Images") + File.separatorChar + physicalName, destFile);
               }
             }
           }
@@ -190,11 +194,9 @@ public class DragAndDrop extends HttpServlet {
   private String saveFileOnDisk(FileItem item, String componentId, String context) throws Exception {
     String fileName = item.getName();
     if (fileName != null) {
-      fileName = fileName.replace('\\', File.separatorChar);
-      fileName = fileName.replace('/', File.separatorChar);
+      fileName = FilenameUtils.separatorsToSystem(fileName);
       SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
           "file = " + fileName);
-
       String type = FileRepositoryManager.getFileExtension(fileName);
       String physicalName = new Date().getTime() + "." + type;
       File file = new File(AttachmentController.createPath(componentId, context) + physicalName);

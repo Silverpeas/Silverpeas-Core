@@ -97,7 +97,7 @@ public class FileUploadUtil {
    * @param items the items resulting from parsing the request.
    * @param parameterName
    * @param defaultValue the value to be returned if the parameter is not found.
-   * @param encoding.
+   * @param encoding the request encoding.
    * @return the parameter value from the list of FileItems. Returns the defaultValue if the
    * parameter is not found.
    */

@@ -27,7 +27,6 @@
  *
  * Created on 17 janvier 2001, 14:38
  */
-
 package com.stratelia.webactiv.util.fileFolder;
 
 /**
@@ -35,7 +34,7 @@ package com.stratelia.webactiv.util.fileFolder;
  * @author  cbonin
  * @version
  */
-
+import com.silverpeas.util.MimeTypes;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -50,6 +49,7 @@ import org.apache.commons.io.FileUtils;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.UtilException;
+import org.apache.commons.io.FilenameUtils;
 
 public class FileFolderManager {
 
@@ -71,9 +71,7 @@ public class FileFolderManager {
           resultat.add(file);
         }
       }
-    }
-
-    else {
+    } else {
       SilverTrace.error("util", "FileFolderManager.getAllSubFolder",
           "util.EX_NO_CHEMIN_REPOS", chemin);
       throw new UtilException("FileFolderManager.getAllSubFolder",
@@ -83,9 +81,10 @@ public class FileFolderManager {
   }
 
   /**
-   * getAllFile : retourne une Collection d'objets File qui representent les fichiers (et seulement
-   * les fichiers, pas les repertoires) contenus dans le repertoire passe en parametre Param =
-   * chemin du repertoire
+   * Returns all the files (and only the files, no directory) inside the given directory.
+   * @param chemin
+   * @return
+   * @throws UtilException
    */
   public static Collection<File> getAllFile(String chemin) throws UtilException {
     List<File> resultat = new ArrayList<File>();
@@ -98,9 +97,7 @@ public class FileFolderManager {
           resultat.add(file);
         }
       }
-    }
-
-    else {
+    } else {
       SilverTrace.error("util", "FileFolderManager.getAllFile",
           "util.EX_NO_CHEMIN_REPOS", chemin);
       throw new UtilException("FileFolderManager.getAllFile",
@@ -110,12 +107,12 @@ public class FileFolderManager {
   }
 
   /**
-   * getAllImages : retourne une Collection d'objets File qui representent les fichiers images (type
-   * GIF ou JPEG) contenus dans le repertoire passe en parametre Param = chemin du repertoire
+   * Returns all the image files (and only the files, no directory) inside the given directory.
+   * @param chemin
+   * @return
+   * @throws UtilException
    */
   public static Collection<File> getAllImages(String chemin) throws UtilException {
-    /* ex chemin = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\rep */
-
     List<File> resultat = new ArrayList<File>();
 
     File directory = new File(chemin);
@@ -124,14 +121,9 @@ public class FileFolderManager {
       for (File file : list) {
         if (file.isFile()) {
           String fichier = file.getName();
-          int indexPoint = fichier.lastIndexOf(".");
-          String type = fichier.substring(indexPoint + 1);
-          if (type.equals("gif") || type.equals("GIF") || type.equals("jpg")
-              || type.equals("JPG") || type.equals("png") || type.equals("PNG")
-              || type.equals("bmp") || type.equals("BMP") || type.equals("pcd")
-              || type.equals("PCD") || type.equals("tga") || type.equals("TGA")
-              || type.equals("tif") || type.equals("TIF"))
+          if (FilenameUtils.isExtension(fichier, MimeTypes.IMAGE_EXTENTIONS)) {
             resultat.add(file);
+          }
         } else if (file.isDirectory()) {
           String cheminRep = file.getAbsolutePath();
           Collection<File> fich = getAllImages(cheminRep);
@@ -141,10 +133,8 @@ public class FileFolderManager {
         }
       }
     } else {
-      SilverTrace.error("util", "FileFolderManager.getAllImages",
-          "util.EX_NO_CHEMIN_REPOS", chemin);
-      throw new UtilException("FileFolderManager.getAllImages",
-          "util.EX_NO_CHEMIN_REPOS", chemin);
+      SilverTrace.error("util", "FileFolderManager.getAllImages", "util.EX_NO_CHEMIN_REPOS", chemin);
+      throw new UtilException("FileFolderManager.getAllImages", "util.EX_NO_CHEMIN_REPOS", chemin);
     }
     return resultat;
   }
@@ -201,8 +191,9 @@ public class FileFolderManager {
           int indexPoint = fichier.lastIndexOf(".");
           String type = fichier.substring(indexPoint + 1);
           if ("htm".equals(type.toLowerCase())
-              || "html".equals(type.toLowerCase()))
+              || "html".equals(type.toLowerCase())) {
             resultat.add(file);
+          }
         }
       }
     } else {
@@ -257,9 +248,7 @@ public class FileFolderManager {
             "util.EX_REPOSITORY_RENAME", cheminRep.toString() + " en "
             + newCheminRep.toString());
       }
-    }
-
-    else {
+    } else {
       SilverTrace.error("util", "FileFolderManager.renameFolder",
           "util.EX_NO_CHEMIN_REPOS", cheminRep);
       throw new UtilException("FileFolderManager.renameFolder",
@@ -268,51 +257,30 @@ public class FileFolderManager {
   }
 
   /**
-   * deleteFolder : destruction d'un repertoire et de tout ce qu'il contient (fichiers et
-   * ss-repertoires) Param = chemin du repertoire
+   * Deletes the specified directory recursively and quietly.
+   * @param chemin the specified directory
    */
-  public static void deleteFolder(String chemin) throws Exception {
-    deleteFolder(chemin, false);
-  }
-
-  /**
-   * deleteFolder : destruction d'un repertoire et de tout ce qu'il contient (fichiers et
-   * ss-repertoires) Param = chemin du repertoire
-   */
-  public static void deleteFolder(String chemin, boolean throwException)
-      throws UtilException {
-    /*
-     * ex chemin = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\Folder
-     */
-
+  public static void deleteFolder(String chemin) {
     File directory = new File(chemin);
-
-    /* recupere la liste des fichiers et directory du chemin */
-    File[] dirFiles = directory.listFiles();
-    for (int i = 0; dirFiles != null && i < dirFiles.length; i++) {
-      delDir(dirFiles[i]);
-    }
-    boolean result = directory.delete();
-    if (!result) {
-      SilverTrace.info("util", "FileFolderManager.deleteFolder",
-          "util.EX_REPOSITORY_DELETE", chemin);
-      if (throwException)
-        throw new UtilException("FileFolderManager.deleteFolder",
-            "util.EX_REPOSITORY_DELETE", chemin);
-    }
+    FileUtils.deleteQuietly(directory);
   }
 
   /**
-   * delDir : procedure privee recursive
+   * Deletes the specified directory recursively.
+   * @param chemin the specified directory
+   * @param throwException set to false if you want to delete quietly - false otherwise.
+   * @throws UtilException
    */
-  private static void delDir(File dir) {
-    if (dir.isDirectory()) {
-      File[] dirFiles = dir.listFiles();
-      for (int i = 0; dirFiles != null && i < dirFiles.length; i++) {
-        delDir(dirFiles[i]);
+  public static void deleteFolder(String chemin, boolean throwException) throws UtilException {
+    File directory = new File(chemin);
+    boolean result = FileUtils.deleteQuietly(directory);
+    if (!result) {
+      SilverTrace.info("util", "FileFolderManager.deleteFolder", "util.EX_REPOSITORY_DELETE", chemin);
+      if (throwException) {
+        throw new UtilException("FileFolderManager.deleteFolder", "util.EX_REPOSITORY_DELETE",
+            chemin);
       }
     }
-    dir.delete();
   }
 
   /**
@@ -367,9 +335,7 @@ public class FileFolderManager {
             "util.EX_RENAME_FILE_ERROR", name + " en " + cheminRep + "\\"
             + newName);
       }
-    }
-
-    else {
+    } else {
       SilverTrace.error("util", "FileFolderManager.renameFile",
           "util.EX_NO_CHEMIN_FINCHER", cheminRep + "\\" + name);
       throw new UtilException("fileFolderManager.renameFile",
@@ -378,21 +344,15 @@ public class FileFolderManager {
   }
 
   /**
-   * deleteFile : destruction d'un fichier Param = chemin du fichier
+   * Deletes a file.
+   * @Param chemin : path to the file
    */
   public static void deleteFile(String chemin) throws UtilException {
-    /*
-     * ex chemin = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\Folder \\File.html
-     */
-
-    File file = new File(chemin);
-    boolean result = file.delete();
-
+    File directory = new File(chemin);
+    boolean result = FileUtils.deleteQuietly(directory);
     if (!result) {
-      SilverTrace.error("util", "FileFolderManager.deleteFile",
-          "util.EX_DELETE_FILE_ERROR", chemin);
-      throw new UtilException("fileFolderManager.deleteFile",
-          "util.EX_DELETE_FILE_ERROR", chemin);
+      SilverTrace.error("util", "FileFolderManager.deleteFile", "util.EX_DELETE_FILE_ERROR", chemin);
+      throw new UtilException("fileFolderManager.deleteFile", "util.EX_DELETE_FILE_ERROR", chemin);
     }
   }
 
@@ -427,9 +387,7 @@ public class FileFolderManager {
             "result = null, fichier absent", e);
         return null;
       }
-    }
-
-    else {
+    } else {
       SilverTrace.error("util", "FileFolderManager.deleteFile",
           "util.util.EX_WRONG_CHEMLIN_SPEC", cheminFichier);
       throw new UtilException("fileFolderManager.getCode",

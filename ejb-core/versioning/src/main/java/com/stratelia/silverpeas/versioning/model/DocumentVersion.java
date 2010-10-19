@@ -51,8 +51,6 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
   public final static int TYPE_DEFAULT_VERSION = 1;
   public final static int TYPE_PUBLIC_VERSION = 0;
 
-  final static String SPINFIRE_MIME_TYPE = "application/xview3d-3d";
-
   public final static String CONTEXT = "Versioning";
 
   public final static String CONTEXT_VERSIONING = CONTEXT + File.separator;
@@ -69,7 +67,7 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
   private String physicalName;
   private String logicalName;
   private String mimeType;
-  private int size;
+  private long size;
   private String instanceId;
   private String xmlForm = null;
   private String creatorName; // used by import/export XML
@@ -81,7 +79,7 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
   public DocumentVersion(DocumentVersionPK pk, DocumentPK documentPK,
       int majorNumber, int minorNumber, int authorId, Date creationDate,
       String comments, int type, int status, String physicalName,
-      String logicalName, String mimeType, int size, String instanceId) {
+      String logicalName, String mimeType, long size, String instanceId) {
     this.pk = pk;
     this.documentPK = documentPK;
     this.majorNumber = majorNumber;
@@ -103,7 +101,7 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
     this.physicalName = attachment.getPhysicalName();
     this.logicalName = attachment.getLogicalName();
     this.mimeType = attachment.getType();
-    this.size = new Long(attachment.getSize()).intValue();
+    this.size = attachment.getSize();
     this.instanceId = attachment.getPK().getInstanceId();
   }
 
@@ -203,7 +201,7 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
     this.mimeType = mimeType;
   }
 
-  public int getSize() {
+  public long getSize() {
     return size;
   }
 
@@ -211,7 +209,7 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
     return FileRepositoryManager.formatFileSize(getSize());
   }
 
-  public void setSize(int size) {
+  public void setSize(long size) {
     this.size = size;
   }
 

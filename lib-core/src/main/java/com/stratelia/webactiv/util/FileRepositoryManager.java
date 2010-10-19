@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util;
 
 import java.io.BufferedInputStream;
@@ -37,13 +36,14 @@ import java.util.StringTokenizer;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  * @author Norbert CHAIX
  * @version
  */
-
 public class FileRepositoryManager extends Object {
+
   static String s_sUpLoadPath = "";
   static String s_sIndexUpLoadPath = "";
   static String s_sTempPath = "";
@@ -118,8 +118,7 @@ public class FileRepositoryManager extends Object {
     int lg = sDirectoryName.length;
     String path = getAbsolutePath(sComponentId);
     for (int k = 0; k < lg; k++) {
-      SilverTrace
-          .debug(
+      SilverTrace.debug(
           "util",
           "FileRepositoryManager.getAbsolutePath",
           ("concat: path = " + path + " sDirectoryName[" + k + "]=" + sDirectoryName[k]));
@@ -163,13 +162,13 @@ public class FileRepositoryManager extends Object {
         "particularSpace = " + particularSpace + " sComponentId= "
         + sComponentId);
     if (particularSpace != null
-        && (particularSpace.startsWith("user@") || particularSpace
-        .equals("transverse")))
+        && (particularSpace.startsWith("user@") || particularSpace.equals("transverse"))) {
       return s_sIndexUpLoadPath + File.separator + particularSpace
           + File.separator + sComponentId + File.separator + "index";
-    else
+    } else {
       return s_sIndexUpLoadPath + File.separator + sComponentId
           + File.separator + "index";
+    }
   }
 
   /**
@@ -246,44 +245,29 @@ public class FileRepositoryManager extends Object {
     return getFileIcon(false, extension, isReadOnly);
   }
 
-  static public String getFileIcon(boolean small, String extension,
-      boolean isReadOnly) {
+  static public String getFileIcon(boolean small, String extension, boolean isReadOnly) {
     String path = s_sApplicationURL + uploadSettings.getString("FileIconsPath");
 
     String fileIcon = uploadSettings.getString(extension.toLowerCase());
-    if (fileIcon == null)
+    if (fileIcon == null) {
       fileIcon = unknownFileIcon;
-    else {
-      if (isReadOnly)
-        fileIcon = fileIcon.substring(0, fileIcon.lastIndexOf(".gif"))
-            + "Lock.gif";
+    } else {
+      if (isReadOnly) {
+        fileIcon = fileIcon.substring(0, fileIcon.lastIndexOf(".gif")) + "Lock.gif";
+      }
     }
-
     if (small) {
-      String newFileIcon = fileIcon.substring(0, fileIcon.lastIndexOf(".gif"))
-          + "Small.gif";
-      if (newFileIcon != null)
+      String newFileIcon = fileIcon.substring(0, fileIcon.lastIndexOf(".gif")) + "Small.gif";
+      if (newFileIcon != null) {
         fileIcon = newFileIcon;
+      }
     }
 
     return path + fileIcon;
   }
 
   static public String getFileExtension(String fileName) {
-    if (fileName == null) {
-      return "";
-    }
-    return fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length());
-  }
-
-  /**
-   * Get the file size with the suitable unit
-   * @deprecated use formatFileSize method
-   * @param long : size
-   * @return String
-   */
-  static public String getFileSize(long size) {
-    return formatFileSize(size);
+    return FilenameUtils.getExtension(fileName);
   }
 
   /**
@@ -311,37 +295,16 @@ public class FileRepositoryManager extends Object {
 
   /**
    * Get the size of a file (in bytes)
-   * @param String (sourceFile)
+   * @param sourceFile
    * @return int
    */
-  static public int getFileSize(String sourceFile) {
-    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-    try {
-      int c;
-      int i;
-      byte[] b = new byte[1];
-      FileInputStream in;
-
-      // Ex: "c:/j2sdkee1.2.1/public_html/kmeliaAttachments/Image6.gif";
-      File inputFile = new File(sourceFile);
-      in = new FileInputStream(inputFile);
-      i = 0;
-      while ((c = in.read()) != -1) {
-        i = i + 1;
-        b[0] = (byte) (c & 0x000000ff);
-        buffer.write(b, 0, 1);
-      }
-      in.close();
-    } catch (IOException ioe) {
-      SilverTrace.error("util", "FileFolderManager.getFileSize()",
-          "util.CANT_GET_FILESIZE", sourceFile);
-    }
-    return buffer.size();
+  static public long getFileSize(String sourceFile) {
+    return new File(sourceFile).length();
   }
 
   /**
    * Get the estimated download time
-   * @param long (fileSize)
+   * @param size the file's size
    * @return String
    */
   static public String getFileDownloadTime(long size) {
@@ -426,5 +389,4 @@ public class FileRepositoryManager extends Object {
   public static String getIndexUpLoadPath() {
     return s_sIndexUpLoadPath + File.separator;
   }
-
 }

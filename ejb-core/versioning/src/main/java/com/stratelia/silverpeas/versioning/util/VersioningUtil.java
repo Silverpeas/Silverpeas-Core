@@ -231,7 +231,7 @@ public class VersioningUtil {
     return FileServerUtils.getVersionedDocumentURL(componentId, logicalName, documentId, versionId);
   }
 
-  public String getDownloadEstimation(int size) {
+  public String getDownloadEstimation(long size) {
     return FileRepositoryManager.getFileDownloadTime(size);
   }
 
@@ -471,7 +471,7 @@ public class VersioningUtil {
           + newDocumentVersion.getPhysicalName();
 
       // Create new document version
-      int newSize = FileRepositoryManager.getFileSize(newVersionFile);
+      long newSize = FileRepositoryManager.getFileSize(newVersionFile);
       newDocumentVersion.setSize(newSize);
       newDocumentVersion.setAuthorId(Integer.parseInt(userId));
       newDocumentVersion.setCreationDate(new Date());

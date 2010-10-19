@@ -29,6 +29,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.util.i18n.Translation;
 
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -55,6 +56,7 @@ import java.sql.Connection;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -154,18 +156,15 @@ public class AttachmentController {
 
   /**
    * to update file information (title and description) AttachmentDetail object to update.
-   * @param attchdetail :AttachmentDetail.
+   * @param attachDetail : AttachmentDetail.
    * @param indexIt - indicates if attachment must be indexed or not
-   * @author Nicolas EYSSERIC
-   * @version 3.0
    */
-  public static void updateAttachment(AttachmentDetail attachDetail,
-      boolean indexIt) {
+  public static void updateAttachment(AttachmentDetail attachDetail, boolean indexIt) {
     updateAttachment(attachDetail, indexIt, true);
   }
 
-  public static void updateAttachment(AttachmentDetail attachDetail,
-      boolean indexIt, boolean invokeCallback) {
+  public static void updateAttachment(AttachmentDetail attachDetail, boolean indexIt, 
+      boolean invokeCallback) {
     try {
       AttachmentDetail oldAttachment =
           getAttachmentBm().getAttachmentByPrimaryKey(attachDetail.getPK());
@@ -372,25 +371,20 @@ public class AttachmentController {
 
       SilverTrace.debug("attachment", "AttachmentController.moveAttachments",
           "root.MSG_GEN_PARAM_VALUE", "attachment updated in DB");
-
-      // process translations
-      AttachmentDetailI18N translation = null;
-
       if (attachment.getTranslations() != null) {
-        Iterator translations = attachment.getTranslations().values().iterator();
+        Collection<Translation> translations = attachment.getTranslations().values();
 
-        while (translations.hasNext()) {
-          translation = (AttachmentDetailI18N) translations.next();
+        for(Translation translation : translations) {
 
           if (translation != null) {
 
             // move file on disk
             fromFile = new File(fromAbsolutePath + "Attachment"
                 + File.separator + attachment.getContext() + File.separator
-                + translation.getPhysicalName());
+                + ((AttachmentDetailI18N)translation).getPhysicalName());
             toFile = new File(toAbsolutePath + "Attachment" + File.separator
                 + attachment.getContext() + File.separator
-                + translation.getPhysicalName());
+                + ((AttachmentDetailI18N)translation).getPhysicalName());
 
             SilverTrace.debug("attachment",
                 "AttachmentController.moveAttachments",
@@ -512,8 +506,7 @@ public class AttachmentController {
 
   /**
    * to delete all file attached to an customer object
-   * @param pk : com.stratelia.webactiv.util.WAPrimaryKey: the primary key of customer object but
-   * this key must be transformed to AttachmentPK
+   * @param foreignKey : the primary key of customer object.
    * @return void
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
    * @exception AttachmentRuntimeException when is impossible to delete
@@ -1246,7 +1239,7 @@ public class AttachmentController {
       if (upload) {
         String uploadedFile = FileRepositoryManager.getAbsolutePath(componentId)
             + CONTEXT_ATTACHMENTS + attachmentDetail.getPhysicalName(language);
-        int newSize = FileRepositoryManager.getFileSize(uploadedFile);
+        long newSize = FileRepositoryManager.getFileSize(uploadedFile);
         attachmentDetail.setSize(newSize);
       }
 
