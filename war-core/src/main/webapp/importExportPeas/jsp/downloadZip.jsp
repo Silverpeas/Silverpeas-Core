@@ -31,6 +31,7 @@
 %>
 <html>
 <head>
+      <title>ZIP export</title>
 <%
 	out.println(gef.getLookStyleSheet());
 %>
@@ -45,14 +46,14 @@ out.println(board.printBefore());
 %>
 <table>
 <tr><td class="txtlibform"><%=resource.getString("importExportPeas.ExportDuration")%> :</td><td><%=DateUtil.formatDuration(report.getDuration())%></td></tr>
-<tr><td class="txtlibform"><%=resource.getString("importExportPeas.FileSize")%> :</td><td><%=FileRepositoryManager.getFileSize(report.getZipFileSize())%></td></tr>
-<tr><td class="txtlibform"><%=resource.getString("importExportPeas.File")%> :</td><td><a href="<%=report.getZipFilePath()%>"><%=report.getZipFileName()%></a> <a href="<%=report.getZipFilePath()%>"><img src="<%=FileRepositoryManager.getFileIcon("zip")%>" border="0" align="absmiddle"></a></td></tr>
+<tr><td class="txtlibform"><%=resource.getString("importExportPeas.FileSize")%> :</td><td><%=FileRepositoryManager.formatFileSize(report.getZipFileSize())%></td></tr>
+<tr><td class="txtlibform"><%=resource.getString("importExportPeas.File")%> :</td><td><a href="<%=report.getZipFilePath()%>"><%=report.getZipFileName()%></a> <a href="<%=report.getZipFilePath()%>"><img src="<%=FileRepositoryManager.getFileIcon("zip")%>" border="0" align="absmiddle" alt="<%=report.getZipFileName()%>"/></a></td></tr>
 </table>
 <%
 out.println(board.printAfter());
 out.println(frame.printMiddle());
 ButtonPane buttonPane = gef.getButtonPane();
-Button button = (Button) gef.getFormButton(resource.getString("GML.close"), "javaScript:window.close();", false);
+Button button = gef.getFormButton(resource.getString("GML.close"), "javaScript:window.close();", false);
 buttonPane.addButton(button);
 out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
 out.println(frame.printAfter());

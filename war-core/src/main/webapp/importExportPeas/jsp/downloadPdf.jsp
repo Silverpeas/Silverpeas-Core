@@ -32,6 +32,7 @@
 
 <html>
 	<head>
+    <title>PDF export</title>
 		<%
 			out.println(gef.getLookStyleSheet());
 		%>
@@ -51,13 +52,13 @@
 			</tr>
 			<tr>
 				<td class="txtlibform"><%=resource.getString("importExportPeas.FileSize")%> :&nbsp;</td>
-				<td><%=FileRepositoryManager.getFileSize(report.getPdfFileSize())%></td>
+        <td><%=FileRepositoryManager.formatFileSize(report.getPdfFileSize())%></td>
 			</tr>
 			<tr>
 				<td class="txtlibform"><%=resource.getString("importExportPeas.File")%> :&nbsp;</td>
 				<td>
 					<a href="<%=report.getPdfFilePath()%>"><%=report.getPdfFileName()%></a>
-					<a href="<%=report.getPdfFilePath()%>"><img src="<%=FileRepositoryManager.getFileIcon("pdf")%>" border="0" align="absmiddle"></a>
+					<a href="<%=report.getPdfFilePath()%>"><img alt="<%=report.getPdfFileName()%>" src="<%=FileRepositoryManager.getFileIcon("pdf")%>" border="0" align="absmiddle"></a>
 				</td>
 			</tr>
 		</table>
@@ -65,7 +66,7 @@
 			out.println(board.printAfter());
 			out.println(frame.printMiddle());
 			ButtonPane buttonPane = gef.getButtonPane();
-			Button button = (Button) gef.getFormButton(resource.getString("GML.close"), "javaScript:window.close();", false);
+			Button button = gef.getFormButton(resource.getString("GML.close"), "javaScript:window.close();", false);
 			buttonPane.addButton(button);
 			out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
 			out.println(frame.printAfter());
