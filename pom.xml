@@ -143,6 +143,42 @@
       </plugin>-->
     </plugins>
   </build>
+  
+  <profiles>
+    <profile>
+      <id>Quality</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.kalistick.soa</groupId>
+            <artifactId>ks-agent</artifactId>
+            <version>2.2.1</version>
+            <configuration>
+              <configFile>${project.basedir}/src/config/agent_cockpit/kalistick-new.xml</configFile>
+              <version>${project.version}-${build.timestamp}</version>
+              <excludes>
+                <exclude>*.iml</exclude>
+              </excludes>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>copy-dependencies</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>copy-dependencies</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+  </profiles>
 
   <modules>
     <module>test-core</module>
@@ -155,7 +191,7 @@
   </modules>
 
   <properties>
-    <installer_stable_version>5.3.2</installer_stable_version>
+    <installer_stable_version>5.3.3</installer_stable_version>
     <installer_version>${project.version}</installer_version>
   </properties>
 

@@ -62,7 +62,7 @@ if (importReport != null)
 	out.println(resource.getString("importExportPeas.ImportDuration")+" : "+importReport.getDuration()+"<br>");
 	out.println(resource.getString("importExportPeas.NbFilesImported")+" : "+importReport.getNbFilesProcessed()+"<br>");
 	out.println(resource.getString("importExportPeas.NbFilesNotFound")+" : "+importReport.getNbFilesNotImported()+"<br>");
-	out.println(resource.getString("importExportPeas.TotalFileUploadedSize")+" : " + FileRepositoryManager.getFileSize(importReport.getTotalImportedFileSize()) + "<br>");
+	out.println(resource.getString("importExportPeas.TotalFileUploadedSize")+" : " + FileRepositoryManager.formatFileSize(importReport.getTotalImportedFileSize()) + "<br>");
 	
 	out.println("<br><b>"+resource.getString("importExportPeas.StatComponent")+"</b><br>");
 	
@@ -78,7 +78,7 @@ if (importReport != null)
 			out.println(resource.getString("importExportPeas.NbPubCreated")+" : "+componentRpt.getNbPublicationsCreated() + "<br>");
 			out.println(resource.getString("importExportPeas.NbPubUpdated")+" : "+componentRpt.getNbPublicationsUpdated() + "<br>");
 			out.println(resource.getString("importExportPeas.NbTopicCreated")+" : "+componentRpt.getNbTopicsCreated() + "<br>");
-			out.println(resource.getString("importExportPeas.TotalFileUploadedSize")+" : " + FileRepositoryManager.getFileSize(componentRpt.getTotalImportedFileSize()) + "<br>");
+			out.println(resource.getString("importExportPeas.TotalFileUploadedSize")+" : " + FileRepositoryManager.formatFileSize(componentRpt.getTotalImportedFileSize()) + "<br>");
 			
 			//Affichage des rapports unitaires
 			List unitReports = componentRpt.getListUnitReports();
