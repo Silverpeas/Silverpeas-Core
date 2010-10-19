@@ -335,21 +335,21 @@ public class AttachmentImportExport {
   }
 
   /**
-   * M�thode de r�cup�ration des attachements et de copie des fichiers dans le dossier d'exportation
+   * Methode de recuperation des attachements et de copie des fichiers dans le dossier d'exportation
    * @param pk - PrimaryKey de l'obijet dont on veut les attachments?
-   * @param exportPath - R�pertoire dans lequel copier les fichiers
-   * @param relativeExportPath chemin relatif du fichier copi�
-   * @return une liste des attachmentDetail trouv�s
+   * @param exportPath - Repertoire dans lequel copier les fichiers
+   * @param relativeExportPath chemin relatif du fichier copie
+   * @return une liste des attachmentDetail trouves
    */
   public Vector<AttachmentDetail> getAttachments(WAPrimaryKey pk, String exportPath,
       String relativeExportPath, String extensionFilter) {
 
-    // R�cup�ration des attachments
+    // Recuperation des attachments
     Vector<AttachmentDetail> listAttachment = AttachmentController
         .searchAttachmentByCustomerPK(pk);
     Vector<AttachmentDetail> listToReturn = new Vector<AttachmentDetail>();
-    if (listAttachment != null && listAttachment.size() == 0)// Si on
-      // re�oit
+    if (listAttachment != null && listAttachment.isEmpty())// Si on
+      // recoit
       // une liste
       // vide, on
       // retourne
@@ -370,7 +370,7 @@ public class AttachmentImportExport {
           try {
             copyAttachment(attDetail, pk, exportPath);
 
-            // Le nom physique correspond maintenant au fichier copi�
+            // Le nom physique correspond maintenant au fichier copie
             attDetail.setPhysicalName(relativeExportPath
                 + File.separator
                 + FileServerUtils

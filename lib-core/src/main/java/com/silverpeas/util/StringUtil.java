@@ -86,6 +86,22 @@ public class StringUtil {
   public static String escapeQuote(String text) {
     return text.replaceAll("'", " ");
   }
+  
+  
+  /**
+   * Replaces 
+   * @param name
+   * @return a String with all quotes replaced by spaces
+   */
+  public static String toAcceptableFilename(String name) {
+    String fileName = name;
+    fileName = fileName.replace('\\', '_');
+    fileName = fileName.replace('/', '_');
+    fileName = fileName.replace('$', '_');
+    fileName = fileName.replace('%', '_');
+    fileName = fileName.replace('?', '_');
+    return fileName;
+  }
 
   /**
    * Format a string by extending the principle of the the method format() of the class
