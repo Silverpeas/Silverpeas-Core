@@ -100,7 +100,7 @@ public class GraphicElementFactory extends Object {
   private static final String JQUERY_JS = "jquery-1.3.2.min.js";
   private static final String JQUERYUI_JS = "jquery-ui-1.7.3.custom.min.js";
   private static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.7.3.custom.css";
-  
+
   private static final String FLOWPLAYER_JS = "flowplayer/flowplayer-3.2.4.min.js";
   private static final String FLOWPLAYER_CSS = "flowplayer.css";
 
@@ -181,8 +181,10 @@ public class GraphicElementFactory extends Object {
           "root.MSG_GEN_EXIT_METHOD", "lookSettings == null");
       // get the customer lookSettings
       try {
-        lookSettings = new ResourceLocator(
-            "com.stratelia.webactiv.util.viewGenerator.settings.lookSettings", "", silverpeasSettings);
+        lookSettings =
+            new ResourceLocator(
+                "com.stratelia.webactiv.util.viewGenerator.settings.lookSettings", "",
+                silverpeasSettings);
       } catch (java.util.MissingResourceException e) {
         // the customer lookSettings is undefined
         // get the default silverpeas looks
@@ -304,7 +306,7 @@ public class GraphicElementFactory extends Object {
     String specificJS = null;
 
     if (externalStylesheet == null) {
-      
+
       code.append("<link type=\"text/css\" href=\"").append(contextPath).append(
           "/util/styleSheets/").append(FLOWPLAYER_CSS).append("\" rel=\"stylesheet\"/>\n");
 
@@ -330,8 +332,10 @@ public class GraphicElementFactory extends Object {
             mainSessionController.getOrganizationController().getComponentInstLight(componentId);
         if (component != null) {
           String componentName = component.getName();
+          String genericComponentName = getGenericComponentName(componentName);
           code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(contextPath)
-              .append("/").append(componentName).append("/jsp/styleSheets/").append(componentName)
+              .append("/").append(genericComponentName).append("/jsp/styleSheets/").append(
+                  genericComponentName)
               .append(".css").append("\"/>\n");
 
           String specificStyle = getFavoriteLookSettings().getString("StyleSheet." + componentName);
@@ -360,7 +364,8 @@ public class GraphicElementFactory extends Object {
     }
 
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
-    		"/util/javaScript/jquery/jquery.ui.datepicker-").append(getLanguage()).append(".js\"></script>");
+        "/util/javaScript/jquery/jquery.ui.datepicker-").append(getLanguage()).append(
+        ".js\"></script>");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/silverpeas-defaultDatePicker.js\"></script>");
 
@@ -371,7 +376,7 @@ public class GraphicElementFactory extends Object {
     // include specific browseBar javaScript
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/browseBarComplete.js\"></script>\n");
-    
+
     // include the Flowplayer javascript code
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/").append(FLOWPLAYER_JS).append("\"></script>\n");
@@ -385,6 +390,21 @@ public class GraphicElementFactory extends Object {
         .info("viewgenerator", "GraphicElementFactory.getLookStyleSheet()",
             "root.MSG_GEN_EXIT_METHOD");
     return code.toString();
+  }
+
+  /**
+   * Some logical components have got the same technical component.
+   * For example, "toolbox" component is technically "kmelia"
+   * 
+   * @return the "implementation" name of the given component 
+   */
+  private String getGenericComponentName(String componentName) {
+    if ("toolbox".equalsIgnoreCase(componentName) || "kmax".equalsIgnoreCase(componentName)) {
+      return "kmelia";
+    } else if ("pollingstation".equalsIgnoreCase(componentName)) {
+      return "survey";
+    }
+    return componentName;
   }
 
   private String getYahooElements() {
