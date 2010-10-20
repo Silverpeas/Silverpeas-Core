@@ -4,7 +4,10 @@
  */
 package com.stratelia.webactiv.util.node.ejb;
 
-import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
+import java.io.IOException;
+import javax.naming.NamingException;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import java.util.Iterator;
 import com.silverpeas.components.model.AbstractTestDao;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
@@ -27,6 +30,17 @@ public class NodeDAOTest extends AbstractTestDao {
     return "nodes-test-dataset.xml";
   }
   private static final String INSTANCE_ID = "kmelia60";
+  
+  @BeforeClass
+  public static void generalSetUp() throws IOException, NamingException {
+    AbstractTestDao.configureJNDIDatasource();
+  }
+
+  @Before
+  @Override
+  public void setUp() throws Exception {
+    super.prepareData();
+  }
 
   public NodeDAOTest() {
   }

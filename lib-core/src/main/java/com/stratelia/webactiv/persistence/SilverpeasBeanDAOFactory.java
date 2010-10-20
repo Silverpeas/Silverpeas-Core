@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.persistence;
 
 import java.util.HashMap;
@@ -31,18 +30,17 @@ import com.stratelia.webactiv.persistence.database.SilverpeasBeanDAOImpl;
 
 public class SilverpeasBeanDAOFactory {
 
-  private static Map<String, SilverpeasBeanDAO> silverpeasBeanDAOs =
-      new HashMap<String, SilverpeasBeanDAO>();
+  private static Map<String, SilverpeasBeanDAO> silverpeasBeanDAOs = new HashMap<String, SilverpeasBeanDAO>();
 
-  public static SilverpeasBeanDAO getDAO(String beanName)
-      throws PersistenceException {
-    SilverpeasBeanDAO result = (SilverpeasBeanDAO) silverpeasBeanDAOs
-        .get(beanName);
-    if (result == null) {
-      result = new SilverpeasBeanDAOImpl(beanName);
-      silverpeasBeanDAOs.put(beanName, result);
+  public static SilverpeasBeanDAO getDAO(String beanName) throws PersistenceException {
+    SilverpeasBeanDAO result = null;
+    synchronized (SilverpeasBeanDAOFactory.class) {
+      result = silverpeasBeanDAOs.get(beanName);
+      if (result == null) {
+        result = new SilverpeasBeanDAOImpl(beanName);
+        silverpeasBeanDAOs.put(beanName, result);
+      }
     }
     return result;
   }
-
 }

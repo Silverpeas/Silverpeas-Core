@@ -39,6 +39,9 @@ import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -46,16 +49,29 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractTestDao extends JndiBasedDBTestCase {
 
-  protected String jndiName = "";
+  protected static String jndiName = "";
 
-  @Override
-  protected void setUp() throws Exception {
+  @After
+  public void cleanData() throws Exception {
+    super.tearDown();
+  }
+  
+  
+
+  @Before
+  public void prepareData() throws Exception {
+    configureJNDIDatasource();
+    super.setUp();
+  }
+  
+  @BeforeClass
+  public static void configureJNDIDatasource() throws IOException, NamingException {
     prepareJndi();
     Properties env = new Properties();
     env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.fscontext.RefFSContextFactory");
     InitialContext ic = new InitialContext(env);
     Properties props = new Properties();
-    props.load(this.getClass().getClassLoader().getResourceAsStream("jdbc.properties"));
+    props.load(AbstractTestDao.class.getClassLoader().getResourceAsStream("jdbc.properties"));
     // Construct BasicDataSource reference
     Reference ref = new Reference("javax.sql.DataSource",
         "org.apache.commons.dbcp.BasicDataSourceFactory", null);
@@ -70,7 +86,6 @@ public abstract class AbstractTestDao extends JndiBasedDBTestCase {
     jndiName = props.getProperty("jndi.name");
     rebind(ic, jndiName, ref);
     ic.rebind(jndiName, ref);
-    super.setUp();
   }
 
   @Override
@@ -112,7 +127,7 @@ public abstract class AbstractTestDao extends JndiBasedDBTestCase {
    * @param ref : the reference to be bound
    * @throws NamingException
    */
-  protected void rebind(InitialContext ic, String jndiName, Reference ref) throws NamingException {
+  protected static void rebind(InitialContext ic, String jndiName, Reference ref) throws NamingException {
     Context currentContext = ic;
     StringTokenizer tokenizer = new StringTokenizer(jndiName, "/", false);
     while (tokenizer.hasMoreTokens()) {
@@ -133,7 +148,7 @@ public abstract class AbstractTestDao extends JndiBasedDBTestCase {
    * Creates the directory for JNDI files ystem provider
    * @throws IOException
    */
-  protected void prepareJndi() throws IOException {
+  protected static void prepareJndi() throws IOException {
     Properties jndiProperties = new Properties();
     jndiProperties.load(PathTestUtil.class.getClassLoader().getResourceAsStream("jndi.properties"));
     String jndiDirectoryPath = jndiProperties.getProperty(Context.PROVIDER_URL).substring(7);

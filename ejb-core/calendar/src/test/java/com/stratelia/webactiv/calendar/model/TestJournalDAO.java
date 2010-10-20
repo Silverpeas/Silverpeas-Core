@@ -8,13 +8,16 @@ import com.stratelia.webactiv.calendar.socialNetwork.SocialInformationEvent;
 import com.silverpeas.components.model.AbstractTestDao;
 
 import com.stratelia.webactiv.calendar.socialNetwork.SocialEvent;
+import java.io.IOException;
 
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import javax.naming.NamingException;
 import org.dbunit.database.IDatabaseConnection;
+import org.junit.Before;
+import org.junit.BeforeClass;
 
 /**
  *
@@ -30,9 +33,15 @@ public class TestJournalDAO extends AbstractTestDao {
     return "calendar-dataset.xml";
   }
 
+  @BeforeClass
+  public static void generalSetUp() throws IOException, NamingException {
+    AbstractTestDao.configureJNDIDatasource();
+  }
+
+  @Before
   @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  public void setUp() throws Exception {
+    super.prepareData();
     dao = new JournalDAO();
 
   }
@@ -156,7 +165,7 @@ public class TestJournalDAO extends AbstractTestDao {
       assertEquals("First should be ", s2.getName(), list.get(2).getTitle());
       assertEquals("First should be ", s3.getName(), list.get(1).getTitle());
 
-      
+
       list = null;
       list = dao.getNextEventsForMyContacts(connexion.getConnection(), "2011/07/07", "2",
           myContactIds, 2, 1);
@@ -181,7 +190,6 @@ public class TestJournalDAO extends AbstractTestDao {
    * Order desc
    *
    */
-
   public void testGetLastEventsForMyContacts() throws Exception {
     IDatabaseConnection connexion = null;
 
@@ -286,8 +294,8 @@ public class TestJournalDAO extends AbstractTestDao {
 
     List<SocialInformationEvent> list = null;
     try {
-      connexion = getConnection();   
-      list = dao.getMyLastEvents(connexion.getConnection(), "2012/07/07", "1",0, 0);
+      connexion = getConnection();
+      list = dao.getMyLastEvents(connexion.getConnection(), "2012/07/07", "1", 0, 0);
 //order S3,S2,S1
       assertNotNull("Event should exist", list);
       assertEquals("Should have 2 Events in db", 3, list.size());
@@ -296,7 +304,7 @@ public class TestJournalDAO extends AbstractTestDao {
       assertEquals("First should be ", s3.getName(), list.get(1).getTitle());
 
 
-      list = dao.getMyLastEvents_MSS(connexion.getConnection(), "2012/07/07", "1",0, 0);
+      list = dao.getMyLastEvents_MSS(connexion.getConnection(), "2012/07/07", "1", 0, 0);
       assertNotNull("Event should exist", list);
       assertEquals("Should have 2 Events in db", 3, list.size());
       assertEquals("First should be ", s1.getName(), list.get(2).getTitle());

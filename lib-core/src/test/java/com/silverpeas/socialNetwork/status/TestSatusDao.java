@@ -24,23 +24,31 @@
 
 package com.silverpeas.socialNetwork.status;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
+import javax.naming.NamingException;
 
 import org.dbunit.database.IDatabaseConnection;
 import org.junit.Test;
 
 import com.silverpeas.components.model.AbstractTestDao;
+import org.junit.Before;
+import org.junit.BeforeClass;
 
 public class TestSatusDao extends AbstractTestDao {
 
   private StatusDao dao;
+  
+  @BeforeClass
+  public static void generalSetUp() throws IOException, NamingException {
+    AbstractTestDao.configureJNDIDatasource();
+  }
 
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  @Before
+  public void setUp() throws Exception {
+    super.prepareData();
     dao = new com.silverpeas.socialNetwork.status.StatusDao();
   }
 

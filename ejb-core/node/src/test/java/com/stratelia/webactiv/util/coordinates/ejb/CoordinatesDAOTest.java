@@ -27,11 +27,13 @@ import com.silverpeas.components.model.AbstractTestDao;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePoint;
+import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import javax.naming.NamingException;
 import org.dbunit.Assertion;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.Column;
@@ -40,6 +42,8 @@ import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.datatype.DataType;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.matchers.JUnitMatchers;
 
@@ -52,6 +56,16 @@ public class CoordinatesDAOTest extends AbstractTestDao {
   public CoordinatesDAOTest() {
   }
 
+  @BeforeClass
+  public static void generalSetUp() throws IOException, NamingException {
+    AbstractTestDao.configureJNDIDatasource();
+  }
+
+  @Before
+  @Override
+  public void setUp() throws Exception {
+    super.prepareData();
+  }
   /**
    * Test of selectByFatherIds method, of class CoordinatesDAO.
    * @throws Exception

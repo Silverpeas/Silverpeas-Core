@@ -23,6 +23,10 @@
  */
 package com.stratelia.silverpeas.versioning;
 
+import java.io.IOException;
+import javax.naming.NamingException;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import com.silverpeas.components.model.AbstractTestDao;
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.silverpeas.util.ForeignPK;
@@ -45,9 +49,15 @@ public class TestVersioningDAO extends AbstractTestDao {
   private static final String INSTANCE_ID = "kmelia60";
   private Date checkoutdate;
 
+  @BeforeClass
+  public static void generalSetUp() throws IOException, NamingException {
+    AbstractTestDao.configureJNDIDatasource();
+  }
+
+  @Before
   @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  public void setUp() throws Exception {
+    super.prepareData();
     Calendar calend = Calendar.getInstance();
     calend.set(Calendar.YEAR, 2008);
     calend.set(Calendar.MONTH, Calendar.MAY);
@@ -186,7 +196,8 @@ public class TestVersioningDAO extends AbstractTestDao {
     initialVersion.setLogicalName("test.bin");
     initialVersion.setInstanceId(INSTANCE_ID);
 
-    DocumentPK pk = VersioningDAO.createDocument(getConnection().getConnection(), doc, initialVersion);
+    DocumentPK pk = VersioningDAO.createDocument(getConnection().getConnection(), doc,
+        initialVersion);
     doc.setPk(pk);
 
     Document result = VersioningDAO.getDocument(getConnection().getConnection(), pk);

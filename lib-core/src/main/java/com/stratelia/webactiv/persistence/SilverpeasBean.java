@@ -34,7 +34,7 @@ public class SilverpeasBean implements SilverpeasBeanIntf, Serializable {
   private WAPrimaryKey pk;
 
   public SilverpeasBean() {
-    setPK(new IdPK());
+     pk =  new IdPK();
   }
 
   @Override

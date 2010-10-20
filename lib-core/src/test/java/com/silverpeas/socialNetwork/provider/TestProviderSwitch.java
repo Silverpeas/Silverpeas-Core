@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.socialNetwork.provider;
 
 import com.silverpeas.socialNetwork.model.SocialInformationType;
@@ -84,7 +83,8 @@ public class TestProviderSwitch {
     SocialGalleryInterface galleryInterface = mock(SocialGalleryInterface.class);
     SocialPublicationsInterface publicationsInterface = mock(SocialPublicationsInterface.class);
     SocialStatusInterface statusInterface = mock(SocialStatusInterface.class);
-    SocialRelationShipsInterface socialRelationShipsInterface = mock(SocialRelationShipsInterface.class);
+    SocialRelationShipsInterface socialRelationShipsInterface = mock(
+        SocialRelationShipsInterface.class);
     ProviderSwitch switch1 = new ProviderSwitch();
     switch1.setSocialEventsInterface(eventsInterface);
     switch1.setSocialGalleryInterface(galleryInterface);
@@ -97,18 +97,18 @@ public class TestProviderSwitch {
         listPhoto);
     when(switch1.getSocialPublicationsInterface().getSocialInformationsList(null, 0, 0)).thenReturn(
         listPub);
-     when(switch1.getSocialStatusInterface().getSocialInformationsList(null, 0, 0)).thenReturn(
+    when(switch1.getSocialStatusInterface().getSocialInformationsList(null, 0, 0)).thenReturn(
         null);
-     when(switch1.getSocialRelationShipsInterface().getSocialInformationsList(null, 0, 0)).thenReturn(
+    when(switch1.getSocialRelationShipsInterface().getSocialInformationsList(null, 0, 0)).thenReturn(
         null);
-     
-    List list = (List) switch1.getSocialInformationsList(SocialInformationType.EVENT, null,
+
+    List list = switch1.getSocialInformationsList(SocialInformationType.EVENT, null,
         null, 0, 0);
     assertEquals("must be equal 4", list.size(), 4);
-    list = (List) switch1.getSocialInformationsList(SocialInformationType.PUBLICATION, null,
+    list = switch1.getSocialInformationsList(SocialInformationType.PUBLICATION, null,
         null, 0, 0);
     assertEquals("must be equal 3", list.size(), 3);
-    list = (List) switch1.getSocialInformationsList(SocialInformationType.PHOTO, null,
+    list = switch1.getSocialInformationsList(SocialInformationType.PHOTO, null,
         null, 0, 0);
     assertNotNull("must be not null", list);
     list = (List) switch1.getSocialInformationsList(SocialInformationType.ALL, null,

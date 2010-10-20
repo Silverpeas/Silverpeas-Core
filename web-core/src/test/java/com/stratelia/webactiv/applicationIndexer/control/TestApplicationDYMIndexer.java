@@ -31,10 +31,13 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
+import javax.naming.NamingException;
 
 import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.store.FSDirectory;
 import org.dbunit.operation.DatabaseOperation;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -44,13 +47,21 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
 
   private String indexDirectory = "";
 
+  @BeforeClass
+  public static void generalSetUp() throws IOException, NamingException {
+    AbstractTestDao.configureJNDIDatasource();
+  }
+
+  @Before
   @Override
   public void setUp() throws Exception {
+    super.prepareData();
     Properties props = new Properties();
-    props.load(this.getClass().getClassLoader().getResourceAsStream("com/stratelia/webactiv/general.properties"));
+    props.load(this.getClass().getClassLoader().getResourceAsStream(
+        "com/stratelia/webactiv/general.properties"));
     indexDirectory = props.getProperty("uploadsIndexPath");
-    assertEquals(FileRepositoryManager.getIndexUpLoadPath(), indexDirectory + File.separatorChar );
-    super.setUp();   
+    assertEquals(FileRepositoryManager.getIndexUpLoadPath(), indexDirectory + File.separatorChar);
+    super.setUp();
   }
 
   /**

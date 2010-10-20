@@ -24,12 +24,16 @@
 package com.silverpeas.socialNetwork.invitation;
 
 import com.silverpeas.components.model.AbstractTestDao;
+import java.io.IOException;
 import java.util.Calendar;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import javax.naming.NamingException;
 import org.dbunit.database.IDatabaseConnection;
+import org.junit.Before;
+import org.junit.BeforeClass;
 
 /**
  *
@@ -39,9 +43,14 @@ public class TestInvitationDao extends AbstractTestDao {
 
   private InvitationDao dao;
 
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  @BeforeClass
+  public static void generalSetUp() throws IOException, NamingException {
+    AbstractTestDao.configureJNDIDatasource();
+  }
+
+  @Before
+  public void setUp() throws Exception {
+    super.prepareData();
     dao = new InvitationDao();
   }
 
