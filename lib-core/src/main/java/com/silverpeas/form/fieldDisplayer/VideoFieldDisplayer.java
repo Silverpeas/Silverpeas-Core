@@ -113,14 +113,21 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
     String language = pagesContext.getLanguage();
     String fieldName = template.getFieldName();
     if (template.isMandatory() && pagesContext.useMandatory()) {
-      out.append("	if (isWhitespace(stripInitialWhitespace(field.value))) {\n").append("		var ").
-              append(fieldName).append("Value = document.getElementById('").append(fieldName).append(
-              Field.FILE_PARAM_NAME_SUFFIX).append("').value;\n").append("		if (").append(fieldName).
-              append("Value=='' || ").append(fieldName).append(
-              "Value.substring(0,7)==\"remove_\") {\n").append("			errorMsg+=\"  - '").append(EncodeHelper.
-              javaStringToJsString(template.getLabel(language))).append("' ").append(Util.getString(
-              "GML.MustBeFilled", language)).append("\\n \";\n").append("			errorNb++;\n").append(
-              "		}\n").append("	}\n");
+      out
+              .append("	if (isWhitespace(stripInitialWhitespace(field.value))) {\n")
+              .append("		var ").append(fieldName).append("Value = document.getElementById('")
+              .append(fieldName).append(Field.FILE_PARAM_NAME_SUFFIX).append("').value;\n")
+              .append("   var ").append(fieldName).append("Operation = document.")
+              .append(pagesContext.getFormName()).append(".")
+              .append(fieldName).append(OPERATION_KEY).append(".value;\n")
+              .append("		if (").append(fieldName).append("Value=='' || ")
+              .append(fieldName).append("Operation=='").append(Operation.DELETION.name()).append("') {\n")
+              .append("			errorMsg+=\"  - '")
+              .append(EncodeHelper.javaStringToJsString(template.getLabel(language))).append("' ")
+              .append(Util.getString("GML.MustBeFilled", language)).append("\\n \";\n")
+              .append("			errorNb++;\n")
+              .append("		}\n")
+              .append("	}\n");
     }
 
     Util.getJavascriptChecker(template.getFieldName(), pagesContext, out);
@@ -305,7 +312,7 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
     fileInput.setName(fieldName);
     input attachmentInput = new input();
     attachmentInput.setType("hidden").setName(fieldName + Field.FILE_PARAM_NAME_SUFFIX).setValue(
-            attachmentId).setID(fieldName + "Hidden");
+            attachmentId).setID(fieldName + Field.FILE_PARAM_NAME_SUFFIX);
     input operationInput = new input();
     operationInput.setType("hidden").setName(fieldName + OPERATION_KEY).setValue(defaultOperation.
             name()).setID(fieldName + OPERATION_KEY);
@@ -379,7 +386,7 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
       String objectId = pageContext.getObjectId();
       String logicalName = item.getName();
       long size = item.getSize();
-      if (StringUtil.isDefined(logicalName) && size > 0) {
+      if (StringUtil.isDefined(logicalName)) {
         if (!FileUtil.isWindows()) {
           logicalName = logicalName.replace('\\', File.separatorChar);
           SilverTrace.info("form", "VideoFieldDisplayer.uploadVideoFile", "root.MSG_GEN_PARAM_VALUE",
