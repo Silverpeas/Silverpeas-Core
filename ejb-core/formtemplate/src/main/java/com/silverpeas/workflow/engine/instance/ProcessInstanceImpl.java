@@ -1354,8 +1354,8 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
       boolean userMatch = wkUser.getUserId() != null && wkUser.getUserId().equals(userId);
       boolean usersRoleMatch =
           wkUser.getUsersRole() != null && wkUser.getUsersRole().equals(roleName);
-      boolean userGroupsMatch = !StringUtil.isDefined(wkUser.getGroupId());
-      if (!userGroupsMatch) {
+      boolean userGroupsMatch = false;
+      if (StringUtil.isDefined(wkUser.getGroupId())) {
         // check if one of userGroups matches with working group
         if (user.getGroupIds() != null) {
           userGroupsMatch = user.getGroupIds().contains(wkUser.getGroupId());
