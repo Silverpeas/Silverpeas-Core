@@ -99,7 +99,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
       if (StringUtil.isDefined(getComponentId())) {
         spaces =
             getMainSessionController().getOrganizationController().getSpacePathToComponent(
-            getComponentId());
+                getComponentId());
       } else {
         spaces = getMainSessionController().getOrganizationController().getSpacePath(getSpaceId());
       }
@@ -131,7 +131,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
         // Display component's label
         ComponentInstLight componentInstLight =
             getMainSessionController().getOrganizationController().getComponentInstLight(
-            getComponentId());
+                getComponentId());
         if (componentInstLight != null) {
           result.append(CONNECTOR);
           result.append("<a href=\"");
@@ -142,7 +142,12 @@ public class BrowseBarComplete extends AbstractBrowseBar {
                 .append(getComponentId()).append("')");
           } else {
             result.append(URLManager.getApplicationURL() +
-                URLManager.getURL(getSpaceId(), getComponentId()) + "Main");
+                URLManager.getURL(getSpaceId(), getComponentId()));
+            if (ignoreComponentLink()) {
+              result.append("Main");
+            } else {
+              result.append(getComponentLink());
+            }
           }
           result.append("\"");
           result.append(" class=\"component\"");

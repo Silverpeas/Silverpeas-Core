@@ -231,6 +231,20 @@
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
+    <attribute>
+      <description>Forces componentId (usefull in portlets case)</description>
+      <name>componentId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Permit to use component's link given by setComponentName(name, link) method</description>
+      <name>ignoreComponentLink</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
   </tag>
   <tag>
     <description>Simple tag to define an element of a Window browsebar. It should be declared and used before a Window.</description>

@@ -66,6 +66,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
   private String spaceJavascriptCallback = null;
   private String componentJavascriptCallback = null;
   private boolean clickable = true;
+  private boolean ignoreComponentLink = true;
 
   /**
    * Constructor declaration
@@ -314,6 +315,14 @@ public abstract class AbstractBrowseBar implements BrowseBar {
 
   public boolean isClickable() {
     return clickable;
+  }
+  
+  public void setIgnoreComponentLink(boolean ignore) {
+     ignoreComponentLink = ignore;
+  }
+  
+  public boolean ignoreComponentLink() {
+    return ignoreComponentLink;
   }
 
 }

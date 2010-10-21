@@ -113,5 +113,7 @@ public interface BrowseBar extends SimpleGraphicElement {
   public void setComponentJavascriptCallback(String callback);
 
   public void setClickable(boolean clickable);
-
+  
+  public void setIgnoreComponentLink(boolean ignore);
+  
 }

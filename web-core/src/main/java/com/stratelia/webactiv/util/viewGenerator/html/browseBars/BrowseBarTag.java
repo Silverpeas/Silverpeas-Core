@@ -38,6 +38,8 @@ public class BrowseBarTag extends NeedWindowTag {
 
   private String extraInformations;
   private String path;
+  private String componentId;
+  private boolean ignoreComponentLink = true;
 
   public void setExtraInformations(String extraInformations) {
     this.extraInformations = extraInformations;
@@ -45,6 +47,14 @@ public class BrowseBarTag extends NeedWindowTag {
   
   public void setPath(String path) {
     this.path = path;
+  }
+  
+  public void setComponentId(String componentId) {
+    this.componentId = componentId;
+  }
+
+  public void setIgnoreComponentLink(boolean ignoreComponentLink) {
+    this.ignoreComponentLink = ignoreComponentLink;
   }
 
   public int doEndTag() throws JspException {
@@ -64,6 +74,10 @@ public class BrowseBarTag extends NeedWindowTag {
     if (StringUtil.isDefined(path)) {
       browseBar.setPath(path);
     }
+    if (StringUtil.isDefined(componentId)) {
+      browseBar.setComponentId(componentId);
+    }
+    browseBar.setIgnoreComponentLink(ignoreComponentLink);
     return EVAL_BODY_INCLUDE;
   }
 }
