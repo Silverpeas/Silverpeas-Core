@@ -33,25 +33,13 @@ package com.silverpeas.jobManagerPeas;
 
 import com.stratelia.webactiv.util.exception.*;
 
-/*
- * CVS Informations
- * 
- * $Id: JobManagerPeasException.java,v 1.1.1.1 2002/08/06 14:47:55 nchaix Exp $
- * 
- * $Log: JobManagerPeasException.java,v $
- * Revision 1.1.1.1  2002/08/06 14:47:55  nchaix
- * no message
- *
- * Revision 1.1  2002/03/20 17:19:57  tleroi
- * Add jobManagerPeas
- *
- */
-
 /**
  * Class declaration
  * @author
  */
 public class JobManagerPeasException extends SilverpeasException {
+
+  private static final long serialVersionUID = 9016908115328819116L;
 
   /**
    * Constructor declaration

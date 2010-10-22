@@ -38,49 +38,6 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 
-/*
- * CVS Informations
- *
- * $Id: JobManagerSettings.java,v 1.5 2008/09/17 04:31:28 neysseri Exp $
- *
- * $Log: JobManagerSettings.java,v $
- * Revision 1.5  2008/09/17 04:31:28  neysseri
- * no message
- *
- * Revision 1.4.12.1  2008/09/10 14:29:25  psliwa
- * New component: Workflow Designer
- *
- * Revision 1.1  2008/05/30 16:10:44  cvsuser
- * *** empty log message ***
- *
- * Revision 1.4  2006/04/19 15:35:15  dlesimple
- * Gestion des Ips Sogreah
- *
- * Revision 1.3  2005/02/23 19:18:35  neysseri
- * integration Import/Export
- *
- * Revision 1.2.2.1  2005/01/25 09:22:11  neysseri
- * Adding tool ImportExport
- *
- * Revision 1.2  2003/01/09 09:37:23  mguillem
- * correction getString
- *
- * Revision 1.1.1.1  2002/08/06 14:47:55  nchaix
- * no message
- *
- * Revision 1.2  2002/07/17 16:16:37  nchaix
- * Merge branche EPAM_130602
- * Ajout de l'onglet jobTools
- *
- * Revision 1.1.22.1  2002/07/17 06:20:21  neysseri
- * Add a property to display or not the tools tab.
- *
- * Revision 1.1  2002/04/11 06:42:53  tleroi
- * no message
- *
- *
- */
-
 /**
  * This class manage the informations needed for job manager
  * @t.leroi
@@ -143,27 +100,27 @@ public class JobManagerSettings {
 
   static public void sortGroups(Group[] toSort) {
     Arrays.sort(toSort, new Comparator() {
-        public int compare(Object o1, Object o2) {
+      public int compare(Object o1, Object o2) {
         return (((Group) o1).getName()).compareTo(((Group) o2).getName());
-        }
+      }
 
       public boolean equals(Object o) {
         return false;
-        }
+      }
 
     });
   }
 
   static public void sortUsers(UserDetail[] toSort) {
     Arrays.sort(toSort, new Comparator() {
-        public int compare(Object o1, Object o2) {
+      public int compare(Object o1, Object o2) {
         return (((UserDetail) o1).getLastName()).compareTo(((UserDetail) o2)
             .getLastName());
-        }
+      }
 
       public boolean equals(Object o) {
         return false;
-        }
+      }
 
     });
   }
