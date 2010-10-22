@@ -28,6 +28,9 @@
  */
 package com.stratelia.webactiv.util.publication.ejb;
 
+import java.util.Iterator;
+import com.stratelia.webactiv.util.node.model.NodePK;
+import java.util.Collection;
 import java.io.IOException;
 import javax.naming.NamingException;
 import org.junit.Before;
@@ -305,17 +308,59 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectByFatherPK method, of class PublicationDAO.
    */
-  /* @org.junit.Test
+  @org.junit.Test
   public void testSelectByFatherPK_Connection_NodePK() throws Exception {
-  System.out.println("selectByFatherPK");
-  Connection con = null;
-  NodePK fatherPK = null;
-  Collection expResult = null;
-  Collection result = PublicationDAO.selectByFatherPK(con, fatherPK);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+    System.out.println("selectByFatherPK");
+    Connection con = getConnection().getConnection();
+    ;
+    NodePK fatherPK = new NodePK("110", "kmelia200");
+    Collection<PublicationDetail> result = PublicationDAO.selectByFatherPK(con, fatherPK);
+    assertNotNull(result);
+    assertEquals(2, result.size());
+    Iterator<PublicationDetail> iter = result.iterator();
+    PublicationDetail detail = iter.next();
+    PublicationPK primaryKey = new PublicationPK("100", "kmelia200");
+    assertEquals(primaryKey, detail.getPK());
+    assertEquals("Homer Simpson", detail.getAuthor());
+    assertEquals("2009/10/18", DateUtil.formatDate(detail.getBeginDate()));
+    assertEquals("00:00", detail.getBeginHour());
+    assertEquals("Contenu de la publication 1", detail.getContent());
+    assertEquals("2008/11/18", DateUtil.formatDate(detail.getCreationDate()));
+    assertEquals("100", detail.getCreatorId());
+    assertEquals("Première publication de test", detail.getDescription());
+    assertEquals("2020/12/18", DateUtil.formatDate(detail.getEndDate()));
+    assertEquals("23:59", detail.getEndHour());
+    assertEquals(1, detail.getImportance());
+    assertEquals("0", detail.getInfoId());
+    assertEquals("kmelia200", detail.getInstanceId());
+    assertEquals("test", detail.getKeywords());
+    assertEquals("Publication 1", detail.getName());
+    assertEquals("Valid", detail.getStatus());
+    assertEquals("300", detail.getValidatorId());
+    assertEquals("Publication 1", detail.getTitle());
+
+    detail = iter.next();
+    primaryKey = new PublicationPK("101", "kmelia200");
+    assertEquals(primaryKey, detail.getPK());
+    assertEquals("Bart Simpson", detail.getAuthor());
+    assertEquals("2009/10/18", DateUtil.formatDate(detail.getBeginDate()));
+    assertEquals("01:10", detail.getBeginHour());
+    assertEquals("Contenu de la publication 2", detail.getContent());
+    assertEquals("2008/11/18", DateUtil.formatDate(detail.getCreationDate()));
+    assertEquals("101", detail.getCreatorId());
+    assertEquals("2ème publication de test", detail.getDescription());
+    assertEquals("2020/12/18", DateUtil.formatDate(detail.getEndDate()));
+    assertEquals("20:35", detail.getEndHour());
+    assertEquals(5, detail.getImportance());
+    assertEquals("0", detail.getInfoId());
+    assertEquals("kmelia200", detail.getInstanceId());
+    assertEquals("test", detail.getKeywords());
+    assertEquals("Publication 2", detail.getName());
+    assertEquals("Valid", detail.getStatus());
+    assertEquals("300", detail.getValidatorId());
+    assertEquals("Publication 2", detail.getTitle());
+  }
+
   /**
    * Test of selectByFatherPK method, of class PublicationDAO.
    */
@@ -351,21 +396,68 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectByFatherPK method, of class PublicationDAO.
    */
-  /* @org.junit.Test
+  @org.junit.Test
   public void testSelectByFatherPK_5args() throws Exception {
-  System.out.println("selectByFatherPK");
-  Connection con = null;
-  NodePK fatherPK = null;
-  String sorting = "";
-  boolean filterOnVisibilityPeriod = false;
-  String userId = "";
-  Collection expResult = null;
-  Collection result = PublicationDAO.selectByFatherPK(con, fatherPK, sorting,
-  filterOnVisibilityPeriod, userId);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+    System.out.println("selectByFatherPK");
+    Connection con = getConnection().getConnection();
+    NodePK fatherPK = new NodePK("110", "kmelia200");
+    String sorting = null;
+    boolean filterOnVisibilityPeriod = false;
+    String userId = "100";
+    Collection result = PublicationDAO.selectByFatherPK(con, fatherPK, sorting,
+        filterOnVisibilityPeriod, userId);
+    assertNotNull(result);
+    assertEquals(1, result.size());
+    Iterator<PublicationDetail> iter = result.iterator();
+    PublicationDetail detail = iter.next();
+    PublicationPK primaryKey = new PublicationPK("100", "kmelia200");
+    assertEquals(primaryKey, detail.getPK());
+    assertEquals("Homer Simpson", detail.getAuthor());
+    assertEquals("2009/10/18", DateUtil.formatDate(detail.getBeginDate()));
+    assertEquals("00:00", detail.getBeginHour());
+    assertEquals("Contenu de la publication 1", detail.getContent());
+    assertEquals("2008/11/18", DateUtil.formatDate(detail.getCreationDate()));
+    assertEquals("100", detail.getCreatorId());
+    assertEquals("Première publication de test", detail.getDescription());
+    assertEquals("2020/12/18", DateUtil.formatDate(detail.getEndDate()));
+    assertEquals("23:59", detail.getEndHour());
+    assertEquals(1, detail.getImportance());
+    assertEquals("0", detail.getInfoId());
+    assertEquals("kmelia200", detail.getInstanceId());
+    assertEquals("test", detail.getKeywords());
+    assertEquals("Publication 1", detail.getName());
+    assertEquals("Valid", detail.getStatus());
+    assertEquals("300", detail.getValidatorId());
+    assertEquals("Publication 1", detail.getTitle());
+    
+    filterOnVisibilityPeriod = true;
+    result = PublicationDAO.selectByFatherPK(con, fatherPK, sorting, filterOnVisibilityPeriod, userId);
+    assertNotNull(result);
+    assertEquals(1, result.size());
+    iter = result.iterator();
+    detail = iter.next();
+    primaryKey = new PublicationPK("100", "kmelia200");
+    assertEquals(primaryKey, detail.getPK());
+    assertEquals("Homer Simpson", detail.getAuthor());
+    assertEquals("2009/10/18", DateUtil.formatDate(detail.getBeginDate()));
+    assertEquals("00:00", detail.getBeginHour());
+    assertEquals("Contenu de la publication 1", detail.getContent());
+    assertEquals("2008/11/18", DateUtil.formatDate(detail.getCreationDate()));
+    assertEquals("100", detail.getCreatorId());
+    assertEquals("Première publication de test", detail.getDescription());
+    assertEquals("2020/12/18", DateUtil.formatDate(detail.getEndDate()));
+    assertEquals("23:59", detail.getEndHour());
+    assertEquals(1, detail.getImportance());
+    assertEquals("0", detail.getInfoId());
+    assertEquals("kmelia200", detail.getInstanceId());
+    assertEquals("test", detail.getKeywords());
+    assertEquals("Publication 1", detail.getName());
+    assertEquals("Valid", detail.getStatus());
+    assertEquals("300", detail.getValidatorId());
+    assertEquals("Publication 1", detail.getTitle());
+    
+  }
+
   /**
    * Test of selectByFatherPK method, of class PublicationDAO.
    */

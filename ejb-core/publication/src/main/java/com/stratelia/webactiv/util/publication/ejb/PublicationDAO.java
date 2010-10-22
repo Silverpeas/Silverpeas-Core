@@ -23,7 +23,6 @@
  */
 package com.stratelia.webactiv.util.publication.ejb;
 
-import java.lang.reflect.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -748,8 +747,7 @@ public class PublicationDAO {
 
   public static Collection<PublicationDetail> selectByFatherPK(Connection con, NodePK fatherPK,
           String sorting, boolean filterOnVisibilityPeriod) throws SQLException {
-    return selectByFatherPK(con, fatherPK, sorting, filterOnVisibilityPeriod,
-            null);
+    return selectByFatherPK(con, fatherPK, sorting, filterOnVisibilityPeriod, null);
   }
 
   public static Collection<PublicationDetail> selectByFatherPK(Connection con, NodePK fatherPK,
@@ -767,19 +765,14 @@ public class PublicationDAO {
     }
     SilverTrace.info("publication", "PublicationDAO.selectByFatherPK()", "root.MSG_GEN_PARAM_VALUE", 
             "selectStatement = " + selectStatement);
-
+            
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
       prepStmt = con.prepareStatement(selectStatement.toString());
       prepStmt.setString(1, pubPK.getComponentName());
       prepStmt.setInt(2, Integer.parseInt(fatherPK.getId()));
-      int index = 0;
-      if (userId != null) {
-        prepStmt.setString(3, userId);
-        prepStmt.setString(4, userId);
-        index = 2;
-      }
+      int index = 3;
       if (filterOnVisibilityPeriod) {
         java.util.Date now = new java.util.Date();
         String dateNow = DateUtil.formatDate(now);
@@ -789,18 +782,23 @@ public class PublicationDAO {
         hourNow = DateUtil.formatTime(now);
         SilverTrace.info("publication", "PublicationDAO.selectByFatherPK()",
                 "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
-        prepStmt.setString(3 + index, dateNow);
-        prepStmt.setString(4 + index, dateNow);
-        prepStmt.setString(5 + index, dateNow);
-        prepStmt.setString(6 + index, dateNow);
-        prepStmt.setString(7 + index, hourNow);
-        prepStmt.setString(8 + index, dateNow);
-        prepStmt.setString(9 + index, dateNow);
-        prepStmt.setString(10 + index, hourNow);
-        prepStmt.setString(11 + index, dateNow);
-        prepStmt.setString(12 + index, dateNow);
-        prepStmt.setString(13 + index, hourNow);
-        prepStmt.setString(14 + index, hourNow);
+        prepStmt.setString(3 , dateNow);
+        prepStmt.setString(4 , dateNow);
+        prepStmt.setString(5 , dateNow);
+        prepStmt.setString(6 , dateNow);
+        prepStmt.setString(7 , hourNow);
+        prepStmt.setString(8 , dateNow);
+        prepStmt.setString(9 , dateNow);
+        prepStmt.setString(10 , hourNow);
+        prepStmt.setString(11 , dateNow);
+        prepStmt.setString(12 , dateNow);
+        prepStmt.setString(13 , hourNow);
+        prepStmt.setString(14 , hourNow);
+        index = 15;
+      }
+      if (userId != null) {
+        prepStmt.setString(index, userId);
+        prepStmt.setString(index + 1, userId);
       }
       rs = prepStmt.executeQuery();
       List<PublicationDetail> list = new ArrayList<PublicationDetail>();
