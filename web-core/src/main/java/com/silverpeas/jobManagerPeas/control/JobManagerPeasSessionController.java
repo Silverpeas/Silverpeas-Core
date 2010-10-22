@@ -128,6 +128,9 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
     JobManagerService jst = new JobManagerService("47", "JST",
         JobManagerService.LEVEL_OPERATION, m_context
         + "/admin/jsp/ExploitationSilverTrace.jsp", null, false);
+    JobManagerService jabout = new JobManagerService("48", "JAB",
+        JobManagerService.LEVEL_OPERATION, m_context
+        + "/silverpeasinfos.jsp", null, false);
 
     // initialisation des opérations du service jKM
     JobManagerService jKM1 = new JobManagerService("21", "JKM1",
@@ -205,6 +208,9 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
 
           ids.add("47");
           services.put(jst.getId(), jst);
+          
+          ids.add("48");
+          services.put(jabout.getId(), jabout);
 
           jTools = new JobManagerService("4", "JTOOLS",
               JobManagerService.LEVEL_SERVICE, null, ids.toArray(new String[0]), false);
