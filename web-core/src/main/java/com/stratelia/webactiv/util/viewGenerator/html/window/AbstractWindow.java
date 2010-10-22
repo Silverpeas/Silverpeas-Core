@@ -33,6 +33,12 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.window;
 
+import java.util.List;
+
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar;
 import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane;
@@ -175,4 +181,26 @@ public abstract class AbstractWindow implements Window {
     return this.browseBar;
   }
 
+  public String getContextualDiv() {
+    String spaceIds = "";
+    String componentId = gef.getComponentId();
+    OrganizationController oc = gef.getMainSessionController().getOrganizationController();
+    if (StringUtil.isDefined(componentId)) {
+      List<SpaceInst> spaces = oc.getSpacePathToComponent(componentId);
+
+      for (SpaceInst spaceInst : spaces) {
+        String spaceId = spaceInst.getId();
+        if (!spaceId.startsWith("WA")) {
+          spaceId = "WA" + spaceId;
+        }
+        spaceIds += spaceId + " ";
+      }
+    }
+
+    if (StringUtil.isDefined(spaceIds)) {
+      ComponentInstLight component = oc.getComponentInstLight(componentId);
+      return "<div class=\"" + spaceIds + component.getName() + " " + componentId + "\">";
+    }
+    return null;
+  }
 }
