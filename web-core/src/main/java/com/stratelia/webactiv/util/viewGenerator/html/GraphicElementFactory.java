@@ -250,7 +250,7 @@ public class GraphicElementFactory extends Object {
 
     SilverTrace.info("viewgenerator", "GraphicElementFactory.setLook()",
         "root.MSG_GEN_PARAM_VALUE", " look = " + look
-            + " | corresponding settings = " + selectedLook);
+        + " | corresponding settings = " + selectedLook);
     this.favoriteLookSettings = new ResourceLocator(selectedLook, "");
 
     currentLookName = look;
@@ -280,7 +280,7 @@ public class GraphicElementFactory extends Object {
   public String getLookFrame() {
     SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookFrame()",
         "root.MSG_GEN_PARAM_VALUE", " FrameJSP = "
-            + getFavoriteLookSettings().getString("FrameJSP"));
+        + getFavoriteLookSettings().getString("FrameJSP"));
     return getFavoriteLookSettings().getString("FrameJSP");
   }
 
@@ -383,12 +383,12 @@ public class GraphicElementFactory extends Object {
 
     if (getFavoriteLookSettings() != null
         && getFavoriteLookSettings().getString("OperationPane").toLowerCase()
-            .endsWith("web20"))
+        .endsWith("web20"))
       code.append(getYahooElements());
 
     SilverTrace
         .info("viewgenerator", "GraphicElementFactory.getLookStyleSheet()",
-            "root.MSG_GEN_EXIT_METHOD");
+        "root.MSG_GEN_EXIT_METHOD");
     return code.toString();
   }
 
@@ -768,15 +768,17 @@ public class GraphicElementFactory extends Object {
     String operationPaneClassName = getFavoriteLookSettings().getString(
         "OperationPane");
 
+    OperationPane operationPane = null;
     try {
-      return (OperationPane) Class.forName(operationPaneClassName)
-          .newInstance();
+      operationPane = (OperationPane) Class.forName(operationPaneClassName).newInstance();
     } catch (Exception e) {
       SilverTrace.error("viewgenerator",
           "GraphicElementFactory.getOperationPane()",
           "viewgenerator.EX_CANT_GET_OPERATION_PANE", "", e);
-      return new OperationPaneSilverpeasV5Web20();
+      operationPane = new OperationPaneSilverpeasV5Web20();
     }
+    operationPane.setMultilang(multilang);
+    return operationPane;
   }
 
   /**

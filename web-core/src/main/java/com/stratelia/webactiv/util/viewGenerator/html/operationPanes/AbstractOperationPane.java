@@ -35,6 +35,7 @@ package com.stratelia.webactiv.util.viewGenerator.html.operationPanes;
 
 import java.util.Vector;
 
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 /**
@@ -45,8 +46,7 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 public abstract class AbstractOperationPane implements OperationPane {
 
   private Vector<String> stack = null;
-
-  // private String iconsPath = null;
+  private ResourceLocator multilang;
 
   /**
    * Constructor declaration
@@ -62,12 +62,6 @@ public abstract class AbstractOperationPane implements OperationPane {
    * @see
    */
   public String getIconsPath() {
-    /*
-     * if (iconsPath == null) { ResourceLocator generalSettings = new
-     * ResourceLocator("com.stratelia.webactiv.general", "fr"); iconsPath =
-     * generalSettings.getString("ApplicationURL") +
-     * GraphicElementFactory.getSettings().getString("IconsPath"); } return iconsPath;
-     */
     return GraphicElementFactory.getIconsPath();
   }
 
@@ -92,6 +86,14 @@ public abstract class AbstractOperationPane implements OperationPane {
       nbOperations = getStack().size();
     }
     return nbOperations;
+  }
+  
+  public void setMultilang(ResourceLocator multilang) {
+    this.multilang = multilang;
+  }
+
+  public ResourceLocator getMultilang() {
+    return multilang;
   }
 
   /**

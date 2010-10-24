@@ -33,6 +33,7 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.operationPanes;
 
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 
 /**
@@ -70,5 +71,7 @@ public interface OperationPane extends SimpleGraphicElement {
    * @return The html based line code
    */
   public String print();
+  
+  public void setMultilang(ResourceLocator multilang);
 
 }

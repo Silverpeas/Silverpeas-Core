@@ -77,7 +77,7 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
     StringBuffer result = new StringBuffer();
     Vector<String> stack = getStack();
 
-    String alt = GraphicElementFactory.getSettings().getString("ActionsLabel", "Opérations");
+    String alt = getMultilang().getString("GEF.operations.label", "Opérations");
 
     result.append(
         "<div align=\"right\"><span id=\"menutoggle\">"
