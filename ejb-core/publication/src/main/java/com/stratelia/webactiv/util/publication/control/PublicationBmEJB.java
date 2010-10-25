@@ -341,17 +341,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
     }
   }
 
-  public void removeImage(PublicationPK pubPK) throws RemoteException {
-    Publication publication = findPublication(pubPK);
-    try {
-      publication.removeImage();
-    } catch (Exception re) {
-      throw new PublicationRuntimeException("PublicationBmEJB.removeImage()",
-          SilverpeasRuntimeException.ERROR,
-          "publication.DELETING_IMAGE_FAILED", "pubId = " + pubPK.getId(), re);
-    }
-  }
-
+  
   public void setDetail(PublicationDetail detail) throws RemoteException {
     setDetail(detail, false);
   }
@@ -1611,9 +1601,16 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
           // name
         }
       }
-
-      indexEntry.setThumbnail(pubDetail.getImage());
-      indexEntry.setThumbnailMimeType(pubDetail.getImageMimeType());
+	  
+      try{
+      	indexEntry.setThumbnail(pubDetail.getImage());
+      	indexEntry.setThumbnailMimeType(pubDetail.getImageMimeType());
+      }catch (Exception e) {
+    	    throw new PublicationRuntimeException(
+    	            "PublicationBmEJB.getFullIndexEntry()",
+    	            SilverpeasRuntimeException.ERROR,
+    	            "publication.GETTING_FULL_INDEX_ENTRY", e);
+	  }
       indexEntry.setThumbnailDirectory(publicationSettings.getString("imagesSubDirectory"));
     }
 

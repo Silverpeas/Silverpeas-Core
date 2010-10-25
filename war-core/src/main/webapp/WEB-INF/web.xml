@@ -514,6 +514,12 @@
     <servlet-name>DirectoryServlet</servlet-name>
     <servlet-class>com.silverpeas.directory.servlets.DirectoryServlet</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>ThumbnailRequestRouter</servlet-name>
+    <display-name>ThumbnailRequestRouter</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.thumbnail.servlets.ThumbnailRequestRouter</servlet-class>
+  </servlet>
   <servlet-mapping>
     <servlet-name>AuthenticationServlet</servlet-name>
     <url-pattern>/AuthenticationServlet</url-pattern>
@@ -884,6 +890,10 @@
   <servlet-mapping>
     <servlet-name>DirectoryServlet</servlet-name>
     <url-pattern>/RdirectoryServlet/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>ThumbnailRequestRouter</servlet-name>
+    <url-pattern>/Thumbnail/*</url-pattern>
   </servlet-mapping>
   <jsp-config>
     <jsp-property-group>

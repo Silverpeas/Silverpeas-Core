@@ -35,6 +35,8 @@ import com.silverpeas.form.fieldDisplayer.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.formTemplate.ejb.FormTemplateBm;
 import com.silverpeas.formTemplate.ejb.FormTemplateBmHome;
+import com.silverpeas.thumbnail.control.ThumbnailController;
+import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -78,8 +80,6 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   private String keywords;
   private String content;
   private String status;
-  private String image;
-  private String imageMimeType;
   private Date updateDate;
   private String updaterId;
   private Date validateDate;
@@ -164,40 +164,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     this.content = content;
   }
 
-  /**
-   * @deprecated
-   * @param id
-   * @param name
-   * @param description
-   * @param creationDate
-   * @param beginDate
-   * @param endDate
-   * @param creatorId
-   * @param importance
-   * @param version
-   * @param keywords
-   * @param content
-   * @param updaterId
-   */
-  public PublicationDetail(String id, String name, String description,
-      Date creationDate, Date beginDate, Date endDate, String creatorId,
-      String importance, String version, String keywords, String content,
-      String updaterId) {
-    this.pk = new PublicationPK(id);
-    this.name = name;
-    this.description = description;
-    this.creationDate = creationDate;
-    this.beginDate = beginDate;
-    this.endDate = endDate;
-    this.creatorId = creatorId;
-    this.importance = new Integer(importance).intValue();
-    this.version = version;
-    this.keywords = keywords;
-    this.content = content;
-    this.updaterId = updaterId;
-  }
-
-  public PublicationDetail(String id, String name, String description,
+ /* public PublicationDetail(String id, String name, String description,
       Date creationDate, Date beginDate, Date endDate, String creatorId,
       String importance, String version, String keywords, String content,
       String updaterId, String author) {
@@ -214,12 +181,12 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     this.content = content;
     this.updaterId = updaterId;
     this.author = author;
-  }
+  }*/
 
   public PublicationDetail(PublicationPK pk, String name, String description,
       Date creationDate, Date beginDate, Date endDate, String creatorId,
       int importance, String version, String keywords, String content,
-      String status, String image, String imageMimeType) {
+      String status) {
     this.pk = pk;
     this.name = name;
     this.description = description;
@@ -232,14 +199,12 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     this.keywords = keywords;
     this.content = content;
     this.status = status;
-    this.image = image;
-    this.imageMimeType = imageMimeType;
   }
 
   public PublicationDetail(PublicationPK pk, String name, String description,
       Date creationDate, Date beginDate, Date endDate, String creatorId,
       int importance, String version, String keywords, String content,
-      String status, String image, String imageMimeType, Date updateDate) {
+      String status, Date updateDate) {
     this.pk = pk;
     this.name = name;
     this.description = description;
@@ -252,8 +217,6 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     this.keywords = keywords;
     this.content = content;
     this.status = status;
-    this.image = image;
-    this.imageMimeType = imageMimeType;
     this.updateDate = updateDate;
   }
 
@@ -271,15 +234,13 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
    * @param keywords
    * @param content
    * @param status
-   * @param image
-   * @param imageMimeType
    * @param updateDate
    * @param updaterId
    */
   public PublicationDetail(PublicationPK pk, String name, String description,
       Date creationDate, Date beginDate, Date endDate, String creatorId,
       int importance, String version, String keywords, String content,
-      String status, String image, String imageMimeType, Date updateDate,
+      String status, Date updateDate,
       String updaterId) {
     this.pk = pk;
     this.name = name;
@@ -293,8 +254,6 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     this.keywords = keywords;
     this.content = content;
     this.status = status;
-    this.image = image;
-    this.imageMimeType = imageMimeType;
     this.updateDate = updateDate;
     this.updaterId = updaterId;
   }
@@ -302,7 +261,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public PublicationDetail(PublicationPK pk, String name, String description,
       Date creationDate, Date beginDate, Date endDate, String creatorId,
       int importance, String version, String keywords, String content,
-      String status, String image, String imageMimeType, Date updateDate,
+      String status, Date updateDate,
       String updaterId, String author) {
     this.pk = pk;
     this.name = name;
@@ -316,8 +275,6 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     this.keywords = keywords;
     this.content = content;
     this.status = status;
-    this.image = image;
-    this.imageMimeType = imageMimeType;
     this.updateDate = updateDate;
     this.updaterId = updaterId;
     this.author = author;
@@ -343,7 +300,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public PublicationDetail(String id, String name, String description,
       Date creationDate, Date beginDate, Date endDate, String creatorId,
       String importance, String version, String keywords, String content,
-      String status, String image, String imageMimeType) {
+      String status) {
     this.pk = new PublicationPK(id);
     this.name = name;
     this.description = description;
@@ -356,14 +313,12 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     this.keywords = keywords;
     this.content = content;
     this.status = status;
-    this.image = image;
-    this.imageMimeType = imageMimeType;
   }
 
   public PublicationDetail(String id, String name, String description,
       Date creationDate, Date beginDate, Date endDate, String creatorId,
       String importance, String version, String keywords, String content,
-      String status, String image, String imageMimeType, String author) {
+      String status, String updaterId, String author) {
     this.pk = new PublicationPK(id);
     this.name = name;
     this.description = description;
@@ -376,15 +331,14 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     this.keywords = keywords;
     this.content = content;
     this.status = status;
-    this.image = image;
-    this.imageMimeType = imageMimeType;
+    this.updaterId = updaterId;
     this.author = author;
   }
 
   public PublicationDetail(String id, String name, String description,
       Date creationDate, Date beginDate, Date endDate, String creatorId,
       String importance, String version, String keywords, String content,
-      String status, String image, String imageMimeType, Date updateDate) {
+      String status, Date updateDate) {
     this.pk = new PublicationPK(id);
     this.name = name;
     this.description = description;
@@ -397,15 +351,13 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     this.keywords = keywords;
     this.content = content;
     this.status = status;
-    this.image = image;
-    this.imageMimeType = imageMimeType;
     this.updateDate = updateDate;
   }
 
   public PublicationDetail(String id, String name, String description,
       Date creationDate, Date beginDate, Date endDate, String creatorId,
       String importance, String version, String keywords, String content,
-      String status, String image, String imageMimeType, Date updateDate,
+      String status, Date updateDate,
       String updaterId) {
     this.pk = new PublicationPK(id);
     this.name = name;
@@ -419,8 +371,6 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     this.keywords = keywords;
     this.content = content;
     this.status = status;
-    this.image = image;
-    this.imageMimeType = imageMimeType;
     this.updateDate = updateDate;
     this.updaterId = updaterId;
   }
@@ -428,7 +378,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public PublicationDetail(String id, String name, String description,
       Date creationDate, Date beginDate, Date endDate, String creatorId,
       String importance, String version, String keywords, String content,
-      String status, String image, String imageMimeType, Date updateDate,
+      String status, Date updateDate,
       String updaterId, Date validateDate, String validatorId) {
     this.pk = new PublicationPK(id);
     this.name = name;
@@ -442,8 +392,6 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     this.keywords = keywords;
     this.content = content;
     this.status = status;
-    this.image = image;
-    this.imageMimeType = imageMimeType;
     this.updateDate = updateDate;
     this.updaterId = updaterId;
     this.validateDate = validateDate;
@@ -457,7 +405,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public PublicationDetail(PublicationPK pk, String name, String description,
       Date creationDate, Date beginDate, Date endDate, String creatorId,
       int importance, String version, String keywords, String content,
-      String status, String image, String imageMimeType, Date updateDate,
+      String status, Date updateDate,
       String updaterId, Date validateDate, String validatorId) {
     this.pk = pk;
     this.name = name;
@@ -471,8 +419,6 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     this.keywords = keywords;
     this.content = content;
     this.status = status;
-    this.image = image;
-    this.imageMimeType = imageMimeType;
     this.updateDate = updateDate;
     this.updaterId = updaterId;
     this.validateDate = validateDate;
@@ -483,7 +429,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public PublicationDetail(PublicationPK pk, String name, String description,
       Date creationDate, Date beginDate, Date endDate, String creatorId,
       int importance, String version, String keywords, String content,
-      String status, String image, String imageMimeType, Date updateDate,
+      String status, Date updateDate,
       String updaterId, Date validateDate, String validatorId, String author) {
     this.pk = pk;
     this.name = name;
@@ -497,8 +443,6 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     this.keywords = keywords;
     this.content = content;
     this.status = status;
-    this.image = image;
-    this.imageMimeType = imageMimeType;
     this.updateDate = updateDate;
     this.updaterId = updaterId;
     this.validateDate = validateDate;
@@ -600,14 +544,6 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     this.status = status;
   }
 
-  public void setImage(String image) {
-    this.image = image;
-  }
-
-  public void setImageMimeType(String imageMimeType) {
-    this.imageMimeType = imageMimeType;
-  }
-
   public void setUpdateDate(Date updateDate) {
     this.updateDate = updateDate;
   }
@@ -674,11 +610,35 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   }
 
   public String getImage() {
-    return image;
+	  try{
+		  if(getPK() != null && getPK().getInstanceId() != null && getPK().getId() != null){
+			  ThumbnailDetail thumbDetail = new ThumbnailDetail(getPK().getInstanceId(), Integer.valueOf(getPK().getId()), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
+			  // default size if creation
+			  String[] imageProps = ThumbnailController.getImageAndMimeType(thumbDetail, 50, 50);
+			  return imageProps[0];
+		  }else{
+			  return null;
+		  }
+	  }catch(Exception e){
+		  SilverTrace.error("publication","PublicationDetail.getImage()","publication.GET_THUMBNAIL_ERROR",e);
+	  }
+	  return null;
   }
 
   public String getImageMimeType() {
-    return imageMimeType;
+	  try{
+		  if(getPK() != null && getPK().getInstanceId() != null && getPK().getId() != null){
+			  ThumbnailDetail thumbDetail = new ThumbnailDetail(getPK().getInstanceId(), Integer.valueOf(getPK().getId()), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
+			  // default size if creation
+			  String[] imageProps = ThumbnailController.getImageAndMimeType(thumbDetail, 50, 50);
+			  return imageProps[1];
+		  }else{
+			  return null;
+		  }
+	  }catch(Exception e){
+		  SilverTrace.error("publication","PublicationDetail.getImageMimeType()","publication.GET_THUMBNAIL_ERROR",e);
+	  }
+	  return null;
   }
 
   public Date getUpdateDate() {
@@ -716,9 +676,6 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     result.append("  getKeywords() = ").append(getKeywords()).append("\n");
     result.append("  getContent() = ").append(getContent()).append("\n");
     result.append("  getStatus() = ").append(getStatus()).append("\n");
-    result.append("  getImage() = ").append(getImage()).append("\n");
-    result.append("  getImageMimeType() = ").append(getImageMimeType()).append(
-        "\n");
     result.append("  getUpdateDate() = ").append(getUpdateDate()).append("\n");
     result.append("  getUpdaterId()  = ").append(getUpdaterId()).append("\n");
     result.append("  getValidateDate() = ").append(getValidateDate()).append(
@@ -1137,8 +1094,6 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     clone.setDescription(description);
     clone.setEndDate(endDate);
     clone.setEndHour(endHour);
-    clone.setImage(image);
-    clone.setImageMimeType(imageMimeType);
     clone.setImportance(importance);
     clone.setInfoId(infoId);
     clone.setKeywords(keywords);

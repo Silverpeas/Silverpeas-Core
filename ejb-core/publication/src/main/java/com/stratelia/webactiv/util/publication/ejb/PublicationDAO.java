@@ -79,7 +79,7 @@ public class PublicationDAO {
           "UPDATE SB_Publication_Publi SET infoId = ?, "
           + "pubName = ?, pubDescription = ?, pubCreationDate = ?, pubBeginDate = ?, pubEndDate = ?, "
           + "pubCreatorId = ?, pubImportance = ?, pubVersion = ?, pubKeywords = ?, pubContent = ?, "
-          + "pubStatus = ?, pubImage = ?, pubImageMimeType = ?, pubUpdateDate = ?, pubUpdaterId = ?, "
+          + "pubStatus = ?, pubUpdateDate = ?, pubUpdaterId = ?, "
           + "instanceId = ?, pubValidatorId = ?, pubValidateDate = ?, pubBeginHour = ?, pubEndHour = ?, "
           + "pubAuthor = ?, pubTargetValidatorId = ?, pubCloneId = ?, pubCloneStatus = ?, lang = ? "
           + "WHERE pubId = ? ";
@@ -425,12 +425,12 @@ public class PublicationDAO {
     insertStatement.append(" (pubId, infoId, pubName, pubDescription, pubCreationDate,");
     insertStatement.append(
             " pubBeginDate, pubEndDate, pubCreatorId, pubImportance, pubVersion, pubKeywords,");
-    insertStatement.append(" pubContent, pubStatus, pubImage, pubImageMimeType, pubUpdateDate,");
+    insertStatement.append(" pubContent, pubStatus, pubUpdateDate,");
     insertStatement.append(
             " instanceId, pubUpdaterId, pubValidateDate, pubValidatorId, pubBeginHour, pubEndHour,");
     insertStatement.append(" pubAuthor, pubTargetValidatorId, pubCloneId, pubCloneStatus, lang) ");
     insertStatement.append(
-            " values ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ?, ? , ? , ? , ? , ? , ? , ? , ?)");
+            " values ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ?, ? , ? , ? , ? , ? , ? , ? , ?)");
     PreparedStatement prepStmt = null;
 
     try {
@@ -468,52 +468,50 @@ public class PublicationDAO {
       prepStmt.setString(11, detail.getKeywords());
       prepStmt.setString(12, detail.getContent());
       prepStmt.setString(13, detail.getStatus());
-      prepStmt.setString(14, detail.getImage());
-      prepStmt.setString(15, detail.getImageMimeType());
       if (detail.getCreationDate() == null) {
-        prepStmt.setString(16, DateUtil.today2SQLDate());
+        prepStmt.setString(14, DateUtil.today2SQLDate());
       } else {
-        prepStmt.setString(16, DateUtil.formatDate(detail.getCreationDate()));
+        prepStmt.setString(14, DateUtil.formatDate(detail.getCreationDate()));
       }
-      prepStmt.setString(17, detail.getPK().getComponentName());
-      prepStmt.setString(18, detail.getCreatorId());
+      prepStmt.setString(15, detail.getPK().getComponentName());
+      prepStmt.setString(16, detail.getCreatorId());
       if ("Valid".equals(detail.getStatus())) {
-        prepStmt.setString(20, detail.getCreatorId());
-        prepStmt.setString(19, DateUtil.formatDate(detail.getCreationDate()));
+        prepStmt.setString(18, detail.getCreatorId());
+        prepStmt.setString(17, DateUtil.formatDate(detail.getCreationDate()));
       } else {
-        prepStmt.setString(19, null);
-        prepStmt.setString(20, null);
+        prepStmt.setString(17, null);
+        prepStmt.setString(18, null);
       }
       if (isUndefined(detail.getBeginHour())) {
-        prepStmt.setString(21, nullBeginHour);
+        prepStmt.setString(19, nullBeginHour);
       } else {
-        prepStmt.setString(21, detail.getBeginHour());
+        prepStmt.setString(19, detail.getBeginHour());
       }
       if (isUndefined(detail.getEndHour())) {
-        prepStmt.setString(22, nullEndHour);
+        prepStmt.setString(20, nullEndHour);
       } else {
-        prepStmt.setString(22, detail.getEndHour());
+        prepStmt.setString(20, detail.getEndHour());
       }
       if (isUndefined(detail.getAuthor())) {
-        prepStmt.setString(23, null);
+        prepStmt.setString(21, null);
       } else {
-        prepStmt.setString(23, detail.getAuthor());
+        prepStmt.setString(21, detail.getAuthor());
       }
 
-      prepStmt.setString(24, detail.getTargetValidatorId());
+      prepStmt.setString(22, detail.getTargetValidatorId());
 
       if (isUndefined(detail.getCloneId())) {
-        prepStmt.setInt(25, -1);
+        prepStmt.setInt(23, -1);
       } else {
-        prepStmt.setInt(25, Integer.parseInt(detail.getCloneId()));
+        prepStmt.setInt(23, Integer.parseInt(detail.getCloneId()));
       }
 
-      prepStmt.setString(26, detail.getCloneStatus());
+      prepStmt.setString(24, detail.getCloneStatus());
 
       if (isUndefined(detail.getLanguage())) {
-        prepStmt.setNull(27, Types.VARCHAR);
+        prepStmt.setNull(25, Types.VARCHAR);
       } else {
-        prepStmt.setString(27, detail.getLanguage());
+        prepStmt.setString(25, detail.getLanguage());
       }
 
       SilverTrace.info("publication", "PublicationDAO.insertRow()",
@@ -612,7 +610,7 @@ public class PublicationDAO {
     // "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString());
     PublicationDetail pub = null;
     int id = rs.getInt(1);
-    String componentId = rs.getString(17);
+    String componentId = rs.getString(15);
     PublicationPK pk = new PublicationPK(String.valueOf(id), componentId);
     String infoId = rs.getString(2);
     SilverTrace.info("publication",
@@ -671,24 +669,23 @@ public class PublicationDAO {
     String keywords = rs.getString(11);
     String content = rs.getString(12);
     String status = rs.getString(13);
-    String image = rs.getString(14);
-    String imageMimeType = rs.getString(15);
-
+    
     java.util.Date updateDate;
-    String u = rs.getString(16);
+    String u = rs.getString(14);
     if (u != null) {
       try {
         updateDate = DateUtil.parseDate(u);
       } catch (java.text.ParseException e) {
         throw new SQLException(
-                "PublicationDAO : resultSet2PublicationDetail() : internal error : updateDate format unknown for publication.pk = "
-                + pk + " : " + e.toString());
+            "PublicationDAO : resultSet2PublicationDetail() : internal error : updateDate format unknown for publication.pk = "
+                +
+                pk + " : " + e.toString());
       }
     } else {
       updateDate = creationDate;
     }
     String updaterId;
-    String v = rs.getString(18);
+    String v = rs.getString(16);
     if (v != null) {
       updaterId = v;
     } else {
@@ -696,7 +693,7 @@ public class PublicationDAO {
     }
 
     java.util.Date validateDate = null;
-    String strValDate = rs.getString(19);
+    String strValDate = rs.getString(17);
     try {
       validateDate = DateUtil.parseDate(strValDate);
     } catch (java.text.ParseException e) {
@@ -704,19 +701,21 @@ public class PublicationDAO {
               "PublicationDAO : resultSet2PublicationDetail() : internal error : validateDate format unknown for publication.pk = "
               + pk + " : " + e.toString());
     }
-    String validatorId = rs.getString(20);
+    String validatorId = rs.getString(18);
 
-    String beginHour = rs.getString(21);
-    String endHour = rs.getString(22);
-    String author = rs.getString(23);
-    String targetValidatorId = rs.getString(24);
-    int tempPubId = rs.getInt(25);
-    String cloneStatus = rs.getString(26);
-    String lang = rs.getString(27);
+    String beginHour = rs.getString(19);
+    String endHour = rs.getString(20);
+    String author = rs.getString(21);
+    String targetValidatorId = rs.getString(22);
+    int tempPubId = rs.getInt(23);
+    String cloneStatus = rs.getString(24);
+    String lang = rs.getString(25);
+    
     pub = new PublicationDetail(pk, name, description, creationDate, beginDate,
-            endDate, creatorId, importance, version, keywords, content, status,
-            image, imageMimeType, updateDate, updaterId, validateDate, validatorId,
-            author);
+        endDate, creatorId, importance, version, keywords, content, status,
+        updateDate, updaterId, validateDate, validatorId,
+        author);
+
     pub.setInfoId(infoId);
     pub.setBeginHour(beginHour);
     pub.setEndHour(endHour);
@@ -915,9 +914,11 @@ public class PublicationDAO {
             "select  distinct P.pubId, P.infoId, P.pubName, P.pubDescription, P.pubCreationDate, P.pubBeginDate, ");
     selectStatement.append(
             "         P.pubEndDate, P.pubCreatorId, P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, ");
-    selectStatement.append(
-            "		 P.pubStatus, P.pubImage, P.pubImageMimeType, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, F.puborder ");
+    selectStatement
+        .append(
+        "		 P.pubStatus, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, F.puborder ");
     selectStatement.append("from ").append(pubPK.getTableName()).append(" P, ").append(pubPK.getTableName()).append("Father F ");
+
     selectStatement.append("where ").append(whereClause.toString());
 
     if (filterOnVisibilityPeriod) {
@@ -1755,55 +1756,56 @@ public class PublicationDAO {
       prepStmt.setString(10, detail.getKeywords());
       prepStmt.setString(11, detail.getContent());
       prepStmt.setString(12, detail.getStatus());
-      prepStmt.setString(13, detail.getImage());
-      prepStmt.setString(14, detail.getImageMimeType());
       if (detail.getUpdateDate() == null) {
-        prepStmt.setString(15, DateUtil.formatDate(detail.getCreationDate()));
+        prepStmt.setString(13, DateUtil.formatDate(detail.getCreationDate()));
       } else {
-        prepStmt.setString(15, DateUtil.formatDate(detail.getUpdateDate()));
+        prepStmt.setString(13, DateUtil.formatDate(detail.getUpdateDate()));
       }
       if (detail.getUpdaterId() == null) {
-        prepStmt.setString(16, detail.getCreatorId());
+        prepStmt.setString(14, detail.getCreatorId());
       } else {
-        prepStmt.setString(16, detail.getUpdaterId());
+        prepStmt.setString(14, detail.getUpdaterId());
       }
-      prepStmt.setString(17, detail.getPK().getComponentName());
+      prepStmt.setString(15, detail.getPK().getComponentName());
 
-      prepStmt.setString(18, detail.getValidatorId());
+      prepStmt.setString(16, detail.getValidatorId());
       if (detail.getValidateDate() != null) {
-        prepStmt.setString(19, DateUtil.formatDate(detail.getValidateDate()));
+        prepStmt.setString(17, DateUtil.formatDate(detail.getValidateDate()));
       } else {
-        prepStmt.setString(19, null);
+        prepStmt.setString(17, null);
       }
 
       if (isUndefined(detail.getBeginHour())) {
-        prepStmt.setString(20, nullBeginHour);
+        prepStmt.setString(18, nullBeginHour);
       } else {
-        prepStmt.setString(20, detail.getBeginHour());
+        prepStmt.setString(18, detail.getBeginHour());
       }
 
       if (isUndefined(detail.getEndHour())) {
-        prepStmt.setString(21, nullEndHour);
+        prepStmt.setString(19, nullEndHour);
       } else {
-        prepStmt.setString(21, detail.getEndHour());
+        prepStmt.setString(19, detail.getEndHour());
       }
 
       if (isUndefined(detail.getAuthor())) {
-        prepStmt.setString(22, null);
+        prepStmt.setString(20, null);
       } else {
-        prepStmt.setString(22, detail.getAuthor());
+        prepStmt.setString(20, detail.getAuthor());
       }
 
-      prepStmt.setString(23, detail.getTargetValidatorId());
+      prepStmt.setString(21, detail.getTargetValidatorId());
 
       if (isUndefined(detail.getCloneId())) {
-        prepStmt.setInt(24, -1);
+        prepStmt.setInt(22, -1);
       } else {
-        prepStmt.setInt(24, Integer.parseInt(detail.getCloneId()));
+        prepStmt.setInt(22, Integer.parseInt(detail.getCloneId()));
       }
-      prepStmt.setString(25, detail.getCloneStatus());
-      prepStmt.setString(26, detail.getLanguage());
-      prepStmt.setInt(27, Integer.parseInt(detail.getPK().getId()));
+
+      prepStmt.setString(23, detail.getCloneStatus());
+
+      prepStmt.setString(24, detail.getLanguage());
+
+      prepStmt.setInt(25, Integer.parseInt(detail.getPK().getId()));
 
       rowCount = prepStmt.executeUpdate();
     } finally {

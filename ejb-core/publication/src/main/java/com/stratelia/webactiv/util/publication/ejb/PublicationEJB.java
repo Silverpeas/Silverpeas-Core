@@ -81,8 +81,6 @@ public class PublicationEJB implements EntityBean {
   private String keywords;
   private String content;
   private String status;
-  private String image;
-  private String imageMimeType;
   private Date updateDate;
   private String updaterId;
   private Date validateDate;
@@ -116,7 +114,7 @@ public class PublicationEJB implements EntityBean {
   public PublicationDetail getDetail() throws SQLException {
     PublicationDetail pubDetail = new PublicationDetail(pk, name, description,
         creationDate, beginDate, endDate, creatorId, importance, version,
-        keywords, content, status, image, imageMimeType, updateDate, updaterId,
+        keywords, content, status, updateDate, updaterId,
         author);
     pubDetail.setBeginHour(beginHour);
     pubDetail.setEndHour(endHour);
@@ -130,13 +128,7 @@ public class PublicationEJB implements EntityBean {
 
     return pubDetail;
   }
-
-  public void removeImage() {
-    image = null;
-    imageMimeType = null;
-    isModified = true;
-  }
-
+  
   /**
    * Update the attributes of the publication
    * @param pubDetail the PublicationDetail which contains updated data
@@ -183,13 +175,7 @@ public class PublicationEJB implements EntityBean {
       if (pubDetail.getStatus() != null) {
         status = pubDetail.getStatus();
       }
-      if (pubDetail.getImage() != null) {
-        image = pubDetail.getImage();
-      }
-      if (pubDetail.getImageMimeType() != null) {
-        imageMimeType = pubDetail.getImageMimeType();
-
-      }
+      
       /*
        * if(pubDetail.getUpdaterId() != null) { updaterId = pubDetail.getCreatorId(); }
        */
@@ -717,8 +703,6 @@ public class PublicationEJB implements EntityBean {
     keywords = pubDetail.getKeywords();
     content = pubDetail.getContent();
     status = pubDetail.getStatus();
-    image = pubDetail.getImage();
-    imageMimeType = pubDetail.getImageMimeType();
     updateDate = new Date();
     updaterId = pubDetail.getUpdaterId();
     beginHour = pubDetail.getBeginHour();
@@ -877,8 +861,6 @@ public class PublicationEJB implements EntityBean {
       keywords = pubDetail.getKeywords();
       content = pubDetail.getContent();
       status = pubDetail.getStatus();
-      image = pubDetail.getImage();
-      imageMimeType = pubDetail.getImageMimeType();
       updateDate = pubDetail.getUpdateDate();
       updaterId = pubDetail.getUpdaterId();
       beginHour = pubDetail.getBeginHour();
@@ -922,7 +904,7 @@ public class PublicationEJB implements EntityBean {
 
     PublicationDetail detail = new PublicationDetail(pk, name, description,
         creationDate, beginDate, endDate, creatorId, importance, version,
-        keywords, content, status, image, imageMimeType, updateDate, updaterId,
+        keywords, content, status, updateDate, updaterId,
         validateDate, validatorId, author);
     detail.setBeginHour(beginHour);
     detail.setEndHour(endHour);

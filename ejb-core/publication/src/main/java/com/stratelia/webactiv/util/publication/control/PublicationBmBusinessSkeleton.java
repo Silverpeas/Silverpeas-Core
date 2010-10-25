@@ -84,11 +84,6 @@ public interface PublicationBmBusinessSkeleton {
   public void removePublication(PublicationPK pubPK) throws RemoteException;
 
   /**
-   * remove the image associated to publication designed by pubPK parameter.
-   */
-  public void removeImage(PublicationPK pubPK) throws RemoteException;
-
-  /**
    * update the publication content.
    */
   public void setDetail(PublicationDetail detaile) throws RemoteException;

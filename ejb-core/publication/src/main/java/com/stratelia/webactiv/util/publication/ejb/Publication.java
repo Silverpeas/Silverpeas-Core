@@ -80,8 +80,6 @@ public interface Publication extends EJBObject {
   public void setDetail(PublicationDetail pubDetail, boolean forceUpdateDate)
       throws RemoteException;
 
-  public void removeImage() throws RemoteException;
-
   /**
    * Method declaration
    * @param fatherPK

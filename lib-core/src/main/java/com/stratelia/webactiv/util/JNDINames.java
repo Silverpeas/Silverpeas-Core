@@ -130,6 +130,7 @@ public class JNDINames extends SilverpeasSettings {
   public static String BOOKMARK_DATASOURCE = "java:comp/env/jdbc/Silverpeas";
   public static String WEBSITES_DATASOURCE = "java:comp/env/jdbc/Silverpeas";
   public static String ATTACHMENT_DATASOURCE = "java:comp/env/jdbc/Silverpeas";
+  public static String THUMBNAIL_DATASOURCE = "java:comp/env/jdbc/Silverpeas";
   public static String TASKM_DATASOURCE = "java:comp/env/jdbc/Silverpeas";
   public static String FORMDESIGNER_DATASOURCE = "java:comp/env/jdbc/Silverpeas";
   public static String PDC_SUBSCRIPTION_DATASOURCE = "java:comp/env/jdbc/Silverpeas";
