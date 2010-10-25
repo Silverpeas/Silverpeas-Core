@@ -23,6 +23,7 @@
  */
 package com.stratelia.silverpeas.domains.ldapdriver;
 
+import com.google.common.base.Charsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +45,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.nio.charset.Charset;
 
 /**
  * This class contains some usefull static functions to access to LDAP elements
@@ -167,7 +169,7 @@ public class LDAPUtility {
       }
       valret.connect(driverSettings.getLDAPHost(), driverSettings.getLDAPPort());
       valret.bind(driverSettings.getLDAPProtocolVer(), driverSettings.getLDAPAccessLoginDN(),
-          driverSettings.getLDAPAccessPasswd());
+          driverSettings.getLDAPAccessPasswd().getBytes(Charsets.UTF_8));
       valret.setConstraints(driverSettings.getSearchConstraints(false));
       (connectInfos.get(connectionId)).connection = valret;
     } catch (LDAPException e) {
@@ -176,8 +178,7 @@ public class LDAPUtility {
           valret.disconnect();
         }
       } catch (LDAPException ee) {
-        SilverTrace.error("admin", "LDAPUtility.openConnection",
-            "admin.EX_ERR_LDAP_GENERAL",
+        SilverTrace.error("admin", "LDAPUtility.openConnection", "admin.EX_ERR_LDAP_GENERAL",
             "ERROR CLOSING CONNECTION : ConnectionId=" + connectionId
             + " Error LDAP #" + Integer.toString(e.getResultCode()) + " "
             + e.getLDAPErrorMessage(), ee);
