@@ -222,6 +222,9 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
       // Update User detail in specific domain
       domainDriver.updateUserFull(user);
+      
+      // index informations relative to given user
+      domainDriver.indexUserFull(user);
     } catch (AdminException e) {
       throw new AdminException("DomainDriverManager.updateUser",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", user

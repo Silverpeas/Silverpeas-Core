@@ -24,14 +24,18 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-import java.util.Iterator;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
+import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 
 abstract public class AbstractDomainDriver extends Object {
   protected int m_DomainId = -1; // The domainId of this instance of domain
@@ -288,6 +292,42 @@ abstract public class AbstractDomainDriver extends Object {
       valret = newDescriptions;
     }
     return valret;
+  }
+
+  public void indexUserFull(UserFull user) {
+    UserFull userFull = null;
+    try {
+      userFull = getUserFull(user.getSpecificId());
+    } catch (Exception e) {
+      SilverTrace.error("admin", "AbstractDomainDriver.indexUserFull", "admin.CANT_GET_USERFULL",
+          "userId=" + user.getId());
+    }
+    if (userFull != null) {
+      FullIndexEntry indexEntry = new FullIndexEntry("users", "UserFull", user.getId());
+      indexEntry.setLastModificationDate(new Date());
+      indexEntry.setTitle(userFull.getDisplayedName());
+      indexEntry.setPreView(userFull.geteMail());
+
+      // index some usefull informations
+      indexEntry.addField("FirstName", userFull.getFirstName());
+      indexEntry.addField("LastName", userFull.getLastName());
+      indexEntry.addField("DomainId", userFull.getDomainId());
+      indexEntry.addField("AccessLevel", userFull.getAccessLevel());
+
+      // index extra informations
+      String[] propertyNames = userFull.getPropertiesNames();
+      StringBuilder extraValues = new StringBuilder(50);
+      String extraValue = null;
+      for (String propertyName : propertyNames) {
+        extraValue = userFull.getValue(propertyName);
+        indexEntry.addField(propertyName, extraValue);
+        extraValues.append(extraValue);
+        extraValues.append(" ");
+      }
+      indexEntry.addTextContent(extraValues.toString());
+
+      IndexEngineProxy.addIndexEntry(indexEntry);
+    }
   }
 
   /**

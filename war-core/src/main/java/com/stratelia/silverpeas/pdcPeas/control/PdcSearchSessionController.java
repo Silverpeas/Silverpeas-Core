@@ -356,6 +356,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           // pour retrouver les espaces et les composants
           query.addSpaceComponentPair(null, "Spaces");
           query.addSpaceComponentPair(null, "Components");
+          query.addSpaceComponentPair(null, "users");
         } else {
           // used for search by space without keywords
           query.setSearchBySpace(true);
@@ -818,6 +819,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             + "');document.location.href='" + underLink + "';";
       } else if (componentId.startsWith("user@")) {
         titleLink = m_sContext + URLManager.getURL(resultType) + indexEntry.getPageAndParams();
+      } else if (resultType.equals("UserFull")) {
+        titleLink = "javascript:" + markAsReadJS + " viewUserProfile('" + indexEntry.getPK().getObjectId() + "');";
       } else {
         titleLink = "javascript:" + markAsReadJS + " jumpToComponent('" + componentId
             + "');";
@@ -953,6 +956,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         place = user.getDisplayedName() + " / " + component;
       } else if (componentId.equals("pdc")) {
         place = getString("pdcPeas.pdc");
+      } else if (componentId.equals("users")) {
+        place = "";
       } else {
         if (places == null) {
           places = new Hashtable<String, String>();
@@ -1018,6 +1023,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       location = user.getDisplayedName() + " / " + component;
     } else if (componentId.equals("pdc")) {
       location = getString("pdcPeas.pdc");
+    } else if (componentId.equals("users")) {
+      location = "";
     } else {
       ComponentInstLight componentInst = getOrganizationController().getComponentInstLight(
           componentId);

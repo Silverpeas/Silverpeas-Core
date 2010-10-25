@@ -418,6 +418,10 @@ if (!StringUtil.isDefined(pageId)) {
 		}
 	<% } %>
 
+	function viewUserProfile(userId) {
+		location.href = "<%=m_context%>/Rprofil/jsp/Main?userId="+userId;
+	}
+
 	$(document).ready(function(){
 		//used for keywords autocompletion
 	    <%  if(autoCompletion){ %>
