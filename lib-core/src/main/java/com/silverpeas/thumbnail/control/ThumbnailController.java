@@ -38,6 +38,7 @@ import com.silverpeas.thumbnail.ThumbnailRuntimeException;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.thumbnail.service.ThumbnailService;
 import com.silverpeas.thumbnail.service.ThumbnailServiceImpl;
+import com.silverpeas.util.ImageUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -224,19 +225,19 @@ public class ThumbnailController {
 	    }
 	  }
  
-  public static String getImage(String instanceId, int objectId, int objectType) throws ThumbnailException {
+  public static String getImage(String instanceId, int objectId, int objectType, int thumbnailWidth, int thumbnailHeight) throws ThumbnailException {
 	  ThumbnailDetail thumbDetail = new ThumbnailDetail(instanceId, objectId, objectType);
 	  
 	  // default size if creation
-	  String[] imageProps = getImageAndMimeType(thumbDetail, 50, 50);
+	  String[] imageProps = getImageAndMimeType(thumbDetail, thumbnailWidth, thumbnailHeight);
 	  return imageProps[0];
   }
 
-  public static String getImageMimeType(String instanceId, int objectId, int objectType) throws ThumbnailException {
+  public static String getImageMimeType(String instanceId, int objectId, int objectType, int thumbnailWidth, int thumbnailHeight) throws ThumbnailException {
 	  ThumbnailDetail thumbDetail = new ThumbnailDetail(instanceId, objectId, objectType);
 	  
 	  // default size if creation
-	  String[] imageProps = getImageAndMimeType(thumbDetail, 50, 50);
+	  String[] imageProps = getImageAndMimeType(thumbDetail, thumbnailWidth, thumbnailHeight);
 	  return imageProps[1];
   }
   
@@ -245,8 +246,7 @@ public class ThumbnailController {
 	    	ThumbnailDetail thumbDetailComplete = getThumbnailService().getCompleteThumbnail(thumbDetail);
 	    	if(thumbDetailComplete != null){
 	    		if(thumbDetailComplete.getCropFileName() == null){
-		    		createCropFile(thumbnailWidth, thumbnailHeight,
-							thumbDetailComplete);
+	    			createCropFile(thumbnailWidth, thumbnailHeight, thumbDetailComplete);
 		    	}
 	    		return new String[]{thumbDetailComplete.getCropFileName(),thumbDetailComplete.getMimeType()};
 	    	}else{
@@ -264,7 +264,26 @@ public class ThumbnailController {
 	private static void createCropFile(int thumbnailWidth, int thumbnailHeight,
 			ThumbnailDetail thumbDetailComplete) throws IOException,
 			ThumbnailException {
-		// if crop image does not exist, create it as the original file
+		
+		String pathOriginalFile = FileRepositoryManager.getAbsolutePath(thumbDetailComplete.getInstanceId()) + publicationSettings.getString("imagesSubDirectory") + File.separator + thumbDetailComplete.getOriginalFileName();
+		
+		if(thumbnailWidth == -1 && thumbnailHeight != -1){
+			// crop with fix height
+			String[] result = ImageUtil.getWidthAndHeightByHeight(new File(pathOriginalFile), thumbnailHeight);
+			thumbnailWidth = Integer.valueOf(result[0]);
+			thumbnailHeight = Integer.valueOf(result[1]);
+		}else if(thumbnailHeight == -1 && thumbnailWidth != -1){
+			// crop with fix width
+			String[] result = ImageUtil.getWidthAndHeightByWidth(new File(pathOriginalFile), thumbnailWidth);
+			thumbnailWidth = Integer.valueOf(result[0]);
+			thumbnailHeight = Integer.valueOf(result[1]);
+		}else if(thumbnailHeight == -1 && thumbnailWidth == -1){
+			// crop full file
+			String[] result = ImageUtil.getWidthAndHeight(new File(pathOriginalFile));
+			thumbnailWidth = Integer.valueOf(result[0]);
+			thumbnailHeight = Integer.valueOf(result[1]);
+		}
+		
 		String type = thumbDetailComplete.getOriginalFileName().substring( thumbDetailComplete.getOriginalFileName().lastIndexOf(".") + 1,
 				thumbDetailComplete.getOriginalFileName().length());
 		// add 2 to be sure cropfilename is different from original filename
@@ -273,9 +292,7 @@ public class ThumbnailController {
 		thumbDetailComplete.setCropFileName(cropFileName);
 		
 		// crop sur l image entiere
-		String pathOriginalFile = FileRepositoryManager.getAbsolutePath(thumbDetailComplete.getInstanceId()) + publicationSettings.getString("imagesSubDirectory") + File.separator + thumbDetailComplete.getOriginalFileName();
-		cropFromPath(pathOriginalFile, thumbDetailComplete, thumbnailHeight,
-				thumbnailWidth);
+		cropFromPath(pathOriginalFile, thumbDetailComplete, thumbnailHeight, thumbnailWidth);
 	}
 
 	protected static void cropFromPath(String pathOriginalFile,
@@ -306,4 +323,5 @@ public class ThumbnailController {
 			getThumbnailService().updateThumbnail(thumbDetailComplete);
 		}
 	}
+	
 }

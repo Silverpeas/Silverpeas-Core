@@ -39,6 +39,7 @@
 	String backUrl		    = request.getParameter("BackUrl");
 	String thumbnailHeight  = request.getParameter("ThumbnailHeight");
     String thumbnailWidth   = request.getParameter("ThumbnailWidth");
+    
 	ThumbnailSessionController thumbnailScc = (ThumbnailSessionController) request.getAttribute("thumbnail");
 	ThumbnailDetail currentThumbnail = (ThumbnailDetail) request.getAttribute("thumbnaildetail");
 	boolean isCreateMode = currentThumbnail == null;
@@ -144,8 +145,12 @@ function showPreview(coords)
 <input type="hidden" name="ObjectId" value="<%=objectId%>">
 <input type="hidden" name="ObjectType" value="<%=objectType%>">
 <input type="hidden" name="BackUrl" value="<%=backUrl%>">
+<%if(thumbnailHeight != null){%>
 <input type="hidden" name="ThumbnailHeight" value="<%=thumbnailHeight%>">
+<%}
+if(thumbnailWidth != null){%>
 <input type="hidden" name="ThumbnailWidth" value="<%=thumbnailWidth%>">
+<%}%>
 <table width="98%" border="0" cellspacing="0" cellpadding="0" class=intfdcolor4>
 	<tr> 
 		<td nowrap>

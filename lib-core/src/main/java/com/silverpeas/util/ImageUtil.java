@@ -100,5 +100,26 @@ public class ImageUtil {
     }
     return result;
   }
+  
+  public static String[] getWidthAndHeight(File image) {
+	    String[] result = new String[2];
+	    try {
+	      BufferedImage inputBuf = ImageIO.read(image);
+	      // calcul de la taille de la sortie
+	      double inputBufWidth = inputBuf.getWidth();
+	      double inputBufHeight = inputBuf.getHeight();
+	      String sWidth = Double.toString(inputBufWidth);
+	      String sHeight = Double.toString(inputBufHeight);
+
+	      result[0] = sWidth.substring(0, sWidth.indexOf("."));
+	      result[1] = sHeight.substring(0, sHeight.indexOf("."));
+	    } catch (Exception e) {
+	      SilverTrace.error("util", "ImageUtil.getWidthAndHeightByWidth", "root.MSG_GEN_ERROR", e);
+	      result[0] = "";
+	      result[1] = "";
+	    }
+	    return result;
+	  }
+  
 
 }

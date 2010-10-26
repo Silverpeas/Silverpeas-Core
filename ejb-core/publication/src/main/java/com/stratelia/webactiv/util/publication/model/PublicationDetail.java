@@ -614,7 +614,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
 		  if(getPK() != null && getPK().getInstanceId() != null && getPK().getId() != null){
 			  ThumbnailDetail thumbDetail = new ThumbnailDetail(getPK().getInstanceId(), Integer.valueOf(getPK().getId()), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
 			  // default size if creation
-			  String[] imageProps = ThumbnailController.getImageAndMimeType(thumbDetail, 50, 50);
+			  String[] imageProps = ThumbnailController.getImageAndMimeType(thumbDetail, -1, -1);
 			  return imageProps[0];
 		  }else{
 			  return null;
@@ -630,7 +630,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
 		  if(getPK() != null && getPK().getInstanceId() != null && getPK().getId() != null){
 			  ThumbnailDetail thumbDetail = new ThumbnailDetail(getPK().getInstanceId(), Integer.valueOf(getPK().getId()), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
 			  // default size if creation
-			  String[] imageProps = ThumbnailController.getImageAndMimeType(thumbDetail, 50, 50);
+			  String[] imageProps = ThumbnailController.getImageAndMimeType(thumbDetail, -1, -1);
 			  return imageProps[1];
 		  }else{
 			  return null;

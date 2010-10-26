@@ -274,12 +274,23 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter {
 				"ThumbnailHeight");
 		String thumbnailWidth = FileUploadUtil.getParameter(parameters,
 				"ThumbnailWidth");
+		int intThumbnailHeight = -1;
+		if(thumbnailHeight != null){
+			intThumbnailHeight = Integer.parseInt(thumbnailHeight);
+		}
+		
+		int intThumbnailWidth = -1;
+		if(thumbnailWidth != null){
+			intThumbnailWidth = Integer.parseInt(thumbnailWidth);
+		}
+		
+		
 		// create line in db
 		try {
 			
 			if (ThumbnailController.createThumbnail(thumb,
-					Integer.parseInt(thumbnailWidth),
-					Integer.parseInt(thumbnailHeight)) != null) {
+					intThumbnailWidth,
+					intThumbnailHeight) != null) {
 				return null;
 			} else {
 				return "error";
