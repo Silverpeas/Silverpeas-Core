@@ -230,10 +230,12 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <skipTests>false</skipTests>
-          <systemPropertyVariables>
-            <propertyName>java.awt.headless</propertyName>
-            <propertyValue>true</propertyValue>
-          </systemPropertyVariables>
+          <systemProperties>
+            <property>
+              <name>java.awt.headless</name>
+              <value>true</value>
+            </property>
+          </systemProperties>
         </configuration>
       </plugin>
       <plugin>
