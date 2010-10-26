@@ -25,7 +25,10 @@ package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+
+import java.io.File;
 import java.io.Serializable;
 
 public class UserDetail extends Object implements Serializable, Comparable<UserDetail> {
@@ -338,5 +341,16 @@ public class UserDetail extends Object implements Serializable, Comparable<UserD
     UserDetail other = o;
     return ((getLastName() + getFirstName()).toLowerCase()).compareTo((other.getLastName() + other.
         getFirstName()).toLowerCase());
+  }
+
+  public String getAvatar() {
+    String avatar = getLogin() + ".jpg";
+    File image = new File(FileRepositoryManager.getAbsolutePath("avatar")
+        + File.separatorChar + avatar);
+    if (image.exists()) {
+      return "/display/avatar/" + avatar;
+    } else {
+      return "/directory/jsp/icons/Photo_profil.jpg";
+    }
   }
 }

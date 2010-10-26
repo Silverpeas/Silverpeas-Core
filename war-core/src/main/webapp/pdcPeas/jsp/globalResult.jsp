@@ -637,7 +637,11 @@ if (!StringUtil.isDefined(pageId)) {
 
 			if (gsr.getThumbnailURL() != null && gsr.getThumbnailURL().length()>0)
 			{
-				out.println("<td><img src=\""+gsr.getThumbnailURL()+"\" border=\"0\" width=\""+gsr.getThumbnailWidth()+"\" height=\""+gsr.getThumbnailHeight()+"\"/></td>");
+			  	if ("UserFull".equals(gsr.getType())) {
+			  	  out.println("<td><img class=\"avatar\" src=\""+m_context+gsr.getThumbnailURL()+"\" /></td>");
+			  	} else {
+			  	  out.println("<td><img src=\""+gsr.getThumbnailURL()+"\" border=\"0\" width=\""+gsr.getThumbnailWidth()+"\" height=\""+gsr.getThumbnailHeight()+"\"/></td>");
+			  	}
 				out.println("<td>&nbsp;</td>");
 			}
 

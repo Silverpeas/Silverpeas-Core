@@ -820,6 +820,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       } else if (componentId.startsWith("user@")) {
         titleLink = m_sContext + URLManager.getURL(resultType) + indexEntry.getPageAndParams();
       } else if (resultType.equals("UserFull")) {
+        UserDetail userDetail = getUserDetail(indexEntry.getPK().getObjectId());
+        if (userDetail != null) {
+          result.setThumbnailURL(userDetail.getAvatar());
+        }
         titleLink = "javascript:" + markAsReadJS + " viewUserProfile('" + indexEntry.getPK().getObjectId() + "');";
       } else {
         titleLink = "javascript:" + markAsReadJS + " jumpToComponent('" + componentId

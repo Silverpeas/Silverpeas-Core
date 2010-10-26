@@ -2151,6 +2151,11 @@ td.browsebar a:hover {
 	width:19%
 }
 
+#globalResult .avatar {
+	width: 30px;
+	border: 1px solid #AAAAAA;
+}
+
 #facetSearchDivId {
 	position:relative;
 	float:right;
