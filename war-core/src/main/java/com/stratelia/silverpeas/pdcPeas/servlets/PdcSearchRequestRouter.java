@@ -1511,6 +1511,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
     pdcSC.setSelectionActivated(false);
     pdcSC.setSortOrder(PdcSearchSessionController.SORT_ORDER_DESC);
     pdcSC.setSortValue(1);
+    pdcSC.getQueryParameters().setXmlTitle(null);
+    pdcSC.clearXmlTemplateAndData();
   }
 
   /**

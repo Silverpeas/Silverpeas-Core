@@ -2265,6 +2265,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
     return template;
   }
+  
+  public void clearXmlTemplateAndData() {
+    xmlTemplate = null;
+    xmlData = null;
+  }
 
   public DataRecord getXmlData() {
     return xmlData;
