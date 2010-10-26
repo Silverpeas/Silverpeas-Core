@@ -24,7 +24,6 @@
 
 package com.silverpeas.importExportPeas.control;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.silverpeas.importExport.control.ImportExport;
@@ -65,11 +64,12 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
   }
 
   /**
+   * @param language
    * @param itemsToExport a List of WAAttributeValuePair contains ids of elements to export
    * (objectId and instanceId)
+   * @param rootId
    * @throws ImportExportException
-   */
-  public void processExport(String language, List<WAAttributeValuePair> itemsToExport, String rootId)
+   */  public void processExport(String language, List<WAAttributeValuePair> itemsToExport, String rootId)
       throws ImportExportException {
     SilverTrace.info("importExportPeas", "ImportExportSessionController.processExport()",
         "root.MSG_GEN_ENTER_METHOD");
@@ -134,14 +134,16 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
   }
 
   /**
+   * @param language 
    * @param itemsToExport a List of WAAttributeValuePair contains ids of elements to export
    * (objectId and instanceId)
-   * @param Arraylist of combination (/0/1/1 ... /0/2/7)
+   * @param combination 
    * @param timeCriteria
+   * @return 
    * @throws ImportExportException
    */
   public ExportReport processExportKmax(String language, List<WAAttributeValuePair> itemsToExport,
-      ArrayList combination, String timeCriteria) throws ImportExportException {
+      List combination, String timeCriteria) throws ImportExportException {
     ImportExport importExport = new ImportExport();
     ExportReport report = importExport.processExportKmax(getUserDetail(),
         language, itemsToExport, combination, timeCriteria);

@@ -24,6 +24,8 @@
 
 package com.silverpeas.importExport.control;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Closeables;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -35,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -111,6 +112,8 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Classe devant être instanciée au niveau controleur pour utiliser le moteur d'import export.
@@ -149,16 +152,14 @@ public class ImportExport {
       // Load mapping and instantiate a Marshaller
       mapping.loadMapping(mappingFile.getPath());
 
-      writer = new OutputStreamWriter(new FileOutputStream(xmlToExportPath), "UTF-8");
+      writer = new OutputStreamWriter(new FileOutputStream(xmlToExportPath), Charsets.UTF_8);
       Marshaller mar = new Marshaller(writer);
       // URI du schéma et chemin du fichier XSD associé.
       String xsdPublicId = settings.getString("xsdPublicId");
       String xsdSystemId = settings.getString("xsdSystemId");
-
-      // mar.setSchemaLocation(xsdLocation + " " + xsdLocation + "/" +
-      // xsdFilename);
       mar.setSchemaLocation(xsdPublicId + " " + xsdSystemId);
       mar.setNamespaceMapping("sp", xsdPublicId);
+      mar.setEncoding("UTF-8");
       mar.setMapping(mapping);
       mar.marshal(silverPeasExchangeType);
 
@@ -423,25 +424,13 @@ public class ImportExport {
     return ImportReportManager.getImportReport();
   }
 
-  /**
-   * Méthode faisant appel au moteur d'importExport de silver peas, des publications dont les
-   * paramètres passés sous forme de WAAttributeValuePair sont exportées grace à l'outil castor.
-   * @deprecated
-   * @param userDetail - information sur l'utilisateur utilisant le moteur importExport
-   * @param itemsToExport - liste de WAAttributeValuePair
-   * @return un rapport détaillé sur l'execution de l'import/export
-   * @throws ImportExportException
-   */
-  public ExportReport processExport(UserDetail userDetail, List listItemsToExport)
-      throws ImportExportException {
-    return processExport(userDetail, "fr", listItemsToExport);
-  }
 
   public ExportReport processExport(UserDetail userDetail, String language, List listItemsToExport)
       throws ImportExportException {
     return processExport(userDetail, language, listItemsToExport, null);
   }
 
+  @SuppressWarnings("unchecked")
   public ExportReport processExport(UserDetail userDetail, String language, List listItemsToExport,
       String rootId) throws ImportExportException {
     // pour le multilangue
@@ -452,8 +441,6 @@ public class ImportExport {
     NodeImportExport nodeIE = new NodeImportExport();
     AdminImportExport adminIE = new AdminImportExport();
     SilverPeasExchangeType silverPeasExch = new SilverPeasExchangeType();
-    List listPubType = null;
-    Iterator itListPubType = null;
     ExportReport exportReport = new ExportReport();
 
     try {
@@ -511,31 +498,23 @@ public class ImportExport {
 
       // Récupération de la liste de id des composants
       List<String> listComponentId = new ArrayList<String>();
-      listPubType = publicationsType.getListPublicationType();
-      itListPubType = listPubType.iterator();
-      while (itListPubType.hasNext()) {
-        PublicationType pubType = (PublicationType) itListPubType.next();
+      List listClassifyPosition = new ArrayList();
+      @SuppressWarnings("unchecked")
+      List<PublicationType>listPubType = publicationsType.getListPublicationType();
+      for(PublicationType pubType : listPubType) {
         listComponentId.add(pubType.getComponentId());
+         PdcPositionsType pdcPos = pubType.getPdcPositionsType();
+        if (pdcPos != null) {
+          listClassifyPosition.addAll(pdcPos.getListClassifyPosition());
+        }
       }
-
       // Exportation des composants liés aux publications exportées
       silverPeasExch.setComponentsType(adminIE.getComponents(listComponentId));
       // Exportation des Arbres de topics liés aux publications exportées
       NodeTreesType nodeTreesType = nodeIE.getTrees(listComponentId);
       silverPeasExch.setNodeTreesType(nodeTreesType);
-
       // Exportation des pdcs liés aux publications exportées
-      List listClassifyPosition = new ArrayList();
-      listPubType = publicationsType.getListPublicationType();
-      itListPubType = listPubType.iterator();
-      while (itListPubType.hasNext()) {
-        PublicationType pubType = (PublicationType) itListPubType.next();
-        PdcPositionsType pdcPos = pubType.getPdcPositionsType();
-        if (pdcPos != null) {
-          listClassifyPosition.addAll(pdcPos.getListClassifyPosition());
-        }
-      }
-      if (listClassifyPosition.isEmpty()) {
+      if (!listClassifyPosition.isEmpty()) {
         silverPeasExch.setPdcType(pdcIE.getPdc(listClassifyPosition));
       }
 
@@ -546,10 +525,10 @@ public class ImportExport {
         File fileHTML = new File(tempDir + thisExportDir + File.separator + "index.html");
 
         HtmlExportGenerator h = new HtmlExportGenerator(exportReport, fileExportDir.getName());
-        FileWriter fileWriter = null;
+        Writer fileWriter = null;
         try {
           fileHTML.createNewFile();
-          fileWriter = new FileWriter(fileHTML.getPath());
+          fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML.getPath()), Charsets.UTF_8);
           fileWriter.write(h.toHTML());
         } catch (IOException ex) {
           throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
@@ -568,27 +547,25 @@ public class ImportExport {
         // --------------------------------------
         HtmlExportGenerator h = new HtmlExportGenerator(exportReport, fileExportDir.getName(),
             resourceLocator);
-        FileWriter fileWriter = null;
 
-        Hashtable topicIds = new Hashtable();
+        Map<String, List<String>> topicIds = new HashMap<String, List<String>>();
         // parcours la liste des publicationType
-        Iterator itPubli = publicationsType.getListPublicationType().iterator();
-        while (itPubli.hasNext()) {
-          PublicationType publicationType = (PublicationType) itPubli.next();
+        listPubType = publicationsType.getListPublicationType();
+        for(PublicationType publicationType : listPubType) {
           // pour chaque publication : parcourir ses noeuds
-          Iterator itTopic =
-              publicationType.getNodePositionsType().getListNodePositionType().iterator();
-          while (itTopic.hasNext()) {
-            NodePositionType nodePositionType = (NodePositionType) itTopic.next();
+          @SuppressWarnings("unchecked")
+          List<NodePositionType> listNodePositionType = 
+              publicationType.getNodePositionsType().getListNodePositionType();
+          for(NodePositionType nodePositionType : listNodePositionType) {
             // pour chaque topic : récupérer l'Id
             int topicId = nodePositionType.getId();
             // ajouter la référence
             String pubId = Integer.toString(publicationType.getId());
             // recherche s'il existe une ligne pour ce topic
-            List pubIds = new ArrayList();
+            List<String> pubIds = new ArrayList<String>();
             if (topicIds.get(Integer.toString(topicId)) != null) {
               // le topic existe, ajouter la publication à sa liste
-              pubIds = (List) topicIds.get(Integer.toString(topicId));
+              pubIds = topicIds.get(Integer.toString(topicId));
             }
             pubIds.add(pubId);
             topicIds.put(Integer.toString(topicId), pubIds);
@@ -596,18 +573,15 @@ public class ImportExport {
         }
 
         // parcours de la liste des topics et création du fichier
-        Set keys = topicIds.keySet();
-        Iterator it = keys.iterator();
-        while (it.hasNext()) {
-          String topicId = (String) it.next();
+        Set<String> keys = topicIds.keySet();
+        for(String topicId : keys) {
           // créer le fichier
           File fileTopicHTML = new File(tempDir + thisExportDir + File.separator + "indexTopic"
               + topicId + ".html");
-
-          fileWriter = null;
+          Writer fileWriter = null;
           try {
             fileTopicHTML.createNewFile();
-            fileWriter = new FileWriter(fileTopicHTML.getPath());
+            fileWriter = new OutputStreamWriter(new FileOutputStream(fileTopicHTML.getPath()), Charsets.UTF_8);
             fileWriter.write(h.toHTML(fileTopicHTML.getName(), (List) topicIds.get(topicId)));
           } catch (IOException ex) {
             throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
@@ -621,10 +595,10 @@ public class ImportExport {
         // création d'un fichier sommaire vide pour les topics vides
         File fileTopicHTML = new File(tempDir + thisExportDir + File.separator
             + "indexTopicEmpty.html");
-        fileWriter = null;
+        Writer fileWriter = null;
         try {
           fileTopicHTML.createNewFile();
-          fileWriter = new FileWriter(fileTopicHTML.getPath());
+          fileWriter = new OutputStreamWriter(new FileOutputStream(fileTopicHTML.getPath()), Charsets.UTF_8);
           fileWriter.write(h.toHTML(fileTopicHTML.getName()));
         } catch (IOException ex) {
           throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
@@ -642,8 +616,8 @@ public class ImportExport {
         fileWriter = null;
         try {
           fileHTML.createNewFile();
-          fileWriter = new FileWriter(fileHTML.getPath());
-          Set topics = topicIds.keySet();
+          fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML.getPath()), Charsets.UTF_8);
+          Set<String> topics = topicIds.keySet();
           fileWriter.write(h.indexToHTML(fileHTML.getName(), topics, nodeTreesType, rootId));
         } catch (IOException ex) {
           throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
@@ -666,10 +640,8 @@ public class ImportExport {
             chemin = chemin.substring(8);
           }
           chemin = chemin + "treeview";
-          Collection files = FileFolderManager.getAllFile(chemin);
-          Iterator itFiles = files.iterator();
-          while (itFiles.hasNext()) {
-            File file = (File) itFiles.next();
+          Collection<File> files = FileFolderManager.getAllFile(chemin);
+          for(File file : files){
             File newFile = new File(tempDir + thisExportDir + File.separator + "treeview"
                 + File.separator + file.getName());
             FileRepositoryManager.copyFile(file.getPath(), newFile.getPath());
@@ -679,11 +651,9 @@ public class ImportExport {
         }
         // FIN : création du répertoire pour le treeview
       }
-
       // Création du fichier XML de mapping
       upLoadSilverpeasExchange(silverPeasExch, fileExportDir.getPath() + File.separator
           + "importExport.xml");
-
       // Création du zip
       try {
         String zipFileName = fileExportDir.getName() + ".zip";
@@ -734,21 +704,19 @@ public class ImportExport {
     }
 
     File pdfFileName = new File(tempDir + fileExportName + ".pdf");
-
-    ArrayList pdfList;
     try {
       // création des répertoires avec le nom des thèmes et des publications
-      pdfList = pubTypeManager.processPDFExport(report, userDetail, listItemsToExport,
+      List pdfList = pubTypeManager.processPDFExport(report, userDetail, listItemsToExport,
           fileExportDir.getPath(), true);
 
       AttachmentDetail attDetail;
       try {
         int pageOffset = 0;
-        ArrayList master = new ArrayList();
+        List master = new ArrayList();
         Document document = null;
         PdfCopy writer = null;
 
-        if (pdfList.size() != 0) {
+        if (!pdfList.isEmpty()) {
           for (int nbFiles = 0; nbFiles < pdfList.size(); nbFiles++) {
             attDetail = (AttachmentDetail) pdfList.get(nbFiles);
 
@@ -823,8 +791,9 @@ public class ImportExport {
    * @return
    * @throws ImportExportException
    */
+  @SuppressWarnings({"unchecked", "unchecked"})
   public ExportReport processExportKmax(UserDetail userDetail, String language,
-      List listItemsToExport, ArrayList combination, String timeCriteria)
+      List<WAAttributeValuePair> listItemsToExport, List combination, String timeCriteria)
       throws ImportExportException {
     ResourceLocator resourceLocator = new ResourceLocator(
         "com.silverpeas.importExport.multilang.importExportBundle", language);
@@ -832,8 +801,6 @@ public class ImportExport {
     PublicationsTypeManager pub_Typ_Mger = new PublicationsTypeManager();
     AdminImportExport adminIE = new AdminImportExport();
     SilverPeasExchangeType silverPeasExch = new SilverPeasExchangeType();
-    List listPubType = null;
-    Iterator itListPubType = null;
     ExportReport exportReport = new ExportReport();
     CoordinateImportExport coordinateImportExport = new CoordinateImportExport();
     GEDImportExport gedIE = null;
@@ -871,18 +838,16 @@ public class ImportExport {
       silverPeasExch.setPublicationsType(publicationsType);
 
       // Récupération de la liste de id des composants
-      HashSet listComponentId = new HashSet();
-      listPubType = publicationsType.getListPublicationType();
-      itListPubType = listPubType.iterator();
+      Set<String> listComponentId = new HashSet<String>();
+      List<PublicationType> listPubType = publicationsType.getListPublicationType();
       String componentId = null;
-      while (itListPubType.hasNext()) {
-        PublicationType pubType = (PublicationType) itListPubType.next();
+      for (PublicationType pubType : listPubType) {
         listComponentId.add(pubType.getComponentId());
         componentId = pubType.getComponentId();
       }
 
       // Exportation des composants liés aux publications exportées
-      silverPeasExch.setComponentsType(adminIE.getComponents(new ArrayList(listComponentId)));
+      silverPeasExch.setComponentsType(adminIE.getComponents(new ArrayList<String>(listComponentId)));
 
       // ================ EXPORT SELECTED PUBLICATIONS ======================
 
@@ -895,13 +860,12 @@ public class ImportExport {
 
         HtmlExportGenerator h = new HtmlExportGenerator(exportReport, fileExportDir.getName(),
             resourceLocator);
-        FileWriter fileWriter = null;
+        Writer fileWriter = null;
         try {
           fileHTML.createNewFile();
-          fileWriter = new FileWriter(fileHTML.getPath());
+          fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML.getPath()), Charsets.UTF_8);
           // Create header with axes and values selected
-          List positionsLabels = new ArrayList();
-          positionsLabels = coordinateImportExport.getCombinationLabels(combination, componentId);
+          List<String> positionsLabels = coordinateImportExport.getCombinationLabels(combination, componentId);
           fileWriter.write(h.kmaxPublicationsToHTML(positionsLabels, timeCriteria,
               iframePublication));
         } catch (IOException ex) {
@@ -918,10 +882,10 @@ public class ImportExport {
 
         // Publication detail empty
         File emptyFileHTML = new File(tempDir + thisExportDir + File.separator + "empty.html");
-        FileWriter fileWriter = null;
+        Writer fileWriter = null;
         try {
           emptyFileHTML.createNewFile();
-          fileWriter = new FileWriter(emptyFileHTML.getPath());
+          fileWriter = new OutputStreamWriter(new FileOutputStream(emptyFileHTML.getPath()), Charsets.UTF_8);
         } catch (IOException ex) {
           throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
         } finally {
@@ -942,7 +906,7 @@ public class ImportExport {
             resourceLocator);
         try {
           unclassifiedFileHTML.createNewFile();
-          fileWriter = new FileWriter(unclassifiedFileHTML.getPath(), true);
+          fileWriter = new OutputStreamWriter(new FileOutputStream(unclassifiedFileHTML.getPath(), true), Charsets.UTF_8);
           fileWriter.write(h.toHtmlPublicationsByPositionStart());
         } catch (IOException ex) {
           throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
@@ -954,12 +918,10 @@ public class ImportExport {
         }
 
         // Fill unbalanced file html index
-        List unbalancedPublications = PublicationImportExport.getUnbalancedPublications(componentId);
-        Iterator unbalancedPublicationsDetails = unbalancedPublications.iterator();
+        List<PublicationDetail> unbalancedPublications = PublicationImportExport.getUnbalancedPublications(componentId);
         String publicationFileNameRelativePath = "";
         String componentLabel = FileServerUtils.replaceAccentChars(componentInst.getLabel());
-        while (unbalancedPublicationsDetails.hasNext()) {
-          PublicationDetail pubDetail = (PublicationDetail) unbalancedPublicationsDetails.next();
+        for(PublicationDetail pubDetail : unbalancedPublications) {
           PublicationType publicationType = gedIE.getPublicationCompleteById(String.valueOf(
               pubDetail.getId()), componentId);
           publicationFileNameRelativePath = componentLabel + File.separator + pubDetail.getId()
@@ -969,7 +931,7 @@ public class ImportExport {
           exportReport.addHtmlIndex(pubDetail.getId(), unbalanced);
           fileWriter = null;
           try {
-            fileWriter = new FileWriter(unclassifiedFileHTML.getPath(), true);
+            fileWriter = new OutputStreamWriter(new FileOutputStream(unclassifiedFileHTML.getPath(), true), Charsets.UTF_8);
             fileWriter.write(unbalanced.toHtmlSommairePublication(iframePublication));
           } catch (IOException ex) {
             throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
@@ -983,11 +945,10 @@ public class ImportExport {
 
         // Create HTML summary with the search axis
         File fileHTML = new File(tempDir + thisExportDir + File.separator + "index.html");
-
         h = new HtmlExportGenerator(exportReport, fileExportDir.getName(), resourceLocator);
         try {
           fileHTML.createNewFile();
-          fileWriter = new FileWriter(fileHTML.getPath());
+          fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML.getPath()), Charsets.UTF_8);
           // Create header with axes and values selected
           List axis = coordinateImportExport.getAxis(componentId);
           fileWriter.write(h.kmaxAxisToHTML(axis, language));
@@ -1004,58 +965,47 @@ public class ImportExport {
         // --------------------------------------
         String exportPath = fileExportDir.getPath();
         String exportSummaryPath = exportPath;
-        List listAxis = coordinateImportExport.getAxisHeadersWithChildren(componentId, true, true);
+        List<NodeDetail> listAxis = coordinateImportExport.getAxisHeadersWithChildren(componentId, true, true);
 
         // Remove unclassified node
         listAxis.remove(0);
         int nbAxis = listAxis.size();
-
-        Iterator itListAxis = listAxis.iterator();
         // Get list axis with values
-        List listAxisWithChildren = new ArrayList();
-        while (itListAxis.hasNext()) {
-          NodeDetail currentAxisNodeDetail = (NodeDetail) itListAxis.next();
-          Collection childrenNodeDetails = currentAxisNodeDetail.getChildrenDetails();
-          if (childrenNodeDetails != null && childrenNodeDetails.size() > 0) {
+        List<Collection<NodeDetail>> listAxisWithChildren = new ArrayList<Collection<NodeDetail>>();
+        for(NodeDetail currentAxisNodeDetail : listAxis) {
+          Collection<NodeDetail> childrenNodeDetails = currentAxisNodeDetail.getChildrenDetails();
+          if (childrenNodeDetails != null && !childrenNodeDetails.isEmpty()) {
             listAxisWithChildren.add(childrenNodeDetails);
           }
         }
 
         // Create List with all nodes Details
-        List nodesIds = new ArrayList();
-        Iterator itListAxisWithChildren = listAxisWithChildren.iterator();
-        while (itListAxisWithChildren.hasNext()) {
-          ArrayList currentAxis = (ArrayList) itListAxisWithChildren.next();
-          Iterator itAxisNodesDetail = currentAxis.iterator();
-          while (itAxisNodesDetail.hasNext()) {
-            String nodeId = String.valueOf(((NodeDetail) itAxisNodesDetail.next()).getId());
+        List<String> nodesIds = new ArrayList<String>();
+        for(Collection<NodeDetail> currentAxis : listAxisWithChildren) {
+          for(NodeDetail axisNode : currentAxis){
+            String nodeId = String.valueOf(axisNode.getId());
             nodesIds.add(nodeId);
           }
         }
 
         // Create List of index files positions (ex: index-2-3-x-y-z....html)
-        List indexFilesPositions = new ArrayList();
+        List<String> indexFilesPositions = new ArrayList<String>();
         // Process all filename combinations
         for (int i = 1; i <= nodesIds.size(); i++) {
           int tuple = i;
           indexFilesPositions = coordinateImportExport.coupleIds(indexFilesPositions, nodesIds, 0,
               0, tuple, null, nbAxis);
         }
-
         // Create positions index files
-        Iterator itIndexFilesPositions = indexFilesPositions.iterator();
-        while (itIndexFilesPositions.hasNext()) {
+        for(String positionNameId : indexFilesPositions) {
           // fileName / index-x-x.html
-          String positionNameId = (String) itIndexFilesPositions.next();
-
           // Create positions index file
           fileHTML = new File(exportSummaryPath + File.separator + positionNameId);
-
           // Write file positions
           fileWriter = null;
           try {
             fileHTML.createNewFile();
-            fileWriter = new FileWriter(fileHTML.getPath());
+            fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML.getPath()), Charsets.UTF_8);
             fileWriter.write(h.toHtmlPublicationsByPositionStart());
           } finally {
             try {
@@ -1066,15 +1016,11 @@ public class ImportExport {
             }
           }
         }
-
         // Publications to export
         exportPath = fileExportDir.getPath();
         exportSummaryPath = exportPath;
-        Iterator itListItemsToExport = listItemsToExport.iterator();
-
-        while (itListItemsToExport.hasNext()) {
-          List filesPositionsHTMLToFill = new ArrayList();
-          WAAttributeValuePair attValue = (WAAttributeValuePair) itListItemsToExport.next();
+        for(WAAttributeValuePair attValue : listItemsToExport) {
+          List<String> filesPositionsHTMLToFill = new ArrayList<String>();
           String pubId = attValue.getName();
           componentId = attValue.getValue();
           gedIE = ImportExportFactory.createGEDImportExport(userDetail, componentId);
@@ -1083,19 +1029,12 @@ public class ImportExport {
           // Récupération du PublicationType
           PublicationType publicationType = gedIE.getPublicationCompleteById(pubId, componentId);
           publicationType.setCoordinatesPositionsType(new CoordinatesPositionsType());
-
-          List listCoordinatesPositions = new ArrayList();
-
-          Collection coordinates = gedIE.getPublicationCoordinates(pubId, componentId);
-          Iterator itCoordinates = coordinates.iterator();
-          while (itCoordinates.hasNext()) {
+          List<CoordinatePoint> listCoordinatesPositions = new ArrayList<CoordinatePoint>();
+          Collection<Coordinate> coordinates = gedIE.getPublicationCoordinates(pubId, componentId);
+          for(Coordinate coordinate : coordinates ) {
             positionFileNameHTML = "index";
-            Coordinate coordinate = (Coordinate) itCoordinates.next();
-            Collection coordinatesPoints = coordinate.getCoordinatePoints();
-            Iterator itCoordinatesPoints = coordinatesPoints.iterator();
-            while (itCoordinatesPoints.hasNext()) {
-              // Build html position file to fill
-              CoordinatePoint coordinatePoint = (CoordinatePoint) itCoordinatesPoints.next();
+            Collection<CoordinatePoint> coordinatesPoints = coordinate.getCoordinatePoints();
+            for(CoordinatePoint coordinatePoint : coordinatesPoints) {
               positionFileNameHTML += "-" + coordinatePoint.getNodeId();
               listCoordinatesPositions.add(coordinatePoint);
             }
@@ -1103,7 +1042,7 @@ public class ImportExport {
               filesPositionsHTMLToFill.add(positionFileNameHTML + ".html");
             }
 
-            List nodeIds = new ArrayList();
+            List<String> nodeIds = new ArrayList<String>();
             StringTokenizer st = new StringTokenizer(positionFileNameHTML, "-");
             String nodeId = "";
             while (st.hasMoreTokens()) {
@@ -1116,23 +1055,22 @@ public class ImportExport {
                   // if subvalue of axis, add this node
                   nodeIds = addNodeToList(nodeIds, currentNodeDetail);
                 } else {
-                  List axisChildren =
-                      coordinateImportExport.getAxisChildren(currentNodeDetail.getNodePK(), false);
+                  List<NodeDetail> axisChildren = coordinateImportExport.getAxisChildren(
+                      currentNodeDetail.getNodePK(), false);
                   // if Axis, add all nodes of this axis
-                  for (int i = 0; i < axisChildren.size(); i++) {
-                    NodeDetail nodeDetail = (NodeDetail) axisChildren.get(i);
+                  for (NodeDetail nodeDetail : axisChildren) {
                     nodeIds.add(String.valueOf(nodeDetail.getId()));
                   }
                 }
               }
             }
 
-            List otherPositionsFilesNameHTML = new ArrayList();
+            List<String> otherPositionsFilesNameHTML = new ArrayList<String>();
             int tuple = nbAxis;
             otherPositionsFilesNameHTML = coordinateImportExport.coupleIds(
                 otherPositionsFilesNameHTML, nodeIds, 0, 0, tuple, null, nbAxis);
             for (int cpt = 0; cpt < otherPositionsFilesNameHTML.size(); cpt++) {
-              String otherPositionFileNameHTML = (String) otherPositionsFilesNameHTML.get(cpt);
+              String otherPositionFileNameHTML = otherPositionsFilesNameHTML.get(cpt);
               if (!filesPositionsHTMLToFill.contains(otherPositionFileNameHTML)) {
                 filesPositionsHTMLToFill.add(otherPositionFileNameHTML);
               }
@@ -1151,25 +1089,18 @@ public class ImportExport {
               null, null, publicationFileNameRelativePath);
           exportReport.addHtmlIndex(pubId, s);
 
-          Iterator itFilesPositionsHTMLToFill = filesPositionsHTMLToFill.iterator();
-          while (itFilesPositionsHTMLToFill.hasNext()) {
-            fileHTML = new File(exportSummaryPath + File.separator
-                + (String) itFilesPositionsHTMLToFill.next());
+          for(String filePositions : filesPositionsHTMLToFill) {
+            fileHTML = new File(exportSummaryPath + File.separator+ filePositions);
             SilverTrace.debug("importExport", "ImportExport.processExportKmax",
                 "root.MSG_GEN_PARAM_VALUE", "pubId = " + pubId);
             fileWriter = null;
             try {
               if (fileHTML.exists()) {
-                fileWriter = new FileWriter(fileHTML.getPath(), true);
+                fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML.getPath(), true), Charsets.UTF_8);
                 fileWriter.write(s.toHtmlSommairePublication(iframePublication));
               }
             } finally {
-              try {
-                fileWriter.close();
-              } catch (Exception ex) {
-                SilverTrace.debug("importExport", "PublicationTypeManager.processExport",
-                    "root.MSG_GEN_PARAM_VALUE", "Exception = " + ex);
-              }
+              Closeables.closeQuietly(fileWriter);
             }
           }
         }
@@ -1220,22 +1151,18 @@ public class ImportExport {
           "com.stratelia.silverpeas.silvertrace.settings.silverTrace", new Locale("", ""));
       String reportLogPath = resources.getString("ErrorDir");
       File file = new File(reportLogPath + File.separator + reportLogFile);
-      FileWriter fileWriter = null;
-
+      Writer fileWriter = null;
       try {
         if (!file.exists()) {
           file.createNewFile();
         }
-        fileWriter = new FileWriter(file.getPath(), true);
+        fileWriter = new OutputStreamWriter(new FileOutputStream(file.getPath(), true), Charsets.UTF_8);
 
         fileWriter.write(importReport.writeToLog(resource));
       } catch (Exception ex) {
         ex.printStackTrace();
       } finally {
-        try {
-          fileWriter.close();
-        } catch (Exception e) {
-        }
+        Closeables.closeQuietly(fileWriter);
       }
     }
   }

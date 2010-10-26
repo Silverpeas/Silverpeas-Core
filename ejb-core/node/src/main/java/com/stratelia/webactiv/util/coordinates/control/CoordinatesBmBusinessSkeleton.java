@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.ArrayList;
 import java.rmi.RemoteException;
 import com.stratelia.webactiv.util.coordinates.model.*;
+import java.util.List;
 
 /**
  * Interface declaration
@@ -69,7 +70,7 @@ public interface CoordinatesBmBusinessSkeleton {
    * @throws RemoteException
    * @see
    */
-  public int addCoordinate(CoordinatePK pk, ArrayList coordinatePoints)
+  public int addCoordinate(CoordinatePK pk, List coordinatePoints)
       throws RemoteException;
 
   /**

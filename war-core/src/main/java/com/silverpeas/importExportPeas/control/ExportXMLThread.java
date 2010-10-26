@@ -28,16 +28,13 @@ import java.util.List;
 
 import com.silverpeas.importExport.control.ImportExport;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
 
 public class ExportXMLThread extends ExportThread {
 
-  protected AdminController m_AdminCtrl = null;
-  protected String m_TargetDomainId = "";
-  List<WAAttributeValuePair> pksToExport = null;
-  String language = null;
-  String rootId = null;
+  private final List<WAAttributeValuePair> pksToExport;
+  private final String language;
+  private final String rootId;
 
   public ExportXMLThread(ImportExportSessionController toAwake, List<WAAttributeValuePair> pks,
       String language, String rootId) {
@@ -53,9 +50,8 @@ public class ExportXMLThread extends ExportThread {
         "------------DEBUT DU THREAD D'EXPORT-----------");
     try {
       ImportExport importExport = new ImportExport();
-      m_ExportReport =
-          importExport
-          .processExport(super.m_toAwake.getUserDetail(), language, pksToExport, rootId);
+      m_ExportReport = importExport.processExport(super.m_toAwake.getUserDetail(), language, 
+          pksToExport, rootId);
       SilverTrace.info("importExportPeas", "ExportXMLThread.run", "root.MSG_GEN_PARAM_VALUE",
           "------------TOUT EST OK-----------");
       m_isEncours = false;

@@ -611,7 +611,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     PublicationDetail publi;
     for (int i = 0; publis != null && i < publis.size(); i++) {
       publi = publis.get(i);
-      if (publi.getStatus().equalsIgnoreCase(PublicationDetail.VALID)) {
+      if (PublicationDetail.VALID.equalsIgnoreCase(publi.getStatus())) {
         filteredPublis.add(publi);
       }
     }

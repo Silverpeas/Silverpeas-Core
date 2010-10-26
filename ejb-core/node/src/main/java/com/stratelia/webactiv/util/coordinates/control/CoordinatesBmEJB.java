@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.webactiv.util.coordinates.control;
 
 import java.rmi.RemoteException;
@@ -43,6 +40,7 @@ import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePoint;
 import com.stratelia.webactiv.util.coordinates.model.CoordinateRuntimeException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import java.util.List;
 
 /**
  * Class declaration
@@ -50,6 +48,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
  * @version %I%, %G%
  */
 public class CoordinatesBmEJB implements javax.ejb.SessionBean, CoordinatesBmBusinessSkeleton {
+  private static final long serialVersionUID = -6692122009364112596L;
 
   private String dbName = JNDINames.PUBLICATION_DATASOURCE;
 
@@ -152,14 +151,13 @@ public class CoordinatesBmEJB implements javax.ejb.SessionBean, CoordinatesBmBus
    * @throws RemoteException
    * @see
    */
-  public int addCoordinate(CoordinatePK pk, ArrayList coordinatePoints)
+  @Override
+  public int addCoordinate(CoordinatePK pk, List coordinatePoints)
       throws RemoteException {
     SilverTrace.info("coordinates", "CoordinatesBmEJB.addCoordinate()",
-        "root.MSG_GEN_PARAM_VALUE", "coordinatePoints = "
-        + coordinatePoints.toString());
+        "root.MSG_GEN_PARAM_VALUE", "coordinatePoints = " + coordinatePoints.toString());
     Connection con = getConnection();
     int coordinateId;
-
     try {
       coordinateId = CoordinatesDAO.addCoordinate(con, pk, coordinatePoints);
     } catch (Exception e) {

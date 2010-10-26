@@ -49,6 +49,7 @@ public class ImportExportRequestRouter extends ComponentRequestRouter {
 
   private static final long serialVersionUID = 1L;
 
+  @Override
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new ImportExportSessionController(mainSessionCtrl, componentContext,
@@ -61,6 +62,7 @@ public class ImportExportRequestRouter extends ComponentRequestRouter {
    * control bean name to be put in the request object ex : for notificationUser, returns
    * "notificationUser"
    */
+  @Override
   public String getSessionControlBeanName() {
     return "importExportPeas";
   }
@@ -74,22 +76,13 @@ public class ImportExportRequestRouter extends ComponentRequestRouter {
    * @return The complete destination URL for a forward (ex :
    * "/notificationUser/jsp/notificationUser.jsp?flag=user")
    */
+  @Override
   public String getDestination(String function, ComponentSessionController componentSC,
       HttpServletRequest request) {
-    ImportExportSessionController importExportSC = (ImportExportSessionController) componentSC; // get
-    // the
-    // session
-    // controller
-    // to
-    // inform
-    // the
-    // request
+    ImportExportSessionController importExportSC = (ImportExportSessionController) componentSC; 
     String destination = "";
-
     try {
-      if (function.startsWith("Main")) {
-        // the user is on the main page
-
+      if (function.startsWith("Main")) { 
         destination = "/importExportPeas/jsp/welcome.jsp";
       } else if ("Import".equals(function)) {
         File file = null;
@@ -107,13 +100,11 @@ public class ImportExportRequestRouter extends ComponentRequestRouter {
         request.setAttribute("importReport", importReport);
         destination = "/importExportPeas/jsp/viewSPExchange.jsp";
       } else if (function.equals("ExportItems")) {
-        List<WAAttributeValuePair> itemPKs =
+        List<WAAttributeValuePair> itemPKs = 
             (List<WAAttributeValuePair>) request.getAttribute("selectedResultsWa");
         String rootId = (String) request.getAttribute("RootId");
-
-        if (itemPKs != null && itemPKs.size() > 0) {
+        if (itemPKs != null && !itemPKs.isEmpty()) {
           importExportSC.processExport(importExportSC.getLanguage(), itemPKs, rootId);
-
           destination = "/importExportPeas/jsp/pingExport.jsp";
         } else {
           destination = "/importExportPeas/jsp/nothingToExport.jsp";
@@ -123,12 +114,11 @@ public class ImportExportRequestRouter extends ComponentRequestRouter {
           destination = "/importExportPeas/jsp/pingExport.jsp";
         } else {
           ExportReport report = importExportSC.getExportReport();
-
           request.setAttribute("ExportReport", report);
-
           destination = "/importExportPeas/jsp/downloadZip.jsp";
         }
       } else if (function.equals("ExportPDF")) {
+        @SuppressWarnings("unchecked")
         List<WAAttributeValuePair> itemPKs =
             (List<WAAttributeValuePair>) request.getAttribute("selectedResultsWa");
         String rootId = (String) request.getAttribute("RootId");
@@ -148,9 +138,10 @@ public class ImportExportRequestRouter extends ComponentRequestRouter {
           destination = "/importExportPeas/jsp/nothingToExport.jsp";
         }
       } else if (function.equals("KmaxExportComponent")) {
+        @SuppressWarnings("unchecked")
         List<WAAttributeValuePair> itemPKs =
             (List<WAAttributeValuePair>) request.getAttribute("selectedResultsWa");
-        if (itemPKs != null && itemPKs.size() > 0) {
+        if (itemPKs != null && !itemPKs.isEmpty()) {
           ExportReport report =
               importExportSC.processExportKmax(importExportSC.getLanguage(), itemPKs, null, null);
           request.setAttribute("ExportReport", report);
@@ -159,15 +150,15 @@ public class ImportExportRequestRouter extends ComponentRequestRouter {
           destination = "/importExportPeas/jsp/nothingToExport.jsp";
         }
       } else if (function.equals("KmaxExportPublications")) {
+        @SuppressWarnings("unchecked")
         List<WAAttributeValuePair> itemPKs =
             (List<WAAttributeValuePair>) request.getAttribute("selectedResultsWa");
-        ArrayList combination = (ArrayList) request.getAttribute("Combination");
+        List combination = (List) request.getAttribute("Combination");
         String timeCriteria = (String) request.getAttribute("TimeCriteria");
 
-        if (itemPKs != null && itemPKs.size() > 0) {
-          ExportReport report =
-              importExportSC.processExportKmax(importExportSC.getLanguage(), itemPKs, combination,
-              timeCriteria);
+        if (itemPKs != null && !itemPKs.isEmpty()) {
+          ExportReport report = importExportSC.processExportKmax(importExportSC.getLanguage(), 
+              itemPKs, combination,  timeCriteria);
           request.setAttribute("ExportReport", report);
           destination = "/importExportPeas/jsp/downloadZip.jsp";
         } else {

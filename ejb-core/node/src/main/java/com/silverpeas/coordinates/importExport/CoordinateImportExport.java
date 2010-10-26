@@ -62,49 +62,38 @@ public class CoordinateImportExport {
    */
   public int addPositions(String componentId, String axisPath)
       throws CoordinateRuntimeException {
-    ArrayList combination = getArrayCombination(axisPath);
+    List<String> combination = getArrayCombination(axisPath);
     SilverTrace.debug("coordinates", "CoordinateImportExport.addPositions",
         "root.MSG_GEN_PARAM_VALUE", "combination = " + combination);
-
     int coordinateId = 0;
     NodePK axisPK = new NodePK("toDefine", componentId);
     CoordinatePK coordinatePK = new CoordinatePK("unknown", axisPK);
     try {
       NodeBm nodeBm = getNodeBm();
-      NodeDetail nodeDetail = null;
       // enrich combination by get ancestors
-      Iterator it = combination.iterator();
-      ArrayList allnodes = new ArrayList();
-      CoordinatePoint point = null;
+      List<CoordinatePoint> allnodes = new ArrayList<CoordinatePoint>();      
       String anscestorId = "";
-      int nodeLevel;
       int i = 1;
-      while (it.hasNext()) {
-        String nodeId = (String) it.next();
-        SilverTrace.info("coordinates",
-            "CoordinateImportExport.addPositions()",
+      for(String nodeId : combination) {
+        SilverTrace.info("coordinates", "CoordinateImportExport.addPositions()",
             "root.MSG_GEN_PARAM_VALUE", "nodeId = " + nodeId);
         NodePK nodePK = new NodePK(nodeId, componentId);
-        SilverTrace.info("coordinates",
-            "CoordinateImportExport.addPositions()",
+        SilverTrace.info("coordinates", "CoordinateImportExport.addPositions()",
             "root.MSG_GEN_PARAM_VALUE", "avant nodeBm.getPath() ! i = " + i);
-        Collection path = nodeBm.getPath(nodePK);
-        SilverTrace.info("coordinates",
-            "CoordinateImportExport.addPositions()",
-            "root.MSG_GEN_PARAM_VALUE", "path for nodeId " + nodeId + " = "
-            + path.toString());
-        Iterator pathIt = path.iterator();
-        while (pathIt.hasNext()) {
-          nodeDetail = (NodeDetail) pathIt.next();
+        Collection<NodeDetail> path = nodeBm.getPath(nodePK);
+        SilverTrace.info("coordinates", "CoordinateImportExport.addPositions()", 
+            "root.MSG_GEN_PARAM_VALUE", "path for nodeId " + nodeId + " = " + path.toString());
+        for(NodeDetail nodeDetail : path) {
           anscestorId = nodeDetail.getNodePK().getId();
-          nodeLevel = nodeDetail.getLevel();
-          if (!anscestorId.equals("0")) {
-            if (anscestorId.equals(nodeId))
-              point = new CoordinatePoint(-1, new Integer(anscestorId)
-                  .intValue(), true, nodeLevel, i);
-            else
-              point = new CoordinatePoint(-1, new Integer(anscestorId)
-                  .intValue(), false, nodeLevel, i);
+          int nodeLevel = nodeDetail.getLevel();
+          if (!"0".equals(anscestorId)) {
+            CoordinatePoint point;
+            if (anscestorId.equals(nodeId)) {
+              point = new CoordinatePoint(-1, Integer.parseInt(anscestorId), true, nodeLevel, i);
+            }
+            else {
+              point = new CoordinatePoint(-1, Integer.parseInt(anscestorId), false, nodeLevel, i);
+            }
             allnodes.add(point);
           }
         }
@@ -148,15 +137,13 @@ public class CoordinateImportExport {
    * @param valuePath
    * @return ArrayList
    */
-  private ArrayList getArrayCombination(String valuePath) {
+  private List<String> getArrayCombination(String valuePath) {
     StringTokenizer st = new StringTokenizer(valuePath, ",");
-    ArrayList combination = new ArrayList();
-    String axisValue = "";
+    List<String> combination = new ArrayList<String>();
     while (st.hasMoreTokens()) {
-      axisValue = st.nextToken();
+      String axisValue = st.nextToken();
       // axisValue is xx/xx/xx where xx are nodeId
-      axisValue = axisValue.substring(axisValue.lastIndexOf('/') + 1, axisValue
-          .length());
+      axisValue = axisValue.substring(axisValue.lastIndexOf('/') + 1, axisValue.length());
       combination.add(axisValue);
     }
     return combination;
@@ -165,28 +152,31 @@ public class CoordinateImportExport {
   /**
    * Get ArrayList of valuePath labels (/xx/yyy, /xx/yyy/zzzz/ to arrayList with Axe1 > value15 then
    * Axe2 > value5)
-   * @param valuePath
-   * @return ArrayList of displayName: Axe1 > value15
+   * @param combination 
+   * @param componentId 
+   * @return a List of displayName: Axe1 > value15
+   * @throws RemoteException 
    */
-  public ArrayList getCombinationLabels(ArrayList combination,
-      String componentId) throws RemoteException {
-    ArrayList coordinatesLabels = new ArrayList();
-    for (int i = 0; i < combination.size(); i++) {
-      String position = (String) combination.get(i);
+  public List<String> getCombinationLabels(List<String> combination, String componentId) 
+      throws RemoteException {
+    List<String> coordinatesLabels = new ArrayList<String>();    
+    for (String position : combination) {
       StringTokenizer st = new StringTokenizer(position, "/");
-      StringBuffer pathName = new StringBuffer();
+      StringBuilder pathName = new StringBuilder();
       while (st.hasMoreTokens()) {
         String nodeId = st.nextToken();
         NodeDetail nodeDetail = getNodeHeader(nodeId, componentId);
         // Don't take the root
         if (nodeDetail.getLevel() > 1) {
-          if (nodeDetail.getLevel() == 2)
-            pathName.append("<b>").append(nodeDetail.getName()).append("</b>")
-                .append(" > ");
-          else if (!st.hasMoreTokens())
-            pathName.append(nodeDetail.getName()).append("<br>");
-          else
+          if (nodeDetail.getLevel() == 2) {
+            pathName.append("<b>").append(nodeDetail.getName()).append("</b>").append(" > ");
+          }
+          else if (!st.hasMoreTokens()) {
+            pathName.append(nodeDetail.getName()).append("<br />");
+          }
+          else {
             pathName.append(nodeDetail.getName()).append(" > ");
+          }
         }
       }
       coordinatesLabels.add(pathName.toString());
@@ -194,8 +184,8 @@ public class CoordinateImportExport {
     return coordinatesLabels;
   }
 
-  public Collection getPathOfNode(NodePK nodePk) {
-    Collection listNodeDetail = null;
+  public Collection<NodeDetail> getPathOfNode(NodePK nodePk) {
+    Collection<NodeDetail> listNodeDetail = null;
     try {
       listNodeDetail = getNodeBm().getPath(nodePk);
     } catch (RemoteException ex) {
