@@ -92,6 +92,7 @@ public class PublicationEJB implements EntityBean {
   private String cloneId;
   private String cloneStatus;
   private String lang;
+  private Date draftOutDate;
 
   private List translations;
 
@@ -125,6 +126,7 @@ public class PublicationEJB implements EntityBean {
     pubDetail.setLanguage(lang);
 
     pubDetail.setTranslations(translations);
+    pubDetail.setDraftOutDate(draftOutDate);
 
     return pubDetail;
   }
@@ -213,6 +215,7 @@ public class PublicationEJB implements EntityBean {
 
       cloneId = pubDetail.getCloneId();
       cloneStatus = pubDetail.getCloneStatus();
+      draftOutDate = pubDetail.getDraftOutDate();
 
       if (pubDetail.getLanguage() != null)
         lang = pubDetail.getLanguage();
@@ -712,6 +715,7 @@ public class PublicationEJB implements EntityBean {
     cloneId = pubDetail.getCloneId();
     cloneStatus = pubDetail.getCloneStatus();
     lang = pubDetail.getLanguage();
+    draftOutDate = pubDetail.getDraftOutDate();
 
     getTranslations();
 
@@ -870,6 +874,7 @@ public class PublicationEJB implements EntityBean {
       cloneId = pubDetail.getCloneId();
       cloneStatus = pubDetail.getCloneStatus();
       lang = pubDetail.getLanguage();
+      draftOutDate = pubDetail.getDraftOutDate();
 
       getTranslations();
 
@@ -913,6 +918,7 @@ public class PublicationEJB implements EntityBean {
     detail.setCloneStatus(cloneStatus);
     detail.setLanguage(lang);
     detail.setInfoId(infoPK.getId());
+    detail.setDraftOutDate(draftOutDate);
 
     Connection con = getConnection();
     try {

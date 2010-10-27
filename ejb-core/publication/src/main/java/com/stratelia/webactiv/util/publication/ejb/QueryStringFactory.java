@@ -49,7 +49,7 @@ public class QueryStringFactory extends Object {
       query.append(
           "        P.pubEndDate, P.pubCreatorId, P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, ");
       query.append(
-          "		 P.pubStatus, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang ");
+          "		 P.pubStatus, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, P.pubDraftOutDate ");
       query.append(" from ").append(tableName).append(" P, ").append(tableName).append("Father F ");
       query.append(" where F.pubId = P.pubId ");
       query.append(" and F.instanceId = ? ");
@@ -86,7 +86,7 @@ public class QueryStringFactory extends Object {
     query.append("P.pubKeywords, P.pubContent, P.pubStatus, ");
     query.append("P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, ");
     query.append("P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, ");
-    query.append("P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang FROM ");
+    query.append("P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, P.pubDraftOutDate FROM ");
     query.append(tableName).append(" P, ").append(tableName).append("Father F ");
     query.append("WHERE F.instanceId = ? AND F.nodeId = ? AND F.pubId = P.pubId ");
     selectByFatherPK = query.toString();
@@ -114,7 +114,7 @@ public class QueryStringFactory extends Object {
       query.append(
           "        P.pubEndDate, P.pubCreatorId, P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, ");
       query.append(
-          "		 P.pubStatus, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang ");
+          "		 P.pubStatus, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, P.pubDraftOutDate ");
       query.append("from ").append(tableName).append(" P, ").append(tableName).append("Father  F ");
       query.append("where F.instanceId = ? ");
       query.append("and F.nodeId <> ? ");
@@ -139,7 +139,7 @@ public class QueryStringFactory extends Object {
               + "pubcontent, pubstatus, pubupdatedate,"
               + "instanceid, pubupdaterid, pubvalidatedate, pubvalidatorid, pubbeginhour,"
               + "pubendhour, pubauthor, pubtargetvalidatorid, pubcloneid, pubclonestatus,"
-              + "lang ");
+              + "lang, pubDraftOutDate ");
       query.append(" from ").append(tableName);
       query.append(" where pubId = ? ");
       loadRow = query.toString();

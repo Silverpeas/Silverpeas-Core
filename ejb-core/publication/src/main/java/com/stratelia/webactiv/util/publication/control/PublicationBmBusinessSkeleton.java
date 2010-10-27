@@ -41,9 +41,7 @@ import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import com.stratelia.webactiv.util.publication.model.PublicationWithStatus;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
-import java.lang.reflect.Array;
 
 /**
  * Interface declaration
@@ -483,4 +481,7 @@ public interface PublicationBmBusinessSkeleton {
   public List<SocialInformationPublication> getSocialInformationsListOfMyContacts(
       List<String> myContactsIds, List<String> options, int numberOfElement,
       int firstIndex) throws RemoteException;
+  
+  public Collection<PublicationDetail> getPublicationsToDraftOut(boolean useClone)
+      throws RemoteException;
 }

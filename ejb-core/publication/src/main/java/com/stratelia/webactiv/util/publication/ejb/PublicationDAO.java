@@ -81,7 +81,7 @@ public class PublicationDAO {
           + "pubCreatorId = ?, pubImportance = ?, pubVersion = ?, pubKeywords = ?, pubContent = ?, "
           + "pubStatus = ?, pubUpdateDate = ?, pubUpdaterId = ?, "
           + "instanceId = ?, pubValidatorId = ?, pubValidateDate = ?, pubBeginHour = ?, pubEndHour = ?, "
-          + "pubAuthor = ?, pubTargetValidatorId = ?, pubCloneId = ?, pubCloneStatus = ?, lang = ? "
+          + "pubAuthor = ?, pubTargetValidatorId = ?, pubCloneId = ?, pubCloneStatus = ?, lang = ?, pubDraftOutDate = ?  "
           + "WHERE pubId = ? ";
 
   /**
@@ -428,9 +428,9 @@ public class PublicationDAO {
     insertStatement.append(" pubContent, pubStatus, pubUpdateDate,");
     insertStatement.append(
             " instanceId, pubUpdaterId, pubValidateDate, pubValidatorId, pubBeginHour, pubEndHour,");
-    insertStatement.append(" pubAuthor, pubTargetValidatorId, pubCloneId, pubCloneStatus, lang) ");
+    insertStatement.append(" pubAuthor, pubTargetValidatorId, pubCloneId, pubCloneStatus, lang, pubDraftOutDate) ");
     insertStatement.append(
-            " values ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ?, ? , ? , ? , ? , ? , ? , ? , ?)");
+            " values ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ?, ? , ? , ? , ? , ? , ? , ? , ?, ?)");
     PreparedStatement prepStmt = null;
 
     try {
@@ -513,6 +513,8 @@ public class PublicationDAO {
       } else {
         prepStmt.setString(25, detail.getLanguage());
       }
+      
+      prepStmt.setString(26, DateUtil.formatDate(detail.getDraftOutDate()));
 
       SilverTrace.info("publication", "PublicationDAO.insertRow()",
               "root.MSG_GEN_PARAM_VALUE", "pubDetail = " + detail.toString());
@@ -711,6 +713,14 @@ public class PublicationDAO {
     String cloneStatus = rs.getString(24);
     String lang = rs.getString(25);
     
+    java.util.Date draftOutDate = null;
+    try {
+      draftOutDate = DateUtil.parseDate(rs.getString(26));
+    } catch (java.text.ParseException e) {
+      throw new SQLException(
+          "PublicationDAO : resultSet2PublicationDetail() : internal error : draftOutDate format unknown for publication.pk = "
+          + pk + " : " + e.toString());
+    }
     pub = new PublicationDetail(pk, name, description, creationDate, beginDate,
         endDate, creatorId, importance, version, keywords, content, status,
         updateDate, updaterId, validateDate, validatorId,
@@ -723,6 +733,7 @@ public class PublicationDAO {
     pub.setCloneId(Integer.toString(tempPubId));
     pub.setCloneStatus(cloneStatus);
     pub.setLanguage(lang);
+    pub.setDraftOutDate(draftOutDate);
     return pub;
   }
 
@@ -1804,8 +1815,9 @@ public class PublicationDAO {
       prepStmt.setString(23, detail.getCloneStatus());
 
       prepStmt.setString(24, detail.getLanguage());
+      prepStmt.setString(25, DateUtil.formatDate(detail.getDraftOutDate()));
 
-      prepStmt.setInt(25, Integer.parseInt(detail.getPK().getId()));
+      prepStmt.setInt(26, Integer.parseInt(detail.getPK().getId()));
 
       rowCount = prepStmt.executeUpdate();
     } finally {
@@ -2233,5 +2245,32 @@ public class PublicationDAO {
           List<String> myContactsIds,
           List<String> options, int numberOfElement, int firstIndex) {
     throw new UnsupportedOperationException("Not yet implemented");
+  }
+  
+  public static Collection<PublicationDetail> getPublicationsToDraftOut(Connection con,
+      boolean useClone) throws SQLException {
+    StringBuilder sb = new StringBuilder();
+    sb.append("select * from sb_publication_publi ");
+    sb.append("where pubdraftoutdate <= ? ");
+    if (useClone) {
+      sb.append("and pubcloneid <> -1 ");
+      sb.append("and pubclonestatus is null ");
+      sb.append("and pubstatus = 'Draft' ");
+    }
+
+    List<PublicationDetail> publications = new ArrayList<PublicationDetail>();
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      prepStmt = con.prepareStatement(sb.toString());
+      prepStmt.setString(1, DateUtil.today2SQLDate());
+      rs = prepStmt.executeQuery();
+      while (rs.next()) {
+        publications.add(resultSet2PublicationDetail(rs, null));
+      }
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+    return publications;
   }
 }

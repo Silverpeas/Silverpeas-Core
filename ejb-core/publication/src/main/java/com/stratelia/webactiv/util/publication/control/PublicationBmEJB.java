@@ -2077,6 +2077,21 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
     }
     return publications;
   }
-
+  
+  public Collection<PublicationDetail> getPublicationsToDraftOut(boolean useClone) {
+    Connection con = null;
+    try {
+      con = getConnection();
+      return PublicationDAO.getPublicationsToDraftOut(con, useClone);
+    } catch (SQLException e) {
+      throw new PublicationRuntimeException(
+          "PublicationBmEJB.getPublicationsToDraftOut",
+          SilverpeasRuntimeException.ERROR,
+          "publication.GETTING_PUBLICATIONS_TO_DRAFT_OUT_FAILED",
+          e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
 
 }

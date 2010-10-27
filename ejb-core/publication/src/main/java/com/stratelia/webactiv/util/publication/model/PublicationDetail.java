@@ -90,6 +90,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   private String targetValidatorId;
   private String cloneId;
   private String cloneStatus;
+  private Date   draftOutDate;
   private String silverObjectId; // added for the components - PDC integration
   private String iconUrl;
   // added for the taglib
@@ -1169,6 +1170,14 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
 
   public void setEndDateAndHour(Date endDateAndHour) {
     this.endDateAndHour = endDateAndHour;
+  }
+
+  public Date getDraftOutDate() {
+    return draftOutDate;
+  }
+
+  public void setDraftOutDate(Date draftOutDate) {
+    this.draftOutDate = draftOutDate;
   }
 
   public boolean isIndexable() {
