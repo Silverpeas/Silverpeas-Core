@@ -148,22 +148,22 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
             }
 
             // Sorting begin
-            int upIndex = Integer.parseInt((String) request.getParameter("up"));
-            int downIndex = Integer.parseInt((String) request.getParameter("down"));
+            int upIndex = Integer.parseInt(request.getParameter("up"));
+            int downIndex = Integer.parseInt(request.getParameter("down"));
             int addIndex = Integer.parseInt(request.getParameter("add"));
 
             // Remove user to change order
             if (upIndex > 0 && upIndex < users_count) {
-              Worker user = (Worker) new_users.remove(upIndex);
+              Worker user = new_users.remove(upIndex);
               new_users.add(upIndex - 1, user);
             }
             if (downIndex >= 0 && downIndex < users_count - 1) {
-              Worker user = (Worker) new_users.remove(downIndex);
+              Worker user = new_users.remove(downIndex);
               new_users.add(downIndex + 1, user);
             }
 
             if (addIndex >= 0 && addIndex < users_count) {
-              Worker user = (Worker) new_users.get(addIndex);
+              Worker user = new_users.get(addIndex);
               Worker new_user =
                   new Worker(user.getUserId(), Integer.parseInt(versioningSC.getEditingDocument()
                   .getPk().getId()),
@@ -174,7 +174,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
             }
 
             for (int i = 0; i < users_count; i++) {
-              ((Worker) new_users.get(i)).setOrder(i);
+              new_users.get(i).setOrder(i);
             }
             document.setWorkList(new_users);
           }
@@ -242,7 +242,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         versioningSC.initUserPanelInstanceForGroupsUsers(role);
         destination = Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
       } else if (function.startsWith("DocumentProfileSetUsersAndGroups")) {
-        String role = (String) request.getParameter("Role");
+        String role = request.getParameter("Role");
         ProfileInst profile = versioningSC.getProfile(role);
         versioningSC.updateDocumentProfile(profile);
         if (role.equals(VersioningSessionController.WRITER)) {
@@ -276,8 +276,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         }
         destination = rootDestination + "closeWindow.jsp";
       } else if (function.startsWith("SaveList")) {
-        String role = (String) request.getParameter("Role");
-        String fromFunction = (String) request.getParameter("From");
+        String role = request.getParameter("Role");
+        String fromFunction = request.getParameter("From");
         if (versioningSC.isAccessListExist(role)) {
           versioningSC.removeAccessList(role);
         }
@@ -601,13 +601,14 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
    * @param comments
    * @param radio
    * @param userId
+   * @param addXmlForm 
+   * @return 
    * @throws RemoteException
    */
   protected DocumentVersionPK saveOnline(Document document,
       VersioningSessionController versioningSC, String comments, String radio,
       int userId, boolean addXmlForm) throws RemoteException {
-    return saveOnline(document, versioningSC, comments, radio, userId, false,
-        addXmlForm);
+    return saveOnline(document, versioningSC, comments, radio, userId, false, addXmlForm);
   }
 
   /**
