@@ -37,7 +37,6 @@ public class JNDINames extends SilverpeasSettings {
   public static String NODEBM_EJBHOME = "ejb/NodeBm";
   public static String NODE_EJBHOME = "ejb/Node";
   public static String COMMENT_EJBHOME = "ejb/Comment";
-  public static String GALLERY_EJBHOME = "ejb/GalleryBm";
   public static String KMELIABM_EJBHOME = "ejb/KmeliaBm";
   public static String YELLOWPAGESBM_EJBHOME = "ejb/YellowpagesBm";
   public static String PUBLICATION_EJBHOME = "ejb/Publication";
