@@ -109,7 +109,7 @@ public abstract class AbstractForm implements Form {
 
       if (!fieldTemplates.isEmpty()) {
         FieldTemplate fieldTemplate = fieldTemplates.get(0);
-        out.append("<script type=\"text/javascript\" src=\"/weblib/xmlforms/")
+        out.append("<script type=\"text/javascript\" src=\"/weblib/xmlForms/")
                 .append(fieldTemplate.getTemplateName())
                 .append(".js\"></script>\n");
         pc = new PagesContext(pagesContext);
