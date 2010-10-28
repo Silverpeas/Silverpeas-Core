@@ -777,7 +777,7 @@ public class GraphicElementFactory extends Object {
           "viewgenerator.EX_CANT_GET_OPERATION_PANE", "", e);
       operationPane = new OperationPaneSilverpeasV5Web20();
     }
-    operationPane.setMultilang(multilang);
+    operationPane.setMultilang(getMultilang());
     return operationPane;
   }
 
