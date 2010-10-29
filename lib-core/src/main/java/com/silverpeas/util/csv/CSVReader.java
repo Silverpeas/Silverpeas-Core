@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.silverpeas.util.csv;
 
 import java.io.BufferedReader;
@@ -40,6 +37,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.exception.UtilTrappedException;
+import java.util.List;
 
 public class CSVReader extends SilverpeasSettings {
   protected int m_nbCols = 0;
@@ -80,10 +78,10 @@ public class CSVReader extends SilverpeasSettings {
 
   /**
    * Constructeur
+   * @param language 
    */
   public CSVReader(String language) {
-    m_utilMessages = new ResourceLocator("com.silverpeas.util.multilang.util",
-        language);
+    m_utilMessages = new ResourceLocator("com.silverpeas.util.multilang.util", language);
   }
 
   public void initCSVFormat(String propertiesFile, String rootPropertyName,
@@ -138,15 +136,12 @@ public class CSVReader extends SilverpeasSettings {
   }
 
   public Variant[][] parseStream(InputStream is) throws UtilTrappedException {
-    BufferedReader rb = null;
-    String theLine = null;
-    ArrayList<Variant[]> valret = new ArrayList<Variant[]>();
+    List<Variant[]> valret = new ArrayList<Variant[]>();
     int lineNumber = 1;
-    StringBuffer listErrors = new StringBuffer("");
-
+    StringBuilder listErrors = new StringBuilder("");
     try {
-      rb = new BufferedReader(new InputStreamReader(is));
-      theLine = rb.readLine();
+      BufferedReader rb = new BufferedReader(new InputStreamReader(is));
+      String theLine = rb.readLine();
       if (theLine != null && !isExtraColumnsControlEnabled()) {
         StringTokenizer st = new StringTokenizer(theLine, m_separator);
         setM_specificNbCols(st.countTokens()-m_nbCols);
@@ -158,28 +153,21 @@ public class CSVReader extends SilverpeasSettings {
           try {
             valret.add(parseLine(theLine, lineNumber));
           } catch (UtilTrappedException u) {
-            listErrors.append(u.getExtraInfos() + "\n");
+            listErrors.append(u.getExtraInfos()).append('\n');
           }
         }
         lineNumber++;
         theLine = rb.readLine();
       }
-
       if (listErrors.length() > 0) {
-        throw new UtilTrappedException("CSVReader.parseStream",
-            SilverpeasException.ERROR, "util.EX_PARSING_CSV_VALUE", listErrors
-            .toString());
+        throw new UtilTrappedException("CSVReader.parseStream", SilverpeasException.ERROR, 
+            "util.EX_PARSING_CSV_VALUE", listErrors.toString());
       }
-
-      return (Variant[][]) valret.toArray(new Variant[0][0]);
+      return valret.toArray(new Variant[0][0]);
     } catch (IOException e) {
-      throw new UtilTrappedException("CSVReader.parseStream",
-          SilverpeasException.ERROR, "util.EX_TRANSMITING_CSV", m_utilMessages
-          .getString("util.ligne")
-          + " = "
-          + Integer.toString(lineNumber)
-          + "\n"
-          + listErrors.toString(), e);
+      throw new UtilTrappedException("CSVReader.parseStream", SilverpeasException.ERROR, 
+          "util.EX_TRANSMITING_CSV", m_utilMessages.getString("util.ligne") + " = "
+          + Integer.toString(lineNumber) + "\n" + listErrors.toString(), e);
     }
   }
 
@@ -188,14 +176,11 @@ public class CSVReader extends SilverpeasSettings {
     int nbColsTotal = m_nbCols + m_specificNbCols;
     Variant[] valret = new Variant[nbColsTotal];
     int i, j;
-    int start, end;
+    StringBuilder listErrors = new StringBuilder("");
+
+    int start = 0;
+    int end = theLine.indexOf(m_separator, start);
     String theValue;
-
-    StringBuffer listErrors = new StringBuffer("");
-
-    start = 0;
-    end = theLine.indexOf(m_separator, start);
-
     for (i = 0; i < m_nbCols; i++) {
       if (end == -1) {
         theValue = theLine.substring(start).trim();
@@ -206,19 +191,18 @@ public class CSVReader extends SilverpeasSettings {
         if ((theValue == null) || (theValue.length() <= 0)) {
           if (Boolean.parseBoolean(m_colMandatory[i]))
           {
-            listErrors.append(m_utilMessages.getString("util.ligne") + " = "
-                + Integer.toString(lineNumber) + ", ");
-            listErrors.append(m_utilMessages.getString("util.colonne") + " = "
-                + Integer.toString(i + 1) + ", ");
-            listErrors
-                .append(m_utilMessages.getString("util.errorMandatory")
-                + m_utilMessages.getString("util.valeur") + " = " + theValue
-                + ", ");
-            listErrors.append(m_utilMessages.getString("util.type") + " = "
-                + m_colTypes[i] + "<BR>");
+            listErrors.append(m_utilMessages.getString("util.ligne")).append(" = ").append(
+                Integer.toString(lineNumber)).append(", ");
+            listErrors.append(m_utilMessages.getString("util.colonne")).append(" = ").append(
+                Integer.toString(i + 1)).append(", ");
+            listErrors.append(m_utilMessages.getString("util.errorMandatory")).append(
+                m_utilMessages.getString("util.valeur")).append(" = ").append(theValue).append(", ");
+            listErrors.append(m_utilMessages.getString("util.type")).append(" = ").append(
+                m_colTypes[i]).append("<br/>");
           }
-          else
+          else {
             theValue = m_colDefaultValues[i];
+          }
         }
         if (Variant.isArrayType(m_colTypes[i])) {
           valret[i] = new Variant(parseArrayValue(theValue), m_colTypes[i]);
@@ -228,21 +212,19 @@ public class CSVReader extends SilverpeasSettings {
         SilverTrace.info("util", "CSVReader.parseLine()",
             "root.MSG_PARAM_VALUE", "Token=" + theValue);
       } catch (UtilException e) {
-        listErrors.append(m_utilMessages.getString("util.ligne") + " = "
-            + Integer.toString(lineNumber) + ", ");
-        listErrors.append(m_utilMessages.getString("util.colonne") + " = "
-            + Integer.toString(i + 1) + ", ");
-        listErrors
-            .append(m_utilMessages.getString("util.errorType")
-            + m_utilMessages.getString("util.valeur") + " = " + theValue
-            + ", ");
-        listErrors.append(m_utilMessages.getString("util.type") + " = "
-            + m_colTypes[i] + "<BR>");
+        listErrors.append(m_utilMessages.getString("util.ligne")).append(" = ").append(
+            Integer.toString(lineNumber)).append(", ");
+        listErrors.append(m_utilMessages.getString("util.colonne")).append(" = ").append(
+            Integer.toString(i + 1)).append(", ");
+        listErrors.append(m_utilMessages.getString("util.errorType")).append(
+            m_utilMessages.getString("util.valeur")).append(" = ").append(theValue).append(", ");
+        listErrors.append(m_utilMessages.getString("util.type")).append(" = ").append(
+            m_colTypes[i]).append("<br/>");
       }
-
       start = end + 1;
-      if (start == 0)
+      if (start == 0) {
         start = -1;
+      }
 
       if ((i < m_nbCols - 1) && (Variant.isArrayType(m_colTypes[i + 1]))) { // End
         // the
@@ -261,12 +243,12 @@ public class CSVReader extends SilverpeasSettings {
         end = theLine.indexOf(m_separator, start);
       }
       if (isColumnNumberControlEnabled() && (i < m_nbCols - 2) && (end == -1)) { // Not enough columns
-        listErrors.append(m_utilMessages.getString("util.ligne") + " = "
-            + Integer.toString(lineNumber) + ", ");
-        listErrors.append(Integer.toString(i + 2) + " "
-            + m_utilMessages.getString("util.colonnesAttendues") + " "
-            + Integer.toString(m_nbCols) + " "
-            + m_utilMessages.getString("util.attendues") + "<BR>");
+        listErrors.append(m_utilMessages.getString("util.ligne")).append(" = ").append(
+            Integer.toString(lineNumber)).append(", ");
+        listErrors.append(Integer.toString(i + 2)).append(" ").append(
+            m_utilMessages.getString("util.colonnesAttendues")).append(" ").append(
+            Integer.toString(m_nbCols)).append(" ").append(m_utilMessages.getString(
+            "util.attendues")).append("<br/>");
       }
     }
 
@@ -291,29 +273,26 @@ public class CSVReader extends SilverpeasSettings {
           if ((theValue == null) || (theValue.length() <= 0)) {
             if (Boolean.parseBoolean(m_colMandatory[i]))
             {
-              listErrors.append(m_utilMessages.getString("util.ligne") + " = "
-                  + Integer.toString(lineNumber) + ", ");
-              listErrors.append(m_utilMessages.getString("util.colonne") + " = "
-                  + Integer.toString(i + 1) + ", ");
-              listErrors
-                  .append(m_utilMessages.getString("util.errorMandatory")
-                  + m_utilMessages.getString("util.valeur") + " = " + theValue
-                  + ", ");
-              listErrors.append(m_utilMessages.getString("util.type") + " = "
-                  + m_colTypes[i] + "<BR>");
+              listErrors.append(m_utilMessages.getString("util.ligne")).append(" = ").append(
+                  Integer.toString(lineNumber)).append(", ");
+              listErrors.append(m_utilMessages.getString("util.colonne")).append(" = ").append(
+                  Integer.toString(i + 1)).append(", ");
+              listErrors.append(m_utilMessages.getString("util.errorMandatory")).append(
+                  m_utilMessages.getString("util.valeur")).append(" = ").append(theValue).append(
+                  ", ");
+              listErrors.append(m_utilMessages.getString("util.type")).append(" = ").append(
+                  m_colTypes[i]).append("<br/>");
             }
           }
         } catch (UtilException e) {
-          listErrors.append(m_utilMessages.getString("util.ligne") + " = "
-              + Integer.toString(lineNumber) + ", ");
-          listErrors.append(m_utilMessages.getString("util.colonne") + " = "
-              + Integer.toString(j + 1) + ", ");
-          listErrors
-              .append(m_utilMessages.getString("util.errorType")
-              + m_utilMessages.getString("util.valeur") + " = " + theValue
-              + ", ");
-          listErrors.append(m_utilMessages.getString("util.type") + " = "
-              + m_specificColTypes[i] + "<BR>");
+          listErrors.append(m_utilMessages.getString("util.ligne")).append(" = ").append(
+              Integer.toString(lineNumber)).append(", ");
+          listErrors.append(m_utilMessages.getString("util.colonne")).append(" = ").append(
+              Integer.toString(j + 1)).append(", ");
+          listErrors.append(m_utilMessages.getString("util.errorType")).append(
+              m_utilMessages.getString("util.valeur")).append(" = ").append(theValue).append(", ");
+          listErrors.append(m_utilMessages.getString("util.type")).append(" = ").append(
+              m_specificColTypes[i]).append("<br/>");
         }
       }
       else {
@@ -325,8 +304,9 @@ public class CSVReader extends SilverpeasSettings {
         }
       }
       start = end + 1;
-      if (start == 0)
+      if (start == 0) {
         start = -1;
+      }
       if (isExtraColumnsControlEnabled() && (i < m_specificNbCols - 1)
           && (Variant.isArrayType(m_specificColTypes[i + 1]))) { // End the
         // parse
@@ -339,12 +319,12 @@ public class CSVReader extends SilverpeasSettings {
         end = theLine.indexOf(m_separator, start);
       }
       if (isColumnNumberControlEnabled() && (i < m_specificNbCols - 2) && (end == -1)) { // Not enough columns
-        listErrors.append(m_utilMessages.getString("util.ligne") + " = "
-            + Integer.toString(lineNumber) + ", ");
-        listErrors.append(Integer.toString(i + 2 + m_nbCols) + " "
-            + m_utilMessages.getString("util.colonnesAttendues") + " "
-            + Integer.toString(nbColsTotal) + " "
-            + m_utilMessages.getString("util.attendues") + "<BR>");
+        listErrors.append(m_utilMessages.getString("util.ligne")).append(" = ").append(
+            Integer.toString(lineNumber)).append(", ");
+        listErrors.append(Integer.toString(i + 2 + m_nbCols)).append(" ").append(
+            m_utilMessages.getString("util.colonnesAttendues")).append(" ").append(
+            Integer.toString(nbColsTotal)).append(" ").append(
+            m_utilMessages.getString("util.attendues")).append("<br/>");
       }
 
       j++;
@@ -355,18 +335,19 @@ public class CSVReader extends SilverpeasSettings {
     while (start > -1) {
       nbColonnes++;
       start = end + 1;
-      if (start == 0)
+      if (start == 0) {
         start = -1;
+      }
       end = theLine.indexOf(m_separator, start);
     }
 
     if (isColumnNumberControlEnabled() && nbColonnes > nbColsTotal) {
-      listErrors.append(m_utilMessages.getString("util.ligne") + " = "
-          + Integer.toString(lineNumber) + ", ");
-      listErrors.append(nbColonnes + " "
-          + m_utilMessages.getString("util.colonnesAttendues") + " "
-          + Integer.toString(nbColsTotal) + " "
-          + m_utilMessages.getString("util.attendues") + "<BR>");
+      listErrors.append(m_utilMessages.getString("util.ligne")).append(" = ").append(
+          Integer.toString(lineNumber)).append(", ");
+      listErrors.append(nbColonnes).append(" ").append(
+          m_utilMessages.getString("util.colonnesAttendues")).append(" ").append(
+          Integer.toString(nbColsTotal)).append(" ").append(
+          m_utilMessages.getString("util.attendues")).append("<br/>");
     }
 
     if (listErrors.length() > 0) {
@@ -401,7 +382,7 @@ public class CSVReader extends SilverpeasSettings {
 
       start = end + 1;
     }
-    return (String[]) ar.toArray(new String[0]);
+    return ar.toArray(new String[0]);
   }
 
   /**

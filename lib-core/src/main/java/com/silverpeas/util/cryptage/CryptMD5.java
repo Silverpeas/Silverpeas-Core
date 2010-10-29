@@ -24,6 +24,7 @@
 
 package com.silverpeas.util.cryptage;
 
+import com.google.common.io.Closeables;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -56,7 +57,7 @@ public class CryptMD5 {
           "root.EX_NO_MESSAGE", e);
     }
 
-    StringBuffer hashString = new StringBuffer();
+    StringBuilder hashString = new StringBuilder();
     String hex;
     for (int i = 0; i < hash.length; ++i) {
       hex = Integer.toHexString(hash[i]);
@@ -98,12 +99,7 @@ public class CryptMD5 {
           "root.EX_NO_MESSAGE", e);
     } finally {
       if (fileInputStream != null) {
-        try {
-          fileInputStream.close();
-        } catch (IOException e) {
-          throw new UtilException("CryptMD5.hash()", SilverpeasException.ERROR,
-              "root.EX_NO_MESSAGE", e);
-        }
+        Closeables.closeQuietly(fileInputStream);
       }
     }
   }
