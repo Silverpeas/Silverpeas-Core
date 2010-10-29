@@ -519,11 +519,8 @@ public class PdcSubscriptionBmEJB implements SessionBean {
         + classifyValues.toString());
     List searchCriterias = subscription.getPdcContext();
 
-    if (searchCriterias == null || classifyValues == null) {
-      return false;
-    }
-    if (searchCriterias.size() == 0 || classifyValues.size() == 0
-        || searchCriterias.size() > classifyValues.size()) {
+    if (searchCriterias == null || classifyValues == null  || searchCriterias.isEmpty() || 
+        classifyValues.isEmpty() || searchCriterias.size() > classifyValues.size()) {
       return false;
     }
 
@@ -535,11 +532,10 @@ public class PdcSubscriptionBmEJB implements SessionBean {
      */
     for (int i = 0; i < searchCriterias.size(); i++) {
       Criteria criteria = (Criteria) searchCriterias.get(i);
-      if (criteria == null)
+      if (criteria == null) {
         continue;
-
+      }
       boolean result = false;
-
       for (int j = 0; j < classifyValues.size(); j++) {
         Value value = (Value) classifyValues.get(j);
         if (checkValues(criteria, value)) {
@@ -547,8 +543,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
           break;
         }
       }
-
-      if (result == false) {
+      if (!result) {
         return false;
       }
     }
