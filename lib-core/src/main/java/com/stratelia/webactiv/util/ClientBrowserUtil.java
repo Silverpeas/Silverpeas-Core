@@ -47,58 +47,58 @@ public class ClientBrowserUtil {
   public static final Pattern UNIX = Pattern.compile(".*[X,x][11].*");
 
   /**
-   * 
+   * Returns true if the user-agent indicates Windows.
    * @param request
-   * @return
+   * @return true if the user-agent indicates Windows.
    */
-  public static final boolean isWindows(HttpServletRequest request) {
+  public static boolean isWindows(HttpServletRequest request) {
     return isWindows(getUserAgent(request));
   }
-  
+
   /**
-   * 
+   * Returns true if the user-agent indicates Windows.
    * @param userAgent the request User-Agent header.
-   * @return
+   * @return true if the user-agent indicates Windows.
    */
-  public static final boolean isWindows(String userAgent) {
+  public static boolean isWindows(String userAgent) {
     Matcher match = WINDOWS.matcher(userAgent);
     return match.matches();
   }
-  
+
   /**
-   * 
+   * Returns true if the user-agent indicates MacOSX.
    * @param request
-   * @return
+   * @return true if the user-agent indicates MacOSX.
    */
-  public static final boolean isMacintosh(HttpServletRequest request) {
+  public static boolean isMacintosh(HttpServletRequest request) {
     return isMacintosh(getUserAgent(request));
   }
 
   /**
-   * 
+   * Returns true if the user-agent indicates MacOSX.
    * @param userAgent the request User-Agent header.
-   * @return
+   * @return true if the user-agent indicates MacOSX.
    */
-  public static final boolean isMacintosh(String userAgent) {
+  public static boolean isMacintosh(String userAgent) {
     Matcher match = MAC.matcher(userAgent);
     return match.matches();
   }
 
   /**
-   * 
+   * Returns true if the user-agent indicates Unix.
    * @param request
-   * @return
+   * @return true if the user-agent indicates Unix.
    */
-  public static final boolean isUnix(HttpServletRequest request) {
-    return isUnix( getUserAgent(request));
+  public static boolean isUnix(HttpServletRequest request) {
+    return isUnix(getUserAgent(request));
   }
-  
-   /**
-   * 
-   * @param request
-   * @return
+
+  /**
+   * Returns true if the user-agent indicates Unix.
+   * @param userAgent the request User-Agent header.
+   * @return true if the user-agent indicates Unix.
    */
-  public static final boolean isUnix(String userAgent) {
+  public static boolean isUnix(String userAgent) {
     Matcher matchBsd = FREEBSD.matcher(userAgent);
     Matcher matchLinux = LINUX.matcher(userAgent);
     Matcher matchUnix = UNIX.matcher(userAgent);
@@ -106,63 +106,62 @@ public class ClientBrowserUtil {
   }
 
   /**
-   * 
+   * Returns true if the user-agent indicates a Firefox browser.
    * @param request
-   * @return
+   * @return true if the user-agent indicates a Firefox browser..
    */
-  public static final boolean isFirefox(HttpServletRequest request) {
+  public static boolean isFirefox(HttpServletRequest request) {
     Matcher matchMoz = MOZILLA.matcher(getUserAgent(request));
     Matcher matchChrome = CHROME.matcher(getUserAgent(request));
     return matchMoz.matches() && !matchChrome.matches();
   }
-  
+
   /**
-   * 
-   * @param userAgent
-   * @return
+   * Returns true if the user-agent indicates a Firefox browser.
+   * @param userAgent the request User-Agent header.
+   * @return true if the user-agent indicates a Firefox browser..
    */
-  public static final boolean isFirefox(String userAgent) {
+  public static boolean isFirefox(String userAgent) {
     Matcher matchMoz = MOZILLA.matcher(userAgent);
     Matcher matchChrome = CHROME.matcher(userAgent);
     return matchMoz.matches() && !matchChrome.matches();
   }
-  
+
+  /**
+   * Returns true if the user-agent indicates a Safari browser.
+   * @param request
+   * @return true if the user-agent indicates a Safari browser..
+   */
+  public static boolean isSafari(HttpServletRequest request) {
+    return isSafari(getUserAgent(request));
+  }
+
+  /**
+   * Returns true if the user-agent indicates a Safari browser.
+   * @param userAgent the request User-Agent header.
+   * @return true if the user-agent indicates a Safari browser..
+   */
+  public static boolean isSafari(String userAgent) {
+    Matcher matchSafari = SAFARI.matcher(userAgent);
+    Matcher matchChrome = CHROME.matcher(userAgent);
+    return matchSafari.matches() && !matchChrome.matches();
+  }
 
   /**
    * 
    * @param request
    * @return
    */
-  public static final boolean isSafari(HttpServletRequest request) {
-    return isSafari(getUserAgent(request));
-  }
-  
-  /**
-   * 
-   * @param request
-   * @return
-   */
-  public static final boolean isSafari(String userAgent) {
-    Matcher matchSafari = SAFARI.matcher(userAgent);
-    Matcher matchChrome = CHROME.matcher(userAgent);
-    return matchSafari.matches() && !matchChrome.matches();
-  }
-  
-  /**
-   * 
-   * @param request
-   * @return
-   */
-  public static final boolean isChrome(HttpServletRequest request) {
+  public static boolean isChrome(HttpServletRequest request) {
     return isChrome(getUserAgent(request));
   }
-  
-   /**
+
+  /**
    * 
-   * @param request
+   * @param userAgent 
    * @return
    */
-  public static final boolean isChrome(String userAgent) {
+  public static boolean isChrome(String userAgent) {
     Matcher matchChrome = CHROME.matcher(userAgent);
     return matchChrome.matches();
   }
@@ -172,37 +171,35 @@ public class ClientBrowserUtil {
    * @param request
    * @return
    */
-  public static final boolean isOpera(HttpServletRequest request) {
+  public static boolean isOpera(HttpServletRequest request) {
     return isOpera(getUserAgent(request));
   }
 
-  
-  
   /**
    * 
-   * @param request
+   * @param userAgent 
    * @return
    */
-  public static final boolean isOpera(String userAgent) {
+  public static boolean isOpera(String userAgent) {
     Matcher match = OPERA.matcher(userAgent);
     return match.matches();
   }
+
   /**
    * 
    * @param request
    * @return
    */
-  public static final boolean isInternetExplorer(HttpServletRequest request) {
+  public static boolean isInternetExplorer(HttpServletRequest request) {
     return isInternetExplorer(getUserAgent(request));
   }
-  
-  
+
   /**
    * 
-   * @param request
+   * @param userAgent 
    * @return
    */
-  public static final boolean isInternetExplorer(String userAgent) {
+  public static boolean isInternetExplorer(String userAgent) {
     Matcher matchIe = MSIE.matcher(userAgent);
     Matcher matchMs = MICROSOFT.matcher(userAgent);
     return matchIe.matches() || matchMs.matches();
@@ -213,17 +210,16 @@ public class ClientBrowserUtil {
    * @param request
    * @return
    */
-  public static final boolean isKonqueror(HttpServletRequest request) {
+  public static boolean isKonqueror(HttpServletRequest request) {
     return isKonqueror(getUserAgent(request));
   }
-  
-  
+
   /**
    * 
    * @param userAgent
    * @return
    */
-  public static final boolean isKonqueror(String userAgent) {
+  public static boolean isKonqueror(String userAgent) {
     Matcher match = KONQUEROR.matcher(userAgent);
     return match.matches();
   }
@@ -233,7 +229,7 @@ public class ClientBrowserUtil {
    * @param request
    * @return
    */
-  public static final String getUserAgent(HttpServletRequest request) {
+  public static String getUserAgent(HttpServletRequest request) {
     return request.getHeader("User-Agent");
   }
 
@@ -243,20 +239,20 @@ public class ClientBrowserUtil {
    * @param filename
    * @return
    */
-  public static final String rfc2047EncodeFilename(HttpServletRequest request, String filename) {
+  public static String rfc2047EncodeFilename(HttpServletRequest request, String filename) {
     if (isFirefox(request) || isChrome(request) || isSafari(request)) {
       return EncodeHelper.encodeFilename(filename);
     }
     return filename;
   }
-  
+
   /**
    * 
    * @param userAgent 
    * @param filename
    * @return
    */
-  public static final String rfc2047EncodeFilename(String userAgent, String filename) {
+  public static String rfc2047EncodeFilename(String userAgent, String filename) {
     if (isFirefox(userAgent) || isChrome(userAgent) || isSafari(userAgent)) {
       return EncodeHelper.encodeFilename(filename);
     }
