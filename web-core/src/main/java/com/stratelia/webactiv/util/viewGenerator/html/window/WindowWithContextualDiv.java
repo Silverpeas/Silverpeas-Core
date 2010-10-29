@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 /*
  * WindowSogreah.java
  * 
@@ -57,8 +54,9 @@ public class WindowWithContextualDiv extends AbstractWindow {
    * @return
    * @see
    */
+  @Override
   public String printBefore() {
-    StringBuffer result = new StringBuffer(200);
+    StringBuilder result = new StringBuilder(200);
     String width = getWidth();
 
     int nbCols = 1;
@@ -104,44 +102,33 @@ public class WindowWithContextualDiv extends AbstractWindow {
    * @return
    * @see
    */
+  @Override
   public String printAfter() {
-    StringBuffer result = new StringBuffer(200);
+    StringBuilder result = new StringBuilder(200);
     String iconsPath = getIconsPath();
 
-    result.append("</td></tr></table>");
-    result.append("</td>");
-    result.append("</tr>");
-    result.append("</table>");
-
-    result
-        .append("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
+    result.append("</td></tr></table></td></tr></table>");
+    result.append("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
     result.append("<tr><td class=\"basGaucheWindow\">");
-    result.append("<img src=\"").append(iconsPath).append(
-        "/1px.gif\" width=\"1\" alt=\"\"/>\n");
+    result.append("<img src=\"").append(iconsPath).append("/1px.gif\" width=\"1\" alt=\"\"/>\n");
     result.append("</td><td class=\"basMilieuWindow\">");
-    result.append("<img src=\"").append(iconsPath).append(
-        "/1px.gif\" width=\"1\" alt=\"\"/>\n");
+    result.append("<img src=\"").append(iconsPath).append("/1px.gif\" width=\"1\" alt=\"\"/>\n");
     result.append("</td><td class=\"basDroiteWindow\">");
-    result.append("<img src=\"").append(iconsPath).append(
-        "/1px.gif\" width=\"1\" alt=\"\"/>\n");
+    result.append("<img src=\"").append(iconsPath).append("/1px.gif\" width=\"1\" alt=\"\"/>\n");
     result.append("</td></tr></table>");
-
-    result
-        .append("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
+    result.append("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
     result.append("<tr><td>");
-    result.append("<div align=\"left\"><a href=\"#topPage\"><img src=\"")
-        .append(iconsPath).append("/goTop.gif\" border=\"0\" alt=\"\"/></a></div>");
+    result.append("<div align=\"left\"><a href=\"#topPage\"><img src=\"").append(iconsPath).append(
+        "/goTop.gif\" border=\"0\" alt=\"\"/></a></div>");
     result.append("</td><td width=\"100%\">");
     result.append("&nbsp;");
     result.append("</td><td>");
     result.append("<div align=\"right\"><a href=\"#topPage\"><img src=\"")
         .append(iconsPath).append("/goTop.gif\" border=\"0\" alt=\"\"/></a></div>");
     result.append("</td></tr></table>");
-
     if (StringUtil.isDefined(contextualDiv)) {
       result.append("</div>");
     }
-
     return result.toString();
   }
 
@@ -150,13 +137,12 @@ public class WindowWithContextualDiv extends AbstractWindow {
    * @return
    * @see
    */
+  @Override
   public String print() {
-    StringBuffer result = new StringBuffer();
-
+    StringBuilder result = new StringBuilder();
     result.append(printBefore());
     result.append(getBody());
     result.append(printAfter());
-
     return result.toString();
   }
 
