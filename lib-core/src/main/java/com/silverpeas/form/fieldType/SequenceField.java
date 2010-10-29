@@ -54,28 +54,35 @@ public class SequenceField extends TextField {
   private String value = "";
   
   public SequenceField() {
+    super();
   }
   
+  @Override
   public String getTypeName() {
     return TYPE;
   }
   
+  @Override
   public void setStringValue(String value) {
     this.value = value;
   }
   
+  @Override
   public String getStringValue() {
     return value;
   }
   
+  @Override
   public boolean isReadOnly() {
     return false;
   }
   
+  @Override
   public boolean acceptValue(String value, String language) {
     return !isReadOnly();
   }
   
+  @Override
   public boolean acceptValue(String value) {
     return !isReadOnly();
   }
@@ -133,12 +140,10 @@ public class SequenceField extends TextField {
         + templateName);
 
       rs = statement.executeQuery();
-
-      int value;
       while (rs.next()) {
-        value = numberToInt(rs.getString(1));
-        if (value != NUMBER_ERROR) {
-          values.add(Integer.valueOf(value));
+        int currentValue = numberToInt(rs.getString(1));
+        if (currentValue != NUMBER_ERROR) {
+          values.add(Integer.valueOf(currentValue));
         }
       }
     } catch (Exception e) {
@@ -175,13 +180,14 @@ public class SequenceField extends TextField {
    * @param number A string corresponding to a number maybe starting with zeros
    * @return
    */
-  private static int numberToInt(String number) {
-    if (number != null && number.length() > 0) {
-      while (number.startsWith("0")) {
-        number = number.substring(1);
+  private static int numberToInt(final String number) {
+    String currentNumber = number;
+    if (currentNumber != null && currentNumber.length() > 0) {
+      while (currentNumber.startsWith("0")) {
+        currentNumber = currentNumber.substring(1);
       }
       try {
-        return Integer.parseInt(number);
+        return Integer.parseInt(currentNumber);
       } catch (NumberFormatException e) {
         SilverTrace.error("form", "SequenceField.numberToInt", "form.EX_CANT_PARSE_NUMBER",
           "number=" + number, e);
