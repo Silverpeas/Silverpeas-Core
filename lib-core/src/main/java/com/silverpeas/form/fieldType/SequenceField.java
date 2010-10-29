@@ -99,7 +99,7 @@ public class SequenceField extends TextField {
     } else {
       if (reuseAvailableValues) {
         newValue = startValue;
-        while (values.contains(new Integer(newValue))) {
+        while (values.contains(Integer.valueOf(newValue))) {
           newValue++;
         }
       } else {
@@ -138,7 +138,7 @@ public class SequenceField extends TextField {
       while (rs.next()) {
         value = numberToInt(rs.getString(1));
         if (value != NUMBER_ERROR) {
-          values.add(new Integer(value));
+          values.add(Integer.valueOf(value));
         }
       }
     } catch (Exception e) {
