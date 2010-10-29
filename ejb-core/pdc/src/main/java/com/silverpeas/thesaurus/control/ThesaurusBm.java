@@ -49,43 +49,45 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 public class ThesaurusBm {
 
   private static ThesaurusBm instance;
-  private SilverpeasBeanDAO Vdao = null;
-  private SilverpeasBeanDAO Sdao = null;
-  private SilverpeasBeanDAO Jdao = null;
+  private SilverpeasBeanDAO vocabularyDao = null;
+  private SilverpeasBeanDAO synonymDao = null;
+  private SilverpeasBeanDAO jargonDao = null;
 
   private ThesaurusBm() {
   }
 
   static public ThesaurusBm getInstance() {
-    if (instance == null)
-      instance = new ThesaurusBm();
+    synchronized(ThesaurusBm.class) {
+    if (instance == null) {
+        instance = new ThesaurusBm();
+      }
+    }
     return instance;
   }
 
-  private SilverpeasBeanDAO getVdao() throws PersistenceException {
-    if (Vdao == null)
-      Vdao = SilverpeasBeanDAOFactory
-          .getDAO("com.silverpeas.thesaurus.model.Vocabulary");
-    return Vdao;
+  private SilverpeasBeanDAO getVocabularyDao() throws PersistenceException {
+    if (vocabularyDao == null) {
+     
+    }
+    return vocabularyDao;
   }
 
-  private SilverpeasBeanDAO getSdao() throws PersistenceException {
-    if (Sdao == null)
-      Sdao = SilverpeasBeanDAOFactory
-          .getDAO("com.silverpeas.thesaurus.model.Synonym");
-    return Sdao;
+  private SilverpeasBeanDAO getSynonymDao() throws PersistenceException {
+    if (synonymDao == null) {
+      synonymDao = SilverpeasBeanDAOFactory.getDAO("com.silverpeas.thesaurus.model.Synonym");
+    }
+    return synonymDao;
   }
 
-  private SilverpeasBeanDAO getJdao() throws PersistenceException {
-    if (Jdao == null)
-      Jdao = SilverpeasBeanDAOFactory
-          .getDAO("com.silverpeas.thesaurus.model.Jargon");
-    return Jdao;
+  private SilverpeasBeanDAO getJargonDao() throws PersistenceException {
+    if (jargonDao == null) {
+      jargonDao = SilverpeasBeanDAOFactory.getDAO("com.silverpeas.thesaurus.model.Jargon");
+    }
+    return jargonDao;
   }
 
   /**
    * Retourne la liste des vocabulaires (Collection de Vocabulary)
-   * @param
    * @return Collection
    * @throws ThesaurusException
    * @see
@@ -93,9 +95,8 @@ public class ThesaurusBm {
   public Collection getListVocabulary() throws ThesaurusException {
     Collection vocabs = new ArrayList();
     try {
-      SilverpeasBeanDAO daoV = getVdao();
       IdPK pk = new IdPK();
-      vocabs = daoV.findByWhereClause(pk, null);
+      vocabs = getVocabularyDao().findByWhereClause(pk, null);
     } catch (PersistenceException e) {
       throw new ThesaurusException("ThesaurusBm.getListVocabulary",
           SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_LIST_VOCABULARIES",
@@ -114,10 +115,9 @@ public class ThesaurusBm {
   public Vocabulary getVocabulary(long idVoca) throws ThesaurusException {
     Vocabulary vocab = null;
     try {
-      SilverpeasBeanDAO daoV = getVdao();
       IdPK pk = new IdPK();
       pk.setIdAsLong(idVoca);
-      vocab = (Vocabulary) daoV.findByPrimaryKey(pk);
+      vocab = (Vocabulary) getVocabularyDao().findByPrimaryKey(pk);
     } catch (PersistenceException e) {
       throw new ThesaurusException("ThesaurusBm.getVocabulary",
           SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_VOCABULARY", "", e);
@@ -135,8 +135,7 @@ public class ThesaurusBm {
   public long createVocabulary(Vocabulary voca) throws ThesaurusException {
     long idV = -1;
     try {
-      SilverpeasBeanDAO daoV = getVdao();
-      IdPK pkV = (IdPK) daoV.add(voca);
+      IdPK pkV = (IdPK) getVocabularyDao().add(voca);
       idV = pkV.getIdAsLong();
     } catch (PersistenceException e) {
       throw new ThesaurusException("ThesaurusBm.createVocabulary",
@@ -155,16 +154,9 @@ public class ThesaurusBm {
    */
   public boolean existVocabulary(String name) throws ThesaurusException {
     try {
-      SilverpeasBeanDAO daoV = getVdao();
       IdPK pk = new IdPK();
-      Collection vocabs = (Collection) daoV.findByWhereClause(pk, " name= '"
-          + encode(name) + "'");
-
-      if (vocabs.size() > 0) { // le vocabulaire existe déjà
-        return true;
-      } else
-        return false;
-
+      Collection vocabs =  getVocabularyDao().findByWhereClause(pk, " name= '" + encode(name) + "'");
+      return !vocabs.isEmpty();
     } catch (PersistenceException e) {
       throw new ThesaurusException("ThesaurusBm.existVocabulary",
           SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_VOCABULARY",
@@ -203,8 +195,7 @@ public class ThesaurusBm {
    */
   public void updateVocabulary(Vocabulary voca) throws ThesaurusException {
     try {
-      SilverpeasBeanDAO daoV = getVdao();
-      daoV.update(voca);
+      getVocabularyDao().update(voca);
     } catch (PersistenceException e) {
       throw new ThesaurusException("ThesaurusBm.updateVocabulary",
           SilverpeasException.ERROR, "Thesaurus.EX_UPDATE_VOCABULARY_FAILED",
@@ -232,7 +223,7 @@ public class ThesaurusBm {
       deleteVocaJargons(con, idVoca);
 
       // supprime le vocabulaire
-      SilverpeasBeanDAO daoV = getVdao();
+      SilverpeasBeanDAO daoV = getVocabularyDao();
       IdPK pk = new IdPK();
       pk.setIdAsLong(idVoca);
       daoV.remove(con, pk);
@@ -249,17 +240,16 @@ public class ThesaurusBm {
       }
 
       throw new ThesaurusException("ThesaurusBm.deleteVocabulary",
-          SilverpeasException.ERROR, "Thesaurus.EX_DELETE_VOCABULARY_FAILED",
-          "", e);
+          SilverpeasException.ERROR, "Thesaurus.EX_DELETE_VOCABULARY_FAILED", "", e);
     } finally {
-      if (con != null)
+      if (con != null) {
         try {
           con.close();
         } catch (SQLException e) {
           throw new ThesaurusException("ThesaurusBm.deleteVocabulary",
-              SilverpeasException.ERROR,
-              "Thesaurus.EX_DELETE_VOCABULARY_FAILED", "", e);
+              SilverpeasException.ERROR, "Thesaurus.EX_DELETE_VOCABULARY_FAILED", "", e);
         }
+      }
     }
   }
 
@@ -273,13 +263,11 @@ public class ThesaurusBm {
   private void deleteVocaSynonyms(Connection con, long idVoca)
       throws ThesaurusException {
     try {
-      SilverpeasBeanDAO daoS = getSdao();
       IdPK pk = new IdPK();
-      daoS.removeWhere(con, pk, " idVoca=" + idVoca);
+      getSynonymDao().removeWhere(con, pk, " idVoca=" + idVoca);
     } catch (PersistenceException e) {
       throw new ThesaurusException("ThesaurusBm.deleteVocaSynonyms",
-          SilverpeasException.ERROR,
-          "Thesaurus.EX_DELETE_SYNONYMS_VOCA_FAILED", "", e);
+          SilverpeasException.ERROR, "Thesaurus.EX_DELETE_SYNONYMS_VOCA_FAILED", "", e);
     }
   }
 
@@ -293,9 +281,8 @@ public class ThesaurusBm {
   private void deleteVocaJargons(Connection con, long idVoca)
       throws ThesaurusException {
     try {
-      SilverpeasBeanDAO daoJ = getJdao();
       IdPK pk = new IdPK();
-      daoJ.removeWhere(con, pk, " idVoca=" + idVoca);
+      getJargonDao().removeWhere(con, pk, " idVoca=" + idVoca);
     } catch (PersistenceException e) {
       throw new ThesaurusException("ThesaurusBm.deleteVocaJargons",
           SilverpeasException.ERROR, "Thesaurus.EX_DELETE_JARGONS_FAILED", "",
@@ -311,7 +298,6 @@ public class ThesaurusBm {
    * @see deleteJargon
    */
   public void deleteJargons(Collection jargons) throws ThesaurusException {
-
     try {
       Iterator i = jargons.iterator();
       while (i.hasNext()) {
@@ -336,7 +322,7 @@ public class ThesaurusBm {
    */
   private void deleteJargon(String idJargon) throws ThesaurusException {
     try {
-      SilverpeasBeanDAO daoJ = getJdao();
+      SilverpeasBeanDAO daoJ = getJargonDao();
       IdPK pk = new IdPK();
       pk.setId(idJargon);
       daoJ.remove(pk);
@@ -378,7 +364,7 @@ public class ThesaurusBm {
   private void createSynonym(Connection con, Synonym synonym)
       throws ThesaurusException {
     try {
-      SilverpeasBeanDAO daoS = getSdao();
+      SilverpeasBeanDAO daoS = getSynonymDao();
       daoS.add(con, synonym);
     } catch (PersistenceException e) {
       throw new ThesaurusException("ThesaurusBm.createSynonym",
@@ -400,7 +386,7 @@ public class ThesaurusBm {
       throws ThesaurusException {
     Collection synonyms = new ArrayList();
     try {
-      SilverpeasBeanDAO daoS = getSdao();
+      SilverpeasBeanDAO daoS = getSynonymDao();
       IdPK pk = new IdPK();
       synonyms = daoS.findByWhereClause(pk, " idVoca=" + idVoca
           + " AND idTree=" + idTree + " AND idTerm=" + idTerm);
@@ -502,7 +488,7 @@ public class ThesaurusBm {
   private void deleteSynonyms(Connection con, long idVoca, long idTree,
       long idTerm) throws ThesaurusException {
     try {
-      SilverpeasBeanDAO daoS = getSdao();
+      SilverpeasBeanDAO daoS = getSynonymDao();
       IdPK pk = new IdPK();
       daoS.removeWhere(con, pk, " idVoca=" + idVoca + " AND idTree=" + idTree
           + " AND idTerm=" + idTerm);
@@ -547,7 +533,7 @@ public class ThesaurusBm {
    */
   private void deleteSynonym(long idSynonym) throws ThesaurusException {
     try {
-      SilverpeasBeanDAO daoS = getSdao();
+      SilverpeasBeanDAO daoS = getSynonymDao();
       IdPK pk = new IdPK();
       pk.setIdAsLong(idSynonym);
       daoS.remove(pk);
@@ -568,7 +554,7 @@ public class ThesaurusBm {
   public void deleteSynonymsAxis(Connection con, long idTree)
       throws ThesaurusException {
     try {
-      SilverpeasBeanDAO daoS = getSdao();
+      SilverpeasBeanDAO daoS = getSynonymDao();
       IdPK pk = new IdPK();
       daoS.removeWhere(con, pk, " idTree=" + idTree);
     } catch (PersistenceException e) {
@@ -612,7 +598,7 @@ public class ThesaurusBm {
   private void deleteSynonymsTerm(Connection con, long idTree, long idTerm)
       throws ThesaurusException {
     try {
-      SilverpeasBeanDAO daoS = getSdao();
+      SilverpeasBeanDAO daoS = getSynonymDao();
       IdPK pk = new IdPK();
       daoS.removeWhere(con, pk, " idTree=" + idTree + " AND idTerm=" + idTerm);
     } catch (PersistenceException e) {
@@ -633,7 +619,7 @@ public class ThesaurusBm {
   public Collection getJargons(long idVoca) throws ThesaurusException {
     Collection jargons = new ArrayList();
     try {
-      SilverpeasBeanDAO daoJ = getJdao();
+      SilverpeasBeanDAO daoJ = getJargonDao();
       IdPK pk = new IdPK();
       jargons = daoJ.findByWhereClause(pk, " idVoca=" + idVoca);
     } catch (PersistenceException e) {
@@ -656,7 +642,7 @@ public class ThesaurusBm {
       throws ThesaurusException {
     Collection jargons = new ArrayList();
     try {
-      SilverpeasBeanDAO daoJ = getJdao();
+      SilverpeasBeanDAO daoJ = getJargonDao();
       IdPK pk = new IdPK();
 
       Iterator i = idUsers.iterator();
@@ -691,7 +677,7 @@ public class ThesaurusBm {
       throws ThesaurusException {
     Collection jargons = new ArrayList();
     try {
-      SilverpeasBeanDAO daoJ = getJdao();
+      SilverpeasBeanDAO daoJ = getJargonDao();
       IdPK pk = new IdPK();
 
       Iterator i = idUsers.iterator();
@@ -850,7 +836,7 @@ public class ThesaurusBm {
    */
   private void createJargon(Jargon jargon) throws ThesaurusException {
     try {
-      SilverpeasBeanDAO daoJ = getJdao();
+      SilverpeasBeanDAO daoJ = getJargonDao();
       daoJ.add(jargon);
     } catch (PersistenceException e) {
       throw new ThesaurusException("ThesaurusBm.createJargon",
@@ -869,7 +855,7 @@ public class ThesaurusBm {
     try {
       long newIdVoca = jargon.getIdVoca();
 
-      SilverpeasBeanDAO daoJ = getJdao();
+      SilverpeasBeanDAO daoJ = getJargonDao();
       IdPK pk = new IdPK();
       pk.setId(jargon.getPK().getId());
       Jargon jargonToModify = (Jargon) daoJ.findByPrimaryKey(pk);
@@ -891,7 +877,7 @@ public class ThesaurusBm {
   private void createJargon(Connection con, Jargon jargon)
       throws ThesaurusException {
     try {
-      SilverpeasBeanDAO daoJ = getJdao();
+      SilverpeasBeanDAO daoJ = getJargonDao();
       daoJ.add(con, jargon);
     } catch (PersistenceException e) {
       throw new ThesaurusException("ThesaurusBm.createJargon",
@@ -909,7 +895,7 @@ public class ThesaurusBm {
   public Jargon getJargon(String idUser) throws ThesaurusException {
     Jargon jargon = null;
     try {
-      SilverpeasBeanDAO daoJ = getJdao();
+      SilverpeasBeanDAO daoJ = getJargonDao();
       IdPK pk = new IdPK();
       Collection jargons = daoJ.findByWhereClause(pk, " idUser='" + idUser
           + "'" + " AND type=0");
@@ -938,7 +924,7 @@ public class ThesaurusBm {
       throws ThesaurusException {
     Collection synonyms = new ArrayList();
     try {
-      SilverpeasBeanDAO daoS = getSdao();
+      SilverpeasBeanDAO daoS = getSynonymDao();
       IdPK pk = new IdPK();
       synonyms = daoS.findByWhereClause(pk, " idVoca=" + idVoca + " AND name='"
           + encode(name) + "'");
@@ -964,7 +950,7 @@ public class ThesaurusBm {
       throws ThesaurusException {
     Collection synonyms = new ArrayList();
     try {
-      SilverpeasBeanDAO daoS = getSdao();
+      SilverpeasBeanDAO daoS = getSynonymDao();
       IdPK pk = new IdPK();
       synonyms = daoS.findByWhereClause(pk, " idVoca=" + idVoca
           + " AND idTree=" + idTree);
