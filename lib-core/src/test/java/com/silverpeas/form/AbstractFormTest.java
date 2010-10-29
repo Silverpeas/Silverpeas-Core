@@ -268,7 +268,7 @@ public class AbstractFormTest {
       MyFieldDisplayer displayer = new MyFieldDisplayer();
       StringBuilder builder = new StringBuilder();
       if (! templates.isEmpty()) {
-        builder.append("<script type=\"text/javascript\" src=\"/weblib/xmlforms/").
+        builder.append("<script type=\"text/javascript\" src=\"/weblib/xmlForms/").
                 append(getFieldTemplates().get(0).getTemplateName()).append(
                 ".js\"></script>\n");
       }
