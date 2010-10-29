@@ -62,25 +62,22 @@ public class XmlForm extends AbstractForm {
    * Prints the HTML layout of the dataRecord using the RecordTemplate to extract labels and extra
    * informations. The value formats may be adapted to a local language. Never throws an Exception
    * but log a silvertrace and writes an empty string when :
-   * <UL>
-   * <LI>a field is unknown by the template.
-   * <LI>a field has not the required type.
-   * </UL>
+   * <ul>
+   * <li>a field is unknown by the template.</li>
+   * <li>a field has not the required type.</li>
+   * </ul>
+   * @param pagesContext
+   * @param record
+   * @return  
    */
   @Override
   public String toString(PagesContext pagesContext, DataRecord record) {
     SilverTrace.info("form", "XmlForm.toString", "root.MSG_GEN_ENTER_METHOD");
     StringWriter sw = new StringWriter();
-    /*
-     * try {
-     */
     String language = pagesContext.getLanguage();
-    // StringWriter sw = new StringWriter();
     PrintWriter out = new PrintWriter(sw, true);
-
-    if (pagesContext.getPrintTitle() && getTitle() != null && getTitle().length() > 0) {
-      out
-          .println("<table cellpadding=\"0\" cellspacing=\"2\" border=\"0\" width=\"98%\" class=\"intfdcolor\">");
+    if (pagesContext.getPrintTitle() && StringUtil.isDefined(getTitle())) {
+      out.println("<table cellpadding=\"0\" cellspacing=\"2\" border=\"0\" width=\"98%\" class=\"intfdcolor\">");
       out.println("<tr>");
       out.println("<td class=\"intfdcolor4\" nowrap=\"nowrap\">");
       out.println("<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\">");
@@ -396,8 +393,9 @@ public class XmlForm extends AbstractForm {
             isReadOnly = fieldTemplate.isReadOnly();
             isHidden = fieldTemplate.isHidden();
             fieldClass = "";
-            if (parameters.containsKey("classLabel"))
-              fieldClass = (String) parameters.get("classLabel");
+            if (parameters.containsKey("classLabel")) {
+              fieldClass = parameters.get("classLabel");
+            }
 
             field = null;
             if (record != null) {
@@ -410,8 +408,9 @@ public class XmlForm extends AbstractForm {
 
             if (record == null || (record != null && field != null)) {
               try {
-                if (fieldDisplayerName == null || fieldDisplayerName.equals(""))
+                if (!StringUtil.isDefined(fieldDisplayerName)) {
                   fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
+                }
 
                 fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
               } catch (FormException fe) {
@@ -425,21 +424,22 @@ public class XmlForm extends AbstractForm {
                 out.println("<tr align=\"center\">");
                 out.println("<td class=\"intfdcolor4\" valign=\"top\" align=\"left\">");
                 if (fieldLabel != null && !fieldLabel.equals("")) {
-                  if (StringUtil.isDefined(fieldClass))
+                  if (StringUtil.isDefined(fieldClass)) {
                     out.println("<span class=\"" + fieldClass + "\">" + fieldLabel + " :</span>");
-                  else
+                  }
+                  else {
                     out.println("<span class=\"txtlibform\">" + fieldLabel + " :</span>");
-                } else
+                  }
+                } else {
                   out.println("<span class=\"txtlibform\">&nbsp;</span>");
+                }
                 out.println("</td>");
                 out.println("<td class=\"intfdcolor4\" valign=\"baseline\" align=\"left\">");
-
                 if (field == null) {
                   try {
                     field = fieldTemplate.getEmptyField();
                   } catch (FormException fe) {
-                    SilverTrace
-                        .error("form", "XmlForm.display", "form.EXP_UNKNOWN_FIELD", null, fe);
+                    SilverTrace.error("form", "XmlForm.display", "form.EXP_UNKNOWN_FIELD", null, fe);
                   }
                 }
 
