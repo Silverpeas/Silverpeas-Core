@@ -38,6 +38,7 @@ import com.silverpeas.form.fieldType.DateField;
 import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import java.util.ArrayList;
@@ -89,27 +90,27 @@ public class TextDisplayer extends AbstractFieldDisplayer {
    * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
    * value format may be adapted to a local language. The fieldName must be used to name the html
    * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
-   * <UL>
-   * <LI>the field type is not a managed type.
-   * </UL>
+   * <ul>
+   * <li>the field type is not a managed type.</li>
+   * </ul>
+   * @param out
+   * @param field
+   * @param template
+   * @param PagesContext
+   * @throws FormException  
    */
   @Override
-  public void display(PrintWriter out,
-      Field field,
-      FieldTemplate template,
+  public void display(PrintWriter out, Field field, FieldTemplate template, 
       PagesContext PagesContext) throws FormException {
-
     String value = "";
-    String classe = "";
+    String classe = null;
     String size = "";
     String color = "";
     String face = "";
     String bold = "";
     String html = "";
     String language = PagesContext.getLanguage();
-
     Map<String, String> parameters = template.getParameters(language);
-
     if (!field.isNull()) {
       value = field.getValue(language);
     }
@@ -119,11 +120,9 @@ public class TextDisplayer extends AbstractFieldDisplayer {
         value = DateUtil.getOutputDate(field.getValue(), PagesContext.getLanguage());
       } catch (Exception e) {
         SilverTrace.error("form", "TextDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-            "value = " + field.getValue(),
-            e);
+            "value = " + field.getValue(), e);
       }
     }
-
     if (parameters.containsKey("class")) {
       classe = parameters.get("class");
       if (classe != null) {
@@ -141,7 +140,6 @@ public class TextDisplayer extends AbstractFieldDisplayer {
         String t = null;
         while (tokenizer.hasMoreTokens()) {
           t = tokenizer.nextToken();
-
           t = keyValuePairs.get(t);
           newValue += t;
 
@@ -155,7 +153,7 @@ public class TextDisplayer extends AbstractFieldDisplayer {
       value = newValue;
     }
 
-    if (classe.length() > 0) {
+    if (StringUtil.isDefined(classe)) {
       html += "<span " + classe + ">";
     }
 
@@ -165,17 +163,17 @@ public class TextDisplayer extends AbstractFieldDisplayer {
     }
 
     if (parameters.containsKey("fontSize")) {
-      size = (String) parameters.get("fontSize");
+      size = parameters.get("fontSize");
       html += " size=\"" + size + "\"";
     }
 
     if (parameters.containsKey("fontColor")) {
-      color = (String) parameters.get("fontColor");
+      color = parameters.get("fontColor");
       html += " color=\"" + color + "\"";
     }
 
     if (parameters.containsKey("fontFace")) {
-      face = (String) parameters.get("fontFace");
+      face = parameters.get("fontFace");
       html += " face=\"" + face + "\"";
     }
 
@@ -184,7 +182,7 @@ public class TextDisplayer extends AbstractFieldDisplayer {
     }
 
     if (parameters.containsKey("bold")) {
-      bold = (String) parameters.get("bold");
+      bold = parameters.get("bold");
       if ("true".equals(bold)) {
         html += "<b>";
       }
@@ -210,15 +208,18 @@ public class TextDisplayer extends AbstractFieldDisplayer {
   /**
    * Updates the value of the field. The fieldName must be used to retrieve the HTTP parameter from
    * the request.
+   * @param newValue 
+   * @param field 
+   * @param template 
+   * @param PagesContext 
+   * @return 
+   * @throws FormException 
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
   @Override
-  public List<String> update(String newValue,
-      Field field,
-      FieldTemplate template,
-      PagesContext PagesContext)
-      throws FormException {
+  public List<String> update(String newValue, Field field, FieldTemplate template, 
+    PagesContext PagesContext) throws FormException {
     return new ArrayList<String>();
   }
 
