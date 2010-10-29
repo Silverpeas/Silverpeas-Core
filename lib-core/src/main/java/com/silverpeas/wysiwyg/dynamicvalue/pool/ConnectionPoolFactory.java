@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.wysiwyg.dynamicvalue.pool;
 
 import java.sql.Connection;
@@ -38,10 +37,9 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * This class allow to initiate a connectionPool implementation and gets a connection from the pool
  */
 public class ConnectionPoolFactory {
+
   final static String ConfigPoolFilename = "ConnectionSettings.xml";
-
   private static ConnectionPoolInformation poolInfo = null;
-
   private static ConnectionPool pool = null;
 
   /**
@@ -56,76 +54,67 @@ public class ConnectionPoolFactory {
    */
   public static Connection getConnection() throws SQLException {
     Connection conn = null;
-
-    // build a pojo which contains information about connection to database (jdni name or jdbc url)
-    if (poolInfo == null) {
-      SilverTrace.debug("wysiwyg", ConnectionPoolFactory.class.toString(),
-          " information about datasource : loading ...");
-      try {
-        Mapping mapping = new Mapping();
-
-        // 1. Load the mapping information from the file
-        mapping.loadMapping(new InputSource(ConnectionPoolFactory.class
-            .getResourceAsStream("mapping-config.xml")));
-
-        // 2. Unmarshal the data
-        Unmarshaller unmar = new Unmarshaller(mapping);
-        poolInfo =
-            (ConnectionPoolInformation) unmar.unmarshal(new InputSource(ConnectionPoolFactory.class
-            .getResourceAsStream(ConfigPoolFilename)));
-
+    synchronized (ConnectionPoolFactory.class) {
+      // build a pojo which contains information about connection to database (jdni name or jdbc url)
+      if (poolInfo == null) {
         SilverTrace.debug("wysiwyg", ConnectionPoolFactory.class.toString(),
-            " information about datasource : poolInformation detail :" + poolInfo.toString());
+            " information about datasource : loading ...");
+        try {
+          Mapping mapping = new Mapping();
 
-      } catch (Exception exception) {
-        SilverTrace
-            .error("wysiwig", ConnectionPoolFactory.class.toString(),
-            "wysiwig.CONNECTION_INIALIZATION_FAILED");
-        throw new TechnicalException(
-            "The pool  has not been initialized. Error when parsing "
-            + ConfigPoolFilename
-            , exception);
+          // 1. Load the mapping information from the file
+          mapping.loadMapping(new InputSource(ConnectionPoolFactory.class.getResourceAsStream(
+              "mapping-config.xml")));
+
+          // 2. Unmarshal the data
+          Unmarshaller unmar = new Unmarshaller(mapping);
+          poolInfo = (ConnectionPoolInformation) unmar.unmarshal(new InputSource(
+              ConnectionPoolFactory.class.getResourceAsStream(ConfigPoolFilename)));
+
+          SilverTrace.debug("wysiwyg", ConnectionPoolFactory.class.toString(),
+              " information about datasource : poolInformation detail :" + poolInfo.toString());
+
+        } catch (Exception exception) {
+          SilverTrace.error("wysiwig", ConnectionPoolFactory.class.toString(),
+              "wysiwig.CONNECTION_INIALIZATION_FAILED");
+          throw new TechnicalException(
+              "The pool  has not been initialized. Error when parsing "
+              + ConfigPoolFilename, exception);
+        }
+        SilverTrace.debug("wysiwyg", ConnectionPoolFactory.class.toString(),
+            " information about datasource : end of loading ...");
       }
-      SilverTrace.debug("wysiwyg", ConnectionPoolFactory.class.toString(),
-          " information about datasource : end of loading ...");
     }
     // gets a connectionPool
-    if (pool == null) {
-      // check the class to instantiate the correct class.
-      // this code must be replace by the use of a properties file or connectionSettings.xml if
-      // there are more than 2 pool
-      // implementations
-      if (poolInfo != null && StringUtils.isNotEmpty(poolInfo.getConnectionType())) {
-        String className = null;
-        if (poolInfo.getConnectionType().equalsIgnoreCase("JNDI")) {
-          className = "com.silverpeas.wysiwyg.dynamicvalue.pool.ConnectionPoolWithJNDI";
+    synchronized (ConnectionPoolFactory.class) {
+      if (pool == null) {
+        // check the class to instantiate the correct class.
+        // this code must be replace by the use of a properties file or connectionSettings.xml if
+        // there are more than 2 pool implementations
+        if (poolInfo != null && StringUtils.isNotEmpty(poolInfo.getConnectionType())) {
+          String className = "com.silverpeas.wysiwyg.dynamicvalue.pool.ConnectionPoolWithJDBC";
+          if ("JNDI".equalsIgnoreCase(poolInfo.getConnectionType())) {
+            className = "com.silverpeas.wysiwyg.dynamicvalue.pool.ConnectionPoolWithJNDI";
+          }
+          // pool instantiation
+          try {
+            pool = (ConnectionPool) Class.forName(className).newInstance();
+          } catch (Exception e) {
+            SilverTrace.error("wysiwig", ConnectionPoolFactory.class.toString(),
+                "root.EX_CANT_INSTANCIATE_DB_DRIVER");
+            throw new TechnicalException(
+                "The pool  has not been initialized. Error during object instantiation", e);
+          }
+          pool.setPoolInformation(poolInfo);
         } else {
-          className = "com.silverpeas.wysiwyg.dynamicvalue.pool.ConnectionPoolWithJDBC";
-        }
-        // pool instantiation
-        try {
-          pool = (ConnectionPool) Class.forName(className).newInstance();
-        } catch (Exception e) {
-          SilverTrace
-              .error("wysiwig", ConnectionPoolFactory.class.toString(),
-              "root.EX_CANT_INSTANCIATE_DB_DRIVER");
+          SilverTrace.error("wysiwig", ConnectionPoolFactory.class.toString(),
+              "wysiwig.CONNECTION_INIALIZATION_FAILED");
           throw new TechnicalException(
-              "The pool  has not been initialized. Error during object instantiation", e);
+              "The pool  has not been initialized. Error when reading ConnectionPoolInformation object");
         }
-        pool.setPoolInformation(poolInfo);
-      } else {
-        SilverTrace
-            .error("wysiwig", ConnectionPoolFactory.class.toString(),
-            "wysiwig.CONNECTION_INIALIZATION_FAILED");
-        throw new TechnicalException(
-            "The pool  has not been initialized. Error when reading ConnectionPoolInformation object");
       }
-
     }
     conn = pool.getConnection();
-
     return conn;
-
   }
-
 }

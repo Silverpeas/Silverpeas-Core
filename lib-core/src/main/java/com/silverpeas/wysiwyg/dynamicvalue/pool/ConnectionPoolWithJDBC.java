@@ -67,20 +67,17 @@ public class ConnectionPoolWithJDBC implements ConnectionPool {
    * Initializes the datasource. This datasource is based on the SharedPoolDataSource class, a dbcp
    * implementation
    */
-  private static void initializeDatasource() {
-    SilverTrace.debug("wysiwyg", ConnectionPoolWithJDBC.class.toString(),
+  private synchronized static void initializeDatasource() {
+    SilverTrace.debug("wysiwyg", ConnectionPoolWithJDBC.class.toString(), 
         " Datasource initialization : starting ...");
     if (ds == null) {
       // check if the information for the pool creation is present.
       if (poolInfo == null) {
-        SilverTrace
-            .error("wysiwig", ConnectionPoolWithJDBC.class.toString(),
+        SilverTrace.error("wysiwig", ConnectionPoolWithJDBC.class.toString(),
             "wysiwig.CONNECTION_INIALIZATION_FAILED");
-        throw new TechnicalException(
-            ConnectionPoolWithJDBC.class.toString() +
-                " : An error occurred  during the connection initialization. The Pool information must be set");
+        throw new TechnicalException(ConnectionPoolWithJDBC.class.toString() 
+            + " : An error occurred  during the connection initialization. The Pool information must be set");
       }
-
       SilverTrace.debug("wysiwyg", ConnectionPoolWithJDBC.class.toString(),
           " Datasource initialization : poolInfo detail :: " + poolInfo.toString());
 
@@ -89,12 +86,9 @@ public class ConnectionPoolWithJDBC implements ConnectionPool {
       try {
         cpds.setDriver(poolInfo.getDriver());
       } catch (ClassNotFoundException e) {
-        SilverTrace
-            .error("wysiwig", ConnectionPoolWithJDBC.class.toString(),
-            "wysiwig.DRIVER_MISSING");
-        throw new TechnicalException(
-            ConnectionPoolWithJDBC.class.toString() +
-                " : An error occurred  during the connection initializatoin. The JDBC driver isn't in the classpath",
+        SilverTrace.error("wysiwig", ConnectionPoolWithJDBC.class.toString(), "wysiwig.DRIVER_MISSING");
+        throw new TechnicalException(ConnectionPoolWithJDBC.class.toString() +
+            " : An error occurred  during the connection initializatoin. The JDBC driver isn't in the classpath",
             e);
       }
       cpds.setUrl(poolInfo.getUrl());
@@ -111,7 +105,6 @@ public class ConnectionPoolWithJDBC implements ConnectionPool {
       tds.setNumTestsPerEvictionRun(poolInfo.getNumTestsPerEvictionRun());
       tds.setMinEvictableIdleTimeMillis(poolInfo.getMinEvictableIdleTimeMillis());
       ds = tds;
-
       SilverTrace.debug("wysiwyg", ConnectionPoolWithJDBC.class.toString(),
           " Datasource initialization : ending ...");
     }
@@ -120,6 +113,7 @@ public class ConnectionPoolWithJDBC implements ConnectionPool {
   /**
    * @return the poolInfo
    */
+  @Override
   public ConnectionPoolInformation getPoolInformation() {
     return poolInfo;
   }
@@ -127,6 +121,7 @@ public class ConnectionPoolWithJDBC implements ConnectionPool {
   /**
    * @param poolInfo the poolInfo to set
    */
+  @Override
   public void setPoolInformation(ConnectionPoolInformation poolInfo) {
     ConnectionPoolWithJDBC.poolInfo = poolInfo;
   }

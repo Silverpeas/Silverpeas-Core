@@ -119,7 +119,7 @@ public class Util {
     out.println(" } ");
   }
 
-  private static void setLanguage(String lg) {
+  private synchronized static void setLanguage(String lg) {
     if ((language == null)
         || (!language.trim().toLowerCase().equals(lg.trim().toLowerCase()))) {
       language = lg;
