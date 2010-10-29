@@ -39,6 +39,7 @@ import com.silverpeas.util.i18n.I18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import java.util.Collections;
 
 /**
  * The default implementation of ArrayPane interface
@@ -61,7 +62,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
   private String componentId = null;
   private MainSessionController mainSessionController = null;
 
-  private List<BrowseBarElement> elements = new ArrayList<BrowseBarElement>();
+  private final List<BrowseBarElement> elements = new ArrayList<BrowseBarElement>();
 
   private String spaceJavascriptCallback = null;
   private String componentJavascriptCallback = null;
@@ -96,6 +97,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
    * @param domainName
    * @see
    */
+  @Override
   public void setDomainName(String domainName) {
     this.domainName = domainName;
   }
@@ -114,6 +116,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
    * @param componentName
    * @see
    */
+  @Override
   public void setComponentName(String componentName) {
     this.componentName = componentName;
     componentLink = null;
@@ -125,6 +128,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
    * @param link
    * @see
    */
+  @Override
   public void setComponentName(String componentName, String link) {
     this.componentName = componentName;
     componentLink = link;
@@ -153,6 +157,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
    * @param information
    * @see
    */
+  @Override
   public void setExtraInformation(String information) {
     if (information != null) {
       if (information.length() > 0) {
@@ -175,6 +180,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
    * @param path
    * @see
    */
+  @Override
   public void setPath(String path) {
     if (StringUtil.isDefined(path)) {
       this.path = path;
@@ -215,14 +221,17 @@ public abstract class AbstractBrowseBar implements BrowseBar {
     return languages;
   }
 
+  @Override
   public void addElement(BrowseBarElement element) {
     elements.add(element);
   }
 
+  @Override
   public void addElements(List<BrowseBarElement> elements) {
     this.elements.addAll(elements);
   }
 
+  @Override
   public void setElements(List<BrowseBarElement> elements) {
     this.elements.clear();
     this.elements.addAll(elements);
@@ -232,16 +241,19 @@ public abstract class AbstractBrowseBar implements BrowseBar {
     return elements;
   }
 
+  @Override
   public void setI18N(I18NBean bean, String language) {
     i18nBean = bean;
     this.language = language;
   }
 
+  @Override
   public void setI18N(String url, String language) {
     this.url = url;
     this.language = language;
   }
 
+  @Override
   public void setI18N(List<String> languages, String language) {
     this.languages = languages;
     this.language = language;
@@ -252,12 +264,13 @@ public abstract class AbstractBrowseBar implements BrowseBar {
   }
 
   public String getI18NHTMLLinks() {
-    if (getI18NBean() != null)
+    if (getI18NBean() != null) {
       return I18NHelper.getHTMLLinks(getI18NBean(), getLanguage());
-    else if (getUrl() != null)
+    }
+    else if (getUrl() != null) {
       return I18NHelper.getHTMLLinks(getUrl(), getLanguage());
-    else
-      return I18NHelper.getHTMLLinks(getLanguages(), getLanguage());
+    }
+    return I18NHelper.getHTMLLinks(getLanguages(), getLanguage());
   }
 
   /**
@@ -265,12 +278,14 @@ public abstract class AbstractBrowseBar implements BrowseBar {
    * @return
    * @see
    */
+  @Override
   public abstract String print();
 
   public String getSpaceId() {
     return spaceId;
   }
 
+  @Override
   public void setSpaceId(String spaceId) {
     this.spaceId = spaceId;
   }
@@ -279,6 +294,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
     return componentId;
   }
 
+  @Override
   public void setComponentId(String componentId) {
     this.componentId = componentId;
   }
@@ -287,16 +303,20 @@ public abstract class AbstractBrowseBar implements BrowseBar {
     return mainSessionController;
   }
 
+  @Override
   public void setMainSessionController(MainSessionController mainSessionController) {
     this.mainSessionController = mainSessionController;
   }
 
+  @Override
   public abstract String getBreadCrumb();
 
+  @Override
   public void setSpaceJavascriptCallback(String callback) {
     spaceJavascriptCallback = callback;
   }
 
+  @Override
   public void setComponentJavascriptCallback(String callback) {
     componentJavascriptCallback = callback;
   }
@@ -309,6 +329,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
     return componentJavascriptCallback;
   }
 
+  @Override
   public void setClickable(boolean clickable) {
     this.clickable = clickable;
   }
@@ -317,6 +338,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
     return clickable;
   }
   
+  @Override
   public void setIgnoreComponentLink(boolean ignore) {
      ignoreComponentLink = ignore;
   }
