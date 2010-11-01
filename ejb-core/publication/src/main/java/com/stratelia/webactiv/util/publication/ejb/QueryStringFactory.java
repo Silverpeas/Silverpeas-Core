@@ -21,9 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
----*/
 package com.stratelia.webactiv.util.publication.ejb;
 
 public class QueryStringFactory extends Object {
@@ -36,34 +33,45 @@ public class QueryStringFactory extends Object {
   private static String selectByFatherPK = null;
   private static String selectByFatherPKPeriodSensitive = null;
   private static String loadRow = null;
-  private static String selectByName = null;
-  private static String selectByNameAndNodeId = null;
+  private final static String selectByName;
+  private static final String selectByNameAndNodeId;
   private static String selectNotInFatherPK = null;
+
+  static {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT * FROM sb_publication_publi pub, sb_publication_publifather pubnode");
+    query.append(" WHERE (pub.pubid = pubnode.pubid)");
+    query.append(" AND pub.pubname = ?");
+    query.append(" AND pub.instanceId = ?");
+    query.append(" AND pubnode.nodeid = ?");
+    selectByNameAndNodeId = query.toString();
+
+    query = new StringBuilder();
+    query.append("SELECT * FROM sb_publication_publi WHERE pubName = ? AND instanceId = ? ");
+    selectByName = query.toString();
+  }
 
   public static String getSelectByBeginDateDescAndStatusAndNotLinkedToFatherId(
       String tableName) {
-    if (selectByBeginDateDescAndStatusAndNotLinkedToFatherId == null) {
-      StringBuffer query = new StringBuffer();
-      query.append(
-          "select  distinct(P.pubId), P.infoId, P.pubName, P.pubDescription, P.pubCreationDate, P.pubBeginDate, ");
-      query.append(
-          "        P.pubEndDate, P.pubCreatorId, P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, ");
-      query.append(
-          "		 P.pubStatus, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, P.pubDraftOutDate ");
-      query.append(" from ").append(tableName).append(" P, ").append(tableName).append("Father F ");
-      query.append(" where F.pubId = P.pubId ");
-      query.append(" and F.instanceId = ? ");
-      query.append(" and F.nodeId <> ? ");
-      query.append(" and P.pubStatus = ? ");
-      query.append("and (");
-      query.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
-      query.append("( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
-      query.append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
-      query.append(
-          "( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour AND ? < P.pubEndHour )");
-      query.append(" ) ");
-      query.append(" order by P.pubBeginDate DESC, P.pubCreationDate DESC ");
-      selectByBeginDateDescAndStatusAndNotLinkedToFatherId = query.toString();
+    synchronized(QueryStringFactory.class) {
+      if (selectByBeginDateDescAndStatusAndNotLinkedToFatherId == null) {
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT DISTINCT(P.pubId), P.infoId, P.pubName, P.pubDescription, ");
+        query.append("P.pubCreationDate, P.pubBeginDate, P.pubEndDate, P.pubCreatorId, ");
+        query.append("P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, ");
+        query.append("	P.pubStatus, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, ");
+        query.append("P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, ");
+        query.append("P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, ");
+        query.append("P.pubDraftOutDate FROM ").append(tableName).append(" P, ").append(tableName);
+        query.append("Father F WHERE F.pubId = P.pubId AND F.instanceId = ? ");
+        query.append(" AND F.nodeId <> ?  AND P.pubStatus = ? AND (");
+        query.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
+        query.append("( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
+        query.append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
+        query.append("( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour ");
+        query.append("AND ? < P.pubEndHour )) ORDER BY P.pubBeginDate DESC, P.pubCreationDate DESC ");
+        selectByBeginDateDescAndStatusAndNotLinkedToFatherId = query.toString();
+      }
     }
     return selectByBeginDateDescAndStatusAndNotLinkedToFatherId;
   }
@@ -101,74 +109,57 @@ public class QueryStringFactory extends Object {
 
     if (periodSensitive) {
       return selectByFatherPKPeriodSensitive;
-    } else {
-      return selectByFatherPK;
     }
+    return selectByFatherPK;
   }
 
   public static String getSelectNotInFatherPK(String tableName) {
-    if (selectNotInFatherPK == null) {
-      StringBuffer query = new StringBuffer();
-      query.append(
-          "select distinct P.pubId, P.infoId, P.pubName, P.pubDescription, P.pubCreationDate, P.pubBeginDate, ");
-      query.append(
-          "        P.pubEndDate, P.pubCreatorId, P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, ");
-      query.append(
-          "		 P.pubStatus, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, P.pubDraftOutDate ");
-      query.append("from ").append(tableName).append(" P, ").append(tableName).append("Father  F ");
-      query.append("where F.instanceId = ? ");
-      query.append("and F.nodeId <> ? ");
-      query.append("and F.pubId = P.pubId ");
-      query.append("and (");
-      query.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
-      query.append("( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
-      query.append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
-      query.append(
-          "( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour AND ? < P.pubEndHour )");
-      query.append(" ) ");
-      selectNotInFatherPK = query.toString();
+    synchronized (QueryStringFactory.class) {
+      if (selectNotInFatherPK == null) {
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT DISTINCT P.pubId, P.infoId, P.pubName, P.pubDescription, ");
+        query.append("P.pubCreationDate, P.pubBeginDate, P.pubEndDate, P.pubCreatorId, ");
+        query.append("P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, P.pubStatus, ");
+        query.append("P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, ");
+        query.append("P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, ");
+        query.append("P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, ");
+        query.append("P.pubDraftOutDate FROM ").append(tableName).append(" P, ").append(tableName);
+        query.append("Father F WHERE F.instanceId = ? AND F.nodeId <> ? ");
+        query.append("AND F.pubId = P.pubId AND (");
+        query.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
+        query.append("( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
+        query.append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
+        query.append("( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour ");
+        query.append(" AND ? < P.pubEndHour )) ");
+        selectNotInFatherPK = query.toString();
+      }
     }
     return selectNotInFatherPK;
   }
 
   public static String getLoadRow(String tableName) {
-    if (loadRow == null) {
-      StringBuffer query = new StringBuffer();
-      query.append("select pubid, infoid, pubname, pubdescription, pubcreationdate, "
-              + "pubbegindate, pubenddate, pubcreatorid, pubimportance, pubversion, pubkeywords,"
-              + "pubcontent, pubstatus, pubupdatedate,"
-              + "instanceid, pubupdaterid, pubvalidatedate, pubvalidatorid, pubbeginhour,"
-              + "pubendhour, pubauthor, pubtargetvalidatorid, pubcloneid, pubclonestatus,"
-              + "lang, pubDraftOutDate ");
-      query.append(" from ").append(tableName);
-      query.append(" where pubId = ? ");
-      loadRow = query.toString();
+    synchronized (QueryStringFactory.class) {
+      if (loadRow == null) {
+        StringBuilder query = new StringBuilder();
+        query.append("select pubid, infoid, pubname, pubdescription, pubcreationdate, "
+            + "pubbegindate, pubenddate, pubcreatorid, pubimportance, pubversion, pubkeywords,"
+            + "pubcontent, pubstatus, pubupdatedate,"
+            + "instanceid, pubupdaterid, pubvalidatedate, pubvalidatorid, pubbeginhour,"
+            + "pubendhour, pubauthor, pubtargetvalidatorid, pubcloneid, pubclonestatus,"
+            + "lang, pubDraftOutDate ");
+        query.append(" from ").append(tableName);
+        query.append(" where pubId = ? ");
+        loadRow = query.toString();
+      }
     }
     return loadRow;
   }
 
-  public static String getSelectByName(String tableName) {
-    if (selectByName == null) {
-      StringBuffer query = new StringBuffer();
-      query.append("select * ");
-      query.append("from ").append(tableName);
-      query.append(" where pubName = ? ");
-      query.append(" and instanceId = ? ");
-      selectByName = query.toString();
-    }
+  public static String getSelectByName() {
     return selectByName;
   }
 
   public static String getSelectByNameAndNodeId() {
-    if (selectByNameAndNodeId == null) {
-      StringBuffer query = new StringBuffer();
-      query.append("SELECT * FROM sb_publication_publi pub, sb_publication_publifather pubnode");
-      query.append(" WHERE (pub.pubid = pubnode.pubid)");
-      query.append(" AND pub.pubname = ?");
-      query.append(" AND pub.instanceId = ?");
-      query.append(" AND pubnode.nodeid = ?");
-      selectByNameAndNodeId = query.toString();
-    }
     return selectByNameAndNodeId;
   }
 }

@@ -1838,7 +1838,7 @@ public class PublicationDAO {
           PublicationPK pubPK, String name) throws SQLException {
     ResultSet rs = null;
     PublicationDetail pub = null;
-    String selectStatement = QueryStringFactory.getSelectByName(pubPK.getTableName());
+    String selectStatement = QueryStringFactory.getSelectByName();
     PreparedStatement prepStmt = null;
 
     try {

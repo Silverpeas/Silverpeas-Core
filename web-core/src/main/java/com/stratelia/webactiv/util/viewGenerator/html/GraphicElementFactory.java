@@ -82,13 +82,16 @@ import java.util.ArrayList;
  */
 public class GraphicElementFactory extends Object {
   public static final String GE_FACTORY_SESSION_ATT = "SessionGraphicElementFactory";
-  private static ResourceLocator settings = null;
-  private static String iconsPath = null;
+  private final static ResourceLocator settings = new ResourceLocator(
+          "com.stratelia.webactiv.util.viewGenerator.settings.graphicElementFactorySettings", "");
+  private static String iconsPath = getGeneralSettings().getString("ApplicationURL")
+          + getSettings().getString("IconsPath");
   private ResourceLocator lookSettings = null;
   private ResourceLocator silverpeasLookSettings = null;
   private ResourceLocator favoriteLookSettings = null;
   private String defaultLook = "com.stratelia.webactiv.util.viewGenerator.settings.Initial";
-  private static ResourceLocator generalSettings = null;
+  private final static ResourceLocator generalSettings = new ResourceLocator("com.stratelia.webactiv.general",
+          I18NHelper.defaultLanguage);
   private ResourceLocator multilang = null;
 
   private String currentLookName = null;
@@ -120,18 +123,10 @@ public class GraphicElementFactory extends Object {
   }
 
   public static String getIconsPath() {
-    if (iconsPath == null) {
-      iconsPath = getGeneralSettings().getString("ApplicationURL")
-          + getSettings().getString("IconsPath");
-    }
     return iconsPath;
   }
 
   public static ResourceLocator getGeneralSettings() {
-    if (generalSettings == null) {
-      generalSettings = new ResourceLocator("com.stratelia.webactiv.general",
-          I18NHelper.defaultLanguage);
-    }
     return generalSettings;
   }
 
@@ -159,10 +154,6 @@ public class GraphicElementFactory extends Object {
    * know wich component to instanciate, but also to know how to generate html code.
    */
   public static ResourceLocator getSettings() {
-    if (settings == null) {
-      settings = new ResourceLocator(
-          "com.stratelia.webactiv.util.viewGenerator.settings.graphicElementFactorySettings", "");
-    }
     return settings;
   }
 
@@ -290,8 +281,7 @@ public class GraphicElementFactory extends Object {
    * @see
    */
   public String getLookStyleSheet() {
-    SilverTrace.info("viewgenerator",
-        "GraphicElementFactory.getLookStyleSheet()",
+    SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookStyleSheet()",
         "root.MSG_GEN_ENTER_METHOD");
     String standardStyle = "/util/styleSheets/globalSP_SilverpeasV5.css";
     String standardStyleForIE = "/util/styleSheets/globalSP_SilverpeasV5-IE.css";

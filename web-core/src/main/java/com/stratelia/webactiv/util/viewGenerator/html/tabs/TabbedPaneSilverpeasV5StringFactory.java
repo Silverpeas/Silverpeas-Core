@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.webactiv.util.viewGenerator.html.tabs;
 
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
@@ -33,11 +30,10 @@ public class TabbedPaneSilverpeasV5StringFactory extends Object {
   private static String printBeforeString = null;
   private static String printAfterString = null;
   private static String printEndString = null;
-
-  public static String getPrintBeforeString() {
-    if (printBeforeString == null) {
-      String iconsPath = GraphicElementFactory.getIconsPath();
-      StringBuffer buffer = new StringBuffer();
+  
+  static {
+    String iconsPath = GraphicElementFactory.getIconsPath();
+      StringBuilder buffer = new StringBuilder();
       buffer.append("<td>\n");
       buffer.append("<table border=0 cellspacing=0 cellpadding=0>\n");
       buffer.append("<tr>\n");
@@ -63,17 +59,9 @@ public class TabbedPaneSilverpeasV5StringFactory extends Object {
           .append("/tabs/1px.gif\"></td>\n");
       buffer.append("<td class=ongletColorLight><img src=\"").append(iconsPath)
           .append("/tabs/1px.gif\"></td>\n");
-
       printBeforeString = buffer.toString();
-    }
-    return printBeforeString;
-  }
-
-  public static String getPrintAfterString() {
-    if (printAfterString == null) {
-      String iconsPath = GraphicElementFactory.getIconsPath();
-      StringBuffer buffer = new StringBuffer();
-
+      
+      buffer = new StringBuilder();
       buffer.append("<td class=ongletColorDark><img src=\"").append(iconsPath)
           .append("/tabs/1px.gif\"></td>\n");
       buffer.append("<td bgcolor=#666666><img src=\"").append(iconsPath)
@@ -83,29 +71,31 @@ public class TabbedPaneSilverpeasV5StringFactory extends Object {
       buffer.append("</tr>\n");
       buffer.append("</table>\n");
       buffer.append("</td>\n");
-
       printAfterString = buffer.toString();
-    }
+      
+      buffer = new StringBuilder();
+      buffer.append("<table width=\"100%\" border=0 cellspacing=0 cellpadding=0>\n");
+      buffer.append("<tr>\n<td class=\"intfdcolor6\">\n");
+      buffer.append("<img src=\"").append(iconsPath);
+      buffer.append("/tabs/1px.gif\" width=\"1\" height=\"3\"></td>\n");
+      buffer.append("</tr>\n");
+      buffer.append("<tr>\n<td>\n");
+      buffer.append("<img src=\"").append(iconsPath);
+      buffer.append("/tabs/1px.gif\" width=\"1\" height=\"6\"></td>\n");
+      buffer.append("</tr>\n");
+      buffer.append("</table>\n");
+      printEndString = buffer.toString();
+  }
+
+  public static String getPrintBeforeString() {
+   return printBeforeString;
+  }
+
+  public static String getPrintAfterString() {
     return printAfterString;
   }
 
   public static String getPrintEndString() {
-    if (printEndString == null) {
-      String iconsPath = GraphicElementFactory.getIconsPath();
-      StringBuffer buffer = new StringBuffer();
-      buffer
-          .append("<table width=\"100%\" border=0 cellspacing=0 cellpadding=0>\n");
-      buffer.append("<tr>\n<td class=\"intfdcolor6\">\n");
-      buffer.append("<img src=\"").append(iconsPath).append(
-          "/tabs/1px.gif\" width=\"1\" height=\"3\"></td>\n");
-      buffer.append("</tr>\n");
-      buffer.append("<tr>\n<td>\n");
-      buffer.append("<img src=\"").append(iconsPath).append(
-          "/tabs/1px.gif\" width=\"1\" height=\"6\"></td>\n");
-      buffer.append("</tr>\n");
-      buffer.append("</table>\n");
-      printEndString = buffer.toString();
-    }
     return printEndString;
   }
 }

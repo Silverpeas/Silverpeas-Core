@@ -50,10 +50,10 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 public class ThumbnailRequestRouter extends ComponentRequestRouter {
 
-	private static final long serialVersionUID = 1L;
 	
 	private static final ResourceLocator publicationSettings = new ResourceLocator(
 		      "com.stratelia.webactiv.util.publication.publicationSettings", "fr");
+  private static final long serialVersionUID = -2685660972761271210L;
 
 	public String getDestination(String function,
 			ComponentSessionController componentSC, HttpServletRequest request) {
@@ -420,10 +420,8 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter {
 	
 	@Override
 	public ComponentSessionController createComponentSessionController(
-			MainSessionController mainSessionCtrl, ComponentContext context) {
-		ComponentSessionController component = (ComponentSessionController) new ThumbnailSessionController(
-				mainSessionCtrl, context);
-		return component;
+          MainSessionController mainSessionCtrl, ComponentContext context) {
+		return new ThumbnailSessionController(mainSessionCtrl, context);
 	}
 
 	@Override
