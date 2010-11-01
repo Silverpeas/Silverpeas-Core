@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * 
- */
 package com.stratelia.webactiv.util;
 
 import java.util.ArrayList;
@@ -40,10 +37,6 @@ public class SearchEnginePropertiesManager {
 
   private static ArrayList<String> fieldsNameList = null;
 
-  static {
-
-  }
-
   /**
    * 
    */
@@ -54,16 +47,14 @@ public class SearchEnginePropertiesManager {
    * gets the list of form XML fields name use to sort search result
    * @return a list of fields name
    */
-  public static ArrayList<String> getFieldsNameList() {
+  public synchronized static ArrayList<String> getFieldsNameList() {
     if (fieldsNameList == null) {
       fieldsNameList = new ArrayList<String>();
-      ResourceLocator resource =
-          new ResourceLocator("com.silverpeas.searchEngine.searchEngineSettings",
-          "");
+      ResourceLocator resource = new ResourceLocator(
+          "com.silverpeas.searchEngine.searchEngineSettings", "");
       String property = resource.getString("sorting.formXML.fields");
       if (StringUtils.isNotEmpty(property)) {
         StringTokenizer tokens = new StringTokenizer(property, ",");
-
         while (tokens.hasMoreTokens()) {
           fieldsNameList.add(tokens.nextToken());
         }
@@ -71,5 +62,4 @@ public class SearchEnginePropertiesManager {
     }
     return fieldsNameList;
   }
-
 }

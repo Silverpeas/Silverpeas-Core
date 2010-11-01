@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.fieldDisplayer;
 
 import java.io.PrintWriter;
@@ -62,6 +61,7 @@ public class TextDisplayer extends AbstractFieldDisplayer {
 
   /**
    * Returns the name of the managed types.
+   * @return 
    */
   public String[] getManagedTypes() {
     String[] s = new String[2];
@@ -75,15 +75,18 @@ public class TextDisplayer extends AbstractFieldDisplayer {
    * The error messages may be adapted to a local language. The FieldTemplate gives the field type
    * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
    * log a silvertrace and writes an empty string when :
-   * <UL>
-   * <LI>the fieldName is unknown by the template.
-   * <LI>the field type is not a managed type.
-   * </UL>
+   * <ul>
+   * <li>the fieldName is unknown by the template.</li>
+   * <li>the field type is not a managed type.</li>
+   * </ul>
+   * @param out
+   * @param template
+   * @param PagesContext
+   * @throws java.io.IOException  
    */
   @Override
-  public void displayScripts(PrintWriter out,
-      FieldTemplate template,
-      PagesContext PagesContext) throws java.io.IOException {
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext) 
+      throws java.io.IOException {
   }
 
   /**
@@ -100,7 +103,7 @@ public class TextDisplayer extends AbstractFieldDisplayer {
    * @throws FormException  
    */
   @Override
-  public void display(PrintWriter out, Field field, FieldTemplate template, 
+  public void display(PrintWriter out, Field field, FieldTemplate template,
       PagesContext PagesContext) throws FormException {
     String value = "";
     String classe = null;
@@ -131,95 +134,95 @@ public class TextDisplayer extends AbstractFieldDisplayer {
     }
 
     if (parameters.containsKey("values") || parameters.containsKey("keys")) {
-      Map<String, String> keyValuePairs =
-          ((GenericFieldTemplate) template).getKeyValuePairs(language);
+      Map<String, String> keyValuePairs = ((GenericFieldTemplate) template).getKeyValuePairs(
+          language);
       String newValue = "";
-      if (value.indexOf("##") != -1) {
-        // Try to display a checkbox list
-        StringTokenizer tokenizer = new StringTokenizer(value, "##");
-        String t = null;
-        while (tokenizer.hasMoreTokens()) {
-          t = tokenizer.nextToken();
-          t = keyValuePairs.get(t);
-          newValue += t;
+      if (StringUtil.isDefined(value)) {
+        if (value.indexOf("##") != -1) {
+          // Try to display a checkbox list
+          StringTokenizer tokenizer = new StringTokenizer(value, "##");
+          String t = null;
+          while (tokenizer.hasMoreTokens()) {
+            t = tokenizer.nextToken();
+            t = keyValuePairs.get(t);
+            newValue += t;
 
-          if (tokenizer.hasMoreTokens()) {
-            newValue += ", ";
+            if (tokenizer.hasMoreTokens()) {
+              newValue += ", ";
+            }
           }
+        } else {
+          newValue = keyValuePairs.get(value);
         }
-      } else if (value != null && value.length() > 0) {
-        newValue = keyValuePairs.get(value);
       }
       value = newValue;
     }
-
-    if (StringUtil.isDefined(classe)) {
-      html += "<span " + classe + ">";
-    }
-
-    if (parameters.containsKey("fontSize") || parameters.containsKey("fontColor") ||
-        parameters.containsKey("fontFace")) {
-      html += "<font";
-    }
-
-    if (parameters.containsKey("fontSize")) {
-      size = parameters.get("fontSize");
-      html += " size=\"" + size + "\"";
-    }
-
-    if (parameters.containsKey("fontColor")) {
-      color = parameters.get("fontColor");
-      html += " color=\"" + color + "\"";
-    }
-
-    if (parameters.containsKey("fontFace")) {
-      face = parameters.get("fontFace");
-      html += " face=\"" + face + "\"";
-    }
-
-    if (size.length() > 0 || color.length() > 0 || face.length() > 0) {
-      html += ">";
-    }
-
-    if (parameters.containsKey("bold")) {
-      bold = parameters.get("bold");
-      if ("true".equals(bold)) {
-        html += "<b>";
+      if (StringUtil.isDefined(classe)) {
+        html += "<span " + classe + ">";
       }
+
+      if (parameters.containsKey("fontSize") || parameters.containsKey("fontColor")
+          || parameters.containsKey("fontFace")) {
+        html += "<font";
+      }
+
+      if (parameters.containsKey("fontSize")) {
+        size = parameters.get("fontSize");
+        html += " size=\"" + size + "\"";
+      }
+
+      if (parameters.containsKey("fontColor")) {
+        color = parameters.get("fontColor");
+        html += " color=\"" + color + "\"";
+      }
+
+      if (parameters.containsKey("fontFace")) {
+        face = parameters.get("fontFace");
+        html += " face=\"" + face + "\"";
+      }
+
+      if (size.length() > 0 || color.length() > 0 || face.length() > 0) {
+        html += ">";
+      }
+
+      if (parameters.containsKey("bold")) {
+        bold = parameters.get("bold");
+        if ("true".equals(bold)) {
+          html += "<b>";
+        }
+      }
+
+      html += EncodeHelper.javaStringToHtmlParagraphe(value);
+
+      if (bold.length() > 0) {
+        html += "</b>";
+      }
+
+      if (size.length() > 0 || color.length() > 0 || face.length() > 0) {
+        html += "</font>";
+      }
+
+      if (classe.length() > 0) {
+        html += "</span>";
+      }
+
+      out.println(html);
     }
-
-    html += EncodeHelper.javaStringToHtmlParagraphe(value);
-
-    if (bold.length() > 0) {
-      html += "</b>";
-    }
-
-    if (size.length() > 0 || color.length() > 0 || face.length() > 0) {
-      html += "</font>";
-    }
-
-    if (classe.length() > 0) {
-      html += "</span>";
-    }
-
-    out.println(html);
-  }
-
-  /**
-   * Updates the value of the field. The fieldName must be used to retrieve the HTTP parameter from
-   * the request.
-   * @param newValue 
-   * @param field 
-   * @param template 
-   * @param PagesContext 
-   * @return 
-   * @throws FormException 
-   * @throw FormException if the field type is not a managed type.
-   * @throw FormException if the field doesn't accept the new value.
-   */
+    /**
+     * Updates the value of the field. The fieldName must be used to retrieve the HTTP parameter from
+     * the request.
+     * @param newValue 
+     * @param field 
+     * @param template 
+     * @param PagesContext 
+     * @return 
+     * @throws FormException 
+     * @throw FormException if the field type is not a managed type.
+     * @throw FormException if the field doesn't accept the new value.
+     */
   @Override
-  public List<String> update(String newValue, Field field, FieldTemplate template, 
-    PagesContext PagesContext) throws FormException {
+  public List<String> update(String newValue, Field field, FieldTemplate template,
+      PagesContext PagesContext) throws FormException {
     return new ArrayList<String>();
   }
 

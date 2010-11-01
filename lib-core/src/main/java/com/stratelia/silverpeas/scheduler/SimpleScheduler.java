@@ -423,7 +423,7 @@ public class SimpleScheduler {
    * This method kills all active jobs. The unique instance of the SimpleScheduler will be
    * destroyed.
    */
-  public static void shutdown() {
+  public synchronized static void shutdown() {
     SilverTrace.debug("scheduler", "SimpleScheduler",
         "-------------------- SimpleScheduler shutdown --------------------",
         new Exception("ForStack"));

@@ -31,7 +31,7 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import java.io.File;
 import java.io.Serializable;
 
-public class UserDetail extends Object implements Serializable, Comparable<UserDetail> {
+public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   public static final String ADMIN_ACCESS = "A";
   public static final String USER_ACCESS = "U";

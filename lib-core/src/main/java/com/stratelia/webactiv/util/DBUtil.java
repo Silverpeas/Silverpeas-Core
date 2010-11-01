@@ -79,17 +79,17 @@ public class DBUtil {
     SilverTrace.debug("util", "DBUtil makeConnection",
         "DBUtil : makeConnection : entree");
     DataSource ds = null;
-
-    try {
+    synchronized(DBUtil.class) {
       if (ic == null) {
-        ic = new InitialContext();
+        try {
+            ic = new InitialContext();
+        } catch (Exception e) {
+          UtilException ue = new UtilException("DBUtil.makeConnection",
+              "util.MSG_CANT_GET_INITIAL_CONTEXT", e);
+          throw ue;
+        }
       }
-    } catch (Exception e) {
-      UtilException ue = new UtilException("DBUtil.makeConnection",
-          "util.MSG_CANT_GET_INITIAL_CONTEXT", e);
-      throw ue;
     }
-
     try {
       ds = (DataSource) dsStock.get(dbName);
       if (ds == null) {
