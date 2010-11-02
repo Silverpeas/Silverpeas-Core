@@ -140,14 +140,12 @@ public class VersioningBmEJB implements SessionBean {
           SilverpeasRuntimeException.ERROR,
           "versioning.CREATING_NEW_DOCUMENT_FAILED", docToCreate);
     }
-
     return documentPK;
   }
 
   private void addDays(Calendar calendar, int nbDay) {
     SilverTrace.debug("versioning", "addDays", "root.MSG_GEN_PARAM_VALUE",
         "nbDay = " + nbDay);
-
     int nb = 0;
     while (nb < nbDay) {
       SilverTrace.debug("versioning", "addDays", "root.MSG_GEN_PARAM_VALUE",
@@ -212,25 +210,20 @@ public class VersioningBmEJB implements SessionBean {
     }
   }
 
-  public boolean checkDocumentOut(DocumentPK documentPK, int ownerId,
-      java.util.Date checkOutDate) {
+  public boolean checkDocumentOut(DocumentPK documentPK, int ownerId, java.util.Date checkOutDate) {
     Connection con = openConnection();
-    SilverTrace.debug("versioning", "checkDocumentOut",
-        "root.MSG_GEN_PARAM_VALUE", "instanceId = " + documentPK.getId());
-
+    SilverTrace.debug("versioning", "checkDocumentOut", "root.MSG_GEN_PARAM_VALUE", 
+        "instanceId = " + documentPK.getId());
     try {
       Document doc = getDocument(documentPK);
-      if (doc.getOwnerId() > 0) {
+      if (doc.getOwnerId() >= 0) {
         return false;
       }
       updateDates(doc);
-
       SilverTrace.debug("versioning", "checkDocumentOut",
           "root.MSG_GEN_PARAM_VALUE", "expiryDate = " + doc.getExpiryDate());
-
       VersioningDAO.checkDocumentOut(con, documentPK, ownerId, checkOutDate,
           doc.getAlertDate(), doc.getExpiryDate());
-
       List<DocumentVersion> versions = VersioningDAO.getDocumentVersions(con, documentPK);
       DocumentVersion lastVersion = versions.get(0);
       if (lastVersion.isOpenOfficeCompatibleDocument()) {
@@ -249,15 +242,13 @@ public class VersioningBmEJB implements SessionBean {
 
   public void checkDocumentIn(DocumentPK documentPK, int userId) {
     Connection con = openConnection();
-    SilverTrace.debug("versioning", "checkDocumentIn",
-        "root.MSG_GEN_PARAM_VALUE", "instanceId = " + documentPK.getId());
-
+    SilverTrace.debug("versioning", "checkDocumentIn", "root.MSG_GEN_PARAM_VALUE", 
+        "instanceId = " + documentPK.getId());
     try {
       Document doc = VersioningDAO.getDocument(con, documentPK);
 
-      SilverTrace.debug("versioning", "checkDocumentIn",
-          "root.MSG_GEN_PARAM_VALUE", "doc.getTypeWorkList() = "
-          + doc.getTypeWorkList() + " / doc.getTypeWorkList() = "
+      SilverTrace.debug("versioning", "checkDocumentIn", "root.MSG_GEN_PARAM_VALUE", 
+          "doc.getTypeWorkList() = " + doc.getTypeWorkList() + " / doc.getTypeWorkList() = "
           + doc.getTypeWorkList());
 
       if (doc.getTypeWorkList() == 1) {
@@ -284,8 +275,7 @@ public class VersioningBmEJB implements SessionBean {
     }
   }
 
-  protected void checkDocumentInNonOrdered(Connection con, Document doc)
-      throws SQLException {
+  protected void checkDocumentInNonOrdered(Connection con, Document doc) throws SQLException {
     DocumentPK documentPK = doc.getPk();
     List<DocumentVersion> versions = VersioningDAO.getDocumentVersions(con, doc.getPk());
     DocumentVersion lastVersion = versions.get(0);

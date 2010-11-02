@@ -335,7 +335,7 @@ public class VersioningDAO {
           nameMaxLength));
       prepStmt.setString(3, document.getDescription());
       prepStmt.setInt(4, document.getStatus());
-      prepStmt.setInt(5, document.getOwnerId());
+      prepStmt.setInt(5, -1);
 
       if (document.getLastCheckOutDate() != null) {
         prepStmt.setString(6, formatter.format(document.getLastCheckOutDate()));

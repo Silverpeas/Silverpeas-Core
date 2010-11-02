@@ -44,25 +44,22 @@ import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.silverpeas.versioningPeas.control.VersioningSessionController;
 
 public class AjaxServlet extends HttpServlet {
-
-  private static final long serialVersionUID = 1L;
+  
+  private static final long serialVersionUID = 1972204681347444151L;
 
   @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, 
+      IOException {
     doPost(req, resp);
   }
 
   @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
-
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, 
+      IOException {
     String action = getAction(req);
     String result = null;
-
     VersioningSessionController versioningSC =
         (VersioningSessionController) req.getSession().getAttribute("Silverpeas_versioningPeas");
-
     if ("Delete".equals(action)) {
       result = deleteAttachment(req, versioningSC);
     } else if ("Checkout".equals(action)) {
@@ -74,7 +71,6 @@ public class AjaxServlet extends HttpServlet {
     } else if ("Sort".equals(action)) {
       result = sort(req, versioningSC);
     }
-
     Writer writer = resp.getWriter();
     writer.write(result);
   }
@@ -103,7 +99,7 @@ public class AjaxServlet extends HttpServlet {
         }
         return "alreadyCheckouted";
       }
-      document.setStatus(1);
+      document.setStatus(Document.STATUS_CHECKOUTED);
       document.setLastCheckOutDate(new Date());
       versioningSC.checkDocumentOut(documentPK, Integer.parseInt(userId), new Date());
       document = versioningSC.getDocument(documentPK);
@@ -141,8 +137,7 @@ public class AjaxServlet extends HttpServlet {
     String docId = req.getParameter("DocId");
     boolean force = StringUtil.getBooleanValue(req.getParameter("force_release"));
     try {
-      DocumentPK documentPK =
-          new DocumentPK(Integer.parseInt(docId), versioningSC.getComponentId());
+      DocumentPK documentPK = new DocumentPK(Integer.parseInt(docId), versioningSC.getComponentId());
       Document document = versioningSC.getEditingDocument();
       if (document == null) {
         document = versioningSC.getDocument(documentPK);
@@ -177,19 +172,12 @@ public class AjaxServlet extends HttpServlet {
   private String sort(HttpServletRequest req, VersioningSessionController versioningSC) {
     String orderedList = req.getParameter("orderedList");
     String componentId = req.getParameter("ComponentId");
-
     StringTokenizer tokenizer = new StringTokenizer(orderedList, ",");
     List<DocumentPK> pks = new ArrayList<DocumentPK>();
     while (tokenizer.hasMoreTokens()) {
       pks.add(new DocumentPK(Integer.parseInt(tokenizer.nextToken()), componentId));
     }
-
     // Save document order
     return versioningSC.sortDocuments(pks);
-  }
-
-  private boolean isIndexable(HttpServletRequest req) {
-    return ((Boolean) req.getSession().getAttribute("Silverpeas_Attachment_IndexIt"))
-        .booleanValue();
   }
 }
