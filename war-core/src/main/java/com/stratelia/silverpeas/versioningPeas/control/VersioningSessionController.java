@@ -302,17 +302,13 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   /**
    * to get user name for given user id
-   * @return String
-   * @exception
-   * @author Michael Nikolaenko
-   * @version 1.0
+   * @param user_id 
+   * @return the user name for given user id
    */
   public String getUserNameByID(int user_id) {
     UserDetail user = getUserDetailByID(user_id);
     String name = user.getFirstName() + " " + user.getLastName();
-    name.trim();
-
-    return name;
+    return name.trim();
   }
 
   public String getGroupNameById(int id) {
@@ -323,7 +319,6 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   /**
    * to get alt message for status icon of document
    * @return String Alt message
-   * @exception
    * @author Michael Nikolaenko
    * @version 1.0
    */
@@ -352,7 +347,6 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   /**
    * to get url for version
    * @return String url
-   * @exception
    * @author Michael Nikolaenko
    * @version 1.0
    * @deprecated
@@ -416,36 +410,33 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   }
 
   /**
-   * to create path to version
-   * @return String
-   * @exception VersioningRuntimeException
-   * @author Michael Nikolaenko
-   * @version 1.0
+   * Create path to version
+   * @param spaceId
+   * @param componentId
+   * @param context
+   * @return 
    */
   public String createPath(String spaceId, String componentId, String context) {
     return getVersioningUtil().createPath(spaceId, componentId, context);
   }
 
   /**
-   * to create path to version
-   * @return String
-   * @exception VersioningRuntimeException
-   * @author David Lesimple
-   * @version 1.0
+   * Create path to version
+   * @param componentId
+   * @param context
+   * @return 
    */
   public String createPath(String componentId, String context) {
     return getVersioningUtil().createPath(null, componentId, context);
   }
 
   /**
-   * to get all users for given profile
+   * To get all users for given profile
+   * @param document
+   * @param nameProfile
    * @return HashMap Stored pair user id and Reader
-   * @exception
-   * @author Michael Nikolaenko
-   * @version 1.0
    */
-  public HashMap<String, Reader> getAllUsersForProfile(Document document,
-      String nameProfile) {
+  public HashMap<String, Reader> getAllUsersForProfile(Document document, String nameProfile) {
     OrganizationController orgCntr = getOrganizationController();
 
     ComponentInst componentInst = orgCntr.getComponentInst(
@@ -493,11 +484,10 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   }
 
   /**
-   * to get all users with no reader rights
-   * @return ArrayList
-   * @exception
-   * @author Michael Nikolaenko
-   * @version 1.0
+   * Get all users with <b>no</b> reader rights.
+   * @param document
+   * @return
+   * @throws RemoteException 
    */
   public List<Reader> getAllNoReader(Document document) throws RemoteException {
     noReaderMap.clear();
@@ -520,18 +510,18 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   /**
    * @param pk
    * @return
+   * @throws RemoteException  
    */
   public int getDocumentCreator(DocumentPK pk) throws RemoteException {
     if (creator_id != -1) {
       return creator_id;
-    } else {
-      List<DocumentVersion> versions = getDocumentVersions(pk);
-      if (versions != null && versions.size() > 0) {
-        DocumentVersion first_version = versions.get(0);
-        return first_version.getAuthorId();
-      }
-      return -1;
     }
+    List<DocumentVersion> versions = getDocumentVersions(pk);
+    if (versions != null && versions.size() > 0) {
+      DocumentVersion first_version = versions.get(0);
+      return first_version.getAuthorId();
+    }
+    return -1;
   }
 
   /**
@@ -551,6 +541,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   /**
    * Constructor
    * @param mainSessionCtrl
+   * @param componentContext 
    * @author Michael Nikolaenko
    * @version 1.0
    */
@@ -607,27 +598,26 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   /**
    * to get document from DB
+   * @param documentPK 
    * @return Document
    * @exception RemoteException
    * @author Michael Nikolaenko
    * @version 1.0
    */
   public Document getDocument(DocumentPK documentPK) throws RemoteException {
-    Document document = null;
     initEJB();
-    document = versioning_bm.getDocument(documentPK);
-    return document;
+    return versioning_bm.getDocument(documentPK);
   }
 
   /**
    * to get all documents for given publication id
+   * @param foreignID 
    * @return ArrayList
-   * @exception
+   * @throws RemoteException 
    * @author Michael Nikolaenko
    * @version 1.0
    */
-  public List<Document> getDocuments(ForeignPK foreignID)
-      throws RemoteException {
+  public List<Document> getDocuments(ForeignPK foreignID) throws RemoteException {
     return getDocuments(foreignID, true);
   }
 
@@ -648,15 +638,12 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @author Michael Nikolaenko
    * @version 1.0
    */
-  public DocumentPK createDocument(Document document,
-      DocumentVersion initialVersion) throws RemoteException {
-    DocumentPK documentPK = null;
+  public DocumentPK createDocument(Document document, DocumentVersion initialVersion) 
+      throws RemoteException {
     initEJB();
-
-    documentPK = versioning_bm.createDocument(document, initialVersion);
+    DocumentPK documentPK = versioning_bm.createDocument(document, initialVersion);
     document.setPk(documentPK);
     setEditingDocument(document);
-
     if (initialVersion.getType() == DocumentVersion.TYPE_PUBLIC_VERSION) {
       CallBackManager.invoke(CallBackManager.ACTION_VERSIONING_ADD, document.getOwnerId(), document.
           getForeignKey().getInstanceId(), document.getForeignKey().getId());

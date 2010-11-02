@@ -237,13 +237,7 @@ public class InfoDAO {
 
     try {
       stmt = con.createStatement();
-      rs = stmt.executeQuery(selectStatement);
-      /*
-       * if (rs.next()) { String id = new Integer(rs.getInt(1)).toString(); String name =
-       * rs.getString(2); String description = rs.getString(3); String imageName = rs.getString(4);
-       * String htmlDisplayer = rs.getString(5); String htmlEditor = rs.getString(6); modelDetail =
-       * new ModelDetail(id, name, description, imageName, htmlDisplayer, htmlEditor); }
-       */
+      rs = stmt.executeQuery(selectStatement);     
       String htmlDisplayer = "";
       String htmlEditor = "";
       String id = null;
@@ -254,7 +248,7 @@ public class InfoDAO {
       while (rs.next()) {
         if (!firstModelPartReaden) {
           // It's the first part of the model
-          id = new Integer(rs.getInt(1)).toString();
+          id = String.valueOf(rs.getInt(1));
           name = rs.getString(2);
           description = rs.getString(3);
           imageName = rs.getString(4);
@@ -313,7 +307,7 @@ public class InfoDAO {
         int infoId = rs.getInt(1);
 
         infoPK = new InfoPK("unknown", pubPK);
-        infoPK.setId(new Integer(infoId).toString());
+        infoPK.setId(String.valueOf(infoId));
       }
     } finally {
       DBUtil.close(rs, stmt);
@@ -361,8 +355,7 @@ public class InfoDAO {
       String tableName = infoPK.getTableName();
 
       try {
-        newId = new Integer(DBUtil.getNextId(tableName, new String("infoId")))
-            .toString();
+        newId = String.valueOf(DBUtil.getNextId(tableName, "infoId"));
       } catch (Exception ex) {
         throw new PublicationRuntimeException("InfoDAO.createInfo()",
             SilverpeasRuntimeException.ERROR, "root.EX_GET_NEXTID_FAILED", ex);
@@ -372,14 +365,14 @@ public class InfoDAO {
       PreparedStatement prepStmt = null;
       SilverTrace.info("publication", "InfoDAO.createInfo",
           "root.MSG_GEN_PARAM_VALUE", "InsertStatement = " + insertStatement
-          + " (" + new Integer(newId).toString() + ", "
-          + new Integer(modelPK.getId()).toString() + ", null, "
+          + " (" + String.valueOf(newId) + ", "
+          + String.valueOf(modelPK.getId()) + ", null, "
           + pubPK.getComponentName() + " )");
 
       try {
         prepStmt = con.prepareStatement(insertStatement);
-        prepStmt.setInt(1, new Integer(newId).intValue());
-        prepStmt.setInt(2, new Integer(modelPK.getId()).intValue());
+        prepStmt.setInt(1, Integer.parseInt(newId));
+        prepStmt.setInt(2, Integer.parseInt(modelPK.getId()));
         prepStmt.setString(3, null);
         prepStmt.setString(4, pubPK.getComponentName());
         prepStmt.executeUpdate();
@@ -414,17 +407,17 @@ public class InfoDAO {
     PreparedStatement prepStmt = null;
     SilverTrace.info("publication", "InfoDAO.updateInfo",
         "root.MSG_GEN_PARAM_VALUE", "UpdateStatement = " + updateStatement
-        + " (" + new Integer(infoPK.getId()).toString() + ", "
-        + new Integer(modelPK.getId()).toString() + ", null, "
+        + " (" + String.valueOf(infoPK.getId()) + ", "
+        + String.valueOf(modelPK.getId()) + ", null, "
         + infoPK.getComponentName() + " )");
 
     try {
       prepStmt = con.prepareStatement(updateStatement);
-      prepStmt.setInt(1, new Integer(infoPK.getId()).intValue());
-      prepStmt.setInt(2, new Integer(modelPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(infoPK.getId()));
+      prepStmt.setInt(2, Integer.parseInt(modelPK.getId()));
       prepStmt.setString(3, null);
       prepStmt.setString(4, infoPK.getComponentName());
-      prepStmt.setInt(5, new Integer(infoPK.getId()).intValue());
+      prepStmt.setInt(5, Integer.parseInt(infoPK.getId()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -447,7 +440,7 @@ public class InfoDAO {
 
     try {
       // prepStmt.setString(1, infoPK.getId());
-      prepStmt.setInt(1, new Integer(infoPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(infoPK.getId()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -463,6 +456,7 @@ public class InfoDAO {
    * @throws SQLException
    * @throws UtilException
    * @see
+   * @Deprecated
    */
   public static void addInfoItems(Connection con, InfoDetail infos)
       throws SQLException, UtilException {
@@ -517,6 +511,7 @@ public class InfoDAO {
    * @throws SQLException
    * @throws UtilException
    * @see
+   * @Deprecated
    */
   public static void updateInfoItems(Connection con, InfoDetail infos,
       InfoPK infoPK) throws SQLException, UtilException {
@@ -596,8 +591,7 @@ public class InfoDAO {
 
     try {
       /* Recherche de la nouvelle PK de la table */
-      newId = new Integer(DBUtil.getNextId(tableName, new String("infoTextId")))
-          .toString();
+      newId = String.valueOf(DBUtil.getNextId(tableName, "infoTextId"));
     } catch (Exception ex) {
       throw new PublicationRuntimeException("InfoDAO.addInfoText()",
           SilverpeasRuntimeException.ERROR, "root.EX_GET_NEXTID_FAILED", ex);
@@ -609,10 +603,10 @@ public class InfoDAO {
 
     try {
       prepStmt = con.prepareStatement(insertStatement);
-      prepStmt.setInt(1, new Integer(newId).intValue());
-      prepStmt.setInt(2, new Integer(infoPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(newId));
+      prepStmt.setInt(2, Integer.parseInt(infoPK.getId()));
       prepStmt.setString(3, infoText.getContent());
-      prepStmt.setInt(4, new Integer(infoText.getOrder()).intValue());
+      prepStmt.setInt(4, Integer.parseInt(infoText.getOrder()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -641,7 +635,7 @@ public class InfoDAO {
     try {
       prepStmt = con.prepareStatement(updateStatement);
       prepStmt.setString(1, infoText.getContent());
-      prepStmt.setInt(2, new Integer(infoText.getId()).intValue());
+      prepStmt.setInt(2, Integer.parseInt(infoText.getId()));
       prepStmt.setString(3, infoPK.getComponentName());
       prepStmt.executeUpdate();
     } finally {
@@ -691,8 +685,7 @@ public class InfoDAO {
 
     try {
       /* Recherche de la nouvelle PK de la table */
-      newId = new Integer(DBUtil
-          .getNextId(tableName, new String("infoImageId"))).toString();
+      newId = String.valueOf(DBUtil.getNextId(tableName, "infoImageId"));
     } catch (Exception ex) {
       throw new PublicationRuntimeException("InfoDAO.addInfoImage()",
           SilverpeasRuntimeException.ERROR, "root.EX_GET_NEXTID_FAILED", ex);
@@ -704,14 +697,14 @@ public class InfoDAO {
 
     try {
       prepStmt = con.prepareStatement(insertStatement);
-      prepStmt.setInt(1, new Integer(newId).intValue());
-      prepStmt.setInt(2, new Integer(infoPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(newId));
+      prepStmt.setInt(2, Integer.parseInt(infoPK.getId()));
       prepStmt.setString(3, infoImage.getPhysicalName());
       prepStmt.setString(4, infoImage.getLogicalName());
       prepStmt.setString(5, infoImage.getDescription());
       prepStmt.setString(6, infoImage.getType());
       prepStmt.setInt(7, new Long(infoImage.getSize()).intValue());
-      prepStmt.setInt(8, new Integer(infoImage.getOrder()).intValue());
+      prepStmt.setInt(8, Integer.parseInt(infoImage.getOrder()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -731,27 +724,20 @@ public class InfoDAO {
     InfoImagePK infoImagePK = new InfoImagePK("unknown", infoPK);
     String tableName = infoImagePK.getTableName();
 
-    String updateStatement =
-        "update "
-            +
-            tableName
-            +
-            " set infoId = ? , "
-            +
-            "infoImagePhysicalName = ? , infoImageLogicalName = ? , infoImageDescription = ? , infoImageType = ? , infoImageSize = ? , infoImageDisplayOrder = ? "
-            + " where infoImageId = ? ";
+    String updateStatement = "update " + tableName + " set infoId = ? , infoImagePhysicalName = ? ,"
+        + " infoImageLogicalName = ? , infoImageDescription = ? , infoImageType = ? , "
+        + "infoImageSize = ? , infoImageDisplayOrder = ? where infoImageId = ? ";
     PreparedStatement prepStmt = null;
-
     try {
       prepStmt = con.prepareStatement(updateStatement);
-      prepStmt.setInt(1, new Integer(infoPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(infoPK.getId()));
       prepStmt.setString(2, infoImage.getPhysicalName());
       prepStmt.setString(3, infoImage.getLogicalName());
       prepStmt.setString(4, infoImage.getDescription());
       prepStmt.setString(5, infoImage.getType());
       prepStmt.setInt(6, new Long(infoImage.getSize()).intValue());
-      prepStmt.setInt(7, new Integer(infoImage.getOrder()).intValue());
-      prepStmt.setInt(8, new Integer(infoImage.getId()).intValue());
+      prepStmt.setInt(7, Integer.parseInt(infoImage.getOrder()));
+      prepStmt.setInt(8, Integer.parseInt(infoImage.getId()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -779,7 +765,7 @@ public class InfoDAO {
 
     try {
       prepStmt = con.prepareStatement(deleteQuery);
-      prepStmt.setInt(1, new Integer(infoPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(infoPK.getId()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -802,8 +788,7 @@ public class InfoDAO {
 
     try {
       /* Recherche de la nouvelle PK de la table */
-      newId = new Integer(DBUtil.getNextId(tableName, new String("infoLinkId")))
-          .toString();
+      newId = String.valueOf(DBUtil.getNextId(tableName, "infoLinkId"));
     } catch (Exception ex) {
       throw new PublicationRuntimeException("InfoDAO.addInfoLink()",
           SilverpeasRuntimeException.ERROR, "root.EX_GET_NEXTID_FAILED", ex);
@@ -815,10 +800,10 @@ public class InfoDAO {
 
     try {
       prepStmt = con.prepareStatement(insertStatement);
-      prepStmt.setInt(1, new Integer(newId).intValue());
-      prepStmt.setInt(2, new Integer(infoPK.getId()).intValue());
-      prepStmt.setInt(3, new Integer(infoLink.getTargetId()).intValue());
-      prepStmt.setInt(4, new Integer(infoLink.getOrder()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(newId));
+      prepStmt.setInt(2, Integer.parseInt(infoPK.getId()));
+      prepStmt.setInt(3, Integer.parseInt(infoLink.getTargetId()));
+      prepStmt.setInt(4, Integer.parseInt(infoLink.getOrder()));
 
       prepStmt.executeUpdate();
 
@@ -863,7 +848,7 @@ public class InfoDAO {
     PreparedStatement prepStmt = con.prepareStatement(deleteStatement);
 
     try {
-      prepStmt.setInt(1, new Integer(linkPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(linkPK.getId()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -914,7 +899,7 @@ public class InfoDAO {
     PreparedStatement prepStmt = con.prepareStatement(deleteStatement);
 
     try {
-      prepStmt.setInt(1, new Integer(infoPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(infoPK.getId()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -938,7 +923,7 @@ public class InfoDAO {
 
     try {
       prepStmt = con.prepareStatement(deleteStatement);
-      prepStmt.setInt(1, new Integer(targetLink).intValue());
+      prepStmt.setInt(1, Integer.parseInt(targetLink));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -1020,9 +1005,9 @@ public class InfoDAO {
       String displayOrder = "";
       ArrayList<InfoTextDetail> list = new ArrayList<InfoTextDetail>();
       while (rs.next()) {
-        id = new Integer(rs.getInt(1)).toString();
+        id = String.valueOf(rs.getInt(1));
         content = rs.getString(3);
-        displayOrder = new Integer(rs.getInt(4)).toString();
+        displayOrder = String.valueOf(rs.getInt(4));
         InfoTextDetail infoTextDetail = new InfoTextDetail(infoPK,
             displayOrder, id, content);
 
@@ -1064,13 +1049,13 @@ public class InfoDAO {
       String displayOrder = "";
       ArrayList<InfoImageDetail> list = new ArrayList<InfoImageDetail>();
       while (rs.next()) {
-        id = new Integer(rs.getInt(1)).toString();
+        id = String.valueOf(rs.getInt(1));
         physicalName = rs.getString(3);
         logicalName = rs.getString(4);
         description = rs.getString(5);
         type = rs.getString(6);
         size = rs.getInt(7);
-        displayOrder = new Integer(rs.getInt(8)).toString();
+        displayOrder = String.valueOf(rs.getInt(8));
         InfoImageDetail infoImageDetail = new InfoImageDetail(infoPK,
             displayOrder, id, physicalName, logicalName, description, type,
             size);
@@ -1102,7 +1087,7 @@ public class InfoDAO {
     PreparedStatement prepStmt = con.prepareStatement(selectStatement);
 
     try {
-      prepStmt.setInt(1, new Integer(infoPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(infoPK.getId()));
       rs = prepStmt.executeQuery();
 
       String id = "";
@@ -1110,12 +1095,10 @@ public class InfoDAO {
       String displayOrder = "";
       ArrayList<InfoLinkDetail> list = new ArrayList<InfoLinkDetail>();
       while (rs.next()) {
-        id = new Integer(rs.getInt(1)).toString();
-        targetId = new Integer(rs.getInt(3)).toString();
-        displayOrder = new Integer(rs.getInt(4)).toString();
-        InfoLinkDetail infoLinkDetail = new InfoLinkDetail(infoPK,
-            displayOrder, id, targetId);
-
+        id = String.valueOf(rs.getInt(1));
+        targetId = String.valueOf(rs.getInt(3));
+        displayOrder = String.valueOf(rs.getInt(4));
+        InfoLinkDetail infoLinkDetail = new InfoLinkDetail(infoPK, displayOrder, id, targetId);
         list.add(infoLinkDetail);
       }
       return list;
