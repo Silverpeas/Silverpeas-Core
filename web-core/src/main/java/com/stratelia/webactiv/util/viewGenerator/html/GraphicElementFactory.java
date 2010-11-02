@@ -83,15 +83,15 @@ import java.util.ArrayList;
 public class GraphicElementFactory extends Object {
   public static final String GE_FACTORY_SESSION_ATT = "SessionGraphicElementFactory";
   private final static ResourceLocator settings = new ResourceLocator(
-          "com.stratelia.webactiv.util.viewGenerator.settings.graphicElementFactorySettings", "");
-  private static String iconsPath = getGeneralSettings().getString("ApplicationURL")
-          + getSettings().getString("IconsPath");
+          "com.stratelia.webactiv.util.viewGenerator.settings.graphicElementFactorySettings", "");  
   private ResourceLocator lookSettings = null;
   private ResourceLocator silverpeasLookSettings = null;
   private ResourceLocator favoriteLookSettings = null;
   private String defaultLook = "com.stratelia.webactiv.util.viewGenerator.settings.Initial";
   private final static ResourceLocator generalSettings = new ResourceLocator("com.stratelia.webactiv.general",
           I18NHelper.defaultLanguage);
+  private final static String iconsPath = generalSettings.getString("ApplicationURL")
+      + settings.getString("IconsPath");
   private ResourceLocator multilang = null;
 
   private String currentLookName = null;
