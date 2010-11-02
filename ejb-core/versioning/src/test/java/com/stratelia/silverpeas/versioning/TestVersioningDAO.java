@@ -199,6 +199,7 @@ public class TestVersioningDAO extends AbstractTestDao {
     DocumentPK pk = VersioningDAO.createDocument(getConnection().getConnection(), doc,
         initialVersion);
     doc.setPk(pk);
+    doc.setOwnerId(-1);
 
     Document result = VersioningDAO.getDocument(getConnection().getConnection(), pk);
 
