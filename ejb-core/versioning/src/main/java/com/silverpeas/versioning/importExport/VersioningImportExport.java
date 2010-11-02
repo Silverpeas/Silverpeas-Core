@@ -398,7 +398,7 @@ public class VersioningImportExport {
             // Création du nouveau document
             DocumentPK docPK = new DocumentPK(-1, "useless", objectPK.getInstanceId());
             document = new Document(docPK, objectPK, document.getName(),
-                document.getDescription(), -1, userId, new Date(), null,
+                document.getDescription(),Document.STATUS_CHECKOUTED, -1, new Date(), null,
                 objectPK.getInstanceId(), new ArrayList<Worker>(), new ArrayList(), 0, 0);
 
             // et on y ajoute la première version
