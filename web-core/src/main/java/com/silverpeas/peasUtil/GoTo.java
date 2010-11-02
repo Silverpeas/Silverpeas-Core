@@ -25,7 +25,6 @@ package com.silverpeas.peasUtil;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.io.StringReader;
 
 import javax.servlet.ServletException;
@@ -39,6 +38,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 public abstract class GoTo extends HttpServlet {
+  private static final long serialVersionUID = -8381001443484846645L;
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -60,9 +60,7 @@ public abstract class GoTo extends HttpServlet {
       if (redirect == null || "".equals(redirect)) {
         objectNotFound(req, res);
       } else {
-        if (res.isCommitted()) {
-          // La réponse a déjà été envoyée
-        } else {
+        if (!res.isCommitted()) { //The response was not previously sent
           if (redirect == null || !redirect.startsWith("http")) {
             redirect = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL")
                 + "/autoRedirect.jsp?" + redirect;

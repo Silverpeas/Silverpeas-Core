@@ -48,14 +48,16 @@ public class TagCloudController {
    * Getter of the home object of TagCloud EJB (initializes it if needed).
    */
   private static TagCloudBm getTagCloudBm() {
-    if (tagCloudBm == null) {
-      try {
-        TagCloudBmHome tagCloudBmHome = (TagCloudBmHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.TAGCLOUDBM_EJBHOME, TagCloudBmHome.class);
-        tagCloudBm = tagCloudBmHome.create();
-      } catch (Exception e) {
-        throw new TagCloudRuntimeException("TagCloudController.initHome()",
-            SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    synchronized(TagCloudController.class) {
+      if (tagCloudBm == null) {
+        try {
+          TagCloudBmHome tagCloudBmHome = (TagCloudBmHome) EJBUtilitaire
+              .getEJBObjectRef(JNDINames.TAGCLOUDBM_EJBHOME, TagCloudBmHome.class);
+          tagCloudBm = tagCloudBmHome.create();
+        } catch (Exception e) {
+          throw new TagCloudRuntimeException("TagCloudController.initHome()",
+              SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+        }
       }
     }
     return tagCloudBm;

@@ -108,7 +108,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 public abstract class GEDImportExport extends ComponentImportExport {
 
   // Variables
-  private static OrganizationController org_Ctrl = new OrganizationController();
+  private static final OrganizationController organizationController = new OrganizationController();
   private PublicationBm publicationBm = null;
   private FormTemplateBm formTemplateBm = null;
   private NodeBm nodeBm = null;
@@ -188,15 +188,15 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @throws ImportExportException
    */
   private PublicationDetail processPublicationDetail(UnitReport unitReport, UserDetail userDetail,
-      PublicationDetail pubDetailToCreate, List listNode_Type) {
+      PublicationDetail pubDetailToCreate, List listOfNodeTypes) {
 
     // vÃ©rification des ids de thÃ¨me
 
     List existingTopics = new ArrayList();
     if (isKmax()) {
-      existingTopics = listNode_Type;
+      existingTopics = listOfNodeTypes;
     } else {
-      existingTopics = getExistingTopics(listNode_Type, pubDetailToCreate.getPK().getInstanceId());
+      existingTopics = getExistingTopics(listOfNodeTypes, pubDetailToCreate.getPK().getInstanceId());
     }
 
     if (existingTopics.size() == 0 && !isKmax()) {
@@ -557,19 +557,16 @@ public abstract class GEDImportExport extends ComponentImportExport {
       }
     }
 
-    // PrÃ©paration du images dbmodel pour crÃ©ation en base
+    // Preparation du images dbmodel pour cretion en base
     if (listImagesParts != null) {
-      Iterator itListImagesParts = listImagesParts.iterator();
+      Iterator<String> itListImagesParts = listImagesParts.iterator();
       while (itListImagesParts.hasNext()) {
-        String imagePath = (String) itListImagesParts.next();
-        File f = new File(imagePath);
-        if (!f.exists()) {
-        }// TODO: jeter l exception et remplir le rapport
-        // TODO: verifier que c est bien une image sinon exception, rapport
+        String imagePath = itListImagesParts.next();
+        File f = new File(imagePath);        
         long size = f.length();
         String mimeType = AttachmentController.getMimeType(imagePath);
         if (listInfoImage == null) {
-          listInfoImage = new ArrayList();
+          listInfoImage = new ArrayList<InfoImageDetail>();
         }
         listInfoImage.add(new InfoImageDetail(null, String.valueOf(imageOrder++), null,
             imagePath, imagePath.substring(imagePath.lastIndexOf(File.separator) + 1), "",
@@ -579,7 +576,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
       copyDBmodelImagePartsForImport(unitReport, getCurrentComponentId(), listInfoImage);
     }
 
-    // CrÃ©ation du contenu en base
+    // Creation du contenu en base
     InfoDetail infoDetail = new InfoDetail(
         new InfoPK("unknown", "useless", getCurrentComponentId()), listInfoText, listInfoImage,
         null, null);
@@ -588,8 +585,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
   }
 
   /**
-   * MÃ©thode de crÃ©ation d'un contenu de type wysiwyg
-   * @param pubId - id de la publication pour laquelle on crÃ©e le contenu wysiwyg
+   * Methode de creation d'un contenu de type wysiwyg
+   * @param pubId - id de la publication pour laquelle on cree le contenu wysiwyg
    * @param wysiwygType - objet de mapping castor contenant les informations de contenu de type
    * Wysiwyg
    */
@@ -1117,8 +1114,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
       publicationType.setId(Integer.parseInt(pubId));
       publicationType.setComponentId(componentId);
 
-      // Recherche du nom et du prÃ©nom du crÃ©ateur de la pub pour le marschalling
-      UserDetail userDetail = org_Ctrl.getUserDetail(publicationDetail.getCreatorId());
+      // Recherche du nom et du prenom du createur de la pub pour le marschalling
+      UserDetail userDetail = organizationController.getUserDetail(publicationDetail.getCreatorId());
       if (userDetail != null) {
         String nomPrenomCreator = userDetail.getDisplayedName().trim();
         publicationDetail.setCreatorName(nomPrenomCreator);
@@ -1153,7 +1150,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
     try {
       listNodePk = getPublicationBm().getAllFatherPK(pubPK);
     } catch (RemoteException ex) {
-      throw new ImportExportException("", "", ex);// TODO: complÃ©ter!!
+      throw new ImportExportException("", "", ex);// TODO: completer!!
     }
     return new ArrayList(listNodePk);
 
@@ -1165,7 +1162,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
     try {
       modelDetail = getPublicationBm().getModelDetail(new ModelPK(Integer.toString(idModelDetail)));
     } catch (RemoteException ex) {
-      throw new ImportExportException("", "", ex);// TODO: complÃ©ter!!
+      throw new ImportExportException("", "", ex);// TODO: completer!!
     }
     return modelDetail;
   }
@@ -1174,10 +1171,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @param string
    */
   @Override
-  public void setCurrentComponentId(String string) {
-    if (!string.equals(getCurrentComponentId())) {
-      // on s'adresse Ã  une autre instance
-    }
+  public void setCurrentComponentId(String string) {   
     super.setCurrentComponentId(string);
   }
 

@@ -102,6 +102,7 @@ public class IndexManager {
 
   /**
    * Add an entry index.
+   * @param indexEntry 
    */
   public void addIndexEntry(FullIndexEntry indexEntry) {
     String indexPath = getIndexDirectoryPath(indexEntry);
@@ -180,6 +181,7 @@ public class IndexManager {
 
   /**
    * Remove an entry index.
+   * @param indexEntry 
    */
   public void removeIndexEntry(IndexEntryPK indexEntry) {
     String indexPath = getIndexDirectoryPath(indexEntry);
@@ -194,6 +196,8 @@ public class IndexManager {
 
   /**
    * Return the path to the directory where are stored the index for the given index entry.
+   * @param indexEntry the index entry.
+   * @return the path to the directory where are stored the index for the given index entry.
    */
   public String getIndexDirectoryPath(IndexEntry indexEntry) {
     return getIndexDirectoryPath(indexEntry.getPK());
@@ -201,6 +205,8 @@ public class IndexManager {
 
   /**
    * Return the path to the directory where are stored the index for the given index entry.
+   * @param indexEntry
+   * @return the path to the directory where are stored the index for the given index entry.
    */
   public String getIndexDirectoryPath(IndexEntryPK indexEntry) {
     return getIndexDirectoryPath(null, indexEntry.getComponent());
@@ -208,15 +214,18 @@ public class IndexManager {
 
   /**
    * Return the path to the directory where are stored the index for the given index entry.
+   * @param space
+   * @param component
+   * @return the path to the directory where are stored the index for the given index entry.
    */
   public String getIndexDirectoryPath(String space, String component) {
-    String path = FileRepositoryManager.getAbsoluteIndexPath(space, component);
-
-    return path;
+    return FileRepositoryManager.getAbsoluteIndexPath(space, component);
   }
 
   /**
    * Return the analyzer used to parse indexed texts and queries in the locale language.
+   * @return the analyzer used to parse indexed texts and queries in the locale language.
+   * @throws IOException  
    */
   public Analyzer getAnalyzer() throws IOException {
     return getAnalyzer(null);
@@ -237,6 +246,8 @@ public class IndexManager {
 
   /**
    * Get the reader specific of the file described by the file description
+   * @param file
+   * @return the reader specific of the file described by the file description
    */
   public Reader getReader(FileDescription file) {
     SilverTrace.debug("indexEngine", "IndexManager.getReader",
@@ -439,29 +450,10 @@ public class IndexManager {
       doc.add(new Field(THUMBNAIL_DIRECTORY,
           indexEntry.getThumbnailDirectory(), Store.YES, Index.NO));
     }
-
-    String componentId = indexEntry.getComponent();
-
     if (indexEntry.isIndexId()) {
-      doc.add(new Field(CONTENT, indexEntry.getObjectId(), Store.NO,
-          Index.NOT_ANALYZED));
+      doc.add(new Field(CONTENT, indexEntry.getObjectId(), Store.NO, Index.NOT_ANALYZED));
     }
-    if ("Wysiwyg".equals(indexEntry.getObjectType())
-        && (componentId.startsWith("kmelia") || componentId.startsWith("kmax"))) {
-      // Added by NEY - 22/01/2004
-      // module Wysiwyg is reuse by several modules like publication,...
-      // When you add a wysiwyg content to an object (it's the case in kmelia),
-      // we call the wysiwyg's method index to index the content of the wysiwyg.
-      // The name, description and keywords of the object are used by the index
-      // method
-      // to display them when the wysiwyg will be found by the search engine.
-      // Here, this data must be unindexed. But it must not be unstored.
-      // If it is unstored, this data will be indexed.
-      // So, if we search a word present in one of this data, two elements will
-      // be returned by the search engine :
-      // - the object
-      // - the wysiwyg
-    } else {
+    if (!isWysiwyg(indexEntry)) {      
       if (indexEntry.getObjectType() != null
           && indexEntry.getObjectType().startsWith("Attachment")) {
         doc.add(new Field(getFieldName(HEADER, indexEntry.getLang()),
@@ -554,10 +546,7 @@ public class IndexManager {
       }
     }
 
-    if ("Wysiwyg".equals(indexEntry.getObjectType())
-        && (componentId.startsWith("kmelia") || componentId.startsWith("kmax"))) {
-      // see comments above
-    } else {
+    if (!isWysiwyg(indexEntry)) {
       // Lucene doesn't index all the words in a field
       // (the max is given by the maxFieldLength property)
       // The problem is that we don't no which words are skipped
@@ -623,6 +612,27 @@ public class IndexManager {
       SilverTrace.error("indexEngine", "IndexManager",
           "indexEngine.MSG_FILE_PARSING_FAILED", f.getPath(), e);
     }
+  }
+  /**
+   * Added by NEY - 22/01/2004 
+   * Module Wysiwyg is reused by several modules like publication,...
+   * When you add a wysiwyg content to an object (it's the case in kmelia),
+   * we call the wysiwyg's method index to index the content of the wysiwyg.
+   * The name, description and keywords of the object are used by the index
+   * method to display them when the wysiwyg will be found by the search engine.
+   * Here, this data must be unindexed. But it must not be unstored.
+   * If it is unstored, this data will be indexed.
+   * So, if we search a word present in one of this data, two elements will
+   * be returned by the search engine :
+   * - the object
+   * - the wysiwyg
+   * @param indexEntry
+   * @return 
+   */
+  private boolean isWysiwyg(FullIndexEntry indexEntry) {
+    return "Wysiwyg".equals(indexEntry.getObjectType())
+        && (indexEntry.getComponent().startsWith("kmelia") 
+        || indexEntry.getComponent().startsWith("kmax"));
   }
 
   /*
