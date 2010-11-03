@@ -1,0 +1,507 @@
+/**
+ * Copyright (C) 2000 - 2009 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://repository.silverpeas.com/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+body {
+	background-image: none;
+	background-repeat: repeat-x;
+	background-attachment: fixed;
+}
+body, td, div, a {
+	font-family: Arial;
+	font-size: 11px;
+}
+.fondDomainsBar {
+	background-image: url("/silverpeas/admin/jsp/icons/silverpeas_light/fondNav.jpg");
+	background-repeat: no-repeat;
+	background-attachment: scroll;	
+}
+#pdcFrame {
+	background-color:#9BD94A;
+	background-image:inherit;
+	color:#222222;
+}
+#ticker {
+	color:#666666;
+	left: 140px;
+}
+#outils {
+	bottom:inherit;
+	font-family:inherit;
+	font-size:10px;
+	height:15px;
+	position:absolute;
+	right:15px;
+	text-align:right;
+	width:100%;
+	top:2px;
+}
+#administration{
+	top: 68px;
+	right: 10px;
+	background-color:#C8ED99;
+	border:1px solid #9BD94A;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	-moz-box-shadow:5px 5px 10px #CCCCCC;
+	-webkit-box-shadow:5px 5px 10px #CCCCCC;
+	box-shadow:5px 5px 10px #CCCCCC;
+}
+#administration a {
+	color:#222222;
+	font-weight: normal;
+	font-size:12px;
+}
+#administration td {
+	background-image: none;
+	border: none;
+	height:20px;
+	text-align:center;
+	width:120px;
+}
+#loginBox table table {
+	margin-right:80px;
+}
+#loginBox table table table {
+	margin-right:0px;
+}
+
+.cellBodyWindows {
+    background-image: none;
+    border-top: solid 1px #dedede;
+    border-bottom: solid 0px #dedede;
+    border-left: solid 0px #dedede;
+    border-right: solid 0px #dedede;
+    background-color : transparent;
+}
+.basGaucheWindow, .basMilieuWindow, .basDroiteWindow {
+    background-image: none;
+    background-color: transparent;
+    height: 1px;
+    border: none;
+    border-bottom: 0px solid #DEDEDE;
+}
+.tableFrame {
+    background-color: transparent;
+}
+.hautFrame {
+	background-color: #FFFFFF;
+	-moz-border-radius:0px 0px 15px 15px;
+	padding-bottom:10px;
+}
+#domainsBar a {
+	color:#777777;
+	font-size:12px;
+}
+#recherche {
+	background-image: none;
+	height:70px;
+	margin:0px;
+	width:250px;
+}
+#recherche #submitRecherche input {
+	background-color:transparent;
+	border:medium none;
+	color:#666666;
+	font-size:10px;
+	margin-left:5px;
+	margin-top:22px;
+	width:160px;
+}
+#recherche #bodyRecherche, #recherche #bodyRecherche a {
+	color: #444444;
+	font-size: 11px;
+}
+#recherche #bodyRecherche {
+	margin-left:10px;
+	margin-top:0;
+	text-align:left;
+}
+#TreeDiv1 {
+	background-color: #FFFFFF;
+}
+#menutoggle {
+	color: #444444;
+	font-size:12px;
+	padding-left:5px;
+	font-weight: bold;
+}
+#browseBar #breadCrumb a:visited, #browseBar #breadCrumb a:active, #browseBar #breadCrumb a:link, #browseBar #breadCrumb a:hover {
+	color: #444444;
+	font-weight: normal;
+	font-size:12px;
+}
+#browseBar {
+	margin-left:3px;
+	margin-top:3px;
+}
+.txtBaseline {
+	color:#444444;
+}
+#spaces, #spacePerso {
+	background-color: transparent;
+	background-image:none;
+	border: none;
+	width:220px;
+}
+#spacePerso {
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+	border-radius: 8px;
+	-moz-box-shadow:5px 5px 10px #cccccc;
+	-webkit-box-shadow:5px 5px 10px #cccccc;
+	box-shadow:5px 5px 10px #cccccc;
+	padding-bottom:10px;
+	padding-top:7px;
+	margin-top: 15px;
+	background: rgba(255, 255, 255, 0.5);
+	border: 1px solid #cacaca;
+	width:170px;
+	background-image:url("/silverpeas/admin/jsp/icons/silverpeas_light/spacePerso.png");
+	background-repeat: no-repeat;
+	background-position:2px 2px;
+}
+#spacePerso .contentSpace {
+	margin-top:10px;
+}
+.spaceLevel1, .spaceLevel1On {
+	background-color:transparent;
+	background-image:url("/silverpeas/admin/jsp/icons/silverpeas_light/puceSpace.png");
+	background-position:5px 3px;
+	background-repeat:no-repeat;
+	border-bottom:1px solid #CACACA;
+	color:#444444;
+	margin-right:0;
+	padding-left:30px;
+	width:159px;
+}
+.spaceLevel1 {
+	line-height: 30px;
+}
+.spaceLevel1On {
+	padding-top:12px;
+}
+.browseIconComponent {
+	display: none;
+}
+#domainsBar #spaceMenuDivId #spaces .spaceLevel1 .spaceURL, #domainsBar #spaceMenuDivId #spaces .spaceLevel1On .spaceURL, #domainsBar #spaceMenuDivId #spacePerso .spaceURL {
+	color: #444444;
+	font-size:14px;
+}
+#domainsBar #spaceMenuDivId #spacePerso .spaceURL {
+	font-size:14px;
+	margin-left:29px;
+}
+#basSpaces {
+	display: none;
+}
+.gaucheBoutonV5, .droiteBoutonV5, .gaucheOngletOn, .droiteOngletOn, .gaucheOngletOff, .droiteOngletOff {
+	display: none;
+}
+.milieuBoutonV5 {
+	background-image: none;
+	background-color:#C8ED99;
+	border:1px solid #9BD94A;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	-moz-box-shadow:5px 5px 10px #cccccc;
+	-webkit-box-shadow:5px 5px 10px #cccccc;
+	box-shadow:5px 5px 10px #cccccc;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+#domainsBar .milieuBoutonV5 a , .milieuBoutonV5 a {
+	color: #444444;
+}
+.milieuBoutonV5 a:hover , .milieuOngletOff a:hover  {
+	color: #000000;
+}
+td.milieuOngletOn {
+	margin-right:1px;
+}
+.milieuOngletOn {
+	background-image: none;
+	background-color:#9BD94A;
+	border:1px solid #FFFFFF;
+	border-bottom:none;
+	-moz-border-radius-topleft: 8px;
+	-moz-border-radius-topright:8px;
+	-moz-border-radius-bottomleft:0px;
+	-moz-border-radius-bottomright:0px;
+	-webkit-border-top-left-radius:8px;
+	-webkit-border-top-right-radius:8px;
+	-webkit-border-bottom-left-radius:0px;
+	-webkit-border-bottom-right-radius:0px;
+	border-top-left-radius:8px;
+	border-top-right-radius:8px;
+	border-bottom-left-radius:0px;
+	border-bottom-right-radius:0px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.milieuOngletOn a {
+	color:#333333;
+	font-weight:bold;
+}
+.milieuOngletOff {
+	background-image: none;
+	background-color:#C8ED99;
+	border:1px solid #FFFFFF;
+	border-bottom: none;
+	-moz-border-radius-topleft: 8px;
+	-moz-border-radius-topright:8px;
+	-moz-border-radius-bottomleft:0px;
+	-moz-border-radius-bottomright:0px;
+	-webkit-border-top-left-radius:8px;
+	-webkit-border-top-right-radius:8px;
+	-webkit-border-bottom-left-radius:0px;
+	-webkit-border-bottom-right-radius:0px;
+	border-top-left-radius:8px;
+	border-top-right-radius:8px;
+	border-bottom-left-radius:0px;
+	border-bottom-right-radius:0px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+.milieuOngletOff a {
+	color:#666666;
+}
+.sousOnglets {
+	background-image:none;
+	background-color:#9BD94A;
+	height:3px;
+}
+
+#spaceMenuDivId {
+	margin-top:10px;
+}
+#preview .publiDesc {
+	font-weight:normal;
+	color:#B3775A;
+}
+.txtnav, .txtlibform  {
+	color:#9C451B;
+}
+.ArrayColumn {
+	background-color:#C8ED99;
+	background-image:none;
+	color:#000000;
+	padding-left:10px;
+}
+.ArrayColumn a {
+	color:#000000;
+}
+.ArrayColumn a:hover {
+	color:#444444;
+}
+.fondPhoto {
+	background-color:#333333;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	-moz-box-shadow:5px 5px 10px #cccccc;
+	-webkit-box-shadow:5px 5px 10px #cccccc;
+	box-shadow:5px 5px 10px #cccccc;
+	padding:7px;
+}
+.fondPhoto .txtlibform {
+	color: #ffffff;
+}
+.pageNav , .pageNav .ArrayNavigation, .pageNav .pageOff {
+	background-image: none;
+}
+.pageNav {
+	background-color:#C8ED99;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	-moz-box-shadow:5px 5px 10px #cccccc;
+	-webkit-box-shadow:5px 5px 10px #cccccc;
+	box-shadow:5px 5px 10px #cccccc;
+	padding-top:3px;
+	padding-left:5px;
+	padding-right:5px;
+}
+.pageNav .pageIndex {
+	background-color:transparent;
+	border-right:1px solid #80A452;
+	margin:0px;
+	padding:0px;
+	padding-top:3px;
+	margin-right:10px;
+}
+
+#blog #titresTopics , #blog #titresArchives, #blog #titresLiens {
+	background-image: none;
+	font-family: MS trebuchet;
+}
+#blog #titresTopics a , #blog #titresArchives a, #blog #titresLiens a {
+	color:#9C451B;
+}
+.navigationListTitle {
+	background-color:#9BD94A;
+	background-image:none;
+	-moz-border-radius-topleft: 8px;
+	-moz-border-radius-topright:8px;
+	-moz-border-radius-bottomleft:0px;
+	-moz-border-radius-bottomright:0px;
+	-webkit-border-top-left-radius:8px;
+	-webkit-border-top-right-radius:8px;
+	-webkit-border-bottom-left-radius:0px;
+	-webkit-border-bottom-right-radius:0px;
+	border-top-left-radius:8px;
+	border-top-right-radius:8px;
+	border-bottom-left-radius:0px;
+	border-bottom-right-radius:0px;
+}
+.tableNavigationList {
+	background-color:#C8ED99;
+	border:none;
+}
+.txttitrecol {
+	color:#9C451B;
+	font-size:14px;
+	font-weight:bold;
+}
+
+.question {
+	background-color:#C8ED99;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	border-color: 1px solid #FFFFFF;
+	margin:2px;
+}
+
+.tableBoard {
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	-moz-box-shadow:5px 5px 10px #cccccc;
+	-webkit-box-shadow:5px 5px 10px #cccccc;
+	box-shadow:5px 5px 10px #cccccc;	
+}
+.arrayPane {
+	-moz-box-shadow:5px 5px 10px #cccccc;
+	-webkit-box-shadow:5px 5px 10px #cccccc;
+	box-shadow:5px 5px 10px #cccccc;	
+}
+#portletPages h2.portlet-title {
+	color:#9C451B;	
+}
+#portletPages dl.sort dt {
+	-moz-border-radius-topleft: 8px;
+	-moz-border-radius-topright:8px;
+	-moz-border-radius-bottomleft:0px;
+	-moz-border-radius-bottomright:0px;
+	-webkit-border-top-left-radius:8px;
+	-webkit-border-top-right-radius:8px;
+	-webkit-border-bottom-left-radius:0px;
+	-webkit-border-bottom-right-radius:0px;
+	border-top-left-radius:8px;
+	border-top-right-radius:8px;
+	border-bottom-left-radius:0px;
+	border-bottom-right-radius:0px;
+}
+#portletPages div.portlet-content {
+	-moz-border-radius-topleft: 0px;
+	-moz-border-radius-topright:0px;
+	-moz-border-radius-bottomleft:8px;
+	-moz-border-radius-bottomright:8px;
+	-webkit-border-top-left-radius:0px;
+	-webkit-border-top-right-radius:0px;
+	-webkit-border-bottom-left-radius:8px;
+	-webkit-border-bottom-right-radius:8px;
+	border-top-left-radius:0px;
+	border-top-right-radius:0px;
+	border-bottom-left-radius:8px;
+	border-bottom-right-radius:8px;
+	border-left: 1px solid #cccccc;
+	border-bottom: 1px solid #cccccc;
+	border-right: 1px solid #cccccc;
+}
+#pubList {
+	padding:10px;
+}
+
+#facetSearchDivId {
+	border: none;
+}
+#facetAuthor, #facetInstance {
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	-moz-box-shadow:5px 5px 10px #cccccc;
+	-webkit-box-shadow:5px 5px 10px #cccccc;
+	box-shadow:5px 5px 10px #cccccc;
+	margin-bottom:10px;
+	border-left: 1px solid #cccccc;
+	border-right: 1px solid #cccccc;
+	border-bottom: 1px solid #cccccc;
+} 
+#searchGroupTitle {
+	background-image: none;
+	background-color: #9BD94A;
+	color: #222222;
+	-moz-border-radius-topleft: 8px;
+	-moz-border-radius-topright:8px;
+	-moz-border-radius-bottomleft:0px;
+	-moz-border-radius-bottomright:0px;
+	-webkit-border-top-left-radius:8px;
+	-webkit-border-top-right-radius:8px;
+	-webkit-border-bottom-left-radius:0px;
+	-webkit-border-bottom-right-radius:0px;
+	border-top-left-radius:8px;
+	border-top-right-radius:8px;
+	border-bottom-left-radius:0px;
+	border-bottom-right-radius:0px;
+	border-left: 1px solid #cccccc;
+	border-right: 1px solid #cccccc;
+	border-top: 1px solid #cccccc;
+}
+#searchGroupValues ul li.selected {
+	background-color:#C8ED99;
+}
+#searchGroupValues ul li.selected a{
+	color:#444444;
+}
+.intfdcolor {
+	background-image: none;
+	background-color:#FFFFFF;
+}
+.ArrayNavigation {
+	background-image: none;
+	font-size: 11px;
+}
+.yuimenu a {
+	font-size:11px;
+	background-color:#C8ED99;
+	font-weight:bold;
+}
+.yuimenu a:hover {
+	color:#222222;
+	background-color: #9BD94A;
+}
