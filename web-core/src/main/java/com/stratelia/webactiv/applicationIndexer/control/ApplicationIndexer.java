@@ -25,6 +25,7 @@
 package com.stratelia.webactiv.applicationIndexer.control;
 
 import com.silverpeas.pdc.PdcIndexer;
+import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.silverpeas.peasCore.*;
@@ -45,6 +46,8 @@ public class ApplicationIndexer extends Object {
     indexPersonalComponents();
 
     indexPdc();
+    
+    indexUsers();
   }
 
   public void indexAllSpaces() throws Exception {
@@ -243,5 +246,11 @@ public class ApplicationIndexer extends Object {
   private void setSilverTraceLevel() {
     SilverTrace.setTraceLevel("applicationIndexer",
         SilverTrace.TRACE_LEVEL_INFO);
+  }
+  
+  public void indexUsers() {
+   AdminController admin = new AdminController(null);
+   admin.indexAllUsers();
+   admin = null;
   }
 }

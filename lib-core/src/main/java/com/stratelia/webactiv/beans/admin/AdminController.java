@@ -1331,6 +1331,24 @@ public class AdminController extends AdminReference implements java.io.Serializa
       return "-1";
     }
   }
+  
+  public void indexUsers(String domainId) {
+    try {
+      m_Admin.indexUsers(domainId);
+    } catch (Exception e) {
+      SilverTrace.error("admin", "AdminController.indexUsers",
+          "admin.CANT_INDEX_USERS", "domainId = "+domainId, e);
+    }
+  }
+  
+  public void indexAllUsers() {
+    try {
+      m_Admin.indexAllUsers();
+    } catch (Exception e) {
+      SilverTrace.error("admin", "AdminController.indexAllUsers",
+          "admin.CANT_INDEX_ALL_USERS", e);
+    }
+  }
 
   // ----------------------------------------------
   // Admin Group Detail related functions

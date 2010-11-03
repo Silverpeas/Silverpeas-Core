@@ -6550,4 +6550,20 @@ public class Admin extends Object {
     }
     return SPACE_KEY_PREFIX + spaceInst.getId();
   }
+  
+  public void indexAllUsers() throws AdminException {
+    Domain[] domains = getAllDomains();
+    for (Domain domain : domains) {
+      indexUsers(domain.getId());
+    }
+  }
+  
+  public void indexUsers(String domainId) throws AdminException {
+    try {
+      m_DDManager.indexAllUsers(domainId);
+    } catch (Exception e) {
+      throw new AdminException("Admin.indexUsers",
+          SilverpeasException.ERROR, "admin.CANT_INDEX_USERS", "domainId = " + domainId, e);
+    }
+  }
 }

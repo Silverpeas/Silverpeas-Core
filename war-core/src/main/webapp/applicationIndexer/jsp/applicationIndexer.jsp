@@ -140,8 +140,10 @@ if (action != null) {
     	ai.indexAll();
     } else if (action.equals("IndexPdc")) {
     	ai.indexPdc();
+    } else if (action.equals("IndexUsers")) {
+    	ai.indexUsers();
     }
-    indexMessage = "Indexation lanc�e en t�che de fond !";
+    indexMessage = "Indexation lancée en tâche de fond !";
 }
 
 %>
@@ -155,25 +157,29 @@ if (action != null) {
 <script language="JavaScript">
 function index(action, compo, space)
 {
-	var message = "Vous �tes sur le point de r�indexer ";
+	var message = "Vous êtes sur le point de réindexer ";
 	if (action == "Index")
 	{
-		if (compo.length > 1)
+		if (compo.length > 1) {
 			message += "un composant";
-		else
+		} else {
 			message += "un espace";
-	}
-	else if (action == "IndexPerso")
+		}
+	} else if (action == "IndexPerso")  {
 		message += "un composant de l'espace personnel";
-	else if (action == "IndexAllSpaces")
+	} else if (action == "IndexAllSpaces") {
 		message += "tous les espaces collaboratifs";
-	else if (action == "IndexAll")
+	} else if (action == "IndexAll") {
 		message += "tout le portail";
-	else if (action == "IndexPdc")
+	} else if (action == "IndexPdc") {
 		message += "le plan de classement";
-	message += ". \nEtes-vous s�r de vouloir effectuer cette op�ration ?";
-	if (confirm(message))
+	} else if (action == "IndexUsers") {
+		message += "les utilisateurs";
+	}
+	message += ". \nEtes-vous sûr(e) de vouloir effectuer cette opération ?";
+	if (confirm(message)) {
 		location.href="applicationIndexer.jsp?Action="+action+"&PersonalCompo="+compo+"&SpaceId="+space+"&ComponentId="+compo;
+	}
 }
 </script>
 </head>
@@ -227,6 +233,16 @@ function index(action, compo, space)
                 <td colspan="2">
                 	<span class="txtnav" nowrap>Plan de classement</span><br><br>
                 	<a href="javaScript:index('IndexPdc','','');">INDEXER PDC</a>
+                </td>
+                </tr>
+                <tr>
+                  <td colspan="2" bgcolor=2776A3><img src="../../admin/jsp/icons/1px.gif"></td>
+                </tr>
+                <tr>
+                <td colspan="2">
+                	<br/>
+                	<span class="txtnav" nowrap="nowrap">Utilisateurs</span><br/><br/>
+                	<a href="javaScript:index('IndexUsers','','');">Indexer tous les utilisateurs</a>
                 </td>
                 </tr>
               </table>

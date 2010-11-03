@@ -329,6 +329,11 @@ abstract public class AbstractDomainDriver extends Object {
       IndexEngineProxy.addIndexEntry(indexEntry);
     }
   }
+  
+  public void unindexUserFull(String userId) {
+    FullIndexEntry indexEntry = new FullIndexEntry("users", "UserFull", userId);
+    IndexEngineProxy.removeIndexEntry(indexEntry.getPK());
+  }
 
   /**
    * Virtual method that performs extra initialization from a properties file. To overload by the

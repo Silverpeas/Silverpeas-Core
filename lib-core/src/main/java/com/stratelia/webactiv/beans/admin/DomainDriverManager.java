@@ -183,6 +183,9 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
       // Get User detail from specific domain
       domainDriver.deleteUser(ur.specificId);
+      
+      // Delete index to given user
+      domainDriver.unindexUserFull(userId);
     } catch (AdminException e) {
       throw new AdminException("DomainDriverManager.deleteUser",
           SilverpeasException.ERROR, "admin.EX_ERR_DELETE_USER", "user Id: '"
@@ -380,6 +383,27 @@ public class DomainDriverManager extends AbstractDomainDriver {
       this.releaseOrganizationSchema();
     }
     return uds;
+  }
+  
+  /**
+   * Indexing all users information of given domain
+   * @param domainId
+   * @throws Exception
+   */
+  public void indexAllUsers(String domainId) throws Exception {
+    UserDetail[] users = getAllUsers(domainId);
+    AbstractDomainDriver ddm = getDomainDriver(Integer.parseInt(domainId));
+    for (UserDetail user : users) {
+      try {
+        UserFull userFull = getUserFull(user.getSpecificId());
+        if (userFull != null) {
+          ddm.indexUserFull(userFull);
+        }
+      } catch (Exception e) {
+        SilverTrace.error("admin", "DomainDriverManager.indexAllUsers", "admin.CANT_INDEX_USER",
+            "userId = " + user.getId(), e);
+      }
+    }
   }
 
   /**
