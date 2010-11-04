@@ -127,9 +127,8 @@ public class VersioningImportExport {
       if (document != null) {
         // Un document portant le même nom existe déjà
         // On ajoute une nouvelle version au document
-        List<DocumentVersion> versions = getVersioningBm().getDocumentVersions(document.getPk());
-        if (versions != null && ! versions.isEmpty()) {
-          DocumentVersion lastVersion = versions.get(versions.size() - 1);
+        DocumentVersion lastVersion = getVersioningBm().getLastDocumentVersion(document.getPk());
+        if (lastVersion != null) {
           version.setMimeType(attachment.getType());
           if (attachment.getType() == null) {
             version.setMimeType("dummy");
@@ -143,24 +142,21 @@ public class VersioningImportExport {
           if (!StringUtil.isDefined(attachment.getInfo())) {
             version.setComments(attachment.getInfo());
           }
-
           version = getVersioningBm().addDocumentVersion(document, version);
         }
       } else {
         // Il n'y a pas de document portant le même nom
         // On crée un nouveau document
         DocumentPK docPK = new DocumentPK(-1, "useless", componentId);
-        document = new Document(docPK, pubPK, attachment.getLogicalName(), "",
-            -1, userId, new Date(), null, componentId, new ArrayList<Worker>(), new ArrayList(), 0, 0);
+        document = new Document(docPK, pubPK, attachment.getLogicalName(), "", 
+            Document.STATUS_CHECKOUTED, -1, new Date(), null, componentId, new ArrayList<Worker>(), 
+            new ArrayList(), 0, 0);
         if (StringUtil.isDefined(attachment.getTitle())) {
           document.setName(attachment.getTitle());
         }
         if (StringUtil.isDefined(attachment.getInfo())) {
           document.setDescription(attachment.getInfo());
         }
-
-        // document.setDescription(attachment.getDescription());
-        // et on y ajoute la première version
         if (versionType == DocumentVersion.TYPE_PUBLIC_VERSION) {
           version.setMajorNumber(1);
           version.setMinorNumber(0);
@@ -178,8 +174,8 @@ public class VersioningImportExport {
         docPK = getVersioningBm().createDocument(document, version);
         document.setPk(docPK);
 
-        VersioningUtil versioningUtil = new VersioningUtil(componentId,
-            document, new Integer(userId).toString(), topicId);
+        VersioningUtil versioningUtil = new VersioningUtil(componentId, document, 
+            String.valueOf(userId), topicId);
         versioningUtil.setFileRights(document);
         getVersioningBm().updateWorkList(document);
         getVersioningBm().updateDocument(document);
