@@ -65,7 +65,6 @@
 		error = true;
 	}
 %>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-1.2.6.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.Jcrop.js"></script>
 <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/jquery.Jcrop.css">
 
@@ -88,7 +87,7 @@ function saveUpdate(){
 
 function cancelWindow(){
 	// into no have return false
-  tb_remove();
+	closeThumbnailDialog();
 }
 <%if(isCreateMode){%>
 function initThumbnailManager(){
@@ -151,20 +150,12 @@ function showPreview(coords)
 if(thumbnailWidth != null){%>
 <input type="hidden" name="ThumbnailWidth" value="<%=thumbnailWidth%>">
 <%}%>
-<table width="98%" border="0" cellspacing="0" cellpadding="0" class=intfdcolor4>
-	<tr> 
-		<td nowrap>
-			<table border="0" cellspacing="0" cellpadding="5" class="contourintfdcolor" width="100%">
-			<%
-			if(error){
-			// message d'erreur
-					%>
-						<tr align=center>
-							<TD class="txtlibform"><%=resource.getString("thumbnail." + result)%></TD>
-						</tr>
-					<%
-			} else if(isCreateMode){
-			%>
+<table width="98%" border="0" cellspacing="0" cellpadding="0">
+			<% 	if(error) { %>
+				<tr align=center>
+					<TD class="txtlibform"><%=resource.getString("thumbnail." + result)%></TD>
+				</tr>
+			<% } else if(isCreateMode) { %>
 				<tr align=center>	
 					<TD class="txtlibform"><%=resource.getString("thumbnail.path")%></TD>
       				<TD>
@@ -173,12 +164,10 @@ if(thumbnailWidth != null){%>
       				<%}else{%>
       					<input type="hidden" name="Action" value="Save">
       				<%}%>
-						<input type="file" name="OriginalFile" size="60">
+						<input type="file" name="OriginalFile" size="60"/>
 					</TD>
 				</tr>
-			<%
-			}else{
-			%>
+			<% } else { %>
 			<tr align=center> 
 					<TD class="txtlibform"><%=resource.getString("thumbnail.picture")%></TD>
       				<TD>
@@ -201,13 +190,8 @@ if(thumbnailWidth != null){%>
 						</table>
 					</TD>
 				</tr>
-			<%
-			}
-			%>
+			<% } %>
 			</table>
-		</td>
-	</tr>
-</table>
 </FORM>
 <br>
 <%
