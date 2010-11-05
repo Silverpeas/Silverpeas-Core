@@ -445,9 +445,15 @@ public class WysiwygController {
       String componentId, String context, String id, String userId) throws WysiwygException {
     createFileAndAttachment(textHtml, fileName, spaceId, componentId, context, id, userId, true);
   }
-
+  
   public static void createFileAndAttachment(String textHtml, String fileName, String spaceId,
       String componentId, String context, String id, String userId, boolean indexIt)
+      throws WysiwygException {
+    createFileAndAttachment(textHtml, fileName, spaceId, componentId, context, id, userId, indexIt, true);
+  }
+
+  public static void createFileAndAttachment(String textHtml, String fileName, String spaceId,
+      String componentId, String context, String id, String userId, boolean indexIt, boolean invokeCallback)
       throws WysiwygException {
     try {
       int iUserId = -1;
@@ -474,9 +480,11 @@ public class WysiwygController {
           new java.util.Date(), foreignKey);
       ad.setAuthor(userId);
 
-      AttachmentController.createAttachment(ad, indexIt);
-
-      CallBackManager.invoke(CallBackManager.ACTION_ON_WYSIWYG, iUserId, componentId, id);
+      AttachmentController.createAttachment(ad, indexIt, invokeCallback);
+      
+      if (invokeCallback) {
+        CallBackManager.invoke(CallBackManager.ACTION_ON_WYSIWYG, iUserId, componentId, id);
+      }
     } catch (Exception exc) {
       throw new WysiwygException("WysiwygController.createFileAndAttachment()",
           SilverpeasException.ERROR, "wysiwyg.CREATING_WYSIWYG_DOCUMENT_FAILED", exc);
@@ -1011,7 +1019,7 @@ public class WysiwygController {
         newStr = replaceInternalImageIds(newStr, imageIds);
 
         createFileAndAttachment(newStr, WysiwygController.getWysiwygFileName(objectId, language),
-            null, componentId, WYSIWYG_CONTEXT, objectId, userId);
+            null, componentId, WYSIWYG_CONTEXT, objectId, userId, true, false);
       }
     } catch (Exception e) {
     }
