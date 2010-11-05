@@ -307,7 +307,7 @@ public class AjaxServletLookV5 extends HttpServlet {
 
     // Affichage de l'espace collaboratif
     SpaceInstLight space = orgaController.getSpaceInstLightById(spaceId);
-    if (space != null) {
+    if (space != null && isSpaceVisible(userId, spaceId, orgaController)) {
       StringBuilder itemSB = new StringBuilder(200);
       itemSB.append("<item open=\"").append(open).append("\" ");
       itemSB.append(getSpaceAttributes(space, language, defaultLook, helper));
@@ -380,7 +380,7 @@ public class AjaxServletLookV5 extends HttpServlet {
       spaceId = availableSpaceIds[nI];
       boolean loadCurSpace = isLoadingContentNeeded(userMenuDisplayMode, userId, spaceId, listUFS,
           orgaController);
-      if (loadCurSpace) {
+      if (loadCurSpace && isSpaceVisible(userId, spaceId, orgaController)) {
         displaySpace(spaceId, targetComponentId, spacePath, userId, language,
             defaultLook, false, false, orgaController, helper, out, listUFS, userMenuDisplayMode);
       }
@@ -426,7 +426,7 @@ public class AjaxServletLookV5 extends HttpServlet {
       spaceId = availableSpaceIds[nI];
       boolean loadCurSpace = isLoadingContentNeeded(userMenuDisplayMode, userId, spaceId, listUFS,
           orgaController);
-      if (loadCurSpace) {
+      if (loadCurSpace && isSpaceVisible(userId, spaceId, orgaController)) {
         space = orgaController.getSpaceInstLightById(spaceId);
         if (space != null) {
           StringBuilder itemSB = new StringBuilder(200);
@@ -818,6 +818,23 @@ public class AjaxServletLookV5 extends HttpServlet {
         return true;
       }
     }
+    return false;
+  }
+
+  /**
+   * a Space is visible if at least one of its items is visible for the currentUser
+   * @param userId
+   * @param spaceId
+   * @param orgaController
+   * @return true or false
+   */
+  protected boolean isSpaceVisible(String userId, String spaceId, OrganizationController orgaController) {
+     String compoIds[] = orgaController.getAvailCompoIds(spaceId, userId);
+     for (int i = 0; i < compoIds.length; i++) {
+       ComponentInst compInst = orgaController.getComponentInst(compoIds[i]);
+       if (!compInst.isHidden())
+         return true;
+     }
     return false;
   }
 
