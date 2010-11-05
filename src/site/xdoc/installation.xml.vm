@@ -39,15 +39,15 @@ Please find a list of the tools you will need to install Silverpeas below.<br/>
       </p>
       <subsection name="Java 6">
         <p>Silverpeas needs a Java SE Development Kit (JDK) at least of version 6, which can be downloaded from Sun
-          <a href="http://java.sun.com/javase/downloads/index.jsp#jdk">here</a>.<br/>
+          <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html#jdk">here</a>.<br/>
           Don't forget to set-up the environment variable <b>JAVA_HOME</b>.
         </p>
       </subsection>
       <subsection name="Apache Maven">
-        <p>Apache Maven 2.2.x is used in Silverpeas for the building of components and the assembly. It must be installed on the target platform.<br/>
+        <p>Apache Maven 3.0.x is used in Silverpeas for the building of components and the assembly. It must be installed on the target platform.<br/>
         To install Maven, follw these steps:
         <ol>
-          <li>Download Maven 2.2.x from the <a href="http://maven.apache.org/download.html">Apache web site</a> or one of its mirrors.</li>
+          <li>Download Maven 3.0.x from the <a href="http://maven.apache.org/download.html">Apache web site</a> or one of its mirrors.</li>
           <li>Uncompress the downloaded archive in a directory</li>
           <li>Define the environment variable <b>M2_HOME</b> to the resulting directory.</li>
           <li>Add <code>%M2_HOME%\bin</code> to your <code>%PATH%</code> variable.</li>
