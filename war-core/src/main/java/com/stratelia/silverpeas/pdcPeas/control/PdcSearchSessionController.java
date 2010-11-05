@@ -415,12 +415,28 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     // contrôle des droits sur les espaces et les composants
     String objectType = mie.getObjectType();
     if (objectType.equals("Space")) {
-      return getOrganizationController().isSpaceAvailable(mie.getObjectId(),
-          getUserId());
-    }
-    if (objectType.equals("Component")) {
-      return getOrganizationController().isComponentAvailable(
-          mie.getObjectId(), getUserId());
+      // check if space is allowed to current user
+      return getOrganizationController().isSpaceAvailable(mie.getObjectId(), getUserId());
+    } else if (objectType.equals("Component")) {
+      // check if component is allowed to current user
+      return getOrganizationController().isComponentAvailable(mie.getObjectId(), getUserId());
+    } else if (objectType.equals("UserFull") &&
+        GeneralPropertiesManager.getDomainVisibility() != GeneralPropertiesManager.DVIS_ALL) {
+      // visibility between domains is limited, check found user domain against current user domain
+      String userId = mie.getObjectId();
+      UserDetail userFound = getUserDetail(userId);
+      if (GeneralPropertiesManager.getDomainVisibility() == GeneralPropertiesManager.DVIS_ONE) {
+        if ("0".equals(getUserDetail().getDomainId())) {
+          // current user of default domain can see all users
+          return true;
+        } else {
+          // current user of other domains can see only users of his domain
+          return userFound.getDomainId().equals(getUserDetail().getDomainId());
+        }
+      } else if (GeneralPropertiesManager.getDomainVisibility() == GeneralPropertiesManager.DVIS_EACH) {
+        // user found must be in same domain of current user
+        return userFound.getDomainId().equals(getUserDetail().getDomainId());
+      }
     }
 
     return true;
