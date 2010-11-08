@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.personalizationPeas.control;
 
 import java.rmi.NoSuchObjectException;
@@ -36,7 +35,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import javax.ejb.CreateException;
 import javax.naming.NamingException;
@@ -59,12 +57,15 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.util.Vector;
 
 /**
  * Class declaration
  * @author
  */
-public class PersonalizationSessionController extends AbstractComponentSessionController {
+public class PersonalizationSessionController
+    extends AbstractComponentSessionController {
+
   private String favoriteLanguage = null;
   private String favoriteLook = null;
   private Boolean thesaurusStatus = null;
@@ -73,7 +74,6 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
   private AdminController m_AdminCtrl = null;
   private NotificationManager notificationManager = null;
   private long domainActions = -1;
-
   ResourceLocator resources = new ResourceLocator(
       "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings",
       "");
@@ -85,7 +85,8 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
    * @see
    */
   public PersonalizationSessionController(
-      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
+      MainSessionController mainSessionCtrl,
+      ComponentContext componentContext) {
     super(
         mainSessionCtrl,
         componentContext,
@@ -166,10 +167,10 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
    * @throws SQLException
    * @see
    */
-  public void setLanguages(Vector<String> languages) throws PeasCoreException {
+  public void setLanguages(List<String> languages) throws PeasCoreException {
     try {
-      getPersonalization().setLanguages(languages);
-      this.favoriteLanguage = languages.firstElement();
+      getPersonalization().setLanguages(new Vector(languages));
+      this.favoriteLanguage = languages.get(0);
 
       // Change language in MainSessionController
       setLanguageToMainSessionController(favoriteLanguage);
@@ -196,7 +197,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
    * @throws SQLException
    * @see
    */
-  public Vector<String> getLanguages() throws PeasCoreException {
+  public List<String> getLanguages() throws PeasCoreException {
     try {
       return getPersonalization().getLanguages();
     } catch (NoSuchObjectException nsoe) {
@@ -225,8 +226,9 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
   public String getFavoriteLook() throws PeasCoreException {
     if (this.favoriteLook == null) {
       try {
-        if (favoriteLook == null)
+        if (favoriteLook == null) {
           this.favoriteLook = getPersonalization().getFavoriteLook();
+        }
       } catch (NoSuchObjectException nsoe) {
         initPersonalization();
         SilverTrace.warn("personalizationPeas",
@@ -311,7 +313,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
       throws PeasCoreException {
     try {
       getPersonalization().setThesaurusStatus(thesaurusStatus);
-      this.thesaurusStatus = new Boolean(thesaurusStatus);
+      this.thesaurusStatus = thesaurusStatus;
     } catch (NoSuchObjectException nsoe) {
       initPersonalization();
       SilverTrace.warn("personalizationPeas",
@@ -329,9 +331,9 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
   // ******************* Methods for Drag And Drop *************************
   public boolean getDragAndDropStatus() throws PeasCoreException {
     try {
-      if (dragAndDropStatus == null)
-        dragAndDropStatus = new Boolean(getPersonalization()
-            .getDragAndDropStatus());
+      if (dragAndDropStatus == null) {
+        dragAndDropStatus = getPersonalization().getDragAndDropStatus();
+      }
     } catch (NoSuchObjectException nsoe) {
       initPersonalization();
       SilverTrace.warn("personalizationPeas",
@@ -352,7 +354,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
       throws PeasCoreException {
     try {
       getPersonalization().setDragAndDropStatus(dragAndDropStatus);
-      this.dragAndDropStatus = new Boolean(dragAndDropStatus);
+      this.dragAndDropStatus = dragAndDropStatus;
     } catch (NoSuchObjectException nsoe) {
       initPersonalization();
       SilverTrace.warn("personalizationPeas",
@@ -371,9 +373,9 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
   // *************************
   public boolean getWebdavEditingStatus() throws PeasCoreException {
     try {
-      if (webdavEditingStatus == null)
-        webdavEditingStatus = new Boolean(getPersonalization()
-            .getWebdavEditingStatus());
+      if (webdavEditingStatus == null) {
+        webdavEditingStatus = getPersonalization().getWebdavEditingStatus();
+      }
     } catch (NoSuchObjectException nsoe) {
       initPersonalization();
       SilverTrace.warn("personalizationPeas",
@@ -393,7 +395,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
       throws PeasCoreException {
     try {
       getPersonalization().setWebdavEditingStatus(webdavEditingStatus);
-      this.webdavEditingStatus = new Boolean(webdavEditingStatus);
+      this.webdavEditingStatus = webdavEditingStatus;
     } catch (NoSuchObjectException nsoe) {
       initPersonalization();
       SilverTrace.warn("personalizationPeas",
@@ -409,7 +411,15 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
   }
 
   // ******************* Methods for Notification *************************
-
+  
+  /**
+   * Is the multichannel notification supported?
+   * @return true if notifications can be done through several channels, false otherwise.
+   */
+  public boolean isMultiChannelNotification() {
+    return notificationManager.isMultiChannelNotification();
+  }
+  
   /**
    * Method declaration
    * @return
@@ -419,7 +429,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
   public ArrayList<Properties> getNotificationAddresses() throws PeasCoreException {
     int userId = Integer.parseInt(getUserId());
     try {
-      return notificationManager.getNotificationAddresses(userId, isMultiChannelNotification());
+      return notificationManager.getNotificationAddresses(userId);
     } catch (NotificationManagerException e) {
       throw new PeasCoreException(
           "PersonalizationSessionController.getNotificationAddresses()",
@@ -520,8 +530,11 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
    * @throws PeasCoreException
    * @see
    */
-  public void saveNotifAddress(String aNotifAddressId, String aNotifName,
-      String aChannelId, String aAddress, String aUsage)
+  public void saveNotifAddress(String aNotifAddressId,
+      String aNotifName,
+      String aChannelId,
+      String aAddress,
+      String aUsage)
       throws PeasCoreException {
     int notifAddressId;
 
@@ -614,8 +627,8 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     int userId = Integer.parseInt(getUserId());
 
     try {
-      return notificationManager.getNotificationAddress(notificationManager
-          .getDefaultAddress(userId), userId);
+      return notificationManager.getNotificationAddress(
+          notificationManager.getDefaultAddress(userId), userId);
     } catch (NotificationManagerException e) {
       throw new PeasCoreException(
           "PersonalizationSessionController.getDefaultAddress()",
@@ -654,7 +667,8 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
    * @throws PeasCoreException
    * @see
    */
-  public void addPreference(String componentId, String priorityId,
+  public void addPreference(String componentId,
+      String priorityId,
       String notificationId) throws PeasCoreException {
     int userId = Integer.parseInt(getUserId());
 
@@ -687,8 +701,9 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
 
     for (int i = 0; i < givenInstancesIds.length; i++) {
       instanceId = givenInstancesIds[i];
-      if (intermed.lastIndexOf((String) instanceId) == i)
+      if (intermed.lastIndexOf((String) instanceId) == i) {
         instancesIds.add(instanceId);
+      }
     }
 
     return instancesIds;
@@ -720,22 +735,29 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
         p = new Properties();
 
         p.setProperty("instanceId", extractLastNumber(instanceId));
-        p.setProperty("fullName", notificationManager
-            .getComponentFullName(instanceId));
+        p.setProperty("fullName", notificationManager.getComponentFullName(instanceId));
         ar.add(p);
       }
       Properties[] componentList = (Properties[]) ar.toArray(new Properties[0]);
 
       Arrays.sort(componentList, new Comparator<Properties>() {
 
-        public int compare(Properties o1, Properties o2) {
+        @Override
+        public int compare(Properties o1,
+            Properties o2) {
           return o1.getProperty("fullName").compareTo(o2.getProperty("fullName"));
-          }
+        }
 
+        @Override
         public boolean equals(Object o) {
           return false;
-          }
+        }
 
+        @Override
+        public int hashCode() {
+          int hash = 3;
+          return hash;
+        }
       });
       sortedComponentList = new ArrayList<Properties>(componentList.length);
 
@@ -786,13 +808,17 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     return s;
   }
 
-  public String buildOptions(ArrayList<Properties> ar, String selectValue, String selectText) {
+  public String buildOptions(ArrayList<Properties> ar,
+      String selectValue,
+      String selectText) {
     return buildOptions(ar, selectValue, selectText, false);
   }
 
-  public String buildOptions(ArrayList<Properties> ar, String selectValue,
-      String selectText, boolean bSorted) {
-    StringBuffer valret = new StringBuffer();
+  public String buildOptions(ArrayList<Properties> ar,
+      String selectValue,
+      String selectText,
+      boolean bSorted) {
+    StringBuilder valret = new StringBuilder();
     Properties elmt = null;
     String selected;
     ArrayList<Properties> arToDisplay = ar;
@@ -804,21 +830,30 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
       } else {
         selected = "";
       }
-      valret.append("<option value=\"\" " + selected + ">"
-          + EncodeHelper.javaStringToHtmlString(selectText) + "</option>\n");
+      valret.append("<option value=\"\" ").append(selected).append(">").append(
+          EncodeHelper.javaStringToHtmlString(selectText)).append("</option>\n");
     }
     if (bSorted) {
       Properties[] theList = (Properties[]) ar.toArray(new Properties[0]);
       Arrays.sort(theList, new Comparator<Properties>() {
-          public int compare(Properties o1, Properties o2) {
-          return o1.getProperty("name").toUpperCase()
-              .compareTo(o2.getProperty("name").toUpperCase());
-          }
 
+        @Override
+        public int compare(Properties o1,
+            Properties o2) {
+          return o1.getProperty("name").toUpperCase().compareTo(o2.getProperty("name").toUpperCase());
+        }
+
+        @Override
         public boolean equals(Object o) {
           return false;
-          }
-                });
+        }
+
+        @Override
+        public int hashCode() {
+          int hash = 3;
+          return hash;
+        }
+      });
       arToDisplay = new ArrayList<Properties>(theList.length);
       for (i = 0; i < theList.length; i++) {
         arToDisplay.add(theList[i]);
@@ -832,10 +867,10 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
         } else {
           selected = "";
         }
-        valret.append("<option value=\"" + elmt.getProperty("id") + "\" "
-            + selected + ">"
-            + EncodeHelper.javaStringToHtmlString(elmt.getProperty("name"))
-            + "</option>\n");
+        valret.append("<option value=\"").append(elmt.getProperty("id")).append("\" ")
+            .append(selected).append(">")
+            .append(EncodeHelper.javaStringToHtmlString(elmt.getProperty("name")))
+            .append("</option>\n");
       }
     }
     return valret.toString();
@@ -855,10 +890,16 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     return valret;
   }
 
-  public void modifyUser(String idUser, String userLastName,
-      String userFirstName, String userEMail, String userAccessLevel,
-      String oldPassword, String newPassword,
-      String userLoginQuestion, String userLoginAnswer, HashMap<String, String> properties)
+  public void modifyUser(String idUser,
+      String userLastName,
+      String userFirstName,
+      String userEMail,
+      String userAccessLevel,
+      String oldPassword,
+      String newPassword,
+      String userLoginQuestion,
+      String userLoginAnswer,
+      HashMap<String, String> properties)
       throws PeasCoreException, AuthenticationException {
     UserFull theModifiedUser = null;
     String idRet = null;
@@ -870,10 +911,11 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
         + userEMail + " userAccessLevel=" + userAccessLevel);
 
     theModifiedUser = m_AdminCtrl.getUserFull(idUser);
-    if (theModifiedUser == null)
+    if (theModifiedUser == null) {
       throw new PeasCoreException(
           "PersonalizationPeasSessionController.modifyUser()",
           SilverpeasException.ERROR, "admin.EX_ERR_UNKNOWN_USER");
+    }
 
     if (isUserDomainRW()) {
       theModifiedUser.setLastName(userLastName);
@@ -919,8 +961,10 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     }
   }
 
-  private void changePassword(String login, String oldPassword,
-      String newPassword, String domainId) throws AuthenticationException {
+  private void changePassword(String login,
+      String oldPassword,
+      String newPassword,
+      String domainId) throws AuthenticationException {
     LoginPasswordAuthentication auth = new LoginPasswordAuthentication();
     auth.changePassword(login, oldPassword, newPassword, domainId);
   }
@@ -931,16 +975,9 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
 
   public long getDomainActions() {
     if (domainActions == -1) {
-      domainActions = m_AdminCtrl.getDomainActions(getUserDetail()
-          .getDomainId());
+      domainActions = m_AdminCtrl.getDomainActions(getUserDetail().getDomainId());
     }
     return domainActions;
-  }
-
-  public boolean isMultiChannelNotification() {
-    ResourceLocator notifResource = new ResourceLocator(
-        "com.stratelia.silverpeas.notificationManager.settings.notificationManagerSettings", "");
-    return "true".equalsIgnoreCase(notifResource.getString("multiChannelNotification"));
   }
 
   public void saveChannels(String selectedChannels) throws PeasCoreException {

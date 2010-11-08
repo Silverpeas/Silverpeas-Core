@@ -43,6 +43,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.ResourceLocator;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class declaration
@@ -62,6 +64,7 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
    * @return
    * @see
    */
+  @Override
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new PersonalizationSessionController(mainSessionCtrl,
@@ -73,6 +76,7 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
    * control bean name to be put in the request object ex : for notificationUser, returns
    * "notificationUser"
    */
+  @Override
   public String getSessionControlBeanName() {
     return "personalizationPeas";
   }
@@ -86,6 +90,7 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
    * @return The complete destination URL for a forward (ex :
    * "/notificationUser/jsp/notificationUser.jsp?flag=user")
    */
+  @Override
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
     SilverTrace.info(getSessionControlBeanName(),
@@ -113,16 +118,14 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
         selectedLanguage = personalizationScc.getFavoriteLanguage();
 
         // thesaurus parameter
-        thesaurusStatus = new Boolean(personalizationScc.getThesaurusStatus())
-            .toString();
+        thesaurusStatus = String.valueOf(personalizationScc.getThesaurusStatus());
 
         // drag and drop parameter
-        dragDropStatus = new Boolean(personalizationScc.getDragAndDropStatus())
-            .toString();
+        dragDropStatus = String.valueOf(personalizationScc.getDragAndDropStatus());
 
         // online editing parameter
-        webdavEditingStatus = new Boolean(personalizationScc
-            .getWebdavEditingStatus()).toString();
+        webdavEditingStatus = String.valueOf(personalizationScc
+            .getWebdavEditingStatus());
 
         // favorite look
         selectedLook = personalizationScc.getFavoriteLook();
@@ -150,17 +153,14 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
         Boolean mustBeReloaded = isFramesetMustBeReloaded(selectedLanguage,
             selectedLook, personalizationScc);
 
-        Vector<String> languages = new Vector<String>();
+        List<String> languages = new ArrayList <String>();
         languages.add(selectedLanguage);
         personalizationScc.setLanguages(languages);
 
         personalizationScc.setFavoriteLook(selectedLook);
-        personalizationScc.setThesaurusStatus(new Boolean(thesaurusStatus)
-            .booleanValue());
-        personalizationScc.setDragAndDropStatus(new Boolean(dragDropStatus)
-            .booleanValue());
-        personalizationScc.setWebdavEditingStatus(new Boolean(
-            webdavEditingStatus).booleanValue());
+        personalizationScc.setThesaurusStatus(Boolean.parseBoolean(thesaurusStatus));
+        personalizationScc.setDragAndDropStatus(Boolean.parseBoolean(dragDropStatus));
+        personalizationScc.setWebdavEditingStatus(Boolean.parseBoolean(webdavEditingStatus));
 
         if (selectedWorkSpace == null || selectedWorkSpace.equals("null"))
           personalizationScc.setPersonalWorkSpace(null);
@@ -190,11 +190,9 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
             || (uf.isPasswordValid() && uf.isPasswordAvailable());
 
         request.setAttribute("userObject", uf);
-        request.setAttribute("UpdateIsAllowed", new Boolean(updateIsAllowed));
-        request.setAttribute("minLengthPwd", new Integer(personalizationScc
-            .getMinLengthPwd()));
-        request.setAttribute("blanksAllowedInPwd", new Boolean(
-            personalizationScc.isBlanksAllowedInPwd()));
+        request.setAttribute("UpdateIsAllowed", updateIsAllowed);
+        request.setAttribute("minLengthPwd", personalizationScc.getMinLengthPwd());
+        request.setAttribute("blanksAllowedInPwd", personalizationScc.isBlanksAllowedInPwd());
         destination = "/personalizationPeas/jsp/changePassword.jsp";
       } else if (function.startsWith("EffectiveChangePassword")) {
         // Update informations only if updateMode is allowed for each field
@@ -285,9 +283,9 @@ public class PersoPeasRequestRouter extends ComponentRequestRouter {
     String actualLook = personalizationScc.getFavoriteLook();
 
     if (!newLanguage.equals(actualLanguage) || !newLook.equals(actualLook)) {
-      return new Boolean(true);
+      return true;
     } else {
-      return new Boolean(false);
+      return false;
     }
   }
 }

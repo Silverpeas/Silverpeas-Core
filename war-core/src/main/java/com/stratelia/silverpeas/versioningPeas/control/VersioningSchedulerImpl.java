@@ -59,11 +59,11 @@ public class VersioningSchedulerImpl implements SchedulerEventHandler {
       try {
         String cronScheduleProcess = resourcesAttachment.getString("ScheduledProcessActify");
         String cronSchedulePurge = resourcesAttachment.getString("ScheduledPurgeActify");
-          SimpleScheduler.removeJob(this, VERSIONING_JOB_NAME_PROCESS_ACTIFY);
-          SimpleScheduler.removeJob(this, VERSIONING_JOB_NAME_PURGE_ACTIFY);
-        SimpleScheduler.getJob(this, VERSIONING_JOB_NAME_PROCESS_ACTIFY, cronScheduleProcess,
+          SimpleScheduler.unscheduleJob(this, VERSIONING_JOB_NAME_PROCESS_ACTIFY);
+          SimpleScheduler.unscheduleJob(this, VERSIONING_JOB_NAME_PURGE_ACTIFY);
+        SimpleScheduler.scheduleJob(this, VERSIONING_JOB_NAME_PROCESS_ACTIFY, cronScheduleProcess,
             this, "doProcessActify");
-        SimpleScheduler.getJob(this, VERSIONING_JOB_NAME_PURGE_ACTIFY, cronSchedulePurge, this,
+        SimpleScheduler.scheduleJob(this, VERSIONING_JOB_NAME_PURGE_ACTIFY, cronSchedulePurge, this,
             "doPurgeActify");
       } catch (Exception e) {
         SilverTrace.error("versioningPeas", "VersioningScheduleImpl.initialize()", "", e);

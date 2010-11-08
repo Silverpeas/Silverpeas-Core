@@ -28,7 +28,7 @@
 <%@ include file="checkPersonalization.jsp"%>
 
 <%
-  //Récupération des paramètres
+  //Rï¿½cupï¿½ration des paramï¿½tres
 			String action = (String) request.getParameter("Action");
 			String id = (String) request.getParameter("id");
 			String testExplanation = "";
@@ -206,7 +206,7 @@ function getChannels()
 					}
 					arrayLine.addArrayCellIconPane(actions);
 				} else {
-					// afficher les choix en case à cocher pour une selection multiple
+					// afficher les choix en case ï¿½ cocher pour une selection multiple
 					String usedCheck = "";
 					if (p.getProperty("isDefault").equalsIgnoreCase("true")) {
 						usedCheck = "checked";
