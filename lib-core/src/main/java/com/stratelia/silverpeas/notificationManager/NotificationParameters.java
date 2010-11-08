@@ -47,11 +47,29 @@ public class NotificationParameters {
   // 1)Component
   // specific 2)Default
   // 3)ADDRESS_BASIC_SILVERMAIL
+  /**
+   * The channel used for notifications is the popup.
+   */
   static public final int ADDRESS_BASIC_POPUP = -10;
+  /**
+   * The channel used for notifications is the trash (recieved notifications are removed).
+   */
   static public final int ADDRESS_BASIC_REMOVE = -11;
+  /**
+   * The channel used for notifications is the internal Silverpeas messaging system.
+   */
   static public final int ADDRESS_BASIC_SILVERMAIL = -12;
+  /**
+   * The channel used for notifications is the SMTP mail system.
+   */
   static public final int ADDRESS_BASIC_SMTP_MAIL = -13;
+  /**
+   * The channel used for notifications is the server one (used by the server to send notifications).
+   */
   static public final int ADDRESS_BASIC_SERVER = -14;
+  /**
+   * The channel used for notifications is the peer to peer user communication (chatting).
+   */
   static public final int ADDRESS_BASIC_COMMUNICATION_USER = -15;
 
   static public final String USAGE_PRO = "addressUsePro";
