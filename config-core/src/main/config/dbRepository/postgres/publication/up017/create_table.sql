@@ -23,7 +23,7 @@ ALTER TABLE SB_Thumbnail_Thumbnail ADD
 ;
 
 INSERT INTO sb_thumbnail_thumbnail (instanceId, objectId, objectType, originalAttachmentName, mimeType) 
- SELECT instanceid, pubid, '0', pubImage, pubImageMimeType FROM SB_Publication_Publi WHERE pubImage IS NOT NULL;
+ SELECT instanceid, pubid, '1', pubImage, pubImageMimeType FROM SB_Publication_Publi WHERE pubImage IS NOT NULL;
 
 ALTER TABLE SB_Publication_Publi DROP COLUMN pubImage;
 ALTER TABLE SB_Publication_Publi DROP COLUMN pubImageMimeType;
