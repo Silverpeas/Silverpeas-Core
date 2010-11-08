@@ -24,12 +24,10 @@
 
 --%>
 <%@page import="com.silverpeas.thumbnail.model.ThumbnailDetail"%>
-<%@ include file="thumbnailHeader.jsp"%>
-<%
-	
-%>
-
 <%@page import="java.net.URLEncoder"%>
+<%@page import="com.silverpeas.util.StringUtil"%>
+<%@ include file="thumbnailHeader.jsp"%>
+
 <%
 	String result		    = (String)request.getAttribute("resultThumbnail");
     String action		    = (String)request.getAttribute("action");
@@ -39,6 +37,9 @@
 	String backUrl		    = request.getParameter("BackUrl");
 	String thumbnailHeight  = request.getParameter("ThumbnailHeight");
     String thumbnailWidth   = request.getParameter("ThumbnailWidth");
+    if (!StringUtil.isDefined(thumbnailHeight)) {
+      thumbnailHeight = Long.toString(Math.round(Integer.parseInt(thumbnailWidth) * 0.75));
+    }
     
 	ThumbnailSessionController thumbnailScc = (ThumbnailSessionController) request.getAttribute("thumbnail");
 	ThumbnailDetail currentThumbnail = (ThumbnailDetail) request.getAttribute("thumbnaildetail");
@@ -65,10 +66,50 @@
 		error = true;
 	}
 %>
+
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.Jcrop.js"></script>
 <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/jquery.Jcrop.css">
+<style>
+.jcrop-holder { 
+	float: left; 
+}
+.container { 
+	height:auto;
+}
 
-<SCRIPT LANGUAGE="JavaScript">
+#visuVignette { 
+	height:100%;
+	background-color:#FFF; 
+	border:1px solid #CCCCCC; 
+	width:230px; 
+	float:right; 
+	/*margin:0px 50px;*/ 
+	padding:0px 0px 20px 0px; 
+	text-align:center;
+}
+
+.txtlibform {
+	margin-top: 10px;
+	margin-bottom: 5px;
+}
+
+#visuVignette .txtlibform {
+	color:#909090;
+	text-align:center;
+	padding-right:0; 
+}
+
+#visuVignette #preview {
+	border:2px solid #CCC;
+	margin-top:118px;
+	float:none;
+	width:<%=thumbnailWidth%>px;
+	height:<%=thumbnailHeight%>px;
+	overflow:hidden;
+}
+</style>
+
+<script type="text/javascript">
 
 function save(){
 	var path = document.thumbnailForm.OriginalFile.value;
@@ -135,65 +176,59 @@ function showPreview(coords)
 		document.thumbnailForm.YLength.value = coords.h;
 	}
 };
-
-
-</SCRIPT>
+</script>
 <center>
-<FORM name="thumbnailForm" METHOD=POST action="<%=m_context%>/Thumbnail/jsp/thumbnailManager.jsp" <%if(isCreateMode){%>enctype="multipart/form-data"<%}%>>
-<input type="hidden" name="ComponentId" value="<%=componentId%>">
-<input type="hidden" name="ObjectId" value="<%=objectId%>">
-<input type="hidden" name="ObjectType" value="<%=objectType%>">
-<input type="hidden" name="BackUrl" value="<%=backUrl%>">
+<form name="thumbnailForm" method="post" action="<%=m_context%>/Thumbnail/jsp/thumbnailManager.jsp" <%if(isCreateMode){%>enctype="multipart/form-data"<%}%>>
+<input type="hidden" name="ComponentId" value="<%=componentId%>"/>
+<input type="hidden" name="ObjectId" value="<%=objectId%>"/>
+<input type="hidden" name="ObjectType" value="<%=objectType%>"/>
+<input type="hidden" name="BackUrl" value="<%=backUrl%>"/>
 <%if(thumbnailHeight != null){%>
-<input type="hidden" name="ThumbnailHeight" value="<%=thumbnailHeight%>">
+<input type="hidden" name="ThumbnailHeight" value="<%=thumbnailHeight%>"/>
 <%}
 if(thumbnailWidth != null){%>
-<input type="hidden" name="ThumbnailWidth" value="<%=thumbnailWidth%>">
+<input type="hidden" name="ThumbnailWidth" value="<%=thumbnailWidth%>"/>
 <%}%>
 <table width="98%" border="0" cellspacing="0" cellpadding="0">
 			<% 	if(error) { %>
-				<tr align=center>
-					<TD class="txtlibform"><%=resource.getString("thumbnail." + result)%></TD>
+				<tr align="center">
+					<td class="txtlibform"><%=resource.getString("thumbnail." + result)%></td>
 				</tr>
 			<% } else if(isCreateMode) { %>
-				<tr align=center>	
-					<TD class="txtlibform"><%=resource.getString("thumbnail.path")%></TD>
-      				<TD>
+				<tr align="center">	
+					<td class="txtlibform"><%=resource.getString("thumbnail.path")%></td>
+      				<td>
       				<%if(isUpdateFileMode){%>
       					<input type="hidden" name="Action" value="SaveUpdateFile">
       				<%}else{%>
       					<input type="hidden" name="Action" value="Save">
       				<%}%>
 						<input type="file" name="OriginalFile" size="60"/>
-					</TD>
+					</td>
 				</tr>
 			<% } else { %>
-			<tr align=center> 
-					<TD class="txtlibform"><%=resource.getString("thumbnail.picture")%></TD>
-      				<TD>
-						<input type="hidden" name="Action" value="SaveUpdate">
-						<input type="hidden" name="XStart">
-						<input type="hidden" name="YStart">
-						<input type="hidden" name="XLength">
-						<input type="hidden" name="YLength">
-						<table cellpadding="0" cellspacing="0" border="0">
-							<tr>
-							<td>
-							<img src="<%=vignette_url%>" id="cropbox" />
-							</td>
-							<td>
-								<div style="width:<%=thumbnailWidth%>px;height:<%=thumbnailHeight%>px;overflow:hidden;margin-left:5px;border-width:2px;border-style:solid;border-color:black;">
-									<img src="<%=vignette_url%>" id="preview" />
-								</div>
-							</td>
-							</tr>
-						</table>
-					</TD>
+				<tr><td>
+						<p class="txtlibform"><%=resource.getString("thumbnail.picture")%></p>
+		    			<div class="container">
+		    				<input type="hidden" name="Action" value="SaveUpdate"/>
+							<input type="hidden" name="XStart"/>
+							<input type="hidden" name="YStart"/>
+							<input type="hidden" name="XLength"/>
+							<input type="hidden" name="YLength"/>
+		        			<img src="<%=vignette_url%>" id="cropbox" />
+		        			<div id="visuVignette">
+		            			<p class="txtlibform"><%=resource.getString("thumbnail.preview")%></p>
+		            			<div style="width:<%=thumbnailWidth%>px;height:<%=thumbnailHeight%>px;overflow:hidden;margin-left:auto;margin-right:auto;border-width:2px;border-style:solid;border-color:#CCC;">
+		            				<img src="<%=vignette_url%>" id="preview" alt="Vignette" />
+		            			</div>
+		        			</div>
+		    			</div>
+	    			</td>
 				</tr>
 			<% } %>
 			</table>
-</FORM>
-<br>
+</form>
+<br/>
 <%
 if(!error){
 	ButtonPane buttonPane = gef.getButtonPane();
@@ -211,9 +246,9 @@ if(!error){
 if(!error){
 // on lance l init vu qu on n a pas de onLoad()
 %>
-<SCRIPT>
+<script type="text/javascript">
 	setTimeout("initThumbnailManager()", 500);
-</SCRIPT>
+</script>
 <%
 }
 %>
