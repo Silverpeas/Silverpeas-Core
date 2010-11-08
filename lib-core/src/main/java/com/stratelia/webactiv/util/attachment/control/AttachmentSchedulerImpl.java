@@ -52,11 +52,11 @@ public class AttachmentSchedulerImpl implements SchedulerEventHandler {
       try {
         String cronScheduleProcess = resources.getString("ScheduledProcessActify");
         String cronSchedulePurge = resources.getString("ScheduledPurgeActify");
-        SimpleScheduler.removeJob(this, ATTACHMENT_JOB_NAME_PROCESS_ACTIFY);
-        SimpleScheduler.removeJob(this, ATTACHMENT_JOB_NAME_PURGE_ACTIFY);
-        SimpleScheduler.getJob(this, ATTACHMENT_JOB_NAME_PROCESS_ACTIFY, cronScheduleProcess, this,
+        SimpleScheduler.unscheduleJob(this, ATTACHMENT_JOB_NAME_PROCESS_ACTIFY);
+        SimpleScheduler.unscheduleJob(this, ATTACHMENT_JOB_NAME_PURGE_ACTIFY);
+        SimpleScheduler.scheduleJob(this, ATTACHMENT_JOB_NAME_PROCESS_ACTIFY, cronScheduleProcess, this,
             "doProcessActify");
-        SimpleScheduler.getJob(this, ATTACHMENT_JOB_NAME_PURGE_ACTIFY, cronSchedulePurge, this,
+        SimpleScheduler.scheduleJob(this, ATTACHMENT_JOB_NAME_PURGE_ACTIFY, cronSchedulePurge, this,
             "doPurgeActify");
       } catch (Exception e) {
         SilverTrace.error("Attachment", "Attachment.initialize()", "", e);

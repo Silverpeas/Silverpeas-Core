@@ -46,10 +46,10 @@ public class ScheduledDBReset implements SchedulerEventHandler {
   public void initialize(String cronString) {
     try {
       // Remove previous scheduled job
-      SimpleScheduler.removeJob(this, DBRESET_JOB_NAME);
+      SimpleScheduler.unscheduleJob(this, DBRESET_JOB_NAME);
       if ((cronString != null) && (cronString.length() > 0)) {
         // Create new scheduled job
-        SimpleScheduler.getJob(this, DBRESET_JOB_NAME, cronString, this, "doDBReset");
+        SimpleScheduler.scheduleJob(this, DBRESET_JOB_NAME, cronString, this, "doDBReset");
       }
     } catch (Exception e) {
       SilverTrace.error("admin", "ScheduledDBReset.initialize", "admin.EX_ERR_INITIALIZE", e);

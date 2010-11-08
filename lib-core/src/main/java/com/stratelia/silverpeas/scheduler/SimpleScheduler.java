@@ -37,12 +37,12 @@ import java.util.Set;
 /**
  * <P>
  * This is the controlling class for all scheduling jobs. It works like a factory. The only way to
- * create a job is the usage of the method 'getJob'. The parameter signature controls the needed job
+ * create a job is the usage of the method 'scheduleJob'. The parameter signature controls the needed job
  * type (script, method or event). An example:
  * </P>
  * <CODE>
  *     .....<BR>
- *     SimpleScheduler.getJob (jobOwner, "Hello", "0 2 * * *");<BR>
+ *     SimpleScheduler.scheduleJob (jobOwner, "Hello", "0 2 * * *");<BR>
  *     .....<BR>
  * </CODE>
  * <P>
@@ -60,7 +60,7 @@ import java.util.Set;
  * </P>
  * <CODE>
  *     .....<BR>
- *     SimpleScheduler.getJob (jobOwner, "Hello", "0 2 * * *", "/home/tb/data/Project/java/SimpleScheduler/prj/test.sh");<BR>
+ *     SimpleScheduler.scheduleJob (jobOwner, "Hello", "0 2 * * *", "/home/tb/data/Project/java/SimpleScheduler/prj/test.sh");<BR>
  *     .....<BR>
  * </CODE>
  * <P>
@@ -73,7 +73,7 @@ import java.util.Set;
  * </P>
  * <CODE>
  *    .....<BR>
- * 	SimpleScheduler.getJob (jobOwner, "Moin1", "0 2 * * *", methodImplementer, "test");<BR>
+ * 	SimpleScheduler.scheduleJob (jobOwner, "Moin1", "0 2 * * *", methodImplementer, "test");<BR>
  *     .....<BR>
  * </CODE>
  * <P>
@@ -114,7 +114,7 @@ public class SimpleScheduler {
    * @return A new job
    * @throws SchedulerException
    */
-  public static SchedulerJob getJob(SchedulerEventHandler aJobOwner,
+  public static SchedulerJob scheduleJob(SchedulerEventHandler aJobOwner,
       String aJobName, int iMinutes) throws SchedulerException {
     initScheduler();
     if (aJobOwner == null) {
@@ -148,7 +148,7 @@ public class SimpleScheduler {
    * @return A new job
    * @throws SchedulerException 
    */
-  public static SchedulerJob getJob(SchedulerEventHandler aJobOwner,
+  public static SchedulerJob scheduleJob(SchedulerEventHandler aJobOwner,
       String aJobName, String aCronString) throws SchedulerException {
     initScheduler();
     if (aJobOwner == null) {
@@ -183,7 +183,7 @@ public class SimpleScheduler {
    * @return A new job
    * @throws SchedulerException
    */
-  public static SchedulerJob getJob(SchedulerEventHandler aJobOwner,
+  public static SchedulerJob scheduleJob(SchedulerEventHandler aJobOwner,
       String aJobName, List<Integer> startMinutes, List<Integer> startHours,
       List<Integer> startDaysOfMonth, List<Integer> startMonths, List<Integer> startDaysOfWeek)
       throws SchedulerException {
@@ -223,7 +223,7 @@ public class SimpleScheduler {
    * @return A new job
    * @throws SchedulerException
    */
-  public static SchedulerJob getJob(SchedulerEventHandler aJobOwner, String aJobName,
+  public static SchedulerJob scheduleJob(SchedulerEventHandler aJobOwner, String aJobName,
       String aCronString, Object aMethodOwner, String aExecutionMethodName)
       throws SchedulerException {
     initScheduler();
@@ -256,7 +256,7 @@ public class SimpleScheduler {
    * @return
    * @throws SchedulerException
    */
-  public static SchedulerJob getJob(SchedulerEventHandler aJobOwner, String aJobName,
+  public static SchedulerJob scheduleJob(SchedulerEventHandler aJobOwner, String aJobName,
       String aCronString, Object aMethodOwner, String aExecutionMethodName, long initialNextTime)
       throws SchedulerException {
     initScheduler();
@@ -291,7 +291,7 @@ public class SimpleScheduler {
    * @return A new job
    * @throws SchedulerException
    */
-  public static SchedulerJob getJob(SchedulerEventHandler aJobOwner,
+  public static SchedulerJob scheduleJob(SchedulerEventHandler aJobOwner,
       String aJobName, int iMinutes, Object aMethodOwner,
       String aExecutionMethodName) throws SchedulerException {
     initScheduler();
@@ -331,7 +331,7 @@ public class SimpleScheduler {
    * @return A new job
    * @throws SchedulerException
    */
-  public static SchedulerJob getJob(SchedulerEventHandler aJobOwner, String aJobName,
+  public static SchedulerJob scheduleJob(SchedulerEventHandler aJobOwner, String aJobName,
       List<Integer> startMinutes, List<Integer> startHours, List<Integer> startDaysOfMonth,
       List<Integer> startMonths, List<Integer> startDaysOfWeek, Object aMethodOwner,
       String aExecutionMethodName) throws SchedulerException {
@@ -378,7 +378,7 @@ public class SimpleScheduler {
    * @param aJobOwner A job owner
    * @param aJobName A job name
    */
-  public static void removeJob(SchedulerEventHandler aJobOwner, String aJobName) {
+  public static void unscheduleJob(SchedulerEventHandler aJobOwner, String aJobName) {
     initScheduler();
     synchronized (SimpleScheduler.class) {
       List<SchedulerJob> jobList = theSimpleScheduler.htJobs.get(aJobOwner);
@@ -398,7 +398,7 @@ public class SimpleScheduler {
    * @param aJobOwner A job owner
    * @param aJob the job to be removed.
    */
-  public static void removeJob(SchedulerEventHandler aJobOwner, SchedulerJob aJob) {
+  public static void unscheduleJob(SchedulerEventHandler aJobOwner, SchedulerJob aJob) {
     initScheduler();
     theSimpleScheduler.removeJob(aJob);
   }
@@ -407,7 +407,7 @@ public class SimpleScheduler {
    * This method removes all jobs of the given job owner
    * @param aJobOwner The job owner, whitch jobs should be removed
    */
-  public static void removeAllJobs(SchedulerEventHandler aJobOwner) {
+  public static void unscheduleAllJobs(SchedulerEventHandler aJobOwner) {
     initScheduler();
     synchronized (SimpleScheduler.class) {
       List<SchedulerJob> jobList = theSimpleScheduler.htJobs.get(aJobOwner);

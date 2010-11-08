@@ -42,8 +42,8 @@ public class SynchroGroupScheduler implements SchedulerEventHandler {
     try {
       this.admin = admin;
       this.synchronizedGroupIds = synchronizedGroupIds;
-      SimpleScheduler.removeJob(this, ADMINSYNCHROGROUP_JOB_NAME);
-      SimpleScheduler.getJob(this, ADMINSYNCHROGROUP_JOB_NAME, cron, this, "doSynchroGroup");
+      SimpleScheduler.unscheduleJob(this, ADMINSYNCHROGROUP_JOB_NAME);
+      SimpleScheduler.scheduleJob(this, ADMINSYNCHROGROUP_JOB_NAME, cron, this, "doSynchroGroup");
     } catch (Exception e) {
       SilverTrace.error("admin", "SynchroGroupScheduler.initialize()",
           "importExport.EX_CANT_INIT_SCHEDULED_IMPORT", e);

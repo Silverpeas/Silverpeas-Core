@@ -56,8 +56,8 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
   public void initialize() {
     try {
       String cron = resources.getString("cronScheduledReservedFile");
-      SimpleScheduler.removeJob(this, VERSIONING_JOB_NAME_PROCESS);
-      SimpleScheduler.getJob(this, VERSIONING_JOB_NAME_PROCESS, cron, this,
+      SimpleScheduler.unscheduleJob(this, VERSIONING_JOB_NAME_PROCESS);
+      SimpleScheduler.scheduleJob(this, VERSIONING_JOB_NAME_PROCESS, cron, this,
           "doScheduledReservedFile");
     } catch (Exception e) {
       SilverTrace.error("versioning", "ScheduledReservedFile.initialize()",

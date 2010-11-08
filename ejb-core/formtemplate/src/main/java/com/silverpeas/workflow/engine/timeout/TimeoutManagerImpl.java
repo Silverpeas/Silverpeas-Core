@@ -60,12 +60,12 @@ public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventHandler
 
       if (jobList.size() != 0) {
         // Remove previous scheduled job
-        SimpleScheduler.removeJob(this, TIMEOUT_MANAGER_JOB_NAME);
+        SimpleScheduler.unscheduleJob(this, TIMEOUT_MANAGER_JOB_NAME);
       }
 
       // Create new scheduled job
       String cronString = settings.getString("timeoutSchedule");
-      SimpleScheduler.getJob(this, TIMEOUT_MANAGER_JOB_NAME, cronString, this,
+      SimpleScheduler.scheduleJob(this, TIMEOUT_MANAGER_JOB_NAME, cronString, this,
           "doTimeoutManagement");
     } catch (Exception e) {
       SilverTrace.error("workflowEngine", "TimeoutManagerImpl.initialize",

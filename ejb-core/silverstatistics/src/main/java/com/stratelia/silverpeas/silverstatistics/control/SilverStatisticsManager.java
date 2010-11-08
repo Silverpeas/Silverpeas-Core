@@ -140,10 +140,10 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
    */
   public void initSchedulerStatistics(String aCronString, String jobName,
       String methodeName) throws SchedulerException {
-    SimpleScheduler.removeJob(myInstance, jobName);
+    SimpleScheduler.unscheduleJob(myInstance, jobName);
     SilverTrace.info("silverstatistics", "SilverStatisticsManager.initSchedulerStatistics",
         "root.MSG_GEN_PARAM_VALUE", "jobName=" + jobName + ", aCronString=" + aCronString);
-    SimpleScheduler.getJob(myInstance, jobName, aCronString, myInstance, methodeName);
+    SimpleScheduler.scheduleJob(myInstance, jobName, aCronString, myInstance, methodeName);
   }
 
   /**
