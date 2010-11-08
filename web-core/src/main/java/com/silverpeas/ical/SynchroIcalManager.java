@@ -50,27 +50,6 @@ public class SynchroIcalManager {
     setCalendarBm();
   }
 
-  public static void main(String[] args) {
-    try {
-
-      // Path to local iCalendar file
-      File localCalendar = new File(
-          "C:\\Silverpeas\\KMEdition\\temp\\icsCalendar\\agenda1.ics");
-
-      URL remoteCalendar = new URL(args[0]);
-      String username = args[1];
-      String password = args[2];
-
-      // Creates a synchronizer engine
-      SyncEngine engine = new SyncEngine();
-
-      // Do the synchronization remoteCalendar -> create localCalendar
-      engine.synchronize(localCalendar, remoteCalendar, username, password);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-
   /**
    * Import remote calendar into Silverpeas calendar (update event if necessary)
    * @param urlCalendar
@@ -83,29 +62,29 @@ public class SynchroIcalManager {
       String loginICalendar, String pwdIcalendar) {
     String returnCodeSynchro = AgendaSessionController.SYNCHRO_FAILED;
     try {
-
       // Private iCal URL
       // Use the SyncEngine.listCalendars() method to get URLs
       URL remoteCalendar = urlCalendar;
-
       // Creates a synchronizer engine
       SyncEngine engine = new SyncEngine();
-
       // Do the synchronization :
       // Remote Calendar -> localfile Calendar
       String remoteConnect = engine.synchronize(localCalendar, remoteCalendar,
           loginICalendar, pwdIcalendar);
-      if (remoteConnect.equals(SyncEngine.REMOTE_CONNECT_SUCCEEDED)) {
+      if (SyncEngine.REMOTE_CONNECT_SUCCEEDED.equals(remoteConnect)) {
         // localfile -> Silverpeas Agenda
         ImportIcalManager impIcalManager = new ImportIcalManager(
             agendaSessionController);
         String returnImport = impIcalManager.importIcalAgenda(localCalendar);
-        if (returnImport.equals(AgendaSessionController.IMPORT_FAILED))
+        if (returnImport.equals(AgendaSessionController.IMPORT_FAILED)) {
           returnCodeSynchro = AgendaSessionController.SYNCHRO_FAILED;
-        else
+        }
+        else {
           returnCodeSynchro = AgendaSessionController.SYNCHRO_SUCCEEDED;
-      } else
+        }
+      } else {
         returnCodeSynchro = remoteConnect;
+      }
     } catch (Exception e) {
       SilverTrace.error("agenda", "SynchroIcalManager.synchroIcalAgenda()", "",
           e.fillInStackTrace());
