@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 // TODO : reporter dans CVS (done)
 
 /*
@@ -79,10 +78,10 @@ public class DBUtil {
     SilverTrace.debug("util", "DBUtil makeConnection",
         "DBUtil : makeConnection : entree");
     DataSource ds = null;
-    synchronized(DBUtil.class) {
+    synchronized (DBUtil.class) {
       if (ic == null) {
         try {
-            ic = new InitialContext();
+          ic = new InitialContext();
         } catch (Exception e) {
           UtilException ue = new UtilException("DBUtil.makeConnection",
               "util.MSG_CANT_GET_INITIAL_CONTEXT", e);
@@ -122,8 +121,7 @@ public class DBUtil {
    * @return a unique id.
    * @throws UtilException
    */
-  public static int getNextId(String tableName, String idName)
-      throws UtilException {
+  public static int getNextId(String tableName, String idName) throws UtilException {
     Connection privateConnection = null;
     try {
       // On ne peux pas utiliser une simple connection du pool
@@ -131,55 +129,18 @@ public class DBUtil {
       privateConnection = ConnectionPool.getConnection();
 
       privateConnection.setAutoCommit(false);
-      int max = 0;
-      // tentative d'update
-      SilverTrace.debug("util", "DBUtil.getNextId", "dBName = " + tableName);
-
-      try {
-        max = updateMaxFromTable(privateConnection, tableName);
-        privateConnection.commit();
-        return max;
-      } catch (Exception e) {
-        // l'update n'a rien fait, il faut recuperer une valeur par defaut.
-        // on recupere le max (depuis la table existante du composant)
-        SilverTrace.debug("util", "DBUtil.getNextId",
-            "impossible d'updater, if faut recuperer la valeur initiale", e);
-      }
-      max = getMaxFromTable(privateConnection, tableName, idName);
-      PreparedStatement createStmt = null;
-      try {
-        // on enregistre le max
-        String createStatement = "insert into UniqueId (maxId, tableName) values (?, ?)";
-        createStmt = privateConnection.prepareStatement(createStatement);
-        createStmt.setInt(1, max);
-        createStmt.setString(2, tableName);
-        createStmt.executeUpdate();
-        return max;
-      } catch (Exception e) {
-        // impossible de creer, on est en concurence, on reessaye l'update.
-        SilverTrace.debug("util", "DBUtil.getNextId",
-            "impossible de creer, if faut reessayer l'update", e);
-      } finally {
-        close(createStmt);
-        privateConnection.commit();
-      }
-      max = updateMaxFromTable(privateConnection, tableName);
-      privateConnection.commit();
-      return max;
+      return getMaxId(privateConnection, tableName, idName);
     } catch (Exception exe) {
-      SilverTrace.debug("util", "DBUtil.getNextId",
-          "impossible de recupérer le prochain id", exe);
+      SilverTrace.debug("util", "DBUtil.getNextId", "impossible de recupérer le prochain id", exe);
       if (privateConnection != null) {
         try {
           privateConnection.rollback();
         } catch (SQLException e) {
-          SilverTrace.error("util", "DBUtil.getNextId",
-              "util.MSG_IMOSSIBLE_UNDO_TRANS", e);
+          SilverTrace.error("util", "DBUtil.getNextId", "util.MSG_IMOSSIBLE_UNDO_TRANS", e);
         }
       }
       throw new UtilException("DBUtil.getNextId", new MultilangMessage(
-          "util.MSG_CANT_GET_A_NEW_UNIQUE_ID", tableName, idName).toString(),
-          exe);
+          "util.MSG_CANT_GET_A_NEW_UNIQUE_ID", tableName, idName).toString(), exe);
     } finally {
       try {
         if (privateConnection != null) {
@@ -204,6 +165,44 @@ public class DBUtil {
   public static int getNextId(Connection con, String tableName, String idName)
       throws UtilException {
     return getNextId(tableName, idName);
+  }
+
+  public static int getMaxId(Connection privateConnection, String tableName, String idName) throws
+      SQLException {
+    int max = 0;
+    // tentative d'update
+    SilverTrace.debug("util", "DBUtil.getNextId", "dBName = " + tableName);
+    try {
+      max = updateMaxFromTable(privateConnection, tableName);
+      privateConnection.commit();
+      return max;
+    } catch (Exception e) {
+      // l'update n'a rien fait, il faut recuperer une valeur par defaut.
+      // on recupere le max (depuis la table existante du composant)
+      SilverTrace.debug("util", "DBUtil.getNextId",
+          "impossible d'updater, if faut recuperer la valeur initiale", e);
+    }
+    max = getMaxFromTable(privateConnection, tableName, idName);
+    PreparedStatement createStmt = null;
+    try {
+      // on enregistre le max
+      String createStatement = "insert into UniqueId (maxId, tableName) values (?, ?)";
+      createStmt = privateConnection.prepareStatement(createStatement);
+      createStmt.setInt(1, max);
+      createStmt.setString(2, tableName);
+      createStmt.executeUpdate();
+      return max;
+    } catch (Exception e) {
+      // impossible de creer, on est en concurence, on reessaye l'update.
+      SilverTrace.debug("util", "DBUtil.getNextId",
+          "impossible de creer, if faut reessayer l'update", e);
+    } finally {
+      close(createStmt);
+      privateConnection.commit();
+    }
+    max = updateMaxFromTable(privateConnection, tableName);
+    privateConnection.commit();
+    return max;
   }
 
   private static int updateMaxFromTable(Connection con, String tableName)
