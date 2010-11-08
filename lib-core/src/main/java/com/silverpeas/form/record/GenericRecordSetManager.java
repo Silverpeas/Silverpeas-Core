@@ -536,41 +536,25 @@ public class GenericRecordSetManager {
       insert = con.prepareStatement(INSERT_TEMPLATE_FIELD);
 
       int internalId = template.getInternalId();
-      String fieldName;
-      int fieldIndex;
-      String fieldType;
-      boolean isMandatory;
-      boolean isReadOnly;
-      boolean isHidden;
-
       FieldTemplate[] fields = template.getFieldTemplates();
       for (int i = 0; i < fields.length; i++) {
-        fieldName = fields[i].getFieldName();
-        fieldIndex = i;
-        fieldType = fields[i].getTypeName();
-        isMandatory = fields[i].isMandatory();
-        isReadOnly = fields[i].isReadOnly();
-        isHidden = fields[i].isHidden();
-
         insert.setInt(1, internalId);
-        insert.setString(2, fieldName);
-        insert.setInt(3, fieldIndex);
-        insert.setString(4, fieldType);
-        if (isMandatory)
+        insert.setString(2, fields[i].getFieldName());
+        insert.setInt(3, i);
+        insert.setString(4, fields[i].getTypeName());
+        if (fields[i].isMandatory()) {
           insert.setInt(5, 1);
-        else
+        }
+        else {
           insert.setInt(5, 0);
-
-        if (isReadOnly)
+        }
+        if (fields[i].isReadOnly()) {
           insert.setInt(6, 1);
-        else
+        }
+        else {
           insert.setInt(6, 0);
-
-        if (isHidden)
-          insert.setInt(7, 1);
-        else
-          insert.setInt(7, 1);
-
+        }
+        insert.setInt(7, 1);
         insert.execute();
       }
     } finally {
