@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+  <uniqueid tableName="sb_comment_comment" maxId="10" />
+  <sb_comment_comment  commentId="1000" commentOwnerId="10" commentCreationDate="15/10/2019" 
+        commentModificationDate="[NULL]" commentComment="my comments" foreignId="500" 
+        instanceId="instanceId10" />
+  <sb_comment_comment  commentId="1001" commentOwnerId="12" commentCreationDate="18/10/2019" 
+        commentModificationDate="16/06/2020" commentComment="my comments are good" foreignId="500" 
+        instanceId="instanceId10" />
+        <sb_comment_comment  commentId="1002" commentOwnerId="12" commentCreationDate="18/10/2019" 
+        commentModificationDate="16/06/2020" commentComment="my comments are good" foreignId="610" 
+        instanceId="instanceId20" />
+</dataset>

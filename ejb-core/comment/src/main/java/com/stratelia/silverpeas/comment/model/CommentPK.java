@@ -24,6 +24,7 @@
 
 package com.stratelia.silverpeas.comment.model;
 
+import com.google.common.base.Objects;
 import java.io.Serializable;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
@@ -72,7 +73,7 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
    */
 
   public String getRootTableName() {
-    return "Comment";
+    return "comment";
   }
 
   /**
@@ -80,8 +81,9 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
    * @return
    * @see
    */
+  @Override
   public String getTableName() {
-    return "SB_Comment_Comment";
+    return "sb_comment_comment";
   }
 
   /**
@@ -90,13 +92,14 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
    * @return
    * @see
    */
+  @Override
   public boolean equals(Object other) {
     if (!(other instanceof CommentPK)) {
       return false;
     }
-    return (id.equals(((CommentPK) other).getId()))
-        && (space.equals(((CommentPK) other).getSpace()))
-        && (componentName.equals(((CommentPK) other).getComponentName()));
+    CommentPK otherPk = (CommentPK) other;
+    return Objects.equal(id, otherPk.getId()) && Objects.equal(space, otherPk.getSpace()) 
+        && Objects.equal(componentName, otherPk.getComponentName());
   }
 
   /**

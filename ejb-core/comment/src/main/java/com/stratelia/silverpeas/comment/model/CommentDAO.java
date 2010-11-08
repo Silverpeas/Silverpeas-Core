@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.comment.model;
 
 import java.sql.Connection;
@@ -36,14 +35,16 @@ import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.WAPrimaryKey;
+import java.sql.Statement;
 
 /**
  * Class declaration
  * @author
  */
 public class CommentDAO {
+
   private static final int INITIAL_CAPACITY = 1000;
-  private static final String COMMENT_TABLENAME = "SB_COMMENT_COMMENT";
+  private static final String COMMENT_TABLENAME = "sb_comment_comment";
 
   /**
    * Constructor declaration
@@ -55,80 +56,81 @@ public class CommentDAO {
   /**
    * Method declaration
    * @param con
-   * @param Document
+   * @param cmt 
+   * @return 
    * @throws SQLException
-   * @see
    */
-
   public static CommentPK createComment(Connection con, Comment cmt)
       throws SQLException {
-    String insert_query = "insert into " + COMMENT_TABLENAME
-        + " values ( ?, ?, ?, ?, ?, ?, ? )";
+    String insert_query = "INSERT INTO sb_comment_comment (commentId , commentOwnerId, "
+        + "commentCreationDate, commentModificationDate, commentComment, foreignId, instanceId) "
+        + "VALUES ( ?, ?, ?, ?, ?, ?, ? )";
     PreparedStatement prep_stmt = null;
     prep_stmt = con.prepareStatement(insert_query);
     int newId = 0;
     try {
-      newId = DBUtil.getNextId(cmt.getCommentPK().getTableName(), new String(
-          "commentId"));
+      newId = DBUtil.getMaxId(con, cmt.getCommentPK().getTableName(), "commentId");
     } catch (Exception e) {
-      SilverTrace.warn("comments", "CommentDAO.createComment",
-          "root.EX_PK_GENERATION_FAILED", e);
+      SilverTrace.warn("comments", "CommentDAO.createComment", "root.EX_PK_GENERATION_FAILED", e);
       return null;
     }
-
-    int index = 1;
-
     try {
-      prep_stmt.setInt(index++, newId);
-      prep_stmt.setInt(index++, cmt.getOwnerId());
-      prep_stmt.setString(index++, cmt.getCreationDate());
-      prep_stmt.setString(index++, cmt.getModificationDate());
-
-      prep_stmt.setString(index++, cmt.getMessage());
-      prep_stmt.setInt(index++, Integer.parseInt(cmt.getForeignKey().getId()));
-      prep_stmt.setString(index++, cmt.getCommentPK().getComponentName());
-
+      prep_stmt.setInt(1, newId);
+      prep_stmt.setInt(2, cmt.getOwnerId());
+      prep_stmt.setString(3, cmt.getCreationDate());
+      prep_stmt.setString(4, cmt.getModificationDate());
+      prep_stmt.setString(5, cmt.getMessage());
+      prep_stmt.setInt(6, Integer.parseInt(cmt.getForeignKey().getId()));
+      prep_stmt.setString(7, cmt.getCommentPK().getComponentName());
       prep_stmt.executeUpdate();
     } finally {
       DBUtil.close(prep_stmt);
     }
     cmt.getCommentPK().setId(String.valueOf(newId));
-    return (cmt.getCommentPK());
+    return cmt.getCommentPK();
   }
 
-  public static void deleteComment(Connection con, CommentPK pk)
-      throws SQLException {
-    String delete_query = "delete from " + COMMENT_TABLENAME
-        + " where commentId=" + pk.getId();
+  public static void deleteComment(Connection con, CommentPK pk) throws SQLException {
+    String delete_query = "DELETE FROM sb_comment_comment WHERE commentId = ?";
     PreparedStatement prep_stmt = null;
     prep_stmt = con.prepareStatement(delete_query);
     try {
+      prep_stmt.setInt(1, Integer.parseInt(pk.getId()));
       prep_stmt.executeUpdate();
     } finally {
       DBUtil.close(prep_stmt);
     }
   }
 
-  public static void updateComment(Connection con, Comment cmt)
-      throws SQLException {
-    String update_query =
-        "update "
-            +
-            COMMENT_TABLENAME
-            +
-            " set commentOwnerId=?, commentModificationDate=?, commentComment=?, foreignId=?, instanceId=? where commentId="
-            + cmt.getCommentPK().getId();
+  public static void updateComment(Connection con, Comment cmt) throws SQLException {
+    String update_query = "UPDATE sb_comment_comment SET commentOwnerId=?, commentModificationDate=?, "
+        + "commentComment=?, foreignId=?, instanceId=? WHERE commentId= ?";
     PreparedStatement prep_stmt = null;
-    prep_stmt = con.prepareStatement(update_query);
-
-    int index = 1;
-
     try {
-      prep_stmt.setInt(index++, cmt.getOwnerId());
-      prep_stmt.setString(index++, cmt.getModificationDate());
-      prep_stmt.setString(index++, cmt.getMessage());
-      prep_stmt.setInt(index++, Integer.parseInt(cmt.getForeignKey().getId()));
-      prep_stmt.setString(index++, cmt.getCommentPK().getComponentName());
+      prep_stmt = con.prepareStatement(update_query);
+      prep_stmt.setInt(1, cmt.getOwnerId());
+      prep_stmt.setString(2, cmt.getModificationDate());
+      prep_stmt.setString(3, cmt.getMessage());
+      prep_stmt.setInt(4, Integer.parseInt(cmt.getForeignKey().getId()));
+      prep_stmt.setString(5, cmt.getCommentPK().getComponentName());
+      prep_stmt.setString(6, cmt.getCommentPK().getId());
+      prep_stmt.executeUpdate();
+    } finally {
+      DBUtil.close(prep_stmt);
+    }
+  }
+
+  public static void moveComments(Connection con, ForeignPK fromPK, ForeignPK toPK)
+      throws SQLException {
+    String update_query = "UPDATE sb_comment_comment SET foreignId=?, instanceId=? WHERE "
+        + "foreignId=? AND instanceId=?";
+    PreparedStatement prep_stmt = null;
+    try {
+      prep_stmt = con.prepareStatement(update_query);
+      prep_stmt.setInt(1, Integer.parseInt(toPK.getId()));
+      prep_stmt.setString(2, toPK.getInstanceId());
+      prep_stmt.setInt(3, Integer.parseInt(fromPK.getId()));
+      prep_stmt.setString(4, fromPK.getInstanceId());
       prep_stmt.executeUpdate();
       prep_stmt.close();
     } finally {
@@ -136,78 +138,45 @@ public class CommentDAO {
     }
   }
 
-  public static void moveComments(Connection con, ForeignPK fromPK,
-      ForeignPK toPK) throws SQLException {
-    String update_query = "update " + COMMENT_TABLENAME
-        + " set foreignId=?, instanceId=? where foreignId=? and instanceId=?";
-    PreparedStatement prep_stmt = null;
-    prep_stmt = con.prepareStatement(update_query);
-
-    int index = 1;
-
-    try {
-      prep_stmt.setInt(index++, Integer.parseInt(toPK.getId()));
-      prep_stmt.setString(index++, toPK.getInstanceId());
-      prep_stmt.setInt(index++, Integer.parseInt(fromPK.getId()));
-      prep_stmt.setString(index++, fromPK.getInstanceId());
-      prep_stmt.executeUpdate();
-      prep_stmt.close();
-    } finally {
-      DBUtil.close(prep_stmt);
-    }
-  }
-
-  public static Comment getComment(Connection con, CommentPK pk)
-      throws SQLException {
-    String select_query =
-        "select commentOwnerId, commentCreationDate, commentModificationDate, commentComment, foreignId, instanceId from "
-            +
-            COMMENT_TABLENAME + " where commentId=" + pk.getId();
+  public static Comment getComment(Connection con, CommentPK pk) throws SQLException {
+    String select_query = "SELECT commentOwnerId, commentCreationDate, commentModificationDate, "
+        + "commentComment, foreignId, instanceId FROM sb_comment_comment WHERE commentId = ?";
     PreparedStatement prep_stmt = null;
     ResultSet rs = null;
-    prep_stmt = con.prepareStatement(select_query);
-    Comment cmt = null;
-
     try {
+      prep_stmt = con.prepareStatement(select_query);
+      prep_stmt.setInt(1, Integer.parseInt(pk.getId()));
       rs = prep_stmt.executeQuery();
       if (rs.next()) {
         pk.setComponentName(rs.getString("instanceId"));
-        WAPrimaryKey father_id = (WAPrimaryKey) new CommentPK(String.valueOf(rs
-            .getInt("foreignId")));
-        cmt = new Comment(pk, father_id, rs.getInt("commentOwnerId"), "", rs
-            .getString("commentComment"), rs.getString("commentCreationDate"),
+        WAPrimaryKey father_id = new CommentPK(String.valueOf(rs.getInt("foreignId")));
+        return new Comment(pk, father_id, rs.getInt("commentOwnerId"), "",
+            rs.getString("commentComment"), rs.getString("commentCreationDate"),
             rs.getString("commentModificationDate"));
-      } else {
-        return null;
       }
+      return null;
     } finally {
       DBUtil.close(rs, prep_stmt);
     }
-
-    return cmt;
   }
 
   public static List<CommentInfo> getMostCommentedAllPublications(Connection con)
       throws SQLException {
-    String select_query = "select count(commentId) as nb_comment, foreignId, instanceId from "
-        + COMMENT_TABLENAME
-        + " group by foreignId, instanceId order by nb_comment desc;";
-    PreparedStatement prep_stmt = null;
+    String select_query = "SELECT COUNT(commentId) as nb_comment, foreignId, instanceId FROM "
+        + "sb_comment_comment GROUP BY foreignId, instanceId ORDER BY nb_comment desc;";
+    Statement prep_stmt = null;
     ResultSet rs = null;
     List<CommentInfo> listPublisCommentsCount = new ArrayList<CommentInfo>();
-
     try {
-      prep_stmt = con.prepareStatement(select_query);
-      rs = prep_stmt.executeQuery();
+      prep_stmt = con.createStatement();
+      rs = prep_stmt.executeQuery(select_query);
       while (rs.next()) {
-        Integer countComment = new Integer(rs.getInt("nb_comment"));
-        Integer foreignId = new Integer(rs.getInt("foreignId"));
+        Integer countComment = Integer.valueOf(rs.getInt("nb_comment"));
+        Integer foreignId = Integer.valueOf(rs.getInt("foreignId"));
         String instanceId = rs.getString("instanceId");
-        listPublisCommentsCount.add(new CommentInfo(countComment.intValue(),
-            instanceId, foreignId.toString()));
+        listPublisCommentsCount.add(new CommentInfo(countComment.intValue(), instanceId,
+            foreignId.toString()));
       }
-    } catch (Exception e) {
-      e.printStackTrace();
     } finally {
       DBUtil.close(rs, prep_stmt);
     }
@@ -246,13 +215,12 @@ public class CommentDAO {
       throws SQLException {
     String select_query =
         "select commentId, commentOwnerId, commentCreationDate, commentModificationDate, commentComment, foreignId, instanceId from "
-            +
-            COMMENT_TABLENAME
-            + " where foreignId="
-            + foreign_pk.getId()
-            + " and instanceId = '"
-            + foreign_pk.getComponentName()
-            + "' order by commentCreationDate DESC, commentId DESC";
+        + COMMENT_TABLENAME
+        + " where foreignId="
+        + foreign_pk.getId()
+        + " and instanceId = '"
+        + foreign_pk.getComponentName()
+        + "' order by commentCreationDate DESC, commentId DESC";
     PreparedStatement prep_stmt = null;
     ResultSet rs = null;
     prep_stmt = con.prepareStatement(select_query);
@@ -266,10 +234,9 @@ public class CommentDAO {
       while (rs.next()) {
         pk = new CommentPK(String.valueOf(rs.getInt("commentId")));
         pk.setComponentName(rs.getString("instanceId"));
-        WAPrimaryKey father_id = (WAPrimaryKey) new CommentPK(String.valueOf(rs
-            .getInt("foreignId")));
-        cmt = new Comment(pk, father_id, rs.getInt("commentOwnerId"), "", rs
-            .getString("commentComment"), rs.getString("commentCreationDate"),
+        WAPrimaryKey father_id = (WAPrimaryKey) new CommentPK(String.valueOf(rs.getInt("foreignId")));
+        cmt = new Comment(pk, father_id, rs.getInt("commentOwnerId"), "", rs.getString(
+            "commentComment"), rs.getString("commentCreationDate"),
             rs.getString("commentModificationDate"));
         comments.add(cmt);
       }
@@ -294,5 +261,4 @@ public class CommentDAO {
       DBUtil.close(prep_stmt);
     }
   }
-
 }
