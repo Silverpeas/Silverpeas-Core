@@ -198,9 +198,9 @@ public class StringUtil {
   }
 
   /**
-   * Evaluate the expression and return true if expression equals "treu", "yes", "y", "1" or "oui".
+   * Evaluate the expression and return true if expression equals "true", "yes", "y", "1" or "oui".
    * @param expression the expression to be evaluated
-   * @return true if expression equals "treu", "yes", "y", "1" or "oui".
+   * @return true if expression equals "true", "yes", "y", "1" or "oui".
    */
   public static boolean getBooleanValue(final String expression) {
     return "true".equalsIgnoreCase(expression) || "yes".equalsIgnoreCase(expression)
