@@ -830,10 +830,11 @@ public class AjaxServletLookV5 extends HttpServlet {
    */
   protected boolean isSpaceVisible(String userId, String spaceId, OrganizationController orgaController) {
      String compoIds[] = orgaController.getAvailCompoIds(spaceId, userId);
-     for (int i = 0; i < compoIds.length; i++) {
-       ComponentInst compInst = orgaController.getComponentInst(compoIds[i]);
-       if (!compInst.isHidden())
+     for (String id : compoIds) {
+       ComponentInst compInst = orgaController.getComponentInst(id);
+       if (!compInst.isHidden()) {
          return true;
+       }
      }
     return false;
   }
