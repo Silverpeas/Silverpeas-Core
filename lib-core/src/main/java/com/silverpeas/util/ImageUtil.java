@@ -85,8 +85,8 @@ public class ImageUtil {
         ratio = inputBufHeight / height;
         width = inputBufWidth / ratio;
       } else {
-        height = inputBuf.getWidth();
-        width = inputBuf.getHeight();
+        height = inputBuf.getHeight();
+        width = inputBuf.getWidth();
       }
       String sWidth = Double.toString(width);
       String sHeight = Double.toString(height);
