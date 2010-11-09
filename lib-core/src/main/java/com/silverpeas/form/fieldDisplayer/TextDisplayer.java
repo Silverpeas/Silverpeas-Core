@@ -85,7 +85,7 @@ public class TextDisplayer extends AbstractFieldDisplayer {
    * @throws java.io.IOException  
    */
   @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext) 
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext)
       throws java.io.IOException {
   }
 
@@ -157,69 +157,65 @@ public class TextDisplayer extends AbstractFieldDisplayer {
       }
       value = newValue;
     }
-      if (StringUtil.isDefined(classe)) {
-        html += "<span " + classe + ">";
-      }
-
-      if (parameters.containsKey("fontSize") || parameters.containsKey("fontColor")
-          || parameters.containsKey("fontFace")) {
-        html += "<font";
-      }
-
-      if (parameters.containsKey("fontSize")) {
-        size = parameters.get("fontSize");
-        html += " size=\"" + size + "\"";
-      }
-
-      if (parameters.containsKey("fontColor")) {
-        color = parameters.get("fontColor");
-        html += " color=\"" + color + "\"";
-      }
-
-      if (parameters.containsKey("fontFace")) {
-        face = parameters.get("fontFace");
-        html += " face=\"" + face + "\"";
-      }
-
-      if (size.length() > 0 || color.length() > 0 || face.length() > 0) {
-        html += ">";
-      }
-
-      if (parameters.containsKey("bold")) {
-        bold = parameters.get("bold");
-        if ("true".equals(bold)) {
-          html += "<b>";
-        }
-      }
-
-      html += EncodeHelper.javaStringToHtmlParagraphe(value);
-
-      if (bold.length() > 0) {
-        html += "</b>";
-      }
-
-      if (size.length() > 0 || color.length() > 0 || face.length() > 0) {
-        html += "</font>";
-      }
-
-      if (classe.length() > 0) {
-        html += "</span>";
-      }
-
-      out.println(html);
+    if (StringUtil.isDefined(classe)) {
+      html += "<span " + classe + ">";
     }
-    /**
-     * Updates the value of the field. The fieldName must be used to retrieve the HTTP parameter from
-     * the request.
-     * @param newValue 
-     * @param field 
-     * @param template 
-     * @param PagesContext 
-     * @return 
-     * @throws FormException 
-     * @throw FormException if the field type is not a managed type.
-     * @throw FormException if the field doesn't accept the new value.
-     */
+
+    if (parameters.containsKey("fontSize") || parameters.containsKey("fontColor")
+        || parameters.containsKey("fontFace")) {
+      html += "<font";
+    }
+
+    if (parameters.containsKey("fontSize")) {
+      size = parameters.get("fontSize");
+      html += " size=\"" + size + "\"";
+    }
+
+    if (parameters.containsKey("fontColor")) {
+      color = parameters.get("fontColor");
+      html += " color=\"" + color + "\"";
+    }
+
+    if (parameters.containsKey("fontFace")) {
+      face = parameters.get("fontFace");
+      html += " face=\"" + face + "\"";
+    }
+
+    if (StringUtil.isDefined(size) || StringUtil.isDefined(color) || StringUtil.isDefined(face)) {
+      html += ">";
+    }
+    if (parameters.containsKey("bold")) {
+      bold = parameters.get("bold");
+      if ("true".equals(bold)) {
+        html += "<b>";
+      }
+    }
+    html += EncodeHelper.javaStringToHtmlParagraphe(value);
+
+    if (StringUtil.isDefined(bold)) {
+      html += "</b>";
+    }
+    if (StringUtil.isDefined(size) || StringUtil.isDefined(color) || StringUtil.isDefined(face)) {
+      html += "</font>";
+    }
+    if (StringUtil.isDefined(classe)) {
+      html += "</span>";
+    }
+    out.println(html);
+  }
+
+  /**
+   * Updates the value of the field. The fieldName must be used to retrieve the HTTP parameter from
+   * the request.
+   * @param newValue 
+   * @param field 
+   * @param template 
+   * @param PagesContext 
+   * @return 
+   * @throws FormException 
+   * @throw FormException if the field type is not a managed type.
+   * @throw FormException if the field doesn't accept the new value.
+   */
   @Override
   public List<String> update(String newValue, Field field, FieldTemplate template,
       PagesContext PagesContext) throws FormException {
