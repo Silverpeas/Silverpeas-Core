@@ -1819,10 +1819,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     componentList = new ArrayList<String>();
 
     if (space == null) {
-      String[] allowedComponentIds = getUserAvailComponentIds();
       // Il n'y a pas de restriction sur un espace particulier
+      String[] allowedComponentIds = getUserAvailComponentIds();
+      List<String> excludedComponentIds = getComponentsExcludedFromGlobalSearch();
       for (int i = 0; i < allowedComponentIds.length; i++) {
-        if (isSearchable(allowedComponentIds[i])) {
+        if (isSearchable(allowedComponentIds[i], excludedComponentIds)) {
           componentList.add(allowedComponentIds[i]);
         }
       }
@@ -1840,6 +1841,37 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         componentList.add(component);
       }
     }
+  }
+  
+  private List<String> getComponentsExcludedFromGlobalSearch() {
+    List<String> excluded = new ArrayList<String>();
+
+    // exclude all components of all excluded spaces
+    List<String> spaces = getItemsExcludedFromGlobalSearch("SpacesExcludedFromGlobalSearch");
+    for (String space : spaces) {
+      String[] availableComponentIds =
+          getOrganizationController().getAvailCompoIds(space, getUserId());
+      excluded.addAll(Arrays.asList(availableComponentIds));
+    }
+
+    // exclude components explicitly excluded
+    List<String> components =
+        getItemsExcludedFromGlobalSearch("ComponentsExcludedFromGlobalSearch");
+    excluded.addAll(components);
+
+    return excluded;
+  }
+
+  private List<String> getItemsExcludedFromGlobalSearch(String parameterName) {
+    List<String> items = new ArrayList<String>();
+    String param = getSettings().getString(parameterName);
+    if (StringUtil.isDefined(param)) {
+      StringTokenizer tokenizer = new StringTokenizer(param, ",");
+      while (tokenizer.hasMoreTokens()) {
+        items.add(tokenizer.nextToken());
+      }
+    }
+    return items;
   }
 
   /**
@@ -1880,8 +1912,15 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       }
     }
   }
-
+  
   private boolean isSearchable(String componentId) {
+    return isSearchable(componentId, null);
+  }
+
+  private boolean isSearchable(String componentId, List<String> exclusionList) {
+    if (exclusionList != null && !exclusionList.isEmpty() && exclusionList.contains(componentId)) {
+      return false;
+    }
     if (componentId.startsWith("silverCrawler")
         || componentId.startsWith("gallery")
         || componentId.startsWith("kmelia")) {
