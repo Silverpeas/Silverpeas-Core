@@ -27,19 +27,15 @@ import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 
 public interface ThumbnailService {
-  public ThumbnailDetail createThumbnail(ThumbnailDetail thumbDetail)
-      throws ThumbnailException;
+  public ThumbnailDetail createThumbnail(ThumbnailDetail thumbDetail) throws ThumbnailException;
 
-  public void updateThumbnail(ThumbnailDetail thumbDetail)
-      throws ThumbnailException;
+  public void updateThumbnail(ThumbnailDetail thumbDetail) throws ThumbnailException;
 
-  public void deleteThumbnail(ThumbnailDetail thumbDetail)
-      throws ThumbnailException;
-  
+  public void deleteThumbnail(ThumbnailDetail thumbDetail) throws ThumbnailException;
+
   public ThumbnailDetail getCompleteThumbnail(ThumbnailDetail thumbDetail)
       throws ThumbnailException;
-  
-  public void deleteAllThumbnail(String componentId)
-  	throws ThumbnailException;
+
+  public void deleteAllThumbnail(String componentId) throws ThumbnailException;
 
 }

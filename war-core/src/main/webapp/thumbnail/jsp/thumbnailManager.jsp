@@ -37,7 +37,7 @@
 	String backUrl		    = request.getParameter("BackUrl");
 	String thumbnailHeight  = request.getParameter("ThumbnailHeight");
     String thumbnailWidth   = request.getParameter("ThumbnailWidth");
-    if (!StringUtil.isDefined(thumbnailHeight)) {
+    if (!StringUtil.isDefined(thumbnailHeight) && StringUtil.isDefined(thumbnailWidth)) {
       thumbnailHeight = Long.toString(Math.round(Integer.parseInt(thumbnailWidth) * 0.75));
     }
     
@@ -67,7 +67,9 @@
 	}
 %>
 
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.Jcrop.js"></script>
+
+<%@page import="java.util.List"%>
+<%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%><script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.Jcrop.js"></script>
 <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/jquery.Jcrop.css">
 <style>
 .jcrop-holder { 
@@ -114,8 +116,7 @@
 function save(){
 	var path = document.thumbnailForm.OriginalFile.value;
     if(path != null && path.length > 0){
-	   document.thumbnailForm.submit();
-       tb_remove();
+    	saveUpdate();
 	} else {
 	  alert('<%=resource.getString("thumbnail.nofile")%>');
 	}
@@ -123,7 +124,6 @@ function save(){
 
 function saveUpdate(){
 	document.thumbnailForm.submit();
-    tb_remove();
 }
 
 function cancelWindow(){
@@ -176,6 +176,7 @@ function showPreview(coords)
 		document.thumbnailForm.YLength.value = coords.h;
 	}
 };
+
 </script>
 <center>
 <form name="thumbnailForm" method="post" action="<%=m_context%>/Thumbnail/jsp/thumbnailManager.jsp" <%if(isCreateMode){%>enctype="multipart/form-data"<%}%>>
@@ -210,7 +211,7 @@ if(thumbnailWidth != null){%>
 				<tr><td>
 						<p class="txtlibform"><%=resource.getString("thumbnail.picture")%></p>
 		    			<div class="container">
-		    				<input type="hidden" name="Action" value="SaveUpdate"/>
+		    				<input type="hidden" name="Action" value="Crop"/>
 							<input type="hidden" name="XStart"/>
 							<input type="hidden" name="YStart"/>
 							<input type="hidden" name="XLength"/>

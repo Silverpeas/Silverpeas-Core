@@ -641,6 +641,14 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
 	  }
 	  return null;
   }
+  
+  public ThumbnailDetail getThumbnail() {
+    if(getPK() != null && getPK().getInstanceId() != null && getPK().getId() != null){
+      ThumbnailDetail thumbDetail = new ThumbnailDetail(getPK().getInstanceId(), Integer.valueOf(getPK().getId()), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
+      return ThumbnailController.getCompleteThumbnail(thumbDetail);
+    }
+    return null;
+  }
 
   public Date getUpdateDate() {
     return updateDate;

@@ -61,39 +61,67 @@ public class ThumbnailController {
   }
 
   /**
-   * To update thumbnails files informations. 
+   * To update thumbnails files informations.
    * @param thumbDetail :ThumbnailDetail.
-   * @param thumbnailWidth 
-   * @param thumbnailHeight 
+   * @param thumbnailWidth
+   * @param thumbnailHeight
    * @author Sebastien ROCHET
    */
-  public static void updateThumbnail(ThumbnailDetail thumbDetail, int thumbnailWidth, int thumbnailHeight) {
+  public static void updateThumbnail(ThumbnailDetail thumbDetail, int thumbnailWidth,
+      int thumbnailHeight) {
 
     try {
       ThumbnailDetail completeThumbnail = thumbnailService.getCompleteThumbnail(thumbDetail);
-      if (completeThumbnail.getCropFileName() != null) {
-        // on garde toujours le meme nom de fichier par contre on le supprime
-        // puis le recreer avec les nouvelles coordonnees
-        deleteThumbnailFileOnServer(completeThumbnail.getInstanceId(), completeThumbnail.getCropFileName());
-      } else {
-        // case creation
-        String extension = FilenameUtils.getExtension(completeThumbnail.getOriginalFileName());
-        String cropFileName = String.valueOf(new Date().getTime()) + '.' + extension;
-        completeThumbnail.setCropFileName(cropFileName);
+      //first, delete former thumbnail
+      if (completeThumbnail != null) {
+        if (completeThumbnail.getCropFileName() != null) {
+          // on garde toujours le meme nom de fichier par contre on le supprime
+          // puis le recreer avec les nouvelles coordonnees
+          deleteThumbnailFileOnServer(completeThumbnail.getInstanceId(), completeThumbnail.getCropFileName());
+        }
+        thumbnailService.deleteThumbnail(thumbDetail);
       }
-      // recup new crop definition
-      completeThumbnail.setXStart(thumbDetail.getXStart());
-      completeThumbnail.setYStart(thumbDetail.getYStart());
-      completeThumbnail.setXLength(thumbDetail.getXLength());
-      completeThumbnail.setYLength(thumbDetail.getYLength());      
-      String pathCropdir = getImageDirectory(completeThumbnail.getInstanceId());
-      String pathOriginalFile =  pathCropdir + completeThumbnail.getOriginalFileName();
-      String pathCropFile = pathCropdir + completeThumbnail.getCropFileName();
-      createCropThumbnailFileOnServer(pathOriginalFile, pathCropdir, pathCropFile, 
-              completeThumbnail, thumbnailWidth, thumbnailHeight);
-      thumbnailService.updateThumbnail(completeThumbnail);
+      thumbDetail.setCropFileName(null);
+      thumbDetail.setXLength(-1);
+      thumbDetail.setXStart(-1);
+      thumbDetail.setYLength(-1);
+      thumbDetail.setYStart(-1);
+      thumbnailService.createThumbnail(thumbDetail);
+      /*ThumbnailDetail completeThumbnail = thumbnailService.getCompleteThumbnail(thumbDetail);
+      if (completeThumbnail == null) {
+        createThumbnail(thumbDetail, thumbnailWidth, thumbnailHeight);
+      } else {
+        if (completeThumbnail.getCropFileName() != null) {
+          // on garde toujours le meme nom de fichier par contre on le supprime
+          // puis le recreer avec les nouvelles coordonnees
+          deleteThumbnailFileOnServer(completeThumbnail.getInstanceId(), completeThumbnail
+              .getCropFileName());
+        } else {
+          // case creation
+          String extension = FilenameUtils.getExtension(completeThumbnail.getOriginalFileName());
+          String cropFileName = String.valueOf(new Date().getTime()) + '.' + extension;
+          completeThumbnail.setCropFileName(cropFileName);
+        }
+        String pathCropdir = getImageDirectory(completeThumbnail.getInstanceId());
+        String pathOriginalFile = pathCropdir + completeThumbnail.getOriginalFileName();
+        if (thumbDetail.getXStart() != -1 && thumbDetail.getYStart() != -1 &&
+            thumbDetail.getXLength() != -1 && thumbDetail.getYLength() != -1) {
+          // recup new crop definition
+          completeThumbnail.setXStart(thumbDetail.getXStart());
+          completeThumbnail.setYStart(thumbDetail.getYStart());
+          completeThumbnail.setXLength(thumbDetail.getXLength());
+          completeThumbnail.setYLength(thumbDetail.getYLength());
+          String pathCropFile = pathCropdir + completeThumbnail.getCropFileName();
+          createCropThumbnailFileOnServer(pathOriginalFile, pathCropdir, pathCropFile,
+                  completeThumbnail, thumbnailWidth, thumbnailHeight);
+          thumbnailService.updateThumbnail(completeThumbnail);
+        } else {
+          pathOriginalFile = pathCropdir + thumbDetail.getOriginalFileName();
+          cropFromPath(pathOriginalFile, thumbDetail, thumbnailHeight, thumbnailWidth);
+        }
+      }*/
     } catch (Exception e) {
-      throw new ThumbnailRuntimeException("ThumbnailController.updateThumbnail()", 
+      throw new ThumbnailRuntimeException("ThumbnailController.updateThumbnail()",
               SilverpeasRuntimeException.ERROR, "thumbnail_MSG_UPDATE_THUMBNAIL_KO", e);
     }
   }
@@ -105,10 +133,12 @@ public class ThumbnailController {
       ThumbnailDetail completeThumbnail = thumbnailService.getCompleteThumbnail(thumbDetail);
       if (completeThumbnail != null) {
         if (completeThumbnail.getOriginalFileName() != null) {
-          deleteThumbnailFileOnServer(completeThumbnail.getInstanceId(), completeThumbnail.getOriginalFileName());
+          deleteThumbnailFileOnServer(completeThumbnail.getInstanceId(), completeThumbnail
+              .getOriginalFileName());
         }
         if (completeThumbnail.getCropFileName() != null) {
-          deleteThumbnailFileOnServer(completeThumbnail.getInstanceId(), completeThumbnail.getCropFileName());
+          deleteThumbnailFileOnServer(completeThumbnail.getInstanceId(), completeThumbnail
+              .getCropFileName());
         }
         thumbnailService.deleteThumbnail(thumbDetail);
       }
@@ -119,19 +149,19 @@ public class ThumbnailController {
     }
   }
 
-  public static ThumbnailDetail createThumbnail(ThumbnailDetail thumbDetail, int thumbnailWidth, 
+  public static ThumbnailDetail createThumbnail(ThumbnailDetail thumbDetail, int thumbnailWidth,
           int thumbnailHeight) {
     try {
       // create line in db
       ThumbnailDetail thumdAdded = thumbnailService.createThumbnail(thumbDetail);
       // create crop thumbnail
-      if (thumdAdded.getCropFileName() == null) {
+      if (thumdAdded.getCropFileName() == null && thumdAdded.isCropable()) {
         createCropFile(thumbnailWidth, thumbnailHeight, thumdAdded);
       }
       return thumdAdded;
     } catch (Exception e) {
       throw new ThumbnailRuntimeException("ThumbnailController.createThumbnail()",
-          SilverpeasRuntimeException.ERROR, "thumbnail_MSG_CREATE_THUMBNAIL_KO",e);
+          SilverpeasRuntimeException.ERROR, "thumbnail_MSG_CREATE_THUMBNAIL_KO", e);
     }
   }
 
@@ -145,7 +175,8 @@ public class ThumbnailController {
     }
   }
 
-  protected static void createCropThumbnailFileOnServer(String pathOriginalFile, String pathCropdir, 
+  protected static void createCropThumbnailFileOnServer(String pathOriginalFile,
+      String pathCropdir,
           String pathCropFile, ThumbnailDetail thumbnail, int thumbnailWidth, int thumbnailHeight) {
     try {
       // Creates folder if not exists
@@ -162,23 +193,25 @@ public class ThumbnailController {
       File originalFile = new File(pathOriginalFile);
       BufferedImage bufferOriginal = ImageIO.read(originalFile);
       // crop image
-      BufferedImage cropPicture = bufferOriginal.getSubimage(thumbnail.getXStart(), 
+      BufferedImage cropPicture = bufferOriginal.getSubimage(thumbnail.getXStart(),
               thumbnail.getYStart(), thumbnail.getXLength(), thumbnail.getYLength());
-      BufferedImage cropPictureFinal = new BufferedImage(thumbnailWidth, thumbnailHeight, 
+      BufferedImage cropPictureFinal = new BufferedImage(thumbnailWidth, thumbnailHeight,
               BufferedImage.TYPE_INT_RGB);
       // Redimensionnement de l'image
       Graphics2D g2 = cropPictureFinal.createGraphics();
-      g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+      g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+          RenderingHints.VALUE_INTERPOLATION_BICUBIC);
       g2.drawImage(cropPicture, 0, 0, thumbnailWidth, thumbnailHeight, null);
       g2.dispose();
 
       // save crop image
-      String extension = FilenameUtils.getExtension(thumbnail.getOriginalFileName());
+      String extension = FilenameUtils.getExtension(originalFile.getName());
       ImageIO.write(cropPictureFinal, extension, cropFile);
     } catch (Exception e) {
       SilverTrace.warn("thumbnail", "ThumbnailController.createThumbnailFileOnServer()",
-          "thumbnail_MSG_CREATE_CROP_FILE_KO", "originalFileName=" + thumbnail.getOriginalFileName() 
-          + " cropFileName = " + thumbnail.getCropFileName(), e);
+          "thumbnail_MSG_CREATE_CROP_FILE_KO", "originalFileName=" +
+              thumbnail.getOriginalFileName()
+              + " cropFileName = " + thumbnail.getCropFileName(), e);
     }
   }
 
@@ -190,13 +223,13 @@ public class ThumbnailController {
         FileUtils.forceDelete(d);
       }
     } catch (Exception e) {
-      SilverTrace.warn("thumbnail", 
+      SilverTrace.warn("thumbnail",
           "ThumbnailController.deleteThumbnailFileOnServer(String componentId, String fileName)",
           "thumbnail_MSG_NOT_DELETE_FILE", "filePath=" + path, e);
     }
   }
 
-  public static String getImage(String instanceId, int objectId, int objectType, int 
+  public static String getImage(String instanceId, int objectId, int objectType, int
       thumbnailWidth, int thumbnailHeight) throws ThumbnailException {
     ThumbnailDetail thumbDetail = new ThumbnailDetail(instanceId, objectId, objectType);
     // default size if creation
@@ -204,7 +237,8 @@ public class ThumbnailController {
     return imageProps[0];
   }
 
-  public static String getImageMimeType(String instanceId, int objectId, int objectType, int thumbnailWidth, int thumbnailHeight) throws ThumbnailException {
+  public static String getImageMimeType(String instanceId, int objectId, int objectType,
+      int thumbnailWidth, int thumbnailHeight) throws ThumbnailException {
     ThumbnailDetail thumbDetail = new ThumbnailDetail(instanceId, objectId, objectType);
 
     // default size if creation
@@ -213,23 +247,26 @@ public class ThumbnailController {
   }
 
   /**
-   * Grosse merde
    * @param thumbDetail
    * @param thumbnailWidth
    * @param thumbnailHeight
-   * @return 
+   * @return
    */
-  public static String[] getImageAndMimeType(ThumbnailDetail thumbDetail, int thumbnailWidth, int thumbnailHeight) {
+  public static String[] getImageAndMimeType(ThumbnailDetail thumbDetail, int thumbnailWidth,
+      int thumbnailHeight) {
     try {
       ThumbnailDetail thumbDetailComplete = thumbnailService.getCompleteThumbnail(thumbDetail);
       if (thumbDetailComplete != null) {
-        if (thumbDetailComplete.getCropFileName() == null) {
-          createCropFile(thumbnailWidth, thumbnailHeight, thumbDetailComplete);
+        if (thumbDetailComplete.getCropFileName() != null) {
+          return new String[] { thumbDetailComplete.getCropFileName(),
+              thumbDetailComplete.getMimeType() };
+        } else {
+          return new String[] { thumbDetailComplete.getOriginalFileName(),
+              thumbDetailComplete.getMimeType() };
         }
-        return new String[]{thumbDetailComplete.getCropFileName(), thumbDetailComplete.getMimeType()};
       } else {
         // case no thumbnail define
-        return new String[]{null, null};
+        return new String[] { null, null };
       }
     } catch (Exception e) {
       throw new ThumbnailRuntimeException(
@@ -239,21 +276,56 @@ public class ThumbnailController {
     }
   }
 
+  public static ThumbnailDetail cropThumbnail(ThumbnailDetail thumbnail, int thumbnailWidth,
+      int thumbnailHeight) {
+    try {
+      ThumbnailDetail thumbDetailComplete = thumbnailService.getCompleteThumbnail(thumbnail);
+      if (thumbDetailComplete.getCropFileName() != null) {
+        // on garde toujours le meme nom de fichier par contre on le supprime
+        // puis le recreer avec les nouvelles coordonnees
+        deleteThumbnailFileOnServer(thumbnail.getInstanceId(), thumbDetailComplete.getCropFileName());
+      } else {
+        // case creation
+        String extension = FilenameUtils.getExtension(thumbDetailComplete.getOriginalFileName());
+        String cropFileName = String.valueOf(new Date().getTime()) + '.' + extension;
+        thumbDetailComplete.setCropFileName(cropFileName);
+      }
+      String pathCropdir = getImageDirectory(thumbnail.getInstanceId());
+      String pathOriginalFile = pathCropdir + thumbDetailComplete.getOriginalFileName();
+      String pathCropFile = pathCropdir + thumbDetailComplete.getCropFileName();
+      createCropThumbnailFileOnServer(pathOriginalFile, pathCropdir, pathCropFile,
+              thumbnail, thumbnailWidth, thumbnailHeight);
+      thumbDetailComplete.setXStart(thumbnail.getXStart());
+      thumbDetailComplete.setXLength(thumbnail.getXLength());
+      thumbDetailComplete.setYStart(thumbnail.getYStart());
+      thumbDetailComplete.setYLength(thumbnail.getYLength());
+      thumbnailService.updateThumbnail(thumbDetailComplete);
+      return thumbDetailComplete;
+    } catch (Exception e) {
+      throw new ThumbnailRuntimeException(
+          "ThumbnailController.cropThumbnail()",
+          SilverpeasRuntimeException.ERROR, "thumbnail_MSG_GET_IMAGE_KO",
+          e);
+    }
+  }
+
   private static void createCropFile(int thumbnailWidth, int thumbnailHeight,
           ThumbnailDetail thumbDetailComplete) throws IOException,
           ThumbnailException {
 
-    String pathOriginalFile = getImageDirectory(thumbDetailComplete.getInstanceId()) 
+    String pathOriginalFile = getImageDirectory(thumbDetailComplete.getInstanceId())
         + thumbDetailComplete.getOriginalFileName();
 
     if (thumbnailWidth == -1 && thumbnailHeight != -1) {
       // crop with fix height
-      String[] result = ImageUtil.getWidthAndHeightByHeight(new File(pathOriginalFile), thumbnailHeight);
+      String[] result =
+          ImageUtil.getWidthAndHeightByHeight(new File(pathOriginalFile), thumbnailHeight);
       thumbnailWidth = Integer.valueOf(result[0]);
       thumbnailHeight = Integer.valueOf(result[1]);
     } else if (thumbnailHeight == -1 && thumbnailWidth != -1) {
       // crop with fix width
-      String[] result = ImageUtil.getWidthAndHeightByWidth(new File(pathOriginalFile), thumbnailWidth);
+      String[] result =
+          ImageUtil.getWidthAndHeightByWidth(new File(pathOriginalFile), thumbnailWidth);
       thumbnailWidth = Integer.valueOf(result[0]);
       thumbnailHeight = Integer.valueOf(result[1]);
     } else if (thumbnailHeight == -1 && thumbnailWidth == -1) {
@@ -271,15 +343,15 @@ public class ThumbnailController {
     cropFromPath(pathOriginalFile, thumbDetailComplete, thumbnailHeight, thumbnailWidth);
   }
 
-  protected static void cropFromPath(String pathOriginalFile,ThumbnailDetail thumbDetailComplete, 
+  protected static void cropFromPath(String pathOriginalFile, ThumbnailDetail thumbDetailComplete,
       int thumbnailHeight, int thumbnailWidth) throws IOException, ThumbnailException {
     File originalFile = new File(pathOriginalFile);
     BufferedImage bufferOriginal = ImageIO.read(originalFile);
     if (bufferOriginal == null) {
-      SilverTrace.error("thumbnail", "ThumbnailController.createCropFile(int thumbnailWidth, "
+      SilverTrace.error("thumbnail", "ThumbnailController.cropFromPath(int thumbnailWidth, "
           + "int thumbnailHeight,ThumbnailDetail thumbDetailComplete)",
           "thumbnail.EX_MSG_NOT_AN_IMAGE", "pathOriginalFile=" + pathOriginalFile);
-      throw new ThumbnailException("ThumbnailBmImpl.createCropFile()",
+      throw new ThumbnailException("ThumbnailBmImpl.cropFromPath()",
               SilverpeasException.ERROR, "thumbnail.EX_MSG_NOT_AN_IMAGE");
     } else {
       thumbDetailComplete.setXStart(0);
@@ -287,17 +359,18 @@ public class ThumbnailController {
       thumbDetailComplete.setXLength(bufferOriginal.getWidth());
       thumbDetailComplete.setYLength(bufferOriginal.getHeight());
 
-      String pathCropFile =  getImageDirectory(thumbDetailComplete.getInstanceId()) 
+      String pathCropFile = getImageDirectory(thumbDetailComplete.getInstanceId())
           + thumbDetailComplete.getCropFileName();
-      createCropThumbnailFileOnServer(pathOriginalFile,  
-          getImageDirectory(thumbDetailComplete.getInstanceId()), pathCropFile, thumbDetailComplete, 
+      createCropThumbnailFileOnServer(pathOriginalFile,
+          getImageDirectory(thumbDetailComplete.getInstanceId()), pathCropFile,
+          thumbDetailComplete,
           thumbnailWidth, thumbnailHeight);
       thumbnailService.updateThumbnail(thumbDetailComplete);
     }
   }
-  
+
   private static String getImageDirectory(String instanceId) {
-    return FileRepositoryManager.getAbsolutePath(instanceId)  + publicationSettings.getString(
-        "imagesSubDirectory")  + File.separatorChar;
+    return FileRepositoryManager.getAbsolutePath(instanceId) + publicationSettings.getString(
+        "imagesSubDirectory") + File.separatorChar;
   }
 }

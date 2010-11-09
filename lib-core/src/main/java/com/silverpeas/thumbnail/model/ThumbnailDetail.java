@@ -26,6 +26,7 @@ package com.silverpeas.thumbnail.model;
 import java.io.Serializable;
 
 import com.silverpeas.util.MimeTypes;
+import com.silverpeas.util.StringUtil;
 
 /**
  * Class declaration
@@ -135,6 +136,10 @@ public class ThumbnailDetail implements Serializable, MimeTypes {
 
 	public String getMimeType() {
 		return mimeType;
+	}
+	
+	public boolean isCropable() {
+	  return StringUtil.isDefined(getOriginalFileName()) && !getOriginalFileName().startsWith("/");  
 	}
 	
 }

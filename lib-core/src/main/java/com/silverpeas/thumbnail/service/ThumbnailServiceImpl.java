@@ -36,33 +36,33 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 public class ThumbnailServiceImpl implements ThumbnailService {
-  
+
   public ThumbnailServiceImpl() {
   }
-  
+
   public ThumbnailDetail createThumbnail(ThumbnailDetail thumbDetail)
-  		throws ThumbnailException {
-	  Connection con = getConnection();
-	    try {
-	    	return ThumbnailDAO.insertThumbnail(con, thumbDetail);
-	    } catch (SQLException se) {
-	      throw new ThumbnailException("ThumbnailBmImpl.createThumbnail()",
-	          SilverpeasException.ERROR,
-	          "thumbnail.EX_INSERT_ROW", se);
-	    } catch (UtilException e) {
-		      throw new ThumbnailException("ThumbnailBmImpl.createThumbnail()",
-			          SilverpeasException.ERROR,
-			          "thumbnail.EX_MSG_RECORD_NOT_INSERT", e);
-	    } finally {
-	      closeConnection(con);
-	    }
+      throws ThumbnailException {
+    Connection con = getConnection();
+    try {
+      return ThumbnailDAO.insertThumbnail(con, thumbDetail);
+    } catch (SQLException se) {
+      throw new ThumbnailException("ThumbnailBmImpl.createThumbnail()",
+            SilverpeasException.ERROR,
+            "thumbnail.EX_INSERT_ROW", se);
+    } catch (UtilException e) {
+      throw new ThumbnailException("ThumbnailBmImpl.createThumbnail()",
+                SilverpeasException.ERROR,
+                "thumbnail.EX_MSG_RECORD_NOT_INSERT", e);
+    } finally {
+      closeConnection(con);
+    }
   }
 
   public void updateThumbnail(ThumbnailDetail thumbDetail)
       throws ThumbnailException {
     Connection con = getConnection();
     try {
-    	ThumbnailDAO.updateThumbnail(con, thumbDetail);
+      ThumbnailDAO.updateThumbnail(con, thumbDetail);
     } catch (SQLException se) {
       throw new ThumbnailException("ThumbnailBmImpl.updateAttachment()",
           SilverpeasException.ERROR,
@@ -76,8 +76,9 @@ public class ThumbnailServiceImpl implements ThumbnailService {
       throws ThumbnailException {
     Connection con = getConnection();
     try {
-    	// delete thumbnail
-    	ThumbnailDAO.deleteThumbnail(con, thumbDetail.getObjectId(), thumbDetail.getObjectType(), thumbDetail.getInstanceId());
+      // delete thumbnail
+      ThumbnailDAO.deleteThumbnail(con, thumbDetail.getObjectId(), thumbDetail.getObjectType(),
+          thumbDetail.getInstanceId());
     } catch (SQLException se) {
       throw new ThumbnailException("ThumbnailBmImpl.deleteThumbnail()",
           SilverpeasException.ERROR, "thumbnail.EX_MSG_RECORD_NOT_DELETE", se);
@@ -85,19 +86,20 @@ public class ThumbnailServiceImpl implements ThumbnailService {
       closeConnection(con);
     }
   }
-  
+
   public ThumbnailDetail getCompleteThumbnail(ThumbnailDetail thumbDetail)
-  throws ThumbnailException {
-	Connection con = getConnection();
-	try {
-		// select thumbnail
-		return ThumbnailDAO.selectByKey(con, thumbDetail.getInstanceId(), thumbDetail.getObjectId(), thumbDetail.getObjectType() );
-	} catch (SQLException se) {
-	  throw new ThumbnailException("ThumbnailBmImpl.getCompleteThumbnail()",
-	      SilverpeasException.ERROR, "thumbnail.EX_MSG_NOT_FOUND", se);
-	} finally {
-	  closeConnection(con);
-	}
+      throws ThumbnailException {
+    Connection con = getConnection();
+    try {
+      // select thumbnail
+      return ThumbnailDAO.selectByKey(con, thumbDetail.getInstanceId(), thumbDetail.getObjectId(),
+          thumbDetail.getObjectType());
+    } catch (SQLException se) {
+      throw new ThumbnailException("ThumbnailBmImpl.getCompleteThumbnail()",
+          SilverpeasException.ERROR, "thumbnail.EX_MSG_NOT_FOUND", se);
+    } finally {
+      closeConnection(con);
+    }
   }
 
   private Connection getConnection() throws ThumbnailException {
@@ -122,17 +124,17 @@ public class ThumbnailServiceImpl implements ThumbnailService {
     }
   }
 
-	public void deleteAllThumbnail(String componentId)
-			throws ThumbnailException {
-		Connection con = getConnection();
-		try {
-			// delete all thumbnails
-			ThumbnailDAO.deleteAllThumbnails(con, componentId);
-		} catch (SQLException se) {
-		  throw new ThumbnailException("ThumbnailBmImpl.deleteAllThumbnail()",
-		      SilverpeasException.ERROR, "thumbnail_MSG_DELETE_ALL_FAILED", se);
-		} finally {
-		  closeConnection(con);
-		}
-	}  
+  public void deleteAllThumbnail(String componentId)
+      throws ThumbnailException {
+    Connection con = getConnection();
+    try {
+      // delete all thumbnails
+      ThumbnailDAO.deleteAllThumbnails(con, componentId);
+    } catch (SQLException se) {
+      throw new ThumbnailException("ThumbnailBmImpl.deleteAllThumbnail()",
+          SilverpeasException.ERROR, "thumbnail_MSG_DELETE_ALL_FAILED", se);
+    } finally {
+      closeConnection(con);
+    }
+  }
 }
