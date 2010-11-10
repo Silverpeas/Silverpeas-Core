@@ -40,7 +40,7 @@ void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWrite
 {
 	String help = parameter.getHelp(resource.getLanguage());
 	boolean isCheckbox = PARAM_TYPE_CHECKBOX.equals(parameter.getType());
-	boolean isSelect = PARAM_TYPE_SELECT.equals(parameter.getType());
+	boolean isSelect = PARAM_TYPE_SELECT.equals(parameter.getType()) || SPParameter.TYPE_XMLTEMPLATES.equals(parameter.getType());
 	boolean isRadio	 = PARAM_TYPE_RADIO.equals(parameter.getType());
 
 	if (help != null) {
@@ -50,20 +50,12 @@ void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWrite
 		out.println("</td>");
 	} else {
 		out.println("<td align=left width=15>&nbsp;</td>");
+	
 	}
-	//New line for the select items
-	if (isSelect)
-	{
-		out.println("<td class=\"intfdcolor4\" nowrap valign=\"center\" align=left colspan=2>");
-		out.println("<span class=\"txtlibform\">"+parameter.getLabel()+" : </span><br>");
-	}
-	else
-	{
-		out.println("<td class=\"intfdcolor4\" nowrap valign=\"center\" align=left>");
-		out.println("<span class=\"txtlibform\">"+parameter.getLabel()+" : </span>");
-		out.println("</td>");
-		out.println("<td class=\"intfdcolor4\" align=left valign=\"top\">");
-	}
+	out.println("<td class=\"intfdcolor4\" nowrap valign=\"center\" align=left>");
+	out.println("<span class=\"txtlibform\">"+parameter.getLabel()+" : </span>");
+	out.println("</td>");
+	out.println("<td class=\"intfdcolor4\" align=left valign=\"top\">");
 
 	String disabled = "disabled";
 	String sTemp = parameter.getUpdatable().toLowerCase();
@@ -83,12 +75,17 @@ void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWrite
 		if (options != null)
 		{
 			out.println("<select name=\""+parameter.getName()+"\">");
+			if (!parameter.isMandatory()) {
+			  // add "blank" option
+			  out.println("<option value=\"\"></option>");
+			}
+			String selected = "";
 			for (int i=0; i<options.size(); i++)
 			{
 				ArrayList option = (ArrayList) options.get(i);
 				String name = (String) option.get(0);
 				String value = (String) option.get(1);
-				String selected = "";
+				selected = "";
 				if (parameter.getValue() != null && parameter.getValue().toLowerCase().equals(value.toLowerCase())) {
 					selected = "selected=\"selected\"";
 				}

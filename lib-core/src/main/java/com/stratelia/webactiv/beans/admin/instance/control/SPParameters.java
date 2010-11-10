@@ -34,6 +34,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.silverpeas.publicationTemplate.PublicationTemplate;
+import com.silverpeas.publicationTemplate.PublicationTemplateException;
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class SPParameters implements Serializable {
@@ -238,7 +241,7 @@ public class SPParameters implements Serializable {
 
           // Type parameter "<select>" to choose a value between several
           // options.
-          if (sParameterType.equals("select") || sParameterType.equals("radio")) {
+          if (SPParameter.TYPE_SELECT.equals(sParameterType) || SPParameter.TYPE_RADIO.equals(sParameterType)) {
             NodeList options = nParameterOptions.getChildNodes();
             if (options != null) {
               for (int nH = 0; nH < options.getLength(); nH++) {
@@ -269,6 +272,21 @@ public class SPParameters implements Serializable {
                   }
                 }
               }
+            }
+          } else if (SPParameter.TYPE_XMLTEMPLATES.equals(sParameterType)) {
+            // getting all visibles XML templates
+            try {
+              List<PublicationTemplate> templates =
+                  PublicationTemplateManager.getInstance().getPublicationTemplates(true);
+              for (PublicationTemplate template : templates) {
+                ArrayList<String> sParameterOption = new ArrayList<String>();
+                sParameterOption.add(template.getName());
+                sParameterOption.add(template.getFileName());
+                sParameterOptions.add(sParameterOption);
+              }
+            } catch (PublicationTemplateException e) {
+              SilverTrace.error("admin", "SPParameters.SPParameters",
+                  "root.EX_IGNORED", "sParameterName=" + sParameterName, e);
             }
           }
 

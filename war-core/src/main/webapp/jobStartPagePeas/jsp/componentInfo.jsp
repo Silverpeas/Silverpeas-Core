@@ -56,7 +56,7 @@ void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWrite
 	
 	// Value
 	boolean isCheckbox = PARAM_TYPE_CHECKBOX.equals(parameter.getType());
-	boolean isSelect = PARAM_TYPE_SELECT.equals(parameter.getType());
+	boolean isSelect = PARAM_TYPE_SELECT.equals(parameter.getType()) || SPParameter.TYPE_XMLTEMPLATES.equals(parameter.getType());
 	boolean isRadio = PARAM_TYPE_RADIO.equals(parameter.getType());
 	if (isCheckbox) {
 		String checked = "";
@@ -69,19 +69,15 @@ void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWrite
 		ArrayList options = parameter.getOptions();
 		if (options != null)
 		{
-			out.println("<select name=\""+parameter.getName()+"\" disabled=\"disabled\">");
 			for (int i=0; i<options.size(); i++)
 			{
 				ArrayList option = (ArrayList) options.get(i);
 				String name = (String) option.get(0);
 				String value = (String) option.get(1);
-				String selected = "";
 				if (parameter.getValue() != null && parameter.getValue().toLowerCase().equals(value.toLowerCase())) {
-					selected = "selected=\"selected\"";
+				  	out.println(name);
 				}
-				out.println("<option value=\""+value+"\" "+selected+">"+name+"</option>");
 			}		
-			out.println("</select>");
 		}
 	}
 	else if (isRadio)

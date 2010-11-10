@@ -32,6 +32,12 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class SPParameter implements Serializable, Comparable<SPParameter> {
 
+  public static final String TYPE_TEXT = "text";
+  public static final String TYPE_CHECKBOX = "checkbox";
+  public static final String TYPE_SELECT = "select";
+  public static final String TYPE_RADIO = "radio";
+  public static final String TYPE_XMLTEMPLATES = "xmltemplates";
+  
   private static final long serialVersionUID = -3362630250347229416L;
   private String name = null;
   private String label = null;
