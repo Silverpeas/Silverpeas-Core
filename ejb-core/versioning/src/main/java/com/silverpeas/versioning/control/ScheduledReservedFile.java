@@ -35,6 +35,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
 import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
 import com.stratelia.silverpeas.scheduler.SimpleScheduler;
+import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
 import com.stratelia.silverpeas.versioning.ejb.VersioningBmHome;
@@ -57,8 +58,8 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
     try {
       String cron = resources.getString("cronScheduledReservedFile");
       SimpleScheduler.unscheduleJob(this, VERSIONING_JOB_NAME_PROCESS);
-      SimpleScheduler.scheduleJob(this, VERSIONING_JOB_NAME_PROCESS, cron, this,
-          "doScheduledReservedFile");
+      JobTrigger trigger = JobTrigger.triggerAt(cron);
+      SimpleScheduler.scheduleJob(VERSIONING_JOB_NAME_PROCESS, trigger, this);
     } catch (Exception e) {
       SilverTrace.error("versioning", "ScheduledReservedFile.initialize()",
           "versioning.EX_CANT_INIT_SCHEDULED_RESERVED_FILE", e);
@@ -79,6 +80,13 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
             "Versioning_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
             + aEvent.getJob().getJobName() + "' was successfull");
         break;
+        
+      case SchedulerEvent.EXECUTION:
+        SilverTrace.debug("versioning",
+            "Versioning_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
+            + aEvent.getJob().getJobName() + "' is executing");
+        doScheduledReservedFile();
+        break;
 
       default:
         SilverTrace.error("versioning",
@@ -88,7 +96,7 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
     }
   }
 
-  public void doScheduledReservedFile(Date date) {
+  public void doScheduledReservedFile() {
     SilverTrace.info("versioning",
         "ScheduledReservedFile.doScheduledReservedFile()",
         "root.MSG_GEN_ENTER_METHOD");

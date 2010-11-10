@@ -24,6 +24,7 @@
 package com.stratelia.silverpeas.peasCore;
 
 import com.silverpeas.util.FileUtil;
+import com.stratelia.silverpeas.scheduler.JobExecutionContext;
 import java.text.SimpleDateFormat;
 
 import com.silverpeas.util.StringUtil;
@@ -33,10 +34,12 @@ import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import com.stratelia.silverpeas.scheduler.Job;
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
 import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
 import com.stratelia.silverpeas.scheduler.SchedulerException;
 import com.stratelia.silverpeas.scheduler.SimpleScheduler;
+import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
 
 import com.stratelia.silverpeas.silvertrace.SilverLog;
@@ -45,7 +48,6 @@ import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
-import com.stratelia.webactiv.servlets.LogoutServlet;
 
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.ArrayList;
@@ -56,7 +58,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -211,15 +212,10 @@ public class SessionManager implements SchedulerEventHandler {
     SimpleScheduler.unscheduleJob(myInstance, SESSION_MANAGER_JOB_NAME);
 
     // Create new scheduled job
-    List<Integer> startMinutes = new ArrayList<Integer>();
-    if (60 % minute == 0) {
-      startMinutes.add(Integer.valueOf(0));
-    }
-    for (int i = minute; i < 60; i += minute) {
-      startMinutes.add(Integer.valueOf(i));
-    }
-    SimpleScheduler.scheduleJob(myInstance, SESSION_MANAGER_JOB_NAME, startMinutes,
-        null, null, null, null, myInstance, "doSessionManagement");
+    JobTrigger trigger = computeJobTrigger(minute);
+    SimpleScheduler.scheduleJob(manageSession(), trigger, this);
+//    SimpleScheduler.scheduleJob(myInstance, SESSION_MANAGER_JOB_NAME, startMinutes,
+//        null, null, null, null, myInstance, "doSessionManagement");
   }
 
   /**
@@ -238,6 +234,10 @@ public class SessionManager implements SchedulerEventHandler {
       case SchedulerEvent.EXECUTION_SUCCESSFULL:
         SilverTrace.debug("peasCore", "SessionManager.handleSchedulerEvent",
             "The job '" + aEvent.getJob().getJobName() + "' was successfull");
+        break;
+      case SchedulerEvent.EXECUTION:
+        SilverTrace.debug("peasCore", "SessionManager.handleSchedulerEvent",
+            "The job '" + aEvent.getJob().getJobName() + "' is starting");
         break;
       default:
         SilverTrace.error("peasCore", "SessionManager.handleSchedulerEvent",
@@ -515,5 +515,38 @@ public class SessionManager implements SchedulerEventHandler {
       SilverTrace.debug("peasCore", "SessionManager.closeHttpSession",
           "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!!");
     }
+  }
+  
+  private JobTrigger computeJobTrigger(int minute) {
+    StringBuilder cronBuilder = new StringBuilder();
+    if (60 % minute == 0) {
+      cronBuilder.append("0");
+    }
+    for (int i = minute; i < 60; i += minute) {
+      cronBuilder.append(",").append(i);
+    }
+    cronBuilder.append(" * * * *");
+    JobTrigger trigger;
+    if (cronBuilder.toString().startsWith(",")) {
+      trigger = JobTrigger.triggerAt(cronBuilder.substring(1));
+    } else {
+      trigger = JobTrigger.triggerAt(cronBuilder.toString());
+    }
+    return trigger;
+  }
+  
+  /**
+   * Gets the job that performs the session management.
+   * @return the job for managing the session.
+   */
+  private Job manageSession() {
+    return new Job(SESSION_MANAGER_JOB_NAME) {
+
+      @Override
+      public void execute(JobExecutionContext context) throws Exception {
+        Date date = context.getFireTime();
+        doSessionManagement(date);
+      }
+    };
   }
 }

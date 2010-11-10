@@ -23,15 +23,13 @@
  */
 package com.stratelia.webactiv.organization;
 
-import java.util.Date;
 
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
 import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
-import com.stratelia.silverpeas.scheduler.SchedulerJob;
 import com.stratelia.silverpeas.scheduler.SimpleScheduler;
+import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
-import java.util.List;
 
 public class ScheduledDBReset implements SchedulerEventHandler {
 
@@ -49,7 +47,8 @@ public class ScheduledDBReset implements SchedulerEventHandler {
       SimpleScheduler.unscheduleJob(this, DBRESET_JOB_NAME);
       if ((cronString != null) && (cronString.length() > 0)) {
         // Create new scheduled job
-        SimpleScheduler.scheduleJob(this, DBRESET_JOB_NAME, cronString, this, "doDBReset");
+        JobTrigger trigger = JobTrigger.triggerAt(cronString);
+        SimpleScheduler.scheduleJob(DBRESET_JOB_NAME, trigger, this);
       }
     } catch (Exception e) {
       SilverTrace.error("admin", "ScheduledDBReset.initialize", "admin.EX_ERR_INITIALIZE", e);
@@ -74,6 +73,12 @@ public class ScheduledDBReset implements SchedulerEventHandler {
         SilverTrace.debug("admin", "ScheduledDBReset.handleSchedulerEvent",
             "The job '" + aEvent.getJob().getJobName() + "' was successfull");
         break;
+        
+      case SchedulerEvent.EXECUTION:
+        SilverTrace.debug("admin", "ScheduledDBReset.handleSchedulerEvent",
+            "The job '" + aEvent.getJob().getJobName() + "' is executed");
+        doDBReset();
+        break;
 
       default:
         SilverTrace.error("admin", "ScheduledDBReset.handleSchedulerEvent",
@@ -91,7 +96,7 @@ public class ScheduledDBReset implements SchedulerEventHandler {
    * @param date the date when the method is called by the scheduler
    * @see SimpleScheduler for parameters,
    */
-  public void doDBReset(Date date) {
+  public void doDBReset() {
     if (m_ac == null) {
       m_ac = new AdminController(null);
     }

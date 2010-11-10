@@ -51,6 +51,7 @@ public class SchedulerEventJob extends SchedulerJob {
    * and sends it to the job owner.
    * @param theExecutionDate The date of the execution
    */
+  @Override
   protected void execute(Date theExecutionDate) throws SchedulerException {
     try {
       getOwner().handleSchedulerEvent(

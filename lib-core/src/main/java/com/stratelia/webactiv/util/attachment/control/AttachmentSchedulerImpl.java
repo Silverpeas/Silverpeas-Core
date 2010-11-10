@@ -23,6 +23,8 @@
  */
 package com.stratelia.webactiv.util.attachment.control;
 
+import com.stratelia.silverpeas.scheduler.Job;
+import com.stratelia.silverpeas.scheduler.JobExecutionContext;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -30,6 +32,7 @@ import java.util.Date;
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
 import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
 import com.stratelia.silverpeas.scheduler.SimpleScheduler;
+import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -37,7 +40,8 @@ import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
-public class AttachmentSchedulerImpl implements SchedulerEventHandler {
+public class AttachmentSchedulerImpl
+    implements SchedulerEventHandler {
 
   public static final String ATTACHMENT_JOB_NAME_PROCESS_ACTIFY = "A_ProcessActify";
   public static final String ATTACHMENT_JOB_NAME_PURGE_ACTIFY = "A_PurgeActify";
@@ -54,16 +58,19 @@ public class AttachmentSchedulerImpl implements SchedulerEventHandler {
         String cronSchedulePurge = resources.getString("ScheduledPurgeActify");
         SimpleScheduler.unscheduleJob(this, ATTACHMENT_JOB_NAME_PROCESS_ACTIFY);
         SimpleScheduler.unscheduleJob(this, ATTACHMENT_JOB_NAME_PURGE_ACTIFY);
-        SimpleScheduler.scheduleJob(this, ATTACHMENT_JOB_NAME_PROCESS_ACTIFY, cronScheduleProcess, this,
-            "doProcessActify");
-        SimpleScheduler.scheduleJob(this, ATTACHMENT_JOB_NAME_PURGE_ACTIFY, cronSchedulePurge, this,
-            "doPurgeActify");
+
+        JobTrigger processTrigger = JobTrigger.triggerAt(cronScheduleProcess);
+        SimpleScheduler.scheduleJob(processActify(), processTrigger, this);
+
+        JobTrigger purgeTrigger = JobTrigger.triggerAt(cronSchedulePurge);
+        SimpleScheduler.scheduleJob(purgeActify(), purgeTrigger, this);
       } catch (Exception e) {
         SilverTrace.error("Attachment", "Attachment.initialize()", "", e);
       }
     }
   }
 
+  @Override
   public void handleSchedulerEvent(SchedulerEvent aEvent) {
     switch (aEvent.getType()) {
       case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
@@ -76,6 +83,12 @@ public class AttachmentSchedulerImpl implements SchedulerEventHandler {
         SilverTrace.debug("Attachment",
             "Attachment_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
             + aEvent.getJob().getJobName() + "' was successfull");
+        break;
+        
+      case SchedulerEvent.EXECUTION:
+        SilverTrace.debug("Attachment",
+            "Attachment_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
+            + aEvent.getJob().getJobName() + "' is starting");
         break;
 
       default:
@@ -91,7 +104,7 @@ public class AttachmentSchedulerImpl implements SchedulerEventHandler {
    * @throws IOException
    * @throws Exception
    */
-  public synchronized void doProcessActify(Date date) throws IOException,
+  public synchronized void doProcessActify() throws IOException,
       Exception {
     String attachmentId;
     String componentId;
@@ -160,7 +173,7 @@ public class AttachmentSchedulerImpl implements SchedulerEventHandler {
    * Purge native 3D files alreday converted by Actify
    * @throws Exception
    */
-  public synchronized void doPurgeActify(Date date) throws Exception {
+  public synchronized void doPurgeActify() throws Exception {
     int delayBeforePurge = Integer.parseInt(resources.getString("DelayBeforePurge"));
     long now = new Date().getTime();
 
@@ -180,5 +193,33 @@ public class AttachmentSchedulerImpl implements SchedulerEventHandler {
         FileFolderManager.deleteFolder(element.getAbsolutePath());
       }
     }
+  }
+
+  /**
+   * Gets the job relative to the actify processing.
+   * @return the job for processing actify.
+   */
+  private Job processActify() {
+    return new Job(ATTACHMENT_JOB_NAME_PROCESS_ACTIFY)   {
+
+      @Override
+      public void execute(JobExecutionContext context) throws Exception {
+        doProcessActify();
+      }
+    };
+  }
+
+  /**
+   * Gets the job relative to the actify purging.
+   * @return the job for purging actify.
+   */
+  private Job purgeActify() {
+    return new Job(ATTACHMENT_JOB_NAME_PURGE_ACTIFY)   {
+
+      @Override
+      public void execute(JobExecutionContext context) throws Exception {
+        doPurgeActify();
+      }
+    };
   }
 }

@@ -24,24 +24,27 @@
 package com.stratelia.silverpeas.silverstatistics.control;
 
 import com.silverpeas.util.FileUtil;
+import com.stratelia.silverpeas.scheduler.Job;
+import com.stratelia.silverpeas.scheduler.JobExecutionContext;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.MissingResourceException;
-import java.util.Vector;
 
 import javax.ejb.EJBException;
 
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
 import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
 import com.stratelia.silverpeas.scheduler.SchedulerException;
-import com.stratelia.silverpeas.scheduler.SchedulerJob;
 import com.stratelia.silverpeas.scheduler.SimpleScheduler;
+import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silverstatistics.model.SilverStatisticsConfigException;
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -51,7 +54,8 @@ import java.util.ResourceBundle;
  * files size and components access. This is a singleton class.
  * @author Marc Guillemin
  */
-public class SilverStatisticsManager implements SchedulerEventHandler {
+public class SilverStatisticsManager
+    implements SchedulerEventHandler {
   // Global constants
 
   // Local constants
@@ -63,7 +67,7 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
   private static SilverStatisticsManager myInstance = null;
   // Object variables
   // List of directory to compute size
-  private Vector directoryToScan = null;
+  private List<String> directoryToScan = null;
   private SilverStatistics silverStatistics = null;
   private StatisticsConfig statsConfig = null;
 
@@ -79,7 +83,7 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
   private void initSilverStatisticsManager() {
 
     // init List
-    directoryToScan = new Vector();
+    directoryToScan = new ArrayList<String>();
 
     try {
       statsConfig = new StatisticsConfig();
@@ -101,11 +105,14 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
       ResourceBundle resources = FileUtil.loadBundle(
           "com.stratelia.silverpeas.silverstatistics.SilverStatistics", Locale.getDefault());
 
-      initSchedulerStatistics(resources.getString("scheduledGetStatVolumeTimeStamp"), STAT_VOLUME_JOB_NAME,
+      initSchedulerStatistics(resources.getString("scheduledGetStatVolumeTimeStamp"),
+          STAT_VOLUME_JOB_NAME,
           "doGetStatVolume");
-      initSchedulerStatistics(resources.getString("scheduledGetStatSizeTimeStamp"), STAT_SIZE_JOB_NAME,
+      initSchedulerStatistics(resources.getString("scheduledGetStatSizeTimeStamp"),
+          STAT_SIZE_JOB_NAME,
           "doGetStatSize");
-      initSchedulerStatistics(resources.getString("scheduledCumulStatTimeStamp"), STAT_CUMUL_JOB_NAME,
+      initSchedulerStatistics(resources.getString("scheduledCumulStatTimeStamp"),
+          STAT_CUMUL_JOB_NAME,
           "doCumulStat");
 
       initDirectoryToScan(resources);
@@ -138,12 +145,15 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
    * @throws SchedulerException
    * @see
    */
-  public void initSchedulerStatistics(String aCronString, String jobName,
+  public void initSchedulerStatistics(String aCronString,
+      String jobName,
       String methodeName) throws SchedulerException {
     SimpleScheduler.unscheduleJob(myInstance, jobName);
     SilverTrace.info("silverstatistics", "SilverStatisticsManager.initSchedulerStatistics",
         "root.MSG_GEN_PARAM_VALUE", "jobName=" + jobName + ", aCronString=" + aCronString);
-    SimpleScheduler.scheduleJob(myInstance, jobName, aCronString, myInstance, methodeName);
+    JobTrigger trigger = JobTrigger.triggerAt(aCronString);
+    Job job = createJobWith(jobName, methodeName);
+    SimpleScheduler.scheduleJob(job, trigger, this);
   }
 
   /**
@@ -249,6 +259,7 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
   /**
    * Scheduler Event handler
    */
+  @Override
   public void handleSchedulerEvent(SchedulerEvent aEvent) {
 
     switch (aEvent.getType()) {
@@ -261,6 +272,11 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
         SilverTrace.debug("silverstatistics",
             "SilverStatisticsManager.handleSchedulerEvent", "The job '"
             + aEvent.getJob().getJobName() + "' was successfull");
+        break;
+      case SchedulerEvent.EXECUTION:
+        SilverTrace.debug("silverstatistics",
+            "SilverStatisticsManager.handleSchedulerEvent", "The job '"
+            + aEvent.getJob().getJobName() + "' is starting");
         break;
       default:
         SilverTrace.error("silverstatistics",
@@ -286,8 +302,12 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
    * @param componentId
    * @see
    */
-  public void addStatVolume(String userId, int volume, Date dateAccess,
-      String peasType, String spaceId, String componentId) {
+  public void addStatVolume(String userId,
+      int volume,
+      Date dateAccess,
+      String peasType,
+      String spaceId,
+      String componentId) {
     // should feed Volume (see SilverStatistics.properties)
     if (statsConfig.isRun("Volume")) {
       SilverTrace.debug("silverstatistics", "SilverStatistics.addStatVolume",
@@ -295,7 +315,7 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
           + componentId);
       // creation du stringbuffer correspondant au type Volume du
       // silverstatistics.properties
-      StringBuffer stat = new StringBuffer();
+      StringBuilder stat = new StringBuilder();
 
       stat.append(SilverStatisticsConstants.DATE_FORMAT.format(dateAccess));
       stat.append(SilverStatisticsConstants.SEPARATOR);
@@ -353,8 +373,11 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
    * @param componentId
    * @see
    */
-  public void addStatAccess(String userId, Date dateAccess, String peasType,
-      String spaceId, String componentId) {
+  public void addStatAccess(String userId,
+      Date dateAccess,
+      String peasType,
+      String spaceId,
+      String componentId) {
     // should feed Access (see SilverStatistics.properties)
     if (statsConfig.isRun("Access")) {
       SilverTrace.debug("silverstatistics", "SilverStatistics.addStatAccess",
@@ -362,7 +385,7 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
           + componentId);
       // creation du stringbuffer correspondant au type Acces du
       // silverstatistics.properties
-      StringBuffer stat = new StringBuffer();
+      StringBuilder stat = new StringBuilder();
 
       stat.append(SilverStatisticsConstants.DATE_FORMAT.format(dateAccess));
       stat.append(SilverStatisticsConstants.SEPARATOR);
@@ -419,7 +442,9 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
    * @param duration
    * @see
    */
-  public void addStatConnection(String userId, Date dateConnection, int count,
+  public void addStatConnection(String userId,
+      Date dateConnection,
+      int count,
       long duration) {
     // should feed connexion (see SilverStatistics.properties)
     if (statsConfig.isRun("Connexion")) {
@@ -429,7 +454,7 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
       // creation du stringbuffer correspondant au type Acces du
       // silverstatistics.properties
 
-      StringBuffer stat = new StringBuffer();
+      StringBuilder stat = new StringBuilder();
       stat.append(SilverStatisticsConstants.DATE_FORMAT.format(dateConnection)); // date
       // connexion
       stat.append(SilverStatisticsConstants.SEPARATOR);
@@ -483,14 +508,16 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
    * @param dirSize
    * @see
    */
-  public void addStatSize(Date date, String dirName, long dirSize) {
+  public void addStatSize(Date date,
+      String dirName,
+      long dirSize) {
     // should feed Size (see SilverStatistics.properties)
     if (statsConfig.isRun("Size")) {
       SilverTrace.debug("silverstatistics", "SilverStatistics.addStatSize",
           "dirName=" + dirName + " dirSize=" + dirSize);
       // creation du stringbuffer correspondant au type Acces du
       // silverstatistics.properties
-      StringBuffer stat = new StringBuffer();
+      StringBuilder stat = new StringBuilder();
 
       stat.append(SilverStatisticsConstants.DATE_FORMAT.format(date));
       stat.append(SilverStatisticsConstants.SEPARATOR);
@@ -564,7 +591,8 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
   private SilverStatistics getSilverStatistics() {
     if (silverStatistics == null) {
       try {
-        SilverStatisticsHome silverStatisticsHome = (SilverStatisticsHome) EJBUtilitaire.getEJBObjectRef(JNDINames.SILVERSTATISTICS_EJBHOME,
+        SilverStatisticsHome silverStatisticsHome = (SilverStatisticsHome) EJBUtilitaire.
+            getEJBObjectRef(JNDINames.SILVERSTATISTICS_EJBHOME,
             SilverStatisticsHome.class);
 
         silverStatistics = silverStatisticsHome.create();
@@ -619,6 +647,34 @@ public class SilverStatisticsManager implements SchedulerEventHandler {
         }
       }
       return fileslength;
+    }
+  }
+
+  /**
+   * Creates a job with the specified name and with the specified operation to execute.
+   * @param jobName the job name.
+   * @param jobOperation the job operation.
+   * @return a job wrapping the operation to schedule at given moments in time.
+   * @throws SchedulerException if an error occurs while creating the job to schedule (for example,
+   * the operation doesn't exist).
+   */
+  private Job createJobWith(final String jobName,
+      final String jobOperation) throws SchedulerException {
+    try {
+      final Method operation = myInstance.getClass().getMethod(jobOperation, Date.class);
+      Job aJob = new Job(jobName)   {
+
+        @Override
+        public void execute(JobExecutionContext context) throws Exception {
+          Date date = context.getFireTime();
+          operation.invoke(myInstance, date);
+        }
+      };
+      return aJob;
+    } catch (Exception ex) {
+      SilverTrace.error("silverstatistics", "SilverStatisticsManager.createJobWith",
+          ex.getMessage(), ex);
+      throw new SchedulerException(ex.getMessage());
     }
   }
 }

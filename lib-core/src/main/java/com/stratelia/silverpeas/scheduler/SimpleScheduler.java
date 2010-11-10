@@ -21,12 +21,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.scheduler;
 
+import com.stratelia.silverpeas.scheduler.trigger.CronJobTrigger;
+import com.stratelia.silverpeas.scheduler.trigger.FixedPeriodJobTrigger;
+import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -114,26 +117,26 @@ public class SimpleScheduler {
    * @return A new job
    * @throws SchedulerException
    */
-  public static SchedulerJob scheduleJob(SchedulerEventHandler aJobOwner,
-      String aJobName, int iMinutes) throws SchedulerException {
-    initScheduler();
-    if (aJobOwner == null) {
-      throw new SchedulerException(
-          "SimpleScheduler.getJob: Parameter 'aJobOwner' is null");
-    }
-    if (aJobName == null) {
-      throw new SchedulerException(
-          "SimpleScheduler.getJob: Parameter 'aJobName' is null");
-    }
-    if (!theSimpleScheduler.checkJobName(aJobName)) {
-      throw new SchedulerException(
-          "SimpleScheduler.getJob: Parameter 'aJobName' conflicts with other job names");
-    }
-    SchedulerEventJob newJob = new SchedulerEventJobMinute(theSimpleScheduler, aJobOwner,
-        aJobName, iMinutes);
-    return theSimpleScheduler.addJob(aJobOwner, newJob);
-  }
-
+//  public static SchedulerJob scheduleJob(SchedulerEventHandler aJobOwner,
+//      String aJobName,
+//      int iMinutes) throws SchedulerException {
+//    initScheduler();
+//    if (aJobOwner == null) {
+//      throw new SchedulerException(
+//          "SimpleScheduler.getJob: Parameter 'aJobOwner' is null");
+//    }
+//    if (aJobName == null) {
+//      throw new SchedulerException(
+//          "SimpleScheduler.getJob: Parameter 'aJobName' is null");
+//    }
+//    if (!theSimpleScheduler.checkJobName(aJobName)) {
+//      throw new SchedulerException(
+//          "SimpleScheduler.getJob: Parameter 'aJobName' conflicts with other job names");
+//    }
+//    SchedulerEventJob newJob = new SchedulerEventJobMinute(theSimpleScheduler, aJobOwner,
+//        aJobName, iMinutes);
+//    return theSimpleScheduler.addJob(aJobOwner, newJob);
+//  }
   /**
    * This method creates a job that fires a SchedulerEvent of the type 'EXECUTION'. The timestamp is
    * given by a cron like string (currently ranges are not allowed). So the string '* 3,21 * 3 0'
@@ -148,26 +151,26 @@ public class SimpleScheduler {
    * @return A new job
    * @throws SchedulerException 
    */
-  public static SchedulerJob scheduleJob(SchedulerEventHandler aJobOwner,
-      String aJobName, String aCronString) throws SchedulerException {
-    initScheduler();
-    if (aJobOwner == null) {
-      throw new SchedulerException(
-          "SimpleScheduler.getJob: Parameter 'aJobOwner' is null");
-    }
-    if (aJobName == null) {
-      throw new SchedulerException(
-          "SimpleScheduler.getJob: Parameter 'aJobName' is null");
-    }
-    if (!theSimpleScheduler.checkJobName(aJobName)) {
-      throw new SchedulerException(
-          "SimpleScheduler.getJob: Parameter 'aJobName' conflicts with other job names");
-    }
-    SchedulerEventJob newJob = new SchedulerEventJob(theSimpleScheduler, aJobOwner, aJobName);
-    newJob.setSchedulingParameter(aCronString);
-    return theSimpleScheduler.addJob(aJobOwner, newJob);
-  }
-
+//  public static SchedulerJob scheduleJob(SchedulerEventHandler aJobOwner,
+//      String aJobName,
+//      String aCronString) throws SchedulerException {
+//    initScheduler();
+//    if (aJobOwner == null) {
+//      throw new SchedulerException(
+//          "SimpleScheduler.getJob: Parameter 'aJobOwner' is null");
+//    }
+//    if (aJobName == null) {
+//      throw new SchedulerException(
+//          "SimpleScheduler.getJob: Parameter 'aJobName' is null");
+//    }
+//    if (!theSimpleScheduler.checkJobName(aJobName)) {
+//      throw new SchedulerException(
+//          "SimpleScheduler.getJob: Parameter 'aJobName' conflicts with other job names");
+//    }
+//    SchedulerEventJob newJob = new SchedulerEventJob(theSimpleScheduler, aJobOwner, aJobName);
+//    newJob.setSchedulingParameter(aCronString);
+//    return theSimpleScheduler.addJob(aJobOwner, newJob);
+//  }
   /**
    * This method creates a job that fires a SchedulerEvent of the type 'EXECUTION'. The time
    * settings are given by vectors. Each vector holds a list of Integer objects. Every Integer
@@ -183,29 +186,32 @@ public class SimpleScheduler {
    * @return A new job
    * @throws SchedulerException
    */
-  public static SchedulerJob scheduleJob(SchedulerEventHandler aJobOwner,
-      String aJobName, List<Integer> startMinutes, List<Integer> startHours,
-      List<Integer> startDaysOfMonth, List<Integer> startMonths, List<Integer> startDaysOfWeek)
-      throws SchedulerException {
-    initScheduler();
-    if (aJobOwner == null) {
-      throw new SchedulerException(
-          "SimpleScheduler.getJob: Parameter 'aJobOwner' is null");
-    }
-    if (aJobName == null) {
-      throw new SchedulerException(
-          "SimpleScheduler.getJob: Parameter 'aJobName' is null");
-    }
-    if (!theSimpleScheduler.checkJobName(aJobName)) {
-      throw new SchedulerException(
-          "SimpleScheduler.getJob: Parameter 'aJobName' conflicts with internal names");
-    }
-    SchedulerEventJob newJob = new SchedulerEventJob(theSimpleScheduler, aJobOwner, aJobName);
-    newJob.setSchedulingParameter(startMinutes, startHours, startDaysOfMonth, startMonths,
-        startDaysOfWeek);
-    return theSimpleScheduler.addJob(aJobOwner, newJob);
-  }
-
+//  public static SchedulerJob scheduleJob(SchedulerEventHandler aJobOwner,
+//      String aJobName,
+//      List<Integer> startMinutes,
+//      List<Integer> startHours,
+//      List<Integer> startDaysOfMonth,
+//      List<Integer> startMonths,
+//      List<Integer> startDaysOfWeek)
+//      throws SchedulerException {
+//    initScheduler();
+//    if (aJobOwner == null) {
+//      throw new SchedulerException(
+//          "SimpleScheduler.getJob: Parameter 'aJobOwner' is null");
+//    }
+//    if (aJobName == null) {
+//      throw new SchedulerException(
+//          "SimpleScheduler.getJob: Parameter 'aJobName' is null");
+//    }
+//    if (!theSimpleScheduler.checkJobName(aJobName)) {
+//      throw new SchedulerException(
+//          "SimpleScheduler.getJob: Parameter 'aJobName' conflicts with internal names");
+//    }
+//    SchedulerEventJob newJob = new SchedulerEventJob(theSimpleScheduler, aJobOwner, aJobName);
+//    newJob.setSchedulingParameter(startMinutes, startHours, startDaysOfMonth, startMonths,
+//        startDaysOfWeek);
+//    return theSimpleScheduler.addJob(aJobOwner, newJob);
+//  }
   /**
    * This method creates a job that executes a class method. The timestamp is given by a cron like
    * string (currently ranges are not allowed). So the string '* 3,21 * 3 0' starts the given method
@@ -223,28 +229,30 @@ public class SimpleScheduler {
    * @return A new job
    * @throws SchedulerException
    */
-  public static SchedulerJob scheduleJob(SchedulerEventHandler aJobOwner, String aJobName,
-      String aCronString, Object aMethodOwner, String aExecutionMethodName)
-      throws SchedulerException {
-    initScheduler();
-    if (aJobOwner == null) {
-      throw new SchedulerException(
-          "SimpleScheduler.getJob: Parameter 'aJobOwner' is null");
-    }
-    if (aJobName == null) {
-      throw new SchedulerException(
-          "SimpleScheduler.getJob: Parameter 'aJobName' is null");
-    }
-    if (!theSimpleScheduler.checkJobName(aJobName)) {
-      throw new SchedulerException(
-          "SimpleScheduler.getJob: Parameter 'aJobName' conflicts with other job names");
-    }
-    SchedulerMethodJob newJob = new SchedulerMethodJob(theSimpleScheduler, aJobOwner, aJobName);
-    newJob.setSchedulingParameter(aCronString);
-    newJob.setExecutionParameter(aMethodOwner, aExecutionMethodName);
-    return theSimpleScheduler.addJob(aJobOwner, newJob);
-  }
-
+//  public static SchedulerJob scheduleJob(SchedulerEventHandler aJobOwner,
+//      String aJobName,
+//      String aCronString,
+//      Object aMethodOwner,
+//      String aExecutionMethodName)
+//      throws SchedulerException {
+//    initScheduler();
+//    if (aJobOwner == null) {
+//      throw new SchedulerException(
+//          "SimpleScheduler.getJob: Parameter 'aJobOwner' is null");
+//    }
+//    if (aJobName == null) {
+//      throw new SchedulerException(
+//          "SimpleScheduler.getJob: Parameter 'aJobName' is null");
+//    }
+//    if (!theSimpleScheduler.checkJobName(aJobName)) {
+//      throw new SchedulerException(
+//          "SimpleScheduler.getJob: Parameter 'aJobName' conflicts with other job names");
+//    }
+//    SchedulerMethodJob newJob = new SchedulerMethodJob(theSimpleScheduler, aJobOwner, aJobName);
+//    newJob.setSchedulingParameter(aCronString);
+//    newJob.setExecutionParameter(aMethodOwner, aExecutionMethodName);
+//    return theSimpleScheduler.addJob(aJobOwner, newJob);
+//  }
   /**
    * Same as previous but the job's first nextTime can be initialized or 0
    * @param aJobOwner
@@ -256,29 +264,32 @@ public class SimpleScheduler {
    * @return
    * @throws SchedulerException
    */
-  public static SchedulerJob scheduleJob(SchedulerEventHandler aJobOwner, String aJobName,
-      String aCronString, Object aMethodOwner, String aExecutionMethodName, long initialNextTime)
-      throws SchedulerException {
-    initScheduler();
-    if (aJobOwner == null) {
-      throw new SchedulerException(
-          "SimpleScheduler.getJob: Parameter 'aJobOwner' is null");
-    }
-    if (aJobName == null) {
-      throw new SchedulerException(
-          "SimpleScheduler.getJob: Parameter 'aJobName' is null");
-    }
-    if (!theSimpleScheduler.checkJobName(aJobName)) {
-      throw new SchedulerException(
-          "SimpleScheduler.getJob: Parameter 'aJobName' conflicts with other job names");
-    }
-    SchedulerMethodJob newJob = new SchedulerMethodJob(theSimpleScheduler, aJobOwner, aJobName);
-    newJob.setSchedulingParameter(aCronString);
-    newJob.setExecutionParameter(aMethodOwner, aExecutionMethodName);
-    newJob.initTimeStamp(initialNextTime);
-    return theSimpleScheduler.addJob(aJobOwner, newJob);
-  }
-
+//  public static SchedulerJob scheduleJob(SchedulerEventHandler aJobOwner,
+//      String aJobName,
+//      String aCronString,
+//      Object aMethodOwner,
+//      String aExecutionMethodName,
+//      long initialNextTime)
+//      throws SchedulerException {
+//    initScheduler();
+//    if (aJobOwner == null) {
+//      throw new SchedulerException(
+//          "SimpleScheduler.getJob: Parameter 'aJobOwner' is null");
+//    }
+//    if (aJobName == null) {
+//      throw new SchedulerException(
+//          "SimpleScheduler.getJob: Parameter 'aJobName' is null");
+//    }
+//    if (!theSimpleScheduler.checkJobName(aJobName)) {
+//      throw new SchedulerException(
+//          "SimpleScheduler.getJob: Parameter 'aJobName' conflicts with other job names");
+//    }
+//    SchedulerMethodJob newJob = new SchedulerMethodJob(theSimpleScheduler, aJobOwner, aJobName);
+//    newJob.setSchedulingParameter(aCronString);
+//    newJob.setExecutionParameter(aMethodOwner, aExecutionMethodName);
+//    newJob.initTimeStamp(initialNextTime);
+//    return theSimpleScheduler.addJob(aJobOwner, newJob);
+//  }
   /**
    * This method creates a job that executes a class method. The time settings are given by minute.
    * The given execution method has to handle two parameter (PrintStream, Date)
@@ -291,28 +302,29 @@ public class SimpleScheduler {
    * @return A new job
    * @throws SchedulerException
    */
-  public static SchedulerJob scheduleJob(SchedulerEventHandler aJobOwner,
-      String aJobName, int iMinutes, Object aMethodOwner,
-      String aExecutionMethodName) throws SchedulerException {
-    initScheduler();
-    if (aJobOwner == null) {
-      throw new SchedulerException(
-          "SimpleScheduler.getJob: Parameter 'aJobOwner' is null");
-    }
-    if (aJobName == null) {
-      throw new SchedulerException(
-          "SimpleScheduler.getJob: Parameter 'aJobName' is null");
-    }
-    if (!theSimpleScheduler.checkJobName(aJobName)) {
-      throw new SchedulerException(
-          "SimpleScheduler.getJob: Parameter 'aJobName' conflicts with internal names");
-    }
-    SchedulerMethodJob newJob = new SchedulerMethodJobMinute(theSimpleScheduler, aJobOwner,
-        aJobName, iMinutes);
-    newJob.setExecutionParameter(aMethodOwner, aExecutionMethodName);
-    return theSimpleScheduler.addJob(aJobOwner, newJob);
-  }
-
+//  public static SchedulerJob scheduleJob(SchedulerEventHandler aJobOwner,
+//      String aJobName,
+//      int iMinutes,
+//      Object aMethodOwner,
+//      String aExecutionMethodName) throws SchedulerException {
+//    initScheduler();
+//    if (aJobOwner == null) {
+//      throw new SchedulerException(
+//          "SimpleScheduler.getJob: Parameter 'aJobOwner' is null");
+//    }
+//    if (aJobName == null) {
+//      throw new SchedulerException(
+//          "SimpleScheduler.getJob: Parameter 'aJobName' is null");
+//    }
+//    if (!theSimpleScheduler.checkJobName(aJobName)) {
+//      throw new SchedulerException(
+//          "SimpleScheduler.getJob: Parameter 'aJobName' conflicts with internal names");
+//    }
+//    SchedulerMethodJob newJob = new SchedulerMethodJobMinute(theSimpleScheduler, aJobOwner,
+//        aJobName, iMinutes);
+//    newJob.setExecutionParameter(aMethodOwner, aExecutionMethodName);
+//    return theSimpleScheduler.addJob(aJobOwner, newJob);
+//  }
   /**
    * This method creates a job that executes a class method. The time settings are given by vectors.
    * Each vector holds a list of Integer objects. Every Integer represents a element of a timestamp
@@ -331,30 +343,35 @@ public class SimpleScheduler {
    * @return A new job
    * @throws SchedulerException
    */
-  public static SchedulerJob scheduleJob(SchedulerEventHandler aJobOwner, String aJobName,
-      List<Integer> startMinutes, List<Integer> startHours, List<Integer> startDaysOfMonth,
-      List<Integer> startMonths, List<Integer> startDaysOfWeek, Object aMethodOwner,
-      String aExecutionMethodName) throws SchedulerException {
-    initScheduler();
-
-    if (aJobOwner == null) {
-      throw new SchedulerException(
-          "SimpleScheduler.getJob: Parameter 'aJobOwner' is null");
-    }
-    if (aJobName == null) {
-      throw new SchedulerException(
-          "SimpleScheduler.getJob: Parameter 'aJobName' is null");
-    }
-    if (!theSimpleScheduler.checkJobName(aJobName)) {
-      throw new SchedulerException(
-          "SimpleScheduler.getJob: Parameter 'aJobName' conflicts with internal names");
-    }
-    SchedulerMethodJob newJob = new SchedulerMethodJob(theSimpleScheduler, aJobOwner, aJobName);
-    newJob.setSchedulingParameter(startMinutes, startHours, startDaysOfMonth,
-        startMonths, startDaysOfWeek);
-    newJob.setExecutionParameter(aMethodOwner, aExecutionMethodName);
-    return theSimpleScheduler.addJob(aJobOwner, newJob);
-  }
+//  public static SchedulerJob scheduleJob(SchedulerEventHandler aJobOwner,
+//      String aJobName,
+//      List<Integer> startMinutes,
+//      List<Integer> startHours,
+//      List<Integer> startDaysOfMonth,
+//      List<Integer> startMonths,
+//      List<Integer> startDaysOfWeek,
+//      Object aMethodOwner,
+//      String aExecutionMethodName) throws SchedulerException {
+//    initScheduler();
+//
+//    if (aJobOwner == null) {
+//      throw new SchedulerException(
+//          "SimpleScheduler.getJob: Parameter 'aJobOwner' is null");
+//    }
+//    if (aJobName == null) {
+//      throw new SchedulerException(
+//          "SimpleScheduler.getJob: Parameter 'aJobName' is null");
+//    }
+//    if (!theSimpleScheduler.checkJobName(aJobName)) {
+//      throw new SchedulerException(
+//          "SimpleScheduler.getJob: Parameter 'aJobName' conflicts with internal names");
+//    }
+//    SchedulerMethodJob newJob = new SchedulerMethodJob(theSimpleScheduler, aJobOwner, aJobName);
+//    newJob.setSchedulingParameter(startMinutes, startHours, startDaysOfMonth,
+//        startMonths, startDaysOfWeek);
+//    newJob.setExecutionParameter(aMethodOwner, aExecutionMethodName);
+//    return theSimpleScheduler.addJob(aJobOwner, newJob);
+//  }
 
   /**
    * This method returns a list of the jobs of the given job owner
@@ -378,7 +395,8 @@ public class SimpleScheduler {
    * @param aJobOwner A job owner
    * @param aJobName A job name
    */
-  public static void unscheduleJob(SchedulerEventHandler aJobOwner, String aJobName) {
+  public static void unscheduleJob(SchedulerEventHandler aJobOwner,
+      String aJobName) {
     initScheduler();
     synchronized (SimpleScheduler.class) {
       List<SchedulerJob> jobList = theSimpleScheduler.htJobs.get(aJobOwner);
@@ -398,7 +416,8 @@ public class SimpleScheduler {
    * @param aJobOwner A job owner
    * @param aJob the job to be removed.
    */
-  public static void unscheduleJob(SchedulerEventHandler aJobOwner, SchedulerJob aJob) {
+  public static void unscheduleJob(SchedulerEventHandler aJobOwner,
+      SchedulerJob aJob) {
     initScheduler();
     theSimpleScheduler.removeJob(aJob);
   }
@@ -455,7 +474,8 @@ public class SimpleScheduler {
    * @param aJobOwner A job owner
    * @param aNewJob A new job
    */
-  private synchronized SchedulerJob addJob(SchedulerEventHandler aJobOwner, SchedulerJob aNewJob) {
+  private synchronized SchedulerJob addJob(SchedulerEventHandler aJobOwner,
+      SchedulerJob aNewJob) {
     List<SchedulerJob> jobList = htJobs.get(aJobOwner);
     if (jobList == null) {
       jobList = new ArrayList<SchedulerJob>();
@@ -519,6 +539,126 @@ public class SimpleScheduler {
       jobs.clear();
       htJobs.clear();
       jobNames.clear();
+    }
+  }
+
+  /**
+   * Schedules a job under the specified name, that will be fired with the specified
+   * trigger, and by setting the specified handler to recieve the events mapped with the job
+   * execution state.
+   * A scheduled job will be registered in the scheduler under the specified name and its execution
+   * will be fired by the specified trigger. The computation of the job will be delegated to the
+   * event handler at job exectution triggering.
+   * @param jobName the name under which the job should be registered in this scheduler.
+   * @param trigger the trigger that will command the job execution in the timeline.
+   * @param handler a scheduling event handler that will recieve the different events mapped with
+   * the job execution state and that should compute the job.
+   * @return a representation of the registered job.
+   * @throws SchedulerException if an error occurs while scheduling the job.
+   */
+  public static SchedulerJob scheduleJob(final String jobName,
+      final JobTrigger trigger,
+      final SchedulerEventHandler handler) throws SchedulerException {
+    checkRequiredArgs(jobName, trigger, handler);
+    initScheduler();
+    if (trigger instanceof FixedPeriodJobTrigger) {
+      FixedPeriodJobTrigger jobTrigger = (FixedPeriodJobTrigger) trigger;
+      SchedulerEventJob newJob = new SchedulerEventJobMinute(theSimpleScheduler, handler,
+          jobName, jobTrigger.getTimeInterval());
+      return theSimpleScheduler.addJob(handler, newJob);
+    } else if (trigger instanceof CronJobTrigger) {
+      CronJobTrigger cronJobTrigger = (CronJobTrigger) trigger;
+      SchedulerEventJob newJob = new SchedulerEventJob(theSimpleScheduler, handler,
+          jobName);
+      newJob.setSchedulingParameter(cronJobTrigger.getCronExpression());
+      return theSimpleScheduler.addJob(handler, newJob);
+    }
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  /**
+   * Schedules the specified job. It will be fired with the specified trigger and the specified
+   * event handler will recieve the events mapped with the job execution state.
+   * @param theJob the job to schedule.
+   * @param trigger the trigger that will fire the job execution.
+   * @param handler a scheduling event handler that will recieve the different events mapped with
+   * the job execution state.
+   * @return a representation of the registered job.
+   * @throws SchedulerException if an error occurs while scheduling the job.
+   */
+  public static SchedulerJob scheduleJob(final Job theJob,
+      final JobTrigger trigger,
+      final SchedulerEventHandler handler) throws SchedulerException {
+    if (theJob == null) {
+      throw new IllegalArgumentException("The job is required!");
+    }
+    String jobName = theJob.getName();
+    checkRequiredArgs(jobName, trigger, handler);
+    initScheduler();
+    if (trigger instanceof FixedPeriodJobTrigger) {
+      FixedPeriodJobTrigger jobTrigger = (FixedPeriodJobTrigger) trigger;
+      SchedulerMethodJob newJob = new SchedulerMethodJobMinute(theSimpleScheduler, handler,
+          jobName, jobTrigger.getTimeInterval());
+      newJob.setExecutionParameter(new JobExecutor(theJob), "execute");
+      return theSimpleScheduler.addJob(handler, newJob);
+    } else if (trigger instanceof CronJobTrigger) {
+      CronJobTrigger cronJobTrigger = (CronJobTrigger) trigger;
+      SchedulerMethodJob newJob = new SchedulerMethodJob(theSimpleScheduler, handler, jobName);
+      newJob.setSchedulingParameter(cronJobTrigger.getCronExpression());
+      newJob.setExecutionParameter(new JobExecutor(theJob), "execute");
+      return theSimpleScheduler.addJob(handler, newJob);
+    }
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  /**
+   * Checks the required specified arguments are correctly set, otherwise throws an
+   * IllegalArgumentException exception.
+   * @param jobName a job name,
+   * @param trigger a trigger of a job,
+   * @param handler an scheduling event handler.
+   */
+  private static void checkRequiredArgs(final String jobName,
+      final JobTrigger trigger,
+      final SchedulerEventHandler handler) {
+    if (jobName == null || jobName.isEmpty()) {
+      throw new IllegalArgumentException("The job name is required!");
+    }
+    if (trigger == null) {
+      throw new IllegalArgumentException("The job trigger is required!");
+    }
+    if (handler == null) {
+      throw new IllegalArgumentException("The scheduling event handler is requried!");
+    }
+  }
+
+  /**
+   * An executor of job.
+   * This class is defined in order to keep the way this scheduler implementation works, whatever
+   * the interface changes are.
+   */
+  private static class JobExecutor {
+
+    private Job job;
+
+    /**
+     * Constructs a now executor for the specified job.
+     * @param jobToExecute the job to execute at trigger firing.
+     */
+    public JobExecutor(final Job jobToExecute) {
+      this.job = jobToExecute;
+    }
+
+    /**
+     * Executes the job.
+     * This method will be called by the internal mechanism of this scheduler implemenation.
+     * @param date the date at which the execution is triggered.
+     * @throws Exception an execption if an error occurs during the job execution.
+     */
+    public void execute(final Date date) throws Exception {
+      JobExecutionContext ctx = new JobExecutionContext();
+      ctx.setFireTime(date);
+      this.job.execute(ctx);
     }
   }
 }

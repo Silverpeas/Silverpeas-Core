@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.versioningPeas.control;
 
 import java.io.File;
@@ -29,12 +28,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Date;
-import java.util.Vector;
 
 import com.silverpeas.util.FileUtil;
+import com.stratelia.silverpeas.scheduler.Job;
+import com.stratelia.silverpeas.scheduler.JobExecutionContext;
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
 import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
 import com.stratelia.silverpeas.scheduler.SimpleScheduler;
+import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.ejb.VersioningRuntimeException;
 import com.stratelia.silverpeas.versioning.model.DocumentPK;
@@ -44,10 +45,11 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
-public class VersioningSchedulerImpl implements SchedulerEventHandler {
+public class VersioningSchedulerImpl
+    implements SchedulerEventHandler {
+
   public static final String VERSIONING_JOB_NAME_PROCESS_ACTIFY = "V_ProcessActify";
   public static final String VERSIONING_JOB_NAME_PURGE_ACTIFY = "V_PurgeActify";
-
   private ResourceLocator resourcesAttachment = new ResourceLocator(
       "com.stratelia.webactiv.util.attachment.Attachment", "");
 
@@ -59,12 +61,14 @@ public class VersioningSchedulerImpl implements SchedulerEventHandler {
       try {
         String cronScheduleProcess = resourcesAttachment.getString("ScheduledProcessActify");
         String cronSchedulePurge = resourcesAttachment.getString("ScheduledPurgeActify");
-          SimpleScheduler.unscheduleJob(this, VERSIONING_JOB_NAME_PROCESS_ACTIFY);
-          SimpleScheduler.unscheduleJob(this, VERSIONING_JOB_NAME_PURGE_ACTIFY);
-        SimpleScheduler.scheduleJob(this, VERSIONING_JOB_NAME_PROCESS_ACTIFY, cronScheduleProcess,
-            this, "doProcessActify");
-        SimpleScheduler.scheduleJob(this, VERSIONING_JOB_NAME_PURGE_ACTIFY, cronSchedulePurge, this,
-            "doPurgeActify");
+        SimpleScheduler.unscheduleJob(this, VERSIONING_JOB_NAME_PROCESS_ACTIFY);
+        SimpleScheduler.unscheduleJob(this, VERSIONING_JOB_NAME_PURGE_ACTIFY);
+
+        JobTrigger processTrigger = JobTrigger.triggerAt(cronScheduleProcess);
+        SimpleScheduler.scheduleJob(processActify(), processTrigger, this);
+
+        JobTrigger purgeTrigger = JobTrigger.triggerAt(cronSchedulePurge);
+        SimpleScheduler.scheduleJob(purgeActify(), purgeTrigger, this);
       } catch (Exception e) {
         SilverTrace.error("versioningPeas", "VersioningScheduleImpl.initialize()", "", e);
       }
@@ -86,9 +90,14 @@ public class VersioningSchedulerImpl implements SchedulerEventHandler {
             + aEvent.getJob().getJobName() + "' was successfull");
         break;
 
+      case SchedulerEvent.EXECUTION:
+        SilverTrace.debug("versioningPeas",
+            "VersioningScheduleImpl.handleSchedulerEvent", "The job '"
+            + aEvent.getJob().getJobName() + "' is starting");
+        break;
+
       default:
-        SilverTrace
-            .error("versioningPeas",
+        SilverTrace.error("versioningPeas",
             "VersioningScheduleImpl.handleSchedulerEvent",
             "Illegal event type");
         break;
@@ -109,8 +118,8 @@ public class VersioningSchedulerImpl implements SchedulerEventHandler {
     long now = new Date().getTime();
 
     String resultActifyPath = resourcesAttachment.getString("ActifyPathResult");
-    int delayBeforeProcess = new Integer(resourcesAttachment
-        .getString("DelayBeforeProcess")).intValue();
+    int delayBeforeProcess = new Integer(resourcesAttachment.getString("DelayBeforeProcess")).
+        intValue();
 
     File folderToAnalyse = new File(FileRepositoryManager.getTemporaryPath()
         + resultActifyPath);
@@ -130,8 +139,7 @@ public class VersioningSchedulerImpl implements SchedulerEventHandler {
       if (element.isDirectory()
           && (lastModified + delayBeforeProcess * 1000 * 60 < now)
           && dirName.substring(0, 2).equals("v_")) {
-        componentId = dirName.substring(dirName.indexOf("_") + 1, dirName
-            .lastIndexOf("_"));
+        componentId = dirName.substring(dirName.indexOf("_") + 1, dirName.lastIndexOf("_"));
         documentId = dirName.substring(dirName.lastIndexOf("_") + 1);
 
         String detailPathToAnalyse = element.getAbsolutePath();
@@ -154,8 +162,8 @@ public class VersioningSchedulerImpl implements SchedulerEventHandler {
           String logicalName = fileName.substring(0, fileName.lastIndexOf("."))
               + ".3d";
           String mimeType = FileUtil.getMimeType(physicalName);
-          DocumentVersion newVersion = new DocumentVersion(null, docPK, doc
-              .getMajorNumber(), doc.getMinorNumber(), doc.getAuthorId(),
+          DocumentVersion newVersion = new DocumentVersion(null, docPK, doc.getMajorNumber(), doc.
+              getMinorNumber(), doc.getAuthorId(),
               new Date(), null, doc.getType(), doc.getStatus(), physicalName,
               logicalName, mimeType, new Long(file.length()).intValue(),
               componentId);
@@ -170,8 +178,7 @@ public class VersioningSchedulerImpl implements SchedulerEventHandler {
         FileFolderManager.deleteFolder(resultActifyFullPath);
       }
     }
-    SilverTrace
-        .info("versioningPeas", "VersioningSchedulerImpl.doProcessActify()",
+    SilverTrace.info("versioningPeas", "VersioningSchedulerImpl.doProcessActify()",
         "root.MSG_GEN_EXIT_METHOD");
   }
 
@@ -180,8 +187,7 @@ public class VersioningSchedulerImpl implements SchedulerEventHandler {
    * @throws Exception
    */
   public synchronized void doPurgeActify(Date date) throws Exception {
-    int delayBeforePurge = new Integer(resourcesAttachment
-        .getString("DelayBeforePurge")).intValue();
+    int delayBeforePurge = new Integer(resourcesAttachment.getString("DelayBeforePurge")).intValue();
     long now = new Date().getTime();
 
     File folderToAnalyse = new File(FileRepositoryManager.getTemporaryPath()
@@ -202,4 +208,33 @@ public class VersioningSchedulerImpl implements SchedulerEventHandler {
     }
   }
 
+  /**
+   * Gets the job relative to the actify processing.
+   * @return the job for processing actify.
+   */
+  private Job processActify() {
+    return new Job(VERSIONING_JOB_NAME_PROCESS_ACTIFY)    {
+
+      @Override
+      public void execute(JobExecutionContext context) throws Exception {
+        Date date = context.getFireTime();
+        doProcessActify(date);
+      }
+    };
+  }
+
+  /**
+   * Gets the job relative to the actify purging.
+   * @return the job for purging actify.
+   */
+  private Job purgeActify() {
+    return new Job(VERSIONING_JOB_NAME_PURGE_ACTIFY)    {
+
+      @Override
+      public void execute(JobExecutionContext context) throws Exception {
+        Date date = context.getFireTime();
+        doPurgeActify(date);
+      }
+    };
+  }
 }

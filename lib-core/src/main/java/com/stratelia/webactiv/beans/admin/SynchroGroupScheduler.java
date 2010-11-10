@@ -24,12 +24,12 @@
 package com.stratelia.webactiv.beans.admin;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
 import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
 import com.stratelia.silverpeas.scheduler.SimpleScheduler;
+import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class SynchroGroupScheduler implements SchedulerEventHandler {
@@ -43,7 +43,8 @@ public class SynchroGroupScheduler implements SchedulerEventHandler {
       this.admin = admin;
       this.synchronizedGroupIds = synchronizedGroupIds;
       SimpleScheduler.unscheduleJob(this, ADMINSYNCHROGROUP_JOB_NAME);
-      SimpleScheduler.scheduleJob(this, ADMINSYNCHROGROUP_JOB_NAME, cron, this, "doSynchroGroup");
+      JobTrigger trigger = JobTrigger.triggerAt(cron);
+      SimpleScheduler.scheduleJob(ADMINSYNCHROGROUP_JOB_NAME, trigger, this);
     } catch (Exception e) {
       SilverTrace.error("admin", "SynchroGroupScheduler.initialize()",
           "importExport.EX_CANT_INIT_SCHEDULED_IMPORT", e);
@@ -64,7 +65,12 @@ public class SynchroGroupScheduler implements SchedulerEventHandler {
             "SynchroGroupScheduler.handleSchedulerEvent", "The job '"
             + aEvent.getJob().getJobName() + "' was successfull");
         break;
-
+        
+     case SchedulerEvent.EXECUTION:
+       SilverTrace.debug("admin",
+            "SynchroGroupScheduler.handleSchedulerEvent", "The job '"
+            + aEvent.getJob().getJobName() + "' is executed");
+       doSynchroGroup();
       default:
         SilverTrace.error("admin",
             "SynchroGroupScheduler.handleSchedulerEvent", "Illegal event type");
@@ -72,7 +78,7 @@ public class SynchroGroupScheduler implements SchedulerEventHandler {
     }
   }
 
-  public void doSynchroGroup(Date date) {
+  public void doSynchroGroup() {
     SilverTrace.info("admin", "SynchroGroupScheduler.doSynchroGroup()",
         "root.MSG_GEN_ENTER_METHOD");
 

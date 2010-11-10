@@ -36,6 +36,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
 import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
 import com.stratelia.silverpeas.scheduler.SimpleScheduler;
+import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
@@ -55,15 +56,16 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
     try {
       String cron = resources.getString("cronScheduledReservedFile");
       SimpleScheduler.unscheduleJob(this, ATTACHMENT_JOB_NAME_PROCESS);
-      SimpleScheduler.scheduleJob(this, ATTACHMENT_JOB_NAME_PROCESS, cron, this,
-          "doScheduledReservedFile");
+      JobTrigger trigger = JobTrigger.triggerAt(cron);
+      SimpleScheduler.scheduleJob(ATTACHMENT_JOB_NAME_PROCESS, trigger, this);
     } catch (Exception e) {
       SilverTrace.error("attachment", "ScheduledReservedFile.initialize()",
           "attachment.EX_CANT_INIT_SCHEDULED_RESERVED_FILE", e);
     }
   }
 
-  public void handleSchedulerEvent(SchedulerEvent aEvent) {
+  @Override
+  public void handleSchedulerEvent(SchedulerEvent aEvent) throws Exception {
     switch (aEvent.getType()) {
       case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
         SilverTrace.error("Attachment",
@@ -76,6 +78,13 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
             "Attachment_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
             + aEvent.getJob().getJobName() + "' was successfull");
         break;
+        
+      case SchedulerEvent.EXECUTION:
+        SilverTrace.debug("Attachment",
+            "Attachment_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
+            + aEvent.getJob().getJobName() + "' is executed");
+        doScheduledReservedFile();
+        break;
 
       default:
         SilverTrace.error("Attachment",
@@ -85,7 +94,7 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
     }
   }
 
-  public void doScheduledReservedFile(Date date) throws AttachmentException {
+  public void doScheduledReservedFile() throws AttachmentException {
     SilverTrace.info("attachment",
         "ScheduledReservedFile.doScheduledReservedFile()",
         "root.MSG_GEN_ENTER_METHOD");

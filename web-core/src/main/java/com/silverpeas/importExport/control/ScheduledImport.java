@@ -25,15 +25,13 @@
 package com.silverpeas.importExport.control;
 
 import java.io.File;
-import java.util.Date;
-import java.util.Vector;
 
-import com.silverpeas.importExport.control.ImportExport;
 import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.importExport.report.ImportReport;
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
 import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
 import com.stratelia.silverpeas.scheduler.SimpleScheduler;
+import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -63,8 +61,8 @@ public class ScheduledImport implements SchedulerEventHandler {
             + "' does not exists !");
       } else {
         SimpleScheduler.unscheduleJob(this, IMPORTENGINE_JOB_NAME);
-        SimpleScheduler.scheduleJob(this, IMPORTENGINE_JOB_NAME, cron, this,
-            "doScheduledImport");
+        JobTrigger trigger = JobTrigger.triggerAt(cron);
+        SimpleScheduler.scheduleJob(IMPORTENGINE_JOB_NAME, trigger, this);
       }
     } catch (Exception e) {
       SilverTrace.error("importExport", "ScheduledImport.initialize()",
@@ -72,6 +70,7 @@ public class ScheduledImport implements SchedulerEventHandler {
     }
   }
 
+  @Override
   public void handleSchedulerEvent(SchedulerEvent aEvent) {
     switch (aEvent.getType()) {
       case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
@@ -85,6 +84,13 @@ public class ScheduledImport implements SchedulerEventHandler {
             "ScheduledImport.handleSchedulerEvent", "The job '"
             + aEvent.getJob().getJobName() + "' was successfull");
         break;
+        
+      case SchedulerEvent.EXECUTION:
+        SilverTrace.debug("importExport",
+            "ScheduledImport.handleSchedulerEvent", "The job '"
+            + aEvent.getJob().getJobName() + "' is executing");
+        doScheduledImport();
+        break;
 
       default:
         SilverTrace.error("importExport",
@@ -93,7 +99,7 @@ public class ScheduledImport implements SchedulerEventHandler {
     }
   }
 
-  public void doScheduledImport(Date date) {
+  public void doScheduledImport() {
     SilverTrace.info("importExport", "ScheduledImport.doScheduledImport()",
         "root.MSG_GEN_ENTER_METHOD");
 
