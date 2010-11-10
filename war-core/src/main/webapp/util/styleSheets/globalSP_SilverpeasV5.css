@@ -3048,7 +3048,7 @@ caption {
   margin: 3px;
 }
 
-/***********Style de table générer par getJSON ""SocialInformation"*******************/
+/***********Style de table gï¿½nï¿½rer par getJSON ""SocialInformation"*******************/
 #myProfile #headAndCore #profilCore #socialIconsZone {
   float: left;
   width: 100%;
@@ -3088,3 +3088,18 @@ ul#attachmentList li.attachmentListItem .lineMain {
     white-space: nowrap;
 }
 /*- [ attachments END ] ------------------------- */
+
+#admin-component .componentIcon {
+	vertical-align: middle;
+}
+
+#admin-component .parameterInfo {
+	width: 12px;
+}
+
+#admin-component #parameters-header {
+	background-color: #EDEDED;
+	text-align: center;
+	margin-top:20px;
+	padding:5px;
+}

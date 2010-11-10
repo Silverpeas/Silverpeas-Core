@@ -42,17 +42,17 @@ void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWrite
 	String help = parameter.getHelp(resource.getLanguage());
 	if (help != null) {
 		help = Encode.javaStringToJsString(help);
-		out.println("<td align=left>");
-		out.print("<img src=\""+resource.getIcon("JSPP.instanceHelpInfo")+"\" border=0 onmouseover=\"return overlib('"+help+"', CAPTION, '"+Encode.javaStringToJsString(parameter.getLabel())+"');\" onmouseout=\"return nd();\" align=\"absmiddle\">");
+		out.println("<td align=\"left\">");
+		out.print("<img src=\""+resource.getIcon("JSPP.instanceHelpInfo")+"\" onmouseover=\"return overlib('"+help+"', CAPTION, '"+Encode.javaStringToJsString(parameter.getLabel())+"');\" onmouseout=\"return nd();\" class=\"parameterInfo\">");
 		out.println("</td>");
 	} else {
-		out.println("<td align=left width=15>&nbsp;</td>");
+		out.println("<td align=\"left\" width=\"15\">&nbsp;</td>");
 	}
 
 	out.println("<td class=\"textePetitBold\" nowrap valign=\"center\">");
 	out.println(parameter.getLabel()+" : ");
 	out.println("</td>");
-	out.println("<td align=left valign=\"top\">");
+	out.println("<td align=\"left\" valign=\"top\">");
 	
 	// Value
 	boolean isCheckbox = PARAM_TYPE_CHECKBOX.equals(parameter.getType());
@@ -62,7 +62,7 @@ void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWrite
 		String checked = "";
 		if (parameter.getValue() != null && parameter.getValue().toLowerCase().equals("yes"))
 			checked = "checked";
-		out.println("<input type=\"checkbox\" name=\""+parameter.getName()+"\" value=\""+parameter.getValue()+"\" "+checked+" disabled>");
+		out.println("<input type=\"checkbox\" name=\""+parameter.getName()+"\" value=\""+parameter.getValue()+"\" "+checked+" disabled/>");
 	}
 	else if (isSelect)
 	{
@@ -93,13 +93,14 @@ void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWrite
 				String checked = "";
 				if (parameter.getValue() != null && parameter.getValue().toLowerCase().equals(value) || i==0)
 					checked = "checked";
-				out.println("<input type=\"radio\" name=\""+parameter.getName()+"\" value=\""+value+"\" "+checked+" disabled>");
+				out.println("<input type=\"radio\" name=\""+parameter.getName()+"\" value=\""+value+"\" "+checked+" disabled/>");
 				out.println(name+"&nbsp;");
 			}		
 		}
 	}
-	else
+	else {
 		out.println(parameter.getValue());
+	}
 	out.println("</td>");
 }
 %>
@@ -119,12 +120,11 @@ browseBar.setComponentId(compoInst.getId());
 browseBar.setExtraInformation(resource.getString("GML.description"));	
 browseBar.setI18N(compoInst, resource.getLanguage());
 
-// Space edition
-//operationPane.addOperation(resource.getIcon("JSPP.instanceAdd"),resource.getString("JSPP.ComponentPanelCreateTitle"),"javascript:onClick=openPopup('ListComponent', 750, 700)");
 operationPane.addOperation(resource.getIcon("JSPP.instanceUpdate"),resource.getString("JSPP.ComponentPanelModifyTitle"),"javascript:onClick=updateInstance(800, 350)");
 operationPane.addOperation(resource.getIcon("JSPP.ComponentOrder"),resource.getString("JSPP.ComponentOrder"),"javascript:onClick=openPopup('PlaceComponentAfter', 750, 230)");
-if (JobStartPagePeasSettings.useComponentsCopy)
+if (JobStartPagePeasSettings.useComponentsCopy) {
 	operationPane.addOperation(resource.getIcon("JSPP.CopyComponent"),resource.getString("JSPP.CopyComponent"),"javascript:onClick=clipboardCopy()");
+}
 operationPane.addOperation(resource.getIcon("JSPP.instanceDel"),resource.getString("JSPP.ComponentPanelDeleteTitle"),"javascript:onClick=deleteInstance()");
 
 tabbedPane.addTab(resource.getString("GML.description"),"#",true);
@@ -143,16 +143,16 @@ while (i.hasNext()) {
 	tabbedPane.addTab(prof,"RoleInstance?IdProfile="+theProfile.getId()+"&NameProfile="+theProfile.getName()+"&LabelProfile="+theProfile.getLabel(),false);
 }	
 %>
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<html>
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/overlib.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 <!--
 var currentLanguage = "<%=compoInst.getLanguage()%>";
 <%
@@ -204,33 +204,34 @@ function clipboardCopy() {
 
 -->
 </script>
-</HEAD>
-
-<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5">
+</head>
+<body id="admin-component">
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
-<FORM NAME="infoInstance" action="" METHOD="POST">
+<form name="infoInstance" action="" method="post">
 <%
 out.println(window.printBefore());
 out.println(tabbedPane.print());
 out.println(frame.printBefore());
 out.println(board.printBefore());
 %>
-<table CELLPADDING="5" CELLSPACING="0" BORDER="0" WIDTH="100%">
+<table cellpadding="5" cellspacing="0" border="0" width="100%">
 	<tr>
-		<td class="textePetitBold" nowrap><%=resource.getString("GML.type") %> :</td>
-		<td align="left" width="100%"><IMG SRC="<%=m_ComponentIcon%>" border="0" align="middle">&nbsp;<%=m_JobPeas%></td>
+		<td class="textePetitBold" nowrap="nowrap"><%=resource.getString("GML.type") %> :</td>
+		<td align="left" width="100%"><img src="<%=m_ComponentIcon%>" class="componentIcon" alt=""/>&nbsp;<%=m_JobPeas%></td>
 	</tr>
 	<tr>
-		<td class="textePetitBold" nowrap><%=resource.getString("GML.name") %> :</td>
+		<td class="textePetitBold" nowrap="nowrap"><%=resource.getString("GML.name") %> :</td>
 		<td align="left" valign="baseline" width="100%" id="compoName"><%=compoInst.getLabel(resource.getLanguage())%></td>
 	</tr>
-	<tr>
-		<td class="textePetitBold" nowrap valign="top"><%=resource.getString("GML.description") %> :</td>
-		<td align="left" valign="top" width="100%" id="compoDesc"><%=Encode.javaStringToHtmlParagraphe(compoInst.getDescription(resource.getLanguage()))%></td>
-	</tr>
+	<% if (StringUtil.isDefined(compoInst.getDescription(resource.getLanguage()))) { %>
+		<tr>
+			<td class="textePetitBold" nowrap="nowrap" valign="top"><%=resource.getString("GML.description") %> :</td>
+			<td align="left" valign="top" width="100%" id="compoDesc"><%=Encode.javaStringToHtmlParagraphe(compoInst.getDescription(resource.getLanguage()))%></td>
+		</tr>
+	<% } %>
 	<% if (compoInst.getCreateDate() != null) { %>
 	<tr>
-		<td class="textePetitBold" nowrap><%=resource.getString("GML.creationDate") %> :</td>
+		<td class="textePetitBold" nowrap="nowrap"><%=resource.getString("GML.creationDate") %> :</td>
 		<td align="left" valign="baseline" width="100%">
 			<%=resource.getOutputDateAndHour(compoInst.getCreateDate())%>
 			<% if (compoInst.getCreator() != null) { %> 
@@ -241,7 +242,7 @@ out.println(board.printBefore());
 	<% } %>
 	<% if (compoInst.getUpdateDate() != null) { %>
 	<tr>
-		<td class="textePetitBold" nowrap><%=resource.getString("GML.updateDate") %> :</td>
+		<td class="textePetitBold" nowrap="nowrap"><%=resource.getString("GML.updateDate") %> :</td>
 		<td align="left" valign="baseline" width="100%">
 			<%=resource.getOutputDateAndHour(compoInst.getUpdateDate())%>
 			<% if (compoInst.getUpdater() != null) { %>  
@@ -252,31 +253,23 @@ out.println(board.printBefore());
 	<% } %>
 	<% if (isInHeritanceEnable) { %>
 	<tr>
-		<td class="textePetitBold" nowrap valign="top"><%=resource.getString("JSPP.inheritanceBlockedComponent") %> :</td>
+		<td class="textePetitBold" nowrap="nowrap" valign="top"><%=resource.getString("JSPP.inheritanceBlockedComponent") %> :</td>
 		<td align="left" valign="baseline" width="100%">
 		<% if (compoInst.isInheritanceBlocked()) { %>
-			<input type="radio" disabled checked /> <%=resource.getString("JSPP.inheritanceComponentNotUsed")%><br/>
-			<input type="radio" disabled/> <%=resource.getString("JSPP.inheritanceComponentUsed")%>
+			<%=resource.getString("JSPP.inheritanceComponentNotUsed")%>
 		<% } else { %>
-			<input type="radio" disabled/> <%=resource.getString("JSPP.inheritanceComponentNotUsed")%><br/>
-			<input type="radio" disabled checked /> <%=resource.getString("JSPP.inheritanceComponentUsed")%>
+			<%=resource.getString("JSPP.inheritanceComponentUsed")%>
 		<% } %>
 		</td>
 	</tr>
 	<% } %>
 </table>
-<% 
-if (parameters.size() > 0)
-{
-%>
-	<br>
-	<table width=100%>
-	<tr class="intfdcolor51"><td align="center"><span class="txtlibform"><img src="<%=resource.getIcon("JSPP.px")%>" height="20" width="1" align="middle"><%=resource.getString("JSPP.parameters") %></span></td></tr>
-	</table>
-<%
-}
-%>
-<table border=0>
+<% if (parameters.size() > 0) { %>
+	<div id="parameters-header">
+		<span class="txtlibform"><%=resource.getString("JSPP.parameters") %></span>
+	</div>
+<% } %>
+<table border="0">
 	<tr>
 	<%
 	boolean on2Columns = false;
@@ -326,6 +319,6 @@ out.println(board.printAfter());
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-</FORM>
-</BODY>
-</HTML>
+</form>
+</body>
+</html>

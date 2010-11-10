@@ -48,7 +48,7 @@ void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWrite
 	if (help != null) {
 		help = Encode.javaStringToJsString(help);
 		out.println("<td valign=top align=left>");
-		out.print("<img src=\""+resource.getIcon("JSPP.instanceHelpInfo")+"\" onmouseout=\"return nd();\" onmouseover=\"return overlib('"+help+"', CAPTION, '"+Encode.javaStringToJsString(parameter.getLabel())+"')\" border=0>");
+		out.print("<img src=\""+resource.getIcon("JSPP.instanceHelpInfo")+"\" onmouseout=\"return nd();\" onmouseover=\"return overlib('"+help+"', CAPTION, '"+Encode.javaStringToJsString(parameter.getLabel())+"')\"  class=\"parameterInfo\">");
 		out.println("</td>");
 	} else {
 		out.println("<td align=left width=15>&nbsp;</td>");
@@ -272,7 +272,7 @@ function toDoOnLoad() {
 
 </script>
 </HEAD>
-<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" onLoad="javascript:toDoOnLoad()">
+<BODY id="admin-component" onload="javascript:toDoOnLoad()">
 <FORM NAME="infoInstance" action="EffectiveCreateInstance" METHOD="POST">
 	<input type="hidden" name="ComponentNum" value="<%=m_ComponentNum%>">
 <%
@@ -283,7 +283,7 @@ out.println(board.printBefore());
 <table CELLPADDING="5" CELLSPACING="0" BORDER="0" WIDTH="100%">
 	<tr>
 		<td class="txtlibform"><%=resource.getString("GML.type")%> :</td>
-		<td><IMG SRC="<%=m_ComponentIcon%>" border="0" align="middle">&nbsp;<%=m_JobPeas%></td>
+		<td><img src="<%=m_ComponentIcon%>" class="componentIcon" alt=""/>&nbsp;<%=m_JobPeas%></td>
 	</tr>
 	<%=I18NHelper.getFormLine(resource)%>
 	<tr>
@@ -309,17 +309,11 @@ out.println(board.printBefore());
 		</td>
 	</tr>
 </table>
-<%
-if (parameters.size() > 0)
-{
-%>
-	<br/>
-	<table width="100%">
-	<tr class="intfdcolor51"><td align="center"><span class="txtlibform"><img src="<%=resource.getIcon("JSPP.px")%>" height="20" width="1" align="middle" alt=""/><%=resource.getString("JSPP.parameters") %></span></td></tr>
-	</table>
-<%
-}
-%>
+<% if (parameters.size() > 0) { %>
+	<div id="parameters-header">
+		<span class="txtlibform"><%=resource.getString("JSPP.parameters") %></span>
+	</div>
+<% } %>
 <table border=0>
 <tr>
 <%

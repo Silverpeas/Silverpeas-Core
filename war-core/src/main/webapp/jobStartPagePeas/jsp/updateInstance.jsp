@@ -46,7 +46,7 @@ void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWrite
 	if (help != null) {
 		help = Encode.javaStringToJsString(help);
 		out.println("<td align=left>");
-		out.print("<img src=\""+resource.getIcon("JSPP.instanceHelpInfo")+"\" border=0 onmouseover=\"return overlib('"+help+"', CAPTION, '"+Encode.javaStringToJsString(parameter.getLabel())+"');\" onmouseout=\"return nd();\" align=\"absmiddle\">");
+		out.print("<img src=\""+resource.getIcon("JSPP.instanceHelpInfo")+"\" onmouseover=\"return overlib('"+help+"', CAPTION, '"+Encode.javaStringToJsString(parameter.getLabel())+"');\" onmouseout=\"return nd();\" class=\"parameterInfo\">");
 		out.println("</td>");
 	} else {
 		out.println("<td align=left width=15>&nbsp;</td>");
@@ -299,7 +299,7 @@ function removeTranslation()
 </script>
 </HEAD>
 
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 onLoad="javascript:toDoOnLoad()">
+<BODY id="admin-component" onLoad="javascript:toDoOnLoad()">
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 <FORM NAME="infoInstance" action = "EffectiveUpdateInstance" METHOD="POST">
 <%
@@ -310,7 +310,7 @@ out.println(board.printBefore());
 <table CELLPADDING="5" CELLSPACING="0" BORDER="0" WIDTH="100%">
 	<tr> 
 		<td class="txtlibform"><%=resource.getString("GML.type")%> :</td>
-		<td><IMG SRC="<%=m_ComponentIcon%>" border="0" align="absmiddle">&nbsp;<%=m_JobPeas%></td>
+		<td><img src="<%=m_ComponentIcon%>" class="componentIcon" alt=""/>&nbsp;<%=m_JobPeas%></td>
 	</tr>
 	<%=I18NHelper.getFormLine(resource, compoInst, translation)%>
 	<tr> 
@@ -323,7 +323,7 @@ out.println(board.printBefore());
 	</tr>
 	<% if (isInHeritanceEnable) { %>
 	<tr>
-		<td class="textePetitBold" nowrap valign="top"><%=resource.getString("JSPP.inheritanceBlockedComponent") %> :</td>
+		<td class="txtlibform" nowrap valign="top"><%=resource.getString("JSPP.inheritanceBlockedComponent") %> :</td>
 		<td align="left" valign="baseline" width="100%">
 		<% if (compoInst.isInheritanceBlocked()) { %>
 			<input type="radio" name="InheritanceBlocked" value="true" checked /> <%=resource.getString("JSPP.inheritanceComponentNotUsed")%><br/>
@@ -336,17 +336,11 @@ out.println(board.printBefore());
 	</tr>
 	<% } %>
 </table>
-<% 
-if (parameters.size() > 0)
-{
-%>
-	<br>
-	<table width=100%>
-	<tr class="intfdcolor51"><td align="center"><span class="txtlibform"><img src="<%=resource.getIcon("JSPP.px")%>" height="20" width="1" align="absmiddle"><%=resource.getString("JSPP.parameters") %></span></td></tr>
-	</table>
-<%
-}
-%>
+<% if (parameters.size() > 0) { %>
+	<div id="parameters-header">
+		<span class="txtlibform"><%=resource.getString("JSPP.parameters") %></span>
+	</div>
+<% } %>
 <table border=0>
 <tr>
 <%
