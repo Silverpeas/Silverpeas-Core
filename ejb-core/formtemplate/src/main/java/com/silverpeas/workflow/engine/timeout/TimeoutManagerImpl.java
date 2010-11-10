@@ -24,7 +24,6 @@
 
 package com.silverpeas.workflow.engine.timeout;
 
-import java.util.List;
 import java.util.Date;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -56,11 +55,11 @@ public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventHandler
     try {
       ResourceLocator settings = new ResourceLocator(
           "com.silverpeas.workflow.engine.schedulerSettings", "");
-      List<SchedulerJob> jobList = SimpleScheduler.getJobList(this);
+      //List<SchedulerJob> jobList = SimpleScheduler.getJobList(this);
 
-      if (!jobList.isEmpty()) {
+      if (SimpleScheduler.isJobScheduled(TIMEOUT_MANAGER_JOB_NAME)) {
         // Remove previous scheduled job
-        SimpleScheduler.unscheduleJob(this, TIMEOUT_MANAGER_JOB_NAME);
+        SimpleScheduler.unscheduleJob(TIMEOUT_MANAGER_JOB_NAME);
       }
 
       // Create new scheduled job

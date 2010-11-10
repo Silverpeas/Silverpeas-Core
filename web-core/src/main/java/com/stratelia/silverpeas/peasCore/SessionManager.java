@@ -209,7 +209,7 @@ public class SessionManager implements SchedulerEventHandler {
     }
 
     // Remove previous scheduled job
-    SimpleScheduler.unscheduleJob(myInstance, SESSION_MANAGER_JOB_NAME);
+    SimpleScheduler.unscheduleJob(SESSION_MANAGER_JOB_NAME);
 
     // Create new scheduled job
     JobTrigger trigger = computeJobTrigger(minute);
@@ -491,7 +491,7 @@ public class SessionManager implements SchedulerEventHandler {
   public void shutdown() {
     SilverTrace.debug("peasCore", "SessionManager.shutdown()", "");
     // Remove previous scheduled job
-    SimpleScheduler.unscheduleJob(myInstance, SESSION_MANAGER_JOB_NAME);
+    SimpleScheduler.unscheduleJob(SESSION_MANAGER_JOB_NAME);
     Collection<SessionInfo> allSI = userDataSessions.values();
     for (SessionInfo si : allSI) {
       removeSession(si);

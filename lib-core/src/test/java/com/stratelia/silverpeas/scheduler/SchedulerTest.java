@@ -48,7 +48,7 @@ import static java.util.concurrent.TimeUnit.*;
  */
 public class SchedulerTest {
 
-  public static final String CURRENT_SCHEDULING_SYSTEM = SimpleScheduler.class.getName();
+  private static final String JOB_NAME = "test";
   private MySchedulingEventHandler eventHandler = new MySchedulingEventHandler();
   private boolean isJobExecuted = false;
 
@@ -69,6 +69,7 @@ public class SchedulerTest {
 
   @After
   public void tearDown() {
+    SimpleScheduler.unscheduleJob(JOB_NAME);
   }
 
   /**
@@ -85,21 +86,21 @@ public class SchedulerTest {
 //    assertEquals(CURRENT_SCHEDULING_SYSTEM, currentScheduler);
   }
 
-  //@Test
+  @Test
   public void schedulingEveryMinuteAJobExecutionShouldSendAnExecutionEventAtExpectedTime()
       throws Exception {
     JobTrigger trigger = JobTrigger.triggerEvery(1, TimeUnit.MINUTE);
-    SchedulerJob job = SimpleScheduler.scheduleJob("test", trigger, eventHandler);
+    SchedulerJob job = SimpleScheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
     assertNotNull(job);
-    assertEquals("test", job.getJobName());
+    assertEquals(JOB_NAME, job.getJobName());
     assertEquals(eventHandler, job.getOwner());
-    await().atMost(1, MINUTES).until(jobIsFired());
+    await().atMost(65, SECONDS).until(jobIsFired());
   }
 
-  //@Test
+  @Test
   public void schedulingEveryMinutesAJobShouldRunThatJobAtTheExpectedTime() throws Exception {
     JobTrigger trigger = JobTrigger.triggerEvery(1, TimeUnit.MINUTE);
-    SchedulerJob job = SimpleScheduler.scheduleJob(new Job("test")    {
+    SchedulerJob job = SimpleScheduler.scheduleJob(new Job(JOB_NAME)    {
 
       @Override
       public void execute(JobExecutionContext context) throws Exception {
@@ -107,29 +108,43 @@ public class SchedulerTest {
       }
     }, trigger, eventHandler);
     assertNotNull(job);
-    assertEquals("test", job.getJobName());
+    assertEquals(JOB_NAME, job.getJobName());
     assertEquals(eventHandler, job.getOwner());
     await().atMost(65, SECONDS).until(jobIsExecuted());
   }
 
-  //@Test
+  @Test
+  public void schedulingAJobWithACronExpressionShouldRunThatJobAtTheExpectedTime() throws
+      Exception {
+    Calendar calendar = Calendar.getInstance();
+    int minute = calendar.get(Calendar.MINUTE);
+    String cron = (minute + 1) + " * * * * ";
+    JobTrigger trigger = JobTrigger.triggerAt(cron);
+    SchedulerJob job = SimpleScheduler.scheduleJob(new Job(JOB_NAME)    {
+
+      @Override
+      public void execute(JobExecutionContext context) throws Exception {
+        isJobExecuted = true;
+      }
+    }, trigger, eventHandler);
+    assertNotNull(job);
+    assertEquals(JOB_NAME, job.getJobName());
+    assertEquals(eventHandler, job.getOwner());
+    await().atMost(65, SECONDS).until(jobIsExecuted());
+  }
+  
+  @Test
   public void schedulingAJobExecutionWithACronExpressionShouldRunThatJobAtTheExpectedTime() throws
       Exception {
     Calendar calendar = Calendar.getInstance();
     int minute = calendar.get(Calendar.MINUTE);
     String cron = (minute + 1) + " * * * * ";
     JobTrigger trigger = JobTrigger.triggerAt(cron);
-    SchedulerJob job = SimpleScheduler.scheduleJob(new Job("test")    {
-
-      @Override
-      public void execute(JobExecutionContext context) throws Exception {
-        isJobExecuted = true;
-      }
-    }, trigger, eventHandler);
+    SchedulerJob job = SimpleScheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
     assertNotNull(job);
-    assertEquals("test", job.getJobName());
+    assertEquals(JOB_NAME, job.getJobName());
     assertEquals(eventHandler, job.getOwner());
-    await().atMost(1, MINUTES).until(jobIsExecuted());
+    await().atMost(65, SECONDS).until(jobIsFired());
   }
 
   /**

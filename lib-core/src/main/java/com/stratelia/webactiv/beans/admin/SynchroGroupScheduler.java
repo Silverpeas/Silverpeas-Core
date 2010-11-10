@@ -42,7 +42,7 @@ public class SynchroGroupScheduler implements SchedulerEventHandler {
     try {
       this.admin = admin;
       this.synchronizedGroupIds = synchronizedGroupIds;
-      SimpleScheduler.unscheduleJob(this, ADMINSYNCHROGROUP_JOB_NAME);
+      SimpleScheduler.unscheduleJob(ADMINSYNCHROGROUP_JOB_NAME);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
       SimpleScheduler.scheduleJob(ADMINSYNCHROGROUP_JOB_NAME, trigger, this);
     } catch (Exception e) {

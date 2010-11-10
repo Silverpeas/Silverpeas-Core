@@ -60,7 +60,7 @@ public class ScheduledImport implements SchedulerEventHandler {
             "importExport.EX_CANT_INIT_SCHEDULED_IMPORT", "Repository '" + sDir
             + "' does not exists !");
       } else {
-        SimpleScheduler.unscheduleJob(this, IMPORTENGINE_JOB_NAME);
+        SimpleScheduler.unscheduleJob(IMPORTENGINE_JOB_NAME);
         JobTrigger trigger = JobTrigger.triggerAt(cron);
         SimpleScheduler.scheduleJob(IMPORTENGINE_JOB_NAME, trigger, this);
       }

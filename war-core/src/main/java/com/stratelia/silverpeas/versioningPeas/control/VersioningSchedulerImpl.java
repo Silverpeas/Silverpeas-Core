@@ -61,8 +61,8 @@ public class VersioningSchedulerImpl
       try {
         String cronScheduleProcess = resourcesAttachment.getString("ScheduledProcessActify");
         String cronSchedulePurge = resourcesAttachment.getString("ScheduledPurgeActify");
-        SimpleScheduler.unscheduleJob(this, VERSIONING_JOB_NAME_PROCESS_ACTIFY);
-        SimpleScheduler.unscheduleJob(this, VERSIONING_JOB_NAME_PURGE_ACTIFY);
+        SimpleScheduler.unscheduleJob(VERSIONING_JOB_NAME_PROCESS_ACTIFY);
+        SimpleScheduler.unscheduleJob(VERSIONING_JOB_NAME_PURGE_ACTIFY);
 
         JobTrigger processTrigger = JobTrigger.triggerAt(cronScheduleProcess);
         SimpleScheduler.scheduleJob(processActify(), processTrigger, this);

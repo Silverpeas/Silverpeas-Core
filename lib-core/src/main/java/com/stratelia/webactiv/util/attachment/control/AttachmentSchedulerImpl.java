@@ -56,8 +56,8 @@ public class AttachmentSchedulerImpl
       try {
         String cronScheduleProcess = resources.getString("ScheduledProcessActify");
         String cronSchedulePurge = resources.getString("ScheduledPurgeActify");
-        SimpleScheduler.unscheduleJob(this, ATTACHMENT_JOB_NAME_PROCESS_ACTIFY);
-        SimpleScheduler.unscheduleJob(this, ATTACHMENT_JOB_NAME_PURGE_ACTIFY);
+        SimpleScheduler.unscheduleJob(ATTACHMENT_JOB_NAME_PROCESS_ACTIFY);
+        SimpleScheduler.unscheduleJob(ATTACHMENT_JOB_NAME_PURGE_ACTIFY);
 
         JobTrigger processTrigger = JobTrigger.triggerAt(cronScheduleProcess);
         SimpleScheduler.scheduleJob(processActify(), processTrigger, this);

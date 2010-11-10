@@ -57,7 +57,7 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
   public void initialize() {
     try {
       String cron = resources.getString("cronScheduledReservedFile");
-      SimpleScheduler.unscheduleJob(this, VERSIONING_JOB_NAME_PROCESS);
+      SimpleScheduler.unscheduleJob(VERSIONING_JOB_NAME_PROCESS);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
       SimpleScheduler.scheduleJob(VERSIONING_JOB_NAME_PROCESS, trigger, this);
     } catch (Exception e) {

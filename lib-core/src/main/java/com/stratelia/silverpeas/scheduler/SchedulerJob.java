@@ -34,7 +34,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Vector;
 import org.apache.commons.lang.time.FastDateFormat;
 
 /**
@@ -209,11 +208,11 @@ abstract public class SchedulerJob extends Thread {
     theOwner = aOwner;
 
     sJobName = aJobName;
-    vMinutes = new Vector();
-    vHours = new Vector();
-    vDaysOfMonth = new Vector();
-    vMonths = new Vector();
-    vDaysOfWeek = new Vector();
+    vMinutes = new ArrayList<Integer>();
+    vHours = new ArrayList<Integer>();
+    vDaysOfMonth = new ArrayList<Integer>();
+    vMonths = new ArrayList<Integer>();
+    vDaysOfWeek = new ArrayList<Integer>();
     // Instead
     Calendar calInit = Calendar.getInstance();
     currentMinute = new Integer(0);

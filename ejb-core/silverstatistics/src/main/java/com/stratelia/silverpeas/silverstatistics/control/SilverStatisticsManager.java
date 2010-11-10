@@ -148,7 +148,7 @@ public class SilverStatisticsManager
   public void initSchedulerStatistics(String aCronString,
       String jobName,
       String methodeName) throws SchedulerException {
-    SimpleScheduler.unscheduleJob(myInstance, jobName);
+    SimpleScheduler.unscheduleJob(jobName);
     SilverTrace.info("silverstatistics", "SilverStatisticsManager.initSchedulerStatistics",
         "root.MSG_GEN_PARAM_VALUE", "jobName=" + jobName + ", aCronString=" + aCronString);
     JobTrigger trigger = JobTrigger.triggerAt(aCronString);
