@@ -34,12 +34,11 @@ import com.stratelia.silverpeas.scheduler.*;
 
 import com.silverpeas.workflow.api.*;
 import com.silverpeas.workflow.api.event.TimeoutEvent;
-import com.silverpeas.workflow.api.model.*;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
-import com.silverpeas.workflow.api.instance.HistoryStep;
 import com.silverpeas.workflow.engine.event.TimeoutEventImpl;
 import com.silverpeas.workflow.engine.instance.ActionAndState;
 import com.silverpeas.workflow.engine.WorkflowEngineThread;
+import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 
 /**
  * The workflow engine services relate to error management.
@@ -52,21 +51,22 @@ public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventHandler
   /**
    * Initialize timeout manager
    */
+  @Override
   public void initialize() {
     try {
       ResourceLocator settings = new ResourceLocator(
           "com.silverpeas.workflow.engine.schedulerSettings", "");
-      List jobList = SimpleScheduler.getJobList(this);
+      List<SchedulerJob> jobList = SimpleScheduler.getJobList(this);
 
-      if (jobList.size() != 0) {
+      if (!jobList.isEmpty()) {
         // Remove previous scheduled job
         SimpleScheduler.unscheduleJob(this, TIMEOUT_MANAGER_JOB_NAME);
       }
 
       // Create new scheduled job
       String cronString = settings.getString("timeoutSchedule");
-      SimpleScheduler.scheduleJob(this, TIMEOUT_MANAGER_JOB_NAME, cronString, this,
-          "doTimeoutManagement");
+      JobTrigger trigger = JobTrigger.triggerAt(cronString);
+      SimpleScheduler.scheduleJob(TIMEOUT_MANAGER_JOB_NAME, trigger, this);
     } catch (Exception e) {
       SilverTrace.error("workflowEngine", "TimeoutManagerImpl.initialize",
           "workflowEngine.EX_ERR_INITIALIZE", e);
@@ -77,6 +77,7 @@ public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventHandler
   /**
    * Scheduler Event handler
    */
+  @Override
   public void handleSchedulerEvent(SchedulerEvent aEvent) {
     switch (aEvent.getType()) {
       case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
@@ -89,6 +90,13 @@ public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventHandler
         SilverTrace.debug("workflowEngine",
             "TimeoutManagerImpl.handleSchedulerEvent", "The job '"
             + aEvent.getJob().getJobName() + "' was successfull");
+        break;
+        
+      case SchedulerEvent.EXECUTION:
+        SilverTrace.debug("workflowEngine",
+            "TimeoutManagerImpl.handleSchedulerEvent", "The job '"
+            + aEvent.getJob().getJobName() + "' is executing");
+        doTimeoutManagement();
         break;
 
       default:
@@ -107,7 +115,7 @@ public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventHandler
    * @param currentDate the date when the method is called by the scheduler
    * @see SimpleScheduler for parameters,
    */
-  public void doTimeoutManagement(Date date) {
+  public void doTimeoutManagement() {
     Date beginDate = new Date();
 
     try {
