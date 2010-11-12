@@ -1280,12 +1280,17 @@ td.browsebar a:hover {
 	font-weight: normal;
 }
 
+.browseComponent a {
+	vertical-align: middle;
+}
+
 .browseComponentActiv {
 	font-weight: bold;
 }
 
 .browseIconComponent {
-	margin-right: 2px;
+	margin: 2px;
+	margin-right: 4px;
 }
 
 .contentSpace {

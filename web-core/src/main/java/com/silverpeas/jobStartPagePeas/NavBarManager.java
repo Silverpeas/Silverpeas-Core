@@ -590,7 +590,7 @@ public class NavBarManager extends Object {
     }
     imageLinked = "<img name=\"" + elementLabel + "\" src=\"" + m_sContext
         + "/util/icons/component/" + imageLinked
-        + "Small.gif\" border=\"0\" onLoad=\"\" align=\"absmiddle\">";
+        + "Small.gif\" class=\"component-icon\"/>";
     switch (imageType) {
       case SPACE_COLLAPSE:
         result.append("<a href=\"").append(link).append("\"").append(target)

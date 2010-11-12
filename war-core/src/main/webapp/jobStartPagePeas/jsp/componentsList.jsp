@@ -47,8 +47,12 @@ function B_ANNULER_ONCLICK() {
 	window.close();
 }
 </script>
+<style type="text/css">
+.component-icon {
+	margin: 2px;
+}
+</style>
 </HEAD>
-
 <BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 onLoad="javascript:window.resizeTo(750,700)">
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 <%
@@ -96,7 +100,7 @@ out.println(board.printBefore());
 		%>
 		<TR>
 			<TD align="center" width="30">
-				<a href="CreateInstance?ComponentNum=<%=nI%>" onmouseover="return overlib('<%=Encode.javaStringToJsString(m_ListComponents[nI].getDescription())%>', CAPTION, '<%=Encode.javaStringToJsString(m_ListComponents[nI].getLabel())%>');" onmouseout="return nd();"><IMG SRC="<%=iconsPath%>/util/icons/component/<%=m_ListComponents[nI].getName()%>Small.gif" border="0"></a>
+				<a href="CreateInstance?ComponentNum=<%=nI%>" onmouseover="return overlib('<%=Encode.javaStringToJsString(m_ListComponents[nI].getDescription())%>', CAPTION, '<%=Encode.javaStringToJsString(m_ListComponents[nI].getLabel())%>');" onmouseout="return nd();"><img src="<%=iconsPath%>/util/icons/component/<%=m_ListComponents[nI].getName()%>Small.gif" class="component-icon" alt=""/></a>
 			</TD>
 			<TD align="left">
 				<a href="CreateInstance?ComponentNum=<%=nI%>" onmouseover="return overlib('<%=Encode.javaStringToJsString(m_ListComponents[nI].getDescription())%>', CAPTION, '<%=Encode.javaStringToJsString(m_ListComponents[nI].getLabel())%>');" onmouseout="return nd();"><%=m_ListComponents[nI].getLabel()%></a>

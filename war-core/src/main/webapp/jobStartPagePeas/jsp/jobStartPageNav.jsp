@@ -47,6 +47,11 @@ function changeSpace(spaceId){
     window.location.href="GoToSpace?Espace="+spaceId;
 }
 </SCRIPT>
+<style type="text/css">
+.component-icon {
+	margin: 1px;
+}
+</style>
 </head>
 <%
     if ((haveToRefreshMainPage != null) && (haveToRefreshMainPage.booleanValue()))
