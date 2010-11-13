@@ -46,7 +46,6 @@
 <%
 out.println(gef.getLookStyleSheet());
 %>
-<script src="<%=m_context %>/attachment/jsp/jquery.qtip-1.0.0-rc3.min.js" type="text/javascript"></script>
 </head>
 <body>
 <%

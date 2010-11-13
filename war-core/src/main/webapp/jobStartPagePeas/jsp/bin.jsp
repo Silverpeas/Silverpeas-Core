@@ -46,8 +46,7 @@ out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/overlib.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 <!--
 function removeItem(id) {	
     if (window.confirm("<%=resource.getString("JSPP.BinDeleteConfirm")%>")) { 
@@ -74,12 +73,32 @@ function jqCheckAll2(id, name)
    $("input[name='" + name + "'][type='checkbox']").attr('checked', $('#' + id).is(':checked'));
 }
 
+$(document).ready(function() 
+{
+   // By suppling no content attribute, the library uses each elements title attribute by default
+   $('.item-path').qtip({
+      content: {
+         text: false,
+         title: {
+             text: "<%=resource.getString("GML.path")%>"
+         }
+      },
+      style: 'silverpeas',
+	  position: {
+		  corner: {
+			target: 'bottomMiddle',
+			tooltip: 'topLeft'
+		  },
+		  adjust: {
+			  screen: true
+		  }
+	  }
+   });
+});
 -->
 </script>
 </HEAD>
-
-<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5">
-<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
+<BODY>
 <%
 out.println(window.printBefore());
 out.println(frame.printBefore());
@@ -106,7 +125,7 @@ out.println(frame.printBefore());
 			if (space.isRoot())
 				cellLabel = line.addArrayCellText(space.getName());
 			else
-				cellLabel = line.addArrayCellText("<div onmouseover=\"return overlib('"+Encode.javaStringToJsString(space.getPath(" > "))+"', CAPTION, '"+resource.getString("GML.path")+"');\" onmouseout=\"return nd();\">"+space.getName()+"</div>");
+				cellLabel = line.addArrayCellText("<a href=\"#\" class=\"item-path\" title=\""+Encode.javaStringToJsString(space.getPath(" > "))+"\"/>"+space.getName()+"</a>");
 			cellLabel.setCompareOn(space.getName());
 			ArrayCellText cell = line.addArrayCellText(resource.getOutputDateAndHour(space.getRemoveDate())+"&nbsp;("+space.getRemoverName()+")");
 			cell.setCompareOn(space.getRemoveDate());
@@ -139,7 +158,7 @@ out.println(frame.printBefore());
 		{
 			ArrayLine line = arrayPane.addArrayLine();
 			ComponentInstLight component = (ComponentInstLight) it.next();
-			line.addArrayCellText("<div onmouseover=\"return overlib('"+Encode.javaStringToJsString(component.getPath(" > "))+"', CAPTION, '"+resource.getString("GML.path")+"');\" onmouseout=\"return nd();\">"+component.getLabel()+"</div>");
+			line.addArrayCellText("<a href=\"#\" class=\"item-path\" title=\""+component.getPath(" > ")+"\"/>"+component.getLabel()+"</a>");
 			ArrayCellText cell = line.addArrayCellText(resource.getOutputDateAndHour(component.getRemoveDate())+"&nbsp;("+component.getRemoverName()+")");
 			cell.setCompareOn(component.getRemoveDate());
 		

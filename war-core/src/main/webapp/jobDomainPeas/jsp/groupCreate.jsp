@@ -42,8 +42,7 @@
 <head>
 <% out.println(gef.getLookStyleSheet()); %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/overlib.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 function SubmitWithVerif(verifParams)
 {
     var namefld = stripInitialWhitespace(document.groupForm.groupName.value);
@@ -63,10 +62,33 @@ function SubmitWithVerif(verifParams)
         window.alert(errorMsg);
     }
 }
+
+$(document).ready(function() 
+{
+   $('#rule-info').qtip({
+      content: {
+         text: "<%=EncodeHelper.javaStringToJsString(resource.getString("JDP.synchroRuleInfo"))%>",
+         title: {
+             text: "<%=resource.getString("JDP.synchroRuleAvail")%>",
+             button: "<%=resource.getString("GML.close")%>"
+         }
+      },
+      hide: false,
+      style: 'silverpeas',
+	  position: {
+		  corner: {
+			target: 'topRight',
+			tooltip: 'bottomLeft'
+		  },
+		  adjust: {
+			  screen: true
+		  }
+	  }
+   });
+});
 </script>
 </head>
-<body marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
-<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
+<body>
 <%
 out.println(window.printBefore());
 out.println(frame.printBefore());
@@ -99,7 +121,7 @@ out.println(board.printBefore());
                     	<td valign="baseline" align="left" class="txtlibform"><%=resource.getString("JDP.synchroRule")%> :</td>
                     	<td align="left" valign="baseline">
                         	<input type="text" name="groupRule" size="50" maxlength="100" VALUE="<%=EncodeHelper.javaStringToHtmlString(grObject.getRule())%>">
-                        	<img border="0" align="absmiddle" src="<%=resource.getIcon("JDP.info")%>" onmouseover="return overlib('<%=EncodeHelper.javaStringToJsString(resource.getString("JDP.synchroRuleInfo"))%>', STICKY, CAPTION, '<%=resource.getString("JDP.synchroRuleAvail")%>', CLOSETEXT, '<%=resource.getString("GML.close")%>');" onmouseout="return nd();">
+                        	<img border="0" align="absmiddle" src="<%=resource.getIcon("JDP.info")%>" id="rule-info"/>
                         </td>
                     </tr>
                     <tr> 

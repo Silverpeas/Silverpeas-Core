@@ -41,9 +41,9 @@ void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWrite
 {
 	String help = parameter.getHelp(resource.getLanguage());
 	if (help != null) {
-		help = Encode.javaStringToJsString(help);
+		//help = Encode.javaStringToJsString(help);
 		out.println("<td align=\"left\">");
-		out.print("<img src=\""+resource.getIcon("JSPP.instanceHelpInfo")+"\" onmouseover=\"return overlib('"+help+"', CAPTION, '"+Encode.javaStringToJsString(parameter.getLabel())+"');\" onmouseout=\"return nd();\" class=\"parameterInfo\">");
+		out.print("<img src=\""+resource.getIcon("JSPP.instanceHelpInfo")+"\" title=\""+help+"\" class=\"parameterInfo\"/>");
 		out.println("</td>");
 	} else {
 		out.println("<td align=\"left\" width=\"15\">&nbsp;</td>");
@@ -151,7 +151,7 @@ out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/overlib.js"></script>
+<script type="text/javascript" src="javascript/component.js"></script>
 <script type="text/javascript">
 <!--
 var currentLanguage = "<%=compoInst.getLanguage()%>";
@@ -201,12 +201,10 @@ function updateInstance(larg, haut)
 function clipboardCopy() {
     top.IdleFrame.location.href = 'copy?Object=Component&Id=<%=compoInst.getId()%>';
 }
-
 -->
 </script>
 </head>
 <body id="admin-component">
-<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 <form name="infoInstance" action="" method="post">
 <%
 out.println(window.printBefore());

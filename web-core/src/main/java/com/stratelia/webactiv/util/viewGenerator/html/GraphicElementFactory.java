@@ -83,12 +83,13 @@ import java.util.ArrayList;
 public class GraphicElementFactory extends Object {
   public static final String GE_FACTORY_SESSION_ATT = "SessionGraphicElementFactory";
   private final static ResourceLocator settings = new ResourceLocator(
-          "com.stratelia.webactiv.util.viewGenerator.settings.graphicElementFactorySettings", "");  
+          "com.stratelia.webactiv.util.viewGenerator.settings.graphicElementFactorySettings", "");
   private ResourceLocator lookSettings = null;
   private ResourceLocator silverpeasLookSettings = null;
   private ResourceLocator favoriteLookSettings = null;
   private String defaultLook = "com.stratelia.webactiv.util.viewGenerator.settings.Initial";
-  private final static ResourceLocator generalSettings = new ResourceLocator("com.stratelia.webactiv.general",
+  private final static ResourceLocator generalSettings =
+      new ResourceLocator("com.stratelia.webactiv.general",
           I18NHelper.defaultLanguage);
   private final static String iconsPath = generalSettings.getString("ApplicationURL")
       + settings.getString("IconsPath");
@@ -106,6 +107,9 @@ public class GraphicElementFactory extends Object {
 
   private static final String FLOWPLAYER_JS = "flowplayer/flowplayer-3.2.4.min.js";
   private static final String FLOWPLAYER_CSS = "flowplayer.css";
+
+  private static final String JQUERY_QTIP = "jquery.qtip-1.0.0-rc3.min.js";
+  private static final String JQUERY_QTIP_STYLE = "silverpeas-qtip-style.js";
 
   /**
    * Creates new GraphicElementFactory
@@ -241,7 +245,7 @@ public class GraphicElementFactory extends Object {
 
     SilverTrace.info("viewgenerator", "GraphicElementFactory.setLook()",
         "root.MSG_GEN_PARAM_VALUE", " look = " + look
-        + " | corresponding settings = " + selectedLook);
+            + " | corresponding settings = " + selectedLook);
     this.favoriteLookSettings = new ResourceLocator(selectedLook, "");
 
     currentLookName = look;
@@ -271,7 +275,7 @@ public class GraphicElementFactory extends Object {
   public String getLookFrame() {
     SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookFrame()",
         "root.MSG_GEN_PARAM_VALUE", " FrameJSP = "
-        + getFavoriteLookSettings().getString("FrameJSP"));
+            + getFavoriteLookSettings().getString("FrameJSP"));
     return getFavoriteLookSettings().getString("FrameJSP");
   }
 
@@ -355,9 +359,9 @@ public class GraphicElementFactory extends Object {
 
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/jquery/jquery.ui.datepicker-").append(getLanguage()).append(
-        ".js\"></script>");
+        ".js\"></script>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
-        "/util/javaScript/silverpeas-defaultDatePicker.js\"></script>");
+        "/util/javaScript/silverpeas-defaultDatePicker.js\"></script>\n");
 
     // include javascript to manage in-progress message
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
@@ -371,22 +375,27 @@ public class GraphicElementFactory extends Object {
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/").append(FLOWPLAYER_JS).append("\"></script>\n");
 
+    // include qTip javascript files
+    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
+        "/util/javaScript/jquery/").append(JQUERY_QTIP).append("\"></script>\n");
+    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
+        "/util/javaScript/jquery/").append(JQUERY_QTIP_STYLE).append("\"></script>\n");
+
     if (getFavoriteLookSettings() != null
         && getFavoriteLookSettings().getString("OperationPane").toLowerCase()
-        .endsWith("web20"))
+            .endsWith("web20"))
       code.append(getYahooElements());
 
     SilverTrace
         .info("viewgenerator", "GraphicElementFactory.getLookStyleSheet()",
-        "root.MSG_GEN_EXIT_METHOD");
+            "root.MSG_GEN_EXIT_METHOD");
     return code.toString();
   }
 
   /**
-   * Some logical components have got the same technical component.
-   * For example, "toolbox" component is technically "kmelia"
-   * 
-   * @return the "implementation" name of the given component 
+   * Some logical components have got the same technical component. For example, "toolbox" component
+   * is technically "kmelia"
+   * @return the "implementation" name of the given component
    */
   private String getGenericComponentName(String componentName) {
     if ("toolbox".equalsIgnoreCase(componentName) || "kmax".equalsIgnoreCase(componentName)) {

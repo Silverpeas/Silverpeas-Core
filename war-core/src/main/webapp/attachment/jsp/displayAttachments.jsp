@@ -28,8 +28,6 @@
 <%@page import="java.io.IOException"%>
 <%@ include file="checkAttachment.jsp"%>
 
-<script src="<%=m_Context%>/attachment/jsp/jquery.qtip-1.0.0-rc3.min.js" type="text/javascript"></script>
-
 <script type="text/javascript" src="<%=m_Context%>/attachment/jsp/javaScript/dragAndDrop.js"></script>
 <script type="text/javascript" src="<%=m_Context%>/util/javaScript/upload_applet.js"></script>
 

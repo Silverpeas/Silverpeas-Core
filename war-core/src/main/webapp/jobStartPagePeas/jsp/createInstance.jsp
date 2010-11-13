@@ -46,9 +46,9 @@ void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWrite
 
 	String help = parameter.getHelp(resource.getLanguage());
 	if (help != null) {
-		help = Encode.javaStringToJsString(help);
-		out.println("<td valign=top align=left>");
-		out.print("<img src=\""+resource.getIcon("JSPP.instanceHelpInfo")+"\" onmouseout=\"return nd();\" onmouseover=\"return overlib('"+help+"', CAPTION, '"+Encode.javaStringToJsString(parameter.getLabel())+"')\"  class=\"parameterInfo\">");
+		//help = Encode.javaStringToJsString(help);
+		out.println("<td valign=\"top\" align=\"left\">");
+		out.print("<img src=\""+resource.getIcon("JSPP.instanceHelpInfo")+"\" title=\""+help+"\" class=\"parameterInfo\"/>");
 		out.println("</td>");
 	} else {
 		out.println("<td align=left width=15>&nbsp;</td>");
@@ -163,9 +163,8 @@ out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/overlib.js"></script>
-
-<script language="JavaScript">
+<script type="text/javascript" src="javascript/component.js"></script>
+<script type="text/javascript">
 
 function B_ANNULER_ONCLICK() {
 	location.href = "ListComponent";

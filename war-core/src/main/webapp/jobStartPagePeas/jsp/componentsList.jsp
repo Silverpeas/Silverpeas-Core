@@ -41,11 +41,26 @@ browseBar.setExtraInformation(resource.getString("JSPP.creationInstance"));
 <%
 out.println(gef.getLookStyleSheet());
 %>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/overlib.js"></script>
-<script language="JavaScript">
-function B_ANNULER_ONCLICK() {
-	window.close();
-}
+<script type="text/javascript">
+$(document).ready(function() 
+{
+   // By suppling no content attribute, the library uses each elements title attribute by default
+   $('a[title]').qtip({
+      content: {
+         text: false // Use each elements title attribute
+      },
+      style: 'silverpeas',
+	  position: {
+		  corner: {
+			target: 'topRight',
+			tooltip: 'bottomLeft'
+		  },
+		  adjust: {
+			  screen: true
+		  }
+	  }
+   });
+});
 </script>
 <style type="text/css">
 .component-icon {
@@ -53,8 +68,7 @@ function B_ANNULER_ONCLICK() {
 }
 </style>
 </HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 onLoad="javascript:window.resizeTo(750,700)">
-<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
+<BODY onLoad="javascript:window.resizeTo(750,700)">
 <%
 out.println(window.printBefore());
 out.println(frame.printBefore());
@@ -100,10 +114,10 @@ out.println(board.printBefore());
 		%>
 		<TR>
 			<TD align="center" width="30">
-				<a href="CreateInstance?ComponentNum=<%=nI%>" onmouseover="return overlib('<%=Encode.javaStringToJsString(m_ListComponents[nI].getDescription())%>', CAPTION, '<%=Encode.javaStringToJsString(m_ListComponents[nI].getLabel())%>');" onmouseout="return nd();"><img src="<%=iconsPath%>/util/icons/component/<%=m_ListComponents[nI].getName()%>Small.gif" class="component-icon" alt=""/></a>
+				<a href="CreateInstance?ComponentNum=<%=nI%>" title="<%=m_ListComponents[nI].getDescription()%>"><img src="<%=iconsPath%>/util/icons/component/<%=m_ListComponents[nI].getName()%>Small.gif" class="component-icon" alt=""/></a>
 			</TD>
 			<TD align="left">
-				<a href="CreateInstance?ComponentNum=<%=nI%>" onmouseover="return overlib('<%=Encode.javaStringToJsString(m_ListComponents[nI].getDescription())%>', CAPTION, '<%=Encode.javaStringToJsString(m_ListComponents[nI].getLabel())%>');" onmouseout="return nd();"><%=m_ListComponents[nI].getLabel()%></a>
+				<a href="CreateInstance?ComponentNum=<%=nI%>" title="<%=m_ListComponents[nI].getDescription()%>"><%=m_ListComponents[nI].getLabel()%></a>
 			</TD>
 		</TR>
 		<%
@@ -117,10 +131,9 @@ out.println(board.printAfter());
 %>
 <br><br>
 <%
-		  ButtonPane buttonPane = gef.getButtonPane();
-		  buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false));
-		  out.println(buttonPane.print());
-
+	ButtonPane buttonPane = gef.getButtonPane();
+	buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:window.close();", false));
+	out.println(buttonPane.print());
 %>
 </center>
 <%

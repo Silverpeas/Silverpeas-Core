@@ -34,8 +34,6 @@
 <%@page import="com.stratelia.webactiv.util.DateUtil"%>
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 
-<script src="<%=m_context %>/attachment/jsp/jquery.qtip-1.0.0-rc3.min.js" type="text/javascript"></script>
-
 <script type="text/javascript" src="<%=m_context%>/util/yui/yahoo-dom-event/yahoo-dom-event.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/yui/container/container_core-min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/yui/animation/animation-min.js"></script>

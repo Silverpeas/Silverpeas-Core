@@ -44,9 +44,9 @@ void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWrite
 	boolean isRadio	 = PARAM_TYPE_RADIO.equals(parameter.getType());
 
 	if (help != null) {
-		help = Encode.javaStringToJsString(help);
-		out.println("<td align=left>");
-		out.print("<img src=\""+resource.getIcon("JSPP.instanceHelpInfo")+"\" onmouseover=\"return overlib('"+help+"', CAPTION, '"+Encode.javaStringToJsString(parameter.getLabel())+"');\" onmouseout=\"return nd();\" class=\"parameterInfo\">");
+		//help = Encode.javaStringToJsString(help);
+	  	out.println("<td valign=\"top\" align=\"left\">");
+		out.print("<img src=\""+resource.getIcon("JSPP.instanceHelpInfo")+"\" title=\""+help+"\" class=\"parameterInfo\"/>");
 		out.println("</td>");
 	} else {
 		out.println("<td align=left width=15>&nbsp;</td>");
@@ -158,9 +158,9 @@ out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/overlib.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
-<script language="JavaScript">
+<script type="text/javascript" src="javascript/component.js"></script>
+<script type="text/javascript">
 
 function B_ANNULER_ONCLICK() {
 	window.close();
@@ -300,7 +300,6 @@ function removeTranslation()
 </HEAD>
 
 <BODY id="admin-component" onLoad="javascript:toDoOnLoad()">
-<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 <FORM NAME="infoInstance" action = "EffectiveUpdateInstance" METHOD="POST">
 <%
 out.println(window.printBefore());
