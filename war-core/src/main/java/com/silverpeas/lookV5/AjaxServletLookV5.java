@@ -771,6 +771,13 @@ public class AjaxServletLookV5 extends HttpServlet {
             + EncodeHelper.escapeXml(message.getString("Clipboard"))
             + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"javascript:openClipboard()\"/>");
       }
+      // fonctionnalité "Trouver une date"
+      if (readBoolean(settings, "scheduleEventVisible", true)) {
+          writer.write("<item id=\"scheduleevent\" name=\""
+              + EncodeHelper.escapeXml(message.getString("ScheduleEvent"))
+              + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
+              + URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT) + "Main\"/>");
+      }
 
       if (readBoolean(settings, "PersonalSpaceAddingsEnabled", true)) {
         PersonalSpaceController psc = new PersonalSpaceController();

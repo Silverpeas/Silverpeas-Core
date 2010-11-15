@@ -50,7 +50,8 @@ public class URLManager {
   public final static String CMP_TREEVIEW = "treeview";
   public final static String CMP_WORKFLOW = "workflow";
   public final static String CMP_WYSIWYG = "wysiwyg";
-
+  public final static String CMP_SCHEDULE_EVENT= "scheduleEvent";
+  
   public final static String CMP_CLIPBOARD = "clipboard";
   public final static String CMP_NOTIFICATIONUSER = "notificationUser";
   public final static String CMP_COMMUNICATIONUSER = "communicationUser";
