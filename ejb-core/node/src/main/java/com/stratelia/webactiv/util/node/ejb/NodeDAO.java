@@ -28,6 +28,7 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.i18n.Translation;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -818,6 +819,11 @@ public class NodeDAO {
     String name = nd.getName();
     String description = nd.getDescription();
     String creationDate = nd.getCreationDate();
+    if (!StringUtil.isDefined(creationDate)) {
+      // Column "nodecreationdate" is not null
+      // Adding this statement to prevent SQLException
+      creationDate = DateUtil.today2SQLDate();
+    }
     String creatorId = nd.getCreatorId();
     String path = nd.getPath();
     int level = nd.getLevel();
