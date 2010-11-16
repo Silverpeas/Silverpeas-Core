@@ -22,32 +22,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.scheduler;
+package com.stratelia.silverpeas.scheduler.simple;
 
-import java.util.Date;
-
+import com.stratelia.silverpeas.scheduler.SchedulerEventListener;
+import com.stratelia.silverpeas.scheduler.SchedulerException;
+import com.stratelia.silverpeas.scheduler.trigger.FixedPeriodJobTrigger;
+import java.util.*;
 
 /**
- * This class extends the class 'SchedulerJob' for the functionality of a scheduled execution of a
- * class method.
+ * This class extends the class 'SchedulerJob' for the functionality of the scheduled execution of
+ * shell scripts.
  */
-public class SchedulerMethodJobMinute extends SchedulerMethodJob {
-  private long m_iMs = 1000l;
+public class SchedulerEventJobMinute extends SchedulerEventJob {
+  long m_iMs = 1000;
 
- /**
+  /**
    * The constructor has proteceted access, because the generation of jobs should be done in a
    * central way by the class 'SimpleScheduler'
-  * @param theJobController The controller, that controls all job executions
-  * @param theJobOwner The owner of the job
-  * @param theJobName The name of the job
-  * @param iMinutes theperiod between each job
-  * @throws SchedulerException
-  */
-  protected SchedulerMethodJobMinute(SimpleScheduler theJobController,
-      SchedulerEventHandler theJobOwner, String theJobName, int iMinutes)
+   * @param aController The controller, that controls all job executions
+   * @param aOwner The owner of the job
+   * @param aJobName The name of the job
+   */
+  protected SchedulerEventJobMinute(SimpleScheduler theJobController,
+      SchedulerEventListener theJobOwner, String theJobName, FixedPeriodJobTrigger trigger)
       throws SchedulerException {
     super(theJobController, theJobOwner, theJobName);
-    m_iMs = iMinutes * 60000l;
+    setTrigger(trigger);
+    m_iMs = trigger.getTimeIntervalInMillis();
   }
 
   @Override

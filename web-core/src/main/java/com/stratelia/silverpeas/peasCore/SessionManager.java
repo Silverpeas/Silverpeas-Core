@@ -35,10 +35,12 @@ import com.stratelia.silverpeas.notificationManager.NotificationSender;
 
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.scheduler.Job;
+import com.stratelia.silverpeas.scheduler.Scheduler;
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
-import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
+import com.stratelia.silverpeas.scheduler.SchedulerEventListener;
 import com.stratelia.silverpeas.scheduler.SchedulerException;
-import com.stratelia.silverpeas.scheduler.SimpleScheduler;
+import com.stratelia.silverpeas.scheduler.SchedulerFactory;
+import com.stratelia.silverpeas.scheduler.simple.SimpleScheduler;
 import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
 
@@ -48,6 +50,7 @@ import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
+import com.stratelia.webactiv.servlets.LogoutServlet;
 
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.ArrayList;
@@ -67,7 +70,8 @@ import javax.servlet.http.HttpSession;
  * sessions, to write a log journal and get informations about the logged users.
  * @author Marc Guillemin
  */
-public class SessionManager implements SchedulerEventHandler {
+public class SessionManager
+    implements SchedulerEventListener {
   // Global constants
 
   public static final SimpleDateFormat NOTIFY_DATE_FORMAT = new SimpleDateFormat(
@@ -208,42 +212,17 @@ public class SessionManager implements SchedulerEventHandler {
           "SchedulerMethodJob.setParameter: minute value is out of range");
     }
 
+    SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
+    Scheduler scheduler = schedulerFactory.getScheduler();
+
     // Remove previous scheduled job
-    SimpleScheduler.unscheduleJob(SESSION_MANAGER_JOB_NAME);
+    scheduler.unscheduleJob(SESSION_MANAGER_JOB_NAME);
 
     // Create new scheduled job
     JobTrigger trigger = computeJobTrigger(minute);
-    SimpleScheduler.scheduleJob(manageSession(), trigger, this);
+    scheduler.scheduleJob(manageSession(), trigger, this);
 //    SimpleScheduler.scheduleJob(myInstance, SESSION_MANAGER_JOB_NAME, startMinutes,
 //        null, null, null, null, myInstance, "doSessionManagement");
-  }
-
-  /**
-   * Scheduler Event handler
-   * @param aEvent
-   */
-  @Override
-  public void handleSchedulerEvent(SchedulerEvent aEvent) {
-
-    switch (aEvent.getType()) {
-      case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
-        SilverTrace.error("peasCore", "SessionManager.handleSchedulerEvent",
-            "The job '" + aEvent.getJob().getJobName()
-            + "' was not successfull");
-        break;
-      case SchedulerEvent.EXECUTION_SUCCESSFULL:
-        SilverTrace.debug("peasCore", "SessionManager.handleSchedulerEvent",
-            "The job '" + aEvent.getJob().getJobName() + "' was successfull");
-        break;
-      case SchedulerEvent.EXECUTION:
-        SilverTrace.debug("peasCore", "SessionManager.handleSchedulerEvent",
-            "The job '" + aEvent.getJob().getJobName() + "' is starting");
-        break;
-      default:
-        SilverTrace.error("peasCore", "SessionManager.handleSchedulerEvent",
-            "Illegal event type");
-        break;
-    }
   }
 
   /**
@@ -255,7 +234,8 @@ public class SessionManager implements SchedulerEventHandler {
    * @see removeSession
    */
   public synchronized void addSession(HttpSession session,
-      HttpServletRequest request, MainSessionController controller) {
+      HttpServletRequest request,
+      MainSessionController controller) {
     String anIP = request.getRemoteHost();
     try {
       SilverTrace.debug("peasCore", "SessionManager.addSession", "sessionId="
@@ -333,7 +313,8 @@ public class SessionManager implements SchedulerEventHandler {
   /**
    * -------------------------------------------------------------------------- pop del
    */
-  private void removeInQueueMessages(String userId, String sessionId) {
+  private void removeInQueueMessages(String userId,
+      String sessionId) {
     try {
       SilverpeasBeanDAO dao;
       IdPK pk = new IdPK();
@@ -461,7 +442,8 @@ public class SessionManager implements SchedulerEventHandler {
    * @endOfSession the time of the end of session (in milliseconds)
    * @see
    */
-  private void notifyEndOfSession(String userId, long endOfSession,
+  private void notifyEndOfSession(String userId,
+      long endOfSession,
       String sessionId) throws NotificationManagerException {
     SilverTrace.debug("peasCore", "SessionManager.notifyEndOfSession",
         "userId=" + userId + " sessionId=" + sessionId);
@@ -490,8 +472,10 @@ public class SessionManager implements SchedulerEventHandler {
    */
   public void shutdown() {
     SilverTrace.debug("peasCore", "SessionManager.shutdown()", "");
-    // Remove previous scheduled job
-    SimpleScheduler.unscheduleJob(SESSION_MANAGER_JOB_NAME);
+    // Remove previous scheduled job   
+    SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
+    Scheduler scheduler = schedulerFactory.getScheduler();
+    scheduler.unscheduleJob(SESSION_MANAGER_JOB_NAME);
     Collection<SessionInfo> allSI = userDataSessions.values();
     for (SessionInfo si : allSI) {
       removeSession(si);
@@ -516,7 +500,7 @@ public class SessionManager implements SchedulerEventHandler {
           "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!!");
     }
   }
-  
+
   private JobTrigger computeJobTrigger(int minute) {
     StringBuilder cronBuilder = new StringBuilder();
     if (60 % minute == 0) {
@@ -534,13 +518,13 @@ public class SessionManager implements SchedulerEventHandler {
     }
     return trigger;
   }
-  
+
   /**
    * Gets the job that performs the session management.
    * @return the job for managing the session.
    */
   private Job manageSession() {
-    return new Job(SESSION_MANAGER_JOB_NAME) {
+    return new Job(SESSION_MANAGER_JOB_NAME)  {
 
       @Override
       public void execute(JobExecutionContext context) throws Exception {
@@ -548,5 +532,24 @@ public class SessionManager implements SchedulerEventHandler {
         doSessionManagement(date);
       }
     };
+  }
+
+  @Override
+  public void triggerFired(SchedulerEvent anEvent) throws Exception {
+    SilverTrace.debug("peasCore", "SessionManager.handleSchedulerEvent",
+            "The job '" + anEvent.getJobExecutionContext().getJobName() + "' is starting");
+  }
+
+  @Override
+  public void jobSucceeded(SchedulerEvent anEvent) {
+    SilverTrace.debug("peasCore", "SessionManager.handleSchedulerEvent",
+            "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
+  }
+
+  @Override
+  public void jobFailed(SchedulerEvent anEvent) {
+    SilverTrace.error("peasCore", "SessionManager.handleSchedulerEvent",
+            "The job '" + anEvent.getJobExecutionContext().getJobName()
+            + "' was not successfull");
   }
 }

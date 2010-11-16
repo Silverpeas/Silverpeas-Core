@@ -23,13 +23,12 @@
  */
 package com.stratelia.silverpeas.scheduler.trigger;
 
-import java.util.Date;
-
 /**
  * This job trigger fires a job execution at given moments in time, defined with a Unix cron-like
  * definition.
- * The format of a cron expression is as following:
- * <code>MINUTES HOURS DAY_OF_MONTH MONTH DAY_OF_WEEK</code> with
+ * 
+ * <p>The format of the expected cron expression is as following: 
+ * <code>MINUTES HOURS DAY_OF_MONTH MONTH DAY_OF_WEEK</code> with</p>
  * <table cellspacing="8">
  *  <tr>
  *    <th align="left">Field Name</th>
@@ -49,7 +48,7 @@ import java.util.Date;
  *  <tr>
  *    <td align="left"><code>DAY_OF_MONTH</code></td>
  *    <td align="left"><code>1-31</code></td>
- *    <td align="left"><code>, - * ? / L W</code></td>
+ *    <td align="left"><code>, - * ? /</code></td>
  *  </tr>
  *  <tr>
  *    <td align="left"><code>MONTH</code></td>
@@ -59,9 +58,26 @@ import java.util.Date;
  *  <tr>
  *    <td align="left"><code>DAY_OF_WEEK</code></td>
  *    <td align="left"><code>1-7 or SUN-SAT</code></td>
- *    <td align="left"><code>, - * ? / L #</code></td>
+ *    <td align="left"><code>, - * ? /</code></td>
  *  </tr>
  * </table>
+ * <p>The '*' character is used to specify all values. For example, "*" in the minute field means
+ * "every minute".</p>
+ * <p>The '?' character is allowed for the DAY_OF_MONTH and DAY_OF_WEEK fields. It is used to
+ * specify 'no specific value'. This is useful when you need to specify something in one of the two
+ * fields, but not the other.</p>
+ * <p>The '-' character is used to specify ranges. For example "10-12" in the hour field means
+ * "the hours 10, 11 and 12".</p>
+ * <p>The ',' character is used to specify additional values. For example "MON,WED,FRI" in the
+ * DAY_OF_WEEK field means "the days Monday, Wednesday, and Friday".</p>
+ * <p>The '/' character is used to specify increments. For example "0/15" in the seconds field means
+ * "the seconds 0, 15, 30, and 45". And "5/15" in the seconds field means "the seconds 5, 20, 35,
+ * and 50". Specifying '*' before the '/' is equivalent to specifying 0 is the value to start with.
+ * Essentially, for each field in the expression, there is a set of numbers that can be turned on or
+ * off. For seconds and minutes, the numbers range from 0 to 59. For hours 0 to 23, for days of the 
+ * month 0 to 31, and for months 1 to 12. The "/" character simply helps you turn on every "nth"
+ * value in the given set. Thus "7/6" in the month field only turns on month "7", it does NOT mean
+ * every 6th month, please note that subtlety.</p>
  */
 public final class CronJobTrigger extends JobTrigger {
   

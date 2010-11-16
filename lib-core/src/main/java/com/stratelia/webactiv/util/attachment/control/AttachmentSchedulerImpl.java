@@ -25,13 +25,14 @@ package com.stratelia.webactiv.util.attachment.control;
 
 import com.stratelia.silverpeas.scheduler.Job;
 import com.stratelia.silverpeas.scheduler.JobExecutionContext;
+import com.stratelia.silverpeas.scheduler.Scheduler;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
-import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
-import com.stratelia.silverpeas.scheduler.SimpleScheduler;
+import com.stratelia.silverpeas.scheduler.SchedulerEventListener;
+import com.stratelia.silverpeas.scheduler.SchedulerFactory;
 import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -41,7 +42,7 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 public class AttachmentSchedulerImpl
-    implements SchedulerEventHandler {
+    implements SchedulerEventListener {
 
   public static final String ATTACHMENT_JOB_NAME_PROCESS_ACTIFY = "A_ProcessActify";
   public static final String ATTACHMENT_JOB_NAME_PURGE_ACTIFY = "A_PurgeActify";
@@ -56,46 +57,21 @@ public class AttachmentSchedulerImpl
       try {
         String cronScheduleProcess = resources.getString("ScheduledProcessActify");
         String cronSchedulePurge = resources.getString("ScheduledPurgeActify");
-        SimpleScheduler.unscheduleJob(ATTACHMENT_JOB_NAME_PROCESS_ACTIFY);
-        SimpleScheduler.unscheduleJob(ATTACHMENT_JOB_NAME_PURGE_ACTIFY);
+
+        SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
+      Scheduler scheduler = schedulerFactory.getScheduler();
+
+        scheduler.unscheduleJob(ATTACHMENT_JOB_NAME_PROCESS_ACTIFY);
+        scheduler.unscheduleJob(ATTACHMENT_JOB_NAME_PURGE_ACTIFY);
 
         JobTrigger processTrigger = JobTrigger.triggerAt(cronScheduleProcess);
-        SimpleScheduler.scheduleJob(processActify(), processTrigger, this);
+        scheduler.scheduleJob(processActify(), processTrigger, this);
 
         JobTrigger purgeTrigger = JobTrigger.triggerAt(cronSchedulePurge);
-        SimpleScheduler.scheduleJob(purgeActify(), purgeTrigger, this);
+        scheduler.scheduleJob(purgeActify(), purgeTrigger, this);
       } catch (Exception e) {
         SilverTrace.error("Attachment", "Attachment.initialize()", "", e);
       }
-    }
-  }
-
-  @Override
-  public void handleSchedulerEvent(SchedulerEvent aEvent) {
-    switch (aEvent.getType()) {
-      case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
-        SilverTrace.error("Attachment",
-            "Attachment_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-            + aEvent.getJob().getJobName() + "' was not successfull");
-        break;
-
-      case SchedulerEvent.EXECUTION_SUCCESSFULL:
-        SilverTrace.debug("Attachment",
-            "Attachment_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-            + aEvent.getJob().getJobName() + "' was successfull");
-        break;
-        
-      case SchedulerEvent.EXECUTION:
-        SilverTrace.debug("Attachment",
-            "Attachment_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-            + aEvent.getJob().getJobName() + "' is starting");
-        break;
-
-      default:
-        SilverTrace.error("Attachment",
-            "Attachment_TimeoutManagerImpl.handleSchedulerEvent",
-            "Illegal event type");
-        break;
     }
   }
 
@@ -200,7 +176,7 @@ public class AttachmentSchedulerImpl
    * @return the job for processing actify.
    */
   private Job processActify() {
-    return new Job(ATTACHMENT_JOB_NAME_PROCESS_ACTIFY)   {
+    return new Job(ATTACHMENT_JOB_NAME_PROCESS_ACTIFY)    {
 
       @Override
       public void execute(JobExecutionContext context) throws Exception {
@@ -214,12 +190,33 @@ public class AttachmentSchedulerImpl
    * @return the job for purging actify.
    */
   private Job purgeActify() {
-    return new Job(ATTACHMENT_JOB_NAME_PURGE_ACTIFY)   {
+    return new Job(ATTACHMENT_JOB_NAME_PURGE_ACTIFY)    {
 
       @Override
       public void execute(JobExecutionContext context) throws Exception {
         doPurgeActify();
       }
     };
+  }
+
+  @Override
+  public void triggerFired(SchedulerEvent anEvent) {
+    SilverTrace.debug("Attachment",
+        "Attachment_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
+        + anEvent.getJobExecutionContext().getJobName() + "' is starting");
+  }
+
+  @Override
+  public void jobSucceeded(SchedulerEvent anEvent) {
+    SilverTrace.debug("Attachment",
+        "Attachment_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
+        + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
+  }
+
+  @Override
+  public void jobFailed(SchedulerEvent anEvent) {
+    SilverTrace.error("Attachment",
+        "Attachment_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
+        + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
   }
 }

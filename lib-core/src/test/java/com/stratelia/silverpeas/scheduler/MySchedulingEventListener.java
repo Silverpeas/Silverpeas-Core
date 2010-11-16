@@ -24,29 +24,16 @@
 
 package com.stratelia.silverpeas.scheduler;
 
+import static org.junit.Assert.*;
+
 /**
  * Handler of scheduling events for testing purpose.
  * It is a stub dedicated to tests.
  */
-public class MySchedulingEventHandler implements SchedulerEventHandler {
+public class MySchedulingEventListener implements SchedulerEventListener {
   
   private boolean executed = false;
   private boolean succeeded = false;
-
-  @Override
-  public void handleSchedulerEvent(SchedulerEvent aEvent) {
-    switch(aEvent.getType()) {
-      case SchedulerEvent.EXECUTION:
-        executed = true;
-        break;
-      case SchedulerEvent.EXECUTION_SUCCESSFULL:
-        succeeded = true;
-        break;
-      case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
-        succeeded = false;
-        break;
-    }
-  }
   
   /**
    * Resets the counters.
@@ -71,5 +58,35 @@ public class MySchedulingEventHandler implements SchedulerEventHandler {
    */
   public boolean jobSucceeded() {
     return succeeded;
+  }
+
+  @Override
+  public void triggerFired(SchedulerEvent anEvent) {
+    assertSchedulerEvent(anEvent);
+    executed = true;
+  }
+
+  @Override
+  public void jobSucceeded(SchedulerEvent anEvent) {
+    assertSchedulerEvent(anEvent);
+    succeeded = true;
+  }
+
+  @Override
+  public void jobFailed(SchedulerEvent anEvent) {
+    assertSchedulerEvent(anEvent);
+    assertNotNull(anEvent.getJobException());
+    succeeded = false;
+  }
+  
+  /**
+   * Asserts the scheduler event is correctly set.
+   * @param anEvent the event to check.
+   */
+  private void assertSchedulerEvent(final SchedulerEvent anEvent) {
+    assertNotNull(anEvent);
+    assertNotNull(anEvent.getJobExecutionContext());
+    assertNotNull(anEvent.getJobExecutionContext().getJobName());
+    assertNotNull(anEvent.getJobExecutionContext().getFireTime());
   }
 }

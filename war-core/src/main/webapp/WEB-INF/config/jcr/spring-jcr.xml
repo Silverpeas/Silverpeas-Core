@@ -69,12 +69,6 @@
     <property name="authenticator" ref="authenticator" />
   </bean>
 
-  <bean id="authenticator" class="com.stratelia.silverpeas.authentication.LoginPasswordAuthentication" />
-
-  <bean id="organizationController" name="organizationController" class="com.stratelia.webactiv.beans.admin.OrganizationController" />
-
-  <bean id="adminController" name="adminController" class="com.stratelia.webactiv.beans.admin.Admin" />
-
   <bean id="securityHelper" class="com.silverpeas.jcrutil.security.impl.RepositoryHelper" factory-method="getInstance" />
 
 

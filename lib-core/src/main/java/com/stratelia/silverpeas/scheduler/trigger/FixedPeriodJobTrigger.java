@@ -24,8 +24,6 @@
 
 package com.stratelia.silverpeas.scheduler.trigger;
 
-import com.stratelia.silverpeas.scheduler.TimeUnit;
-
 /**
  * A job trigger that fires repeatedly the execution of a job at a specified interval.
  */
@@ -35,11 +33,27 @@ public final class FixedPeriodJobTrigger extends JobTrigger {
   private TimeUnit unit;
 
   /**
-   * Gets the interval in time between two job triggering.
+   * Gets the interval in time between two job triggerings.
    * @return the time interval.
    */
   public int getTimeInterval() {
     return time;
+  }
+  
+  /**
+   * Gets the interval in milliseconds between two job triggerings.
+   * @return the time interval.
+   */
+  public long getTimeIntervalInMillis() {
+    return time * unit.inMilliSeconds();
+  }
+  
+  /**
+   * Gets the unit of the interval of time between two job triggerings.
+   * @return 
+   */
+  public TimeUnit getTimeUnit() {
+    return unit;
   }
   
   /**

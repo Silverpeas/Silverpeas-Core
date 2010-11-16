@@ -32,9 +32,10 @@ import java.util.Locale;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.scheduler.Scheduler;
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
-import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
-import com.stratelia.silverpeas.scheduler.SimpleScheduler;
+import com.stratelia.silverpeas.scheduler.SchedulerEventListener;
+import com.stratelia.silverpeas.scheduler.SchedulerFactory;
 import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
@@ -46,7 +47,8 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
-public class ScheduledReservedFile implements SchedulerEventHandler {
+public class ScheduledReservedFile
+    implements SchedulerEventListener {
 
   public static final String VERSIONING_JOB_NAME_PROCESS = "A_ProcessReservedFileVersioning";
   private ResourceLocator resources = new ResourceLocator(
@@ -57,42 +59,14 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
   public void initialize() {
     try {
       String cron = resources.getString("cronScheduledReservedFile");
-      SimpleScheduler.unscheduleJob(VERSIONING_JOB_NAME_PROCESS);
+      SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
+      Scheduler scheduler = schedulerFactory.getScheduler();
+      scheduler.unscheduleJob(VERSIONING_JOB_NAME_PROCESS);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
-      SimpleScheduler.scheduleJob(VERSIONING_JOB_NAME_PROCESS, trigger, this);
+      scheduler.scheduleJob(VERSIONING_JOB_NAME_PROCESS, trigger, this);
     } catch (Exception e) {
       SilverTrace.error("versioning", "ScheduledReservedFile.initialize()",
           "versioning.EX_CANT_INIT_SCHEDULED_RESERVED_FILE", e);
-    }
-  }
-
-  @Override
-  public void handleSchedulerEvent(SchedulerEvent aEvent) {
-    switch (aEvent.getType()) {
-      case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
-        SilverTrace.error("versioning",
-            "Versioning_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-            + aEvent.getJob().getJobName() + "' was not successfull");
-        break;
-
-      case SchedulerEvent.EXECUTION_SUCCESSFULL:
-        SilverTrace.debug("versioning",
-            "Versioning_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-            + aEvent.getJob().getJobName() + "' was successfull");
-        break;
-        
-      case SchedulerEvent.EXECUTION:
-        SilverTrace.debug("versioning",
-            "Versioning_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-            + aEvent.getJob().getJobName() + "' is executing");
-        doScheduledReservedFile();
-        break;
-
-      default:
-        SilverTrace.error("versioning",
-            "Versioning_TimeoutManagerImpl.handleSchedulerEvent",
-            "Illegal event type");
-        break;
     }
   }
 
@@ -131,7 +105,8 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
         Document doc = (Document) it.next();
         messageBody.append(message.getString("versioning.notifName")).append(
             " '").append(doc.getName()).append("'");
-        messageBody_en.append(message_en.getString("versioning.notifName")).append(" '").append(doc.getName()).append("'");
+        messageBody_en.append(message_en.getString("versioning.notifName")).append(" '").append(doc.
+            getName()).append("'");
         SilverTrace.info("versioning",
             "ScheduledReservedFile.doScheduledReservedFile()",
             "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
@@ -164,7 +139,8 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
         Document doc = (Document) itA.next();
         messageBody.append(message.getString("versioning.notifName")).append(
             " '").append(doc.getName()).append("'");
-        messageBody_en.append(message_en.getString("versioning.notifName")).append(" '").append(doc.getName()).append("'");
+        messageBody_en.append(message_en.getString("versioning.notifName")).append(" '").append(doc.
+            getName()).append("'");
         SilverTrace.info("versioning",
             "ScheduledReservedFile.doScheduledReservedFile()",
             "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
@@ -200,7 +176,8 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
         // envoyer une notif
         messageBody.append(message.getString("versioning.notifName")).append(
             " '").append(doc.getName()).append("'");
-        messageBody_en.append(message_en.getString("versioning.notifName")).append(" '").append(doc.getName()).append("'");
+        messageBody_en.append(message_en.getString("versioning.notifName")).append(" '").append(doc.
+            getName()).append("'");
         SilverTrace.info("versioning",
             "ScheduledReservedFile.doScheduledReservedFile()",
             "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
@@ -224,9 +201,13 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
         "root.MSG_GEN_EXIT_METHOD");
   }
 
-  private void createMessage(ResourceLocator message, StringBuffer messageBody,
-      ResourceLocator message_en, StringBuffer messageBody_en, Document doc,
-      boolean alert, boolean lib) throws VersioningRuntimeException {
+  private void createMessage(ResourceLocator message,
+      StringBuffer messageBody,
+      ResourceLocator message_en,
+      StringBuffer messageBody_en,
+      Document doc,
+      boolean alert,
+      boolean lib) throws VersioningRuntimeException {
     Calendar atDate = Calendar.getInstance();
     atDate.setTime(doc.getExpiryDate());
     int day = atDate.get(Calendar.DAY_OF_WEEK);
@@ -252,7 +233,8 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
       if (alert) {
         subject = message.getString("versioning.notifSubjectAlert");
         body = messageBody.append(" ").append(
-            message.getString("versioning.notifUserAlert")).append(" (").append(date).append(") ").append("\n\n").toString();
+            message.getString("versioning.notifUserAlert")).append(" (").append(date).append(") ").
+            append("\n\n").toString();
       } else {
         subject = message.getString("versioning.notifSubjectExpiry");
         body = messageBody.append(" ").append(
@@ -271,7 +253,8 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
       if (alert) {
         subject_en = message_en.getString("versioning.notifSubjectAlert");
         body_en = messageBody_en.append(" ").append(
-            message_en.getString("versioning.notifUserAlert")).append(" (").append(date).append(") ").append("\n\n").toString();
+            message_en.getString("versioning.notifUserAlert")).append(" (").append(date).append(") ").
+            append("\n\n").toString();
       } else {
         subject_en = message_en.getString("versioning.notifSubjectExpiry");
         body_en = messageBody_en.append(" ").append(
@@ -319,7 +302,8 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
   public VersioningBm getVersioningBm() {
     VersioningBm versioning_bm = null;
     try {
-      VersioningBmHome vscEjbHome = (VersioningBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.VERSIONING_EJBHOME, VersioningBmHome.class);
+      VersioningBmHome vscEjbHome = (VersioningBmHome) EJBUtilitaire.getEJBObjectRef(
+          JNDINames.VERSIONING_EJBHOME, VersioningBmHome.class);
       versioning_bm = vscEjbHome.create();
     } catch (Exception e) {
       throw new VersioningRuntimeException(
@@ -327,5 +311,27 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
           SilverTrace.TRACE_LEVEL_ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     return versioning_bm;
+  }
+
+  @Override
+  public void triggerFired(SchedulerEvent anEvent) throws Exception {
+    SilverTrace.debug("versioning",
+        "Versioning_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
+        + anEvent.getJobExecutionContext().getJobName() + "' is executing");
+    doScheduledReservedFile();
+  }
+
+  @Override
+  public void jobSucceeded(SchedulerEvent anEvent) {
+    SilverTrace.debug("versioning",
+        "Versioning_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
+        + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
+  }
+
+  @Override
+  public void jobFailed(SchedulerEvent anEvent) {
+    SilverTrace.error("versioning",
+        "Versioning_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
+        + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
   }
 }

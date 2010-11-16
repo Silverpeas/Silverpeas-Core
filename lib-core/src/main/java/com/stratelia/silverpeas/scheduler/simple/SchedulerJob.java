@@ -21,9 +21,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.silverpeas.scheduler;
+package com.stratelia.silverpeas.scheduler.simple;
 
-
+import com.stratelia.silverpeas.scheduler.JobExecutionContext;
+import com.stratelia.silverpeas.scheduler.ScheduledJob;
+import com.stratelia.silverpeas.scheduler.SchedulerEvent;
+import com.stratelia.silverpeas.scheduler.SchedulerEventListener;
+import com.stratelia.silverpeas.scheduler.SchedulerException;
+import com.stratelia.silverpeas.scheduler.trigger.CronJobTrigger;
+import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.text.Format;
 import java.util.ArrayList;
@@ -35,17 +41,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 import org.apache.commons.lang.time.FastDateFormat;
+import static com.stratelia.silverpeas.scheduler.SchedulerFactory.*;
 
 /**
  * This is the base class of all scheduler job classes. This class is abstract. If you will
  * implement your own special job class, you have to overrite the method 'execute' and add your own
  * job generation method in the class 'SimpleScheduler'
  */
-abstract public class SchedulerJob extends Thread {
+abstract public class SchedulerJob
+    implements Runnable,
+    ScheduledJob {
   // Environment variables
 
   protected Format logDateFormat = FastDateFormat.getInstance("yyyy-MM-dd HH:mm");
-  private SchedulerEventHandler theOwner;
+  private SchedulerEventListener theOwner;
   // private File theLogBaseFile;
   private String sJobName;
   // private String sJobLogFileName;
@@ -64,12 +73,13 @@ abstract public class SchedulerJob extends Thread {
   // Runtime variables
   private long nextTimeStamp = 0;
   private volatile boolean bRunnable;
+  private JobTrigger trigger;
 
   /**
    * This method returns the owner (or creator) of the job
    * @return The owner of the job
    */
-  public SchedulerEventHandler getOwner() {
+  public SchedulerEventListener getOwner() {
     return theOwner;
   }
 
@@ -105,10 +115,10 @@ abstract public class SchedulerJob extends Thread {
       nextTimeStamp = getNextTimeStamp();
     }
 
-    SilverTrace.info("scheduler", "SchedulerJob.run",
+    SilverTrace.info(MODULE_NAME, "SchedulerJob.run",
         "root.MSG_GEN_PARAM_VALUE", ": Job '" + sJobName
         + "' starts without errors.");
-    SilverTrace.info("scheduler", "SchedulerJob.run",
+    SilverTrace.info(MODULE_NAME, "SchedulerJob.run",
         "root.MSG_GEN_PARAM_VALUE", ": Next schedule time: "
         + logDateFormat.format(new Date(nextTimeStamp)));
 
@@ -116,45 +126,46 @@ abstract public class SchedulerJob extends Thread {
       try {
         // Calculate the delay time
         sleepTime = nextTimeStamp - (new Date()).getTime();
-        SilverTrace.info("scheduler", "SchedulerJob.run",
+        SilverTrace.info(MODULE_NAME, "SchedulerJob.run",
             "root.MSG_GEN_PARAM_VALUE", ": Sleeptime = " + sleepTime);
         if (sleepTime < 0) {
           // Yields if there are problems with the date. Should normaly not
           // occour.
-          sleep(0);
+          Thread.currentThread().sleep(0);
         } else {
           // Sleeps up to the next schedule time
-          sleep(sleepTime);
+          Thread.currentThread().sleep(sleepTime);
         }
       } catch (InterruptedException aException) {
       }
 
       if (bRunnable && ((new Date()).getTime() >= nextTimeStamp)) {
         try {
-          SilverTrace.info("scheduler", "SchedulerJob.run",
+          SilverTrace.info(MODULE_NAME, "SchedulerJob.run",
               "root.MSG_GEN_PARAM_VALUE", ": ---------------- Start of job '"
               + sJobName + "' -------------------");
           // Execute the functionality of the job and gets a new schedule time
+          nextTimeStamp = getNextTimeStamp();
+          Date now = new Date();
+          JobExecutionContext ctx = JobExecutionContext.createWith(sJobName, now);
           try {
-            nextTimeStamp = getNextTimeStamp();
             // execute (logStream, new Date ());
-            execute(new Date());
+            now = new Date();
+            execute(now);
             // logStream.flush ();
-            theOwner.handleSchedulerEvent(new SchedulerEvent(
-                SchedulerEvent.EXECUTION_SUCCESSFULL, this));
+            theOwner.jobSucceeded(SchedulerEvent.jobSucceeded(ctx));
           } catch (SchedulerException aException) {
-            theOwner.handleSchedulerEvent(new SchedulerEvent(
-                SchedulerEvent.EXECUTION_NOT_SUCCESSFULL, this));
+            theOwner.jobFailed(SchedulerEvent.jobFailed(ctx, aException));
           }
 
-          SilverTrace.info("scheduler", "SchedulerJob.run",
+          SilverTrace.info(MODULE_NAME, "SchedulerJob.run",
               "root.MSG_GEN_PARAM_VALUE", ": ---------------- End of job '"
               + sJobName + "' -------------------");
-          SilverTrace.info("scheduler", "SchedulerJob.run",
+          SilverTrace.info(MODULE_NAME, "SchedulerJob.run",
               "root.MSG_GEN_PARAM_VALUE", ": Next schedule time: "
               + logDateFormat.format(new Date(nextTimeStamp)));
         } catch (Exception aException) {
-          SilverTrace.error("scheduler", "SchedulerJob.run",
+          SilverTrace.error(MODULE_NAME, "SchedulerJob.run",
               "root.EX_NO_MESSAGE", aException);
         }
       }
@@ -166,9 +177,8 @@ abstract public class SchedulerJob extends Thread {
   /**
    * Stops the scheduling of the job
    */
-  public synchronized void stopThread() {
+  public synchronized void stop() {
     bRunnable = false;
-    interrupt();
   }
 
   /**
@@ -189,7 +199,8 @@ abstract public class SchedulerJob extends Thread {
    * @param aLogBaseFile The log file for the job
    */
   protected SchedulerJob(SimpleScheduler aController,
-      SchedulerEventHandler aOwner, String aJobName) throws SchedulerException {
+      SchedulerEventListener aOwner,
+      String aJobName) throws SchedulerException {
     if (aController == null) {
       throw new SchedulerException(
           "SchedulerJob.SchedulerJob: Parameter 'aController' is null");
@@ -252,7 +263,9 @@ abstract public class SchedulerJob extends Thread {
    * @param startDaysOfWeek A list of day of a week (0-6; starts with 0 for Sunday)
    */
   protected synchronized void setSchedulingParameter(List<Integer> startMinutes,
-      List<Integer> startHours, List<Integer> startDaysOfMonth, List<Integer> startMonths,
+      List<Integer> startHours,
+      List<Integer> startDaysOfMonth,
+      List<Integer> startMonths,
       List<Integer> startDaysOfWeek) throws SchedulerException {
     Enumeration vectorEnumerator;
 
@@ -406,7 +419,10 @@ abstract public class SchedulerJob extends Thread {
    * StringTokenizers so this method is <B>very</B> sensitive for syntax failures!
    * @param aCronString
    */
-  protected synchronized void setSchedulingParameter(String aCronString) throws SchedulerException {
+  protected synchronized void setSchedulingParameter(CronJobTrigger trigger) throws
+      SchedulerException {
+    setTrigger(trigger);
+    String aCronString = trigger.getCronExpression();
     StringTokenizer fieldSeparator;
     StringTokenizer fieldContentSeparator;
     String workString;
@@ -626,7 +642,7 @@ abstract public class SchedulerJob extends Thread {
 
     calcCalendar = Calendar.getInstance();
 
-    SilverTrace.debug("scheduler", "SchedulerJob.getNextTimeStamp",
+    SilverTrace.debug(MODULE_NAME, "SchedulerJob.getNextTimeStamp",
         "Current TimeStamp: "
         + logDateFormat.format(new Date(
         getMillisecondsOfCalendar(calcCalendar))));
@@ -639,7 +655,7 @@ abstract public class SchedulerJob extends Thread {
     calcCalendar.set(Calendar.HOUR_OF_DAY, currentHour.intValue());
     calcCalendar.set(Calendar.MINUTE, currentMinute.intValue());
 
-    SilverTrace.debug("scheduler", "SchedulerJob.getNextTimeStamp",
+    SilverTrace.debug(MODULE_NAME, "SchedulerJob.getNextTimeStamp",
         "Start TimeStamp: "
         + logDateFormat.format(new Date(
         getMillisecondsOfCalendar(calcCalendar))));
@@ -828,7 +844,7 @@ abstract public class SchedulerJob extends Thread {
       }
     } // while (getMillisecondsOfCurrentTimeStamp (calcCalendar) < currentTime)
 
-    SilverTrace.debug("scheduler", "SchedulerJob.getNextTimeStamp", "New TimeStamp: "
+    SilverTrace.debug(MODULE_NAME, "SchedulerJob.getNextTimeStamp", "New TimeStamp: "
         + logDateFormat.format(new Date(getMillisecondsOfCalendar(calcCalendar))));
     return getMillisecondsOfCalendar(calcCalendar);
   }
@@ -883,5 +899,29 @@ abstract public class SchedulerJob extends Thread {
         // Unequal
       }
     }
+  }
+
+  @Override
+  public String getName() {
+    return getJobName();
+  }
+
+  @Override
+  public void execute(JobExecutionContext context) throws Exception {
+    execute(new Date());
+  }
+
+  @Override
+  public SchedulerEventListener getSchedulerEventListener() {
+    return this.getOwner();
+  }
+
+  @Override
+  public JobTrigger getTrigger() {
+    return this.trigger;
+  }
+
+  protected void setTrigger(final JobTrigger trigger) {
+    this.trigger = trigger;
   }
 }

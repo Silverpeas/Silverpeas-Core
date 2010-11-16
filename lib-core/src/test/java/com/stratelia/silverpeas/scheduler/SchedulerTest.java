@@ -23,6 +23,7 @@
  */
 package com.stratelia.silverpeas.scheduler;
 
+import com.stratelia.silverpeas.scheduler.trigger.TimeUnit;
 import java.util.Date;
 import java.util.Calendar;
 import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
@@ -32,6 +33,9 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.junit.Assert.*;
 import static com.jayway.awaitility.Awaitility.*;
 import static java.util.concurrent.TimeUnit.*;
@@ -46,11 +50,14 @@ import static java.util.concurrent.TimeUnit.*;
  * This test checks the current concrete scheduler is ok.
  * @author mmoquillon
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations="/spring-scheduling.xml")
 public class SchedulerTest {
 
   private static final String JOB_NAME = "test";
-  private MySchedulingEventHandler eventHandler = new MySchedulingEventHandler();
+  private MySchedulingEventListener eventHandler = new MySchedulingEventListener();
   private boolean isJobExecuted = false;
+  private Scheduler scheduler = null;
 
   public SchedulerTest() {
   }
@@ -65,11 +72,15 @@ public class SchedulerTest {
 
   @Before
   public void setUp() {
+    SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
+    assertNotNull(schedulerFactory);
+    scheduler = schedulerFactory.getScheduler();
+    assertNotNull(scheduler);
   }
 
   @After
   public void tearDown() {
-    SimpleScheduler.unscheduleJob(JOB_NAME);
+    scheduler.unscheduleJob(JOB_NAME);
   }
 
   /**
@@ -80,27 +91,22 @@ public class SchedulerTest {
     assertTrue(true);
   }
 
-  //@Test
-  public void theDefaultImplementationShouldBeSimpleScheduler() {
-//    Scheduler currentScheduler = SchedulerFactory.getScheduler();
-//    assertEquals(CURRENT_SCHEDULING_SYSTEM, currentScheduler);
-  }
-
   @Test
   public void schedulingEveryMinuteAJobExecutionShouldSendAnExecutionEventAtExpectedTime()
       throws Exception {
-    JobTrigger trigger = JobTrigger.triggerEvery(1, TimeUnit.MINUTE);
-    SchedulerJob job = SimpleScheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
+    JobTrigger trigger = JobTrigger.triggerEach(1, TimeUnit.MINUTE);
+    ScheduledJob job = scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
     assertNotNull(job);
-    assertEquals(JOB_NAME, job.getJobName());
-    assertEquals(eventHandler, job.getOwner());
+    assertEquals(JOB_NAME, job.getName());
+    assertEquals(eventHandler, job.getSchedulerEventListener());
+    assertEquals(trigger, job.getTrigger());
     await().atMost(65, SECONDS).until(jobIsFired());
   }
 
   @Test
   public void schedulingEveryMinutesAJobShouldRunThatJobAtTheExpectedTime() throws Exception {
-    JobTrigger trigger = JobTrigger.triggerEvery(1, TimeUnit.MINUTE);
-    SchedulerJob job = SimpleScheduler.scheduleJob(new Job(JOB_NAME)    {
+    JobTrigger trigger = JobTrigger.triggerEach(1, TimeUnit.MINUTE);
+    ScheduledJob job = scheduler.scheduleJob(new Job(JOB_NAME)    {
 
       @Override
       public void execute(JobExecutionContext context) throws Exception {
@@ -108,8 +114,9 @@ public class SchedulerTest {
       }
     }, trigger, eventHandler);
     assertNotNull(job);
-    assertEquals(JOB_NAME, job.getJobName());
-    assertEquals(eventHandler, job.getOwner());
+    assertEquals(JOB_NAME, job.getName());
+    assertEquals(eventHandler, job.getSchedulerEventListener());
+    assertEquals(trigger, job.getTrigger());
     await().atMost(65, SECONDS).until(jobIsExecuted());
   }
 
@@ -117,10 +124,11 @@ public class SchedulerTest {
   public void schedulingAJobWithACronExpressionShouldRunThatJobAtTheExpectedTime() throws
       Exception {
     Calendar calendar = Calendar.getInstance();
+    calendar.add(Calendar.MINUTE, 1);
     int minute = calendar.get(Calendar.MINUTE);
-    String cron = (minute + 1) + " * * * * ";
+    String cron = minute + " * * * * ";
     JobTrigger trigger = JobTrigger.triggerAt(cron);
-    SchedulerJob job = SimpleScheduler.scheduleJob(new Job(JOB_NAME)    {
+    ScheduledJob job = scheduler.scheduleJob(new Job(JOB_NAME)    {
 
       @Override
       public void execute(JobExecutionContext context) throws Exception {
@@ -128,8 +136,9 @@ public class SchedulerTest {
       }
     }, trigger, eventHandler);
     assertNotNull(job);
-    assertEquals(JOB_NAME, job.getJobName());
-    assertEquals(eventHandler, job.getOwner());
+    assertEquals(JOB_NAME, job.getName());
+    assertEquals(eventHandler, job.getSchedulerEventListener());
+    assertEquals(trigger, job.getTrigger());
     await().atMost(65, SECONDS).until(jobIsExecuted());
   }
   
@@ -137,13 +146,15 @@ public class SchedulerTest {
   public void schedulingAJobExecutionWithACronExpressionShouldRunThatJobAtTheExpectedTime() throws
       Exception {
     Calendar calendar = Calendar.getInstance();
+    calendar.add(Calendar.MINUTE, 1);
     int minute = calendar.get(Calendar.MINUTE);
-    String cron = (minute + 1) + " * * * * ";
+    String cron = minute + " * * * * ";
     JobTrigger trigger = JobTrigger.triggerAt(cron);
-    SchedulerJob job = SimpleScheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
+    ScheduledJob job = scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
     assertNotNull(job);
-    assertEquals(JOB_NAME, job.getJobName());
-    assertEquals(eventHandler, job.getOwner());
+    assertEquals(JOB_NAME, job.getName());
+    assertEquals(eventHandler, job.getSchedulerEventListener());
+    assertEquals(trigger, job.getTrigger());
     await().atMost(65, SECONDS).until(jobIsFired());
   }
 

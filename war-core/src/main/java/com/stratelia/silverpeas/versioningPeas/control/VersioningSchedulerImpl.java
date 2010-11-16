@@ -32,9 +32,10 @@ import java.util.Date;
 import com.silverpeas.util.FileUtil;
 import com.stratelia.silverpeas.scheduler.Job;
 import com.stratelia.silverpeas.scheduler.JobExecutionContext;
+import com.stratelia.silverpeas.scheduler.Scheduler;
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
-import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
-import com.stratelia.silverpeas.scheduler.SimpleScheduler;
+import com.stratelia.silverpeas.scheduler.SchedulerEventListener;
+import com.stratelia.silverpeas.scheduler.SchedulerFactory;
 import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.ejb.VersioningRuntimeException;
@@ -46,7 +47,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 public class VersioningSchedulerImpl
-    implements SchedulerEventHandler {
+    implements SchedulerEventListener {
 
   public static final String VERSIONING_JOB_NAME_PROCESS_ACTIFY = "V_ProcessActify";
   public static final String VERSIONING_JOB_NAME_PURGE_ACTIFY = "V_PurgeActify";
@@ -61,46 +62,19 @@ public class VersioningSchedulerImpl
       try {
         String cronScheduleProcess = resourcesAttachment.getString("ScheduledProcessActify");
         String cronSchedulePurge = resourcesAttachment.getString("ScheduledPurgeActify");
-        SimpleScheduler.unscheduleJob(VERSIONING_JOB_NAME_PROCESS_ACTIFY);
-        SimpleScheduler.unscheduleJob(VERSIONING_JOB_NAME_PURGE_ACTIFY);
+        SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
+        Scheduler scheduler = schedulerFactory.getScheduler();
+        scheduler.unscheduleJob(VERSIONING_JOB_NAME_PROCESS_ACTIFY);
+        scheduler.unscheduleJob(VERSIONING_JOB_NAME_PURGE_ACTIFY);
 
         JobTrigger processTrigger = JobTrigger.triggerAt(cronScheduleProcess);
-        SimpleScheduler.scheduleJob(processActify(), processTrigger, this);
+        scheduler.scheduleJob(processActify(), processTrigger, this);
 
         JobTrigger purgeTrigger = JobTrigger.triggerAt(cronSchedulePurge);
-        SimpleScheduler.scheduleJob(purgeActify(), purgeTrigger, this);
+        scheduler.scheduleJob(purgeActify(), purgeTrigger, this);
       } catch (Exception e) {
         SilverTrace.error("versioningPeas", "VersioningScheduleImpl.initialize()", "", e);
       }
-    }
-  }
-
-  @Override
-  public void handleSchedulerEvent(SchedulerEvent aEvent) {
-    switch (aEvent.getType()) {
-      case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
-        SilverTrace.error("versioningPeas",
-            "VersioningScheduleImpl.handleSchedulerEvent", "The job '"
-            + aEvent.getJob().getJobName() + "' was not successfull");
-        break;
-
-      case SchedulerEvent.EXECUTION_SUCCESSFULL:
-        SilverTrace.debug("versioningPeas",
-            "VersioningScheduleImpl.handleSchedulerEvent", "The job '"
-            + aEvent.getJob().getJobName() + "' was successfull");
-        break;
-
-      case SchedulerEvent.EXECUTION:
-        SilverTrace.debug("versioningPeas",
-            "VersioningScheduleImpl.handleSchedulerEvent", "The job '"
-            + aEvent.getJob().getJobName() + "' is starting");
-        break;
-
-      default:
-        SilverTrace.error("versioningPeas",
-            "VersioningScheduleImpl.handleSchedulerEvent",
-            "Illegal event type");
-        break;
     }
   }
 
@@ -213,7 +187,7 @@ public class VersioningSchedulerImpl
    * @return the job for processing actify.
    */
   private Job processActify() {
-    return new Job(VERSIONING_JOB_NAME_PROCESS_ACTIFY)    {
+    return new Job(VERSIONING_JOB_NAME_PROCESS_ACTIFY) {
 
       @Override
       public void execute(JobExecutionContext context) throws Exception {
@@ -228,7 +202,7 @@ public class VersioningSchedulerImpl
    * @return the job for purging actify.
    */
   private Job purgeActify() {
-    return new Job(VERSIONING_JOB_NAME_PURGE_ACTIFY)    {
+    return new Job(VERSIONING_JOB_NAME_PURGE_ACTIFY) {
 
       @Override
       public void execute(JobExecutionContext context) throws Exception {
@@ -236,5 +210,26 @@ public class VersioningSchedulerImpl
         doPurgeActify(date);
       }
     };
+  }
+
+  @Override
+  public void triggerFired(SchedulerEvent anEvent) throws Exception {
+    SilverTrace.debug("versioningPeas",
+        "VersioningScheduleImpl.handleSchedulerEvent", "The job '"
+        + anEvent.getJobExecutionContext().getJobName() + "' is starting");
+  }
+
+  @Override
+  public void jobSucceeded(SchedulerEvent anEvent) {
+    SilverTrace.debug("versioningPeas",
+        "VersioningScheduleImpl.handleSchedulerEvent", "The job '"
+        + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
+  }
+
+  @Override
+  public void jobFailed(SchedulerEvent anEvent) {
+    SilverTrace.error("versioningPeas",
+        "VersioningScheduleImpl.handleSchedulerEvent", "The job '"
+        + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
   }
 }

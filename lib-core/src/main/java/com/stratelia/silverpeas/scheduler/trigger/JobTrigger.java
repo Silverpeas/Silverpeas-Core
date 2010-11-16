@@ -24,7 +24,6 @@
 
 package com.stratelia.silverpeas.scheduler.trigger;
 
-import com.stratelia.silverpeas.scheduler.TimeUnit;
 import java.util.Date;
 
 /**
@@ -45,10 +44,10 @@ public abstract class JobTrigger {
   }
  
   /**
-   * Creates a job trigger that will fire a job execution every the specified time.
+   * Creates a job trigger that will fire a job execution each the specified time.
    * @return a job trigger whose the triggering is scheduled periodically at a given time.
    */
-  public static JobTrigger triggerEvery(int time, final TimeUnit unit) {
+  public static JobTrigger triggerEach(int time, final TimeUnit unit) {
     JobTriggerFactory triggerFactory = new JobTriggerFactory();
     return triggerFactory.createWithAsPeriodicity(time, unit);
   }

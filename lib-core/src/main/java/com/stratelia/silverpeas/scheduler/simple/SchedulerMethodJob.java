@@ -22,8 +22,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.scheduler;
+package com.stratelia.silverpeas.scheduler.simple;
 
+import com.stratelia.silverpeas.scheduler.SchedulerEventListener;
+import com.stratelia.silverpeas.scheduler.SchedulerException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
@@ -47,7 +49,7 @@ public class SchedulerMethodJob extends SchedulerJob {
    * @param aLogBaseFile The log file for the job
    */
   protected SchedulerMethodJob(SimpleScheduler theJobController,
-      SchedulerEventHandler theJobOwner, String theJobName)
+      SchedulerEventListener theJobOwner, String theJobName)
       throws SchedulerException {
     super(theJobController, theJobOwner, theJobName);
   }

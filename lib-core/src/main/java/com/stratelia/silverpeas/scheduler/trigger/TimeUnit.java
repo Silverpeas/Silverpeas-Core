@@ -22,42 +22,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.scheduler;
+package com.stratelia.silverpeas.scheduler.trigger;
 
 /**
- * A job to schedule at a given moments in time.
- * A job is identified in the scheduler by a name that must be unique.
+ * The unit of times as used and supported by the scheduling system in Silverpeas.
  */
-public abstract class Job {
-
-  private String name;
-  
-  /**
-   * Creates a new job with the specified name.
-   * @param name the name under which the job has to be registered in the scheduler.
-   */
-  public Job(final String name) {
-    if (name == null || name.trim().isEmpty()) {
-      throw new IllegalArgumentException("The job name is required!");
-    }
-    this.name = name.trim();
-  }
+public enum TimeUnit {
 
   /**
-   * Gets the name under which this job should be scheduled.
-   * @return the job name.
+   * The second.
    */
-  public String getName() {
-    return name;
+  SECOND(1000),
+  /**
+   * The minute.
+   */
+  MINUTE(60000),
+  /**
+   * The hour.
+   */
+  HOUR(3600000);
+  
+  /**
+   * How many milliseconds this unit of time is made.
+   * @return the conversion in milliseconds of this unit of time.
+   */
+  public long inMilliSeconds() {
+    return this.duration;
   }
   
   /**
-   * Executes the job with the specified execution context.
-   * The context carries the information that can be required by the job to fulfill its execution,
-   * like the job parameters.
-   * @param context the context under which this job is executed.
-   * @throws Exception if an error occurs during the job execution.
+   * Creates a TimeUnit instance by specifying the duration of this unit in milliseconds.
+   * @param duration the duration the unit takes in milliseconds.
    */
-  public abstract void execute(final JobExecutionContext context) throws Exception;
- 
+  private TimeUnit(int duration) {
+    this.duration = duration;
+  }
+  
+  private int duration;
 }

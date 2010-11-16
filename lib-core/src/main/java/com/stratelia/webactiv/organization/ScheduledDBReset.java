@@ -23,15 +23,17 @@
  */
 package com.stratelia.webactiv.organization;
 
-
+import com.stratelia.silverpeas.scheduler.Scheduler;
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
-import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
-import com.stratelia.silverpeas.scheduler.SimpleScheduler;
+import com.stratelia.silverpeas.scheduler.SchedulerEventListener;
+import com.stratelia.silverpeas.scheduler.SchedulerFactory;
+import com.stratelia.silverpeas.scheduler.simple.SimpleScheduler;
 import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 
-public class ScheduledDBReset implements SchedulerEventHandler {
+public class ScheduledDBReset
+    implements SchedulerEventListener {
 
   // Local constants
   private static final String DBRESET_JOB_NAME = "ScheduledDBReset";
@@ -43,48 +45,19 @@ public class ScheduledDBReset implements SchedulerEventHandler {
    */
   public void initialize(String cronString) {
     try {
+      SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
+      Scheduler scheduler = schedulerFactory.getScheduler();
       // Remove previous scheduled job
-      SimpleScheduler.unscheduleJob(DBRESET_JOB_NAME);
+      scheduler.unscheduleJob(DBRESET_JOB_NAME);
       if ((cronString != null) && (cronString.length() > 0)) {
         // Create new scheduled job
         JobTrigger trigger = JobTrigger.triggerAt(cronString);
-        SimpleScheduler.scheduleJob(DBRESET_JOB_NAME, trigger, this);
+        scheduler.scheduleJob(DBRESET_JOB_NAME, trigger, this);
       }
     } catch (Exception e) {
       SilverTrace.error("admin", "ScheduledDBReset.initialize", "admin.EX_ERR_INITIALIZE", e);
     }
 
-  }
-
-  /**
-   * Scheduler Event handler
-   * @param aEvent
-   */
-  @Override
-  public void handleSchedulerEvent(SchedulerEvent aEvent) {
-    switch (aEvent.getType()) {
-      case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
-        SilverTrace.error("admin", "ScheduledDBReset.handleSchedulerEvent",
-            "The job '" + aEvent.getJob().getJobName()
-            + "' was not successfull");
-        break;
-
-      case SchedulerEvent.EXECUTION_SUCCESSFULL:
-        SilverTrace.debug("admin", "ScheduledDBReset.handleSchedulerEvent",
-            "The job '" + aEvent.getJob().getJobName() + "' was successfull");
-        break;
-        
-      case SchedulerEvent.EXECUTION:
-        SilverTrace.debug("admin", "ScheduledDBReset.handleSchedulerEvent",
-            "The job '" + aEvent.getJob().getJobName() + "' is executed");
-        doDBReset();
-        break;
-
-      default:
-        SilverTrace.error("admin", "ScheduledDBReset.handleSchedulerEvent",
-            "Illegal event type");
-        break;
-    }
   }
 
   /**
@@ -106,5 +79,25 @@ public class ScheduledDBReset implements SchedulerEventHandler {
       SilverTrace.error("admin", "ScheduledDBReset.doDBReset",
           "admin.EX_ERR_TIMEOUT_MANAGEMENT", e);
     }
+  }
+
+  @Override
+  public void triggerFired(SchedulerEvent anEvent) {
+    SilverTrace.debug("admin", "ScheduledDBReset.handleSchedulerEvent",
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' is executed");
+    doDBReset();
+  }
+
+  @Override
+  public void jobSucceeded(SchedulerEvent anEvent) {
+    SilverTrace.debug("admin", "ScheduledDBReset.handleSchedulerEvent",
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
+  }
+
+  @Override
+  public void jobFailed(SchedulerEvent anEvent) {
+    SilverTrace.error("admin", "ScheduledDBReset.handleSchedulerEvent",
+        "The job '" + anEvent.getJobExecutionContext().getJobName()
+        + "' was not successfull");
   }
 }

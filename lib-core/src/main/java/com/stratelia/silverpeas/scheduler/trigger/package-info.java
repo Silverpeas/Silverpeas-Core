@@ -22,42 +22,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.scheduler;
-
 /**
- * A job to schedule at a given moments in time.
- * A job is identified in the scheduler by a name that must be unique.
+ * Provides job trigger definitions.
+ * A trigger is a definition of the scheduling in time of a job execution. It provides a simplified
+ * way to extend and to define new way to trigger a job execution without changing the scheduler's
+ * interface.
  */
-public abstract class Job {
-
-  private String name;
-  
-  /**
-   * Creates a new job with the specified name.
-   * @param name the name under which the job has to be registered in the scheduler.
-   */
-  public Job(final String name) {
-    if (name == null || name.trim().isEmpty()) {
-      throw new IllegalArgumentException("The job name is required!");
-    }
-    this.name = name.trim();
-  }
-
-  /**
-   * Gets the name under which this job should be scheduled.
-   * @return the job name.
-   */
-  public String getName() {
-    return name;
-  }
-  
-  /**
-   * Executes the job with the specified execution context.
-   * The context carries the information that can be required by the job to fulfill its execution,
-   * like the job parameters.
-   * @param context the context under which this job is executed.
-   * @throws Exception if an error occurs during the job execution.
-   */
-  public abstract void execute(final JobExecutionContext context) throws Exception;
- 
-}
+package com.stratelia.silverpeas.scheduler.trigger;

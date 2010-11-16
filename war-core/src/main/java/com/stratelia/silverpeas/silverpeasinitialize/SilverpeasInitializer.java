@@ -40,7 +40,7 @@ import java.util.Properties;
  * @author EDurand
  * @version 1.0
  */
-public class SilverpeasInitializer {
+public final class SilverpeasInitializer {
   private static boolean isInitialized = false;
   private static final String INITIALIZESETTINGS = "InitializeSettings.properties";
 
@@ -51,19 +51,29 @@ public class SilverpeasInitializer {
    * @see
    */
   public SilverpeasInitializer() {
-    boolean localIsInitialized;
-
-    synchronized (INITIALIZESETTINGS) {
-      localIsInitialized = isInitialized;
-      isInitialized = true;
-    }
-    if (!localIsInitialized) // Initialize only once !!!
-    {
-      startInitialize();
-    }
+  }
+  
+  /**
+   * Is the Silverpeas context already initialized?
+   * @return true if the Silverpeas is initialized, false otherwise.
+   */
+  public static synchronized boolean isInitialized() {
+      return isInitialized;
   }
 
-  public void startInitialize() {
+  /**
+   * Starts the Silverpeas context initialization.
+   * 
+   * If the context is already initialized, then nothing is performed.
+   * It initializes each Silverpeas components declared as to be initialized (through their
+   * properties file located at a well-defined dedicated locations). Whatever the success of the
+   * components initialization, the Silverpeas context is marked as initialized.
+   */
+  public synchronized void startInitialize() {
+    if (isInitialized()) {
+      return;
+    }
+    initialized();
     try {
       // Add properties
       _silverpeasinitializeSettings = FileUtil.loadBundle(
@@ -195,4 +205,7 @@ public class SilverpeasInitializer {
     System.out.println(from + " : " + msg);
   }
 
+  private static synchronized void initialized() {
+    isInitialized = true;
+  }
 }

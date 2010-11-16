@@ -23,8 +23,6 @@
  */
 package com.stratelia.silverpeas.scheduler.trigger;
 
-import com.stratelia.silverpeas.scheduler.TimeUnit;
-
 
 /**
  * A factory of job triggers.

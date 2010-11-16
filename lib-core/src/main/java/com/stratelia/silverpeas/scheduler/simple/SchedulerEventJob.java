@@ -22,17 +22,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.scheduler;
+package com.stratelia.silverpeas.scheduler.simple;
 
-import java.util.*;
+import com.stratelia.silverpeas.scheduler.JobExecutionContext;
+import com.stratelia.silverpeas.scheduler.SchedulerEvent;
+import com.stratelia.silverpeas.scheduler.SchedulerEventListener;
+import com.stratelia.silverpeas.scheduler.SchedulerException;
+import java.util.Date;
+
+
 
 /**
  * This class extends the class 'SchedulerJob' for the functionality of the scheduled execution of
  * shell scripts.
  */
-public class SchedulerEventJobMinute extends SchedulerEventJob {
-  long m_iMs = 1000;
-
+public class SchedulerEventJob extends SchedulerJob {
   /**
    * The constructor has proteceted access, because the generation of jobs should be done in a
    * central way by the class 'SimpleScheduler'
@@ -40,14 +44,26 @@ public class SchedulerEventJobMinute extends SchedulerEventJob {
    * @param aOwner The owner of the job
    * @param aJobName The name of the job
    */
-  protected SchedulerEventJobMinute(SimpleScheduler theJobController,
-      SchedulerEventHandler theJobOwner, String theJobName, int iMinutes)
+  protected SchedulerEventJob(SimpleScheduler theJobController,
+      SchedulerEventListener theJobOwner, String theJobName)
       throws SchedulerException {
     super(theJobController, theJobOwner, theJobName);
-    m_iMs = (long) iMinutes * (long) 60 * (long) 1000;
   }
 
-  protected long getNextTimeStamp() {
-    return ((new Date()).getTime() + m_iMs);
+  /**
+   * This method implements the abstract method of the base class. It creates a new SchedulerEvent
+   * and sends it to the job owner.
+   * @param theExecutionDate The date of the execution
+   */
+  @Override
+  protected void execute(Date theExecutionDate) throws SchedulerException {
+    try {
+      JobExecutionContext ctx = JobExecutionContext.createWith(getName(), theExecutionDate);
+      getOwner().triggerFired(SchedulerEvent.triggerFired(ctx));
+    } catch (Exception aException) {
+      throw new SchedulerException(
+          "SchedulerShellJob.execute: Execution failed (Reason: "
+          + aException.getMessage() + ")");
+    }
   }
 }

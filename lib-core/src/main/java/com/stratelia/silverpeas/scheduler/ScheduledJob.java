@@ -24,32 +24,34 @@
 
 package com.stratelia.silverpeas.scheduler;
 
-/**
- * A job to schedule at a given moments in time.
- * A job is identified in the scheduler by a name that must be unique.
- */
-public abstract class Job {
+import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 
-  private String name;
+/**
+ * A job that is scheduled in the scheduler.
+ * 
+ * A job registered in the scheduler is instanciated into a ScheduledJob object that carries all of
+ * the information required by the scheduler to perform its task.
+ * The implementation of this interface depends upon the scheduling backend in use.
+ */
+public interface ScheduledJob {
+
+  /**
+   * Gets the name under which the job is registered into the scheduler.
+   * @return 
+   */
+  String getName();
   
   /**
-   * Creates a new job with the specified name.
-   * @param name the name under which the job has to be registered in the scheduler.
+   * Gets the trigger responsible of firing the execution of this job.
+   * @return the trigger of this job.
    */
-  public Job(final String name) {
-    if (name == null || name.trim().isEmpty()) {
-      throw new IllegalArgumentException("The job name is required!");
-    }
-    this.name = name.trim();
-  }
+  JobTrigger getTrigger();
 
   /**
-   * Gets the name under which this job should be scheduled.
-   * @return the job name.
+   * Gets the listener of the scheduler's events mapped with the state of this job execution.
+   * @return a scheduler's events listener registered with this job.
    */
-  public String getName() {
-    return name;
-  }
+  SchedulerEventListener getSchedulerEventListener();
   
   /**
    * Executes the job with the specified execution context.
@@ -58,6 +60,5 @@ public abstract class Job {
    * @param context the context under which this job is executed.
    * @throws Exception if an error occurs during the job execution.
    */
-  public abstract void execute(final JobExecutionContext context) throws Exception;
- 
+  void execute(final JobExecutionContext context) throws Exception;
 }

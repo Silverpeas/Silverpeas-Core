@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.workflow.engine.timeout;
 
 import java.util.Date;
@@ -42,7 +41,9 @@ import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 /**
  * The workflow engine services relate to error management.
  */
-public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventHandler {
+public class TimeoutManagerImpl
+    implements TimeoutManager,
+    SchedulerEventListener {
 
   // Local constants
   private static final String TIMEOUT_MANAGER_JOB_NAME = "WorkflowTimeoutManager";
@@ -56,53 +57,22 @@ public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventHandler
       ResourceLocator settings = new ResourceLocator(
           "com.silverpeas.workflow.engine.schedulerSettings", "");
       //List<SchedulerJob> jobList = SimpleScheduler.getJobList(this);
-
-      if (SimpleScheduler.isJobScheduled(TIMEOUT_MANAGER_JOB_NAME)) {
+      SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
+      Scheduler scheduler = schedulerFactory.getScheduler();
+      if (scheduler.isJobScheduled(TIMEOUT_MANAGER_JOB_NAME)) {
         // Remove previous scheduled job
-        SimpleScheduler.unscheduleJob(TIMEOUT_MANAGER_JOB_NAME);
+        scheduler.unscheduleJob(TIMEOUT_MANAGER_JOB_NAME);
       }
 
       // Create new scheduled job
       String cronString = settings.getString("timeoutSchedule");
       JobTrigger trigger = JobTrigger.triggerAt(cronString);
-      SimpleScheduler.scheduleJob(TIMEOUT_MANAGER_JOB_NAME, trigger, this);
+      scheduler.scheduleJob(TIMEOUT_MANAGER_JOB_NAME, trigger, this);
     } catch (Exception e) {
       SilverTrace.error("workflowEngine", "TimeoutManagerImpl.initialize",
           "workflowEngine.EX_ERR_INITIALIZE", e);
     }
 
-  }
-
-  /**
-   * Scheduler Event handler
-   */
-  @Override
-  public void handleSchedulerEvent(SchedulerEvent aEvent) {
-    switch (aEvent.getType()) {
-      case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
-        SilverTrace.error("workflowEngine",
-            "TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-            + aEvent.getJob().getJobName() + "' was not successfull");
-        break;
-
-      case SchedulerEvent.EXECUTION_SUCCESSFULL:
-        SilverTrace.debug("workflowEngine",
-            "TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-            + aEvent.getJob().getJobName() + "' was successfull");
-        break;
-        
-      case SchedulerEvent.EXECUTION:
-        SilverTrace.debug("workflowEngine",
-            "TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-            + aEvent.getJob().getJobName() + "' is executing");
-        doTimeoutManagement();
-        break;
-
-      default:
-        SilverTrace.error("workflowEngine",
-            "TimeoutManagerImpl.handleSchedulerEvent", "Illegal event type");
-        break;
-    }
   }
 
   /**
@@ -119,7 +89,8 @@ public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventHandler
 
     try {
       // parse all "process manager" peas
-      ProcessInstance[] instances = Workflow.getProcessInstanceManager().getTimeOutProcessInstances();
+      ProcessInstance[] instances =
+          Workflow.getProcessInstanceManager().getTimeOutProcessInstances();
       Date now = new Date();
 
       for (int k = 0; k < instances.length; k++) {
@@ -133,8 +104,7 @@ public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventHandler
               "workflowEngine.WARN_TIMEOUT_DETECTED", "instance Id : '"
               + instances[k].getInstanceId() + "' state : '"
               + timeoutActionAndState.getState().getName());
-        }
-        catch (WorkflowException e) {
+        } catch (WorkflowException e) {
           SilverTrace.error("workflowEngine",
               "TimeoutManagerImpl.doTimeoutManagement",
               "workflowEngine.EX_ERR_TIMEOUT_MANAGEMENT", e);
@@ -152,5 +122,27 @@ public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventHandler
           "TimeoutManagerImpl.doTimeoutManagement", "Duree de traitement : "
           + delay + " seconds.");
     }
+  }
+
+  @Override
+  public void triggerFired(SchedulerEvent anEvent) throws Exception {
+    SilverTrace.debug("workflowEngine",
+        "TimeoutManagerImpl.handleSchedulerEvent", "The job '"
+        + anEvent.getJobExecutionContext().getJobName() + "' is executing");
+    doTimeoutManagement();
+  }
+
+  @Override
+  public void jobSucceeded(SchedulerEvent anEvent) {
+    SilverTrace.debug("workflowEngine",
+        "TimeoutManagerImpl.handleSchedulerEvent", "The job '"
+        + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
+  }
+
+  @Override
+  public void jobFailed(SchedulerEvent anEvent) {
+    SilverTrace.error("workflowEngine",
+        "TimeoutManagerImpl.handleSchedulerEvent", "The job '"
+        + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
   }
 }

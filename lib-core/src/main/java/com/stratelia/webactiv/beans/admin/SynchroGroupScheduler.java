@@ -23,58 +23,38 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
+import com.stratelia.silverpeas.scheduler.Scheduler;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
-import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
-import com.stratelia.silverpeas.scheduler.SimpleScheduler;
+import com.stratelia.silverpeas.scheduler.SchedulerEventListener;
+import com.stratelia.silverpeas.scheduler.SchedulerFactory;
 import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-public class SynchroGroupScheduler implements SchedulerEventHandler {
+public class SynchroGroupScheduler
+    implements SchedulerEventListener {
 
   public static final String ADMINSYNCHROGROUP_JOB_NAME = "AdminSynchroGroupJob";
   private List<String> synchronizedGroupIds = null;
   private Admin admin = null;
 
-  public void initialize(String cron, Admin admin, List<String> synchronizedGroupIds) {
+  public void initialize(String cron,
+      Admin admin,
+      List<String> synchronizedGroupIds) {
     try {
       this.admin = admin;
       this.synchronizedGroupIds = synchronizedGroupIds;
-      SimpleScheduler.unscheduleJob(ADMINSYNCHROGROUP_JOB_NAME);
+
+      SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
+      Scheduler scheduler = schedulerFactory.getScheduler();
+      scheduler.unscheduleJob(ADMINSYNCHROGROUP_JOB_NAME);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
-      SimpleScheduler.scheduleJob(ADMINSYNCHROGROUP_JOB_NAME, trigger, this);
+      scheduler.scheduleJob(ADMINSYNCHROGROUP_JOB_NAME, trigger, this);
     } catch (Exception e) {
       SilverTrace.error("admin", "SynchroGroupScheduler.initialize()",
           "importExport.EX_CANT_INIT_SCHEDULED_IMPORT", e);
-    }
-  }
-
-  @Override
-  public void handleSchedulerEvent(SchedulerEvent aEvent) {
-    switch (aEvent.getType()) {
-      case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
-        SilverTrace.error("admin",
-            "SynchroGroupScheduler.handleSchedulerEvent", "The job '"
-            + aEvent.getJob().getJobName() + "' was not successfull");
-        break;
-
-      case SchedulerEvent.EXECUTION_SUCCESSFULL:
-        SilverTrace.debug("admin",
-            "SynchroGroupScheduler.handleSchedulerEvent", "The job '"
-            + aEvent.getJob().getJobName() + "' was successfull");
-        break;
-        
-     case SchedulerEvent.EXECUTION:
-       SilverTrace.debug("admin",
-            "SynchroGroupScheduler.handleSchedulerEvent", "The job '"
-            + aEvent.getJob().getJobName() + "' is executed");
-       doSynchroGroup();
-      default:
-        SilverTrace.error("admin",
-            "SynchroGroupScheduler.handleSchedulerEvent", "Illegal event type");
-        break;
     }
   }
 
@@ -113,5 +93,30 @@ public class SynchroGroupScheduler implements SchedulerEventHandler {
     if (synchronizedGroupIds != null) {
       synchronizedGroupIds.remove(groupId);
     }
+  }
+
+  @Override
+  public void triggerFired(SchedulerEvent anEvent) {
+    String jobName = anEvent.getJobExecutionContext().getJobName();
+    SilverTrace.debug("admin",
+        "SynchroGroupScheduler.handleSchedulerEvent", "The job '"
+        + jobName + "' is executed");
+    doSynchroGroup();
+  }
+
+  @Override
+  public void jobSucceeded(SchedulerEvent anEvent) {
+    String jobName = anEvent.getJobExecutionContext().getJobName();
+    SilverTrace.debug("admin",
+        "SynchroGroupScheduler.handleSchedulerEvent", "The job '"
+        + jobName + "' was successfull");
+  }
+
+  @Override
+  public void jobFailed(SchedulerEvent anEvent) {
+    String jobName = anEvent.getJobExecutionContext().getJobName();
+    SilverTrace.error("admin",
+        "SynchroGroupScheduler.handleSchedulerEvent", "The job '"
+        + jobName + "' was not successfull");
   }
 }

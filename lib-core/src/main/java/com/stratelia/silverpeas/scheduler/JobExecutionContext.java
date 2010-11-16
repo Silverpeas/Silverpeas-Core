@@ -34,6 +34,18 @@ import java.util.Date;
 public class JobExecutionContext {
 
   private Date date;
+  private String jobName;
+  
+  /**
+   * Creates a new context for the execution of the specified job and fired at the specified time.
+   * @param jobName the name of the job that is being executed.
+   * @param fireTime the time at which the job has been starting.
+   * @return the execution context of the job.
+   */
+  public static JobExecutionContext createWith(final String jobName,  final Date fireTime) {
+    JobExecutionContext context = new JobExecutionContext();
+    return context.jobNamed(jobName).jobFiredAt(fireTime);
+  }
 
   /**
    * Gets the actual time at which the trigger fired.
@@ -45,11 +57,36 @@ public class JobExecutionContext {
 
   /**
    * Sets the actual time at which the trigger fired.
-   * @param date 
+   * @param date the triggering time.
+   * @return itself.
    */
-  protected void setFireTime(final Date date) {
+  public JobExecutionContext jobFiredAt(final Date date) {
     this.date = date;
+    return this;
   }
   
+  /**
+   * Gets the name of the job that takes part in the job execution .
+   * @return the name of the executed job.
+   */
+  public String getJobName() {
+    return this.jobName;
+  }
   
+  /**
+   * Sets the name of the job that takes part in the job execution.
+   * @param theJobName the name of the executed job.
+   * @return itself.
+   */
+  public JobExecutionContext jobNamed(final String theJobName) {
+    this.jobName = theJobName;
+    return this;
+  }
+  
+  /**
+   * Constructs a new context of a job execution.
+   */
+  private JobExecutionContext() {
+    
+  }
 }

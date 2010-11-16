@@ -22,44 +22,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.scheduler;
+package com.stratelia.silverpeas.scheduler.simple;
 
+import com.stratelia.silverpeas.scheduler.SchedulerEventListener;
+import com.stratelia.silverpeas.scheduler.SchedulerException;
+import com.stratelia.silverpeas.scheduler.trigger.FixedPeriodJobTrigger;
 import java.util.Date;
 
 
-
 /**
- * This class extends the class 'SchedulerJob' for the functionality of the scheduled execution of
- * shell scripts.
+ * This class extends the class 'SchedulerJob' for the functionality of a scheduled execution of a
+ * class method.
  */
-public class SchedulerEventJob extends SchedulerJob {
-  /**
+public class SchedulerMethodJobMinute extends SchedulerMethodJob {
+  private long m_iMs = 1000l;
+
+ /**
    * The constructor has proteceted access, because the generation of jobs should be done in a
    * central way by the class 'SimpleScheduler'
-   * @param aController The controller, that controls all job executions
-   * @param aOwner The owner of the job
-   * @param aJobName The name of the job
-   */
-  protected SchedulerEventJob(SimpleScheduler theJobController,
-      SchedulerEventHandler theJobOwner, String theJobName)
+  * @param theJobController The controller, that controls all job executions
+  * @param theJobOwner The owner of the job
+  * @param theJobName The name of the job
+  * @param iMinutes theperiod between each job
+  * @throws SchedulerException
+  */
+  protected SchedulerMethodJobMinute(SimpleScheduler theJobController,
+      SchedulerEventListener theJobOwner, String theJobName, FixedPeriodJobTrigger trigger)
       throws SchedulerException {
     super(theJobController, theJobOwner, theJobName);
+    setTrigger(trigger);
+    m_iMs = trigger.getTimeIntervalInMillis();
   }
 
-  /**
-   * This method implements the abstract method of the base class. It creates a new SchedulerEvent
-   * and sends it to the job owner.
-   * @param theExecutionDate The date of the execution
-   */
   @Override
-  protected void execute(Date theExecutionDate) throws SchedulerException {
-    try {
-      getOwner().handleSchedulerEvent(
-          new SchedulerEvent(SchedulerEvent.EXECUTION, this));
-    } catch (Exception aException) {
-      throw new SchedulerException(
-          "SchedulerShellJob.execute: Execution failed (Reason: "
-          + aException.getMessage() + ")");
-    }
+  protected long getNextTimeStamp() {
+    return ((new Date()).getTime() + m_iMs);
   }
 }

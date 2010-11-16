@@ -26,6 +26,7 @@ package com.stratelia.silverpeas.silverstatistics.control;
 import com.silverpeas.util.FileUtil;
 import com.stratelia.silverpeas.scheduler.Job;
 import com.stratelia.silverpeas.scheduler.JobExecutionContext;
+import com.stratelia.silverpeas.scheduler.Scheduler;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Date;
@@ -34,9 +35,9 @@ import java.util.MissingResourceException;
 import javax.ejb.EJBException;
 
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
-import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
+import com.stratelia.silverpeas.scheduler.SchedulerEventListener;
 import com.stratelia.silverpeas.scheduler.SchedulerException;
-import com.stratelia.silverpeas.scheduler.SimpleScheduler;
+import com.stratelia.silverpeas.scheduler.SchedulerFactory;
 import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silverstatistics.model.SilverStatisticsConfigException;
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
@@ -55,7 +56,7 @@ import java.util.ResourceBundle;
  * @author Marc Guillemin
  */
 public class SilverStatisticsManager
-    implements SchedulerEventHandler {
+    implements SchedulerEventListener {
   // Global constants
 
   // Local constants
@@ -148,12 +149,14 @@ public class SilverStatisticsManager
   public void initSchedulerStatistics(String aCronString,
       String jobName,
       String methodeName) throws SchedulerException {
-    SimpleScheduler.unscheduleJob(jobName);
+    SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
+      Scheduler scheduler = schedulerFactory.getScheduler();
+    scheduler.unscheduleJob(jobName);
     SilverTrace.info("silverstatistics", "SilverStatisticsManager.initSchedulerStatistics",
         "root.MSG_GEN_PARAM_VALUE", "jobName=" + jobName + ", aCronString=" + aCronString);
     JobTrigger trigger = JobTrigger.triggerAt(aCronString);
     Job job = createJobWith(jobName, methodeName);
-    SimpleScheduler.scheduleJob(job, trigger, this);
+    scheduler.scheduleJob(job, trigger, this);
   }
 
   /**
@@ -253,36 +256,6 @@ public class SilverStatisticsManager
       SilverTrace.error("silverstatistics",
           "SilverStatisticsManager.initDirectoryToScan()",
           "silvertrace.ERR_INIT_APPENDER_FROM_PROP", e);
-    }
-  }
-
-  /**
-   * Scheduler Event handler
-   */
-  @Override
-  public void handleSchedulerEvent(SchedulerEvent aEvent) {
-
-    switch (aEvent.getType()) {
-      case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
-        SilverTrace.error("silverstatistics",
-            "SilverStatisticsManager.handleSchedulerEvent", "The job '"
-            + aEvent.getJob().getJobName() + "' was not successfull");
-        break;
-      case SchedulerEvent.EXECUTION_SUCCESSFULL:
-        SilverTrace.debug("silverstatistics",
-            "SilverStatisticsManager.handleSchedulerEvent", "The job '"
-            + aEvent.getJob().getJobName() + "' was successfull");
-        break;
-      case SchedulerEvent.EXECUTION:
-        SilverTrace.debug("silverstatistics",
-            "SilverStatisticsManager.handleSchedulerEvent", "The job '"
-            + aEvent.getJob().getJobName() + "' is starting");
-        break;
-      default:
-        SilverTrace.error("silverstatistics",
-            "SilverStatisticsManager.handleSchedulerEvent",
-            "Illegal event type");
-        break;
     }
   }
 
@@ -662,7 +635,7 @@ public class SilverStatisticsManager
       final String jobOperation) throws SchedulerException {
     try {
       final Method operation = myInstance.getClass().getMethod(jobOperation, Date.class);
-      Job aJob = new Job(jobName)   {
+      Job aJob = new Job(jobName)     {
 
         @Override
         public void execute(JobExecutionContext context) throws Exception {
@@ -676,5 +649,26 @@ public class SilverStatisticsManager
           ex.getMessage(), ex);
       throw new SchedulerException(ex.getMessage());
     }
+  }
+
+  @Override
+  public void triggerFired(SchedulerEvent anEvent) throws Exception {
+    SilverTrace.debug("silverstatistics",
+        "SilverStatisticsManager.handleSchedulerEvent", "The job '"
+        + anEvent.getJobExecutionContext().getJobName() + "' is starting");
+  }
+
+  @Override
+  public void jobSucceeded(SchedulerEvent anEvent) {
+    SilverTrace.debug("silverstatistics",
+        "SilverStatisticsManager.handleSchedulerEvent", "The job '"
+        + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
+  }
+
+  @Override
+  public void jobFailed(SchedulerEvent anEvent) {
+    SilverTrace.error("silverstatistics",
+        "SilverStatisticsManager.handleSchedulerEvent", "The job '"
+        + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
   }
 }

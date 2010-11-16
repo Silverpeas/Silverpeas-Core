@@ -27,6 +27,7 @@ package com.stratelia.silverpeas.silverpeasinitialize;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+@Deprecated
 public class SilverpeasContextInitializer implements ServletContextListener {
 
   @Override
@@ -43,7 +44,7 @@ public class SilverpeasContextInitializer implements ServletContextListener {
   public void contextInitialized(ServletContextEvent sce) {
     // Just to be sure that the Initializer is called at least once
     SilverpeasInitializer si = new SilverpeasInitializer();
-
+    //si.startInitialize();
   }
 
 }

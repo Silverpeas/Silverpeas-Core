@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.attachment.control;
 
 import java.util.Calendar;
@@ -33,9 +32,10 @@ import java.util.Locale;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.scheduler.Scheduler;
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
-import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
-import com.stratelia.silverpeas.scheduler.SimpleScheduler;
+import com.stratelia.silverpeas.scheduler.SchedulerEventListener;
+import com.stratelia.silverpeas.scheduler.SchedulerFactory;
 import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -43,10 +43,10 @@ import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
-public class ScheduledReservedFile implements SchedulerEventHandler {
+public class ScheduledReservedFile
+    implements SchedulerEventListener {
 
   public static final String ATTACHMENT_JOB_NAME_PROCESS = "A_ProcessReservedFileAttachment";
-
   private ResourceLocator resources = new ResourceLocator(
       "com.stratelia.webactiv.util.attachment.Attachment", "");
   private ResourceLocator generalMessage = new ResourceLocator(
@@ -55,42 +55,14 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
   public void initialize() {
     try {
       String cron = resources.getString("cronScheduledReservedFile");
-      SimpleScheduler.unscheduleJob(ATTACHMENT_JOB_NAME_PROCESS);
+      SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
+      Scheduler scheduler = schedulerFactory.getScheduler();
+      scheduler.unscheduleJob(ATTACHMENT_JOB_NAME_PROCESS);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
-      SimpleScheduler.scheduleJob(ATTACHMENT_JOB_NAME_PROCESS, trigger, this);
+      scheduler.scheduleJob(ATTACHMENT_JOB_NAME_PROCESS, trigger, this);
     } catch (Exception e) {
       SilverTrace.error("attachment", "ScheduledReservedFile.initialize()",
           "attachment.EX_CANT_INIT_SCHEDULED_RESERVED_FILE", e);
-    }
-  }
-
-  @Override
-  public void handleSchedulerEvent(SchedulerEvent aEvent) throws Exception {
-    switch (aEvent.getType()) {
-      case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
-        SilverTrace.error("Attachment",
-            "Attachment_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-            + aEvent.getJob().getJobName() + "' was not successfull");
-        break;
-
-      case SchedulerEvent.EXECUTION_SUCCESSFULL:
-        SilverTrace.debug("Attachment",
-            "Attachment_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-            + aEvent.getJob().getJobName() + "' was successfull");
-        break;
-        
-      case SchedulerEvent.EXECUTION:
-        SilverTrace.debug("Attachment",
-            "Attachment_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-            + aEvent.getJob().getJobName() + "' is executed");
-        doScheduledReservedFile();
-        break;
-
-      default:
-        SilverTrace.error("Attachment",
-            "Attachment_TimeoutManagerImpl.handleSchedulerEvent",
-            "Illegal event type");
-        break;
     }
   }
 
@@ -129,8 +101,8 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
         AttachmentDetail att = it.next();
         messageBody.append(message.getString("attachment.notifName")).append(
             " '").append(att.getLogicalName()).append("'");
-        messageBody_en.append(message_en.getString("attachment.notifName"))
-            .append(" '").append(att.getLogicalName()).append("'");
+        messageBody_en.append(message_en.getString("attachment.notifName")).append(" '").append(att.
+            getLogicalName()).append("'");
         SilverTrace.info("attachment",
             "ScheduledAlertUser.doScheduledAlertUser()",
             "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
@@ -162,8 +134,8 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
         AttachmentDetail att = itA.next();
         messageBody.append(message.getString("attachment.notifName")).append(
             " '").append(att.getLogicalName()).append("' ");
-        messageBody_en.append(message_en.getString("attachment.notifName"))
-            .append(" '").append(att.getLogicalName()).append("' ");
+        messageBody_en.append(message_en.getString("attachment.notifName")).append(" '").append(att.
+            getLogicalName()).append("' ");
         SilverTrace.info("attachment",
             "ScheduledAlertUser.doScheduledAlertUser()",
             "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
@@ -197,8 +169,8 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
         // envoyer une notif
         messageBody.append(message.getString("attachment.notifName")).append(
             " '").append(att.getLogicalName()).append("'");
-        messageBody_en.append(message_en.getString("attachment.notifName"))
-            .append(" '").append(att.getLogicalName()).append("'");
+        messageBody_en.append(message_en.getString("attachment.notifName")).append(" '").append(att.
+            getLogicalName()).append("'");
         SilverTrace.info("attachment",
             "ScheduledAlertUser.doScheduledAlertUser()",
             "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
@@ -224,9 +196,13 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
         "root.MSG_GEN_EXIT_METHOD");
   }
 
-  private void createMessage(ResourceLocator message, StringBuffer messageBody,
-      ResourceLocator message_en, StringBuffer messageBody_en,
-      AttachmentDetail att, boolean alert, boolean lib)
+  private void createMessage(ResourceLocator message,
+      StringBuffer messageBody,
+      ResourceLocator message_en,
+      StringBuffer messageBody_en,
+      AttachmentDetail att,
+      boolean alert,
+      boolean lib)
       throws AttachmentException {
     Calendar atDate = Calendar.getInstance();
     atDate.setTime(att.getExpiryDate());
@@ -246,19 +222,17 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
     if (lib) {
       subject = message.getString("attachment.notifSubjectLib");
       body = messageBody.append(" ").append(
-          message.getString("attachment.notifUserLib")).append("\n\n")
-          .toString();
+          message.getString("attachment.notifUserLib")).append("\n\n").toString();
     } else {
       if (alert) {
         subject = message.getString("attachment.notifSubjectAlert");
         body = messageBody.append(" ").append(
-            message.getString("attachment.notifUserAlert")).append(" (")
-            .append(date).append(") ").append("\n\n").toString();
+            message.getString("attachment.notifUserAlert")).append(" (").append(date).append(") ").
+            append("\n\n").toString();
       } else {
         subject = message.getString("attachment.notifSubjectExpiry");
         body = messageBody.append(" ").append(
-            message.getString("attachment.notifUserExpiry")).append("\n\n")
-            .toString();
+            message.getString("attachment.notifUserExpiry")).append("\n\n").toString();
       }
     }
 
@@ -268,19 +242,17 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
     if (lib) {
       subject_en = message_en.getString("attachment.notifSubjectLib");
       body_en = messageBody.append(" ").append(
-          message_en.getString("attachment.notifUserLib")).append("\n\n")
-          .toString();
+          message_en.getString("attachment.notifUserLib")).append("\n\n").toString();
     } else {
       if (alert) {
         subject_en = message_en.getString("attachment.notifSubjectAlert");
         body_en = messageBody_en.append(" ").append(
-            message_en.getString("attachment.notifUserAlert")).append(" (")
-            .append(date).append(") ").append("\n\n").toString();
+            message_en.getString("attachment.notifUserAlert")).append(" (").append(date).append(") ").
+            append("\n\n").toString();
       } else {
         subject_en = message_en.getString("attachment.notifSubjectExpiry");
         body_en = messageBody_en.append(" ").append(
-            message_en.getString("attachment.notifUserExpiry")).append("\n\n")
-            .toString();
+            message_en.getString("attachment.notifUserExpiry")).append("\n\n").toString();
       }
     }
 
@@ -312,5 +284,27 @@ public class ScheduledReservedFile implements SchedulerEventHandler {
       attachmentBm = new AttachmentBmImpl();
     }
     return attachmentBm;
+  }
+
+  @Override
+  public void triggerFired(SchedulerEvent anEvent) throws Exception {
+    SilverTrace.debug("Attachment",
+        "Attachment_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
+        + anEvent.getJobExecutionContext().getJobName() + "' is executed");
+    doScheduledReservedFile();
+  }
+
+  @Override
+  public void jobSucceeded(SchedulerEvent anEvent) {
+    SilverTrace.debug("Attachment",
+        "Attachment_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
+        + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
+  }
+
+  @Override
+  public void jobFailed(SchedulerEvent anEvent) {
+    SilverTrace.error("Attachment",
+        "Attachment_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
+        + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
   }
 }
