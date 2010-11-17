@@ -111,7 +111,7 @@
       session.setAttribute("Silverpeas_Attachment_Context", context);
       session.setAttribute("Silverpeas_Attachment_Profile", profile);
 
-      boolean indexIt = !"0".equals(sIndexIt);
+      boolean indexIt = StringUtil.getBooleanValue(sIndexIt);
       session.setAttribute("Silverpeas_Attachment_IndexIt", new Boolean(indexIt));
 
       //Example: http://myserver
@@ -288,7 +288,7 @@
       String maximumFileSize = uploadSettings.getString("MaximumFileSize", "10000000");
 %>
 <tr><td class="dragNdrop">
-    <a href="javascript:showHideDragDrop('<%=httpServerBase + m_Context%>/DragAndDrop/drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&PubId=<%=id%>&IndexIt=1&Context=<%=context%>','<%=httpServerBase + m_Context%>/upload/explanationShort_<%=language%>.html','<%=attResources.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_Context%>','<%=attResources.getString("GML.DragNDropExpand")%>','<%=attResources.getString("GML.DragNDropCollapse")%>')" id="dNdActionLabel">Déposer rapidement un fichier...</a>
+    <a href="javascript:showHideDragDrop('<%=httpServerBase + m_Context%>/DragAndDrop/drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&PubId=<%=id%>&IndexIt=<%=indexIt%>&Context=<%=context%>','<%=httpServerBase + m_Context%>/upload/explanationShort_<%=language%>.html','<%=attResources.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_Context%>','<%=attResources.getString("GML.DragNDropExpand")%>','<%=attResources.getString("GML.DragNDropCollapse")%>')" id="dNdActionLabel">Déposer rapidement un fichier...</a>
     <div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding: 0px" align="top"></div>
   </td>
   <% }%>

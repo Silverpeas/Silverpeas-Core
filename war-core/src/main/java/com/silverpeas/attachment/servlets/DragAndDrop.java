@@ -23,6 +23,7 @@
  */
 package com.silverpeas.attachment.servlets;
 
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import java.io.File;
 import java.io.IOException;
@@ -116,8 +117,7 @@ public class DragAndDrop extends HttpServlet {
       SilverTrace.info("attachment", "DragAndDrop.doPost",
           "root.MSG_GEN_PARAM_VALUE", "userId = " + userId);
       String context = req.getParameter("Context");
-      boolean bIndexIt = "1".equals(req.getParameter("IndexIt"));
-
+      boolean bIndexIt = StringUtil.getBooleanValue(req.getParameter("IndexIt"));
 
       List<FileItem> items = FileUploadUtil.parseRequest(req);
       for (FileItem item : items) {

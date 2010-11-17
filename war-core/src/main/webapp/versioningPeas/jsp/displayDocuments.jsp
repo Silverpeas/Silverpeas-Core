@@ -216,7 +216,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 	String sHideAllVersionsLink = m_MainSessionCtrl.getOrganizationController().getComponentParameterValue(componentId, "hideAllVersionsLink");
 	boolean hideAllVersionsLink = StringUtil.getBooleanValue(sHideAllVersionsLink) && profile.equals("user");
 
-	boolean indexIt = "1".equals(sIndexIt);
+	boolean indexIt = StringUtil.getBooleanValue(sIndexIt);
 
 	boolean topicRightsEnabled = false;
 	if (StringUtil.isDefined(s_topicRightsEnabled))
@@ -654,7 +654,7 @@ function reloadIncludingPage()
 function updateAttachment(attachmentId)
 {
 	var url = "<%=m_context%>/RVersioningPeas/jsp/versions.jsp";
-	SP_openWindow(url + "?DocId="+attachmentId+"&ForeignId=<%=id%>&ComponentId=<%=componentId%>&Context=Images&IndexIt=1&profile=<%=profile%>", "", "750", "400","scrollbars=yes", "resizable", "alwaysRaised");
+	SP_openWindow(url + "?DocId="+attachmentId+"&ForeignId=<%=id%>&ComponentId=<%=componentId%>&Context=Images&IndexIt=<%=indexIt%>&profile=<%=profile%>", "", "750", "400","scrollbars=yes", "resizable", "alwaysRaised");
 }
 
 // Suppression du fichier

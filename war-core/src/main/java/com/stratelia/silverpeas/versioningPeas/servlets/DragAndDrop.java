@@ -95,8 +95,7 @@ public class DragAndDrop extends HttpServlet {
       SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
           "userId = " + userId);
       int versionType = Integer.parseInt(req.getParameter("Type"));
-      String indexIt = req.getParameter("IndexIt");
-      boolean bIndexIt = "1".equals(indexIt);
+      boolean bIndexIt = StringUtil.getBooleanValue(req.getParameter("IndexIt"));
 
       String documentId = req.getParameter("DocumentId");
 

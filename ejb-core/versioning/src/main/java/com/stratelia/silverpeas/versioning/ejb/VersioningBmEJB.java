@@ -770,10 +770,17 @@ public class VersioningBmEJB implements SessionBean {
     Connection con = openConnection();
 
     try {
-      List<DocumentVersion> versions = VersioningDAO.getDocumentVersions(con, document_pk);
+      Document document = getDocument(document_pk);
 
-      VersioningDAO.deleteDocument(con, document_pk);
+      // remove all versions
+      List<DocumentVersion> versions = VersioningDAO.getDocumentVersions(con, document_pk);
       deleteDocumentFiles(versions, document_pk);
+
+      // remove document itself
+      VersioningDAO.deleteDocument(con, document_pk);
+
+      // remove index
+      deleteIndex(document);
     } catch (Exception e) {
       throw new VersioningRuntimeException("VersioningBmEJB.deleteDocument",
           SilverpeasRuntimeException.ERROR, "root.EX_SQL_QUERY_FAILED", "", e);
