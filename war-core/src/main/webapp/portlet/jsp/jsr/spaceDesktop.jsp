@@ -28,6 +28,19 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%@ include file="header.jsp"%>
+
+<%
+	String currentSpaceId = request.getParameter("SpaceId");
+	
+	Window window = gef.getWindow();
+
+	BrowseBar browseBar = window.getBrowseBar();
+  	browseBar.setSpaceId(currentSpaceId);
+  	browseBar.setComponentId(null);
+  	browseBar.setDomainName(message.getString("portlets.homepage"));
+	
+	out.println(window.printBefore());
+%>
   
 <div id="portal-content">
 
@@ -51,9 +64,12 @@
   </c:choose>
 
 </div> <!-- closes portal-content -->
+
+<%
+	out.println(window.printAfter());
+%>
   
 </div> <!-- closes portal-page -->
 
 </body>
-
 </html>
