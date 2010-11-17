@@ -460,7 +460,7 @@ public class AjaxServletLookV5 extends HttpServlet {
         // Check user favorite space
         loadCurSpace = isLoadingContentNeeded(userMenuDisplayMode, userId, subSpaceId, listUFS,
             orgaController);
-        if (loadCurSpace) {
+        if (loadCurSpace && isSpaceVisible(userId, subSpaceId, orgaController)) {
           StringBuilder itemSB = new StringBuilder(200);
           itemSB.append("<item ");
           itemSB.append(getSpaceAttributes(space, language, defaultLook, helper));
