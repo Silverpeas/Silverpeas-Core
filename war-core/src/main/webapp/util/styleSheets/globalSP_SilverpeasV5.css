@@ -3108,3 +3108,8 @@ ul#attachmentList li.attachmentListItem .lineMain {
 	margin-top:20px;
 	padding:5px;
 }
+
+#admin-role .group-icon,
+#admin-role .user-icon {
+	margin: 1px;
+}

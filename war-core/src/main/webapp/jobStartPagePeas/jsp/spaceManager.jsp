@@ -89,7 +89,7 @@ function deleteRoleContent() {
 }	
 </script>
 </HEAD>
-<BODY>
+<BODY id="admin-role">
 <%
 	if (m_SpaceExtraInfos.isAdmin)
 	{
@@ -141,9 +141,9 @@ out.println(board.printBefore());
 			group = (Group) groups.next();
 			out.println("<TR>");
 			if (group.isSynchronized())
-				out.println("<TD align=\"center\"><IMG SRC=\""+resource.getIcon("JSPP.scheduledGroup")+"\"></TD>");
+				out.println("<TD align=\"center\"><img src=\""+resource.getIcon("JSPP.scheduledGroup")+"\" class=\"group-icon\"/></TD>");
 			else
-				out.println("<TD align=\"center\"><IMG SRC=\""+resource.getIcon("JSPP.group")+"\"></TD>");
+				out.println("<TD align=\"center\"><img src=\""+resource.getIcon("JSPP.group")+"\" class=\"group-icon\"/></TD>");
 			out.println("<TD align=\"center\">"+group.getName()+"</TD>");
 			out.println("</TR>");
 		}
@@ -155,7 +155,7 @@ out.println(board.printBefore());
 		{
 			user = (UserDetail) users.next();
 			out.println("<TR>");
-			out.println("<TD align=\"center\"><IMG SRC=\""+resource.getIcon("JSPP.user")+"\"></TD>");
+			out.println("<TD align=\"center\"><img src=\""+resource.getIcon("JSPP.user")+"\" class=\"user-icon\"/></TD>");
 			out.println("<TD align=\"center\">"+user.getDisplayedName()+"</TD>");
 			out.println("</TR>");
 		}
@@ -192,9 +192,9 @@ out.println(board.printBefore());
 			group = (Group) groups.next();
 			out.println("<TR>");
 			if (group.isSynchronized())
-				out.println("<TD align=\"center\"><IMG SRC=\""+resource.getIcon("JSPP.scheduledGroup")+"\"></TD>");
+				out.println("<TD align=\"center\"><img src=\""+resource.getIcon("JSPP.scheduledGroup")+"\" class=\"group-icon\"/></TD>");
 			else
-				out.println("<TD align=\"center\"><IMG SRC=\""+resource.getIcon("JSPP.group")+"\"></TD>");
+				out.println("<TD align=\"center\"><img src=\""+resource.getIcon("JSPP.group")+"\" class=\"group-icon\"/></TD>");
 			out.println("<TD align=\"center\">"+group.getName()+"</TD>");
 			out.println("</TR>");
 		}
@@ -206,7 +206,7 @@ out.println(board.printBefore());
 		{
 			user = (UserDetail) users.next();
 			out.println("<TR>");
-			out.println("<TD align=\"center\"><IMG SRC=\""+resource.getIcon("JSPP.user")+"\"></TD>");
+			out.println("<TD align=\"center\"><img src=\""+resource.getIcon("JSPP.user")+"\" class=\"user-icon\"/></TD>");
 			out.println("<TD align=\"center\">"+user.getDisplayedName()+"</TD>");
 			out.println("</TR>");
 		}

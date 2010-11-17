@@ -106,7 +106,7 @@ function deleteUsersGroupsProfileInstance() {
 }
 </script>                
 </HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5>
+<BODY id="admin-role">
 <%
 	// Profile edition
 	if (idProfile == null || idProfile.equals("")) {//creation
@@ -179,9 +179,9 @@ out.println(board.printBefore());
 			group = (Group) groups.next();
 			out.println("<TR>");
 			if (group.isSynchronized())
-				out.println("<TD align=\"center\"><IMG SRC=\""+resource.getIcon("JSPP.scheduledGroup")+"\"></TD>");
+				out.println("<TD align=\"center\"><img src=\""+resource.getIcon("JSPP.scheduledGroup")+"\" class=\"group-icon\"/></TD>");
 			else
-				out.println("<TD align=\"center\"><IMG SRC=\""+resource.getIcon("JSPP.group")+"\"></TD>");
+				out.println("<TD align=\"center\"><img src=\""+resource.getIcon("JSPP.group")+"\" class=\"group-icon\"/></TD>");
 			out.println("<TD align=\"center\">"+group.getName()+"</TD>");
 			out.println("</TR>");
 		}
@@ -193,7 +193,7 @@ out.println(board.printBefore());
 		{
 			user = (UserDetail) users.next();
 			out.println("<TR>");
-			out.println("<TD align=\"center\"><IMG SRC=\""+resource.getIcon("JSPP.user")+"\"></TD>");
+			out.println("<TD align=\"center\"><img src=\""+resource.getIcon("JSPP.user")+"\" class=\"user-icon\"/></TD>");
 			out.println("<TD align=\"center\">"+user.getLastName() + " " + user.getFirstName()+"</TD>");
 			out.println("</TR>");
 		}
@@ -231,9 +231,9 @@ out.println(board.printBefore());
 			group = (Group) groups.next();
 			out.println("<TR>");
 			if (group.isSynchronized())
-				out.println("<TD align=\"center\"><IMG SRC=\""+resource.getIcon("JSPP.scheduledGroup")+"\"></TD>");
+				out.println("<TD align=\"center\"><img src=\""+resource.getIcon("JSPP.scheduledGroup")+"\" class=\"group-icon\"/></TD>");
 			else
-				out.println("<TD align=\"center\"><IMG SRC=\""+resource.getIcon("JSPP.group")+"\"></TD>");
+				out.println("<TD align=\"center\"><img src=\""+resource.getIcon("JSPP.group")+"\" class=\"group-icon\"/></TD>");
 			out.println("<TD align=\"center\">"+group.getName()+"</TD>");
 			out.println("</TR>");
 		}
@@ -245,7 +245,7 @@ out.println(board.printBefore());
 		{
 			user = (UserDetail) users.next();
 			out.println("<TR>");
-			out.println("<TD align=\"center\"><IMG SRC=\""+resource.getIcon("JSPP.user")+"\"></TD>");
+			out.println("<TD align=\"center\"><img src=\""+resource.getIcon("JSPP.user")+"\" class=\"user-icon\"/></TD>");
 			out.println("<TD align=\"center\">"+user.getLastName() + " " + user.getFirstName()+"</TD>");
 			out.println("</TR>");
 		}

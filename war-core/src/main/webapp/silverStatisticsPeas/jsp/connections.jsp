@@ -78,7 +78,7 @@ function DoIdle()
 </SCRIPT>
 
 </HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5>
+<BODY>
 
 <%
 	browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics"));
@@ -124,7 +124,7 @@ function DoIdle()
 
           		arrayLine = arrayPane.addArrayLine();
 
-                arrayLine.addArrayCellText("<div align=right><img src=\""+resources.getIcon("silverStatisticsPeas.icoMonitor")+"\" border=0></div>");
+                arrayLine.addArrayCellText("<div align=\"right\"><img src=\""+resources.getIcon("silverStatisticsPeas.icoMonitor")+"\" alt=\"\"/></div>");
 
           		arrayLine.addArrayCellText(item.m_IP);
 				
@@ -134,7 +134,7 @@ function DoIdle()
 				cellText = arrayLine.addArrayCellText(item.formatDuration(duration));
 				cellText.setCompareOn(new Long(duration));
 
-                arrayLine.addArrayCellText("<div align=left><a href=#><img src=\""+resources.getIcon("silverStatisticsPeas.icoNotifySession")+"\" border=0 onclick=\"javascript:openSPWindow('DisplayNotifySession?theUserId=" + item.m_User.getId() + "','DisplayNotifySession')\"></A>&nbsp;<a href=\"javascript:ConfirmAndSend('KickSession?theSessionId=" + URLEncoder.encode(item.m_SessionId) + "','" + Encode.javaStringToJsString(resources.getString("silverStatisticsPeas.ConfirmKickSession") + item.m_User.getLogin() + " (" + item.m_User.getLastName() + " " + item.m_User.getFirstName()) + ") ?')\"><img src=\""+resources.getIcon("silverStatisticsPeas.icoKillSession")+"\" border=0 onclick=\"\"></A></div>");
+                arrayLine.addArrayCellText("<div align=\"left\"><a href=\"#\"><img src=\""+resources.getIcon("silverStatisticsPeas.icoNotifySession")+"\" onclick=\"javascript:openSPWindow('DisplayNotifySession?theUserId=" + item.m_User.getId() + "','DisplayNotifySession')\"></a>&nbsp;<a href=\"javascript:ConfirmAndSend('KickSession?theSessionId=" + URLEncoder.encode(item.m_SessionId) + "','" + Encode.javaStringToJsString(resources.getString("silverStatisticsPeas.ConfirmKickSession") + item.m_User.getLogin() + " (" + item.m_User.getDisplayedName()) + ") ?')\"><img src=\""+resources.getIcon("silverStatisticsPeas.icoKillSession")+"\"/></a></div>");
             }
         
         	out.println(arrayPane.print());
