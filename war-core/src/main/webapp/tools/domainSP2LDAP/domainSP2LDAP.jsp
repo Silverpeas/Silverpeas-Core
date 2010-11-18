@@ -72,10 +72,10 @@
       %>
       <center>
 			<table>
-  		<tr><td colspan="5">La migration se fait sur la comparaison du <b>prénom+nom</b></center></td></tr>
+  		<tr><td colspan="5">La migration se fait sur la comparaison du <b>pr&eacute;nom+nom</b></center></td></tr>
 			<tr><td colspan="5"><b><%=db.getNbUsers(db.DOMAIN_SILVERPEAS_ID) %></b> utilisateurs dans le domaine Silverpeas</td></tr>
 			<tr><td colspan="5"><b><%=db.getNbUsers(domainLDAPId) %></b> utilisateurs dans le LDAP</td></tr>
-			<tr><td colspan="5"><b><%=usersSPProcessed.size() %></b> utilisateurs traités</td></tr>
+			<tr><td colspan="5"><b><%=usersSPProcessed.size() %></b> utilisateurs trait&eacute;s</td></tr>
 			<tr><td></td></tr>
 				<% if (usersSPProcessed.size() > 0) { %>
 						<tr><td class="browseBar">DOMAIN ID</td><td class="browseBar">PRENOM</td><td class="browseBar">NOM</td><td class="browseBar">SPECIFIC_ID</td><td class="browseBar">EMAIL</td><td class="browseBar">LOGIN</td><td class="browseBar">DROITS</td></tr></b>
@@ -95,7 +95,7 @@
 
 			<tr><td></td></tr>
 			<tr><td></td></tr>
-			<tr><td colspan="5"><b><%=usersSPNotProcessed.size() %></b> utilisateurs non traités (à traiter manuellement si nécessaire) :</td></tr>
+			<tr><td colspan="5"><b><%=usersSPNotProcessed.size() %></b> utilisateurs non trait&eacute;s (&agrave; traiter manuellement si n&eacute;cessaire) :</td></tr>
 			<tr><td></td></tr>
 				<% if (usersSPNotProcessed.size() > 0) { %>
 						<tr><td class="browseBar">DOMAIN ID</td><td class="browseBar">PRENOM</td><td class="browseBar">NOM</td><td class="browseBar">SPECIFIC_ID</td><td class="browseBar">EMAIL</td><td class="browseBar">LOGIN</td><td class="browseBar">DROITS</td></tr></b>
@@ -124,11 +124,11 @@
 	{
     Domain[] domains = db.getDomains();
     %>
-		<center>- Pré-requis: Le domaine LDAP doit être crée et synchronisé</b> -</center>
- 		<center>- La migration se fait sur la comparaison du prénom+nom</b> -</center>
- 		<center><h3><span class="MessageReadHighPriority"><b>ATTENTION !!</b></span> Assurez-vous d'avoir effectué un backup de la base de données car cette opération met à jour la table des utilisateurs</h3><br></center>
+		<center>- Pr&eacute;-requis: Le domaine LDAP doit &ecirc;tre cr&eacute;e et synchronis&eacute;</b> -</center>
+ 		<center>- La migration se fait sur la comparaison du pr&eacute;nom+nom</b> -</center>
+		<center>- <u>Note:</u> Les groupes contenant des utilisateurs migr&eacute;s seront d&eacute;plac&eacute;s dans le domaine mixte.</center>
+ 		<center><h3><span class="MessageReadHighPriority"><b>ATTENTION !!</b></span> Assurez-vous d'avoir effectu&eacute; un backup de la base de donn&eacute;es car cette op&eacute;ration met &agrave; jour la table des utilisateurs</h3><br></center>
 		<br>
-
 		<center>
 		<form action="domainSP2LDAP.jsp" name="toolForm">
 			<input type="hidden" name="toLaunch" value="false">
@@ -153,7 +153,8 @@
 <%
 	out.println(board.printAfter());
 	ButtonPane buttonPane = gef.getButtonPane();
-  buttonPane.addButton(validateButton);
+	if (!toLaunch)
+	  buttonPane.addButton(validateButton);
   buttonPane.addButton(homeButton);
   buttonPane.addButton(homeTools);
 	out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
