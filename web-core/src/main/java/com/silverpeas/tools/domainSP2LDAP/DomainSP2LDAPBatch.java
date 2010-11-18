@@ -3,12 +3,16 @@ package com.silverpeas.tools.domainSP2LDAP;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class DomainSP2LDAPBatch
@@ -42,7 +46,8 @@ public class DomainSP2LDAPBatch
 	public ArrayList<HashMap<String, UserDetail>> processMigration(String domainLDAP_Id) throws Exception
 	{
 	  SynchroReport.info("DomainSP2LDAPBatch.processMigration()", "root.MSG_ENTER_METHOD",null);
-
+	  AdminController adminController = getAdminController();
+	  
 	  ArrayList<HashMap<String, UserDetail>> returnListLDAPUsers = new ArrayList<HashMap<String, UserDetail>>();
 	  
     HashMap<String,UserDetail> processedUsers = new HashMap<String, UserDetail>();
@@ -52,7 +57,7 @@ public class DomainSP2LDAPBatch
 		try
 		{
 			// get all users from ldap
-		  String[] listLDAPUsersIds = getAdminController().getUserIdsOfDomain(domainLDAP_Id);
+		  String[] listLDAPUsersIds = adminController.getUserIdsOfDomain(domainLDAP_Id);
 		  SynchroReport.info("DomainSP2LDAPBatch.processMigration()", "Utilisateurs du domaine Silverpeas="+listLDAPUsersIds.length, null);
 		  if (listLDAPUsersIds.length==0)
 		    return returnListLDAPUsers;
@@ -65,7 +70,8 @@ public class DomainSP2LDAPBatch
 		  }
 		  
       // get all users from domainSilverpeas
-      String[] listSilverpeasUsersIds = getAdminController().getUserIdsOfDomain(DOMAIN_SILVERPEAS_ID);
+      String[] listSilverpeasUsersIds = adminController.getUserIdsOfDomain(DOMAIN_SILVERPEAS_ID);
+      boolean groupToProcess = false;
       for (int i=0; i<listSilverpeasUsersIds.length; i++)
       {
         UserDetail userDetail = getOrganizationController().getUserDetail(listSilverpeasUsersIds[i]);
@@ -76,20 +82,39 @@ public class DomainSP2LDAPBatch
           //Delete ldap user entry
           UserDetail userDetailLDAP = listLDAPUsers.get(keyName);
           
-          getAdminController().synchronizeRemoveUser(userDetailLDAP.getId());
+          adminController.synchronizeRemoveUser(userDetailLDAP.getId());
 
           //update silverpeas user entry (withe ldap infos)
           userDetail.setSpecificId(userDetailLDAP.getSpecificId());
           userDetail.setDomainId(userDetailLDAP.getDomainId());
-          getAdminController().updateUser(userDetail);
+          adminController.updateUser(userDetail);
           //Users processed
           processedUsers.put(keyName, userDetail);
+          groupToProcess = true;
         }
         else
           notProcessedSPUsers.put(keyName, userDetail);
-
       }
-		}
+      
+      if (groupToProcess) {
+        // Move groups from domainSP to mixtDomain
+        Group[] groups = getOrganizationController().getAllGroups();
+        SynchroReport.info("DomainSP2LDAPBatch.processMigration()", "DEBUT Migration des groupes du domaine SP vers le domaine mixte...", null);
+        for (int i=0; i<groups.length; i++)
+        {
+          Group group = groups[i];
+          if (DOMAIN_SILVERPEAS_ID.equals(group.getDomainId()))
+          {
+            int nextId = DBUtil.getNextId("ST_GROUP", "specificId");
+            group.setSpecificId(new Integer(nextId).toString());
+            group.setDomainId(null);
+            adminController.updateGroup(group);
+            SynchroReport.info("DomainSP2LDAPBatch.processMigration()", "- Groupe "+group.getName()+" avec "+group.getUserIds().length+" utilisateurs d&eacute;plac&eacute;s dans le domaine Mixte", null);
+          }
+        }
+        SynchroReport.info("DomainSP2LDAPBatch.processMigration()", "FIN Migration des groupes du domaine SP vers le domaine mixte...", null);
+      }
+    }
     catch (Exception e)
 		{
 			e.printStackTrace();
