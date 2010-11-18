@@ -350,7 +350,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     if (image.exists()) {
       return "/display/avatar/" + avatar;
     } else {
-      return "/directory/jsp/icons/Photo_profil.jpg";
+      return "/directory/jsp/icons/avatar.png";
     }
   }
 }

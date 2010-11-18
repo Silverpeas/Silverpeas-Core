@@ -60,7 +60,7 @@ public class Member {
       profilPhoto = "/display/avatar/" + avatar;
       this.avatar = true;
     } else {
-      profilPhoto = "/directory/jsp/icons/Photo_profil.jpg";
+      profilPhoto = "/directory/jsp/icons/avatar.png";
 
     }
     Collection<SessionInfo> sessionInfos = SessionManager.getInstance().getConnectedUsersList();

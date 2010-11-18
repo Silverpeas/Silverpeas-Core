@@ -515,6 +515,10 @@
     <servlet-class>com.silverpeas.directory.servlets.DirectoryServlet</servlet-class>
   </servlet>
   <servlet>
+    <servlet-name>DirectoryJSONServlet</servlet-name>
+    <servlet-class>com.silverpeas.directory.servlets.DirectoryJSONServlet</servlet-class>
+  </servlet>
+  <servlet>
     <servlet-name>ThumbnailRequestRouter</servlet-name>
     <display-name>ThumbnailRequestRouter</display-name>
     <description>no description</description>
@@ -890,6 +894,10 @@
   <servlet-mapping>
     <servlet-name>DirectoryServlet</servlet-name>
     <url-pattern>/RdirectoryServlet/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>DirectoryJSONServlet</servlet-name>
+    <url-pattern>/DirectoryJSON</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>ThumbnailRequestRouter</servlet-name>

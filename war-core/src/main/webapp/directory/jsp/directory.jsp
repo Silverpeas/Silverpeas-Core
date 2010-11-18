@@ -35,20 +35,23 @@
 <%@page import="com.silverpeas.util.StringUtil"%>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination"%>
+<%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.*"%>
+<%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.*"%>
 <%@page import="com.silverpeas.directory.model.Member"%>
 <%@page import="java.util.List"%>
-<%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
-<%@ page import="java.io.File"%>
+<%@page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
+<%@page import="java.io.File"%>
+<%@page import="com.stratelia.silverpeas.notificationManager.NotificationParameters"%>
+
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" var="LML" />
 <view:setBundle basename="com.stratelia.webactiv.multilang.generalMultilang" var="GML" />
 <c:set var="browseContext" value="${requestScope.browseContext}" />
  <c:url value="/RprofilPublic/ProfilPublic" var="profilPublic" />
 
-
 <%
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-        "ApplicationURL");
+	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
+    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
     List members = (List) request.getAttribute("Members");
     Pagination pagination = (Pagination) request.getAttribute("pagination");
 
@@ -61,15 +64,62 @@
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript">
-      function OpenPopup(usersId,name){
-        options="location=no, menubar=no,toolbar=no,scrollbars=yes,resizable,alwaysRaised"
-        SP_openWindow('<%=m_context%>/Rdirectory/jsp/NotificationView?Recipient='+usersId , 'strWindowName', '500', '200',options );
-
+      var targetUserId = -1;
+      function OpenPopup(userId, name){
+        $("#directoryDialog").dialog("option", "title", name);
+        targetUserId = userId;
+    	$("#directoryDialog").dialog("open");
       }
+
+      function sendNotification(userId) {
+          var title = stripInitialWhitespace($("#txtTitle").val());
+          var errorMsg = "";
+          if (isWhitespace(title)) {
+              errorMsg = "<fmt:message key="GML.thefield" bundle="${GML}"/>"+ " <fmt:message key="notificationUser.object" />"+ " <fmt:message key="GML.isRequired" bundle="${GML}"/>";
+          }
+          if (errorMsg == "") {
+          	$.getJSON("<%=m_context%>/DirectoryJSON",
+                  	{ 
+          				IEFix: new Date().getTime(),
+          				Action: "SendMessage",
+          				Title: $("#txtTitle").val(),
+          				Message: $("#txtMessage").val(),
+          				TargetUserId: targetUserId
+                  	},
+          			function(data){
+              			if (data.success) {
+                  			closeDialog();
+              			} else {
+                  			alert(data.error);
+              			}
+          			});
+          } else {
+            window.alert(errorMsg);
+          }
+      }
+
+      function closeDialog() {
+      	$("#directoryDialog").dialog("close");
+      	$("#txtTitle").val("");
+      	$("#txtMessage").val("");
+      }
+      
       function OpenPopupInvitaion(usersId,name){
         options="directories=no, menubar=no,toolbar=no,scrollbars=yes,resizable=no,alwaysRaised"
         SP_openWindow('<%=m_context%>/Rinvitation/jsp/invite?Recipient='+usersId, 'strWindowName', '500', '200','directories=no, menubar=no,toolbar=no,scrollbars=yes, resizable=no ,alwaysRaised');
       }
+
+      $(document).ready(function(){
+
+	        var dialogOpts = {
+	                modal: true,
+	                autoOpen: false,
+	                height: 250,
+	                width: 600
+	        };
+	
+	        $("#directoryDialog").dialog(dialogOpts);    //end dialog
+      });
     </script>
 
   </head>
@@ -77,6 +127,19 @@
     <view:window>
       <view:frame>
         <div id="indexAndSearch">
+          <div id="search">
+            <form name="search" action="searchByKey" method="post">
+            	<input type="text" name="key" size="40" maxlength="60" />
+            	<!-- Ajout d'un bouton rechercher -->
+                   <table cellspacing="0" cellpadding="0" border="0">
+                        <tbody><tr>
+                            <td align="left" class="gaucheBoutonV5"><img alt="" src="/silverpeas/util/viewGenerator/icons/px.gif"/></td>
+                            <td nowrap="nowrap" class="milieuBoutonV5"><a href="">Rechercher</a></td>
+                            <td align="right" class="droiteBoutonV5"><img alt="" src="/silverpeas/util/viewGenerator/icons/px.gif"/></td>
+                         </tr></tbody>
+                    </table>
+            </form>
+          </div>
           <div id="index">
             <%
                 // afficher la bande d'index alphabetique
@@ -89,79 +152,61 @@
                         "<a class=\"active\" href=\"" + i + "\">" + i + "</a>");
                   } else {
                     out.println(
-                        "<a class=\"index\" href=\"" + i + "\">" + i + "</a>");
+                        "<a href=\"" + i + "\">" + i + "</a>");
                   }
                 }
+                out.println(" - ");
                 if (para != null && para.equals("tous")) {
                   out.println("<a class=\"active\" href=\"tous\">Tous</a>");
                 } else {
-                  out.println("<a class=\"index\" href=\"tous\">Tous</a>");
+                  out.println("<a href=\"tous\">Tous</a>");
                 }
             %>
-          </div>
-          <div id="search">
-            <form name="search" action="searchByKey" method="post">
-            	<table cellpadding="0" cellspacing="0">
-              <tr><td><input type="text" name="key" size="40" maxlength="60" /></td><td>&nbsp;</td><td><view:button label="Rechercher" action="javascript:document.search.submit()"></view:button></td>
-              </tr>
-              </table>
-            </form>
-          </div>
+         </div>          
         </div>
         <div id="users">
-          <ol class="message_list">
+          <ol class="message_list aff_colonnes">
             <%
                 for (int i = 0; i < members.size(); i++) {
                   Member member = (Member) members.get(i);
             %>
-            <li>
-              <view:board>
-                <div id="infoAndPhoto">
-                  <div id="profilPhoto">
-                  	<% if (!member.haveAvatar()) { %>
-                    	<a href="createPhoto"><img src="<%=m_context + member.getProfilPhoto()%>" alt="viewUser" class="defaultAvatar"/></a>
-                    <% } else { %>
-                    	<a href="createPhoto"><img src="<%=m_context + member.getProfilPhoto()%>" alt="viewUser" class="avatar"/></a>
-                    <% } %>
-                  </div>
-                  <div id="info">
-                    <ul>
-                      <li> <a class="userName" href="<%=m_context%>/Rprofil/jsp/Main?userId=<%=member.getId()%>"
-                              ><%=member.getLastName() + " " + member.getFirstName()%></a>
-                      </li>
-                      <li>
-                        <a class="userMail" href="#" onclick="OpenPopup(<%=member.getId()%>,'<%=member.getLastName() + " "
-                                               + member.getFirstName()%>')"><%=member.geteMail()%>
-                        </a>
-                      </li>
-                      <li>
+            <li class="intfdcolor">
+                 <div class="profilPhoto">
+                 	<% if (!member.haveAvatar()) { %>
+                   	<a href="<%=m_context%>/Rprofil/jsp/Main?userId=<%=member.getId()%>"><img src="<%=m_context + member.getProfilPhoto()%>" alt="viewUser" class="defaultAvatar"/></a>
+                   <% } else { %>
+                   	<a href="<%=m_context%>/Rprofil/jsp/Main?userId=<%=member.getId()%>"><img src="<%=m_context + member.getProfilPhoto()%>" alt="viewUser" class="avatar"/></a>
+                   <% } %>
+                 </div>
+                 <div class="info">
+                   <ul>
+                     <li class="userName"> <a href="<%=m_context%>/Rprofil/jsp/Main?userId=<%=member.getId()%>"><%=member.getLastName() + " " + member.getFirstName()%></a></li>
+                     <li class="infoConnection">
+                     	<% if (member.isConnected()) { %>
+                       		<img src="<%=m_context%>/util/icons/online.gif" alt="connected"/> <fmt:message key="directory.connected" bundle="${LML}" /> <%=member.getDuration()%>
+                       <% } else { %>
+                       		<img src="<%=m_context%>/util/icons/offline.gif" alt="deconnected"/> <fmt:message key="directory.deconnected" bundle="${LML}" />
+                       <% } %>
+                     </li>
+                     <li class="userType">
                         <fmt:message key="<%=member.getAccessLevel()%>"
-                                     bundle="${LML}" var="carAccessLevel" />
-                        <fmt:message key="${carAccessLevel}" bundle="${GML}" />
-                      </li>
-                      <li>
-                        <% if (member.isConnected()) { %>
-                        	<img src="<%=m_context%>/directory/jsp/icons/connected.jpg" width="10" height="10"
-                            	 alt="connected"/> <fmt:message key="directory.connected" bundle="${LML}" /> <%=member.getDuration()%>
-                        <% } else { %>
-                        	<img src="<%=m_context%>/directory/jsp/icons/deconnected.jpg" width="10" height="10" alt="deconnected"/> <fmt:message key="directory.deconnected" bundle="${LML}" />
-                        <% } %>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
+                                    bundle="${LML}" var="carAccessLevel" />
+                       	<fmt:message key="${carAccessLevel}" bundle="${GML}" />
+                     </li>
+                     <li class="userMail">
+                     	<a href="#" onclick="OpenPopup(<%=member.getId()%>,'<%=member.getLastName() + " " + member.getFirstName()%>')"><%=member.geteMail()%></a>
+                     </li>                     
+                   </ul>
+                 </div>
                 <div class="action">
-                	
                   <% if (!request.getAttribute("MyId").equals(member.getId())) { %>
-                  <ul>
 	                  <% if (!member.isRelationOrInvitation(request.getAttribute("MyId").toString())) { %>
-	                  	<li><a href="#" onclick="OpenPopupInvitaion(<%=member.getId()%>,'<%=member.getLastName() + " " + member.getFirstName()%>');">Envoyer une invitation</a></li>
+	                  	<a href="#" class="link invitation" onclick="OpenPopupInvitaion(<%=member.getId()%>,'<%=member.getLastName() + " " + member.getFirstName()%>');">Envoyer une invitation</a>
 	                  <% } %>
-	                  	<li><a href="#" onclick="OpenPopup(<%=member.getId()%>,'<%=member.getLastName() + " " + member.getFirstName()%>')">Envoyer un message</a></li>
-	              </ul>
+					  <a href="#" class="link notification" onclick="OpenPopup(<%=member.getId()%>,'<%=member.getLastName() + " " + member.getFirstName()%>')">Envoyer un message</a>
                   <% } %>
                 </div>
-              </view:board>
+               <br clear="all" />
             </li>
             <%
                 }
@@ -174,6 +219,43 @@
       </view:frame>
 
     </view:window>
-
+	<div id="directoryDialog">
+		<view:board>
+        <form name="notificationSenderForm" action="SendMessage" method="post">
+        	<table>
+          <tr>
+            <td class="txtlibform">
+              <fmt:message key="notificationUser.object" bundle="${LML}" /> :
+            </td>
+            <td>
+              <input type="text" name="txtTitle" id="txtTitle" maxlength="<%=NotificationParameters.MAX_SIZE_TITLE%>" size="50" value=""/>
+              <img border="0" src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5" alt="mandatoryField" />
+            </td>
+          </tr>
+          <tr>
+            <td class="txtlibform">
+              <fmt:message key="notificationUser.message" bundle="${LML}" /> :
+            </td>
+            <td>
+              <textarea name="txtMessage" id="txtMessage" cols="49" rows="4"></textarea>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+	    (<img border="0" src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5" alt="mandatoryField" /> <fmt:message key="GML.requiredField" bundle="${GML}"/>)
+            </td>
+          </tr>
+          </table>
+        </form>
+        </view:board>
+        <div align="center">
+          <%
+			ButtonPane buttonPane = gef.getButtonPane();
+			buttonPane.addButton((Button) gef.getFormButton("Envoyer", "javascript:sendNotification()", false));
+			buttonPane.addButton((Button) gef.getFormButton("Cancel", "javascript:closeDialog()", false));
+			out.println(buttonPane.print());
+          %>
+        </div>
+	</div>
   </body>
 </html>

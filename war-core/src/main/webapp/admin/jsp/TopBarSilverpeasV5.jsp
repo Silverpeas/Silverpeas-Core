@@ -147,7 +147,12 @@ function reloadTopBar()
 			new ajax_ticker(xmlfile, "ticker", "someclass", 3500, "fade");
 		</script>
         <div id="outils">
-        	<a href="#" onclick="javascript:onClick=openConnectedUsers();" style="visibility:hidden" id="connectedUsers"></a> 
+        	<a href="#" onclick="javascript:onClick=openConnectedUsers();" style="visibility:hidden" id="connectedUsers"></a>
+        <% if (!isAnonymousAccess && helper.getSettings("directoryVisible", true)) {
+		    outilDisplayed = true; 
+		%>
+			<a href="<%=m_sContext%>/Rdirectory/jsp/Main" target="MyMain"><%=helper.getString("lookSilverpeasV5.directory")%></a>
+		<% } %> 
 		<% if (helper.getSettings("glossaryVisible", false)) {
 				outilDisplayed = true; 
 		%>

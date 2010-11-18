@@ -134,22 +134,6 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
       request.setAttribute("User", new Member(directorySC.getUserDetail(userId)));
       destination = "/directory/jsp/notificationUser.jsp";
 
-    } else if (function.equalsIgnoreCase("CancelSendMessage")) {
-
-      destination = "/directory/jsp/notificationUser.jsp?popupMode=Yes&Action=CancelSendMessage";
-
-    } else if (function.equalsIgnoreCase("SendMessage")) {
-      try {
-        String[] selectedUsers = new String[1];
-        selectedUsers[0] = request.getParameter("Recipient");
-        String txtTitle = request.getParameter("txtTitle");
-        String txtMessage = request.getParameter("txtMessage");
-        directorySC.sendMessage(null, txtTitle, txtMessage, selectedUsers);
-        destination = "/directory/jsp/notificationUser.jsp?popupMode=Yes&Action=SendMessage";
-      } catch (NotificationManagerException ex) {
-        SilverTrace.error("directory", "DirectoryRequestRouter.sendMessage", "ERROR", ex);
-      }
-
     } else if ("ProfilPublic".equalsIgnoreCase(function)) {
 
       destination = "/directory/jsp/profilPublic.jsp";
