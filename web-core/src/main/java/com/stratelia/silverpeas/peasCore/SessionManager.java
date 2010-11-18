@@ -24,7 +24,8 @@
 package com.stratelia.silverpeas.peasCore;
 
 import com.silverpeas.util.FileUtil;
-import com.stratelia.silverpeas.scheduler.JobExecutionContext;
+import com.silverpeas.scheduler.JobExecutionContext;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import com.silverpeas.util.StringUtil;
@@ -34,14 +35,14 @@ import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import com.stratelia.silverpeas.scheduler.Job;
-import com.stratelia.silverpeas.scheduler.Scheduler;
-import com.stratelia.silverpeas.scheduler.SchedulerEvent;
-import com.stratelia.silverpeas.scheduler.SchedulerEventListener;
-import com.stratelia.silverpeas.scheduler.SchedulerException;
-import com.stratelia.silverpeas.scheduler.SchedulerFactory;
-import com.stratelia.silverpeas.scheduler.simple.SimpleScheduler;
-import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
+import com.silverpeas.scheduler.Job;
+import com.silverpeas.scheduler.Scheduler;
+import com.silverpeas.scheduler.SchedulerEvent;
+import com.silverpeas.scheduler.SchedulerEventListener;
+import com.silverpeas.scheduler.SchedulerException;
+import com.silverpeas.scheduler.SchedulerFactory;
+import com.silverpeas.scheduler.simple.SimpleScheduler;
+import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
 
 import com.stratelia.silverpeas.silvertrace.SilverLog;
@@ -50,7 +51,6 @@ import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
-import com.stratelia.webactiv.servlets.LogoutServlet;
 
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.ArrayList;
@@ -67,7 +67,7 @@ import javax.servlet.http.HttpSession;
 /**
  * Class declaration This object is a singleton used by LoginServlet : when the user log in,
  * ComponentRequestRouter : when the user access a component. It provides functions to manage the
- * sessions, to write a log journal and get informations about the logged users.
+ * sessions, to write a log journal and getFactory informations about the logged users.
  * @author Marc Guillemin
  */
 public class SessionManager
@@ -219,7 +219,12 @@ public class SessionManager
     scheduler.unscheduleJob(SESSION_MANAGER_JOB_NAME);
 
     // Create new scheduled job
-    JobTrigger trigger = computeJobTrigger(minute);
+    JobTrigger trigger;
+    try {
+      trigger = computeJobTrigger(minute);
+    } catch (ParseException ex) {
+      throw new SchedulerException(ex.getMessage(), ex);
+    }
     scheduler.scheduleJob(manageSession(), trigger, this);
 //    SimpleScheduler.scheduleJob(myInstance, SESSION_MANAGER_JOB_NAME, startMinutes,
 //        null, null, null, null, myInstance, "doSessionManagement");
@@ -438,7 +443,7 @@ public class SessionManager
 
   /**
    * This method notify a user's end session
-   * @param session the session to get the user to notify
+   * @param session the session to getFactory the user to notify
    * @endOfSession the time of the end of session (in milliseconds)
    * @see
    */
@@ -472,10 +477,14 @@ public class SessionManager
    */
   public void shutdown() {
     SilverTrace.debug("peasCore", "SessionManager.shutdown()", "");
-    // Remove previous scheduled job   
+    // Remove previous scheduled job
     SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
     Scheduler scheduler = schedulerFactory.getScheduler();
-    scheduler.unscheduleJob(SESSION_MANAGER_JOB_NAME);
+    try {
+      scheduler.unscheduleJob(SESSION_MANAGER_JOB_NAME);
+    } catch (SchedulerException ex) {
+      SilverTrace.error("peasCore", "SessionManager.shutdown", ex.getMessage(), ex);
+    }
     Collection<SessionInfo> allSI = userDataSessions.values();
     for (SessionInfo si : allSI) {
       removeSession(si);
@@ -501,7 +510,7 @@ public class SessionManager
     }
   }
 
-  private JobTrigger computeJobTrigger(int minute) {
+  private JobTrigger computeJobTrigger(int minute) throws ParseException {
     StringBuilder cronBuilder = new StringBuilder();
     if (60 % minute == 0) {
       cronBuilder.append("0");
@@ -509,7 +518,7 @@ public class SessionManager
     for (int i = minute; i < 60; i += minute) {
       cronBuilder.append(",").append(i);
     }
-    cronBuilder.append(" * * * *");
+    cronBuilder.append(" * * * ?");
     JobTrigger trigger;
     if (cronBuilder.toString().startsWith(",")) {
       trigger = JobTrigger.triggerAt(cronBuilder.substring(1));

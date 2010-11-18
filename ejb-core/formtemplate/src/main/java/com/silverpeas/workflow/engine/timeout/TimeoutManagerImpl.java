@@ -28,7 +28,7 @@ import java.util.Date;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 import com.stratelia.webactiv.util.*;
-import com.stratelia.silverpeas.scheduler.*;
+import com.silverpeas.scheduler.*;
 
 import com.silverpeas.workflow.api.*;
 import com.silverpeas.workflow.api.event.TimeoutEvent;
@@ -36,7 +36,7 @@ import com.silverpeas.workflow.api.instance.ProcessInstance;
 import com.silverpeas.workflow.engine.event.TimeoutEventImpl;
 import com.silverpeas.workflow.engine.instance.ActionAndState;
 import com.silverpeas.workflow.engine.WorkflowEngineThread;
-import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
+import com.silverpeas.scheduler.trigger.JobTrigger;
 
 /**
  * The workflow engine services relate to error management.

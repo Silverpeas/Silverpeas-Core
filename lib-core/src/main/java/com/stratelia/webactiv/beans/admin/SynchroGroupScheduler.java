@@ -23,14 +23,14 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import com.stratelia.silverpeas.scheduler.Scheduler;
+import com.silverpeas.scheduler.Scheduler;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.stratelia.silverpeas.scheduler.SchedulerEvent;
-import com.stratelia.silverpeas.scheduler.SchedulerEventListener;
-import com.stratelia.silverpeas.scheduler.SchedulerFactory;
-import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
+import com.silverpeas.scheduler.SchedulerEvent;
+import com.silverpeas.scheduler.SchedulerEventListener;
+import com.silverpeas.scheduler.SchedulerFactory;
+import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class SynchroGroupScheduler

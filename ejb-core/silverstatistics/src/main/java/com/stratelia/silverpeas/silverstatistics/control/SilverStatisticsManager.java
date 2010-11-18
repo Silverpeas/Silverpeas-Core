@@ -24,9 +24,9 @@
 package com.stratelia.silverpeas.silverstatistics.control;
 
 import com.silverpeas.util.FileUtil;
-import com.stratelia.silverpeas.scheduler.Job;
-import com.stratelia.silverpeas.scheduler.JobExecutionContext;
-import com.stratelia.silverpeas.scheduler.Scheduler;
+import com.silverpeas.scheduler.Job;
+import com.silverpeas.scheduler.JobExecutionContext;
+import com.silverpeas.scheduler.Scheduler;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Date;
@@ -34,17 +34,18 @@ import java.util.MissingResourceException;
 
 import javax.ejb.EJBException;
 
-import com.stratelia.silverpeas.scheduler.SchedulerEvent;
-import com.stratelia.silverpeas.scheduler.SchedulerEventListener;
-import com.stratelia.silverpeas.scheduler.SchedulerException;
-import com.stratelia.silverpeas.scheduler.SchedulerFactory;
-import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
+import com.silverpeas.scheduler.SchedulerEvent;
+import com.silverpeas.scheduler.SchedulerEventListener;
+import com.silverpeas.scheduler.SchedulerException;
+import com.silverpeas.scheduler.SchedulerFactory;
+import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silverstatistics.model.SilverStatisticsConfigException;
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import java.lang.reflect.Method;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -139,16 +140,17 @@ public class SilverStatisticsManager
   }
 
   /**
-   * Method declaration
-   * @param aCronString
-   * @param jobName
-   * @param methodeName
-   * @throws SchedulerException
-   * @see
+   * Sets up the scheduling of the specified statistics computation at given moments in time as
+   * specified by the Unix-like cron expression.
+   * @param aCronString the cron expression.
+   * @param jobName the name of the computation to schedule.
+   * @param methodeName the name of the method that performs the computation.
+   * @throws SchedulerException if the computation scheduling failed.
+   * @throws ParseException if the cron expression is malformed.
    */
   public void initSchedulerStatistics(String aCronString,
       String jobName,
-      String methodeName) throws SchedulerException {
+      String methodeName) throws SchedulerException, ParseException {
     SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
       Scheduler scheduler = schedulerFactory.getScheduler();
     scheduler.unscheduleJob(jobName);

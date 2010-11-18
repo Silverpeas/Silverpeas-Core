@@ -23,17 +23,17 @@
  */
 package com.stratelia.webactiv.util.attachment.control;
 
-import com.stratelia.silverpeas.scheduler.Job;
-import com.stratelia.silverpeas.scheduler.JobExecutionContext;
-import com.stratelia.silverpeas.scheduler.Scheduler;
+import com.silverpeas.scheduler.Job;
+import com.silverpeas.scheduler.JobExecutionContext;
+import com.silverpeas.scheduler.Scheduler;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
-import com.stratelia.silverpeas.scheduler.SchedulerEvent;
-import com.stratelia.silverpeas.scheduler.SchedulerEventListener;
-import com.stratelia.silverpeas.scheduler.SchedulerFactory;
-import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
+import com.silverpeas.scheduler.SchedulerEvent;
+import com.silverpeas.scheduler.SchedulerEventListener;
+import com.silverpeas.scheduler.SchedulerFactory;
+import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
