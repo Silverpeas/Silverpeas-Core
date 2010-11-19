@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
+import com.silverpeas.socialNetwork.status.StatusService;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -352,5 +353,13 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     } else {
       return "/directory/jsp/icons/avatar.png";
     }
+  }
+  
+  public String getStatus() {
+    String status = new StatusService().getLastStatusService(Integer.parseInt(getId())).getDescription();
+    if (StringUtil.isDefined(status)) {
+      return status;
+    }
+    return "";
   }
 }

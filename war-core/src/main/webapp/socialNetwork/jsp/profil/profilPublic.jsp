@@ -33,6 +33,10 @@
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@page import="com.silverpeas.directory.control.DirectorySessionController"%>
 <%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager" %>
+<%@page import="com.stratelia.silverpeas.notificationManager.NotificationParameters"%>
+<%@page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
+<%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.*"%>
+<%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.*"%>
 <%@page import="com.silverpeas.directory.model.Member"%>
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <%--<c:set var="level" value="byGroup" />
@@ -41,22 +45,22 @@
             </c:url>--%>
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle basename="com.stratelia.webactiv.multilang.generalMultilang" var="GML" />
+<view:setBundle basename="com.silverpeas.directory.multilang.DirectoryBundle" var="DML" />
 
 <%  
 	ResourceLocator settings = (ResourceLocator) request.getAttribute("Settings");
-    
+	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
+
     String language = request.getLocale().getLanguage();
-    ResourceLocator multilang = new ResourceLocator(
-        "com.silverpeas.socialNetwork.multilang.socialNetworkBundle", language);
-    ResourceLocator multilangG = new ResourceLocator(
-        "com.stratelia.webactiv.multilang.generalMultilang", language);
+    ResourceLocator multilang = new ResourceLocator("com.silverpeas.socialNetwork.multilang.socialNetworkBundle", language);
+    ResourceLocator multilangG = new ResourceLocator("com.stratelia.webactiv.multilang.generalMultilang", language);
     UserFull userFull = (UserFull) request.getAttribute("userFull");
     Member member = (Member) request.getAttribute("Member");
 
-    String gml = "GML.";
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-        "ApplicationURL");
+    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 %>
+
 
 <html>
   <head>
@@ -64,153 +68,174 @@
     <script type="text/javascript" src="/silverpeas/util/javaScript/animation.js"></script>
     <script type="text/javascript" src="/silverpeas/util/javaScript/checkForm.js"></script>
     <script language="JavaScript">
-      function OpenPopup(usersId){
-        SP_openWindow('<%=m_context%>/Rdirectory/jsp/NotificationView?Recipient='+usersId , 'strWindowName', '500', '250', 'true');
-      }
+	    function OpenPopup(){
+	      $("#profileDialog").dialog("option", "title", "<%=member.getUserDetail().getDisplayedName()%>");
+	  	  $("#profileDialog").dialog("open");
+	    }
+	
+	    function sendNotification(userId) {
+	        var title = stripInitialWhitespace($("#txtTitle").val());
+	        var errorMsg = "";
+	        if (isWhitespace(title)) {
+	            errorMsg = "<fmt:message key="GML.thefield" bundle="${GML}"/>"+ " <fmt:message key="notification.object" bundle="${DML}" />"+ " <fmt:message key="GML.isRequired" bundle="${GML}"/>";
+	        }
+	        if (errorMsg == "") {
+	        	$.getJSON("<%=m_context%>/DirectoryJSON",
+	                	{ 
+	        				IEFix: new Date().getTime(),
+	        				Action: "SendMessage",
+	        				Title: $("#txtTitle").val(),
+	        				Message: $("#txtMessage").val(),
+	        				TargetUserId: <%=member.getId()%>
+	                	},
+	        			function(data){
+	            			if (data.success) {
+	                			closeDialog();
+	            			} else {
+	                			alert(data.error);
+	            			}
+	        			});
+	        } else {
+	          window.alert(errorMsg);
+	        }
+	    }
+	
+	    function closeDialog() {
+	    	$("#profileDialog").dialog("close");
+	    	$("#txtTitle").val("");
+	    	$("#txtMessage").val("");
+	    }
+    
       function OpenPopupInvitaion(usersId,name){
         options="directories=no, menubar=no,toolbar=no,scrollbars=yes, resizable=no, alwaysRaised";
         SP_openWindow('<%=m_context%>/Rinvitation/jsp/invite?Recipient='+usersId, 'strWindowName', '350', '200',options);
       }
+
+      $(document).ready(function(){
+
+	        var dialogOpts = {
+	                modal: true,
+	                autoOpen: false,
+	                height: 250,
+	                width: 600
+	        };
+	
+	        $("#profileDialog").dialog(dialogOpts);    //end dialog
+    });
     </script>
   </head>
   <body id="publicProfile">
-    <view:browseBar extraInformations="Profil public"></view:browseBar>
     <view:window>
-        <view:frame>
-          <view:board>
-            <table border="0" cellspacing="0" cellpadding="0" width="100%">
-              <tr>
-                <td width="50">
-                	<% if (!member.haveAvatar()) { %>
-                    	<img src="<%=m_context + member.getProfilPhoto()%>" alt="viewUser" class="defaultAvatar"/>
-                    <% } else { %>
-                    	<img src="<%=m_context + member.getProfilPhoto()%>" alt="viewUser" class="avatar"/>
-                    <% } %>
-                </td>
-                <td>
-                  <table border="0" cellspacing="0" cellpadding="5" width="100%">
 
-                    <%      // afficher le  "Nom" si n'est pas null et n'est pas interdit de l'afficher
-                        if (StringUtil.isDefined(userFull.getLastName()) && settings.
-                            getBoolean("GML.lastname", true)) {
-                    %>
-                    <tr>
-                      <td class="txtlibform" valign="baseline">
-                        <%=userFull.getLastName()%>
-                        <%
-                            }
-                            // afficher le  "Prenom" si  n'est pas null et n'est pas interdit de l'afficher
-                            if (StringUtil.isDefined(userFull.getFirstName()) && settings.
-                                getBoolean("GML.firstname", true)) {
-                        %>
-                        <%=userFull.getFirstName()%>
-                      </td>
-                    </tr>
+<!-- profilPublicFiche  -->  
+<div id="publicProfileFiche" >
+  
+	<!-- info  -->           
+  	<div class="info tableBoard">
+    	<h2 class="userName"><%=member.getFirstName() %> <br /><%=member.getLastName() %></h2>
+        <p class="infoConnection">
+        	<% if (member.isConnected()) { %>
+				<img src="<%=m_context%>/util/icons/online.gif" alt="connected"/> <fmt:message key="directory.connected" bundle="${DML}" /> <%=member.getDuration()%>
+			<% } else { %>
+            	<img src="<%=m_context%>/util/icons/offline.gif" alt="deconnected"/> <fmt:message key="directory.deconnected" bundle="${DML}" />
+            <% } %>
+        </p>  
+               
+	    <!-- action  -->
+        <div class="action">
+        	<a href="#" class="link invitation" onclick="OpenPopupInvitaion(268,'admin ');"><fmt:message key="notification.sendMessage" bundle="${DML}" /></a>
+            <br />
+            <a href="#" class="link notification" onclick="OpenPopup()"><fmt:message key="notification.sendMessage" bundle="${DML}" /></a>
+        </div> <!-- /action  -->              
 
-                    <%                                       }
+        <!-- profilPhoto  -->  
+		<div class="profilPhoto">
+			<img src="<%=m_context + member.getProfilPhoto()%>" alt="viewUser" class="avatar"/>
+        </div>  
+             
+        <p class="statut">
+        	
+        </p>
+         
+        <br clear="all" />
+ 	</div><!-- /info  -->          
+      
+</div><!-- /profilPublicFiche  -->      
 
-                    %>
-                    <%
-                        // afficher leur  "eMail" si n'est pas null et n'est pas interdit de l'afficher
-                        if (StringUtil.isDefined(userFull.geteMail()) && settings.getBoolean("eMail", true)) {
-                    %>
-                    <tr>
-                      <td class="txtlibform" valign="baseline" >
-                        <a style="color: blue; text-decoration: underline" href="mailto:<%=userFull.geteMail()%> "><%=userFull.geteMail()%></a>
-                      </td>
-                    </tr>
-                    <%
-                        }
-                    %>
-                    <%
-                        // afficher leur  "Droit" si n'est pas null et n'est pas interdit de l'afficher
-                        if (StringUtil.isDefined(userFull.getAccessLevel()) && settings.
-                            getBoolean("position", true)) {
-                    %>
-                    <tr>
-                      <td class="txtlibform" valign="baseline" >
-                        <%=multilangG.getString(multilang.getString(userFull.getAccessLevel()))%>
-                      </td>
-                    </tr>
-                    <%                                       }
+<!-- profilPublicContenu  -->   
+<div id="publicProfileContenu">
 
-                    %>
-                  </table>
-                </td>
-                <td align="right">
-                  <a href="#" class="link" onclick="OpenPopupInvitaion(<%=userFull.getId()%>);">
-                    Envoyer une invitation</a><br />
-                  <br />
-                  <a href="#" style="color: blue" onclick="OpenPopup(<%=userFull.getId()%>)">Envoyer un message</a>
-                </td>
-              </tr>
-            </table>
-          </view:board>
-          <view:frame title="Informations professionnelles & Coordonnées">
-            <view:board>
-              <table border="0" cellspacing="0" cellpadding="5" width="100%">
-                <%
-                    // afficher leur  "Droit" si n'est pas null et n'est pas interdit de l'afficher
-                    if (StringUtil.isDefined(userFull.getAccessLevel()) && settings.
-                        getBoolean("position", true)) {
-                %>
+	<!-- sousNav  --> 
+	<div class="sousNavBulle">
+		<p><fmt:message key="profil.subnav.display" /> : <a class="active" href="#"><fmt:message key="profil.subnav.identity" /></a> <!-- <a href="#">Personnelles</a> <a href="#">Personnelles</a> --></p>
+	</div><!-- /sousNav  --> 
+
+	<table width="100%" cellspacing="0" cellpadding="5" border="0">
+	<%
+		if (userFull != null) {
+        	//  récupérer toutes les propriétés de ce User
+            String[] properties = userFull.getPropertiesNames();
+
+            String property = null;
+            for (int p = 0; p < properties.length; p++) {
+	            property = properties[p];
+                if (StringUtil.isDefined(userFull.getValue(property)) && settings.getBoolean(property, true)) {
+            %>
                 <tr>
-                  <td class="txtlibform" valign="baseline" width="30%"><%=multilangG.getString("GML.position")%></td>
-                  <td valign="baseline">
-                    <%=multilangG.getString(multilang.getString(userFull.getAccessLevel()))%>
-                  </td>
-                </tr>
-                <%                                       }
-
-                %>
-
-
-                <%
-                    //  r�cup�rer toutes les propri�t�s de ce User
-                    String[] properties = userFull.getPropertiesNames();
-
-                    String property = null;
-                    for (int p = 0; p < properties.length; p++) {
-
-                      property = properties[p];
-                      // afficher toutes   les propri�t�s de User  si ne sont pas null et ne sont pas interdit de les afficher
-
-                      if (StringUtil.isDefined(userFull.getValue(property)) && settings.
-                          getBoolean(property, true)) {
-
-
-
-
-                %>
-                <tr>
-                  <td class="txtlibform" valign="baseline" width="30%"><%= userFull.getSpecificLabel(language, property)%></td>
+                  <td class="txtlibform" width="30%"><%= userFull.getSpecificLabel(language, property)%></td>
                   <td >
                     <%=userFull.getValue(property)%>
                   </td>
                 </tr>
-                <%
-                      }
-                    }
-                %>
-
-                <%
-                    // afficher leur  "eMail" si n'est pas null et n'est pas interdit de l'afficher
-                    if (StringUtil.isDefined(userFull.geteMail()) && settings.
-                        getBoolean("eMail", true)) {
-                %>
-                <tr>
-                  <td class="txtlibform" valign="baseline" width="30%"><%=multilangG.getString("GML.eMail")%></td>
-                  <td >
-                    <%=userFull.geteMail()%>
-                  </td>
-                </tr>
-                <%
-                    }
-                %>
-              </table>
-            </view:board>
-          </view:frame>
-        </view:frame>
+    		<%
+                }
+            }
+		}
+	%>
+</table>              
+              
+</div><!-- /publicProfileContenu  -->   
     </view:window>
+    
+    
+    <div id="profileDialog">
+    <view:board>
+        <form name="notificationSenderForm" action="SendMessage" method="post">
+        	<table>
+          <tr>
+            <td class="txtlibform">
+              <fmt:message key="notification.object" bundle="${DML}" /> :
+            </td>
+            <td>
+              <input type="text" name="txtTitle" id="txtTitle" maxlength="<%=NotificationParameters.MAX_SIZE_TITLE%>" size="50" value=""/>
+              <img src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5" alt="mandatoryField" />
+            </td>
+          </tr>
+          <tr>
+            <td class="txtlibform">
+              <fmt:message key="notification.message" bundle="${DML}" /> :
+            </td>
+            <td>
+              <textarea name="txtMessage" id="txtMessage" cols="49" rows="4"></textarea>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+	    (<img src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5" alt="mandatoryField" /> <fmt:message key="GML.requiredField" bundle="${GML}"/>)
+            </td>
+          </tr>
+          </table>
+        </form>
+        </view:board>
+        <div align="center">
+          <%
+			ButtonPane buttonPane = gef.getButtonPane();
+			buttonPane.addButton((Button) gef.getFormButton("Envoyer", "javascript:sendNotification()", false));
+			buttonPane.addButton((Button) gef.getFormButton("Cancel", "javascript:closeDialog()", false));
+			out.println(buttonPane.print());
+          %>
+        </div>
+    </div>
+    
   </body>
 </html>

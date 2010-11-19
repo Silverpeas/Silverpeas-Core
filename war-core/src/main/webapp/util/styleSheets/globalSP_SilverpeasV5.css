@@ -1492,6 +1492,7 @@ td.browsebar a:hover {
 	background-position: right top;
 	margin-left: auto;
 	margin-right: auto;
+	margin-bottom: 10px;
 }
 
 .tableBoard > td {
@@ -3137,6 +3138,184 @@ caption {
   float: left;
   margin: 10px;
 }
+
+/*- [ publicProfile BEGIN ] --------------------------- */
+#publicProfileFiche p{ margin:0; padding:0;}
+
+#publicProfile #publicProfileFiche {
+	width:20%;
+	float:left;
+	position:relative;
+	
+}
+#publicProfile .mail {
+  text-decoration: underline;
+  color:#333366;
+}
+#publicProfileFiche  .action .link , #publicProfileFiche  #contactCommun .link, #publicProfileFiche  #allContact .link{
+  color:#333366;
+  border-bottom:1px solid #9E9ECF;
+  padding:0 0 3px 0; 
+  font-size:11px;
+  width:132px;
+  margin-bottom:8px;
+  float:right; clear:right;
+}
+#publicProfileFiche  .action .link:hover, #publicProfileFiche  .action .link:focus , #publicProfileFiche  #allContact .link:focus, #publicProfileFiche  #allContact .link:hover,
+#publicProfileFiche  #contactCommun .link:hover, #publicProfileFiche  #contactCommun .link:focus {
+  color:#000;
+  border-bottom:1px solid #000;
+  
+}
+#publicProfileFiche  #allContact .link, #publicProfileFiche  #contactCommun .link {
+	clear:both;
+	float:right;
+	margin-top:10px;
+	display:block;
+}
+
+#publicProfile .NameLink {
+  font-size: 14px;
+  color: blue;
+}
+
+#publicProfile #indexAndSearch #index a { 
+	border:1px solid #CECECE;
+	padding:2px 4px;
+	margin-right:3px;
+	background-color:#FFF;
+	color:#AFAFAF;
+	font-size: 12px;
+	text-decoration: none;
+	line-height:220%;
+}
+#publicProfile #indexAndSearch #index a.active {
+	background-color:#B5B5B5;
+	color:#FFF;
+}
+
+#publicProfile #indexAndSearch #index a:hover, #publicProfile #indexAndSearch #index a:focus {
+	background-color:#BFBFBF;
+	color:#FFF;
+}
+
+#publicProfile .profilPhoto {
+ 	border:1px solid #CCCCCC;
+	height:140px;
+	margin:7px 6px;
+	overflow:hidden;
+	width:108px;
+}
+#publicProfile .profilPhoto img {
+	height:140px;
+}
+
+#publicProfileFiche {color:#909090; font-size:11px;}
+
+#publicProfileFiche h3 {color:#26334A; font-size:12px; padding:10px 0 5px; margin:0;}
+
+#publicProfileFiche .userName{
+  font-size:14px;
+  color:#000;
+  font-weight:bold;
+  padding:0; margin:0;
+}
+
+#publicProfileFiche .infoConnection { font-size:11px; padding:10px 0 15px} 
+
+#publicProfileFiche .infoConnection img{
+  position:absolute;
+  top:10px; 
+  right:10px;
+}
+#publicProfileFiche .info {padding:1%; height:100%;}
+#publicProfileFiche .info .userType {
+  color:#333333;
+  font-size:12px;
+  font-weight:bold;
+  padding-top:10px;
+}
+
+#publicProfileFiche .statut {
+	background:transparent url(images_annuaire/sep-2-tiraits.gif)  50% top no-repeat;
+	color:#333333; font-size:10px;
+	padding:10px 0 0;
+	margin:0;
+}
+
+#publicProfileFiche .action .invitation {
+	display: none;
+}
+
+#publicProfileContenu { width:78%; margin-left:0.5%; float:left;}
+#publicProfileContenu  address { font-style:normal;}
+
+/* IMAGE  bg_tri.png à chercher dans corps dans fleche */
+.sousNavBulle {
+	background:#EAEAEA url(../icons/arrow/bg_tri.png) bottom left no-repeat;
+ 	float:none;
+  	margin:0 auto;
+  	text-align:left;
+  	width:100%;
+  	color:#26334A;
+  	font-size:11px;
+  	padding:5px 5px 14px;
+	}
+.sousNavBulle p { margin:0; padding:0;}	
+
+
+.sousNavBulle a { 
+	border:1px solid #CECECE;
+	padding:2px 4px;
+	margin-right:3px;
+	background-color:#FFF;
+	color:#AFAFAF;
+	font-size: 11px;
+	text-decoration: none;
+	line-height:220%;
+}
+.sousNavBulle a.active {
+	background-color:#B5B5B5;
+	color:#FFF;
+}
+
+.sousNavBulle a:hover, .sousNavBulle a:focus {
+	background-color:#BFBFBF;
+	color:#FFF;
+}
+
+#publicProfile #publicProfileFiche #allContact, #publicProfile #publicProfileFiche #contactCommun {
+	background-color:#E9E9E9;
+	clear:both;
+	height:100%;
+}
+
+#publicProfile #publicProfileFiche .unContact {
+	width:126px; float:left; height:100%;
+}
+
+#publicProfile #publicProfileFiche .unContact .contactName{
+	color:#5F5F5F;
+	float:left;
+	padding-top:20px;
+	width:50px;
+	display:inline;
+}
+#publicProfile #publicProfileFiche .profilPhotoContact {
+ 	border:1px solid #CCCCCC;
+	height:62px;
+	margin:7px 6px;
+	overflow:hidden;
+	width:54px;
+	float:left;
+	background-color:#FFF;
+	text-align:center;
+}
+#publicProfile #publicProfileFiche  .profilPhotoContact img {
+	height:62px;
+}
+
+/*- [ publicProfile END ] --------------------------- */
 
 /*- [ attachments BEGIN ] ------------------------- */
 a.yuimenuitemlabel-disabled:hover {

@@ -52,10 +52,11 @@ public class DirectoryJSONServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException,
       IOException {
-    
+
     HttpSession session = req.getSession(true);
-    
-    DirectorySessionController dsc = (DirectorySessionController) session.getAttribute("Silverpeas_" + "directory");
+
+    DirectorySessionController dsc =
+        (DirectorySessionController) session.getAttribute("Silverpeas_" + "directory");
 
     res.setContentType("application/json");
 
