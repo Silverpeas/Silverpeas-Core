@@ -23,6 +23,11 @@
  */
 package com.silverpeas.directory.control;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -30,33 +35,29 @@ import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.SessionInfo;
+import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
- *
  * @author Nabil Bensalem
  */
 public class DirectorySessionController extends AbstractComponentSessionController {
 
   private List<UserDetail> lastAlllistUsersCalled;
-  private List<UserDetail> lastListUsersCalled;
+  private List<UserDetail> lastListUsersCalled; // cache for pagination
+
+  private String currentView = "tous";
 
   /**
    * Standard Session Controller Constructeur
-   *
-   *
-   * @param mainSessionCtrl   The user's profile
-   * @param componentContext  The component's profile
-   *
+   * @param mainSessionCtrl The user's profile
+   * @param componentContext The component's profile
    * @see
    */
   public DirectorySessionController(MainSessionController mainSessionCtrl,
@@ -67,12 +68,11 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-
-   *get All Users
-   *
+   * get All Users
    * @see
    */
   public List<UserDetail> getAllUsers() {
+    setCurrentView("tous");
     lastAlllistUsersCalled = Arrays.asList(getOrganizationController().getAllUsers());
     lastListUsersCalled = lastAlllistUsersCalled;
     return lastAlllistUsersCalled;
@@ -80,30 +80,28 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-   *get all Users that their Last Name  begin with 'Index'
-   *
+   *get all Users that their Last Name begin with 'Index'
    * @param index:Alphabetical Index like A,B,C,E......
    * @see
    */
   public List<UserDetail> getUsersByIndex(String index) {
+    setCurrentView(index);
     lastListUsersCalled = new ArrayList<UserDetail>();
-
     for (UserDetail varUd : lastAlllistUsersCalled) {
       if (varUd.getLastName().toUpperCase().startsWith(index)) {
         lastListUsersCalled.add(varUd);
       }
     }
     return lastListUsersCalled;
-
   }
 
   /**
-   *get all User that  heir  lastname or first name  Last Name  like  "Key"
-   *
+   *get all User that heir lastname or first name Last Name like "Key"
    * @param Key:the key of search
    * @see
    */
   public List<UserDetail> getUsersByLastName(String Key) {
+    setCurrentView(Key);
     lastListUsersCalled = new ArrayList<UserDetail>();
 
     for (UserDetail varUd : lastAlllistUsersCalled) {
@@ -118,11 +116,11 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   /**
    *get all User of the Group who has Id="groupId"
-   *
    * @param groupId:the ID of group
    * @see
    */
   public List<UserDetail> getAllUsersByGroup(String groupId) {
+    setCurrentView("tous");
     lastAlllistUsersCalled = Arrays.asList(getOrganizationController().getAllUsersOfGroup(groupId));
     lastListUsersCalled = lastAlllistUsersCalled;
     return lastAlllistUsersCalled;
@@ -130,19 +128,16 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   /**
    *get all User "we keep the last list of All users"
-   *
-   *
    * @see
    */
   public List<UserDetail> getLastListOfAllUsers() {
+    setCurrentView("tous");
     lastListUsersCalled = lastAlllistUsersCalled;
     return lastAlllistUsersCalled;
   }
 
   /**
-   *get the last list of users colled   " keep the session"
-   *
-   *
+   *get the last list of users colled " keep the session"
    * @see
    */
   public List<UserDetail> getLastListOfUsersCallded() {
@@ -151,22 +146,22 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   /**
    *return All users of Space who has Id="spaceId"
-   *
    * @param spaceId:the ID of Space
    * @see
    */
   public List<UserDetail> getAllUsersBySpace(String spaceId) {
+    setCurrentView("tous");
     List<String> lus = new ArrayList<String>();
     lus = getAllUsersBySpace(lus, spaceId);
-    lastAlllistUsersCalled = Arrays.asList(getOrganizationController().getUserDetails(lus.toArray(new String[lus.
-        size()])));
+    lastAlllistUsersCalled =
+        Arrays.asList(getOrganizationController().getUserDetails(lus.toArray(new String[lus.
+            size()])));
     lastListUsersCalled = lastAlllistUsersCalled;
     return lastAlllistUsersCalled;
 
   }
 
   private List<String> getAllUsersBySpace(List<String> lus, String spaceId) {
-
     SpaceInst si = getOrganizationController().getSpaceInstById(spaceId);
     for (String ChildSpaceVar : si.getSubSpaceIds()) {
       getAllUsersBySpace(lus, ChildSpaceVar);
@@ -177,10 +172,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
       }
     }
-
     return lus;
-
-
   }
 
   public List<String> fillList(List<String> ol, List<String> nl) {
@@ -195,7 +187,6 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   /**
    *return All user of Domaine who has Id="domainId"
-   *
    * @param domainId:the ID of Domaine
    * @see
    */
@@ -214,9 +205,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   public UserFull getUserFul(String userId) {
-
     return this.getOrganizationController().getUserFull(userId);
-
   }
 
   /**
@@ -240,7 +229,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     SilverTrace.debug("notificationUser",
         "NotificationUsersessionController.sendMessage()",
         "root.MSG_GEN_PARAM_VALUE", "  AVANT CONTROLE priorityId="
-        + priorityId);
+            + priorityId);
     NotificationMetaData notifMetaData = new NotificationMetaData(
         priorityId, txtTitle, txtMessage);
     notifMetaData.setSender(getUserId());
@@ -251,7 +240,30 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   public String getPhoto(String filename) {
-   // return getUserDetail().getLogin() + '.' + FileRepositoryManager.getFileExtension(filename);
+    // return getUserDetail().getLogin() + '.' + FileRepositoryManager.getFileExtension(filename);
     return getUserDetail().getLogin() + '.' + "jpg";
+  }
+
+  public void setCurrentView(String currentView) {
+    this.currentView = currentView;
+  }
+
+  public String getCurrentView() {
+    return currentView;
+  }
+
+  public List<UserDetail> getConnectedUsers() {
+    setCurrentView("connected");
+    List<UserDetail> connectedUsers = new ArrayList<UserDetail>();
+
+    Collection<SessionInfo> sessions = SessionManager.getInstance().getDistinctConnectedUsersList();
+    for (SessionInfo session : sessions) {
+      connectedUsers.add(session.m_User);
+    }
+
+    ArrayList<UserDetail> users = new ArrayList<UserDetail>(lastAlllistUsersCalled);
+    users.retainAll(connectedUsers);
+    lastListUsersCalled = users;
+    return lastListUsersCalled;
   }
 }

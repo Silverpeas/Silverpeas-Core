@@ -75,7 +75,7 @@
           var title = stripInitialWhitespace($("#txtTitle").val());
           var errorMsg = "";
           if (isWhitespace(title)) {
-              errorMsg = "<fmt:message key="GML.thefield" bundle="${GML}"/>"+ " <fmt:message key="notificationUser.object" />"+ " <fmt:message key="GML.isRequired" bundle="${GML}"/>";
+              errorMsg = "<fmt:message key="GML.thefield" bundle="${GML}"/>"+ " <fmt:message key="notification.object" />"+ " <fmt:message key="GML.isRequired" bundle="${GML}"/>";
           }
           if (errorMsg == "") {
           	$.getJSON("<%=m_context%>/DirectoryJSON",
@@ -109,6 +109,16 @@
         SP_openWindow('<%=m_context%>/Rinvitation/jsp/invite?Recipient='+usersId, 'strWindowName', '500', '200','directories=no, menubar=no,toolbar=no,scrollbars=yes, resizable=no ,alwaysRaised');
       }
 
+      function viewIndex(index) {
+          $.progressMessage();
+          location.href=index;
+      }
+
+      function search() {
+    	  $.progressMessage();
+    	  document.search.submit();
+      }
+
       $(document).ready(function(){
 
 	        var dialogOpts = {
@@ -125,16 +135,17 @@
   </head>
   <body id="directory">
     <view:window>
+    	<view:browseBar extraInformations="Annuaire"/>
       <view:frame>
         <div id="indexAndSearch">
           <div id="search">
-            <form name="search" action="searchByKey" method="post">
+            <form name="search" action="searchByKey" method="post" onsubmit="$.progressMessage()">
             	<input type="text" name="key" size="40" maxlength="60" />
             	<!-- Ajout d'un bouton rechercher -->
                    <table cellspacing="0" cellpadding="0" border="0">
                         <tbody><tr>
                             <td align="left" class="gaucheBoutonV5"><img alt="" src="/silverpeas/util/viewGenerator/icons/px.gif"/></td>
-                            <td nowrap="nowrap" class="milieuBoutonV5"><a href="">Rechercher</a></td>
+                            <td nowrap="nowrap" class="milieuBoutonV5"><a href="javascript:search()"><fmt:message key="GML.search" bundle="${GML}" /></a></td>
                             <td align="right" class="droiteBoutonV5"><img alt="" src="/silverpeas/util/viewGenerator/icons/px.gif"/></td>
                          </tr></tbody>
                     </table>
@@ -143,25 +154,34 @@
           <div id="index">
             <%
                 // afficher la bande d'index alphabetique
-                String para = (String) request.getAttribute("IndexLetter");
-
+                String para = (String) request.getAttribute("View");
+				if (!StringUtil.isDefined(para)) {
+				  para = "tous";
+				}
+				String indexCSS = "";
                 for (char i = 'A'; i <= 'Z'; ++i) {
-
-                  if (para != null && para.equals(String.valueOf(i))) {
-                    out.println(
-                        "<a class=\"active\" href=\"" + i + "\">" + i + "</a>");
-                  } else {
-                    out.println(
-                        "<a href=\"" + i + "\">" + i + "</a>");
+                  if (String.valueOf(i).equals(para)) {
+                    indexCSS = "class=\"active\"";
                   }
+                  %>
+                  <a <%=indexCSS%> href="javascript:viewIndex('<%=i%>')"><%=i%></a>
+                  <%
+                  indexCSS = "";
                 }
                 out.println(" - ");
-                if (para != null && para.equals("tous")) {
-                  out.println("<a class=\"active\" href=\"tous\">Tous</a>");
-                } else {
-                  out.println("<a href=\"tous\">Tous</a>");
+                if ("tous".equals(para)) {
+                  indexCSS = "class=\"active\"";
                 }
-            %>
+                %>
+                <a <%=indexCSS%> href="javascript:viewIndex('tous')"><fmt:message key="directory.scope.all" bundle="${LML}" /></a>
+                <%
+                out.println(" - ");
+                indexCSS = "";
+                if ("connected".equals(para)) {
+                  indexCSS = "class=\"active\"";
+                }
+                %>
+                <a <%=indexCSS%> href="javascript:viewIndex('connected')"><fmt:message key="directory.scope.connected" bundle="${LML}" /></a>
          </div>          
         </div>
         <div id="users">
@@ -201,9 +221,9 @@
                 <div class="action">
                   <% if (!request.getAttribute("MyId").equals(member.getId())) { %>
 	                  <% if (!member.isRelationOrInvitation(request.getAttribute("MyId").toString())) { %>
-	                  	<a href="#" class="link invitation" onclick="OpenPopupInvitaion(<%=member.getId()%>,'<%=member.getLastName() + " " + member.getFirstName()%>');">Envoyer une invitation</a>
+	                  	<a href="#" class="link invitation" onclick="OpenPopupInvitaion(<%=member.getId()%>,'<%=member.getLastName() + " " + member.getFirstName()%>');"><fmt:message key="notification.sendMessage" bundle="${LML}" /></a>
 	                  <% } %>
-					  <a href="#" class="link notification" onclick="OpenPopup(<%=member.getId()%>,'<%=member.getLastName() + " " + member.getFirstName()%>')">Envoyer un message</a>
+					  <a href="#" class="link notification" onclick="OpenPopup(<%=member.getId()%>,'<%=member.getLastName() + " " + member.getFirstName()%>')"><fmt:message key="notification.sendMessage" bundle="${LML}" /></a>
                   <% } %>
                 </div>
                <br clear="all" />
@@ -219,22 +239,24 @@
       </view:frame>
 
     </view:window>
+    
+    <!-- Dialog to notify a user -->
 	<div id="directoryDialog">
 		<view:board>
         <form name="notificationSenderForm" action="SendMessage" method="post">
         	<table>
           <tr>
             <td class="txtlibform">
-              <fmt:message key="notificationUser.object" bundle="${LML}" /> :
+              <fmt:message key="notification.object" bundle="${LML}" /> :
             </td>
             <td>
               <input type="text" name="txtTitle" id="txtTitle" maxlength="<%=NotificationParameters.MAX_SIZE_TITLE%>" size="50" value=""/>
-              <img border="0" src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5" alt="mandatoryField" />
+              <img src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5" alt="mandatoryField" />
             </td>
           </tr>
           <tr>
             <td class="txtlibform">
-              <fmt:message key="notificationUser.message" bundle="${LML}" /> :
+              <fmt:message key="notification.message" bundle="${LML}" /> :
             </td>
             <td>
               <textarea name="txtMessage" id="txtMessage" cols="49" rows="4"></textarea>
@@ -242,7 +264,7 @@
           </tr>
           <tr>
             <td colspan="2">
-	    (<img border="0" src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5" alt="mandatoryField" /> <fmt:message key="GML.requiredField" bundle="${GML}"/>)
+	    (<img src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5" alt="mandatoryField" /> <fmt:message key="GML.requiredField" bundle="${GML}"/>)
             </td>
           </tr>
           </table>
@@ -257,5 +279,6 @@
           %>
         </div>
 	</div>
+	<view:progressMessage/>
   </body>
 </html>

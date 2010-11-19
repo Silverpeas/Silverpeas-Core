@@ -36,7 +36,6 @@ import com.silverpeas.directory.control.DirectorySessionController;
 import com.silverpeas.directory.model.Member;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
-import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -54,7 +53,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
 
   private static int ELEMENTS_PER_PAGE = 2;
   public static final String AVATAR_FOLDER = "avatar";
-  
+
   private static final long serialVersionUID = -1683812983096083815L;
 
   @Override
@@ -103,28 +102,31 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
         users = directorySC.getAllUsers();
       }
 
-      destination = doPagination(request, users);
+      destination = doPagination(request, users, directorySC);
     } else if (function.equalsIgnoreCase("searchByKey")) {
 
       users = directorySC.getUsersByLastName(request.getParameter("key").toUpperCase());
-      destination = doPagination(request, users);
+      destination = doPagination(request, users, directorySC);
 
     } else if (function.equalsIgnoreCase("tous")) {
 
-      request.setAttribute("Index", function);
       users = directorySC.getLastListOfAllUsers();
-      destination = doPagination(request, users);
+      destination = doPagination(request, users, directorySC);
+
+    } else if (function.equalsIgnoreCase("connected")) {
+
+      users = directorySC.getConnectedUsers();
+      destination = doPagination(request, users, directorySC);
 
     } else if (isSearchByIndex(function)) {
 
-      request.setAttribute("Index", function);
       users = directorySC.getUsersByIndex(function);
-      destination = doPagination(request, users);
+      destination = doPagination(request, users, directorySC);
 
     } else if (function.equalsIgnoreCase("pagination")) {
 
       users = directorySC.getLastListOfUsersCallded();
-      destination = doPagination(request, users);
+      destination = doPagination(request, users, directorySC);
 
     } else if (function.equalsIgnoreCase("viewUser")) {
       destination = "/Rprofil/jsp/Main?userId=" + request.getParameter("UserId");
@@ -186,11 +188,13 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
    *do pagination
    *@param HttpServletRequest request
    */
-  String doPagination(HttpServletRequest request, List<UserDetail> users) {
+  String doPagination(HttpServletRequest request, List<UserDetail> users,
+      DirectorySessionController directorySC) {
     int index = 0;
     if (StringUtil.isInteger(request.getParameter("Index"))) {
       index = Integer.parseInt(request.getParameter("Index"));
     }
+
     HttpSession session = request.getSession();
     GraphicElementFactory gef =
         (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
@@ -200,6 +204,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
         getLastItemIndex()));
     request.setAttribute("Members", membersToDisplay);
     request.setAttribute("pagination", pagination);
+    request.setAttribute("View", directorySC.getCurrentView());
     return "/directory/jsp/directory.jsp";
   }
 
