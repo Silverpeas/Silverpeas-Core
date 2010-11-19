@@ -75,10 +75,11 @@ public class QuartzScheduler
     try {
       quartzScheduler = quartzSchedulerFactory.getScheduler();
       quartzScheduler.start();
-      SilverTrace.info(MODULE_NAME, getClass().getName(), getClass().getSimpleName() + " is started");
+      SilverTrace.info(MODULE_NAME, getClass().getSimpleName() + ".<init>()", "root.EX_NO_MESSAGE",
+          getClass().getSimpleName() + " is started");
     } catch (org.quartz.SchedulerException ex) {
-      SilverTrace.fatal(MODULE_NAME, getClass().getName(), getClass().getSimpleName()
-          + " failed to start", ex);
+      SilverTrace.fatal(MODULE_NAME, getClass().getSimpleName() + ".<init>()",
+          "root.EX_NO_MESSAGE", getClass().getSimpleName() + " failed to start", ex);
       throw new SchedulerException(ex.getMessage(), ex);
     }
   }
@@ -96,8 +97,8 @@ public class QuartzScheduler
       schedule(job, jobDetail);
       return job;
     } catch (Exception ex) {
-      SilverTrace.error(MODULE_NAME, getClass().getName(), "The scheduling of the job '" + jobName
-          + "' failed!", ex);
+      SilverTrace.error(MODULE_NAME, getClass().getSimpleName() + ".scheduleJob()",
+          "root.EX_NO_MESSAGE", "The scheduling of the job '" + jobName + "' failed!", ex);
       throw new SchedulerException(ex.getMessage(), ex);
     }
   }
@@ -115,8 +116,8 @@ public class QuartzScheduler
       schedule(job, jobDetail);
       return job;
     } catch (Exception ex) {
-      SilverTrace.error(MODULE_NAME, getClass().getName(), "The scheduling of the job '" + theJob.
-          getName() + "' failed!", ex);
+      SilverTrace.error(MODULE_NAME, getClass().getSimpleName() + ".scheduleJob()",
+          "root.EX_NO_MESSAGE", "The scheduling of the job '" + theJob.getName() + "' failed!", ex);
       throw new SchedulerException(ex.getMessage(), ex);
     }
   }
@@ -132,8 +133,8 @@ public class QuartzScheduler
     try {
       this.quartzScheduler.deleteJob(jobName, org.quartz.Scheduler.DEFAULT_GROUP);
     } catch (org.quartz.SchedulerException ex) {
-      SilverTrace.error(MODULE_NAME, getClass().getName(), "The unscheduling of the job '" + jobName
-          + "' failed!", ex);
+      SilverTrace.error(MODULE_NAME, getClass().getSimpleName() + ".unscheduleJob()",
+          "root.EX_NO_MESSAGE", "The unscheduling of the job '" + jobName + "' failed!", ex);
       throw new SchedulerException(ex.getMessage(), ex);
     }
   }
@@ -153,9 +154,12 @@ public class QuartzScheduler
   @Override
   public void shutdown() throws SchedulerException {
     try {
+      SilverTrace.info(MODULE_NAME, getClass().getSimpleName() + ".shutdown()",
+          "root.EX_NO_MESSAGE", getClass().getSimpleName() + " is shutdown");
       this.quartzScheduler.shutdown();
     } catch (org.quartz.SchedulerException ex) {
-      SilverTrace.fatal(MODULE_NAME, getClass().getName(), "The scheduler shutdown failed!", ex);
+      SilverTrace.fatal(MODULE_NAME, getClass().getSimpleName() + ".shutdown()",
+          "root.EX_NO_MESSAGE", "The scheduler shutdown failed!", ex);
       throw new SchedulerException(ex.getMessage(), ex);
     }
   }

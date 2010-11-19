@@ -50,23 +50,27 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
  * creating of portlet windows.
  */
 public class PortletDeployerServlet extends HttpServlet {
+  private static final long serialVersionUID = 7041695476364573175L;
 
-  private static Logger logger = Logger.getLogger(PortletDeployerServlet.class
+  private static final Logger logger = Logger.getLogger(PortletDeployerServlet.class
       .getPackage().getName(), "com.silverpeas.portlets.PCDLogMessages");
   private static final String PORTLET_DRIVER_AUTODEPLOY_DIR = PortletRegistryHelper
       .getAutoDeployLocation();
 
   private ServletContext context;
 
+  @Override
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
     context = config.getServletContext();
+    PropertiesContext propertiesContext = PropertiesContext.get();
     // Do not invoke autodeploy is not enabled
-    if (PropertiesContext.enableAutodeploy()) {
+    if (propertiesContext.enableAutodeploy()) {
       DirectoryWatcherTask watcher = new DirectoryWatcherTask(
           PORTLET_DRIVER_AUTODEPLOY_DIR, new WarFileFilter(),
           new DirectoryChangedListener() {
 
+        @Override
         public void fileAdded(File file) {
           if (file.getName().endsWith(WarFileFilter.WAR_EXTENSION)) {
             PortletWar portlet = new PortletWar(file);
@@ -109,16 +113,18 @@ public class PortletDeployerServlet extends HttpServlet {
       });
 
       Timer timer = new Timer();
-      long watchInterval = PropertiesContext.getAutodeployDirWatchInterval();
+      long watchInterval = propertiesContext.getAutodeployDirWatchInterval();
       timer.schedule(watcher, watchInterval, watchInterval);
     }
   }
 
+  @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     doGetPost(request, response);
   }
 
+  @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     doGetPost(request, response);

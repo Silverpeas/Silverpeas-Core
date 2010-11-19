@@ -58,8 +58,8 @@ public class SchedulerFactory {
    */
   public Scheduler getScheduler() {
     if (actualScheduler == null) {
-      SilverTrace.error(SchedulerFactory.MODULE_NAME, getClass().getName(), "Unable to initialize "
-          + "the scheduling backend");
+      SilverTrace.error(SchedulerFactory.MODULE_NAME, getClass().getSimpleName() +
+          ".getScheduler()", "root.EX_NO_MESSAGE", "Unable to initialize the scheduling backend");
     }
     return actualScheduler;
   }

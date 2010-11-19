@@ -31,19 +31,34 @@ import java.util.Properties;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
- * PropertiesContext loads the content of driverconfig.properties
+ * PropertiesContext loads the portal driver properties.
+ * A portal driver is a lightweight portal execution environment.
  */
 public class PropertiesContext {
 
-  private static Properties configProperties;
-  // private static String CONFIG_FILE = "DriverConfig.properties";
-  private static String CONFIG_FILE = "DriverConfig";
+  private static PropertiesContext context = new PropertiesContext();
+
+  private static final String CONFIG_FILE = "DriverConfig";
   // Constants for properties defined in the config file
   private static final String PORTLET_RENDER_MODE_PARALLEL = "portletRenderModeParallel";
   private static final String ENABLE_AUTODEPLOY = "enableAutodeploy";
   private static final String AUTODEPLOY_DIR_WATCH_INTERVAL = "autodeployDirWatchInterval";
 
-  public static void init() {
+  private Properties configProperties;
+
+  /**
+   * Gets the properties context of the Silverpeas portal.
+   * @return a PropertiesContext instance.
+   */
+  public static PropertiesContext get() {
+    return context;
+  }
+
+  /**
+   * Constructs a PropertiesContext.
+   * It loads all of the properties about the portal context.
+   */
+  protected PropertiesContext() {
     InputStream defaultConfigBundle = null;
     Properties defaultProperties = new Properties();
     try {
@@ -62,21 +77,21 @@ public class PropertiesContext {
     configProperties = new Properties(defaultProperties);
   }
 
-  public static boolean isPortletRenderModeParallel() {
+  public boolean isPortletRenderModeParallel() {
     String value = configProperties.getProperty(PORTLET_RENDER_MODE_PARALLEL);
     if ("true".equals(value))
       return true;
     return false;
   }
 
-  public static boolean enableAutodeploy() {
+  public boolean enableAutodeploy() {
     String value = configProperties.getProperty(ENABLE_AUTODEPLOY);
     if ("true".equals(value))
       return true;
     return false;
   }
 
-  public static long getAutodeployDirWatchInterval() {
+  public long getAutodeployDirWatchInterval() {
     String value = configProperties.getProperty(AUTODEPLOY_DIR_WATCH_INTERVAL);
     long watchInterval;
     try {

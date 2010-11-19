@@ -61,10 +61,11 @@ import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
 import com.sun.portal.portletcontainer.invoker.util.InvokerUtil;
 
 public class DesktopServlet extends HttpServlet {
+  private static final long serialVersionUID = -2008936824253888899L;
 
   ServletContext context;
 
-  private static Logger logger = Logger.getLogger("com.silverpeas.portlets.portal",
+  private static final Logger logger = Logger.getLogger("com.silverpeas.portlets.portal",
       "com.silverpeas.portlets.PCDLogMessages");
 
   /**
@@ -72,23 +73,25 @@ public class DesktopServlet extends HttpServlet {
    * @param config the ServletConfig Object
    * @throws javax.servlet.ServletException
    */
+  @Override
   public void init(ServletConfig config)
       throws ServletException {
     super.init(config);
     context = config.getServletContext();
-    PropertiesContext.init();
     PortletRegistryCache.init();
   }
 
+  @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     try {
       doGetPost(request, response);
     } catch (Exception e) {
-      System.out.println(e);
+      logger.log(Level.SEVERE, e.getMessage(), e);
     }
   }
 
+  @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     doGetPost(request, response);
@@ -151,7 +154,7 @@ public class DesktopServlet extends HttpServlet {
         InvokerUtil.clearResponseProperties(portletContent.getResponseProperties());
       }
     } catch (Exception e) {
-      System.out.println(e);
+      logger.log(Level.SEVERE, e.getMessage(), e);
     } finally {
       ServletContextThreadLocalizer.set(null);
     }
@@ -372,7 +375,7 @@ public class DesktopServlet extends HttpServlet {
           throw new PortletRegistryException(portletWindowName + " is neither thick or thin!!");
         }
       } catch (PortletRegistryException pre) {
-        pre.printStackTrace();
+        logger.log(Level.SEVERE, pre.getMessage(), pre);
       }
     }
     Map portletWindowContents = new HashMap();
