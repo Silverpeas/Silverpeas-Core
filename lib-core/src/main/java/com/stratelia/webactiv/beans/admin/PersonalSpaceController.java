@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.lookV5;
+package com.stratelia.webactiv.beans.admin;
 
 import java.util.ArrayList;
 import java.util.Collection;
