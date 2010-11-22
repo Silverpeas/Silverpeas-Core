@@ -17,7 +17,6 @@
 <html>
 <%
 	String domainLDAPId = null;
-
   boolean toLaunch = false;
 
   if (request.getParameter("DomainLDAPId") != null) {
