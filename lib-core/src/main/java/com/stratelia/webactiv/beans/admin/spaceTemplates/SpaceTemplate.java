@@ -44,8 +44,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Class declaration
- * @author
+ * A Silverpeas workspace template.
+ * A such template defines the components a workspace described by the template should contain and
+ * the different user profiles defined within the workspace.
  */
 public final class SpaceTemplate {
   protected String filename;

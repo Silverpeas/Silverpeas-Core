@@ -38,6 +38,8 @@ import java.util.List;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This objet is used by all the admin jsp such as SpaceManagement, UserManagement, etc... It
@@ -216,7 +218,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
   }
 
   /** Return all the components names available in webactiv */
-  public Hashtable<String, String> getAllComponentsNames() {
+  public Map<String, String> getAllComponentsNames() {
     try {
       return m_Admin.getAllComponentsNames();
     } catch (Exception e) {
@@ -225,7 +227,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
         SilverTrace.error("admin",
             "OrganizationController.getAvailDriverCompoIds",
             "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", null, e);
-      return new Hashtable<String, String>();
+      return new HashMap<String, String>();
     }
   }
 

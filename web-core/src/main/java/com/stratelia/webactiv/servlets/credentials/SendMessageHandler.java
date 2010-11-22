@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class SendMessageHandler extends FunctionHandler {
 
+  @Override
   public String doAction(HttpServletRequest request) {
     try {
       ForgottenPasswordMailParameters parameters = new ForgottenPasswordMailParameters();

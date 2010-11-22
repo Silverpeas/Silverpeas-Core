@@ -27,14 +27,13 @@ package com.silverpeas.treeMenu.taglib;
 import static com.silverpeas.treeMenu.model.MenuConstants.ICON_STYLE_PREFIX;
 
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Hashtable;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
+import java.util.Map;
 
 /**
  * @author David Derigent
@@ -67,7 +66,7 @@ public class TreeMenuHtmlHeadTag extends TagSupport {
   private String contextName = null;
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 2678199573554487425L;
 
@@ -129,14 +128,12 @@ public class TreeMenuHtmlHeadTag extends TagSupport {
               (MainSessionController) pageContext.getSession().getAttribute(
               "SilverSessionController");
           OrganizationController controller = mainSessionCtrl.getOrganizationController();
-          Hashtable<String, String> componentsNames = controller.getAllComponentsNames();
+          Map<String, String> componentsNames = controller.getAllComponentsNames();
 
-          String name = null;
           if (!componentsNames.isEmpty()) {
             iconStyleBuilder.append("<style type=\"text/css\">");
           }
-          for (Enumeration<String> e = componentsNames.keys(); e.hasMoreElements();) {
-            name = e.nextElement();
+          for (String name : componentsNames.keySet()) {
             iconStyleBuilder.append(".").append(ICON_STYLE_PREFIX).append(name).append(
                 "{ display:block; height: 15px; padding-left: 20px; background: transparent url(")
                 .append(contextName).append(

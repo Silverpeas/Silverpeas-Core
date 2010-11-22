@@ -66,7 +66,8 @@ public class SpaceInstanciatorTest {
   }
 
   /**
-   * Test of getAllSpaceTemplates method, of class SpaceInstanciator.
+   * When some space templates are present, then they should be available as SpaceTemplate objects
+   * by the SpaceInstanciator instances.
    */
   @Test
   public void atInitAllTemplatesAreAvailables() {
@@ -80,7 +81,8 @@ public class SpaceInstanciatorTest {
   }
 
   /**
-   * Test of getAllSpaceTemplates method, of class SpaceInstanciator.
+   * When no space templates are present, then no SpaceTemplate objects should be provided by the
+   * SpaceInstanciator instances.
    */
   @Test
   public void atInitNoTemplatesDirectoryImpliesNoTemplatesLoaded() {

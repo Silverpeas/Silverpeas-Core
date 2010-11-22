@@ -191,8 +191,8 @@ public class Instanciateur extends Object {
     return WAComponents;
   }
 
-  public static Hashtable<String, String> getAllComponentsNames() {
-    Hashtable<String, String> hComponents = new Hashtable<String, String>();
+  public static Map<String, String> getAllComponentsNames() {
+    Map<String, String> hComponents = new HashMap<String, String>();
 
     Enumeration<WAComponent> e = WAComponents.elements();
     while (e.hasMoreElements()) {

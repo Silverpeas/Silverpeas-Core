@@ -38,6 +38,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
 import com.stratelia.webactiv.beans.admin.spaceTemplates.SpaceTemplate;
 import com.stratelia.webactiv.beans.admin.spaceTemplates.SpaceTemplateProfile;
+import java.util.HashMap;
 import java.util.Map;
 
 /*
@@ -370,7 +371,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
   // ----------------------------------------------
 
   /** Return all the components names available in webactiv */
-  public Hashtable<String, String> getAllComponentsNames() {
+  public Map<String, String> getAllComponentsNames() {
     SilverTrace.info("admin", "AdminController.getAllComponentsNames",
         "root.MSG_GEN_ENTER_METHOD");
     try {
@@ -378,7 +379,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getAllComponentsNames",
           "admin.MSG_ERR_GET_ALL_COMPONENT_NAMES", e);
-      return new Hashtable<String, String>();
+      return new HashMap<String, String>();
     }
   }
 

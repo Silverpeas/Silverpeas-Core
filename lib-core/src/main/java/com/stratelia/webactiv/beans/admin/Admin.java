@@ -930,17 +930,15 @@ public final class Admin extends Object {
   /**
    * Return all the components name available in Silverpeas
    */
-  public Hashtable<String, String> getAllComponentsNames() throws AdminException {
+  public Map<String, String> getAllComponentsNames() throws AdminException {
     SilverTrace.debug(MODULE_ADMIN, "Admin.getAllComponentsNames",
         "root.MSG_GEN_ENTER_METHOD");
 
-    Hashtable<String, String> hComponents = Instanciateur.getAllComponentsNames();
+    Map<String, String> hComponents = Instanciateur.getAllComponentsNames();
 
-    for (Enumeration<String> e = hComponents.keys(); e.hasMoreElements();) {
-      String sKey = e.nextElement();
-      String sLabel = hComponents.get(sKey);
+    for (Map.Entry<String, String> entry : hComponents.entrySet()) {
       SilverTrace.debug(MODULE_ADMIN, "Admin.getAllComponentsNames",
-          "admin.MSG_INFO_COMPONENT_FOUND", sKey + ": " + sLabel);
+          "admin.MSG_INFO_COMPONENT_FOUND", entry.getKey() + ": " + entry.getValue());
     }
 
     return hComponents;

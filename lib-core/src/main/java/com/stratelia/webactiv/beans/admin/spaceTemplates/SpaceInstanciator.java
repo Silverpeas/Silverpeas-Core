@@ -33,19 +33,23 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * An instanciator of Silverpeas workspaces.
+ * A Silverpeas workspace is an area providing specified Silverpeas components and within which some
+ * collaborative works can be performed by well authorized users.
+ * The Silverpeas collaborative portal is made up of one or more workspaces. By default, each user
+ * has its own workspace from which it access its data and collaborative and shared resources.
+ */
 public class SpaceInstanciator extends Object {
 
-  protected static ResourceLocator resources = null;
   protected static String xmlPackage = "";
   private Map<String, SpaceTemplate> spaceTemplates = new HashMap<String, SpaceTemplate>();
 
   // Init Function
   static {
     try {
-      resources = new ResourceLocator(
-          "com.stratelia.webactiv.beans.admin.admin", "");
-      xmlPackage = resources.getString("xmlSpaceTemplate");
-      xmlPackage = xmlPackage.trim();
+      xmlPackage = (new ResourceLocator(
+          "com.stratelia.webactiv.beans.admin.admin", "")).getString("xmlSpaceTemplate").trim();
     } catch (MissingResourceException mre) {
       SilverTrace.fatal("admin", "Instanciateur.static",
           "admin.MSG_INSTANCIATEUR_RESOURCES_NOT_FOUND", mre);
@@ -73,10 +77,22 @@ public class SpaceInstanciator extends Object {
     }
   }
 
+  /**
+   * Gets all of the templates on workspace.
+   * A template is provided by an XML file that defines the Silverpeas components a workspace
+   * can contain and for each of them the user profiles.
+   * @return a map between the workspace template name and its definition. If no templates are
+   * found, then an empty Map instance is returned.
+   */
   public Map<String, SpaceTemplate> getAllSpaceTemplates() {
     return spaceTemplates;
   }
 
+  /**
+   * Gets the user profiles of the specified workspace, identified by its name.
+   * @param templateName the name of the space templace.
+   * @return an array of the profiles in the specified template.
+   */
   public SpaceTemplateProfile[] getTemplateProfiles(String templateName) {
     SpaceTemplate st = spaceTemplates.get(templateName);
 
@@ -95,6 +111,11 @@ public class SpaceInstanciator extends Object {
     }
   }
 
+  /**
+   * Gets an instance of a workspace defined by the specified template, identified by its name.
+   * @param templateName the name of the template from which the workspace has to be instanciated.
+   * @return a workspace instance.
+   */
   public SpaceInst getSpaceToInstanciate(String templateName) {
     SpaceTemplate st = spaceTemplates.get(templateName);
 
