@@ -22,13 +22,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
 package com.stratelia.webactiv.beans.admin.spaceTemplates;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Iterator;
 
 import org.w3c.dom.Document;
@@ -41,12 +40,14 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.instance.control.SPParameters;
 import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
 import com.stratelia.webactiv.beans.admin.instance.control.WADOMUtil;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class declaration
  * @author
  */
-public class SpaceTemplate {
+public final class SpaceTemplate {
   protected String filename;
 
   protected String templateName;
@@ -63,10 +64,10 @@ public class SpaceTemplate {
    * @param allComponentsModels
    * @see
    */
-  public SpaceTemplate(String filename, Hashtable<String, WAComponent> allComponentsModels) {
+  public SpaceTemplate(String filename, Map<String, WAComponent> allComponentsModels) {
     SpaceTemplateProfile stp;
-    Hashtable<String, SpaceTemplateProfile> templateProfiles =
-        new Hashtable<String, SpaceTemplateProfile>();
+    Map<String, SpaceTemplateProfile> templateProfiles =
+        new HashMap<String, SpaceTemplateProfile>();
 
     this.filename = filename;
     try {
@@ -342,6 +343,7 @@ public class SpaceTemplate {
    * @return
    * @see
    */
+  @Override
   public String toString() {
     return templateName + "|" + description + "|"
         + ((readOnly) ? " Read Only " : " Read/Write ");

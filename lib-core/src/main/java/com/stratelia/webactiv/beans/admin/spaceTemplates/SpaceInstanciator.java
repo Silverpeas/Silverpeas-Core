@@ -24,7 +24,6 @@
 package com.stratelia.webactiv.beans.admin.spaceTemplates;
 
 import java.io.File;
-import java.util.Hashtable;
 import java.util.MissingResourceException;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -57,7 +56,7 @@ public class SpaceInstanciator extends Object {
    * Constructs a new SpaceInstanciator instance with the specified component models.
    * @param allComponentsModels a map of component models each of them identified by their name.
    */
-  public SpaceInstanciator(Hashtable<String, WAComponent> allComponentsModels) {
+  public SpaceInstanciator(Map<String, WAComponent> allComponentsModels) {
     File file = new File(xmlPackage);
     String[] list = file.list();
     if (list != null) {
