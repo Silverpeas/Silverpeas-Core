@@ -27,6 +27,8 @@ import com.silverpeas.util.PathTestUtil;
 import java.io.File;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
+import com.stratelia.webactiv.util.ResourceLocator;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import org.junit.After;
@@ -69,7 +71,7 @@ public class SpaceInstanciatorTest {
   @Test
   public void atInitAllTemplatesAreAvailables() {
     SpaceInstanciator.xmlPackage = XMLSPACETEMPLATES_DIR;
-    Hashtable<String, WAComponent> componentModels = new Hashtable<String, WAComponent>();
+    Map<String, WAComponent> componentModels = new HashMap<String, WAComponent>();
     SpaceInstanciator instanciator = new SpaceInstanciator(componentModels);
     Map<String, SpaceTemplate> spaceTemplates = instanciator.getAllSpaceTemplates();
     assertNotNull(spaceTemplates);
@@ -82,7 +84,8 @@ public class SpaceInstanciatorTest {
    */
   @Test
   public void atInitNoTemplatesDirectoryImpliesNoTemplatesLoaded() {
-    Hashtable<String, WAComponent> componentModels = new Hashtable<String, WAComponent>();
+    SpaceInstanciator.xmlPackage = "toto";
+    Map<String, WAComponent> componentModels = new HashMap<String, WAComponent>();
     SpaceInstanciator instanciator = new SpaceInstanciator(componentModels);
     Map<String, SpaceTemplate> spaceTemplates = instanciator.getAllSpaceTemplates();
     assertNotNull(spaceTemplates);
