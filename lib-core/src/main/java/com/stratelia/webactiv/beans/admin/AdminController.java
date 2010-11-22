@@ -38,6 +38,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
 import com.stratelia.webactiv.beans.admin.spaceTemplates.SpaceTemplate;
 import com.stratelia.webactiv.beans.admin.spaceTemplates.SpaceTemplateProfile;
+import java.util.Map;
 
 /*
  This objet is used by all the admin jsp such as SpaceManagement, UserManagement, etc...
@@ -258,7 +259,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     }
   }
 
-  public Hashtable<String, SpaceTemplate> getAllSpaceTemplates() {
+  public Map<String, SpaceTemplate> getAllSpaceTemplates() {
     return m_Admin.getAllSpaceTemplates();
   }
 
@@ -1331,7 +1332,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
       return "-1";
     }
   }
-  
+
   public void indexUsers(String domainId) {
     try {
       m_Admin.indexUsers(domainId);
@@ -1340,7 +1341,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
           "admin.CANT_INDEX_USERS", "domainId = "+domainId, e);
     }
   }
-  
+
   public void indexAllUsers() {
     try {
       m_Admin.indexAllUsers();

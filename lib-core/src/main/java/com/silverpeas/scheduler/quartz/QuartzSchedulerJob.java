@@ -28,9 +28,12 @@ import com.silverpeas.scheduler.Job;
 import com.silverpeas.scheduler.JobExecutionContext;
 import com.silverpeas.scheduler.ScheduledJob;
 import com.silverpeas.scheduler.SchedulerEventListener;
+import com.silverpeas.scheduler.SchedulerFactory;
 import com.silverpeas.scheduler.trigger.JobTrigger;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.io.Serializable;
 import java.util.Date;
+import static com.silverpeas.scheduler.SchedulerFactory.*;
 
 /**
  * The QuartzSchedulerJob is, as its name implies, a job that will be scheduled within the
@@ -59,7 +62,9 @@ public class QuartzSchedulerJob implements ScheduledJob, Serializable {
     this.job = new Job(name) {
 
       @Override
-      public void execute(JobExecutionContext context) throws Exception {
+      public void execute(JobExecutionContext context) {
+        SilverTrace.debug(MODULE_NAME, getClass().getSimpleName() + "<init>()",
+            "root.EX_NO_MESSAGE", "Empty job: the job is delegated to an event listener.");
       }
     };
     this.trigger = trigger;

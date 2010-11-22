@@ -44,7 +44,6 @@ import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.domains.ldapdriver.LDAPSynchroUserItf;
 import com.stratelia.silverpeas.domains.silverpeasdriver.DomainSPSchemaPool;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.cache.AdminCache;
 import com.stratelia.webactiv.beans.admin.cache.GroupCache;
@@ -53,7 +52,7 @@ import com.stratelia.webactiv.beans.admin.cache.TreeCache;
 import com.stratelia.webactiv.beans.admin.instance.control.Instanciateur;
 import com.stratelia.webactiv.beans.admin.instance.control.SPParameter;
 import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
-import com.stratelia.webactiv.beans.admin.spaceTemplates.SpaceInstanciateur;
+import com.stratelia.webactiv.beans.admin.spaceTemplates.SpaceInstanciator;
 import com.stratelia.webactiv.beans.admin.spaceTemplates.SpaceTemplate;
 import com.stratelia.webactiv.beans.admin.spaceTemplates.SpaceTemplateProfile;
 import com.stratelia.webactiv.organization.OrganizationSchemaPool;
@@ -67,6 +66,9 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.pool.ConnectionPool;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.lang.time.FastDateFormat;
 
 /**
@@ -77,7 +79,7 @@ import org.apache.commons.lang.time.FastDateFormat;
  * The class Admin is the main class of the Administrator.<BR>
  * The role of the administrator is to create and maintain spaces.
  */
-public class Admin extends Object {
+public final class Admin extends Object {
 
   public static final String SPACE_KEY_PREFIX = "WA";
   // Divers
@@ -99,7 +101,7 @@ public class Admin extends Object {
   static private GroupProfileInstManager m_GroupProfileInstManager = new GroupProfileInstManager();
   // Component instanciator
   static private Instanciateur m_compoInstanciator = null;
-  static private SpaceInstanciateur m_spaceInstanciator = null;
+  static private SpaceInstanciator m_spaceInstanciator = null;
   // Entreprise client space Id
   static private String m_sAdminDBDriver = null;
   static private String m_sWaProductionDb;
@@ -109,7 +111,8 @@ public class Admin extends Object {
   static private String m_sAdministratorEMail = null;
   static private String m_sDAPIGeneralAdminId = null;
   // User Logs
-  static private Hashtable<String, UserLog> m_hUserLog = new Hashtable<String, UserLog>(0);
+  static private Map<String, UserLog> m_hUserLog =
+      Collections.synchronizedMap(new HashMap<String, UserLog>(0));
   private static FastDateFormat formatter = FastDateFormat.getInstance("dd/MM/yyyy HH:mm:ss:S");
   // Cache management
   static private AdminCache m_Cache = new AdminCache();
@@ -150,16 +153,11 @@ public class Admin extends Object {
             "DBConnectionResetScheduler", ""));
       }
 
-      m_bFallbackGroupNames = SilverpeasSettings.readBoolean(resources,
-          "FallbackGroupNames", true);
-      m_bFallbackUserLogins = SilverpeasSettings.readBoolean(resources,
-          "FallbackUserLogins", false);
-      m_threadDelay = SilverpeasSettings.readLong(resources,
-          "AdminThreadedSynchroDelay", 900);
-      m_groupSynchroCron = SilverpeasSettings.readString(resources,
-          "GroupSynchroCron", "* 5 * * *");
-      m_delUsersOnDiffSynchro = SilverpeasSettings.readBoolean(resources,
-          "DelUsersOnThreadedSynchro", true);
+      m_bFallbackGroupNames = resources.getBoolean("FallbackGroupNames", true);
+      m_bFallbackUserLogins = resources.getBoolean("FallbackUserLogins", false);
+      m_threadDelay = resources.getLong("AdminThreadedSynchroDelay", 900);
+      m_groupSynchroCron = resources.getString("GroupSynchroCron", "* 5 * * *");
+      m_delUsersOnDiffSynchro = resources.getBoolean("DelUsersOnThreadedSynchro", true);
 
       // Cache management
       m_Cache.setCacheAvailable(resources.getString("UseCache", "1").equals("1"));
@@ -170,7 +168,7 @@ public class Admin extends Object {
       }
 
       if (m_spaceInstanciator == null) {
-        m_spaceInstanciator = new SpaceInstanciateur(getAllComponents());
+        m_spaceInstanciator = new SpaceInstanciator(getAllComponents());
       }
       // Init tree cache
       synchronized (Admin.class) {
@@ -914,7 +912,7 @@ public class Admin extends Object {
     }
   }
 
-  public Hashtable<String, SpaceTemplate> getAllSpaceTemplates() {
+  public Map<String, SpaceTemplate> getAllSpaceTemplates() {
     return m_spaceInstanciator.getAllSpaceTemplates();
   }
 
@@ -4706,8 +4704,8 @@ public class Admin extends Object {
     UserLog[] userLogs = new UserLog[m_hUserLog.size()];
 
     int nI = 0;
-    for (Enumeration<String> e = m_hUserLog.keys(); e.hasMoreElements();) {
-      userLogs[nI++] = m_hUserLog.get(e.nextElement());
+    for (String user : m_hUserLog.keySet()) {
+      userLogs[nI++] = m_hUserLog.get(user);
     }
     return userLogs;
   }
@@ -6550,14 +6548,14 @@ public class Admin extends Object {
     }
     return SPACE_KEY_PREFIX + spaceInst.getId();
   }
-  
+
   public void indexAllUsers() throws AdminException {
     Domain[] domains = getAllDomains();
     for (Domain domain : domains) {
       indexUsers(domain.getId());
     }
   }
-  
+
   public void indexUsers(String domainId) throws AdminException {
     try {
       m_DDManager.indexAllUsers(domainId);

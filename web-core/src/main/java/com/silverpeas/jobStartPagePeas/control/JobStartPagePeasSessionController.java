@@ -207,7 +207,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     return m_AdminCtrl.getSpaceInstFromTemplate(templateName);
   }
 
-  public Hashtable<String, SpaceTemplate> getAllSpaceTemplates() {
+  public Map<String, SpaceTemplate> getAllSpaceTemplates() {
     return m_AdminCtrl.getAllSpaceTemplates();
   }
 

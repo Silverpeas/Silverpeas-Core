@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<SpaceTemplate>
+    <templateName>Espace projet</templateName>
+    <defaultName>Projet XXX</defaultName>
+    <description>Description du projet</description>
+    <readOnly>no</readOnly>
+	<!-- Profiles matching must be done One to One : i.e. not two template profiles linked to the same component profile and not two component profiles linked the same template profile -->
+    <Profiles>
+	    <Profile name="Gestionnaire">Gestionnaire</Profile>
+	    <Profile name="Redacteur">Rédacteur</Profile>
+	    <Profile name="Lecteur">Lecteur</Profile>
+    </Profiles>
+    <Components>
+        <Component>
+            <ComponentName>kmelia</ComponentName>
+			<!-- Components labels MUST BE UNIQUE in the same space template -->
+            <ComponentLabel>Documentation</ComponentLabel>
+            <ComponentDescription>Ensemble des documents liés au projet</ComponentDescription>
+			<ComponentMatchingProfiles>
+				<ComponentMatchingProfile name="Gestionnaire">admin</ComponentMatchingProfile>
+				<ComponentMatchingProfile name="Redacteur">publisher</ComponentMatchingProfile>
+				<ComponentMatchingProfile name="Lecteur">user</ComponentMatchingProfile>
+			</ComponentMatchingProfiles>
+		    <ComponentParameters>
+		        <ComponentParameter name="nbPubliOnRoot">9</ComponentParameter>
+		        <ComponentParameter name="usePdc">yes</ComponentParameter>
+		    </ComponentParameters>
+        </Component>
+        <Component>
+            <ComponentName>bookmark</ComponentName>
+            <ComponentLabel>Sites de référence</ComponentLabel>
+            <ComponentDescription>Annuaire de sites web</ComponentDescription>
+			<ComponentMatchingProfiles>
+				<ComponentMatchingProfile name="Gestionnaire">Admin</ComponentMatchingProfile>
+				<ComponentMatchingProfile name="Redacteur">Publisher</ComponentMatchingProfile>
+				<ComponentMatchingProfile name="Lecteur">Reader</ComponentMatchingProfile>
+			</ComponentMatchingProfiles>
+        </Component>
+        <Component>
+            <ComponentName>toolbox</ComponentName>
+            <ComponentLabel>Téléchargement</ComponentLabel>
+            <ComponentDescription>Boite de téléchargement et échange de fichiers</ComponentDescription>
+			<ComponentMatchingProfiles>
+				<ComponentMatchingProfile name="Gestionnaire">admin</ComponentMatchingProfile>
+				<ComponentMatchingProfile name="Redacteur">publisher</ComponentMatchingProfile>
+				<ComponentMatchingProfile name="Lecteur">user</ComponentMatchingProfile>
+			</ComponentMatchingProfiles>
+        </Component>
+        <Component>
+            <ComponentName>forums</ComponentName>
+            <ComponentLabel>Forum</ComponentLabel>
+            <ComponentDescription>Discussions diverses autour du projet</ComponentDescription>
+			<ComponentMatchingProfiles>
+				<ComponentMatchingProfile name="Gestionnaire">admin</ComponentMatchingProfile>
+				<ComponentMatchingProfile name="Lecteur">user</ComponentMatchingProfile>
+			</ComponentMatchingProfiles>
+        </Component>
+        <Component>
+            <ComponentName>yellowpages</ComponentName>
+            <ComponentLabel>Contacts</ComponentLabel>
+            <ComponentDescription>Liste des intervenants</ComponentDescription>
+			<ComponentMatchingProfiles>
+				<ComponentMatchingProfile name="Gestionnaire">admin</ComponentMatchingProfile>
+				<ComponentMatchingProfile name="Redacteur">publisher</ComponentMatchingProfile>
+				<ComponentMatchingProfile name="Lecteur">user</ComponentMatchingProfile>
+			</ComponentMatchingProfiles>
+        </Component>
+    </Components>
+</SpaceTemplate>

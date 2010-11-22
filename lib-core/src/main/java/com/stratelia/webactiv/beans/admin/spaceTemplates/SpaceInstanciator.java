@@ -21,23 +21,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.beans.admin.spaceTemplates;
 
 import java.io.File;
 import java.util.Hashtable;
 import java.util.MissingResourceException;
-import java.util.Vector;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
 import com.stratelia.webactiv.util.ResourceLocator;
+import java.util.HashMap;
+import java.util.Map;
 
-public class SpaceInstanciateur extends Object {
-  private static ResourceLocator resources = null;
-  private static String xmlPackage = "";
-  private Hashtable<String, SpaceTemplate> spaceTemplates = new Hashtable<String, SpaceTemplate>();
+public class SpaceInstanciator extends Object {
+
+  protected static ResourceLocator resources = null;
+  protected static String xmlPackage = "";
+  private Map<String, SpaceTemplate> spaceTemplates = new HashMap<String, SpaceTemplate>();
 
   // Init Function
   static {
@@ -52,33 +53,28 @@ public class SpaceInstanciateur extends Object {
     }
   }
 
-  public SpaceInstanciateur(Hashtable<String, WAComponent> allComponentsModels) {
+  /**
+   * Constructs a new SpaceInstanciator instance with the specified component models.
+   * @param allComponentsModels a map of component models each of them identified by their name.
+   */
+  public SpaceInstanciator(Hashtable<String, WAComponent> allComponentsModels) {
     File file = new File(xmlPackage);
     String[] list = file.list();
-
-    Vector<String> vector = new Vector<String>();
-    for (int i = 0; list != null && i < list.length; i++) {
-      if (list[i].toLowerCase().endsWith(".xml")) {
-        vector.addElement(list[i].substring(0, list[i].length() - 4));
+    if (list != null) {
+      for (String fileName : list) {
+        if (fileName.toLowerCase().endsWith(".xml")) {
+          String spaceName = fileName.substring(0, fileName.length() - 4);
+          String fullPath = xmlPackage + File.separator + fileName;
+          SilverTrace.info("admin", "SpaceInstanciateur.SpaceInstanciateur",
+              "admin.MSG_INFO_BUILD_WA_COMPONENT_LIST", "space name: '" + spaceName
+              + "', full path: '" + fullPath + "'");
+          spaceTemplates.put(spaceName, new SpaceTemplate(fullPath, allComponentsModels));
+        }
       }
-    }
-    int count = vector.size();
-    list = new String[count];
-    for (int i = 0; i < list.length; i++) {
-      list[i] = (String) vector.elementAt(i);
-    }
-    for (int i = 0; i < list.length; i++) {
-      String spaceName = list[i];
-      String fullPath = xmlPackage + File.separator + spaceName + ".xml";
-      SilverTrace.info("admin", "SpaceInstanciateur.SpaceInstanciateur",
-          "admin.MSG_INFO_BUILD_WA_COMPONENT_LIST", "space name: '" + spaceName
-          + "', full path: '" + fullPath + "'");
-      spaceTemplates.put(spaceName, new SpaceTemplate(fullPath,
-          allComponentsModels));
     }
   }
 
-  public Hashtable<String, SpaceTemplate> getAllSpaceTemplates() {
+  public Map<String, SpaceTemplate> getAllSpaceTemplates() {
     return spaceTemplates;
   }
 

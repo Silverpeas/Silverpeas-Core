@@ -236,27 +236,27 @@ abstract public class SchedulerJob
     vDaysOfWeek = new ArrayList<Integer>();
     // Instead
     Calendar calInit = Calendar.getInstance();
-    currentMinute = new Integer(0);
-    currentHour = new Integer(0);
+    currentMinute = 0;
+    currentHour = 0;
     if (calInit.getActualMinimum(Calendar.DAY_OF_MONTH) == calInit.get(Calendar.DAY_OF_MONTH)) {
-      currentDayOfMonth = new Integer(calInit.getActualMaximum(Calendar.DAY_OF_MONTH));
+      currentDayOfMonth = calInit.getActualMaximum(Calendar.DAY_OF_MONTH);
       if (calInit.getActualMinimum(Calendar.MONTH) == calInit.get(Calendar.MONTH)) {
-        currentMonth = new Integer(calInit.getActualMaximum(Calendar.MONTH));
-        currentYear = new Integer(calInit.get(Calendar.YEAR) - 1);
+        currentMonth = calInit.getActualMaximum(Calendar.MONTH);
+        currentYear = calInit.get(Calendar.YEAR) - 1;
       } else {
-        currentMonth = new Integer(calInit.get(Calendar.MONTH) - 1);
-        currentYear = new Integer(calInit.get(Calendar.YEAR));
+        currentMonth = calInit.get(Calendar.MONTH) - 1;
+        currentYear = calInit.get(Calendar.YEAR);
       }
     } else {
-      currentDayOfMonth = new Integer(calInit.get(Calendar.DAY_OF_MONTH) - 1);
-      currentMonth = new Integer(calInit.get(Calendar.MONTH));
-      currentYear = new Integer(calInit.get(Calendar.YEAR));
+      currentDayOfMonth = calInit.get(Calendar.DAY_OF_MONTH) - 1;
+      currentMonth = calInit.get(Calendar.MONTH);
+      currentYear = calInit.get(Calendar.YEAR);
     }
     if (calInit.getActualMinimum(Calendar.MONTH) == currentMonth.intValue()) {
-      currentMonth = new Integer(calInit.getActualMaximum(Calendar.MONTH));
-      currentYear = new Integer(currentYear.intValue() - 1);
+      currentMonth = calInit.getActualMaximum(Calendar.MONTH);
+      currentYear = currentYear.intValue() - 1;
     } else {
-      currentMonth = new Integer(currentMonth.intValue() - 1);
+      currentMonth = currentMonth.intValue() - 1;
     }
     nextTimeStamp = 0;
     bRunnable = true;
@@ -354,7 +354,7 @@ abstract public class SchedulerJob
               "SchedulerMethodJob.setParameter: A month value is out of range");
         }
 
-        workVector.add(new Integer(workInt - 1)); // Internal: zero based
+        workVector.add(workInt - 1); // Internal: zero based
       } catch (ClassCastException aException) {
         throw new SchedulerException(
             "SchedulerMethodJob.setParameter: Can't convert a month value");
@@ -485,7 +485,7 @@ abstract public class SchedulerJob
               "SchedulerShellJob.setCronString: A minute value is out of range");
         }
 
-        vMinutes.add(new Integer(workInt));
+        vMinutes.add(workInt);
       }
     }
 
@@ -514,7 +514,7 @@ abstract public class SchedulerJob
               "SchedulerShellJob.setCronString: A hour value is out of range");
         }
 
-        vHours.add(new Integer(workInt));
+        vHours.add(workInt);
       }
     }
 
@@ -543,7 +543,7 @@ abstract public class SchedulerJob
               "SchedulerShellJob.setCronString: A day of month value is out of range");
         }
 
-        vDaysOfMonth.add(new Integer(workInt));
+        vDaysOfMonth.add(workInt);
       }
     }
 
@@ -572,7 +572,7 @@ abstract public class SchedulerJob
               "SchedulerShellJob.setCronString: A month value is out of range");
         }
 
-        vMonths.add(new Integer(workInt - 1)); // Internal: zero based
+        vMonths.add(workInt - 1); // Internal: zero based
       }
     }
 
@@ -604,25 +604,25 @@ abstract public class SchedulerJob
 
         switch (workInt) {
           case 0:
-            vDaysOfWeek.add(new Integer(Calendar.SUNDAY));
+            vDaysOfWeek.add(Calendar.SUNDAY);
             break;
           case 1:
-            vDaysOfWeek.add(new Integer(Calendar.MONDAY));
+            vDaysOfWeek.add(Calendar.MONDAY);
             break;
           case 2:
-            vDaysOfWeek.add(new Integer(Calendar.TUESDAY));
+            vDaysOfWeek.add(Calendar.TUESDAY);
             break;
           case 3:
-            vDaysOfWeek.add(new Integer(Calendar.WEDNESDAY));
+            vDaysOfWeek.add(Calendar.WEDNESDAY);
             break;
           case 4:
-            vDaysOfWeek.add(new Integer(Calendar.THURSDAY));
+            vDaysOfWeek.add(Calendar.THURSDAY);
             break;
           case 5:
-            vDaysOfWeek.add(new Integer(Calendar.FRIDAY));
+            vDaysOfWeek.add(Calendar.FRIDAY);
             break;
           case 6:
-            vDaysOfWeek.add(new Integer(Calendar.SATURDAY));
+            vDaysOfWeek.add(Calendar.SATURDAY);
             break;
         }
       }
@@ -725,12 +725,12 @@ abstract public class SchedulerJob
         {
           int maxHour = calcCalendar.getActualMaximum(Calendar.HOUR_OF_DAY);
           if (currentHour.intValue() < maxHour) {
-            currentHour = new Integer(currentHour.intValue() + 1);
+            currentHour = currentHour.intValue() + 1;
             carryHour = false;
             carryDayOfMonth = false;
             carryMonth = false;
           } else {
-            currentHour = new Integer(calcCalendar.getActualMinimum(Calendar.HOUR_OF_DAY));
+            currentHour = calcCalendar.getActualMinimum(Calendar.HOUR_OF_DAY);
             carryHour = true;
           }
         } else {
@@ -764,11 +764,11 @@ abstract public class SchedulerJob
         {
           int maxMonth = calcCalendar.getActualMaximum(Calendar.DAY_OF_MONTH);
           if (currentDayOfMonth.intValue() < maxMonth) {
-            currentDayOfMonth = new Integer(currentDayOfMonth.intValue() + 1);
+            currentDayOfMonth = currentDayOfMonth.intValue() + 1;
             carryDayOfMonth = false;
             carryMonth = false;
           } else {
-            currentDayOfMonth = new Integer(calcCalendar.getActualMinimum(Calendar.DAY_OF_MONTH));
+            currentDayOfMonth = calcCalendar.getActualMinimum(Calendar.DAY_OF_MONTH);
             carryDayOfMonth = true;
           }
         } else {
@@ -800,10 +800,10 @@ abstract public class SchedulerJob
         {
           int maxMonth = calcCalendar.getActualMaximum(Calendar.MONTH);
           if (currentMonth.intValue() < maxMonth) {
-            currentMonth = new Integer(currentMonth.intValue() + 1);
+            currentMonth = currentMonth.intValue() + 1;
             carryMonth = false;
           } else {
-            currentMonth = new Integer(calcCalendar.getActualMinimum(Calendar.MONTH));
+            currentMonth = calcCalendar.getActualMinimum(Calendar.MONTH);
             carryMonth = true;
           }
         } else {
@@ -834,7 +834,7 @@ abstract public class SchedulerJob
             && (currentHour.intValue() == 0)
             && (currentDayOfMonth.intValue() == 1) && (currentMonth.intValue() == 0))) {
           // Hit every year
-          currentYear = new Integer(currentYear.intValue() + 1);
+          currentYear = currentYear.intValue() + 1;
           calcCalendar.set(Calendar.YEAR, currentYear.intValue());
         }
 

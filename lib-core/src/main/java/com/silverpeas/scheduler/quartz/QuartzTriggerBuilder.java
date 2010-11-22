@@ -50,7 +50,7 @@ public final class QuartzTriggerBuilder implements JobTriggerVisitor {
    * @return a Quartz scheduler trigger.
    * @throws Exception if the build of a Quartz trigger failed.
    */
-  public Trigger buildFrom(final QuartzSchedulerJob job) throws Exception {
+  public Trigger buildFrom(final QuartzSchedulerJob job) {
     job.getTrigger().accept(this);
     quartzTrigger.setName(job.getName());
     return quartzTrigger;

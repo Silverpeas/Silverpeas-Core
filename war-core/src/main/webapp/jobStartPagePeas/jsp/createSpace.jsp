@@ -29,17 +29,17 @@
 
 <%
 String 		m_SousEspace 		= (String) request.getAttribute("SousEspace");
-Hashtable 	m_SpaceTemplates 	= (Hashtable) request.getAttribute("spaceTemplates");
+Map     	m_SpaceTemplates 	= (Map) request.getAttribute("spaceTemplates");
 SpaceInst[] brothers 			= (SpaceInst[]) request.getAttribute("brothers");
 String 		spaceId				= (String) request.getAttribute("CurrentSpaceId");
-		
+
 	browseBar.setSpaceId(spaceId);
 	browseBar.setClickable(false);
-	if (m_SousEspace == null) 
+	if (m_SousEspace == null)
 		browseBar.setComponentName(resource.getString("JSPP.creationSpace"));
 	else
 		browseBar.setPath(resource.getString("JSPP.creationSubSpace"));
- 			
+
 %>
 
 <HTML>
@@ -66,26 +66,26 @@ function B_VALIDER_ONCLICK() {
 
 /*****************************************************************************/
 
-function isCorrectForm() {		
+function isCorrectForm() {
      	var errorMsg = "";
      	var errorNb = 0;
-     	
+
 		var name = stripInitialWhitespace(document.infoSpace.NameObject.value);
 		var desc = document.infoSpace.Description;
-        
+
         if (isWhitespace(name)) {
 			errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("MustContainsText")%>\n";
-			errorNb++; 
+			errorNb++;
 		}
-		
+
 		var textAreaLength = 400;
 		var s = desc.value;
 		if (! (s.length <= textAreaLength)) {
      		errorMsg+="  - '<%=resource.getString("GML.description")%>' <%=resource.getString("ContainsTooLargeText")+"400 "+resource.getString("Characters")%>\n";
-           	errorNb++; 
-		}  	  	
-		  	
-		
+           	errorNb++;
+		}
+
+
      switch(errorNb)
      {
         case 0 :
@@ -102,8 +102,8 @@ function isCorrectForm() {
             result = false;
             break;
      }
-     return result;	
-     
+     return result;
+
 }
 </script>
 </HEAD>
@@ -119,15 +119,15 @@ out.println(board.printBefore());
 
 		<table border="0" cellspacing="0" cellpadding="5" width="100%">
 			<%=I18NHelper.getFormLine(resource)%>
-			<tr> 
+			<tr>
 				<td class="txtlibform"><%=resource.getString("GML.name")%> :</td>
 				<td><input type="text" name="NameObject" size="60" maxlength="60" value="">&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="txtlibform" valign="top"><%=resource.getString("GML.description")%> :</td>
 				<td><textarea name="Description" rows="4" cols="49"></textarea></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="txtlibform"><%=resource.getString("JSPP.SpacePlace")%> :</td>
 				<td valign="top">
                     <SELECT name="SpaceBefore" id="SpaceBefore">
@@ -141,17 +141,17 @@ out.println(board.printBefore());
                     </SELECT>
 				</td>
 			</tr>
-            <tr> 
+            <tr>
 				<td class="txtlibform"><%=resource.getString("JSPP.SpaceTemplate")%> :</td>
 				<td>
                     <SELECT name="SpaceTemplate" id="SpaceTemplate">
                         <OPTION value=""><%=resource.getString("JSPP.NoTemplate")%></OPTION>
                         <%
-                            Enumeration it = m_SpaceTemplates.keys();
+                            Iterator it = m_SpaceTemplates.keySet().iterator();
 
-                            while (it.hasMoreElements())
+                            while (it.hasNext())
                             {
-                                String theKey = (String)it.nextElement();
+                                String theKey = (String)it.next();
                                 SpaceTemplate st = (SpaceTemplate)m_SpaceTemplates.get(theKey);
                                 out.println("<OPTION value=\"" + theKey + "\">" + st.getTemplateName() + "</OPTION>");
                             }
@@ -159,7 +159,7 @@ out.println(board.printBefore());
                     </SELECT>
 				</td>
 			</tr>
-			<tr align=left> 
+			<tr align=left>
 				<td colspan="2">(<img border="0" src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5"> : <%=resource.getString("GML.requiredField")%>)</td>
 			</tr>
 		</table>
@@ -171,7 +171,7 @@ out.println(board.printBefore());
 		buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false));
 		buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false));
 		out.println("<br/><center>"+buttonPane.print()+"</center>");
-		
+
 		out.println(frame.printAfter());
 		out.println(window.printAfter());
 %>

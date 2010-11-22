@@ -40,7 +40,7 @@ public class SchedulerFactory {
    * The name of the scheduling system in Silverpeas.
    */
   public static final String MODULE_NAME = "scheduler";
-  private static SchedulerFactory instance = new SchedulerFactory();
+  private static final SchedulerFactory instance = new SchedulerFactory();
   @Autowired
   private Scheduler actualScheduler;
 

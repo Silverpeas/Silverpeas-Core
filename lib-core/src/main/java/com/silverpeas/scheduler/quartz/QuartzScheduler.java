@@ -60,11 +60,11 @@ public class QuartzScheduler
   /**
    * The Quartz scheduler (the backend).
    */
-  private org.quartz.Scheduler quartzScheduler;
+  private org.quartz.Scheduler backend;
   /**
    * A Quartz trigger builder.
    */
-  private QuartzTriggerBuilder triggerBuilder = new QuartzTriggerBuilder();
+  private final QuartzTriggerBuilder triggerBuilder = new QuartzTriggerBuilder();
 
   /**
    * Constructs a new scheduler and bootstraps the Quartz scheduler backend.
@@ -73,8 +73,8 @@ public class QuartzScheduler
   protected QuartzScheduler() throws SchedulerException {
     StdSchedulerFactory quartzSchedulerFactory = new StdSchedulerFactory();
     try {
-      quartzScheduler = quartzSchedulerFactory.getScheduler();
-      quartzScheduler.start();
+      backend = quartzSchedulerFactory.getScheduler();
+      backend.start();
       SilverTrace.info(MODULE_NAME, getClass().getSimpleName() + ".<init>()", "root.EX_NO_MESSAGE",
           getClass().getSimpleName() + " is started");
     } catch (org.quartz.SchedulerException ex) {
@@ -131,7 +131,7 @@ public class QuartzScheduler
   public void unscheduleJob(String jobName) throws SchedulerException {
     checkJobName(jobName);
     try {
-      this.quartzScheduler.deleteJob(jobName, org.quartz.Scheduler.DEFAULT_GROUP);
+      this.backend.deleteJob(jobName, org.quartz.Scheduler.DEFAULT_GROUP);
     } catch (org.quartz.SchedulerException ex) {
       SilverTrace.error(MODULE_NAME, getClass().getSimpleName() + ".unscheduleJob()",
           "root.EX_NO_MESSAGE", "The unscheduling of the job '" + jobName + "' failed!", ex);
@@ -144,7 +144,7 @@ public class QuartzScheduler
     checkJobName(jobName);
     try {
       JobDetail jobDetail =
-          this.quartzScheduler.getJobDetail(jobName, org.quartz.Scheduler.DEFAULT_GROUP);
+          this.backend.getJobDetail(jobName, org.quartz.Scheduler.DEFAULT_GROUP);
       return jobDetail != null;
     } catch (org.quartz.SchedulerException ex) {
       return false;
@@ -156,7 +156,7 @@ public class QuartzScheduler
     try {
       SilverTrace.info(MODULE_NAME, getClass().getSimpleName() + ".shutdown()",
           "root.EX_NO_MESSAGE", getClass().getSimpleName() + " is shutdown");
-      this.quartzScheduler.shutdown();
+      this.backend.shutdown();
     } catch (org.quartz.SchedulerException ex) {
       SilverTrace.fatal(MODULE_NAME, getClass().getSimpleName() + ".shutdown()",
           "root.EX_NO_MESSAGE", "The scheduler shutdown failed!", ex);
@@ -171,9 +171,10 @@ public class QuartzScheduler
    * execution parameters.
    * @throws Exception if an error occurs while scheduling the specified job.
    */
-  private void schedule(final QuartzSchedulerJob job, final JobDetail jobDetail) throws Exception {
+  private void schedule(final QuartzSchedulerJob job, final JobDetail jobDetail) throws
+      org.quartz.SchedulerException {
     Trigger quartzTrigger = triggerBuilder.buildFrom(job);
-    this.quartzScheduler.scheduleJob(jobDetail, quartzTrigger);
+    this.backend.scheduleJob(jobDetail, quartzTrigger);
     job.setNextExecutionTime(quartzTrigger.getNextFireTime());
   }
 
@@ -251,4 +252,5 @@ public class QuartzScheduler
         }
       }
     }
-  }}
+  }
+}

@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
 /*
@@ -47,7 +47,7 @@ import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
  */
 public class OrganizationController extends AdminReference implements java.io.Serializable {
 
-  private static final long serialVersionUID = 1869750368600972095L;
+  //private static final long serialVersionUID = 1869750368600972095L;
 
   /**
    * Constructor declaration

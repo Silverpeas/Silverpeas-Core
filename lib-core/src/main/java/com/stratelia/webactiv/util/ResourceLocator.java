@@ -196,10 +196,44 @@ public class ResourceLocator implements Serializable {
    */
   public boolean getBoolean(String sAttribut, boolean defaultValue) {
     String value = getString(sAttribut);
-    if (value == null) {
+    if (value == null || value.trim().isEmpty()) {
       return defaultValue;
     }
     return StringUtil.getBooleanValue(value);
+  }
+
+  /**
+   * Gets the value as a long of the specified attributes in the resource bundle located by this
+   * ResourceLocator.
+   * It no such attribute exists or has no value, then returns the specified default value.
+   * @param sAttribute the attribute to look up in the resource bundle.
+   * @param defaultValue the default value to return wether no such property exists in the resource
+   * bundle.
+   * @return the value as a long.
+   */
+  public long getLong(final String sAttribute, long defaultValue) {
+    String value = getString(sAttribute);
+    if (value == null || value.trim().isEmpty()) {
+      return defaultValue;
+    }
+    return Long.parseLong(value);
+  }
+
+  /**
+   * Gets the value as an integer of the specified attributes in the resource bundle located by this
+   * ResourceLocator.
+   * It no such attribute exists or has no value, then returns the specified default value.
+   * @param sAttribute the attribute to look up in the resource bundle.
+   * @param defaultValue the default value to return wether no such property exists in the resource
+   * bundle.
+   * @return the value as an integer.
+   */
+  public long getInteger(final String sAttribute, long defaultValue) {
+    String value = getString(sAttribute);
+    if (value == null || value.trim().isEmpty()) {
+      return defaultValue;
+    }
+    return Integer.parseInt(value);
   }
 
   public String getStringWithParam(String resName, String param) {

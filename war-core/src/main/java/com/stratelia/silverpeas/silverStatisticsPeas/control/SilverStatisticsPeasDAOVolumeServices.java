@@ -29,8 +29,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.Hashtable;
-import java.util.Vector;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
@@ -38,6 +36,9 @@ import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author BERTINL TODO To change the template for this generated type comment go to Window -
@@ -72,11 +73,11 @@ public class SilverStatisticsPeasDAOVolumeServices {
    */
   private static Collection[] getCollectionArrayFromResultset(ResultSet rs)
       throws SQLException {
-    Vector dates = new Vector();
-    Vector counts = new Vector();
+    List<String> dates = new ArrayList<String>();
+    List<String> counts = new ArrayList<String>();
     long count = 0;
     Admin admin = new Admin();
-    Hashtable components = admin.getAllComponents();
+    Map components = admin.getAllComponents();
     String label = null;
 
     while (rs.next()) {
