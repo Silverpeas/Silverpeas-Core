@@ -23,6 +23,8 @@
  */
 package com.silverpeas.lookV5;
 
+import static com.stratelia.silverpeas.util.SilverpeasSettings.readBoolean;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
@@ -53,10 +55,10 @@ import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import static com.stratelia.silverpeas.util.SilverpeasSettings.*;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.PersonalSpaceController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserFavoriteSpaceManager;
