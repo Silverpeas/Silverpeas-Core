@@ -202,11 +202,11 @@ public class LookSilverpeasV5Helper implements LookHelper {
     this.resources = resources;
     this.defaultMessages =
         new ResourceLocator("com.silverpeas.lookSilverpeasV5.multilang.lookBundle",
-        mainSessionController.getFavoriteLanguage());
+            mainSessionController.getFavoriteLanguage());
     if (StringUtil.isDefined(resources.getString("MessageBundle"))) {
       this.messages =
           new ResourceLocator(resources.getString("MessageBundle"), mainSessionController
-          .getFavoriteLanguage());
+              .getFavoriteLanguage());
     }
     initProperties();
     getTopItems();
@@ -555,7 +555,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     if (formatter == null) {
       formatter =
           new SimpleDateFormat(resources.getString("DateFormat", "dd/MM/yyyy"), new Locale(mainSC
-          .getFavoriteLanguage()));
+              .getFavoriteLanguage()));
     }
 
     return formatter.format(new Date());
@@ -623,7 +623,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
       try {
         publicationBm =
             ((PublicationBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBmHome.class)).create();
+                PublicationBmHome.class)).create();
       } catch (Exception e) {
         throw new EJBException(e);
       }
@@ -657,7 +657,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
           getMainSessionController().getCurrentUserDetail().getLogin());
       destination = getParsedDestination(destination, "%ST_USER_FULLNAME%",
           URLEncoder.encode(getMainSessionController().getCurrentUserDetail()
-          .getDisplayedName()));
+              .getDisplayedName()));
       destination = getParsedDestination(destination, "%ST_USER_ID%",
           URLEncoder.encode(getMainSessionController().getUserId()));
       destination = getParsedDestination(destination, "%ST_SESSION_ID%",
@@ -707,6 +707,31 @@ public class LookSilverpeasV5Helper implements LookHelper {
    */
   public boolean isEnableUFSContainsState() {
     return enableUFSContainsState;
+  }
+
+  /**
+   * Returns a list of shortcuts to display on a page (home page, heading page...)
+   * @param id identify the area of shorcuts
+   * @param nb the number of shortcuts to retrieve
+   * @return a List of Shorcut
+   */
+  public List<Shortcut> getShortcuts(String id, int nb) {
+    List<Shortcut> shortcuts = new ArrayList<Shortcut>();
+    String url;
+    String target;
+    String altText;
+    String iconUrl;
+    Shortcut shortcut;
+    for (int i = 1; i <= nb; i++) {
+      String prefix = "Shortcut." + id + "." + i;
+      url = getSettings(prefix + ".Url", "toBeDefined");
+      target = getSettings(prefix + ".Target", "toBeDefined");
+      altText = getSettings(prefix + ".AltText", "toBeDefined");
+      iconUrl = getSettings(prefix + ".IconUrl", "toBeDefined");
+      shortcut = new Shortcut(iconUrl, target, url, altText);
+      shortcuts.add(shortcut);
+    }
+    return shortcuts;
   }
 
 }
