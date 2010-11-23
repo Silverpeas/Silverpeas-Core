@@ -611,24 +611,24 @@ public class PublicationDAO {
     // "PublicationDAO.resultSet2PublicationDetail()",
     // "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString());
     PublicationDetail pub = null;
-    int id = rs.getInt(1);
+    int id = rs.getInt("pubid");
     String componentId = rs.getString(15);
     PublicationPK pk = new PublicationPK(String.valueOf(id), componentId);
-    String infoId = rs.getString(2);
+    String infoId = rs.getString("infoid");
     SilverTrace.info("publication",
             "PublicationDAO.resultSet2PublicationDetail()",
             "root.MSG_GEN_PARAM_VALUE", "InfoId = " + infoId);
-    String name = rs.getString(3);
+    String name = rs.getString("pubname");
     SilverTrace.info("publication",
             "PublicationDAO.resultSet2PublicationDetail()",
             "root.MSG_GEN_PARAM_VALUE", "name = " + name);
-    String description = rs.getString(4);
+    String description = rs.getString("pubDescription");
     if (description == null) {
       description = "";
     }
     java.util.Date creationDate;
     try {
-      creationDate = DateUtil.parseDate(rs.getString(5));
+      creationDate = DateUtil.parseDate(rs.getString("pubCreationDate"));
     } catch (java.text.ParseException e) {
       throw new SQLException(
               "PublicationDAO : resultSet2PublicationDetail() : internal error : "
@@ -636,7 +636,7 @@ public class PublicationDAO {
               + " : " + e.toString());
     }
     java.util.Date beginDate;
-    String d = rs.getString(6);
+    String d = rs.getString("pubBeginDate");
 
     if (d.equals(nullBeginDate)) {
       beginDate = null;
@@ -652,7 +652,7 @@ public class PublicationDAO {
     }
     java.util.Date endDate;
 
-    d = rs.getString(7);
+    d = rs.getString("pubEndDate");
     if (d.equals(nullEndDate)) {
       endDate = null;
     } else {
@@ -665,15 +665,15 @@ public class PublicationDAO {
                 + pk.toString() + " : " + e.toString());
       }
     }
-    String creatorId = rs.getString(8);
-    int importance = rs.getInt(9);
-    String version = rs.getString(10);
-    String keywords = rs.getString(11);
-    String content = rs.getString(12);
-    String status = rs.getString(13);
+    String creatorId = rs.getString("pubCreatorId");
+    int importance = rs.getInt("pubImportance");
+    String version = rs.getString("pubVersion");
+    String keywords = rs.getString("pubKeywords");
+    String content = rs.getString("pubContent");
+    String status = rs.getString("pubStatus");
     
     java.util.Date updateDate;
-    String u = rs.getString(14);
+    String u = rs.getString("pubUpdateDate");
     if (u != null) {
       try {
         updateDate = DateUtil.parseDate(u);
@@ -687,7 +687,7 @@ public class PublicationDAO {
       updateDate = creationDate;
     }
     String updaterId;
-    String v = rs.getString(16);
+    String v = rs.getString("pubUpdaterId");
     if (v != null) {
       updaterId = v;
     } else {
@@ -695,7 +695,7 @@ public class PublicationDAO {
     }
 
     java.util.Date validateDate = null;
-    String strValDate = rs.getString(17);
+    String strValDate = rs.getString("pubValidateDate");
     try {
       validateDate = DateUtil.parseDate(strValDate);
     } catch (java.text.ParseException e) {
@@ -703,19 +703,19 @@ public class PublicationDAO {
               "PublicationDAO : resultSet2PublicationDetail() : internal error : validateDate format unknown for publication.pk = "
               + pk + " : " + e.toString());
     }
-    String validatorId = rs.getString(18);
+    String validatorId = rs.getString("pubValidatorId");
 
-    String beginHour = rs.getString(19);
-    String endHour = rs.getString(20);
-    String author = rs.getString(21);
-    String targetValidatorId = rs.getString(22);
-    int tempPubId = rs.getInt(23);
-    String cloneStatus = rs.getString(24);
-    String lang = rs.getString(25);
+    String beginHour = rs.getString("pubBeginHour");
+    String endHour = rs.getString("pubEndHour");
+    String author = rs.getString("pubAuthor");
+    String targetValidatorId = rs.getString("pubTargetValidatorId");
+    int tempPubId = rs.getInt("pubCloneId");
+    String cloneStatus = rs.getString("pubCloneStatus");
+    String lang = rs.getString("lang");
     
     java.util.Date draftOutDate = null;
     try {
-      draftOutDate = DateUtil.parseDate(rs.getString(26));
+      draftOutDate = DateUtil.parseDate(rs.getString("pubdraftoutdate"));
     } catch (java.text.ParseException e) {
       throw new SQLException(
           "PublicationDAO : resultSet2PublicationDetail() : internal error : draftOutDate format unknown for publication.pk = "
@@ -927,7 +927,7 @@ public class PublicationDAO {
             "         P.pubEndDate, P.pubCreatorId, P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, ");
     selectStatement
         .append(
-        "		 P.pubStatus, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, F.puborder ");
+        "		 P.pubStatus, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, P.pubdraftoutdate, F.puborder ");
     selectStatement.append("from ").append(pubPK.getTableName()).append(" P, ").append(pubPK.getTableName()).append("Father F ");
 
     selectStatement.append("where ").append(whereClause.toString());
@@ -1075,7 +1075,7 @@ public class PublicationDAO {
       selectStatement.append(
               "         P.pubEndDate, P.pubCreatorId, P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, ");
       selectStatement.append(
-              "		 P.pubStatus, P.pubImage, P.pubImageMimeType, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang ");
+              "		 P.pubStatus, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, P.pubdraftoutdate ");
       selectStatement.append("from ").append(publicationTableName).append(
               " P, ").append(publicationTableName).append("Father F ");
       selectStatement.append("where P.pubStatus = '").append(status).append("'");

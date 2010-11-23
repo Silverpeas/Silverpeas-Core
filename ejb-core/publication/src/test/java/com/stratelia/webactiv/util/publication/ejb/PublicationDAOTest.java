@@ -49,7 +49,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
 import javax.naming.Context;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -404,7 +403,7 @@ public class PublicationDAOTest extends AbstractTestDao {
     String sorting = null;
     boolean filterOnVisibilityPeriod = false;
     String userId = "100";
-    Collection result = PublicationDAO.selectByFatherPK(con, fatherPK, sorting,
+    Collection<PublicationDetail> result = PublicationDAO.selectByFatherPK(con, fatherPK, sorting,
         filterOnVisibilityPeriod, userId);
     assertNotNull(result);
     assertEquals(1, result.size());
@@ -505,22 +504,30 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectByFatherIds method, of class PublicationDAO.
    */
-  /* @org.junit.Test
+  @org.junit.Test
   public void testSelectByFatherIds() throws Exception {
-  System.out.println("selectByFatherIds");
-  Connection con = null;
-  ArrayList fatherIds = null;
-  PublicationPK pubPK = null;
-  String sorting = "";
-  ArrayList status = null;
-  boolean filterOnVisibilityPeriod = false;
-  ArrayList expResult = null;
-  ArrayList result = PublicationDAO.selectByFatherIds(con, fatherIds, pubPK, sorting, status,
-  filterOnVisibilityPeriod);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+    System.out.println("selectByFatherIds");
+    Connection con = getConnection().getConnection();
+    List<String> fatherIds = new ArrayList<String>();
+    fatherIds.add("110");
+    PublicationPK pubPK = new PublicationPK("useless", "kmelia200");
+    String sorting = "P.pubName";
+    List<String >status = new ArrayList<String>();
+    status.add("Valid");
+    boolean filterOnVisibilityPeriod = true;
+    ArrayList<PublicationDetail> result = PublicationDAO.selectByFatherIds(con, fatherIds, pubPK, sorting, status,
+        filterOnVisibilityPeriod);
+    assertEquals(result.size(), 2);
+
+    // Test on an empty node
+    fatherIds.clear();
+    fatherIds.add("999");
+    
+    result = PublicationDAO.selectByFatherIds(con, fatherIds, pubPK, sorting, status,
+        filterOnVisibilityPeriod);
+    assertEquals(result.size(), 0);
+    
+  }
   /**
    * Test of selectByPublicationPKs method, of class PublicationDAO.
    */
@@ -538,33 +545,42 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectByStatus method, of class PublicationDAO.
    */
-  /*  @org.junit.Test
+  @org.junit.Test
   public void testSelectByStatus_3args_1() throws Exception {
-  System.out.println("selectByStatus");
-  Connection con = null;
-  PublicationPK pubPK = null;
-  String status = "";
-  Collection expResult = null;
-  Collection result = PublicationDAO.selectByStatus(con, pubPK, status);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+    System.out.println("selectByStatus");
+    Connection con = getConnection().getConnection();
+    PublicationPK pubPK = new PublicationPK("useless", "kmelia200");
+    String status = "Valid";
+    Collection<PublicationDetail> result = PublicationDAO.selectByStatus(con, pubPK, status);
+    assertEquals(result.size(), 2);
+    
+    status = "Draft";
+    result = PublicationDAO.selectByStatus(con, pubPK, status);
+    assertEquals(result.size(), 0);
+  }
   /**
    * Test of selectByStatus method, of class PublicationDAO.
    */
-  /* @org.junit.Test
+  @org.junit.Test
   public void testSelectByStatus_3args_2() throws Exception {
-  System.out.println("selectByStatus");
-  Connection con = null;
-  List componentIds = null;
-  String status = "";
-  Collection expResult = null;
-  Collection result = PublicationDAO.selectByStatus(con, componentIds, status);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+    System.out.println("selectByStatus");
+    Connection con = getConnection().getConnection();
+    List<String> componentIds = new ArrayList<String>();
+    componentIds.add("kmelia200");
+    componentIds.add("kmelia201");
+    String status = "Valid";
+    Collection<PublicationDetail> result = PublicationDAO.selectByStatus(con, componentIds, status);
+    assertEquals(result.size(), 2);
+    
+    status = "Draft";
+    result = PublicationDAO.selectByStatus(con, componentIds, status);
+    assertEquals(result.size(), 0);
+    
+    status = "Valid";
+    componentIds.remove("kmelia200");
+    result = PublicationDAO.selectByStatus(con, componentIds, status);
+    assertEquals(result.size(), 0);
+  }
   /**
    * Test of selectPKsByStatus method, of class PublicationDAO.
    */
