@@ -79,12 +79,10 @@ body, td, div, a {
 	text-align:center;
 	width:120px;
 }
-#loginBox table table {
-	margin-right:80px;
+#loginBox {
+	width:200px;
 }
-#loginBox table table table {
-	margin-right:0px;
-}
+
 
 .cellBodyWindows {
     background-image: none;
@@ -117,7 +115,8 @@ body, td, div, a {
 	background-image: none;
 	height:70px;
 	margin:0px;
-	width:250px;
+	width:210px;
+	position:relative;
 }
 #recherche #submitRecherche input {
 	background-color:transparent;
@@ -131,6 +130,15 @@ body, td, div, a {
 #recherche #bodyRecherche, #recherche #bodyRecherche a {
 	color: #444444;
 	font-size: 11px;
+}
+#recherche  #submitRecherche a {
+	display:block;
+	height:30px;
+	margin-left:15px;
+	position:absolute;
+	right:10px;
+	top:17px;
+	width:23px;
 }
 #recherche #bodyRecherche {
 	margin-left:10px;
@@ -181,7 +189,7 @@ body, td, div, a {
 	background-repeat: no-repeat;
 	background-position:2px 2px;
 }
-#spacePerso .contentSpace {
+#spacePerso .contentSpace, .spaceLevel1On .contentSpace{
 	margin-top:10px;
 }
 .spaceLevel1, .spaceLevel1On {
@@ -195,9 +203,24 @@ body, td, div, a {
 	padding-left:30px;
 	width:159px;
 }
-.spaceLevel1 {
-	line-height: 30px;
+.spaceLevel1 a.spaceURL{
+	line-height:120%;
+	display:block;
+	padding:4px 0 8px;
+	position:relative;
 }
+
+.browseSpace { 
+	position:relative;
+	padding:2px 17px 2px 0;
+	}
+	
+#favdiv { 
+	position:absolute; 
+	top:8px; 
+	right:2px;
+}
+
 .spaceLevel1On {
 	padding-top:12px;
 }
@@ -294,6 +317,10 @@ td.milieuOngletOn {
 	background-color:#9BD94A;
 	height:3px;
 }
+
+#tabDivId {
+	width:200px;
+} 
 
 #spaceMenuDivId {
 	margin-top:10px;
