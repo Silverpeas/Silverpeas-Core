@@ -30,6 +30,12 @@ public interface FormNames {
    * Markup element name for the "url" value in the portlet's edit mode.
    */
   public static final String TEXTBOX_NB_ITEMS = "textboxNbItems";
+  
+  
+   /*
+   * Markup element name for the "maxAge" value in the portlet's edit mode.
+   */
+  public static final String TEXTBOX_MAX_AGE = "maxAge";
 
   /*
    * Markup element name for the "finished" button in the portlet's edit mode.

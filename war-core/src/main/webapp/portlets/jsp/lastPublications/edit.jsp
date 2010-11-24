@@ -65,6 +65,10 @@
                 <td class="txtlibform"><fmt:message key="portlets.portlet.lastPublis.pref.nbPublis" /> :</td>
                 <td><input name="<%=FormNames.TEXTBOX_NB_ITEMS%>" value="<%=pref.getValue("nbPublis","5")%>" type="text" size="10"/></td>
             </tr>
+            <tr>
+                <td class="txtlibform"><fmt:message key="portlets.portlet.lastPublis.pref.maxAge" /> :</td>
+                <td><input name="<%=FormNames.TEXTBOX_MAX_AGE%>" value="<%=pref.getValue("maxAge","0")%>" type="text" size="10"/></td>
+            </tr>
 			<tr>
                 <td class="txtlibform"><fmt:message key="portlets.portlet.lastPublis.pref.displayDescription" /> :</td>
                 <% if ("checked".equalsIgnoreCase(pref.getValue("displayDescription",""))) { %>
