@@ -14,6 +14,11 @@
 	
   <dependencies>
     <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>node</artifactId>
       <version>${project.parent.version}</version>
@@ -47,6 +52,11 @@
       <groupId>com.silverpeas.core</groupId>
       <artifactId>test-core</artifactId>
       <version>${project.parent.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-all</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

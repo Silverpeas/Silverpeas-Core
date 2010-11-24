@@ -145,11 +145,11 @@ public class PublicationDAO {
           cDateEnd.setTime(java.sql.Date.valueOf("9999-12-31"));
         }
         sBeginHour = pubDetail.getBeginHour();// exemple 10:04
-        beginHour = new Integer(sBeginHour.substring(0, 2)).intValue() * 100;// 1000
-        beginHour += new Integer(sBeginHour.substring(3)).intValue();// 1004
+        beginHour = Integer.parseInt(sBeginHour.substring(0, 2)) * 100;// 1000
+        beginHour += Integer.parseInt(sBeginHour.substring(3));// 1004
         sEndHour = pubDetail.getEndHour();
-        endHour = new Integer(sEndHour.substring(0, 2)).intValue() * 100;
-        endHour += new Integer(sEndHour.substring(3)).intValue();
+        endHour = Integer.parseInt(sEndHour.substring(0, 2)) * 100;
+        endHour += Integer.parseInt(sEndHour.substring(3));
 
         if ((cDateNow.after(cDateBegin) && cDateNow.before(cDateEnd))
                 || (cDateNow.equals(cDateBegin) && cDateNow.before(cDateEnd) && hourNow > beginHour)
@@ -1153,17 +1153,13 @@ public class PublicationDAO {
   }
 
   public static Collection<PublicationPK> selectPKsByStatus(Connection con,
-          List<String> componentIds,
-          String status) throws SQLException {
+          List<String> componentIds, String status) throws SQLException {
     List<PublicationPK> list = new ArrayList<PublicationPK>();
     if (componentIds != null && componentIds.size() > 0) {
       StringBuilder selectStatement = new StringBuilder(128);
-      selectStatement.append("select  distinct(P.pubId), P.instanceId, P.pubUpdateDate ");
-      selectStatement.append("from ").append(publicationTableName).append(
-              " P, ").append(publicationTableName).append("Father F ");
-      selectStatement.append("where P.pubStatus = '").append(status).append("'");
-      selectStatement.append(" and F.nodeId <> 1 ");
-      selectStatement.append(" and (");
+      selectStatement.append("SELECT  DISTINCT(P.pubId), P.instanceId, P.pubUpdateDate ");
+      selectStatement.append("FROM SB_Publication_Publi P, SB_Publication_PubliFather F ");
+      selectStatement.append("WHERE P.pubStatus = ? AND F.nodeId <> 1 AND (");
       selectStatement.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
       selectStatement.append(
               "( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
@@ -1173,7 +1169,6 @@ public class PublicationDAO {
       selectStatement.append(" ) ");
       selectStatement.append(" and F.pubId = P.pubId ");
       selectStatement.append(" and P.instanceId IN (");
-
       String componentId = null;
       for (int c = 0; c < componentIds.size(); c++) {
         componentId = componentIds.get(c);
@@ -1191,7 +1186,6 @@ public class PublicationDAO {
 
       PreparedStatement prepStmt = null;
       ResultSet rs = null;
-
       try {
         java.util.Date now = new java.util.Date();
         String dateNow = DateUtil.formatDate(now);
@@ -1201,26 +1195,99 @@ public class PublicationDAO {
         SilverTrace.info("publication", "PublicationDAO.selectByStatus()",
                 "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
         prepStmt = con.prepareStatement(selectStatement.toString());
-
-        prepStmt.setString(1, dateNow);
+        
+        prepStmt.setString(1, status);
         prepStmt.setString(2, dateNow);
         prepStmt.setString(3, dateNow);
         prepStmt.setString(4, dateNow);
-        prepStmt.setString(5, hourNow);
-        prepStmt.setString(6, dateNow);
+        prepStmt.setString(5, dateNow);
+        prepStmt.setString(6, hourNow);
         prepStmt.setString(7, dateNow);
-        prepStmt.setString(8, hourNow);
-        prepStmt.setString(9, dateNow);
+        prepStmt.setString(8, dateNow);
+        prepStmt.setString(9, hourNow);
         prepStmt.setString(10, dateNow);
-        prepStmt.setString(11, hourNow);
+        prepStmt.setString(11, dateNow);
         prepStmt.setString(12, hourNow);
-
+        prepStmt.setString(13, hourNow);
         rs = prepStmt.executeQuery();
-
         PublicationPK pubPK = null;
         while (rs.next()) {
-          pubPK = new PublicationPK(String.valueOf(rs.getInt(1)), rs.getString(2));
+          pubPK = new PublicationPK(rs.getString("pubId"), rs.getString("instanceId"));
           list.add(pubPK);
+        }
+      } finally {
+        DBUtil.close(rs, prepStmt);
+      }
+    }
+    return list;
+  }
+  
+  
+  public static Collection<PublicationPK> selectUpdatedPublicationsSince(Connection con,
+          List<String> componentIds, String status, java.util.Date since, int maxSize) throws SQLException {
+    List<PublicationPK> list = new ArrayList<PublicationPK>();
+    if (componentIds != null && componentIds.size() > 0) {
+      StringBuilder selectStatement = new StringBuilder(128);
+      selectStatement.append("SELECT  DISTINCT(P.pubId), P.instanceId, P.pubUpdateDate ");
+      selectStatement.append("FROM SB_Publication_Publi P, SB_Publication_PubliFather F ");
+      selectStatement.append("WHERE P.pubStatus = ? AND F.nodeId <> 1 AND (");
+      selectStatement.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
+      selectStatement.append(
+              "( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
+      selectStatement.append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
+      selectStatement.append(
+              "( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour AND ? < P.pubEndHour )");
+      selectStatement.append(" ) ");
+      selectStatement.append(" AND F.pubId = P.pubId AND P.pubupdatedate > ? ");
+      selectStatement.append(" AND P.instanceId IN (");
+      String componentId = null;
+      for (int c = 0; c < componentIds.size(); c++) {
+        componentId = componentIds.get(c);
+        if (c != 0) {
+          selectStatement.append(", ");
+        }
+        selectStatement.append("'").append(componentId).append("'");
+      }
+      selectStatement.append(")");
+      selectStatement.append(" ORDER BY P.pubUpdateDate DESC, P.pubId DESC");
+
+      SilverTrace.info("publication", "PublicationDAO.selectByStatus()",
+              "root.MSG_GEN_PARAM_VALUE", "selectStatement = "
+              + selectStatement.toString());
+
+      PreparedStatement prepStmt = null;
+      ResultSet rs = null;
+      try {
+        java.util.Date now = new java.util.Date();
+        String dateNow = DateUtil.formatDate(now);
+        SilverTrace.info("publication", "PublicationDAO.selectByStatus()",
+                "root.MSG_GEN_PARAM_VALUE", "dateNow = " + dateNow);
+        String hourNow = DateUtil.formatTime(now);
+        SilverTrace.info("publication", "PublicationDAO.selectByStatus()",
+                "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
+        prepStmt = con.prepareStatement(selectStatement.toString());    
+        prepStmt.setFetchSize(maxSize);
+        prepStmt.setString(1, status);
+        prepStmt.setString(2, dateNow);
+        prepStmt.setString(3, dateNow);
+        prepStmt.setString(4, dateNow);
+        prepStmt.setString(5, dateNow);
+        prepStmt.setString(6, hourNow);
+        prepStmt.setString(7, dateNow);
+        prepStmt.setString(8, dateNow);
+        prepStmt.setString(9, hourNow);
+        prepStmt.setString(10, dateNow);
+        prepStmt.setString(11, dateNow);
+        prepStmt.setString(12, hourNow);
+        prepStmt.setString(13, hourNow);
+        prepStmt.setString(14, DateUtil.date2SQLDate(since));
+        rs = prepStmt.executeQuery();
+        PublicationPK pubPK = null;
+        int i =0;
+        while (rs.next() && (maxSize <= 0 || i <= maxSize )) {
+          pubPK = new PublicationPK(rs.getString("pubId"), rs.getString("instanceId"));
+          list.add(pubPK);
+          i++;
         }
       } finally {
         DBUtil.close(rs, prepStmt);
