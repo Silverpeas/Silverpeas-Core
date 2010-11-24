@@ -30,6 +30,7 @@ package com.silverpeas.look;
 
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import java.util.Date;
 
 import java.util.List;
 
@@ -39,6 +40,8 @@ import java.util.List;
 public interface PublicationHelper {
 
   public List<PublicationDetail> getPublications(String spaceId, int nbPublis);
+  
+  public List<PublicationDetail> getUpdatedPublications(String spaceId, Date since, int nbPublis);
 
   public void setMainSessionController(MainSessionController mainSC);
 }

@@ -48,6 +48,25 @@ import com.stratelia.webactiv.util.pool.ConnectionPool;
 
 public class DBUtil {
 
+  private static DBUtil instance;
+  private Connection connectionForTest;
+
+  private DBUtil(Connection connectionForTest) {
+    this.connectionForTest = connectionForTest;
+  }
+
+  public static DBUtil getInstance() {
+    return getInstance(null);
+  }
+
+  public static DBUtil getInstance(Connection connectionForTest) {
+    synchronized (DBUtil.class) {
+      if (instance == null) {
+        instance = new DBUtil(connectionForTest);
+      }
+    }
+    return instance;
+  }
   /**
    * TextFieldLength is the maximum length to store an html textfield input in db.
    */
@@ -75,8 +94,7 @@ public class DBUtil {
    * @param dbName le nom de la base de donnée
    */
   public static Connection makeConnection(String dbName) throws UtilException {
-    SilverTrace.debug("util", "DBUtil makeConnection",
-        "DBUtil : makeConnection : entree");
+    SilverTrace.debug("util", "DBUtil makeConnection", "DBUtil : makeConnection : entree");
     DataSource ds = null;
     synchronized (DBUtil.class) {
       if (ic == null) {
@@ -90,17 +108,14 @@ public class DBUtil {
       }
     }
     try {
-      ds = (DataSource) dsStock.get(dbName);
+      ds = dsStock.get(dbName);
       if (ds == null) {
         ds = (DataSource) ic.lookup(dbName);
         dsStock.put(dbName, ds);
       }
-
     } catch (Exception e) {
-      UtilException ue = new UtilException(
-          "DBUtil.makeConnection",
-          new MultilangMessage("util.MSG_BDD_REF_NOT_FOUND", dbName).toString(),
-          e);
+      UtilException ue = new UtilException( "DBUtil.makeConnection", 
+          new MultilangMessage("util.MSG_BDD_REF_NOT_FOUND", dbName).toString(),e);
       throw ue;
     }
 
@@ -123,11 +138,19 @@ public class DBUtil {
    */
   public static int getNextId(String tableName, String idName) throws UtilException {
     Connection privateConnection = null;
+     boolean testingMode = false;
     try {
       // On ne peux pas utiliser une simple connection du pool
       // on utilise une connection extérieure au contexte transactionnel des ejb
-      privateConnection = ConnectionPool.getConnection();
-
+     
+      synchronized (DBUtil.class) {
+        if (getInstance().connectionForTest != null) {
+          privateConnection = getInstance().connectionForTest;
+          testingMode = true;
+        } else {
+          privateConnection = ConnectionPool.getConnection();
+        }
+      }
       privateConnection.setAutoCommit(false);
       return getMaxId(privateConnection, tableName, idName);
     } catch (Exception exe) {
@@ -143,7 +166,7 @@ public class DBUtil {
           "util.MSG_CANT_GET_A_NEW_UNIQUE_ID", tableName, idName).toString(), exe);
     } finally {
       try {
-        if (privateConnection != null) {
+        if (privateConnection != null && !testingMode) {
           privateConnection.close();
         }
       } catch (SQLException e) {
@@ -167,7 +190,7 @@ public class DBUtil {
     return getNextId(tableName, idName);
   }
 
-  public static int getMaxId(Connection privateConnection, String tableName, String idName) throws
+  protected static int getMaxId(Connection privateConnection, String tableName, String idName) throws
       SQLException {
     int max = 0;
     // tentative d'update

@@ -65,16 +65,16 @@ public class CommentDAO {
     String insert_query = "INSERT INTO sb_comment_comment (commentId , commentOwnerId, "
         + "commentCreationDate, commentModificationDate, commentComment, foreignId, instanceId) "
         + "VALUES ( ?, ?, ?, ?, ?, ?, ? )";
-    PreparedStatement prep_stmt = null;
-    prep_stmt = con.prepareStatement(insert_query);
+    PreparedStatement prep_stmt = null;   
     int newId = 0;
     try {
-      newId = DBUtil.getMaxId(con, cmt.getCommentPK().getTableName(), "commentId");
+      newId = DBUtil.getNextId(cmt.getCommentPK().getTableName(), "commentId");
     } catch (Exception e) {
       SilverTrace.warn("comments", "CommentDAO.createComment", "root.EX_PK_GENERATION_FAILED", e);
       return null;
     }
     try {
+      prep_stmt = con.prepareStatement(insert_query);
       prep_stmt.setInt(1, newId);
       prep_stmt.setInt(2, cmt.getOwnerId());
       prep_stmt.setString(3, cmt.getCreationDate());

@@ -12,6 +12,7 @@ import java.io.IOException;
 import javax.naming.NamingException;
 import org.dbunit.database.IDatabaseConnection;
 import com.silverpeas.util.ForeignPK;
+import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import java.sql.Connection;
 import org.junit.BeforeClass;
@@ -35,7 +36,7 @@ public class CommentDAOTest extends AbstractJndiCase {
     baseTest.configureJNDIDatasource();
     IDatabaseConnection databaseConnection = baseTest.getDatabaseTester().getConnection();
     executeDDL(databaseConnection, baseTest.getDdlFile());
-    baseTest.getDatabaseTester().closeConnection(databaseConnection);
+    baseTest.getDatabaseTester().closeConnection(databaseConnection);    
   }
   
   /**
@@ -44,8 +45,9 @@ public class CommentDAOTest extends AbstractJndiCase {
    */
   @Test
   public void testCreateComment() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getConnection();
+    IDatabaseConnection dbConnection = baseTest.getConnection();    
     Connection con = dbConnection.getConnection();
+    DBUtil.getInstance(con);
     CommentPK pk = new CommentPK(null, null, "kmelia18");
     ForeignPK foreignKey = new ForeignPK("200", "kmelia18");
     int ownerId = RandomGenerator.getRandomInt();
@@ -76,6 +78,7 @@ public class CommentDAOTest extends AbstractJndiCase {
   public void testGetComment() throws Exception {
     IDatabaseConnection dbConnection = baseTest.getConnection();
     Connection con = dbConnection.getConnection();
+    DBUtil.getInstance(con);
     CommentPK pk = new CommentPK("1000", null, "instanceId10");
     Comment result = CommentDAO.getComment(con, pk);
     assertNotNull(result);
@@ -95,6 +98,7 @@ public class CommentDAOTest extends AbstractJndiCase {
   public void testDeleteComment() throws Exception {
     IDatabaseConnection dbConnection = baseTest.getConnection();
     Connection con = dbConnection.getConnection();
+    DBUtil.getInstance(con);
     CommentPK pk = new CommentPK("1000", null, "instanceId10");
     Comment result = CommentDAO.getComment(con, pk);
     assertNotNull(result);
@@ -117,6 +121,7 @@ public class CommentDAOTest extends AbstractJndiCase {
   public void testUpdateComment() throws Exception {
     IDatabaseConnection dbConnection = baseTest.getConnection();
     Connection con = dbConnection.getConnection();
+    DBUtil.getInstance(con);
     CommentPK pk = new CommentPK("1000", null, "instanceId10");
     Comment comment = CommentDAO.getComment(con, pk);
     assertNotNull(comment);
@@ -158,6 +163,7 @@ public class CommentDAOTest extends AbstractJndiCase {
   public void testMoveComment() throws Exception {
     IDatabaseConnection dbConnection = baseTest.getConnection();
     Connection con = dbConnection.getConnection();
+    DBUtil.getInstance(con);
     CommentPK pk = new CommentPK("1000", null, "instanceId10");
     Comment result = CommentDAO.getComment(con, pk);
     assertNotNull(result);
