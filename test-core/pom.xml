@@ -19,6 +19,11 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-all</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.dbunit</groupId>
       <artifactId>dbunit</artifactId>
       <scope>compile</scope>
@@ -61,8 +66,8 @@
     </dependency>
     <dependency>
       <groupId>com.jayway.awaitility</groupId>
-       <artifactId>awaitility</artifactId>
-       <scope>compile</scope>
+      <artifactId>awaitility</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>postgresql</groupId>
