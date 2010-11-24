@@ -61,12 +61,13 @@ public class SchedulerEvent {
   }
 
   private JobExecutionContext ctx;
-  private Exception exception = null;
+  private Throwable exception = null;
   private Type type;
 
   /**
    * Creates a new scheduler event about a trigger firing.
    * @param the context of the job to be executed.
+   * @return the scheduler event fired by the firing of a trigger.
    */
   public static SchedulerEvent triggerFired(final JobExecutionContext context) {
     return new SchedulerEvent(Type.TRIGGER_FIRED, context);
@@ -75,6 +76,7 @@ public class SchedulerEvent {
   /**
    * Creates a new scheduler event about a success of a job execution.
    * @param the context of the completed execution of a job.
+   * @return the scheduler event fired by the job completion.
    */
   public static SchedulerEvent jobSucceeded(final JobExecutionContext context) {
     return new SchedulerEvent(Type.JOB_SUCCEEDED, context);
@@ -82,12 +84,14 @@ public class SchedulerEvent {
 
   /**
    * Creates a new scheduler event about a failure of a job execution.
-   * @param the context of the failed execution of a job.
+   * @param context the context of the failed execution of a job.
+   * @param throwable the Throwable object carrying the job failure.
+   * @return the scheduler event fired by a job failure.
    */
   public static SchedulerEvent jobFailed(final JobExecutionContext context,
-      final Exception exception) {
+      final Throwable throwable) {
     SchedulerEvent event = new SchedulerEvent(Type.JOB_FAILED, context);
-    event.setException(exception);
+    event.setThrowable(throwable);
     return event;
   }
 
@@ -108,10 +112,11 @@ public class SchedulerEvent {
   }
 
   /**
-   * Gets the exception that was thrown during a job execution.
-   * @return the exception thrown during a job execution or null if the job completed successfully.
+   * Gets the throwable object that was thrown during a job execution and that carries the job
+   * failure.
+   * @return the throwable raised during a job execution or null if the job completed successfully.
    */
-  public Exception getJobException() {
+  public Throwable getJobThrowable() {
     return this.exception;
   }
 
@@ -133,7 +138,7 @@ public class SchedulerEvent {
     this.ctx = aContext;
   }
 
-  protected void setException(final Exception anException) {
-    this.exception  = anException;
+  protected void setThrowable(final Throwable aThrowable) {
+    this.exception  = aThrowable;
   }
 }

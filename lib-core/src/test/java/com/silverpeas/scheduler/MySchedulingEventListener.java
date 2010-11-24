@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.scheduler;
 
 import static org.junit.Assert.*;
@@ -34,13 +33,24 @@ public class MySchedulingEventListener implements SchedulerEventListener {
 
   private boolean executed = false;
   private boolean succeeded = false;
+  private boolean mustFail = false;
+
+  /**
+   * The processing of a scheduler event about a trigger firing must throw an error.
+   * @return the event listener itself.
+   */
+  public MySchedulingEventListener mustFail() {
+    mustFail = true;
+    return this;
+  }
 
   /**
    * Resets the counters.
    */
-  public  void reset() {
+  public void reset() {
     executed = false;
     succeeded = false;
+    mustFail = false;
   }
 
   /**
@@ -64,6 +74,9 @@ public class MySchedulingEventListener implements SchedulerEventListener {
   public void triggerFired(SchedulerEvent anEvent) {
     assertSchedulerEvent(anEvent);
     executed = true;
+    if (mustFail) {
+      throw new Error();
+    }
   }
 
   @Override
@@ -75,7 +88,7 @@ public class MySchedulingEventListener implements SchedulerEventListener {
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
     assertSchedulerEvent(anEvent);
-    assertNotNull(anEvent.getJobException());
+    assertNotNull(anEvent.getJobThrowable());
     succeeded = false;
   }
 

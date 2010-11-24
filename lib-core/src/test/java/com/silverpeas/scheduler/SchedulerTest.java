@@ -128,6 +128,15 @@ public class SchedulerTest {
   }
 
   @Test
+  public void aFailureJobExecutionShouldFireACorrespondingSchedulerEvent()
+      throws Exception {
+    JobTrigger trigger = JobTrigger.triggerEvery(1, TimeUnit.SECOND);
+    ScheduledJob job = scheduler.scheduleJob(JOB_NAME, trigger, eventHandler.mustFail());
+    await().atMost(2, SECONDS).until(jobIsFired());
+    assertFalse(eventHandler.isJobSucceeded());
+  }
+
+  @Test
   public void schedulingAJobWithoutEventListenerShouldRunThatJobAtTheExpectedTime() throws Exception {
     JobTrigger trigger = JobTrigger.triggerEvery(1, TimeUnit.SECOND);
     ScheduledJob job = scheduler.scheduleJob(new Job(JOB_NAME) {
@@ -142,6 +151,21 @@ public class SchedulerTest {
     assertNull(job.getSchedulerEventListener());
     assertEquals(trigger, job.getTrigger());
     await().atMost(2, SECONDS).until(jobIsExecuted());
+  }
+
+  @Test
+  public void aFailureJobShouldFireACorrespondingSchedulerEvent()
+      throws Exception {
+    JobTrigger trigger = JobTrigger.triggerEvery(1, TimeUnit.SECOND);
+    ScheduledJob job = scheduler.scheduleJob(new Job(JOB_NAME) {
+
+      @Override
+      public void execute(JobExecutionContext context) throws Exception {
+        throw new Error("Not supported yet.");
+      }
+    }, trigger, eventHandler);
+    await().atMost(2, SECONDS).until(jobIsFired());
+    assertFalse(eventHandler.isJobSucceeded());
   }
 
   @Test
