@@ -57,12 +57,13 @@ public class SchedulerTest {
   private MySchedulingEventListener eventHandler;
   private boolean isJobExecuted;
   private Scheduler scheduler = null;
+  private long time;
 
   public SchedulerTest() {
   }
 
   @BeforeClass
-  public static void setUpClass() throws Exception {    
+  public static void setUpClass() throws Exception {
     ApplicationContext context = new ClassPathXmlApplicationContext("/spring-scheduling.xml");
   }
 
@@ -205,7 +206,33 @@ public class SchedulerTest {
     assertEquals(JOB_NAME, job.getName());
     assertEquals(eventHandler, job.getSchedulerEventListener());
     assertEquals(trigger, job.getTrigger());
-    await().atMost(1, MINUTES).until(jobIsExecuted());
+    await().atMost(10, MINUTES).until(jobIsExecuted());
+    assertTrue(eventHandler.isJobSucceeded());
+  }
+
+  @Test
+  public void schedulingAJobWithACronExpressionShouldRunThatJobOnlyOnceAtTheExpectedTime() throws
+      Exception {
+    time = System.currentTimeMillis();
+    Calendar calendar = Calendar.getInstance();
+    calendar.add(Calendar.MINUTE, 1);
+    int minute = calendar.get(Calendar.MINUTE);
+    String cron = minute + " * * * * ";
+    JobTrigger trigger = JobTrigger.triggerAt(cron);
+    ScheduledJob job = scheduler.scheduleJob(new Job(JOB_NAME) {
+
+      private int counter = 0;
+
+      @Override
+      public void execute(JobExecutionContext context) throws Exception {
+        assertEquals(1, ++counter);
+      }
+    }, trigger, eventHandler);
+    assertNotNull(job);
+    assertEquals(JOB_NAME, job.getName());
+    assertEquals(eventHandler, job.getSchedulerEventListener());
+    assertEquals(trigger, job.getTrigger());
+    await().atMost(5, MINUTES).until(timeThresholdIsDone());
     assertTrue(eventHandler.isJobSucceeded());
   }
 
@@ -283,6 +310,20 @@ public class SchedulerTest {
       @Override
       public Boolean call() throws Exception {
         return isJobExecuted();
+      }
+    };
+  }
+
+  /**
+   * Is a job was executed at a given time?
+   * @return true if a job was executed.
+   */
+  private Callable<Boolean> timeThresholdIsDone() {
+    return new Callable<Boolean>() {
+
+      @Override
+      public Boolean call() throws Exception {
+        return (System.currentTimeMillis() - time) >=  180000;
       }
     };
   }

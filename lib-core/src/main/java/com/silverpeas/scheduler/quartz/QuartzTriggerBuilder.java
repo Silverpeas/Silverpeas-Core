@@ -80,7 +80,7 @@ public final class QuartzTriggerBuilder implements JobTriggerVisitor {
   public void visit(CronJobTrigger trigger) {
     try {
       CronTrigger cronTrigger = new CronTrigger();
-      cronTrigger.setCronExpression("* " + trigger.getCronExpression());
+      cronTrigger.setCronExpression("0 " + trigger.getCronExpression());
       if (trigger.getStartDate() != null) {
         cronTrigger.setStartTime(trigger.getStartDate());
       }
