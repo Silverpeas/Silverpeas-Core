@@ -43,7 +43,7 @@
       String id = request.getParameter("Id");
       String componentId = request.getParameter("ComponentId");
       String context = request.getParameter("Context");
-      String fromAlias = request.getParameter("Alias");
+      boolean fromAlias = StringUtil.getBooleanValue(request.getParameter("Alias"));
       String profile = request.getParameter("Profile");
       String sIndexIt = request.getParameter("IndexIt");
       String callbackURL = request.getParameter("CallbackUrl");
@@ -172,7 +172,7 @@
           }
 
           url = m_Context +  attachmentDetail.getAttachmentURL(contentLanguage);
-          if ("1".equals(fromAlias)) {
+          if (fromAlias) {
             url = attachmentDetail.getAliasURL(contentLanguage);
           }
 

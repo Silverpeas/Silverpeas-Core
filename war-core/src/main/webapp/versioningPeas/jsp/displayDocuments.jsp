@@ -28,6 +28,7 @@
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ page import="java.util.Vector"%>
 <%@ page import="com.stratelia.silverpeas.versioning.util.VersioningUtil"%>
+<%@page import="com.stratelia.webactiv.util.FileServerUtils"%>
 
 <%@ include file="checkVersion.jsp"%>
 
@@ -202,7 +203,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 	String id 			= request.getParameter("Id");
 	String componentId 	= request.getParameter("ComponentId");
 	String context 		= request.getParameter("Context");
-	String fromAlias	= request.getParameter("Alias");
+	boolean fromAlias	= StringUtil.getBooleanValue(request.getParameter("Alias"));
 	String profile		= request.getParameter("Profile");
 	if (!StringUtil.isDefined(profile)) {
 	  profile = "user";
@@ -254,7 +255,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 	if (request.getParameter("ShowIcon") != null)
 					showIcon = (new Boolean(request.getParameter("ShowIcon"))).booleanValue();
 	boolean useFileSharing = (isFileSharingEnable(m_MainSessionCtrl, componentId) && "admin".equalsIgnoreCase(profile));
-	boolean contextualMenuEnabled = ("admin".equalsIgnoreCase(profile) || "publisher".equalsIgnoreCase(profile) || "writer".equalsIgnoreCase(profile));
+	boolean contextualMenuEnabled = !fromAlias && ("admin".equalsIgnoreCase(profile) || "publisher".equalsIgnoreCase(profile) || "writer".equalsIgnoreCase(profile));
 	String iconStyle = "";
     if (contextualMenuEnabled)
     	iconStyle = "style=\"cursor:move\"";
@@ -295,12 +296,8 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 	        	  if (document_version != null)
 	        	  {
 	             		String documentVersionUrl = m_context + versioning_util.getDocumentVersionURL(componentId, document_version.getLogicalName(), document.getPk().getId(), document_version.getPk().getId());
-
-	             		if ("1".equals(fromAlias))
-	             		{
-							String contextFileServer = m_context+"/FileServer/";
-							int index = documentVersionUrl.indexOf(contextFileServer);
-							documentVersionUrl = m_context+"/AliasFileServer/"+documentVersionUrl.substring(index+contextFileServer.length());
+	             		if (fromAlias) {
+							documentVersionUrl = FileServerUtils.getAliasURL(componentId, document_version.getLogicalName(), document.getPk().getId(), document_version.getPk().getId());
 	             		}
 	             	%>
 					<li id="attachment_<%=document.getPk().getId()%>" class="attachmentListItem">

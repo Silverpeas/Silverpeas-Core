@@ -35,12 +35,13 @@
 
     Document 	document 	= (Document) request.getAttribute("Document");
     List 		vVersions 	= (List) request.getAttribute("Versions");
-    String		fromAlias	= (String) request.getAttribute("Alias");
+    boolean		fromAlias	= StringUtil.getBooleanValue((String) request.getAttribute("Alias"));
 
     String componentId = document.getPk().getInstanceId();
     String id = document.getPk().getId();
 %>
-<html>
+
+<%@page import="com.stratelia.webactiv.util.FileServerUtils"%><html>
 <head>
 <TITLE><%=messages.getString("popupTitle")%></TITLE>
 <%
@@ -80,11 +81,8 @@ for (int i=0;i<vVersions.size();i++) {
 
     url = versioningSC.getDocumentVersionURL(publicVersion.getLogicalName(),publicVersion.getDocumentPK().getId(), publicVersion.getPk().getId());
 
-    if ("1".equals(fromAlias))
-	{
-		String contextFileServer = m_context+"/FileServer/";
-		int index = url.indexOf(contextFileServer);
-		url = m_context+"/AliasFileServer/"+url.substring(index+contextFileServer.length());
+    if (fromAlias) {
+		url = FileServerUtils.getAliasURL(componentId, publicVersion.getLogicalName(),publicVersion.getDocumentPK().getId(), publicVersion.getPk().getId());
 	}
 
     String spinFire = "";
