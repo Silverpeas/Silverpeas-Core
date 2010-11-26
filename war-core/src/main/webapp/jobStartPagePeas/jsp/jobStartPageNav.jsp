@@ -50,6 +50,11 @@ function changeSpace(spaceId){
 <style type="text/css">
 .component-icon {
 	margin: 1px;
+	vertical-align: middle;
+}
+
+#space-icon {
+	vertical-align: middle;
 }
 </style>
 </head>
@@ -57,13 +62,13 @@ function changeSpace(spaceId){
     if ((haveToRefreshMainPage != null) && (haveToRefreshMainPage.booleanValue()))
     {
 %>
-<BODY topmargin="5" leftmargin="0" marginheight="0" marginwidth="0" onload="javascript:viewSpace()">
+<BODY onload="javascript:viewSpace()" id="admin-treeview">
 <%
     }
     else
     {
 %>
-<BODY topmargin="5" leftmargin="0" marginheight="0" marginwidth="0">
+<BODY id="admin-treeview">
 <%
     }
 %>
@@ -88,7 +93,7 @@ function changeSpace(spaceId){
 		<td width="100%">
 				<table width="100%" border="0" cellspacing="2" cellpadding="0">
 					<tr>
-						<td width="100%"><span class="txtpetitblanc"><%=resource.getString("GML.domains")%> : </span></td>
+						<td width="100%"><span class="treeview-label"><%=resource.getString("GML.domains")%> : </span></td>
 					</tr>
 				</table>
 		</td>
@@ -111,7 +116,7 @@ function changeSpace(spaceId){
 		<td class="intfdcolor"><img src="<%=resource.getIcon("JSPP.px")%>"></td>
 </tr>
 <tr class="intfdcolor51" valign="top">
-    <td width="100%" nowrap valign="top">
+    <td width="100%" nowrap="nowrap">
     	<input name="privateSubDomain" type="hidden">
 		<img src="<%=resource.getIcon("JSPP.px")%>" height="20" width="0" align="middle">
         <span class="selectNS"><select name="privateDomain" size=1 onchange="javascript:changeSpace(document.privateDomainsForm.privateDomain.value)">
@@ -128,13 +133,13 @@ function changeSpace(spaceId){
     if (currentSpaceId != null)
     {
 %>
-        <a href="javascript:changeSpace(<%=currentSpaceId%>)"><img src="<%=resource.getIcon("JSPP.px")%>" width="2" height="1" border="0"><img src="<%=resource.getIcon("JSPP.homeSpaceIcon")%>" border="0" align="middle" alt="<%=resource.getString("JSPP.BackToMainSpacePage")%>" title="<%=resource.getString("JSPP.BackToMainSpacePage")%>"></a>
+        <a href="javascript:changeSpace(<%=currentSpaceId%>)"><img src="<%=resource.getIcon("JSPP.px")%>" width="2" height="1" border="0"><img id="space-icon" src="<%=resource.getIcon("JSPP.homeSpaceIcon")%>" align="middle" alt="<%=resource.getString("JSPP.BackToMainSpacePage")%>" title="<%=resource.getString("JSPP.BackToMainSpacePage")%>"/></a>
 <%
     }
     else
     {
 %>
-        <a href="javascript:changeSpace('')"><img src="<%=resource.getIcon("JSPP.px")%>" width="2" height="1" border="0"><img src="<%=resource.getIcon("JSPP.homeSpaceIcon")%>" border="0" align="middle" alt="<%=resource.getString("JSPP.BackToMainSpacePage")%>" title="<%=resource.getString("JSPP.BackToMainSpacePage")%>"></a>
+        <a href="javascript:changeSpace('')"><img src="<%=resource.getIcon("JSPP.px")%>" width="2" height="1" border="0"><img id="space-icon" src="<%=resource.getIcon("JSPP.homeSpaceIcon")%>" align="middle" alt="<%=resource.getString("JSPP.BackToMainSpacePage")%>" title="<%=resource.getString("JSPP.BackToMainSpacePage")%>"/></a>
 <%
     }
 %>

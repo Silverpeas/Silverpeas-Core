@@ -70,7 +70,7 @@ function viewDomain()
     <td width="100%">
         <table width="100%" border="0" cellspacing="2" cellpadding="0">
           <tr> 
-            <td width="100%"><img align="absmiddle" width="3" height="1" src="<%=resource.getIcon("JDP.px")%>"><span class="txtpetitblanc"><%=resource.getString("JDP.domains")%> : </span></td>
+            <td width="100%"><img align="absmiddle" width="3" height="1" src="<%=resource.getIcon("JDP.px")%>"><span class="domains-label"><%=resource.getString("JDP.domains")%> : </span></td>
           </tr>
         </table>
 		</td>
