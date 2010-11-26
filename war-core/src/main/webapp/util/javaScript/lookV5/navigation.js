@@ -268,6 +268,12 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
 	
 	refreshPDCFrame();
   	refreshTopFrame();
+  	
+  	try {
+  		openSpecificLookComponent(componentId, componentLevel);
+  	} catch (e) {
+  		//all looks don't need this callback function
+  	}
   }
   
   function closeCurrentComponent()
@@ -955,16 +961,8 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
 	   		currentRootSpaceId = currentSpaceId;
 	   		spaceHeader.setAttribute("class", "spaceLevel1On");
   	   		spaceHeader.setAttribute("className", "spaceLevel1On");
-		   /*if (init == "false")
-		   {
-		   		spaceHeader.setAttribute("class", "spaceLevel1On");
-	  	   		spaceHeader.setAttribute("className", "spaceLevel1On");
-	  	   }
-	  	   else
-	  	   {
-	  	   		spaceHeader.setAttribute("class", "spaceLevel1");
-	  	   		spaceHeader.setAttribute("className", "spaceLevel1");
-	  	   }*/
+	   } else {
+		    $('#'+currentSpaceId).addClass("spaceOn");
 	   }
 	   
 	   if (init == "true")
