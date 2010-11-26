@@ -1,6 +1,6 @@
 <div class="componentNav">
 
-<span class="txtNav"><center>Bienvenue sur le module Référentiel</center></span><br/>
+<span class="txtNav"><center>Bienvenue sur le module "Utilisateurs & groupes"</center></span><br/>
 Le référentiel permet de gérer les utilisateurs autorisés à accéder à Silverpeas.<br/>
 Chaque utilisateur appartient à un domaine. Dans ce domaine, les utilisateurs peuvent être regroupés en groupes et sous groupes.<br/>
 Les groupes peuvent être gérés manuellement ou automatiquement (groupe synchronisé).<br/>

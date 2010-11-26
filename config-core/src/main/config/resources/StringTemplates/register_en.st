@@ -1,6 +1,6 @@
 <div class="componentNav">
 
-<span class="txtNav"><center>Welcome to the Register module</center></span><br/>
+<span class="txtNav"><center>Welcome to the "Users & groups" module</center></span><br/>
 The repository manages which users can access to Silverpeas.<br/>
 Each user belongs to a domain. In this area, users can be grouped into groups and subgroups.<br/>
 Groups can be managed manually or automatically (synchronized group).<br/>
