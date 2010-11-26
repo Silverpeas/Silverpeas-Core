@@ -141,8 +141,7 @@ public class DBUtil {
      boolean testingMode = false;
     try {
       // On ne peux pas utiliser une simple connection du pool
-      // on utilise une connection extérieure au contexte transactionnel des ejb
-     
+      // on utilise une connection extérieure au contexte transactionnel des ejb     
       synchronized (DBUtil.class) {
         if (getInstance().connectionForTest != null) {
           privateConnection = getInstance().connectionForTest;
@@ -152,7 +151,7 @@ public class DBUtil {
         }
       }
       privateConnection.setAutoCommit(false);
-      return getMaxId(privateConnection, tableName, idName);
+      return getNextId(privateConnection, tableName, idName);
     } catch (Exception exe) {
       SilverTrace.debug("util", "DBUtil.getNextId", "impossible de recupérer le prochain id", exe);
       if (privateConnection != null) {
@@ -182,12 +181,11 @@ public class DBUtil {
    * @param tableName the name of the table.
    * @param idName the name of the column.
    * @return a unique id.
-   * @throws UtilException
-   * @deprecated replace with getNextId(String tableName, String idName)
+   * @throws SQLException
    */
-  public static int getNextId(Connection con, String tableName, String idName)
-      throws UtilException {
-    return getNextId(tableName, idName);
+  public static int getNextId(Connection connection, String tableName, String idName)
+      throws SQLException {     
+      return getMaxId(connection, tableName, idName);
   }
 
   protected static int getMaxId(Connection privateConnection, String tableName, String idName) throws
