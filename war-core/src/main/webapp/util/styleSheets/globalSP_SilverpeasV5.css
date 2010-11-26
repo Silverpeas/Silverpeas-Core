@@ -2018,10 +2018,6 @@ td.browsebar a:hover {
 	font-size: 83%;
 }
 
-#portletPages ul.portlet-options li a:hover {
-	background-color: #fff;
-}
-
 #portletPages div.portlet-content {
 	text-align: left;
 	clear: both;
