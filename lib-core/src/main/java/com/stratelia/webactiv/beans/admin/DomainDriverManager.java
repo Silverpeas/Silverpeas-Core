@@ -235,6 +235,19 @@ public class DomainDriverManager extends AbstractDomainDriver {
           + " " + user.getLastName(), e);
     }
   }
+  
+  public String[] getUserIdsOfDomain(String domainId) throws Exception {
+    // Set the OrganizationSchema (if not already done)
+    getOrganizationSchema();
+    try {
+      return organization.user.getUserIdsOfDomain(Integer.parseInt(domainId));
+    } catch (AdminException e) {
+      throw new AdminException("DomainDriverManager.getUser",
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_USERS", "domainId = " + domainId, e);
+    } finally {
+      releaseOrganizationSchema();
+    }
+  }
 
   public UserFull getUserFull(String userId) throws Exception {
     UserFull uf = null;
@@ -391,17 +404,17 @@ public class DomainDriverManager extends AbstractDomainDriver {
    * @throws Exception
    */
   public void indexAllUsers(String domainId) throws Exception {
-    UserDetail[] users = getAllUsers(domainId);
+    String[] userIds = getUserIdsOfDomain(domainId);
     AbstractDomainDriver ddm = getDomainDriver(Integer.parseInt(domainId));
-    for (UserDetail user : users) {
+    for (String userId : userIds) {
       try {
-        UserFull userFull = getUserFull(user.getSpecificId());
+        UserFull userFull = getUserFull(userId);
         if (userFull != null) {
           ddm.indexUserFull(userFull);
         }
       } catch (Exception e) {
         SilverTrace.error("admin", "DomainDriverManager.indexAllUsers", "admin.CANT_INDEX_USER",
-            "userId = " + user.getId(), e);
+            "userId = " + userId, e);
       }
     }
   }
