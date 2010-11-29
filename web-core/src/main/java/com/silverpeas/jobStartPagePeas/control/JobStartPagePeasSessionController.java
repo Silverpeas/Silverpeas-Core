@@ -729,51 +729,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   // user panel de selection de n groupes et n users
-  public String initUserPanelForTemplateProfile(String compoURL,
-      String profileIndex) {
-    try {
-      SpaceTemplateProfile stp = getCurrentSpaceTemplateProfiles()[Integer.
-          parseInt(profileIndex)];
-      sel.resetAll();
-
-      String hostSpaceName = getMultilang().getString("JSPP.TemplateProfile");
-      sel.setHostSpaceName(hostSpaceName);
-
-      PairObject hostComponentName = new PairObject(stp.getLabel(), null);
-      sel.setHostComponentName(hostComponentName);
-
-      ResourceLocator generalMessage = GeneralPropertiesManager.
-          getGeneralMultilang(getLanguage());
-      PairObject[] hostPath = { new PairObject(generalMessage.getString(
-          "GML.selection"), null) };
-      sel.setHostPath(hostPath);
-
-      sel.setGoBackURL(
-          compoURL + "ReturnUserPanelForTemplateProfile?profileIndex=" + profileIndex +
-          "&SpaceTemplate=" + m_spaceTemplate);
-      sel.setCancelURL(
-          compoURL + "SetSpaceTemplateProfile?SpaceTemplate=" + m_spaceTemplate);
-      sel.setPopupMode(true);
-      sel.setSelectedElements(m_TemplateProfilesUsers[Integer.parseInt(
-          profileIndex)]);
-      sel.setSelectedSets(
-          m_TemplateProfilesGroups[Integer.parseInt(profileIndex)]);
-    } catch (Exception e) {
-      SilverTrace.error("jobStartPagePeas",
-          "JobStartPageSessionController.initUserPanelForTemplateProfile()",
-          "root.EX_USERPANEL_FAILED", "profileIndex = " + profileIndex, e);
-    }
-    return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
-  }
-
-  public void returnUserPanelForTemplateProfile(String profileIndex) {
-    m_TemplateProfilesUsers[Integer.parseInt(profileIndex)] = sel.
-        getSelectedElements();
-    m_TemplateProfilesGroups[Integer.parseInt(profileIndex)] = sel.
-        getSelectedSets();
-  }
-
-  // user panel de selection de n groupes et n users
   public void initUserPanelSpaceForGroupsUsers(String compoURL, String role)
       throws SelectionException {
     SpaceInst spaceint1 = getSpaceInstById();

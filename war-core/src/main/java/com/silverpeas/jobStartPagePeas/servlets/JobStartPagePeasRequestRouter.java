@@ -728,33 +728,8 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
             request.getParameter("SelectedLook"));
       }
 
-      if (spaceTemplate != null && spaceTemplate.length() > 0
-          && jobStartPageSC.getCurrentSpaceTemplateProfiles() != null
-          && jobStartPageSC.getCurrentSpaceTemplateProfiles().length > 0) {
-        setSpacesNameInRequest(jobStartPageSC, request);
-
-        request
-            .setAttribute("SpaceBefore", request.getParameter("SpaceBefore"));
-        request.setAttribute("SpaceTemplateProfiles", jobStartPageSC
-            .getCurrentSpaceTemplateProfiles());
-        request.setAttribute("SpaceTemplateProfilesGroups", jobStartPageSC
-            .getCurrentSpaceTemplateProfilesGroups());
-        request.setAttribute("SpaceTemplateProfilesUsers", jobStartPageSC
-            .getCurrentSpaceTemplateProfilesUsers());
-        destination = "/jobStartPagePeas/jsp/setSpaceTemplateProfiles.jsp";
-      } else {
-        destination = getDestinationSpace("EffectiveCreateSpace",
-            jobStartPageSC, request);
-      }
-    } else if (function.equals("InvokeUserPanelForTemplateProfile")) {
-      destination = jobStartPageSC.initUserPanelForTemplateProfile(
-          (String) request.getAttribute("myComponentURL"), request
-          .getParameter("profileIndex"));
-    } else if (function.equals("ReturnUserPanelForTemplateProfile")) {
-      jobStartPageSC.returnUserPanelForTemplateProfile(request
-          .getParameter("profileIndex"));
-      destination = getDestinationSpace("SetSpaceTemplateProfile",
-          jobStartPageSC, request);
+      destination = getDestinationSpace("EffectiveCreateSpace", jobStartPageSC, request);
+      
     } else if (function.equals("EffectiveCreateSpace")) { // Space CREATE action
       String spaceId = jobStartPageSC.createSpace();
       if (spaceId != null && spaceId.length() > 0) {
