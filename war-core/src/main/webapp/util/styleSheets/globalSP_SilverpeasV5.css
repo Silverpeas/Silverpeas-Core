@@ -2466,12 +2466,16 @@ caption {
 	width:60%;
 }
 #directory .info ul a {color:#909090; font-size:11px;}
-#directory .info ul a:hover {color:#000; font-size:11px;}
+#directory .info ul a:hover {color:#000}
 
-#directory .info ul li.userName a{
-  font-size:14px;
-  color:#000;
-  font-weight:bold;
+#directory .info ul li.userName a {
+  	font-size:14px;
+  	color:#000;
+  	font-weight:bold;
+}
+
+#directory .info ul li.userName a:hover {
+	color:#444444;
 }
 
 #directory .info ul li.infoConnection img{
@@ -2895,245 +2899,150 @@ caption {
   margin-right:auto;
 }
 
-/**MyInfotemplate*/
-#myProfile #mask {
-  position: absolute;
-  left: 0;
-  top: 0;
-  z-index: 9000;
-  background-color: #000;
-  display: none;
-}
+/*- [ myProfile BEGIN ] --------------------------- */
+#myProfileFiche p{ margin:0; padding:0;}
 
-#myProfile #boxes .window {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 440px;
-  height: 200px;
-  display: none;
-  z-index: 9999;
-  padding: 20px;
+#myProfile #myProfileFiche {
+	width:20%;
+	float:left;
+	position:relative;
+	
 }
-
-#myProfile #boxes #dialog {
-  background-color: #FFFFFF;
-  height: 150px;
-  padding: 10px;
-  width: 500px;
+#myProfile .mail {
+  text-decoration: underline;
+  color:#333366;
 }
-
-#myProfile #headAndCore {
-  float: left;
-  width: 75%;
-  margin: 0px;
-  padding: 0px;
-}
-
-#myProfile #headAndCore #profilHead {
-  float: left;
-  width: 100%;
-  margin: 2px;
-  padding: 2px;
-}
-
-#myProfile #headAndCore #profilCore {
-  float: left;
-  width: 100%;
-  margin: 2px;
-  padding: 2px;
-}
-
-/********************MyInfosBody*****************************************************/
-#myProfile #headAndCore #profilCore #informations {
-  width: 100%;
-}
-
-#myProfile #headAndCore #profilCore #informations .form {
-  width: 100%;
-  height: 25px;
-}
-
-#myProfile #headAndCore #profilCore #informations .form .attribut {
-  float: left;
-  width: 25%;
-  font-weight: bold;
-}
-
-#myProfile #headAndCore #profilCore #myInfoAction {
-  text-align: center;
-  padding-left: 40%;
-}
-
-#myProfile #headAndCore #profilCore #myInfoAction .button {
-  float: left;
-  margin: 4px;
-}
-
-/************************************* ProfilHead***********************************/
-#myProfile #headAndCore #profilHead #photoAndInfo {
-  float: left;
-  width: 100%;
-}
-
-#myProfile #headAndCore #profilHead #photoAndInfo #profilHeadPhote {
-  float: left;
-  margin: 2px;
-  padding: 2px;
-}
-
-#myProfile #headAndCore #profilHead #photoAndInfo #profilHeadPhote img {
-  width: 90px;
-  border: 1px solid #AAAAAA;
-}
-
-#myProfile #headAndCore #profilHead #photoAndInfo #profilHeadinfo {
-  height: 100;
-  width: 40%;
-  float: left;
-  vertical-align: middle;
-}
-
-#myProfile #headAndCore #profilHead #photoAndInfo #profilHeadinfo .username {
-  font-size: 17px;
-}
-
-#myProfile #headAndCore #profilHead #photoAndInfo #profilHeadinfo .connection {
-  float: left;
-  margin-top: 10px;
-}
-
-#myProfile #headAndCore #profilHead #photoAndInfo #profilHeadAction {
-  float: left;
-  position: absolute;
-  vertical-align: bottom;
-  top: 133px;
-  left: 330px;
-}
-
-#myProfile #headAndCore #profilHead #photoAndInfo #profilHeadAction #status {
-  float: left;
-  width: auto;
-}
-
-#myProfile #boxes #dialog .barre {
-  float: right;
-  height: 25px;
-}
-
-#myProfile #boxes #dialog .formButton {
-  font-size: 0;
-  font-weight: bold;
-  padding-left: 170px;
-  text-align: left;
-}
-
-#myProfile #enabledStat {
-  width: 300px;
-  height: 20px;
-}
-
-/*****************************************MyProfilNavigation*******************************/
-#myProfile #navigation {
-  float: left;
-  width: 20%;
-  background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
-  background-position:right top;
-  background-repeat:no-repeat;
-  margin-left:auto;
-  margin-right:auto;
-  margin-bottom: 15px;
-  border:1px solid #CCCCCC;
-}
-
-#myProfile #navigation .box
-{
-  background-color:#FFFFFF;
-  background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
-  background-position:right top;
-  background-repeat:no-repeat;
-  margin-left:auto;
-  margin-right:auto;
-  margin-bottom: 15px;
-  width: 100%;
-  float: left;
-}
-#myProfile #navigation .boxTitle
-{
-  float: left;
-  width: 98%;
-  background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuOngletOff.gif);
-  background-repeat:repeat-x;
+#myProfileFiche  .action .link , #publicProfileFiche  #contactCommun .link, #publicProfileFiche  #allContact .link{
+  color:#333366;
+  border-bottom:1px solid #9E9ECF;
+  padding:0 0 3px 0; 
   font-size:11px;
+  width:132px;
+  margin-bottom:8px;
+  float:right; clear:right;
+}
+#myProfileFiche  .action .link:hover, #publicProfileFiche  .action .link:focus , #publicProfileFiche  #allContact .link:focus, #publicProfileFiche  #allContact .link:hover,
+#myProfileFiche  #contactCommun .link:hover, #publicProfileFiche  #contactCommun .link:focus {
+  color:#000;
+  border-bottom:1px solid #000;
+  
+}
+#myProfileFiche  #allContact .link, #publicProfileFiche  #contactCommun .link {
+	clear:both;
+	float:right;
+	margin-top:10px;
+	display:block;
+}
+
+#myProfile .NameLink {
+  font-size: 14px;
+  color: blue;
+}
+
+#myProfile #indexAndSearch #index a { 
+	border:1px solid #CECECE;
+	padding:2px 4px;
+	margin-right:3px;
+	background-color:#FFF;
+	color:#AFAFAF;
+	font-size: 12px;
+	text-decoration: none;
+	line-height:220%;
+}
+#myProfile #indexAndSearch #index a.active {
+	background-color:#B5B5B5;
+	color:#FFF;
+}
+
+#myProfile #indexAndSearch #index a:hover, #publicProfile #indexAndSearch #index a:focus {
+	background-color:#BFBFBF;
+	color:#FFF;
+}
+
+#myProfile .profilPhoto {
+ 	border:1px solid #CCCCCC;
+	height:140px;
+	margin:7px 6px;
+	overflow:hidden;
+	width:108px;
+}
+#myProfile .profilPhoto img {
+	height:140px;
+}
+
+#myProfileFiche {color:#909090; font-size:11px;}
+
+#myProfileFiche h3 {color:#26334A; font-size:12px; padding:10px 0 5px; margin:0;}
+
+#myProfileFiche .userName{
+  font-size:14px;
+  color:#000;
   font-weight:bold;
-  height:20px;
-  text-align:center;
+  padding:0; margin:0;
 }
 
-#myProfile #navigation .boxAction
-{
-  z-index: 100;
-  float: left;
-  width: 98%;
-  margin: 2px;
+#myProfileFiche .infoConnection { font-size:11px; padding:10px 0 15px} 
+
+#myProfileFiche .infoConnection img{
+  position:absolute;
+  top:10px; 
+  right:10px;
+}
+#myProfileFiche .info {padding:1%; height:100%;}
+#myProfileFiche .info .userType {
+  color:#333333;
+  font-size:12px;
+  font-weight:bold;
+  padding-top:10px;
 }
 
-#myProfile #navigation .boxAction .boxActionLeft
-{
-  float: left;
-  width: 48%;
+#myProfileFiche .statut {
+	background:transparent url(images_annuaire/sep-2-tiraits.gif)  50% top no-repeat;
+	color:#333333; font-size:10px;
+	padding:10px 0 0;
+	margin:0;
 }
 
-#myProfile #navigation .boxAction .boxActionRight
-{ text-align: right;
-  float: left;
-  width: 48%;
-}
-#myProfile #navigation .boxContent
-{
-  float: left;
-  width: 98%;
-  margin: 2px;
-  /*border:1px solid #CCCCCC;*/
-}
-#myProfile #navigation .boxContent .boxContact
-{
-  float: left;
-  width: 45%;
-  margin: 2px;
-}
-#myProfile #navigation .boxContent .boxContact img
-{
-  width: 70px;
-  height: 93px;
-  border: 1px solid #AAAAAA;
+#myProfileFiche .action .invitation {
+	display: none;
 }
 
-/******************************************MyProfilBody*******************/
-/* message display page */
-#myProfile .message_list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  width: 100%;
+#myProfileContenu { width:78%; margin-left:0.5%; float:left;}
+#myProfileContenu  address { font-style:normal;}
+
+#myProfile #myProfileFiche #allContact, #publicProfile #publicProfileFiche #contactCommun {
+	background-color:#E9E9E9;
+	clear:both;
+	height:100%;
 }
 
-#myProfile .message_list li {
-  padding: 0px;
-  margin: 3px;
+#myProfile #myProfileFiche .unContact {
+	width:126px; float:left; height:100%;
 }
 
-/***********Style de table g�n�rer par getJSON ""SocialInformation"*******************/
-#myProfile #headAndCore #profilCore #socialIconsZone {
-  float: left;
-  width: 100%;
-  padding-left: 20%;
+#myProfile #myProfileFiche .unContact .contactName{
+	color:#5F5F5F;
+	float:left;
+	padding-top:20px;
+	width:50px;
+	display:inline;
 }
+#myProfile #myProfileFiche .profilPhotoContact {
+ 	border:1px solid #CCCCCC;
+	height:62px;
+	margin:7px 6px;
+	overflow:hidden;
+	width:54px;
+	float:left;
+	background-color:#FFF;
+	text-align:center;
+}
+#myProfile #myProfileFiche  .profilPhotoContact img {
+	height:62px;
+}
+/*- [ myProfile END ] --------------------------- */
 
-#myProfile #headAndCore #profilCore #socialIconsZone .icon {
-  float: left;
-  margin: 10px;
-}
+
 
 /*- [ publicProfile BEGIN ] --------------------------- */
 #publicProfileFiche p{ margin:0; padding:0;}
@@ -3243,7 +3152,7 @@ caption {
 	display: none;
 }
 
-#publicProfileContenu { width:78%; margin-left:0.5%; float:left;}
+#publicProfileContenu { width:78%; margin-left:1.5%; float:left;}
 #publicProfileContenu  address { font-style:normal;}
 
 /* IMAGE  bg_tri.png à chercher dans corps dans fleche */
@@ -3360,4 +3269,12 @@ ul#attachmentList li.attachmentListItem .lineMain {
 #admin-role .group-icon,
 #admin-role .user-icon {
 	margin: 1px;
+}
+
+.inline_message_ok {
+	background-color: #C8ED99;
+	border: 2px solid #9BD94A;
+	padding: 5px;
+	margin: 10px;
+	text-align: center;
 }

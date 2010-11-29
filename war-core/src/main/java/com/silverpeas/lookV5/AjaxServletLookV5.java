@@ -758,8 +758,8 @@ public class AjaxServletLookV5 extends HttpServlet {
         writer.write("<item id=\"personalize\" name=\""
             + EncodeHelper.escapeXml(message.getString("Personalization"))
             + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
-            + URLManager.getURL(URLManager.CMP_PERSONALIZATION)
-            + "Main.jsp\"/>");
+            + URLManager.getURL(URLManager.CMP_MYPROFILE)
+            + "Main\"/>");
       }
       if (readBoolean(settings, "mailVisible", true)) {
         writer.write(

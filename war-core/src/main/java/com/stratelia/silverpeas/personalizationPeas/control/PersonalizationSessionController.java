@@ -23,27 +23,13 @@
  */
 package com.stratelia.silverpeas.personalizationPeas.control;
 
-import java.rmi.NoSuchObjectException;
-import java.rmi.RemoteException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
-import java.util.Set;
-import java.util.StringTokenizer;
 
-import javax.ejb.CreateException;
-import javax.naming.NamingException;
-
-import com.silverpeas.jobDomainPeas.JobDomainSettings;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.authentication.AuthenticationException;
-import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
 import com.stratelia.silverpeas.notificationManager.NotificationManager;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -51,13 +37,8 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.PeasCoreException;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
-import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import java.util.Vector;
 
 /**
  * Class declaration
@@ -66,17 +47,7 @@ import java.util.Vector;
 public class PersonalizationSessionController
     extends AbstractComponentSessionController {
 
-  private String favoriteLanguage = null;
-  private String favoriteLook = null;
-  private Boolean thesaurusStatus = null;
-  private Boolean dragAndDropStatus = null;
-  private Boolean webdavEditingStatus = null;
-  private AdminController m_AdminCtrl = null;
   private NotificationManager notificationManager = null;
-  private long domainActions = -1;
-  ResourceLocator resources = new ResourceLocator(
-      "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings",
-      "");
 
   /**
    * Constructor declaration
@@ -91,326 +62,11 @@ public class PersonalizationSessionController
         mainSessionCtrl,
         componentContext,
         "com.stratelia.silverpeas.personalizationPeas.multilang.personalizationBundle",
-        "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasIcons");
+        "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasIcons",
+        "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings");
     setComponentRootName(URLManager.CMP_PERSONALIZATION);
     notificationManager = new NotificationManager(getLanguage());
-    m_AdminCtrl = new AdminController(getUserId());
-
-    try {
-      thesaurusStatus = getActiveThesaurusByUser();
-    } catch (Exception e) {
-      thesaurusStatus = false;
-    }
   }
-
-  public int getMinLengthPwd() {
-    return JobDomainSettings.m_MinLengthPwd;
-  }
-
-  public boolean isBlanksAllowedInPwd() {
-    return JobDomainSettings.m_BlanksAllowedInPwd;
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public synchronized String getFavoriteLanguage() {
-    try {
-      if (this.favoriteLanguage == null) {
-        this.favoriteLanguage = getPersonalization().getFavoriteLanguage();
-      }
-    } catch (NoSuchObjectException nsoe) {
-      initPersonalization();
-      SilverTrace.warn("personalizationPeas",
-          "PersonalizationSessionController.getFavoriteLanguage()",
-          "root.EX_CANT_GET_REMOTE_OBJECT", nsoe);
-      return getFavoriteLanguage();
-    } catch (Exception e) {
-      SilverTrace.error("personalizationPeas",
-          "PersonalizationSessionController.getFavoriteLanguage()",
-          "personalizationPeas.EX_CANT_GET_FAVORITE_LANGUAGE", e);
-    }
-    return this.favoriteLanguage;
-  }
-
-  public synchronized List<String> getAllLanguages() {
-    List<String> allLanguages = new ArrayList<String>();
-    try {
-      StringTokenizer st = new StringTokenizer(
-          resources.getString("languages"), ",");
-      SilverTrace.debug("personalizationPeas",
-          "PersonalizationSessionController.getAllLanguages()", "langues = "
-          + resources.getString("languages").toString());
-      while (st.hasMoreTokens()) {
-        String langue = st.nextToken();
-        SilverTrace.debug("personalizationPeas",
-            "PersonalizationSessionController.getAllLanguages()", "langue = "
-            + langue);
-        allLanguages.add(langue);
-      }
-    } catch (Exception e) {
-      SilverTrace.error("personalizationPeas",
-          "PersonalizationSessionController.getAllLanguages()",
-          "personalizationPeas.EX_CANT_GET_FAVORITE_LANGUAGE", e);
-    }
-    return allLanguages;
-  }
-
-  /**
-   * Method declaration
-   * @param languages
-   * @throws CreateException
-   * @throws NamingException
-   * @throws RemoteException
-   * @throws SQLException
-   * @see
-   */
-  public void setLanguages(List<String> languages) throws PeasCoreException {
-    try {
-      getPersonalization().setLanguages(new Vector(languages));
-      this.favoriteLanguage = languages.get(0);
-
-      // Change language in MainSessionController
-      setLanguageToMainSessionController(favoriteLanguage);
-    } catch (NoSuchObjectException nsoe) {
-      initPersonalization();
-      SilverTrace.warn("personalizationPeas",
-          "PersonalizationSessionController.setLanguages()",
-          "root.EX_CANT_GET_REMOTE_OBJECT", nsoe);
-      setLanguages(languages);
-    } catch (Exception e) {
-      throw new PeasCoreException(
-          "PersonalizationSessionController.setLanguages()",
-          SilverpeasException.ERROR,
-          "personalizationPeas.EX_CANT_SET_LANGUAGE", e);
-    }
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws RemoteException
-   * @throws SQLException
-   * @see
-   */
-  public List<String> getLanguages() throws PeasCoreException {
-    try {
-      return getPersonalization().getLanguages();
-    } catch (NoSuchObjectException nsoe) {
-      initPersonalization();
-      SilverTrace.warn("personalizationPeas",
-          "PersonalizationSessionController.getLanguages()",
-          "root.EX_CANT_GET_REMOTE_OBJECT", nsoe);
-      return getLanguages();
-    } catch (Exception e) {
-      throw new PeasCoreException(
-          "PersonalizationSessionController.getLanguages()",
-          SilverpeasException.ERROR,
-          "personalizationPeas.EX_CANT_GET_LANGUAGE", e);
-    }
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @throws CreateException
-   * @throws NamingException
-   * @throws RemoteException
-   * @throws SQLException
-   * @see
-   */
-  public String getFavoriteLook() throws PeasCoreException {
-    if (this.favoriteLook == null) {
-      try {
-        if (favoriteLook == null) {
-          this.favoriteLook = getPersonalization().getFavoriteLook();
-        }
-      } catch (NoSuchObjectException nsoe) {
-        initPersonalization();
-        SilverTrace.warn("personalizationPeas",
-            "PersonalizationSessionController.getFavoriteLook()",
-            "root.EX_CANT_GET_REMOTE_OBJECT", nsoe);
-        return getFavoriteLook();
-      } catch (Exception e) {
-        throw new PeasCoreException(
-            "PersonalizationSessionController.getFavoriteLook()",
-            SilverpeasException.ERROR,
-            "personalizationPeas.EX_CANT_GET_FAVORITE_LOOK", e);
-      }
-    }
-    return this.favoriteLook;
-  }
-
-  /**
-   * Method declaration
-   * @param look
-   * @throws CreateException
-   * @throws NamingException
-   * @throws RemoteException
-   * @throws SQLException
-   * @see
-   */
-  public void setFavoriteLook(String look) throws PeasCoreException {
-    try {
-      getPersonalization().setFavoriteLook(look);
-      this.favoriteLook = look;
-    } catch (NoSuchObjectException nsoe) {
-      initPersonalization();
-      SilverTrace.warn("personalizationPeas",
-          "PersonalizationSessionController.setFavoriteLook()",
-          "root.EX_CANT_GET_REMOTE_OBJECT", nsoe);
-      setFavoriteLook(look);
-    } catch (Exception e) {
-      throw new PeasCoreException(
-          "PersonalizationSessionController.setFavoriteLook()",
-          SilverpeasException.ERROR,
-          "personalizationPeas.EX_CANT_SET_FAVORITE_LOOK", "Look=" + look, e);
-    }
-  }
-
-  public void setPersonalWorkSpace(String personalWS) throws PeasCoreException {
-    try {
-      getPersonalization().setPersonalWorkSpace(personalWS);
-
-      // Change language in MainSessionController
-      setFavoriteSpaceToMainSessionController(personalWS);
-    } catch (NoSuchObjectException nsoe) {
-      initPersonalization();
-      SilverTrace.warn("personalizationPeas",
-          "PersonalizationSessionController.setFavoriteLook()",
-          "root.EX_CANT_GET_REMOTE_OBJECT", nsoe);
-      setPersonalWorkSpace(personalWS);
-    } catch (Exception e) {
-      throw new PeasCoreException(
-          "PersonalizationSessionController.setFavoriteLook()",
-          SilverpeasException.ERROR,
-          "personalizationPeas.EX_CANT_SET_FAVORITE_COLLWS", personalWS, e);
-    }
-  }
-
-  // ******************* Methods for Thesaurus *************************
-  private synchronized boolean getActiveThesaurusByUser() throws PeasCoreException, RemoteException {
-    try {
-      return getPersonalization().getThesaurusStatus();
-    } catch (NoSuchObjectException nsoe) {
-      initPersonalization();
-      return getPersonalization().getThesaurusStatus();
-    } catch (Exception e) {
-      throw new PeasCoreException("PdcSearchSessionController.getActiveThesaurusByUser()",
-          SilverpeasException.ERROR, "personalizationPeas.EX_CANT_GET_THESAURUS_STATUS", "", e);
-    }
-  }
-
-  public boolean getThesaurusStatus() {
-    return this.thesaurusStatus;
-  }
-
-  public void setThesaurusStatus(boolean thesaurusStatus)
-      throws PeasCoreException {
-    try {
-      getPersonalization().setThesaurusStatus(thesaurusStatus);
-      this.thesaurusStatus = thesaurusStatus;
-    } catch (NoSuchObjectException nsoe) {
-      initPersonalization();
-      SilverTrace.warn("personalizationPeas",
-          "PersonalizationSessionController.setThesaurusStatus()",
-          "root.EX_CANT_GET_REMOTE_OBJECT", nsoe);
-      setThesaurusStatus(thesaurusStatus);
-    } catch (Exception e) {
-      throw new PeasCoreException(
-          "PersonalizationSessionController.setThesaurusStatus()",
-          SilverpeasException.ERROR,
-          "personalizationPeas.EX_CANT_SET_THESAURUS_STATUS", e);
-    }
-  }
-
-  // ******************* Methods for Drag And Drop *************************
-  public boolean getDragAndDropStatus() throws PeasCoreException {
-    try {
-      if (dragAndDropStatus == null) {
-        dragAndDropStatus = getPersonalization().getDragAndDropStatus();
-      }
-    } catch (NoSuchObjectException nsoe) {
-      initPersonalization();
-      SilverTrace.warn("personalizationPeas",
-          "PersonalizationSessionController.getDragAndDropStatus()",
-          "root.EX_CANT_GET_REMOTE_OBJECT", nsoe);
-      return getDragAndDropStatus();
-    } catch (Exception e) {
-      throw new PeasCoreException(
-          "PersonalizationSessionController.getDragAndDropStatus()",
-          SilverpeasException.ERROR,
-          "personalizationPeas.EX_CANT_GET_DRAGDROP_STATUS", e);
-    }
-
-    return dragAndDropStatus.booleanValue();
-  }
-
-  public void setDragAndDropStatus(boolean dragAndDropStatus)
-      throws PeasCoreException {
-    try {
-      getPersonalization().setDragAndDropStatus(dragAndDropStatus);
-      this.dragAndDropStatus = dragAndDropStatus;
-    } catch (NoSuchObjectException nsoe) {
-      initPersonalization();
-      SilverTrace.warn("personalizationPeas",
-          "PersonalizationSessionController.setDragAndDropStatus()",
-          "root.EX_CANT_GET_REMOTE_OBJECT", nsoe);
-      setDragAndDropStatus(dragAndDropStatus);
-    } catch (Exception e) {
-      throw new PeasCoreException(
-          "PersonalizationSessionController.setDragAndDropStatus()",
-          SilverpeasException.ERROR,
-          "personalizationPeas.EX_CANT_SET_DRAGDROP_STATUS", e);
-    }
-  }
-
-  // ******************* Methods for Webdav Editing Office / OpenOffice document
-  // *************************
-  public boolean getWebdavEditingStatus() throws PeasCoreException {
-    try {
-      if (webdavEditingStatus == null) {
-        webdavEditingStatus = getPersonalization().getWebdavEditingStatus();
-      }
-    } catch (NoSuchObjectException nsoe) {
-      initPersonalization();
-      SilverTrace.warn("personalizationPeas",
-          "PersonalizationSessionController.getWebdavEditingStatus()",
-          "root.EX_CANT_GET_REMOTE_OBJECT", nsoe);
-      return getWebdavEditingStatus();
-    } catch (Exception e) {
-      throw new PeasCoreException(
-          "PersonalizationSessionController.getWebdavEditingStatus()",
-          SilverpeasException.ERROR,
-          "personalizationPeas.EX_CANT_GET_WEBDAV_EDITING_STATUS", e);
-    }
-    return webdavEditingStatus.booleanValue();
-  }
-
-  public void setWebdavEditingStatus(boolean webdavEditingStatus)
-      throws PeasCoreException {
-    try {
-      getPersonalization().setWebdavEditingStatus(webdavEditingStatus);
-      this.webdavEditingStatus = webdavEditingStatus;
-    } catch (NoSuchObjectException nsoe) {
-      initPersonalization();
-      SilverTrace.warn("personalizationPeas",
-          "PersonalizationSessionController.setWebdavEditingStatus()",
-          "root.EX_CANT_GET_REMOTE_OBJECT", nsoe);
-      setWebdavEditingStatus(webdavEditingStatus);
-    } catch (Exception e) {
-      throw new PeasCoreException(
-          "PersonalizationSessionController.setWebdavEditingStatus()",
-          SilverpeasException.ERROR,
-          "personalizationPeas.EX_CANT_SET_WEBDAV_EDITING_STATUS", e);
-    }
-  }
-
-  // ******************* Methods for Notification *************************
   
   /**
    * Is the multichannel notification supported?
@@ -876,10 +532,6 @@ public class PersonalizationSessionController
     return valret.toString();
   }
 
-  public List getSpaceTreeview() {
-    return getOrganizationController().getSpaceTreeview(getUserId());
-  }
-
   public UserFull getTargetUserFull() {
     UserFull valret = null;
     String IdUserCur = getUserId();
@@ -888,96 +540,6 @@ public class PersonalizationSessionController
       valret = getOrganizationController().getUserFull(IdUserCur);
     }
     return valret;
-  }
-
-  public void modifyUser(String idUser,
-      String userLastName,
-      String userFirstName,
-      String userEMail,
-      String userAccessLevel,
-      String oldPassword,
-      String newPassword,
-      String userLoginQuestion,
-      String userLoginAnswer,
-      HashMap<String, String> properties)
-      throws PeasCoreException, AuthenticationException {
-    UserFull theModifiedUser = null;
-    String idRet = null;
-
-    SilverTrace.info("personalizationPeas",
-        "PersonalizationPeasSessionController.modifyUser()",
-        "root.MSG_GEN_ENTER_METHOD", "UserId=" + idUser + " userLastName="
-        + userLastName + " userFirstName=" + userFirstName + " userEMail="
-        + userEMail + " userAccessLevel=" + userAccessLevel);
-
-    theModifiedUser = m_AdminCtrl.getUserFull(idUser);
-    if (theModifiedUser == null) {
-      throw new PeasCoreException(
-          "PersonalizationPeasSessionController.modifyUser()",
-          SilverpeasException.ERROR, "admin.EX_ERR_UNKNOWN_USER");
-    }
-
-    if (isUserDomainRW()) {
-      theModifiedUser.setLastName(userLastName);
-      theModifiedUser.setFirstName(userFirstName);
-      theModifiedUser.seteMail(userEMail);
-      theModifiedUser.setLoginQuestion(userLoginQuestion);
-      theModifiedUser.setLoginAnswer(userLoginAnswer);
-
-      // Si l'utilisateur n'a pas entré de nouveau mdp, on ne le change pas
-      if (newPassword != null && newPassword.length() != 0) {
-        // In this case, this method checks if oldPassword and actual password
-        // match !
-        changePassword(theModifiedUser.getLogin(), oldPassword, newPassword,
-            theModifiedUser.getDomainId());
-
-        theModifiedUser.setPassword(newPassword);
-      }
-
-      // process extra properties
-      Set<String> keys = properties.keySet();
-      Iterator<String> iKeys = keys.iterator();
-      String key = null;
-      String value = null;
-      while (iKeys.hasNext()) {
-        key = iKeys.next();
-        value = properties.get(key);
-
-        theModifiedUser.setValue(key, value);
-      }
-
-      idRet = m_AdminCtrl.updateUserFull(theModifiedUser);
-      if (idRet == null || idRet.length() <= 0) {
-        throw new PeasCoreException(
-            "PersonalizationPeasSessionController.modifyUser()",
-            SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "UserId="
-            + idUser);
-      }
-    } else {
-      if (newPassword != null && newPassword.length() != 0) {
-        changePassword(theModifiedUser.getLogin(), oldPassword, newPassword,
-            theModifiedUser.getDomainId());
-      }
-    }
-  }
-
-  private void changePassword(String login,
-      String oldPassword,
-      String newPassword,
-      String domainId) throws AuthenticationException {
-    LoginPasswordAuthentication auth = new LoginPasswordAuthentication();
-    auth.changePassword(login, oldPassword, newPassword, domainId);
-  }
-
-  public boolean isUserDomainRW() {
-    return (getDomainActions() & AbstractDomainDriver.ACTION_CREATE_USER) != 0;
-  }
-
-  public long getDomainActions() {
-    if (domainActions == -1) {
-      domainActions = m_AdminCtrl.getDomainActions(getUserDetail().getDomainId());
-    }
-    return domainActions;
   }
 
   public void saveChannels(String selectedChannels) throws PeasCoreException {
