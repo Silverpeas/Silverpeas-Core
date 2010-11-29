@@ -152,7 +152,7 @@
 
   <sb_publication_publi pubid="1" infoid="0" pubname=" Publication de test" pubdescription="Ceci est un test."
     pubcreationdate="2008/04/30" pubbegindate="2008/04/30" pubenddate="9999/99/99" pubcreatorid="7" pubimportance="1"
-    pubversion="" pubkeywords="test" pubcontent="" pubstatus="Valid" pubimage="\N" pubimagemimetype="\N"
+    pubversion="" pubkeywords="test" pubcontent="" pubstatus="Valid" 
     pubupdatedate="2008/04/30" instanceid="kmelia57" pubupdaterid="7" pubvalidatedate="2008/04/30" pubvalidatorid="7"
     pubbeginhour="00:00" pubendhour="23:59" pubauthor="\N" pubtargetvalidatorid="\N" pubcloneid="-1" pubclonestatus="\N"
     lang="fr" />
