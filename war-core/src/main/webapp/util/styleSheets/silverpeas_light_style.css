@@ -198,6 +198,7 @@ body, td, div, a {
 }
 #spacePerso .contentSpace, .spaceLevel1On .contentSpace{
 	margin-top:10px;
+	margin-left:0;
 }
 .spaceLevel1, .spaceLevel1On {
 	background-color:transparent;
@@ -207,7 +208,7 @@ body, td, div, a {
 	border-bottom:1px solid #CACACA;
 	color:#444444;
 	margin-right:0;
-	padding-left:30px;
+	padding-left:13px;
 	height:100%;
 	
 }
@@ -217,6 +218,8 @@ body, td, div, a {
 	padding:4px 0 8px;
 	position:relative;
 }
+#domainsBar #spaceMenuDivId #spaces .spaceLevel1 .spaceURL, #domainsBar #spaceMenuDivId #spaces .spaceLevel1On .spaceURL, #domainsBar #spaceMenuDivId #spacePerso .spaceURL {
+	margin-left:19px;}
 
 .browseSpace { 
 	position:relative;
