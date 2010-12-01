@@ -37,6 +37,7 @@ import javax.ejb.EntityContext;
 import javax.ejb.FinderException;
 
 import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
@@ -655,14 +656,6 @@ public class PublicationEJB implements EntityBean {
     try {
       int id = 0;
 
-      // Transform the 'special' caracters
-      /*
-       * pubDetail.setName(Encode.transformStringForBD(pubDetail.getName())); pubDetail
-       * .setDescription(Encode.transformStringForBD(pubDetail.getDescription ()));
-       * pubDetail.setKeywords(Encode.transformStringForBD(pubDetail.getKeywords ()));
-       * pubDetail.setAuthor(Encode.transformStringForBD(pubDetail.getAuthor ()));
-       */
-
       try {
         id = DBUtil.getNextId(pubDetail.getPK().getTableName(), "pubId");
       } catch (Exception ex) {
@@ -707,7 +700,11 @@ public class PublicationEJB implements EntityBean {
     content = pubDetail.getContent();
     status = pubDetail.getStatus();
     updateDate = new Date();
-    updaterId = pubDetail.getUpdaterId();
+    if (!StringUtil.isDefined(pubDetail.getUpdaterId())) {
+      updaterId = pubDetail.getCreatorId();
+    } else {
+      updaterId = pubDetail.getUpdaterId();
+    }
     beginHour = pubDetail.getBeginHour();
     endHour = pubDetail.getEndHour();
     author = pubDetail.getAuthor();
