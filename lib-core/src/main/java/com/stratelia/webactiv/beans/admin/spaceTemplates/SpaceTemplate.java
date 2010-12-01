@@ -34,6 +34,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
@@ -119,7 +120,7 @@ public final class SpaceTemplate {
 
       if (nComponentsList != null) {
         NodeList listComponents = nComponentsList.getChildNodes();
-
+        int componentOrderNum = 0;
         for (int nI = 0; nI < listComponents.getLength(); nI++) {
           if (listComponents.item(nI).getNodeType() == Node.ELEMENT_NODE) {
             String sComponentName = "";
@@ -167,6 +168,8 @@ public final class SpaceTemplate {
               ci.setLabel(sComponentLabel);
               ci.setDescription(sComponentDescription);
               ci.setParameters(wac.getParameters());
+              ci.setOrderNum(componentOrderNum);
+              componentOrderNum++;
 
               // Retrieves the parameters' values
               if (nComponentParameters != null) {
@@ -182,15 +185,18 @@ public final class SpaceTemplate {
 
                     sComponentParameterValue = listParameters.item(nJ)
                         .getFirstChild().getNodeValue();
+                    Node node = listParameters.item(nJ).getAttributes().getNamedItem("name");
                     if (listParameters.item(nJ).getAttributes() != null
-                        && listParameters.item(nJ).getAttributes()
-                        .getNamedItem("name") != null
-                        && listParameters.item(nJ).getAttributes()
-                        .getNamedItem("name").getNodeValue() != null) {
-                      sComponentParameterName = listParameters.item(nJ)
-                          .getAttributes().getNamedItem("name").getNodeValue();
-                      parameters.setParameterValue(sComponentParameterName,
-                          sComponentParameterValue);
+                        && node != null && node.getNodeValue() != null) {
+                      sComponentParameterName = node.getNodeValue();
+                      if ("PublicComponent".equalsIgnoreCase(sComponentParameterName)) {
+                        ci.setPublic(StringUtil.getBooleanValue(sComponentParameterValue));
+                      } else if ("HiddenComponent".equalsIgnoreCase(sComponentParameterName)) {
+                        ci.setHidden(StringUtil.getBooleanValue(sComponentParameterValue));
+                      } else {
+                        parameters.setParameterValue(sComponentParameterName,
+                            sComponentParameterValue);
+                      }
                     }
                   }
                 }
