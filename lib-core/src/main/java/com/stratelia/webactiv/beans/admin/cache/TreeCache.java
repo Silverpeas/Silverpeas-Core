@@ -169,6 +169,15 @@ public class TreeCache {
     }
     return component;
   }
+  
+   public synchronized static SpaceInstLight getSpaceContainingComponent(String componentId) {
+    for (Space space : map.values()) {
+      if(space.containsComponent(componentId)) {
+        return space.getSpace();
+      }
+    }
+    return null;
+  }
 
   public static List<SpaceInstLight> getComponentPath(String componentId) {
     ComponentInstLight component = getComponent(componentId);

@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
-
 /*
  * @author Norbert CHAIX
  * @version 1.0
@@ -48,29 +45,13 @@ import java.util.Map;
  * @author
  */
 public class OrganizationController extends AdminReference implements java.io.Serializable {
+  private static final long serialVersionUID = 3435241972671610107L;
 
-  //private static final long serialVersionUID = 1869750368600972095L;
 
   /**
    * Constructor declaration
    */
   public OrganizationController() {
-  }
-
-  /**
-   * Constructor declaration
-   * @param userId
-   * @deprecated
-   */
-  public OrganizationController(String userId) {
-  }
-
-  /**
-   * Constructor declaration
-   * @param auc
-   * @deprecated
-   */
-  public OrganizationController(AdminUserConnections auc) {
   }
 
   // -------------------------------------------------------------------
@@ -79,6 +60,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
 
   /**
    * Return all the spaces Id available in silverpeas
+   * @return 
    */
   public String[] getAllSpaceIds() {
     try {
@@ -160,7 +142,6 @@ public class OrganizationController extends AdminReference implements java.io.Se
   public SpaceInst getSpaceInstById(String sSpaceId) {
     try {
       SpaceInst spaceInst = m_Admin.getSpaceInstById(sSpaceId);
-
       return spaceInst;
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getSpaceInstById",
@@ -175,7 +156,6 @@ public class OrganizationController extends AdminReference implements java.io.Se
   public String[] getAvailCompoIds(String sClientSpaceId, String sUserId) {
     try {
       String[] asCompoIds = m_Admin.getAvailCompoIds(sClientSpaceId, sUserId);
-
       return asCompoIds;
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAvailCompoIds",

@@ -107,7 +107,8 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
         writer.write(getResult(componentName, componentId, null, helper).toString());
       } catch (AdminException e) {
         writer.write(getResult(componentName, null, e, helper).toString());
-        e.printStackTrace();
+        SilverTrace.error("admin", "PersonalSpaceJSONServlet.doPost.AddComponent",
+              "root.EX_NO_MESSAGE", e);
       }
     } else if ("RemoveComponent".equals(action)) {
       String componentId = req.getParameter("ComponentId");
@@ -116,7 +117,8 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
         writer.write(getResult(componentName, componentId, null, helper).toString());
       } catch (AdminException e) {
         writer.write(getResult(null, componentId, e, helper).toString());
-        e.printStackTrace();
+        SilverTrace.error("admin", "PersonalSpaceJSONServlet.doPost.RemoveComponent",
+              "root.EX_NO_MESSAGE", e);
       }
     } else if ("GetTools".equals(action)) {
       writer.write(getToolsAsJSONArray(helper));

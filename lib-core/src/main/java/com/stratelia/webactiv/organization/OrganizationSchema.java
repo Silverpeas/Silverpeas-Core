@@ -21,24 +21,30 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.organization;
 
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.Schema;
 import com.stratelia.webactiv.util.exception.UtilException;
+import java.sql.Connection;
 
 public class OrganizationSchema extends Schema {
+
   public OrganizationSchema(int cl) throws UtilException {
     super(cl);
     init();
   }
-
+  
+  public OrganizationSchema(int cl, Connection connection) throws UtilException {
+    super(cl, connection);
+    init();
+  }
+  
   protected String getJNDIName() {
     return JNDINames.ADMIN_DATASOURCE;
   }
-
-  public void init() {
+  
+  public final void init() {
     domain = new DomainTable(this);
     keyStore = new KeyStoreTable(this);
     user = new UserTable(this);
@@ -53,7 +59,6 @@ public class OrganizationSchema extends Schema {
     accessLevel = new AccessLevelTable(this);
     groupUserRole = new GroupUserRoleTable(this);
   }
-
   public DomainTable domain = null;
   public KeyStoreTable keyStore = null;
   public UserTable user = null;

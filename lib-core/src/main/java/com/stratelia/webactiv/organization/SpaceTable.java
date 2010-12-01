@@ -33,7 +33,9 @@ import java.util.List;
 
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
+import com.stratelia.webactiv.organization.SpaceRow;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.util.List;
 
 /**
  * A SpaceTable object manages the ST_SPACE table.
@@ -130,18 +132,16 @@ public class SpaceTable extends Table {
    * @return true if the given space instance name is an existing space
    */
   public boolean isSpaceInstExist(int id) throws AdminPersistenceException {
-    SpaceRow space = this.getSpace(id);
-    if (space == null)
-      return false;
-    else
-      return true;
+    return (this.getSpace(id) != null);
   }
 
   /**
    * Returns all the Spaces.
    */
   public SpaceRow[] getAllSpaces() throws AdminPersistenceException {
-    return (SpaceRow[]) getRows(SELECT_ALL_SPACES).toArray(new SpaceRow[0]);
+    @SuppressWarnings("unchecked")
+    List<SpaceRow> rows = (List<SpaceRow>) getRows(SELECT_ALL_SPACES);
+    return rows.toArray(new SpaceRow[rows.size()]);
   }
 
   static final private String SELECT_ALL_SPACES = "select " + SPACE_COLUMNS
@@ -151,7 +151,8 @@ public class SpaceTable extends Table {
    * Returns all the Space ids.
    */
   public String[] getAllSpaceIds() throws AdminPersistenceException {
-    return (String[]) getIds(SELECT_ALL_SPACE_IDS).toArray(new String[0]);
+    List<String> ids = getIds(SELECT_ALL_SPACE_IDS);
+    return ids.toArray(new String[ids.size()]);
   }
 
   static final private String SELECT_ALL_SPACE_IDS = "select id from ST_Space"
@@ -161,14 +162,12 @@ public class SpaceTable extends Table {
    * Returns all the root Space ids.
    */
   public String[] getAllRootSpaceIds() throws AdminPersistenceException {
-    return (String[]) getIds(SELECT_ALL_ROOT_SPACE_IDS).toArray(new String[0]);
+    List<String> ids = getIds(SELECT_ALL_ROOT_SPACE_IDS);
+    return ids.toArray(new String[ids.size()]);
   }
 
-  static final private String SELECT_ALL_ROOT_SPACE_IDS = "select id from ST_Space"
-      + " where domainFatherId is null"
-      + " AND spaceStatus is null"
-      + " AND isPersonal is null"
-      + " order by orderNum";
+  static final private String SELECT_ALL_ROOT_SPACE_IDS = "SELECT id FROM st_space WHERE "
+    + "domainFatherId IS NULL AND spaceStatus IS NULL AND isPersonal IS NULL ORDER BY orderNum";
 
   /**
    * Returns all the Root Spaces.

@@ -61,9 +61,9 @@ import com.stratelia.webactiv.util.exception.UtilException;
  * @author azzedine
  */
 public class MyProfilRequestRouter extends ComponentRequestRouter {
-
-  private static final long serialVersionUID = 1L;
+  
   private static final String AVATAR_FOLDER = "avatar";
+  private static final long serialVersionUID = -9194682447286602180L;
   private final int NUMBER_CONTACTS_TO_DISPLAY = 3;
   
   @Override

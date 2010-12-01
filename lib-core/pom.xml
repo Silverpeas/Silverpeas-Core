@@ -188,10 +188,13 @@
     <dependency>
       <groupId>com.mockrunner</groupId>
       <artifactId>mockrunner</artifactId>
-      <version>0.4.1</version>
-      <classifier>j2ee1.4-jdk6</classifier>
+      <classifier>jdk1.6-j2ee1.4</classifier>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-all</artifactId>
+    </dependency>    
     <dependency>
       <groupId>net.fortuna.ical4j</groupId>
       <artifactId>ical4j</artifactId>

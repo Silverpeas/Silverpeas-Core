@@ -47,10 +47,6 @@ public class AdminCache extends Object {
   static private Hashtable<String, SpaceInst> m_hSpaceInstCache =
       new Hashtable<String, SpaceInst>();
 
-  static private boolean m_bUseSpaceInstLightCache = true;
-  static private Hashtable<String, SpaceInstLight> m_hSpaceInstLightCache =
-      new Hashtable<String, SpaceInstLight>();
-
   static private boolean m_bUseComponentInstCache = true;
   static private Hashtable<String, ComponentInst> m_hComponentInstCache =
       new Hashtable<String, ComponentInst>();
@@ -116,7 +112,6 @@ public class AdminCache extends Object {
     SilverTrace.debug("admin", "AdminCache.resetCache",
         "root.MSG_GEN_ENTER_METHOD");
     m_hSpaceInstCache.clear();
-    m_hSpaceInstLightCache.clear();
     m_hComponentInstCache.clear();
     m_hProfileInstCache.clear();
     m_hUserDetailCache.clear();
@@ -153,39 +148,6 @@ public class AdminCache extends Object {
   public SpaceInst getSpaceInst(String spaceId) {
     if (m_bUseCache && m_bUseSpaceInstCache) {
       return m_hSpaceInstCache.get(spaceId);
-    } else {
-      return null;
-    }
-  }
-
-  /*
-   * Store the spaceInst in cache
-   */
-  public void resetSpaceInstLight() {
-    if (m_bUseCache && m_bUseSpaceInstLightCache) {
-      SilverTrace.debug("admin", "AdminCache.resetSpaceInstLight",
-          "root.MSG_GEN_ENTER_METHOD");
-      m_hSpaceInstLightCache.clear();
-    }
-  }
-
-  public void putSpaceInstLight(SpaceInstLight spaceInst) {
-    if (m_bUseCache && m_bUseSpaceInstLightCache) {
-      SilverTrace.debug("admin", "AdminCache.putSpaceInstLight",
-          "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceInst.getShortId());
-      m_hSpaceInstLightCache.put(spaceInst.getShortId(), spaceInst);
-    }
-  }
-
-  public void removeSpaceInstLight(String spaceId) {
-    if (m_bUseCache && m_bUseSpaceInstLightCache) {
-      m_hSpaceInstLightCache.remove(spaceId);
-    }
-  }
-
-  public SpaceInstLight getSpaceInstLight(String spaceId) {
-    if (m_bUseCache && m_bUseSpaceInstLightCache) {
-      return m_hSpaceInstLightCache.get(spaceId);
     } else {
       return null;
     }
@@ -612,7 +574,6 @@ public class AdminCache extends Object {
     // structs
     removeSpaceComponentsInst(theSpace.getId());
     removeSpaceInst(theSpace.getId());
-    removeSpaceInstLight(theSpace.getId());
     resetProfileIds();
     resetAvailCompoIds();
     resetManageableSpaceIds();

@@ -51,15 +51,25 @@ public abstract class AbstractTestDao extends JndiBasedDBTestCase {
 
   protected static String jndiName = "";
 
+  
   @After
-  public void cleanData() throws Exception {
+  @Override
+  protected void tearDown() throws Exception {
+    cleanData();
+  }
+  
+  protected void cleanData() throws Exception {
     super.tearDown();
   }
   
   
-
   @Before
-  public void prepareData() throws Exception {
+  @Override
+  protected void setUp() throws Exception {
+    prepareData();
+  }
+
+  protected void prepareData() throws Exception {
     configureJNDIDatasource();
     super.setUp();
   }

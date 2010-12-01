@@ -29,11 +29,13 @@ import java.util.List;
 
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class Space {
 
   SpaceInstLight space;
-  List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
+  Map<String, ComponentInstLight> components = new LinkedHashMap<String, ComponentInstLight>();
   List<SpaceInstLight> subspaces = new ArrayList<SpaceInstLight>();
 
   public SpaceInstLight getSpace() {
@@ -45,11 +47,13 @@ public class Space {
   }
 
   public List<ComponentInstLight> getComponents() {
-    return components;
+    return new ArrayList<ComponentInstLight>(components.values());
   }
 
   public void setComponents(List<ComponentInstLight> components) {
-    this.components = components;
+    for(ComponentInstLight component : components) {
+      this.components.put(component.getId(), component);
+    }
   }
 
   public List<SpaceInstLight> getSubspaces() {
@@ -61,29 +65,19 @@ public class Space {
   }
 
   public void addComponent(ComponentInstLight component) {
-    components.add(component);
+    this.components.put(component.getId(), component);
   }
 
   public void removeComponent(ComponentInstLight component) {
-    components.remove(component);
+    components.remove(component.getId());
   }
 
   public boolean containsComponent(String componentId) {
-    for (ComponentInstLight component : components) {
-      if (component.getId().equalsIgnoreCase(componentId)) {
-        return true;
-      }
-    }
-    return false;
+    return components.containsKey(componentId);
   }
 
   public ComponentInstLight getComponent(String componentId) {
-    for (ComponentInstLight component : components) {
-      if (component.getId().equalsIgnoreCase(componentId)) {
-        return component;
-      }
-    }
-    return null;
+    return components.get(componentId);
   }
 
 }

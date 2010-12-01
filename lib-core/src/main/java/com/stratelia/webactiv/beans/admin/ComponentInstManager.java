@@ -71,8 +71,9 @@ public class ComponentInstManager {
     componentInst.setUpdaterUserId(componentInstToCopy.getUpdaterUserId());
     componentInst.setRemoverUserId(componentInstToCopy.getRemoverUserId());
 
-    for (int nI = 0; nI < componentInstToCopy.getNumProfileInst(); nI++)
+    for (int nI = 0; nI < componentInstToCopy.getNumProfileInst(); nI++) {
       componentInst.addProfileInst(componentInstToCopy.getProfileInst(nI));
+    }
 
     SPParameters parameters = componentInstToCopy.getSPParameters();
     componentInst.setSPParameters(parameters);

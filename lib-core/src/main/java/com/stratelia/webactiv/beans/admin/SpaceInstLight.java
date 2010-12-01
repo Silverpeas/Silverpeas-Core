@@ -28,6 +28,7 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
+import com.google.common.base.Objects;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -333,19 +334,17 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     SpaceInstLight other = (SpaceInstLight) obj;
-    if (id == null) {
-      if (other.id != null)
-        return false;
-    } else if (!id.equals(other.id))
-      return false;
-    return true;
+    return Objects.equal(getFullId(), other.getFullId());
   }
 
 }
