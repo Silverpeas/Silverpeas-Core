@@ -17,25 +17,23 @@ import static org.junit.Assert.*;
 public class AdminTest extends AbstractTestDao {
 
   private Admin instance;
-  
+
   public AdminTest() {
     instance = new Admin();
   }
 
   @Override
-  protected void setUp() throws Exception {  
-    super.setUp();    
+  protected void setUp() throws Exception {
+    super.setUp();
     instance.reloadCache();
   }
 
   @Override
   protected void tearDown() throws Exception {
-    super.tearDown();    
+    super.tearDown();
     instance.reloadCache();
   }
 
-  
-  
   @Override
   protected String getDatasetFileName() {
     return "test-admin-spaces-dataset.xml";
@@ -56,7 +54,7 @@ public class AdminTest extends AbstractTestDao {
    */
   @Test
   public void testGetSpaceInstById() throws Exception {
-    String sClientSpaceId = "2";    
+    String sClientSpaceId = "2";
     SpaceInst expResult = new SpaceInst();
     expResult.setId(sClientSpaceId);
     SpaceInst result = instance.getSpaceInstById(sClientSpaceId);
@@ -128,16 +126,16 @@ public class AdminTest extends AbstractTestDao {
   @Test
   public void testGetUserSpaceTreeview() throws Exception {
     String userId = "0";
-    long startTime = System.currentTimeMillis();
     List<SpaceInstLight> result = instance.getUserSpaceTreeview(userId);
-    System.out.println("New method : " + (System.currentTimeMillis() - startTime));
     assertNotNull(result);
     assertEquals(5, result.size());
-    startTime = System.currentTimeMillis();
-    List<SpaceInstLight> oldResult = instance.getUserSpaceTreeview(userId);
-    System.out.println("Old method : " + (System.currentTimeMillis() - startTime));
-    assertTrue(result.containsAll(oldResult));
-    assertTrue(oldResult.containsAll(result));
+    assertEquals("WA1", result.get(0).getFullId());
+    assertEquals("WA2", result.get(1).getFullId());
+    assertEquals("WA3", result.get(2).getFullId());
+    assertEquals("WA4", result.get(3).getFullId());
+    assertEquals("WA5", result.get(4).getFullId());
+
+
   }
 
   /**
