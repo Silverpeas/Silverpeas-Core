@@ -2988,7 +2988,10 @@ caption {
   top:10px; 
   right:10px;
 }
-#myProfileFiche .info {padding:1%; height:100%;}
+#myProfileFiche .info {
+	padding:8px; 
+	height:100%;
+} 
 #myProfileFiche .info .userType {
   color:#333333;
   font-size:12px;
@@ -3007,7 +3010,11 @@ caption {
 	display: none;
 }
 
-#myProfileContenu { width:78%; margin-left:0.5%; float:left;}
+#myProfileContenu { 
+	width:78%; 
+	margin-left:15px; 
+	float:left;
+}
 #myProfileContenu  address { font-style:normal;}
 
 #myProfile #myProfileFiche #allContact, #publicProfile #publicProfileFiche #contactCommun {
@@ -3133,7 +3140,10 @@ caption {
   top:10px; 
   right:10px;
 }
-#publicProfileFiche .info {padding:1%; height:100%;}
+#publicProfileFiche .info {
+	padding:8px;
+	height:100%;
+}
 #publicProfileFiche .info .userType {
   color:#333333;
   font-size:12px;
@@ -3152,7 +3162,11 @@ caption {
 	display: none;
 }
 
-#publicProfileContenu { width:78%; margin-left:1.5%; float:left;}
+#publicProfileContenu { 
+	width:78%; 
+	margin-left:15px; 
+	float:left;
+}
 #publicProfileContenu  address { font-style:normal;}
 
 /* IMAGE  bg_tri.png à chercher dans corps dans fleche */
