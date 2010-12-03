@@ -24,10 +24,9 @@
 
 package com.silverpeas.form.form;
 
+import com.google.common.base.Charsets;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -44,6 +43,10 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.TypeManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
 /**
  * A Form is an object which can display in HTML the content of a DataRecord to a end user and can
@@ -105,7 +108,8 @@ public class HtmlForm extends AbstractForm {
    */
   private void openHtmlFile() throws FileNotFoundException, IOException {
     closeHtmlFile();
-    m_HtmlFile = new BufferedReader(new FileReader(new File(m_FileName)));
+    m_HtmlFile = new BufferedReader(new InputStreamReader(new FileInputStream(m_FileName), 
+        Charsets.UTF_8));
 
   }
 
@@ -115,17 +119,16 @@ public class HtmlForm extends AbstractForm {
    * @throws IOException if an error occurs while working with the HTML file.
    * @throws FileNotFoundException if the underlying HTML file doesn't exist.
    */
-  private void parseFile(PrintWriter out) throws IOException,
-      FileNotFoundException {
+  private void parseFile(PrintWriter out) throws IOException, FileNotFoundException {
     openHtmlFile();
     PagesContext pc = new PagesContext(pagesContext);
     boolean endOfFile = false;
     pc.incCurrentFieldIndex(1);
     do {
       endOfFile = printBeforeTag(out);
-      if (!endOfFile)
+      if (!endOfFile) {
         processTag(out, pc);
-
+      }
     } while (!endOfFile);
     closeHtmlFile();
   }
@@ -138,13 +141,14 @@ public class HtmlForm extends AbstractForm {
    * @throws IOException if an error occurs while working with the HTML file or the writer.
    */
   private boolean printBeforeTag(PrintWriter out) throws IOException {
-    if (currentLine == null || currentLine.isEmpty())
+    if (currentLine == null || currentLine.isEmpty()) {
       currentLine = m_HtmlFile.readLine();
+    }
 
     // Testing end of file
-    if (currentLine == null)
+    if (currentLine == null) {
       return true;
-
+    }
     int pos = currentLine.indexOf(TAG_BEGIN);
     if (pos == -1) {
       // tag not found in the read line
@@ -166,22 +170,20 @@ public class HtmlForm extends AbstractForm {
    * @throws IOException if an error while printing the content of the form.
    */
   private void processTag(PrintWriter out, PagesContext pc) throws IOException {
-    if (currentLine == null || currentLine.isEmpty())
+    if (currentLine == null || currentLine.isEmpty()) {
       currentLine = m_HtmlFile.readLine();
-
+    }
     // Testing end of file
     if (currentLine == null) {
       SilverTrace.error("form", "HtmlForm.processTag", "form.EX_END_OF_FILE");
       return;
     }
-
     // Testing begin tag
     int beginPos = currentLine.indexOf(TAG_BEGIN);
     if (beginPos != 0) {
       SilverTrace.error("form", "HtmlForm.processTag", "form.EX_TAG_NOT_FOUND");
       return;
     }
-
     // Search for end tag
     int endPos = currentLine.indexOf(TAG_END);
     while (endPos == -1) {
@@ -194,17 +196,14 @@ public class HtmlForm extends AbstractForm {
       endPos = currentLine.indexOf(TAG_END);
     }
 
-    String fieldName = currentLine.substring(beginPos + TAG_BEGIN.length(),
-        endPos);
-
+    String fieldName = currentLine.substring(beginPos + TAG_BEGIN.length(), endPos);
     if (fieldName.endsWith(".label")) {
       fieldName = fieldName.substring(0, fieldName.lastIndexOf("."));
       printFieldLabel(out, fieldName, pc);
     } else {
       printField(out, fieldName, pc);
     }
-    currentLine = currentLine.substring(endPos + TAG_END.length(), currentLine
-        .length());
+    currentLine = currentLine.substring(endPos + TAG_END.length(), currentLine.length());
   }
 
   /**
@@ -214,25 +213,23 @@ public class HtmlForm extends AbstractForm {
    * @param pc the page context.
    * @throws IOException if an error occurs while printing the field.
    */
-  private void printField(PrintWriter out, String fieldName, PagesContext pc)
-          throws IOException {
+  private void printField(PrintWriter out, String fieldName, PagesContext pc) throws IOException {
     try {
       Field field = record.getField(fieldName);
+      String currentFieldName = fieldName;
       if (field != null) {
         boolean fieldFound = false;
         for (FieldTemplate fieldTemplate : getFieldTemplates()) {
           String fieldType;
           String fieldDisplayerName;
-          fieldName = fieldName.substring(fieldName.indexOf(".") + 1,
-                  fieldName.length());
+          currentFieldName = currentFieldName.substring(currentFieldName.indexOf('.') + 1,
+                  currentFieldName.length());
           if (fieldTemplate != null
-                  && fieldTemplate.getFieldName().equalsIgnoreCase(fieldName)) {
+                  && fieldTemplate.getFieldName().equalsIgnoreCase(currentFieldName)) {
             fieldType = fieldTemplate.getTypeName();
             fieldDisplayerName = fieldTemplate.getDisplayerName();
-
             FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(
                     fieldType, fieldDisplayerName);
-
             if (fieldDisplayer != null) {
               fieldDisplayer.display(out, field, fieldTemplate, pc);
             }
@@ -245,8 +242,7 @@ public class HtmlForm extends AbstractForm {
         }
       }
     } catch (FormException fe) {
-      SilverTrace.error("form", "HtmlForm.display", "form.EXP_UNKNOWN_FIELD",
-              fieldName);
+      SilverTrace.error("form", "HtmlForm.display", "form.EXP_UNKNOWN_FIELD", fieldName);
     }
   }
 
@@ -257,46 +253,35 @@ public class HtmlForm extends AbstractForm {
    * @param pc the page context.
    * @throws IOException if an error occurs while printing the field label.
    */
-  private void printFieldLabel(PrintWriter out, String fieldName,
-      PagesContext pc) throws IOException {
+  private void printFieldLabel(PrintWriter out, String fieldName, PagesContext pc) throws IOException {
     for (FieldTemplate fieldTemplate : getFieldTemplates()) {
-      if (fieldTemplate != null
-              && fieldTemplate.getFieldName().equalsIgnoreCase(fieldName)) {
+      if (fieldTemplate != null && fieldTemplate.getFieldName().equalsIgnoreCase(fieldName)) {
         out.print(fieldTemplate.getLabel(pc.getLanguage()));
         break;
       }
     }
   }
 
-  /**
+ /**
+   * 
    * Prints the HTML layout of the dataRecord using the RecordTemplate to extract labels and extra
    * informations. The value formats may be adapted to a local language. Never throws an Exception
    * but log a silvertrace and writes an empty string when :
-   * <UL>
-   * <LI>a field is unknown by the template.
-   * <LI>a field has not the required type.
-   * </UL>
+   * <ul>
+   * <li>a field is unknown by the template.</li>
+   * <li>a field has not the required type.</li>
+   * </ul>
+   * 
+   * @param jw
+   * @param pagesContext
+   * @param record 
    */
   @Override
-  public void display(JspWriter jw, PagesContext PagesContext, DataRecord record) {
-    this.record = record;
-    this.pagesContext = PagesContext;
+  public void display(JspWriter jw, PagesContext pagesContext, DataRecord record) {
     try {
-      StringWriter sw = new StringWriter();
-      PrintWriter out = new PrintWriter(sw, true);
-
-      out.println("<input type=\"hidden\" name=\"id\" value=\"" + record.getId()
-          + "\"/>");
-      parseFile(out);
-
-      out.flush();
-      jw.write(sw.toString());
-    } catch (FileNotFoundException fe) {
-      SilverTrace.error("form", "HtmlForm.display", "form.EX_CANT_OPEN_FILE",
-          null, fe);
+      jw.write(toString(pagesContext, record));
     } catch (IOException fe) {
-      SilverTrace.error("form", "HtmlForm.display", "form.EXP_CANT_WRITE",
-          null, fe);
+      SilverTrace.error("form", "HtmlForm.display", "form.EXP_CANT_WRITE", null, fe);
     }
   }
 
@@ -304,31 +289,31 @@ public class HtmlForm extends AbstractForm {
    * Prints the HTML layout of the dataRecord using the RecordTemplate to extract labels and extra
    * informations. The value formats may be adapted to a local language. Never throws an Exception
    * but log a silvertrace and writes an empty string when :
-   * <UL>
-   * <LI>a field is unknown by the template.
-   * <LI>a field has not the required type.
-   * </UL>
+   * <ul>
+   * <li>a field is unknown by the template.</li>
+   * <li>a field has not the required type.</li>
+   * </ul>
+   * 
+   * @param PagesContext
+   * @param record
+   * @return the string to be displayed 
    */
   @Override
   public String toString(PagesContext PagesContext, DataRecord record) {
     this.record = record;
     this.pagesContext = PagesContext;
-    StringWriter sw = new StringWriter();
+    ByteArrayOutputStream buffer = new ByteArrayOutputStream(2048);
     try {
-      // StringWriter sw = new StringWriter();
-      PrintWriter out = new PrintWriter(sw, true);
-
-      out.println("<input type=\"hidden\" name=\"id\" value=\"" + record.getId()
-          + "\"/>");
+      PrintWriter out = new PrintWriter(new OutputStreamWriter(buffer, Charsets.UTF_8) , true);
+      out.println("<input type=\"hidden\" name=\"id\" value=\"" + record.getId() + "\"/>");
       parseFile(out);
+      out.flush();
     } catch (FileNotFoundException fe) {
-      SilverTrace.error("form", "HtmlForm.toString", "form.EX_CANT_OPEN_FILE",
-          null, fe);
+      SilverTrace.error("form", "HtmlForm.toString", "form.EX_CANT_OPEN_FILE", null, fe);
     } catch (IOException fe) {
-      SilverTrace.error("form", "HtmlForm.toString", "form.EXP_CANT_WRITE",
-          null, fe);
+      SilverTrace.error("form", "HtmlForm.toString", "form.EXP_CANT_WRITE", null, fe);
     }
-    return sw.getBuffer().toString();
+    return new String(buffer.toByteArray(), Charsets.UTF_8);
   }
 
   /**

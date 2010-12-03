@@ -135,7 +135,7 @@ public class PagesContext {
     return formName;
   }
 
-  public void setFormName(String formName) {
+  public final void setFormName(String formName) {
     this.formName = formName;
   }
 
@@ -143,7 +143,7 @@ public class PagesContext {
     return formIndex;
   }
 
-  public void setFormIndex(String formIndex) {
+  public final void setFormIndex(String formIndex) {
     this.formIndex = formIndex;
   }
 
@@ -155,7 +155,7 @@ public class PagesContext {
     return language;
   }
 
-  public void setLanguage(String language) {
+  public final void setLanguage(String language) {
     this.language = language;
   }
 
@@ -163,15 +163,16 @@ public class PagesContext {
     return printTitle;
   }
 
-  public void setPrintTitle(boolean printTitle) {
+  public final void setPrintTitle(boolean printTitle) {
     this.printTitle = printTitle;
   }
 
-  public void setCurrentFieldIndex(String currentFieldIndex) {
+  public final void setCurrentFieldIndex(String currentFieldIndex) {
     this.currentFieldIndex = currentFieldIndex;
   }
 
-  public void incCurrentFieldIndex(int increment) {
+  @SuppressWarnings("AssignmentReplaceableWithOperatorAssignment")
+  public final void incCurrentFieldIndex(int increment) {
     int currentFieldIndexInt = 0;
     if (currentFieldIndex != null) {
       currentFieldIndexInt = Integer.parseInt(currentFieldIndex);
@@ -184,7 +185,7 @@ public class PagesContext {
     return componentId;
   }
 
-  public void setComponentId(String string) {
+  public final void setComponentId(String string) {
     componentId = string;
   }
 
@@ -192,7 +193,7 @@ public class PagesContext {
     return userId;
   }
 
-  public void setUserId(String string) {
+  public final void setUserId(String string) {
     userId = string;
   }
 
@@ -200,7 +201,7 @@ public class PagesContext {
     return objectId;
   }
 
-  public void setObjectId(String string) {
+  public final void setObjectId(String string) {
     objectId = string;
   }
 
@@ -208,7 +209,7 @@ public class PagesContext {
     return versioningUsed;
   }
 
-  public void setVersioningUsed(boolean b) {
+  public final void setVersioningUsed(boolean b) {
     versioningUsed = b;
   }
 
@@ -221,7 +222,7 @@ public class PagesContext {
    * Else no border will be displayed. Default value = true.
    * @param b
    */
-  public void setBorderPrinted(boolean b) {
+  public final void setBorderPrinted(boolean b) {
     printBorder = b;
   }
 
@@ -229,7 +230,7 @@ public class PagesContext {
     return contentLanguage;
   }
 
-  public void setContentLanguage(String contentLanguage) {
+  public final void setContentLanguage(String contentLanguage) {
     this.contentLanguage = contentLanguage;
   }
 
@@ -237,7 +238,7 @@ public class PagesContext {
     return this.nbFields;
   }
 
-  public void setNbFields(int nbFields) {
+  public final void setNbFields(int nbFields) {
     this.nbFields = nbFields;
   }
 
@@ -245,7 +246,7 @@ public class PagesContext {
     return nodeId;
   }
 
-  public void setNodeId(String nodeId) {
+  public final void setNodeId(String nodeId) {
     this.nodeId = nodeId;
   }
 
@@ -253,7 +254,7 @@ public class PagesContext {
     return lastFieldIndex;
   }
 
-  public void setLastFieldIndex(int lastFieldIndex) {
+  public final void setLastFieldIndex(int lastFieldIndex) {
     this.lastFieldIndex = lastFieldIndex;
   }
 
@@ -261,7 +262,7 @@ public class PagesContext {
     return useBlankFields;
   }
 
-  public void setUseBlankFields(boolean useBlankFields) {
+  public final void setUseBlankFields(boolean useBlankFields) {
     this.useBlankFields = useBlankFields;
   }
 
@@ -269,7 +270,7 @@ public class PagesContext {
     return useMandatory;
   }
 
-  public void setUseMandatory(boolean ignoreMandatory) {
+  public final void setUseMandatory(boolean ignoreMandatory) {
     this.useMandatory = ignoreMandatory;
   }
 
@@ -277,7 +278,7 @@ public class PagesContext {
     return updatePolicy;
   }
 
-  public void setUpdatePolicy(int updatePolicy) {
+  public final void setUpdatePolicy(int updatePolicy) {
     this.updatePolicy = updatePolicy;
   }
 
@@ -285,7 +286,7 @@ public class PagesContext {
     return ignoreDefaultValues;
   }
 
-  public void setIgnoreDefaultValues(boolean ignoreDefaultValues) {
+  public final void setIgnoreDefaultValues(boolean ignoreDefaultValues) {
     this.ignoreDefaultValues = ignoreDefaultValues;
   }
 
@@ -293,7 +294,7 @@ public class PagesContext {
     return encoding;
   }
 
-  public void setEncoding(String encoding) {
+  public final void setEncoding(String encoding) {
     this.encoding = encoding;
   }
 }
