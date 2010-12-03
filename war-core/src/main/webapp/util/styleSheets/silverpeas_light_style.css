@@ -154,7 +154,7 @@ body, td, div, a {
 	padding-left:5px;
 	font-weight: bold;
 }
-#browseBar #breadCrumb a:visited, #browseBar #breadCrumb a:active, #browseBar #breadCrumb a:link, #browseBar #breadCrumb a:hover {
+#browseBar #breadCrumb a:visited, #browseBar #breadCrumb a:active, #browseBar #breadCrumb a:link, #browseBar #breadCrumb a:hover,  #browseBar #breadCrumb {
 	color: #444444;
 	font-weight: normal;
 	font-size:12px;

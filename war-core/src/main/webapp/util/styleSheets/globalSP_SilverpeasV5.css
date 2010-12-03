@@ -2912,6 +2912,12 @@ caption {
   text-decoration: underline;
   color:#333366;
 }
+
+
+#myProfileFiche  .action {
+	margin-top:5px;
+	}
+
 #myProfileFiche  .action .link , #publicProfileFiche  #contactCommun .link, #publicProfileFiche  #allContact .link{
   color:#333366;
   border-bottom:1px solid #9E9ECF;
@@ -3064,6 +3070,11 @@ caption {
   text-decoration: underline;
   color:#333366;
 }
+
+#publicProfileFiche  .action {
+	margin-top:5px;
+	}
+
 #publicProfileFiche  .action .link , #publicProfileFiche  #contactCommun .link, #publicProfileFiche  #allContact .link{
   color:#333366;
   border-bottom:1px solid #9E9ECF;
