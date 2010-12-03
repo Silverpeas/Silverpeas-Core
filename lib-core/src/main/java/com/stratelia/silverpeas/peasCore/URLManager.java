@@ -43,7 +43,7 @@ public class URLManager {
   public final static String CMP_FORMDESIGNER = "formDesigner";
   public final static String CMP_SILVERMAIL = "SILVERMAIL";
   public final static String CMP_POPUP = "POPUP";
-  public final static String CMP_PERSONALIZATION = "MyProfil";
+  public final static String CMP_PERSONALIZATION = "personalization";
   public final static String CMP_FILESERVER = "FileServer";
   public final static String CMP_PORTLET = "portlet";
   public final static String CMP_TODO = "todo";
