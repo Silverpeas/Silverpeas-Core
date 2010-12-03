@@ -774,7 +774,7 @@ public class AjaxServletLookV5 extends HttpServlet {
             + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"javascript:openClipboard()\"/>");
       }
       // fonctionnalité "Trouver une date"
-      if (readBoolean(settings, "scheduleEventVisible", true)) {
+      if (readBoolean(settings, "scheduleEventVisible", false)) {
           writer.write("<item id=\"scheduleevent\" name=\""
               + EncodeHelper.escapeXml(message.getString("ScheduleEvent"))
               + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
