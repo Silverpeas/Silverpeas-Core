@@ -99,33 +99,29 @@ public class TextDisplayer extends AbstractFieldDisplayer {
    * @param out
    * @param field
    * @param template
-   * @param PagesContext
+   * @param pagesContext
    * @throws FormException  
    */
   @Override
   public void display(PrintWriter out, Field field, FieldTemplate template,
-      PagesContext PagesContext) throws FormException {
-    String value = "";
-    String classe = null;
-    String size = "";
-    String color = "";
-    String face = "";
-    String bold = "";
-    String html = "";
-    String language = PagesContext.getLanguage();
+      PagesContext pagesContext) throws FormException {
+    StringBuilder html = new StringBuilder(10000);
+    String language = pagesContext.getLanguage();
     Map<String, String> parameters = template.getParameters(language);
+    String value = "";
     if (!field.isNull()) {
       value = field.getValue(language);
     }
 
     if (field.getTypeName().equals(DateField.TYPE)) {
       try {
-        value = DateUtil.getOutputDate(field.getValue(), PagesContext.getLanguage());
+        value = DateUtil.getOutputDate(field.getValue(), pagesContext.getLanguage());
       } catch (Exception e) {
         SilverTrace.error("form", "TextDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
             "value = " + field.getValue(), e);
       }
     }
+    String classe = null;
     if (parameters.containsKey("class")) {
       classe = parameters.get("class");
       if (classe != null) {
@@ -158,50 +154,56 @@ public class TextDisplayer extends AbstractFieldDisplayer {
       value = newValue;
     }
     if (StringUtil.isDefined(classe)) {
-      html += "<span " + classe + ">";
+      html.append("<span ").append(classe).append(">");
     }
 
     if (parameters.containsKey("fontSize") || parameters.containsKey("fontColor")
         || parameters.containsKey("fontFace")) {
-      html += "<font";
+      html.append("<font");
     }
 
+
+    String size = "";
     if (parameters.containsKey("fontSize")) {
       size = parameters.get("fontSize");
-      html += " size=\"" + size + "\"";
+      html.append(" size=\"").append(size).append("\"");
     }
 
+
+    String color = "";
     if (parameters.containsKey("fontColor")) {
       color = parameters.get("fontColor");
-      html += " color=\"" + color + "\"";
+      html.append(" color=\"").append(color).append("\"");
     }
 
+    String face = "";
     if (parameters.containsKey("fontFace")) {
       face = parameters.get("fontFace");
-      html += " face=\"" + face + "\"";
+      html.append(" face=\"").append(face).append("\"");
     }
 
     if (StringUtil.isDefined(size) || StringUtil.isDefined(color) || StringUtil.isDefined(face)) {
-      html += ">";
+      html.append(">");
     }
+    String bold = "";
     if (parameters.containsKey("bold")) {
       bold = parameters.get("bold");
       if ("true".equals(bold)) {
-        html += "<b>";
+        html.append("<b>");
       }
     }
-    html += EncodeHelper.javaStringToHtmlParagraphe(value);
+    html.append(EncodeHelper.javaStringToHtmlParagraphe(value));
 
     if (StringUtil.isDefined(bold)) {
-      html += "</b>";
+      html.append("</b>");
     }
     if (StringUtil.isDefined(size) || StringUtil.isDefined(color) || StringUtil.isDefined(face)) {
-      html += "</font>";
+      html.append("</font>");
     }
     if (StringUtil.isDefined(classe)) {
-      html += "</span>";
+      html.append("</span>");
     }
-    out.println(html);
+    out.println(html.toString());
   }
 
   /**
@@ -213,8 +215,7 @@ public class TextDisplayer extends AbstractFieldDisplayer {
    * @param PagesContext 
    * @return 
    * @throws FormException 
-   * @throw FormException if the field type is not a managed type.
-   * @throw FormException if the field doesn't accept the new value.
+   * @throw FormException if the field type is not a managed type or if the field doesn't accept the new value.
    */
   @Override
   public List<String> update(String newValue, Field field, FieldTemplate template,

@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.fieldDisplayer;
 
 import java.io.IOException;
@@ -57,6 +56,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  */
 public class TextFieldDisplayer extends AbstractFieldDisplayer {
 
+  private final static String[] MANAGED_TYPES = new String[]{TextField.TYPE};
+
   /**
    * Constructeur
    */
@@ -65,9 +66,10 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer {
 
   /**
    * Returns the name of the managed types.
+   * @return 
    */
   public String[] getManagedTypes() {
-    return new String[] { TextField.TYPE };
+    return MANAGED_TYPES;
   }
 
   /**
@@ -89,45 +91,46 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer {
       SilverTrace.info("form", "TextFieldDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
           TextField.TYPE);
     }
+    StringBuilder script = new StringBuilder(10000);
 
     if (template.isMandatory() && pagesContext.useMandatory()) {
-      out.println("		if (isWhitespace(stripInitialWhitespace(field.value))) {");
-      out.println("			errorMsg+=\"  - '" + label + "' " +
-          Util.getString("GML.MustBeFilled", language) + "\\n\";");
-      out.println("			errorNb++;");
-      out.println("		}");
+      script.append("		if (isWhitespace(stripInitialWhitespace(field.value))) {\n");
+      script.append("			errorMsg+=\"  - '").append(label).append("' ").
+          append(Util.getString("GML.MustBeFilled", language)).append("\\n\";\n");
+      script.append("			errorNb++;\n");
+      script.append("		}\n");
     }
 
     Map<String, String> parameters = template.getParameters(pagesContext.getLanguage());
-    String contentType = (String) parameters.get(TextField.CONTENT_TYPE);
+    String contentType = parameters.get(TextField.CONTENT_TYPE);
     if (contentType != null) {
       if (contentType.equals(TextField.CONTENT_TYPE_INT)) {
-        out.println("		if (field.value != \"\" && !(/^-?\\d+$/.test(field.value))) {");
-        out.println(
-            "			errorMsg+=\"  - '" + label + "' " +
-            Util.getString("GML.MustContainsNumber", language) + "\\n\";");
-        out.println("			errorNb++;");
-        out.println("		}");
+        script.append("		if (field.value != \"\" && !(/^-?\\d+$/.test(field.value))) {\n");
+        script.append("			errorMsg+=\"  - '").append(label).append("' ").
+            append(Util.getString("GML.MustContainsNumber", language)).append(
+            "\\n\";\n");
+        script.append("			errorNb++;\n");
+        script.append("		}\n");
       } else if (contentType.equals(TextField.CONTENT_TYPE_FLOAT)) {
-        out.println("		field.value = field.value.replace(\",\", \".\")");
-        out
-            .println(
-            "		if (field.value != \"\" && !(/^([+-]?(((\\d+(\\.)?)|(\\d*\\.\\d+))([eE][+-]?\\d+)?))$/.test(field.value))) {");
-        out.println("			errorMsg+=\"  - '" + label + "' " +
-            Util.getString("GML.MustContainsFloat", language) + "\\n\";");
-        out.println("			errorNb++;");
-        out.println("		}");
+        script.append("		field.value = field.value.replace(\",\", \".\")\n");
+        script.append(  "		if (field.value != \"\" && !(/^([+-]?(((\\d+(\\.)?)|(\\d*\\.\\d+))");
+        script.append("([eE][+-]?\\d+)?))$/.test(field.value))) {\n");
+        script.append("			errorMsg+=\"  - '").append(label).append("' ");
+        script.append(Util.getString("GML.MustContainsFloat", language)).append("\\n\";\n");
+        script.append("			errorNb++;\n");
+        script.append("		}\n");
       }
     }
 
     String nbMaxCar = (parameters.containsKey("maxLength")
         ? parameters.get("maxLength") : Util.getSetting("nbMaxCar"));
-    out.println("		if (! isValidText(field, " + nbMaxCar + ")) {");
-    out.println("			errorMsg+=\"  - '" + label + "' " +
-        Util.getString("ContainsTooLargeText", language)
-        + nbMaxCar + " " + Util.getString("Characters", language) + "\\n\";");
-    out.println("			errorNb++;");
-    out.println("		}");
+    script.append("		if (! isValidText(field, ").append(nbMaxCar).append(")) {\n");
+    script.append("			errorMsg+=\"  - '").append(label).append("' ").
+        append(Util.getString("ContainsTooLargeText", language)).append(nbMaxCar).append(" ").
+        append(Util.getString("Characters", language)).append("\\n\";\n");
+    script.append("			errorNb++;\n");
+    script.append("		}\n");
+    out.print(script.toString());
 
     Util.getJavascriptChecker(template.getFieldName(), pagesContext, out);
   }
@@ -162,15 +165,16 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer {
     if (useSuggestions) {
       TextFieldImpl textField = (TextFieldImpl) field;
       suggestions =
-          textField.getSuggestions(fieldName, template.getTemplateName(), pageContext
-          .getComponentId());
+          textField.getSuggestions(fieldName, template.getTemplateName(),
+          pageContext.getComponentId());
     }
 
     String cssClass = null;
     if (parameters.containsKey("class")) {
-      cssClass = (String) parameters.get("class");
-      if (cssClass != null)
+      cssClass = parameters.get("class");
+      if (cssClass != null) {
         cssClass = "class=\"" + cssClass + "\"";
+      }
     }
 
     String defaultValue =
@@ -199,13 +203,13 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer {
     } else if (template.isReadOnly()) {
       textInput.setReadOnly(true);
     }
-    if (StringUtil.isDefined(cssClass))
+    if (StringUtil.isDefined(cssClass)) {
       textInput.setClass(cssClass);
+    }
 
     img image = null;
-    if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
-        !template.isHidden() && pageContext.
-        useMandatory()) {
+    if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly()
+        && !template.isHidden() && pageContext.useMandatory()) {
       image = new img();
       image.setSrc(Util.getIcon("mandatoryField"));
       image.setWidth(5);
@@ -244,7 +248,7 @@ public class TextFieldDisplayer extends AbstractFieldDisplayer {
   public List<String> update(String newValue, Field field, FieldTemplate template,
       PagesContext pagesContext)
       throws FormException {
-    if (!field.getTypeName().equals(TextField.TYPE)) {
+    if (!TextField.TYPE.equals(field.getTypeName())) {
       throw new FormException("TextFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
           TextField.TYPE);
     }
