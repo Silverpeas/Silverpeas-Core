@@ -31,27 +31,13 @@
   <head>
     <title>Infos</title>
     <link href="<c:url value="/style.css" />" rel="stylesheet" type="text/css">
-
-<!--[if lt IE 8]>
-<style>
-input{
-	background-color:#FAFAFA;
-	border:1px solid #DAD9D9;
-	width:448px;
-	text-align:left;
-    margin-left:-10px;
-    height:26px;
-    line-height:24px;
-    padding:0px 60px;
-    display:block;
-    padding:0px;
-}
-</style>
-<![endif]-->
-  
+    <style type="text/css">
+    	.titre {
+			left:490px;
+		}
+    </style>  
   </head>
   <body>
-    <div id="top"></div>
     <div class="page">
       <div class="titre">Information</div>
       <div id="background">
@@ -61,11 +47,9 @@ input{
             <p class="information">Silverpeas version is <b><c:out value="${initParam.SILVERPEAS_VERSION}" /></b></p>
           </div>
           <p class="information">
-            Silverpeas is running on <b><c:out value="${pageContext.servletContext.serverInfo}" /></b> with the version <b><c:out value="${pageContext.servletContext.majorVersion}" />.<c:out value="${pageContext.servletContext.minorVersion}" /></b> of the Servlet API.<br/>
-            The server is running on <b><%=System.getProperty("os.name") %><%=System.getProperty("os.version")%> <%=System.getProperty("os.arch")%></b> with the version <b><%=System.getProperty("java.vm.name")%> <%=System.getProperty("java.vm.version")%> by <%=System.getProperty("java.vm.vendor")%></b><br/>
+            Silverpeas is running on <b><c:out value="${pageContext.servletContext.serverInfo}" /></b> with the version <b><c:out value="${pageContext.servletContext.majorVersion}" />.<c:out value="${pageContext.servletContext.minorVersion}" /></b> of the Servlet API.<br/><br/>
+            The server is running on <b><%=System.getProperty("os.name") %><%=System.getProperty("os.version")%> <%=System.getProperty("os.arch")%></b> with the version <b><%=System.getProperty("java.vm.name")%> <%=System.getProperty("java.vm.version")%> by <%=System.getProperty("java.vm.vendor")%></b><br/><br/>
             Silverpeas is running with the following configuration:<br/><i><%=System.getenv("JAVA_OPTS")%></i></p>
-
-
         </div></div>
     </div>
   </body>
