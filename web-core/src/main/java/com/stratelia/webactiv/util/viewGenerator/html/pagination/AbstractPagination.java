@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.viewGenerator.html.pagination;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -29,6 +28,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 public abstract class AbstractPagination implements Pagination {
+
   private int nbItems = -1; // the total number of items to paginate
   private int nbItemsPerPage = -1; // the number of items displayed by page
   private int firstItemIndex = -1; // the first item's index displayed
@@ -79,8 +79,9 @@ public abstract class AbstractPagination implements Pagination {
 
   public int getLastItemIndex() {
     int end = getFirstItemIndex() + getNbItemsPerPage();
-    if (end > getNbItems() - 1)
+    if (end > getNbItems() - 1) {
       end = getNbItems();
+    }
     return end;
   }
 
@@ -88,19 +89,20 @@ public abstract class AbstractPagination implements Pagination {
     int currentPage = (getFirstItemIndex() + 1) / getNbItemsPerPage();
     SilverTrace.info("viewgenerator", "AbstractPagination.getCurrentPage()",
         "root.MSG_GEN_PARAM_VALUE", "currentPage = " + currentPage);
-
-    if (currentPage == 0)
+    if (currentPage == 0) {
       currentPage = 1;
-    else
+    } else {
       currentPage++;
+    }
 
     return currentPage;
   }
 
   public int getNbPage() {
     int nbPage = (getNbItems() / getNbItemsPerPage());
-    if ((getNbItems() % getNbItemsPerPage()) != 0)
+    if ((getNbItems() % getNbItemsPerPage()) != 0) {
       nbPage++;
+    }
     SilverTrace.info("viewgenerator", "AbstractPagination.getNbPage()",
         "root.MSG_GEN_PARAM_VALUE", "nbPage = " + nbPage);
     return nbPage;

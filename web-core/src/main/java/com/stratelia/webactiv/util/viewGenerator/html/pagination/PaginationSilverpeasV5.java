@@ -21,42 +21,46 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.viewGenerator.html.pagination;
 
 public class PaginationSilverpeasV5 extends AbstractPagination {
+
   public PaginationSilverpeasV5() {
     super();
   }
 
+  @Override
   public void init(int nbItems, int nbItemsPerPage, int firstItemIndex) {
     super.init(nbItems, nbItemsPerPage, firstItemIndex);
   }
 
+  @Override
   public String printCounter() {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
     if (getNbItems() <= getNbItemsPerPage()) {
       result.append(getNbItems()).append(" ");
     } else {
       int end = getFirstItemIndex() + getNbItemsPerPage();
-      if (end > getNbItems())
+      if (end > getNbItems()) {
         end = getNbItems();
-      result.append(getFirstItemIndex() + 1).append(" - ").append(end).append(
-          " / ").append(getNbItems()).append(" ");
+      }
+      result.append(getFirstItemIndex() + 1).append(" - ").append(end).append(" / ").append(
+          getNbItems()).append(" ");
     }
     return result.toString();
   }
 
+  @Override
   public String printIndex() {
     return printIndex(null);
   }
 
+  @Override
   public String printIndex(String javascriptFunc) {
-    StringBuffer result = new StringBuffer();
-
+    StringBuilder result = new StringBuilder();
     if (getNbItems() > 0 && getNbItems() > getNbItemsPerPage()) {
-      result
-          .append("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" align=\"center\">");
+      result.append(
+          "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" align=\"center\">");
       result.append("<tr valign=\"middle\" class=\"intfdcolor\">");
       result.append("<td align=\"center\">");
 
@@ -72,31 +76,32 @@ public class PaginationSilverpeasV5 extends AbstractPagination {
         index = getIndexForPreviousPage();
 
         // formatage du lien de la source de la balise href
-        if (javascriptFunc == null)
+        if (javascriptFunc == null) {
           result.append(" <a href=\"").append(action).append("?Index=").append(
               index);
-        else
+        } else {
           result.append(" <a href=\"").append("javascript:onClick=").append(
               javascriptFunc).append("(").append(index).append(")");
+        }
 
         result.append("\"><img src=\"").append(getIconsPath()).append(
-            "/arrows/arrowLeft.gif\" border=\"0\" align=\"absmiddle\" alt=\"")
-            .append(altPreviousPage).append("\"/></a> ");
+            "/arrows/arrowLeft.gif\" border=\"0\" align=\"absmiddle\" alt=\"").append(
+            altPreviousPage).append("\"/></a> ");
       } else {
         result.append("&#160;&#160;&#160;");
       }
       for (int i = 1; i <= nbPage; i++) {
-        if (i == currentPage)
+        if (i == currentPage) {
           result.append(" ").append(i).append(" ");
-        else {
+        } else {
           index = getIndexForDirectPage(i);
           // formatage du lien de la source de la balise href
-          if (javascriptFunc == null)
-            result.append(" <a href=\"").append(action).append("?Index=")
-                .append(index);
-          else
+          if (javascriptFunc == null) {
+            result.append(" <a href=\"").append(action).append("?Index=").append(index);
+          } else {
             result.append(" <a href=\"").append("javascript:onClick=").append(
                 javascriptFunc).append("(").append(index).append(")");
+          }
           result.append("\">").append(i).append("</a> ");
         }
       }
@@ -104,16 +109,17 @@ public class PaginationSilverpeasV5 extends AbstractPagination {
         index = getIndexForNextPage();
 
         // formatage du lien de la source de la balise href
-        if (javascriptFunc == null)
+        if (javascriptFunc == null) {
           result.append(" <a href=\"").append(action).append("?Index=").append(
               index);
-        else
+        } else {
           result.append(" <a href=\"").append("javascript:onClick=").append(
               javascriptFunc).append("(").append(index).append(")");
+        }
 
         result.append("\"><img src=\"").append(getIconsPath()).append(
-            "/arrows/arrowRight.gif\" border=\"0\" align=\"absmiddle\" alt=\"")
-            .append(altNextPage).append("\"/></a>");
+            "/arrows/arrowRight.gif\" border=\"0\" align=\"absmiddle\" alt=\"").append(altNextPage).
+            append("\"/></a>");
       } else {
         result.append("&#160;&#160;&#160;");
       }
@@ -124,6 +130,7 @@ public class PaginationSilverpeasV5 extends AbstractPagination {
     return result.toString();
   }
 
+  @Override
   public String print() {
     return printIndex();
   }
