@@ -42,6 +42,7 @@ import java.util.ResourceBundle;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourceBundleWrapper;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -357,7 +358,7 @@ public class ResourceLocator implements Serializable {
         if (object != null) {
           SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
               "Calling getClass for object '" + object + "'");
-          Class clazz = object.getClass();
+          Class<?> clazz = object.getClass();
           SilverTrace.debug("util", "ResourceLocator.getResourceAsStream",
               "calling getResourceAsStream(" + configFile + ")");
           inputStream = clazz.getResourceAsStream(configFile);
@@ -399,13 +400,12 @@ public class ResourceLocator implements Serializable {
 
   private static URL locateResource(Object o, Locale loc, String ConfigFile,
       String Extension) {
-    Locale lloc = null;
+    Locale lloc;
     if (loc == null) {
       lloc = Locale.getDefault();
     } else {
       lloc = loc;
     }
-
     String lang = lloc.getLanguage();
     String var = lloc.getVariant();
     String country = lloc.getCountry();
@@ -415,19 +415,16 @@ public class ResourceLocator implements Serializable {
 
   private static InputStream locateResourceAsStream(Object o, Locale loc,
       String configFile, String extension) {
-    Locale lloc = null;
+    Locale lloc;
     if (loc == null) {
       lloc = Locale.getDefault();
     } else {
       lloc = loc;
     }
-
     String lang = lloc.getLanguage();
     String var = lloc.getVariant();
     String country = lloc.getCountry();
-
-    InputStream is = locateResourceAsStream(o, configFile, extension, lang,
-        country, var);
+    InputStream is = locateResourceAsStream(o, configFile, extension, lang, country, var);
     return (is);
   }
 
@@ -435,12 +432,12 @@ public class ResourceLocator implements Serializable {
    * This method returns the URL of a resource file. The algorithm to find it is the same as for
    * getBundle()
    */
-  private static URL locateResource(Object object, String configFile,
-      String extension, String lang, String country, String var) {
+  private static URL locateResource(Object object, String configFile, String extension, String lang,
+      String country, String var) {
     URL url = null;
     boolean vardone = false;
     if (object != null) {
-      Class clazz = object.getClass();
+      Class<?> clazz = object.getClass();
       if (clazz != null) {
         String fileName = configFile + "_" + lang + "_" + country;
         if (StringUtil.isDefined(var)) {
@@ -481,28 +478,21 @@ public class ResourceLocator implements Serializable {
    * This method returns an input stream on a resource file. The algorithm to find it is the same as
    * for getBundle()
    */
-  private static InputStream locateResourceAsStream(Object o,
-      String configFile, String fileExtension, String lang, String country,
-      String var) {
+  private static InputStream locateResourceAsStream(Object o, String configFile,
+      String fileExtension, String lang, String country, String var) {
     SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-        "Starting with args:Object = " + o + ", ConfigFile=" + configFile
-        + ", extension=" + fileExtension + ", lang=" + lang + ", country="
-        + country + ", var =" + var);
-
+        "Starting with args:Object = " + o + ", ConfigFile=" + configFile + ", extension="
+        + fileExtension + ", lang=" + lang + ", country=" + country + ", var =" + var);
     if (o == null) {
       SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
           "o is null. returning immediately.");
       return null;
     }
-
-    Class clazz = o.getClass();
+    Class<?> clazz = o.getClass();
     if (clazz == null) {
-      SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-          "getClass() returned null");
+      SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream", "getClass() returned null");
       return null;
     }
-
-    InputStream is = null;
     boolean vardone = false;
     String fileName = configFile + "_" + lang;
     if (StringUtil.isDefined(country)) {
@@ -512,63 +502,52 @@ public class ResourceLocator implements Serializable {
         vardone = true;
       }
     } else {
-      SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-          "no country specified");
+      SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream", "no country specified");
     }
 
     if (vardone) {
-      is = getConfigurationFileInputStream(clazz, fileName, fileExtension);
+      InputStream is = loadResourceAsStream(clazz, fileName, fileExtension);
       if (is != null) {
         return is;
       }
     }
+
     fileName = configFile + "_" + lang;
     SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
         "calling getResourceAsStream", fileName);
-
-    is = getConfigurationFileInputStream(clazz, configFile + "_" + lang, fileExtension);
+    InputStream is = loadResourceAsStream(clazz, configFile + "_" + lang, fileExtension);
     if (is != null) {
       return is;
     }
-    return getConfigurationFileInputStream(clazz, configFile, fileExtension);
+
+    return loadResourceAsStream(clazz, configFile, fileExtension);
   }
 
-  private static InputStream getConfigurationFileInputStream(Class clazz, String configFile,
+  private static InputStream loadResourceAsStream(Class<?> clazz, String configFile,
       String fileExtension) {
-    String fileName = configFile;
-    SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-        "calling getResourceAsStream", fileName);
+    InputStream is = loadResourceAsStream(clazz, configFile);
+    if (is == null) {
+      String fileName = configFile + fileExtension;
+      is = loadResourceAsStream(clazz, fileName);
+      if (is == null) {
+        fileName = clazz.getPackage().getName().replace('.', '/')  + '/' + fileName;
+        is = loadResourceAsStream(clazz, fileName);
+      }
+    }
+    return is;
+  }
 
+  private static InputStream loadResourceAsStream(Class<?> clazz, String fileName) {
     InputStream is = clazz.getResourceAsStream(fileName);
     if (is != null) {
-      SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream", "found resource",
-          fileName);
+      SilverTrace.debug("util", "ResourceLocator.getFileInputStream", "found resource", fileName);
       return is;
     }
     is = loader.getResourceAsStream(fileName);
     if (is != null) {
-      SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream", "found resource",
-          fileName);
-      return is;
+      SilverTrace.debug("util", "ResourceLocator.getFileInputStream", "found resource", fileName);
     }
-    fileName = fileName + fileExtension;
-    SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-        "calling getResourceAsStream (with extension)", fileName);
-    is = clazz.getResourceAsStream(fileName);
-    if (is != null) {
-      SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-          "found resource", fileName);
-      return (is);
-    }
-    is = loader.getResourceAsStream(fileName);
-    if (is != null) {
-      SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-          "found resource", fileName);
-      return (is);
-    }
-    SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
-        "Could not find resource", fileName);
-    return null;
+    return is;
   }
 
   private static InputStream getPrivileged(final ClassLoader l, final String s) {
