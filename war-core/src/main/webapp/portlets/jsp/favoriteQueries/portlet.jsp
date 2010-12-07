@@ -55,7 +55,7 @@ else
 		InterestCenter ic = (InterestCenter) queries.next();
 		if (j == 0)
 			out.println("<tr>");
-		out.println("<td width='50%'>&#149; <a href='" + icLink + ic.getId() + "'>" + EncodeHelper.convertHTMLEntities(ic.getName()) + "</a></td>");
+		out.println("<td width='50%'>&#149; <a href='" + icLink + ic.getId() + "'>" + ic.getName() + "</a></td>");
 		if (j != 0)
 		{
 			out.println("</tr>");
