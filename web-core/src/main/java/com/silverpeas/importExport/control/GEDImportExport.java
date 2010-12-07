@@ -64,7 +64,6 @@ import com.silverpeas.publication.importExport.PublicationContentType;
 import com.silverpeas.publication.importExport.XMLModelContentType;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.util.StringUtil;
@@ -418,50 +417,52 @@ public abstract class GEDImportExport extends ComponentImportExport {
       xmlField = (XMLField) xmlFields.get(f);
       xmlFieldName = xmlField.getName();
       xmlFieldValue = xmlField.getValue();
-      field = data.getField(xmlFieldName);
-      if (field != null) {
-        FieldTemplate fieldTemplate = pub.getRecordTemplate().getFieldTemplate(xmlFieldName);
-        if (fieldTemplate != null) {
-          FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(
-                  field.getTypeName(), fieldTemplate.getDisplayerName());
-          if (field.getTypeName().equals(FileField.TYPE)) {
-            String context = null;
-            if (fieldTemplate.getDisplayerName().equals("image")) {
-              context = "XMLFormImages";
+      try {
+        field = data.getField(xmlFieldName);
+        if (field != null) {
+          FieldTemplate fieldTemplate = pub.getRecordTemplate().getFieldTemplate(xmlFieldName);
+          if (fieldTemplate != null) {
+            FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(
+                    field.getTypeName(), fieldTemplate.getDisplayerName());
+            if (field.getTypeName().equals(FileField.TYPE) && StringUtil.isDefined(xmlFieldValue)) {
+              String context = "Images";
+              if (fieldTemplate.getDisplayerName().equals("image")) {
+                context = "XMLFormImages";
+              }
+
+              String imagePath = xmlFieldValue;
+              String imageName = imagePath.substring(imagePath.lastIndexOf(File.separator) + 1,
+                  imagePath.length());
+              String imageExtension = FileRepositoryManager.getFileExtension(imagePath);
+              String imageMimeType = AttachmentController.getMimeType(imagePath);
+
+              String physicalName = new Long(new Date().getTime()).toString() + "." + imageExtension;
+
+              String path = AttachmentController.createPath(getCurrentComponentId(), context);
+              FileRepositoryManager.copyFile(imagePath, path + physicalName);
+              File file = new File(path + physicalName);
+              long size = file.length();
+
+              if (size > 0) {
+                AttachmentDetail ad = createAttachmentDetail(pubId, getCurrentComponentId(),
+                    physicalName, imageName, imageMimeType, size, context, userId);
+                ad = AttachmentController.createAttachment(ad, true);
+                fieldValue = ad.getPK().getId();
+              } else {
+                // le fichier a tout de même été créé sur le serveur avec une taille 0!,
+                // il faut le supprimer
+                FileFolderManager.deleteFolder(path + physicalName);
+              }
             } else {
-              context = "Images";
+              fieldValue = xmlFieldValue;
             }
 
-            String imagePath = xmlFieldValue;
-            String imageName = imagePath.substring(imagePath.lastIndexOf(File.separator) + 1,
-                imagePath.length());
-            String imageExtension = FileRepositoryManager.getFileExtension(imagePath);
-            String imageMimeType = AttachmentController.getMimeType(imagePath);
-
-            String physicalName = new Long(new Date().getTime()).toString() + "." + imageExtension;
-
-            String path = AttachmentController.createPath(getCurrentComponentId(), context);
-            FileRepositoryManager.copyFile(imagePath, path + physicalName);
-            File file = new File(path + physicalName);
-            long size = file.length();
-
-            if (size > 0) {
-              AttachmentDetail ad = createAttachmentDetail(pubId, getCurrentComponentId(),
-                  physicalName, imageName, imageMimeType, size, context, userId);
-              ad = AttachmentController.createAttachment(ad, true);
-              fieldValue = ad.getPK().getId();
-            } else {
-              // le fichier Ã  tout de mÃªme Ã©tÃ© crÃ©Ã© sur le serveur avec une taille 0!, il faut
-              // le
-              // supprimer
-              FileFolderManager.deleteFolder(path + physicalName);
-            }
-          } else {
-            fieldValue = xmlFieldValue;
+            fieldDisplayer.update(fieldValue, field, fieldTemplate, new PagesContext());
           }
-
-          fieldDisplayer.update(fieldValue, field, fieldTemplate, new PagesContext());
         }
+      } catch (Exception e) {
+        SilverTrace.warn("importExport", "GEDImportExport.createXMLModelContent",
+            "importExport.EX_CANT_IMPORT_XML_FIELD", "xmlField = " + xmlFieldName, e);
       }
     }
     set.save(data);
