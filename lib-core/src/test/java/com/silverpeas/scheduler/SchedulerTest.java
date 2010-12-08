@@ -116,7 +116,7 @@ public class SchedulerTest {
   }
 
   @Test
-  public void schedulingEveryMinuteAJobExecutionShouldSendAnExecutionEventAtExpectedTime()
+  public void schedulingEveryTimeAJobExecutionShouldSendAnExecutionEventAtTheExpectedTime()
       throws Exception {
     JobTrigger trigger = JobTrigger.triggerEvery(1, TimeUnit.SECOND);
     ScheduledJob job = scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
@@ -170,7 +170,7 @@ public class SchedulerTest {
   }
 
   @Test
-  public void schedulingEveryMinutesAJobShouldRunThatJobAtTheExpectedTime() throws Exception {
+  public void schedulingEveryTimeAJobShouldRunThatJobAtTheExpectedTime() throws Exception {
     JobTrigger trigger = JobTrigger.triggerEvery(1, TimeUnit.SECOND);
     ScheduledJob job = scheduler.scheduleJob(new Job(JOB_NAME) {
 
@@ -206,7 +206,7 @@ public class SchedulerTest {
     assertEquals(JOB_NAME, job.getName());
     assertEquals(eventHandler, job.getSchedulerEventListener());
     assertEquals(trigger, job.getTrigger());
-    await().atMost(10, MINUTES).until(jobIsExecuted());
+    await().atMost(1, MINUTES).until(jobIsExecuted());
     assertTrue(eventHandler.isJobSucceeded());
   }
 
@@ -257,7 +257,7 @@ public class SchedulerTest {
   public void schedulingWithDayOfMonthAndDayOfWeekBothSetShouldThrowAnException() throws Exception {
     try {
       String cron = "* * 24 * 3";
-      JobTrigger trigger = JobTrigger.triggerAt(cron);
+      JobTrigger.triggerAt(cron);
       fail("A SchedulerException should be thrown!");
     } catch (ParseException ex) {
       assertEquals("Support for specifying both a day-of-week AND a day-of-month parameter is not "

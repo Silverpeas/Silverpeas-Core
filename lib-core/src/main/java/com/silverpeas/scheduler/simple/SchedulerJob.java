@@ -447,7 +447,7 @@ abstract public class SchedulerJob
           "This scheduler backend doesn't support yet the range and the increment instructions "
           + "in cron expressions");
     }
-    aCronString.replaceAll("\\?", "*");
+    aCronString = aCronString.replaceAll("\\?", "*");
 
     // Reset current values
     vMinutes = new ArrayList<Integer>();

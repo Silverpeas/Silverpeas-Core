@@ -235,7 +235,7 @@ public class QuartzScheduler
       if (eventListener == null) {
         try {
           job.execute(context);
-        } catch (Throwable ex) {
+        } catch (Exception ex) {
           SilverTrace.error(MODULE_NAME, QuartzScheduler.class.getName(), ex.getMessage(), ex);
         }
       } else {
@@ -243,10 +243,10 @@ public class QuartzScheduler
           eventListener.triggerFired(SchedulerEvent.triggerFired(context));
           job.execute(context);
           eventListener.jobSucceeded(SchedulerEvent.jobSucceeded(context));
-        } catch (Throwable ex) {
+        } catch (Exception ex) {
           try {
             eventListener.jobFailed(SchedulerEvent.jobFailed(context, ex));
-          } catch (Throwable e) {
+          } catch (Exception e) {
             SilverTrace.error(MODULE_NAME, QuartzScheduler.class.getName(), e.getMessage(), ex);
           }
         }
