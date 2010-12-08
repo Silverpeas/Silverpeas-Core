@@ -156,7 +156,7 @@ public class ImportExport {
       Marshaller mar = new Marshaller(writer);
       // URI du schéma et chemin du fichier XSD associé.
       String xsdPublicId = settings.getString("xsdPublicId");
-      String xsdSystemId = settings.getString("xsdSystemId");
+      String xsdSystemId = settings.getString("xsdDefaultSystemId");
       mar.setSchemaLocation(xsdPublicId + " " + xsdSystemId);
       mar.setNamespaceMapping("sp", xsdPublicId);
       mar.setEncoding("UTF-8");
