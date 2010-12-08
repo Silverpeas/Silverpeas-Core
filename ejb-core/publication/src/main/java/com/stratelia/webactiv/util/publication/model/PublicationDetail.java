@@ -38,6 +38,7 @@ import com.silverpeas.formTemplate.ejb.FormTemplateBmHome;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
@@ -612,7 +613,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
 
   public String getImage() {
 	  try{
-		  if(getPK() != null && getPK().getInstanceId() != null && getPK().getId() != null){
+		  if(getPK() != null && getPK().getInstanceId() != null && getPK().getId() != null && StringUtil.isInteger( getPK().getId())){
 			  ThumbnailDetail thumbDetail = new ThumbnailDetail(getPK().getInstanceId(), Integer.valueOf(getPK().getId()), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
 			  // default size if creation
 			  String[] imageProps = ThumbnailController.getImageAndMimeType(thumbDetail, -1, -1);
