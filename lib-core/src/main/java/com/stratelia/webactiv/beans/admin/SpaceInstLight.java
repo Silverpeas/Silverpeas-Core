@@ -58,15 +58,11 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
   private int createdBy = -1;
   private int updatedBy = -1;
   private int removedBy = -1;
-
   private String creatorName = null;
   private String updaterName = null;
   private String removerName = null;
-
   private String look = null;
-
   private List<SpaceInstLight> path = null;
-
   private boolean displaySpaceFirst = true;
   private boolean isPersonalSpace = false;
 
@@ -88,12 +84,15 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
       setFatherId(spaceRow.domainFatherId);
       description = spaceRow.description;
       orderNum = spaceRow.orderNum;
-      if (spaceRow.createTime != null)
+      if (spaceRow.createTime != null) {
         createDate = new Date(Long.parseLong(spaceRow.createTime));
-      if (spaceRow.updateTime != null)
+      }
+      if (spaceRow.updateTime != null) {
         updateDate = new Date(Long.parseLong(spaceRow.updateTime));
-      if (spaceRow.removeTime != null)
+      }
+      if (spaceRow.removeTime != null) {
         removeDate = new Date(Long.parseLong(spaceRow.removeTime));
+      }
       status = spaceRow.status;
 
       createdBy = spaceRow.createdBy;
@@ -160,20 +159,22 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
       return GeneralPropertiesManager.getGeneralMultilang(language).getString("GML.personalSpace",
           "Mon espace");
     } else {
-      if (!I18NHelper.isI18N)
+      if (!I18NHelper.isI18N) {
         return getName();
+      }
 
       SpaceI18N s = (SpaceI18N) getTranslations().get(language);
-      if (s == null)
+      if (s == null) {
         s = (SpaceI18N) getNextTranslation();
+      }
+      if (s != null) {
+        return s.getName();
+      }
+      return getName();
 
-      return s.getName();
     }
   }
 
-  /**
-   * @param string
-   */
   public void setFatherId(int fatherId) {
     this.fatherId = new Integer(fatherId).toString();
   }
@@ -182,9 +183,6 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
     this.fatherId = fatherId;
   }
 
-  /**
-   * @param string
-   */
   public void setId(int id) {
     this.id = new Integer(id).toString();
   }
@@ -286,9 +284,9 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
     if (path != null) {
       SpaceInstLight space = null;
       for (int i = 0; i < path.size(); i++) {
-        if (i > 0)
+        if (i > 0) {
           sPath += separator;
-
+        }
         space = path.get(i);
         sPath += space.getName();
       }
@@ -346,5 +344,4 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
     SpaceInstLight other = (SpaceInstLight) obj;
     return Objects.equal(getFullId(), other.getFullId());
   }
-
 }
