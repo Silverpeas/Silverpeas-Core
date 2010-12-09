@@ -254,47 +254,47 @@ public class LDAPUtility {
     String sureFilter;
     LDAPSearchConstraints sc = ld.getSearchConstraints();
 
-    try {
-      if ((filter == null) || (filter.length() == 0)) {
-        sureFilter = "(objectClass=*)";
-      } else {
-        sureFilter = filter;
-      }
-      // Return only one entry
-      sc.setBatchSize(1);
-      sc.setMaxResults(1);
-      SilverTrace.debug("admin", "LDAPUtility.getFirstEntryFromSearch()",
+    if (!StringUtil.isDefined(filter)) {
+      sureFilter = "(objectClass=*)";
+    } else {
+      sureFilter = filter;
+    }
+    // Return only one entry
+    sc.setBatchSize(1);
+    sc.setMaxResults(1);
+    SilverTrace.debug("admin", "LDAPUtility.getFirstEntryFromSearch()",
           "LDAP query", "BaseDN=" + baseDN + " scope="
-          + Integer.toString(scope) + " Filter=" + sureFilter);
-      // SynchroReport.debug("LDAPUtility.getFirstEntryFromSearch()",
-      // "Requête LDAP : BaseDN="+baseDN+" scope="+Integer.toString(scope)+" Filter="+sureFilter,null);
-      // Modif LBE : as more than on baseDN can be set, iterate on all baseDNs
-      // and stop when first entry is found
-      String[] baseDNs = extractBaseDNs(baseDN);
-      for (int i = 0; i < baseDNs.length; i++) {
+              + Integer.toString(scope) + " Filter=" + sureFilter);
+    // SynchroReport.debug("LDAPUtility.getFirstEntryFromSearch()",
+    // "Requête LDAP : BaseDN="+baseDN+" scope="+Integer.toString(scope)+" Filter="+sureFilter,null);
+    // Modif LBE : as more than on baseDN can be set, iterate on all baseDNs
+    // and stop when first entry is found
+    String[] baseDNs = extractBaseDNs(baseDN);
+    for (int i = 0; i < baseDNs.length; i++) {
+      try {
         res = ld.search(baseDNs[i], scope, sureFilter, attrs, false, sc);
         if (res.hasMore()) {
           theEntry = res.next();
           SilverTrace.debug("admin", "LDAPUtility.getFirstEntryFromSearch()",
-              "Entry Founded : ", theEntry.getDN());
+                  "Entry Founded : ", theEntry.getDN());
           break;
         }
-      }
-    } catch (LDAPReferralException re) {
-      throw new AdminException("LDAPUtility.getFirstEntryFromSearch",
-          SilverpeasException.ERROR, "admin.EX_ERR_LDAP_REFERRAL", "#"
-          + Integer.toString(re.getResultCode()) + " "
-          + re.getLDAPErrorMessage(), re);
-    } catch (LDAPException e) {
-      if (LDAPUtility.recoverConnection(lds, e)) {
-        return getFirstEntryFromSearch(lds, baseDN, scope, filter, attrs);
-      } else {
+      } catch (LDAPReferralException re) {
         throw new AdminException("LDAPUtility.getFirstEntryFromSearch",
-            SilverpeasException.ERROR, "admin.EX_ERR_LDAP_GENERAL", "#"
-            + Integer.toString(e.getResultCode()) + " "
-            + e.getLDAPErrorMessage(), e);
+                SilverpeasException.ERROR, "admin.EX_ERR_LDAP_REFERRAL", "#"
+                    + Integer.toString(re.getResultCode()) + " "
+                    + re.getLDAPErrorMessage(), re);
+      } catch (LDAPException e) {
+        if (LDAPUtility.recoverConnection(lds, e)) {
+          return getFirstEntryFromSearch(lds, baseDN, scope, filter, attrs);
+        } else {
+          SilverTrace.error("admin", "LDAPUtility.getFirstEntryFromSearch()",
+              "admin.EX_ERR_LDAP_GENERAL", "#" + Integer.toString(e.getResultCode())
+                  + " " + e.getLDAPErrorMessage(), e);
+        }
       }
     }
+    
     return theEntry;
   }
 
