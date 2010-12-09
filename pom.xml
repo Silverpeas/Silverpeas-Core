@@ -41,9 +41,9 @@
   </description>
 
   <scm>
-    <connection>scm:svn:https://www.silverpeas.org/svn/silverpeas/core/trunk</connection>
-    <developerConnection>scm:svn:https://www.silverpeas.org/svn/silverpeas/core/trunk</developerConnection>
-    <url>http://www.silverpeas.org/websvn/repos/Silverpeas/list/core/trunk/</url>
+    <connection>scm:svn:https://www.silverpeas.org/svn/silverpeas/core/tags/core-5.4</connection>
+    <developerConnection>scm:svn:https://www.silverpeas.org/svn/silverpeas/core/tags/core-5.4</developerConnection>
+    <url>http://www.silverpeas.org/websvn/repos/Silverpeas/list/core/tags/core-5.4</url>
   </scm>
 
   <repositories>
@@ -71,7 +71,7 @@
 
   <groupId>com.silverpeas</groupId>
   <artifactId>core</artifactId>
-  <version>5.4-SNAPSHOT</version>
+  <version>5.4</version>
   <packaging>pom</packaging>
   <name>Silverpeas Core</name>
 
