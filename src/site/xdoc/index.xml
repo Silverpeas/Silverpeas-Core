@@ -33,6 +33,36 @@
   <head>
   </head>
   <body>
+    <section name="Try Silverpeas easily">
+      <p>We provide an easy way to try Silverpeas using 
+        <a href="http://izpack.org/">
+          <img src="/images/izpack_logo.png" alt="izpack"/>
+        </a> with a pre-configured JBoss Server and an H2 Database.
+        <br/>
+        <b>You have to have a Java 6 JDK installed.</b>
+        <br/>
+        <b>This version is not suitable for production !</b>.
+      </p>
+      <ol>
+        <li>Download the 
+          <a href="http://www.silverpeas.org/files/Silverpeas-5.4-installer.jar">installer</a>
+        </li>
+        <li>Run the following command (or double click on the jar file) 
+          <code>java -jar Silverpeas-5.4-installer.jar</code>
+        </li>
+        <li>When all has been installed, go to the 
+          <code>bin</code> directory under the installation directory and run the following scripts in that order 
+          <ol>
+            <li>start_db.bat (thus starting the database).</li>
+            <li>silverpeas_start_jboss.cmd (to start Silverpeas)</li>
+          </ol>
+        </li>
+        <li>Now you can open a browser to 
+          <a href="http://localhost:8000/silverpeas">http://localhost:8000/silverpeas</a> an login using the account 
+          <i>SilverAdmin/SilverAdmin</i>
+        </li>
+      </ol>
+    </section> 
     <section name="Architecture">
       <p>Silverpeas functions in the Java J2EE environment. The WCM layer is used to publish public contents on the web and to build an Xnet platform, or Web 2.0 website.
         <br/>
@@ -68,13 +98,13 @@
       </subsection>
     </section>
     <section name="Operating Systems">
-      <p>Silverpeas operates under.</p>
+      <p>Silverpeas operates under</p>
       <ul>
         <li>Windows</li>
         <li>Mac</li>
         <li>Linux,</li>
         <li>with a relational database (SQL ANSI), and a Java EE application serveur.</li>
       </ul>
-    </section>
+    </section>   
   </body>
 </document>

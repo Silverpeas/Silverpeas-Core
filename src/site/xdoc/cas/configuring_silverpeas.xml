@@ -149,7 +149,7 @@
       </fieldset>
        <p>
         At last, to coclude the configuration you can setup a logout page for Silverpeas to be called after the logout has been performed by adding the
-        entry <code>logout.page</code to the file <i>$SILVERPEAS_HOME/properties/com/silverpeas/authentication/settings/authenticationSettings.properties</i> like this :
+        entry <code>logout.page</code> to the file <i>$SILVERPEAS_HOME/properties/com/silverpeas/authentication/settings/authenticationSettings.properties</i> like this :
       </p>
        <fieldset>
         <pre>
