@@ -647,6 +647,12 @@ public final class Admin extends Object {
       m_DDManager.commit();
 
       m_Cache.opUpdateSpace(spaceInstNew);
+      
+      // Update space in TreeCache
+      SpaceInstLight spaceLight =
+          m_SpaceInstManager.getSpaceInstLightById(m_DDManager, getDriverSpaceId(spaceInstNew
+              .getId()));
+      TreeCache.updateSpace(spaceLight);
 
       // indexation de l'espace
       SilverTrace.info(MODULE_ADMIN, "admin.updateSpaceInst",

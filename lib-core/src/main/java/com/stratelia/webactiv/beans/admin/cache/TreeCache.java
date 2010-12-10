@@ -26,6 +26,7 @@ package com.stratelia.webactiv.beans.admin.cache;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import java.util.concurrent.ConcurrentHashMap;
@@ -169,10 +170,10 @@ public class TreeCache {
     }
     return component;
   }
-  
-   public synchronized static SpaceInstLight getSpaceContainingComponent(String componentId) {
+
+  public synchronized static SpaceInstLight getSpaceContainingComponent(String componentId) {
     for (Space space : map.values()) {
-      if(space.containsComponent(componentId)) {
+      if (space.containsComponent(componentId)) {
         return space.getSpace();
       }
     }
@@ -185,6 +186,15 @@ public class TreeCache {
       return getSpacePath(component.getDomainFatherId());
     }
     return new ArrayList<SpaceInstLight>();
+  }
+
+  public synchronized static void updateSpace(SpaceInstLight spaceLight) {
+    if (spaceLight != null && StringUtil.isDefined(spaceLight.getFullId())) {
+      Space space = getSpace(spaceLight.getShortId());
+      if (space != null) {
+        space.setSpace(spaceLight);
+      }
+    }
   }
 
   private static synchronized Space getSpace(String spaceId) {

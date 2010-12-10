@@ -46,6 +46,7 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
 
 public class SpacesAndComponentsTest extends JndiBasedDBTestCase {
@@ -147,13 +148,20 @@ public class SpacesAndComponentsTest extends JndiBasedDBTestCase {
   @Test
   public void testUpdateSpace() {
     AdminController ac = getAdminController();
-    SpaceInst space = ac.getSpaceInstById("WA1");
+    String spaceId = "WA1";
+    SpaceInst space = ac.getSpaceInstById(spaceId);
+    assertNull(space.getDescription());
+    SpaceInstLight spaceLight = ac.getSpaceInstLight(spaceId);
+    assertNull(spaceLight.getDescription());
     String desc = "New description";
     space.setDescription(desc);
     ac.updateSpaceInst(space);
 
-    space = ac.getSpaceInstById("1");
+    space = ac.getSpaceInstById(spaceId);
     assertEquals(desc, space.getDescription());
+    
+    spaceLight = ac.getSpaceInstLight(spaceId);
+    assertEquals(desc, spaceLight.getDescription());
   }
 
   @Test
