@@ -149,13 +149,13 @@
     
     <upgrade version="017">
 	   <create_constraint>
-            <file name="oracle\publication\up017\create_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="oracle\publication\up017\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </create_constraint>
     </upgrade>
     
     <upgrade version="018">
 	   <create_constraint>
-            <file name="oracle\publication\up018\create_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+            <file name="oracle\publication\up018\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </create_constraint>
     </upgrade>
 
