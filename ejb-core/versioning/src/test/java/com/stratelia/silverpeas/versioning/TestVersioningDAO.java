@@ -23,11 +23,14 @@
  */
 package com.stratelia.silverpeas.versioning;
 
+import java.sql.Connection;
+import com.silverpeas.components.model.AbstractJndiCase;
+import com.silverpeas.components.model.SilverpeasJndiCase;
+import org.dbunit.database.IDatabaseConnection;
 import java.io.IOException;
 import javax.naming.NamingException;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import com.silverpeas.components.model.AbstractTestDao;
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.MimeTypes;
@@ -44,20 +47,26 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.junit.matchers.JUnitMatchers.*;
 
-public class TestVersioningDAO extends AbstractTestDao {
+public class TestVersioningDAO extends AbstractJndiCase {
 
   private static final String INSTANCE_ID = "kmelia60";
   private Date checkoutdate;
 
   @BeforeClass
-  public static void generalSetUp() throws IOException, NamingException {
-    AbstractTestDao.configureJNDIDatasource();
+  public static void generalSetUp() throws IOException, NamingException, Exception {
+    baseTest = new SilverpeasJndiCase(
+        "com/stratelia/silverpeas/versioning/test-versioning-dataset.xml",
+        "create-database.ddl");
+    baseTest.configureJNDIDatasource();
+    IDatabaseConnection databaseConnection = baseTest.getDatabaseTester().getConnection();
+    executeDDL(databaseConnection, baseTest.getDdlFile());
+    baseTest.getDatabaseTester().closeConnection(databaseConnection);
   }
-
+  
   @Before
   @Override
   public void setUp() throws Exception {
-    super.prepareData();
+    super.setUp();
     Calendar calend = Calendar.getInstance();
     calend.set(Calendar.YEAR, 2008);
     calend.set(Calendar.MONTH, Calendar.MAY);
@@ -69,15 +78,13 @@ public class TestVersioningDAO extends AbstractTestDao {
     checkoutdate = calend.getTime();
   }
 
-  @Override
-  protected String getDatasetFileName() {
-    return "test-versioning-dataset.xml";
-  }
 
   @Test
   public void testGetDocumentById() throws Exception {
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    Connection con = dataSetConnection.getConnection();
     DocumentPK pk = new DocumentPK(1, null, INSTANCE_ID);
-    Document doc = VersioningDAO.getDocument(getConnection().getConnection(), pk);
+    Document doc = VersioningDAO.getDocument(con, pk);
     assertNotNull(doc);
     assertEquals(pk, doc.getPk());
     assertEquals("SimpleDocument", doc.getName());
@@ -89,12 +96,15 @@ public class TestVersioningDAO extends AbstractTestDao {
     assertEquals(new ForeignPK("4", INSTANCE_ID), doc.getForeignKey());
     assertEquals(0, doc.getTypeWorkList());
     assertEquals(0, doc.getCurrentWorkListOrder());
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
   @Test
   public void testGetDocument() throws Exception {
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    Connection con = dataSetConnection.getConnection();
     DocumentPK pk = new DocumentPK(1, null, INSTANCE_ID);
-    Document doc = VersioningDAO.getDocument(getConnection().getConnection(), pk);
+    Document doc = VersioningDAO.getDocument(con, pk);
     assertNotNull(doc);
     assertEquals(pk, doc.getPk());
     assertEquals("SimpleDocument", doc.getName());
@@ -107,12 +117,15 @@ public class TestVersioningDAO extends AbstractTestDao {
     assertEquals(0, doc.getTypeWorkList());
     assertEquals(0, doc.getCurrentWorkListOrder());
     assertEquals(INSTANCE_ID, doc.getInstanceId());
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
   @Test
   public void testGetDocumentsByForeignKey() throws Exception {
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    Connection con = dataSetConnection.getConnection();
     ForeignPK fpk = new ForeignPK("4", INSTANCE_ID);
-    List<Document> docs = VersioningDAO.getDocuments(getConnection().getConnection(), fpk);
+    List<Document> docs = VersioningDAO.getDocuments(con, fpk);
     assertNotNull(docs);
     assertEquals(3, docs.size());
 
@@ -162,11 +175,14 @@ public class TestVersioningDAO extends AbstractTestDao {
     assertThat("Result shoud contain the document 1", docs, hasItem(doc1));
     assertThat("Result shoud contain the document 2", docs, hasItem(doc2));
     assertThat("Result shoud contain the document 3", docs, hasItem(doc3));
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
 
   }
 
   @Test
   public void testCreateNewDocument() throws Exception {
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    Connection con = dataSetConnection.getConnection();
     Document doc = new Document();
     doc.setPk(new DocumentPK(1, INSTANCE_ID));
     doc.setAdditionalInfo("Additional Infos");
@@ -196,14 +212,13 @@ public class TestVersioningDAO extends AbstractTestDao {
     initialVersion.setLogicalName("test.bin");
     initialVersion.setInstanceId(INSTANCE_ID);
 
-    DocumentPK pk = VersioningDAO.createDocument(getConnection().getConnection(), doc,
-        initialVersion);
+    DocumentPK pk = VersioningDAO.createDocument(con, doc, initialVersion);
     doc.setPk(pk);
     doc.setOwnerId(-1);
 
-    Document result = VersioningDAO.getDocument(getConnection().getConnection(), pk);
+    Document result = VersioningDAO.getDocument(con, pk);
 
     assertEquals(doc, result);
-
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 }
