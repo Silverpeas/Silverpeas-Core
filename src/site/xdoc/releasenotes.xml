@@ -40,12 +40,22 @@
         <ul>
           <li>
             <a href="releases/Silverpeas V5.0.pdf">Silverpeas 5.0 release notes</a>
+          </li>
+          <li>
             <a href="releases/Silverpeas V5.1.pdf">Silverpeas 5.1 release notes</a>
+          </li>
+          <li>
             <a href="releases/Silverpeas V5.2.pdf">Silverpeas 5.2 release notes</a>
+          </li>
+          <li>
             <a href="releases/Silverpeas V5.3.pdf">Silverpeas 5.3 release notes</a>
+          </li>
+          <li>
             <a href="releases/Silverpeas V5.4.pdf">Silverpeas 5.4 release notes</a>
           </li>
-        </ul>
-      </fieldset>
-    </body>
-  </document>
+        </li>
+      </ul>
+    </fieldset>
+  </section>
+</body>
+</document>
