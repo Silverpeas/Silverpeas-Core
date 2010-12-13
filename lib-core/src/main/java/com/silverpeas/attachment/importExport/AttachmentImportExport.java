@@ -42,6 +42,7 @@ import com.silverpeas.form.AbstractForm;
 import com.silverpeas.form.importExport.FormTemplateImportExport;
 import com.silverpeas.form.importExport.XMLModelContentType;
 import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
@@ -70,10 +71,10 @@ public class AttachmentImportExport {
    * chemin physique du fichier importe)
    * @param attachmentDetail - objet contenant les details necessaires a la creation du fichier
    * importe et a sa liaison avec la publication
-   * @throws AttachmentException
+   * @param indexIt 
    */
-  public void importAttachment(String pubId, String componentId,
-      AttachmentDetail attachmentDetail, boolean indexIt) {
+  public void importAttachment(String pubId, String componentId, AttachmentDetail attachmentDetail,
+      boolean indexIt) {
     importAttachment(pubId, componentId, attachmentDetail, indexIt, true);
   }
 
@@ -81,18 +82,20 @@ public class AttachmentImportExport {
       AttachmentDetail attachmentDetail, boolean indexIt,
       boolean updateLogicalName) {
     this.copyFile(componentId, attachmentDetail, updateLogicalName);
-    if (attachmentDetail.getSize() > 0)
+    if (attachmentDetail.getSize() > 0) {
       this.addAttachmentToPublication(pubId, componentId, attachmentDetail,
           AbstractForm.CONTEXT_FORM_FILE, indexIt);
+    }
   }
 
   public AttachmentDetail importWysiwygAttachment(String pubId,
       String componentId, AttachmentDetail attachmentDetail, String context) {
     AttachmentDetail a_detail = null;
     this.copyFileWysiwyg(componentId, attachmentDetail, context);
-    if (attachmentDetail.getSize() > 0)
+    if (attachmentDetail.getSize() > 0) {
       a_detail = this.addAttachmentToPublication(pubId, componentId,
           attachmentDetail, context, false);
+    }
     return a_detail;
   }
 
@@ -108,8 +111,9 @@ public class AttachmentImportExport {
     for (AttachmentDetail attDetail : copiedAttachments) {
       attDetail.setAuthor(userId);
       XMLModelContentType xmlContent = attDetail.getXMLModelContentType();
-      if (xmlContent != null)
+      if (xmlContent != null) {
         attDetail.setXmlForm(xmlContent.getName());
+      }
 
       this.addAttachmentToPublication(pubId, componentId, attDetail,
           AbstractForm.CONTEXT_FORM_FILE, indexIt);
@@ -117,11 +121,11 @@ public class AttachmentImportExport {
       // Store xml content
       try {
         if (xmlContent != null) {
-          if (xmlIE == null)
+          if (xmlIE == null) {
             xmlIE = new FormTemplateImportExport();
+          }
 
-          ForeignPK pk = new ForeignPK(attDetail.getPK().getId(), attDetail
-              .getPK().getInstanceId());
+          ForeignPK pk = new ForeignPK(attDetail.getPK().getId(), attDetail.getPK().getInstanceId());
           xmlIE.importXMLModelContentType(pk, "Attachment", xmlContent,
               attDetail.getAuthor());
         }
@@ -134,14 +138,14 @@ public class AttachmentImportExport {
     return copiedAttachments;
   }
 
-  private AttachmentDetail copyFile(String componentId,
-      AttachmentDetail a_Detail, boolean updateLogicalName) {
+  private AttachmentDetail copyFile(String componentId, AttachmentDetail a_Detail,
+      boolean updateLogicalName) {
     String path = getPath(componentId);
     return copyFile(componentId, a_Detail, path, updateLogicalName);
   }
 
-  private AttachmentDetail copyFileWysiwyg(String componentId,
-      AttachmentDetail a_Detail, String context) {
+  private AttachmentDetail copyFileWysiwyg(String componentId, AttachmentDetail a_Detail,
+      String context) {
     String path = getPathWysiwyg(componentId, context);
     a_Detail.setContext(context);
     return copyFile(componentId, a_Detail, path);
@@ -164,18 +168,16 @@ public class AttachmentImportExport {
   }
 
   /**
-   * M�thode de copie de fichier utilis�e par la m�thode
+   * Methode de copie de fichier utilisee par la methode
    * importAttachement(String,String,AttachmentDetail)
-   * @param componentId - id du composant contenant la publication � laquelle est destin�
+   * @param componentId - id du composant contenant la publication e laquelle est destine
    * l'attachement
-   * @param a_Detail - objet contenant les informations sur le fichier � copier
-   * @param path - chemin o� doit �tre copi� le fichier
-   * @return renvoie l'objet des informations sur le fichier � copier compl�t� par les nouvelles
-   * donn�es issues de la copie
-   * @throws AttachmentException
+   * @param a_Detail - objet contenant les informations sur le fichier e copier
+   * @param path - chemin oe doit etre copie le fichier
+   * @return renvoie l'objet des informations sur le fichier e copier complete par les nouvelles
+   * donnees issues de la copie
    */
-  public AttachmentDetail copyFile(String componentId,
-      AttachmentDetail a_Detail, String path) {
+  public AttachmentDetail copyFile(String componentId, AttachmentDetail a_Detail, String path) {
     return copyFile(componentId, a_Detail, path, true);
   }
 
@@ -184,21 +186,19 @@ public class AttachmentImportExport {
 
     String fileToUpload = a_Detail.getPhysicalName();
 
-    // Pr�paration des param�tres du fichier � creer
-    String logicalName = fileToUpload.substring(fileToUpload
-        .lastIndexOf(File.separator) + 1);
-    String type = logicalName.substring(logicalName.lastIndexOf(".") + 1,
-        logicalName.length());
+    // Preparation des parametres du fichier e creer
+    String logicalName = fileToUpload.substring(fileToUpload.lastIndexOf(File.separator) + 1);
+    String type = logicalName.substring(logicalName.lastIndexOf('.') + 1, logicalName.length());
     String mimeType = AttachmentController.getMimeType(logicalName);
     String physicalName = System.currentTimeMillis() + "." + type;
     File fileToCreate = new File(path + physicalName);
     while (fileToCreate.exists()) {
       SilverTrace.info("attachment", "AttachmentImportExport.copyFile()",
-          "root.MSG_GEN_PARAM_VALUE", "fileToCreate already exists="
-          + fileToCreate.getAbsolutePath());
+          "root.MSG_GEN_PARAM_VALUE",
+          "fileToCreate already exists=" + fileToCreate.getAbsolutePath());
 
       // To prevent overwriting
-      physicalName = new Long(new Date().getTime()).toString() + "." + type;
+      physicalName = String.valueOf(System.currentTimeMillis()) + '.' + type;
       fileToCreate = new File(path + physicalName);
     }
     SilverTrace.info("attachment", "AttachmentImportExport.copyFile()",
@@ -213,7 +213,7 @@ public class AttachmentImportExport {
           "attachment.EX_FILE_COPY_ERROR", e);
     }
 
-    // Compl�ments sur les attachmentDetail
+    // Complements sur les attachmentDetail
     a_Detail.setSize(size);
     a_Detail.setType(mimeType);
     a_Detail.setPhysicalName(physicalName);
@@ -223,7 +223,6 @@ public class AttachmentImportExport {
 
     AttachmentPK pk = new AttachmentPK("unknown", "useless", componentId);
     a_Detail.setPK(pk);
-
     return a_Detail;
   }
 
@@ -259,12 +258,12 @@ public class AttachmentImportExport {
   }
 
   /**
-   * M�thode utilis�e par la m�thode importAttachement(String,String,AttachmentDetail) pour creer un
-   * attachement sur la publication cr��e dans la m�thode cit�e.
-   * @param pubId - id de la publication dans laquelle cr�er l'attachment
+   * Methode utilisee par la methode importAttachement(String,String,AttachmentDetail) pour creer un
+   * attachement sur la publication creee dans la methode citee.
+   * @param pubId - id de la publication dans laquelle creer l'attachment
    * @param componentId - id du composant contenant la publication
-   * @param a_Detail - obejt contenant les informations n�c�ssaire � la cr�ation de l'attachment
-   * @return AttachmentDetail cr��
+   * @param a_Detail - obejt contenant les informations necessaire e la creation de l'attachment
+   * @return AttachmentDetail cree
    */
   private AttachmentDetail addAttachmentToPublication(String pubId,
       String componentId, AttachmentDetail a_Detail, String context,
@@ -274,55 +273,52 @@ public class AttachmentImportExport {
     int incrementSuffixe = 0;
     AttachmentPK atPK = new AttachmentPK(null, componentId);
     AttachmentPK foreignKey = new AttachmentPK(pubId, componentId);
-    Vector<AttachmentDetail> attachments = AttachmentController
-        .searchAttachmentByCustomerPK(foreignKey);
+    Vector<AttachmentDetail> attachments = AttachmentController.searchAttachmentByCustomerPK(
+        foreignKey);
     int i = 0;
 
     String logicalName = a_Detail.getLogicalName();
     String userId = a_Detail.getAuthor();
     String updateRule = a_Detail.getImportUpdateRule();
-    if (updateRule == null || updateRule.length() == 0
-        || updateRule.equalsIgnoreCase("null"))
+    if (!StringUtil.isDefined(updateRule) || "null".equalsIgnoreCase(updateRule)) {
       updateRule = AttachmentDetail.IMPORT_UPDATE_RULE_ADD;
+    }
 
     SilverTrace.info("attachment",
         "AttachmentImportExport.addAttachmentToPublication()",
         "root.MSG_GEN_PARAM_VALUE", "updateRule=" + updateRule);
 
-    // V�rification s'il existe un attachment de m�me nom, si oui, ajout
+    // Verification s'il existe un attachment de meme nom, si oui, ajout
     // d'un
     // suffixe au nouveau fichier
     while (i < attachments.size()) {
       ad_toCreate = attachments.get(i);
-      if (ad_toCreate.getLogicalName().equals(logicalName))// si les tailles
-      // sont diff�rentes,
-      // on
-      {
+      if (ad_toCreate.getLogicalName().equals(logicalName)) {
         if ((ad_toCreate.getSize() != a_Detail.getSize())
-            && updateRule
-            .equalsIgnoreCase(AttachmentDetail.IMPORT_UPDATE_RULE_ADD)) {
+            && AttachmentDetail.IMPORT_UPDATE_RULE_ADD.equalsIgnoreCase(updateRule)) {
           logicalName = a_Detail.getLogicalName();
-          int Extposition = logicalName.lastIndexOf(".");
-          if (Extposition != -1)
-            logicalName = logicalName.substring(0, Extposition) + "_"
+          int extPosition = logicalName.lastIndexOf('.');
+          if (extPosition != -1) {
+            logicalName = logicalName.substring(0, extPosition) + "_"
                 + (++incrementSuffixe)
-                + logicalName.substring(Extposition, logicalName.length());
-          else
+                + logicalName.substring(extPosition, logicalName.length());
+          } else {
             logicalName += "_" + (++incrementSuffixe);
-          // On reprend la boucle au d�but pour v�rifier que le nom
-          // g�n�r� n est
-          // pas lui meme un autre nom d'attachment de la publication
+          }
+          // On reprend la boucle au debut pour verifier que le nom
+          // genere n est pas lui meme un autre nom d'attachment de la publication
           i = 0;
         } else {// on efface l'ancien fichier joint et on stoppe la boucle
           AttachmentController.deleteAttachment(ad_toCreate);
           break;
         }
-      } else
+      } else {
         i++;
+      }
     }
     a_Detail.setLogicalName(logicalName);
 
-    // On instancie l'objet attachment � creer
+    // On instancie l'objet attachment e creer
     ad_toCreate = new AttachmentDetail(atPK, a_Detail.getPhysicalName(),
         a_Detail.getLogicalName(), null, a_Detail.getType(),
         a_Detail.getSize(), context, new Date(), foreignKey, userId);
@@ -345,18 +341,19 @@ public class AttachmentImportExport {
       String relativeExportPath, String extensionFilter) {
 
     // Recuperation des attachments
-    Vector<AttachmentDetail> listAttachment = AttachmentController
-        .searchAttachmentByCustomerPK(pk);
+    Vector<AttachmentDetail> listAttachment = AttachmentController.searchAttachmentByCustomerPK(pk);
     Vector<AttachmentDetail> listToReturn = new Vector<AttachmentDetail>();
     if (listAttachment != null && listAttachment.isEmpty())// Si on
-      // recoit
-      // une liste
-      // vide, on
-      // retourne
-      // null
+    // recoit
+    // une liste
+    // vide, on
+    // retourne
+    // null
+    {
       listAttachment = null;
+    }
     if (listAttachment != null) {
-      // Pour chaque attachment trouv�, on copie le fichier dans le dossier
+      // Pour chaque attachment trouve, on copie le fichier dans le dossier
       // d'exportation
       for (AttachmentDetail attDetail : listAttachment) {
         if (!attDetail.getContext().equals(AbstractForm.CONTEXT_FORM_FILE)) {
@@ -373,8 +370,7 @@ public class AttachmentImportExport {
             // Le nom physique correspond maintenant au fichier copie
             attDetail.setPhysicalName(relativeExportPath
                 + File.separator
-                + FileServerUtils
-                .replaceAccentChars(attDetail.getLogicalName()));
+                + FileServerUtils.replaceAccentChars(attDetail.getLogicalName()));
 
           } catch (IOException ex) {
             // TODO: gerer ou ne pas gerer telle est la question
@@ -387,8 +383,7 @@ public class AttachmentImportExport {
           try {
             copyAttachment(attDetail, pk, exportPath);
             // Le nom physique correspond maintenant au fichier copi
-            attDetail.setLogicalName(FileServerUtils
-                .replaceAccentChars(attDetail.getLogicalName()));
+            attDetail.setLogicalName(FileServerUtils.replaceAccentChars(attDetail.getLogicalName()));
 
           } catch (Exception ex) {
             // TODO: gerer ou ne pas gerer telle est la question
@@ -416,11 +411,11 @@ public class AttachmentImportExport {
   }
 
   /**
-   * M�thode r�cup�rant le chemin d'acc�s au dossier de stockage des fichiers import�s dans un
+   * Methode recuperant le chemin d'acces au dossier de stockage des fichiers importes dans un
    * composant.
-   * @param componentId - id du composant dont on veut r�cuperer le chemin de stockage de ses
-   * fichiers import�s
-   * @return le chemin recherch�
+   * @param componentId - id du composant dont on veut recuperer le chemin de stockage de ses
+   * fichiers importes
+   * @return le chemin recherche
    */
   private String getPath(String componentId) {
     String path = AttachmentController.createPath(componentId,

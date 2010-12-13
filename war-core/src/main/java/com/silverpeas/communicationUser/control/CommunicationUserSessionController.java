@@ -21,15 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
-
-/*
- * CommunicationUserSessionControl.java
- *
- */
-
 package com.silverpeas.communicationUser.control;
 
 import java.io.BufferedReader;
@@ -60,13 +51,10 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
  * @version
  */
 public class CommunicationUserSessionController extends AbstractComponentSessionController {
+
   Selection sel = null;
-
-  // CBO : ADD
   private String m_PathDiscussions = null;
-  private Collection m_listCurrentDiscussion = new ArrayList();
-
-  // CBO : FIN ADD
+  private Collection<File> m_listCurrentDiscussion = new ArrayList<File>();
 
   /**
    * Constructor declaration
@@ -76,14 +64,10 @@ public class CommunicationUserSessionController extends AbstractComponentSession
    */
   public CommunicationUserSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-    // CBO : UPDATE
-    // super(mainSessionCtrl,
-    // componentContext,"com.silverpeas.communicationUser.multilang.communicationUserBundle");
     super(mainSessionCtrl, componentContext,
         "com.silverpeas.communicationUser.multilang.communicationUserBundle",
         "com.silverpeas.communicationUser.settings.communicationUserIcons",
         "com.silverpeas.communicationUser.settings.communicationUserSettings");
-
     setComponentRootName(URLManager.CMP_COMMUNICATIONUSER);
     sel = getSelection();
   }
@@ -102,7 +86,7 @@ public class CommunicationUserSessionController extends AbstractComponentSession
    * @author dlesimple
    * @return Collection of connected Users
    */
-  public Collection getDistinctConnectedUsersList() {
+  public Collection<SessionInfo> getDistinctConnectedUsersList() {
     return SessionManager.getInstance().getDistinctConnectedUsersList();
   }
 
@@ -124,42 +108,29 @@ public class CommunicationUserSessionController extends AbstractComponentSession
     try {
       NotificationSender notificationSender = new NotificationSender(null);
       NotificationMetaData notifMetaData = new NotificationMetaData();
-
       notifMetaData.setTitle("");
       notifMetaData.setContent(message);
       notifMetaData.setSource(getUserDetail().getDisplayedName());
-
-      // CBO : ADD
       notifMetaData.setSender(getUserId());
       notifMetaData.setAnswerAllowed(true);
-      // CBO : FIN ADD
-
       notifMetaData.addUserRecipient(userId);
-
-      // CBO : UPDATE
-      // notificationSender.notifyUser(NotificationParameters.ADDRESS_BASIC_POPUP,
-      // notifMetaData);
-      notificationSender.notifyUser(
-          NotificationParameters.ADDRESS_BASIC_COMMUNICATION_USER,
+      notificationSender.notifyUser(NotificationParameters.ADDRESS_BASIC_COMMUNICATION_USER,
           notifMetaData);
     } catch (Exception ex) {
-      SilverTrace.error("communicationUser",
-          "CommunicationUserSessionController.NotifySession",
+      SilverTrace.error("communicationUser", "CommunicationUserSessionController.NotifySession",
           "root.EX_CANT_SEND_MESSAGE", ex);
     }
   }
-
-  // CBO : ADD
 
   /**
    * @param discussion
    */
   public void addCurrentDiscussion(File discussion) {
-    Iterator it = this.m_listCurrentDiscussion.iterator();
+    Iterator<File> it = this.m_listCurrentDiscussion.iterator();
     File disc;
     boolean trouve = false;
     while (it.hasNext()) {
-      disc = (File) it.next();
+      disc = it.next();
       if (disc.getName().equals(discussion.getName())) {
         trouve = true;
         break;
@@ -172,8 +143,9 @@ public class CommunicationUserSessionController extends AbstractComponentSession
 
   /**
    * @param discussion
+   * @return  
    */
-  public Collection getListCurrentDiscussion() {
+  public Collection<File> getListCurrentDiscussion() {
     return this.m_listCurrentDiscussion;
   }
 
@@ -197,12 +169,8 @@ public class CommunicationUserSessionController extends AbstractComponentSession
     return m_PathDiscussions;
   }
 
-  public File getExistingFileDiscussion(String userId)
-      throws CommunicationUserException {
+  public File getExistingFileDiscussion(String userId) throws CommunicationUserException {
     String currentUserId = this.getUserId();
-
-    // serveur de fichiers : récupérer la discussion en cours entre ces 2
-    // utilisateurs
     return getExistingFileDiscussion(userId, currentUserId);
   }
 
@@ -212,20 +180,14 @@ public class CommunicationUserSessionController extends AbstractComponentSession
     // currentUserId
     if (getPathDiscussions() != null) {
       try {
-        Collection listFile = FileFolderManager
-            .getAllFile(getPathDiscussions());
+        Collection<File> listFile = FileFolderManager.getAllFile(getPathDiscussions());
         if (listFile != null && listFile.size() > 0) {
-          Iterator it = listFile.iterator();
-          File file;
-          String fileName;
-          String userId1;
-          String userId2;
+          Iterator<File> it = listFile.iterator();
           while (it.hasNext()) {
-            file = (File) it.next();
-            fileName = file.getName(); // userId1.userId2.txt
-            userId1 = fileName.substring(0, fileName.indexOf("."));
-            userId2 = fileName.substring(fileName.indexOf(".") + 1, fileName
-                .lastIndexOf("."));
+            File file = it.next();
+            String fileName = file.getName(); // userId1.userId2.txt
+            String userId1 = fileName.substring(0, fileName.indexOf('.'));
+            String userId2 = fileName.substring(fileName.indexOf('.') + 1, fileName.lastIndexOf('.'));
             if ((userId.equals(userId1) && currentUserId.equals(userId2))
                 || (userId.equals(userId2) && currentUserId.equals(userId1))) {
               return file;
@@ -249,13 +211,11 @@ public class CommunicationUserSessionController extends AbstractComponentSession
         File directory = new File(getPathDiscussions());
         if (directory.isDirectory()) {
           /* Création d'un nouveau fichier sous la bonne arborescence */
-          File discussion = new File(directory, currentUserId + "." + userId
-              + ".txt");
-
+          File discussion = new File(directory, currentUserId + '.' + userId + ".txt");
           /* Ecriture dans le fichier */
           FileWriter file_write = new FileWriter(discussion);
           BufferedWriter flux_out = new BufferedWriter(file_write);
-          flux_out.write("\n");
+          flux_out.write('\n');
           flux_out.close();
           file_write.close();
           return discussion;
@@ -276,24 +236,18 @@ public class CommunicationUserSessionController extends AbstractComponentSession
     return null;
   }
 
-  public String getDiscussion(File fileDiscussion)
-      throws CommunicationUserException {
-    // serveur de fichiers : récupérer la discussion en cours entre ces 2
-    // utilisateurs
+  public String getDiscussion(File fileDiscussion) throws CommunicationUserException {
     try {
-      /* lecture du contenu du fichier */
       FileReader file_read = new FileReader(fileDiscussion);
       BufferedReader flux_in = new BufferedReader(file_read);
-
       String ligne;
-      String messages = "";
+      StringBuilder messages = new StringBuilder("");
       while ((ligne = flux_in.readLine()) != null) {
-        messages += ligne + "\n";
+        messages.append(ligne).append("\n");
       }
       flux_in.close();
       file_read.close();
-
-      return messages;
+      return messages.toString();
     } catch (IOException e) {
       throw new CommunicationUserException(
           "CommunicationUserSessionController.getDiscussion()",
@@ -303,19 +257,11 @@ public class CommunicationUserSessionController extends AbstractComponentSession
 
   public void addMessageDiscussion(File fileDiscussion, String message)
       throws CommunicationUserException {
-    // serveur de fichiers : récupérer la discussion en cours entre ces 2
-    // utilisateurs
     if (getPathDiscussions() != null) {
       try {
-        // lecture du contenu du fichier
         String messages = getDiscussion(fileDiscussion);
-
         messages += message + "\n";
-
-        // écrase le contenu du fichier avec ce nouveau contenu
-        FileFolderManager.createFile(getPathDiscussions(), fileDiscussion
-            .getName(), messages);
-
+        FileFolderManager.createFile(getPathDiscussions(), fileDiscussion.getName(), messages);
       } catch (UtilException e1) {
         throw new CommunicationUserException(
             "CommunicationUserSessionController.addMessageDiscussion()",
@@ -329,8 +275,7 @@ public class CommunicationUserSessionController extends AbstractComponentSession
     if (getPathDiscussions() != null) {
       // écrase le contenu du fichier avec ce nouveau contenu vide
       try {
-        FileFolderManager.createFile(getPathDiscussions(), fileDiscussion
-            .getName(), " ");
+        FileFolderManager.createFile(getPathDiscussions(), fileDiscussion.getName(), " ");
       } catch (UtilException e) {
         throw new CommunicationUserException(
             "CommunicationUserSessionController.clearDiscussion()",
@@ -338,5 +283,4 @@ public class CommunicationUserSessionController extends AbstractComponentSession
       }
     }
   }
-  // CBO : FIN ADD
 }

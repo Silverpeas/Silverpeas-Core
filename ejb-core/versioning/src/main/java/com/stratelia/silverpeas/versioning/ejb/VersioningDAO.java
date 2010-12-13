@@ -538,7 +538,7 @@ public class VersioningDAO {
           SilverTrace.TRACE_LEVEL_DEBUG, "VersioningDAO.EX_NO_CONNECTION");
     }
     if (documentPK == null || ownerId == -1 || checkOutDate == null) {
-      throw new VersioningRuntimeException("VersioningDAO.checkDocumentIn",
+      throw new VersioningRuntimeException("VersioningDAO.checkDocumentOut",
           SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_NULL_VALUE_OBJECT_OR_PK");
     }
     SilverTrace.debug("versioning", "DAO.checkDocumentOut",
