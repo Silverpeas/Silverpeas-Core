@@ -47,6 +47,7 @@ public class SubscribeCallBack extends CallBack {
    * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#doInvoke(int, int,
    * java.lang.String, java.lang.Object)
    */
+  @Override
   public void doInvoke(int action, int iParam, String sParam, Object extraParam) {
     SilverTrace.info("subscribe", "SubscribeCallBack.doInvoke()",
         "root.MSG_GEN_ENTER_METHOD", "action = " + action + ", iParam = "
@@ -73,8 +74,10 @@ public class SubscribeCallBack extends CallBack {
    * (non-Javadoc)
    * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#subscribe()
    */
+  @Override
   public void subscribe() {
-    CallBackManager.subscribeAction(CallBackManager.ACTION_BEFORE_REMOVE_USER,
+    CallBackManager callBackManager = CallBackManager.get();
+    callBackManager.subscribeAction(CallBackManager.ACTION_BEFORE_REMOVE_USER,
         this);
   }
 

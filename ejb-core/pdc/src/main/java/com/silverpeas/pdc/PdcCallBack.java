@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.pdc;
 
 import com.stratelia.silverpeas.pdc.control.PdcBm;
@@ -44,6 +43,7 @@ public class PdcCallBack extends CallBack {
    * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#doInvoke(int, int,
    * java.lang.String, java.lang.Object)
    */
+  @Override
   public void doInvoke(int action, int iParam, String sParam, Object extraParam) {
     SilverTrace.info("Pdc", "PdcCallBack.doInvoke()",
         "root.MSG_GEN_ENTER_METHOD", "action = " + action + ", iParam = "
@@ -61,10 +61,11 @@ public class PdcCallBack extends CallBack {
     try {
       PdcBm pdcBm = new PdcBmImpl();
 
-      if (action == CallBackManager.ACTION_BEFORE_REMOVE_USER)
-        pdcBm.deleteManager(Integer.toString(iParam));
-      else if (action == CallBackManager.ACTION_BEFORE_REMOVE_GROUP)
-        pdcBm.deleteGroupManager(Integer.toString(iParam));
+      if (action == CallBackManager.ACTION_BEFORE_REMOVE_USER) {
+        pdcBm.deleteManager(String.valueOf(iParam));
+      } else if (action == CallBackManager.ACTION_BEFORE_REMOVE_GROUP) {
+        pdcBm.deleteGroupManager(String.valueOf(iParam));
+      }
 
     } catch (Exception e) {
       throw new PdcRuntimeException("PdcCallBack.doInvoke()",
@@ -75,10 +76,10 @@ public class PdcCallBack extends CallBack {
   /*
    * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#subscribe()
    */
+  @Override
   public void subscribe() {
-    CallBackManager.subscribeAction(CallBackManager.ACTION_BEFORE_REMOVE_USER,
-        this);
-    CallBackManager.subscribeAction(CallBackManager.ACTION_BEFORE_REMOVE_GROUP,
-        this);
+    CallBackManager callBackManager = CallBackManager.get();
+    callBackManager.subscribeAction(CallBackManager.ACTION_BEFORE_REMOVE_USER, this);
+    callBackManager.subscribeAction(CallBackManager.ACTION_BEFORE_REMOVE_GROUP, this);
   }
 }

@@ -117,8 +117,9 @@ public class Comment implements java.io.Serializable {
     return this.modification_date;
   }
 
+  @Override
   public String toString() {
-    StringBuffer str = new StringBuffer();
+    StringBuilder str = new StringBuilder();
     str.append("getCommentPK() = ").append(getCommentPK().toString()).append(
         ", \n");
     str.append("getForeignKey() = ").append(getForeignKey().toString()).append(

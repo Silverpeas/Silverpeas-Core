@@ -66,7 +66,7 @@ public interface Clipboard {
    * @throws RemoteException
    * @see
    */
-  public Collection getSelectedObjects() throws RemoteException;
+  public Collection<ClipboardSelection> getSelectedObjects() throws RemoteException;
 
   /**
    * Method declaration
@@ -74,7 +74,7 @@ public interface Clipboard {
    * @throws RemoteException
    * @see
    */
-  public Collection getObjects() throws RemoteException;
+  public Collection<ClipboardSelection> getObjects() throws RemoteException;
 
   /**
    * Method declaration

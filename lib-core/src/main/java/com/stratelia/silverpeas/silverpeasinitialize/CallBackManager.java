@@ -27,9 +27,15 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Title: Description: Copyright: Copyright (c) 2001 Company:
- * @author TLE
- * @version 1.0
+ * The CallBackManager centralizes and dispatches the notification events coming from the different
+ * actions performed within Silverpeas components.
+ *
+ * The CallBackManager is a way to loosly couply the differents components between them. In effect,
+ * some components can be interested by some kind of events, whatever their origin, in order to
+ * perform some useful computation. For doing, they have just to subscribe a callback function for
+ * the kind of event they are interested. The callback function will be invoked by a CallBackManager
+ * at the firing of a such event.
+ * The callback function is represented by an object implementing the CallBack interface.
  */
 public class CallBackManager {
   // Actions [int parameter, string parameter, extra parameter]
@@ -57,47 +63,83 @@ public class CallBackManager {
   public final static int ACTION_XMLCONTENT_UPDATE = 19;
   public final static int ACTION_XMLCONTENT_DELETE = 20;
   public final static int ACTION_LAST = 21;
-  // HashTables
-  // ----------
-  protected static List<CallBack>[] subscribers = null;
 
-  static {
-    subscribers = new List[ACTION_LAST];
-    for (int i = 0; i < ACTION_LAST; i++) {
-      subscribers[i] = new CopyOnWriteArrayList<CallBack>();
-    }
+  private static final CallBackManager instance = new CallBackManager();
+
+  /**
+   * Gets an instance of a CallBackManager.
+   * @return an instance of this class.
+   */
+  public static CallBackManager get() {
+    return instance;
   }
 
-  // Subscriptions functions
-  // -----------------------
-  static synchronized public void subscribeAction(int action, CallBack theObj) {
+  private List<CallBack>[] subscribers = new List[ACTION_LAST];
+
+  /**
+   * Subscribes the specified callback function for the given notification event.
+   * @param action the action at the origin of a notification event.
+   * @param theObj the callback function to invoke when a such action is performed.
+   */
+  synchronized public void subscribeAction(int action, CallBack theObj) {
     subscribers[action].add(theObj);
   }
 
-  static synchronized public void unsubscribeAction(int action, CallBack theObj) {
+  /**
+   * Unsubscribes the specified callback function for the given notification event.
+   * @param action the action at the origin of a notification event.
+   * @param theObj the callback function to unsubscribe.
+   */
+  synchronized public void unsubscribeAction(int action, CallBack theObj) {
     subscribers[action].remove(theObj);
   }
 
-  static synchronized public void subscribeAll(CallBack theObj) {
+  /**
+   * Subscribes the specified callback function for all notification events, whatever they are.
+   * @param theObj the callback function to invoke when an action, responsible of a notification
+   * event firing, is performed.
+   */
+  synchronized public void subscribeAll(CallBack theObj) {
     for (int i = 0; i < ACTION_LAST; i++) {
       subscribers[i].add(theObj);
     }
   }
 
-  static synchronized public void unsubscribeAll(CallBack theObj) {
+  /**
+   * Unsubscribes the specified callback function for all notification events, whatever they are.
+   * @param theObj the callback function to unsubscribe.
+   */
+  synchronized public void unsubscribeAll(CallBack theObj) {
     for (int i = 0; i < ACTION_LAST; i++) {
       subscribers[i].remove(theObj);
     }
   }
 
-  static synchronized public void invoke(final int action, final int iParam, final String sParam,
+  /**
+   * Invokes all of the callback functions registered for the specified event matching a
+   * well-defined action.
+   * @param action the event fired and matching a specific context of an action.
+   * @param iParam a parameter as integer.
+   * @param sParam another parameter as string.
+   * @param extraParam  an extra parameter as an object.
+   */
+  synchronized public void invoke(final int action, final int iParam, final String sParam,
       final Object extraParam) {
     for (CallBack callback : subscribers[action]) {
       callback.doInvoke(action, iParam, sParam, extraParam);
     }
   }
 
-  static public String getInvokeString(int action, int iParam, String sParam,
+  /**
+   * Gets the string representation of the invocation of the callbacks registered for the specified
+   * event.
+   * @param action the event matching a specific context of an action.
+   * @param iParam a parameter as integer.
+   * @param sParam another parameter as string.
+   * @param extraParam  an extra parameter as an object.
+   * @return a String representation of the invocation.
+   */
+  public String getInvokeString(int action, int iParam, String sParam,
       Object extraParam) {
     StringBuilder sb = new StringBuilder("Invoke Action = ");
     switch (action) {
@@ -175,5 +217,14 @@ public class CallBackManager {
       sb.append(extraParam.toString());
     }
     return sb.toString();
+  }
+
+  /**
+   * Constructs a new CallBackManager instance.
+   */
+  private CallBackManager() {
+    for (int i = 0; i < ACTION_LAST; i++) {
+      subscribers[i] = new CopyOnWriteArrayList<CallBack>();
+    }
   }
 }

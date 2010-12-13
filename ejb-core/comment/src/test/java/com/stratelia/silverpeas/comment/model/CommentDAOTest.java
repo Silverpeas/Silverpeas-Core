@@ -4,7 +4,6 @@
  */
 package com.stratelia.silverpeas.comment.model;
 
-import org.junit.Before;
 import com.silverpeas.components.model.SilverpeasJndiCase;
 import com.silverpeas.components.model.AbstractJndiCase;
 import com.silverpeas.jcrutil.RandomGenerator;
@@ -24,11 +23,13 @@ import static org.junit.Assert.*;
  * @author ehugonnet
  */
 public class CommentDAOTest extends AbstractJndiCase {
-  
+
+  private CommentDAO commentDAO = new CommentDAO();
+
 
   public CommentDAOTest() {
   }
-  
+
   @BeforeClass
   public static void generalSetUp() throws IOException, NamingException, Exception {
     baseTest = new SilverpeasJndiCase("com/stratelia/silverpeas/comment/model/comments-dataset.xml",
@@ -36,16 +37,16 @@ public class CommentDAOTest extends AbstractJndiCase {
     baseTest.configureJNDIDatasource();
     IDatabaseConnection databaseConnection = baseTest.getDatabaseTester().getConnection();
     executeDDL(databaseConnection, baseTest.getDdlFile());
-    baseTest.getDatabaseTester().closeConnection(databaseConnection);    
+    baseTest.getDatabaseTester().closeConnection(databaseConnection);
   }
-  
+
   /**
    * Test of createComment method, of class CommentDAO.
-   * @throws Exception 
+   * @throws Exception
    */
   @Test
   public void testCreateComment() throws Exception {
-    IDatabaseConnection dbConnection = baseTest.getConnection();    
+    IDatabaseConnection dbConnection = baseTest.getConnection();
     Connection con = dbConnection.getConnection();
     DBUtil.getInstance(con);
     CommentPK pk = new CommentPK(null, null, "kmelia18");
@@ -55,12 +56,12 @@ public class CommentDAOTest extends AbstractJndiCase {
     String message = RandomGenerator.getRandomString();
     String creationDate = DateUtil.date2SQLDate(RandomGenerator.getRandomCalendar().getTime());
     Comment cmt = new Comment(pk, foreignKey, ownerId, owner, message, creationDate, null);
-    CommentPK result = CommentDAO.createComment(con, cmt);
+    CommentPK result = commentDAO.saveComment(con, cmt);
     assertNotNull(result);
     assertEquals("kmelia18", result.getInstanceId());
     assertNotNull(result.getId());
     assertEquals("11", result.getId());
-    Comment savedComment = CommentDAO.getComment(con, result);
+    Comment savedComment = commentDAO.getComment(con, result);
     assertNotNull(savedComment);
     assertEquals(ownerId, savedComment.getOwnerId());
     assertEquals("", savedComment.getOwner());
@@ -72,7 +73,7 @@ public class CommentDAOTest extends AbstractJndiCase {
 
   /**
    * Test of createComment method, of class CommentDAO.
-   * @throws Exception 
+   * @throws Exception
    */
   @Test
   public void testGetComment() throws Exception {
@@ -80,7 +81,7 @@ public class CommentDAOTest extends AbstractJndiCase {
     Connection con = dbConnection.getConnection();
     DBUtil.getInstance(con);
     CommentPK pk = new CommentPK("1000", null, "instanceId10");
-    Comment result = CommentDAO.getComment(con, pk);
+    Comment result = commentDAO.getComment(con, pk);
     assertNotNull(result);
     assertEquals(10, result.getOwnerId());
     assertEquals("", result.getOwner());
@@ -92,7 +93,7 @@ public class CommentDAOTest extends AbstractJndiCase {
 
   /**
    * Test of createComment method, of class CommentDAO.
-   * @throws Exception 
+   * @throws Exception
    */
   @Test
   public void testDeleteComment() throws Exception {
@@ -100,22 +101,22 @@ public class CommentDAOTest extends AbstractJndiCase {
     Connection con = dbConnection.getConnection();
     DBUtil.getInstance(con);
     CommentPK pk = new CommentPK("1000", null, "instanceId10");
-    Comment result = CommentDAO.getComment(con, pk);
+    Comment result = commentDAO.getComment(con, pk);
     assertNotNull(result);
     assertEquals(10, result.getOwnerId());
     assertEquals("", result.getOwner());
     assertEquals("my comments", result.getMessage());
     assertEquals("15/10/2019", result.getCreationDate());
     assertNull(result.getModificationDate());
-    CommentDAO.deleteComment(con, pk);
-    result = CommentDAO.getComment(con, pk);
+    commentDAO.deleteComment(con, pk);
+    result = commentDAO.getComment(con, pk);
     assertNull(result);
     baseTest.getDatabaseTester().closeConnection(dbConnection);
   }
 
   /**
    * Test of createComment method, of class CommentDAO.
-   * @throws Exception 
+   * @throws Exception
    */
   @Test
   public void testUpdateComment() throws Exception {
@@ -123,7 +124,7 @@ public class CommentDAOTest extends AbstractJndiCase {
     Connection con = dbConnection.getConnection();
     DBUtil.getInstance(con);
     CommentPK pk = new CommentPK("1000", null, "instanceId10");
-    Comment comment = CommentDAO.getComment(con, pk);
+    Comment comment = commentDAO.getComment(con, pk);
     assertNotNull(comment);
     assertEquals(10, comment.getOwnerId());
     assertEquals("", comment.getOwner());
@@ -140,8 +141,8 @@ public class CommentDAOTest extends AbstractJndiCase {
     comment.setModificationDate(modificationDate);
     comment.setCreationDate(modificationDate);
     comment.setForeignKey(foreignKey);
-    CommentDAO.updateComment(con, comment);
-    Comment result = CommentDAO.getComment(con, pk);
+    commentDAO.updateComment(con, comment);
+    Comment result = commentDAO.getComment(con, pk);
     assertNotNull(result);
     assertEquals(newOwnerId, result.getOwnerId());
     assertEquals("", result.getOwner());
@@ -153,11 +154,11 @@ public class CommentDAOTest extends AbstractJndiCase {
     assertEquals(pk, result.getCommentPK());
     baseTest.getDatabaseTester().closeConnection(dbConnection);
   }
-  
-  
+
+
   /**
    * Test of createComment method, of class CommentDAO.
-   * @throws Exception 
+   * @throws Exception
    */
   @Test
   public void testMoveComment() throws Exception {
@@ -165,7 +166,7 @@ public class CommentDAOTest extends AbstractJndiCase {
     Connection con = dbConnection.getConnection();
     DBUtil.getInstance(con);
     CommentPK pk = new CommentPK("1000", null, "instanceId10");
-    Comment result = CommentDAO.getComment(con, pk);
+    Comment result = commentDAO.getComment(con, pk);
     assertNotNull(result);
     assertEquals(10, result.getOwnerId());
     assertEquals("", result.getOwner());
@@ -178,8 +179,8 @@ public class CommentDAOTest extends AbstractJndiCase {
     ForeignPK srcForeignKey = new ForeignPK(result.getForeignKey().getId(), "instanceId10");
     ForeignPK targetForeignKey = new ForeignPK(String.valueOf(RandomGenerator.getRandomInt()),
         "instanceId" + RandomGenerator.getRandomInt());
-    CommentDAO.moveComments(con, srcForeignKey, targetForeignKey);
-    result = CommentDAO.getComment(con, pk);
+    commentDAO.moveComments(con, srcForeignKey, targetForeignKey);
+    result = commentDAO.getComment(con, pk);
     assertNotNull(result);
     assertEquals(10, result.getOwnerId());
     assertEquals("", result.getOwner());
@@ -190,9 +191,9 @@ public class CommentDAOTest extends AbstractJndiCase {
     assertNull(result.getForeignKey().getInstanceId());
     assertEquals("1000", result.getCommentPK().getId());
     assertEquals(targetForeignKey.getComponentName(), result.getCommentPK().getInstanceId());
-    
+
     pk = new CommentPK("1001", null, "instanceId10");
-    result = CommentDAO.getComment(con, pk);
+    result = commentDAO.getComment(con, pk);
     assertNotNull(result);
     assertEquals(12, result.getOwnerId());
     assertEquals("", result.getOwner());

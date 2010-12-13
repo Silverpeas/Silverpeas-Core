@@ -39,7 +39,7 @@ String action 		= request.getParameter("action");
 String component_id = request.getParameter("component_id");
 String user_id 		= request.getParameter("userid");
 String indexIt		= request.getParameter("IndexIt");
-
+CommentController commentController = new CommentController();
 if ( "save".equals(action) )
 {
 	boolean bIndexIt = true;
@@ -51,10 +51,10 @@ if ( "save".equals(action) )
     if ( id != null && !"null".equals(id) && !"".equals(id))
     {
         CommentPK pk = new CommentPK(id);
-        Comment comment = CommentController.getComment(pk);
+        Comment comment = commentController.getComment(pk);
         comment.setMessage(message);
         comment.setModificationDate(current_date);
-        CommentController.updateComment(comment, bIndexIt);
+        commentController.updateComment(comment, bIndexIt);
     }
     else if ( foreign_id != null )
     {
@@ -62,7 +62,7 @@ if ( "save".equals(action) )
         CommentPK pk = new CommentPK("X");
         pk.setComponentName(component_id);
         Comment comment = new Comment(pk, foreign_pk, Integer.parseInt(user_id), "X", message, current_date, current_date);
-        CommentController.createComment(comment, bIndexIt);
+        commentController.createComment(comment, bIndexIt);
     }
 %>
 <html>
@@ -86,7 +86,7 @@ else
     if ( id != null )
     {
         CommentPK pk = new CommentPK(id);
-        Comment comment = CommentController.getComment(pk);
+        Comment comment = commentController.getComment(pk);
         message = comment.getMessage();
     }
     else
@@ -110,11 +110,11 @@ function addComment()
         alert("<%=messages.getString("pleaseFill_single")%>");
         return;
     }
-    if (!isValidTextArea(document.addForm.message)) 
+    if (!isValidTextArea(document.addForm.message))
     {
-     	alert("<%=messages.getString("champsTropLong")%>");	
+     	alert("<%=messages.getString("champsTropLong")%>");
 	return;
-    }  	
+    }
     document.addForm.submit();
 }
 

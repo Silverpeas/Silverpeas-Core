@@ -25,7 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="java.util.Vector,
+<%@ page import="java.util.List,
                  java.io.IOException,
                  javax.ejb.CreateException,
                  java.sql.SQLException,
@@ -48,7 +48,8 @@
                         "</b></TD><TD align=\"center\" width=\"2%\"><b></b></TD><TD align=\"center\" width=\"2%\"><b></b></TD></TR>");
           out.println("<TR><TD colspan=\"6\" align=\"center\" class=\"intfdcolor\" height=\"1\"><img src=\""+hLineSrc+"\" width=\"100%\" height=\"1\"></TD></TR>");
 
-        Vector comments = CommentController.getAllComments(new CommentPK(id, null, component_id));
+        CommentController commentController = new CommentController();
+        List comments = commentController.getAllComments(new CommentPK(id, null, component_id));
         Comment comment;
         String comment_id;
         String owner_id;
@@ -84,11 +85,11 @@
             }
             else if (is_admin)
             {
-            	if (adminAllowedToUpdate) 
+            	if (adminAllowedToUpdate)
             	{
             		out.println("<td align=\"center\" valign=\"top\"><A href=\"javascript:updateComment("+comment_id+")\"><IMG SRC=\""+modif_icon+"\" border=\"0\" alt=\""+messages.getString("modify")+"\" title=\""+messages.getString("modify")+"\"></A></td>");
             	}
-                out.println("<td align=\"center\" valign=\"top\"><A href=\"javascript:removeComment("+comment_id+")\"><IMG SRC=\""+delete_icon+"\" border=\"0\" alt=\""+messages.getString("delete")+"\" title=\""+messages.getString("delete")+"\"></A></td>");            	
+                out.println("<td align=\"center\" valign=\"top\"><A href=\"javascript:removeComment("+comment_id+")\"><IMG SRC=\""+delete_icon+"\" border=\"0\" alt=\""+messages.getString("delete")+"\" title=\""+messages.getString("delete")+"\"></A></td>");
             }
             else
             {
@@ -110,10 +111,10 @@
     String component_id = request.getParameter("component_id");
     String profile 		= request.getParameter("profile");
     String indexIt		= request.getParameter("IndexIt");
-    
+
     if (indexIt == null || "null".equals(indexIt) || indexIt.length()==0)
   		indexIt = "1";
-    
+
     boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAccessLevel());
     ResourceLocator commentSettings = new ResourceLocator("com.stratelia.webactiv.util.comment.Comment","");
 	boolean adminAllowedToUpdate = commentSettings.getBoolean("AdminAllowedToUpdate", true);

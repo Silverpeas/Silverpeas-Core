@@ -26,12 +26,14 @@ package com.stratelia.silverpeas.peasCore;
 
 import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.silverpeas.alertUser.AlertUser;
+import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.genericPanel.GenericPanel;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.instance.control.SPParameter;
 import com.stratelia.webactiv.personalization.control.ejb.PersonalizationBm;
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.io.UnsupportedEncodingException;
@@ -44,6 +46,11 @@ import java.util.List;
  * Base class for all component session controller.
  */
 public class AbstractComponentSessionController implements ComponentSessionController {
+
+  /**
+   * The default character encoded supported by Silverpeas.
+   */
+  public static final String CHARACTER_ENCODING = "UTF-8";
 
   private MainSessionController controller = null;
   protected ComponentContext context = null;
@@ -156,7 +163,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
 
   /**
    * Method declaration
-   * @param multilangFileName 
+   * @param multilangFileName
    * @see
    */
   public final void setMultilangFileName(String multilangFileName) {
@@ -186,9 +193,10 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   }
 
   /**
-   * Method declaration
-   * @param resourceFileName
-   * @see
+   * Sets the icon file by its name.
+   * The icon file is a file in which is stored the icon that represents the
+   * underlying Silverpeas component this controller works with.
+   * @param iconFileName the name of the icon file.
    */
   public final void setIconFileName(String iconFileName) {
     iconFile = iconFileName;
@@ -294,7 +302,8 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   }
 
   /**
-   * Return the user language
+   * Gets the main language of the user.
+   * @return the user language code.
    */
   @Override
   public String getLanguage() {
@@ -306,7 +315,8 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   }
 
   /**
-   * The utilization of this method is allowed only for PersonalizationSessionController
+   * The utilization of this method is allowed only for PersonalizationSessionController.
+   * @param newLanguage the favorite user language.
    */
   public void setLanguageToMainSessionController(String newLanguage) {
     // change the language into the mainSessionController
@@ -315,20 +325,23 @@ public class AbstractComponentSessionController implements ComponentSessionContr
 
   /**
    * The utilization of this method is allowed only for PersonalizationSessionController
+   * @param newSpace the new user favorite space.
    */
   public void setFavoriteSpaceToMainSessionController(String newSpace) {
     controller.setFavoriteSpace(newSpace);
   }
 
   /**
-   * Return the user language
+   * Gets the identifier of the user website look.
+   * @return the user favorite look name.
    */
   public String getLook() {
     return controller.getFavoriteLook();
   }
 
   /**
-   * Return the UserDetail of the current user
+   * Gets details on the connected current user.
+   * @return the UserDetail information about the current user.
    */
   @Override
   public UserDetail getUserDetail() {
@@ -340,7 +353,8 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   }
 
   /**
-   * Return the UserId of the current user
+   * Gets the unique identifier of the current connected user.
+   * @return the user identifier.
    */
   @Override
   public String getUserId() {
@@ -348,7 +362,8 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   }
 
   /**
-   * Return the space label (as known by the user)
+   * Gets the space label (as known by the user).
+   * @return the space label.
    */
   @Override
   public String getSpaceLabel() {
@@ -356,34 +371,43 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   }
 
   /**
-   * Return the space id
+   * Gets the unique identifier of the current selected workspace.
+   * @return the space identifier.
    */
   @Override
   public String getSpaceId() {
     return context.getCurrentSpaceId();
   }
 
+  @Override
   public String getComponentName() {
     return context.getCurrentComponentName();
   }
 
   /**
-   * Return the component label (as known by the user)
+   * Gets the label of the current used component (as known by the user).
+   * @return the component label.
    */
+  @Override
   public final String getComponentLabel() {
     return context.getCurrentComponentLabel();
   }
 
   /**
-   * Return the component id
+   * Return the unique identifier of the current component.
+   * @return the current component identifier.
    */
+  @Override
   public final String getComponentId() {
     return context.getCurrentComponentId();
   }
 
   /**
-   * return the component Url : For Old Components' use ONLY ! (use it in the jsp:forward lines)
+   * Gets the URL at which is located the current selected component.
+   * Warning: For old components' use ONLY! (use it in the jsp:forward lines).
+   * @return the current component URL.
    */
+  @Override
   public final String getComponentUrl() {
     return URLManager.getURL(rootName, getSpaceId(), getComponentId());
   }
@@ -391,30 +415,35 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   /**
    * return the component Root name : i.e. 'agenda', 'todo', 'kmelia', .... (the name that appears
    * in the URL's root (the 'R' prefix is added later when needed))
+   * @return the component root name.
    */
   public final String getComponentRootName() {
     return rootName;
   }
 
   /**
-   * set the component Root name : i.e. 'agenda', 'todo', 'kmelia', .... (the name that appears in
+   * Sets the component root name : i.e. 'agenda', 'todo', 'kmelia', .... (the name that appears in
    * the URL's root (the 'R' prefix is added later when needed)) this function is called by the
    * class of non-instanciable components the inherits from this class
+   * @param newRootName the new root component.
    */
   protected final void setComponentRootName(String newRootName) {
     rootName = newRootName;
   }
 
   /**
-   * Return the parameters for this component instance
+   * Gets the parameters for the current component instance.
+   * @return a list of current component parameters.
    */
   @Override
-  public List getComponentParameters() {
+  public List<SPParameter> getComponentParameters() {
     return controller.getComponentParameters(getComponentId());
   }
 
   /**
-   * Return the parameter value for this component instance and the given parameter name
+   * Gets the value of the specified current component's parameter.
+   * @param parameterName the name of the parameter to get.
+   * @return the value of the parameter.
    */
   @Override
   public String getComponentParameterValue(String parameterName) {
@@ -423,7 +452,8 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   }
 
   /**
-   * Return the user's available components Ids list
+   * Gets the user's available components.
+   * @return an array with all available component identifiers.
    */
   @Override
   public String[] getUserAvailComponentIds() {
@@ -431,7 +461,8 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   }
 
   /**
-   * Return the user's available space Ids list
+   * Gets the user's available workspace.
+   * @return an array with all available spaces identifiers.
    */
   @Override
   public String[] getUserAvailSpaceIds() {
@@ -442,16 +473,17 @@ public class AbstractComponentSessionController implements ComponentSessionContr
     return controller.getUserManageableSpaceIds();
   }
 
-  public List getUserManageableGroupIds() {
+  public List<String> getUserManageableGroupIds() {
     return controller.getUserManageableGroupIds();
   }
 
   public boolean isGroupManager() {
-    return getUserManageableGroupIds().size() > 0;
+    return !getUserManageableGroupIds().isEmpty();
   }
 
   /**
-   * Return the name of the user's roles
+   * Gets all of the roles the current user plays in Silverpeas.
+   * @return an array with all the user role names.
    */
   @Override
   public String[] getUserRoles() {
@@ -459,7 +491,8 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   }
 
   /**
-   * Return the highest user's role (admin, publisher or user)
+   * Gets the highest privileged role the current user can play (administrator, publisher or user).
+   * @return the highest privileged role name of the current user.
    */
   @Override
   public String getUserRoleLevel() {
@@ -532,11 +565,11 @@ public class AbstractComponentSessionController implements ComponentSessionContr
     return controller.getServerNameAndPort();
   }
 
-  public List getLastResults() {
+  public List<GlobalSilverContent> getLastResults() {
     return controller.getLastResults();
   }
 
-  public void setLastResults(List results) {
+  public void setLastResults(List<GlobalSilverContent> results) {
     controller.setLastResults(results);
   }
 
@@ -558,16 +591,21 @@ public class AbstractComponentSessionController implements ComponentSessionContr
     return builder.toString();
   }
 
+  /**
+   * Gets the URL encoded representation of the specified parameter.
+   * @param param the parameter.
+   * @return a URL encoded representation of the parameter.
+   */
   protected String getUrlEncodedParameter(String param) {
     try {
-      return URLEncoder.encode(param, "UTF-8");
+      return URLEncoder.encode(param, CHARACTER_ENCODING);
     } catch (UnsupportedEncodingException ex) {
       return param;
     }
   }
 
   @Override
-  public Collection getClipboardSelectedObjects() throws RemoteException {
+  public Collection<ClipboardSelection> getClipboardSelectedObjects() throws RemoteException {
     return controller.getSelectedObjects();
   }
 
@@ -582,7 +620,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   }
 
   @Override
-  public Collection getClipboardObjects() throws RemoteException {
+  public Collection<ClipboardSelection> getClipboardObjects() throws RemoteException {
     return controller.getObjects();
   }
 

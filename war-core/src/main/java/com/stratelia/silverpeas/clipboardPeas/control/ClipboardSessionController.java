@@ -74,7 +74,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
 
   /**
    * The ClipboardSessionController is built empty and will be later initialized.
-   * @param mainSessionCtrl 
+   * @param mainSessionCtrl
    * @param context
    */
   public ClipboardSessionController(MainSessionController mainSessionCtrl,
@@ -268,7 +268,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
         errorMessage = getString(errorMessage);
         Exception exc = getClipboardExceptionError();
         if (exc != null) {
-          errorMessage = errorMessage + exc.getMessage();
+          errorMessage += exc.getMessage();
         }
       }
     } catch (Exception e) {
@@ -284,15 +284,12 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
    * @return the list of object (IndexEntry format) in clipboard.
    * @throws java.rmi.RemoteException
    */
-  public synchronized Collection getIndexEntryObjects() throws java.rmi.RemoteException {
+  public synchronized Collection<IndexEntry> getIndexEntryObjects() throws java.rmi.RemoteException {
     SilverTrace.info("clipboardPeas",
         "ClipboardSessionController.getStrateliaReferenceObjects()",
         "root.MSG_GEN_ENTER_METHOD");
     List<IndexEntry> result = new ArrayList<IndexEntry>();
-    Iterator<Transferable> qi = (Iterator<Transferable>) getClipboardObjects().iterator();
-    while (qi.hasNext()) {
-      Transferable clipObject =  qi.next();
-
+    for (Transferable clipObject : getClipboardObjects()) {
       if ((clipObject != null)
           && (clipObject.isDataFlavorSupported(ClipboardSelection.IndexFlavor))) {
         try {
@@ -321,14 +318,9 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
    * @throws javax.naming.NamingException
    * @throws java.sql.SQLException
    */
-  public synchronized Collection getObjects() throws java.rmi.RemoteException,
+  public synchronized Collection<ClipboardSelection> getObjects() throws java.rmi.RemoteException,
       javax.naming.NamingException, java.sql.SQLException {
-    List<ClipboardSelection> result = new ArrayList<ClipboardSelection>();
-    Iterator<ClipboardSelection> qi = (Iterator<ClipboardSelection>) getClipboardObjects().iterator();
-    while (qi.hasNext()) {
-      ClipboardSelection clipObject = qi.next();
-      result.add(clipObject);
-    }
+    List<ClipboardSelection> result = new ArrayList<ClipboardSelection>(getClipboardObjects());
     return result;
   }
 
@@ -350,13 +342,13 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
     SpaceInst spaceInst = getOrganizationController().getSpaceInstById(spaceId);
     if (spaceInst != null) {
       return spaceInst.getName();
-    } 
+    }
       return spaceId;
   }
 
   /**
    * Returns the label of the given component
-   * @param componentId 
+   * @param componentId
    * @return
    */
   public String getComponentLabel(String componentId) {
@@ -395,7 +387,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
 
   /**
    *
-   * @param JSPPage 
+   * @param JSPPage
    */
   public void setJSPPage(String JSPPage) {
     m_CallerJSPPage = JSPPage;
@@ -428,7 +420,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * 
+   *
    * @return
    */
   public String getTargetFrame() {

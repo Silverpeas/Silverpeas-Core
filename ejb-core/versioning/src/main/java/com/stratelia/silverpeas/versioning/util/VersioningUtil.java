@@ -140,8 +140,8 @@ public class VersioningUtil {
     return getVersioningBm().getDocument(pk);
   }
 
-  public ArrayList getDocuments(ForeignPK foreignID) throws RemoteException {
-    ArrayList documents = new ArrayList(getVersioningBm().getDocuments(foreignID));
+  public List<Document> getDocuments(ForeignPK foreignID) throws RemoteException {
+    List<Document> documents = new ArrayList<Document>(getVersioningBm().getDocuments(foreignID));
     return documents;
   }
 
@@ -175,7 +175,7 @@ public class VersioningUtil {
     return version;
   }
 
-  public HashMap getAllUsersReader(Document document, String nameProfile)
+  public HashMap<String, Reader> getAllUsersReader(Document document, String nameProfile)
       throws RemoteException {
     HashMap<String, Reader> mapRead = new HashMap<String, Reader>();
     @SuppressWarnings("unchecked")
@@ -457,7 +457,7 @@ public class VersioningUtil {
       }
       DocumentVersion newDocumentVersion = createNewDocumentVersion(documentVersion);
 
-      String componentId = documentVersion.getInstanceId();
+      String theComponentId = documentVersion.getInstanceId();
 
       newDocumentVersion.setPk(new DocumentVersionPK(new Integer(documentId).intValue()));
       newDocumentVersion.setPhysicalName(physicalFileName);
@@ -466,7 +466,7 @@ public class VersioningUtil {
           "root.MSG_GEN_ENTER_METHOD", "newDocumentVersion.getId() = "
           + newDocumentVersion.getPk().getId());
 
-      String newVersionFile = FileRepositoryManager.getAbsolutePath(componentId)
+      String newVersionFile = FileRepositoryManager.getAbsolutePath(theComponentId)
           + DocumentVersion.CONTEXT_VERSIONING
           + newDocumentVersion.getPhysicalName();
 
@@ -537,17 +537,18 @@ public class VersioningUtil {
     DocumentVersion version = null;
 
     DocumentPK document_pk = newVersion.getDocumentPK();
-    Document document = getVersioningBm().getDocument(document_pk);
+    Document theDocument = getVersioningBm().getDocument(document_pk);
     newVersion.setType(versionType);
     newVersion.setComments(comment);
-    version = getVersioningBm().addDocumentVersion(document, newVersion);
+    version = getVersioningBm().addDocumentVersion(theDocument, newVersion);
 
     if (versionType == DocumentVersion.TYPE_PUBLIC_VERSION) {
-      CallBackManager.invoke(CallBackManager.ACTION_VERSIONING_UPDATE,
-          newVersion.getAuthorId(), document.getForeignKey().getInstanceId(),
-          document.getForeignKey().getId());
+      CallBackManager callBackManager = CallBackManager.get();
+      callBackManager.invoke(CallBackManager.ACTION_VERSIONING_UPDATE,
+          newVersion.getAuthorId(), theDocument.getForeignKey().getInstanceId(),
+          theDocument.getForeignKey().getId());
       if (isIndexable()) {
-        createIndex(document, version);
+        createIndex(theDocument, version);
       }
     }
 
@@ -575,13 +576,13 @@ public class VersioningUtil {
 
     List documents = getVersioningBm().getDocuments(fromPK);
 
-    Document document = null;
+    Document aDocument = null;
     File fromFile = null;
     File toFile = null;
     for (int a = 0; documents != null && a < documents.size(); a++) {
-      document = (Document) documents.get(a);
+      aDocument = (Document) documents.get(a);
 
-      List versions = getVersioningBm().getDocumentVersions(document.getPk());
+      List versions = getVersioningBm().getDocumentVersions(aDocument.getPk());
 
       DocumentVersion version = null;
       for (int v = 0; versions != null && v < versions.size(); v++) {
@@ -602,7 +603,7 @@ public class VersioningUtil {
         getVersioningBm().updateDocumentVersion(version);
       }
 
-      getVersioningBm().updateDocumentForeignKey(document.getPk(), toPK);
+      getVersioningBm().updateDocumentForeignKey(aDocument.getPk(), toPK);
     }
 
     if (indexIt) {

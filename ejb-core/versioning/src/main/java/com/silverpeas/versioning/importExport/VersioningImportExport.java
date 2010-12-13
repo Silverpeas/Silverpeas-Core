@@ -148,8 +148,8 @@ public class VersioningImportExport {
         // Il n'y a pas de document portant le même nom
         // On crée un nouveau document
         DocumentPK docPK = new DocumentPK(-1, "useless", componentId);
-        document = new Document(docPK, pubPK, attachment.getLogicalName(), "", 
-            Document.STATUS_CHECKOUTED, -1, new Date(), null, componentId, new ArrayList<Worker>(), 
+        document = new Document(docPK, pubPK, attachment.getLogicalName(), "",
+            Document.STATUS_CHECKOUTED, -1, new Date(), null, componentId, new ArrayList<Worker>(),
             new ArrayList(), 0, 0);
         if (StringUtil.isDefined(attachment.getTitle())) {
           document.setName(attachment.getTitle());
@@ -174,7 +174,7 @@ public class VersioningImportExport {
         docPK = getVersioningBm().createDocument(document, version);
         document.setPk(docPK);
 
-        VersioningUtil versioningUtil = new VersioningUtil(componentId, document, 
+        VersioningUtil versioningUtil = new VersioningUtil(componentId, document,
             String.valueOf(userId), topicId);
         versioningUtil.setFileRights(document);
         getVersioningBm().updateWorkList(document);
@@ -483,7 +483,8 @@ public class VersioningImportExport {
         }
       }
       if (launchCallback) {
-        CallBackManager.invoke(CallBackManager.ACTION_VERSIONING_UPDATE,
+        CallBackManager callBackManager = CallBackManager.get();
+        callBackManager.invoke(CallBackManager.ACTION_VERSIONING_UPDATE,
             userIdCallback, document.getForeignKey().getInstanceId(), document.getForeignKey().getId());
       }
     }

@@ -43,6 +43,8 @@ public class ComponentInstanceTable extends Table {
     this.organization = organization;
   }
 
+  private final CallBackManager callBackManager = CallBackManager.get();
+
   static final private String INSTANCE_COLUMNS =
       "id,spaceId,name,componentName,description,createdBy,orderNum,createTime,updateTime,removeTime,componentStatus,updatedBy,removedBy,isPublic,isHidden,lang,isInheritanceBlocked";
 
@@ -188,7 +190,7 @@ public class ComponentInstanceTable extends Table {
      * organization.userSet.addUserSetInUserSet("I", instance.id, "S", instance.spaceId);
      */
 
-    CallBackManager.invoke(CallBackManager.ACTION_AFTER_CREATE_COMPONENT,
+    callBackManager.invoke(CallBackManager.ACTION_AFTER_CREATE_COMPONENT,
         instance.id, null, null);
   }
 
@@ -197,6 +199,7 @@ public class ComponentInstanceTable extends Table {
       + ")"
       + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
+  @Override
   protected void prepareInsert(String insertQuery, PreparedStatement insert,
       Object row) throws SQLException {
     ComponentInstanceRow i = (ComponentInstanceRow) row;
@@ -337,7 +340,7 @@ public class ComponentInstanceTable extends Table {
     int[] param = new int[2];
     param[0] = spaceId;
     param[1] = componentId;
-    CallBackManager.invoke(CallBackManager.ACTION_BEFORE_REMOVE_COMPONENT,
+    callBackManager.invoke(CallBackManager.ACTION_BEFORE_REMOVE_COMPONENT,
         componentId, null, null);
     updateRelation(MOVE_COMPONENT_INSTANCE, param);
   }
@@ -347,6 +350,7 @@ public class ComponentInstanceTable extends Table {
 
   // NEWF DLE
 
+  @Override
   protected void prepareUpdate(String updateQuery, PreparedStatement update,
       Object row) throws SQLException {
     ComponentInstanceRow i = (ComponentInstanceRow) row;
@@ -380,7 +384,7 @@ public class ComponentInstanceTable extends Table {
    * Delete a component instance and all his user role sets.
    */
   public void removeComponentInstance(int id) throws AdminPersistenceException {
-    CallBackManager.invoke(CallBackManager.ACTION_BEFORE_REMOVE_COMPONENT, id,
+    callBackManager.invoke(CallBackManager.ACTION_BEFORE_REMOVE_COMPONENT, id,
         null, null);
     ComponentInstanceRow instance = getComponentInstance(id);
     if (instance == null)
@@ -409,6 +413,7 @@ public class ComponentInstanceTable extends Table {
   /**
    * Fetch the current space row from a resultSet.
    */
+  @Override
   protected Object fetchRow(ResultSet rs) throws SQLException {
     return fetchComponentInstance(rs);
   }

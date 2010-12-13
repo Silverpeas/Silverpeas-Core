@@ -90,7 +90,7 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter {
     FormTemplateSessionController controller = (FormTemplateSessionController) componentSC;
 
     String destination = "";
-    
+
     PublicationTemplateManager publicationTemplateManager =
             PublicationTemplateManager.getInstance();
 
@@ -190,7 +190,8 @@ public class FormTemplateRequestRouter extends ComponentRequestRouter {
         params.put("XMLFormName", xmlFormShortName);
 
         // launch event
-        CallBackManager.invoke(callbackAction, Integer.parseInt(controller.getUserId()),
+        CallBackManager callBackManager = CallBackManager.get();
+        callBackManager.invoke(callbackAction, Integer.parseInt(controller.getUserId()),
             componentId, params);
         request.setAttribute("ReloadOpener", controller.getReloadOpener());
         request.setAttribute("urlToReload", controller.getUrlToReload());

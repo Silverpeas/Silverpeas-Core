@@ -302,7 +302,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   /**
    * to get user name for given user id
-   * @param user_id 
+   * @param user_id
    * @return the user name for given user id
    */
   public String getUserNameByID(int user_id) {
@@ -414,7 +414,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @param spaceId
    * @param componentId
    * @param context
-   * @return 
+   * @return
    */
   public String createPath(String spaceId, String componentId, String context) {
     return getVersioningUtil().createPath(spaceId, componentId, context);
@@ -424,7 +424,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * Create path to version
    * @param componentId
    * @param context
-   * @return 
+   * @return
    */
   public String createPath(String componentId, String context) {
     return getVersioningUtil().createPath(null, componentId, context);
@@ -487,7 +487,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * Get all users with <b>no</b> reader rights.
    * @param document
    * @return
-   * @throws RemoteException 
+   * @throws RemoteException
    */
   public List<Reader> getAllNoReader(Document document) throws RemoteException {
     noReaderMap.clear();
@@ -510,7 +510,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   /**
    * @param pk
    * @return
-   * @throws RemoteException  
+   * @throws RemoteException
    */
   public int getDocumentCreator(DocumentPK pk) throws RemoteException {
     if (creator_id != -1) {
@@ -541,7 +541,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   /**
    * Constructor
    * @param mainSessionCtrl
-   * @param componentContext 
+   * @param componentContext
    * @author Michael Nikolaenko
    * @version 1.0
    */
@@ -598,7 +598,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   /**
    * to get document from DB
-   * @param documentPK 
+   * @param documentPK
    * @return Document
    * @exception RemoteException
    * @author Michael Nikolaenko
@@ -611,9 +611,9 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   /**
    * to get all documents for given publication id
-   * @param foreignID 
+   * @param foreignID
    * @return ArrayList
-   * @throws RemoteException 
+   * @throws RemoteException
    * @author Michael Nikolaenko
    * @version 1.0
    */
@@ -638,14 +638,15 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @author Michael Nikolaenko
    * @version 1.0
    */
-  public DocumentPK createDocument(Document document, DocumentVersion initialVersion) 
+  public DocumentPK createDocument(Document document, DocumentVersion initialVersion)
       throws RemoteException {
     initEJB();
     DocumentPK documentPK = versioning_bm.createDocument(document, initialVersion);
     document.setPk(documentPK);
     setEditingDocument(document);
     if (initialVersion.getType() == DocumentVersion.TYPE_PUBLIC_VERSION) {
-      CallBackManager.invoke(CallBackManager.ACTION_VERSIONING_ADD, document.getOwnerId(), document.
+      CallBackManager callBackManager = CallBackManager.get();
+      callBackManager.invoke(CallBackManager.ACTION_VERSIONING_ADD, document.getOwnerId(), document.
           getForeignKey().getInstanceId(), document.getForeignKey().getId());
 
       if (isIndexable()) {
@@ -673,7 +674,8 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     Document doc = versioning_bm.getDocument(document_pk);
     version = versioning_bm.addDocumentVersion(doc, newVersion);
     if (version.getType() == DocumentVersion.TYPE_PUBLIC_VERSION) {
-      CallBackManager.invoke(CallBackManager.ACTION_VERSIONING_UPDATE,
+      CallBackManager callBackManager = CallBackManager.get();
+      callBackManager.invoke(CallBackManager.ACTION_VERSIONING_UPDATE,
           newVersion.getAuthorId(), document.getForeignKey().getInstanceId(),
           doc.getForeignKey().getId());
       if (isIndexable()) {
@@ -866,8 +868,8 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   public void validateDocument(DocumentPK documentPK, int validatorID,
       String comment, java.util.Date validationDate) throws RemoteException {
     initEJB();
-    Document document = versioning_bm.getDocument(documentPK);
-    versioning_bm.validateDocument(document, validatorID, comment,
+    Document theDocument = versioning_bm.getDocument(documentPK);
+    versioning_bm.validateDocument(theDocument, validatorID, comment,
         validationDate);
   }
 
@@ -895,7 +897,8 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     }
     initEJB();
     versioning_bm.deleteDocument(documentPK);
-    CallBackManager.invoke(CallBackManager.ACTION_VERSIONING_REMOVE, doc.getOwnerId(), doc.
+    CallBackManager callBackManager = CallBackManager.get();
+    callBackManager.invoke(CallBackManager.ACTION_VERSIONING_REMOVE, doc.getOwnerId(), doc.
         getForeignKey().getInstanceId(), doc);
   }
 

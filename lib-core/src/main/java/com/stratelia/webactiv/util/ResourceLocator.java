@@ -113,6 +113,18 @@ public class ResourceLocator implements Serializable {
     }
   }
 
+  /**
+   * Switchs this resource locator to the specified language for the same refered property file.
+   * @param sLanguage the language to use for getting property values.
+   */
+  public void setLanguage(final String sLanguage) {
+    if (sLanguage != null) {
+      m_sPropertiesLocale = new Locale(sLanguage);
+    } else {
+      m_sPropertiesLocale = Locale.getDefault();
+    }
+  }
+
   private ResourceBundle getResourceBundle(String sPropertyFile, Locale locale) {
     boolean bLoadPropertyInCache = true;
     ResourceBundle bundle = null;

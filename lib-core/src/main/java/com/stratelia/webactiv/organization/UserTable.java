@@ -121,7 +121,7 @@ public class UserTable extends Table {
    */
   public UserRow[] getUsersBySpecificIds(int domainId, List<String> specificIds)
       throws AdminPersistenceException {
-    if (specificIds == null || specificIds.size() == 0)
+    if (specificIds == null || specificIds.isEmpty())
       return null;
 
     StringBuffer clauseIN = new StringBuffer("(");
@@ -391,7 +391,7 @@ public class UserTable extends Table {
     boolean manualFiltering = userIds != null && !userIds.isEmpty() && userIds.size() > 100;
     StringBuffer theQuery = new StringBuffer(SELECT_SEARCH_USERSID);
     if (userIds != null && !userIds.isEmpty() && userIds.size() <= 100) {
-      theQuery.append(" WHERE (ST_User.id IN (" + list2String(userIds) + ") ");
+      theQuery.append(" WHERE (ST_User.id IN (").append(list2String(userIds)).append(") ");
       concatAndOr = true;
     }
     concatAndOr = addIdToQuery(ids, theQuery, userModel.id, "ST_User.id",
@@ -523,13 +523,15 @@ public class UserTable extends Table {
         + ", requête : " + INSERT_USER, null);
     insertRow(INSERT_USER, user);
 
-    CallBackManager.invoke(CallBackManager.ACTION_AFTER_CREATE_USER, user.id,
+    CallBackManager callBackManager = CallBackManager.get();
+    callBackManager.invoke(CallBackManager.ACTION_AFTER_CREATE_USER, user.id,
         null, null);
   }
 
   static final private String INSERT_USER = "insert into ST_User ("
       + USER_COLUMNS + ") values (?,?,?,?,?,?,?,?,?,?,?)";
 
+  @Override
   protected void prepareInsert(String insertQuery, PreparedStatement insert,
       Object row) throws SQLException {
     UserRow u = (UserRow) row;
@@ -572,6 +574,7 @@ public class UserTable extends Table {
       + " loginAnswer = ?"
       + " where id = ?";
 
+  @Override
   protected void prepareUpdate(String updateQuery, PreparedStatement update,
       Object row) throws SQLException {
     UserRow u = (UserRow) row;
@@ -594,7 +597,8 @@ public class UserTable extends Table {
    * Removes a user row.
    */
   public void removeUser(int id) throws AdminPersistenceException {
-    CallBackManager.invoke(CallBackManager.ACTION_BEFORE_REMOVE_USER, id, null,
+    CallBackManager callBackManager = CallBackManager.get();
+    callBackManager.invoke(CallBackManager.ACTION_BEFORE_REMOVE_USER, id, null,
         null);
 
     UserRow user = getUser(id);
@@ -660,6 +664,7 @@ public class UserTable extends Table {
   /**
    * Fetch the current user row from a resultSet.
    */
+  @Override
   protected Object fetchRow(ResultSet rs) throws SQLException {
     return fetchUser(rs);
   }

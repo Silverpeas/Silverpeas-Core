@@ -28,9 +28,15 @@ import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.comment.model.*;
 import java.rmi.RemoteException;
 import java.util.Collection;
-import java.util.Vector;
 import com.stratelia.webactiv.util.WAPrimaryKey;
+import java.util.List;
 
+/**
+ * The service for managing comments about contents in Silverpeas.
+ * This service provides only basic operations on comments. For extended features like the indexing
+ * or the Silverpeas component notification about some operations on comments (adding, removing),
+ * please use for this a CommmentController object.
+ */
 public interface CommentBm extends javax.ejb.EJBObject {
 
   public CommentPK createComment(Comment cmt) throws RemoteException;
@@ -43,9 +49,9 @@ public interface CommentBm extends javax.ejb.EJBObject {
 
   public int getCommentsCount(WAPrimaryKey foreign_pk) throws RemoteException;
 
-  public Vector<Comment> getAllComments(WAPrimaryKey foreign_pk) throws RemoteException;
+  public List<Comment> getAllComments(WAPrimaryKey foreign_pk) throws RemoteException;
 
-  public Vector<Comment> getAllCommentsWithUserName(WAPrimaryKey foreign_pk)
+  public List<Comment> getAllCommentsWithUserName(WAPrimaryKey foreign_pk)
       throws RemoteException;
 
   public Collection<CommentInfo> getMostCommentedAllPublications() throws RemoteException;

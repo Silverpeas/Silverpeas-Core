@@ -48,6 +48,16 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
   }
 
   /**
+   * Constructs a new comment primary key from the specified identifier and Silverpeas component
+   * identifier.
+   * @param id the identifier of the comment.
+   * @param componentId the identifier of the component to which the comment belongs.
+   */
+  public CommentPK(String id, String componentId) {
+    super(id, componentId);
+  }
+
+  /**
    * Constructor declaration
    * @param id
    * @param spaceId
@@ -72,6 +82,7 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
    * **********
    */
 
+  @Override
   public String getRootTableName() {
     return "comment";
   }
@@ -98,7 +109,7 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
       return false;
     }
     CommentPK otherPk = (CommentPK) other;
-    return Objects.equal(id, otherPk.getId()) && Objects.equal(space, otherPk.getSpace()) 
+    return Objects.equal(id, otherPk.getId()) && Objects.equal(space, otherPk.getSpace())
         && Objects.equal(componentName, otherPk.getComponentName());
   }
 
@@ -107,6 +118,7 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
    * @return
    * @see
    */
+  @Override
   public String toString() {
     return "(id = " + getId() + ", space = " + getSpace()
         + ", componentName = " + getComponentName() + ")";
@@ -116,6 +128,7 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
    * Returns a hash code for the key
    * @return A hash code for this object
    */
+  @Override
   public int hashCode() {
     return toString().hashCode();
   }

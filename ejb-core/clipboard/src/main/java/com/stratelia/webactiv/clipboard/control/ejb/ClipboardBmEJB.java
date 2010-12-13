@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
 package com.stratelia.webactiv.clipboard.control.ejb;
@@ -30,7 +30,7 @@ package com.stratelia.webactiv.clipboard.control.ejb;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Collections;
 
 import javax.ejb.CreateException;
 import javax.ejb.SessionBean;
@@ -42,11 +42,13 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
 
 /**
- * A SearchEngineEJB search the web'activ index and give access to the retrieved index entries.
+ * A SearchEngincommeeEJB search the web'activ index and give access to the retrieved index entries.
  */
 public class ClipboardBmEJB implements SessionBean {
+  private static final long serialVersionUID = -824732581358882058L;
+
   private ClipboardSelection m_LastObject = null;
-  private ArrayList m_ObjectList = null;
+  private ArrayList<ClipboardSelection> m_ObjectList = null;
   private boolean m_MultiClip = true;
   private boolean m_Adding2Selection = true;
   private String m_Name = null;
@@ -60,21 +62,19 @@ public class ClipboardBmEJB implements SessionBean {
 
   /**
    * Copy a node.
+   * @param objectToCopy
+   * @throws ClipboardException
    */
   public void add(ClipboardSelection objectToCopy) throws ClipboardException {
     try {
       SilverTrace.info("clipboard", "ClipboardBmEJB.add()",
           "root.MSG_GEN_ENTER_METHOD");
       m_Count += 1;
+      boolean failed = false;
       if (objectToCopy != null) {
         if (!m_Adding2Selection) {
           // we have to deselect the object still in clipboard
-          Iterator iterator = m_ObjectList.iterator();
-
-          while (iterator.hasNext()) {
-            ClipboardSelection clipObject = (ClipboardSelection) iterator
-                .next();
-
+          for (ClipboardSelection clipObject : m_ObjectList) {
             clipObject.setSelected(false);
           }
           // now we add...
@@ -85,12 +85,7 @@ public class ClipboardBmEJB implements SessionBean {
             IndexEntry MainIndexEntry = (IndexEntry) objectToCopy
                 .getTransferData(ClipboardSelection.IndexFlavor);
             IndexEntry indexEntry;
-            Iterator iterator = m_ObjectList.iterator();
-
-            while (iterator.hasNext()) {
-              ClipboardSelection clipObject = (ClipboardSelection) iterator
-                  .next();
-
+            for (ClipboardSelection clipObject : m_ObjectList) {
               if (clipObject
                   .isDataFlavorSupported(ClipboardSelection.IndexFlavor)) {
                 indexEntry = (IndexEntry) clipObject
@@ -105,10 +100,10 @@ public class ClipboardBmEJB implements SessionBean {
             // We dont add an other copy of this object
             // but we need to select it
             objectToCopy.setSelected(true);
-            objectToCopy = null;
+            failed = true;
           }
         }
-        if (objectToCopy != null) {
+        if (objectToCopy != null && !failed) {
           m_LastObject = objectToCopy;
           if (m_MultiClip) {
             m_ObjectList.add(m_LastObject);
@@ -128,6 +123,7 @@ public class ClipboardBmEJB implements SessionBean {
 
   /**
    * Paste a node.
+   * @return
    */
   public ClipboardSelection getObject() {
     m_Count += 1;
@@ -136,24 +132,23 @@ public class ClipboardBmEJB implements SessionBean {
 
   /**
    * Return al the objects.
+   * @return
    */
-  public Collection getObjects() {
+  public Collection<ClipboardSelection> getObjects() {
     m_Count += 1;
-    return m_ObjectList;
+    return Collections.unmodifiableCollection(m_ObjectList);
   }
 
   /**
    * Return the selected objects.
+   * @return
+   * @throws ClipboardException
    */
-  public Collection getSelectedObjects() throws ClipboardException {
+  public Collection<ClipboardSelection> getSelectedObjects() throws ClipboardException {
     try {
       m_Count += 1;
-      ArrayList result = new ArrayList();
-      Iterator qi = m_ObjectList.iterator();
-
-      while (qi.hasNext()) {
-        ClipboardSelection clipObject = (ClipboardSelection) qi.next();
-
+      ArrayList<ClipboardSelection> result = new ArrayList<ClipboardSelection>();
+      for (ClipboardSelection clipObject : m_ObjectList) {
         if (clipObject.isSelected()) {
           result.add(clipObject);
         }
@@ -170,14 +165,12 @@ public class ClipboardBmEJB implements SessionBean {
 
   /**
    * Returns the number of elements in the clipboard.
+   * @return
    * @throws ClipboardException
    */
   public int size() throws ClipboardException {
     try {
-      int Size;
-
-      Size = m_ObjectList.size();
-      return Size;
+      return m_ObjectList.size();
     } catch (Exception e) {
       SilverTrace.warn("clipboard", "ClipboardBmEJB.size()",
           "root.MSG_GEN_ERROR", "ERROR occured in ClipboardBmEJB.size()", e);
@@ -188,13 +181,15 @@ public class ClipboardBmEJB implements SessionBean {
 
   /**
    * Returns the element at the specified position in the clipboard.
+   * @param index
+   * @return
    * @throws ClipboardException
    */
   public ClipboardSelection getObject(int index) throws ClipboardException {
     try {
       ClipboardSelection clipObject;
 
-      clipObject = (ClipboardSelection) m_ObjectList.get(index);
+      clipObject = m_ObjectList.get(index);
       return clipObject;
     } catch (Exception e) {
       SilverTrace.warn("clipboard", "ClipboardBmEJB.getObject()",
@@ -217,13 +212,15 @@ public class ClipboardBmEJB implements SessionBean {
 
   /**
    * Returns the element at the specified position in the clipboard.
+   * @param index
+   * @param setIt
    * @throws ClipboardException
    */
   public void setSelected(int index, boolean setIt) throws ClipboardException {
     ClipboardSelection clipObject;
 
     try {
-      clipObject = (ClipboardSelection) m_ObjectList.get(index);
+      clipObject = m_ObjectList.get(index);
       if (clipObject != null) {
         clipObject.setSelected(setIt);
       }
@@ -239,6 +236,7 @@ public class ClipboardBmEJB implements SessionBean {
 
   /**
    * Removes the element at the specified position in the clipboard.
+   * @param index
    * @throws ClipboardException
    */
   public void removeObject(int index) throws ClipboardException {
@@ -273,6 +271,7 @@ public class ClipboardBmEJB implements SessionBean {
 
   /**
    * Switch the clipboard to multi mode.
+   * @throws RemoteException
    */
   public void setMultiClipboard() throws RemoteException {
     try {
@@ -299,6 +298,7 @@ public class ClipboardBmEJB implements SessionBean {
 
   /**
    * Get the name of clipboard.
+   * @return
    */
   public String getName() {
     return m_Name;
@@ -306,6 +306,7 @@ public class ClipboardBmEJB implements SessionBean {
 
   /**
    * Get the count access of clipboard.
+   * @return
    */
   public Integer getCount() {
     return new Integer(m_Count);
@@ -332,7 +333,8 @@ public class ClipboardBmEJB implements SessionBean {
 
   /**
    * - Method setMessageError
-   * @return
+   * @param messageID
+   * @param e
    * @see
    */
   public void setMessageError(String messageID, Exception e) {
@@ -342,10 +344,13 @@ public class ClipboardBmEJB implements SessionBean {
 
   /**
    * Create a ClipboardBm. The results set is initialized empty.
+   * @param name
+   * @throws CreateException
+   * @throws RemoteException
    */
   public void ejbCreate(String name) throws CreateException, RemoteException {
     m_LastObject = null;
-    m_ObjectList = new ArrayList();
+    m_ObjectList = new ArrayList<ClipboardSelection>();
     m_Name = name;
     SilverTrace.info("clipboard", "ClipboardBmEJB.ejbCreate()",
         "root.MSG_GEN_ENTER_METHOD");
@@ -362,6 +367,7 @@ public class ClipboardBmEJB implements SessionBean {
   /**
    * The last results set is released.
    */
+  @Override
   public void ejbRemove() {
     SilverTrace.info("clipboard", "ClipboardBmEJB.ejbRemove()",
         "root.MSG_GEN_ENTER_METHOD");
@@ -369,7 +375,9 @@ public class ClipboardBmEJB implements SessionBean {
 
   /**
    * The session context is useless.
+   * @param sc
    */
+  @Override
   public void setSessionContext(SessionContext sc) {
     SilverTrace.info("clipboard", "ClipboardBmEJB.setSessionContext()",
         "root.MSG_GEN_ENTER_METHOD");
@@ -378,6 +386,7 @@ public class ClipboardBmEJB implements SessionBean {
   /**
    * There is no ressources to be released.
    */
+  @Override
   public void ejbPassivate() {
     SilverTrace.info("clipboard", "ClipboardBmEJB.ejbPassivate()",
         "root.MSG_GEN_ENTER_METHOD");
@@ -386,6 +395,7 @@ public class ClipboardBmEJB implements SessionBean {
   /**
    * There is no ressources to be restored.
    */
+  @Override
   public void ejbActivate() {
     SilverTrace.info("clipboard", "ClipboardBmEJB.ejbActivate()",
         "root.MSG_GEN_ENTER_METHOD");

@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Vector;
 
 import javax.ejb.CreateException;
 import javax.ejb.SessionBean;
@@ -75,11 +74,16 @@ public class CommentBmEJB implements SessionBean {
     }
   }
 
+  private CommentDAO getCommentDAO() {
+    return new CommentDAO();
+  }
+
   public CommentPK createComment(Comment cmt) throws RemoteException {
     Connection con = openConnection();
     CommentPK commentPK;
     try {
-      commentPK = CommentDAO.createComment(con, cmt);
+      CommentDAO commentDAO = getCommentDAO();
+      commentPK = commentDAO.saveComment(con, cmt);
       if (commentPK == null) {
         throw new CommentRuntimeException("CommentBmEJB.createComment()",
             SilverpeasRuntimeException.ERROR,
@@ -98,7 +102,8 @@ public class CommentBmEJB implements SessionBean {
   public void deleteComment(CommentPK pk) throws RemoteException {
     Connection con = openConnection();
     try {
-      CommentDAO.deleteComment(con, pk);
+      CommentDAO commentDAO = getCommentDAO();
+      commentDAO.deleteComment(con, pk);
     } catch (Exception re) {
       throw new CommentRuntimeException("CommentBmEJB.deleteComment()",
           SilverpeasRuntimeException.ERROR, "comment.DELETE_COMMENT_FAILED", re);
@@ -110,7 +115,8 @@ public class CommentBmEJB implements SessionBean {
   public void updateComment(Comment cmt) throws RemoteException {
     Connection con = openConnection();
     try {
-      CommentDAO.updateComment(con, cmt);
+      CommentDAO commentDAO = getCommentDAO();
+      commentDAO.updateComment(con, cmt);
     } catch (Exception re) {
       throw new CommentRuntimeException("CommentBmEJB.updateComment()",
           SilverpeasRuntimeException.ERROR, "comment.UPDATE_COMMENT_FAILED", re);
@@ -123,7 +129,8 @@ public class CommentBmEJB implements SessionBean {
     Connection con = openConnection();
     Comment comment;
     try {
-      comment = CommentDAO.getComment(con, pk);
+      CommentDAO commentDAO = getCommentDAO();
+      comment = commentDAO.getComment(con, pk);
       if (comment == null) {
         throw new CommentRuntimeException("CommentBmEJB.getComment()",
             SilverpeasRuntimeException.ERROR, "comment.GET_COMMENT_FAILED");
@@ -140,7 +147,8 @@ public class CommentBmEJB implements SessionBean {
   public Collection<CommentInfo> getMostCommentedAllPublications() throws RemoteException {
     Connection con = openConnection();
     try {
-      return CommentDAO.getMostCommentedAllPublications(con);
+      CommentDAO commentDAO = getCommentDAO();
+      return commentDAO.getMostCommentedAllPublications(con);
     } catch (Exception e) {
       throw new RemoteException("Problème Base de données", e);
     } finally {
@@ -152,10 +160,11 @@ public class CommentBmEJB implements SessionBean {
       throws RemoteException {
     List<CommentInfo> comments = new ArrayList<CommentInfo>();
     Connection con = openConnection();
+    CommentDAO commentDAO = getCommentDAO();
     if (pks != null && !pks.isEmpty()) {
       try {
         for (CommentPK commentPk : pks) {
-          comments.add(new CommentInfo(CommentDAO.getCommentsCount(con,
+          comments.add(new CommentInfo(commentDAO.getCommentsCount(con,
               commentPk), commentPk.getInstanceId(), commentPk.getId()));
         }
         Collections.sort(comments, new CommentInfoComparator());
@@ -175,7 +184,8 @@ public class CommentBmEJB implements SessionBean {
     Connection con = openConnection();
     int publicationCommentsCount = 0;
     try {
-      publicationCommentsCount = CommentDAO.getCommentsCount(con, foreign_pk);
+      CommentDAO commentDAO = getCommentDAO();
+      publicationCommentsCount = commentDAO.getCommentsCount(con, foreign_pk);
     } catch (Exception re) {
       throw new CommentRuntimeException("CommentBmEJB.getCommentsCount()",
           SilverpeasRuntimeException.ERROR, "comment.GET_ALL_COMMENTS_FAILED",
@@ -186,11 +196,12 @@ public class CommentBmEJB implements SessionBean {
     return publicationCommentsCount;
   }
 
-  public Vector<Comment> getAllComments(WAPrimaryKey foreign_pk) throws RemoteException {
+  public List<Comment> getAllComments(WAPrimaryKey foreign_pk) throws RemoteException {
     Connection con = openConnection();
-    Vector<Comment> vRet;
+    List<Comment> vRet;
     try {
-      vRet = CommentDAO.getAllComments(con, foreign_pk);
+      CommentDAO commentDAO = getCommentDAO();
+      vRet = commentDAO.getAllComments(con, foreign_pk);
       if (vRet == null) {
         throw new CommentRuntimeException("CommentBmEJB.getAllComments()",
             SilverpeasRuntimeException.ERROR, "comment.GET_ALL_COMMENTS_FAILED");
@@ -213,23 +224,21 @@ public class CommentBmEJB implements SessionBean {
    * @return
    * @throws RemoteException
    */
-  public Vector<Comment> getAllCommentsWithUserName(WAPrimaryKey foreign_pk)
+  public List<Comment> getAllCommentsWithUserName(WAPrimaryKey foreign_pk)
       throws RemoteException {
     Connection con = openConnection();
-    Vector<Comment> vRet;
-    Vector<Comment> vReturn = new Vector<Comment>();
     try {
-      vRet = CommentDAO.getAllComments(con, foreign_pk);
+      CommentDAO commentDAO = getCommentDAO();
+      List<Comment> vRet = commentDAO.getAllComments(con, foreign_pk);
       if (vRet == null) {
         throw new CommentRuntimeException("CommentBmEJB.getAllComments()",
             SilverpeasRuntimeException.ERROR, "comment.GET_ALL_COMMENTS_FAILED");
       } else {
         for (Comment comment : vRet) {
           comment.setOwner(getUserName(comment));
-          vReturn.addElement(comment);
         }
       }
-      return vReturn;
+      return vRet;
     } catch (Exception re) {
       throw new CommentRuntimeException("CommentBmEJB.getAllComments()",
           SilverpeasRuntimeException.ERROR, "comment.GET_ALL_COMMENTS_FAILED",
@@ -252,7 +261,8 @@ public class CommentBmEJB implements SessionBean {
   public void deleteAllComments(ForeignPK foreign_pk) throws RemoteException {
     Connection con = openConnection();
     try {
-      CommentDAO.deleteAllComments(con, foreign_pk);
+      CommentDAO commentDAO = getCommentDAO();
+      commentDAO.deleteAllComments(con, foreign_pk);
     } catch (Exception re) {
       throw new CommentRuntimeException("CommentBmEJB.getAllComments()",
           SilverpeasRuntimeException.ERROR, "comment.GET_ALL_COMMENTS_FAILED",
@@ -266,7 +276,8 @@ public class CommentBmEJB implements SessionBean {
       throws RemoteException {
     Connection con = openConnection();
     try {
-      CommentDAO.moveComments(con, fromPK, toPK);
+      CommentDAO commentDAO = getCommentDAO();
+      commentDAO.moveComments(con, fromPK, toPK);
     } catch (Exception re) {
       throw new CommentRuntimeException("CommentBmEJB.moveComments()",
           SilverpeasRuntimeException.ERROR, "comment.GET_ALL_COMMENTS_FAILED",
@@ -283,6 +294,7 @@ public class CommentBmEJB implements SessionBean {
    * Method declaration
    * @see
    */
+  @Override
   public void ejbRemove() {
   }
 
@@ -290,6 +302,7 @@ public class CommentBmEJB implements SessionBean {
    * Method declaration
    * @see
    */
+  @Override
   public void ejbActivate() {
   }
 
@@ -297,6 +310,7 @@ public class CommentBmEJB implements SessionBean {
    * Method declaration
    * @see
    */
+  @Override
   public void ejbPassivate() {
   }
 
@@ -305,6 +319,7 @@ public class CommentBmEJB implements SessionBean {
    * @param sc
    * @see
    */
+  @Override
   public void setSessionContext(SessionContext sc) {
   }
 }

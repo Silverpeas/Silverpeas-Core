@@ -28,7 +28,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Vector;
 
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -36,6 +35,8 @@ import com.stratelia.webactiv.beans.admin.SynchroGroupReport;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.beans.admin.cache.GroupCache;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A GroupTable object manages the ST_Group table.
@@ -405,8 +406,8 @@ public class GroupTable extends Table {
     boolean concatAndOr = false;
     String andOr = ") AND (";
     StringBuffer theQuery;
-    Vector<Integer> ids = new Vector<Integer>();
-    Vector<String> params = new Vector<String>();
+    List<Integer> ids = new ArrayList<Integer>();
+    List<String> params = new ArrayList<String>();
 
     if ((aRoleId != null) && (aRoleId.length > 0)) {
       theQuery = new StringBuffer(SELECT_SEARCH_GROUPSID_IN_ROLE);
@@ -491,8 +492,8 @@ public class GroupTable extends Table {
     boolean concatAndOr = false;
     String andOr;
     StringBuffer theQuery = new StringBuffer(SELECT_SEARCH_GROUPS);
-    Vector<Integer> ids = new Vector<Integer>();
-    Vector<String> params = new Vector<String>();
+    List<Integer> ids = new ArrayList<Integer> ();
+    List<String> params = new ArrayList<String>();
 
     if (isAnd) {
       andOr = ") AND (";
@@ -547,13 +548,15 @@ public class GroupTable extends Table {
         + ", requête : " + INSERT_GROUP, null);
     insertRow(INSERT_GROUP, group);
 
-    CallBackManager.invoke(CallBackManager.ACTION_AFTER_CREATE_GROUP, group.id,
+    CallBackManager callBackManager = CallBackManager.get();
+    callBackManager.invoke(CallBackManager.ACTION_AFTER_CREATE_GROUP, group.id,
         null, null);
   }
 
   static final private String INSERT_GROUP = "insert into" + " ST_Group("
       + GROUP_COLUMNS + ")" + " values  (? ,? ,? ,? ,? ,? ,?)";
 
+  @Override
   protected void prepareInsert(String insertQuery, PreparedStatement insert,
       Object row) throws SQLException {
     GroupRow g = (GroupRow) row;
@@ -594,6 +597,7 @@ public class GroupTable extends Table {
       + " description = ?," + " superGroupId = ?," + " synchroRule = ?"
       + " where id = ?";
 
+  @Override
   protected void prepareUpdate(String updateQuery, PreparedStatement update,
       Object row) throws SQLException {
     GroupRow g = (GroupRow) row;
@@ -620,7 +624,8 @@ public class GroupTable extends Table {
    * Delete the group and all the sub-groups
    */
   public void removeGroup(int id) throws AdminPersistenceException {
-    CallBackManager.invoke(CallBackManager.ACTION_BEFORE_REMOVE_GROUP, id,
+    CallBackManager callBackManager = CallBackManager.get();
+    callBackManager.invoke(CallBackManager.ACTION_BEFORE_REMOVE_GROUP, id,
         null, null);
 
     GroupRow group = getGroup(id);
@@ -834,6 +839,7 @@ public class GroupTable extends Table {
   /**
    * Fetch the current group row from a resultSet.
    */
+  @Override
   protected Object fetchRow(ResultSet rs) throws SQLException {
     return fetchGroup(rs);
   }

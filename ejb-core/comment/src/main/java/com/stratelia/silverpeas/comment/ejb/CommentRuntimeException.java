@@ -45,6 +45,7 @@ public class CommentRuntimeException extends SilverpeasRuntimeException {
   /**
    * method of interface FromModule
    */
+  @Override
   public String getModule() {
     return "comment";
   }

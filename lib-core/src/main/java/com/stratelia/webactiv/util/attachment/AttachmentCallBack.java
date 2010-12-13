@@ -46,6 +46,7 @@ public class AttachmentCallBack extends CallBack {
    * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#doInvoke(int, int,
    * java.lang.String, java.lang.Object)
    */
+  @Override
   public void doInvoke(int action, int iParam, String componentId, Object extraParam) {
     SilverTrace.info("attachment", "AttachmentCallBack.doInvoke()", "root.MSG_GEN_ENTER_METHOD",
         "action = " + action + ", iParam = " + iParam + ", componentId = " + componentId +
@@ -88,12 +89,14 @@ public class AttachmentCallBack extends CallBack {
    * (non-Javadoc)
    * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#subscribe()
    */
+  @Override
   public void subscribe() {
-    CallBackManager.subscribeAction(CallBackManager.ACTION_XMLCONTENT_CREATE,
+    CallBackManager callBackManager = CallBackManager.get();
+    callBackManager.subscribeAction(CallBackManager.ACTION_XMLCONTENT_CREATE,
         this);
-    CallBackManager.subscribeAction(CallBackManager.ACTION_XMLCONTENT_UPDATE,
+    callBackManager.subscribeAction(CallBackManager.ACTION_XMLCONTENT_UPDATE,
         this);
-    CallBackManager.subscribeAction(CallBackManager.ACTION_XMLCONTENT_DELETE,
+    callBackManager.subscribeAction(CallBackManager.ACTION_XMLCONTENT_DELETE,
         this);
   }
 

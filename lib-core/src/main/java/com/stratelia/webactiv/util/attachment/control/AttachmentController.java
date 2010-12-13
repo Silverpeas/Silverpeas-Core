@@ -130,7 +130,8 @@ public class AttachmentController {
 
       if (invokeCallback && (attachmentDetail.getAuthor() != null)
           && (attachmentDetail.getAuthor().length() > 0)) {
-        CallBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_ADD, Integer
+        CallBackManager callBackManager = CallBackManager.get();
+        callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_ADD, Integer
             .parseInt(attachmentDetail.getAuthor()), attachmentDetail.getForeignKey()
             .getInstanceId(), attachmentDetail.getForeignKey().
             getId());
@@ -163,7 +164,7 @@ public class AttachmentController {
     updateAttachment(attachDetail, indexIt, true);
   }
 
-  public static void updateAttachment(AttachmentDetail attachDetail, boolean indexIt, 
+  public static void updateAttachment(AttachmentDetail attachDetail, boolean indexIt,
       boolean invokeCallback) {
     try {
       AttachmentDetail oldAttachment =
@@ -204,7 +205,8 @@ public class AttachmentController {
       }
       String userId = attachDetail.getAuthor();
       if ((userId != null) && (userId.length() > 0) && invokeCallback) {
-        CallBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_UPDATE,
+        CallBackManager callBackManager = CallBackManager.get();
+        callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_UPDATE,
             Integer.parseInt(attachDetail.getAuthor()), attachDetail.getInstanceId(), attachDetail
             .getForeignKey().getId());
       }
@@ -603,7 +605,8 @@ public class AttachmentController {
           authorId = Integer.parseInt(attachmentDetail.getAuthor());
         }
 
-        CallBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_REMOVE,
+        CallBackManager callBackManager = CallBackManager.get();
+        callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_REMOVE,
             authorId, attachmentDetail.getPK().getInstanceId(), attachmentDetail);
       }
 

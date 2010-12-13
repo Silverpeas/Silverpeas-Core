@@ -32,11 +32,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import javax.ejb.FinderException;
 import javax.naming.NamingException;
@@ -56,6 +53,8 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author neysseri
@@ -92,13 +91,13 @@ public class WysiwygController {
   {
     AttachmentPK foreignKey = new AttachmentPK(id, spaceId, componentId);
 
-    Vector<AttachmentDetail> vectAttachment =
+    List<AttachmentDetail> vectAttachment =
         AttachmentController.searchAttachmentByPKAndContext(foreignKey, context);
     int nbImages = vectAttachment.size();
     String[][] imagesList = new String[nbImages][2];
 
     for (int i = 0; i < nbImages; i++) {
-      AttachmentDetail attD = vectAttachment.elementAt(i);
+      AttachmentDetail attD = vectAttachment.get(i);
 
       String path =
           FileServerUtils.getUrl(spaceId, componentId, attD.getLogicalName(), attD
@@ -416,7 +415,7 @@ public class WysiwygController {
 
   public static void deleteFile(String componentId, String objectId, String language) {
     AttachmentPK foreignKey = new AttachmentPK(objectId, "useless", componentId);
-    Vector<AttachmentDetail> files = AttachmentController.searchAttachmentByCustomerPK(foreignKey);
+    List<AttachmentDetail> files = AttachmentController.searchAttachmentByCustomerPK(foreignKey);
     Iterator<AttachmentDetail> f = files.iterator();
     while (f.hasNext()) {
       AttachmentDetail file = f.next();
@@ -445,7 +444,7 @@ public class WysiwygController {
       String componentId, String context, String id, String userId) throws WysiwygException {
     createFileAndAttachment(textHtml, fileName, spaceId, componentId, context, id, userId, true);
   }
-  
+
   public static void createFileAndAttachment(String textHtml, String fileName, String spaceId,
       String componentId, String context, String id, String userId, boolean indexIt)
       throws WysiwygException {
@@ -481,9 +480,10 @@ public class WysiwygController {
       ad.setAuthor(userId);
 
       AttachmentController.createAttachment(ad, indexIt, invokeCallback);
-      
+
       if (invokeCallback) {
-        CallBackManager.invoke(CallBackManager.ACTION_ON_WYSIWYG, iUserId, componentId, id);
+        CallBackManager callBackManager = CallBackManager.get();
+        callBackManager.invoke(CallBackManager.ACTION_ON_WYSIWYG, iUserId, componentId, id);
       }
     } catch (Exception exc) {
       throw new WysiwygException("WysiwygController.createFileAndAttachment()",
@@ -815,13 +815,9 @@ public class WysiwygController {
   public static AttachmentDetail searchAttachmentDetail(String fileName, String spaceId,
       String componentId, String context, String objectId, Connection con) {
     AttachmentPK foreignKey = new AttachmentPK(objectId, spaceId, componentId);
-    Vector<AttachmentDetail> vectAttachment =
+    List<AttachmentDetail> vectAttachment =
         AttachmentController.searchAttachmentByPKAndContext(foreignKey, context, con);
-    int nbFiles = vectAttachment.size();
-
-    for (int i = 0; i < nbFiles; i++) {
-      AttachmentDetail attD = vectAttachment.elementAt(i);
-
+    for (AttachmentDetail attD : vectAttachment) {
       if (attD.getLogicalName().equals(fileName)) {
         return attD;
       }
@@ -969,17 +965,14 @@ public class WysiwygController {
       String nPath = AttachmentController.createPath(componentId, getImagesFileName(objectId));
       String newPath = "";
       AttachmentPK foreignKey = new AttachmentPK(oldObjectId, oldSpaceId, oldComponentId);
-      Vector<AttachmentDetail> vectAttachment =
+      List<AttachmentDetail> vectAttachment =
           AttachmentController.searchAttachmentByPKAndContext(foreignKey,
           getImagesFileName(oldObjectId));
       int nbImages = vectAttachment.size();
-      Hashtable<String, String> imageIds = new Hashtable<String, String>();
+      Map<String, String> imageIds = new HashMap<String, String>();
 
-      for (int i = 0; i < nbImages; i++) {
-        currentPath = oldPath;
-        AttachmentDetail attD = vectAttachment.elementAt(i);
-
-        currentPath += attD.getPhysicalName();
+      for (AttachmentDetail attD : vectAttachment) {
+        currentPath = oldPath + attD.getPhysicalName();
         newPath = nPath + attD.getPhysicalName();
         // physically
         FileRepositoryManager.copyFile(currentPath, newPath);
@@ -1006,7 +999,7 @@ public class WysiwygController {
   }
 
   private static void copyFile(String oldComponentId, String oldObjectId, String componentId,
-      String objectId, String userId, String language, Hashtable<String, String> imageIds) {
+      String objectId, String userId, String language, Map<String, String> imageIds) {
     SilverTrace.info("wysiwyg", "WysiwygController.copyFile()", "root.MSG_GEN_ENTER_METHOD");
     try {
       // copy the wysiwyg
@@ -1026,14 +1019,11 @@ public class WysiwygController {
   }
 
   private static String replaceInternalImageIds(String wysiwygContent,
-      Hashtable<String, String> imageIds) {
+      Map<String, String> imageIds) {
     String tmp = wysiwygContent;
-    Enumeration<String> oldImageIds = imageIds.keys();
-    while (oldImageIds.hasMoreElements()) {
-      String oldImageId = oldImageIds.nextElement();
-      String newImageId = imageIds.get(oldImageId);
-
-      tmp = replaceInternalImageId(tmp, oldImageId, newImageId);
+    for (Map.Entry<String, String> imageId : imageIds.entrySet()) {
+      String newImageId = imageId.getValue();
+      tmp = replaceInternalImageId(tmp, imageId.getKey(), newImageId);
     }
     return tmp;
   }

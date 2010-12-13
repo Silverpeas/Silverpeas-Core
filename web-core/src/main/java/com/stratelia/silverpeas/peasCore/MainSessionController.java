@@ -711,7 +711,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
   }
 
   @Override
-  public Collection<?> getSelectedObjects() throws RemoteException {
+  public Collection<ClipboardSelection> getSelectedObjects() throws RemoteException {
     ClipboardBm clipboard = getClipboard();
     synchronized (clipboard) {
       return clipboard.getSelectedObjects();
@@ -719,7 +719,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
   }
 
   @Override
-  public Collection<?> getObjects() throws RemoteException {
+  public Collection<ClipboardSelection> getObjects() throws RemoteException {
     ClipboardBm clipboard = getClipboard();
     synchronized (clipboard) {
       return clipboard.getObjects();

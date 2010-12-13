@@ -44,6 +44,7 @@ public class FileSharingCallBack extends CallBack {
    * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#doInvoke(int, int,
    * java.lang.String, java.lang.Object)
    */
+  @Override
   public void doInvoke(int action, int iParam, String componentId,
       Object extraParam) {
     SilverTrace.info("fileSharing", "FileSharingCallback.doInvoke()",
@@ -89,10 +90,12 @@ public class FileSharingCallBack extends CallBack {
    * (non-Javadoc)
    * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#subscribe()
    */
+  @Override
   public void subscribe() {
-    CallBackManager.subscribeAction(CallBackManager.ACTION_ATTACHMENT_REMOVE,
+    CallBackManager callBackManager = CallBackManager.get();
+    callBackManager.subscribeAction(CallBackManager.ACTION_ATTACHMENT_REMOVE,
         this);
-    CallBackManager.subscribeAction(CallBackManager.ACTION_VERSIONING_REMOVE,
+    callBackManager.subscribeAction(CallBackManager.ACTION_VERSIONING_REMOVE,
         this);
   }
 

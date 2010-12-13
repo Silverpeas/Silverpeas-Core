@@ -49,6 +49,8 @@ public class SpaceTable extends Table {
   static final private String SPACE_COLUMNS =
       "id,domainFatherId,name,description,createdBy,firstPageType,firstPageExtraParam,orderNum,createTime,updateTime,removeTime,spaceStatus,updatedBy,removedBy,lang,isInheritanceBlocked,look,displaySpaceFirst,isPersonal";
 
+  private final CallBackManager callBackManager = CallBackManager.get();
+
   /**
    * Fetch the current space row from a resultSet.
    */
@@ -235,7 +237,7 @@ public class SpaceTable extends Table {
 
     insertRow(INSERT_SPACE, space);
 
-    CallBackManager.invoke(CallBackManager.ACTION_AFTER_CREATE_SPACE, space.id,
+    callBackManager.invoke(CallBackManager.ACTION_AFTER_CREATE_SPACE, space.id,
         null, null);
   }
 
@@ -243,6 +245,7 @@ public class SpaceTable extends Table {
       + SPACE_COLUMNS + ")"
       + " values  (? ,? ,? ,? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
+  @Override
   protected void prepareInsert(String insertQuery, PreparedStatement insert,
       Object row) throws SQLException {
     SpaceRow s = (SpaceRow) row;
@@ -337,6 +340,7 @@ public class SpaceTable extends Table {
       + " spaceStatus = ?," + " lang = ?," + " isInheritanceBlocked = ?,"
       + " look = ?," + " displaySpaceFirst = ?," + " isPersonal = ? " + " where id = ?";
 
+  @Override
   protected void prepareUpdate(String updateQuery, PreparedStatement update,
       Object row) throws SQLException {
     SpaceRow s = (SpaceRow) row;
@@ -380,7 +384,7 @@ public class SpaceTable extends Table {
    * Delete the space and all his component instances.
    */
   public void removeSpace(int id) throws AdminPersistenceException {
-    CallBackManager.invoke(CallBackManager.ACTION_BEFORE_REMOVE_SPACE, id,
+    callBackManager.invoke(CallBackManager.ACTION_BEFORE_REMOVE_SPACE, id,
         null, null);
 
     SpaceRow space = getSpace(id);
@@ -475,6 +479,7 @@ public class SpaceTable extends Table {
   /**
    * Fetch the current space row from a resultSet.
    */
+  @Override
   protected Object fetchRow(ResultSet rs) throws SQLException {
     return fetchSpace(rs);
   }

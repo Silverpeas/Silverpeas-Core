@@ -22,12 +22,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
 package com.stratelia.silverpeas.silverpeasinitialize;
-
-import com.stratelia.silverpeas.silverpeasinitialize.IInitialize;
 
 /**
  * Title: Description: Copyright: Copyright (c) 2001 Company:
@@ -48,6 +46,7 @@ public class TestInitialize implements IInitialize {
    * @return
    * @see
    */
+  @Override
   public boolean Initialize() {
     System.out.println("Silverpeas Initializer well started.");
     return true;

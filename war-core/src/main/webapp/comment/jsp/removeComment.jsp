@@ -34,12 +34,13 @@
     String action 		= request.getParameter("action");
     String url 			= request.getParameter("url");
     String pub_id 		= request.getParameter("pub_id");
+    CommentController commentController = new CommentController();
 
     if ( "delete".equals(action) && comment_id != null && !"null".equals(comment_id) )
     {
         CommentPK pk = new CommentPK(comment_id);
 		pk.setComponentName(component_id);
-        CommentController.deleteComment(pk);
+        commentController.deleteComment(pk);
     }
 
     response.sendRedirect(URLManager.getApplicationURL()+ url + "?Action=ViewComment&PubId="+pub_id);

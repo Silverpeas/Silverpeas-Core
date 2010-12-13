@@ -29,7 +29,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -38,8 +37,7 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 import java.sql.Statement;
 
 /**
- * Class declaration
- * @author
+ * A DAO on comments.
  */
 public class CommentDAO {
 
@@ -47,25 +45,24 @@ public class CommentDAO {
   private static final String COMMENT_TABLENAME = "sb_comment_comment";
 
   /**
-   * Constructor declaration
-   * @see
+   * Constructs a new CommentDAO instance.
    */
   public CommentDAO() {
   }
 
   /**
-   * Method declaration
-   * @param con
-   * @param cmt 
-   * @return 
-   * @throws SQLException
+   * Saves the specified comment with the specified connection onto a data source.
+   * @param con the connection to a data source.
+   * @param cmt the comment to save.
+   * @return the unique identifier of comment in the data source (id est the primary key).
+   * @throws SQLException if an error occurs while saving the comment.
    */
-  public static CommentPK createComment(Connection con, Comment cmt)
+  public CommentPK saveComment(Connection con, Comment cmt)
       throws SQLException {
     String insert_query = "INSERT INTO sb_comment_comment (commentId , commentOwnerId, "
         + "commentCreationDate, commentModificationDate, commentComment, foreignId, instanceId) "
         + "VALUES ( ?, ?, ?, ?, ?, ?, ? )";
-    PreparedStatement prep_stmt = null;   
+    PreparedStatement prep_stmt = null;
     int newId = 0;
     try {
       newId = DBUtil.getNextId(cmt.getCommentPK().getTableName(), "commentId");
@@ -90,7 +87,14 @@ public class CommentDAO {
     return cmt.getCommentPK();
   }
 
-  public static void deleteComment(Connection con, CommentPK pk) throws SQLException {
+  /**
+   * Deletes the comment identified by the specified primary key from the data source onto which
+   * the given connection is opened.
+   * @param con the connection to the data source.
+   * @param pk the unique identifier of the comment in the data source.
+   * @throws SQLException if an error occurs while removing the comment from the data source.
+   */
+  public void deleteComment(Connection con, CommentPK pk) throws SQLException {
     String delete_query = "DELETE FROM sb_comment_comment WHERE commentId = ?";
     PreparedStatement prep_stmt = null;
     prep_stmt = con.prepareStatement(delete_query);
@@ -102,7 +106,13 @@ public class CommentDAO {
     }
   }
 
-  public static void updateComment(Connection con, Comment cmt) throws SQLException {
+  /**
+   * Updates the comment representation in the data source by the specified one.
+   * @param con the connection to the data source.
+   * @param cmt the updated comment.
+   * @throws SQLException if an error occurs while updating the comment in the data source.
+   */
+  public void updateComment(Connection con, Comment cmt) throws SQLException {
     String update_query = "UPDATE sb_comment_comment SET commentOwnerId=?, commentModificationDate=?, "
         + "commentComment=?, foreignId=?, instanceId=? WHERE commentId= ?";
     PreparedStatement prep_stmt = null;
@@ -120,7 +130,14 @@ public class CommentDAO {
     }
   }
 
-  public static void moveComments(Connection con, ForeignPK fromPK, ForeignPK toPK)
+  /**
+   * Moves comments. (Requires more explanation!)
+   * @param con the connection to the data source.
+   * @param fromPK the source unique identifier of the comment in the data source.
+   * @param toPK the destination unique identifier of another comment in the data source.
+   * @throws SQLException if an error occurs during the operation.
+   */
+  public void moveComments(Connection con, ForeignPK fromPK, ForeignPK toPK)
       throws SQLException {
     String update_query = "UPDATE sb_comment_comment SET foreignId=?, instanceId=? WHERE "
         + "foreignId=? AND instanceId=?";
@@ -138,7 +155,14 @@ public class CommentDAO {
     }
   }
 
-  public static Comment getComment(Connection con, CommentPK pk) throws SQLException {
+  /**
+   * Gets the comment identified by the specified identifier.
+   * @param con the connection to use for getting the comment.
+   * @param pk the identifier of the comment in the data source.
+   * @return the comment or null if no such comment is found.
+   * @throws SQLException if an error occurs during the comment fetching.
+   */
+  public Comment getComment(Connection con, CommentPK pk) throws SQLException {
     String select_query = "SELECT commentOwnerId, commentCreationDate, commentModificationDate, "
         + "commentComment, foreignId, instanceId FROM sb_comment_comment WHERE commentId = ?";
     PreparedStatement prep_stmt = null;
@@ -160,7 +184,7 @@ public class CommentDAO {
     }
   }
 
-  public static List<CommentInfo> getMostCommentedAllPublications(Connection con)
+  public List<CommentInfo> getMostCommentedAllPublications(Connection con)
       throws SQLException {
     String select_query = "SELECT COUNT(commentId) as nb_comment, foreignId, instanceId FROM "
         + "sb_comment_comment GROUP BY foreignId, instanceId ORDER BY nb_comment desc;";
@@ -185,7 +209,7 @@ public class CommentDAO {
 
   }
 
-  public static int getCommentsCount(Connection con, WAPrimaryKey foreign_pk)
+  public int getCommentsCount(Connection con, WAPrimaryKey foreign_pk)
       throws SQLException {
     String select_query = "select count(commentId) as nb_comment from "
         + COMMENT_TABLENAME + " where instanceId = '"
@@ -203,7 +227,8 @@ public class CommentDAO {
         commentsCount = rs.getInt("nb_comment");
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      SilverTrace.error("comment", "CommentDAO.getCommentsCount()",
+          "root.EX_NO_MESSAGE", e);
     } finally {
       DBUtil.close(rs, prep_stmt);
     }
@@ -211,7 +236,7 @@ public class CommentDAO {
     return commentsCount;
   }
 
-  public static Vector<Comment> getAllComments(Connection con, WAPrimaryKey foreign_pk)
+  public List<Comment> getAllComments(Connection con, WAPrimaryKey foreign_pk)
       throws SQLException {
     String select_query =
         "select commentId, commentOwnerId, commentCreationDate, commentModificationDate, commentComment, foreignId, instanceId from "
@@ -225,7 +250,7 @@ public class CommentDAO {
     ResultSet rs = null;
     prep_stmt = con.prepareStatement(select_query);
 
-    Vector<Comment> comments = new Vector<Comment>(INITIAL_CAPACITY);
+    List<Comment> comments = new ArrayList<Comment>(INITIAL_CAPACITY);
 
     try {
       rs = prep_stmt.executeQuery();
@@ -247,7 +272,7 @@ public class CommentDAO {
     return comments;
   }
 
-  public static void deleteAllComments(Connection con, ForeignPK pk)
+  public void deleteAllComments(Connection con, ForeignPK pk)
       throws SQLException {
     String delete_query = "delete from " + COMMENT_TABLENAME
         + " where foreignId = ? And instanceId = ? ";
