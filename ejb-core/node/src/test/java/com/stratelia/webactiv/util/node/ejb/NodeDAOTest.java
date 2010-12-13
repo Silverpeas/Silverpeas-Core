@@ -4,12 +4,12 @@
  */
 package com.stratelia.webactiv.util.node.ejb;
 
+import com.silverpeas.components.model.AbstractJndiCase;
+import com.silverpeas.components.model.SilverpeasJndiCase;
 import java.io.IOException;
 import javax.naming.NamingException;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import java.util.Iterator;
-import com.silverpeas.components.model.AbstractTestDao;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import java.sql.Connection;
@@ -23,31 +23,24 @@ import static org.junit.Assert.*;
  *
  * @author ehugonnet
  */
-public class NodeDAOTest extends AbstractTestDao {
+public class NodeDAOTest extends AbstractJndiCase {
 
-  @Override
-  protected String getDatasetFileName() {
-    return "nodes-test-dataset.xml";
-  }
   private static final String INSTANCE_ID = "kmelia60";
   
   @BeforeClass
-  public static void generalSetUp() throws IOException, NamingException {
-    AbstractTestDao.configureJNDIDatasource();
+  public static void generalSetUp() throws IOException, NamingException, Exception {
+    baseTest = new SilverpeasJndiCase("com/stratelia/webactiv/util/node/ejb/nodes-test-dataset.xml",
+        "create-database.ddl");
+    baseTest.configureJNDIDatasource();
+    IDatabaseConnection databaseConnection = baseTest.getDatabaseTester().getConnection();
+    executeDDL(databaseConnection, baseTest.getDdlFile());
+    baseTest.getDatabaseTester().closeConnection(databaseConnection);    
   }
 
-  @Before
-  @Override
-  public void setUp() throws Exception {
-    super.prepareData();
-  }
-
-  public NodeDAOTest() {
-  }
 
   @Test
   public void testGetTree() throws Exception {
-    IDatabaseConnection dataSetConnection = getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("0", INSTANCE_ID);
     List<NodeDetail> tree = NodeDAO.getTree(connection, nodePK);
@@ -158,13 +151,13 @@ public class NodeDAOTest extends AbstractTestDao {
     assertEquals(1, detail.getOrder());
     assertEquals("/0/3/", detail.getPath());
     assertEquals("default", detail.getType());
-    dataSetConnection.close();
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
   @Test
   public void testIsSameNameSameLevelOnCreation() throws Exception {
-    IDatabaseConnection dataSetConnection = getConnection();
-    Connection connection = dataSetConnection.getConnection();
+    IDatabaseConnection dbConnection = baseTest.getConnection();
+    Connection connection = dbConnection.getConnection();
     NodePK pk = new NodePK(null, INSTANCE_ID);
     NodeDetail detail = new NodeDetail();
     detail.setLevel(2);
@@ -189,12 +182,12 @@ public class NodeDAOTest extends AbstractTestDao {
     pk = new NodePK(null, "kmelia65");
     detail.setNodePK(pk);
     assertFalse(NodeDAO.isSameNameSameLevelOnCreation(connection, detail));
-    dataSetConnection.close();
+    baseTest.getDatabaseTester().closeConnection(dbConnection);
   }
 
   @Test
   public void testIsSameNameSameLevelOnUpdate() throws Exception {
-    IDatabaseConnection dataSetConnection = getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK pk = new NodePK("1", INSTANCE_ID);
     NodeDetail detail = new NodeDetail();
@@ -228,15 +221,15 @@ public class NodeDAOTest extends AbstractTestDao {
     detail.setNodePK(pk);
     assertFalse(NodeDAO.isSameNameSameLevelOnCreation(
         connection, detail));
-    dataSetConnection.close();
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
   @Test
   public void testGetChildrenPKs() throws Exception {
-    IDatabaseConnection dataSetConnection = getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("0", INSTANCE_ID);
-    Collection children = NodeDAO.getChildrenPKs(connection, nodePK);
+    Collection<NodePK> children = NodeDAO.getChildrenPKs(connection, nodePK);
     assertNotNull(children);
     assertEquals(3, children.size());
     nodePK = new NodePK("3", INSTANCE_ID);
@@ -250,12 +243,12 @@ public class NodeDAOTest extends AbstractTestDao {
     assertEquals(INSTANCE_ID, childPk.getComponentName());
     assertNull(childPk.getSpaceId());
     assertEquals("sb_node_node", childPk.getTableName().toLowerCase());
-    dataSetConnection.close();
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
   @Test
   public void testGetDescendantPKs() throws Exception {
-    IDatabaseConnection dataSetConnection = getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("3", INSTANCE_ID);
     Collection children = NodeDAO.getDescendantPKs(connection,
@@ -294,12 +287,12 @@ public class NodeDAOTest extends AbstractTestDao {
     assertEquals(INSTANCE_ID, childPk.getComponentName());
     assertNull(childPk.getSpaceId());
     assertEquals("sb_node_node", childPk.getTableName().toLowerCase());
-    dataSetConnection.close();
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
   @Test
   public void testGetDescendantDetailsConnectionNodePK() throws Exception {
-    IDatabaseConnection dataSetConnection = getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("3", INSTANCE_ID);
     Collection children = NodeDAO.getDescendantDetails(
@@ -392,12 +385,12 @@ public class NodeDAOTest extends AbstractTestDao {
     assertEquals(1, detail.getOrder());
     assertEquals("/0/3/", detail.getPath());
     assertEquals("default", detail.getType());
-    dataSetConnection.close();
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
   @Test
   public void testGetDescendantDetailsConnectionNodeDetail() throws Exception {
-    IDatabaseConnection dataSetConnection = getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("3", INSTANCE_ID);
     NodeDetail parent = new NodeDetail();
@@ -496,12 +489,12 @@ public class NodeDAOTest extends AbstractTestDao {
     assertEquals(1, detail.getOrder());
     assertEquals("/0/3/", detail.getPath());
     assertEquals("default", detail.getType());
-    dataSetConnection.close();
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
   @Test
   public void testGetHeadersByLevel() throws Exception {
-    IDatabaseConnection dataSetConnection = getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("3", INSTANCE_ID);
     Collection children = NodeDAO.getHeadersByLevel(connection,
@@ -596,12 +589,12 @@ public class NodeDAOTest extends AbstractTestDao {
     assertEquals(1, detail.getOrder());
     assertEquals("/0/3/", detail.getPath());
     assertEquals("default", detail.getType());
-    dataSetConnection.close();
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
   @Test
   public void testGetAllHeaders() throws Exception {
-    IDatabaseConnection dataSetConnection = getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("0", INSTANCE_ID);
     List tree = NodeDAO.getTree(connection, nodePK);
@@ -712,12 +705,12 @@ public class NodeDAOTest extends AbstractTestDao {
     assertEquals(1, detail.getOrder());
     assertEquals("/0/3/", detail.getPath());
     assertEquals("default", detail.getType());
-    dataSetConnection.close();
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
   @Test
   public void testGetAnotherPath() throws Exception {
-    IDatabaseConnection dataSetConnection = getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("3", INSTANCE_ID);
     Collection tree = NodeDAO.getAnotherPath(connection, nodePK);
@@ -829,12 +822,12 @@ public class NodeDAOTest extends AbstractTestDao {
     assertEquals(0, detail.getOrder());
     assertEquals("/", detail.getPath());
     assertNull(detail.getType());
-    dataSetConnection.close();
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
   @Test
   public void testGetAnotherHeader() throws Exception {
-    IDatabaseConnection dataSetConnection = getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("2", INSTANCE_ID);
     NodePK result = NodeDAO.selectByPrimaryKey(connection, nodePK);
@@ -929,12 +922,12 @@ public class NodeDAOTest extends AbstractTestDao {
     assertEquals(1, detail.getOrder());
     assertEquals("/0/3/", detail.getPath());
     assertEquals("default", detail.getType());
-    dataSetConnection.close();
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
   @Test
   public void testGetChildrenDetailsConnectionNodePK() throws Exception {
-    IDatabaseConnection dataSetConnection = getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("0", INSTANCE_ID);
     Collection<NodeDetail> children = NodeDAO.getChildrenDetails(
@@ -1027,12 +1020,12 @@ public class NodeDAOTest extends AbstractTestDao {
     assertEquals(1, detail.getOrder());
     assertEquals("/0/3/", detail.getPath());
     assertEquals("default", detail.getType());
-    dataSetConnection.close();
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
   @Test
   public void testGetChildrenDetailsConnectionNodePKString() throws Exception {
-    IDatabaseConnection dataSetConnection = getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("0", INSTANCE_ID);
     Collection<NodeDetail> children = NodeDAO.getChildrenDetails(connection, nodePK, "nodename");
@@ -1124,23 +1117,23 @@ public class NodeDAOTest extends AbstractTestDao {
     assertEquals(1, detail.getOrder());
     assertEquals("/0/3/", detail.getPath());
     assertEquals("default", detail.getType());
-    dataSetConnection.close();
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
   @Test
   public void testGetChildrenNumber() throws Exception {
-    IDatabaseConnection dataSetConnection = getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("0", INSTANCE_ID);
     assertEquals(3, NodeDAO.getChildrenNumber(connection, nodePK));
     nodePK = new NodePK("3", INSTANCE_ID);
     assertEquals(1, NodeDAO.getChildrenNumber(connection, nodePK));
-    dataSetConnection.close();
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
   @Test
   public void testSelectByPrimaryKey() throws Exception {
-    IDatabaseConnection dataSetConnection = getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("2", INSTANCE_ID);
     NodePK detail = NodeDAO.selectByPrimaryKey(connection, nodePK);
@@ -1247,12 +1240,12 @@ public class NodeDAOTest extends AbstractTestDao {
     assertEquals(1, detail.nodeDetail.getOrder());
     assertEquals("/0/3/", detail.nodeDetail.getPath());
     assertEquals("default", detail.nodeDetail.getType());
-    dataSetConnection.close();
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
 /*  @Test
   public void testSelectByNameAndFatherId() throws Exception {
-    IDatabaseConnection dataSetConnection = getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("2", INSTANCE_ID);
     NodePK detail = NodeDAO.selectByNameAndFatherId(connection, nodePK, "Déclassées", 0);
@@ -1372,12 +1365,12 @@ public class NodeDAOTest extends AbstractTestDao {
     assertEquals(1, detail.nodeDetail.getOrder());
     assertEquals("/0/3/", detail.nodeDetail.getPath());
     assertEquals("default", detail.nodeDetail.getType());
-    dataSetConnection.close();
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
   @Test
   public void testSelectByFatherPrimaryKey() throws Exception {
-    IDatabaseConnection dataSetConnection = getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
     Connection connection = dataSetConnection.getConnection();
     NodePK nodePK = new NodePK("0", INSTANCE_ID);
     Collection children = NodeDAO.getChildrenPKs(connection, nodePK);
@@ -1477,6 +1470,6 @@ public class NodeDAOTest extends AbstractTestDao {
     assertEquals(1, detail.getOrder());
     assertEquals("/0/3/", detail.getPath());
     assertEquals("default", detail.getType());
-    dataSetConnection.close();
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }*/
 }

@@ -23,7 +23,8 @@
  */
 package com.stratelia.webactiv.util.coordinates.ejb;
 
-import com.silverpeas.components.model.AbstractTestDao;
+import com.silverpeas.components.model.AbstractJndiCase;
+import com.silverpeas.components.model.SilverpeasJndiCase;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePoint;
@@ -41,8 +42,7 @@ import org.dbunit.dataset.DefaultTable;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.datatype.DataType;
-import org.junit.Assert;
-import org.junit.Before;
+import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.matchers.JUnitMatchers;
@@ -51,28 +51,30 @@ import org.junit.matchers.JUnitMatchers;
  *
  * @author ehugonnet
  */
-public class CoordinatesDAOTest extends AbstractTestDao {
+public class CoordinatesDAOTest extends AbstractJndiCase {
 
   public CoordinatesDAOTest() {
   }
 
   @BeforeClass
-  public static void generalSetUp() throws IOException, NamingException {
-    AbstractTestDao.configureJNDIDatasource();
+  public static void generalSetUp() throws IOException, NamingException, Exception {
+    baseTest = new SilverpeasJndiCase(
+        "com/stratelia/webactiv/util/coordinates/ejb/coordinates-test-dataset.xml",
+        "create-database.ddl");
+    baseTest.configureJNDIDatasource();
+    IDatabaseConnection databaseConnection = baseTest.getDatabaseTester().getConnection();
+    executeDDL(databaseConnection, baseTest.getDdlFile());
+    baseTest.getDatabaseTester().closeConnection(databaseConnection);
   }
 
-  @Before
-  @Override
-  public void setUp() throws Exception {
-    super.prepareData();
-  }
   /**
    * Test of selectByFatherIds method, of class CoordinatesDAO.
    * @throws Exception
    */
   @Test
   public void testSelectByFatherIds() throws Exception {
-    Connection con = getConnection().getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    Connection con = dataSetConnection.getConnection();
     List<Integer> fatherIds = new ArrayList<Integer>();
     fatherIds.add(Integer.valueOf(1060));
     String instanceId = "kmax888";
@@ -83,6 +85,7 @@ public class CoordinatesDAOTest extends AbstractTestDao {
     @SuppressWarnings("unchecked")
     Collection<String> result = CoordinatesDAO.selectByFatherIds(con, fatherIds, pk);
     assertEquals(expResult, result);
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
   /**
@@ -91,7 +94,8 @@ public class CoordinatesDAOTest extends AbstractTestDao {
    */
   @Test
   public void testSelectByFatherPaths() throws Exception {
-    Connection con = getConnection().getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    Connection con = dataSetConnection.getConnection();
     List<String> fatherPaths = new ArrayList<String>();
     fatherPaths.add("/0/1/1060");
     String instanceId = "kmax888";
@@ -100,8 +104,10 @@ public class CoordinatesDAOTest extends AbstractTestDao {
     expResult.add("1");
     expResult.add("2");
     @SuppressWarnings("unchecked")
-    HashSet<String> result = new HashSet<String>(CoordinatesDAO.selectByFatherPaths(con, fatherPaths, pk));
+    HashSet<String> result = new HashSet<String>(CoordinatesDAO.selectByFatherPaths(con, fatherPaths,
+        pk));
     assertEquals(expResult, result);
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
   /**
@@ -110,7 +116,7 @@ public class CoordinatesDAOTest extends AbstractTestDao {
    */
   @Test
   public void testAddCoordinate() throws Exception {
-    IDatabaseConnection dataSetConnection = getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
     Connection con = dataSetConnection.getConnection();
     String instanceId = "kmax888";
     CoordinatePK pk = new CoordinatePK(null, null, instanceId);
@@ -175,7 +181,7 @@ public class CoordinatesDAOTest extends AbstractTestDao {
           valueOf(2), "kmax888"});
 
     Assertion.assertEquals(expectedTable, actualTable);
-    dataSetConnection.close();
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
   /**
@@ -185,7 +191,7 @@ public class CoordinatesDAOTest extends AbstractTestDao {
   @Test()
   @SuppressWarnings("unchecked")
   public void testRemoveCoordinates() throws Exception {
-    IDatabaseConnection dataSetConnection = getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
     Connection con = dataSetConnection.getConnection();
     String instanceId = "kmax888";
     CoordinatePK pk = new CoordinatePK(null, null, instanceId);
@@ -203,7 +209,7 @@ public class CoordinatesDAOTest extends AbstractTestDao {
     points1.add(new CoordinatePoint(1, 1060, true));
     points1.add(new CoordinatePoint(1, 1064, true));
     coordinate1.setCoordinatePoints(points1);
-    Assert.assertThat(result, JUnitMatchers.hasItem(coordinate1));
+    assertThat(result, JUnitMatchers.hasItem(coordinate1));
 
     Coordinate coordinate2 = new Coordinate();
     coordinate2.setCoordinateId(2);
@@ -211,7 +217,7 @@ public class CoordinatesDAOTest extends AbstractTestDao {
     points2.add(new CoordinatePoint(2, 1060, true));
     points2.add(new CoordinatePoint(2, 1058, true));
     coordinate2.setCoordinatePoints(points2);
-    Assert.assertThat(result, JUnitMatchers.hasItem(coordinate2));
+    assertThat(result, JUnitMatchers.hasItem(coordinate2));
     CoordinatesDAO.removeCoordinates(con, pk, coordinateIds);
     result = CoordinatesDAO.selectCoordinatesByCoordinateIds(con, coordinateIds, pk);
     assertNotNull(result);
@@ -222,8 +228,8 @@ public class CoordinatesDAOTest extends AbstractTestDao {
     coordinate2 = new Coordinate();
     coordinate2.setCoordinateId(2);
     coordinate2.setCoordinatePoints(new ArrayList<CoordinatePoint>());
-    Assert.assertThat(result, JUnitMatchers.hasItem(coordinate1));
-    Assert.assertThat(result, JUnitMatchers.hasItem(coordinate2));
+    assertThat(result, JUnitMatchers.hasItem(coordinate1));
+    assertThat(result, JUnitMatchers.hasItem(coordinate2));
     IDataSet databaseDataSet = dataSetConnection.createDataSet();
     ITable actualTable = databaseDataSet.getTable("sb_coordinates_coordinates");
 
@@ -259,7 +265,7 @@ public class CoordinatesDAOTest extends AbstractTestDao {
           valueOf(1), "kmax888"});
 
     Assertion.assertEquals(expectedTable, actualTable);
-    dataSetConnection.close();
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
   /**
@@ -268,7 +274,7 @@ public class CoordinatesDAOTest extends AbstractTestDao {
    */
   @Test
   public void testRemoveCoordinatesByPoints() throws Exception {
-    IDatabaseConnection dataSetConnection = getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
     Connection con = dataSetConnection.getConnection();
     String instanceId = "kmax888";
     CoordinatePK pk = new CoordinatePK(null, null, instanceId);
@@ -286,7 +292,7 @@ public class CoordinatesDAOTest extends AbstractTestDao {
     points1.add(new CoordinatePoint(1, 1060, true));
     points1.add(new CoordinatePoint(1, 1064, true));
     coordinate1.setCoordinatePoints(points1);
-    Assert.assertThat(result, JUnitMatchers.hasItem(coordinate1));
+    assertThat(result, JUnitMatchers.hasItem(coordinate1));
 
     Coordinate coordinate2 = new Coordinate();
     coordinate2.setCoordinateId(2);
@@ -294,7 +300,7 @@ public class CoordinatesDAOTest extends AbstractTestDao {
     points2.add(new CoordinatePoint(2, 1060, true));
     points2.add(new CoordinatePoint(2, 1058, true));
     coordinate2.setCoordinatePoints(points2);
-    Assert.assertThat(result, JUnitMatchers.hasItem(coordinate2));
+    assertThat(result, JUnitMatchers.hasItem(coordinate2));
     List<String> removedPoints = new ArrayList<String>();
     removedPoints.add("1064");
     removedPoints.add("1060");
@@ -337,7 +343,7 @@ public class CoordinatesDAOTest extends AbstractTestDao {
           valueOf(1), "kmax888"});
 
     Assertion.assertEquals(expectedTable, actualTable);
-    dataSetConnection.close();
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
   /**
@@ -346,7 +352,7 @@ public class CoordinatesDAOTest extends AbstractTestDao {
    */
   @Test
   public void testSelectCoordinatesByCoordinateIds() throws Exception {
-    IDatabaseConnection dataSetConnection = getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
     Connection con = dataSetConnection.getConnection();
     String instanceId = "kmax888";
     List<String> coordinateIds = new ArrayList<String>(2);
@@ -364,7 +370,7 @@ public class CoordinatesDAOTest extends AbstractTestDao {
     points1.add(new CoordinatePoint(1, 1060, true));
     points1.add(new CoordinatePoint(1, 1064, true));
     coordinate1.setCoordinatePoints(points1);
-    Assert.assertThat(result, JUnitMatchers.hasItem(coordinate1));
+    assertThat(result, JUnitMatchers.hasItem(coordinate1));
 
     Coordinate coordinate2 = new Coordinate();
     coordinate2.setCoordinateId(2);
@@ -372,8 +378,8 @@ public class CoordinatesDAOTest extends AbstractTestDao {
     points2.add(new CoordinatePoint(2, 1060, true));
     points2.add(new CoordinatePoint(2, 1058, true));
     coordinate2.setCoordinatePoints(points2);
-    Assert.assertThat(result, JUnitMatchers.hasItem(coordinate2));
-    dataSetConnection.close();
+    assertThat(result, JUnitMatchers.hasItem(coordinate2));
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
   /**
@@ -382,7 +388,7 @@ public class CoordinatesDAOTest extends AbstractTestDao {
    */
   @Test
   public void testAddPointToAllCoordinates() throws Exception {
-    IDatabaseConnection dataSetConnection = getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
     Connection con = dataSetConnection.getConnection();
     String instanceId = "kmax888";
     CoordinatePK pk = new CoordinatePK(null, null, instanceId);
@@ -442,7 +448,7 @@ public class CoordinatesDAOTest extends AbstractTestDao {
           valueOf(1), "kmax888"});
 
     Assertion.assertEquals(expectedTable, actualTable);
-    dataSetConnection.close();
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
   /**
@@ -451,7 +457,7 @@ public class CoordinatesDAOTest extends AbstractTestDao {
    */
   @Test
   public void testGetCoordinateIdsByNodeId() throws Exception {
-    IDatabaseConnection dataSetConnection = getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
     Connection con = dataSetConnection.getConnection();
     String instanceId = "kmax888";
     CoordinatePK pk = new CoordinatePK(null, null, instanceId);
@@ -460,9 +466,9 @@ public class CoordinatesDAOTest extends AbstractTestDao {
     Collection<String> result = CoordinatesDAO.getCoordinateIdsByNodeId(con, pk, nodeId);
     assertNotNull(result);
     assertEquals("We should have 2 coordinates", 2, result.size());
-    Assert.assertThat(result, JUnitMatchers.hasItem("1"));
-    Assert.assertThat(result, JUnitMatchers.hasItem("2"));
-    dataSetConnection.close();
+    assertThat(result, JUnitMatchers.hasItem("1"));
+    assertThat(result, JUnitMatchers.hasItem("2"));
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
   /**
@@ -471,7 +477,7 @@ public class CoordinatesDAOTest extends AbstractTestDao {
    */
   @Test
   public void testGetCoordinateIds() throws Exception {
-    IDatabaseConnection dataSetConnection = getConnection();
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
     Connection con = dataSetConnection.getConnection();
     String instanceId = "kmax888";
     CoordinatePK pk = new CoordinatePK(null, null, instanceId);
@@ -479,14 +485,9 @@ public class CoordinatesDAOTest extends AbstractTestDao {
     Collection<String> result = CoordinatesDAO.getCoordinateIds(con, pk);
     assertNotNull(result);
     assertEquals("We should have 3 coordinates", 3, result.size());
-    Assert.assertThat(result, JUnitMatchers.hasItem("1"));
-    Assert.assertThat(result, JUnitMatchers.hasItem("2"));
-    Assert.assertThat(result, JUnitMatchers.hasItem("3"));
-    dataSetConnection.close();
-  }
-
-  @Override
-  protected String getDatasetFileName() {
-    return "coordinates-test-dataset.xml";
+    assertThat(result, JUnitMatchers.hasItem("1"));
+    assertThat(result, JUnitMatchers.hasItem("2"));
+    assertThat(result, JUnitMatchers.hasItem("3"));
+    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 }

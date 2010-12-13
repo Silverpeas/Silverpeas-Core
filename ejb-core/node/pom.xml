@@ -26,6 +26,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>com.mockrunner</groupId>
       <artifactId>mockrunner</artifactId>
       <classifier>jdk1.6-j2ee1.4</classifier>
@@ -49,5 +54,8 @@
         <filtering>true</filtering>
       </testResource>
     </testResources>
+    <filters>
+      <filter>src/test/filters/filters.properties</filter>
+    </filters>  
   </build>
 </project>
