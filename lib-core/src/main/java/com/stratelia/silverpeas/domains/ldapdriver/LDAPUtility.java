@@ -46,6 +46,7 @@ import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.nio.charset.Charset;
+import java.util.logging.Logger;
 
 /**
  * This class contains some usefull static functions to access to LDAP elements
@@ -56,7 +57,6 @@ public class LDAPUtility {
   public final static int MAX_NB_RETRY_CONNECT = 10;
   public final static int MAX_NB_RETRY_TIMELIMIT = 5;
   public final static String BASEDN_SEPARATOR = ";;";
-
   final static Map<String, LDAPConnectInfos> connectInfos = new HashMap<String, LDAPConnectInfos>();
   static int connexionsLastId = 0;
 
@@ -158,18 +158,20 @@ public class LDAPUtility {
    */
   static private void InternalOpenConnection(String connectionId)
       throws AdminException {
-    LDAPConnection valret = null;
     LDAPSettings driverSettings = (connectInfos.get(connectionId)).driverSettings;
-
+    LDAPConnection valret;
+    if (driverSettings.isLDAPSecured()) {
+      valret = new LDAPConnection(new LDAPJSSESecureSocketFactory());
+    } else {
+      valret = new LDAPConnection();
+    }
     try {
-      if (driverSettings.isLDAPSecured()) {
-        valret = new LDAPConnection(new LDAPJSSESecureSocketFactory());
-      } else {
-        valret = new LDAPConnection();
-      }
       valret.connect(driverSettings.getLDAPHost(), driverSettings.getLDAPPort());
-      valret.bind(driverSettings.getLDAPProtocolVer(), driverSettings.getLDAPAccessLoginDN(),
-          driverSettings.getLDAPAccessPasswd().getBytes(Charsets.UTF_8));
+      byte[] passwd = null;
+      if (StringUtil.isDefined(driverSettings.getLDAPAccessPasswd())) {
+        passwd = driverSettings.getLDAPAccessPasswd().getBytes(Charsets.UTF_8);
+      }
+      valret.bind(driverSettings.getLDAPProtocolVer(), driverSettings.getLDAPAccessLoginDN(), passwd);
       valret.setConstraints(driverSettings.getSearchConstraints(false));
       (connectInfos.get(connectionId)).connection = valret;
     } catch (LDAPException e) {
@@ -263,8 +265,8 @@ public class LDAPUtility {
     sc.setBatchSize(1);
     sc.setMaxResults(1);
     SilverTrace.debug("admin", "LDAPUtility.getFirstEntryFromSearch()",
-          "LDAP query", "BaseDN=" + baseDN + " scope="
-              + Integer.toString(scope) + " Filter=" + sureFilter);
+        "LDAP query", "BaseDN=" + baseDN + " scope="
+        + Integer.toString(scope) + " Filter=" + sureFilter);
     // SynchroReport.debug("LDAPUtility.getFirstEntryFromSearch()",
     // "Requête LDAP : BaseDN="+baseDN+" scope="+Integer.toString(scope)+" Filter="+sureFilter,null);
     // Modif LBE : as more than on baseDN can be set, iterate on all baseDNs
@@ -276,25 +278,25 @@ public class LDAPUtility {
         if (res.hasMore()) {
           theEntry = res.next();
           SilverTrace.debug("admin", "LDAPUtility.getFirstEntryFromSearch()",
-                  "Entry Founded : ", theEntry.getDN());
+              "Entry Founded : ", theEntry.getDN());
           break;
         }
       } catch (LDAPReferralException re) {
         throw new AdminException("LDAPUtility.getFirstEntryFromSearch",
-                SilverpeasException.ERROR, "admin.EX_ERR_LDAP_REFERRAL", "#"
-                    + Integer.toString(re.getResultCode()) + " "
-                    + re.getLDAPErrorMessage(), re);
+            SilverpeasException.ERROR, "admin.EX_ERR_LDAP_REFERRAL", "#"
+            + Integer.toString(re.getResultCode()) + " "
+            + re.getLDAPErrorMessage(), re);
       } catch (LDAPException e) {
         if (LDAPUtility.recoverConnection(lds, e)) {
           return getFirstEntryFromSearch(lds, baseDN, scope, filter, attrs);
         } else {
           SilverTrace.error("admin", "LDAPUtility.getFirstEntryFromSearch()",
               "admin.EX_ERR_LDAP_GENERAL", "#" + Integer.toString(e.getResultCode())
-                  + " " + e.getLDAPErrorMessage(), e);
+              + " " + e.getLDAPErrorMessage(), e);
         }
       }
     }
-    
+
     return theEntry;
   }
 
