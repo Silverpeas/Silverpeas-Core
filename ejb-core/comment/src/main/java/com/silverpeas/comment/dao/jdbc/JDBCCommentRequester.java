@@ -21,8 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.silverpeas.comment.model;
+package com.silverpeas.comment.dao.jdbc;
 
+import com.silverpeas.comment.dao.CommentInfo;
+import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.model.CommentPK;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -37,17 +40,17 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 import java.sql.Statement;
 
 /**
- * A DAO on comments.
+ * A specific JDBC requester dedicated on the comments persisted in the underlying data source.
  */
-public class CommentDAO {
+public class JDBCCommentRequester {
 
   private static final int INITIAL_CAPACITY = 1000;
   private static final String COMMENT_TABLENAME = "sb_comment_comment";
 
   /**
-   * Constructs a new CommentDAO instance.
+   * Constructs a new JDBCCommentRequester instance.
    */
-  public CommentDAO() {
+  public JDBCCommentRequester() {
   }
 
   /**
@@ -67,7 +70,7 @@ public class CommentDAO {
     try {
       newId = DBUtil.getNextId(cmt.getCommentPK().getTableName(), "commentId");
     } catch (Exception e) {
-      SilverTrace.warn("comments", "CommentDAO.createComment", "root.EX_PK_GENERATION_FAILED", e);
+      SilverTrace.warn("comments", getClass().getSimpleName() + ".createComment", "root.EX_PK_GENERATION_FAILED", e);
       return null;
     }
     try {
@@ -227,7 +230,7 @@ public class CommentDAO {
         commentsCount = rs.getInt("nb_comment");
       }
     } catch (Exception e) {
-      SilverTrace.error("comment", "CommentDAO.getCommentsCount()",
+      SilverTrace.error("comment", getClass().getSimpleName() + ".getCommentsCount()",
           "root.EX_NO_MESSAGE", e);
     } finally {
       DBUtil.close(rs, prep_stmt);

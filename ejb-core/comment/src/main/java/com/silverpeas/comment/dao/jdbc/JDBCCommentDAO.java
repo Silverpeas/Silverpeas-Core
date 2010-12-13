@@ -22,34 +22,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.comment.ejb;
+package com.silverpeas.comment.dao.jdbc;
 
-import java.rmi.RemoteException;
+import com.silverpeas.comment.CommentRuntimeException;
+import com.silverpeas.comment.dao.CommentDAO;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import javax.ejb.CreateException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
 
 import com.silverpeas.util.ForeignPK;
-import com.stratelia.silverpeas.comment.model.Comment;
-import com.stratelia.silverpeas.comment.model.CommentDAO;
-import com.stratelia.silverpeas.comment.model.CommentInfo;
-import com.stratelia.silverpeas.comment.model.CommentInfoComparator;
-import com.stratelia.silverpeas.comment.model.CommentPK;
+import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.dao.CommentInfo;
+import com.silverpeas.comment.dao.CommentInfoComparator;
+import com.silverpeas.comment.model.CommentPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.springframework.stereotype.Repository;
 
-public class CommentBmEJB implements SessionBean {
+@Repository("commentDAO")
+public class JDBCCommentDAO implements CommentDAO {
 
   private static final long serialVersionUID = -4880326368611108874L;
 
@@ -58,7 +56,7 @@ public class CommentBmEJB implements SessionBean {
       Connection con = DBUtil.makeConnection(JNDINames.NODE_DATASOURCE);
       return con;
     } catch (Exception e) {
-      throw new CommentRuntimeException("CommentBmEJB.getConnection()",
+      throw new CommentRuntimeException(getClass().getSimpleName() + ".getConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
     }
   }
@@ -68,30 +66,31 @@ public class CommentBmEJB implements SessionBean {
       try {
         con.close();
       } catch (Exception e) {
-        SilverTrace.error("comment", "CommentBmEJB.closeConnection()",
+        SilverTrace.error("comment", getClass().getSimpleName() + ".closeConnection()",
             "root.EX_CONNECTION_CLOSE_FAILED", "", e);
       }
     }
   }
 
-  private CommentDAO getCommentDAO() {
-    return new CommentDAO();
+  private JDBCCommentRequester getCommentDAO() {
+    return new JDBCCommentRequester();
   }
 
-  public CommentPK createComment(Comment cmt) throws RemoteException {
+  @Override
+  public CommentPK saveComment(Comment cmt) {
     Connection con = openConnection();
     CommentPK commentPK;
     try {
-      CommentDAO commentDAO = getCommentDAO();
+      JDBCCommentRequester commentDAO = getCommentDAO();
       commentPK = commentDAO.saveComment(con, cmt);
       if (commentPK == null) {
-        throw new CommentRuntimeException("CommentBmEJB.createComment()",
+        throw new CommentRuntimeException(getClass().getSimpleName() + ".createComment()",
             SilverpeasRuntimeException.ERROR,
             "comment.CREATING_NEW_COMMENT_FAILED");
       }
       return commentPK;
     } catch (Exception re) {
-      throw new CommentRuntimeException("CommentBmEJB.createComment()",
+      throw new CommentRuntimeException(getClass().getSimpleName() + ".createComment()",
           SilverpeasRuntimeException.ERROR,
           "comment.CREATING_NEW_COMMENT_FAILED", re);
     } finally {
@@ -99,73 +98,80 @@ public class CommentBmEJB implements SessionBean {
     }
   }
 
-  public void deleteComment(CommentPK pk) throws RemoteException {
+  @Override
+  public void removeComment(CommentPK pk) {
     Connection con = openConnection();
     try {
-      CommentDAO commentDAO = getCommentDAO();
+      JDBCCommentRequester commentDAO = getCommentDAO();
       commentDAO.deleteComment(con, pk);
     } catch (Exception re) {
-      throw new CommentRuntimeException("CommentBmEJB.deleteComment()",
+      throw new CommentRuntimeException(getClass().getSimpleName() + ".deleteComment()",
           SilverpeasRuntimeException.ERROR, "comment.DELETE_COMMENT_FAILED", re);
     } finally {
       closeConnection(con);
     }
   }
 
-  public void updateComment(Comment cmt) throws RemoteException {
+  @Override
+  public void updateComment(Comment cmt) {
     Connection con = openConnection();
     try {
-      CommentDAO commentDAO = getCommentDAO();
+      JDBCCommentRequester commentDAO = getCommentDAO();
       commentDAO.updateComment(con, cmt);
     } catch (Exception re) {
-      throw new CommentRuntimeException("CommentBmEJB.updateComment()",
+      throw new CommentRuntimeException(getClass().getSimpleName() + ".updateComment()",
           SilverpeasRuntimeException.ERROR, "comment.UPDATE_COMMENT_FAILED", re);
     } finally {
       closeConnection(con);
     }
   }
 
-  public Comment getComment(CommentPK pk) throws RemoteException {
+  @Override
+  public Comment getComment(CommentPK pk)  {
     Connection con = openConnection();
     Comment comment;
     try {
-      CommentDAO commentDAO = getCommentDAO();
+      JDBCCommentRequester commentDAO = getCommentDAO();
       comment = commentDAO.getComment(con, pk);
       if (comment == null) {
-        throw new CommentRuntimeException("CommentBmEJB.getComment()",
+        throw new CommentRuntimeException(getClass().getSimpleName() + ".getComment()",
             SilverpeasRuntimeException.ERROR, "comment.GET_COMMENT_FAILED");
       }
       return comment;
     } catch (Exception re) {
-      throw new CommentRuntimeException("CommentBmEJB.getComment()",
+      throw new CommentRuntimeException(getClass().getSimpleName() + ".getComment()",
           SilverpeasRuntimeException.ERROR, "comment.GET_COMMENT_FAILED", re);
     } finally {
       closeConnection(con);
     }
   }
 
-  public Collection<CommentInfo> getMostCommentedAllPublications() throws RemoteException {
+  @Override
+  public List<CommentInfo> getAllMostCommentedPublications() {
     Connection con = openConnection();
     try {
-      CommentDAO commentDAO = getCommentDAO();
+      JDBCCommentRequester commentDAO = getCommentDAO();
       return commentDAO.getMostCommentedAllPublications(con);
     } catch (Exception e) {
-      throw new RemoteException("Problème Base de données", e);
+      throw new CommentRuntimeException(getClass().getSimpleName() + ".getMostCommentedAllPublications()",
+          SilverpeasRuntimeException.FATAL,
+          "comment.GET_COMMENT_FAILED",
+          e);
     } finally {
       closeConnection(con);
     }
   }
 
-  public Collection<CommentInfo> getMostCommented(Collection<CommentPK> pks, int commentsCount)
-      throws RemoteException {
+  @Override
+  public List<CommentInfo> getMostCommentedPublications(final Collection<ForeignPK> pks, int commentsCount) {
     List<CommentInfo> comments = new ArrayList<CommentInfo>();
     Connection con = openConnection();
-    CommentDAO commentDAO = getCommentDAO();
+    JDBCCommentRequester commentDAO = getCommentDAO();
     if (pks != null && !pks.isEmpty()) {
       try {
-        for (CommentPK commentPk : pks) {
+        for (ForeignPK foreignPk : pks) {
           comments.add(new CommentInfo(commentDAO.getCommentsCount(con,
-              commentPk), commentPk.getInstanceId(), commentPk.getId()));
+              foreignPk), foreignPk.getInstanceId(), foreignPk.getId()));
         }
         Collections.sort(comments, new CommentInfoComparator());
         if (comments.size() > commentsCount) {
@@ -180,14 +186,15 @@ public class CommentBmEJB implements SessionBean {
     return comments;
   }
 
-  public int getCommentsCount(WAPrimaryKey foreign_pk) {
+  @Override
+  public int getCommentsCountByForeignKey(ForeignPK foreign_pk) {
     Connection con = openConnection();
     int publicationCommentsCount = 0;
     try {
-      CommentDAO commentDAO = getCommentDAO();
+      JDBCCommentRequester commentDAO = getCommentDAO();
       publicationCommentsCount = commentDAO.getCommentsCount(con, foreign_pk);
     } catch (Exception re) {
-      throw new CommentRuntimeException("CommentBmEJB.getCommentsCount()",
+      throw new CommentRuntimeException(getClass().getSimpleName() + ".getCommentsCount()",
           SilverpeasRuntimeException.ERROR, "comment.GET_ALL_COMMENTS_FAILED",
           re);
     } finally {
@@ -196,51 +203,20 @@ public class CommentBmEJB implements SessionBean {
     return publicationCommentsCount;
   }
 
-  public List<Comment> getAllComments(WAPrimaryKey foreign_pk) throws RemoteException {
+  @Override
+  public List<Comment> getAllCommentsByForeignKey(ForeignPK foreign_pk) {
     Connection con = openConnection();
     List<Comment> vRet;
     try {
-      CommentDAO commentDAO = getCommentDAO();
+      JDBCCommentRequester commentDAO = getCommentDAO();
       vRet = commentDAO.getAllComments(con, foreign_pk);
       if (vRet == null) {
-        throw new CommentRuntimeException("CommentBmEJB.getAllComments()",
+        throw new CommentRuntimeException(getClass().getSimpleName() + ".getAllComments()",
             SilverpeasRuntimeException.ERROR, "comment.GET_ALL_COMMENTS_FAILED");
       }
       return vRet;
     } catch (Exception re) {
-      throw new CommentRuntimeException("CommentBmEJB.getAllComments()",
-          SilverpeasRuntimeException.ERROR, "comment.GET_ALL_COMMENTS_FAILED",
-          re);
-    } finally {
-      closeConnection(con);
-    }
-  }
-
-  /**
-   * TODO: methode utilisée par les taglibs : elle positionne le nom de l'auteur du commentaire
-   * (fait habituellement dans le CommentController => a voir si on modifie l'ejb pour que ce soit
-   * systematiquement fait ou non)
-   * @param foreign_pk
-   * @return
-   * @throws RemoteException
-   */
-  public List<Comment> getAllCommentsWithUserName(WAPrimaryKey foreign_pk)
-      throws RemoteException {
-    Connection con = openConnection();
-    try {
-      CommentDAO commentDAO = getCommentDAO();
-      List<Comment> vRet = commentDAO.getAllComments(con, foreign_pk);
-      if (vRet == null) {
-        throw new CommentRuntimeException("CommentBmEJB.getAllComments()",
-            SilverpeasRuntimeException.ERROR, "comment.GET_ALL_COMMENTS_FAILED");
-      } else {
-        for (Comment comment : vRet) {
-          comment.setOwner(getUserName(comment));
-        }
-      }
-      return vRet;
-    } catch (Exception re) {
-      throw new CommentRuntimeException("CommentBmEJB.getAllComments()",
+      throw new CommentRuntimeException(getClass().getSimpleName() + ".getAllComments()",
           SilverpeasRuntimeException.ERROR, "comment.GET_ALL_COMMENTS_FAILED",
           re);
     } finally {
@@ -258,13 +234,14 @@ public class CommentBmEJB implements SessionBean {
     return getUserName(userDetail);
   }
 
-  public void deleteAllComments(ForeignPK foreign_pk) throws RemoteException {
+  @Override
+  public void removeAllCommentsByForeignPk(ForeignPK foreign_pk) {
     Connection con = openConnection();
     try {
-      CommentDAO commentDAO = getCommentDAO();
+      JDBCCommentRequester commentDAO = getCommentDAO();
       commentDAO.deleteAllComments(con, foreign_pk);
     } catch (Exception re) {
-      throw new CommentRuntimeException("CommentBmEJB.getAllComments()",
+      throw new CommentRuntimeException(getClass().getSimpleName() + ".getAllComments()",
           SilverpeasRuntimeException.ERROR, "comment.GET_ALL_COMMENTS_FAILED",
           re);
     } finally {
@@ -272,54 +249,18 @@ public class CommentBmEJB implements SessionBean {
     }
   }
 
-  public void moveComments(ForeignPK fromPK, ForeignPK toPK)
-      throws RemoteException {
+  @Override
+  public void moveComments(ForeignPK fromPK, ForeignPK toPK) {
     Connection con = openConnection();
     try {
-      CommentDAO commentDAO = getCommentDAO();
+      JDBCCommentRequester commentDAO = getCommentDAO();
       commentDAO.moveComments(con, fromPK, toPK);
     } catch (Exception re) {
-      throw new CommentRuntimeException("CommentBmEJB.moveComments()",
+      throw new CommentRuntimeException(getClass().getSimpleName() + ".moveComments()",
           SilverpeasRuntimeException.ERROR, "comment.GET_ALL_COMMENTS_FAILED",
           re);
     } finally {
       closeConnection(con);
     }
-  }
-
-  public void ejbCreate() throws CreateException {
-  }
-
-  /**
-   * Method declaration
-   * @see
-   */
-  @Override
-  public void ejbRemove() {
-  }
-
-  /**
-   * Method declaration
-   * @see
-   */
-  @Override
-  public void ejbActivate() {
-  }
-
-  /**
-   * Method declaration
-   * @see
-   */
-  @Override
-  public void ejbPassivate() {
-  }
-
-  /**
-   * Method declaration
-   * @param sc
-   * @see
-   */
-  @Override
-  public void setSessionContext(SessionContext sc) {
   }
 }

@@ -1,4 +1,5 @@
-<%--
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
 
     Copyright (C) 2000 - 2009 Silverpeas
 
@@ -22,25 +23,23 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
---%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+-->
 
-<%@ include file="checkComment.jsp" %>
-<%@ include file="graphicUtil.jsp.inc"%>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:ctx="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-<%
-    String comment_id 	= request.getParameter("comment_id");
-	String component_id = request.getParameter("component_id");
-    String action 		= request.getParameter("action");
-    String url 			= request.getParameter("url");
-    String pub_id 		= request.getParameter("pub_id");
-    CommentService commentService = CommentServiceFactory.getFactory().getCommentService();
+  <ctx:annotation-config/>
+  <ctx:component-scan base-package="com.silverpeas.comment"/>
 
-    if ( "delete".equals(action) && comment_id != null && !"null".equals(comment_id) )
-    {
-        CommentPK pk = new CommentPK(comment_id, component_id);
-        commentService.deleteComment(pk);
-    }
+  <!-- the CommentService factory from which Silverpeas components access the comment service.
+       It delegate to the Spring container the management of the life-cycle of the CommentService objects. -->
+  <bean id="commentServiceFactory" class="com.silverpeas.comment.service.CommentServiceFactory"
+        factory-method="getFactory"/>
 
-    response.sendRedirect(URLManager.getApplicationURL()+ url + "?Action=ViewComment&PubId="+pub_id);
-%>
+</beans>
+

@@ -46,12 +46,14 @@ public class CommentInstanciator implements ComponentsInstanciatorIntf {
   public CommentInstanciator() {
   }
 
+  @Override
   public void create(Connection con, String spaceId, String componentId,
       String userId) throws InstanciationException {
     SilverTrace.info("comment", "CommentInstanciator.create()",
         "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId);
   }
 
+  @Override
   public void delete(Connection con, String spaceId, String componentId,
       String userId) throws InstanciationException {
     SilverTrace.info("comment", "CommentInstanciator.delete()",

@@ -37,8 +37,9 @@ response.setHeader( "Last-Modified", "Fri, Jan 25 2099 23:59:59 GMT" );
                  com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory "%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.stratelia.silverpeas.comment.model.CommentPK,
-                 com.stratelia.silverpeas.comment.control.CommentController"%>
+<%@ page import="com.silverpeas.comment.model.CommentPK,
+                 com.silverpeas.comment.service.CommentService,
+                 com.silverpeas.comment.service.CommentServiceFactory"%>
 <%@ page import="com.stratelia.webactiv.util.DateUtil"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>

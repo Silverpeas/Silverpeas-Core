@@ -32,7 +32,7 @@
                  javax.naming.NamingException,
                  java.rmi.RemoteException,
                  javax.ejb.FinderException,
-                 com.stratelia.silverpeas.comment.model.Comment,
+                 com.silverpeas.comment.model.Comment,
                  java.util.Date"%>
 <%@ include file="checkComment.jsp" %>
 <%@ include file="graphicUtil.jsp.inc"%>
@@ -48,8 +48,8 @@
                         "</b></TD><TD align=\"center\" width=\"2%\"><b></b></TD><TD align=\"center\" width=\"2%\"><b></b></TD></TR>");
           out.println("<TR><TD colspan=\"6\" align=\"center\" class=\"intfdcolor\" height=\"1\"><img src=\""+hLineSrc+"\" width=\"100%\" height=\"1\"></TD></TR>");
 
-        CommentController commentController = new CommentController();
-        List comments = commentController.getAllComments(new CommentPK(id, null, component_id));
+        CommentService commentService = CommentServiceFactory.getFactory().getCommentService();
+        List comments = commentService.getAllCommentsOnPublication(new CommentPK(id, component_id));
         Comment comment;
         String comment_id;
         String owner_id;

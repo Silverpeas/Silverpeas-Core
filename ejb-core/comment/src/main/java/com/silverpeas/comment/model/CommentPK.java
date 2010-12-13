@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.comment.model;
+package com.silverpeas.comment.model;
 
 import com.google.common.base.Objects;
 import java.io.Serializable;

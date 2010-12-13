@@ -22,13 +22,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.comment.ejb;
+package com.silverpeas.comment.dao;
 
-import java.rmi.RemoteException;
-import javax.ejb.CreateException;
-import javax.ejb.EJBHome;
+import java.util.Comparator;
 
-public interface CommentBmHome extends EJBHome {
+public class CommentInfoComparator implements Comparator<CommentInfo> {
 
-  CommentBm create() throws RemoteException, CreateException;
+  @Override
+  public int compare(CommentInfo o1, CommentInfo o2) {
+    return o2.getCommentCount() - o1.getCommentCount();
+  }
+
 }

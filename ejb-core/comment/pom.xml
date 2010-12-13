@@ -9,19 +9,13 @@
 	
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>comment</artifactId>
-  <packaging>ejb</packaging>
-  <name>EJB Comment</name>
+  <packaging>jar</packaging>
+  <name>Lib Comment</name>
 	
   <dependencies>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>node</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
-      <artifactId>publication</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>

@@ -2,8 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.stratelia.silverpeas.comment.model;
+package com.silverpeas.comment.dao;
 
+import com.silverpeas.comment.dao.jdbc.JDBCCommentRequester;
+import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.components.model.SilverpeasJndiCase;
 import com.silverpeas.components.model.AbstractJndiCase;
 import com.silverpeas.jcrutil.RandomGenerator;
@@ -24,7 +27,8 @@ import static org.junit.Assert.*;
  */
 public class CommentDAOTest extends AbstractJndiCase {
 
-  private CommentDAO commentDAO = new CommentDAO();
+  private JDBCCommentRequester commentDAO = new JDBCCommentRequester();
+
 
 
   public CommentDAOTest() {
@@ -32,7 +36,7 @@ public class CommentDAOTest extends AbstractJndiCase {
 
   @BeforeClass
   public static void generalSetUp() throws IOException, NamingException, Exception {
-    baseTest = new SilverpeasJndiCase("com/stratelia/silverpeas/comment/model/comments-dataset.xml",
+    baseTest = new SilverpeasJndiCase("com/silverpeas/comment/dao/comments-dataset.xml",
         "create-database.ddl");
     baseTest.configureJNDIDatasource();
     IDatabaseConnection databaseConnection = baseTest.getDatabaseTester().getConnection();
@@ -41,7 +45,7 @@ public class CommentDAOTest extends AbstractJndiCase {
   }
 
   /**
-   * Test of createComment method, of class CommentDAO.
+   * Test of createComment method, of class JDBCCommentRequester.
    * @throws Exception
    */
   @Test
@@ -72,7 +76,7 @@ public class CommentDAOTest extends AbstractJndiCase {
   }
 
   /**
-   * Test of createComment method, of class CommentDAO.
+   * Test of createComment method, of class JDBCCommentRequester.
    * @throws Exception
    */
   @Test
@@ -92,7 +96,7 @@ public class CommentDAOTest extends AbstractJndiCase {
   }
 
   /**
-   * Test of createComment method, of class CommentDAO.
+   * Test of createComment method, of class JDBCCommentRequester.
    * @throws Exception
    */
   @Test
@@ -115,7 +119,7 @@ public class CommentDAOTest extends AbstractJndiCase {
   }
 
   /**
-   * Test of createComment method, of class CommentDAO.
+   * Test of createComment method, of class JDBCCommentRequester.
    * @throws Exception
    */
   @Test
@@ -157,7 +161,7 @@ public class CommentDAOTest extends AbstractJndiCase {
 
 
   /**
-   * Test of createComment method, of class CommentDAO.
+   * Test of createComment method, of class JDBCCommentRequester.
    * @throws Exception
    */
   @Test

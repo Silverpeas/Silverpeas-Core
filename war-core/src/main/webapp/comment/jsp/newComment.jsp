@@ -25,7 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="com.stratelia.silverpeas.comment.model.Comment,
+<%@ page import="com.silverpeas.comment.model.Comment,
                  java.util.Date"%>
 <%@ include file="checkComment.jsp" %>
 <%@ include file="graphicUtil.jsp.inc"%>
@@ -39,7 +39,7 @@ String action 		= request.getParameter("action");
 String component_id = request.getParameter("component_id");
 String user_id 		= request.getParameter("userid");
 String indexIt		= request.getParameter("IndexIt");
-CommentController commentController = new CommentController();
+CommentService commentService = CommentServiceFactory.getFactory().getCommentService();
 if ( "save".equals(action) )
 {
 	boolean bIndexIt = true;
@@ -50,19 +50,27 @@ if ( "save".equals(action) )
 
     if ( id != null && !"null".equals(id) && !"".equals(id))
     {
-        CommentPK pk = new CommentPK(id);
-        Comment comment = commentController.getComment(pk);
+        CommentPK pk = new CommentPK(id, component_id);
+        Comment comment = commentService.getComment(pk);
         comment.setMessage(message);
         comment.setModificationDate(current_date);
-        commentController.updateComment(comment, bIndexIt);
+        if (bIndexIt) {
+          commentService.updateAndIndexComment(comment);
+        } else {
+          commentService.updateComment(comment);
+        }
     }
     else if ( foreign_id != null )
     {
-        CommentPK foreign_pk = new CommentPK(foreign_id);
-        CommentPK pk = new CommentPK("X");
-        pk.setComponentName(component_id);
+        CommentPK foreign_pk = new CommentPK(foreign_id, component_id);
+        CommentPK pk = new CommentPK("X", component_id);
         Comment comment = new Comment(pk, foreign_pk, Integer.parseInt(user_id), "X", message, current_date, current_date);
-        commentController.createComment(comment, bIndexIt);
+        if (bIndexIt) {
+          commentService.createAndIndexComment(comment);
+        } else {
+          commentService.createComment(comment);
+        }
+
     }
 %>
 <html>
@@ -86,7 +94,7 @@ else
     if ( id != null )
     {
         CommentPK pk = new CommentPK(id);
-        Comment comment = commentController.getComment(pk);
+        Comment comment = commentService.getComment(pk);
         message = comment.getMessage();
     }
     else

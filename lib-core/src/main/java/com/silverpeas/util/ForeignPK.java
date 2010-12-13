@@ -59,6 +59,7 @@ public class ForeignPK extends WAPrimaryKey implements Serializable {
    * @return the root table name of the object
    * @since 1.0
    */
+  @Override
   public String getRootTableName() {
     return "Useless";
   }
@@ -68,6 +69,7 @@ public class ForeignPK extends WAPrimaryKey implements Serializable {
    * @return the table name of the object
    * @since 1.0
    */
+  @Override
   public String getTableName() {
     return "Useless";
   }
@@ -78,9 +80,11 @@ public class ForeignPK extends WAPrimaryKey implements Serializable {
    * @param other the object to compare to this NodePK
    * @since 1.0
    */
+  @Override
   public boolean equals(Object other) {
-    if (!(other instanceof ForeignPK))
+    if (!(other instanceof ForeignPK)) {
       return false;
+    }
     return (id.equals(((ForeignPK) other).getId()))
         && (componentName.equals(((ForeignPK) other).getComponentName()));
   }
@@ -89,6 +93,7 @@ public class ForeignPK extends WAPrimaryKey implements Serializable {
    * Returns a hash code for the key
    * @return A hash code for this object
    */
+  @Override
   public int hashCode() {
     return this.id.hashCode() ^ this.componentName.hashCode();
   }

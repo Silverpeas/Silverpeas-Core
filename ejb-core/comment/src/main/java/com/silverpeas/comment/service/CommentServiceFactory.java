@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2000 - 2009 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
@@ -9,9 +9,9 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,33 +22,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.comment.model;
+package com.silverpeas.comment.service;
 
-import java.io.Serializable;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class CommentInfo implements Serializable {
+/**
+ * A factory of CommentService objects. Its aim is to manage the life-cycle of such objects and
+ * so to encapsulates from the CommentService client the adopted policy about that life-cycle.
+ */
+public class CommentServiceFactory {
 
-  private static final long serialVersionUID = 4433090666272026427L;
-  private int commentCount;
-  private String componentId;
-  private String elementId;
+  private static final CommentServiceFactory instance = new CommentServiceFactory();
 
-  public CommentInfo(int commentCount, String componentId, String elementId) {
-    this.commentCount = commentCount;
-    this.componentId = componentId;
-    this.elementId = elementId;
+  @Autowired
+  private CommentService commentService;
+
+  /**
+   * Gets an instance of this CommentServiceFactory class.
+   * @return a CommentServiceFactory instance.
+   */
+  public static CommentServiceFactory getFactory() {
+    return instance;
   }
 
-  public int getCommentCount() {
-    return commentCount;
+  /**
+   * Gets a CommentService instance.
+   * @return a CommentService instance.
+   */
+  public CommentService getCommentService() {
+    return commentService;
   }
 
-  public String getComponentId() {
-    return componentId;
+  private CommentServiceFactory() {
   }
-
-  public String getElementId() {
-    return elementId;
-  }
-
 }

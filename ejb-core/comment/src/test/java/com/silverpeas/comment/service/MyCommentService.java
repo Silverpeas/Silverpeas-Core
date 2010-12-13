@@ -22,56 +22,50 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.comment.control;
+package com.silverpeas.comment.service;
 
-import com.stratelia.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.dao.CommentDAO;
+import com.silverpeas.comment.model.Comment;
 import java.util.List;
-import com.stratelia.silverpeas.comment.ejb.CommentBm;
-import com.stratelia.silverpeas.comment.model.CommentPK;
+import com.silverpeas.comment.model.CommentPK;
+import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
- * This a wrapper of the comment controller in order to mock some of the inner methods like, for
- * example, the access to EJBs.
+ * This a wrapper of the comment service in order to mock some of the inner methods like, for
+ * example, the access to the data source.
  */
-public class MyCommentController extends CommentController {
+public class MyCommentService extends CommentService {
 
-  private CommentBm mockedBm = null;
+  private CommentDAO mockedDAO = null;
   private OrganizationController mockedController = null;
 
   /**
-   * Constructs a new comment controller.
+   * Constructs a new comment service and mocks some of the underlying resource.
    */
-  public MyCommentController() {
+  public MyCommentService() {
     super();
-    try {
       Comment aComment = CommentBuilder.getBuilder().buildWith("Toto", "Vu à la télé");
       List<Comment> comments = new ArrayList<Comment>();
       comments.add(aComment);
       comments.add(CommentBuilder.getBuilder().buildWith("Titi", "Repasses demain"));
-      mockedBm = mock(CommentBm.class);
-      when(mockedBm.getAllComments(any(WAPrimaryKey.class))).thenReturn(comments);
-      when(mockedBm.getComment(any(CommentPK.class))).thenReturn(aComment);
+      mockedDAO = mock(CommentDAO.class);
+      when(mockedDAO.getAllCommentsByForeignKey(any(ForeignPK.class))).thenReturn(comments);
+      when(mockedDAO.getComment(any(CommentPK.class))).thenReturn(aComment);
 
       UserDetail userDetail = new UserDetail();
       userDetail.setFirstName("Toto");
       userDetail.setLastName("Chez-les-papoos");
       mockedController = mock(OrganizationController.class);
       when(mockedController.getUserDetail(anyString())).thenReturn(userDetail);
-    } catch (RemoteException ex) {
-      fail(ex.getMessage());
-    }
   }
 
   @Override
-  protected CommentBm getCommentBm() {
-    return mockedBm;
+  protected CommentDAO getCommentDAO() {
+    return mockedDAO;
   }
 
   @Override

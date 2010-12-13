@@ -21,12 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.silverpeas.comment.control;
+package com.silverpeas.comment.service;
 
-import com.stratelia.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.model.Comment;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBack;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import static com.silverpeas.util.StringUtil.*;
 
 /**
  * An abstract class that defines the contract a callback interested about actions on the comment
@@ -68,37 +69,45 @@ public abstract class CallBackOnCommentAction extends CallBack {
 
   @Override
   public final void doInvoke(int action, int iParam, String sParam, Object extraParam) {
-    if (action == CallBackManager.ACTION_COMMENT_ADD) {
-      Comment addedComment = (Comment) extraParam;
-      commentAdded(iParam, sParam, addedComment);
-    } else if (action == CallBackManager.ACTION_COMMENT_REMOVE) {
-      Comment removedComment = (Comment) extraParam;
-      commentRemoved(iParam, sParam, removedComment);
+    if (!isDefined(sParam) || extraParam == null) {
+      String message = "The component name or the comment is'nt defined";
+      SilverTrace.error("comment", getClass().getSimpleName() + ".doInvoke()",
+          "comment.UNKNOWN_ACTION", message);
     } else {
-      SilverTrace.warn("comment", getClass().getSimpleName() + ".doInvoke()",
-          "comment.UNKNOWN_ACTION");
+      if (action == CallBackManager.ACTION_COMMENT_ADD) {
+        Comment addedComment = (Comment) extraParam;
+        commentAdded(iParam, sParam, addedComment);
+      } else if (action == CallBackManager.ACTION_COMMENT_REMOVE) {
+        Comment removedComment = (Comment) extraParam;
+        commentRemoved(iParam, sParam, removedComment);
+      } else {
+        SilverTrace.warn("comment", getClass().getSimpleName() + ".doInvoke()",
+            "comment.UNKNOWN_ACTION");
+      }
     }
   }
 
   /**
-   * A comment, written by the specified author, is added to the specified resource.
+   * A comment, written by the specified author, is added to the specified publication.
    * The implementer implements this method to perform a computation when a comment is added to
-   * a resource.
-   * @param authorId the unique identifier of the user that wrote the comment.
-   * @param resourceId the unique identifier of the commented resource .
+   * a publication.
+   * @param publicationId the unique identifier of the commented publication.
+   * @param componentInstanceId the unique identifier of the component instance in which the
+   * publication and the comment live.
    * @param addedComment the comment that is added.
    */
-  public abstract void commentAdded(int authorId, final String resourceId,
+  public abstract void commentAdded(int publicationId, final String componentInstanceId,
       final Comment addedComment);
 
   /**
-   * A comment, that was written by the specified author, is removed from the specified resource.
+   * A comment, that was written by the specified author, is removed from the specified publication.
    * The implementer implements this method to perform a computation when a comment is removed from
-   * a resource.
-   * @param authorId the unique identifier of the user that had written the comment.
-   * @param resourceId the unique identifier of the commented resource .
+   * a publication.
+   * @param publicationId the unique identifier of the commented publication.
+   * @param componentInstanceId the unique identifier of the component instance in which the
+   * publication lives.
    * @param removedComment the comment that is removed.
    */
-  public abstract void commentRemoved(int authorId, final String resourceId,
+  public abstract void commentRemoved(int publicationId, final String componentInstanceId,
       final Comment removedComment);
 }

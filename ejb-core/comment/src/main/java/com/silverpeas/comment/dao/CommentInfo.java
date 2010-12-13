@@ -22,14 +22,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.comment.model;
+package com.silverpeas.comment.dao;
 
-import java.util.Comparator;
+import java.io.Serializable;
 
-public class CommentInfoComparator implements Comparator<CommentInfo> {
+public class CommentInfo implements Serializable {
 
-  public int compare(CommentInfo o1, CommentInfo o2) {
-    return o2.getCommentCount() - o1.getCommentCount();
+  private static final long serialVersionUID = 4433090666272026427L;
+  private int commentCount;
+  private String componentId;
+  private String elementId;
+
+  public CommentInfo(int commentCount, String componentId, String elementId) {
+    this.commentCount = commentCount;
+    this.componentId = componentId;
+    this.elementId = elementId;
+  }
+
+  public int getCommentCount() {
+    return commentCount;
+  }
+
+  public String getComponentId() {
+    return componentId;
+  }
+
+  public String getElementId() {
+    return elementId;
   }
 
 }

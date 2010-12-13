@@ -21,9 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.silverpeas.comment.control;
+package com.silverpeas.comment.service;
 
-import com.stratelia.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.model.Comment;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -33,11 +33,11 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Unit tests on the CommentController behaviour.
+ * Unit tests on the CommentService behaviour.
  */
-public class CommentControllerTest {
+public class CommentServiceTest {
 
-  public CommentControllerTest() {
+  public CommentServiceTest() {
   }
 
   @BeforeClass
@@ -72,8 +72,7 @@ public class CommentControllerTest {
   public void callbacksShouldBeInvokedAtCommentAdding() throws Exception {
     CommentCallBack callback = new CommentCallBack();
     callback.subscribeForCommentAdding();
-    getCommentController().createComment(
-        CommentBuilder.getBuilder().buildWith("Toto", "Vu à la télé"), false);
+    getCommentService().createComment(CommentBuilder.getBuilder().buildWith("Toto", "Vu à la télé"));
     assertTrue(callback.isInvoked());
     assertEquals(1, callback.getInvocationCount());
     assertTrue(callback.isCommentAdded());
@@ -89,8 +88,8 @@ public class CommentControllerTest {
     CommentCallBack callback = new CommentCallBack();
     callback.subscribeForCommentRemoving();
 
-    CommentController commentController = getCommentController();
-    List<Comment> allComments = commentController.getAllComments(
+    CommentService commentController = getCommentService();
+    List<Comment> allComments = commentController.getAllCommentsOnPublication(
         CommentBuilder.getResourcePrimaryPK());
     commentController.deleteComment(allComments.get(0).getCommentPK());
     assertTrue(callback.isInvoked());
@@ -109,22 +108,30 @@ public class CommentControllerTest {
     CommentCallBack callback = new CommentCallBack();
     callback.subscribeForCommentRemoving();
 
-    CommentController commentController = getCommentController();
-    List<Comment> allComments = commentController.getAllComments(
+    CommentService commentController = getCommentService();
+    List<Comment> allComments = commentController.getAllCommentsOnPublication(
         CommentBuilder.getResourcePrimaryPK());
-    commentController.deleteCommentsByForeignPK(CommentBuilder.getResourcePrimaryPK());
+    commentController.deleteAllCommentsOnPublication(CommentBuilder.getResourcePrimaryPK());
     assertTrue(callback.isInvoked());
     assertEquals(allComments.size(), callback.getInvocationCount());
     assertFalse(callback.isCommentAdded());
     assertTrue(callback.isCommentRemoved());
   }
 
+  @Test
+  public void invocationWithIllegalArgumentsShouldDoesNothing() throws Exception {
+    CommentCallBack callback = new CommentCallBack();
+    callback.subscribeForCommentAdding();
+    getCommentService().createComment(CommentBuilder.getBuilder().buildOrphelanWith("Toto", "Vu à la télé"));
+    assertFalse(callback.isInvoked());
+  }
+
   /**
-   * Gets a CommentController instance with which tests has to be performed.
-   * @return a CommentController object to test.
+   * Gets a CommentService instance with which tests has to be performed.
+   * @return a CommentService object to test.
    */
-  protected CommentController getCommentController() {
-    return new MyCommentController();
+  protected CommentService getCommentService() {
+    return new MyCommentService();
   }
 
   /**

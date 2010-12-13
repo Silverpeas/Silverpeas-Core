@@ -30,7 +30,7 @@
  * @author Jean-Claude Groccia
  * @version 1.0
  */
-package com.stratelia.silverpeas.comment.ejb;
+package com.silverpeas.comment;
 
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 

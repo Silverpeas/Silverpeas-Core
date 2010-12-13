@@ -22,10 +22,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.comment.control;
+package com.silverpeas.comment.service;
 
-import com.stratelia.silverpeas.comment.model.Comment;
-import com.stratelia.silverpeas.comment.model.CommentPK;
+import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.model.CommentPK;
 import java.util.Date;
 
 /**
@@ -54,6 +54,19 @@ public class CommentBuilder {
     String now = (new Date()).toString();
     return new Comment(new CommentPK(String.valueOf(i++)),
         new CommentPK(RESOURCE_ID, SPACE_ID, COMPONENT_ID), 1, author, text, now, now);
+  }
+
+  /**
+   * Builds a comment with the specified author and with the specified comment text.
+   * The publication on which the comment is is not set; the comment is orphelan.
+   * @param author the author of the comment.
+   * @param text the text of the comment.
+   * @return a Comment instance.
+   */
+  public Comment buildOrphelanWith(final String author, final String text) {
+    String now = (new Date()).toString();
+    return new Comment(new CommentPK(String.valueOf(i++)),
+        new CommentPK(RESOURCE_ID), 1, author, text, now, now);
   }
 
   /**
