@@ -55,6 +55,7 @@ public class NotificationMetaData implements java.io.Serializable {
   private String componentId;
   private boolean isAnswerAllowed = false;
   private String fileName;
+
   private Map<String, String> titles = new HashMap<String, String>();
   private Map<String, String> contents = new HashMap<String, String>(); // <"fr",
   // "bonjour">,
@@ -422,5 +423,13 @@ public class NotificationMetaData implements java.io.Serializable {
         setContent(content.toString(), language);
       }
     }
+  }
+  
+  public String getFileName() {
+    return fileName;
+  }
+
+  public void setFileName(String fileName) {
+    this.fileName = fileName;
   }
 }

@@ -73,6 +73,7 @@
       boolean showDownloadEstimation = true;
       boolean showInfo = true;
       boolean showIcon = true;
+	  boolean showMenuNotif = StringUtil.getBooleanValue(request.getParameter("ShowMenuNotif"));
 
       if (request.getParameter("AttachmentPosition") != null) {
         attachmentPosition = request.getParameter("AttachmentPosition");
@@ -189,9 +190,11 @@
           }
 
           if (contextualMenuEnabled) {
-            com.silverpeas.attachment.MenuHelper.displayActions(attachmentDetail, useXMLForm,
+			  
+			com.silverpeas.attachment.MenuHelper.displayActions(attachmentDetail, useXMLForm,
                 useFileSharing, webdavEditingEnable, userId, contentLanguage, attResources,
-                httpServerBase, out);
+                httpServerBase, showMenuNotif, out);
+			
             out.println("<br/>");
             if (attachmentDetail.isReadOnly()) {
               out.println("<div id=\"worker" + attachmentDetail.getPK().getId() + "\" style=\"visibility:visible\">" + attResources.
@@ -468,6 +471,11 @@
 	
       $('#worker'+id).html("");
       $('#worker'+id).css({'visibility':'hidden'});
+    }
+    
+     function notifyAttachment(attachmentId)
+    {
+		alertUsersAttachment(attachmentId); //dans publication.jsp
     }
 
     function AddAttachment()

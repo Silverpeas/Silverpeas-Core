@@ -93,75 +93,88 @@ boolean isDocumentCheckoutable(Document document, String flag, int user_Id, bool
   return false;
 }
 
-void displayActions(Document document, DocumentVersion version, String profile, boolean useXMLForm, boolean useFileSharing, boolean useWebDAV, int userId, ResourcesWrapper resources, String httpServerBase, VersioningSessionController versioningSC, JspWriter out) throws IOException
+void displayActions(Document document, DocumentVersion version, String profile, boolean useXMLForm, boolean useFileSharing, boolean useWebDAV, int userId, 
+ResourcesWrapper resources, String httpServerBase, VersioningSessionController versioningSC, boolean showMenuNotif, JspWriter out) throws IOException
 {
 	String documentId = document.getPk().getId();
 	String webDavOK = "false";
-	if (useWebDAV && version.isOpenOfficeCompatibleDocument())
+	if (useWebDAV && version.isOpenOfficeCompatibleDocument()) {
 		webDavOK = "true";
+	}
 
-	out.println("<div id=\"basicmenu"+documentId+"\" class=\"yuimenu\">");
-	out.println("<div class=\"bd\">");
-		out.println("<ul class=\"first-of-type\">");
-			out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkout("+documentId+","+webDavOK+")\">"+resources.getString("checkOut")+"</a></li>");
-		    out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkoutAndDownload("+documentId+","+webDavOK+")\">"+resources.getString("versioning.checkOutAndDownload")+"</a></li>");
-		    out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkoutAndEdit("+documentId+")\">"+resources.getString("versioning.checkOutAndEditOnline")+"</a></li>");
-		    out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:addVersion("+documentId+")\">"+resources.getString("addNewVersion")+"</a></li>");
-		    out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkin("+documentId+",false)\">"+resources.getString("checkIn")+"</a></li>");
-		    out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:validateFile("+documentId+")\">"+resources.getString("operation.validate")+"</a></li>");
-		    out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:refuseFile("+documentId+")\">"+resources.getString("operation.refuse")+"</a></li>");
-		out.println("</ul>");
-		out.println("<ul>");
-			out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:updateAttachment('"+documentId+"')\">"+resources.getString("GML.modify")+"</a></li>");
-			out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:deleteAttachment("+documentId+")\">"+resources.getString("GML.delete")+"</a></li>");
-		out.println("</ul>");
+	StringBuilder builder = new StringBuilder();
+	builder.append("<div id=\"basicmenu"+documentId+"\" class=\"yuimenu\">");
+	builder.append("<div class=\"bd\">");
+		builder.append("<ul class=\"first-of-type\">");
+			builder.append("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkout("+documentId+","+webDavOK+")\">"+resources.getString("checkOut")+"</a></li>");
+		    builder.append("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkoutAndDownload("+documentId+","+webDavOK+")\">"+resources.getString("versioning.checkOutAndDownload")+"</a></li>");
+		    builder.append("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkoutAndEdit("+documentId+")\">"+resources.getString("versioning.checkOutAndEditOnline")+"</a></li>");
+		    builder.append("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:addVersion("+documentId+")\">"+resources.getString("addNewVersion")+"</a></li>");
+		    builder.append("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkin("+documentId+",false)\">"+resources.getString("checkIn")+"</a></li>");
+		    builder.append("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:validateFile("+documentId+")\">"+resources.getString("operation.validate")+"</a></li>");
+		    builder.append("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:refuseFile("+documentId+")\">"+resources.getString("operation.refuse")+"</a></li>");
+		builder.append("</ul>");
+		builder.append("<ul>");
+			builder.append("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:updateAttachment('"+documentId+"')\">"+resources.getString("GML.modify")+"</a></li>");
+			builder.append("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:deleteAttachment("+documentId+")\">"+resources.getString("GML.delete")+"</a></li>");
+		builder.append("</ul>");
 		if (useFileSharing)
 		{
+			builder.append("<ul>");
+				builder.append("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:ShareAttachment('"+documentId+"')\">"+resources.getString("versioning.share")+"</a></li>");
+			builder.append("</ul>");
+		}
+		out.print(builder.toString());
+		
+		
+	    if(showMenuNotif) { //ajoute l'opération Notifier dans le menu
 			out.println("<ul>");
-				out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:ShareAttachment('"+documentId+"')\">"+resources.getString("versioning.share")+"</a></li>");
+				out.println("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:notifyDocument('"+documentId+"')\">" + resources.getString("GML.notify")+"</a></li>");
 			out.println("</ul>");
 		}
-	out.println("</div>");
-	out.println("</div>");
+		
+		builder = new StringBuilder();
+		builder.append("</div>");
+		builder.append("</div>");
 
-	out.println("<script type=\"text/javascript\">");
+		builder.append("<script type=\"text/javascript\">");
 
-			out.println("var oMenu"+documentId+";");
-			out.println("var webDav"+documentId+" = \""+URLEncoder.encode(httpServerBase+version.getWebdavUrl())+"\";");
-			out.println("YAHOO.util.Event.onContentReady(\"basicmenu"+documentId+"\", function () {");
-				out.println("oMenu"+documentId+" = new YAHOO.widget.ContextMenu(\"basicmenu"+documentId+"\", { trigger: \"img_"+documentId+"\", hidedelay: 100, effect: { effect: YAHOO.widget.ContainerEffect.FADE, duration: 0.30}});");
-				out.println("oMenu"+documentId+".render();");
+			builder.append("var oMenu"+documentId+";");
+			builder.append("var webDav"+documentId+" = \""+URLEncoder.encode(httpServerBase+version.getWebdavUrl())+"\";");
+			builder.append("YAHOO.util.Event.onContentReady(\"basicmenu"+documentId+"\", function () {");
+				builder.append("oMenu"+documentId+" = new YAHOO.widget.ContextMenu(\"basicmenu"+documentId+"\", { trigger: \"img_"+documentId+"\", hidedelay: 100, effect: { effect: YAHOO.widget.ContainerEffect.FADE, duration: 0.30}});");
+				builder.append("oMenu"+documentId+".render();");
 				boolean is_user_writer = versioningSC.isWriter(document, userId);
 
-				out.println("oMenu"+documentId+".getItem(5).cfg.setProperty(\"disabled\", true);"); //validate
-		  		out.println("oMenu"+documentId+".getItem(6).cfg.setProperty(\"disabled\", true);"); //refuse
+				builder.append("oMenu"+documentId+".getItem(5).cfg.setProperty(\"disabled\", true);"); //validate
+		  		builder.append("oMenu"+documentId+".getItem(6).cfg.setProperty(\"disabled\", true);"); //refuse
 				if (document.getStatus()==Document.STATUS_CHECKOUTED)
 				{
 				  	//locked
 				  	if (useFileSharing)
 					{
-						out.println("oMenu"+documentId+".getItem(0, 2).cfg.setProperty(\"disabled\", true);"); //share
+						builder.append("oMenu"+documentId+".getItem(0, 2).cfg.setProperty(\"disabled\", true);"); //share
 					}
-					out.println("oMenu"+documentId+".getItem(0).cfg.setProperty(\"disabled\", true);"); //checkout
-					out.println("oMenu"+documentId+".getItem(1).cfg.setProperty(\"disabled\", true);"); //checkout and download
+					builder.append("oMenu"+documentId+".getItem(0).cfg.setProperty(\"disabled\", true);"); //checkout
+					builder.append("oMenu"+documentId+".getItem(1).cfg.setProperty(\"disabled\", true);"); //checkout and download
 
 					if (document.getOwnerId() != userId && "admin".equals(profile))
 					{
-					  	out.println("oMenu"+documentId+".getItem(2).cfg.setProperty(\"disabled\", true);"); //edit online
-						out.println("oMenu"+documentId+".getItem(3).cfg.setProperty(\"disabled\", true);"); //add version
+					  	builder.append("oMenu"+documentId+".getItem(2).cfg.setProperty(\"disabled\", true);"); //edit online
+						builder.append("oMenu"+documentId+".getItem(3).cfg.setProperty(\"disabled\", true);"); //add version
 					}
 
 					if (!isDocumentCheckinable(document, version, profile, userId, is_user_writer))
 					{
-						out.println("oMenu"+documentId+".getItem(4).cfg.setProperty(\"disabled\", true);"); //checkin
+						builder.append("oMenu"+documentId+".getItem(4).cfg.setProperty(\"disabled\", true);"); //checkin
 					}
 
 					if (document.getTypeWorkList() == 1)
 					{
 					  	if (isValidator(document.getWorkList(), userId) && version.getStatus() == DocumentVersion.STATUS_VALIDATION_REQUIRED)
             			{
-					  	  	out.println("oMenu"+documentId+".getItem(5).cfg.setProperty(\"disabled\", false);"); //validate
-					  		out.println("oMenu"+documentId+".getItem(6).cfg.setProperty(\"disabled\", false);"); //refuse
+					  	  	builder.append("oMenu"+documentId+".getItem(5).cfg.setProperty(\"disabled\", false);"); //validate
+					  		builder.append("oMenu"+documentId+".getItem(6).cfg.setProperty(\"disabled\", false);"); //refuse
             			}
 					}
 					else if (document.getTypeWorkList() == 2)
@@ -169,33 +182,34 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 					  	Worker user = (Worker)document.getWorkList().get(document.getCurrentWorkListOrder());
 					  	if (userId == user.getUserId() && user.isApproval())
             			{
-					  	  	out.println("oMenu"+documentId+".getItem(5).cfg.setProperty(\"disabled\", false);"); //validate
-					  		out.println("oMenu"+documentId+".getItem(6).cfg.setProperty(\"disabled\", false);"); //refuse
+					  	  	builder.append("oMenu"+documentId+".getItem(5).cfg.setProperty(\"disabled\", false);"); //validate
+					  		builder.append("oMenu"+documentId+".getItem(6).cfg.setProperty(\"disabled\", false);"); //refuse
             			}
 					}
 				}
 				else
 				{
 				    //libre
-				  	out.println("oMenu"+documentId+".getItem(4).cfg.setProperty(\"disabled\", true);"); //checkin
+				  	builder.append("oMenu"+documentId+".getItem(4).cfg.setProperty(\"disabled\", true);"); //checkin
 
 				  	if (!isDocumentCheckoutable(document, profile, userId, is_user_writer))
 				  	{
-				  	  	out.println("oMenu"+documentId+".getItem(0).cfg.setProperty(\"disabled\", true);"); //checkout
-						out.println("oMenu"+documentId+".getItem(1).cfg.setProperty(\"disabled\", true);"); //checkout and download
-						out.println("oMenu"+documentId+".getItem(3).cfg.setProperty(\"disabled\", true);"); //edit online
-						out.println("oMenu"+documentId+".getItem(4).cfg.setProperty(\"disabled\", true);"); //new version
+				  	  	builder.append("oMenu"+documentId+".getItem(0).cfg.setProperty(\"disabled\", true);"); //checkout
+						builder.append("oMenu"+documentId+".getItem(1).cfg.setProperty(\"disabled\", true);"); //checkout and download
+						builder.append("oMenu"+documentId+".getItem(3).cfg.setProperty(\"disabled\", true);"); //edit online
+						builder.append("oMenu"+documentId+".getItem(4).cfg.setProperty(\"disabled\", true);"); //new version
 				  	}
 				}
 
 				if (!useWebDAV || !version.isOpenOfficeCompatibleDocument())
-					out.println("oMenu"+documentId+".getItem(2).cfg.setProperty(\"disabled\", true);"); //edit online
+					builder.append("oMenu"+documentId+".getItem(2).cfg.setProperty(\"disabled\", true);"); //edit online
 
-				out.println("YAHOO.util.Event.addListener(\"basicmenu"+documentId+"\", \"mouseover\", oMenu"+documentId+".show);");
-				out.println("YAHOO.util.Event.addListener(\"basicmenu"+documentId+"\", \"mouseout\", oMenu"+documentId+".hide);");
-			out.println("});");
+				builder.append("YAHOO.util.Event.addListener(\"basicmenu"+documentId+"\", \"mouseover\", oMenu"+documentId+".show);");
+				builder.append("YAHOO.util.Event.addListener(\"basicmenu"+documentId+"\", \"mouseout\", oMenu"+documentId+".hide);");
+			builder.append("});");
 
-	out.println("</script>");
+		builder.append("</script>");
+		out.print(builder.toString());
 }
 %>
 
@@ -242,18 +256,25 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 	boolean showDownloadEstimation = true;
 	boolean showInfo = true;
 	boolean showIcon = true;
-	if (request.getParameter("AttachmentPosition") != null)
-					attachmentPosition = request.getParameter("AttachmentPosition");
-	if (request.getParameter("ShowTitle") != null)
-					showTitle = (new Boolean(request.getParameter("ShowTitle"))).booleanValue();
-	if (request.getParameter("ShowFileSize") != null)
-					showFileSize = (new Boolean(request.getParameter("ShowFileSize"))).booleanValue();
-	if (request.getParameter("ShowDownloadEstimation") != null)
-					showDownloadEstimation = (new Boolean(request.getParameter("ShowDownloadEstimation"))).booleanValue();
-	if (request.getParameter("ShowInfo") != null)
-					showInfo = (new Boolean(request.getParameter("ShowInfo"))).booleanValue();
-	if (request.getParameter("ShowIcon") != null)
-					showIcon = (new Boolean(request.getParameter("ShowIcon"))).booleanValue();
+	boolean showMenuNotif = StringUtil.getBooleanValue(request.getParameter("ShowMenuNotif"));
+	if (request.getParameter("AttachmentPosition") != null) {
+		attachmentPosition = request.getParameter("AttachmentPosition");
+	}
+	if (request.getParameter("ShowTitle") != null) {
+		showTitle = Boolean.parseBoolean(request.getParameter("ShowTitle"));
+	}
+	if (request.getParameter("ShowFileSize") != null) {
+		showFileSize = Boolean.parseBoolean(request.getParameter("ShowFileSize"));
+	}
+	if (request.getParameter("ShowDownloadEstimation") != null) {
+		showDownloadEstimation = Boolean.parseBoolean(request.getParameter("ShowDownloadEstimation"));
+	}
+	if (request.getParameter("ShowInfo") != null) {
+		showInfo = Boolean.parseBoolean(request.getParameter("ShowInfo"));
+	}
+	if (request.getParameter("ShowIcon") != null) {
+		showIcon = Boolean.parseBoolean(request.getParameter("ShowIcon"));
+	}
 	boolean useFileSharing = (isFileSharingEnable(m_MainSessionCtrl, componentId) && "admin".equalsIgnoreCase(profile));
 	boolean contextualMenuEnabled = !fromAlias && ("admin".equalsIgnoreCase(profile) || "publisher".equalsIgnoreCase(profile) || "writer".equalsIgnoreCase(profile));
 	String iconStyle = "";
@@ -311,7 +332,7 @@ void displayActions(Document document, DocumentVersion version, String profile, 
 								<%
 							 	if (contextualMenuEnabled)
 							    {
-							 	 	displayActions(document, versioning_util.getLastVersion(document.getPk()), profile, false, useFileSharing, webdavEditingEnable, Integer.parseInt(versioningSC.getUserId()), attResources, httpServerBase, versioningSC, out);
+									displayActions(document, versioning_util.getLastVersion(document.getPk()), profile, false, useFileSharing, webdavEditingEnable, Integer.parseInt(versioningSC.getUserId()), attResources, httpServerBase, versioningSC, showMenuNotif, out);
 								    out.println("<br/>");
 								    if (document.getStatus() == Document.STATUS_CHECKOUTED)
 								    {
@@ -646,6 +667,11 @@ function reloadIncludingPage()
 	<% } else { %>
 		document.location.href = "<%=m_sAbsolute+m_context+callbackURL%>";
 	<% } %>
+}
+
+function notifyDocument(documentId)
+{
+	alertUsersDocument(documentId); //dans publication.jsp
 }
 
 function updateAttachment(attachmentId)
