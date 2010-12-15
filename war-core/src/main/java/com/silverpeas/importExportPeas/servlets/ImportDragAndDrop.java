@@ -112,20 +112,16 @@ public class ImportDragAndDrop extends HttpServlet {
           + File.separator + topicId + new Date().getTime() + File.separator;
 
       List<FileItem> items = FileUploadUtil.parseRequest(request);
-      String parentPath = FileUploadUtil.getParameter(items, "userfile_parent");
-      SilverTrace.info("importExportPeas", "Drop.doPost",
-          "root.MSG_GEN_PARAM_VALUE", "parentPath = " + parentPath);
       SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE",
           "debut de la boucle");
       for (FileItem item : items) {
         if (!item.isFormField()) {
           String fileUploadId = item.getFieldName().substring(4);
-          parentPath = FileUploadUtil.getParameter(items, "relpathinfo" + fileUploadId, null,
-              "UTF-8");
+          String parentPath = FileUploadUtil.getParameter(items, "relpathinfo" + fileUploadId, null);
           String fileName = item.getName();
           if (StringUtil.isDefined(parentPath)) {
             if (parentPath.endsWith(":\\")) { // special case for file on root of disk
-              parentPath = parentPath.substring(0, parentPath.indexOf(":") + 1);
+              parentPath = parentPath.substring(0, parentPath.indexOf(':') + 1);
             }
           }
           SilverTrace.info("importExportPeas", "Drop.doPost",
@@ -135,8 +131,7 @@ public class ImportDragAndDrop extends HttpServlet {
             fileName = fileName.replace('/', File.separatorChar);
             if (fileName.indexOf(File.separatorChar) >= 0) {
               fileName = fileName.substring(fileName.lastIndexOf(File.separatorChar));
-              parentPath =
-                  parentPath + File.separatorChar +
+              parentPath = parentPath + File.separatorChar +
                       fileName.substring(0, fileName.lastIndexOf(File.separatorChar));
             }
             SilverTrace.info("importExportPeas", "Drop.doPost",
