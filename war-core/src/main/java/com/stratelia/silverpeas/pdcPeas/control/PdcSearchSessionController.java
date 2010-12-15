@@ -57,6 +57,7 @@ import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.silverpeas.thesaurus.model.Jargon;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.security.ComponentSecurity;
@@ -170,11 +171,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private String xmlFormSortValue = null;
   // keyword used to retrieve the implementation to realize sorting or filtering
   private String sortImplementor = null;
-
   private int currentResultsDisplay = SHOWRESULTS_ALL;
   public static final int SHOWRESULTS_ALL = 0;
   public static final int SHOWRESULTS_OnlyPDC = 1;
-
   // spelling word
   private String[] spellingwords = null;
 
@@ -251,7 +250,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   public void setIndexOfFirstResultToDisplay(String index) {
-    this.indexOfFirstResultToDisplay = new Integer(index).intValue();
+    this.indexOfFirstResultToDisplay = Integer.parseInt(index);
   }
 
   public String getDisplayParamChoices() {
@@ -331,9 +330,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       getSearchEngineBm().setSpellingWords(null);
       spellingwords = null;
       if (getQueryParameters() != null
-          &&
-          (getQueryParameters().isDefined() || getQueryParameters().getXmlQuery() != null || StringUtil
-              .isDefined(getQueryParameters().getSpaceId()))) {
+          && (getQueryParameters().isDefined() || getQueryParameters().getXmlQuery() != null || StringUtil.
+          isDefined(getQueryParameters().getSpaceId()))) {
         query = getQueryParameters().getQueryDescription(
             getUserId(), "*");
 
@@ -364,7 +362,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
         SilverTrace.info("pdcPeas", "PdcSearchSessionController.search()",
             "root.MSG_GEN_PARAM_VALUE", "# component = "
-                + query.getSpaceComponentPairSet().size());
+            + query.getSpaceComponentPairSet().size());
 
         String originalQuery = query.getQuery();
         query.setQuery(getSynonymsQueryString(originalQuery));
@@ -408,8 +406,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         SilverTrace.info("pdcPeas",
             "PdcSearchSessionController.isMatchingIndexEntryAvailable()",
             "pdcPeas.EX_CAN_SEARCH_QUERY", "componentId = " + componentId
-                + ", objectId = " + mie.getObjectId() + ", objectType = "
-                + mie.getObjectType(), e);
+            + ", objectId = " + mie.getObjectId() + ", objectType = "
+            + mie.getObjectType(), e);
       }
     }
     // contrôle des droits sur les espaces et les composants
@@ -420,8 +418,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     } else if (objectType.equals("Component")) {
       // check if component is allowed to current user
       return getOrganizationController().isComponentAvailable(mie.getObjectId(), getUserId());
-    } else if (objectType.equals("UserFull") &&
-        GeneralPropertiesManager.getDomainVisibility() != GeneralPropertiesManager.DVIS_ALL) {
+    } else if (objectType.equals("UserFull")
+        && GeneralPropertiesManager.getDomainVisibility() != GeneralPropertiesManager.DVIS_ALL) {
       // visibility between domains is limited, check found user domain against current user domain
       String userId = mie.getObjectId();
       UserDetail userFound = getUserDetail(userId);
@@ -619,12 +617,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   private boolean isPopularityCompliant(GlobalSilverResult gsr) {
-    if (gsr != null &&
-        (StringUtil.isDefined(gsr.getInstanceId()) && (gsr.getInstanceId().startsWith("kmelia") ||
-            gsr.getInstanceId().startsWith("kmax") || gsr
-            .getInstanceId().startsWith("toolbox"))) &&
-        ("Publication".equals(gsr.getType()) || (StringUtil.isDefined(gsr.getURL()) && gsr.getURL()
-            .indexOf("Publication") != -1))) {
+    if (gsr != null
+        && (StringUtil.isDefined(gsr.getInstanceId()) && (gsr.getInstanceId().startsWith("kmelia")
+        || gsr.getInstanceId().startsWith("kmax") || gsr.getInstanceId().startsWith("toolbox")))
+        && ("Publication".equals(gsr.getType()) || (StringUtil.isDefined(gsr.getURL()) && gsr.getURL().
+        indexOf("Publication") != -1))) {
       return true;
     }
     return false;
@@ -634,7 +631,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     try {
       StatisticBmHome statisticHome =
           (StatisticBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME,
-              StatisticBmHome.class);
+          StatisticBmHome.class);
       StatisticBm statisticBm = statisticHome.create();
       return statisticBm;
     } catch (Exception e) {
@@ -748,8 +745,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       if (resultType.startsWith("Attachment")) {
         if (!componentId.startsWith("webPages")) {
           try {
-            downloadLink = getAttachmentUrl(indexEntry.getObjectType(), indexEntry.
-                getComponent());
+            downloadLink = getAttachmentUrl(indexEntry.getObjectType(), indexEntry.getComponent());
           } catch (Exception e) {
             SilverTrace.error("pdcPeas",
                 "searchEngineSessionController.setExtraInfoToResultsToDisplay()",
@@ -799,8 +795,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         // open the linked file inside a popup window
         downloadLink =
             FileServerUtils.getUrl(indexEntry.getTitle(), indexEntry.getObjectId(),
-                AttachmentController.
-                    getMimeType(indexEntry.getTitle()));
+            AttachmentController.getMimeType(indexEntry.getTitle()));
         // window opener is reloaded on the main page of the component
         underLink = m_sContext + URLManager.getURL("useless", componentId)
             + "Main";
@@ -840,7 +835,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         if (userDetail != null) {
           result.setThumbnailURL(userDetail.getAvatar());
         }
-        titleLink = "javascript:" + markAsReadJS + " viewUserProfile('" + indexEntry.getPK().getObjectId() + "');";
+        titleLink = "javascript:" + markAsReadJS + " viewUserProfile('" + indexEntry.getPK().
+            getObjectId() + "');";
       } else {
         titleLink = "javascript:" + markAsReadJS + " jumpToComponent('" + componentId
             + "');";
@@ -848,8 +844,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           titleLink += "document.location.href='" + getUrl(m_sContext, indexEntry) + "';";
         } else {
           titleLink +=
-              "document.location.href='" +
-                  getUrl(m_sContext, componentId, "useless", result.getURL()) + "';";
+              "document.location.href='"
+              + getUrl(m_sContext, componentId, "useless", result.getURL()) + "';";
         }
       }
 
@@ -1102,10 +1098,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     String id = objectType.substring(10); // object type is Attachment1245 or
     // Attachment1245_en
     String language = I18NHelper.defaultLanguage;
-    if (id != null && id.indexOf("_") != -1) {
+    if (id != null && id.indexOf('_') != -1) {
       // extract attachmentId and language
-      language = id.substring(id.indexOf("_") + 1, id.length());
-      id = id.substring(0, id.indexOf("_"));
+      language = id.substring(id.indexOf('_') + 1, id.length());
+      id = id.substring(0, id.indexOf('_'));
     }
 
     AttachmentPK attachmentPK = new AttachmentPK(id, "useless", componentId);
@@ -1120,7 +1116,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     if (queryParameters != null) {
       String keywords = queryParameters.getKeywords();
       if (keywords != null && keywords.trim().length() > 0
-          && "application/pdf".equals(attachmentDetail.getType(language))) {
+          && MimeTypes.PDF_MIME_TYPE.equals(attachmentDetail.getType(language))) {
         // Suppression des éventuelles quotes (ne sont pas acceptées)
         if (keywords.startsWith("\"")) {
           keywords = keywords.substring(1);
@@ -1133,7 +1129,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         urlAttachment += "#search=%22" + keywords + "%22";
       }
     }
-
     return FileServerUtils.getApplicationContext() + urlAttachment;
   }
 
@@ -1141,7 +1136,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       throws Exception {
     SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.getVersioningUrl",
         "root.MSG_GEN_PARAM_VALUE", "documentId = " + documentId
-            + ", componentId = " + componentId);
+        + ", componentId = " + componentId);
 
     DocumentVersion version = versioningUtil.getLastPublicVersion(new DocumentPK(
         Integer.parseInt(documentId), "useless", componentId));
@@ -1149,7 +1144,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     if (version != null) {
       String urlVersioning = versioningUtil.getDocumentVersionURL(componentId,
           version.getLogicalName(), documentId, version.getPk().getId());
-
       return FileServerUtils.getApplicationContext() + urlVersioning;
     }
     return null;
@@ -1233,7 +1227,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   public List<SearchAxis> getAxis(String viewType, AxisFilter filter) throws PdcException {
-    if (componentList == null || componentList.size() == 0) {
+    if (componentList == null || componentList.isEmpty()) {
       if (StringUtil.isDefined(getCurrentComponentId())) {
         return getPdcBm().getPertinentAxisByInstanceId(searchContext, viewType,
             getCurrentComponentId());
@@ -1255,12 +1249,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   private List<SearchAxis> transformAxisHeadersIntoSearchAxis(List<AxisHeader> axis) {
     ArrayList<SearchAxis> transformedAxis = new ArrayList<SearchAxis>();
-    AxisHeader ah;
-    SearchAxis sa;
     try {
       for (int i = 0; i < axis.size(); i++) {
-        ah = (AxisHeader) axis.get(i);
-        sa = new SearchAxis(Integer.parseInt(ah.getPK().getId()), 0);
+        AxisHeader ah = axis.get(i);
+        SearchAxis sa = new SearchAxis(Integer.parseInt(ah.getPK().getId()), 0);
         // sa.setAxisName(ah.getName());
         sa.setAxis(ah);
         sa.setAxisRootId(Integer.parseInt(
@@ -1283,9 +1275,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     SilverTrace.info("pdcPeas",
         "PdcSearchSessionController.getDaughterValues()",
         "root.MSG_GEN_ENTER_METHOD", "axisId = " + axisId + ", valueId = "
-            + valueId);
+        + valueId);
     List<Value> values = null;
-    if (componentList == null || componentList.size() == 0) {
+    if (componentList == null || componentList.isEmpty()) {
       values = getPdcBm().getPertinentDaughterValuesByInstanceId(searchContext,
           axisId, valueId, getCurrentComponentId());
     } else {
@@ -1315,7 +1307,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         "PdcSearchSessionController.getFirstLevelAxisValues()",
         "root.MSG_GEN_ENTER_METHOD", "axisId = " + axisId);
     List<Value> result = null;
-    if (componentList == null || componentList.size() == 0) {
+    if (componentList == null || componentList.isEmpty()) {
       result = getPdcBm().getFirstLevelAxisValuesByInstanceId(searchContext,
           axisId, getCurrentComponentId());
     } else {
@@ -1389,7 +1381,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public ContentPeas getContentPeas() {
     return contentPeasPDC;
   }
-
   /******************************************************************************************************************/
   /**
    * searchAndSelect methods /
@@ -1422,18 +1413,15 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   public List<String> getInstanceIdsFromComponentName(String componentName) {
-    CompoSpace[] compoIds = getOrganizationController().getCompoForUser(
-        getUserId(), componentName);
-    SilverTrace.info("pdcPeas",
-        "PdcSearchSessionController.getInstanceIdsFromComponentName",
+    CompoSpace[] compoIds = getOrganizationController().getCompoForUser(getUserId(), componentName);
+    SilverTrace.info("pdcPeas", "PdcSearchSessionController.getInstanceIdsFromComponentName",
         "root.MSG_GEN_PARAM_VALUE", "compoIds = " + compoIds.toString());
     List<String> instanceIds = new ArrayList<String>();
-    for (int i = 0; i < compoIds.length; i++) {
-      instanceIds.add(((CompoSpace) compoIds[i]).getComponentId());
+    for (CompoSpace component : compoIds) {
+      instanceIds.add(component.getComponentId());
     }
     return instanceIds;
   }
-
   /******************************************************************************************************************/
   /**
    * Thesaurus methods /
@@ -1478,7 +1466,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   private String getSynonymsQueryString(String queryString) {
     String synonymsQueryString = "";
-    if (queryString == null || queryString.equals("") || !activeThesaurus) {
+    if (!StringUtil.isDefined(queryString) || !activeThesaurus) {
       synonymsQueryString = queryString;
     } else {
       StreamTokenizer st = new StreamTokenizer(new StringReader(queryString));
@@ -1492,7 +1480,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       st.ordinaryChar('(');
       st.ordinaryChar(' ');
       try {
-        String synonymsString = "";
+        StringBuilder synonymsString = new StringBuilder("");
         while (st.nextToken() != StreamTokenizer.TT_EOF) {
           String word = "";
           String specialChar = "";
@@ -1501,29 +1489,26 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           } else {
             specialChar = String.valueOf((char) st.ttype);
           }
-          if (!word.equals("")) {
+          if (!word.isEmpty()) {
             if (!isKeyword(word)) {
-              synonymsString += "(\"" + word + "\"";
-              Collection synonyms = getSynonym(word);
-              Iterator it = synonyms.iterator();
-              while (it.hasNext()) {
-                String synonym = (String) it.next();
-                synonymsString += " " + "\"" + synonym + "\"";
+              synonymsString.append("(\"").append(word).append("\"");
+              Collection<String> wordSynonyms = getSynonym(word);
+              for (String synonym : wordSynonyms) {
+                synonymsString.append(" " + "\"").append(synonym).append("\"");
               }
-              synonymsString += ")";
+              synonymsString.append(")");
             } else // and or
             {
-              synonymsString += word;
+              synonymsString.append(word);
             }
           }
-          if (!specialChar.equals("")) {
-            synonymsString += specialChar;
+          if (!specialChar.isEmpty()) {
+            synonymsString.append(specialChar);
           }
         }
-        synonymsQueryString = synonymsString;
+        synonymsQueryString = synonymsString.toString();
       } catch (IOException e) {
-        throw new PdcPeasRuntimeException(
-            "PdcSearchSessionController.setSynonymsQueryString",
+        throw new PdcPeasRuntimeException("PdcSearchSessionController.setSynonymsQueryString",
             SilverpeasException.ERROR, "pdcPeas.EX_GET_SYNONYMS", e);
       }
     }
@@ -1535,6 +1520,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       return synonyms.get(mot);
     } else {
       try {
+        @SuppressWarnings("unchecked")
         Collection<String> synos = new ThesaurusManager().getSynonyms(mot, getUserId());
         synonyms.put(mot, synos);
         return synos;
@@ -1549,9 +1535,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public Map<String, Collection<String>> getSynonyms() {
     if (activeThesaurus) {
       return synonyms;
-    } else {
-      return new HashMap<String, Collection<String>>();
     }
+    return new HashMap<String, Collection<String>>();
   }
 
   private boolean isKeyword(String mot) {
@@ -1577,7 +1562,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         while (stopWord.hasMoreElements()) {
           wordList.add(stopWord.nextElement());
         }
-        KEYWORDS = (String[]) wordList.toArray(new String[wordList.size()]);
+        KEYWORDS = wordList.toArray(new String[wordList.size()]);
       } catch (MissingResourceException e) {
         SilverTrace.warn("pdcPeas", "PdcSearchSessionController",
             "pdcPeas.MSG_MISSING_STOPWORDS_DEFINITION");
@@ -1586,7 +1571,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
     return KEYWORDS;
   }
-
   /******************************************************************************************************************/
   /**
    * Glossary methods /
@@ -1631,8 +1615,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     SilverTrace.info("pdcPeas",
         "PdcSearchSessionController.getAxisValuesByFilter",
         "root.MSG_GEN_PARAM_VALUE", "filter_by_name = " + filter_by_name
-            + ", filter_by_description = " + filter_by_description
-            + ", search_in_daughters = " + search_in_daughters);
+        + ", filter_by_description = " + filter_by_description
+        + ", search_in_daughters = " + search_in_daughters);
     AxisFilter filter;
     if (filter_by_name != null && !"".equals(filter_by_name)) {
       filter_by_name = filter_by_name.replace('*', '%');
@@ -1768,7 +1752,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           "pdcPeas.EX_LOAD_IC", e);
     }
   }
-
   /******************************************************************************************************************/
   /**
    * PDC Subscriptions methods /
@@ -1817,7 +1800,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     SilverTrace.info("pdcPeas",
         "PdcSearchSessionController.buildComponentListWhereToSearch()",
         "root.MSG_GEN_ENTER_METHOD", "space = " + space + ", component = "
-            + component);
+        + component);
 
     componentList = new ArrayList<String>();
 
@@ -1845,7 +1828,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       }
     }
   }
-  
+
   private List<String> getComponentsExcludedFromGlobalSearch() {
     List<String> excluded = new ArrayList<String>();
 
@@ -1886,7 +1869,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     SilverTrace.info("pdcPeas",
         "PdcSearchSessionController.buildComponentListWhereToSearch()",
         "root.MSG_GEN_ENTER_METHOD", "space = " + space + ", component = "
-            + components);
+        + components);
 
     componentList = new ArrayList<String>();
 
@@ -1915,7 +1898,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       }
     }
   }
-  
+
   private boolean isSearchable(String componentId) {
     return isSearchable(componentId, null);
   }
@@ -2027,7 +2010,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       return componentId;
     }
   }
-
   /*********************************************************************************************/
   /** AskOnce methods **/
   /*********************************************************************************************/
@@ -2112,7 +2094,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           componentId);
       return urlBase
           + URLManager.getNewComponentURL(componentInst.getDomainFatherId(),
-              componentId)
+          componentId)
           + params
           + URLManager.getEndURL(componentInst.getDomainFatherId(), componentId);
     } else {
@@ -2126,9 +2108,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         || componentId.startsWith("incidents")
         || componentId.startsWith("documentation")) {
       return true;
-    } else {
-      return false;
-    }
+    } 
+    return false;
   }
 
   private boolean isExportLicenseOK() {
@@ -2154,7 +2135,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
     return validSequence;
   }
-
   /*********************************************************************************************/
   /** Business objects primitives **/
   /*********************************************************************************************/
@@ -2313,8 +2293,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       throws PdcPeasRuntimeException {
     PublicationTemplateImpl template = null;
     try {
-      template = (PublicationTemplateImpl) PublicationTemplateManager.getInstance()
-              .loadPublicationTemplate(fileName);
+      template = (PublicationTemplateImpl) PublicationTemplateManager.getInstance().
+          loadPublicationTemplate(fileName);
       this.xmlTemplate = template;
     } catch (PublicationTemplateException e) {
       throw new PdcPeasRuntimeException(
@@ -2323,7 +2303,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
     return template;
   }
-  
+
   public void clearXmlTemplateAndData() {
     xmlTemplate = null;
     xmlData = null;

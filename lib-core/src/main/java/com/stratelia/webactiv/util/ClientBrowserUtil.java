@@ -258,4 +258,7 @@ public class ClientBrowserUtil {
     }
     return filename;
   }
+
+  private ClientBrowserUtil() {
+  }
 }

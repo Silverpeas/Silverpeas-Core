@@ -64,8 +64,7 @@ public class FileUtil implements MimeTypes {
    */
   public static String getMimeType(String fileName) {
     String mimeType = null;
-    String fileExtension = FileRepositoryManager.getFileExtension(fileName)
-        .toLowerCase();
+    String fileExtension = FileRepositoryManager.getFileExtension(fileName).toLowerCase();
     try {
       if (MIME_TYPES_EXTENSIONS != null) {
         mimeType = MIME_TYPES_EXTENSIONS.getString(fileExtension);
@@ -178,5 +177,8 @@ public class FileUtil implements MimeTypes {
    */
   public static boolean isWindows() {
     return OsEnum.getOS().isWindows();
+  }
+
+  private FileUtil() {
   }
 }

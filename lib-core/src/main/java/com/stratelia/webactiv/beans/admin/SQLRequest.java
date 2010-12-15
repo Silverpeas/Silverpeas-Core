@@ -214,13 +214,13 @@ public class SQLRequest {
     dbName.add("postgreSQL");
     dbName.add("SQLserver");
     internalTag.put("__TextFieldLength__", String
-        .valueOf(DBUtil.TextFieldLength));
+        .valueOf(DBUtil.getTextFieldLength()));
     internalTag
-        .put("__TextAreaLength__", String.valueOf(DBUtil.TextAreaLength));
+        .put("__TextAreaLength__", String.valueOf(DBUtil.getTextAreaLength()));
     internalTag.put("__DateFieldLength__", String
-        .valueOf(DBUtil.DateFieldLength));
+        .valueOf(DBUtil.getDateFieldLength()));
     internalTag
-        .put("__TextMaxiLength__", String.valueOf(DBUtil.TextMaxiLength));
+        .put("__TextMaxiLength__", String.valueOf(DBUtil.getTextMaxiLength()));
   }
 
   /**
