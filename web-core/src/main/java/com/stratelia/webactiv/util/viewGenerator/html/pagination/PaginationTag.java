@@ -21,23 +21,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.viewGenerator.html.pagination;
 
+import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import java.io.IOException;
-
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
-
 public class PaginationTag extends TagSupport {
+
+  private static final long serialVersionUID = 7931703988418922022L;
   private int currentPage;
   private int nbPages;
   private String pageParam;
   private String altPreviousAction;
   private String altNextAction;
-
   private String action;
 
   public void setCurrentPage(Integer currentPage) {
@@ -64,63 +63,58 @@ public class PaginationTag extends TagSupport {
     this.pageParam = pageParam;
   }
 
+  @Override
   public int doEndTag() throws JspException {
     if (nbPages <= 1) {
       return EVAL_PAGE;
     }
     boolean hasParam = action.indexOf('?') > 0;
+    JspWriter out = pageContext.getOut();
     try {
-      pageContext.getOut().println(
-          "<table id=\"pagination\" width=\"100%\" border=\"0\" "
-          + "cellspacing=\"0\" cellpadding=\"2\" align=\"center\">");
-      pageContext.getOut().println(
-          "<tr valign=\"middle\" class=\"intfdcolor\">");
-      pageContext.getOut().println(
-          "<td align=\"center\" class=\"ArrayNavigation\">");
+      out.println(
+          "<table id=\"pagination\" width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" align=\"center\">");
+      out.println("<tr valign=\"middle\" class=\"intfdcolor\">");
+      out.println("<td align=\"center\" class=\"ArrayNavigation\">");
       if (currentPage > 0) {
-        pageContext.getOut().print("<a class=\"ArrayNavigation\" href=\"");
-        pageContext.getOut().print(getUrl(action, hasParam, (currentPage - 1)));
-        pageContext.getOut().print("\">");
-        pageContext
-            .getOut()
-            .print(
-            "<img src=\""
-            + getIconsPath()
-            + "/arrows/arrowLeft.gif\" border=\"0\" align=\"absmiddle\" alt=\""
-            + altPreviousAction + "\"/></a>");
+        out.print("<a class=\"ArrayNavigation\" href=\"");
+        out.print(getUrl(action, hasParam, (currentPage - 1)));
+        out.print("\">");
+        out.print("<img src=\"");
+        out.print(getIconsPath());
+        out.print("/arrows/arrowLeft.gif\" border=\"0\" align=\"absmiddle\" alt=\"");
+        out.print(altPreviousAction);
+        out.print("\"/></a>");
       } else {
-        pageContext.getOut().println("&#160;&#160;&#160;");
+        out.println("&#160;&#160;&#160;");
       }
       for (int i = 0; i < nbPages; i++) {
         if (i == currentPage) {
-          pageContext.getOut().println(
-              " <span class=\"ArrayNavigationOn\">&#160;" + (i + 1)
-              + "&#160;</span>");
+          out.print(" <span class=\"ArrayNavigationOn\">&#160;");
+          out.print(i + 1);
+          out.print("&#160;</span>");
         } else {
-          pageContext.getOut().print("<a class=\"ArrayNavigation\" href=\"");
-          pageContext.getOut().print(getUrl(action, hasParam, (i)));
-          pageContext.getOut().print("\">");
-          pageContext.getOut().print(i + 1);
-          pageContext.getOut().print("</a> ");
+          out.print("<a class=\"ArrayNavigation\" href=\"");
+          out.print(getUrl(action, hasParam, (i)));
+          out.print("\">");
+          out.print(i + 1);
+          out.print("</a> ");
         }
       }
       if ((currentPage + 1) >= nbPages) {
-        pageContext.getOut().print("&#160;&#160;&#160;");
+        out.print("&#160;&#160;&#160;");
       } else {
-        pageContext.getOut().print("<a class=\"ArrayNavigation\" href=\"");
-        pageContext.getOut().print(getUrl(action, hasParam, (currentPage + 1)));
-        pageContext.getOut().print("\">");
-        pageContext
-            .getOut()
-            .print(
-            "<img src=\""
-            + getIconsPath()
-            + "/arrows/arrowRight.gif\" border=\"0\" align=\"absmiddle\" alt=\""
-            + altNextAction + "\"/></a>");
+        out.print("<a class=\"ArrayNavigation\" href=\"");
+        out.print(getUrl(action, hasParam, (currentPage + 1)));
+        out.print("\">");
+        out.print("<img src=\"");
+        out.print(getIconsPath());
+        out.print("/arrows/arrowRight.gif\" border=\"0\" align=\"absmiddle\" alt=\"");
+        out.print(altNextAction);
+        out.print("\"/></a>");
       }
-      pageContext.getOut().println("</td>");
-      pageContext.getOut().println("</tr>");
-      pageContext.getOut().println("</table>");
+      out.println("</td>");
+      out.println("</tr>");
+      out.println("</table>");
       return EVAL_PAGE;
 
     } catch (IOException e) {
@@ -129,14 +123,14 @@ public class PaginationTag extends TagSupport {
   }
 
   public String getUrl(String elAction, boolean hasParam, int page) {
-    StringBuffer buffer = new StringBuffer(200);
+    StringBuilder buffer = new StringBuilder(200);
     buffer.append(elAction);
     if (hasParam) {
       buffer.append('&');
     } else {
       buffer.append('?');
     }
-    buffer.append(pageParam + '=' + page);
+    buffer.append(pageParam).append('=').append(page);
     return buffer.toString();
   }
 

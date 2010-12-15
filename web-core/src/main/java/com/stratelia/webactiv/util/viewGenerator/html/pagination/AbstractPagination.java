@@ -42,6 +42,7 @@ public abstract class AbstractPagination implements Pagination {
   public AbstractPagination() {
   }
 
+  @Override
   public void init(int nbItems, int nbItemsPerPage, int firstItemIndex) {
     this.nbItems = nbItems;
     this.nbItemsPerPage = nbItemsPerPage;
@@ -73,10 +74,12 @@ public abstract class AbstractPagination implements Pagination {
     return nbItemsPerPage;
   }
 
+  @Override
   public int getFirstItemIndex() {
     return firstItemIndex;
   }
 
+  @Override
   public int getLastItemIndex() {
     int end = getFirstItemIndex() + getNbItemsPerPage();
     if (end > getNbItems() - 1) {
@@ -108,18 +111,31 @@ public abstract class AbstractPagination implements Pagination {
     return nbPage;
   }
 
+  @Override
   public boolean isLastPage() {
     return getFirstItemIndex() + 1 + getNbItemsPerPage() > getNbItems();
   }
 
+  @Override
   public int getIndexForPreviousPage() {
     return getIndexForDirectPage(getCurrentPage() - 1);
   }
 
+  @Override
   public int getIndexForDirectPage(int page) {
-    return (page - 1) * getNbItemsPerPage();
+    int result = (page - 1) * getNbItemsPerPage();
+    if(result > getNbItems()) {
+      result = getIndexForLastPage();
+    }
+    return result;
+  }
+  
+  @Override
+  public int getIndexForCurrentPage() {
+    return getIndexForDirectPage(getCurrentPage());
   }
 
+  @Override
   public int getIndexForNextPage() {
     return getIndexForDirectPage(getCurrentPage() + 1);
   }
@@ -128,6 +144,7 @@ public abstract class AbstractPagination implements Pagination {
     return (getNbPage() * getNbItemsPerPage()) - getNbItemsPerPage();
   }
 
+  @Override
   public void setActionSuffix(String actionSuffix) {
     this.actionSuffix = actionSuffix;
   }
@@ -136,6 +153,7 @@ public abstract class AbstractPagination implements Pagination {
     return actionSuffix;
   }
 
+  @Override
   public void setBaseURL(String url) {
     this.baseURL = url;
   }
@@ -144,10 +162,12 @@ public abstract class AbstractPagination implements Pagination {
     return baseURL;
   }
 
+  @Override
   public void setAltPreviousPage(String text) {
     this.altPreviousPage = text;
   }
 
+  @Override
   public void setAltNextPage(String text) {
     this.altNextPage = text;
   }
@@ -174,6 +194,7 @@ public abstract class AbstractPagination implements Pagination {
         false);
   }
 
+  @Override
   public void setMultilang(ResourceLocator multilang) {
     this.multilang = multilang;
   }
@@ -190,11 +211,15 @@ public abstract class AbstractPagination implements Pagination {
     return getMultilang().getString(key, defaultValue);
   }
 
+  @Override
   public abstract String print();
 
+  @Override
   public abstract String printIndex();
 
+  @Override
   public abstract String printIndex(String text);
 
+  @Override
   public abstract String printCounter();
 }

@@ -416,11 +416,11 @@ public class PdcSearchRequestRouterHelper {
   public static void processItemsPagination(String function,
       PdcSearchSessionController pdcSC, HttpServletRequest request) {
     String index = request.getParameter("Index");
-    if (index != null && index.length() > 0) {
+    if (StringUtil.isDefined(index)) {
       pdcSC.setIndexOfFirstItemToDisplay(index);
     }
-    request.setAttribute("NbItemsPerPage", new Integer(pdcSC.getNbItemsPerPage()));
-    request.setAttribute("FirstItemIndex", new Integer(pdcSC.getIndexOfFirstItemToDisplay()));
+    request.setAttribute("NbItemsPerPage", Integer.valueOf(pdcSC.getNbItemsPerPage()));
+    request.setAttribute("FirstItemIndex", Integer.valueOf(pdcSC.getIndexOfFirstItemToDisplay()));
 
     Value value = pdcSC.getCurrentValue();
     request.setAttribute("SelectedValue", value);

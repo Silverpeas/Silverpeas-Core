@@ -99,16 +99,16 @@ public class PaginationSilverpeasV5Test {
     instance.setActionSuffix("");
     instance.init(nbItems, nbItemsPerPage, firstItemIndex);
     String result = instance.printIndex();
-    assertNotNull(result);    
+    assertNotNull(result);
     assertEquals("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" "
         + "align=\"center\"><tr valign=\"middle\" class=\"intfdcolor\"><td align=\"center\">"
         + "&#160;&#160;&#160; 1  <a href=\"Pagination?Index=10\">2</a>  <a href=\"Pagination?Index=10\"><img src=\""
         + "/silverpeas//util/viewGenerator/icons/arrows/arrowRight.gif\" border=\"0\" "
         + "align=\"absmiddle\" alt=\"\"/></a></td></tr></table>", result);
-    
+
     instance = new PaginationSilverpeasV5();
     instance.init(nbItems, nbItemsPerPage, 10);
-    result = instance.printIndex();    
+    result = instance.printIndex();
     assertNotNull(result);
     assertEquals("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" "
         + "align=\"center\"><tr valign=\"middle\" class=\"intfdcolor\"><td align=\"center\"> "
@@ -117,32 +117,193 @@ public class PaginationSilverpeasV5Test {
         + "\"Pagination?Index=0\">1</a>  2 &#160;&#160;&#160;</td></tr></table>", result);
   }
 
+  @Test
+  public void testGetNbPage() {
+    int nbItems = 14;
+    int nbItemsPerPage = 10;
+    int firstItemIndex = 0;
+    PaginationSilverpeasV5 instance = new PaginationSilverpeasV5();
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(2, instance.getNbPage());
+
+    nbItemsPerPage = 5;
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(3, instance.getNbPage());
+  }
+
+  @Test
+  public void testGetCurrentPage() {
+    int nbItems = 14;
+    int nbItemsPerPage = 5;
+    int firstItemIndex = 0;
+    PaginationSilverpeasV5 instance = new PaginationSilverpeasV5();
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(1, instance.getCurrentPage());
+
+    firstItemIndex = 14;
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(3, instance.getCurrentPage());
+
+    firstItemIndex = 8;
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(2, instance.getCurrentPage());
+
+
+    firstItemIndex = 6;
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(2, instance.getCurrentPage());
+    
+    firstItemIndex = 5;
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(2, instance.getCurrentPage());
+    
+     firstItemIndex = 10;
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(3, instance.getCurrentPage());
+  }
+  
+  
+  @Test
+  public void testGetIndexForPreviousPage() {
+    int nbItems = 14;
+    int nbItemsPerPage = 5;
+    int firstItemIndex = 0;
+    PaginationSilverpeasV5 instance = new PaginationSilverpeasV5();
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(-5, instance.getIndexForPreviousPage());
+
+    firstItemIndex = 14;
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(5, instance.getIndexForPreviousPage());
+
+    firstItemIndex = 8;
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(0, instance.getIndexForPreviousPage());
+
+
+    firstItemIndex = 6;
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(0, instance.getIndexForPreviousPage());
+    
+    firstItemIndex = 5;
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(0, instance.getIndexForPreviousPage());
+    
+     firstItemIndex = 10;
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(5, instance.getIndexForPreviousPage());
+  }
+  
+  
+  @Test
+  public void testGetIndexForNextPage() {
+    int nbItems = 14;
+    int nbItemsPerPage = 5;
+    int firstItemIndex = 0;
+    PaginationSilverpeasV5 instance = new PaginationSilverpeasV5();
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(5, instance.getIndexForNextPage());
+
+    firstItemIndex = 14;
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(10, instance.getIndexForNextPage());
+
+    firstItemIndex = 8;
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(10, instance.getIndexForNextPage());
+
+
+    firstItemIndex = 6;
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(10, instance.getIndexForNextPage());
+    
+    firstItemIndex = 5;
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(10, instance.getIndexForNextPage());
+    
+    firstItemIndex = 10;
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(10, instance.getIndexForNextPage());
+  }
+  
+  
+  @Test
+  public void testGetIndexForLastPage() {
+    int nbItems = 14;
+    int nbItemsPerPage = 5;
+    int firstItemIndex = 0;
+    PaginationSilverpeasV5 instance = new PaginationSilverpeasV5();
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(10, instance.getIndexForLastPage());
+
+    firstItemIndex = 14;
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(10, instance.getIndexForLastPage());
+
+    firstItemIndex = 8;
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(10, instance.getIndexForLastPage());
+
+
+    firstItemIndex = 6;
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(10, instance.getIndexForLastPage());
+    
+    firstItemIndex = 5;
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(10, instance.getIndexForLastPage());
+    
+    firstItemIndex = 10;
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(10, instance.getIndexForLastPage());
+  }
+  
+  
+  @Test
+  public void testGetIndexForDirectPage() {
+    int nbItems = 14;
+    int nbItemsPerPage = 5;
+    int firstItemIndex = 0;
+    PaginationSilverpeasV5 instance = new PaginationSilverpeasV5();
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(0, instance.getIndexForDirectPage(1));
+
+    firstItemIndex = 14;
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(5, instance.getIndexForDirectPage(2));
+    
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(10, instance.getIndexForDirectPage(3));
+
+    firstItemIndex = 8;
+    instance.init(nbItems, nbItemsPerPage, firstItemIndex);
+    assertEquals(10, instance.getIndexForDirectPage(5));
+  }
   /**
    * Test of printIndex method, of class PaginationSilverpeasV5.
    */
   /*@Test
   public void testPrintIndex_String() {
-    System.out.println("printIndex");
-    String javascriptFunc = "";
-    PaginationSilverpeasV5 instance = new PaginationSilverpeasV5();
-    String expResult = "";
-    String result = instance.printIndex(javascriptFunc);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+  System.out.println("printIndex");
+  String javascriptFunc = "";
+  PaginationSilverpeasV5 instance = new PaginationSilverpeasV5();
+  String expResult = "";
+  String result = instance.printIndex(javascriptFunc);
+  assertEquals(expResult, result);
+  // TODO review the generated test code and remove the default call to fail.
+  fail("The test case is a prototype.");
   }*/
-
   /**
    * Test of print method, of class PaginationSilverpeasV5.
    */
   /*@Test
   public void testPrint() {
-    System.out.println("print");
-    PaginationSilverpeasV5 instance = new PaginationSilverpeasV5();
-    String expResult = "";
-    String result = instance.print();
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+  System.out.println("print");
+  PaginationSilverpeasV5 instance = new PaginationSilverpeasV5();
+  String expResult = "";
+  String result = instance.print();
+  assertEquals(expResult, result);
+  // TODO review the generated test code and remove the default call to fail.
+  fail("The test case is a prototype.");
   }*/
 }

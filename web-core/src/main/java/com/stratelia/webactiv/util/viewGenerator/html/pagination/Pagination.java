@@ -40,8 +40,16 @@ public interface Pagination extends SimpleGraphicElement {
   public void setAltNextPage(String text);
 
   public void setActionSuffix(String actionSuffix);
+  
+  public int getIndexForPreviousPage();
 
-  public String print();
+  public int getIndexForDirectPage(int page);
+  
+  public int getIndexForCurrentPage();
+
+  public int getIndexForNextPage();
+  
+  public boolean isLastPage();
 
   /**
    * Method declaration

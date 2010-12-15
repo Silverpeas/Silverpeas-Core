@@ -88,7 +88,6 @@ void displayItemsListHeader(String query, Pagination pagination, ResourcesWrappe
 		out.println(" <span id=\"globalResultForYourQuery\">" + resource.getString("pdcPeas.ForYourQuery") + query + "</div>");
 	out.println("</td>");
 	out.println("</tr>");
-	//out.println("<tr><td>&nbsp;</td></tr>");
 }
 %>
 
@@ -126,7 +125,7 @@ String keywords = (String) request.getAttribute("Keywords");
 if (keywords == null)
 	keywords = "";
 else
-	keywords = Encode.javaStringToHtmlString(keywords);
+	keywords = EncodeHelper.javaStringToHtmlString(keywords);
 
 Boolean activeSelection = (Boolean) request.getAttribute("ActiveSelection");
 if (activeSelection == null) {
@@ -150,7 +149,7 @@ Map synonyms = (Map) request.getAttribute("synonyms");
 String urlToRedirect = (String) request.getAttribute("urlToRedirect");
 String backButtonClick;
 if (urlToRedirect != null) {
-    backButtonClick = "location.href='" + URLDecoder.decode(urlToRedirect) + "';";
+    backButtonClick = "location.href='" + URLDecoder.decode(urlToRedirect, "UTF-8") + "';";
 }
 
 String fullStarSrc		= "<img src=\""+m_context+"/pdcPeas/jsp/icons/starGreen.gif\">";
@@ -159,7 +158,7 @@ String downloadSrc		= "<img border=0 align=absmiddle src=\""+resource.getIcon("p
 String attachmentSrc	= "<img border=0 align=absmiddle src=\""+resource.getIcon("pdcPeas.attachment")+"\">&nbsp;";
 
 Board board = gef.getBoard();
-Button searchButton = (Button) gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
+Button searchButton = gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
 
 // keyword autocompletion
 int autocompletionMinChars = Integer.parseInt(resource.getSetting("autocompletion.minChars", "3"));
