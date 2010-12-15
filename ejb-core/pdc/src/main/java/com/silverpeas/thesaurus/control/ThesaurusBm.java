@@ -67,7 +67,7 @@ public class ThesaurusBm {
 
   private SilverpeasBeanDAO getVocabularyDao() throws PersistenceException {
     if (vocabularyDao == null) {
-     
+      vocabularyDao = SilverpeasBeanDAOFactory.getDAO("com.silverpeas.thesaurus.model.Vocabulary");
     }
     return vocabularyDao;
   }
