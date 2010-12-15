@@ -79,7 +79,6 @@ function checkIn()
 }
 </script>
 <% if (formUpdate != null) { %>
-	<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
 	<% formUpdate.displayScripts(out, context); %>
 <% } else { %>
 	<script type="text/javascript">

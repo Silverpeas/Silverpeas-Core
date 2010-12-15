@@ -35,7 +35,6 @@ PagesContext		context	= (PagesContext) request.getAttribute("context");
 <HTML>
 <HEAD>
 <% out.println(gef.getLookStyleSheet()); %>
-<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
 <% formUpdate.displayScripts(out, context); %>
 </HEAD>
 <BODY class="yui-skin-sam">
