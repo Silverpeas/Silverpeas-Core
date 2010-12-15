@@ -53,7 +53,6 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.versioning.ejb.RepositoryHelper;
 import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
@@ -67,8 +66,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 public class VersioningRequestRouter extends ComponentRequestRouter {
-
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 4808952397898736028L;
 
   @Override
   public ComponentSessionController createComponentSessionController(
@@ -381,7 +379,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         boolean addXmlForm = !isXMLFormEmpty(versioningSC, items);
 
         DocumentVersionPK newVersionPK =
-            saveOnline(document, versioningSC, comments, radio, Integer.parseInt(userId), force,
+            versioningSC.saveOnline(document, comments, radio, Integer.parseInt(userId), force,
             addXmlForm);
         if (newVersionPK != null) {
           request.setAttribute("DocumentId", documentId);
@@ -575,40 +573,20 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
     return destination;
   }
 
-  protected DocumentVersionPK saveOnline(Document document,
-      VersioningSessionController versioningSC, String comments, String radio,
-      int userId, boolean force, boolean addXmlForm) throws RemoteException {
-    DocumentVersion lastVersion = versioningSC.getLastVersion(document.getPk());
-    String physicalName = new Date().getTime() + "." + lastVersion.getLogicalName().substring(
-        lastVersion.getLogicalName().indexOf(".") + 1, lastVersion.getLogicalName().length());
-    DocumentVersion newVersion = new DocumentVersion(null, document.getPk(),
-        lastVersion.getMajorNumber(), lastVersion.getMinorNumber(), userId,
-        new Date(), comments, Integer.parseInt(radio), lastVersion.getStatus(),
-        physicalName, lastVersion.getLogicalName(), lastVersion.getMimeType(),
-        lastVersion.getSize(), lastVersion.getInstanceId());
-    RepositoryHelper.getJcrDocumentService().getUpdatedDocument(newVersion);
-    if (addXmlForm) {
-      newVersion.setXmlForm(versioningSC.getXmlForm());
-    }
-    versioningSC.checkDocumentIn(document.getPk(), userId, force);
-    newVersion = versioningSC.addNewDocumentVersion(newVersion);
-    return newVersion.getPk();
-  }
-
   /**
    * @param document
    * @param versioningSC
    * @param comments
    * @param radio
    * @param userId
-   * @param addXmlForm 
-   * @return 
+   * @param addXmlForm
+   * @return
    * @throws RemoteException
    */
   protected DocumentVersionPK saveOnline(Document document,
       VersioningSessionController versioningSC, String comments, String radio,
       int userId, boolean addXmlForm) throws RemoteException {
-    return saveOnline(document, versioningSC, comments, radio, userId, false, addXmlForm);
+    return versioningSC.saveOnline(document, comments, radio, userId, false, addXmlForm);
   }
 
   /**
@@ -867,7 +845,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
     request.setAttribute("Alias", isAlias);
     return "/versioningPeas/jsp/publicVersions.jsp";
   }
-  
+
   /**
    * Gets an instance of PublicationTemplateManager.
    * @return an instance of PublicationTemplateManager.

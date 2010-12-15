@@ -77,6 +77,7 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import java.util.Date;
 
 /**
  * @author Michael Nikolaenko
@@ -108,7 +109,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   public final static String VER_USE_WRITERS = "1";
   public final static String VER_USE_READERS = "2";
   public final static String VER_USE_NONE = "3";
-  public String fileRightsMode = VER_USE_WRITERS_AND_READERS;
+  private String fileRightsMode = VER_USE_WRITERS_AND_READERS;
   // Type of list in Writer's Panel
   public final static String WRITERS_LIST_SIMPLE = "0";
   public final static String WRITERS_LIST_APPROUVAL = "1";
@@ -133,7 +134,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   public static final int PUBLIC_VERSION = 0;
   public static final int WORK_VERSION = 1;
   // Groups merged with users (for typeList ordered)
-  public boolean alreadyMerged = false;
+  private boolean alreadyMerged = false;
 
   /**
    * to initilize the Versioning EJB
@@ -155,14 +156,14 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   }
 
   /**
-   * to set attributes for UserPanel
-   * @return void
-   * @exception
-   * @author Michael Nikolaenko
-   * @version 1.0
+   * To set attributes for UserPanel
+   * @param spaceId
+   * @param componentId
+   * @param spaceLabel
+   * @param componentLabel 
    */
-  public void setAttributesContext(String spaceId, String componentId,
-      String spaceLabel, String componentLabel) {
+  public void setAttributesContext(String spaceId, String componentId, String spaceLabel,
+      String componentLabel) {
     this.context.setCurrentSpaceId(spaceId);
     this.context.setCurrentComponentId(componentId);
     this.context.setCurrentSpaceName(spaceLabel);
@@ -244,11 +245,9 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   }
 
   /**
-   * to generate path to icon of document
-   * @return String Path to icon
-   * @exception
-   * @author Michael Nikolaenko
-   * @version 1.0
+   * To generate path to icon of document
+   * @param physicalName
+   * @return 
    */
   public String getDocumentVersionIconPath(String physicalName) {
     return getDocumentVersionIconPath(physicalName, false);
@@ -258,12 +257,12 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * To generate path to icon of document
    * @param physicalName
    * @param isReadOnly
-   * @return String Path to icon
+   * @return 
    */
   public String getDocumentVersionIconPath(String physicalName,
       boolean isReadOnly) {
     String icon_url = "";
-    int pointIndex = physicalName.lastIndexOf(".");
+    int pointIndex = physicalName.lastIndexOf('.');
     int theLength = physicalName.length();
 
     if ((pointIndex >= 0) && ((pointIndex + 1) < theLength)) {
@@ -275,18 +274,15 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   }
 
   /**
-   * to generate path to icon for status of document
-   * @return String Path to icon
-   * @exception
-   * @author Michael Nikolaenko
-   * @version 1.0
+   * To generate path to icon for status of document
+   * @param status
+   * @return 
    */
   public String getDocumentVersionStatusIconPath(int status) {
     if (status == 0) {
       return ICON_UNLOCKED_PATH;
-    } else {
-      return ICON_LOCKED_PATH;
     }
+    return ICON_LOCKED_PATH;
   }
 
   /**
@@ -317,10 +313,12 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   }
 
   /**
-   * to get alt message for status icon of document
-   * @return String Alt message
-   * @author Michael Nikolaenko
-   * @version 1.0
+   * To get alt message for status icon of document
+   * @param msg
+   * @param owner_id
+   * @param date
+   * @param status
+   * @return 
    */
   public String getDocumentVersionStatusIconAlt(String msg, int owner_id, String date, int status) {
     String message = msg;
@@ -345,10 +343,14 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   }
 
   /**
-   * to get url for version
-   * @return String url
-   * @author Michael Nikolaenko
-   * @version 1.0
+   * To get url for version
+   * @param space
+   * @param component_name
+   * @param context
+   * @param logicalName
+   * @param physicalName
+   * @param mimeType
+   * @return 
    * @deprecated
    */
   public String getDocumentVersionURL(String space, String component_name,
@@ -377,11 +379,8 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   }
 
   /**
-   * to get path to jsp page for showing versions
-   * @return String
-   * @exception
-   * @author Michael Nikolaenko
-   * @version 1.0
+   * To get path to jsp page for showing versions.
+   * @return the path to jsp page for showing versions
    */
   public String getDocumentVersionShowVersionsURL() {
     return DOCUMENT_VERSION_SHOW_VERSIONS_URL;
@@ -665,11 +664,9 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @author Michael Nikolaenko
    * @version 1.0
    */
-  public DocumentVersion addNewDocumentVersion(DocumentVersion newVersion)
-      throws RemoteException {
+  public DocumentVersion addNewDocumentVersion(DocumentVersion newVersion) throws RemoteException {
     DocumentVersion version = null;
     initEJB();
-
     DocumentPK document_pk = newVersion.getDocumentPK();
     Document doc = versioning_bm.getDocument(document_pk);
     version = versioning_bm.addDocumentVersion(doc, newVersion);
@@ -686,8 +683,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   }
 
   /**
-   * to update document (Save it to DB)
-   * @return void
+   * to update document (Save it to DB)   
    * @exception RemoteException
    * @author Michael Nikolaenko
    * @version 1.0
@@ -704,7 +700,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   /**
    * to check document out
-   * @return void
+  
    * @exception RemoteException
    * @author Michael Nikolaenko
    * @version 1.0
@@ -717,7 +713,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   /**
    * to check document in
-   * @return void
+  
    * @exception RemoteException
    * @author Michael Nikolaenko
    * @version 1.0
@@ -736,7 +732,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   /**
    * to check document in
-   * @return void
+  
    * @exception RemoteException
    * @author Michael Nikolaenko
    * @version 1.0
@@ -860,13 +856,13 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   /**
    * to validate document
-   * @return void
+  
    * @exception RemoteException
    * @author Michael Nikolaenko
    * @version 1.0
    */
-  public void validateDocument(DocumentPK documentPK, int validatorID,
-      String comment, java.util.Date validationDate) throws RemoteException {
+  public void validateDocument(DocumentPK documentPK, int validatorID, String comment,
+      Date validationDate) throws RemoteException {
     initEJB();
     Document theDocument = versioning_bm.getDocument(documentPK);
     versioning_bm.validateDocument(theDocument, validatorID, comment,
@@ -875,7 +871,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   /**
    * to delete document
-   * @return void
+  
    * @exception RemoteException
    * @author Michael Nikolaenko
    * @version 1.0
@@ -904,13 +900,13 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   /**
    * to refuse document
-   * @return void
+  
    * @exception RemoteException
    * @author Michael Nikolaenko
    * @version 1.0
    */
-  public void refuseDocument(DocumentPK documentPK, int validatorID,
-      String comment, java.util.Date validationDate) throws RemoteException {
+  public void refuseDocument(DocumentPK documentPK, int validatorID, String comment,
+      Date validationDate) throws RemoteException {
     initEJB();
     Document doc = versioning_bm.getDocument(documentPK);
     versioning_bm.refuseDocument(doc, validatorID, comment, validationDate);
@@ -918,7 +914,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   /**
    * to create index for search engeen
-   * @return void
+  
    * @exception RemoteException
    * @author Michael Nikolaenko
    * @version 1.0
@@ -930,7 +926,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   /**
    * to store in controller editing document
-   * @return void
+  
    * @exception
    * @author Michael Nikolaenko
    * @version 1.0
@@ -960,7 +956,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   /**
    * to store in controller editing document and set lists of readers and workers
-   * @return void
+  
    * @exception RemoteException
    * @author Michael Nikolaenko
    * @version 1.0
@@ -1450,8 +1446,6 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     return getComponentProfile(role);
   }
 
-
-
   public ProfileInst getInheritedProfile(String role) throws RemoteException {
     ProfileInst profileInst = null;
     // Rights of the node
@@ -1901,5 +1895,27 @@ public class VersioningSessionController extends AbstractComponentSessionControl
           "MSG_ERROR_CANT_SORT_DOCUMENTS", e);
       return e.getMessage();
     }
+  }
+
+  public DocumentVersionPK saveOnline(Document document,
+      String comments, String radio,
+      int userId, boolean force, boolean addXmlForm) throws RemoteException {
+    DocumentVersion lastVersion = getLastVersion(document.getPk());
+    String physicalName = new Date().getTime() + "." + lastVersion.getLogicalName().substring(
+        lastVersion.getLogicalName().indexOf(".") + 1, lastVersion.getLogicalName().length());
+    DocumentVersion newVersion = new DocumentVersion(null, document.getPk(),
+        lastVersion.getMajorNumber(), lastVersion.getMinorNumber(), userId,
+        new Date(), comments, Integer.parseInt(radio), lastVersion.getStatus(),
+        physicalName, lastVersion.getLogicalName(), lastVersion.getMimeType(),
+        lastVersion.getSize(), lastVersion.getInstanceId());
+    if (lastVersion.isOpenOfficeCompatibleDocument()) {
+      RepositoryHelper.getJcrDocumentService().getUpdatedDocument(newVersion);
+    }
+    if (addXmlForm) {
+      newVersion.setXmlForm(getXmlForm());
+    }
+    checkDocumentIn(document.getPk(), userId, force);
+    newVersion = addNewDocumentVersion(newVersion);
+    return newVersion.getPk();
   }
 }
