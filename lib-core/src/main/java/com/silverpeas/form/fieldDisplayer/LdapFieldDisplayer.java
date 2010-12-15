@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.fieldDisplayer;
 
 import java.io.PrintWriter;
@@ -53,6 +52,9 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  */
 public class LdapFieldDisplayer extends AbstractFieldDisplayer {
 
+  private final static String[] MANAGED_TYPES = new String[]{LdapField.TYPE};
+  private final static String mandatoryImg = Util.getIcon("mandatoryField");
+
   /**
    * Constructeur
    */
@@ -61,11 +63,10 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer {
 
   /**
    * Returns the name of the managed types.
+   * @return 
    */
   public String[] getManagedTypes() {
-    String[] s = new String[0];
-    s[0] = LdapField.TYPE;
-    return s;
+    return MANAGED_TYPES;
   }
 
   /**
@@ -73,50 +74,57 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer {
    * The error messages may be adapted to a local language. The FieldTemplate gives the field type
    * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
    * log a silvertrace and writes an empty string when :
-   * <UL>
-   * <LI>the fieldName is unknown by the template.
-   * <LI>the field type is not a managed type.
-   * </UL>
+   * <ul>
+   * <li>the fieldName is unknown by the template.</li>
+   * <li>the field type is not a managed type.</li>
+   * </ul>
+   * @param out 
+   * @param template 
+   * @param pagesContext 
+   * @throws java.io.IOException 
    */
-  public void displayScripts(PrintWriter out,
-      FieldTemplate template,
-      PagesContext PagesContext) throws java.io.IOException {
+  @Override
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
+      throws java.io.IOException {
 
-    String language = PagesContext.getLanguage();
+    String language = pagesContext.getLanguage();
 
-    if (!template.getTypeName().equals(LdapField.TYPE))
+    if (!template.getTypeName().equals(LdapField.TYPE)) {
       SilverTrace.info("form", "LdapFieldDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
           LdapField.TYPE);
+    }
 
-    if (template.isMandatory() && PagesContext.useMandatory()) {
+    if (template.isMandatory() && pagesContext.useMandatory()) {
       out.println("	if (isWhitespace(stripInitialWhitespace(field.value))) {");
-      out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' " +
-          Util.getString("GML.MustBeFilled", language) + "\\n \";");
+      out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' "
+          + Util.getString("GML.MustBeFilled", language) + "\\n \";");
       out.println("		errorNb++;");
       out.println("	}");
     }
 
-    Util.getJavascriptChecker(template.getFieldName(), PagesContext, out);
+    Util.getJavascriptChecker(template.getFieldName(), pagesContext, out);
   }
 
   /**
    * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
    * value format may be adapted to a local language. The fieldName must be used to name the html
    * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
-   * <UL>
-   * <LI>the field type is not a managed type.
-   * </UL>
+   * <ul>
+   * <li>the field type is not a managed type.</li>
+   * </ul>
+   * @param out 
+   * @param field 
+   * @param pagesContext
+   * @param template 
+   * @throws FormException  
    */
-  public void display(PrintWriter out,
-      Field field,
-      FieldTemplate template,
-      PagesContext PagesContext) throws FormException {
+  @Override
+  public void display(PrintWriter out, Field field, FieldTemplate template,
+      PagesContext pagesContext) throws FormException {
     String value = "";
-    String html = "";
-    String currentUserId = PagesContext.getUserId();
-    String language = PagesContext.getLanguage();
 
-    String mandatoryImg = Util.getIcon("mandatoryField");
+    String currentUserId = pagesContext.getUserId();
+    String language = pagesContext.getLanguage();
 
     String fieldName = template.getFieldName();
     Map<String, String> parameters = template.getParameters(language);
@@ -205,135 +213,114 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer {
         }
 
         // Requête LDAP
-        boolean boolSearchTypeOnly = false;
-        if (searchTypeOnly != null) {
-          if ("true".equals(searchTypeOnly)) {
-            boolSearchTypeOnly = true;
-          }
-        }
-        listRes =
-            ldapField.searchLdap(ldapConnection, searchBase, searchScope, searchFilter,
+        boolean boolSearchTypeOnly = "true".equals(searchTypeOnly);
+        listRes = ldapField.searchLdap(ldapConnection, searchBase, searchScope, searchFilter,
             searchAttribute, boolSearchTypeOnly, currentUserId);
       } finally {
         ldapField.disconnectLdap(ldapConnection);
       }
     }
-
-    if (listRes != null && listRes.size() > 0) {
-      int zindex =
-          (PagesContext.getLastFieldIndex() - new Integer(PagesContext.getCurrentFieldIndex())
-          .intValue()) * 9000;
-      html += "<style type=\"text/css\">\n";
-      html += "	#listAutocomplete" + fieldName + " {\n";
-      html += "		width:15em;\n";
-      html += "		padding-bottom:2em;\n";
-      html += "	}\n";
-      html += "	#listAutocomplete" + fieldName + " {\n";
-      html +=
-          "		z-index:" + zindex +
-          "; /* z-index needed on top instance for ie & sf absolute inside relative issue */\n";
-      html += "	}\n";
-      html += "	#" + fieldName + " {\n";
-      html += "		_position:absolute; /* abs pos needed for ie quirks */\n";
-      html += "	}\n";
-      html += "</style>\n";
-
-      html += "<div id=\"listAutocomplete" + fieldName + "\">\n";
-      html += "<input id=\"" + fieldName + "\" name=\"" + fieldName + "\" type=\"text\"";
+    StringBuilder html = new StringBuilder(10000);
+    if (listRes != null && !listRes.isEmpty()) {
+      int zindex = (pagesContext.getLastFieldIndex() - Integer.parseInt(pagesContext.
+          getCurrentFieldIndex())) * 9000;
+      html.append("<style type=\"text/css\">\n").append("	#listAutocomplete").append(fieldName);
+      html.append(" {\n").append("		width:15em;\n").append("		padding-bottom:2em;\n");
+      html.append("	}\n").append("	#listAutocomplete").append(fieldName).append(" {\n");
+      html.append("		z-index:").append(zindex);
+      html.append("; /* z-index needed on top instance for ie & sf absolute inside relative issue ");
+      html.append("*/\n").append("	}\n").append("	#").append(fieldName).append(" {\n");
+      html.append("		_position:absolute; /* abs pos needed for ie quirks */\n").append("	}\n");
+      html.append("</style>\n").append("<div id=\"listAutocomplete").append(fieldName).append(
+          "\">\n");
+      html.append("<input id=\"").append(fieldName).append("\" name=\"").append(fieldName);
+      html.append("\" type=\"text\"");
       if (value != null) {
-        html += " value=\"" + value + "\"";
+        html.append(" value=\"").append(value).append("\"");
       }
       if (template.isDisabled() || template.isReadOnly()) {
-        html += " disabled";
+        html.append(" disabled");
       }
-      html += "/>\n";
-      html += "<div id=\"container" + fieldName + "\"/>\n";
-      html += "</div>\n";
+      html.append("/>\n").append("<div id=\"container").append(fieldName).append("\"/>\n");
+      html.append("</div>\n");
 
-      if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
-          !template.isHidden() && PagesContext.useMandatory()) {
-        html +=
-            "<img src=\"" +
-                mandatoryImg +
-                "\" width=\"5\" height=\"5\" border=\"0\" alt=\"\" style=\"position:absolute;left:16em;top:5px\"/>\n";
+      if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly()
+          && !template.isHidden() && pagesContext.useMandatory()) {
+        html.append("<img src=\"").append(mandatoryImg).append("\" width=\"5\" height=\"5\" ");
+        html.append("border=\"0\" alt=\"\" style=\"position:absolute;left:16em;top:5px\"/>\n");
       }
 
-      html += "<script type=\"text/javascript\">\n";
-      html += "listArray" + fieldName + " = [\n";
+      html.append("<script type=\"text/javascript\">\n");
+      html.append("listArray").append(fieldName).append(" = [\n");
 
       Iterator<String> itRes = listRes.iterator();
       while (itRes.hasNext()) {
-        html += "\"" + EncodeHelper.javaStringToJsString(itRes.next()) + "\"";
+        html.append("\"").
+            append(EncodeHelper.javaStringToJsString(itRes.next())).append("\"");
         if (itRes.hasNext()) {
-          html += ",\n";
+          html.append(",\n");
         }
       }
-      html += "];\n";
-      html += "</script>\n";
+      html.append("];\n");
+      html.append("</script>\n");
 
-      html += "<script type=\"text/javascript\">\n";
-      html +=
-          " this.oACDS" + fieldName + " = new YAHOO.util.LocalDataSource(listArray" + fieldName +
-          ");\n";
-      html +=
-          "	this.oAutoComp" + fieldName + " = new YAHOO.widget.AutoComplete('" + fieldName +
-          "','container" + fieldName + "', this.oACDS" + fieldName + ");\n";
-      html += "	this.oAutoComp" + fieldName + ".prehighlightClassName = \"yui-ac-prehighlight\";\n";
-      html += "	this.oAutoComp" + fieldName + ".typeAhead = true;\n";
-      html += "	this.oAutoComp" + fieldName + ".useShadow = true;\n";
-      html += "	this.oAutoComp" + fieldName + ".minQueryLength = 0;\n";
+      html.append("<script type=\"text/javascript\">\n");
+      html.append(" this.oACDS").append(fieldName);
+      html.append(" = new YAHOO.util.LocalDataSource(listArray").append(fieldName).append(");\n");
+      html.append("	this.oAutoComp").append(fieldName).append(" = new YAHOO.widget.AutoComplete('");
+      html.append(fieldName).append("','container").append(fieldName).append("', this.oACDS");
+      html.append(fieldName).append(");\n").append("	this.oAutoComp").append(fieldName);
+      html.append(".prehighlightClassName = \"yui-ac-prehighlight\");\n");
+      html.append("	this.oAutoComp").append(fieldName).append(".typeAhead = true;\n");
+      html.append("	this.oAutoComp").append(fieldName).append(".useShadow = true;\n");
+      html.append("	this.oAutoComp").append(fieldName).append(".minQueryLength = 0;\n");
 
       if ("1".equals(valueFieldType)) {// valeurs possibles 1 = choix restreint à la liste ou 2 =
         // saisie libre, par défaut 1
-        html += "	this.oAutoComp" + fieldName + ".forceSelection = true;\n";
+        html.append("	this.oAutoComp").append(fieldName).append(".forceSelection = true;\n");
       }
 
-      html += "	this.oAutoComp" + fieldName + ".textboxFocusEvent.subscribe(function(){\n";
-      html += "		var sInputValue = YAHOO.util.Dom.get('" + fieldName + "').value;\n";
-      html += "		if(sInputValue.length == 0) {\n";
-      html += "			var oSelf = this;\n";
-      html += "			setTimeout(function(){oSelf.sendQuery(sInputValue);},0);\n";
-      html += "		}\n";
-      html += "	});\n";
-      html += "</script>\n";
+      html.append("	this.oAutoComp").append(fieldName).append(
+          ".textboxFocusEvent.subscribe(function(){\n");
+      html.append("		var sInputValue = YAHOO.util.Dom.get('").append(fieldName).append("').value;\n");
+      html.append("		if(sInputValue.length == 0) {\n");
+      html.append("			var oSelf = this;\n");
+      html.append("			setTimeout(function(){oSelf.sendQuery(sInputValue);},0);\n");
+      html.append("		}\n");
+      html.append("	});\n");
+      html.append("</script>\n");
 
     } else {
 
       if ("1".equals(valueFieldType)) {// valeurs possibles 1 = choix restreint à la liste ou 2 =
         // saisie libre, par défaut 1
-
-        html += "<select name=\"" + fieldName + "\"";
-
+        html.append("<select name=\"").append(fieldName).append("\"");
         if (template.isDisabled() || template.isReadOnly()) {
-          html += " disabled=\"disabled\"";
+          html.append(" disabled=\"disabled\"");
         }
-        html += " >\n";
-        html += "</select>\n";
+        html.append(" >\n");
+        html.append("</select>\n");
 
-        if ((template.isMandatory()) && (!template.isDisabled()) && (!template.isReadOnly()) &&
-            (!template.isHidden())) {
-          html +=
-              "&nbsp;<img src=\"" + mandatoryImg +
-              "\" width=\"5\" height=\"5\" border=\"0\" alt=\"\"/>&nbsp;\n";
+        if ((template.isMandatory()) && (!template.isDisabled()) && (!template.isReadOnly())
+            && (!template.isHidden())) {
+          html.append("&nbsp;<img src=\"").append(mandatoryImg).append(
+              "\" width=\"5\" height=\"5\" border=\"0\" alt=\"\"/>&nbsp;\n");
         }
       } else {
-        html += "<input type=\"text\" name=\"" + fieldName + "\"";
-
+        html.append("<input type=\"text\" name=\"").append(fieldName).append("\"");
         if (template.isDisabled() || template.isReadOnly()) {
-          html += " disabled=\"disabled\"";
+          html.append(" disabled=\"disabled\"");
         }
-        html += " />\n";
-
-        if ((template.isMandatory()) && (!template.isDisabled()) && (!template.isReadOnly()) &&
-            (!template.isHidden())) {
-          html +=
-              "&nbsp;<img src=\"" + mandatoryImg +
-              "\" width=\"5\" height=\"5\" border=\"0\" alt=\"\"/>&nbsp;\n";
+        html.append(" />\n");
+        if ((template.isMandatory()) && (!template.isDisabled()) && (!template.isReadOnly())
+            && (!template.isHidden())) {
+          html.append("&nbsp;<img src=\"").append(mandatoryImg);
+          html.append("\" width=\"5\" height=\"5\" border=\"0\" alt=\"\"/>&nbsp;\n");
         }
       }
     }
 
-    out.println(html);
+    out.println(html.toString());
   }
 
   /**
@@ -342,30 +329,30 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer {
    * @throw FormException if the field type is not a managed type.
    * @throw FormException if the field doesn't accept the new value.
    */
-  public List<String> update(String newValue,
-      Field field,
-      FieldTemplate template,
-      PagesContext PagesContext)
-      throws FormException {
+  public List<String> update(String newValue, Field field, FieldTemplate template,
+      PagesContext pagesContext) throws FormException {
 
-    if (!field.getTypeName().equals(LdapField.TYPE))
+    if (!field.getTypeName().equals(LdapField.TYPE)) {
       throw new FormException("LdapFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
           LdapField.TYPE);
+    }
 
-    if (field.acceptValue(newValue, PagesContext.getLanguage()))
-      field.setValue(newValue, PagesContext.getLanguage());
-    else
+    if (field.acceptValue(newValue, pagesContext.getLanguage())) {
+      field.setValue(newValue, pagesContext.getLanguage());
+    } else {
       throw new FormException("LdapFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
           LdapField.TYPE);
+    }
     return new ArrayList<String>();
   }
 
+  @Override
   public boolean isDisplayedMandatory() {
     return true;
   }
 
+  @Override
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
     return 1;
   }
-
 }

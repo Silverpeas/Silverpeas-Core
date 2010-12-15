@@ -129,6 +129,7 @@ public class JdbcRefFieldDisplayer extends AbstractFieldDisplayer {
     out.println(container.toString());
   }
 
+  @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
       throws IOException {
     String language = pagesContext.getLanguage();
@@ -149,14 +150,17 @@ public class JdbcRefFieldDisplayer extends AbstractFieldDisplayer {
     }
   }
 
+  @Override
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
     return 1;
   }
 
+  @Override
   public boolean isDisplayedMandatory() {
     return true;
   }
 
+  @Override
   public List<String> update(String value, Field field, FieldTemplate template,
       PagesContext pagesContext)
       throws FormException {
