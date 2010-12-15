@@ -70,19 +70,19 @@ public class TicketDAO {
     // récupérer toutes les tickets d'un utilisateur
     ArrayList<TicketDetail> tickets = null;
 
-    String query = "select * from SB_fileSharing_ticket";
-    String whereClause = " where componentId IN (";
+    StringBuilder query = new StringBuilder("SELECT * FROM sb_fileSharing_ticket");
+    query.append(" where componentId IN (");
     for (int c = 0; c < componentIds.size(); c++) {
       if (c != 0) {
-        whereClause += ",";
+        query.append(",");
       }
-      whereClause += componentIds.get(c);
+      query.append(componentIds.get(c));
     }
-    whereClause += ")";
+    query.append(")");
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
-      prepStmt = con.prepareStatement(query + whereClause);
+      prepStmt = con.prepareStatement(query.toString());
       rs = prepStmt.executeQuery();
       tickets = new ArrayList<TicketDetail>();
       while (rs.next()) {
