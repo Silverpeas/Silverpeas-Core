@@ -3,12 +3,34 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
         version="2.0">
-  <description>View Generator 1.0 core library</description>
+  <description>View Generator 1.1 core library</description>
   <display-name>View Generator</display-name>
   <tlib-version>1.0</tlib-version>
   <short-name>view</short-name>
   <uri>http://www.silverpeas.com/tld/viewGenerator</uri>
-  
+
+  <tag>
+    <description>Tag to print out the URL of a Silverpeas component instance.</description>
+    <name>componentUrl</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.ComponentURLTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The name of the Silverpeas component instance.</description>
+      <name>componentName</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The identifier of the Silverpeas component instance.</description>
+      <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
   <tag>
     <description>Simple tag to display a Board. A Board should be used inside a Frame.</description>
     <name>board</name>
@@ -136,7 +158,7 @@
   <tag>
     <description>Simple tag to display a button pane.</description>
     <name>buttonPane</name>
-    <tag-class>      
+    <tag-class>
         com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPaneTag
     </tag-class>
     <body-content>JSP</body-content>
@@ -147,7 +169,7 @@
       <rtexprvalue>true</rtexprvalue>
       <type>boolean</type>
     </attribute>
-     <attribute>
+    <attribute>
       <description>Indicates if the button are added horizontically</description>
       <name>horizontalPosition</name>
       <required>false</required>
@@ -282,6 +304,15 @@
     <name>operationPane</name>
     <tag-class>
       com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPaneTag
+    </tag-class>
+    <body-content>JSP</body-content>
+  </tag>
+  <tag>
+    <description>Simple tag to define a separator line between two operations in an OperationPane.
+    </description>
+    <name>operationSeparator</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationSeparatorTag
     </tag-class>
     <body-content>JSP</body-content>
   </tag>
@@ -518,39 +549,40 @@
     </attribute>
   </tag>
   <tag>
-	<description>Tag to highlight some terms contained in his body</description>
-	<name>highlight</name>
-	<tag-class>
-		com.stratelia.webactiv.util.viewGenerator.html.glossary.HighlightTermTag</tag-class>
-	<body-content>JSP</body-content>
-	<attribute>
-		<description>The css class used to highlight a word .</description>
-		<name>className</name>
-		<required>true</required>
-		<rtexprvalue>true</rtexprvalue>
-		<type>java.lang.String</type>
-	</attribute>
-	<attribute>
-		<description>The Glossary identifier (pdc axis).</description>
-		<name>axisId</name>
-		<required>true</required>
-		<rtexprvalue>true</rtexprvalue>
-		<type>java.lang.String</type>
-	</attribute>
-	<attribute>
-		<description>indicates if all a term occurrences must be highlight or only the fisrt</description>
-		<name>onlyFirst</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-		<type>java.lang.Boolean</type>
-	</attribute>
-	<attribute>
-		<description>indicates the language used to display the definition term.</description>
-		<name>language</name>
-		<required>true</required>
-		<rtexprvalue>true</rtexprvalue>
-		<type>java.lang.String</type>
-	</attribute>
+    <description>Tag to highlight some terms contained in his body</description>
+    <name>highlight</name>
+    <tag-class>
+		com.stratelia.webactiv.util.viewGenerator.html.glossary.HighlightTermTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The css class used to highlight a word .</description>
+      <name>className</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The Glossary identifier (pdc axis).</description>
+      <name>axisId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>indicates if all a term occurrences must be highlight or only the fisrt</description>
+      <name>onlyFirst</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>indicates the language used to display the definition term.</description>
+      <name>language</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
   </tag>
   <tag>
     <description>Simple tag to display a progress message.</description>

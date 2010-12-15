@@ -26,7 +26,7 @@ package com.stratelia.silverpeas.peasCore;
 
 import java.util.Properties;
 
-import com.silverpeas.util.StringUtil;
+import static com.silverpeas.util.StringUtil.*;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.util.ResourceLocator;
 
@@ -51,7 +51,7 @@ public class URLManager {
   public final static String CMP_WORKFLOW = "workflow";
   public final static String CMP_WYSIWYG = "wysiwyg";
   public final static String CMP_SCHEDULE_EVENT= "scheduleEvent";
-  
+
   public final static String CMP_CLIPBOARD = "clipboard";
   public final static String CMP_NOTIFICATIONUSER = "notificationUser";
   public final static String CMP_COMMUNICATIONUSER = "communicationUser";
@@ -127,15 +127,15 @@ public class URLManager {
       String sComponentId) {
     String sureCompName = sComponentName;
 
-    if (sComponentName == null && sComponentId == null) {
+    if (!isDefined(sComponentName) && !isDefined(sComponentId)) {
       return "";
     }
 
-    if (sureCompName == null) {
+    if (!isDefined(sureCompName)) {
       sureCompName = getComponentNameFromComponentId(sComponentId);
     }
     String specialString = specialsURL.getProperty(sureCompName);
-    if (specialString != null && specialString.length() > 0) {
+    if (isDefined(specialString)) {
       return specialString;
     } else {
       // Build the standard path : /RcompName/CompId/
@@ -284,7 +284,7 @@ public class URLManager {
         break;
       case URL_PUBLI:
         url += "/Publication/" + id;
-        if (StringUtil.isDefined(componentId))
+        if (isDefined(componentId))
           url += "?ComponentId=" + componentId;
         break;
       case URL_TOPIC:

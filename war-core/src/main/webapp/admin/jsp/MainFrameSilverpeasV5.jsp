@@ -37,11 +37,11 @@
 <%@ page import="com.silverpeas.look.LookSilverpeasV5Helper"%>
 
 <%
-String			componentIdFromRedirect = (String) session.getValue("RedirectToComponentId");
-String			spaceIdFromRedirect 	= (String) session.getValue("RedirectToSpaceId");
+String			componentIdFromRedirect = (String) session.getAttribute("RedirectToComponentId");
+String			spaceIdFromRedirect 	= (String) session.getAttribute("RedirectToSpaceId");
 if (!StringUtil.isDefined(spaceIdFromRedirect))
 	spaceIdFromRedirect 	= request.getParameter("RedirectToSpaceId");
-String			attachmentId		 	= (String) session.getValue("RedirectToAttachmentId");
+String			attachmentId		 	= (String) session.getAttribute("RedirectToAttachmentId");
 ResourceLocator generalMessage			= new ResourceLocator("com.stratelia.webactiv.multilang.generalMultilang", language);
 String			topBarParams			= "";
 String			frameBottomParams		= "";
@@ -52,40 +52,40 @@ boolean			login					= false;
 if (m_MainSessionCtrl == null)
 {
 %>
-	<script type="text/javascript"> 
+	<script type="text/javascript">
 		top.location="../../Login.jsp";
 	</script>
 <%
 }
 else
-{	
+{
 	LookSilverpeasV5Helper 	helper 	= (LookSilverpeasV5Helper) session.getAttribute("Silverpeas_LookHelper");
 	if (helper == null)
 	{
 		helper = new LookSilverpeasV5Helper(m_MainSessionCtrl, gef.getFavoriteLookSettings());
 		helper.setMainFrame("MainFrameSilverpeasV5.jsp");
-		
+
 		session.setAttribute("Silverpeas_LookHelper", helper);
 		login = true;
 	}
-	
+
 	boolean componentExists = false;
 	if (StringUtil.isDefined(componentIdFromRedirect))
 		componentExists = (organizationCtrl.getComponentInstLight(componentIdFromRedirect) != null);
-		
+
 	//System.out.println("componentExists = "+componentExists);
-	
+
 	if (!componentExists)
 	{
 		String spaceId = m_MainSessionCtrl.getFavoriteSpace();
 		//System.out.println("favoriteSpace = "+spaceId);
-		
+
 		boolean spaceExists = false;
 		if (StringUtil.isDefined(spaceIdFromRedirect))
 			spaceExists = (organizationCtrl.getSpaceInstById(spaceIdFromRedirect) != null);
-		
+
 		//System.out.println("spaceExists = "+spaceExists+" for spaceId = "+spaceIdFromRedirect);
-		
+
 		if (spaceExists)
 		{
 			spaceId = spaceIdFromRedirect;
@@ -98,7 +98,7 @@ else
 		}
 		//System.out.println("MainFrame : spaceId = "+spaceId);
 		helper.setSpaceIdAndSubSpaceId(spaceId);
-		
+
 		String 	workSpace 	= "?SpaceId="+spaceId;
 		frameBottomParams 	= workSpace;
 	}
@@ -107,20 +107,20 @@ else
 		helper.setComponentIdAndSpaceIds(null, null, componentIdFromRedirect);
 		frameBottomParams 	= "?SpaceId=&amp;ComponentId="+componentIdFromRedirect;
 	}
-	
+
 	if (login)
 		frameBottomParams += "&amp;Login=1";
-	
+
 	if (!"MainFrameSilverpeasV5.jsp".equalsIgnoreCase(helper.getMainFrame()))
 	{
-		session.putValue("RedirectToSpaceId", spaceIdFromRedirect);
+		session.setAttribute("RedirectToSpaceId", spaceIdFromRedirect);
 		%>
 			<script type="text/javascript">
 				top.location="<%=helper.getMainFrame()%>";
 			</script>
 		<%
 	}
-	
+
 	String framesetRows = "115,100%,*,*,*";
 	if (helper.displayPDCFrame())
 		framesetRows = "115,100%,26,*,*,*";
@@ -162,7 +162,7 @@ function init(){
 	if (document.body!=null){
 		columntype=(document.body.cols)? "cols" : "rows"
 		defaultsetting=(document.body.cols)? document.body.cols : document.body.rows
-	} 
+	}
 	else
 		setTimeout("init()",100)
 }
@@ -188,10 +188,10 @@ border: none;
 }
 </style>
 </head>
-<% if (attachmentId != null) 
+<% if (attachmentId != null)
    {
-   	session.putValue("RedirectToAttachmentId", null);
-   	String mapping = (String) session.getValue("RedirectToMapping");
+   	session.setAttribute("RedirectToAttachmentId", null);
+   	String mapping = (String) session.getAttribute("RedirectToMapping");
 %>
 	<script type="text/javascript">
 		SP_openWindow('<%=m_sContext%>/<%=mapping%>/<%=attachmentId%>', 'Fichier', '800', '600', 'directories=0,menubar=1,toolbar=1,scrollbars=1,location=1,alwaysRaised');
