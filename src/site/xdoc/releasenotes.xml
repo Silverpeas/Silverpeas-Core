@@ -33,8 +33,10 @@
   </head>
   <body>
     <section name="ReleaseNotes">
-      <p>Currently all our release notes are in 
-        <b>French</b>. sorry for the inconvenience, we are looking for an easy way to provide them in English as soon as possible.
+      <p>Currently all our release notes are in
+        <b>French</b>. sorry for the inconvenience, we are looking for an easy way to
+        provide them in English as
+        soon as possible.
       </p>
       <fieldset class="related-issues">
         <ul>
@@ -53,9 +55,8 @@
           <li>
             <a href="releases/Silverpeas V5.4.pdf">Silverpeas 5.4 release notes</a>
           </li>
-        </li>
-      </ul>
-    </fieldset>
-  </section>
-</body>
+        </ul>
+      </fieldset>
+    </section>
+  </body>
 </document>

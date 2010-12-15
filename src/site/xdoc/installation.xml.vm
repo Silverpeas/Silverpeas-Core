@@ -85,6 +85,7 @@ Please find a list of the tools you will need to install Silverpeas below.<br/>
         </p>
         <p>
           For a complete configuration description, see this <a href="http://maven.apache.org/guides/mini/guide-proxies.html">Maven documentation page</a>.
+          For a complete description of each parameter see <a href="http://maven.apache.org/ref/3.0.1/maven-settings/settings.html#proxy">Maven Settings.xml configuration page</a>.
         </p>
       </subsection>
       <subsection name="Postgresql">
