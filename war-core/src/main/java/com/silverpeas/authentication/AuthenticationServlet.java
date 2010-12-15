@@ -27,7 +27,7 @@
  * @version 1.0
  * date 20/9/2001
  */
-package com.stratelia.silverpeas.servlets;
+package com.silverpeas.authentication;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.authentication.EncryptionFactory;
