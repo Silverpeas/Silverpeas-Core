@@ -123,7 +123,7 @@ browseBar.setI18N(compoInst, resource.getLanguage());
 operationPane.addOperation(resource.getIcon("JSPP.instanceUpdate"),resource.getString("JSPP.ComponentPanelModifyTitle"),"javascript:onClick=updateInstance(800, 350)");
 operationPane.addOperation(resource.getIcon("JSPP.ComponentOrder"),resource.getString("JSPP.ComponentOrder"),"javascript:onClick=openPopup('PlaceComponentAfter', 750, 230)");
 if (JobStartPagePeasSettings.useComponentsCopy) {
-	operationPane.addOperation(resource.getIcon("JSPP.CopyComponent"),resource.getString("JSPP.CopyComponent"),"javascript:onClick=clipboardCopy()");
+	operationPane.addOperation(resource.getIcon("JSPP.CopyComponent"),resource.getString("GML.copy"),"javascript:onClick=clipboardCopy()");
 }
 operationPane.addOperation(resource.getIcon("JSPP.instanceDel"),resource.getString("JSPP.ComponentPanelDeleteTitle"),"javascript:onClick=deleteInstance()");
 

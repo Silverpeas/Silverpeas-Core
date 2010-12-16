@@ -63,6 +63,7 @@ import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
+import com.stratelia.webactiv.beans.admin.SpaceSelection;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.instance.control.ComponentPasteInterface;
 import com.stratelia.webactiv.beans.admin.instance.control.PasteDetail;
@@ -501,7 +502,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
           SilverTrace.info("jobStartPagePeas",
               "JobStartPagePeasRequestRouter.addSpaceInst()",
               "root.MSG_GEN_PARAM_VALUE", "Looking for component " + ci.getLabel() + " - " + ci.
-              getName());
+                  getName());
           for (int i = 0; i < m_TemplateProfiles.length; i++) {
             Vector<String> componentProfiles = m_TemplateProfiles[i].
                 getMappedComponentProfileName(ci.getLabel());
@@ -518,7 +519,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
                   SilverTrace.info("jobStartPagePeas",
                       "JobStartPagePeasRequestRouter.addSpaceInst()",
                       "root.MSG_GEN_PARAM_VALUE", "Scan Template Profile " + m_TemplateProfiles[i].
-                      getName() + " Profile Founded : " + componentProfile);
+                          getName() + " Profile Founded : " + componentProfile);
                   for (int j = 0; j < pl.length && refProfileLabel == null; j++) {
                     if (componentProfile.equalsIgnoreCase(pl[j])) {
                       refProfileLabel = modeleCompo.getProfilLabelList()[j];
@@ -615,7 +616,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       SilverTrace.error("jobStartPagePeas",
           "JobStartPagePeasSessionController.deleteSpace()",
           "root.MSG_GEN_PARAM_VALUE", "user #" + getUserId() + " is not allowed to delete space #" +
-          spaceId);
+              spaceId);
       return "";
     } else {
       SpaceInst spaceint1 = m_AdminCtrl.getSpaceInstById(spaceId);
@@ -773,8 +774,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     SilverTrace.info("jobStartPagePeas",
         "JobStartPagePeasSessionController.initUserPanelSpaceForGroupsUsers()",
         "root.MSG_GEN_PARAM_VALUE", "compoURL = " + compoURL + " hostSpaceName=" + hostSpaceName +
-        " hostComponentName=" + getSpaceInstById().
-        getName() + " hostUrlTest=" + hostUrl);
+            " hostComponentName=" + getSpaceInstById().
+                getName() + " hostUrlTest=" + hostUrl);
     sel.setGoBackURL(hostUrl);
     sel.setCancelURL(compoURL + "CancelCreateOrUpdateSpaceProfile?Role=" + role);
 
@@ -840,7 +841,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   public void updateSpaceManagersDescription(SpaceProfileInst spaceProfileInst) {
     SilverTrace.spy("jobStartPagePeas",
         "JobStartPagePeasSC.updateSpaceManagersDescription", spaceProfileInst.
-        getSpaceFatherId(), "N/A", spaceProfileInst.getName(), getUserId(),
+            getSpaceFatherId(), "N/A", spaceProfileInst.getName(), getUserId(),
         SilverTrace.SPY_ACTION_UPDATE);
 
     // Update the profile description
@@ -926,8 +927,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       SilverTrace.info("jobStartPagePeas",
           "JobStartPagePeasSesionController.getBrotherComponents()",
           "root.MSG_GEN_PARAM_VALUE", "Current = '" + getManagedInstanceId() + "' Loop = '" +
-          theComponent.
-          getId() + "'");
+              theComponent.
+                  getId() + "'");
       if (isNew || !theComponent.getId().equals(getManagedInstanceId())) {
         m_BrothersComponents[j++] = theComponent;
       }
@@ -952,8 +953,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       SilverTrace.info("jobStartPagePeas",
           "JobStartPagePeasSesionController.getComponentsOfSpace()",
           "root.MSG_GEN_PARAM_VALUE", "Current = '" + getManagedInstanceId() + "' Loop = '" +
-          theComponent.
-          getId() + "'");
+              theComponent.
+                  getId() + "'");
       m_Components[j++] = theComponent;
     }
     Arrays.sort(m_BrothersComponents);
@@ -992,7 +993,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         "JobStartPagePeasSessionController.setMoveComponentToSpace()",
         "root.MSG_GEN_PARAM_VALUE",
         "component = " + component.getId() + " espace dest:" + destinationSpaceId +
-        " idComponentBefore=" + idComponentBefore);
+            " idComponentBefore=" + idComponentBefore);
     String originSpace = component.getDomainFatherId();
     ComponentInst[] m_destBrothersComponents = getDestBrotherComponents(
         destinationSpaceId, true, component.getId());
@@ -1026,7 +1027,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       SilverTrace.info("jobStartPagePeas",
           "JobStartPagePeasSesionController.getDestBrotherComponents()",
           "root.MSG_GEN_PARAM_VALUE", "Current = '" + componentId + "' Loop = '" + theComponent.
-          getId() + "'");
+              getId() + "'");
       if (isNew || !theComponent.getId().equals(componentId)) {
         m_DestBrothersComponents[j++] = theComponent;
       }
@@ -1045,12 +1046,12 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         String valcomp1 = o1.getSuite() + o1.getLabel();
         String valcomp2 = o2.getSuite() + o2.getLabel();
         return valcomp1.toUpperCase().compareTo(valcomp2.toUpperCase());
-        }
+      }
 
       public boolean equals(Object o) {
         return false;
-        }
-            });
+      }
+    });
     return componentsModels;
   }
 
@@ -1118,7 +1119,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     SilverTrace.spy("jobStartPagePeas",
         "JobStartPagePeasSessionController.updateComponentInst()",
         componentInst.getDomainFatherId(), componentInst.getId(), componentInst.
-        getLabel(),
+            getLabel(),
         getUserDetail().getId(), SilverTrace.SPY_ACTION_UPDATE);
 
     componentInst.setUpdaterUserId(getUserId());
@@ -1277,7 +1278,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     String compoName = getComponentInst(getManagedInstanceId()).getLabel();
     PairObject[] hostPath =
         { new PairObject(compoName + " > " + labelProfile + " > " + generalMessage.
-        getString("GML.selection"), null) };
+            getString("GML.selection"), null) };
     sel.setHostPath(hostPath);
 
     String hostUrl = compoURL + "EffectiveUpdateInstanceProfile";
@@ -1288,8 +1289,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     SilverTrace.info("jobStartPagePeas",
         "JobStartPagePeasSessionController.initUserPanelInstanceForGroupsUsers()",
         "root.MSG_GEN_PARAM_VALUE", "compoURL = " + compoURL + " hostSpaceName=" + hostSpaceName +
-        " hostComponentName=" + getSpaceInstById().
-        getName() + " hostUrlTest=" + hostUrl);
+            " hostComponentName=" + getSpaceInstById().
+                getName() + " hostUrlTest=" + hostUrl);
     sel.setGoBackURL(hostUrl);
     sel.setCancelURL(compoURL + "CancelCreateOrUpdateInstanceProfile");
 
@@ -1317,7 +1318,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
     SilverTrace.spy("jobStartPagePeas",
         "JobStartPagePeasSC.createInstanceProfile", "unknown", profileInst.
-        getComponentFatherId(), profileInst.getName(), getUserId(),
+            getComponentFatherId(), profileInst.getName(), getUserId(),
         SilverTrace.SPY_ACTION_CREATE);
 
     // Add the profile
@@ -1338,7 +1339,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
     SilverTrace.spy("jobStartPagePeas",
         "JobStartPagePeasSC.updateInstanceProfile", "unknown", profile.
-        getComponentFatherId(), profile.getName(), getUserId(),
+            getComponentFatherId(), profile.getName(), getUserId(),
         SilverTrace.SPY_ACTION_UPDATE);
 
     // mise à jour
@@ -1393,7 +1394,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
     SilverTrace.spy("jobStartPagePeas",
         "JobStartPagePeasSC.deleteInstanceProfile", "unknown", profile.
-        getComponentFatherId(), profile.getName(), getUserId(),
+            getComponentFatherId(), profile.getName(), getUserId(),
         SilverTrace.SPY_ACTION_DELETE);
 
     // mise à jour
@@ -1446,8 +1447,18 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     SilverTrace.info("jobStartPagePeas",
         "JobStartPagePeasSessionController.copyComponent()",
         "root.MSG_GEN_PARAM_VALUE", "clipboard = " + getClipboardName() + "' count=" +
-        getClipboardCount());
+            getClipboardCount());
     addClipboardSelection((ClipboardSelection) compoSelect);
+  }
+
+  public void copySpace(String id) throws RemoteException {
+    SpaceInst space = getSpaceInstById(id);
+    SpaceSelection spaceSelect = new SpaceSelection(space);
+    SilverTrace.info("jobStartPagePeas",
+        "JobStartPagePeasSessionController.copySpace()",
+        "root.MSG_GEN_PARAM_VALUE", "clipboard = " + getClipboardName() + "' count=" +
+            getClipboardCount());
+    addClipboardSelection((ClipboardSelection) spaceSelect);
   }
 
   /**
@@ -1455,12 +1466,12 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
    * @throws RemoteException
    * @throws JobStartPagePeasException
    */
-  public void pasteComponent() throws RemoteException, JobStartPagePeasException {
+  public void paste() throws RemoteException, JobStartPagePeasException {
     try {
       SilverTrace.info("jobStartPagePeas",
           "JobStartPagePeasSessionController.pasteComponent()",
           "root.MSG_GEN_PARAM_VALUE", "clipboard = " + getClipboardName() + " count=" +
-          getClipboardCount());
+              getClipboardCount());
       Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
       Iterator<ClipboardSelection> clipObjectIterator = clipObjects.iterator();
       while (clipObjectIterator.hasNext()) {
@@ -1470,7 +1481,10 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
               ComponentSelection.ComponentDetailFlavor)) {
             ComponentInst compo = (ComponentInst) clipObject.getTransferData(
                 ComponentSelection.ComponentDetailFlavor);
-            pasteComponent(compo);
+            pasteComponent(compo.getId());
+          } else if (clipObject.isDataFlavorSupported(SpaceSelection.SpaceFlavor)) {
+            SpaceInst space = (SpaceInst) clipObject.getTransferData(SpaceSelection.SpaceFlavor);
+            pasteSpace(space.getId());
           }
         }
       }
@@ -1487,10 +1501,18 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
    * @param compoInst
    * @throws JobStartPagePeasException
    */
-  public void pasteComponent(ComponentInst compoInst) throws
+  public void pasteComponent(String componentId) throws JobStartPagePeasException {
+    pasteComponent(componentId, getManagedSpaceId());
+  }
+
+  public void pasteComponent(String componentId, String spaceId) throws
       JobStartPagePeasException {
-    ComponentInst newCompo = (ComponentInst) compoInst.clone();
-    SpaceInst destinationSpace = getSpaceInstById();
+    if (!StringUtil.isDefined(spaceId)) {
+      // cannot paste component on root
+      return;
+    }
+    ComponentInst newCompo = (ComponentInst) getComponentInst(componentId).clone();
+    SpaceInst destinationSpace = getSpaceInstById(spaceId);
 
     // Creation
     newCompo.setId("-1");
@@ -1504,70 +1526,27 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         getAllComponentsInst());
     newCompo.setLabel(label);
 
-    // Delete profiles
-    newCompo.removeAllProfilesInst();
+    // Delete inherited profiles only
+    // It will be processed by admin
+    newCompo.removeInheritedProfiles();
 
     // Add the component
     String sComponentId = addComponentInst(newCompo);
 
     // Adding ok
-    if (sComponentId != null && sComponentId.length() > 0) {
+    if (StringUtil.isDefined(sComponentId)) {
       setManagedInstanceId(sComponentId);
-      // Get profiles from destination Space
-      List<SpaceProfileInst> spaceProfiles = destinationSpace.
-          getAllSpaceProfilesInst();
-      if (spaceProfiles.size() > 1) {
-        m_AdminCtrl.setSpaceProfilesToComponent(newCompo, destinationSpace);
-      } else // Get Profiles from Component
-      {
-        List<ProfileInst> compoProfiles = compoInst.getAllProfilesInst();
-        Iterator<ProfileInst> itProfIterator = compoProfiles.iterator();
-        newCompo.setInheritanceBlocked(true);
-        while (itProfIterator.hasNext()) {
-          ProfileInst profileInst = itProfIterator.next();
-
-          // Create the profile
-          ProfileInst newProfileInst = new ProfileInst();
-          newProfileInst.setLabel(profileInst.getLabel());
-          newProfileInst.setName(profileInst.getName());
-          newProfileInst.setComponentFatherId(getManagedInstanceId());
-          newProfileInst.setInherited(false);
-          newProfileInst.setDescription(profileInst.getDescription());
-
-          // Set groupIds and userIds
-          String[] groupsIds = null;
-          String[] usersIds = null;
-          if (profileInst.getAllGroups() != null && profileInst.getAllGroups().
-              size() > 0) {
-            groupsIds = new String[profileInst.getAllGroups().size()];
-            profileInst.getAllGroups().toArray(groupsIds);
-          }
-          if (profileInst.getAllUsers() != null && profileInst.getAllUsers().
-              size() > 0) {
-            usersIds = new String[profileInst.getAllUsers().size()];
-            profileInst.getAllUsers().toArray(usersIds);
-          }
-
-          newProfileInst.setGroupsAndUsers(groupsIds, usersIds);
-
-          // Add the profile
-          m_AdminCtrl.addProfileInst(newProfileInst, getUserId());
-          newCompo.addProfileInst(newProfileInst);
-        }
-      }
-      updateComponentInst(newCompo);
       refreshCurrentSpaceCache();
     }
 
     // Execute specific paste by the component
     try {
-      PasteDetail pasteDetail = new PasteDetail(compoInst.getId(), sComponentId,
+      PasteDetail pasteDetail = new PasteDetail(componentId, sComponentId,
           getUserId());
-      String componentRootName = URLManager.getComponentNameFromComponentId(compoInst.
-          getId());
+      String componentRootName = URLManager.getComponentNameFromComponentId(componentId);
       String className =
           "com.silverpeas.component." + componentRootName + "." + componentRootName.
-          substring(0, 1).toUpperCase() + componentRootName.substring(1) + "Paste";
+              substring(0, 1).toUpperCase() + componentRootName.substring(1) + "Paste";
       if (Class.forName(className).getClass() != null) {
         ComponentPasteInterface componentPaste = (ComponentPasteInterface) Class.
             forName(className).newInstance();
@@ -1577,6 +1556,69 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       SilverTrace.warn("jobStartPagePeas",
           "JobStartPagePeasSessionController.pasteComponent()",
           "root.GEN_EXIT_METHOD", e);
+    }
+  }
+
+  private void pasteSpace(String spaceId) throws JobStartPagePeasException {
+    pasteSpace(spaceId, getManagedSpaceId());
+    refreshCurrentSpaceCache();
+  }
+
+  private void pasteSpace(String spaceId, String toSpaceId) throws JobStartPagePeasException {
+    boolean pasteAllowed = true;
+    if (StringUtil.isDefined(toSpaceId)) {
+      // First, check if target space is not a sub space of paste space
+      List<SpaceInst> path = getOrganizationController().getSpacePath(toSpaceId);
+      for (int i = 0; i < path.size() && pasteAllowed; i++) {
+        pasteAllowed = !spaceId.equalsIgnoreCase(((SpaceInst) path.get(i)).getId());
+      }
+    }
+    if (pasteAllowed) {
+      // paste space itself
+      SpaceInst newSpace = getSpaceInstById(spaceId).clone();
+      newSpace.setId("-1");
+      List<String> newBrotherIds = new ArrayList<String>();
+      if (StringUtil.isDefined(toSpaceId)) {
+        SpaceInst destinationSpace = getSpaceInstById(toSpaceId);
+        newSpace.setDomainFatherId(destinationSpace.getId());
+        newBrotherIds = Arrays.asList(destinationSpace.getSubSpaceIds());
+      } else {
+        newSpace.setDomainFatherId("-1");
+        newBrotherIds = Arrays.asList(getOrganizationController().getAllRootSpaceIds());
+      }
+      newSpace.setOrderNum(newBrotherIds.size());
+      newSpace.setCreateDate(new Date());
+      newSpace.setCreatorUserId(getUserId());
+      newSpace.setLanguage(getLanguage());
+
+      // Rename if spaceName already used in the destination space
+      List<SpaceInstLight> subSpaces = new ArrayList<SpaceInstLight>();
+      for (String subSpaceId : newBrotherIds) {
+        subSpaces.add(m_AdminCtrl.getSpaceInstLight(subSpaceId));
+      }
+      String name = renameSpace(newSpace.getName(getLanguage()), subSpaces);
+      newSpace.setName(name);
+
+      // Remove inherited profiles from cloned space
+      newSpace.removeInheritedProfiles();
+
+      // Remove components from cloned space
+      List<ComponentInst> components = newSpace.getAllComponentsInst();
+      newSpace.removeAllComponentsInst();
+
+      // Add space
+      String newSpaceId = addSpaceInst(newSpace, null);
+
+      // paste components of space
+      for (ComponentInst component : components) {
+        pasteComponent(component.getId(), newSpaceId);
+      }
+
+      // paste subspaces
+      String[] subSpaceIds = newSpace.getSubSpaceIds();
+      for (String subSpaceId : subSpaceIds) {
+        pasteSpace(subSpaceId, newSpaceId);
+      }
     }
   }
 
@@ -1597,5 +1639,16 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       }
     }
     return newComponentLabel;
+  }
+
+  private String renameSpace(String label, List<SpaceInstLight> listSpaces) {
+    String newSpaceLabel = label;
+    for (SpaceInstLight space : listSpaces) {
+      if (space.getName().equals(newSpaceLabel)) {
+        newSpaceLabel = getMultilang().getString("JSPP.CopyOf") + label;
+        return renameSpace(newSpaceLabel, listSpaces);
+      }
+    }
+    return newSpaceLabel;
   }
 }

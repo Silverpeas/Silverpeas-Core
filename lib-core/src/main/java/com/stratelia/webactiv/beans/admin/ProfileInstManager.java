@@ -58,6 +58,7 @@ public class ProfileInstManager extends Object {
     try {
       // Create the spaceProfile node
       UserRoleRow newRole = makeUserRoleRow(profileInst);
+      newRole.id = -1; // new profile Id is to be defined
       newRole.instanceId = idAsInt(sFatherCompoId);
       ddManager.organization.userRole.createUserRole(newRole);
       String sProfileNodeId = idAsString(newRole.id);
@@ -130,9 +131,13 @@ public class ProfileInstManager extends Object {
         profileInst.setLabel(userRole.name);
         profileInst.setDescription(userRole.description);
         profileInst.setComponentFatherId(sFatherId);
-        if (userRole.isInherited == 1)
+        if (userRole.isInherited == 1) {
           profileInst.setInherited(true);
-        profileInst.setObjectId(userRole.objectId);
+        }
+        if (userRole.objectId > 0) {
+          profileInst.setObjectId(userRole.objectId);
+        }
+        profileInst.setObjectType(userRole.objectType);
 
         // Get the groups
         String[] asGroupIds = ddManager.organization.group

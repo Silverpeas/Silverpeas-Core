@@ -26,18 +26,22 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="check.jsp" %>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
 
 boolean isUserAdmin 	= ((Boolean)request.getAttribute("isUserAdmin")).booleanValue();
 boolean globalMode 		= ((Boolean)request.getAttribute("globalMode")).booleanValue();
 boolean isBackupEnable 	= ((Boolean)request.getAttribute("IsBackupEnable")).booleanValue();
 boolean isBasketEnable 	= ((Boolean)request.getAttribute("IsBasketEnable")).booleanValue();
+boolean	clipboardNotEmpty = new Boolean((String) request.getAttribute("ObjectsSelectedInClipboard")).booleanValue();
 
 	// Space edition
     if (isUserAdmin)
     {   	
         operationPane.addOperation(resource.getIcon("JSPP.spaceAdd"),resource.getString("JSPP.SpacePanelCreateTitle"),"javascript:onClick=openPopup('CreateSpace', 750, 300)");
+        if (clipboardNotEmpty) {
+  			operationPane.addOperation(resource.getIcon("JSPP.PasteComponent"),resource.getString("GML.paste"),"javascript:onClick=clipboardPaste()");
+  		}
         // All Silverpeas
         if (globalMode)
         {
@@ -68,7 +72,7 @@ out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 <!--
 function openPopup(action, larg, haut) 
 {
@@ -77,11 +81,14 @@ function openPopup(action, larg, haut)
 	windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
 	actionWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);
 }
+function clipboardPaste() {
+	$.progressMessage();
+    top.IdleFrame.document.location.replace('../..<%=URLManager.getURL(URLManager.CMP_CLIPBOARD)%>paste?compR=RjobStartPagePeas&JSPPage=<%=response.encodeURL("StartPageInfo")%>&TargetFrame=TopFrame&message=REFRESH');
+}
 -->
 </script>
 </HEAD>
-
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5>
+<BODY>
 <%
 out.println(window.printBefore());
 out.println(frame.printBefore());
@@ -92,10 +99,11 @@ out.println(board.printBefore());
 %>
 <div align="center" class="txtNav">
 <%
-    if (globalMode)
-        out.print("<FONT color=#ff0000>" + resource.getString("JSPP.maintenanceTout") + "</FONT>");
-    else
+    if (globalMode) {
+        out.print("<font color=\"#ff0000\">" + resource.getString("JSPP.maintenanceTout") + "</font>");
+    } else {
         out.print(resource.getString("JSPP.welcome"));
+    }
 %></div>
 <%
 out.println(board.printAfter());
@@ -105,5 +113,6 @@ out.println(board.printAfter());
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
+<view:progressMessage/>
 </BODY>
 </HTML>

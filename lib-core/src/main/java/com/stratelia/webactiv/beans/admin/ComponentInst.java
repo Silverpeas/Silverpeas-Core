@@ -102,6 +102,7 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
     ci.m_iOrderNum = m_iOrderNum;
     ci.isPublic = isPublic;
     ci.isHidden = isHidden;
+    ci.isInheritanceBlocked = isInheritanceBlocked;
 
     if (m_alProfileInst == null) {
       ci.m_alProfileInst = null;
@@ -393,6 +394,16 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
 
   public void setRemover(UserDetail remover) {
     this.remover = remover;
+  }
+  
+  public void removeInheritedProfiles() {
+    ArrayList<ProfileInst> newProfiles = new ArrayList<ProfileInst>();
+    for (ProfileInst profile : m_alProfileInst) {
+      if (!profile.isInherited()) {
+        newProfiles.add(profile);
+      }
+    }
+    m_alProfileInst = newProfiles;
   }
 
 }

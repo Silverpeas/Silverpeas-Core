@@ -71,8 +71,8 @@ public class ComponentInstManager {
     componentInst.setUpdaterUserId(componentInstToCopy.getUpdaterUserId());
     componentInst.setRemoverUserId(componentInstToCopy.getRemoverUserId());
 
-    for (int nI = 0; nI < componentInstToCopy.getNumProfileInst(); nI++) {
-      componentInst.addProfileInst(componentInstToCopy.getProfileInst(nI));
+    for (ProfileInst profile : componentInstToCopy.getAllProfilesInst()) {
+      componentInst.addProfileInst(profile);
     }
 
     SPParameters parameters = componentInstToCopy.getSPParameters();
@@ -107,23 +107,21 @@ public class ComponentInstManager {
       ddManager.organization.instance.createComponentInstance(newInstance);
       String sComponentNodeId = idAsString(newInstance.id);
 
-      // Add the parameter if necessary
+      // Add the parameters if necessary
       List<SPParameter> parameters = componentInst.getParameters();
 
       SilverTrace.info("admin", "ComponentInstManager.createComponentInst",
           "root.MSG_GEN_PARAM_VALUE", "nb parameters = " + parameters.size());
 
-      SPParameter parameter = null;
-      for (int nI = 0; nI < parameters.size(); nI++) {
-        parameter = parameters.get(nI);
+      for (SPParameter parameter : parameters) {
         ddManager.organization.instanceData.createInstanceData(
             idAsInt(sComponentNodeId), parameter);
       }
 
       // Create the profile nodes
-      for (int nI = 0; nI < componentInst.getNumProfileInst(); nI++)
-        m_ProfileInstManager.createProfileInst(
-            componentInst.getProfileInst(nI), ddManager, sComponentNodeId);
+      for (ProfileInst profile : componentInst.getProfiles()) {
+        m_ProfileInstManager.createProfileInst(profile, ddManager, sComponentNodeId);
+      }
 
       return sComponentNodeId;
     } catch (Exception e) {

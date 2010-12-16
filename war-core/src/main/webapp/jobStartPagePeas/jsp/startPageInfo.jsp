@@ -26,6 +26,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="check.jsp" %>
+<%@page import="java.net.URLEncoder"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%	
@@ -48,8 +49,9 @@
     List 		availableLooks			= gef.getAvailableLooks();
     String		spaceLook				= space.getLook();
 
-    if (spaceLook == null)
+    if (spaceLook == null) {
     	spaceLook = "&nbsp;";
+    }
        
     String[] pageType = {resource.getString("JSPP.main"),resource.getString("JSPP.peas"),resource.getString("JSPP.portlet"),resource.getString("JSPP.webPage")};
 
@@ -59,44 +61,46 @@
 	browseBar.setExtraInformation(resource.getString("GML.description"));
 	browseBar.setI18N(space, resource.getLanguage());
 	
-    if (m_SpaceExtraInfos.isAdmin)
-    {
+    if (m_SpaceExtraInfos.isAdmin) {
       	operationPane.addOperation(resource.getIcon("JSPP.spaceUpdate"),resource.getString("JSPP.SpacePanelModifyTitle"),"javascript:onClick=updateSpace(750, 350)");
       	operationPane.addOperation(resource.getIcon("JSPP.updateHomePage"),resource.getString("JSPP.ModifyStartPage"),"javascript:onClick=openPopup('UpdateJobStartPage', 740, 600)");
-        if (isUserAdmin || (m_SubSpace != null))
-        {
+        if (isUserAdmin || m_SubSpace != null) {
             operationPane.addOperation(resource.getIcon("JSPP.SpaceOrder"),resource.getString("JSPP.SpaceOrder"),"javascript:onClick=openPopup('PlaceSpaceAfter', 750, 250)");
         }
         
         // This space configuration
-        if (mode)
-        {
+        if (mode) {
             operationPane.addOperation(resource.getIcon("JSPP.spaceUnlock"),resource.getString("JSPP.maintenanceModeToOff"),"DesactivateMaintenance");
-        }
-        else
-        {
+        } else {
             operationPane.addOperation(resource.getIcon("JSPP.spaceLock"),resource.getString("JSPP.maintenanceModeToOn"),"ActivateMaintenance");
         }
-        if (isUserAdmin || (m_SubSpace != null))
+        if (isUserAdmin || m_SubSpace != null) {
             operationPane.addOperation(resource.getIcon("JSPP.spaceDel"),resource.getString("JSPP.SpacePanelDeleteTitle"),"javascript:onClick=deleteSpace()");
+        }
         
-        if (isBackupEnable)
+        if (isBackupEnable) {
     		operationPane.addOperation(resource.getIcon("JSPP.spaceBackup"),resource.getString("JSPP.BackupSpace"),"javascript:onClick=openPopup('"+m_context+URLManager.getURL(URLManager.CMP_JOBBACKUP)+"Main?spaceToSave=" + m_SpaceId + "', 750, 550)");
+        }
     	
-        operationPane.addLine();
+        if (JobStartPagePeasSettings.useComponentsCopy || objectsSelectedInClipboard) { 
+	        operationPane.addLine();
+	        if (JobStartPagePeasSettings.useComponentsCopy) {
+	        	operationPane.addOperation(resource.getIcon("JSPP.CopyComponent"),resource.getString("GML.copy"),"javascript:onClick=clipboardCopy()");
+	        }
+			if (objectsSelectedInClipboard) {
+				operationPane.addOperation(resource.getIcon("JSPP.PasteComponent"),resource.getString("GML.paste"),"javascript:onClick=clipboardPaste()");
+			}
+        }
+		operationPane.addLine();
         operationPane.addOperation(resource.getIcon("JSPP.subspaceAdd"),resource.getString("JSPP.SubSpacePanelCreateTitle"),"javascript:onClick=openPopup('CreateSpace?SousEspace=SousEspace', 750, 300)");
-				if (objectsSelectedInClipboard)
-					operationPane.addOperation(resource.getIcon("JSPP.PasteComponent"),resource.getString("JSPP.PasteComponent"),"javascript:onClick=clipboardPaste()");
         operationPane.addOperation(resource.getIcon("JSPP.instanceAdd"),resource.getString("JSPP.ComponentPanelCreateTitle"),"javascript:onClick=openPopup('ListComponent', 750, 700)");
     }
     
     tabbedPane.addTab(resource.getString("GML.description"), "#", true);
-    tabbedPane.addTab(resource.getString("JSPP.SpaceAppearance"), "SpaceLook", false);
-    
+    tabbedPane.addTab(resource.getString("JSPP.SpaceAppearance"), "SpaceLook", false);    
     tabbedPane.addTab(resource.getString("JSPP.Manager"), "SpaceManager", false);
     
-    if (isInHeritanceEnable)
-    {
+    if (isInHeritanceEnable) {
         tabbedPane.addTab(resource.getString("JSPP.admin"), "SpaceManager?Role=admin", false);
         tabbedPane.addTab(resource.getString("JSPP.publisher"), "SpaceManager?Role=publisher", false);
         tabbedPane.addTab(resource.getString("JSPP.writer"), "SpaceManager?Role=writer", false);
@@ -104,7 +108,7 @@
     }
 %>
 
-<%@page import="java.net.URLEncoder"%><HTML>
+<HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
 <%
@@ -162,6 +166,10 @@ function openPopup(action, larg, haut)
 
 function clipboardPaste() {
     top.IdleFrame.document.location.replace('../..<%=URLManager.getURL(URLManager.CMP_CLIPBOARD)%>paste?compR=RjobStartPagePeas&JSPPage=<%=response.encodeURL("StartPageInfo")%>&TargetFrame=TopFrame&message=REFRESH');
+}
+
+function clipboardCopy() {
+	top.IdleFrame.location.href = 'copy?Type=Space&Id=<%=space.getId()%>';
 }
 -->
 </script>

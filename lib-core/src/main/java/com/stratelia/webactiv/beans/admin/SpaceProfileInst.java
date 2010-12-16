@@ -160,4 +160,21 @@ public class SpaceProfileInst extends Object implements Serializable {
   public void setInherited(boolean isInherited) {
     this.isInherited = isInherited;
   }
+
+  @Override
+  protected SpaceProfileInst clone() {
+    SpaceProfileInst clone = new SpaceProfileInst();
+    
+    clone.setDescription(m_sDescription);
+    //clone.setId(m_sId);
+    clone.setInherited(isInherited);
+    clone.setLabel(m_sLabel);
+    clone.setName(m_sName);
+    clone.setSpaceFatherId(m_sSpaceFatherId);
+    
+    clone.addGroups((List<String>) m_alGroups.clone());
+    clone.addUsers((List<String>) m_alUsers.clone());
+    
+    return clone;
+  }
 }

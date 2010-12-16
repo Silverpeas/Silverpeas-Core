@@ -301,7 +301,7 @@ public final class Admin extends Object {
         // Convert the client id in driver id
         spaceInst.setDomainFatherId(getDriverSpaceId(spaceInst.getDomainFatherId()));
 
-        if (useProfileInheritance) {
+        if (useProfileInheritance && !spaceInst.isInheritanceBlocked()) {
           // inherits profiles from super space
           // set super space profiles to new space
           setSpaceProfilesToSubSpace(spaceInst, null);
@@ -1213,7 +1213,7 @@ public final class Admin extends Object {
           "containerPDC", componentName);
       }
 
-      if (useProfileInheritance) {
+      if (useProfileInheritance && !componentInst.isInheritanceBlocked()) {
         // inherits profiles from space
         setSpaceProfilesToComponent(componentInst, spaceInstFather);
       }

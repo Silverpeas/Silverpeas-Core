@@ -23,12 +23,12 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import com.google.common.base.Objects;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.google.common.base.Objects;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -486,7 +486,8 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
   }
 
   public boolean isRoot() {
-    return (!StringUtil.isDefined(getDomainFatherId()) || "0".equals(getDomainFatherId()));
+    return (!StringUtil.isDefined(getDomainFatherId()) || "0".equals(getDomainFatherId()) || "-1"
+        .equals(getDomainFatherId()));
   }
 
   public Date getCreateDate() {
@@ -619,5 +620,47 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
   public int hashCode() {
     return Objects.hashCode(createDate, m_sId, level, look, m_iFirstPageType, m_iOrderNum, 
       m_sCreatorUserId, m_sDescription, m_sDomainFatherId, m_sFirstPageExtraParam, m_sName);
+  }
+
+  @Override
+  public SpaceInst clone() {
+    SpaceInst clone =  new SpaceInst();
+    
+    // clone basic information
+    clone.setDescription(m_sDescription);
+    clone.setDisplaySpaceFirst(displaySpaceFirst);
+    clone.setFirstPageExtraParam(m_sFirstPageExtraParam);
+    clone.setFirstPageType(m_iFirstPageType);
+    clone.setInheritanceBlocked(isInheritanceBlocked);
+    clone.setLook(look);
+    clone.setName(m_sName);
+    clone.setPersonalSpace(isPersonalSpace);
+    
+    // clone profiles
+    List<SpaceProfileInst> profiles = getProfiles();
+    for (SpaceProfileInst profile : profiles) {
+      clone.addSpaceProfileInst(profile.clone());
+    }
+    
+    // clone components
+    List<ComponentInst> components = getAllComponentsInst();
+    for (ComponentInst component : components) {
+      clone.addComponentInst((ComponentInst) component.clone());
+    }
+
+    // clone subspace ids
+    clone.setSubSpaceIds(getSubSpaceIds().clone());
+    
+    return clone;
+  }
+  
+  public void removeInheritedProfiles() {
+    ArrayList<SpaceProfileInst> newProfiles = new ArrayList<SpaceProfileInst>();
+    for (SpaceProfileInst profile : m_alSpaceProfileInst) {
+      if (!profile.isInherited()) {
+        newProfiles.add(profile);
+      }
+    }
+    m_alSpaceProfileInst = newProfiles;
   }
 }

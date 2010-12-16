@@ -495,23 +495,23 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       SilverTrace.info("jobStartPagePeas",
           "JobStartPagePeasRequestRouter.EffectivePlaceComponent()",
           "root.MSG_GEN_PARAM_VALUE", "Managed spaceId= "
-          + jobStartPageSC.getManagedSpaceId());
+              + jobStartPageSC.getManagedSpaceId());
       SpaceInst destinationSpace = jobStartPageSC.getSpaceInstById(request
           .getParameter("DestinationSpace"));
       SilverTrace.info("jobStartPagePeas",
           "JobStartPagePeasRequestRouter.EffectivePlaceComponent()",
           "root.MSG_GEN_PARAM_VALUE", "espace source: " + currentSpace.getId()
-          + " espace dest=" + destinationSpace.getId());
+              + " espace dest=" + destinationSpace.getId());
       // Moving only if destination space and current space are different
       if (!destinationSpace.getId().equals(currentSpace.getId())) {
         SilverTrace.info("jobStartPagePeas",
             "JobStartPagePeasRequestRouter.EffectivePlaceComponent()",
             "root.MSG_GEN_PARAM_VALUE", "espace source: "
-            + jobStartPageSC.isSpaceInMaintenance(currentSpace.getId()
-            .substring(2))
-            + " espace dest="
-            + jobStartPageSC.isSpaceInMaintenance(destinationSpace.getId()
-            .substring(2)));
+                + jobStartPageSC.isSpaceInMaintenance(currentSpace.getId()
+                    .substring(2))
+                + " espace dest="
+                + jobStartPageSC.isSpaceInMaintenance(destinationSpace.getId()
+                    .substring(2)));
         // Destination and source space in maintenance = OK
         if ((jobStartPageSC.isSpaceInMaintenance(destinationSpace.getId()
             .substring(2)) && jobStartPageSC.isSpaceInMaintenance(currentSpace
@@ -521,9 +521,9 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
           SilverTrace.info("jobStartPagePeas",
               "JobStartPagePeasRequestRouter.EffectivePlaceComponent()",
               "root.MSG_GEN_PARAM_VALUE", "component = " + compoint1.getId()
-              + " espace dest:" + destinationSpace.getId().substring(2)
-              + " componentBefore="
-              + request.getParameter("ComponentBefore"));
+                  + " espace dest:" + destinationSpace.getId().substring(2)
+                  + " componentBefore="
+                  + request.getParameter("ComponentBefore"));
           jobStartPageSC.setMoveComponentToSpace(compoint1, request
               .getParameter("DestinationSpace").substring(2), request
               .getParameter("ComponentBefore"));
@@ -578,7 +578,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       SilverTrace.info("jobStartPagePeas",
           "JobStartPagePeasRequestRouter.ChangeDestinationSpace()",
           "root.MSG_GEN_PARAM_VALUE", "currentSpaceId=" + currentSpace.getId()
-          + "selectedSpaceId=" + selectedSpace.getId());
+              + "selectedSpaceId=" + selectedSpace.getId());
       request.setAttribute("jobStartPageSC", jobStartPageSC);
       request.setAttribute("currentComponentName", compoint1.getLabel());
       request.setAttribute("currentSpace", currentSpace);
@@ -629,8 +629,13 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
     } else if (function.startsWith("copy")) {
       String objectId = request.getParameter("Id");
+      String objectType = request.getParameter("Type");
       try {
-        jobStartPageSC.copyComponent(objectId);
+        if ("Space".equals(objectType)) {
+          jobStartPageSC.copySpace(objectId);
+        } else {
+          jobStartPageSC.copyComponent(objectId);
+        }
       } catch (Exception e) {
         throw new AdminException(
             "JobStartPagePeasRequestRouter.getDestination()",
@@ -641,7 +646,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
           + "Idle.jsp?message=REFRESHCLIPBOARD";
     } else if (function.startsWith("paste")) {
       try {
-        jobStartPageSC.pasteComponent();
+        jobStartPageSC.paste();
       } catch (Exception e) {
         throw new AdminException(
             "JobStartPagePeasRequestRouter.getDestination()",
@@ -724,12 +729,12 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
         jobStartPageSC.setCreateSpaceParameters(request.getParameter("NameObject"), request
             .getParameter("Description"),
             request.getParameter("SousEspace"), spaceTemplate, I18NHelper
-            .getSelectedLanguage(request),
+                .getSelectedLanguage(request),
             request.getParameter("SelectedLook"));
       }
 
       destination = getDestinationSpace("EffectiveCreateSpace", jobStartPageSC, request);
-      
+
     } else if (function.equals("EffectiveCreateSpace")) { // Space CREATE action
       String spaceId = jobStartPageSC.createSpace();
       if (spaceId != null && spaceId.length() > 0) {
@@ -803,7 +808,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
         SilverTrace.info("jobStartPagePeas",
             "JobStartPagePeasRequestRouter.SpaceManager()",
             "root.MSG_GEN_PARAM_VALUE", "profileName=" + profile.getName()
-            + " profileName=" + profile.getLabel());
+                + " profileName=" + profile.getLabel());
         request.setAttribute("Profile", profile);
       }
 
@@ -1035,7 +1040,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
         (JobStartPagePeasSessionController) componentSC;
     SilverTrace.info("jobStartPagePeas", "JobStartPagePeasRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + jobStartPageSC.getUserId() + " Function="
-        + function);
+            + function);
     try {
       if (destination == null) {
         destination = getDestinationStartPage(function, jobStartPageSC, request);
