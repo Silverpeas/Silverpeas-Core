@@ -22,7 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//Source file: d:\\webactiv\\util\\com\\stratelia\\webactiv\\util\\answer\\model\\AnswerPK.java
 package com.stratelia.webactiv.util.answer.model;
 
 import com.stratelia.webactiv.util.*;

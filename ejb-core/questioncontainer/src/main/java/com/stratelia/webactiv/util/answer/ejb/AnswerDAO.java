@@ -22,18 +22,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//TODO : reporter dans CVS (done)
 package com.stratelia.webactiv.util.answer.ejb;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 import com.silverpeas.util.ForeignPK;
-import com.stratelia.webactiv.util.*;
-import com.stratelia.webactiv.util.exception.*;
-import com.stratelia.webactiv.util.answer.model.*;
-
-import com.stratelia.silverpeas.silvertrace.*;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.answer.model.Answer;
+import com.stratelia.webactiv.util.answer.model.AnswerPK;
+import com.stratelia.webactiv.util.answer.model.AnswerRuntimeException;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
  * This class is made to access database only (table SB_Question_Answer)
@@ -85,7 +91,7 @@ public class AnswerDAO {
    * @return a Collection of Answer
    * @throws SQLException
    */
-  public static Collection getAnswersByQuestionPK(Connection con,
+  public static Collection<Answer> getAnswersByQuestionPK(Connection con,
       ForeignPK questionPK) throws SQLException {
     SilverTrace.info("answer", "AnswerDAO.getAnswersByQuestionPK()",
         "root.MSG_GEN_ENTER_METHOD", "questionPK =" + questionPK);
@@ -96,7 +102,7 @@ public class AnswerDAO {
     String selectStatement = "select " + ANSWERCOLUMNNAMES + " from "
         + answerPK.getTableName() + " where questionId = ? order by answerId ";
 
-    ArrayList result = new ArrayList();
+    List<Answer> result = new ArrayList<Answer>();
     PreparedStatement prepStmt = null;
 
     try {
@@ -150,15 +156,15 @@ public class AnswerDAO {
    * @param questionPK the QuestionPK (question id)
    * @throws SQLException
    */
-  public static void addAnswersToAQuestion(Connection con, Collection answers,
+  public static void addAnswersToAQuestion(Connection con, Collection<Answer> answers,
       ForeignPK questionPK) throws SQLException {
     SilverTrace.info("answer", "AnswerDAO.addAnswersToAQuestion()",
         "root.MSG_GEN_ENTER_METHOD", "questionPK =" + questionPK);
     if (answers != null) {
-      Iterator it = answers.iterator();
+      Iterator<Answer> it = answers.iterator();
 
       while (it.hasNext()) {
-        Answer answer = (Answer) it.next();
+        Answer answer = it.next();
         addAnswerToAQuestion(con, answer, questionPK);
       }
     }

@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
-
 package com.stratelia.webactiv.util.question.control;
 
 import java.rmi.RemoteException;
@@ -32,6 +29,7 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.ejb.SessionContext;
 
@@ -95,7 +93,7 @@ public class QuestionBmEJB implements javax.ejb.SessionBean, QuestionBmBusinessS
       con = getConnection();
       Question question = QuestionDAO.getQuestion(con, questionPK);
       // try to fetch the possible answers to this question
-      Collection answers = this.getAnswersByQuestionPK(questionPK);
+      Collection<Answer> answers = this.getAnswersByQuestionPK(questionPK);
 
       question.setAnswers(answers);
       return question;
@@ -108,16 +106,15 @@ public class QuestionBmEJB implements javax.ejb.SessionBean, QuestionBmBusinessS
     }
   }
 
-  private Collection getAnswersByQuestionPK(QuestionPK questionPK)
+  private Collection<Answer> getAnswersByQuestionPK(QuestionPK questionPK)
       throws RemoteException {
     SilverTrace.info("question", "QuestionBmEJB.getAnswersByQuestionPK()",
         "root.MSG_GEN_ENTER_METHOD", "questionPK = " + questionPK);
-    Collection answers = getAnswerBm().getAnswersByQuestionPK(
-        new ForeignPK(questionPK));
+    Collection<Answer> answers = getAnswerBm().getAnswersByQuestionPK(new ForeignPK(questionPK));
     return answers;
   }
 
-  public Collection getQuestionsByFatherPK(QuestionPK questionPK,
+  public Collection<Question> getQuestionsByFatherPK(QuestionPK questionPK,
       String fatherId) throws RemoteException {
     SilverTrace.info("question", "QuestionBmEJB.getQuestionsByFatherPK()",
         "root.MSG_GEN_ENTER_METHOD", "questionPK = " + questionPK
@@ -126,15 +123,15 @@ public class QuestionBmEJB implements javax.ejb.SessionBean, QuestionBmBusinessS
 
     try {
       con = getConnection();
-      Collection questions = QuestionDAO.getQuestionsByFatherPK(con,
+      Collection<Question> questions = QuestionDAO.getQuestionsByFatherPK(con,
           questionPK, fatherId);
       // try to fetch the possible answers for each questions
-      Iterator it = questions.iterator();
-      ArrayList result = new ArrayList();
+      Iterator<Question> it = questions.iterator();
+      List<Question> result = new ArrayList<Question>();
 
       while (it.hasNext()) {
         Question question = (Question) it.next();
-        Collection answers = this.getAnswersByQuestionPK(question.getPK());
+        Collection<Answer> answers = this.getAnswersByQuestionPK(question.getPK());
 
         question.setAnswers(answers);
         result.add(question);
@@ -179,15 +176,15 @@ public class QuestionBmEJB implements javax.ejb.SessionBean, QuestionBmBusinessS
     }
   }
 
-  public void createQuestions(Collection questions, String fatherId)
+  public void createQuestions(Collection<Question> questions, String fatherId)
       throws RemoteException {
     SilverTrace.info("question", "QuestionBmEJB.createQuestions()",
         "root.MSG_GEN_ENTER_METHOD", "fatherId = " + fatherId);
-    Iterator it = questions.iterator();
+    Iterator<Question> it = questions.iterator();
     int displayOrder = 1;
 
     while (it.hasNext()) {
-      Question question = (Question) it.next();
+      Question question = it.next();
 
       question.setFatherId(fatherId);
       question.setDisplayOrder(displayOrder);
@@ -209,9 +206,9 @@ public class QuestionBmEJB implements javax.ejb.SessionBean, QuestionBmBusinessS
       con = getConnection();
 
       // get all questions to delete
-      Collection questions = getQuestionsByFatherPK(questionPK, fatherId);
+      Collection<Question> questions = getQuestionsByFatherPK(questionPK, fatherId);
 
-      Iterator iterator = questions.iterator();
+      Iterator<Question> iterator = questions.iterator();
 
       while (iterator.hasNext()) {
         QuestionPK questionPKToDelete = ((Question) iterator.next()).getPK();
@@ -327,11 +324,11 @@ public class QuestionBmEJB implements javax.ejb.SessionBean, QuestionBmBusinessS
     SilverTrace.info("question", "QuestionBmEJB.deleteAnswersToAQuestion()",
         "root.MSG_GEN_ENTER_METHOD", "questionPK = " + questionPK);
 
-    Collection answers = getAnswersByQuestionPK(questionPK);
-    Iterator iterator = answers.iterator();
+    Collection<Answer> answers = getAnswersByQuestionPK(questionPK);
+    Iterator<Answer> iterator = answers.iterator();
 
     while (iterator.hasNext()) {
-      AnswerPK answerPKToDelete = ((Answer) iterator.next()).getPK();
+      AnswerPK answerPKToDelete = (iterator.next()).getPK();
       deleteAnswerToAQuestion(answerPKToDelete, questionPK);
     }
   }
@@ -350,11 +347,11 @@ public class QuestionBmEJB implements javax.ejb.SessionBean, QuestionBmBusinessS
     SilverTrace.info("question", "QuestionBmEJB.createAnswersToAQuestion()",
         "root.MSG_GEN_ENTER_METHOD", "questionDetail = " + questionDetail);
 
-    Collection answers = questionDetail.getAnswers();
-    Iterator iterator = answers.iterator();
+    Collection<Answer> answers = questionDetail.getAnswers();
+    Iterator<Answer> iterator = answers.iterator();
 
     while (iterator.hasNext()) {
-      createAnswerToAQuestion((Answer) iterator.next(), questionDetail.getPK());
+      createAnswerToAQuestion(iterator.next(), questionDetail.getPK());
     }
   }
 

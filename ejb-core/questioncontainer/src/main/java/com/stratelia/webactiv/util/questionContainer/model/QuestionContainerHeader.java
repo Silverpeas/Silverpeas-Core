@@ -30,6 +30,7 @@ import java.util.Iterator;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.stratelia.silverpeas.contentManager.*;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.util.score.model.ScoreDetail;
 
 public class QuestionContainerHeader extends AbstractI18NBean implements java.io.Serializable,
     SilverContentInterface {
@@ -50,7 +51,7 @@ public class QuestionContainerHeader extends AbstractI18NBean implements java.io
   private int nbParticipationsBeforeSolution = 0;
   private int maxTime = 0;
   private int nbMaxPoints = 0;
-  private Collection scores = null;
+  private Collection<ScoreDetail> scores = null;
   private boolean anonymous;
 
   private String iconUrl;
@@ -198,7 +199,7 @@ public class QuestionContainerHeader extends AbstractI18NBean implements java.io
     return this.nbMaxPoints;
   }
 
-  public Collection getScores() {
+  public Collection<ScoreDetail> getScores() {
     return this.scores;
   }
 
@@ -266,7 +267,7 @@ public class QuestionContainerHeader extends AbstractI18NBean implements java.io
     this.nbMaxPoints = nb;
   }
 
-  public void setScores(Collection scores) {
+  public void setScores(Collection<ScoreDetail> scores) {
     this.scores = scores;
   }
 

@@ -22,12 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
-//
-// -- Java Code Generation Process --
-
 package com.stratelia.webactiv.util.score.control;
 
 // Import Statements
@@ -36,23 +30,6 @@ import java.util.Collection;
 
 import com.stratelia.webactiv.util.score.model.ScoreDetail;
 import com.stratelia.webactiv.util.score.model.ScorePK;
-
-/*
- * CVS Informations
- *
- * $Id: ScoreBmSkeleton.java,v 1.2 2008/05/28 08:39:50 ehugonnet Exp $
- *
- * $Log: ScoreBmSkeleton.java,v $
- * Revision 1.2  2008/05/28 08:39:50  ehugonnet
- * Imports inutiles
- *
- * Revision 1.1.1.1  2002/08/06 14:47:53  nchaix
- * no message
- *
- * Revision 1.8  2001/12/21 13:51:11  scotte
- * no message
- *
- */
 
 /**
  * Interface declaration
@@ -109,7 +86,7 @@ public interface ScoreBmSkeleton {
    * @throws RemoteException
    * @see
    */
-  public Collection getAllScores(ScorePK scorePK) throws RemoteException;
+  public Collection<ScoreDetail> getAllScores(ScorePK scorePK) throws RemoteException;
 
   /*
    * Method: getUserScores
@@ -123,7 +100,7 @@ public interface ScoreBmSkeleton {
    * @throws RemoteException
    * @see
    */
-  public Collection getUserScores(ScorePK scorePK, String userId)
+  public Collection<ScoreDetail> getUserScores(ScorePK scorePK, String userId)
       throws RemoteException;
 
   /*
@@ -139,7 +116,7 @@ public interface ScoreBmSkeleton {
    * @throws RemoteException
    * @see
    */
-  public Collection getUserScoresByFatherId(ScorePK scorePK, String fatherId,
+  public Collection<ScoreDetail> getUserScoresByFatherId(ScorePK scorePK, String fatherId,
       String userId) throws RemoteException;
 
   /*
@@ -155,7 +132,7 @@ public interface ScoreBmSkeleton {
    * @throws RemoteException
    * @see
    */
-  public Collection getBestScoresByFatherId(ScorePK scorePK, int nbBestScores,
+  public Collection<ScoreDetail> getBestScoresByFatherId(ScorePK scorePK, int nbBestScores,
       String fatherId) throws RemoteException;
 
   /*
@@ -171,7 +148,7 @@ public interface ScoreBmSkeleton {
    * @throws RemoteException
    * @see
    */
-  public Collection getWorstScoresByFatherId(ScorePK scorePK,
+  public Collection<ScoreDetail> getWorstScoresByFatherId(ScorePK scorePK,
       int nbWorstScores, String fatherId) throws RemoteException;
 
   /*
@@ -234,7 +211,7 @@ public interface ScoreBmSkeleton {
    * @throws RemoteException
    * @see
    */
-  public Collection getScoresByFatherId(ScorePK scorePK, String fatherId)
+  public Collection<ScoreDetail> getScoresByFatherId(ScorePK scorePK, String fatherId)
       throws RemoteException;
 
   /**

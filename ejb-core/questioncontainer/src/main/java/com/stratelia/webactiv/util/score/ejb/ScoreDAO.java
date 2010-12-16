@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// TODO : reporter dans CVS (done)
-
-// Source file: d:\\webactiv\\util\\com\\stratelia\\webactiv\\util\\score\\ejb\\ScoreDAO.java
 package com.stratelia.webactiv.util.score.ejb;
 
 import java.sql.Connection;
@@ -34,6 +31,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
@@ -41,26 +39,6 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.score.model.ScoreDetail;
 import com.stratelia.webactiv.util.score.model.ScorePK;
 import com.stratelia.webactiv.util.score.model.ScoreRuntimeException;
-
-/*
- * CVS Informations
- * 
- * $Id: ScoreDAO.java,v 1.3 2003/11/25 08:34:49 cbonin Exp $
- * 
- * $Log: ScoreDAO.java,v $
- * Revision 1.3  2003/11/25 08:34:49  cbonin
- * no message
- *
- * Revision 1.2  2003/11/24 11:10:31  cbonin
- * no message
- *
- * Revision 1.1.1.1  2002/08/06 14:47:53  nchaix
- * no message
- *
- * Revision 1.15  2001/12/21 13:51:41  scotte
- * no message
- *
- */
 
 /**
  * Class declaration
@@ -221,7 +199,7 @@ public class ScoreDAO {
   /**
    * @roseuid 3ACC3C8F0370
    */
-  public static Collection getAllScores(Connection con, ScorePK scorePK)
+  public static Collection<ScoreDetail> getAllScores(Connection con, ScorePK scorePK)
       throws SQLException {
     ResultSet rs = null;
     ScoreDetail scoreDetail = null;
@@ -232,7 +210,7 @@ public class ScoreDAO {
     try {
       prepStmt = con.prepareStatement(selectStatement);
       rs = prepStmt.executeQuery();
-      ArrayList result = new ArrayList();
+      List<ScoreDetail> result = new ArrayList<ScoreDetail>();
 
       while (rs.next()) {
         scoreDetail = getScoreFromResultSet(rs, scorePK);
@@ -247,7 +225,7 @@ public class ScoreDAO {
   /**
    * @roseuid 3ACC3CAE0248
    */
-  public static Collection getUserScores(Connection con, ScorePK scorePK,
+  public static Collection<ScoreDetail> getUserScores(Connection con, ScorePK scorePK,
       String userId) throws SQLException {
     ResultSet rs = null;
     ScoreDetail scoreDetail = null;
@@ -260,7 +238,7 @@ public class ScoreDAO {
       prepStmt = con.prepareStatement(selectStatement);
       prepStmt.setInt(1, new Integer(userId).intValue());
       rs = prepStmt.executeQuery();
-      ArrayList result = new ArrayList();
+      List<ScoreDetail> result = new ArrayList<ScoreDetail>();
       while (rs.next()) {
         scoreDetail = getScoreFromResultSet(rs, scorePK);
         result.add(scoreDetail);
@@ -274,7 +252,7 @@ public class ScoreDAO {
   /**
    * @roseuid 3ACC3CC50025
    */
-  public static Collection getUserScoresByFatherId(Connection con,
+  public static Collection<ScoreDetail> getUserScoresByFatherId(Connection con,
       ScorePK scorePK, String fatherId, String userId) throws SQLException {
     ResultSet rs = null;
     ScoreDetail scoreDetail = null;
@@ -288,7 +266,7 @@ public class ScoreDAO {
       prepStmt.setInt(1, new Integer(fatherId).intValue());
       prepStmt.setString(2, userId);
       rs = prepStmt.executeQuery();
-      ArrayList result = new ArrayList();
+      List<ScoreDetail> result = new ArrayList<ScoreDetail>();
       while (rs.next()) {
         scoreDetail = getScoreFromResultSet(rs, scorePK);
         result.add(scoreDetail);
@@ -308,7 +286,7 @@ public class ScoreDAO {
    * @throws SQLException
    * @see
    */
-  public static Collection getScoresByFatherId(Connection con, ScorePK scorePK,
+  public static Collection<ScoreDetail> getScoresByFatherId(Connection con, ScorePK scorePK,
       String fatherId) throws SQLException {
     ResultSet rs = null;
     ScoreDetail scoreDetail = null;
@@ -320,7 +298,7 @@ public class ScoreDAO {
       prepStmt = con.prepareStatement(selectStatement);
       prepStmt.setInt(1, new Integer(fatherId).intValue());
       rs = prepStmt.executeQuery();
-      ArrayList result = new ArrayList();
+      List<ScoreDetail> result = new ArrayList<ScoreDetail>();
       while (rs.next()) {
         scoreDetail = getScoreFromResultSet(rs, scorePK);
         result.add(scoreDetail);
@@ -334,7 +312,7 @@ public class ScoreDAO {
   /**
    * @roseuid 3ACC3D7D01F6
    */
-  public static Collection getBestScoresByFatherId(Connection con,
+  public static Collection<ScoreDetail> getBestScoresByFatherId(Connection con,
       ScorePK scorePK, int nbBestScores, String fatherId) throws SQLException {
     ResultSet rs = null;
     ScoreDetail scoreDetail = null;
@@ -348,7 +326,7 @@ public class ScoreDAO {
       prepStmt = con.prepareStatement(selectStatement);
       prepStmt.setInt(1, new Integer(fatherId).intValue());
       rs = prepStmt.executeQuery();
-      ArrayList result = new ArrayList();
+      List<ScoreDetail> result = new ArrayList<ScoreDetail>();
       while ((rs.next()) && (nbRecord < nbBestScores)) {
         scoreDetail = getScoreFromResultSet(rs, scorePK);
         result.add(scoreDetail);
@@ -363,7 +341,7 @@ public class ScoreDAO {
   /**
    * @roseuid 3ACC3DBB02B3
    */
-  public static Collection getWorstScoresByFatherId(Connection con,
+  public static Collection<ScoreDetail> getWorstScoresByFatherId(Connection con,
       ScorePK scorePK, int nbWorstScores, String fatherId) throws SQLException {
     ResultSet rs = null;
     ScoreDetail scoreDetail = null;
@@ -376,7 +354,7 @@ public class ScoreDAO {
       prepStmt = con.prepareStatement(selectStatement);
       prepStmt.setInt(1, new Integer(fatherId).intValue());
       rs = prepStmt.executeQuery();
-      ArrayList result = new ArrayList();
+      List<ScoreDetail> result = new ArrayList<ScoreDetail>();
       while ((rs.next()) && (nbRecord < nbWorstScores)) {
         scoreDetail = getScoreFromResultSet(rs, scorePK);
         result.add(scoreDetail);
@@ -502,14 +480,14 @@ public class ScoreDAO {
   public static int getUserPositionByFatherIdAndParticipationId(Connection con,
       ScorePK scorePK, String fatherId, String userId, int participationId)
       throws SQLException {
-    Collection scoreDetails = getScoresByFatherId(con, scorePK, fatherId);
-    Iterator it = scoreDetails.iterator();
+    Collection<ScoreDetail> scoreDetails = getScoresByFatherId(con, scorePK, fatherId);
+    Iterator<ScoreDetail> it = scoreDetails.iterator();
     int position = 0;
     int nbPosition = 0;
     String previousScore = null;
 
     while (it.hasNext()) {
-      ScoreDetail scoreDetail = (ScoreDetail) it.next();
+      ScoreDetail scoreDetail = it.next();
 
       if ((previousScore != null)
           && (scoreDetail.getScore() == new Integer(previousScore).intValue())) {

@@ -25,7 +25,8 @@
 package com.stratelia.webactiv.util.questionContainer.model;
 
 import java.io.Serializable;
-import com.stratelia.webactiv.util.*;
+
+import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
  * It's the Publication PrimaryKey object It identify a Publication

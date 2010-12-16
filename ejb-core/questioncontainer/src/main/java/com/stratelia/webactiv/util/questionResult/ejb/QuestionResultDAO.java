@@ -31,6 +31,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -41,39 +42,6 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
 import com.stratelia.webactiv.util.questionResult.model.QuestionResultPK;
 import com.stratelia.webactiv.util.questionResult.model.QuestionResultRuntimeException;
-
-/*
- * CVS Informations
- *
- * $Id: QuestionResultDAO.java,v 1.4 2006/08/16 11:56:47 neysseri Exp $
- *
- * $Log: QuestionResultDAO.java,v $
- * Revision 1.4.4.2  2009/08/21 13:26:34  sfariello
- * Gestion non anonyme des enquêtes
- *
- * Revision 1.4.4.1  2009/07/16 13:31:04  sfariello
- * trier les résultats d'une question par réponse
- *
- * Revision 1.4  2006/08/16 11:56:47  neysseri
- * no message
- *
- * Revision 1.3  2003/11/25 08:33:13  cbonin
- * no message
- *
- * Revision 1.2  2003/11/24 10:56:16  cbonin
- * no message
- *
- * Revision 1.1.1.1  2002/08/06 14:47:53  nchaix
- * no message
- *
- * Revision 1.10  2002/01/04 13:54:15  neysseri
- * no message
- *
- * Revision 1.9  2001/12/19 16:36:11  neysseri
- * Stabilisation Lot 2 :
- * Mise en place Exceptions et SilverTrace + javadoc
- *
- */
 
 /**
  * This class is made to access database only (table SB_Question_Answer)
@@ -116,7 +84,8 @@ public class QuestionResultDAO {
     return result;
   }
 
-  public static Collection getUserQuestionResultsToQuestion(Connection con, String userId,
+  public static Collection<QuestionResult> getUserQuestionResultsToQuestion(Connection con,
+      String userId,
       ForeignPK questionPK)
       throws SQLException {
     SilverTrace.info(
@@ -143,7 +112,7 @@ public class QuestionResultDAO {
       prepStmt.setInt(1, new Integer(questionPK.getId()).intValue());
       prepStmt.setString(2, userId);
       rs = prepStmt.executeQuery();
-      ArrayList result = new ArrayList();
+      List<QuestionResult> result = new ArrayList<QuestionResult>();
       while (rs.next()) {
         questionResult = getQuestionResultFromResultSet(rs, questionPK);
         result.add(questionResult);
@@ -180,7 +149,7 @@ public class QuestionResultDAO {
     }
   }
 
-  public static Collection getUserQuestionResultsToQuestionByParticipation(
+  public static Collection<QuestionResult> getUserQuestionResultsToQuestionByParticipation(
       Connection con,
       String userId,
       ForeignPK questionPK,
@@ -213,7 +182,7 @@ public class QuestionResultDAO {
       prepStmt.setString(2, userId);
       prepStmt.setInt(3, participationId);
       rs = prepStmt.executeQuery();
-      ArrayList result = new ArrayList();
+      List<QuestionResult> result = new ArrayList<QuestionResult>();
       while (rs.next()) {
         questionResult = getQuestionResultFromResultSet(rs, questionPK);
         result.add(questionResult);
@@ -224,7 +193,8 @@ public class QuestionResultDAO {
     }
   }
 
-  public static Collection getQuestionResultToQuestion(Connection con, ForeignPK questionPK)
+  public static Collection<QuestionResult> getQuestionResultToQuestion(Connection con,
+      ForeignPK questionPK)
       throws SQLException {
     SilverTrace.info(
         "questionResult",
@@ -244,7 +214,7 @@ public class QuestionResultDAO {
       prepStmt = con.prepareStatement(selectStatement);
       prepStmt.setInt(1, new Integer(questionPK.getId()).intValue());
       rs = prepStmt.executeQuery();
-      ArrayList result = new ArrayList();
+      List<QuestionResult> result = new ArrayList<QuestionResult>();
       while (rs.next()) {
         questionResult = getQuestionResultFromResultSet(rs, questionPK);
         result.add(questionResult);
@@ -255,7 +225,7 @@ public class QuestionResultDAO {
     }
   }
 
-  public static Collection getQuestionResultToQuestionByParticipation(
+  public static Collection<QuestionResult> getQuestionResultToQuestionByParticipation(
       Connection con,
       ForeignPK questionPK,
       int participationId)
@@ -284,7 +254,7 @@ public class QuestionResultDAO {
       prepStmt.setInt(1, new Integer(questionPK.getId()).intValue());
       prepStmt.setInt(2, participationId);
       rs = prepStmt.executeQuery();
-      ArrayList result = new ArrayList();
+      List<QuestionResult> result = new ArrayList<QuestionResult>();
       while (rs.next()) {
         questionResult = getQuestionResultFromResultSet(rs, questionPK);
         result.add(questionResult);

@@ -76,53 +76,6 @@ import com.stratelia.webactiv.util.score.control.ScoreBmHome;
 import com.stratelia.webactiv.util.score.model.ScoreDetail;
 import com.stratelia.webactiv.util.score.model.ScorePK;
 
-/*
- * CVS Informations
- * 
- * $Id: QuestionContainerBmEJB.java,v 1.10 2006/11/15 14:09:19 sfariello Exp $
- * 
- * $Log: QuestionContainerBmEJB.java,v $
- * Revision 1.10  2006/11/15 14:09:19  sfariello
- * no message
- *
- * Revision 1.9  2006/08/16 11:56:39  neysseri
- * no message
- *
- * Revision 1.8  2004/11/05 14:42:14  neysseri
- * Nettoyage sources
- *
- * Revision 1.7  2004/06/22 15:42:07  neysseri
- * implements new SilverContentInterface + nettoyage eclipse
- *
- * Revision 1.6  2003/02/28 15:51:30  neysseri
- * no message
- *
- * Revision 1.5  2002/12/02 12:43:02  neysseri
- * Quizz In PDC merging
- *
- * Revision 1.4.2.1  2002/11/29 15:06:06  pbialevich
- * no message
- *
- * Revision 1.3  2002/11/27 12:57:24  neysseri
- * no message
- *
- * Revision 1.2  2002/11/18 11:19:37  neysseri
- * PdcVisibility branch merging
- *
- * Revision 1.1.1.1.16.2  2002/11/15 17:12:46  neysseri
- * no message
- *
- * Revision 1.1.1.1.16.1  2002/11/14 17:35:41  neysseri
- * Adding of survey as a new content
- *
- * Revision 1.1.1.1  2002/08/06 14:47:53  nchaix
- * no message
- *
- * Revision 1.33  2002/01/04 14:22:46  neysseri
- * no message
- *
- */
-
 /**
  * Class declaration
  * @author neysseri
@@ -135,16 +88,16 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
   private ScoreBm currentScoreBm = null;
 
   // if beginDate is null, it will be replace in database with it
-  private String nullBeginDate = new String("0000/00/00");
+  private String nullBeginDate = "0000/00/00";
   // if endDate is null, it will be replace in database with it
-  private String nullEndDate = new String("9999/99/99");
+  private String nullEndDate = "9999/99/99";
 
   private String dbName = JNDINames.QUESTIONCONTAINER_DATASOURCE;
 
   public QuestionContainerBmEJB() {
   }
 
-  public Collection getQuestionContainers(
+  public Collection<QuestionContainerHeader> getQuestionContainers(
       QuestionContainerPK questionContainerPK) throws RemoteException {
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getQuestionContainers()",
@@ -154,7 +107,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
 
     try {
       con = getConnection();
-      Collection questionContainerHeaders = QuestionContainerDAO
+      Collection<QuestionContainerHeader> questionContainerHeaders = QuestionContainerDAO
           .getQuestionContainers(con, questionContainerPK);
 
       return this.setNbMaxPoints(questionContainerHeaders);
@@ -168,7 +121,8 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
     }
   }
 
-  public Collection getQuestionContainerHeaders(ArrayList pks)
+  public Collection<QuestionContainerHeader> getQuestionContainerHeaders(
+      ArrayList<QuestionContainerPK> pks)
       throws RemoteException {
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getQuestionContainerHeaders()",
@@ -177,8 +131,8 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
 
     try {
       con = getConnection();
-      Collection questionContainerHeaders = QuestionContainerDAO
-          .getQuestionContainers(con, pks);
+      Collection<QuestionContainerHeader> questionContainerHeaders =
+          QuestionContainerDAO.getQuestionContainers(con, pks);
 
       return questionContainerHeaders;
     } catch (Exception e) {
@@ -191,27 +145,26 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
     }
   }
 
-  private Collection setNbMaxPoints(Collection questionContainerHeaders)
+  private Collection<QuestionContainerHeader> setNbMaxPoints(
+      Collection<QuestionContainerHeader> questionContainerHeaders)
       throws RemoteException {
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.setNbMaxPoints()", "root.MSG_GEN_ENTER_METHOD",
         "");
 
     QuestionBm questionBm = getQuestionBm();
-    Iterator it = questionContainerHeaders.iterator();
-    ArrayList result = new ArrayList();
+    Iterator<QuestionContainerHeader> it = questionContainerHeaders.iterator();
+    List<QuestionContainerHeader> result = new ArrayList<QuestionContainerHeader>();
 
     while (it.hasNext()) {
       int nbMaxPoints = 0;
-      Collection questions = null;
-      QuestionContainerHeader questionContainerHeader = (QuestionContainerHeader) it
-          .next();
-      QuestionPK questionPK = new QuestionPK(null, questionContainerHeader
-          .getPK());
+      Collection<Question> questions = null;
+      QuestionContainerHeader questionContainerHeader = it.next();
+      QuestionPK questionPK = new QuestionPK(null, questionContainerHeader.getPK());
 
       try {
-        questions = questionBm.getQuestionsByFatherPK(questionPK,
-            questionContainerHeader.getPK().getId());
+        questions =
+            questionBm.getQuestionsByFatherPK(questionPK, questionContainerHeader.getPK().getId());
       } catch (Exception e) {
         throw new QuestionContainerRuntimeException(
             "QuestionContainerBmEJB.setNbMaxPoints()",
@@ -219,10 +172,10 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
             "questionContainer.SETTING_NB_MAX_POINTS_TO_QUESTIONCONTAINER_FAILED",
             e);
       }
-      Iterator it2 = questions.iterator();
+      Iterator<Question> it2 = questions.iterator();
 
       while (it2.hasNext()) {
-        Question question = (Question) it2.next();
+        Question question = it2.next();
 
         nbMaxPoints += question.getNbPointsMax();
       }
@@ -240,7 +193,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
 
     int nbMaxPoints = 0;
     QuestionBm questionBm = getQuestionBm();
-    Collection questions = null;
+    Collection<Question> questions = null;
     QuestionPK questionPK = new QuestionPK(null, questionContainerHeader
         .getPK());
 
@@ -253,7 +206,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
           SilverpeasRuntimeException.ERROR,
           "questionContainer.GETTING_QUESTIONS_FAILED", e);
     }
-    Iterator it2 = questions.iterator();
+    Iterator<Question> it2 = questions.iterator();
 
     while (it2.hasNext()) {
       Question question = (Question) it2.next();
@@ -264,7 +217,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
     return questionContainerHeader;
   }
 
-  public Collection getNotClosedQuestionContainers(
+  public Collection<QuestionContainerHeader> getNotClosedQuestionContainers(
       QuestionContainerPK questionContainerPK) throws RemoteException {
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getNotClosedQuestionContainers()",
@@ -274,7 +227,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
 
     try {
       con = getConnection();
-      Collection questionContainerHeaders = QuestionContainerDAO
+      Collection<QuestionContainerHeader> questionContainerHeaders = QuestionContainerDAO
           .getNotClosedQuestionContainers(con, questionContainerPK);
 
       return this.setNbMaxPoints(questionContainerHeaders);
@@ -288,7 +241,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
     }
   }
 
-  public Collection getOpenedQuestionContainers(
+  public Collection<QuestionContainerHeader> getOpenedQuestionContainers(
       QuestionContainerPK questionContainerPK) throws RemoteException {
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getOpenedQuestionContainers()",
@@ -298,7 +251,8 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
 
     try {
       con = getConnection();
-      Collection result = QuestionContainerDAO.getOpenedQuestionContainers(con,
+      Collection<QuestionContainerHeader> result =
+          QuestionContainerDAO.getOpenedQuestionContainers(con,
           questionContainerPK);
 
       return this.setNbMaxPoints(result);
@@ -312,7 +266,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
     }
   }
 
-  public Collection getOpenedQuestionContainersAndUserScores(
+  public Collection<QuestionContainerHeader> getOpenedQuestionContainersAndUserScores(
       QuestionContainerPK questionContainerPK, String userId)
       throws RemoteException {
     SilverTrace.info("questionContainer",
@@ -323,10 +277,10 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
 
     try {
       con = getConnection();
-      Collection questionContainerHeaders = QuestionContainerDAO
+      Collection<QuestionContainerHeader> questionContainerHeaders = QuestionContainerDAO
           .getOpenedQuestionContainers(con, questionContainerPK);
-      Iterator it = questionContainerHeaders.iterator();
-      ArrayList result = new ArrayList();
+      Iterator<QuestionContainerHeader> it = questionContainerHeaders.iterator();
+      List<QuestionContainerHeader> result = new ArrayList<QuestionContainerHeader>();
 
       while (it.hasNext()) {
         QuestionContainerHeader questionContainerHeader = (QuestionContainerHeader) it
@@ -348,7 +302,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
     }
   }
 
-  public Collection getQuestionContainersWithScores(
+  public Collection<QuestionContainerHeader> getQuestionContainersWithScores(
       QuestionContainerPK questionContainerPK) throws RemoteException {
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getQuestionContainersWithScores()",
@@ -358,15 +312,15 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
 
     try {
       con = getConnection();
-      Collection questionContainerHeaders = QuestionContainerDAO
+      Collection<QuestionContainerHeader> questionContainerHeaders = QuestionContainerDAO
           .getQuestionContainers(con, questionContainerPK);
-      Iterator it = questionContainerHeaders.iterator();
-      ArrayList result = new ArrayList();
+      Iterator<QuestionContainerHeader> it = questionContainerHeaders.iterator();
+      List<QuestionContainerHeader> result = new ArrayList<QuestionContainerHeader>();
 
       while (it.hasNext()) {
         QuestionContainerHeader questionContainerHeader = (QuestionContainerHeader) it
             .next();
-        Collection scoreDetails = this
+        Collection<ScoreDetail> scoreDetails = this
             .getScoresByFatherId(questionContainerHeader.getPK());
 
         if (scoreDetails != null) {
@@ -385,7 +339,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
     }
   }
 
-  public Collection getQuestionContainersWithUserScores(
+  public Collection<QuestionContainerHeader> getQuestionContainersWithUserScores(
       QuestionContainerPK questionContainerPK, String userId)
       throws RemoteException {
     SilverTrace.info("questionContainer",
@@ -396,15 +350,14 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
 
     try {
       con = getConnection();
-      Collection questionContainerHeaders = QuestionContainerDAO
+      Collection<QuestionContainerHeader> questionContainerHeaders = QuestionContainerDAO
           .getQuestionContainers(con, questionContainerPK);
-      Iterator it = questionContainerHeaders.iterator();
-      ArrayList result = new ArrayList();
+      Iterator<QuestionContainerHeader> it = questionContainerHeaders.iterator();
+      List<QuestionContainerHeader> result = new ArrayList<QuestionContainerHeader>();
 
       while (it.hasNext()) {
-        QuestionContainerHeader questionContainerHeader = (QuestionContainerHeader) it
-            .next();
-        Collection scoreDetails = this.getUserScoresByFatherId(
+        QuestionContainerHeader questionContainerHeader = it.next();
+        Collection<ScoreDetail> scoreDetails = this.getUserScoresByFatherId(
             questionContainerHeader.getPK(), userId);
 
         if (scoreDetails != null) {
@@ -424,7 +377,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
     }
   }
 
-  public Collection getClosedQuestionContainers(
+  public Collection<QuestionContainerHeader> getClosedQuestionContainers(
       QuestionContainerPK questionContainerPK) throws RemoteException {
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getClosedQuestionContainers()",
@@ -434,7 +387,8 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
 
     try {
       con = getConnection();
-      Collection result = QuestionContainerDAO.getClosedQuestionContainers(con,
+      Collection<QuestionContainerHeader> result =
+          QuestionContainerDAO.getClosedQuestionContainers(con,
           questionContainerPK);
 
       return this.setNbMaxPoints(result);
@@ -448,7 +402,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
     }
   }
 
-  public Collection getInWaitQuestionContainers(
+  public Collection<QuestionContainerHeader> getInWaitQuestionContainers(
       QuestionContainerPK questionContainerPK) throws RemoteException {
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getInWaitQuestionContainers()",
@@ -458,7 +412,8 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
 
     try {
       con = getConnection();
-      Collection result = QuestionContainerDAO.getInWaitQuestionContainers(con,
+      Collection<QuestionContainerHeader> result =
+          QuestionContainerDAO.getInWaitQuestionContainers(con,
           questionContainerPK);
 
       return this.setNbMaxPoints(result);
@@ -472,14 +427,14 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
     }
   }
 
-  public Collection getUserScoresByFatherId(
+  public Collection<ScoreDetail> getUserScoresByFatherId(
       QuestionContainerPK questionContainerPK, String userId)
       throws RemoteException {
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getUserScoresByFatherId()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
         + questionContainerPK + ", userId = " + userId);
-    Collection scores = null;
+    Collection<ScoreDetail> scores = null;
     ScoreBm scoreBm = getScoreBm();
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
 
@@ -504,14 +459,14 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
     return scores;
   }
 
-  public Collection getBestScoresByFatherId(
+  public Collection<ScoreDetail> getBestScoresByFatherId(
       QuestionContainerPK questionContainerPK, int nbBestScores)
       throws RemoteException {
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getBestScoresByFatherId()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
         + questionContainerPK + ", nbBestScores = " + nbBestScores);
-    Collection scores = null;
+    Collection<ScoreDetail> scores = null;
     ScoreBm scoreBm = getScoreBm();
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
 
@@ -527,14 +482,14 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
     }
   }
 
-  public Collection getWorstScoresByFatherId(
+  public Collection<ScoreDetail> getWorstScoresByFatherId(
       QuestionContainerPK questionContainerPK, int nbScores)
       throws RemoteException {
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getWorstScoresByFatherId()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
         + questionContainerPK + ", nbScores = " + nbScores);
-    Collection scores = null;
+    Collection<ScoreDetail> scores = null;
     ScoreBm scoreBm = getScoreBm();
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
 
@@ -550,13 +505,13 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
     }
   }
 
-  public Collection getScoresByFatherId(QuestionContainerPK questionContainerPK)
+  public Collection<ScoreDetail> getScoresByFatherId(QuestionContainerPK questionContainerPK)
       throws RemoteException {
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getScoresByFatherId()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
         + questionContainerPK);
-    Collection scores = null;
+    Collection<ScoreDetail> scores = null;
     ScoreBm scoreBm = getScoreBm();
     ScorePK scorePK = new ScorePK(null, questionContainerPK);
 
@@ -611,10 +566,10 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
         + questionContainerPK + ", userId = " + userId);
     Connection con = null;
-    Collection questions = null;
-    Collection comments = null;
+    Collection<Question> questions = null;
+    Collection<Comment> comments = null;
     QuestionContainerHeader questionContainerHeader = null;
-    Collection userVotes = null;
+    Collection<QuestionResult> userVotes = null;
 
     questionContainerHeader = getQuestionContainerHeader(questionContainerPK);
 
@@ -625,10 +580,10 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
     try {
       questions = questionBm.getQuestionsByFatherPK(questionPK,
           questionContainerPK.getId());
-      Iterator it2 = questions.iterator();
+      Iterator<Question> it2 = questions.iterator();
 
       while (it2.hasNext()) {
-        Question question = (Question) it2.next();
+        Question question = it2.next();
 
         nbMaxPoints += question.getNbPointsMax();
       }
@@ -695,10 +650,10 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
         + questionContainerPK + ", userId = " + userId
         + ", participationId = " + participationId);
-    Collection questions = null;
-    Collection comments = null;
+    Collection<Question> questions = null;
+    Collection<Comment> comments = null;
     QuestionContainerHeader questionContainerHeader = null;
-    Collection userVotes = null;
+    Collection<QuestionResult> userVotes = null;
 
     questionContainerHeader = getQuestionContainerHeader(questionContainerPK);
 
@@ -710,10 +665,10 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
     try {
       questions = questionBm.getQuestionsByFatherPK(questionPK,
           questionContainerPK.getId());
-      Iterator it2 = questions.iterator();
+      Iterator<Question> it2 = questions.iterator();
 
       while (it2.hasNext()) {
-        Question question = (Question) it2.next();
+        Question question = it2.next();
 
         userVotes = questionResultBm
             .getUserQuestionResultsToQuestionByParticipation(userId,
@@ -1077,9 +1032,9 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
 
     QuestionBm questionBm = getQuestionBm();
     QuestionPK questionPK = new QuestionPK(null, questionContainerPK);
-    Collection questions = questionContainerDetail.getQuestions();
-    Iterator it = questions.iterator();
-    ArrayList q = new ArrayList();
+    Collection<Question> questions = questionContainerDetail.getQuestions();
+    Iterator<Question> it = questions.iterator();
+    List<Question> q = new ArrayList<Question>();
 
     while (it.hasNext()) {
       Question question = (Question) it.next();
@@ -1130,15 +1085,15 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
   }
 
   public void updateQuestions(QuestionContainerPK questionContainerPK,
-      Collection questions) throws RemoteException {
+      Collection<Question> questions) throws RemoteException {
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.updateQuestions()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
         + questionContainerPK);
     QuestionBm questionBm = getQuestionBm();
     QuestionPK questionPK = new QuestionPK(null, questionContainerPK);
-    Iterator it = questions.iterator();
-    ArrayList q = new ArrayList();
+    Iterator<Question> it = questions.iterator();
+    List<Question> q = new ArrayList<Question>();
 
     while (it.hasNext()) {
       Question question = (Question) it.next();
@@ -1271,7 +1226,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
     }
   }
 
-  private Collection getComments(QuestionContainerPK questionContainerPK)
+  private Collection<Comment> getComments(QuestionContainerPK questionContainerPK)
       throws RemoteException {
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getComments()", "root.MSG_GEN_ENTER_METHOD",
@@ -1280,7 +1235,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
 
     try {
       con = getConnection();
-      Collection comments = QuestionContainerDAO.getComments(con,
+      Collection<Comment> comments = QuestionContainerDAO.getComments(con,
           questionContainerPK);
 
       return comments;
@@ -1294,12 +1249,12 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
     }
   }
 
-  public Collection getSuggestions(QuestionContainerPK questionContainerPK)
+  public Collection<QuestionResult> getSuggestions(QuestionContainerPK questionContainerPK)
       throws RemoteException {
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getSuggestions()", "root.MSG_GEN_ENTER_METHOD",
         "questionContainerPK = " + questionContainerPK);
-    Collection suggestions = null;
+    Collection<QuestionResult> suggestions = null;
     QuestionPK questionPK = new QuestionPK(questionContainerPK.getId(),
         questionContainerPK.getSpace(), questionContainerPK.getComponentName());
     QuestionResultBm questionResultBm = getQuestionResultBm();
@@ -1316,17 +1271,17 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
     return suggestions;
   }
 
-  private Collection getUserVotesToQuestionContainer(String userId,
+  private Collection<QuestionResult> getUserVotesToQuestionContainer(String userId,
       QuestionContainerPK questionContainerPK) throws RemoteException {
     SilverTrace.info("questionContainer",
         "QuestionContainerBmEJB.getUserVotesToQuestionContainer()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
         + questionContainerPK + ", userId = " + userId);
-    Collection votes = null;
+    Collection<QuestionResult> votes = null;
     QuestionPK questionPK = new QuestionPK("unknown", questionContainerPK
         .getSpace(), questionContainerPK.getComponentName());
     QuestionBm questionBm = getQuestionBm();
-    Collection questions = null;
+    Collection<Question> questions = null;
 
     try {
       questions = questionBm.getQuestionsByFatherPK(questionPK,
@@ -1339,10 +1294,10 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
           e);
     }
 
-    Iterator it = questions.iterator();
+    Iterator<Question> it = questions.iterator();
 
     while (it.hasNext()) {
-      Question question = (Question) it.next();
+      Question question = it.next();
       QuestionResultBm questionResultBm = getQuestionResultBm();
 
       try {

@@ -28,25 +28,26 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import com.stratelia.webactiv.util.question.model.Question;
+import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
 
 public class QuestionContainerDetail implements java.io.Serializable {
 
   private QuestionContainerHeader header = null;
-  private Collection questions = null;
-  private Collection comments = null; // Comments Collection
-  private Collection votes = null; // QuestionResult Collection of Current user
+  private Collection<Question> questions = null;
+  private Collection<Comment> comments = null; // Comments Collection
+  private Collection<QuestionResult> votes = null; // QuestionResult Collection of Current user
 
   public QuestionContainerDetail() {
     init(null, null, null, null);
   }
 
   public QuestionContainerDetail(QuestionContainerHeader header,
-      Collection questions, Collection comments, Collection votes) {
+      Collection<Question> questions, Collection<Comment> comments, Collection<QuestionResult> votes) {
     init(header, questions, comments, votes);
   }
 
-  private void init(QuestionContainerHeader header, Collection questions,
-      Collection comments, Collection votes) {
+  private void init(QuestionContainerHeader header, Collection<Question> questions,
+      Collection<Comment> comments, Collection<QuestionResult> votes) {
     setHeader(header);
     setQuestions(questions);
     setComments(comments);
@@ -57,15 +58,15 @@ public class QuestionContainerDetail implements java.io.Serializable {
     this.header = header;
   }
 
-  public void setQuestions(Collection questions) {
+  public void setQuestions(Collection<Question> questions) {
     this.questions = questions;
   }
 
-  public void setComments(Collection comments) {
+  public void setComments(Collection<Comment> comments) {
     this.comments = comments;
   }
 
-  public void setCurrentUserVotes(Collection votes) {
+  public void setCurrentUserVotes(Collection<QuestionResult> votes) {
     this.votes = votes;
   }
 
@@ -73,25 +74,25 @@ public class QuestionContainerDetail implements java.io.Serializable {
     return this.header;
   }
 
-  public Collection getQuestions() {
+  public Collection<Question> getQuestions() {
     return this.questions;
   }
 
   public Question getFirstQuestion() {
     Question question = null;
-    Collection questions = getQuestions();
-    Iterator it = questions.iterator();
+    Collection<Question> questions = getQuestions();
+    Iterator<Question> it = questions.iterator();
     if (it.hasNext()) {
-      question = (Question) it.next();
+      question = it.next();
     }
     return question;
   }
 
-  public Collection getComments() {
+  public Collection<Comment> getComments() {
     return this.comments;
   }
 
-  public Collection getCurrentUserVotes() {
+  public Collection<QuestionResult> getCurrentUserVotes() {
     return this.votes;
   }
 

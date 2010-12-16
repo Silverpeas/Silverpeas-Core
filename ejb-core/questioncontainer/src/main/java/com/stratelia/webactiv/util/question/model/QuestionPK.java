@@ -22,11 +22,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//Source file: d:\\webactiv\\util\\com\\stratelia\\webactiv\\util\\question\\model\\QuestionPK.java
 package com.stratelia.webactiv.util.question.model;
 
-import com.stratelia.webactiv.util.*;
 import java.io.Serializable;
+
+import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
  * It's the Publication PrimaryKey object It identify a Publication

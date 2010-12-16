@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.webactiv.util.question.control;
 
 import java.rmi.RemoteException;
@@ -34,24 +31,6 @@ import com.stratelia.webactiv.util.answer.model.Answer;
 import com.stratelia.webactiv.util.answer.model.AnswerPK;
 import com.stratelia.webactiv.util.question.model.Question;
 import com.stratelia.webactiv.util.question.model.QuestionPK;
-
-/*
- * CVS Informations
- * 
- * $Id: QuestionBmBusinessSkeleton.java,v 1.2 2006/08/16 11:56:33 neysseri Exp $
- * 
- * $Log: QuestionBmBusinessSkeleton.java,v $
- * Revision 1.2  2006/08/16 11:56:33  neysseri
- * no message
- *
- * Revision 1.1.1.1  2002/08/06 14:47:53  nchaix
- * no message
- *
- * Revision 1.7  2001/12/20 15:46:04  neysseri
- * Stabilisation Lot 2 :
- * Silvertrace et exceptions + javadoc
- *
- */
 
 /**
  * A question is composed by its self attributes (see Question.java) and some possibles answers
@@ -78,7 +57,7 @@ public interface QuestionBmBusinessSkeleton {
    * @throws RemoteException
    * @see
    */
-  public Collection getQuestionsByFatherPK(QuestionPK questionPK,
+  public Collection<Question> getQuestionsByFatherPK(QuestionPK questionPK,
       String fatherId) throws RemoteException;
 
   /**
@@ -97,7 +76,7 @@ public interface QuestionBmBusinessSkeleton {
    * @throws RemoteException
    * @see
    */
-  public void createQuestions(Collection questions, String fatherId)
+  public void createQuestions(Collection<Question> questions, String fatherId)
       throws RemoteException;
 
   /**

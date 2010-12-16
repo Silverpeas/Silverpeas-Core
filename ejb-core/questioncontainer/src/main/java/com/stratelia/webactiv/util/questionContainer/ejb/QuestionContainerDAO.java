@@ -22,57 +22,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// TODO : reporter dans CVS (done)
-
 package com.stratelia.webactiv.util.questionContainer.ejb;
 
-import java.sql.*;
-import java.util.*;
-import com.stratelia.webactiv.util.*;
-import com.stratelia.webactiv.util.questionContainer.model.*;
-import com.stratelia.webactiv.util.exception.*;
-import com.stratelia.silverpeas.silvertrace.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
-/*
- * CVS Informations
- *
- * $Id: QuestionContainerDAO.java,v 1.6 2006/11/15 14:09:19 sfariello Exp $
- *
- * $Log: QuestionContainerDAO.java,v $
- * Revision 1.6.4.3  2009/07/10 13:08:48  sfariello
- * Modification de la mise à jour des question pour la modification à tout moment des enquêtes
- *
- * Revision 1.6.4.2  2009/06/26 09:32:19  sfariello
- * no message
- *
- * Revision 1.6.4.1  2009/06/22 08:08:15  sfariello
- * Ajout modification de l'enquête à tout moment
- *
- * Revision 1.6  2006/11/15 14:09:19  sfariello
- * no message
- *
- * Revision 1.5  2004/06/22 15:42:07  neysseri
- * implements new SilverContentInterface + nettoyage eclipse
- *
- * Revision 1.4  2003/11/25 08:31:25  cbonin
- * no message
- *
- * Revision 1.3  2003/11/24 10:50:17  cbonin
- * no message
- *
- * Revision 1.2  2002/11/18 11:19:37  neysseri
- * PdcVisibility branch merging
- *
- * Revision 1.1.1.1.16.1  2002/11/14 17:35:41  neysseri
- * Adding of survey as a new content
- *
- * Revision 1.1.1.1  2002/08/06 14:47:53  nchaix
- * no message
- *
- * Revision 1.13  2002/01/04 14:22:51  neysseri
- * no message
- *
- */
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.questionContainer.model.Comment;
+import com.stratelia.webactiv.util.questionContainer.model.CommentPK;
+import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader;
+import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerPK;
+import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerRuntimeException;
 
 /**
  * This class is made to access database only (table SB_QuestionContainer_QC et
@@ -154,7 +123,7 @@ public class QuestionContainerDAO {
    * @throws SQLException
    * @see
    */
-  public static Collection getQuestionContainers(Connection con,
+  public static Collection<QuestionContainerHeader> getQuestionContainers(Connection con,
       QuestionContainerPK questionContainerPK) throws SQLException {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.getQuestionContainers()",
@@ -174,7 +143,7 @@ public class QuestionContainerDAO {
     try {
       stmt = con.createStatement();
       rs = stmt.executeQuery(selectStatement);
-      ArrayList list = new ArrayList();
+      List<QuestionContainerHeader> list = new ArrayList<QuestionContainerHeader>();
       while (rs.next()) {
         questionContainerHeader = getQuestionContainerHeaderFromResultSet(rs,
             questionContainerPK);
@@ -186,7 +155,8 @@ public class QuestionContainerDAO {
     }
   }
 
-  public static Collection getQuestionContainers(Connection con, ArrayList pks)
+  public static Collection<QuestionContainerHeader> getQuestionContainers(Connection con,
+      ArrayList<QuestionContainerPK> pks)
       throws SQLException {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.getQuestionContainers()",
@@ -195,16 +165,16 @@ public class QuestionContainerDAO {
     ResultSet rs = null;
     QuestionContainerHeader questionContainerHeader = null;
     QuestionContainerPK questionContainerPK = new QuestionContainerPK("unknown");
-    ArrayList list = new ArrayList();
+    List<QuestionContainerHeader> list = new ArrayList<QuestionContainerHeader>();
     StringBuffer whereClause = new StringBuffer();
 
     if (pks != null && pks.size() > 0) {
-      Iterator it = pks.iterator();
+      Iterator<QuestionContainerPK> it = pks.iterator();
       QuestionContainerPK pk = null;
 
       whereClause.append("(");
       while (it.hasNext()) {
-        pk = (QuestionContainerPK) it.next();
+        pk = it.next();
         whereClause.append(" qcId = ").append(pk.getId());
         if (it.hasNext()) {
           whereClause.append(" or ");
@@ -243,7 +213,7 @@ public class QuestionContainerDAO {
    * @throws SQLException
    * @see
    */
-  public static Collection getOpenedQuestionContainers(Connection con,
+  public static Collection<QuestionContainerHeader> getOpenedQuestionContainers(Connection con,
       QuestionContainerPK questionContainerPK) throws SQLException {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.getOpenedQuestionContainers()",
@@ -266,7 +236,7 @@ public class QuestionContainerDAO {
       prepStmt.setString(1, formatter.format(new java.util.Date()));
       prepStmt.setString(2, questionContainerPK.getComponentName());
       rs = prepStmt.executeQuery();
-      ArrayList list = new ArrayList();
+      List<QuestionContainerHeader> list = new ArrayList<QuestionContainerHeader>();
       while (rs.next()) {
         questionContainerHeader = getQuestionContainerHeaderFromResultSet(rs,
             questionContainerPK);
@@ -286,7 +256,7 @@ public class QuestionContainerDAO {
    * @throws SQLException
    * @see
    */
-  public static Collection getNotClosedQuestionContainers(Connection con,
+  public static Collection<QuestionContainerHeader> getNotClosedQuestionContainers(Connection con,
       QuestionContainerPK questionContainerPK) throws SQLException {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.getNotClosedQuestionContainers()",
@@ -307,7 +277,7 @@ public class QuestionContainerDAO {
     try {
       stmt = con.createStatement();
       rs = stmt.executeQuery(selectStatement);
-      ArrayList list = new ArrayList();
+      List<QuestionContainerHeader> list = new ArrayList<QuestionContainerHeader>();
       while (rs.next()) {
         questionContainerHeader = getQuestionContainerHeaderFromResultSet(rs,
             questionContainerPK);
@@ -327,7 +297,7 @@ public class QuestionContainerDAO {
    * @throws SQLException
    * @see
    */
-  public static Collection getClosedQuestionContainers(Connection con,
+  public static Collection<QuestionContainerHeader> getClosedQuestionContainers(Connection con,
       QuestionContainerPK questionContainerPK) throws SQLException {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.getClosedQuestionContainers()",
@@ -349,7 +319,7 @@ public class QuestionContainerDAO {
       prepStmt.setString(1, formatter.format(new java.util.Date()));
       prepStmt.setString(2, questionContainerPK.getComponentName());
       rs = prepStmt.executeQuery();
-      ArrayList list = new ArrayList();
+      List<QuestionContainerHeader> list = new ArrayList<QuestionContainerHeader>();
       while (rs.next()) {
         questionContainerHeader = getQuestionContainerHeaderFromResultSet(rs,
             questionContainerPK);
@@ -369,7 +339,7 @@ public class QuestionContainerDAO {
    * @throws SQLException
    * @see
    */
-  public static Collection getInWaitQuestionContainers(Connection con,
+  public static Collection<QuestionContainerHeader> getInWaitQuestionContainers(Connection con,
       QuestionContainerPK qcPK) throws SQLException {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.getInWaitQuestionContainers()",
@@ -389,7 +359,7 @@ public class QuestionContainerDAO {
       prepStmt.setString(1, formatter.format(new java.util.Date()));
       prepStmt.setString(2, qcPK.getComponentName());
       rs = prepStmt.executeQuery();
-      ArrayList list = new ArrayList();
+      List<QuestionContainerHeader> list = new ArrayList<QuestionContainerHeader>();
       while (rs.next()) {
         header = getQuestionContainerHeaderFromResultSet(rs, qcPK);
         list.add(header);
@@ -768,7 +738,7 @@ public class QuestionContainerDAO {
    * @throws SQLException
    * @see
    */
-  public static Collection getComments(Connection con, QuestionContainerPK qcPK)
+  public static Collection<Comment> getComments(Connection con, QuestionContainerPK qcPK)
       throws SQLException {
     SilverTrace.info("questionContainer", "QuestionContainerDAO.getComments()",
         "root.MSG_GEN_ENTER_METHOD", "qcPK = " + qcPK);
@@ -787,7 +757,7 @@ public class QuestionContainerDAO {
       prepStmt = con.prepareStatement(selectStatement);
       prepStmt.setInt(1, new Integer(qcPK.getId()).intValue());
       rs = prepStmt.executeQuery();
-      ArrayList list = new ArrayList();
+      List<Comment> list = new ArrayList<Comment>();
       while (rs.next()) {
         comment = getCommentFromResultSet(rs, qcPK);
         list.add(comment);

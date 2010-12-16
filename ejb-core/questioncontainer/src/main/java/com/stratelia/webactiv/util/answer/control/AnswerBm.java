@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.util.answer.control;
 
-import javax.ejb.*;
+import javax.ejb.EJBObject;
 
 /**
  * Interface declaration

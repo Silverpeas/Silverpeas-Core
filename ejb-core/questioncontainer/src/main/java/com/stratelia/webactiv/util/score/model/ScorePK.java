@@ -21,29 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
-// Source file: d:\\webactiv\\util\\com\\stratelia\\webactiv\\util\\score\\model\\ScorePK.java
 package com.stratelia.webactiv.util.score.model;
 
-import com.stratelia.webactiv.util.*;
 import java.io.Serializable;
 
-/*
- * CVS Informations
- * 
- * $Id: ScorePK.java,v 1.1.1.1 2002/08/06 14:47:53 nchaix Exp $
- * 
- * $Log: ScorePK.java,v $
- * Revision 1.1.1.1  2002/08/06 14:47:53  nchaix
- * no message
- *
- * Revision 1.4  2001/12/21 13:51:47  scotte
- * no message
- *
- */
+import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
  * Class declaration

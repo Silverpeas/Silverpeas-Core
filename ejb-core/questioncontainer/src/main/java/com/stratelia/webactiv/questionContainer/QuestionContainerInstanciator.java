@@ -22,12 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * NewsInstanciator.java
- *
- * Created on 13 juillet 2000, 09:54
- */
-
 package com.stratelia.webactiv.questionContainer;
 
 import java.sql.Connection;

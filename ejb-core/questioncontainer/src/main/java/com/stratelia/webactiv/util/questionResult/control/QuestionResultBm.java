@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.util.questionResult.control;
 
-import javax.ejb.*;
+import javax.ejb.EJBObject;
 
 public interface QuestionResultBm extends EJBObject, QuestionResultBmBusinessSkeleton {
 

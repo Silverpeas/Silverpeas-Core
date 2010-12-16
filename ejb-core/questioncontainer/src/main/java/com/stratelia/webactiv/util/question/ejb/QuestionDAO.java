@@ -22,45 +22,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// TODO : reporter dans CVS (done)
 package com.stratelia.webactiv.util.question.ejb;
 
 import java.sql.*;
 import java.util.*;
+
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.*;
 import com.stratelia.webactiv.util.question.model.*;
 import com.stratelia.silverpeas.silvertrace.*;
-
-/*
- * CVS Informations
- *
- * $Id: QuestionDAO.java,v 1.4 2008/06/26 05:08:34 neysseri Exp $
- *
- * $Log: QuestionDAO.java,v $
- * Revision 1.4  2008/06/26 05:08:34  neysseri
- * no message
- *
- * Revision 1.3.6.1  2008/06/06 13:05:07  sfariello
- * Ajout zone "style" pour le type de réponse
- *
- * Revision 1.3  2003/11/24 10:38:09  cbonin
- * no message
- *
- * Revision 1.2  2002/12/17 10:34:00  scotte
- * Correction erreur : Les questions sont TJS dans le désordre
- *
- * Revision 1.1.1.1  2002/08/06 14:47:53  nchaix
- * no message
- *
- * Revision 1.14  2002/01/04 13:53:47  neysseri
- * no message
- *
- * Revision 1.13  2001/12/20 15:46:04  neysseri
- * Stabilisation Lot 2 :
- * Silvertrace et exceptions + javadoc
- *
- */
 
 /**
  * This class is made to access database only (table SB_Question_Question)
@@ -154,13 +124,13 @@ public class QuestionDAO {
    * @return a Collection of Question
    * @throws SQLException
    */
-  public static Collection getQuestionsByFatherPK(Connection con,
+  public static Collection<Question> getQuestionsByFatherPK(Connection con,
       QuestionPK questionPK, String fatherId) throws SQLException {
     SilverTrace.info("question", "QuestionDAO.getQuestionsByFatherPK()",
         "root.MSG_GEN_ENTER_METHOD", "questionPK = " + questionPK
         + ", fatherId = " + fatherId);
 
-    ArrayList result = new ArrayList();
+    List<Question> result = new ArrayList<Question>();
     ResultSet rs = null;
     Question question = null;
 

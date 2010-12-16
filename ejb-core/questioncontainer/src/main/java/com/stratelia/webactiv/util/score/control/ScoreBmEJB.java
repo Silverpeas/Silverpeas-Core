@@ -22,12 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
-//
-// -- Java Code Generation Process -
-
 package com.stratelia.webactiv.util.score.control;
 
 // Import Statements
@@ -45,23 +39,6 @@ import com.stratelia.webactiv.util.score.ejb.ScoreDAO;
 import com.stratelia.webactiv.util.score.model.ScoreDetail;
 import com.stratelia.webactiv.util.score.model.ScorePK;
 import com.stratelia.webactiv.util.score.model.ScoreRuntimeException;
-
-/*
- * CVS Informations
- *
- * $Id: ScoreBmEJB.java,v 1.2 2008/05/28 08:35:59 ehugonnet Exp $
- *
- * $Log: ScoreBmEJB.java,v $
- * Revision 1.2  2008/05/28 08:35:59  ehugonnet
- * Import inutile
- *
- * Revision 1.1.1.1  2002/08/06 14:47:53  nchaix
- * no message
- *
- * Revision 1.13  2001/12/21 13:51:04  scotte
- * no message
- *
- */
 
 /**
  * Class declaration
@@ -234,11 +211,11 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
    * @param scoreDetails
    * @see
    */
-  private void setPositions(Collection scoreDetails) {
-    Iterator it = scoreDetails.iterator();
+  private void setPositions(Collection<ScoreDetail> scoreDetails) {
+    Iterator<ScoreDetail> it = scoreDetails.iterator();
 
     while (it.hasNext()) {
-      ScoreDetail scoreDetail = (ScoreDetail) it.next();
+      ScoreDetail scoreDetail = it.next();
 
       scoreDetail.setPosition(getUserPositionByFatherIdAndParticipationId(
           scoreDetail.getScorePK(), scoreDetail.getFatherId(), scoreDetail
@@ -251,11 +228,11 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
    * @param scoreDetails
    * @see
    */
-  private void setParticipations(Collection scoreDetails) {
-    Iterator it = scoreDetails.iterator();
+  private void setParticipations(Collection<ScoreDetail> scoreDetails) {
+    Iterator<ScoreDetail> it = scoreDetails.iterator();
 
     while (it.hasNext()) {
-      ScoreDetail scoreDetail = (ScoreDetail) it.next();
+      ScoreDetail scoreDetail = it.next();
 
       scoreDetail.setNbParticipations(getUserNbParticipationsByFatherId(
           scoreDetail.getScorePK(), scoreDetail.getFatherId(), scoreDetail
@@ -372,9 +349,9 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
    * @return
    * @see
    */
-  public Collection getAllScores(ScorePK scorePK) {
+  public Collection<ScoreDetail> getAllScores(ScorePK scorePK) {
     Connection con = null;
-    Collection allScores = null;
+    Collection<ScoreDetail> allScores = null;
 
     try {
       con = getConnection();
@@ -397,9 +374,9 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
    * @return
    * @see
    */
-  public Collection getUserScores(ScorePK scorePK, String userId) {
+  public Collection<ScoreDetail> getUserScores(ScorePK scorePK, String userId) {
     Connection con = null;
-    Collection userScores = null;
+    Collection<ScoreDetail> userScores = null;
 
     try {
       con = getConnection();
@@ -424,10 +401,10 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
    * @return
    * @see
    */
-  public Collection getUserScoresByFatherId(ScorePK scorePK, String fatherId,
+  public Collection<ScoreDetail> getUserScoresByFatherId(ScorePK scorePK, String fatherId,
       String userId) {
     Connection con = null;
-    Collection userScores = null;
+    Collection<ScoreDetail> userScores = null;
 
     try {
       con = getConnection();
@@ -453,10 +430,10 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
    * @return
    * @see
    */
-  public Collection getBestScoresByFatherId(ScorePK scorePK, int nbBestScores,
+  public Collection<ScoreDetail> getBestScoresByFatherId(ScorePK scorePK, int nbBestScores,
       String fatherId) {
     Connection con = null;
-    Collection bestScores = null;
+    Collection<ScoreDetail> bestScores = null;
 
     try {
       con = getConnection();
@@ -482,10 +459,10 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
    * @return
    * @see
    */
-  public Collection getWorstScoresByFatherId(ScorePK scorePK,
+  public Collection<ScoreDetail> getWorstScoresByFatherId(ScorePK scorePK,
       int nbWorstScores, String fatherId) {
     Connection con = null;
-    Collection worstScores = null;
+    Collection<ScoreDetail> worstScores = null;
 
     try {
       con = getConnection();
@@ -587,9 +564,9 @@ public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
    * @return
    * @see
    */
-  public Collection getScoresByFatherId(ScorePK scorePK, String fatherId) {
+  public Collection<ScoreDetail> getScoresByFatherId(ScorePK scorePK, String fatherId) {
     Connection con = null;
-    Collection scores = null;
+    Collection<ScoreDetail> scores = null;
 
     try {
       con = getConnection();

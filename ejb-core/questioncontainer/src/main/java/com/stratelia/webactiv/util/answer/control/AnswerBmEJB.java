@@ -50,7 +50,7 @@ public class AnswerBmEJB implements javax.ejb.SessionBean, AnswerBmBusinessSkele
   public AnswerBmEJB() {
   }
 
-  public Collection getAnswersByQuestionPK(ForeignPK questionPK)
+  public Collection<Answer> getAnswersByQuestionPK(ForeignPK questionPK)
       throws RemoteException {
     SilverTrace.info("answer", "AnswerBmEJB.getAnswersByQuestionPK()",
         "root.MSG_GEN_ENTER_METHOD", "questionPK =" + questionPK);
@@ -58,7 +58,7 @@ public class AnswerBmEJB implements javax.ejb.SessionBean, AnswerBmBusinessSkele
 
     try {
       con = getConnection();
-      Collection answers = AnswerDAO.getAnswersByQuestionPK(con, questionPK);
+      Collection<Answer> answers = AnswerDAO.getAnswersByQuestionPK(con, questionPK);
 
       return answers;
     } catch (Exception e) {
@@ -89,7 +89,7 @@ public class AnswerBmEJB implements javax.ejb.SessionBean, AnswerBmBusinessSkele
     }
   }
 
-  public void addAnswersToAQuestion(Collection answers, ForeignPK questionPK)
+  public void addAnswersToAQuestion(Collection<Answer> answers, ForeignPK questionPK)
       throws RemoteException {
     SilverTrace.info("answer", "AnswerBmEJB.addAnswersToAQuestion()",
         "root.MSG_GEN_ENTER_METHOD", "questionPK=" + questionPK);

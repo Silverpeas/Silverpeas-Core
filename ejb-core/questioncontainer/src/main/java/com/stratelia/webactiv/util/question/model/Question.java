@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import com.stratelia.webactiv.util.answer.model.Answer;
+import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
 
 public class Question implements Serializable {
   private boolean qcm = false;
@@ -45,8 +46,8 @@ public class Question implements Serializable {
   private String description = null;
   private String clue = null;
   private String image = null;
-  private Collection answers = null;
-  private Collection questionResults = null;
+  private Collection<Answer> answers = null;
+  private Collection<QuestionResult> questionResults = null;
   private String style = null;
 
   public Question(QuestionPK pk, String fatherId, String label,
@@ -161,21 +162,24 @@ public class Question implements Serializable {
     this.image = image;
   }
 
-  public void setAnswers(Collection answers) {
+  public void setAnswers(Collection<Answer> answers) {
     int nbMaxPoints = 0;
     int nbMinPoints = 0;
-    Iterator it2 = answers.iterator();
+    Iterator<Answer> it2 = answers.iterator();
     while (it2.hasNext()) {
-      Answer answer = (Answer) it2.next();
-      if (answer.isSolution())
+      Answer answer = it2.next();
+      if (answer.isSolution()) {
         nbMaxPoints += answer.getNbPoints();
-      else
+      } else {
         nbMinPoints += answer.getNbPoints();
+      }
     }
-    if (getNbPointsMin() > nbMinPoints)
+    if (getNbPointsMin() > nbMinPoints) {
       nbMinPoints = getNbPointsMin();
-    if (getNbPointsMax() < nbMaxPoints)
+    }
+    if (getNbPointsMax() < nbMaxPoints) {
       nbMaxPoints = getNbPointsMax();
+    }
     this.setNbPointsMax(nbMaxPoints);
     this.setNbPointsMin(nbMinPoints);
     this.answers = answers;
@@ -213,7 +217,7 @@ public class Question implements Serializable {
     this.nbPointsMax = nbPointsMax;
   }
 
-  public void setQuestionResults(Collection results) {
+  public void setQuestionResults(Collection<QuestionResult> results) {
     this.questionResults = results;
   }
 
@@ -245,18 +249,19 @@ public class Question implements Serializable {
     return this.image;
   }
 
-  public Collection getAnswers() {
+  public Collection<Answer> getAnswers() {
     return this.answers;
   }
 
   public Answer getAnswer(String answerId) {
-    Collection answers = getAnswers();
-    Iterator it = answers.iterator();
+    Collection<Answer> answers = getAnswers();
+    Iterator<Answer> it = answers.iterator();
     Answer answer = null;
     while (it.hasNext()) {
-      answer = (Answer) it.next();
-      if (answer.getPK().getId().equals(answerId))
+      answer = it.next();
+      if (answer.getPK().getId().equals(answerId)) {
         return answer;
+      }
     }
     return answer;
   }
@@ -287,9 +292,9 @@ public class Question implements Serializable {
 
   public float getAverageScore() {
     float averageScore = 0;
-    Iterator iterator = answers.iterator();
+    Iterator<Answer> iterator = answers.iterator();
     while (iterator.hasNext()) {
-      Answer answerDetail = (Answer) iterator.next();
+      Answer answerDetail = iterator.next();
       averageScore += answerDetail.getNbVoters() * answerDetail.getNbPoints();
     }
     return averageScore;
@@ -307,7 +312,7 @@ public class Question implements Serializable {
     return this.isOpen;
   }
 
-  public Collection getQuestionResults() {
+  public Collection<QuestionResult> getQuestionResults() {
     return this.questionResults;
   }
 

@@ -22,45 +22,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.webactiv.util.questionResult.control;
 
-import javax.ejb.*;
-import java.util.*;
-import java.sql.*;
 import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
 
 import com.silverpeas.util.ForeignPK;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.questionResult.model.*;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.questionResult.ejb.QuestionResultDAO;
-import com.stratelia.webactiv.util.exception.*;
-
-import com.stratelia.silverpeas.silvertrace.*;
-
-/*
- * CVS Informations
- * 
- * $Id: QuestionResultBmEJB.java,v 1.2 2006/08/16 11:56:47 neysseri Exp $
- * 
- * $Log: QuestionResultBmEJB.java,v $
- * Revision 1.2.4.1  2009/08/21 13:26:34  sfariello
- * Gestion non anonyme des enquetes
- *
- * Revision 1.2  2006/08/16 11:56:47  neysseri
- * no message
- *
- * Revision 1.1.1.1  2002/08/06 14:47:53  nchaix
- * no message
- *
- * Revision 1.9  2001/12/19 16:36:11  neysseri
- * Stabilisation Lot 2 :
- * Mise en place Exceptions et SilverTrace + javadoc
- *
- */
+import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
+import com.stratelia.webactiv.util.questionResult.model.QuestionResultRuntimeException;
 
 /**
  * QuestionResult Business Manager See QuestionResultBmBusinessSkeleton for methods documentation
@@ -89,14 +68,16 @@ public class QuestionResultBmEJB implements SessionBean, QuestionResultBmBusines
     }
   }
 
-  public Collection getQuestionResultToQuestion(ForeignPK questionPK) throws RemoteException {
+  public Collection<QuestionResult> getQuestionResultToQuestion(ForeignPK questionPK)
+      throws RemoteException {
     SilverTrace.info("questionResult", "QuestionResultBmEJB.getQuestionResultToQuestion()",
         "root.MSG_GEN_ENTER_METHOD", "questionPK =" + questionPK);
     Connection con = null;
 
     try {
       con = getConnection();
-      Collection result = QuestionResultDAO.getQuestionResultToQuestion(con, questionPK);
+      Collection<QuestionResult> result =
+          QuestionResultDAO.getQuestionResultToQuestion(con, questionPK);
 
       return result;
     } catch (Exception e) {
@@ -108,7 +89,8 @@ public class QuestionResultBmEJB implements SessionBean, QuestionResultBmBusines
     }
   }
 
-  public Collection getUserQuestionResultsToQuestion(String userId, ForeignPK questionPK)
+  public Collection<QuestionResult> getUserQuestionResultsToQuestion(String userId,
+      ForeignPK questionPK)
       throws RemoteException {
     SilverTrace.info("questionResult", "QuestionResultBmEJB.getUserQuestionResultsToQuestion()",
         "root.MSG_GEN_ENTER_METHOD", "userId = " + userId + ", questionPK =" + questionPK);
@@ -116,7 +98,7 @@ public class QuestionResultBmEJB implements SessionBean, QuestionResultBmBusines
 
     try {
       con = getConnection();
-      Collection result =
+      Collection<QuestionResult> result =
           QuestionResultDAO.getUserQuestionResultsToQuestion(con, userId, questionPK);
 
       return result;
@@ -162,7 +144,8 @@ public class QuestionResultBmEJB implements SessionBean, QuestionResultBmBusines
     }
   }
 
-  public Collection getQuestionResultToQuestionByParticipation(ForeignPK questionPK,
+  public Collection<QuestionResult> getQuestionResultToQuestionByParticipation(
+      ForeignPK questionPK,
       int participationId) throws RemoteException {
     SilverTrace.info("questionResult",
         "QuestionResultBmEJB.getQuestionResultToQuestionByParticipation()",
@@ -184,7 +167,7 @@ public class QuestionResultBmEJB implements SessionBean, QuestionResultBmBusines
     }
   }
 
-  public Collection getUserQuestionResultsToQuestionByParticipation(String userId,
+  public Collection<QuestionResult> getUserQuestionResultsToQuestionByParticipation(String userId,
       ForeignPK questionPK, int participationId) throws RemoteException {
     SilverTrace.info("questionResult",
         "QuestionResultBmEJB.getUserQuestionResultsToQuestionByParticipation()",
@@ -206,14 +189,14 @@ public class QuestionResultBmEJB implements SessionBean, QuestionResultBmBusines
     }
   }
 
-  public void setQuestionResultsToUser(Collection results) throws RemoteException {
+  public void setQuestionResultsToUser(Collection<QuestionResult> results) throws RemoteException {
     SilverTrace.info("questionResult", "QuestionResultBmEJB.setQuestionResultsToUser()",
         "root.MSG_GEN_ENTER_METHOD", "");
     if (results != null) {
-      Iterator iterator = results.iterator();
+      Iterator<QuestionResult> iterator = results.iterator();
 
       while (iterator.hasNext()) {
-        QuestionResult questionResult = (QuestionResult) iterator.next();
+        QuestionResult questionResult = iterator.next();
         setQuestionResultToUser(questionResult);
       }
     }

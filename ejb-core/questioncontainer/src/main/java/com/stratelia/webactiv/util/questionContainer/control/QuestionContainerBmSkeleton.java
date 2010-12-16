@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.webactiv.util.questionContainer.control;
 
 import java.rmi.RemoteException;
@@ -32,48 +29,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 
+import com.stratelia.webactiv.util.question.model.Question;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerPK;
+import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
 import com.stratelia.webactiv.util.score.model.ScoreDetail;
-
-/*
- * CVS Informations
- * 
- * $Id: QuestionContainerBmSkeleton.java,v 1.8 2006/11/15 14:09:19 sfariello Exp $
- * 
- * $Log: QuestionContainerBmSkeleton.java,v $
- * Revision 1.8  2006/11/15 14:09:19  sfariello
- * no message
- *
- * Revision 1.7  2004/06/22 15:42:07  neysseri
- * implements new SilverContentInterface + nettoyage eclipse
- *
- * Revision 1.6  2003/02/28 15:51:31  neysseri
- * no message
- *
- * Revision 1.5  2002/12/02 12:43:02  neysseri
- * Quizz In PDC merging
- *
- * Revision 1.4.2.1  2002/11/29 15:06:06  pbialevich
- * no message
- *
- * Revision 1.3  2002/11/27 12:57:24  neysseri
- * no message
- *
- * Revision 1.2  2002/11/18 11:19:37  neysseri
- * PdcVisibility branch merging
- *
- * Revision 1.1.1.1.16.1  2002/11/14 17:35:41  neysseri
- * Adding of survey as a new content
- *
- * Revision 1.1.1.1  2002/08/06 14:47:53  nchaix
- * no message
- *
- * Revision 1.18  2002/01/04 14:22:46  neysseri
- * no message
- *
- */
 
 /**
  * Interface declaration
@@ -114,7 +75,7 @@ public interface QuestionContainerBmSkeleton {
    * @throws RemoteException
    * @see
    */
-  public Collection getSuggestions(QuestionContainerPK questionContainerPK)
+  public Collection<QuestionResult> getSuggestions(QuestionContainerPK questionContainerPK)
       throws RemoteException;
 
   /**
@@ -124,7 +85,7 @@ public interface QuestionContainerBmSkeleton {
    * @throws RemoteException
    * @see
    */
-  public Collection getQuestionContainers(
+  public Collection<QuestionContainerHeader> getQuestionContainers(
       QuestionContainerPK questionContainerPK) throws RemoteException;
 
   /**
@@ -134,7 +95,8 @@ public interface QuestionContainerBmSkeleton {
    * @throws RemoteException
    * @see
    */
-  public Collection getQuestionContainerHeaders(ArrayList pks)
+  public Collection<QuestionContainerHeader> getQuestionContainerHeaders(
+      ArrayList<QuestionContainerPK> pks)
       throws RemoteException;
 
   /**
@@ -169,7 +131,7 @@ public interface QuestionContainerBmSkeleton {
    * @throws RemoteException
    * @see
    */
-  public Collection getNotClosedQuestionContainers(
+  public Collection<QuestionContainerHeader> getNotClosedQuestionContainers(
       QuestionContainerPK questionContainerPK) throws RemoteException;
 
   /**
@@ -179,7 +141,7 @@ public interface QuestionContainerBmSkeleton {
    * @throws RemoteException
    * @see
    */
-  public Collection getOpenedQuestionContainers(
+  public Collection<QuestionContainerHeader> getOpenedQuestionContainers(
       QuestionContainerPK questionContainerPK) throws RemoteException;
 
   /**
@@ -189,7 +151,7 @@ public interface QuestionContainerBmSkeleton {
    * @throws RemoteException
    * @see
    */
-  public Collection getClosedQuestionContainers(
+  public Collection<QuestionContainerHeader> getClosedQuestionContainers(
       QuestionContainerPK questionContainerPK) throws RemoteException;
 
   /**
@@ -199,7 +161,7 @@ public interface QuestionContainerBmSkeleton {
    * @throws RemoteException
    * @see
    */
-  public Collection getInWaitQuestionContainers(
+  public Collection<QuestionContainerHeader> getInWaitQuestionContainers(
       QuestionContainerPK questionContainerPK) throws RemoteException;
 
   /**
@@ -273,7 +235,7 @@ public interface QuestionContainerBmSkeleton {
    * @see
    */
   public void updateQuestions(QuestionContainerPK questionContainerPK,
-      Collection questions) throws RemoteException;
+      Collection<Question> questions) throws RemoteException;
 
   /**
    * Method declaration
@@ -293,7 +255,7 @@ public interface QuestionContainerBmSkeleton {
    * @throws RemoteException
    * @see
    */
-  public Collection getOpenedQuestionContainersAndUserScores(
+  public Collection<QuestionContainerHeader> getOpenedQuestionContainersAndUserScores(
       QuestionContainerPK questionContainerPK, String userId)
       throws RemoteException;
 
@@ -304,7 +266,7 @@ public interface QuestionContainerBmSkeleton {
    * @throws RemoteException
    * @see
    */
-  public Collection getQuestionContainersWithScores(
+  public Collection<QuestionContainerHeader> getQuestionContainersWithScores(
       QuestionContainerPK questionContainerPK) throws RemoteException;
 
   /**
@@ -315,7 +277,7 @@ public interface QuestionContainerBmSkeleton {
    * @throws RemoteException
    * @see
    */
-  public Collection getQuestionContainersWithUserScores(
+  public Collection<QuestionContainerHeader> getQuestionContainersWithUserScores(
       QuestionContainerPK questionContainerPK, String userId)
       throws RemoteException;
 
@@ -327,7 +289,7 @@ public interface QuestionContainerBmSkeleton {
    * @throws RemoteException
    * @see
    */
-  public Collection getUserScoresByFatherId(
+  public Collection<ScoreDetail> getUserScoresByFatherId(
       QuestionContainerPK questionContainerPK, String userId)
       throws RemoteException;
 
@@ -339,7 +301,7 @@ public interface QuestionContainerBmSkeleton {
    * @throws RemoteException
    * @see
    */
-  public Collection getBestScoresByFatherId(
+  public Collection<ScoreDetail> getBestScoresByFatherId(
       QuestionContainerPK questionContainerPK, int nbBestScores)
       throws RemoteException;
 
@@ -360,7 +322,7 @@ public interface QuestionContainerBmSkeleton {
    * @throws RemoteException
    * @see
    */
-  public Collection getScoresByFatherId(QuestionContainerPK questionContainerPK)
+  public Collection<ScoreDetail> getScoresByFatherId(QuestionContainerPK questionContainerPK)
       throws RemoteException;
 
   /**

@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.webactiv.util.answer.control;
 
 import java.util.Collection;
@@ -45,7 +42,7 @@ public interface AnswerBmBusinessSkeleton {
    * @param questionPK the QuestionPK (question id)
    * @return a Collection of Answer
    */
-  public Collection getAnswersByQuestionPK(ForeignPK questionPK)
+  public Collection<Answer> getAnswersByQuestionPK(ForeignPK questionPK)
       throws RemoteException;
 
   /**
@@ -63,7 +60,7 @@ public interface AnswerBmBusinessSkeleton {
    * @param answers a Collection of Answer
    * @param questionPK the QuestionPK (question id)
    */
-  public void addAnswersToAQuestion(Collection answers, ForeignPK questionPK)
+  public void addAnswersToAQuestion(Collection<Answer> answers, ForeignPK questionPK)
       throws RemoteException;
 
   /**
