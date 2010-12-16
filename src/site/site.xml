@@ -69,6 +69,7 @@ pageTracker._trackPageview();
       <item name="Release Notes" href="releasenotes.html"/>
       <item name="Installation" href="installation.html"/>
       <item name="Migration" href="migration.html"/>
+      <item name="Source Code" href="source-repository.html" />
     </menu>
     <menu name="CAS" collapse="true" inherit="none">
       <item name="Introduction" href="cas/SSO-CAS.html" collapse="false"/>

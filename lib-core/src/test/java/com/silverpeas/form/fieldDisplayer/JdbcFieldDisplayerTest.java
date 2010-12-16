@@ -4,7 +4,6 @@
  */
 package com.silverpeas.form.fieldDisplayer;
 
-import com.google.common.collect.Lists;
 import com.google.common.base.Charsets;
 import com.silverpeas.form.fieldType.JdbcField;
 import com.silverpeas.form.Field;
@@ -16,10 +15,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -106,7 +101,6 @@ public class JdbcFieldDisplayerTest {
     }
     when(field.selectSql(null, null, "0")).thenReturn(resList);
     JdbcFieldDisplayer instance = new JdbcFieldDisplayer();
-    long start = System.currentTimeMillis();
     instance.display(printer, field, template, pagesContext);
     String display = new String(out.toByteArray(), Charsets.UTF_8).trim();
     assertNotNull(display);
