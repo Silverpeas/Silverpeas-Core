@@ -27,7 +27,6 @@ package com.silverpeas.thesaurus.control;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import com.silverpeas.thesaurus.ThesaurusException;
@@ -60,10 +59,10 @@ public class ThesaurusManager {
    * @throws ThesaurusException
    * @see getJargon, getSynonymsTerm, getSynonyms, isExist
    */
-  public Collection getSynonyms(String mot, String idUser)
+  public Collection<String> getSynonyms(String mot, String idUser)
       throws ThesaurusException {
 
-    Collection finalList = new ArrayList();
+    Collection<String> finalList = new ArrayList<String>();
     try {
       // recupere le jargon de l'utilisateur
       Jargon jargon = getJargon(idUser);
@@ -72,22 +71,16 @@ public class ThesaurusManager {
         long idVoca = jargon.getIdVoca();
 
         // recupere la liste des mots synonymes du mot si c'est un terme
-        Collection synonyms = getSynonymsTerm(idVoca, mot);
-        ArrayList interList = new ArrayList(synonyms);
+        Collection<String> synonyms = getSynonymsTerm(idVoca, mot);
+        List<String> interList = new ArrayList<String>(synonyms);
 
         // recupere la liste des mots synonymes du mot si c'est un synonyme
-        Collection otherSynonyms = getSynonyms(idVoca, mot);
+        Collection<String> otherSynonyms = getSynonyms(idVoca, mot);
 
-        Iterator i = otherSynonyms.iterator();
-        while (i.hasNext()) {
-          String synonyme = (String) i.next();
-          interList.add(synonyme);
-        }
+        interList.addAll(otherSynonyms);
 
         // parsing de la liste pour enlever les doublons
-        i = interList.iterator();
-        while (i.hasNext()) {
-          String synonyme = (String) i.next();
+        for (String synonyme : interList) {
           if ((!isExist(synonyme, finalList))
               && (!mot.toLowerCase().equals(synonyme.toLowerCase()))) {
             finalList.add(synonyme);
@@ -114,27 +107,23 @@ public class ThesaurusManager {
    * @see com.stratelia.silverpeas.pdc.control.PdcBm.getValues,
    * com.silverpeas.thesaurus.control.ThesaurusBm.getSynonyms
    */
-  private Collection getSynonymsTerm(long idVoca, String term)
+  private Collection<String> getSynonymsTerm(long idVoca, String term)
       throws ThesaurusException {
 
-    Collection theList = new ArrayList();
+    Collection<String> theList = new ArrayList<String>();
     try {
       // recupere les termes correspondant à un nom de terme
       PdcBm pdc = new PdcBmImpl();
-      List valueList = pdc.getAxisValuesByName(term);
+      List<Value> valueList = pdc.getAxisValuesByName(term);
 
-      Iterator i = valueList.iterator();
-      while (i.hasNext()) {
-        Value value = (Value) i.next();
-        long idTree = new Long(value.getTreeId()).longValue();
-        long idTerm = new Long(value.getPK().getId()).longValue();
+      for (Value value : valueList) {
+        long idTree = Long.parseLong(value.getTreeId());
+        long idTerm = Long.parseLong(value.getPK().getId());
 
         // recupere la liste des mots synonymes du terme
-        Collection synonymes = thesaurus.getSynonyms(idVoca, idTree, idTerm);
+        Collection<Synonym> synonymes = thesaurus.getSynonyms(idVoca, idTree, idTerm);
 
-        Iterator j = synonymes.iterator();
-        while (j.hasNext()) {
-          Synonym synonyme = (Synonym) j.next();
+        for (Synonym synonyme : synonymes) {
           String nom = synonyme.getName();
           theList.add(nom);
         }
@@ -163,33 +152,28 @@ public class ThesaurusManager {
    * @see com.silverpeas.thesaurus.control.ThesaurusBm.getSynonyms,
    * com.stratelia.silverpeas.pdc.control.PdcBm.getValue
    */
-  private Collection getSynonyms(long idVoca, String synonym)
+  private Collection<String> getSynonyms(long idVoca, String synonym)
       throws ThesaurusException {
 
-    Collection theList = new ArrayList();
+    Collection<String> theList = new ArrayList<String>();
     try {
       // recupere les autres synonymes du synonyme dans le vocabulaire
-      Collection synonymsList = thesaurus.getSynonyms(idVoca, synonym);
+      Collection<Synonym> synonymsList = thesaurus.getSynonyms(idVoca, synonym);
 
-      Iterator i = synonymsList.iterator();
-      while (i.hasNext()) {
-        Synonym aSynonym = (Synonym) i.next();
+      for (Synonym aSynonym : synonymsList) {
         long idTree = aSynonym.getIdTree();
         long idTerm = aSynonym.getIdTerm();
 
         // recupere la liste des synonymes du terme dans le vocabulaire
-        Collection synonyms = thesaurus.getSynonyms(idVoca, idTree, idTerm);
+        Collection<Synonym> synonyms = thesaurus.getSynonyms(idVoca, idTree, idTerm);
 
-        Iterator j = synonyms.iterator();
-        while (j.hasNext()) {
-          Synonym synonymTerm = (Synonym) j.next();
+        for (Synonym synonymTerm : synonyms) {
           String name = synonymTerm.getName();
           theList.add(name);
 
           // recupere le nom du terme correspondant
           PdcBm pdc = new PdcBmImpl();
-          Value value = pdc.getAxisValue(new Long(idTerm).toString(), new Long(
-              idTree).toString());
+          Value value = pdc.getAxisValue(Long.toString(idTerm), Long.toString(idTree));
           String nameTerm = value.getName();
           theList.add(nameTerm);
         }
@@ -219,12 +203,11 @@ public class ThesaurusManager {
    * @throws
    * @see
    */
-  private boolean isExist(String nom, Collection tab) {
-    Iterator i = tab.iterator();
-    while (i.hasNext()) {
-      String mot = (String) i.next();
-      if (nom.toLowerCase().equals(mot.toLowerCase()))
+  private boolean isExist(String nom, Collection<String> tab) {
+    for (String mot : tab) {
+      if (nom.toLowerCase().equals(mot.toLowerCase())) {
         return true;
+      }
     }
     return false;
   }
@@ -239,10 +222,10 @@ public class ThesaurusManager {
    * @throws ThesaurusException
    * @see getJargon, com.silverpeas.thesaurus.control.ThesaurusBm.getSynonyms
    */
-  public Collection getSynonyms(long idTree, long idTerm, String idUser)
+  public Collection<String> getSynonyms(long idTree, long idTerm, String idUser)
       throws ThesaurusException {
 
-    Collection theList = new ArrayList();
+    Collection<String> theList = new ArrayList<String>();
     try {
       // recupere le jargon de l'utilisateur
       Jargon jargon = getJargon(idUser);
@@ -259,24 +242,21 @@ public class ThesaurusManager {
     return theList;
   }
 
-  public Collection getSynonyms(long idTree, long idTerm, long idVoca)
+  public Collection<String> getSynonyms(long idTree, long idTerm, long idVoca)
       throws ThesaurusException {
 
-    List theList = new ArrayList();
+    List<String> theList = new ArrayList<String>();
 
     // recupere la liste des synonymes du terme dans le vocabulaire
-    Collection synonyms = thesaurus.getSynonyms(idVoca, idTree, idTerm);
+    Collection<Synonym> synonyms = thesaurus.getSynonyms(idVoca, idTree, idTerm);
 
-    Iterator i = synonyms.iterator();
-    while (i.hasNext()) {
-      Synonym synonym = (Synonym) i.next();
-      String name = synonym.getName();
-      theList.add(name);
+    for (Synonym synonym : synonyms) {
+      theList.add(synonym.getName());
     }
     return theList;
   }
 
-  public Collection getSynonymsByTree(long idTree, long idVoca)
+  public Collection<Synonym> getSynonymsByTree(long idTree, long idVoca)
       throws ThesaurusException {
     return thesaurus.getSynonymsByTree(idVoca, idTree);
   }
@@ -291,10 +271,10 @@ public class ThesaurusManager {
    * @see getJargon, com.stratelia.silverpeas.pdc.control.PdcBm.getRoot,
    * com.silverpeas.thesaurus.control.ThesaurusBm.getSynonyms
    */
-  public Collection getSynonymsAxis(String axisId, String idUser)
+  public Collection<String> getSynonymsAxis(String axisId, String idUser)
       throws ThesaurusException {
 
-    Collection theList = new ArrayList();
+    Collection<String> theList = new ArrayList<String>();
     try {
       // recupere le jargon de l'utilisateur
       Jargon jargon = getJargon(idUser);
@@ -305,18 +285,14 @@ public class ThesaurusManager {
         PdcBm pdc = new PdcBmImpl();
         Value value = pdc.getRoot(axisId);
 
-        long idTree = new Long(value.getTreeId()).longValue();
-        long idTerm = new Long(value.getPK().getId()).longValue();
+        long idTree = Long.parseLong(value.getTreeId());
+        long idTerm = Long.parseLong(value.getPK().getId());
 
         // recupere la liste des synonymes du terme dans le vocabulaire
-        Collection synonyms = thesaurus.getSynonyms(idVoca, idTree, idTerm);
+        Collection<Synonym> synonyms = thesaurus.getSynonyms(idVoca, idTree, idTerm);
 
-        Iterator i = synonyms.iterator();
-        while (i.hasNext()) {
-          Synonym synonym = (Synonym) i.next();
-          String name = synonym.getName();
-          theList.add(name);
-
+        for (Synonym synonym : synonyms) {
+          theList.add(synonym.getName());
         }
       }
 
@@ -380,7 +356,7 @@ public class ThesaurusManager {
    * @throws ThesaurusException
    * @see com.silverpeas.thesaurus.control.ThesaurusBm.deleteSynonymsTerms
    */
-  public void deleteSynonymsTerms(Connection con, long idTree, List idTerms)
+  public void deleteSynonymsTerms(Connection con, long idTree, List<String> idTerms)
       throws ThesaurusException {
 
     try {

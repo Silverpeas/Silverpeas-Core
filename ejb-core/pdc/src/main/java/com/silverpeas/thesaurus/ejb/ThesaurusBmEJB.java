@@ -32,10 +32,12 @@ import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
 import com.silverpeas.thesaurus.control.ThesaurusManager;
+import com.silverpeas.thesaurus.model.Synonym;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class ThesaurusBmEJB implements SessionBean {
 
+  private static final long serialVersionUID = 1L;
   private ThesaurusManager thesaurus = null;
 
   public ThesaurusManager getThesaurus() {
@@ -47,29 +49,25 @@ public class ThesaurusBmEJB implements SessionBean {
   public ThesaurusBmEJB() {
   }
 
-  public List getSynonyms(long idTree, long idTerm, long idVoca) {
-    List synonyms = null;
+  public List<String> getSynonyms(long idTree, long idTerm, long idVoca) {
     try {
-      synonyms = (List) getThesaurus().getSynonyms(idTree, idTerm, idVoca);
+      return (List<String>) getThesaurus().getSynonyms(idTree, idTerm, idVoca);
     } catch (Exception e) {
       throw new ThesaurusBmRuntimeException("ThesaurusBmEJB.getSynonyms",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
           "idTree = " + idTree + ", idTerm = " + idTerm + ", idVoca = "
           + idVoca, e);
     }
-    return synonyms;
   }
 
-  public List getSynonymsByTree(long idTree, long idVoca) {
-    List synonyms = null;
+  public List<Synonym> getSynonymsByTree(long idTree, long idVoca) {
     try {
-      synonyms = (List) getThesaurus().getSynonymsByTree(idTree, idVoca);
+      return (List<Synonym>) getThesaurus().getSynonymsByTree(idTree, idVoca);
     } catch (Exception e) {
       throw new ThesaurusBmRuntimeException("ThesaurusBmEJB.getSynonymsByTree",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT",
           "idTree = " + idTree + ", idVoca = " + idVoca, e);
     }
-    return synonyms;
   }
 
   public void setSessionContext(SessionContext arg0) throws EJBException,

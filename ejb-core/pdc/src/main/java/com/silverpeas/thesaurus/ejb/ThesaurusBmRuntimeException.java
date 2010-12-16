@@ -28,6 +28,8 @@ import com.stratelia.webactiv.util.exception.*;
 
 public class ThesaurusBmRuntimeException extends SilverpeasRuntimeException {
 
+  private static final long serialVersionUID = 1L;
+
   public ThesaurusBmRuntimeException(String callingClass, int errorLevel,
       String message) {
     super(callingClass, errorLevel, message);

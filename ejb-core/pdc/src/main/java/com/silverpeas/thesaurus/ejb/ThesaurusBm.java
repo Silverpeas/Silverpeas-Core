@@ -29,6 +29,8 @@ import java.util.List;
 
 import javax.ejb.EJBObject;
 
+import com.silverpeas.thesaurus.model.Synonym;
+
 public interface ThesaurusBm extends EJBObject {
 
   /**
@@ -39,7 +41,7 @@ public interface ThesaurusBm extends EJBObject {
    * @return une liste de String
    * @throws RemoteException
    */
-  public List getSynonyms(long idTree, long idTerm, long idVoca)
+  public List<String> getSynonyms(long idTree, long idTerm, long idVoca)
       throws RemoteException;
 
   /**
@@ -50,7 +52,7 @@ public interface ThesaurusBm extends EJBObject {
    * @return une liste de Synonym
    * @throws RemoteException
    */
-  public List getSynonymsByTree(long idTree, long idVoca)
+  public List<Synonym> getSynonymsByTree(long idTree, long idVoca)
       throws RemoteException;
 
 }

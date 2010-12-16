@@ -28,7 +28,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class ThesaurusException extends SilverpeasException {
 
-  // constructors
+  private static final long serialVersionUID = 1L;
+
   /**
    * Constructor which calls the super constructor
    * @param callingClass (String) the name of the module which catchs the Exception

@@ -92,11 +92,12 @@ public class ThesaurusBm {
    * @throws ThesaurusException
    * @see
    */
-  public Collection getListVocabulary() throws ThesaurusException {
-    Collection vocabs = new ArrayList();
+  @SuppressWarnings("unchecked")
+  public Collection<Vocabulary> getListVocabulary() throws ThesaurusException {
+    Collection<Vocabulary> vocabs = new ArrayList<Vocabulary>();
     try {
       IdPK pk = new IdPK();
-      vocabs = getVocabularyDao().findByWhereClause(pk, null);
+      vocabs = (Collection<Vocabulary>) getVocabularyDao().findByWhereClause(pk, null);
     } catch (PersistenceException e) {
       throw new ThesaurusException("ThesaurusBm.getListVocabulary",
           SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_LIST_VOCABULARIES",
@@ -152,10 +153,11 @@ public class ThesaurusBm {
    * @throws ThesaurusException
    * @see
    */
+  @SuppressWarnings("unchecked")
   public boolean existVocabulary(String name) throws ThesaurusException {
     try {
       IdPK pk = new IdPK();
-      Collection vocabs =  getVocabularyDao().findByWhereClause(pk, " name= '" + encode(name) + "'");
+      Collection<Vocabulary> vocabs =  getVocabularyDao().findByWhereClause(pk, " name= '" + encode(name) + "'");
       return !vocabs.isEmpty();
     } catch (PersistenceException e) {
       throw new ThesaurusException("ThesaurusBm.existVocabulary",
@@ -297,14 +299,11 @@ public class ThesaurusBm {
    * @throws ThesaurusException
    * @see deleteJargon
    */
-  public void deleteJargons(Collection jargons) throws ThesaurusException {
+  public void deleteJargons(Collection<Jargon> jargons) throws ThesaurusException {
     try {
-      Iterator i = jargons.iterator();
-      while (i.hasNext()) {
-        Jargon jargon = (Jargon) i.next();
-        String idJargon = jargon.getPK().getId();
+      for (Jargon jargon : jargons) {
         // supprime jargon
-        deleteJargon(idJargon);
+        deleteJargon(jargon.getPK().getId());
       }
     } catch (ThesaurusException e) {
       throw new ThesaurusException("ThesaurusBm.deleteJargons",
@@ -339,12 +338,10 @@ public class ThesaurusBm {
    * @throws ThesaurusException
    * @see createSynonym
    */
-  private void createSynonyms(Connection con, Collection synonyms)
+  private void createSynonyms(Connection con, Collection<Synonym> synonyms)
       throws ThesaurusException {
     try {
-      Iterator i = synonyms.iterator();
-      while (i.hasNext()) {
-        Synonym synonyme = (Synonym) i.next();
+      for (Synonym synonyme : synonyms) {
         createSynonym(con, synonyme);
       }
     } catch (ThesaurusException e) {
@@ -364,8 +361,7 @@ public class ThesaurusBm {
   private void createSynonym(Connection con, Synonym synonym)
       throws ThesaurusException {
     try {
-      SilverpeasBeanDAO daoS = getSynonymDao();
-      daoS.add(con, synonym);
+      getSynonymDao().add(con, synonym);
     } catch (PersistenceException e) {
       throw new ThesaurusException("ThesaurusBm.createSynonym",
           SilverpeasException.ERROR, "Thesaurus.EX_CREATE_SYNONYMS_FAILED", "",
@@ -382,9 +378,10 @@ public class ThesaurusBm {
    * @throws ThesaurusException
    * @see
    */
-  public Collection getSynonyms(long idVoca, long idTree, long idTerm)
+  @SuppressWarnings("unchecked")
+  public Collection<Synonym> getSynonyms(long idVoca, long idTree, long idTerm)
       throws ThesaurusException {
-    Collection synonyms = new ArrayList();
+    Collection<Synonym> synonyms = new ArrayList<Synonym>();
     try {
       SilverpeasBeanDAO daoS = getSynonymDao();
       IdPK pk = new IdPK();
@@ -405,17 +402,17 @@ public class ThesaurusBm {
    * @throws ThesaurusException
    * @see deleteSynonyms, createSynonyms
    */
-  public void updateSynonyms(Collection synonyms) throws ThesaurusException {
+  public void updateSynonyms(Collection<Synonym> synonyms) throws ThesaurusException {
     Connection con = null;
 
     try {
       con = DBUtil.makeConnection(JNDINames.THESAURUS_DATASOURCE);
       con.setAutoCommit(false);
 
-      Iterator i = synonyms.iterator();
+      Iterator<Synonym> i = synonyms.iterator();
       // premier élément de la liste
       if (i.hasNext()) {
-        Synonym synonyme = (Synonym) i.next();
+        Synonym synonyme = i.next();
         long idVoca = synonyme.getIdVoca();
         long idTree = synonyme.getIdTree();
         long idTerm = synonyme.getIdTerm();
@@ -507,12 +504,9 @@ public class ThesaurusBm {
    * @throws ThesaurusException
    * @see deleteSynonym
    */
-  public void deleteSynonyms(Collection idSynonyms) throws ThesaurusException {
+  public void deleteSynonyms(Collection<Long> idSynonyms) throws ThesaurusException {
     try {
-      Iterator i = idSynonyms.iterator();
-      while (i.hasNext()) {
-        Long idSynonym = (Long) i.next();
-
+      for (Long idSynonym : idSynonyms) {
         // supprime le synonyme
         deleteSynonym(idSynonym.longValue());
       }
@@ -572,12 +566,11 @@ public class ThesaurusBm {
    * @throws ThesaurusException
    * @see deleteSynonymsTerm
    */
-  public void deleteSynonymsTerms(Connection con, long idTree, List idTerms)
+  public void deleteSynonymsTerms(Connection con, long idTree, List<String> idTerms)
       throws ThesaurusException {
     try {
-      Iterator i = idTerms.iterator();
-      while (i.hasNext()) {
-        long idTerm = new Long(((String) i.next())).longValue();
+      for (String id : idTerms) {
+        long idTerm = Long.parseLong(id);
         deleteSynonymsTerm(con, idTree, idTerm);
       }
     } catch (ThesaurusException e) {
@@ -616,12 +609,12 @@ public class ThesaurusBm {
    * @throws ThesaurusException
    * @see
    */
-  public Collection getJargons(long idVoca) throws ThesaurusException {
-    Collection jargons = new ArrayList();
+  @SuppressWarnings("unchecked")
+  public Collection<Jargon> getJargons(long idVoca) throws ThesaurusException {
+    Collection<Jargon> jargons = new ArrayList<Jargon>();
     try {
-      SilverpeasBeanDAO daoJ = getJargonDao();
       IdPK pk = new IdPK();
-      jargons = daoJ.findByWhereClause(pk, " idVoca=" + idVoca);
+      jargons = getJargonDao().findByWhereClause(pk, " idVoca=" + idVoca);
     } catch (PersistenceException e) {
       throw new ThesaurusException("ThesaurusBm.getJargons",
           SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_JARGONS", "", e);
@@ -638,21 +631,18 @@ public class ThesaurusBm {
    * @throws ThesaurusException
    * @see
    */
-  public Collection getJargons(Collection idUsers, int type)
+  @SuppressWarnings("unchecked")
+  public Collection<Jargon> getJargons(Collection<String> idUsers, int type)
       throws ThesaurusException {
-    Collection jargons = new ArrayList();
+    Collection<Jargon> jargons = new ArrayList<Jargon>();
     try {
       SilverpeasBeanDAO daoJ = getJargonDao();
       IdPK pk = new IdPK();
 
-      Iterator i = idUsers.iterator();
-      while (i.hasNext()) {
-        String idUser = (String) i.next();
-        Collection theJargons = daoJ.findByWhereClause(pk, " idUser='" + idUser
+      for (String idUser : idUsers) {
+        Collection<Jargon> theJargons = daoJ.findByWhereClause(pk, " idUser='" + idUser
             + "'" + " AND type=" + type);
-        Iterator j = theJargons.iterator();
-        while (j.hasNext()) {
-          Jargon jargon = (Jargon) j.next();
+        for (Jargon jargon : theJargons) {
           jargons.add(jargon);
         }
       }
@@ -673,21 +663,18 @@ public class ThesaurusBm {
    * @throws ThesaurusException
    * @see
    */
-  public Collection getJargons(Connection con, Collection idUsers, int type)
+  @SuppressWarnings("unchecked")
+  public Collection<Jargon> getJargons(Connection con, Collection<String> idUsers, int type)
       throws ThesaurusException {
-    Collection jargons = new ArrayList();
+    Collection<Jargon> jargons = new ArrayList<Jargon>();
     try {
       SilverpeasBeanDAO daoJ = getJargonDao();
       IdPK pk = new IdPK();
 
-      Iterator i = idUsers.iterator();
-      while (i.hasNext()) {
-        String idUser = (String) i.next();
-        Collection theJargons = daoJ.findByWhereClause(con, pk, " idUser='"
+      for (String idUser : idUsers) {
+        Collection<Jargon> theJargons = daoJ.findByWhereClause(con, pk, " idUser='"
             + idUser + "'" + " AND type=" + type);
-        Iterator j = theJargons.iterator();
-        while (j.hasNext()) {
-          Jargon jargon = (Jargon) j.next();
+        for (Jargon jargon : theJargons) {
           jargons.add(jargon);
         }
       }
@@ -706,22 +693,20 @@ public class ThesaurusBm {
    * @throws ThesaurusException
    * @see getJargons, createJargon, updateJargon
    */
-  public void createJargons(Collection jargons) throws ThesaurusException {
+  public void createJargons(Collection<Jargon> jargons) throws ThesaurusException {
     try {
-      Iterator i = jargons.iterator();
-      while (i.hasNext()) {
-        Jargon jargon = (Jargon) i.next();
+      for (Jargon jargon : jargons) {
         long idVoca = jargon.getIdVoca();
         String idUser = jargon.getIdUser();
         int type = jargon.getType();
 
         // recupere le jargon actuel utilisé par l'utilisateur
-        ArrayList user = new ArrayList();
+        List<String> user = new ArrayList<String>();
         user.add(idUser);
-        ArrayList actualJargon = new ArrayList(getJargons(user, type));
+        List<Jargon> actualJargon = new ArrayList<Jargon>(getJargons(user, type));
 
         if (actualJargon.size() > 0) {// l'utilisateur avait deja un jargon
-          Jargon theActualJargon = (Jargon) actualJargon.get(0);
+          Jargon theActualJargon = actualJargon.get(0);
           if (theActualJargon.getIdVoca() != idVoca) {// update de l'idVoca
             IdPK pk = new IdPK();
             pk.setIdAsLong(((IdPK) theActualJargon.getPK()).getIdAsLong());
@@ -729,7 +714,6 @@ public class ThesaurusBm {
             updateJargon(jargon);
           }
         }
-
         else {// l'utilisateur n'avait pas de jargon
           createJargon(jargon);
         }
@@ -748,23 +732,21 @@ public class ThesaurusBm {
    * @throws ThesaurusException
    * @see getJargons, createJargon, updateJargon
    */
-  public void createJargons(Connection con, Collection jargons)
+  public void createJargons(Connection con, Collection<Jargon> jargons)
       throws ThesaurusException {
     try {
-      Iterator i = jargons.iterator();
-      while (i.hasNext()) {
-        Jargon jargon = (Jargon) i.next();
+      for (Jargon jargon : jargons) {
         long idVoca = jargon.getIdVoca();
         String idUser = jargon.getIdUser();
         int type = jargon.getType();
 
         // recupere le jargon actuel utilisé par l'utilisateur
-        ArrayList user = new ArrayList();
+        List<String> user = new ArrayList<String>();
         user.add(idUser);
-        ArrayList actualJargon = new ArrayList(getJargons(con, user, type));
+        List<Jargon> actualJargon = new ArrayList<Jargon>(getJargons(con, user, type));
 
         if (actualJargon.size() > 0) {// l'utilisateur avait deja un jargon
-          Jargon theActualJargon = (Jargon) actualJargon.get(0);
+          Jargon theActualJargon = actualJargon.get(0);
           if (theActualJargon.getIdVoca() != idVoca) {// update de l'idVoca
             IdPK pk = new IdPK();
             pk.setIdAsLong(((IdPK) theActualJargon.getPK()).getIdAsLong());
@@ -772,7 +754,6 @@ public class ThesaurusBm {
             updateJargon(jargon);
           }
         }
-
         else {// l'utilisateur n'avait pas de jargon
           createJargon(con, jargon);
         }
@@ -791,7 +772,7 @@ public class ThesaurusBm {
    * @throws ThesaurusException
    * @see deleteVocaJargons, createJargon
    */
-  public void createVocaJargons(Collection jargons, long idVoca)
+  public void createVocaJargons(Collection<Jargon> jargons, long idVoca)
       throws ThesaurusException {
     Connection con = null;
 
@@ -892,12 +873,13 @@ public class ThesaurusBm {
    * @throws ThesaurusException
    * @see
    */
+  @SuppressWarnings("unchecked")
   public Jargon getJargon(String idUser) throws ThesaurusException {
     Jargon jargon = null;
     try {
       SilverpeasBeanDAO daoJ = getJargonDao();
       IdPK pk = new IdPK();
-      Collection jargons = daoJ.findByWhereClause(pk, " idUser='" + idUser
+      Collection<Jargon> jargons = daoJ.findByWhereClause(pk, " idUser='" + idUser
           + "'" + " AND type=0");
       Iterator i = jargons.iterator();
       if (i.hasNext()) {
@@ -920,9 +902,10 @@ public class ThesaurusBm {
    * @throws ThesaurusException
    * @see
    */
-  public Collection getSynonyms(long idVoca, String name)
+  @SuppressWarnings("unchecked")
+  public Collection<Synonym> getSynonyms(long idVoca, String name)
       throws ThesaurusException {
-    Collection synonyms = new ArrayList();
+    Collection<Synonym> synonyms = new ArrayList<Synonym>();
     try {
       SilverpeasBeanDAO daoS = getSynonymDao();
       IdPK pk = new IdPK();
@@ -946,9 +929,10 @@ public class ThesaurusBm {
    * @throws ThesaurusException
    * @see
    */
-  public Collection getSynonymsByTree(long idVoca, long idTree)
+  @SuppressWarnings("unchecked")
+  public Collection<Synonym> getSynonymsByTree(long idVoca, long idTree)
       throws ThesaurusException {
-    Collection synonyms = new ArrayList();
+    Collection<Synonym> synonyms = new ArrayList<Synonym>();
     try {
       SilverpeasBeanDAO daoS = getSynonymDao();
       IdPK pk = new IdPK();
