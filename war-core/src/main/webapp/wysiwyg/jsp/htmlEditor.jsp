@@ -390,7 +390,7 @@ function openStorageFilemanager(){
 	index = document.getElementById("storageFile").selectedIndex;
 	var componentId = document.getElementById("storageFile").options[index].value;
 	if (index != 0){	
-		url = "<%=context%>/kmelia/jsp/attachmentLinkManagement.jsp?key="+componentId+"&amp;ntype=<%=NodeType.COMPONENT%>";
+		url = "<%=context%>/kmelia/jsp/attachmentLinkManagement.jsp?key="+componentId+"&ntype=<%=NodeType.COMPONENT%>";
 		windowName = "StorageFileWindow";
 		width = "750";
 		height = "580";
