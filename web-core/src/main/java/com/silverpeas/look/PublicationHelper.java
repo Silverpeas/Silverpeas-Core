@@ -30,7 +30,6 @@ package com.silverpeas.look;
 
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import java.util.Date;
 
 import java.util.List;
 
@@ -41,7 +40,14 @@ public interface PublicationHelper {
 
   public List<PublicationDetail> getPublications(String spaceId, int nbPublis);
   
-  public List<PublicationDetail> getUpdatedPublications(String spaceId, Date since, int nbPublis);
+  /**
+   * Get the last publications of a space updated since a specified date.
+   * @param spaceId the id of the space.
+   * @param since the number of days to be taken into account. If 0 or negativ, no limit is taken.
+   * @param nbPublis the max number of publications returned.
+   * @return the last publications of a space updated since a specified date.
+   */
+  public List<PublicationDetail> getUpdatedPublications(String spaceId, int since, int nbPublis);
 
   public void setMainSessionController(MainSessionController mainSC);
 }
