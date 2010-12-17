@@ -502,6 +502,19 @@ public class AdminController extends AdminReference implements java.io.Serializa
       return false;
     }
   }
+  
+  
+  public boolean isSpaceAvailable(String spaceId, String userId) {
+    SilverTrace.info("admin", "AdminController.isSpaceAvailable",
+        "root.MSG_GEN_ENTER_METHOD");
+    try {
+      return m_Admin.isSpaceAvailable(spaceId, userId);
+    } catch (Exception e) {
+      SilverTrace.error("admin", "AdminController.isSpaceAvailable",
+          "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT", e);
+      return false;
+    }
+  }
 
   public void updateComponentOrderNum(String sComponentId, int orderNum) {
     SilverTrace.info("admin", "AdminController.updateComponentOrderNum",
