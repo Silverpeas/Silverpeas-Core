@@ -45,6 +45,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
  * @author neysseri
  */
 public class AnswerBmEJB implements javax.ejb.SessionBean, AnswerBmBusinessSkeleton {
+
+  private static final long serialVersionUID = -3608243014179097347L;
   private String dbName = JNDINames.ANSWER_DATASOURCE;
 
   public AnswerBmEJB() {

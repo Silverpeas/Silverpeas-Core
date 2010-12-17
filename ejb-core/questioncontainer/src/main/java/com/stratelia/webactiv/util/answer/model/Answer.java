@@ -28,6 +28,7 @@ import com.silverpeas.util.ForeignPK;
 import java.io.Serializable;
 
 public class Answer implements Serializable {
+  private static final long serialVersionUID = 7915608110782813687L;
   private int nbPoints = 0;
   private boolean isSolution = false;
   private boolean isOpened = false;

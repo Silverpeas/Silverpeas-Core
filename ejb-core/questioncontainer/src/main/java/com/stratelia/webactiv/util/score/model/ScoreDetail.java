@@ -28,6 +28,7 @@ package com.stratelia.webactiv.util.score.model;
  * @author
  */
 public class ScoreDetail implements java.io.Serializable {
+  private static final long serialVersionUID = 2322117586354034602L;
   private int participationId = 0;
   private int score = 0;
   private int elapsedTime = 0;

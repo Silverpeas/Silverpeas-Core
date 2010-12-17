@@ -47,6 +47,7 @@ import com.stratelia.webactiv.util.questionResult.model.QuestionResultRuntimeExc
  */
 public class QuestionResultBmEJB implements SessionBean, QuestionResultBmBusinessSkeleton {
 
+  private static final long serialVersionUID = -1184974708719525868L;
   private String dbName = JNDINames.QUESTION_DATASOURCE;
 
   public QuestionResultBmEJB() {

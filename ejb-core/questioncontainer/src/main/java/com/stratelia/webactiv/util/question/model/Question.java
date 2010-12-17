@@ -32,6 +32,7 @@ import com.stratelia.webactiv.util.answer.model.Answer;
 import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
 
 public class Question implements Serializable {
+  private static final long serialVersionUID = 3495698479955515991L;
   private boolean qcm = false;
   private int type = 0;
   private boolean isOpen = false;

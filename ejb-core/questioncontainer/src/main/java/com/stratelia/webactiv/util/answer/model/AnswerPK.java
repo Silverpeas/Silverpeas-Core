@@ -24,8 +24,9 @@
 
 package com.stratelia.webactiv.util.answer.model;
 
-import com.stratelia.webactiv.util.*;
 import java.io.Serializable;
+
+import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
  * It's the Publication PrimaryKey object It identify a Publication
@@ -33,6 +34,8 @@ import java.io.Serializable;
  * @version 1.0
  */
 public class AnswerPK extends WAPrimaryKey implements Serializable {
+
+  private static final long serialVersionUID = -5552889774654039050L;
 
   /**
    * Constructor which set only the id

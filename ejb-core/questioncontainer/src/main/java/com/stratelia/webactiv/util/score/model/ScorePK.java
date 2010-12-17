@@ -33,6 +33,8 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  */
 public class ScorePK extends WAPrimaryKey implements Serializable {
 
+  private static final long serialVersionUID = 2904895551791659598L;
+
   /**
    * Constructor which set only the id
    * @since 1.0

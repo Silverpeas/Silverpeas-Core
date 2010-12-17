@@ -32,6 +32,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
  */
 public class ScoreRuntimeException extends SilverpeasRuntimeException {
 
+  private static final long serialVersionUID = 6321958237587957340L;
+
   /**
    * -------------------------------------------------------------------------- constructors
    * constructors

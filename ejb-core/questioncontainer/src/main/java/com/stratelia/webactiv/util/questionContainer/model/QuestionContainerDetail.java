@@ -32,6 +32,7 @@ import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
 
 public class QuestionContainerDetail implements java.io.Serializable {
 
+  private static final long serialVersionUID = -2502073007907742590L;
   private QuestionContainerHeader header = null;
   private Collection<Question> questions = null;
   private Collection<Comment> comments = null; // Comments Collection

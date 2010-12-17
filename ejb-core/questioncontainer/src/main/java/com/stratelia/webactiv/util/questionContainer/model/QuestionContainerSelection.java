@@ -37,10 +37,7 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
 
 public class QuestionContainerSelection extends ClipboardSelection implements Serializable {
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1311812797166397833L;
   static public DataFlavor QuestionContainerDetailFlavor;
 
   static {

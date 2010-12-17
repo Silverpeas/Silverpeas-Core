@@ -50,33 +50,13 @@ import com.stratelia.webactiv.util.question.model.QuestionRuntimeException;
 import com.stratelia.webactiv.util.questionResult.control.QuestionResultBm;
 import com.stratelia.webactiv.util.questionResult.control.QuestionResultBmHome;
 
-/*
- * CVS Informations
- *
- * $Id: QuestionBmEJB.java,v 1.2 2006/08/16 11:56:33 neysseri Exp $
- *
- * $Log: QuestionBmEJB.java,v $
- * Revision 1.2  2006/08/16 11:56:33  neysseri
- * no message
- *
- * Revision 1.1.1.1  2002/08/06 14:47:53  nchaix
- * no message
- *
- * Revision 1.14  2002/04/16 10:03:06  santonio
- * ajout d'une methode pour transformer les carecteres speciaux comme € et ’
- *
- * Revision 1.13  2001/12/20 15:46:04  neysseri
- * Stabilisation Lot 2 :
- * Silvertrace et exceptions + javadoc
- *
- */
-
 /**
  * Question Business Manager See QuestionBmBusinessSkeleton for methods documentation
  * @author neysseri
  */
 public class QuestionBmEJB implements javax.ejb.SessionBean, QuestionBmBusinessSkeleton {
 
+  private static final long serialVersionUID = -6408050998586411706L;
   private AnswerBm currentAnswerBm = null;
   private QuestionResultBm currentQuestionResultBm = null;
   private String dbName = JNDINames.QUESTION_DATASOURCE;
@@ -118,7 +98,7 @@ public class QuestionBmEJB implements javax.ejb.SessionBean, QuestionBmBusinessS
       String fatherId) throws RemoteException {
     SilverTrace.info("question", "QuestionBmEJB.getQuestionsByFatherPK()",
         "root.MSG_GEN_ENTER_METHOD", "questionPK = " + questionPK
-        + ", fatherId = " + fatherId);
+            + ", fatherId = " + fatherId);
     Connection con = null;
 
     try {
@@ -197,7 +177,7 @@ public class QuestionBmEJB implements javax.ejb.SessionBean, QuestionBmBusinessS
       throws RemoteException {
     SilverTrace.info("question", "QuestionBmEJB.deleteQuestionsByFatherPK()",
         "root.MSG_GEN_ENTER_METHOD", "questionPK = " + questionPK
-        + ", fatherId = " + fatherId);
+            + ", fatherId = " + fatherId);
     Connection con = null;
     AnswerBm answerBm = getAnswerBm();
     QuestionResultBm questionResultBm = getQuestionResultBm();
@@ -337,7 +317,7 @@ public class QuestionBmEJB implements javax.ejb.SessionBean, QuestionBmBusinessS
       throws RemoteException {
     SilverTrace.info("question", "QuestionBmEJB.deleteAnswerToAQuestion()",
         "root.MSG_GEN_ENTER_METHOD", "questionPK = " + questionPK
-        + ", answerPK = " + answerPK);
+            + ", answerPK = " + answerPK);
     getAnswerBm().deleteAnswerToAQuestion(new ForeignPK(questionPK),
         answerPK.getId());
   }
@@ -385,7 +365,7 @@ public class QuestionBmEJB implements javax.ejb.SessionBean, QuestionBmBusinessS
       try {
         QuestionResultBmHome questionResultBmHome = (QuestionResultBmHome) EJBUtilitaire
             .getEJBObjectRef(JNDINames.QUESTIONRESULTBM_EJBHOME,
-            QuestionResultBmHome.class);
+                QuestionResultBmHome.class);
 
         currentQuestionResultBm = questionResultBmHome.create();
       } catch (Exception e) {

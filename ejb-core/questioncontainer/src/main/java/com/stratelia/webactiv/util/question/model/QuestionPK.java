@@ -35,6 +35,8 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  */
 public class QuestionPK extends WAPrimaryKey implements Serializable {
 
+  private static final long serialVersionUID = -786950625594352623L;
+
   /**
    * Constructor which set only the id
    * @since 1.0

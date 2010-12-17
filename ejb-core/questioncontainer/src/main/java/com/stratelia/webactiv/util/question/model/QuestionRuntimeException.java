@@ -28,6 +28,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class QuestionRuntimeException extends SilverpeasRuntimeException {
 
+  private static final long serialVersionUID = 8620958223591764613L;
+
   public QuestionRuntimeException(String callingClass, int errorLevel,
       String message) {
     super(callingClass, errorLevel, message);

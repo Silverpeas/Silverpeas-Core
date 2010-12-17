@@ -45,7 +45,7 @@ import com.stratelia.webactiv.util.score.model.ScoreRuntimeException;
  * @author
  */
 public class ScoreBmEJB implements javax.ejb.SessionBean, ScoreBmSkeleton {
-
+  private static final long serialVersionUID = -8139560611772321449L;
   private String dbName = JNDINames.SCORE_DATASOURCE;
 
   /*

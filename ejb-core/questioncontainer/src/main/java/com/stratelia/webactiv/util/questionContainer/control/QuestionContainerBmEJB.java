@@ -82,6 +82,7 @@ import com.stratelia.webactiv.util.score.model.ScorePK;
  */
 public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, SessionBean {
 
+  private static final long serialVersionUID = -2214591704695533730L;
   private QuestionBm currentQuestionBm = null;
   private QuestionResultBm currentQuestionResultBm = null;
   private AnswerBm currentAnswerBm = null;

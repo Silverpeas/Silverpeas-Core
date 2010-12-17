@@ -35,6 +35,7 @@ import com.stratelia.webactiv.util.score.model.ScoreDetail;
 public class QuestionContainerHeader extends AbstractI18NBean implements java.io.Serializable,
     SilverContentInterface {
 
+  private static final long serialVersionUID = 6871118433726400355L;
   private QuestionContainerPK pk = null;
   private String title = null;
   private String description = null;

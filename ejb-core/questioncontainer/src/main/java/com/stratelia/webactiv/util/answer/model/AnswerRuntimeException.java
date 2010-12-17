@@ -24,9 +24,11 @@
 
 package com.stratelia.webactiv.util.answer.model;
 
-import com.stratelia.webactiv.util.exception.*;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class AnswerRuntimeException extends SilverpeasRuntimeException {
+
+  private static final long serialVersionUID = -7584480862051850784L;
 
   public AnswerRuntimeException(String callingClass, int errorLevel,
       String message) {

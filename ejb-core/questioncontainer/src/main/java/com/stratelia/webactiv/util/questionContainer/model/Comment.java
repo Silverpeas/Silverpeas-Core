@@ -26,6 +26,7 @@ package com.stratelia.webactiv.util.questionContainer.model;
 
 public class Comment implements java.io.Serializable {
 
+  private static final long serialVersionUID = 4715008538961567734L;
   private CommentPK commentPK = null;
   private QuestionContainerPK questionContainerPK = null;
   private String userId = null;

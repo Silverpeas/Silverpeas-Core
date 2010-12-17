@@ -30,6 +30,7 @@ import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.answer.model.AnswerPK;
 
 public class QuestionResult implements Serializable {
+  private static final long serialVersionUID = -4595110484759953673L;
   private int elapsedTime = 0;
   private int participationId = 1;
   private QuestionResultPK pk = null;
