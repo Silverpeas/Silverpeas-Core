@@ -133,7 +133,7 @@ public class LoginServlet extends HttpServlet {
       SessionManager.getInstance().addSession(session, request, controller);
 
       // Put the main session controller in the session
-      session.setAttribute("SilverSessionController", controller);
+      session.setAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT, controller);
       // Add pwd for Hyperlink
       session.setAttribute("Silverpeas_pwdForHyperlink", sPassword);
 

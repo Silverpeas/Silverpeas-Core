@@ -15,12 +15,10 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class SilverpeasWebUtil {
 
-  public static final String MAIN_SESSION_CONTROLLER = "SilverSessionController";  
   private OrganizationController organizationController = new OrganizationController();
 
-   public SilverpeasWebUtil() {
-     
-   }
+  public SilverpeasWebUtil() {
+  }
 
   public SilverpeasWebUtil(OrganizationController controller) {
     organizationController = controller;
@@ -36,11 +34,14 @@ public class SilverpeasWebUtil {
    * @return the current MainSessionController.
    */
   public MainSessionController getMainSessionController(HttpServletRequest request) {
-    return (MainSessionController) request.getSession().getAttribute(MAIN_SESSION_CONTROLLER);
+    return (MainSessionController) request.getSession().getAttribute(
+        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
   }
 
   /**
    * Extract the space id and the component id.
+   * @param request
+   * @return  
    */
   public String[] getComponentId(HttpServletRequest request) {
     String spaceId;
@@ -68,7 +69,7 @@ public class SilverpeasWebUtil {
           // componentId looks like kmelia123
           componentId = sAndCId.substring(spaceId.length() + 1, sAndCId.length());
         } else {
-          componentId = pathInfo.substring(0, pathInfo.indexOf("/"));
+          componentId = pathInfo.substring(0, pathInfo.indexOf('/'));
         }
 
         if (function.startsWith("Main") || function.startsWith("searchResult")
@@ -97,7 +98,8 @@ public class SilverpeasWebUtil {
   public String[] getRoles(HttpServletRequest request) {
     MainSessionController controller = getMainSessionController(request);
     if (controller != null) {
-      return organizationController.getUserProfiles(controller.getUserId(), getComponentId(request)[1]);
+      return organizationController.getUserProfiles(controller.getUserId(),
+          getComponentId(request)[1]);
     }
     return new String[0];
   }

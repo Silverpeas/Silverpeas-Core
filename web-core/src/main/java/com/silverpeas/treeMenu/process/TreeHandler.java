@@ -39,6 +39,7 @@ import com.silverpeas.treeMenu.model.MenuItem;
 import com.silverpeas.treeMenu.model.NodeType;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 
 /**
@@ -62,10 +63,7 @@ public class TreeHandler {
    */
   public static String ProcessMenu(HttpServletRequest request, String menuType)
       throws RemoteException {
-    HttpSession session = request.getSession(true);
-
-    MainSessionController mainSessionCtrl =
-        (MainSessionController) session.getAttribute("SilverSessionController");
+    MainSessionController mainSessionCtrl = new SilverpeasWebUtil().getMainSessionController(request);
     OrganizationController controller = mainSessionCtrl.getOrganizationController();
     String userId = mainSessionCtrl.getUserId();
     String language = mainSessionCtrl.getFavoriteLanguage();

@@ -21,17 +21,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.peasUtil;
 
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class AccessForbiddenException extends SilverpeasException {
-  public AccessForbiddenException(String callingClass, int errorLevel,
-      String message) {
+
+  private static final long serialVersionUID = 24612705927634016L;
+
+  public AccessForbiddenException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message, null, null);
   }
 
+  @Override
   public String getModule() {
     return "peasUtil";
   }

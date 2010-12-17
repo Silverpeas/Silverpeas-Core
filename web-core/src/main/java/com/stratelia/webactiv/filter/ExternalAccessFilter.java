@@ -66,7 +66,7 @@ public class ExternalAccessFilter implements Filter {
     if (securityId != null) {
       HttpSession session = req.getSession(true);
       MainSessionController controller = (MainSessionController) session.getAttribute(
-          "SilverSessionController");
+          MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 
       SecurityData securityData = SecurityHolder.getData(securityId);
       if (securityData != null) {
@@ -86,7 +86,7 @@ public class ExternalAccessFilter implements Filter {
           // Init session management and session object.
           SessionManager.getInstance().addSession(session, req, controller);
           // Put the main session controller in the session
-          session.setAttribute("SilverSessionController", controller);
+          session.setAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT, controller);
           GraphicElementFactory gef = new GraphicElementFactory(controller.getFavoriteLook());
           String stylesheet = req.getParameter("stylesheet");
           if (stylesheet != null) {

@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.portlets.context.window.impl;
 
 import java.io.IOException;
@@ -74,7 +73,6 @@ public class PortletWindowContextImpl implements PortletWindowContext {
   private static final String IS_WSRP_REQ = "is.wsrp.request";
   private static Logger logger = ContainerLogger.getLogger(PortletWindowContextImpl.class,
       "com.silverpeas.portlets.PCCTXLogMessages");
-
   private static List<String> roles = Arrays.asList("role1", "role2", "role3",
       "role4", "role5", "role6",
       "role7", "role8", "role9");
@@ -87,21 +85,15 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     this.elementId = userID;
   }
 
+  @Override
   public void init(HttpServletRequest request) {
     this.request = request;
-
-    // retrieve userId from session
-    /*
-     * HttpSession session = request.getSession(); MainSessionController m_MainSessionCtrl =
-     * (MainSessionController) session.getAttribute("SilverSessionController"); if
-     * (m_MainSessionCtrl != null) this.elementId = m_MainSessionCtrl.getUserId();
-     */
-
-    String elementId = (String) request.getAttribute("SpaceId");
-    if (!StringUtil.isDefined(elementId))
+    String spaceId = (String) request.getAttribute("SpaceId");
+    if (!StringUtil.isDefined(elementId)) {
       elementId = (String) request.getAttribute("UserId");
+    }
 
-    this.elementId = elementId;
+    this.elementId = spaceId;
 
     try {
       PortletRegistryContextAbstractFactory afactory = new PortletRegistryContextAbstractFactory();
@@ -112,13 +104,15 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     }
   }
 
+  @Override
   public String getDesktopURL(HttpServletRequest request) {
     StringBuffer requestURL = request.getRequestURL();
     return requestURL.toString();
   }
 
+  @Override
   public String getDesktopURL(HttpServletRequest request, String query, boolean escape) {
-    StringBuffer urlBuffer = new StringBuffer(getDesktopURL(request));
+    StringBuilder urlBuffer = new StringBuilder(getDesktopURL(request));
     if (query != null && query.length() != 0) {
       urlBuffer.append("?").append(query);
     }
@@ -133,20 +127,24 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     return url;
   }
 
+  @Override
   public String getLocaleString() {
     Locale locale = getLocale();
     return locale.toString();
   }
 
+  @Override
   public Locale getLocale() {
     return request.getLocale();
   }
 
+  @Override
   public String getContentType() {
     String contentType = "text/html";
     return contentType;
   }
 
+  @Override
   public String encodeURL(String url) {
     try {
       return URLEncoder.encode(url, ENC);
@@ -155,15 +153,18 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     }
   }
 
+  @Override
   public boolean isAuthless(HttpServletRequest request) {
     // For now authless can also edit , hence return false
     return false;
   }
 
+  @Override
   public String getAuthenticationType() {
     return request.getAuthType();
   }
 
+  @Override
   public String getUserID() {
     // The order in which this is suppose to be done
     // 1. Check if userID is explicity set , If yes use it always
@@ -181,25 +182,29 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     return elementId;
   }
 
+  @Override
   public Object getProperty(String name) {
     Object value = null;
     if (request != null) {
       HttpSession session = request.getSession(false);
-      if (session != null)
+      if (session != null) {
         value = session.getAttribute(name);
+      }
     }
     return value;
   }
 
+  @Override
   public void setProperty(String name, Object value) {
     if (request != null) {
       request.getSession(true).setAttribute(name, value);
     }
   }
 
+  @Override
   public List getRoles() {
     // Check if any in the roles is in role
-    List<String> currentRoles = new ArrayList();
+    List<String> currentRoles = new ArrayList<String>();
     for (String role : roles) {
       if (this.request.isUserInRole(role)) {
         currentRoles.add(role);
@@ -208,11 +213,13 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     return currentRoles;
   }
 
+  @Override
   public Map<String, String> getUserInfo() {
     // TODO
     return Collections.EMPTY_MAP;
   }
 
+  @Override
   public List getMarkupTypes(String portletName) throws PortletWindowContextException {
     try {
       return portletRegistryContext.getMarkupTypes(portletName);
@@ -221,6 +228,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     }
   }
 
+  @Override
   public String getDescription(String portletName, String desiredLocale)
       throws PortletWindowContextException {
     try {
@@ -230,6 +238,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     }
   }
 
+  @Override
   public String getShortTitle(String portletName, String desiredLocale)
       throws PortletWindowContextException {
     try {
@@ -239,6 +248,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     }
   }
 
+  @Override
   public String getTitle(String portletName, String desiredLocale)
       throws PortletWindowContextException {
     try {
@@ -248,6 +258,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     }
   }
 
+  @Override
   public List getKeywords(String portletName, String desiredLocale)
       throws PortletWindowContextException {
     try {
@@ -257,6 +268,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     }
   }
 
+  @Override
   public String getDisplayName(String portletName, String desiredLocale)
       throws PortletWindowContextException {
     try {
@@ -266,6 +278,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     }
   }
 
+  @Override
   public String getPortletName(String portletWindowName) throws PortletWindowContextException {
     try {
       return portletRegistryContext.getPortletName(portletWindowName);
@@ -274,9 +287,10 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     }
   }
 
+  @Override
   public List<EntityID> getPortletWindows(PortletType portletType, DistributionType distributionType)
       throws PortletWindowContextException {
-    List<EntityID> portletList = new ArrayList();
+    List<EntityID> portletList = new ArrayList<EntityID>();
     try {
       List<String> portlets = null;
       if (DistributionType.ALL_PORTLETS.equals(distributionType)) {
@@ -383,38 +397,43 @@ public class PortletWindowContextImpl implements PortletWindowContext {
   public EventHolder verifySupportedPublishingEvent(EntityID portletEntityId,
       EventHolder eventHolder) {
     PortletDescriptorHolder portletDescriptorHolder = getPortletDescriptorHolder();
-    if (portletDescriptorHolder == null)
+    if (portletDescriptorHolder == null) {
       return null;
+    }
     return portletDescriptorHolder.verifySupportedPublishingEvent(portletEntityId, eventHolder);
   }
 
   public List<EventHolder> getSupportedPublishingEventHolders(EntityID portletEntityId) {
     PortletDescriptorHolder portletDescriptorHolder = getPortletDescriptorHolder();
-    if (portletDescriptorHolder == null)
+    if (portletDescriptorHolder == null) {
       return null;
+    }
     return portletDescriptorHolder.getSupportedPublishingEventHolders(portletEntityId);
   }
 
   public EventHolder verifySupportedProcessingEvent(EntityID portletEntityId,
       EventHolder eventHolder) {
     PortletDescriptorHolder portletDescriptorHolder = getPortletDescriptorHolder();
-    if (portletDescriptorHolder == null)
+    if (portletDescriptorHolder == null) {
       return null;
+    }
     return portletDescriptorHolder.verifySupportedProcessingEvent(portletEntityId, eventHolder);
   }
 
   public List<EventHolder> getSupportedProcessingEventHolders(EntityID portletEntityId) {
     PortletDescriptorHolder portletDescriptorHolder = getPortletDescriptorHolder();
-    if (portletDescriptorHolder == null)
+    if (portletDescriptorHolder == null) {
       return null;
+    }
     return portletDescriptorHolder.getSupportedProcessingEventHolders(portletEntityId);
   }
 
   public Map<String, String> verifySupportedPublicRenderParameters(EntityID portletEntityId,
       List<PublicRenderParameterHolder> publicRenderParameterHolders) {
     PortletDescriptorHolder portletDescriptorHolder = getPortletDescriptorHolder();
-    if (portletDescriptorHolder == null)
+    if (portletDescriptorHolder == null) {
       return Collections.emptyMap();
+    }
     return portletDescriptorHolder.verifySupportedPublicRenderParameters(portletEntityId,
         publicRenderParameterHolders);
   }
@@ -422,8 +441,9 @@ public class PortletWindowContextImpl implements PortletWindowContext {
   public List<PublicRenderParameterHolder> getSupportedPublicRenderParameterHolders(
       EntityID portletEntityId, Map<String, String[]> renderParameters) {
     PortletDescriptorHolder portletDescriptorHolder = getPortletDescriptorHolder();
-    if (portletDescriptorHolder == null)
+    if (portletDescriptorHolder == null) {
       return Collections.emptyList();
+    }
     return portletDescriptorHolder.getSupportedPublicRenderParameterHolders(portletEntityId,
         renderParameters);
   }
@@ -491,6 +511,5 @@ public class PortletWindowContextImpl implements PortletWindowContext {
 
   // TODO
   public void store() throws PortletWindowContextException {
-
   }
 }

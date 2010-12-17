@@ -59,7 +59,7 @@ public class SilverpeasWebUtilTest {
     HttpServletRequest request = mock(HttpServletRequest.class);
     HttpSession session = mock(HttpSession.class);
     MainSessionController controller = mock(MainSessionController.class);
-    when(session.getAttribute(SilverpeasWebUtil.MAIN_SESSION_CONTROLLER)).thenReturn(controller);
+    when(session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT)).thenReturn(controller);
     when(request.getSession()).thenReturn(session);
     SilverpeasWebUtil util = new SilverpeasWebUtil();
     MainSessionController result = util.getMainSessionController(request);
@@ -125,7 +125,7 @@ public class SilverpeasWebUtilTest {
     HttpSession session = mock(HttpSession.class);
     MainSessionController controller = mock(MainSessionController.class);
     when(controller.getUserId()).thenReturn("18");
-    when(session.getAttribute(SilverpeasWebUtil.MAIN_SESSION_CONTROLLER)).thenReturn(controller);
+    when(session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT)).thenReturn(controller);
     when(request.getSession()).thenReturn(session);
     when(request.getPathInfo()).thenReturn("/toolbox8/ViewAttachments");
 

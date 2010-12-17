@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.treeMenu.taglib;
 
 import static com.silverpeas.treeMenu.model.MenuConstants.ICON_STYLE_PREFIX;
@@ -44,27 +43,22 @@ public class TreeMenuHtmlHeadTag extends TagSupport {
    * stores the style to display the icons components
    */
   private static String iconStyle = null;
-
   /**
    * Indicates if the css File must be display
    */
   private boolean displayCssFile = false;
-
   /**
    * Indicates if the javascript File must be display
    */
   private boolean displayJavascriptFile = false;
-
   /**
    * Indicates if the icons components must be display
    */
   private boolean displayIconsStyles = false;
-
   /**
    * context name application
    */
   private String contextName = null;
-
   /**
    *
    */
@@ -124,9 +118,8 @@ public class TreeMenuHtmlHeadTag extends TagSupport {
       if (displayIconsStyles) {
         if (iconStyle == null) {
           StringBuilder iconStyleBuilder = new StringBuilder();
-          MainSessionController mainSessionCtrl =
-              (MainSessionController) pageContext.getSession().getAttribute(
-              "SilverSessionController");
+          MainSessionController mainSessionCtrl = (MainSessionController) pageContext.getSession().
+              getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
           OrganizationController controller = mainSessionCtrl.getOrganizationController();
           Map<String, String> componentsNames = controller.getAllComponentsNames();
 
@@ -135,10 +128,9 @@ public class TreeMenuHtmlHeadTag extends TagSupport {
           }
           for (String name : componentsNames.keySet()) {
             iconStyleBuilder.append(".").append(ICON_STYLE_PREFIX).append(name).append(
-                "{ display:block; height: 15px; padding-left: 20px; background: transparent url(")
-                .append(contextName).append(
-                "/util/icons/component/")
-                .append(name).append("Small.gif) 0 0px no-repeat; } ");
+                "{ display:block; height: 15px; padding-left: 20px; background: transparent url(").
+                append(contextName).append(
+                "/util/icons/component/").append(name).append("Small.gif) 0 0px no-repeat; } ");
           }
           if (iconStyleBuilder.length() > 1) {
             iconStyleBuilder.append("</style>");

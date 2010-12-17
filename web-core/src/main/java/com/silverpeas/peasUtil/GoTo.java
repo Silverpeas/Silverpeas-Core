@@ -23,22 +23,26 @@
  */
 package com.silverpeas.peasUtil;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Closeables;
+import com.silverpeas.util.StringUtil;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.StringReader;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 public abstract class GoTo extends HttpServlet {
+
   private static final long serialVersionUID = -8381001443484846645L;
+  private static SilverpeasWebUtil util = new SilverpeasWebUtil();
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -53,16 +57,16 @@ public abstract class GoTo extends HttpServlet {
     String id = getObjectId(req);
 
     try {
-      SilverTrace.info("peasUtil", "GoTo.doPost", "root.MSG_GEN_PARAM_VALUE",
-          "id = " + id);
+      SilverTrace.info("peasUtil", "GoTo.doPost", "root.MSG_GEN_PARAM_VALUE", "id = " + id);
 
       String redirect = getDestination(id, req, res);
-      if (redirect == null || "".equals(redirect)) {
+      if (!StringUtil.isDefined(redirect)) {
         objectNotFound(req, res);
       } else {
         if (!res.isCommitted()) { //The response was not previously sent
           if (redirect == null || !redirect.startsWith("http")) {
-            redirect = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL")
+            redirect = GeneralPropertiesManager.getGeneralResourceLocator().getString(
+                "ApplicationURL")
                 + "/autoRedirect.jsp?" + redirect;
           }
           res.sendRedirect(redirect);
@@ -75,8 +79,8 @@ public abstract class GoTo extends HttpServlet {
     }
   }
 
-  public abstract String getDestination(String objectId,
-      HttpServletRequest req, HttpServletResponse res) throws Exception;
+  public abstract String getDestination(String objectId, HttpServletRequest req,
+      HttpServletResponse res) throws Exception;
 
   private void objectNotFound(HttpServletRequest req, HttpServletResponse res)
       throws IOException {
@@ -84,8 +88,8 @@ public abstract class GoTo extends HttpServlet {
     if (!isLoggedIn) {
       res.sendRedirect("/weblib/notFound.html");
     } else {
-      res.sendRedirect(GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL")
-          + "/admin/jsp/documentNotFound.jsp");
+      res.sendRedirect(GeneralPropertiesManager.getGeneralResourceLocator().getString(
+          "ApplicationURL") + "/admin/jsp/documentNotFound.jsp");
     }
   }
 
@@ -104,66 +108,37 @@ public abstract class GoTo extends HttpServlet {
   }
 
   public boolean isUserLogin(HttpServletRequest req) {
-    return (getMainSessionController(req) != null);
+    return util.getMainSessionController(req) != null;
   }
 
   // check if the user is allowed to access the required component
   public boolean isUserAllowed(HttpServletRequest req, String componentId) {
-    MainSessionController mainSessionCtrl = getMainSessionController(req);
-    boolean isAllowed = false;
+    MainSessionController mainSessionCtrl = util.getMainSessionController(req);
     if (componentId == null) { // Personal space
-      isAllowed = true;
-    } else {
-      return mainSessionCtrl.getOrganizationController().isComponentAvailable(componentId,
-          mainSessionCtrl.getUserId());
+      return true;
     }
-    return isAllowed;
-  }
-
-  private MainSessionController getMainSessionController(HttpServletRequest req) {
-    HttpSession session = req.getSession(true);
-    MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute("SilverSessionController");
-    return mainSessionCtrl;
+    return mainSessionCtrl.getOrganizationController().isComponentAvailable(componentId,
+        mainSessionCtrl.getUserId());
   }
 
   public String getUserId(HttpServletRequest req) {
-    return getMainSessionController(req).getUserId();
+    return util.getMainSessionController(req).getUserId();
   }
 
   public void displayError(HttpServletResponse res) {
-    SilverTrace.info("peasUtil", "GoToFile.displayError()",
-        "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("peasUtil", "GoToFile.displayError()", "root.MSG_GEN_ENTER_METHOD");
 
     res.setContentType("text/html");
-    OutputStream out2 = null;
-    int read;
-
+    OutputStream out = null;
     StringBuilder message = new StringBuilder(255);
-    message.append("<HTML>");
-    message.append("<BODY>");
-    message.append("</BODY>");
-    message.append("</HTML>");
-
-    StringReader reader = new StringReader(message.toString());
-
+    message.append("<HTML>").append("<BODY>").append("</BODY>").append("</HTML>");
     try {
-      out2 = res.getOutputStream();
-      read = reader.read();
-      while (read != -1) {
-        out2.write(read); // writes bytes into the response
-        read = reader.read();
-      }
-    } catch (Exception e) {
-      SilverTrace.warn("peasUtil", "GoToFile.displayError",
-          "root.EX_CANT_READ_FILE");
+      out = res.getOutputStream();
+      out.write(message.toString().getBytes(Charsets.UTF_8)); // writes bytes into the response
+    } catch (IOException e) {
+      SilverTrace.warn("peasUtil", "GoToFile.displayError", "root.EX_CANT_READ_FILE");
     } finally {
-      // we must close the in and out streams
-      try {
-        out2.close();
-      } catch (Exception e) {
-        SilverTrace.warn("peasUtil", "GoToFile.displayError",
-            "root.EX_CANT_READ_FILE", "close failed");
-      }
+      Closeables.closeQuietly(out);
     }
   }
 }

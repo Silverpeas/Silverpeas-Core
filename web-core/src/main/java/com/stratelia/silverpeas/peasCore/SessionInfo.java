@@ -104,7 +104,7 @@ public class SessionInfo extends Object {
                 ex);
           }
         }
-        m_Session.removeAttribute("SilverSessionController");
+        m_Session.removeAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
         m_Session.removeAttribute("SessionGraphicElementFactory");
         m_Session.removeAttribute("spaceModel"); // For Portlets
         m_Session.removeAttribute("quizzUnderConstruction"); // For Quizz

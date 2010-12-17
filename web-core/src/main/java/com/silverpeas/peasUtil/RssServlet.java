@@ -21,17 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.peasUtil;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -57,32 +54,30 @@ import de.nava.informa.exporters.RSS_2_0_Exporter;
 import de.nava.informa.impl.basic.Channel;
 import de.nava.informa.impl.basic.Item;
 
-public abstract class RssServlet extends HttpServlet {
-  HttpSession session;
-  PrintWriter out;
+public abstract class RssServlet<T> extends HttpServlet {
 
+  private static final long serialVersionUID = 1756308502037077021L;
+
+  @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     doPost(req, res);
   }
 
-  public void doPost(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
-    SilverTrace.info("peasUtil", "RssServlet.doPost",
-        "root.MSG_GEN_ENTER_METHOD");
+  @Override
+  public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException,
+      IOException {
+    SilverTrace.info("peasUtil", "RssServlet.doPost", "root.MSG_GEN_ENTER_METHOD");
     String instanceId = getObjectId(req);
     String userId = getUserId(req);
     String login = getLogin(req);
     String password = getPassword(req);
-
     // rechercher si le composant a bien le flux RSS autorisé
     if (isComponentRss(instanceId)) {
       try {
-        SilverTrace.info("peasUtil", "RssServlet.doPost",
-            "root.MSG_GEN_PARAM_VALUE", "InstanceId = " + instanceId);
+        SilverTrace.info("peasUtil", "RssServlet.doPost", "root.MSG_GEN_PARAM_VALUE",
+            "InstanceId = " + instanceId);
 
-        // Vérification que le login - password correspond bien à un utilisateur
-        // dans Silverpeas
         // Vérification que le user a droit d'accès au composant
         AdminController adminController = new AdminController(null);
         UserFull user = adminController.getUserFull(userId);
@@ -95,27 +90,17 @@ public abstract class RssServlet extends HttpServlet {
 
           // récupération de la liste des N éléments à remonter dans le flux
           int nbReturnedElements = getNbReturnedElements();
-          Collection<Object> listElements = getListElements(instanceId,
-              nbReturnedElements);
+          Collection<T> listElements = getListElements(instanceId, nbReturnedElements);
 
           // création d'une liste de ItemIF en fonction de la liste des éléments
-          Object element;
-          String title;
-          URL link;
-          String description;
-          String creatorId;
-          Date dateElement;
-          ItemIF item;
-          Iterator<Object> it = (Iterator) listElements.iterator();
-          while (it.hasNext()) {
-            element = it.next();
-            title = getElementTitle(element, userId);
-            link = new URL(serverURL + getElementLink(element, userId));
-            description = getElementDescription(element, userId);
-            dateElement = getElementDate(element);
-            creatorId = getElementCreatorId(element);
 
-            item = new Item();
+          for (T element : listElements) {
+            String title = getElementTitle(element, userId);
+            URL link = new URL(serverURL + getElementLink(element, userId));
+            String description = getElementDescription(element, userId);
+            Date dateElement = getElementDate(element);
+            String creatorId = getElementCreatorId(element);
+            ItemIF item = new Item();
             item.setTitle(title);
             item.setLink(link);
             item.setDescription(description);
@@ -123,28 +108,26 @@ public abstract class RssServlet extends HttpServlet {
 
             if (StringUtil.isDefined(creatorId)) {
               UserDetail creator = adminController.getUserDetail(creatorId);
-              if (creator != null)
+              if (creator != null) {
                 item.setCreator(creator.getDisplayedName());
+              }
             } else if (StringUtil.isDefined(getExternalCreatorId(element))) {
               item.setCreator(getExternalCreatorId(element));
             }
-
             channel.addItem(item);
           }
 
           // construction de l'objet Channel
           channel.setTitle(getChannelTitle(instanceId));
-
           URL componentUrl = new URL(serverURL + URLManager.getApplicationURL()
               + URLManager.getURL("useless", instanceId));
           channel.setLocation(componentUrl);
 
           // exportation du channel
-          String encoding = "UTF-8";
           res.setContentType("application/rss+xml");
           res.setHeader("Content-Disposition", "inline; filename=feeds.rss");
           Writer writer = res.getWriter();
-          RSS_2_0_Exporter rssExporter = new RSS_2_0_Exporter(writer, encoding);
+          RSS_2_0_Exporter rssExporter = new RSS_2_0_Exporter(writer, "UTF-8");
           rssExporter.write(channel);
 
           if (rssExporter == null) {
@@ -162,9 +145,9 @@ public abstract class RssServlet extends HttpServlet {
   public String getChannelTitle(String instanceId) {
     OrganizationController orga = new OrganizationController();
     ComponentInstLight instance = orga.getComponentInstLight(instanceId);
-    if (instance != null)
+    if (instance != null) {
       return instance.getLabel();
-
+    }
     return "";
   }
 
@@ -176,7 +159,6 @@ public abstract class RssServlet extends HttpServlet {
   public boolean isComponentRss(String instanceId) {
     OrganizationController orga = new OrganizationController();
     String paramRssValue = orga.getComponentParameterValue(instanceId, "rss");
-
     // rechercher si le composant a bien le flux RSS autorisé
     if ("yes".equalsIgnoreCase(paramRssValue)) {
       return true;
@@ -193,62 +175,62 @@ public abstract class RssServlet extends HttpServlet {
     return 15;
   }
 
-  public abstract Collection getListElements(String instanceId, int nbReturned)
+  public abstract Collection<T> getListElements(String instanceId, int nbReturned)
       throws RemoteException;
 
-  public abstract String getElementTitle(Object element, String userId);
+  public abstract String getElementTitle(T element, String userId);
 
-  public abstract String getElementLink(Object element, String userId);
+  public abstract String getElementLink(T element, String userId);
 
-  public abstract String getElementDescription(Object element, String userId);
+  public abstract String getElementDescription(T element, String userId);
 
-  public abstract Date getElementDate(Object element);
+  public abstract Date getElementDate(T element);
 
-  public abstract String getElementCreatorId(Object element);
+  public abstract String getElementCreatorId(T element);
 
-  public String getExternalCreatorId(Object element) {
+  public String getExternalCreatorId(T element) {
     return "";
   }
 
-  private String getObjectId(HttpServletRequest request) {
+  protected String getObjectId(HttpServletRequest request) {
     String pathInfo = request.getPathInfo();
-    if (pathInfo != null)
+    if (pathInfo != null) {
       return pathInfo.substring(1);
+    }
     return null;
   }
 
-  private String getUserId(HttpServletRequest request) {
+  protected String getUserId(HttpServletRequest request) {
     return request.getParameter("userId");
   }
 
-  private String getLogin(HttpServletRequest request) {
+  protected String getLogin(HttpServletRequest request) {
     return request.getParameter("login");
   }
 
-  private String getPassword(HttpServletRequest request) {
+  protected String getPassword(HttpServletRequest request) {
     return request.getParameter("password");
   }
 
-  private MainSessionController getMainSessionController(HttpServletRequest req) {
+  protected MainSessionController getMainSessionController(HttpServletRequest req) {
     HttpSession session = req.getSession(true);
-    MainSessionController mainSessionCtrl = (MainSessionController) session
-        .getAttribute("SilverSessionController");
+    MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(
+        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     return mainSessionCtrl;
   }
 
-  private boolean isUserLogin(HttpServletRequest req) {
+  protected boolean isUserLogin(HttpServletRequest req) {
     return (getMainSessionController(req) != null);
   }
 
-  private void objectNotFound(HttpServletRequest req, HttpServletResponse res)
+  protected void objectNotFound(HttpServletRequest req, HttpServletResponse res)
       throws IOException {
     boolean isLoggedIn = isUserLogin(req);
-    if (!isLoggedIn)
+    if (!isLoggedIn) {
       res.sendRedirect("/weblib/notFound.html");
-    else
-      res.sendRedirect(GeneralPropertiesManager.getGeneralResourceLocator()
-          .getString("ApplicationURL")
-          + "/admin/jsp/documentNotFound.jsp");
+    } else {
+      res.sendRedirect(GeneralPropertiesManager.getGeneralResourceLocator().getString(
+          "ApplicationURL") + "/admin/jsp/documentNotFound.jsp");
+    }
   }
-
 }
