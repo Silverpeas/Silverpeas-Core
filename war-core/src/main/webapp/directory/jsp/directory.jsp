@@ -52,7 +52,7 @@
 <%
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-    List members = (List) request.getAttribute("Members");
+    List fragments = (List) request.getAttribute("UserFragments");
     Pagination pagination = (Pagination) request.getAttribute("pagination");
 
 %>
@@ -187,46 +187,12 @@
         <div id="users">
           <ol class="message_list aff_colonnes">
             <%
-                for (int i = 0; i < members.size(); i++) {
-                  Member member = (Member) members.get(i);
+                for (int i = 0; i < fragments.size(); i++) {
+                  String fragment = (String) fragments.get(i);
             %>
             <li class="intfdcolor">
-                 <div class="profilPhoto">
-                 	<% if (!member.haveAvatar()) { %>
-                   	<a href="<%=m_context%>/Rprofil/jsp/Main?userId=<%=member.getId()%>"><img src="<%=m_context + member.getProfilPhoto()%>" alt="viewUser" class="defaultAvatar"/></a>
-                   <% } else { %>
-                   	<a href="<%=m_context%>/Rprofil/jsp/Main?userId=<%=member.getId()%>"><img src="<%=m_context + member.getProfilPhoto()%>" alt="viewUser" class="avatar"/></a>
-                   <% } %>
-                 </div>
-                 <div class="info">
-                   <ul>
-                     <li class="userName"> <a href="<%=m_context%>/Rprofil/jsp/Main?userId=<%=member.getId()%>"><%=member.getLastName() + " " + member.getFirstName()%></a></li>
-                     <li class="infoConnection">
-                     	<% if (member.isConnected()) { %>
-                       		<img src="<%=m_context%>/util/icons/online.gif" alt="connected"/> <fmt:message key="directory.connected" bundle="${LML}" /> <%=member.getDuration()%>
-                       <% } else { %>
-                       		<img src="<%=m_context%>/util/icons/offline.gif" alt="deconnected"/> <fmt:message key="directory.deconnected" bundle="${LML}" />
-                       <% } %>
-                     </li>
-                     <li class="userType">
-                        <fmt:message key="<%=member.getAccessLevel()%>"
-                                    bundle="${LML}" var="carAccessLevel" />
-                       	<fmt:message key="${carAccessLevel}" bundle="${GML}" />
-                     </li>
-                     <li class="userMail">
-                     	<a href="#" onclick="OpenPopup(<%=member.getId()%>,'<%=member.getLastName() + " " + member.getFirstName()%>')"><%=member.geteMail()%></a>
-                     </li>                     
-                   </ul>
-                 </div>
-                <div class="action">
-                  <% if (!request.getAttribute("MyId").equals(member.getId())) { %>
-	                  <% if (!member.isRelationOrInvitation(request.getAttribute("MyId").toString())) { %>
-	                  	<a href="#" class="link invitation" onclick="OpenPopupInvitaion(<%=member.getId()%>,'<%=member.getLastName() + " " + member.getFirstName()%>');"><fmt:message key="notification.sendMessage" bundle="${LML}" /></a>
-	                  <% } %>
-					  <a href="#" class="link notification" onclick="OpenPopup(<%=member.getId()%>,'<%=member.getLastName() + " " + member.getFirstName()%>')"><fmt:message key="notification.sendMessage" bundle="${LML}" /></a>
-                  <% } %>
-                </div>
-               <br clear="all" />
+                 <%=fragment %>
+                 <br clear="all" />
             </li>
             <%
                 }

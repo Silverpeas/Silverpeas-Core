@@ -202,7 +202,10 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
     List<Member> membersToDisplay = new ArrayList<Member>();
     membersToDisplay = toListMember(users.subList(pagination.getFirstItemIndex(), pagination.
         getLastItemIndex()));
-    request.setAttribute("Members", membersToDisplay);
+
+    // setting one fragment per user displayed
+    request.setAttribute("UserFragments", directorySC.getFragments(membersToDisplay));
+
     request.setAttribute("pagination", pagination);
     request.setAttribute("View", directorySC.getCurrentView());
     return "/directory/jsp/directory.jsp";

@@ -26,8 +26,15 @@ package com.silverpeas.directory.control;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 
+import com.silverpeas.directory.model.Member;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -37,6 +44,7 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SessionInfo;
 import com.stratelia.silverpeas.peasCore.SessionManager;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
@@ -53,6 +61,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private List<UserDetail> lastListUsersCalled; // cache for pagination
 
   private String currentView = "tous";
+  private Properties stConfig;
 
   /**
    * Standard Session Controller Constructeur
@@ -65,6 +74,12 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     super(mainSessionCtrl, componentContext, "com.silverpeas.directory.multilang.DirectoryBundle",
         "com.silverpeas.directory.settings.DirectoryIcons",
         "com.silverpeas.directory.settings.DirectorySettings");
+    
+    stConfig = new Properties();
+    stConfig.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, getSettings().getString(
+        "templatePath"));
+    stConfig.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, getSettings().getString(
+        "customersTemplatePath"));
   }
 
   /**
@@ -266,4 +281,51 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     lastListUsersCalled = users;
     return lastListUsersCalled;
   }
+  
+  public List<String> getFragments(List<Member> membersToDisplay) {
+    // using StringTemplate to personalize display of members
+    List<String> fragments = new ArrayList<String>();
+    SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplate(stConfig);
+    for (Member member : membersToDisplay) {
+      template.setAttribute("user", member);
+      template.setAttribute("type", getString("GML.user.type." + member.getAccessLevel()));
+      template.setAttribute("avatar", getAvatarFragment(member));
+      template.setAttribute("context", URLManager.getApplicationURL());
+      template.setAttribute("notMyself", !member.getId().equals(getUserId()));
+      template.setAttribute("notAContact", !member.isRelationOrInvitation(getUserId()));
+
+      UserFull userFull = getUserFul(member.getId());
+      HashMap<String, String> extra = new HashMap<String, String>();
+      if (userFull != null) {
+        Set<String> keys = userFull.getSpecificDetails().keySet();
+        // put only defined values
+        for (String key : keys) {
+          String value = userFull.getValue(key);
+          if (StringUtil.isDefined(value)) {
+            extra.put(key, value);
+          }
+        }
+      }
+      template.setAttribute("extra", extra);
+      fragments.add(template.applyFileTemplate("user_" + getLanguage()));
+    }
+    return fragments;
+
+  }
+
+  private String getAvatarFragment(Member member) {
+    StringBuilder sb = new StringBuilder();
+    String context = URLManager.getApplicationURL();
+    sb.append("<a href=\"").append(context).append("/Rprofil/jsp/Main?userId=").append(
+        member.getId()).append("\">");
+    String avatarClass = "avatar";
+    if (!member.haveAvatar()) {
+      avatarClass = "defaultAvatar";
+    }
+    sb.append("<img src=\"").append(context).append(member.getProfilPhoto()).append(
+        "\" alt=\"viewUser\"");
+    sb.append("class=\"").append(avatarClass).append("\"/></a>");
+    return sb.toString();
+  }
+  
 }

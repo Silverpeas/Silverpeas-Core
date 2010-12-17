@@ -25,6 +25,7 @@ package com.silverpeas.directory.model;
 
 import com.silverpeas.socialNetwork.invitation.InvitationService;
 import com.silverpeas.socialNetwork.relationShip.RelationShipService;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.SessionInfo;
 import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -176,5 +177,16 @@ public class Member {
   
   public boolean haveAvatar() {
     return avatar;
+  }
+  
+  public String getStatus() {
+    if (!StringUtil.isDefined(userDetail.getStatus())) {
+      return null;
+    }
+    return userDetail.getStatus();
+  }
+  
+  public String getMail() {
+    return userDetail.geteMail();
   }
 }
