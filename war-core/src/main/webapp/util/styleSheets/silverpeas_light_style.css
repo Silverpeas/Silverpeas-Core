@@ -40,6 +40,8 @@ body, td, div, a {
 	background-image:inherit;
 	color:#222222;
 }
+
+
 #ticker {
 	color:#666666;
 	left: 140px;
@@ -593,6 +595,19 @@ td.milieuOngletOn {
 	background-image: none;
 	font-size: 11px;
 }
+
+#topPage .yuimenu, #kmelia .yuimenu, #attachmentList .yuimenu{ 
+	padding:6px 0;
+	background-color:#C8ED99;
+	border:1px solid #9BD94A;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+	border-radius: 8px;
+	-moz-box-shadow:8px 8px 10px #CCCCCC;
+	-webkit-box-shadow:8px 8px 10px #CCCCCC;
+	box-shadow:8px 8px 10px #CCCCCC;
+}
+
 .yuimenu a {
 	font-size:11px;
 	background-color:#C8ED99;
