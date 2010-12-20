@@ -3698,6 +3698,8 @@ public final class Admin extends Object {
 
   /**
    * This method permit to know if given space is allowed to given user.
+   * @param userId 
+   * @param spaceId 
    * @return true if user is allowed to access to one component (at least) in given space, false
    * otherwise.
    * @throws AdminException

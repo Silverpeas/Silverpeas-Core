@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.silverpeas.domains;
 
 import com.stratelia.silverpeas.silverpeasinitialize.IInitialize;
@@ -49,14 +46,14 @@ public class AdminInitialize implements IInitialize {
    * @return
    * @see
    */
+  @Override
   public boolean Initialize() {
     // Initialize SilverTrace
     AdminController ac = new AdminController("");
     try {
       ac.startServer();
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminInitialize.Initialize()",
-          "admin.MSG_ERR_GET_DOMAIN", e);
+      SilverTrace.error("admin", "AdminInitialize.Initialize()", "admin.MSG_ERR_GET_DOMAIN", e);
       return false;
     }
     return true;

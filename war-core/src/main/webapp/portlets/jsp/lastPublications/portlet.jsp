@@ -62,7 +62,6 @@ function jumpToComponent(componentId) {
 	parent.SpacesBar.reloadTopBar(true);
 }
 </script>
-
 <%
 Iterator publications = ((List) pReq.getAttribute("Publications")).iterator();
 
@@ -85,5 +84,5 @@ Iterator publications = ((List) pReq.getAttribute("Publications")).iterator();
         	out.println("<br/><br/>");
     }
 %>
-
-<a href="<c:out value="${requestScope['javax.portlet.request'].rssUrl}" />"><img src="icons/rss.gif" border="0" alt="RSS"/></a>
+<br/>
+<a href="<c:url value="${rssUrl}" />" class="rss_link"><img src="<c:url value="/util/icons/rss.gif" />" border="0" alt="RSS"/></a>

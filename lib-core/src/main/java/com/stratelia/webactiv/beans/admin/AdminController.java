@@ -503,12 +503,17 @@ public class AdminController extends AdminReference implements java.io.Serializa
     }
   }
   
-  
-  public boolean isSpaceAvailable(String spaceId, String userId) {
+  /**
+   * Indcates if a user can access the specified space.
+   * @param userId the user id.
+   * @param spaceId the space id.
+   * @return true if the space is accessible - false otherwise.
+   */
+  public boolean isSpaceAvailable(String userId, String spaceId) {
     SilverTrace.info("admin", "AdminController.isSpaceAvailable",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      return m_Admin.isSpaceAvailable(spaceId, userId);
+      return m_Admin.isSpaceAvailable(userId, spaceId);
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.isSpaceAvailable",
           "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT", e);
