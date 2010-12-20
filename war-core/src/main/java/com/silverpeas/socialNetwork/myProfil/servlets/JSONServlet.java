@@ -50,41 +50,46 @@ public class JSONServlet extends HttpServlet {
   public static final String AVATAR_EXTENTION = ".jpg";
   public static final int DEFAULT_OFFSET = 0;
   public static final int DEFAULT_ELEMENT_PER_PAGE = 3;
-  public int elements_per_page;
-  String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-  String iconURL = m_context + "/socialNetwork/jsp/icons/";
-  SocialInformationType type;
-  private SocialNetworkService socialNetworkService = new SocialNetworkService();
-  private Locale locale;
-/**
- * servlet method for returning JSON format
- * @param request
- * @param response
- * @throws ServletException
- * @throws IOException
- */
+  private static final long serialVersionUID = -843491398398079951L;
+  private static final ResourceLocator settings = new ResourceLocator(
+      "com.silverpeas.socialNetwork.settings.socialNetworkSettings", "");
+  public static int elements_per_page = DEFAULT_ELEMENT_PER_PAGE;
+
+  static {
+    if (StringUtil.isInteger(settings.getString("profil.elements_per_page"))) {
+      elements_per_page = Integer.parseInt(settings.getString("profil.elements_per_page"));
+    }
+  }
+  static String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
+      "ApplicationURL");
+  static String iconURL = m_context + "/socialNetwork/jsp/icons/";
+  static SocialInformationType type;
+  private static SocialNetworkService socialNetworkService = new SocialNetworkService();
+
+  /**
+   * servlet method for returning JSON format
+   * @param request
+   * @param response
+   * @throws ServletException
+   * @throws IOException
+   */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
-
     HttpSession session = request.getSession();
     MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(
-        "SilverSessionController");
-    locale = request.getLocale();
+        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+    Locale locale = request.getLocale();
     String userId = m_MainSessionCtrl.getUserId();
     socialNetworkService.setMyId(userId);
-
     String action = request.getParameter("Action");
-
     if ("getLastStatus".equalsIgnoreCase(action)) {
       String status = socialNetworkService.getLastStatusService();
       JSONObject jsonStatus = new JSONObject();
       jsonStatus.put("status", status);
       PrintWriter out = response.getWriter();
       out.println(jsonStatus);
-
     } else if ("updateStatus".equalsIgnoreCase(action)) {
-
       String status = request.getParameter("status");
       //if status equal null or empty so don't do update status and do get Last status
       if (StringUtil.isDefined(status)) {
@@ -96,47 +101,37 @@ public class JSONServlet extends HttpServlet {
       jsonStatus.put("status", status);
       PrintWriter out = response.getWriter();
       out.println(jsonStatus);
-
     } else {
       Map<Date, List<SocialInformation>> map = new LinkedHashMap<Date, List<SocialInformation>>();
-
       ResourceLocator multilang = new ResourceLocator(
-          "com.silverpeas.socialNetwork.multilang.socialNetworkBundle", locale);
- ResourceLocator settings = new ResourceLocator(
-        "com.silverpeas.socialNetwork.settings.socialNetworkSettings", Locale.getDefault());
+          "com.silverpeas.socialNetwork.multilang.socialNetworkBundle", locale.getLanguage());
       try {
         //recover the type
         type = SocialInformationType.valueOf(request.getParameter("type"));
-
         //recover the first Element
         int paginationIndex = DEFAULT_OFFSET;
         if (StringUtil.isInteger(request.getParameter("offset"))) {
           paginationIndex = Integer.parseInt(request.getParameter("offset"));
         }
-        //recover the numbre elements per page
-        int elementsPerPage = DEFAULT_ELEMENT_PER_PAGE;
-        if (StringUtil.isInteger(settings.getString("profil.elements_per_page"))) {
-          elementsPerPage = Integer.parseInt(
-              settings.getString("profil.elements_per_page"));
-        }
-        socialNetworkService.setElementPerPage(elementsPerPage);
-        map = socialNetworkService.getSocialInformation(type, elementsPerPage, paginationIndex);
+        socialNetworkService.setElementPerPage(elements_per_page);
+        map = socialNetworkService.getSocialInformation(type, elements_per_page, paginationIndex);
 
       } catch (Exception ex) {
         Logger.getLogger(JSONServlet.class.getName()).log(Level.SEVERE, null, ex);
       }
       response.setCharacterEncoding("UTF-8");
       PrintWriter out = response.getWriter();
-      out.println(toJsonS(map));
+      out.println(toJsonS(map, locale));
 
     }
   }
-/**
+
+  /**
    * convert the SocialInormation to JSONObject
    * @param event
    * @return JSONObject
    */
-  private JSONObject toJson(SocialInformation event) {
+  private JSONObject toJson(SocialInformation event, Locale locale) {
     SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm", locale);
 
     JSONObject valueObj = new JSONObject();
@@ -172,24 +167,24 @@ public class JSONServlet extends HttpServlet {
         getIconUrl(SocialInformationType.valueOf(event.getType())) + event.getIcon());
     return valueObj;
   }
-/**
+
+  /**
    * convert the Map of socailInformation to JSONArray
    * @param Map<Date, List<SocialInformation>> map
    * @return JSONArray
    */
-  private JSONArray toJsonS(Map<Date, List<SocialInformation>> map) {
+  private JSONArray toJsonS(Map<Date, List<SocialInformation>> map, Locale locale) {
     SimpleDateFormat formatDate = new SimpleDateFormat("EEEE, dd MMMM yyyy", locale);
     JSONArray result = new JSONArray();
     for (Map.Entry<Date, List<SocialInformation>> entry : map.entrySet()) {
       JSONArray jsonArrayDateWithValues = new JSONArray();
       Object key = entry.getKey();
-
       JSONArray jsonArray = new JSONArray();
       JSONObject jsonObject = new JSONObject();
       jsonObject.put("day", formatDate.format(key));
       List<SocialInformation> events = entry.getValue();
       for (SocialInformation event : events) {
-        jsonArray.put(toJson(event));
+        jsonArray.put(toJson(event, locale));
       }
       jsonArrayDateWithValues.put(jsonObject);
       jsonArrayDateWithValues.put(jsonArray);
@@ -197,27 +192,26 @@ public class JSONServlet extends HttpServlet {
     }
     return result;
   }
-/**
- * return the url of icon
- * @param SocialInformationType type
- * @return String
- */
+
+  /**
+   * return the url of icon
+   * @param SocialInformationType type
+   * @return String
+   */
   private String getIconUrl(SocialInformationType type) {
     String url = iconURL;
-    if (type.equals(SocialInformationType.PHOTO)) {
+    if (SocialInformationType.PHOTO.equals(type)) {
       url = m_context;
     }
     return url;
   }
-/**
- * return the title when the type is RELATIONSHIP
- * @param SocialInformationType type
- * @return String
- */
+
+  /**
+   * return the title when the type is RELATIONSHIP
+   * @param SocialInformationType type
+   * @return String
+   */
   private String getTitle(SocialInformation event) {
-    String title = event.getTitle();
-    if (type.equals(SocialInformationType.RELATIONSHIP)) {
-    }
-    return title;
+    return event.getTitle();
   }
 }
