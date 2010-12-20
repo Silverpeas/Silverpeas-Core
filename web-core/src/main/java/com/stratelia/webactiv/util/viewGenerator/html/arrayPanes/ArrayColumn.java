@@ -271,7 +271,7 @@ public class ArrayColumn implements SimpleGraphicElement {
         // standard non-javascript url. Add parameters to the url
         if (isAP == false) {
           String temp = result.toString();
-          if (temp.indexOf("?") >= 0) {
+          if (temp.indexOf('?') >= 0 || href.indexOf("?") >=0) {
             // there are already some parameters
             href.append(sep);
           } else {
