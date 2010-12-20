@@ -39,15 +39,11 @@ import java.util.Calendar;
 import java.util.Date;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import java.text.SimpleDateFormat;
-import java.util.List;
 
 /**
  * this class allows to convert objects into object "Event" usable by the monthCalendar
  */
 public class Event extends Object {
-
-  private static final SimpleDateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
   private String id = null;
   private String name = null;
@@ -406,57 +402,5 @@ public class Event extends Object {
 
   public void setTooltip(String tooltip) {
     this.tooltip = tooltip;
-  }
-
-  /**
-   * Gets the start date and time of this event in the ISO 8601 format
-   * For example: 2010-01-01T14:30:00
-   * @return the ISO 8601 format of the start date and time of this event.
-   */
-  public String getStartDateTimeInISO() {
-    return isoDateFormat.format(getStartDate()) + "T" + getStartHour();
-  }
-
-  /**
-   * Gets the end date and time of this event in the ISO 8601 format
-   * For example: 2010-01-01T14:30:00
-   * @return the ISO 8601 format of the end date and time of this event.
-   */
-  public String getEndDateTimeInISO() {
-      return isoDateFormat.format(endDate) + "T" + getEndHour();
-  }
-
-  /**
-   * Gets a javascript representation of this event in the form: { id: EVENT_ID, instanceId:
-   * EVENT_INSTANCE_ID, className: EVENT_COLORDEF, title: EVENT_TITLE, startDate: START_DATE,
-   * endDate: END_DATE] } where EVENT_ID, EVENT_INSTANCE_ID, EVENT_COLORDEF, EVENT_TITLE, START_DATE,
-   * and END_DATE are respectively the identifier, the componenent instance identifier, the CSS class
-   * defining the color, the title, the start date time and the end date time of the
-   * event.
-   * @return a javascript representation of this event.
-   */
-  public String toJavaScript() {
-    return "{ id: \"" + getId() + "\", instanceId: \""  + getInstanceId() + "\", className: \"" +
-        getInstanceId() + "\" , title: \"" + getName() + "\", start: \""
-        + getStartDateTimeInISO() + "\", end: \"" + getEndDateTimeInISO() + "\" }";
-  }
-
-  /**
-   * Gets a javascript representation of all the specified events.
-   * In the javascript representation, the events are put into a javascript array:
-   * ([ EVENT1_AS_JAVASCRIPT, EVENT2_AS_JAVASCRIPT ] for example.
-   * @param events the events.
-   * @return a javascript representation of all the specified events.
-   */
-  public static String toJavaScript(final List<Event> events) {
-    StringBuilder descBuilder = new StringBuilder("[");
-    for (Event event : events) {
-      descBuilder.append(event.toJavaScript()).append(", ");
-    }
-    String desc = descBuilder.toString();
-    if (desc.endsWith(", ")) {
-      desc = desc.substring(0, desc.length() - 2);
-    }
-    return desc + " ]";
   }
 }
