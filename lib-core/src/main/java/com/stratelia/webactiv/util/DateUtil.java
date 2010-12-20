@@ -54,6 +54,7 @@ public class DateUtil {
   public static final FastDateFormat DATE_FORMATTER;
   public static final SimpleDateFormat DATETIME_PARSER;
   public static final FastDateFormat DATETIME_FORMATTER;
+  public static final FastDateFormat ISO8601DATE_FORMATTER;
   /**
    * Format and parse dates.
    */
@@ -69,6 +70,7 @@ public class DateUtil {
     TIME_PARSER = new SimpleDateFormat("HH:mm");
     TIME_PARSER.setLenient(false);
     TIME_FORMATTER = FastDateFormat.getInstance("HH:mm");
+    ISO8601DATE_FORMATTER = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm");
   }
 
   /**
@@ -551,6 +553,16 @@ public class DateUtil {
       return null;
     }
     return TIME_FORMATTER.format(calend.getTime());
+  }
+
+  /**
+   * Formats the specified date according to the ISO 8601 format.
+   * @param date the date to format.
+   * @return a String representation of the date in one of the ISO 8601 format (down to the minute
+   * and without the UTC offset).
+   */
+  public static String formatAsISO8601Date(final Date date) {
+    return ISO8601DATE_FORMATTER.format(date);
   }
 
   private DateUtil() {
