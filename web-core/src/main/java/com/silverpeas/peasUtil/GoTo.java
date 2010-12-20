@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
@@ -65,9 +66,7 @@ public abstract class GoTo extends HttpServlet {
       } else {
         if (!res.isCommitted()) { //The response was not previously sent
           if (redirect == null || !redirect.startsWith("http")) {
-            redirect = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-                "ApplicationURL")
-                + "/autoRedirect.jsp?" + redirect;
+            redirect = URLManager.getApplicationURL() + "/autoRedirect.jsp?" + redirect;
           }
           res.sendRedirect(redirect);
         }
@@ -95,8 +94,7 @@ public abstract class GoTo extends HttpServlet {
 
   private void accessForbidden(HttpServletRequest req, HttpServletResponse res)
       throws IOException {
-    res.sendRedirect(GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL")
-        + "/admin/jsp/accessForbidden.jsp");
+    res.sendRedirect(URLManager.getApplicationURL() + "/admin/jsp/accessForbidden.jsp");
   }
 
   public String getObjectId(HttpServletRequest request) {
