@@ -25,7 +25,7 @@
 package com.stratelia.silverpeas.domains.sqldriver;
 
 import com.stratelia.silverpeas.authentication.Authentication;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.domains.DriverSettings;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
@@ -34,7 +34,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
  * @version 1.0
  */
 
-public class SQLSettings extends Object {
+public class SQLSettings extends DriverSettings {
   // For DB Access
   protected String SQLClassName = "";
   protected String SQLJDBCUrl = "";
@@ -227,73 +227,7 @@ public class SQLSettings extends Object {
     return SQLUserGroupGIDColumnName;
   }
 
-  // Local functions
-  /**
-   * Use this function to be sure to obtain a string without error, even if the property is not
-   * found. (in that case, returns empty string)
-   * @param rs the properties file
-   * @param key the key value to retreive
-   */
-  protected String getSureString(ResourceLocator rs, String key) {
-    String valret = null;
-
-    try {
-      valret = rs.getString(key, null);
-      if (valret == null) {
-        valret = "";
-      }
-    } catch (Exception e) {
-      valret = "";
-    }
-    return valret;
-  }
-
-  protected String getStringValue(ResourceLocator rs, String key,
-      String defaultValue) {
-    String valret = defaultValue;
-
-    try {
-      valret = rs.getString(key, null);
-      if (valret == null) {
-        valret = defaultValue;
-      }
-    } catch (Exception e) {
-      valret = defaultValue;
-    }
-    return valret;
-  }
-
-  protected boolean getBooleanValue(ResourceLocator rs, String key,
-      boolean defaultValue) {
-    String res = rs.getString(key, null);
-    boolean valret = defaultValue;
-
-    if (res != null) {
-      if (res.equalsIgnoreCase("true") || res.equalsIgnoreCase("1")
-          || res.equalsIgnoreCase("yes") || res.equalsIgnoreCase("oui")
-          || res.equalsIgnoreCase("ok"))
-        valret = true;
-      else
-        valret = false;
-    }
-    return valret;
-  }
-
-  protected int getIntValue(ResourceLocator rs, String key, int defaultValue) {
-    String res = rs.getString(key, null);
-    int valret = defaultValue;
-
-    if (res != null) {
-      try {
-        valret = Integer.parseInt(res);
-      } catch (Exception e) {
-        SilverTrace.error("admin", "LDAPSettings.getUserIds()",
-            "admin.MSG_ERR_LDAP_GENERAL", "Int parse error : " + key + " = "
-            + res, e);
-      }
-    }
-    return valret;
-  }
+  
 
   public String trunc(String src, int max) {
     if ((src == null) || (src.length() <= max)) {

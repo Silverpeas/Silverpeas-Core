@@ -21,14 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.domains.ldapdriver;
 
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPConstraints;
 import com.novell.ldap.LDAPSearchConstraints;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.domains.DriverSettings;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -38,12 +37,11 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * @author tleroi
  * @version 1.0
  */
+public class LDAPSettings extends DriverSettings {
 
-public class LDAPSettings extends Object {
   public final static String TIME_STAMP_MSAD = "uSNChanged";
   public final static String TIME_STAMP_MSAD_TT = "whenChanged";
   public final static String TIME_STAMP_NDS = "modifyTimeStamp";
-
   protected String LDAPHost = null;
   protected String LDAPImpl = null;
   protected int LDAPPort = 389;
@@ -62,14 +60,12 @@ public class LDAPSettings extends Object {
   protected int LDAPBatchSize = 1;
   protected boolean LDAPSecured = false;
   protected int LDAPPortSecured = 636;
-
   protected boolean SYNCHROautomatic = false;
   protected boolean SYNCHRORecursToGroups = true;
   protected boolean SYNCHROthreaded = false;
   protected String SYNCHROtimeStampVar = "uSNChanged";
   protected boolean SYNCHROCacheEnabled = true;
   protected boolean SYNCHROImportUsers = true;
-
   protected String usersClassName = null;
   protected String usersFilter = null;
   // AdminUser
@@ -79,7 +75,6 @@ public class LDAPSettings extends Object {
   protected String usersFirstNameField = null;
   protected String usersLastNameField = null;
   protected String usersEmailField = null;
-
   // Groups
   protected String groupsType = null;
   protected String groupsClassName = null;
@@ -92,7 +87,6 @@ public class LDAPSettings extends Object {
   protected String groupsMemberField = null;
   protected String groupsNameField = null;
   protected String groupsDescriptionField = null;
-
   // IHM
   protected boolean ihmImportUsers = true;
   protected boolean ihmImportGroups = true;
@@ -208,10 +202,11 @@ public class LDAPSettings extends Object {
   }
 
   public AbstractLDAPTimeStamp newLDAPTimeStamp(String theValue) {
-    if (TIME_STAMP_MSAD.equalsIgnoreCase(getTimeStampVar()))
+    if (TIME_STAMP_MSAD.equalsIgnoreCase(getTimeStampVar())) {
       return new LDAPTimeStampMSAD(this, theValue);
-    else
+    } else {
       return new LDAPTimeStampNDS(this, theValue);
+    }
   }
 
   public String getLDAPImpl() {
@@ -268,10 +263,11 @@ public class LDAPSettings extends Object {
     if (allocateNew) {
       boolean doReferrals = false;
 
-      if (LDAPMaxNbReferrals == 0)
+      if (LDAPMaxNbReferrals == 0) {
         doReferrals = false;
-      else
+      } else {
         doReferrals = true;
+      }
       theSearchConstraints = new LDAPSearchConstraints(
           LDAPMaxMsClientTimeLimit, LDAPMaxSecServerTimeLimit,
           LDAPSearchConstraints.DEREF_NEVER, LDAPMaxNbEntryReturned,
@@ -288,10 +284,11 @@ public class LDAPSettings extends Object {
     if (allocateNew) {
       boolean doReferrals = false;
 
-      if (LDAPMaxNbReferrals == 0)
+      if (LDAPMaxNbReferrals == 0) {
         doReferrals = false;
-      else
+      } else {
         doReferrals = true;
+      }
       theConstraints = new LDAPConstraints(LDAPMaxMsClientTimeLimit,
           doReferrals, null, LDAPMaxNbReferrals);
     } else {
@@ -304,10 +301,11 @@ public class LDAPSettings extends Object {
   // -----------
   public LDAPUser newLDAPUser() throws AdminException {
     try {
-      if (usersType != null)
+      if (usersType != null) {
         return (LDAPUser) Class.forName(usersType).newInstance();
-      else
+      } else {
         return new LDAPUser();
+      }
     } catch (Exception e) {
       throw new AdminException("LDAPSettings.newLDAPUser",
           SilverpeasException.ERROR,
@@ -326,9 +324,8 @@ public class LDAPSettings extends Object {
   public String getUsersFullFilter() {
     if (usersFilter != null && usersFilter.length() > 0) {
       return "(&(objectClass=" + usersClassName + ")" + usersFilter + ")";
-    } else {
-      return "(objectClass=" + usersClassName + ")";
     }
+    return "(objectClass=" + usersClassName + ")";
   }
 
   // AdminUser fields
@@ -424,12 +421,13 @@ public class LDAPSettings extends Object {
   }
 
   public String getGroupsSpecificGroupsBaseDN() {
-    if (!StringUtil.isDefined(groupsSpecificGroupsBaseDN))
+    if (!StringUtil.isDefined(groupsSpecificGroupsBaseDN)) {
       return LDAPUserBaseDN;
-    else if (groupsSpecificGroupsBaseDN.equalsIgnoreCase("root"))
+    } else if (groupsSpecificGroupsBaseDN.equalsIgnoreCase("root")) {
       return "";
-    else
+    } else {
       return groupsSpecificGroupsBaseDN;
+    }
   }
 
   // Group fields
@@ -513,73 +511,5 @@ public class LDAPSettings extends Object {
 
   public boolean displayImportGroups() {
     return ihmImportGroups;
-  }
-
-  // Local functions
-  /**
-   * Use this function to be sure to obtain a string without error, even if the property is not
-   * found. (in that case, returns empty string)
-   * @param rs the properties file
-   * @param key the key value to retreive
-   */
-  protected String getSureString(ResourceLocator rs, String key) {
-    String valret = null;
-
-    try {
-      valret = rs.getString(key, null);
-      if (valret == null) {
-        valret = "";
-      }
-    } catch (Exception e) {
-      valret = "";
-    }
-    return valret;
-  }
-
-  protected String getStringValue(ResourceLocator rs, String key,
-      String defaultValue) {
-    String valret = defaultValue;
-
-    try {
-      valret = rs.getString(key, null);
-      if (valret == null) {
-        valret = defaultValue;
-      }
-    } catch (Exception e) {
-      valret = defaultValue;
-    }
-    return valret;
-  }
-
-  protected boolean getBooleanValue(ResourceLocator rs, String key,
-      boolean defaultValue) {
-    String res = rs.getString(key, null);
-    boolean valret = defaultValue;
-
-    if (res != null) {
-      if (res.equalsIgnoreCase("true") || res.equalsIgnoreCase("1")
-          || res.equalsIgnoreCase("yes") || res.equalsIgnoreCase("oui")
-          || res.equalsIgnoreCase("ok"))
-        valret = true;
-      else
-        valret = false;
-    }
-    return valret;
-  }
-
-  protected int getIntValue(ResourceLocator rs, String key, int defaultValue) {
-    String res = rs.getString(key, null);
-    int valret = defaultValue;
-
-    if (res != null) {
-      try {
-        valret = Integer.parseInt(res);
-      } catch (Exception e) {
-        SilverTrace.error("admin", "LDAPSettings.getUserIds()",
-            "admin.MSG_ERR_LDAP_GENERAL", "Int parse error : " + key + " = "
-            + res, e);
-      }
-    }
-    return valret;
   }
 }
