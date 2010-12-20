@@ -21,12 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
 import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
+import javax.servlet.http.HttpServletRequest;
+import org.apache.ecs.xhtml.address;
+import static com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane.*;
 /**
  * @author squere
  * @version
@@ -46,7 +47,6 @@ public class ArrayColumn implements SimpleGraphicElement {
   protected ArrayPane pane;
   protected int m_Behaviour = COLUMN_BEHAVIOUR_DEFAULT;
   protected String width = null;
-
   /**
    * In some cases, it may be preferable to specify the routing address (via
    * {@link #setRoutingAddress(String address)}) If not the {@link #print()} method defaults to an
@@ -72,6 +72,7 @@ public class ArrayColumn implements SimpleGraphicElement {
 
   /**
    * standard method that returns the CVS-managed version string
+   * @return 
    */
   public static String getVersion() {
     String v = "$Id: ArrayColumn.java,v 1.6 2008/04/16 14:45:06 neysseri Exp $";
@@ -82,6 +83,7 @@ public class ArrayColumn implements SimpleGraphicElement {
   /**
    * This method sets the routing address. This is actually the URL of the page to which requests
    * will be routed when the user clicks on a column header link.
+   * @param address 
    */
   public void setRoutingAddress(String address) {
     m_RoutingAddress = address;
@@ -115,6 +117,7 @@ public class ArrayColumn implements SimpleGraphicElement {
 
   /**
    * This method changes the column behaviour, if the argument behaviour is valid
+   * @param behaviour 
    * @deprecated
    */
   public void setBehaviour(int behaviour) {
@@ -179,8 +182,6 @@ public class ArrayColumn implements SimpleGraphicElement {
     return width;
   }
 
-  // admittedly ultra-crude, but alas, we run outta time, here...
-
   /**
    * Method declaration
    * @param address
@@ -188,12 +189,7 @@ public class ArrayColumn implements SimpleGraphicElement {
    * @see
    */
   protected boolean isArrayPaneURL(String address) {
-    if (address != null
-        && address.trim().toLowerCase().startsWith("arraypane:")) {
-      return (true);
-    } else {
-      return (false);
-    }
+    return (address != null && address.trim().toLowerCase().startsWith("arraypane:"));
   }
 
   /**
@@ -201,12 +197,13 @@ public class ArrayColumn implements SimpleGraphicElement {
    * @return
    * @see
    */
+  @Override
   public String print() {
     return print(false);
   }
 
   public String print(boolean xhtml) {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
     boolean isAP = false;
     String JSStartString = "";
     String JSEndString = "";
@@ -238,14 +235,12 @@ public class ArrayColumn implements SimpleGraphicElement {
         // routing address computation. By default, route to the short name for
         // the calling page
         if (m_RoutingAddress == null) {
-          address = ((javax.servlet.http.HttpServletRequest) pane.getRequest())
-              .getRequestURI();
+          address = ((HttpServletRequest) pane.getRequest()).getRequestURI();
           // only get a relative http address
-          address = address.substring(address.lastIndexOf("/") + 1, address
-              .length());
+          address = address.substring(address.lastIndexOf('/') + 1, address.length());
           // if the previous request had parameters, remove them
-          if (address.lastIndexOf("?") >= 0) {
-            address = address.substring(0, address.lastIndexOf("?"));
+          if (address.lastIndexOf('?') >= 0) {
+            address = address.substring(0, address.lastIndexOf('?'));
           }
         } else {
           address = m_RoutingAddress;
@@ -271,39 +266,31 @@ public class ArrayColumn implements SimpleGraphicElement {
         // standard non-javascript url. Add parameters to the url
         if (isAP == false) {
           String temp = result.toString();
-          if (temp.indexOf('?') >= 0 || href.indexOf("?") >=0) {
-            // there are already some parameters
+          if (temp.indexOf('?') >= 0 || href.indexOf("?") >= 0) {// there are already some parameters
             href.append(sep);
           } else {
             // there are no parameters
             href.append("?");
           }
-          href.append(ArrayPane.ACTION_PARAMETER_NAME).append("=Sort")
-              .append(sep).append(ArrayPane.TARGET_PARAMETER_NAME).append("=")
-              .append(pane.getName()).append(sep).append(
-              ArrayPane.COLUMN_PARAMETER_NAME).append("=").append(
-              getColumnNumber());
-        }
-        // arraypane javascript function. Pass it parameters.
+          href.append(ACTION_PARAMETER_NAME).append("=Sort").append(sep);
+          href.append(TARGET_PARAMETER_NAME).append('=').append(pane.getName());
+          href.append(sep).append(COLUMN_PARAMETER_NAME).append('=').append(getColumnNumber());
+        } // arraypane javascript function. Pass it parameters.
         else {
-          href.append("'").append(pane.getName()).append("',").append(
-              getColumnNumber());
+          href.append("'").append(pane.getName()).append("',").append(getColumnNumber());
         }
         href.append(JSEndString);
-
         result.append("<a class=\"ArrayColumn\" href=\"").append(href);
         result.append("\">").append(title).append("</a>");
 
         result.append("</th>");
-      }
-      // behaviour 'no trigger'
+      } // behaviour 'no trigger'
       else {
         result.append(title).append("</th>");
       }
     } else {
       result.append(" class=\"ArrayColumn\">&nbsp;</th>");
     }
-
     return result.toString();
   }
 }
