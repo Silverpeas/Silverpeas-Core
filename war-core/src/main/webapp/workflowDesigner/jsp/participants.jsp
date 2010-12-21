@@ -80,7 +80,7 @@ if ( participants != null )
                               "javascript:confirmRemove('RemoveParticipant?participant=" 
                               + URLEncoder.encode(strParticipantName, UTF8) + "', '"
                               + resource.getString("workflowDesigner.confirmRemoveJS") + " "
-                              + Encode.javaStringToJsString( strParticipantName ) + " ?');" );
+                              + EncodeHelper.javaStringToJsString( strParticipantName ) + " ?');" );
         updateIcon.setProperties(resource.getIcon("workflowDesigner.smallUpdate"),
                                  resource.getString("GML.modify"),
                                  "ModifyParticipant?participant=" + strParticipantName );

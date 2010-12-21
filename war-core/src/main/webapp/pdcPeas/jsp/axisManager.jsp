@@ -154,8 +154,8 @@
 				item = 0;
 				while (IteratorP.hasNext()){
 					h = (AxisHeader)IteratorP.next();
-					nom = Encode.javaStringToHtmlString(h.getName());
-					desc = Encode.javaStringToHtmlString(h.getDescription());
+					nom = EncodeHelper.javaStringToHtmlString(h.getName());
+					desc = EncodeHelper.javaStringToHtmlString(h.getDescription());
 					o = h.getAxisOrder();
 					ordre = new Integer(o).toString();
 					if (!(h.getPK().getId()).equals(id)){
@@ -182,8 +182,8 @@
 				item = 0;
 				while (IteratorS.hasNext()){
 					h = (AxisHeader)IteratorS.next();
-					nom = Encode.javaStringToHtmlString(h.getName());
-					desc = Encode.javaStringToHtmlString(h.getDescription());
+					nom = EncodeHelper.javaStringToHtmlString(h.getName());
+					desc = EncodeHelper.javaStringToHtmlString(h.getDescription());
 					o = h.getAxisOrder();
 					ordre = new Integer(o).toString();
 					if (!(h.getPK().getId()).equals(id)){
@@ -216,8 +216,8 @@
 		while (codes.hasNext())
 		{
 			lang = (String) codes.next();
-			out.println("var name_"+lang+" = \""+Encode.javaStringToJsString(axisHeader.getName(lang))+"\";\n");
-			out.println("var desc_"+lang+" = \""+Encode.javaStringToJsString(axisHeader.getDescription(lang))+"\";\n");
+			out.println("var name_"+lang+" = \""+EncodeHelper.javaStringToJsString(axisHeader.getName(lang))+"\";\n");
+			out.println("var desc_"+lang+" = \""+EncodeHelper.javaStringToJsString(axisHeader.getDescription(lang))+"\";\n");
 		}
 	}
 	%>
@@ -270,11 +270,11 @@
 	  <% } %>
       <tr> 
         <td width="30%" class="txtlibform" nowrap><%=resource.getString("GML.nom")%>&nbsp;:</td>
-        <td nowrap><input type="text" style="text-align:left;" name="Name" id="AxisName" maxlength="25" size="30" value="<%=Encode.javaStringToHtmlString(name)%>" onKeyUP="javascript:highlightItem(document.axisForm.Order,this.value)">&nbsp;<img src="<%=resource.getIcon("pdcPeas.mandatoryField")%>" width="5" align="absmiddle"></td>
+        <td nowrap><input type="text" style="text-align:left;" name="Name" id="AxisName" maxlength="25" size="30" value="<%=EncodeHelper.javaStringToHtmlString(name)%>" onKeyUP="javascript:highlightItem(document.axisForm.Order,this.value)">&nbsp;<img src="<%=resource.getIcon("pdcPeas.mandatoryField")%>" width="5" align="absmiddle"></td>
       </tr>
       <tr> 
 	  <td width="30%" class="txtlibform" valign="top" nowrap><%=resource.getString("pdcPeas.definition")%>&nbsp;:</td>
-        <td><TEXTAREA style="width:100%" name="Description" id="AxisDescription" rows="3"><%=Encode.javaStringToHtmlString(description)%></TEXTAREA></td>
+        <td><TEXTAREA style="width:100%" name="Description" id="AxisDescription" rows="3"><%=EncodeHelper.javaStringToHtmlString(description)%></TEXTAREA></td>
      </tr>
       <tr>
         <td class="txtlibform" nowrap><%=resource.getString("GML.type")%>&nbsp;:</td>
@@ -292,7 +292,7 @@
 					// affiche les axes fr�res
 					while (it.hasNext()){
 						tempAxisHeader = (AxisHeader)it.next();
-						axisName = Encode.javaStringToHtmlString(tempAxisHeader.getName());
+						axisName = EncodeHelper.javaStringToHtmlString(tempAxisHeader.getName());
 						order = (new Integer( tempAxisHeader.getAxisOrder() )).toString();
 						if (!(tempAxisHeader.getPK().getId()).equals(id)) {
 							out.println("<option value=\""+axisName+sepOptionValueTag+order+"\">"+axisName+"</option>");

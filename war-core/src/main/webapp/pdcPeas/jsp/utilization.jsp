@@ -144,7 +144,7 @@ Icon aspiIcon = null;
 	        else 
 				arrayLine.addArrayCellText(cellCenterStart+"<img src=\""+resource.getIcon("pdcPeas.icoSecondaryAxis")+"\" alt=\""+resource.getString("pdcPeas.secondaryAxis")+"\" title=\""+resource.getString("pdcPeas.secondaryAxis")+"\">"+cellCenterEnd);
 
-			arrayLine.addArrayCellText("<a href=\""+pdcUtilizationContext+"UtilizationEditAxis?Id="+usedAxisId+"\" title=\""+resource.getString("pdcPeas.axisUtilizationParameter")+" : "+Encode.javaStringToHtmlString(usedAxis._getAxisName())+"\"><span class=textePetitBold>"+Encode.javaStringToHtmlString(usedAxis._getAxisName())+"</a></span>");
+			arrayLine.addArrayCellText("<a href=\""+pdcUtilizationContext+"UtilizationEditAxis?Id="+usedAxisId+"\" title=\""+resource.getString("pdcPeas.axisUtilizationParameter")+" : "+EncodeHelper.javaStringToHtmlString(usedAxis._getAxisName())+"\"><span class=textePetitBold>"+EncodeHelper.javaStringToHtmlString(usedAxis._getAxisName())+"</a></span>");
 
 			arrayLine.addArrayCellText(usedAxis._getBaseValueName());
 

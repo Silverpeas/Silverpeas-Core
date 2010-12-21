@@ -68,8 +68,8 @@ out.println(gef.getLookStyleSheet());
 
                 arrayLine = arrayPane.addArrayLine();
 
-                arrayLine.addArrayCellLink("<div align=left><img src=\""+resource.getIcon("pdcPeas.icoComponent")+"\" border=0 alt=\""+resource.getString("pdcPeas.viewAxis")+" : "+Encode.javaStringToHtmlString(axisHeader.getName())+"\" title=\""+resource.getString("pdcPeas.viewAxis")+" : "+Encode.javaStringToHtmlString(axisHeader.getName())+"\"></div>", "vsicAddTree?Id="+axisId);
-                arrayLine.addArrayCellText("<span class=textePetitBold>"+Encode.javaStringToHtmlString(axisHeader.getName())+"</span>");
+                arrayLine.addArrayCellLink("<div align=left><img src=\""+resource.getIcon("pdcPeas.icoComponent")+"\" border=0 alt=\""+resource.getString("pdcPeas.viewAxis")+" : "+EncodeHelper.javaStringToHtmlString(axisHeader.getName())+"\" title=\""+resource.getString("pdcPeas.viewAxis")+" : "+EncodeHelper.javaStringToHtmlString(axisHeader.getName())+"\"></div>", "vsicAddTree?Id="+axisId);
+                arrayLine.addArrayCellText("<span class=textePetitBold>"+EncodeHelper.javaStringToHtmlString(axisHeader.getName())+"</span>");
         }
 
         out.println(arrayPane.print());

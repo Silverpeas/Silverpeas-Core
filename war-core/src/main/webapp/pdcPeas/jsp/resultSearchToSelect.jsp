@@ -37,7 +37,7 @@ String showSndSearchAxis = (String) request.getAttribute("ShowSndSearchAxis");
 String theSpace = (String) request.getAttribute("SpaceSelected");
 String theComponent = (String) request.getAttribute("ComponentSelected");
 String theQuery = (String) request.getAttribute("theQuery");
-theQuery = Encode.javaStringToHtmlString(theQuery);
+theQuery = EncodeHelper.javaStringToHtmlString(theQuery);
 
 String theAuthor = (String) request.getAttribute("theAuthor");
 String theAfterDate = (String) request.getAttribute("theAfterDate");
@@ -277,10 +277,10 @@ if (theBeforeDate == null){
 			stars = "";
 
 			// affiche le titre
-			line.addArrayCellLink(Encode.javaStringToHtmlString(results[i][1]),results[i][2]);
+			line.addArrayCellLink(EncodeHelper.javaStringToHtmlString(results[i][1]),results[i][2]);
 			
 			// affiche l'emplacement
-			line.addArrayCellText(Encode.javaStringToHtmlString(results[i][3]));
+			line.addArrayCellText(EncodeHelper.javaStringToHtmlString(results[i][3]));
 		  
 			// affiche l'extrait du document
 			line.addArrayCellText(results[i][4]);			 
@@ -374,11 +374,11 @@ if (theBeforeDate == null){
 		stars = "";
 		String contentid = ((Integer)alSilverContentIds.get(nI)).toString();
 		if (activeSelection.booleanValue())
-			arrayLine.addArrayCellText("<a href=\"GlobalContentForward?contentURL="+sURL+"&contentId="+contentid+"\" target=_blank><span class=textePetitBold>"+Encode.javaStringToHtmlString(sName)+"</span></a>");
+			arrayLine.addArrayCellText("<a href=\"GlobalContentForward?contentURL="+sURL+"&contentId="+contentid+"\" target=_blank><span class=textePetitBold>"+EncodeHelper.javaStringToHtmlString(sName)+"</span></a>");
 		else
-			arrayLine.addArrayCellLink("<span class=textePetitBold>"+Encode.javaStringToHtmlString(sName)+"</span>","GlobalContentForward?contentURL="+sURL+"&contentId="+contentid);
-	    arrayLine.addArrayCellText(Encode.javaStringToHtmlString(sLocation));
-	    arrayLine.addArrayCellText(Encode.javaStringToHtmlString(sDescription));
+			arrayLine.addArrayCellLink("<span class=textePetitBold>"+EncodeHelper.javaStringToHtmlString(sName)+"</span>","GlobalContentForward?contentURL="+sURL+"&contentId="+contentid);
+	    arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(sLocation));
+	    arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(sDescription));
 		if (activeSelection.booleanValue())
 			arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"resultObjects\" value=\""+sId+"-"+sInstanceId+"\">");
 			

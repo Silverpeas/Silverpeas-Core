@@ -83,7 +83,7 @@ if ( states != null )
                               "javascript:confirmRemove('RemoveState?state=" 
                               + URLEncoder.encode(strStateName, UTF8) + "', '"
                               + resource.getString("workflowDesigner.confirmRemoveJS") + " "
-                              + Encode.javaStringToJsString( strStateName ) + " ?');" );
+                              + EncodeHelper.javaStringToJsString( strStateName ) + " ?');" );
         updateIcon.setProperties(resource.getIcon("workflowDesigner.smallUpdate"),
                                  resource.getString("GML.modify"),
                                  "ModifyState?state=" + strStateName );

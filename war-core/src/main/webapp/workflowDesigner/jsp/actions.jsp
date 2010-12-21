@@ -83,7 +83,7 @@ if ( actions != null )
                               "javascript:confirmRemove('RemoveAction?action=" 
                               + URLEncoder.encode(strActionName, UTF8) + "', '"
                               + resource.getString("workflowDesigner.confirmRemoveJS")
-                              + " " + Encode.javaStringToJsString( strActionName ) + " ?');" );
+                              + " " + EncodeHelper.javaStringToJsString( strActionName ) + " ?');" );
         
         updateIcon.setProperties(resource.getIcon("workflowDesigner.smallUpdate"),
                                  resource.getString("GML.modify"),

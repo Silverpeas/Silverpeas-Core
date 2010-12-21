@@ -109,7 +109,7 @@ void displayAxisByType(boolean showAllAxis, String axisLabel, List axis, SearchC
             for (int i=0; i<axis.size(); i++){
 				searchAxis		= (SearchAxis) axis.get(i);
                 axisId			= searchAxis.getAxisId();
-                axisName		= Encode.javaStringToHtmlString(searchAxis.getAxisName(language));
+                axisName		= EncodeHelper.javaStringToHtmlString(searchAxis.getAxisName(language));
                 nbPositions 	= searchAxis.getNbObjects();
                 valueInContext 	= getValueIdFromPdcSearchContext(axisId, searchContext);
                 if (nbPositions != 0)
@@ -424,7 +424,7 @@ function sendSelectionQuery() {
 
 function addSubscription() {
 	if (document.all["scName"].value == '') {
-		alert('<%=Encode.javaStringToJsString(resource.getString("pdcSubscription.Name.NotEmpty"))%>');
+		alert('<%=EncodeHelper.javaStringToJsString(resource.getString("pdcSubscription.Name.NotEmpty"))%>');
 		return;
 	}
 	

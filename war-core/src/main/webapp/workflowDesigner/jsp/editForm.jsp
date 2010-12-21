@@ -182,7 +182,7 @@
     row = formPane.addArrayLine();
     cellText = row.addArrayCellText( resource.getString("GML.name") );
     cellText.setStyleSheet( "txtlibform" );
-    cellInput = row.addArrayCellInputText( "name", Encode.javaStringToHtmlString( form.getName() ) );
+    cellInput = row.addArrayCellInputText( "name", EncodeHelper.javaStringToHtmlString( form.getName() ) );
     cellInput.setSize( "80" );
 
     // Role
@@ -201,7 +201,7 @@
     row = formPane.addArrayLine();
     cellText = row.addArrayCellText( resource.getString("workflowDesigner.HTMLFileName") );
     cellText.setStyleSheet( "txtlibform" );
-    cellInput = row.addArrayCellInputText( "HTMLFileName", Encode.javaStringToHtmlString( form.getHTMLFileName() ) );
+    cellInput = row.addArrayCellInputText( "HTMLFileName", EncodeHelper.javaStringToHtmlString( form.getHTMLFileName() ) );
     cellInput.setSize( "80" );
     
     //Fill the 'inputs' section
@@ -240,7 +240,7 @@
         sb.append( "', '" );
         sb.append( resource.getString("workflowDesigner.confirmRemoveJS") );
         sb.append( " " ); 
-        sb.append( Encode.javaStringToJsString( resource.getString("workflowDesigner.input") ) ); 
+        sb.append( EncodeHelper.javaStringToJsString( resource.getString("workflowDesigner.input") ) ); 
         sb.append( " ?');" ); 
         
         row = inputsPane.addArrayLine();
@@ -279,9 +279,9 @@
     out.println(board.printBefore());
 %>
 <FORM NAME="formForm" METHOD="POST" ACTION="UpdateForm">
-	<input type="hidden" name="name_original" value="<%=Encode.javaStringToHtmlString(form.getName())%>"/>
-    <input type="hidden" name="role_original" value="<%=Encode.javaStringToHtmlString(form.getRole())%>"/>
-    <input type="hidden" name="context" value="<%=Encode.javaStringToHtmlString(strContext)%>" />
+	<input type="hidden" name="name_original" value="<%=EncodeHelper.javaStringToHtmlString(form.getName())%>"/>
+    <input type="hidden" name="role_original" value="<%=EncodeHelper.javaStringToHtmlString(form.getRole())%>"/>
+    <input type="hidden" name="context" value="<%=EncodeHelper.javaStringToHtmlString(strContext)%>" />
 <%
     out.println( formPane.print() );
     out.println( "<br>");

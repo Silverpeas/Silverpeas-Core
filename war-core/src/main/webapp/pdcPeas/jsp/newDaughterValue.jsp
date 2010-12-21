@@ -124,12 +124,12 @@ if (valueToCreate != null){
       <tr> 
         <td class="txtlibform" valign="top"><%=resource.getString("pdcPeas.daughterValue")%>&nbsp;:</td>
         <td> 
-          <input type="text" style="text-align:left;" name="Name" maxlength="75" size="75" value="<%=Encode.javaStringToHtmlString(name)%>"  onKeyUP="javascript:highlightItem(document.editValue.Order,this.value)">&nbsp;<img src="<%=resource.getIcon("pdcPeas.mandatoryField")%>" width=5 align="absmiddle"> 
+          <input type="text" style="text-align:left;" name="Name" maxlength="75" size="75" value="<%=EncodeHelper.javaStringToHtmlString(name)%>"  onKeyUP="javascript:highlightItem(document.editValue.Order,this.value)">&nbsp;<img src="<%=resource.getIcon("pdcPeas.mandatoryField")%>" width=5 align="absmiddle"> 
         </td>
       </tr>
 	 <tr>
 		<td class="txtlibform" valign="top" width="30%"><%=resource.getString("pdcPeas.definition")%>&nbsp;:</td>
-		<td><TEXTAREA name="Description" rows="4" cols="75"><%=Encode.javaStringToHtmlString(motherValueDescription)%></TEXTAREA></td>
+		<td><TEXTAREA name="Description" rows="4" cols="75"><%=EncodeHelper.javaStringToHtmlString(motherValueDescription)%></TEXTAREA></td>
 	</tr>
 	 <tr>
 	    <td class="txtlibform" width="30%" valign="top"><%=resource.getString("pdcPeas.sistersValue")%>&nbsp;:</td>
@@ -140,7 +140,7 @@ if (valueToCreate != null){
 					// affiche les soeurs de la valeur courante
 					while (it.hasNext()){
 						tempValue = (Value)it.next();
-						sisterValueName = Encode.javaStringToHtmlString(tempValue.getName());
+						sisterValueName = EncodeHelper.javaStringToHtmlString(tempValue.getName());
 						order = (new Integer( tempValue.getOrderNumber() )).toString();
 						out.println("<option value=\""+sisterValueName+sepOptionValueTag+order+"\">"+sisterValueName+"</option>");
 					}

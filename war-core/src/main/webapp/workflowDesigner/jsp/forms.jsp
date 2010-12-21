@@ -87,7 +87,7 @@ if ( forms != null )
                               "javascript:confirmRemove('RemoveForm?context=" 
                               + strContextEncoded + "', '"
                               + resource.getString("workflowDesigner.confirmRemoveJS") + " " 
-                              + Encode.javaStringToJsString( form.getName() + " " + strRoleName ) 
+                              + EncodeHelper.javaStringToJsString( form.getName() + " " + strRoleName ) 
                               + " ?');" );
         updateIcon.setProperties(resource.getIcon("workflowDesigner.smallUpdate"),
                                  resource.getString("GML.modify"),

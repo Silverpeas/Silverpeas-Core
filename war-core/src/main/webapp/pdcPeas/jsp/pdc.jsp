@@ -146,23 +146,23 @@ ArrayLine arrayLine = null;
 			
             arrayLine = arrayPane.addArrayLine();
             
-			arrayLine.addArrayCellLink("<div align=center><img src=\""+resource.getIcon("pdcPeas.icoComponent")+"\" border=0 alt=\""+resource.getString("pdcPeas.viewAxis")+" : "+Encode.javaStringToHtmlString(name)+"\" title=\""+resource.getString("pdcPeas.viewAxis")+" : "+Encode.javaStringToHtmlString(name)+"\"></div>", "ViewAxis?Id="+axisId).setValignement("top");
-           	arrayLine.addArrayCellText("<a href=\"ViewAxis?Id="+axisId+"\" title=\""+resource.getString("pdcPeas.viewAxis")+" : "+Encode.javaStringToHtmlString(name)+"\"><span class=textePetitBold>"+Encode.javaStringToHtmlString(name)+"</span></a>").setValignement("top");
+			arrayLine.addArrayCellLink("<div align=center><img src=\""+resource.getIcon("pdcPeas.icoComponent")+"\" border=0 alt=\""+resource.getString("pdcPeas.viewAxis")+" : "+EncodeHelper.javaStringToHtmlString(name)+"\" title=\""+resource.getString("pdcPeas.viewAxis")+" : "+EncodeHelper.javaStringToHtmlString(name)+"\"></div>", "ViewAxis?Id="+axisId).setValignement("top");
+           	arrayLine.addArrayCellText("<a href=\"ViewAxis?Id="+axisId+"\" title=\""+resource.getString("pdcPeas.viewAxis")+" : "+EncodeHelper.javaStringToHtmlString(name)+"\"><span class=textePetitBold>"+EncodeHelper.javaStringToHtmlString(name)+"</span></a>").setValignement("top");
 
-			arrayLine.addArrayCellText("<span class=\"textePetitBold\">"+Encode.javaStringToHtmlParagraphe(description)+"</span>").setValignement("top");
+			arrayLine.addArrayCellText("<span class=\"textePetitBold\">"+EncodeHelper.javaStringToHtmlParagraphe(description)+"</span>").setValignement("top");
 			
 			if (isAdmin)
 			{
 				IconPane iconPane = gef.getIconPane();
 	         	Icon updateIcon = iconPane.addIcon();
-	          	updateIcon.setProperties(resource.getIcon("pdcPeas.update"), resource.getString("pdcPeas.editAxis")+ " : "+Encode.javaStringToHtmlString(name) , "javascript:openSPWindow('EditAxis?Id="+axisId+"&Translation="+axisHeader.getLanguage()+"','editaxis')");
+	          	updateIcon.setProperties(resource.getIcon("pdcPeas.update"), resource.getString("pdcPeas.editAxis")+ " : "+EncodeHelper.javaStringToHtmlString(name) , "javascript:openSPWindow('EditAxis?Id="+axisId+"&Translation="+axisHeader.getLanguage()+"','editaxis')");
 	          	arrayLine.addArrayCellText(updateIcon.print()+"&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"deleteAxis\" value=\""+axisId+"\">");
 			}
 			else if (manageableAxis != null && manageableAxis.contains(axisId))
 			{
 				IconPane iconPane = gef.getIconPane();
 	         	Icon updateIcon = iconPane.addIcon();
-	          	updateIcon.setProperties(resource.getIcon("pdcPeas.update"), resource.getString("pdcPeas.editAxis")+ " : "+Encode.javaStringToHtmlString(name) , "javascript:openSPWindow('EditAxis?Id="+axisId+"&Translation="+axisHeader.getLanguage()+"','editaxis')");
+	          	updateIcon.setProperties(resource.getIcon("pdcPeas.update"), resource.getString("pdcPeas.editAxis")+ " : "+EncodeHelper.javaStringToHtmlString(name) , "javascript:openSPWindow('EditAxis?Id="+axisId+"&Translation="+axisHeader.getLanguage()+"','editaxis')");
 	          	arrayLine.addArrayCellText(updateIcon.print());
 			}
 			else

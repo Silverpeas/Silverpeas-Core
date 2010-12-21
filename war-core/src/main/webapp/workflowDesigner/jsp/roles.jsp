@@ -78,7 +78,7 @@ if ( roles != null )
     	                      "javascript:confirmRemove('RemoveRole?role=" 
                                                         + URLEncoder.encode(strRoleName, UTF8) + "', '"
                                                         + resource.getString("workflowDesigner.confirmRemoveJS")
-                                                        + " " + Encode.javaStringToJsString( strRoleName ) + " ?');" );
+                                                        + " " + EncodeHelper.javaStringToJsString( strRoleName ) + " ?');" );
     	updateIcon.setProperties(resource.getIcon("workflowDesigner.smallUpdate"),
     	                         resource.getString("GML.modify"),
     	                         "ModifyRole?role=" + URLEncoder.encode(strRoleName, UTF8) );

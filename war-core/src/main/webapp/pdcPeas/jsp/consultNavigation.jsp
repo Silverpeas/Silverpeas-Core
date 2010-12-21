@@ -206,21 +206,21 @@ for (int a=0; a<axisList.size(); a++) {
            out.print("<p><img id=\"but"+uniqueId+"\"");
            if (axisValues.size()>1) {
 				//there is almost one value under the root
-               out.println(" onClick=\"F7_swapClass(1,'mn"+uniqueId+"','showIt','hideIt','but"+uniqueId+"');\" src="+resource.getIcon("pdcPeas.minus")+" width=\"15\" align=\"absmiddle\">&nbsp;<a id=\"a"+uniqueId+"\" "+aClass+" title=\""+Encode.javaStringToHtmlString(valueDescr)+"\" href=\"javaScript:loadDescr('a"+uniqueId+"')\">&nbsp;&nbsp;&nbsp;"+Encode.javaStringToHtmlString(valueName)+"&nbsp;&nbsp;&nbsp;</a><img src="+resource.getIcon("pdcPeas.noColorPix")+" width=\"18\" align=\"absmiddle\">");
+               out.println(" onClick=\"F7_swapClass(1,'mn"+uniqueId+"','showIt','hideIt','but"+uniqueId+"');\" src="+resource.getIcon("pdcPeas.minus")+" width=\"15\" align=\"absmiddle\">&nbsp;<a id=\"a"+uniqueId+"\" "+aClass+" title=\""+EncodeHelper.javaStringToHtmlString(valueDescr)+"\" href=\"javaScript:loadDescr('a"+uniqueId+"')\">&nbsp;&nbsp;&nbsp;"+EncodeHelper.javaStringToHtmlString(valueName)+"&nbsp;&nbsp;&nbsp;</a><img src="+resource.getIcon("pdcPeas.noColorPix")+" width=\"18\" align=\"absmiddle\">");
                out.println("<div id=\"mn"+uniqueId+"\" class=\"showIt\">");
            } else {
 				//there is no value under the root
-               out.println(" src="+resource.getIcon("pdcPeas.target")+" width=\"15\" align=\"absmiddle\">&nbsp;<a id=\"a"+uniqueId+"\" "+aClass+" title=\""+Encode.javaStringToHtmlString(valueDescr)+"\" href=\"javaScript:loadDescr('a"+uniqueId+"')\">&nbsp;&nbsp;&nbsp;"+Encode.javaStringToHtmlString(valueName)+"&nbsp;&nbsp;&nbsp;</a><img src="+resource.getIcon("pdcPeas.noColorPix")+" width=\"18\" align=\"absmiddle\">");
+               out.println(" src="+resource.getIcon("pdcPeas.target")+" width=\"15\" align=\"absmiddle\">&nbsp;<a id=\"a"+uniqueId+"\" "+aClass+" title=\""+EncodeHelper.javaStringToHtmlString(valueDescr)+"\" href=\"javaScript:loadDescr('a"+uniqueId+"')\">&nbsp;&nbsp;&nbsp;"+EncodeHelper.javaStringToHtmlString(valueName)+"&nbsp;&nbsp;&nbsp;</a><img src="+resource.getIcon("pdcPeas.noColorPix")+" width=\"18\" align=\"absmiddle\">");
            }
        } else {     		
            if ((i+1 < axisValues.size()) && ((Value)axisValues.get(i+1)).getLevelNumber() > valueLevel) {
 				//there is a child value
                out.print(increment+"<img id=\"but"+uniqueId+"\"");
-               out.println(" onClick=\"F7_swapClass(1,'mn"+uniqueId+"','showIt','hideIt','but"+uniqueId+"');\" src="+resource.getIcon("pdcPeas.plus")+" width=\"15\" align=\"absmiddle\">&nbsp;<a id=\"a"+uniqueId+"\""+aClass+" title=\""+Encode.javaStringToHtmlString(valueDescr)+"\" href=\"javaScript:loadDescr('a"+uniqueId+"')\">&nbsp;&nbsp;&nbsp;"+Encode.javaStringToHtmlString(valueName)+"&nbsp;&nbsp;&nbsp;</a><img src="+resource.getIcon("pdcPeas.noColorPix")+" width=\"18\" align=\"absmiddle\"><br>");
+               out.println(" onClick=\"F7_swapClass(1,'mn"+uniqueId+"','showIt','hideIt','but"+uniqueId+"');\" src="+resource.getIcon("pdcPeas.plus")+" width=\"15\" align=\"absmiddle\">&nbsp;<a id=\"a"+uniqueId+"\""+aClass+" title=\""+EncodeHelper.javaStringToHtmlString(valueDescr)+"\" href=\"javaScript:loadDescr('a"+uniqueId+"')\">&nbsp;&nbsp;&nbsp;"+EncodeHelper.javaStringToHtmlString(valueName)+"&nbsp;&nbsp;&nbsp;</a><img src="+resource.getIcon("pdcPeas.noColorPix")+" width=\"18\" align=\"absmiddle\"><br>");
                out.println("<div id=\"mn"+uniqueId+"\" class=\"hideIt\">");
            } else {
 				//there is no child values
-               	out.println(increment+"<img src="+resource.getIcon("pdcPeas.target")+" width=\"15\" align=\"absmiddle\">&nbsp;<a id=\"a"+uniqueId+"\" "+aClass+" title=\""+Encode.javaStringToHtmlString(valueDescr)+"\" href=\"javaScript:loadDescr('a"+uniqueId+"')\">&nbsp;&nbsp;&nbsp;"+Encode.javaStringToHtmlString(valueName)+"&nbsp;&nbsp;&nbsp;</a><img src="+resource.getIcon("pdcPeas.noColorPix")+" width=\"18\" align=\"absmiddle\"><BR>");
+               	out.println(increment+"<img src="+resource.getIcon("pdcPeas.target")+" width=\"15\" align=\"absmiddle\">&nbsp;<a id=\"a"+uniqueId+"\" "+aClass+" title=\""+EncodeHelper.javaStringToHtmlString(valueDescr)+"\" href=\"javaScript:loadDescr('a"+uniqueId+"')\">&nbsp;&nbsp;&nbsp;"+EncodeHelper.javaStringToHtmlString(valueName)+"&nbsp;&nbsp;&nbsp;</a><img src="+resource.getIcon("pdcPeas.noColorPix")+" width=\"18\" align=\"absmiddle\"><BR>");
                	
                	//fermeture eventuelle des balises div
                	int diffLevel = 0;

@@ -134,12 +134,12 @@
 				increment += "<img src="+resource.getIcon("pdcPeas.noColorPix")+" width=\"18\" align=\"absmiddle\">";
 			
 			if(valueId.equals(Id))
-				out.println(increment+"<img src="+resource.getIcon("pdcPeas.target")+" width=\"15\" align=\"absmiddle\">&nbsp;<a class=\"axe\" href=\"javaScript:openSPWindow("+valueId+",'ViewValue?Id="+valueId+"&AxisId="+axisId+"&DisplayLanguage="+displayLanguage+"','windowValue')\">"+beginFont+Encode.javaStringToHtmlString(valueName)+ endFont + "</a><img src="+resource.getIcon("pdcPeas.noColorPix")+" width=\"18\" align=\"absmiddle\"><BR>");
+				out.println(increment+"<img src="+resource.getIcon("pdcPeas.target")+" width=\"15\" align=\"absmiddle\">&nbsp;<a class=\"axe\" href=\"javaScript:openSPWindow("+valueId+",'ViewValue?Id="+valueId+"&AxisId="+axisId+"&DisplayLanguage="+displayLanguage+"','windowValue')\">"+beginFont+EncodeHelper.javaStringToHtmlString(valueName)+ endFont + "</a><img src="+resource.getIcon("pdcPeas.noColorPix")+" width=\"18\" align=\"absmiddle\"><BR>");
 			else 
 				if (levelRights < 1000 || kmAdmin) 
-					out.println(increment+"<img src="+resource.getIcon("pdcPeas.target")+" width=\"15\" align=\"absmiddle\">&nbsp;<a class=\"axe\" href=\"javaScript:openSPWindow("+valueId+",'ViewValue?Id="+valueId+"&AxisId="+axisId+"&DisplayLanguage="+displayLanguage+"','windowValue')\">&nbsp;&nbsp;&nbsp;"+Encode.javaStringToHtmlString(valueName) +"&nbsp;&nbsp;&nbsp;</a><img src="+resource.getIcon("pdcPeas.noColorPix")+" width=\"18\" align=\"absmiddle\"><BR>");
+					out.println(increment+"<img src="+resource.getIcon("pdcPeas.target")+" width=\"15\" align=\"absmiddle\">&nbsp;<a class=\"axe\" href=\"javaScript:openSPWindow("+valueId+",'ViewValue?Id="+valueId+"&AxisId="+axisId+"&DisplayLanguage="+displayLanguage+"','windowValue')\">&nbsp;&nbsp;&nbsp;"+EncodeHelper.javaStringToHtmlString(valueName) +"&nbsp;&nbsp;&nbsp;</a><img src="+resource.getIcon("pdcPeas.noColorPix")+" width=\"18\" align=\"absmiddle\"><BR>");
 				else 
-					out.println(increment+"<img src="+resource.getIcon("pdcPeas.target")+" width=\"15\" align=\"absmiddle\">&nbsp;&nbsp;&nbsp;&nbsp;"+Encode.javaStringToHtmlString(valueName)+"&nbsp;&nbsp;&nbsp;<img src="+resource.getIcon("pdcPeas.noColorPix")+" width=\"18\" align=\"absmiddle\"><BR>");
+					out.println(increment+"<img src="+resource.getIcon("pdcPeas.target")+" width=\"15\" align=\"absmiddle\">&nbsp;&nbsp;&nbsp;&nbsp;"+EncodeHelper.javaStringToHtmlString(valueName)+"&nbsp;&nbsp;&nbsp;<img src="+resource.getIcon("pdcPeas.noColorPix")+" width=\"18\" align=\"absmiddle\"><BR>");
 				
 	  	}
 	  %>

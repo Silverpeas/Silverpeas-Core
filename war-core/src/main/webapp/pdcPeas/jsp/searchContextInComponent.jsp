@@ -435,7 +435,7 @@ List alUserRoles = containerWorkspace.getContainerUserRoles();
 						searchAxis = (SearchAxis)primaryAxis.get(i);
 						axisId = new Integer(searchAxis.getAxisId()).toString();
 						axisRootId = new Integer(searchAxis.getAxisRootId()).toString();
-						axisName = Encode.javaStringToHtmlString(searchAxis.getAxisName());
+						axisName = EncodeHelper.javaStringToHtmlString(searchAxis.getAxisName());
 						nbPositions = searchAxis.getNbObjects();
 						// on n'affiche pas les axes que l'on a selectionne pour la recherche
 						if (!axisCriteriaList.contains(axisId)){
@@ -461,7 +461,7 @@ List alUserRoles = containerWorkspace.getContainerUserRoles();
 
 									for (int j = 0; j<daughters.size(); j++) {
 										Value value = (Value) daughters.get(j);
-										String valueName = Encode.javaStringToHtmlString(value.getName());
+										String valueName = EncodeHelper.javaStringToHtmlString(value.getName());
 										String valueId = value.getPK().getId();
 										int valueLevel = value.getLevelNumber();
 										int valueNbObjects = value.getNbObjects();
@@ -596,7 +596,7 @@ List alUserRoles = containerWorkspace.getContainerUserRoles();
 						searchAxis = (SearchAxis)secondaryAxis.get(i);
 						axisId = new Integer(searchAxis.getAxisId()).toString();
 						axisRootId = new Integer(searchAxis.getAxisRootId()).toString();
-						axisName = Encode.javaStringToHtmlString(searchAxis.getAxisName());
+						axisName = EncodeHelper.javaStringToHtmlString(searchAxis.getAxisName());
 						nbPositions = searchAxis.getNbObjects();
 						// on n'affiche pas les axes que l'on a selectionne pour la recherche
 						if (!axisCriteriaList.contains(axisId)){

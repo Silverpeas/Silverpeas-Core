@@ -90,9 +90,9 @@ function goBack(){
 
             arrayLine = arrayPane.addArrayLine();
             
-			arrayLine.addArrayCellText("<div align=right><img src=\""+resource.getIcon("pdcPeas.icoComponent")+"\" border=0 alt=\""+Encode.javaStringToHtmlString(axisHeader.getName(language))+"\" title=\""+Encode.javaStringToHtmlString(axisHeader.getName(language))+"\"></div>");
+			arrayLine.addArrayCellText("<div align=right><img src=\""+resource.getIcon("pdcPeas.icoComponent")+"\" border=0 alt=\""+EncodeHelper.javaStringToHtmlString(axisHeader.getName(language))+"\" title=\""+EncodeHelper.javaStringToHtmlString(axisHeader.getName(language))+"\"></div>");
             
-			arrayLine.addArrayCellText("<a href=\""+pdcUtilizationContext+"UtilizationChooseAxis?Id="+axisId+"\" title=\""+resource.getString("pdcPeas.axisUse")+"&nbsp;:&nbsp;"+Encode.javaStringToHtmlString(axisHeader.getName(language))+"\"><span class=textePetitBold>"+Encode.javaStringToHtmlString(axisHeader.getName(language))+"</span></a>");
+			arrayLine.addArrayCellText("<a href=\""+pdcUtilizationContext+"UtilizationChooseAxis?Id="+axisId+"\" title=\""+resource.getString("pdcPeas.axisUse")+"&nbsp;:&nbsp;"+EncodeHelper.javaStringToHtmlString(axisHeader.getName(language))+"\"><span class=textePetitBold>"+EncodeHelper.javaStringToHtmlString(axisHeader.getName(language))+"</span></a>");
 	}
 	
     out.println(arrayPane.print());

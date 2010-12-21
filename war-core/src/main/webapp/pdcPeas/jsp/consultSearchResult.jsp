@@ -123,7 +123,7 @@ function submitForm() {
 <table border="0" cellspacing="0" cellpadding="5" class="intfdcolor4" width="100%">
 <tr>
 <td valign="top" nowrap align="left"><span class="txtlibform"><%=resource.getString("pdcPeas.requete")%> :</span></td>
-<td align="left"><input type="text" name="query" size="50" value="<%=Encode.javaStringToHtmlString(query)%>"></td>
+<td align="left"><input type="text" name="query" size="50" value="<%=EncodeHelper.javaStringToHtmlString(query)%>"></td>
 <td width="1%"><%
   out.println("<CENTER>");
   ButtonPane buttonPane = gef.getButtonPane();
@@ -170,7 +170,7 @@ function submitForm() {
 			fullPath = value.getStringFullPath("/");
 			line = pane.addArrayLine();
 			//line.addArrayCellText(stars);
-			line.addArrayCellText("<a href=\"javascript:viewDescription('"+Encode.javaStringToJsString(value.getDescription())+"','"+Encode.javaStringToJsString(fullPath)+"')\"><span class=textePetitBold>"+Encode.javaStringToHtmlString(value.getName())+"</span></a>");
+			line.addArrayCellText("<a href=\"javascript:viewDescription('"+EncodeHelper.javaStringToJsString(value.getDescription())+"','"+EncodeHelper.javaStringToJsString(fullPath)+"')\"><span class=textePetitBold>"+EncodeHelper.javaStringToHtmlString(value.getName())+"</span></a>");
 		}
 
 	}

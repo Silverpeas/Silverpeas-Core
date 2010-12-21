@@ -64,14 +64,14 @@ while ( workflows.hasNext() )
 {
 	strProcessFileName = (String) workflows.next();
     strProcessFileNameURLEncoded = URLEncoder.encode( strProcessFileName, UTF8);
-    strProcessFileNameJSEncoded = Encode.javaStringToJsString( strProcessFileName );
+    strProcessFileNameJSEncoded = EncodeHelper.javaStringToJsString( strProcessFileName );
 	
     row       = arrayPane.addArrayLine();
 	iconPane = gef.getIconPane();
 	updateIcon = iconPane.addIcon();
 	delIcon = iconPane.addIcon();
 	
-	row.addArrayCellLink( Encode.javaStringToHtmlString( strProcessFileName ),
+	row.addArrayCellLink( EncodeHelper.javaStringToHtmlString( strProcessFileName ),
 	                     "EditWorkflow?ProcessFileName=" + strProcessFileNameURLEncoded );
 	
 	updateIcon.setProperties(resource.getIcon("workflowDesigner.smallUpdate"),

@@ -130,8 +130,8 @@ if (value != null)
 	while (codes.hasNext())
 	{
 		lang = (String) codes.next();
-		out.println("var name_"+lang+" = \""+Encode.javaStringToJsString(value.getName(lang))+"\";\n");
-		out.println("var desc_"+lang+" = \""+Encode.javaStringToJsString(value.getDescription(lang))+"\";\n");
+		out.println("var name_"+lang+" = \""+EncodeHelper.javaStringToJsString(value.getName(lang))+"\";\n");
+		out.println("var desc_"+lang+" = \""+EncodeHelper.javaStringToJsString(value.getDescription(lang))+"\";\n");
 	}
 }
 %>
@@ -173,11 +173,11 @@ function removeTranslation()
       <%=I18NHelper.getFormLine(resource, value, translation)%>
       <tr> 
         <td width="30%" class="txtlibform"><%=resource.getString("pdcPeas.value")%>&nbsp;:&nbsp;</td>
-        <td><input type="text" style="text-align:left;" name="Name" id="ValueName" maxlength="75" size="75" value="<%=Encode.javaStringToHtmlString(valueName)%>" onKeyUP="javascript:highlightItem(document.editValue.Order,this.value)">&nbsp;<img src="<%=resource.getIcon("pdcPeas.mandatoryField")%>" width=5 align="absmiddle"/></td>
+        <td><input type="text" style="text-align:left;" name="Name" id="ValueName" maxlength="75" size="75" value="<%=EncodeHelper.javaStringToHtmlString(valueName)%>" onKeyUP="javascript:highlightItem(document.editValue.Order,this.value)">&nbsp;<img src="<%=resource.getIcon("pdcPeas.mandatoryField")%>" width=5 align="absmiddle"/></td>
       </tr>
 	  <tr>
 		<td valign=top width="30%" class="txtlibform"><%=resource.getString("pdcPeas.definition")%>&nbsp;:&nbsp;</td>
-		<td><TEXTAREA name="Description" id="ValueDescription" rows="4" cols="75"><%=Encode.javaStringToHtmlString(valueDescription)%></TEXTAREA></td>
+		<td><TEXTAREA name="Description" id="ValueDescription" rows="4" cols="75"><%=EncodeHelper.javaStringToHtmlString(valueDescription)%></TEXTAREA></td>
 	  </tr>
 	  <tr> 
       	<td width="30%" class="txtlibform"><%=resource.getString("pdcPeas.docsNumber")%>&nbsp;:&nbsp;</td>
@@ -194,7 +194,7 @@ function removeTranslation()
 					// affiche les soeurs de la valeur courante
 					while (itSisters.hasNext()){
 						tempValue = (Value)itSisters.next();
-						sisterValueName = Encode.javaStringToHtmlString(tempValue.getName(translation));
+						sisterValueName = EncodeHelper.javaStringToHtmlString(tempValue.getName(translation));
 						order = (new Integer( tempValue.getOrderNumber() )).toString();
 						out.println("<option value=\""+sisterValueName+sepOptionValueTag+order+"\">"+sisterValueName+"</option>");
 					}

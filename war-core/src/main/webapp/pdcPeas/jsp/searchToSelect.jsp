@@ -122,7 +122,7 @@ String componentSelected = (String)request.getAttribute("ComponentSelected");
 // recuperation du choix de l'utilisateur
 String theSpace = (String) request.getAttribute("theSpace");
 String theQuery = (String) request.getAttribute("theQuery");
-theQuery = Encode.javaStringToHtmlString(theQuery);
+theQuery = EncodeHelper.javaStringToHtmlString(theQuery);
 
 String theAuthor = (String) request.getAttribute("theAuthor");
 String theAfterDate = (String) request.getAttribute("theAfterDate");
@@ -498,7 +498,7 @@ function positionOfInput(inputName){
 						searchAxis = (SearchAxis)primaryAxis.get(i);
 						axisId = new Integer(searchAxis.getAxisId()).toString();
 						axisRootId = new Integer(searchAxis.getAxisRootId()).toString();
-						axisName = Encode.javaStringToHtmlString(searchAxis.getAxisName());
+						axisName = EncodeHelper.javaStringToHtmlString(searchAxis.getAxisName());
 						nbPositions = searchAxis.getNbObjects();
 						// on n'affiche pas les axes que l'on a s�lectionn� pour la recherche
 						if (!axisCriteriaList.contains(axisId)){	
@@ -521,7 +521,7 @@ function positionOfInput(inputName){
 
 									for (int j = 0; j<daughters.size(); j++) {
 										Value value = (Value) daughters.get(j);
-										String valueName = Encode.javaStringToHtmlString(value.getName());
+										String valueName = EncodeHelper.javaStringToHtmlString(value.getName());
 										String valueId = value.getPK().getId();
 										int valueLevel = value.getLevelNumber();
 										int valueNbObjects = value.getNbObjects();
@@ -662,7 +662,7 @@ function positionOfInput(inputName){
 						searchAxis = (SearchAxis)secondaryAxis.get(i);
 						axisId = new Integer(searchAxis.getAxisId()).toString();
 						axisRootId = new Integer(searchAxis.getAxisRootId()).toString();
-						axisName = Encode.javaStringToHtmlString(searchAxis.getAxisName());
+						axisName = EncodeHelper.javaStringToHtmlString(searchAxis.getAxisName());
 						nbPositions = searchAxis.getNbObjects();
 						// on n'affiche pas les axes que l'on a s�lectionn� pour la recherche
 						if (!axisCriteriaList.contains(axisId)){

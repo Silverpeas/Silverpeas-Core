@@ -154,7 +154,7 @@
     row = consequencePane.addArrayLine();
     cellText = row.addArrayCellText( resource.getString("workflowDesigner.value") );
     cellText.setStyleSheet( "txtlibform" );
-    row.addArrayCellInputText( "value", Encode.javaStringToHtmlString( consequence.getValue() ) );
+    row.addArrayCellInputText( "value", EncodeHelper.javaStringToHtmlString( consequence.getValue() ) );
     
     // Kill
     //
@@ -183,13 +183,13 @@
                  fUnSet = consequence.getUnsetState( astrStateValues[i] ) != null;
 
         row = setUnsetPane.addArrayLine();
-        row.addArrayCellRadio( Encode.javaStringToHtmlString( "setUnset_" + astrStateValues[i] ),
+        row.addArrayCellRadio( EncodeHelper.javaStringToHtmlString( "setUnset_" + astrStateValues[i] ),
                                "", 
                                ! (fSet || fUnSet) );
-        row.addArrayCellRadio( Encode.javaStringToHtmlString( "setUnset_" + astrStateValues[i] ),
+        row.addArrayCellRadio( EncodeHelper.javaStringToHtmlString( "setUnset_" + astrStateValues[i] ),
                                "set",
                                fSet );
-        row.addArrayCellRadio( Encode.javaStringToHtmlString( "setUnset_" + astrStateValues[i] ),
+        row.addArrayCellRadio( EncodeHelper.javaStringToHtmlString( "setUnset_" + astrStateValues[i] ),
                                "unset",
                                fUnSet );
         row.addArrayCellText( astrStateValues[i] );
@@ -240,7 +240,7 @@
             sb.append( "', '" );
             sb.append( resource.getString("workflowDesigner.confirmRemoveJS") );
             sb.append( " " );
-            sb.append( Encode.javaStringToJsString( resource.getString("workflowDesigner.notifiedUsers") ) );
+            sb.append( EncodeHelper.javaStringToJsString( resource.getString("workflowDesigner.notifiedUsers") ) );
             sb.append( " ?');" );
 
             row.addArrayCellLink( resource.getString("workflowDesigner.notifiedUsers"),
@@ -271,7 +271,7 @@
     out.println(board.printBefore());
 %>
 <FORM NAME="consequenceForm" METHOD="POST" ACTION="UpdateConsequence">
-	<input type="hidden" name="context" value="<%=Encode.javaStringToHtmlString( strContext )%>">
+	<input type="hidden" name="context" value="<%=EncodeHelper.javaStringToHtmlString( strContext )%>">
 <%
     out.println( consequencePane.print() );
  
