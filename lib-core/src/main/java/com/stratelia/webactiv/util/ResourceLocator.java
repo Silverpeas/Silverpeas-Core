@@ -241,7 +241,7 @@ public class ResourceLocator implements Serializable {
    * bundle.
    * @return the value as an integer.
    */
-  public long getInteger(final String sAttribute, long defaultValue) {
+  public int getInteger(final String sAttribute, int defaultValue) {
     String value = getString(sAttribute);
     if (value == null || value.trim().isEmpty()) {
       return defaultValue;
