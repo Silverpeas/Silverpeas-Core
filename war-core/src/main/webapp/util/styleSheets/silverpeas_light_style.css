@@ -202,6 +202,16 @@ body, td, div, a {
 	margin-top:10px;
 	margin-left:0;
 }
+
+.contentSpace .contentSpace { 
+	margin:2px 0 0 10px;
+	
+}
+
+.contentSpace .contentSpace .browseSpace {
+	padding-right:0;
+	}
+
 .spaceLevel1, .spaceLevel1On {
 	background-color:transparent;
 	background-image:url("/silverpeas/admin/jsp/icons/silverpeas_light/puceSpace.png");
