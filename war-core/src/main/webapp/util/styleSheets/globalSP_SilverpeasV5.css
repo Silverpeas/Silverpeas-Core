@@ -2030,6 +2030,11 @@ td.browsebar a:hover {
 	font-size: 10px;
 }
 
+#portletPages div.portlet-content .rss_link{
+	display:block;
+	text-align:right;
+}
+
 #portletPages div.portlet-content-minimized {
 	clear: both;
 }
