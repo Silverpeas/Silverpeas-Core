@@ -200,4 +200,8 @@ public class TreeCache {
   private static synchronized Space getSpace(String spaceId) {
     return map.get(spaceId);
   }
+  
+  public static int getSpaceLevel(String spaceId) {
+    return getSpacePath(spaceId).size() - 1;
+  }
 }

@@ -293,7 +293,7 @@ public class SpaceInstManager {
 
   private int getSpaceLevel(int spaceId)
       throws AdminException {
-    return TreeCache.getSpacePath(Integer.toString(spaceId)).size() - 1;
+    return TreeCache.getSpaceLevel(Integer.toString(spaceId));
   }
 
   /**
@@ -310,9 +310,6 @@ public class SpaceInstManager {
       // Set the attributes of the space Inst
       spaceInst.setId(idAsString(space.id));
       spaceInst.setDomainFatherId(idAsString(space.domainFatherId));
-      // String[] asParents =
-      // ddManager.organization.space.getAllFatherSpaceIds(space.id);
-      // spaceInst.setLevel(asParents.length);
       int spaceLevel = -1;
       if (spaceInst.isRoot()) {
         spaceLevel = 0;

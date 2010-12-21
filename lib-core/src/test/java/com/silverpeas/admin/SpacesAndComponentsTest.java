@@ -143,6 +143,9 @@ public class SpacesAndComponentsTest extends JndiBasedDBTestCase {
     // test level calculation
     subspace = ac.getSpaceInstById("WA4");
     assertEquals(1, subspace.getLevel());
+    
+    SpaceInstLight subspaceLight = ac.getSpaceInstLight("WA4");
+    assertEquals(1, subspaceLight.getLevel());
   }
 
   @Test
@@ -176,6 +179,23 @@ public class SpacesAndComponentsTest extends JndiBasedDBTestCase {
     ac.deleteSpaceInstById("WA1", true);
     space = ac.getSpaceInstById("WA1");
     assertNull(space);
+  }
+  
+  public void testAddSubSpace() {
+    AdminController ac = getAdminController();
+
+    // test space creation
+    SpaceInst space = new SpaceInst();
+    space.setCreatorUserId("1");
+    space.setName("Space 1-3");
+    space.setDomainFatherId("WA1");
+    String spaceId = ac.addSpaceInst(space);
+    assertNotNull(spaceId);
+    assertEquals("WA3", spaceId);
+
+    // test subspace of space
+    String[] subSpaceIds = ac.getAllSubSpaceIds("WA1");
+    assertEquals(2, subSpaceIds.length);
   }
 
   @Test

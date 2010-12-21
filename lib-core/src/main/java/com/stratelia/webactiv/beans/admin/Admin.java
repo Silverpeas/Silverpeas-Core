@@ -3960,6 +3960,9 @@ public final class Admin extends Object {
     if (level != -1) {
       sil.setLevel(level);
     }
+    if (sil.getLevel() == -1) {
+      sil.setLevel(TreeCache.getSpaceLevel(spaceId));
+    }
     return sil;
   }
 

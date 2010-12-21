@@ -49,7 +49,7 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
   private String name = null;
   private String description = null;
   private int orderNum = 0;
-  private int level = 0;
+  private int level = -1;
   private String fatherId = null;
   private Date createDate = null;
   private Date updateDate = null;
@@ -72,7 +72,7 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
     name = "";
     description = "";
     orderNum = 0;
-    level = 0;
+    level = -1;
     displaySpaceFirst = true;
     isPersonalSpace = false;
   }
