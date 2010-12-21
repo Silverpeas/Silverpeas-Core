@@ -496,17 +496,6 @@ public class DateUtil {
   }
 
   /**
-   * Formats the specified date according to the specified date pattern.
-   * @param date the date to format into a string.
-   * @param pattern the pattern to apply in the format.
-   * @return a string representation of the specified date and in the specified pattern.
-   */
-  public static String formatDate(final Date date, String pattern) {
-    SimpleDateFormat formater = new SimpleDateFormat(pattern);
-    return formater.format(date);
-  }
-
-  /**
    * Parse a String of format HH:mm and set the corresponding hours and minutes to the specified
    * Calendar.
    * @param time the String to be parsed.
