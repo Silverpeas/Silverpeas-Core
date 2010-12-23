@@ -116,14 +116,19 @@ public class Instanciateur extends Object {
 
   public void instantiateComponentName(String componentName)
       throws InstanciationException {
-    String fullPath = null;
-    try {
-      fullPath = getDescriptorFullPath(componentName);
-    } catch (IOException e) {
-      throw new InstanciationException("Instanciateur.instantiateComponentName",
-          InstanciationException.FATAL, e.getMessage(), e);
+    WAComponent waComponent = getWAComponent(componentName);
+    if (waComponent == null) {
+      // load dynamically new component descriptor (not loaded on startup)
+      String fullPath = null;
+      try {
+        fullPath = getDescriptorFullPath(componentName);
+      } catch (IOException e) {
+        throw new InstanciationException("Instanciateur.instantiateComponentName",
+            InstanciationException.FATAL, e.getMessage(), e);
+      }
+      waComponent = new WAComponent(fullPath);
     }
-    instantiateComponent(new WAComponent(fullPath));
+    instantiateComponent(waComponent);
   }
 
   @SuppressWarnings("unchecked")
@@ -238,13 +243,10 @@ public class Instanciateur extends Object {
     }
   }
 
-  @SuppressWarnings("unchecked")
   private static Collection<File> getFileList() {
-    Collection<File> list = FileUtils.listFiles(new File(xmlPackage), new String[] { "xml" }, true);
-    return list;
+    return FileUtils.listFiles(new File(xmlPackage), new String[] { "xml" }, true);
   }
 
-  @SuppressWarnings("unchecked")
   private static String getDescriptorFullPath(String componentName) throws IOException {
     IOFileFilter filter = new NameFileFilter(componentName + ".xml");
     List<File> list = new ArrayList<File>(FileUtils.listFiles(new File(xmlPackage), filter,
