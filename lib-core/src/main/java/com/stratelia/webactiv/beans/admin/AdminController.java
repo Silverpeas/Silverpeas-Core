@@ -1660,4 +1660,14 @@ public class AdminController extends AdminReference implements java.io.Serializa
   public void reloadAdminCache() {
     m_Admin.reloadCache();
   }
+  
+  public String copyAndPasteComponent(String componentId, String spaceId, String userId)
+      throws AdminException {
+    return m_Admin.copyAndPasteComponent(componentId, spaceId, userId);
+  }
+  
+  public String copyAndPasteSpace(String spaceId, String toSpaceId, String userId)
+      throws AdminException {
+    return m_Admin.copyAndPasteSpace(spaceId, toSpaceId, userId);
+  }
 }

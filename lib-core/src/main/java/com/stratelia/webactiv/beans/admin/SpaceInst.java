@@ -177,10 +177,11 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
         return getName();
       }
       SpaceI18N s = (SpaceI18N) getTranslations().get(language);
-      if (s == null) {
-        s = (SpaceI18N) getNextTranslation();
+      if (s != null) {
+        return s.getName();
+      } else {
+        return getName();
       }
-      return s.getName();
     }
   }
 
@@ -206,11 +207,11 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
     }
 
     SpaceI18N s = (SpaceI18N) getTranslations().get(language);
-    if (s == null) {
-      s = (SpaceI18N) getNextTranslation();
+    if (s != null) {
+      return s.getDescription();
+    } else {
+      return getDescription();
     }
-
-    return s.getDescription();
   }
 
   /**

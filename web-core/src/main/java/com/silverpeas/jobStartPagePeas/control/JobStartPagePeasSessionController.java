@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -65,8 +64,6 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
 import com.stratelia.webactiv.beans.admin.SpaceSelection;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.instance.control.ComponentPasteInterface;
-import com.stratelia.webactiv.beans.admin.instance.control.PasteDetail;
 import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
 import com.stratelia.webactiv.beans.admin.spaceTemplates.SpaceTemplate;
 import com.stratelia.webactiv.beans.admin.spaceTemplates.SpaceTemplateProfile;
@@ -1490,7 +1487,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       }
     } catch (Exception e) {
       throw new JobStartPagePeasException(
-          "JobStartPagePeasSessionController.pasteComponent()",
+          "JobStartPagePeasSessionController.paste()",
           SilverpeasRuntimeException.ERROR, "jobStartPagePeas.EX_PASTE_ERROR", e);
     }
     clipboardPasteDone();
@@ -1502,153 +1499,37 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
    * @throws JobStartPagePeasException
    */
   public void pasteComponent(String componentId) throws JobStartPagePeasException {
-    pasteComponent(componentId, getManagedSpaceId());
-  }
-
-  public void pasteComponent(String componentId, String spaceId) throws
-      JobStartPagePeasException {
-    if (!StringUtil.isDefined(spaceId)) {
-      // cannot paste component on root
-      return;
-    }
-    ComponentInst newCompo = (ComponentInst) getComponentInst(componentId).clone();
-    SpaceInst destinationSpace = getSpaceInstById(spaceId);
-
-    // Creation
-    newCompo.setId("-1");
-    newCompo.setDomainFatherId(destinationSpace.getId());
-    newCompo.setOrderNum(destinationSpace.getNumComponentInst());
-    newCompo.setCreateDate(new Date());
-    newCompo.setLanguage(getLanguage());
-
-    // Rename if componentName already exists in the destination space
-    String label = renameComponentName(newCompo.getLabel(getLanguage()), destinationSpace.
-        getAllComponentsInst());
-    newCompo.setLabel(label);
-
-    // Delete inherited profiles only
-    // It will be processed by admin
-    newCompo.removeInheritedProfiles();
-
-    // Add the component
-    String sComponentId = addComponentInst(newCompo);
-
-    // Adding ok
-    if (StringUtil.isDefined(sComponentId)) {
-      setManagedInstanceId(sComponentId);
-      refreshCurrentSpaceCache();
-    }
-
-    // Execute specific paste by the component
     try {
-      PasteDetail pasteDetail = new PasteDetail(componentId, sComponentId,
-          getUserId());
-      String componentRootName = URLManager.getComponentNameFromComponentId(componentId);
-      String className =
-          "com.silverpeas.component." + componentRootName + "." + componentRootName.
-              substring(0, 1).toUpperCase() + componentRootName.substring(1) + "Paste";
-      if (Class.forName(className).getClass() != null) {
-        ComponentPasteInterface componentPaste = (ComponentPasteInterface) Class.
-            forName(className).newInstance();
-        componentPaste.paste(pasteDetail);
+      String sComponentId = m_AdminCtrl.copyAndPasteComponent(componentId, getManagedSpaceId(), getUserId());
+      // Adding ok
+      if (StringUtil.isDefined(sComponentId)) {
+        setManagedInstanceId(sComponentId);
+        refreshCurrentSpaceCache();
       }
-    } catch (Exception e) {
-      SilverTrace.warn("jobStartPagePeas",
+    } catch (AdminException e) {
+      throw new JobStartPagePeasException(
           "JobStartPagePeasSessionController.pasteComponent()",
-          "root.GEN_EXIT_METHOD", e);
+          SilverpeasRuntimeException.ERROR, "jobStartPagePeas.EX_PASTE_ERROR", 
+          "componentId = "+componentId+" in space "+getManagedSpaceId(), e);
     }
+    
   }
 
   private void pasteSpace(String spaceId) throws JobStartPagePeasException {
-    pasteSpace(spaceId, getManagedSpaceId());
-    refreshCurrentSpaceCache();
-  }
-
-  private void pasteSpace(String spaceId, String toSpaceId) throws JobStartPagePeasException {
-    boolean pasteAllowed = true;
-    if (StringUtil.isDefined(toSpaceId)) {
-      // First, check if target space is not a sub space of paste space
-      List<SpaceInst> path = getOrganizationController().getSpacePath(toSpaceId);
-      for (int i = 0; i < path.size() && pasteAllowed; i++) {
-        pasteAllowed = !spaceId.equalsIgnoreCase(((SpaceInst) path.get(i)).getId());
+    try {
+      String newSpaceId = m_AdminCtrl.copyAndPasteSpace(spaceId, getManagedSpaceId(), getUserId());
+      if (StringUtil.isDefined(newSpaceId)) {
+        if (StringUtil.isDefined(getManagedSpaceId())) {
+          refreshCurrentSpaceCache();
+        } else {
+          m_NavBarMgr.addSpaceInCache(newSpaceId);
+        }
       }
+    } catch (AdminException e) {
+      throw new JobStartPagePeasException(
+          "JobStartPagePeasSessionController.pasteSpace()",
+          SilverpeasRuntimeException.ERROR, "jobStartPagePeas.EX_PASTE_ERROR",
+          "spaceId = "+spaceId+" in space "+getManagedSpaceId(), e);
     }
-    if (pasteAllowed) {
-      // paste space itself
-      SpaceInst newSpace = getSpaceInstById(spaceId).clone();
-      newSpace.setId("-1");
-      List<String> newBrotherIds = new ArrayList<String>();
-      if (StringUtil.isDefined(toSpaceId)) {
-        SpaceInst destinationSpace = getSpaceInstById(toSpaceId);
-        newSpace.setDomainFatherId(destinationSpace.getId());
-        newBrotherIds = Arrays.asList(destinationSpace.getSubSpaceIds());
-      } else {
-        newSpace.setDomainFatherId("-1");
-        newBrotherIds = Arrays.asList(getOrganizationController().getAllRootSpaceIds());
-      }
-      newSpace.setOrderNum(newBrotherIds.size());
-      newSpace.setCreateDate(new Date());
-      newSpace.setCreatorUserId(getUserId());
-      newSpace.setLanguage(getLanguage());
-
-      // Rename if spaceName already used in the destination space
-      List<SpaceInstLight> subSpaces = new ArrayList<SpaceInstLight>();
-      for (String subSpaceId : newBrotherIds) {
-        subSpaces.add(m_AdminCtrl.getSpaceInstLight(subSpaceId));
-      }
-      String name = renameSpace(newSpace.getName(getLanguage()), subSpaces);
-      newSpace.setName(name);
-
-      // Remove inherited profiles from cloned space
-      newSpace.removeInheritedProfiles();
-
-      // Remove components from cloned space
-      List<ComponentInst> components = newSpace.getAllComponentsInst();
-      newSpace.removeAllComponentsInst();
-
-      // Add space
-      String newSpaceId = addSpaceInst(newSpace, null);
-
-      // paste components of space
-      for (ComponentInst component : components) {
-        pasteComponent(component.getId(), newSpaceId);
-      }
-
-      // paste subspaces
-      String[] subSpaceIds = newSpace.getSubSpaceIds();
-      for (String subSpaceId : subSpaceIds) {
-        pasteSpace(subSpaceId, newSpaceId);
-      }
-    }
-  }
-
-  /**
-   * Rename component Label if necessary
-   * @param name
-   * @param listComponents
-   * @return
-   */
-  private String renameComponentName(String label,
-      ArrayList<ComponentInst> listComponents) {
-    String newComponentLabel = label;
-    for (int i = 0; i < listComponents.size(); i++) {
-      ComponentInst componentInst = (ComponentInst) listComponents.get(i);
-      if (componentInst.getLabel().equals(newComponentLabel)) {
-        newComponentLabel = getMultilang().getString("JSPP.CopyOf") + label;
-        return renameComponentName(newComponentLabel, listComponents);
-      }
-    }
-    return newComponentLabel;
-  }
-
-  private String renameSpace(String label, List<SpaceInstLight> listSpaces) {
-    String newSpaceLabel = label;
-    for (SpaceInstLight space : listSpaces) {
-      if (space.getName().equals(newSpaceLabel)) {
-        newSpaceLabel = getMultilang().getString("JSPP.CopyOf") + label;
-        return renameSpace(newSpaceLabel, listSpaces);
-      }
-    }
-    return newSpaceLabel;
   }
 }

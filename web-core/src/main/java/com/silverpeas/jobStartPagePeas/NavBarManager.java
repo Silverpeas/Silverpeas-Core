@@ -83,10 +83,10 @@ public class NavBarManager extends Object {
 
   public void addSpaceInCache(String theSpaceId) {
     String spaceId = getShortSpaceId(theSpaceId);
+    m_ManageableSpaces.add(spaceId);
     DisplaySorted newElmt = buildSpaceObject(spaceId);
 
     if (newElmt != null) {
-      m_ManageableSpaces.add(spaceId);
       if (newElmt.type == DisplaySorted.TYPE_SPACE) {
         DisplaySorted[] oldSpaces = m_Spaces;
         m_Spaces = new DisplaySorted[oldSpaces.length + 1];

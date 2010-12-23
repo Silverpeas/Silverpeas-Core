@@ -44,7 +44,8 @@
 	
 	<st_space id="1" domainfatherid="[NULL]" name="Space 1" firstpagetype="0"/>
 	<st_space id="2" domainfatherid="1" name="Space 1-2" firstpagetype="0" />
-	<uniqueid maxid="2" tablename="st_space"/>
+	<st_space id="3" domainfatherid="[NULL]" name="Space 2" firstpagetype="0"/>
+	<uniqueid maxid="3" tablename="st_space"/>
 	
 	<st_componentinstance id="1" spaceid="1" name="GED" componentname="kmelia"/>
 	<st_componentinstance id="2" spaceid="2" name="Dates clés" componentname="almanach"/>

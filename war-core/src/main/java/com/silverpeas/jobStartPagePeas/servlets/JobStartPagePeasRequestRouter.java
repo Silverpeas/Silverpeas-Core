@@ -189,12 +189,6 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
     } else if (function.equals("jobStartPageNav")) {
       destination = "/jobStartPagePeas/jsp/jobStartPageNav.jsp";
     } else if (function.equals("welcome")) {
-      request.setAttribute("isUserAdmin", Boolean.valueOf(jobStartPageSC.isUserAdmin()));
-      request.setAttribute("globalMode", Boolean.valueOf(jobStartPageSC.isAppInMaintenance()));
-      request.setAttribute("IsBackupEnable", jobStartPageSC.isBackupEnable());
-      request.setAttribute("IsBasketEnable", Boolean
-          .valueOf(JobStartPagePeasSettings.isBasketEnable));
-
       destination = "/jobStartPagePeas/jsp/welcome.jsp";
     } else if (function.equals("ViewBin")) {
       request.setAttribute("Spaces", jobStartPageSC.getRemovedSpaces());
@@ -654,7 +648,11 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
             e);
       }
       refreshNavBar(jobStartPageSC, request);
-      destination = "/jobStartPagePeas/jsp/startPageInfo.jsp";
+      if (StringUtil.isDefined(jobStartPageSC.getManagedSpaceId())) {
+        destination = "/jobStartPagePeas/jsp/startPageInfo.jsp";
+      } else {
+        destination = "/jobStartPagePeas/jsp/welcome.jsp";
+      }
     }
 
     return destination;
@@ -1068,6 +1066,12 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
         request.setAttribute("CurrentSpaceId", jobStartPageSC.getSpaceId());
         request.setAttribute("CurrentSubSpaceId", jobStartPageSC
             .getSubSpaceId());
+      } else if (destination.equals("/jobStartPagePeas/jsp/welcome.jsp")) {
+        request.setAttribute("isUserAdmin", Boolean.valueOf(jobStartPageSC.isUserAdmin()));
+        request.setAttribute("globalMode", Boolean.valueOf(jobStartPageSC.isAppInMaintenance()));
+        request.setAttribute("IsBackupEnable", jobStartPageSC.isBackupEnable());
+        request.setAttribute("IsBasketEnable", Boolean
+            .valueOf(JobStartPagePeasSettings.isBasketEnable));
       } else if (destination.equals("/jobStartPagePeas/jsp/startPageInfo.jsp")) {
         SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById(); // espace
         // courant

@@ -90,26 +90,17 @@ OperationPane operationPane = window.getOperationPane();
 Frame frame = gef.getFrame();
 Board board = gef.getBoard();
 %>
-<script language="JavaScript1.2">
+<script type="text/javascript">
 function refreshNavBar(){
-    if (window.name == "startPageContent")
-    {
+    if (window.name == "startPageContent") {
         window.parent.startPageNavigation.location.href="jobStartPageNav";
-    }
-    else if (window.name == "IdleFrame")
-    {
-			parent.frames["bottomFrame"].frames["startPageNavigation"].location.href="<%=m_context%>/RjobStartPagePeas/jsp/jobStartPageNav";
-		}
-    else
-    {
+    } else if (window.name == "IdleFrame") {
+		parent.frames["bottomFrame"].frames["startPageNavigation"].location.href="<%=m_context%>/RjobStartPagePeas/jsp/jobStartPageNav";
+	} else {
         window.opener.parent.startPageNavigation.location.href="jobStartPageNav";
     }
 }
-<%  if ((haveToRefreshNavBar != null) && (haveToRefreshNavBar.booleanValue()))
-    {
-%>
+<%  if (haveToRefreshNavBar != null && haveToRefreshNavBar.booleanValue()) { %>
 refreshNavBar();
-<%  
-    }
-%>
-</SCRIPT>
+<%  } %>
+</script>

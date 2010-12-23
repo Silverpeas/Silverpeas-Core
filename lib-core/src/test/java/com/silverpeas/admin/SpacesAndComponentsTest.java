@@ -27,6 +27,7 @@ package com.silverpeas.admin;
 import java.io.File;
 import java.io.IOException;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Properties;
 
 import javax.naming.Context;
@@ -48,6 +49,8 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
+import com.stratelia.webactiv.beans.admin.instance.control.Instanciateur;
+import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
 
 public class SpacesAndComponentsTest extends JndiBasedDBTestCase {
 
@@ -104,7 +107,7 @@ public class SpacesAndComponentsTest extends JndiBasedDBTestCase {
   protected IDataSet getDataSet() throws Exception {
     ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
         SpacesAndComponentsTest.class
-        .getResourceAsStream("test-spacesandcomponents-dataset.xml")));
+            .getResourceAsStream("test-spacesandcomponents-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
     return dataSet;
   }
@@ -122,29 +125,29 @@ public class SpacesAndComponentsTest extends JndiBasedDBTestCase {
     // test space creation
     SpaceInst space = new SpaceInst();
     space.setCreatorUserId("1");
-    space.setName("Space 2");
+    space.setName("Space 3");
     String spaceId = ac.addSpaceInst(space);
     assertNotNull(spaceId);
-    assertEquals("WA3", spaceId);
+    assertEquals("WA4", spaceId);
 
     // test subspace creation
     SpaceInst subspace = new SpaceInst();
     subspace.setCreatorUserId("1");
-    subspace.setName("Space 2 - 1");
-    subspace.setDomainFatherId("3");
+    subspace.setName("Space 3 - 1");
+    subspace.setDomainFatherId("4");
     String subSpaceId = ac.addSpaceInst(subspace);
     assertNotNull(subSpaceId);
-    assertEquals("WA4", subSpaceId);
+    assertEquals("WA5", subSpaceId);
 
     // test subspace of root space
-    String[] subSpaceIds = ac.getAllSubSpaceIds("WA3");
+    String[] subSpaceIds = ac.getAllSubSpaceIds("WA4");
     assertEquals(1, subSpaceIds.length);
 
     // test level calculation
-    subspace = ac.getSpaceInstById("WA4");
+    subspace = ac.getSpaceInstById("WA5");
     assertEquals(1, subspace.getLevel());
-    
-    SpaceInstLight subspaceLight = ac.getSpaceInstLight("WA4");
+
+    SpaceInstLight subspaceLight = ac.getSpaceInstLight("WA5");
     assertEquals(1, subspaceLight.getLevel());
   }
 
@@ -162,7 +165,7 @@ public class SpacesAndComponentsTest extends JndiBasedDBTestCase {
 
     space = ac.getSpaceInstById(spaceId);
     assertEquals(desc, space.getDescription());
-    
+
     spaceLight = ac.getSpaceInstLight(spaceId);
     assertEquals(desc, spaceLight.getDescription());
   }
@@ -180,7 +183,7 @@ public class SpacesAndComponentsTest extends JndiBasedDBTestCase {
     space = ac.getSpaceInstById("WA1");
     assertNull(space);
   }
-  
+
   public void testAddSubSpace() {
     AdminController ac = getAdminController();
 
@@ -191,7 +194,7 @@ public class SpacesAndComponentsTest extends JndiBasedDBTestCase {
     space.setDomainFatherId("WA1");
     String spaceId = ac.addSpaceInst(space);
     assertNotNull(spaceId);
-    assertEquals("WA3", spaceId);
+    assertEquals("WA4", spaceId);
 
     // test subspace of space
     String[] subSpaceIds = ac.getAllSubSpaceIds("WA1");
@@ -294,6 +297,120 @@ public class SpacesAndComponentsTest extends JndiBasedDBTestCase {
     assertEquals(0, managerIds.length);
   }
 
+  @Test
+  public void testCopyAndPasteComponent() throws AdminException {
+    AdminController ac = getAdminController();
+
+    WAComponent waComponent = Instanciateur.getWAComponents().get("almanach");
+    waComponent.setInstanceClassName("com.silverpeas.admin.FakeComponentInstanciator");
+
+    String targetSpaceId = "WA3";
+    String componentId = ac.copyAndPasteComponent("almanach2", targetSpaceId, "1");
+
+    String expectedComponentId = "almanach3";
+    assertEquals(expectedComponentId, componentId);
+
+    ComponentInst component = ac.getComponentInst(expectedComponentId);
+    assertNotNull(component);
+    assertEquals("Dates clés", component.getLabel());
+    assertEquals(expectedComponentId, component.getId());
+
+    SpaceInst space = ac.getSpaceInstById(targetSpaceId);
+    List<ComponentInst> components = space.getAllComponentsInst();
+    assertEquals(1, components.size());
+    component = components.get(0);
+    assertEquals(expectedComponentId, component.getId());
+  }
+
+  @Test
+  public void testCopyAndPasteRootSpace() throws AdminException {
+    AdminController ac = getAdminController();
+
+    WAComponent waComponent = Instanciateur.getWAComponents().get("kmelia");
+    waComponent.setInstanceClassName("com.silverpeas.admin.FakeComponentInstanciator");
+
+    String[] rootSpaceIds = ac.getAllRootSpaceIds();
+    assertEquals(2, rootSpaceIds.length);
+
+    String targetSpaceId = null;
+    String newSpaceId = ac.copyAndPasteSpace("WA1", targetSpaceId, "1");
+
+    String expectedSpaceId = "WA4";
+    assertEquals(expectedSpaceId, newSpaceId);
+
+    SpaceInstLight spaceLight = ac.getSpaceInstLight(expectedSpaceId);
+    assertNotNull(spaceLight);
+    assertEquals("Copie de Space 1", spaceLight.getName());
+    assertEquals(expectedSpaceId, spaceLight.getFullId());
+    assertEquals(rootSpaceIds.length, spaceLight.getOrderNum());
+
+    SpaceInst space = ac.getSpaceInstById(expectedSpaceId);
+
+    // test pasted component
+    String expectedComponentId = "kmelia3";
+    List<ComponentInst> components = space.getAllComponentsInst();
+    assertEquals(1, components.size());
+    ComponentInst component = components.get(0);
+    assertEquals(expectedComponentId, component.getId());
+
+    // test pasted subspace
+    String expectedSubSpaceId = "WA5";
+    String[] subSpaceIds = space.getSubSpaceIds();
+    assertEquals(1, subSpaceIds.length);
+    SpaceInst subSpace = ac.getSpaceInstById(subSpaceIds[0]);
+    assertNotNull(subSpace);
+    assertEquals(expectedSubSpaceId, subSpace.getId());
+    assertEquals("Space 1-2", subSpace.getName());
+
+    rootSpaceIds = ac.getAllRootSpaceIds();
+    assertEquals(3, rootSpaceIds.length);
+  }
+
+  @Test
+  public void testCopyAndPasteSubSpaceInSpace() throws AdminException {
+    AdminController ac = getAdminController();
+
+    WAComponent waComponent = Instanciateur.getWAComponents().get("almanach");
+    waComponent.setInstanceClassName("com.silverpeas.admin.FakeComponentInstanciator");
+
+    String copiedSpaceId = "WA2";
+    String targetSpaceId = "WA3";
+    String newSpaceId = ac.copyAndPasteSpace(copiedSpaceId, targetSpaceId, "1");
+
+    String expectedSpaceId = "WA4";
+    assertEquals(expectedSpaceId, newSpaceId);
+
+    SpaceInstLight copiedSpace = ac.getSpaceInstLight(copiedSpaceId);
+
+    SpaceInstLight spaceLight = ac.getSpaceInstLight(expectedSpaceId);
+    assertNotNull(spaceLight);
+    assertEquals(copiedSpace.getName(), spaceLight.getName());
+    assertEquals(expectedSpaceId, spaceLight.getFullId());
+    assertEquals(0, spaceLight.getOrderNum());
+
+    SpaceInst space = ac.getSpaceInstById(expectedSpaceId);
+
+    // test pasted component
+    String expectedComponentId = "almanach3";
+    List<ComponentInst> components = space.getAllComponentsInst();
+    assertEquals(1, components.size());
+    ComponentInst component = components.get(0);
+    assertEquals(expectedComponentId, component.getId());
+
+    // test new space is well subspace of target space
+    SpaceInst targetSpace = ac.getSpaceInstById(targetSpaceId);
+    String[] targetSubSpaceIds = targetSpace.getSubSpaceIds();
+    assertEquals(1, targetSubSpaceIds.length);
+    assertEquals(expectedSpaceId, targetSubSpaceIds[targetSubSpaceIds.length - 1]);
+
+  }
+
+  @Test
+  /*
+   * public void testCopyAndPasteSpaceNotAllowed() throws AdminException { AdminController ac =
+   * getAdminController(); String newSpaceId = ac.copyAndPasteSpace("WA1", "WA2", "1");
+   * assertNull(newSpaceId); }
+   */
   @Override
   protected DatabaseOperation getTearDownOperation() throws Exception {
     return DatabaseOperation.DELETE_ALL;

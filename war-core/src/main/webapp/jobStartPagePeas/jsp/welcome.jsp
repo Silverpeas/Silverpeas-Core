@@ -28,7 +28,6 @@
 <%@ include file="check.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
-
 boolean isUserAdmin 	= ((Boolean)request.getAttribute("isUserAdmin")).booleanValue();
 boolean globalMode 		= ((Boolean)request.getAttribute("globalMode")).booleanValue();
 boolean isBackupEnable 	= ((Boolean)request.getAttribute("IsBackupEnable")).booleanValue();
@@ -83,7 +82,7 @@ function openPopup(action, larg, haut)
 }
 function clipboardPaste() {
 	$.progressMessage();
-    top.IdleFrame.document.location.replace('../..<%=URLManager.getURL(URLManager.CMP_CLIPBOARD)%>paste?compR=RjobStartPagePeas&JSPPage=<%=response.encodeURL("StartPageInfo")%>&TargetFrame=TopFrame&message=REFRESH');
+	location.href="paste";
 }
 -->
 </script>

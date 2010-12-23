@@ -204,4 +204,11 @@ public class TreeCache {
   public static int getSpaceLevel(String spaceId) {
     return getSpacePath(spaceId).size() - 1;
   }
+
+  public static void addSubSpace(String spaceId, SpaceInstLight subSpace) {
+    Space space = getSpace(spaceId);
+    if (space != null) {
+      space.getSubspaces().add(subSpace);
+    }
+  }
 }
