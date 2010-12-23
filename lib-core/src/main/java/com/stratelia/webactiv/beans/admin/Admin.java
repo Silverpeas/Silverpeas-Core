@@ -6598,6 +6598,7 @@ public final class Admin extends Object {
     newCompo.setDomainFatherId(destinationSpace.getId());
     newCompo.setOrderNum(destinationSpace.getNumComponentInst());
     newCompo.setCreateDate(new Date());
+    newCompo.setCreatorUserId(userId);
     newCompo.setLanguage(I18NHelper.defaultLanguage);
 
     // Rename if componentName already exists in the destination space
