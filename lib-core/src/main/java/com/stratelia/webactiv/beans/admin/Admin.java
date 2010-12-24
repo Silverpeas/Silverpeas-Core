@@ -6571,7 +6571,11 @@ public final class Admin extends Object {
   public void indexAllUsers() throws AdminException {
     Domain[] domains = getAllDomains();
     for (Domain domain : domains) {
-      indexUsers(domain.getId());
+      try {
+        indexUsers(domain.getId());
+      } catch (Exception e) {
+        SilverTrace.error("admin", "Admin.indexAllUsers", "admin.CANT_INDEX_USERS", "domainId = "+domain.getId(), e);
+      }
     }
   }
 

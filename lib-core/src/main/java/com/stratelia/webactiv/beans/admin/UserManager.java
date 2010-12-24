@@ -487,6 +487,9 @@ public class UserManager extends Object {
       ur = this.userDetail2UserRow(userDetail);
       ddManager.organization.user.createUser(ur);
       String sUserId = idAsString(ur.id);
+      
+      // index user information
+      ddManager.indexUser(sUserId);
 
       // X509 ?
       long domainActions = ddManager.getDomainActions(userDetail.getDomainId());
@@ -527,6 +530,9 @@ public class UserManager extends Object {
           "Suppression de l'utilisateur " + user.getSpecificId()
           + " de la base...", null);
       ddManager.organization.user.removeUser(idAsInt(user.getId()));
+      
+      // Delete index of user information
+      ddManager.unindexUser(user.getId());
 
       // X509 ?
       long domainActions = ddManager.getDomainActions(user.getDomainId());
@@ -563,6 +569,9 @@ public class UserManager extends Object {
       SynchroReport.info("UserManager.updateUser()", "Maj de l'utilisateur "
           + user.getSpecificId() + " dans la base...", null);
       ddManager.organization.user.updateUser(ur);
+      
+      // index user information
+      ddManager.indexUser(user.getId());
 
       return user.getId();
     } catch (Exception e) {

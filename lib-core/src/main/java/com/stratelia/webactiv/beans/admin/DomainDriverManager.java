@@ -24,6 +24,7 @@
 
 package com.stratelia.webactiv.beans.admin;
 
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -37,6 +38,8 @@ import com.stratelia.webactiv.organization.OrganizationSchema;
 import com.stratelia.webactiv.organization.OrganizationSchemaPool;
 import com.stratelia.webactiv.organization.UserRow;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
+import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 
 public class DomainDriverManager extends AbstractDomainDriver {
   public OrganizationSchema organization = null;
@@ -185,7 +188,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       domainDriver.deleteUser(ur.specificId);
       
       // Delete index to given user
-      domainDriver.unindexUserFull(userId);
+      unindexUser(userId);
     } catch (AdminException e) {
       throw new AdminException("DomainDriverManager.deleteUser",
           SilverpeasException.ERROR, "admin.EX_ERR_DELETE_USER", "user Id: '"
@@ -227,7 +230,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       domainDriver.updateUserFull(user);
       
       // index informations relative to given user
-      domainDriver.indexUserFull(user);
+      indexUser(user.getId());
     } catch (AdminException e) {
       throw new AdminException("DomainDriverManager.updateUser",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", user
@@ -405,18 +408,50 @@ public class DomainDriverManager extends AbstractDomainDriver {
    */
   public void indexAllUsers(String domainId) throws Exception {
     String[] userIds = getUserIdsOfDomain(domainId);
-    AbstractDomainDriver ddm = getDomainDriver(Integer.parseInt(domainId));
     for (String userId : userIds) {
-      try {
-        UserFull userFull = getUserFull(userId);
-        if (userFull != null) {
-          ddm.indexUserFull(userFull);
-        }
-      } catch (Exception e) {
-        SilverTrace.error("admin", "DomainDriverManager.indexAllUsers", "admin.CANT_INDEX_USER",
-            "userId = " + userId, e);
-      }
+      indexUser(userId);
     }
+  }
+  
+  public void indexUser(String userId) {
+    UserFull userFull = null;
+    try {
+      userFull = getUserFull(userId);
+    } catch (Exception e) {
+      SilverTrace.error("admin", "AbstractDomainDriver.indexUserFull", "admin.CANT_GET_USERFULL",
+          "userId=" + userId);
+    }
+    if (userFull != null) {
+      FullIndexEntry indexEntry = new FullIndexEntry("users", "UserFull", userId);
+      indexEntry.setLastModificationDate(new Date());
+      indexEntry.setTitle(userFull.getDisplayedName());
+      indexEntry.setPreView(userFull.geteMail());
+
+      // index some usefull informations
+      indexEntry.addField("FirstName", userFull.getFirstName());
+      indexEntry.addField("LastName", userFull.getLastName());
+      indexEntry.addField("DomainId", userFull.getDomainId());
+      indexEntry.addField("AccessLevel", userFull.getAccessLevel());
+
+      // index extra informations
+      String[] propertyNames = userFull.getPropertiesNames();
+      StringBuilder extraValues = new StringBuilder(50);
+      String extraValue = null;
+      for (String propertyName : propertyNames) {
+        extraValue = userFull.getValue(propertyName);
+        indexEntry.addField(propertyName, extraValue);
+        extraValues.append(extraValue);
+        extraValues.append(" ");
+      }
+      indexEntry.addTextContent(extraValues.toString());
+
+      IndexEngineProxy.addIndexEntry(indexEntry);
+    }
+  }
+  
+  public void unindexUser(String userId) {
+    FullIndexEntry indexEntry = new FullIndexEntry("users", "UserFull", userId);
+    IndexEngineProxy.removeIndexEntry(indexEntry.getPK());
   }
 
   /**
