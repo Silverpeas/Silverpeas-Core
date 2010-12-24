@@ -39,16 +39,17 @@ import com.stratelia.silverpeas.util.LongText;
 import com.stratelia.webactiv.util.DBUtil;
 
 public class SendedNotificationDAO {
+  
+  private static final String COLUMNS =
+      "notifId, userId, messageType, notifDate, title, link, sessionId, componentId, body"; 
 
   public static int saveNotifUser(Connection con, SendedNotificationDetail notif) {
     // Création de la sauvegarde de la notification envoyée
     PreparedStatement prepStmt = null;
     int notifId = 0;
     try {
-      String query =
-          "insert into ST_NotifSended "
-          +
-          "(notifId, userId, messageType, notifDate, title, link, sessionId, componentId, body)"
+      String query = "insert into ST_NotifSended "
+          + "("+COLUMNS+")"
           + " values (?,?,?,?,?,?,?,?,?)";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
@@ -86,9 +87,7 @@ public class SendedNotificationDAO {
     List<SendedNotificationDetail> notifs = new ArrayList<SendedNotificationDetail>();
 
     String query =
-        "select notifId, userId, messageType, notifDate, title, link, sessionId, componentId , body "
-            +
-            "from ST_NotifSended where userId = ?";
+        "select " + COLUMNS + " from ST_NotifSended where userId = ? order by notifDate desc";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -110,8 +109,7 @@ public class SendedNotificationDAO {
     // récupérer toutes les notifications envoyées par un utilisateur
     List<String> users = new ArrayList<String>();
 
-    String query =
-        "select userId from ST_NotifSendedReceiver where notifId = ?";
+    String query = "select userId from ST_NotifSendedReceiver where notifId = ?";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -132,10 +130,7 @@ public class SendedNotificationDAO {
 
     SendedNotificationDetail notif = new SendedNotificationDetail();
 
-    String query =
-        "select notifId, userId, messageType, notifDate, title, link, sessionId, componentId , body "
-            +
-            "from ST_NotifSended where notifId = ?";
+    String query = "select " + COLUMNS + " from ST_NotifSended where notifId = ?";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
