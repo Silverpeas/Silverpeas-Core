@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import com.silverpeas.directory.DirectoryException;
 import com.silverpeas.directory.model.Member;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
@@ -51,6 +52,12 @@ import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
+import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBm;
+import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBmHome;
+import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
+import com.stratelia.webactiv.searchEngine.model.QueryDescription;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
 
 /**
  * @author Nabil Bensalem
@@ -59,6 +66,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   private List<UserDetail> lastAlllistUsersCalled;
   private List<UserDetail> lastListUsersCalled; // cache for pagination
+
+  private int elementsByPage = 10;
 
   private String currentView = "tous";
   private Properties stConfig;
@@ -74,12 +83,18 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     super(mainSessionCtrl, componentContext, "com.silverpeas.directory.multilang.DirectoryBundle",
         "com.silverpeas.directory.settings.DirectoryIcons",
         "com.silverpeas.directory.settings.DirectorySettings");
-    
+
+    elementsByPage = Integer.parseInt(getSettings().getString("ELEMENTS_PER_PAGE", "10"));
+
     stConfig = new Properties();
     stConfig.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, getSettings().getString(
         "templatePath"));
     stConfig.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, getSettings().getString(
         "customersTemplatePath"));
+  }
+
+  public int getElementsByPage() {
+    return elementsByPage;
   }
 
   /**
@@ -113,18 +128,36 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   /**
    *get all User that heir lastname or first name Last Name like "Key"
    * @param Key:the key of search
+   * @throws DirectoryException
    * @see
    */
-  public List<UserDetail> getUsersByLastName(String Key) {
-    setCurrentView(Key);
+  public List<UserDetail> getUsersByQuery(String query) throws DirectoryException {
+    setCurrentView("query");
     lastListUsersCalled = new ArrayList<UserDetail>();
 
-    for (UserDetail varUd : lastAlllistUsersCalled) {
-      if (varUd.getLastName().toUpperCase().startsWith(Key) || varUd.getFirstName().toUpperCase().
-          startsWith(Key)) {
-        lastListUsersCalled.add(varUd);
+    QueryDescription queryDescription = new QueryDescription(query);
+    queryDescription.addSpaceComponentPair(null, "users");
+
+    SearchEngineBm searchEngine = getSearchEngineBm();
+    try {
+      searchEngine.search(queryDescription);
+
+      MatchingIndexEntry[] plainSearchResults =
+          searchEngine.getRange(0, searchEngine.getResultLength());
+
+      for (MatchingIndexEntry result : plainSearchResults) {
+        String userId = result.getObjectId();
+        for (UserDetail varUd : lastAlllistUsersCalled) {
+          if (varUd.getId().equals(userId)) {
+            lastListUsersCalled.add(varUd);
+          }
+        }
       }
+    } catch (Exception e) {
+      throw new DirectoryException(this.getClass().getSimpleName(), "directory.EX_CANT_SEARCH",
+          e);
     }
+
     return lastListUsersCalled;
 
   }
@@ -281,7 +314,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     lastListUsersCalled = users;
     return lastListUsersCalled;
   }
-  
+
   public List<String> getFragments(List<Member> membersToDisplay) {
     // using StringTemplate to personalize display of members
     List<String> fragments = new ArrayList<String>();
@@ -327,5 +360,16 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     sb.append("class=\"").append(avatarClass).append("\"/></a>");
     return sb.toString();
   }
-  
+
+  private SearchEngineBm getSearchEngineBm() throws DirectoryException {
+    try {
+      SearchEngineBmHome home = (SearchEngineBmHome) EJBUtilitaire.getEJBObjectRef(
+              JNDINames.SEARCHBM_EJBHOME, SearchEngineBmHome.class);
+      return home.create();
+    } catch (Exception e) {
+      throw new DirectoryException(this.getClass().getSimpleName(), "root.EX_SEARCH_ENGINE_FAILED",
+          e);
+    }
+  }
+
 }
