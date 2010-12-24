@@ -72,16 +72,10 @@ public class DirectorySessionControllerTest {
     assertEquals(users.get(0), userscalled.get(0));
     assertEquals(users.get(1), userscalled.get(1));
     assertEquals(users.get(2), userscalled.get(2));
-    // by lastName
-    String lastName = "bourakbi";
-    userscalled = directoryDSC.getUsersByLastName(lastName.toUpperCase());
-    assertNotNull(userscalled);
-    assertEquals(1, userscalled.size());
-    assertEquals(users.get(0), userscalled.get(0));
     // pagination
     userscalled = directoryDSC.getLastListOfUsersCallded();
     assertNotNull(userscalled);
-    assertEquals(1, userscalled.size());
+    assertEquals(3, userscalled.size());
     assertEquals(users.get(0), userscalled.get(0));
 
   }
@@ -140,23 +134,6 @@ public class DirectorySessionControllerTest {
     assertEquals(2, userscalled.size());
     assertEquals(usersGroup.get(0), userscalled.get(0));
     assertEquals(usersGroup.get(1), userscalled.get(1));
-    // by lastName
-    String lastName = "bensalem";
-    userscalled = directoryDSC.getUsersByLastName(lastName.toUpperCase());
-    assertNotNull(userscalled);
-    assertEquals(1, userscalled.size());
-    assertEquals(usersGroup.get(0), userscalled.get(0));
-    // by lastName
-    lastName = "simpson";
-    userscalled = directoryDSC.getUsersByLastName(lastName.toUpperCase());
-    assertNotNull(userscalled);
-    assertEquals(1, userscalled.size());
-    assertEquals(usersGroup.get(1), userscalled.get(0));
-    // pagination
-    userscalled = directoryDSC.getLastListOfUsersCallded();
-    assertNotNull(userscalled);
-    assertEquals(1, userscalled.size());
-    assertEquals(usersGroup.get(1), userscalled.get(0));   
   }
   
   @Test
@@ -224,23 +201,6 @@ public class DirectorySessionControllerTest {
     assertEquals(usersDomain.get(0), userscalled.get(0));
     assertEquals(usersDomain.get(1), userscalled.get(1));
     assertEquals(usersDomain.get(2), userscalled.get(2));
-    // by lastName
-    String lastName = "groland";
-    userscalled = directoryDSC.getUsersByLastName(lastName.toUpperCase());
-    assertNotNull(userscalled);
-    assertEquals(1, userscalled.size());
-    assertEquals(usersDomain.get(1), userscalled.get(0));
-    // by lastName
-    lastName = "simpson";
-    userscalled = directoryDSC.getUsersByLastName(lastName.toUpperCase());
-    assertNotNull(userscalled);
-    assertEquals(1, userscalled.size());
-    assertEquals(usersDomain.get(2), userscalled.get(0));
-    // pagination
-    userscalled = directoryDSC.getLastListOfUsersCallded();
-    assertNotNull(userscalled);
-    assertEquals(1, userscalled.size());
-    assertEquals(usersDomain.get(2), userscalled.get(0));      
   }
 
   @Test
@@ -324,23 +284,6 @@ public class DirectorySessionControllerTest {
     assertEquals(usersSpace.get(0), userscalled.get(0));
     assertEquals(usersSpace.get(1), userscalled.get(1));
     assertEquals(usersSpace.get(2), userscalled.get(2));
-    // by lastName
-    String lastName = "groland";
-    userscalled = directoryDSC.getUsersByLastName(lastName.toUpperCase());
-    assertNotNull(userscalled);
-    assertEquals(1, userscalled.size());
-    assertEquals(usersSpace.get(1), userscalled.get(0));
-    // by lastName
-    lastName = "simpson";
-    userscalled = directoryDSC.getUsersByLastName(lastName.toUpperCase());
-    assertNotNull(userscalled);
-    assertEquals(1, userscalled.size());
-    assertEquals(usersSpace.get(2), userscalled.get(0));
-    // pagination
-    userscalled = directoryDSC.getLastListOfUsersCallded();
-    assertNotNull(userscalled);
-    assertEquals(1, userscalled.size());
-    assertEquals(usersSpace.get(2), userscalled.get(0));      
   }
   
   @Test
