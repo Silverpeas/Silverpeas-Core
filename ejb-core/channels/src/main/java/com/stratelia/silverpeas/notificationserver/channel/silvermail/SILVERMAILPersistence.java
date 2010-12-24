@@ -75,25 +75,45 @@ public class SILVERMAILPersistence {
     }
   }
 
+  public static Collection<SILVERMAILMessage> getNotReadMessagesOfFolder(int p_UserId, String p_FolderName)
+  throws SILVERMAILException {
+    return getMessageOfFolder(p_UserId, p_FolderName, 0);
+  }
+  
+  public static Collection<SILVERMAILMessage> getReadMessagesOfFolder(int p_UserId, String p_FolderName)
+  throws SILVERMAILException {
+    return getMessageOfFolder(p_UserId, p_FolderName, 1);
+  }
+  
+  public static Collection<SILVERMAILMessage> getMessageOfFolder(int p_UserId, String p_FolderName)
+  throws SILVERMAILException {
+    return getMessageOfFolder(p_UserId, p_FolderName, -1);
+  }
+  
   /**
-	 * 
-	 */
-  public static Collection getMessageOfFolder(int p_UserId, String p_FolderName)
+   * @param p_UserId
+   * @param p_FolderName
+   * @param readState not read only (0) , read only (1), all messages (-1) 
+   * @return
+   * @throws SILVERMAILException
+   */
+  public static Collection<SILVERMAILMessage> getMessageOfFolder(int p_UserId, String p_FolderName, int readState)
       throws SILVERMAILException {
     SILVERMAILMessage silverMailMessage = null;
     SILVERMAILMessageBean pmb;
     Collection collectionMessageBean = null;
-    Vector folderMessageList = new Vector();
+    Vector<SILVERMAILMessage> folderMessageList = new Vector<SILVERMAILMessage>();
     Iterator cmbIterator;
     SilverpeasBeanDAO dao;
     IdPK pk = new IdPK();
-    String whereClause = null;
     String userLogin = null;
 
-    whereClause = "USERID=" + p_UserId;
-    whereClause = whereClause + " AND FOLDERID="
-        + convertFolderNameToId(p_FolderName);
-    whereClause = whereClause + " ORDER BY ID DESC";
+    String whereClause = "USERID=" + p_UserId;
+    whereClause += " AND FOLDERID="+ convertFolderNameToId(p_FolderName);
+    if (readState != -1) {
+      whereClause += " readen = "+readState;
+    }
+    whereClause += " ORDER BY ID DESC";
 
     try {
       // find all message
@@ -232,11 +252,11 @@ public class SILVERMAILPersistence {
 
   public static void deleteAllMessages(int p_UserId, String p_FolderName)
       throws SILVERMAILException {
-    Iterator messageIterator = getMessageOfFolder(p_UserId, p_FolderName)
+    Iterator<SILVERMAILMessage> messageIterator = getMessageOfFolder(p_UserId, p_FolderName)
         .iterator();
 
     while (messageIterator.hasNext() == true) {
-      deleteMessage(((SILVERMAILMessage) messageIterator.next()).getId());
+      deleteMessage(messageIterator.next().getId());
     }
   }
 

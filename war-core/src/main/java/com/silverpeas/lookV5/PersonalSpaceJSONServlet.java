@@ -45,6 +45,7 @@ import com.silverpeas.external.webConnections.dao.WebConnectionsImpl;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
 import com.silverpeas.look.LookHelper;
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessage;
 import com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILPersistence;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -248,8 +249,8 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
         // get number of notifications
         int nbNotifications = 0;
         try {
-          Collection notifications =
-              SILVERMAILPersistence.getMessageOfFolder(Integer.parseInt(helper.getUserId()),
+          Collection<SILVERMAILMessage> notifications =
+              SILVERMAILPersistence.getNotReadMessagesOfFolder(Integer.parseInt(helper.getUserId()),
                   "INBOX");
           if (notifications != null) {
             nbNotifications = notifications.size();
