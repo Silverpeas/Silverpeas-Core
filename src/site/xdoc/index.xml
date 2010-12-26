@@ -43,7 +43,7 @@
       </p>
       <ol>
         <li>Download the 
-          <a href="http://www.silverpeas.org/files/Silverpeas-5.4-installer.jar">installer</a>
+          <a href="http://www.silverpeas.org/files/Silverpeas-5.4-izpack-installer.jar">installer</a>
         </li>
         <li>Run the following command (or double click on the jar file) 
           <code>java -jar Silverpeas-5.4-installer.jar</code>
