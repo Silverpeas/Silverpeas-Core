@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2009 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have recieved a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://repository.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<WAComponent>
+  <name>almanach</name>
+  <label>Almanach</label>
+  <description>Permet de créer et de visualiser les différents agendas d'événements définis dans les espaces et sous-espaces collaboratifs. A chaque événement peuvent être associés des fichiers joints. La visualisation s'effectue sur plusieurs échelles de temps.</description>
+  <suite>02 Gestion Collaborative</suite>
+  <visible>@ComponentVisibleAlmanach@</visible>
+  <portlet>yes</portlet>
+  <instanceClassName>com.stratelia.webactiv.almanach.AlmanachInstanciator</instanceClassName>
+  <tableList>
+    <tabletpl>event</tabletpl>
+  </tableList>
+  <Profiles>
+    <Profile name="admin">Gestionnaire</Profile>
+    <Profile name="publisher">Publieur</Profile>
+    <Profile name="user">Lecteur</Profile>
+  </Profiles>
+  <Parameters>
+    <Parameter>
+      <ParameterName>usePdc</ParameterName>
+      <ParameterLabel>Classification PDC</ParameterLabel>
+      <ParameterOrder>1</ParameterOrder>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterHelp>
+        <ParameterHelpFr>Les événements saisis au sein de cette instance pourront être classés sur le Plan de Classement</ParameterHelpFr>
+        <ParameterHelpEn></ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+    <Parameter>
+      <ParameterName>useAgregation</ParameterName>
+      <ParameterLabel>Agrégation d'Almanachs</ParameterLabel>
+      <ParameterOrder>2</ParameterOrder>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterHelp>
+        <ParameterHelpFr>Cet Almanach pourra contenir des évènements d'Almanachs appartenant à des sous-espaces de l'espace de cet Almanach.</ParameterHelpFr>
+        <ParameterHelpEn></ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+    <Parameter>
+      <ParameterName>weekendNotVisible</ParameterName>
+      <ParameterLabel>Masquer les week-end</ParameterLabel>
+      <ParameterOrder>3</ParameterOrder>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterHelp>
+        <ParameterHelpFr>Permet d'alléger l'interface et d'optimiser l'affichage du reste de la semaine</ParameterHelpFr>
+        <ParameterHelpEn></ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+    <Parameter>
+      <ParameterName>rss</ParameterName>
+      <ParameterLabel>Flux RSS</ParameterLabel>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterValue>N</ParameterValue>
+      <ParameterMandatory>N</ParameterMandatory>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>4</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Permet de générer un flux RSS des événements de cet Almanach.</ParameterHelpFr>
+        <ParameterHelpEn>.</ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+    <Parameter>
+      <ParameterName>directAccess</ParameterName>
+      <ParameterLabel>Accès transversal</ParameterLabel>
+      <ParameterType>select</ParameterType>
+      <ParameterValue>0</ParameterValue>
+      <ParameterMandatory>N</ParameterMandatory>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>5</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Permet de choisir quelles autres instances du composant Almanach sont accessibles depuis la liste déroulante.</ParameterHelpFr>
+        <ParameterHelpEn>.</ParameterHelpEn>
+      </ParameterHelp>
+      <ParameterOptions>
+        <ParameterOption>
+          <Name>Tous</Name>
+          <Value>0</Value>
+        </ParameterOption>
+        <ParameterOption>
+          <Name>Ceux de l'espace</Name>
+          <Value>1</Value>
+        </ParameterOption>
+        <ParameterOption>
+          <Name>Ceux de l'espace et sous espaces</Name>
+          <Value>2</Value>
+        </ParameterOption>
+        <ParameterOption>
+          <Name>Aucun</Name>
+          <Value>3</Value>
+        </ParameterOption>
+      </ParameterOptions>
+    </Parameter>
+  </Parameters>
+</WAComponent>
