@@ -69,7 +69,6 @@ public class VideoFieldDisplayerTest {
    */
   @Test
   public void testGetManagedTypes() {
-    System.out.println("get managed types");
     VideoFieldDisplayer instance = new VideoFieldDisplayer();
     String[] expResult = { FileField.TYPE };
     String[] result = instance.getManagedTypes();
@@ -81,7 +80,6 @@ public class VideoFieldDisplayerTest {
    */
   @Test
   public void testUpdateAttachment() throws Exception {
-    System.out.println("update attachment");
     String attachmentId = "toto.flv";
     Field field = new FileField();
     FieldTemplate template = new GenericFieldTemplate("video", FileField.class);
@@ -97,7 +95,6 @@ public class VideoFieldDisplayerTest {
    */
   @Test
   public void testUpdateEmptyAttachment() throws Exception {
-    System.out.println("update an empty attachment");
     String attachmentId = "";
     Field field = new FileField();
     FieldTemplate template = new GenericFieldTemplate("video", FileField.class);
@@ -113,7 +110,6 @@ public class VideoFieldDisplayerTest {
    */
   @Test
   public void testIsDisplayedMandatory() {
-    System.out.println("isDisplayedMandatory");
     VideoFieldDisplayer instance = new VideoFieldDisplayer();
     boolean result = instance.isDisplayedMandatory();
     assertTrue(result);
@@ -124,7 +120,6 @@ public class VideoFieldDisplayerTest {
    */
   @Test
   public void testGetNbHtmlObjectsDisplayed() throws FormException {
-    System.out.println("getNbHtmlObjectsDisplayed");
     FieldTemplate template = new GenericFieldTemplate("video", FileField.class);
     PagesContext pagesContext = mock(PagesContext.class);
     VideoFieldDisplayer instance = new VideoFieldDisplayer();

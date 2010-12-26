@@ -23,9 +23,9 @@
  */
 package com.stratelia.webactiv.util;
 
+import com.stratelia.silverpeas.peasCore.URLManager;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -44,31 +44,22 @@ import org.apache.commons.io.FilenameUtils;
  */
 public class FileRepositoryManager extends Object {
 
-  static String s_sUpLoadPath = "";
-  static String s_sIndexUpLoadPath = "";
+  final static String s_sUpLoadPath = GeneralPropertiesManager.getString("uploadsPath");
+  static String s_sIndexUpLoadPath = GeneralPropertiesManager.getString("uploadsIndexPath");
   static String s_sTempPath = "";
-  static String s_sApplicationURL = "";
   static FileFolderManager s_FileFolderManager = new FileFolderManager();
-  static ResourceLocator uploadSettings = null;
-  static ResourceLocator utilMessages = new ResourceLocator(
-      "com.silverpeas.util.multilang.util", "");
-  static String unknownFileIcon = null;
+  final static ResourceLocator uploadSettings=  new ResourceLocator(
+          "com.stratelia.webactiv.util.uploads.uploadSettings", "");
+  static final ResourceLocator utilMessages = new ResourceLocator("com.silverpeas.util.multilang.util", "");
+  static final String unknownFileIcon = uploadSettings.getString("unknown");
   public static final String CONTEXT_TOKEN = ",";
 
   static {
     try {
-      ResourceLocator generalSettings = new ResourceLocator(
-          "com.stratelia.webactiv.general", "");
-      s_sApplicationURL = generalSettings.getString("ApplicationURL");
-      s_sUpLoadPath = generalSettings.getString("uploadsPath");
-      s_sTempPath = generalSettings.getString("tempPath");
+      s_sTempPath = GeneralPropertiesManager.getString("tempPath");
       if (!s_sTempPath.endsWith(File.separator)) {
-        s_sTempPath = s_sTempPath + File.separator;
+        s_sTempPath = s_sTempPath + File.separatorChar;
       }
-      s_sIndexUpLoadPath = generalSettings.getString("uploadsIndexPath");
-      uploadSettings = new ResourceLocator(
-          "com.stratelia.webactiv.util.uploads.uploadSettings", "");
-      unknownFileIcon = uploadSettings.getString("unknown");
     } catch (Exception e) {
       SilverTrace.error("util", "FileRepositoryManager static",
           "util.MSG_ERROR_LOADING_PROPS",
@@ -172,6 +163,10 @@ public class FileRepositoryManager extends Object {
   }
 
   /**
+   * @param sSpaceId 
+   * @param sComponentId 
+   * @param sDirectoryName 
+   * @throws Exception 
    * @deprecated
    */
   static public void createAbsolutePath(String sSpaceId, String sComponentId,
@@ -187,6 +182,10 @@ public class FileRepositoryManager extends Object {
   }
 
   /**
+   * @param sSpaceId 
+   * @param sComponentId 
+   * @param sDirectoryName 
+   * @throws Exception 
    * @deprecated
    */
   static public void createTempPath(String sSpaceId, String sComponentId,
@@ -246,7 +245,7 @@ public class FileRepositoryManager extends Object {
   }
 
   static public String getFileIcon(boolean small, String extension, boolean isReadOnly) {
-    String path = s_sApplicationURL + uploadSettings.getString("FileIconsPath");
+    String path = URLManager.getApplicationURL() + uploadSettings.getString("FileIconsPath");
 
     String fileIcon = uploadSettings.getString(extension.toLowerCase());
     if (fileIcon == null) {
@@ -272,7 +271,7 @@ public class FileRepositoryManager extends Object {
 
   /**
    * Get the file size with the suitable unit
-   * @param long : size
+   * @param lSize : size
    * @return String
    */
   static public String formatFileSize(long lSize) {
@@ -325,6 +324,8 @@ public class FileRepositoryManager extends Object {
    * @author Seb
    * @param from The name of the source file, the one to copy.
    * @param to The name of the destination file, where to paste data.
+   * @throws FileNotFoundException
+   * @throws IOException  
    */
   static public void copyFile(String from, String to)
       throws FileNotFoundException, IOException {
@@ -358,7 +359,6 @@ public class FileRepositoryManager extends Object {
    * to create the array of the string this array represents the repertories where the files must be
    * stored.
    * @param str : type String: the string of repertories
-   * @param token : type String: the token separating the repertories
    */
   public static String[] getAttachmentContext(String str) {
 

@@ -24,11 +24,12 @@
 
 package com.stratelia.webactiv.util.indexEngine;
 
+import com.silverpeas.util.StringUtil;
 import java.io.File;
 
 import com.stratelia.silverpeas.silverpeasinitialize.IInitialize;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 /**
  * Class declaration
@@ -50,14 +51,10 @@ public class IndexEngineInitialize implements IInitialize {
    */
   public boolean Initialize() {
     // Remove all remaining *.lock files in index path
-    ResourceLocator resource = new ResourceLocator(
-        "com.stratelia.webactiv.general", "");
-
-    String indexPath = resource.getString("uploadsIndexPath");
-    String removeLocks = resource.getString("removeLocksOnInit", "");
-    if ("yes".equalsIgnoreCase(removeLocks)) {
+    String indexPath = GeneralPropertiesManager.getString("uploadsIndexPath");
+    String removeLocks = GeneralPropertiesManager.getString("removeLocksOnInit", "");
+    if (StringUtil.getBooleanValue(removeLocks)) {
       String property = System.getProperty("java.io.tmpdir");
-
       SilverTrace.debug("indexEngine", "IndexEngineInitialize.Initialize()",
           "Removing Locks...(" + property + ")");
       removeLockFiles(new File(property));

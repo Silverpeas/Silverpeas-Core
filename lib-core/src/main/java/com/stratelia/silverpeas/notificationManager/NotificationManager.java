@@ -50,6 +50,7 @@ import com.stratelia.silverpeas.notificationManager.model.NotifSchema;
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServer;
 import com.stratelia.silverpeas.notificationserver.NotificationServerException;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -78,7 +79,6 @@ public class NotificationManager
   static public final String FROM_NAME = "N";
   private Admin m_Admin = null;
   private ResourceLocator m_Multilang = null;
-  private String m_ApplicationURL = null;
   private ResourceLocator notifResources = new ResourceLocator(
       "com.stratelia.silverpeas.notificationManager.settings.notificationManagerSettings", "");
   
@@ -984,13 +984,8 @@ public class NotificationManager
    * @throws UtilException
    * @see
    */
-  protected Properties notifPreferencesRowToProperties(int aUserId,
-      NotifPreferenceRow npr,
-      boolean canEdit,
-      boolean canDelete,
-      boolean canTest,
-      boolean isDefault,
-      NotifSchema schema)
+  protected Properties notifPreferencesRowToProperties(int aUserId, NotifPreferenceRow npr,
+      boolean canEdit, boolean canDelete, boolean canTest, boolean isDefault, NotifSchema schema)
       throws UtilException, NotificationManagerException {
     Properties p = new Properties();
     // Look for the corresponding channel label
@@ -1307,14 +1302,7 @@ public class NotificationManager
   }
 
   public String getApplicationURL() {
-    if (m_ApplicationURL == null) {
-      ResourceLocator resources = new ResourceLocator("com.stratelia.webactiv.general", "");
-      m_ApplicationURL = resources.getString("ApplicationURL");
-      if (m_ApplicationURL == null) {
-        m_ApplicationURL = "/silverpeas";
-      }
-    }
-    return m_ApplicationURL;
+      return URLManager.getApplicationURL();
   }
 
   public String getUserAutoRedirectURL(String userId,

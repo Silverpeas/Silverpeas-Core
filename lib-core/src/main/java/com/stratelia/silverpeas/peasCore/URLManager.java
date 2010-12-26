@@ -28,6 +28,7 @@ import java.util.Properties;
 
 import static com.silverpeas.util.StringUtil.*;
 import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
@@ -229,9 +230,7 @@ public class URLManager {
    */
   public static String getApplicationURL() {
     if (applicationURL == null) {
-      ResourceLocator resources = new ResourceLocator(
-          "com.stratelia.webactiv.general", "");
-      applicationURL = resources.getString("ApplicationURL");
+      applicationURL = GeneralPropertiesManager.getString("ApplicationURL");
       if (applicationURL == null)
         applicationURL = "/silverpeas";
     }

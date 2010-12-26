@@ -28,15 +28,14 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ResourceBundle;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.lucene.queryParser.ParseException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.stratelia.webactiv.searchEngine.model.DidYouMeanSearcher;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 /**
  * 
@@ -49,8 +48,7 @@ public class TestDidYouMeanSearcher {
    */
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
-    String indexDirectory =
-        ResourceBundle.getBundle("com.stratelia.webactiv.general").getString("uploadsIndexPath") +
+    String indexDirectory = GeneralPropertiesManager.getString("uploadsIndexPath") +
         File.separatorChar + "kmelia2";
     String base = System.getProperty("basedir");
     File fileDest = new File(indexDirectory);

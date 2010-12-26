@@ -27,6 +27,7 @@ package com.stratelia.webactiv.util.indexEngine.parser;
 import java.util.MissingResourceException;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /*
@@ -62,15 +63,9 @@ public class ParserHelper {
    * @return the path to the temp directory or null
    */
   static public String getTempDirectory() {
-    ResourceLocator resource = null;
     String tempDirectory = null;
-
     try {
-      resource = new ResourceLocator("com.stratelia.webactiv.general", "");
-      if (resource != null) {
-        tempDirectory = resource.getString("tempPath");
-      }
-
+      tempDirectory = GeneralPropertiesManager.getString("tempPath");
     } catch (MissingResourceException e) {
       SilverTrace.warn("indexEngine", "ParserHelper",
           "indexEngine.MSG_MISSING_GENERAL_PROPERTIES", null, e);
