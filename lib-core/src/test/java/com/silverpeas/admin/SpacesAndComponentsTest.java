@@ -24,21 +24,10 @@
 
 package com.silverpeas.admin;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Hashtable;
+import com.silverpeas.components.model.AbstractTestDao;
 import java.util.List;
-import java.util.Properties;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.Reference;
-import javax.naming.StringRefAddr;
 
-import org.dbunit.JndiBasedDBTestCase;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.Test;
 
@@ -52,65 +41,7 @@ import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
 import com.stratelia.webactiv.beans.admin.instance.control.Instanciateur;
 import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
 
-public class SpacesAndComponentsTest extends JndiBasedDBTestCase {
-
-  private String jndiName = "";
-
-  @Override
-  protected void setUp() throws Exception {
-    prepareJndi();
-    Hashtable<String, String> env = new Hashtable<String, String>();
-    env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.fscontext.RefFSContextFactory");
-    InitialContext ic = new InitialContext(env);
-    Properties props = new Properties();
-    props.load(SpacesAndComponentsTest.class.getClassLoader()
-        .getResourceAsStream("jdbc.properties"));
-    // Construct BasicDataSource reference
-    Reference ref = new Reference("javax.sql.DataSource",
-        "org.apache.commons.dbcp.BasicDataSourceFactory", null);
-    ref.add(new StringRefAddr("driverClassName", props
-        .getProperty("driverClassName")));
-    ref.add(new StringRefAddr("url", props.getProperty("url")));
-    ref.add(new StringRefAddr("username", props.getProperty("username")));
-    ref.add(new StringRefAddr("password", props.getProperty("password")));
-    ref.add(new StringRefAddr("maxActive", "4"));
-    ref.add(new StringRefAddr("maxWait", "5000"));
-    ref.add(new StringRefAddr("removeAbandoned", "true"));
-    ref.add(new StringRefAddr("removeAbandonedTimeout", "5000"));
-    ic.rebind(props.getProperty("jndi.name"), ref);
-    jndiName = props.getProperty("jndi.name");
-    super.setUp();
-  }
-
-  /**
-   * Creates the directory for JNDI files System provider
-   * @throws IOException
-   */
-  protected void prepareJndi() throws IOException {
-    Properties jndiProperties = new Properties();
-    jndiProperties.load(JndiBasedDBTestCase.class.getClassLoader().getResourceAsStream(
-        "jndi.properties"));
-    String jndiDirectoryPath = jndiProperties.getProperty(Context.PROVIDER_URL).substring(7);
-    File jndiDirectory = new File(jndiDirectoryPath);
-    if (!jndiDirectory.exists()) {
-      jndiDirectory.mkdirs();
-      jndiDirectory.mkdir();
-    }
-  }
-
-  @Override
-  protected String getLookupName() {
-    return jndiName;
-  }
-
-  @Override
-  protected IDataSet getDataSet() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
-        SpacesAndComponentsTest.class
-            .getResourceAsStream("test-spacesandcomponents-dataset.xml")));
-    dataSet.addReplacementObject("[NULL]", null);
-    return dataSet;
-  }
+public class SpacesAndComponentsTest extends AbstractTestDao {
 
   private AdminController getAdminController() {
     AdminController ac = new AdminController("1");
@@ -405,15 +336,9 @@ public class SpacesAndComponentsTest extends JndiBasedDBTestCase {
 
   }
 
-  @Test
-  /*
-   * public void testCopyAndPasteSpaceNotAllowed() throws AdminException { AdminController ac =
-   * getAdminController(); String newSpaceId = ac.copyAndPasteSpace("WA1", "WA2", "1");
-   * assertNull(newSpaceId); }
-   */
   @Override
-  protected DatabaseOperation getTearDownOperation() throws Exception {
-    return DatabaseOperation.DELETE_ALL;
+  protected String getDatasetFileName() {
+    return "test-spacesandcomponents-dataset.xml";
   }
 
 }
