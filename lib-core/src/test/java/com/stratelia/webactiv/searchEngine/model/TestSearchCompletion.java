@@ -21,33 +21,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.searchEngine.model;
 
-import java.io.File;
-import java.util.Properties;
+import com.silverpeas.components.model.AbstractTestDao;
 import java.util.Set;
-
-import org.junit.Before;
 import org.junit.Test;
 
 public class TestSearchCompletion extends AbstractTestDao {
 
-  @Before
-  @Override
-  public void setUp() throws Exception {
-    Properties props = new Properties();
-    props.load(TestSearchCompletion.class.getClassLoader().getResourceAsStream(
-        "jndi.properties"));
-    String jndiPath = props.getProperty("java.naming.provider.url").substring(7);
-    File file = new File(jndiPath);
-    file.mkdir();
-    super.setUp();
-  }
-
-
   @Test
-  public final void testGetSuggestions() {
+  public void testGetSuggestions() {
     SearchCompletion completion = new SearchCompletion();
     Set<String> set = completion.getSuggestions("inte");
 
@@ -73,5 +56,4 @@ public class TestSearchCompletion extends AbstractTestDao {
   protected String getDatasetFileName() {
     return "autocompletion-dataset.xml";
   }
-
 }
