@@ -26,25 +26,13 @@
 -->
 
 <dataset>
-	<st_domain id="0" name="Silverpeas" propfilename="com.stratelia.silverpeas.domains.domainSP" classname="com.stratelia.silverpeas.domains.silverpeasdriver.SilverpeasDriver" authenticationserver="autDomainSP" />
-
-	<st_user id="1" domainid="0" specificid="1" lastname="Administrateur" login="SilverAdmin" accesslevel="A" />
-	<uniqueid maxid="1" tablename="st_user"/>
-
-	<domainsp_user id="1" lastname="Administrateur" login="SilverAdmin"></domainsp_user>
-	<uniqueid maxid="1" tablename="domainsp_user"/>
-
-	<st_group id="1" domainid="0" specificid="1" name="Groupe 1"/>
-	<uniqueid maxid="1" tablename="st_group"/>
-	
-	<domainsp_group id="1" name="Groupe 1"/>
-	<uniqueid maxid="1" tablename="domainsp_group"/>
-	
-	<uniqueid/>
-	<domainsp_group_user_rel/>
-	<st_group_user_rel/>
-	<st_domain/>
-	<st_user/>
-	<domainsp_user/>
-	<domainsp_group/>
+  <st_domain id="0" name="Silverpeas" propfilename="com.stratelia.silverpeas.domains.domainSP" classname="com.stratelia.silverpeas.domains.silverpeasdriver.SilverpeasDriver" authenticationserver="autDomainSP" />
+  <st_user id="1" domainid="0" specificid="1" lastname="Administrateur" login="SilverAdmin" accesslevel="A" />
+  <domainsp_user id="1" lastname="Administrateur" login="SilverAdmin" />
+  <st_group id="1" domainid="0" specificid="1" name="Groupe 1"/>	
+  <domainsp_group id="1" name="Groupe 1"/>
+  <uniqueid maxid="1" tablename="domainsp_group"/>
+  <uniqueid maxid="1" tablename="st_group"/>
+  <uniqueid maxid="1" tablename="domainsp_user"/>
+  <uniqueid maxid="1" tablename="st_user"/>
 </dataset>

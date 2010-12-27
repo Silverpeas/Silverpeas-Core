@@ -27,7 +27,6 @@ package com.silverpeas.admin;
 import com.silverpeas.components.model.AbstractTestDao;
 
 
-import org.dbunit.operation.DatabaseOperation;
 import org.junit.Test;
 
 import com.stratelia.webactiv.beans.admin.AdminController;

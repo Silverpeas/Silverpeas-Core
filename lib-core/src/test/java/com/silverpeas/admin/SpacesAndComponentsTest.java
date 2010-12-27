@@ -28,7 +28,6 @@ import com.silverpeas.components.model.AbstractTestDao;
 import java.util.List;
 
 
-import org.dbunit.operation.DatabaseOperation;
 import org.junit.Test;
 
 import com.stratelia.webactiv.beans.admin.Admin;

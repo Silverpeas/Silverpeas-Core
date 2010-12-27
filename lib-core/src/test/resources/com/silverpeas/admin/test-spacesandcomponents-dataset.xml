@@ -26,37 +26,35 @@
 -->
 
 <dataset>
-	<st_domain id="0" name="Silverpeas" propfilename="com.stratelia.silverpeas.domains.domainSP" classname="com.stratelia.silverpeas.domains.silverpeasdriver.SilverpeasDriver" authenticationserver="autDomainSP" />
+  <st_domain id="0" name="Silverpeas" propfilename="com.stratelia.silverpeas.domains.domainSP" classname="com.stratelia.silverpeas.domains.silverpeasdriver.SilverpeasDriver" authenticationserver="autDomainSP" />
 
-	<st_user id="1" domainid="0" specificid="1" lastname="Administrateur" login="SilverAdmin" accesslevel="A" />
-	<st_user id="2" domainid="0" specificid="2" lastname="SimpleUser" login="SimpleUser" accesslevel="U" />
-	<uniqueid maxid="2" tablename="st_user"/>
+  <st_user id="1" domainid="0" specificid="1" lastname="Administrateur" login="SilverAdmin" accesslevel="A" />
+  <st_user id="2" domainid="0" specificid="2" lastname="SimpleUser" login="SimpleUser" accesslevel="U" />
+	
+  <domainsp_user id="1" lastname="Administrateur" login="SilverAdmin"/>
+  <domainsp_user id="2" lastname="SimpleUser" login="SimpleUser"/>
+	
+  <st_group id="1" domainid="0" specificid="1" name="Groupe 1"/>
+	
+  <domainsp_group id="1" name="Groupe 1"/>
+	
+  <st_space id="1" domainfatherid="[NULL]" name="Space 1" firstpagetype="0"/>
+  <st_space id="2" domainfatherid="1" name="Space 1-2" firstpagetype="0" />
+  <st_space id="3" domainfatherid="[NULL]" name="Space 2" firstpagetype="0"/>
+  <st_componentinstance id="1" spaceid="1" name="GED" componentname="kmelia"/>
+  <st_componentinstance id="2" spaceid="2" name="Dates clés" componentname="almanach"/>	
+ 
+	
+  <uniqueid maxid="2" tablename="st_user"/>
+  <uniqueid maxid="2" tablename="domainsp_user"/>
+  <uniqueid maxid="1" tablename="st_group"/>
+  <uniqueid maxid="1" tablename="domainsp_group"/>
+  <uniqueid maxid="3" tablename="st_space"/>
+  <uniqueid maxid="2" tablename="st_componentinstance"/>
+  
+  <st_userrole />
+  <st_userrole_user_rel/>
+  <st_spaceuserrole />
+  <st_spaceuserrole_user_rel />
 
-	<domainsp_user id="1" lastname="Administrateur" login="SilverAdmin"/>
-	<domainsp_user id="2" lastname="SimpleUser" login="SimpleUser"/>
-	<uniqueid maxid="2" tablename="domainsp_user"/>
-
-	<st_group id="1" domainid="0" specificid="1" name="Groupe 1"/>
-	<uniqueid maxid="1" tablename="st_group"/>
-	
-	<domainsp_group id="1" name="Groupe 1"/>
-	<uniqueid maxid="1" tablename="domainsp_group"/>
-	
-	<st_space id="1" domainfatherid="[NULL]" name="Space 1" firstpagetype="0"/>
-	<st_space id="2" domainfatherid="1" name="Space 1-2" firstpagetype="0" />
-	<st_space id="3" domainfatherid="[NULL]" name="Space 2" firstpagetype="0"/>
-	<uniqueid maxid="3" tablename="st_space"/>
-	
-	<st_componentinstance id="1" spaceid="1" name="GED" componentname="kmelia"/>
-	<st_componentinstance id="2" spaceid="2" name="Dates clés" componentname="almanach"/>
-	<uniqueid maxid="2" tablename="st_componentinstance"/>
-	
-	<domainsp_group_user_rel/>
-	<st_group_user_rel/>
-	<st_spaceuserrole/>
-	<st_spaceuserrole_user_rel/>
-	<st_spaceuserrole_group_rel/>
-	<st_userrole/>
-	<st_userrole_user_rel/>
-	<st_userrole_group_rel/>
 </dataset>
