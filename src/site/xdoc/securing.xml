@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2009 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<document>
+  <properties>
+    <author>Emmanuel Hugonnet</author>
+    <title>Securing Silverpeas</title>
+  </properties>
+  <head>
+  </head>
+  <body>
+    <section name="Configuring SSL">
+      <subsection name="Preparing the Certificate Keystore">
+      <p><b>Note: </b> this documentation is based on <a href="http://tomcat.apache.org/tomcat-6.0-doc/ssl-howto.html">Apache Tomcat SSL Documentation</a>.</p>
+      <p>Using SSL with Silverpeas is quite transparent since most of the work is on JBoss configuration.
+     First, you have to create a keystore to hold your certificates. JBoss supports the following formats :  JKS and PKCS12.<br/>
+     To import an existing certificate signed by your own CA into a PKCS12 keystore using OpenSSL you would execute a command like:
+      </p>
+      <fieldset>
+        <pre>openssl pkcs12 -export -in mycert.crt -inkey mykey.key \
+                        -out mycert.p12 -name tomcat -CAfile myCA.crt \
+                        -caname root -chain
+        </pre>
+      </fieldset>
+      <p>		
+For more advanced cases, consult the OpenSSL documentation.
+To create a new keystore from scratch, containing a single 
+        <b>self-signed Certificate</b>, execute the following from a terminal command line:
+      </p>
+      <fieldset>
+        <legend>Windows</legend>
+        <pre>%JAVA_HOME%\bin\keytool -genkey -alias tomcat -keyalg RSA -keystore \path\to\my\keystore</pre>
+      </fieldset>
+      <fieldset>
+        <legend>Unix</legend>
+        <pre>$JAVA_HOME/bin/keytool -genkey -alias tomcat -keyalg RSA -keystore /path/to/my/keystore</pre>
+      </fieldset>
+      <p>
+      After executing this command, you will first be prompted for the keystore password. The default 
+      password used by JBoss is "<b>changeit</b>" (all lower case), although you can specify a custom 
+      password if you like. You will also need to specify the custom password in the <i>server.xml</i>
+      configuration file, as described later.<br/>
+      Next, you will be prompted for general information about this Certificate, such as company, 
+      contact name, and so on. This information will be displayed to users who attempt to access a 
+      secure page in your application, so make sure that the information provided here matches what 
+      they will expect.br/>
+      Finally, you will be prompted for the key password, which is the password specifically for 
+      this Certificate (as opposed to any other Certificates stored in the same keystore file). 
+      You <b>MUST</b> use the same password here as was used for the keystore password itself. 
+      (Currently, the keytool prompt will tell you that pressing the ENTER key does this for you automatically.)<br/>
+      If everything was successful, you now have a keystore file with a Certificate that can be used by your server.
+      </p>
+      </subsection>
+      <subsection name="Configuring JBoss">
+      <p>The final step is to configure the Connector in the <i>$JBOSS_HOME/server/default/deploy/jbossweb-tomcat55.sar/server.xml</i> 
+      file. An example &lt;Connector&gt; element for an SSL connector is included in the default server.xml file installed with Silverpeas. 
+      It should look something like this:</p>
+      <fieldset>
+        <legend>SSL Connector</legend>
+        <pre><![CDATA[<Connector URIEncoding="UTF-8" acceptCount="100" address="${jboss.bind.address}" clientAuth="false" 
+        disableUploadTimeout="true" enableLookups="false" keyAlias="tomcat" 
+        keystoreFile="/home/ehugonnet/programs/silverpeas/bin/truststore.jks" keystorePass="changeit" 
+        port="8443" scheme="https" secure="true" sslProtocol="TLS"/>]]></pre>
+      </fieldset>
+      </subsection>
+    </section>
+    <section name="Secure Authentication with clear site">
+      <p>With Silverpeas you can have an HTTPS login, thus authentication is secured, with an HTTP intranet (for performance). This feature is activated by configuration.
+      First, you have to enable SSL (following the preceding instructions) then you have to configure Silverpeas using the following XML block into your <i>CustomerSettings.xml</i> </p>
+      <fieldset>
+        <legend>CustomerSettings.xml</legend>
+        <pre><![CDATA[<silverpeas-settings>
+  ...
+  <fileset root="${SILVERPEAS_HOME}/properties/com/stratelia/webactiv/">
+    <configfile name="general.properties">
+      <parameter key="server.ssl">false</parameter><!-- we don't want to stay in SSL mode -->
+       <parameter key="server.http.port">8000</parameter>
+  </configfile>
+  </fileset>
+  <fileset root="${SILVERPEAS_HOME}/jar/silverpeas.ear/war-ic.war/WEB-INF/">
+    <xmlfile name="web.xml">
+      <parameter key="//security-constraint/user-data-constraint/transport-guarantee" mode="update">
+	<value>CONFIDENTIAL</value>
+      </parameter>
+    </xmlfile>
+  </fileset>
+  ...
+</silverpeas-settings>]]></pre>
+      </fieldset>
+    </section>
+  </body>
+</document>
