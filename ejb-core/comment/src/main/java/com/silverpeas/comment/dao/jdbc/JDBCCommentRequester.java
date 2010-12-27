@@ -45,7 +45,6 @@ import java.sql.Statement;
 public class JDBCCommentRequester {
 
   private static final int INITIAL_CAPACITY = 1000;
-  private static final String COMMENT_TABLENAME = "sb_comment_comment";
 
   /**
    * Constructs a new JDBCCommentRequester instance.
@@ -70,7 +69,8 @@ public class JDBCCommentRequester {
     try {
       newId = DBUtil.getNextId(cmt.getCommentPK().getTableName(), "commentId");
     } catch (Exception e) {
-      SilverTrace.warn("comments", getClass().getSimpleName() + ".createComment", "root.EX_PK_GENERATION_FAILED", e);
+      SilverTrace.warn("comments", getClass().getSimpleName() + ".createComment",
+          "root.EX_PK_GENERATION_FAILED", e);
       return null;
     }
     try {
@@ -214,17 +214,15 @@ public class JDBCCommentRequester {
 
   public int getCommentsCount(Connection con, WAPrimaryKey foreign_pk)
       throws SQLException {
-    String select_query = "select count(commentId) as nb_comment from "
-        + COMMENT_TABLENAME + " where instanceId = '"
-        + foreign_pk.getComponentName() + "' AND foreignid="
-        + foreign_pk.getId() + ";";
-
+    String select_query = "SELECT COUNT(commentId) AS nb_comment FROM sb_comment_comment "
+        + "WHERE instanceId = ? AND foreignid = ?";
     PreparedStatement prep_stmt = null;
     ResultSet rs = null;
     int commentsCount = 0;
-
     try {
       prep_stmt = con.prepareStatement(select_query);
+      prep_stmt.setString(1, foreign_pk.getComponentName());
+      prep_stmt.setInt(2, Integer.parseInt(foreign_pk.getId()));
       rs = prep_stmt.executeQuery();
       while (rs.next()) {
         commentsCount = rs.getInt("nb_comment");
@@ -242,20 +240,16 @@ public class JDBCCommentRequester {
   public List<Comment> getAllComments(Connection con, WAPrimaryKey foreign_pk)
       throws SQLException {
     String select_query =
-        "select commentId, commentOwnerId, commentCreationDate, commentModificationDate, commentComment, foreignId, instanceId from "
-        + COMMENT_TABLENAME
-        + " where foreignId="
-        + foreign_pk.getId()
-        + " and instanceId = '"
-        + foreign_pk.getComponentName()
-        + "' order by commentCreationDate DESC, commentId DESC";
+        "SELECT commentId, commentOwnerId, commentCreationDate, commentModificationDate, "
+        + "commentComment, foreignId, instanceId FROM sb_comment_comment WHERE foreignId = ? "
+        + "AND instanceId = ? ORDER BY commentCreationDate DESC, commentId DESC";
     PreparedStatement prep_stmt = null;
     ResultSet rs = null;
-    prep_stmt = con.prepareStatement(select_query);
-
     List<Comment> comments = new ArrayList<Comment>(INITIAL_CAPACITY);
-
     try {
+      prep_stmt = con.prepareStatement(select_query);
+      prep_stmt.setInt(1, Integer.parseInt(foreign_pk.getId()));
+      prep_stmt.setString(2, foreign_pk.getComponentName());
       rs = prep_stmt.executeQuery();
       CommentPK pk;
       Comment cmt = null;
@@ -277,11 +271,10 @@ public class JDBCCommentRequester {
 
   public void deleteAllComments(Connection con, ForeignPK pk)
       throws SQLException {
-    String delete_query = "delete from " + COMMENT_TABLENAME
-        + " where foreignId = ? And instanceId = ? ";
-    PreparedStatement prep_stmt = null;
-    prep_stmt = con.prepareStatement(delete_query);
+    String delete_query = "DELETE FROM sb_comment_comment WHERE foreignId = ? AND instanceId = ? ";
+    PreparedStatement prep_stmt = null;    
     try {
+      prep_stmt = con.prepareStatement(delete_query);
       prep_stmt.setInt(1, Integer.parseInt(pk.getId()));
       prep_stmt.setString(2, pk.getInstanceId());
       prep_stmt.executeUpdate();
