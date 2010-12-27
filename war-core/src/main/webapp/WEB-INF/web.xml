@@ -907,6 +907,7 @@
       <page-encoding>UTF-8</page-encoding>
     </jsp-property-group>
   </jsp-config>
+  
   <security-constraint>
     <display-name>Authentification</display-name>
     <web-resource-collection>
@@ -919,7 +920,7 @@
       <http-method>PUT</http-method>
     </web-resource-collection>
     <web-resource-collection>
-      <web-resource-name>Login page</web-resource-name>
+      <web-resource-name>Default Login page</web-resource-name>
       <description/>
       <url-pattern>/defaultLogin.jsp</url-pattern>
       <http-method>DELETE</http-method>
@@ -927,9 +928,18 @@
       <http-method>POST</http-method>
       <http-method>PUT</http-method>
     </web-resource-collection>
+    <web-resource-collection>
+      <web-resource-name>Login page</web-resource-name>
+      <description/>
+      <url-pattern>/Login.jsp</url-pattern>
+      <http-method>DELETE</http-method>
+      <http-method>GET</http-method>
+      <http-method>POST</http-method>
+      <http-method>PUT</http-method>
+    </web-resource-collection>
     <user-data-constraint>
       <description>SSL</description>
-      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+      <transport-guarantee>NONE</transport-guarantee>
     </user-data-constraint>
   </security-constraint>
 </web-app>

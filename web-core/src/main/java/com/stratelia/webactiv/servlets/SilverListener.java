@@ -26,9 +26,10 @@ package com.stratelia.webactiv.servlets;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.servlet.http.*;
 import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
 
 /**
  * @author sv To change the template for this generated type comment go to
@@ -36,20 +37,23 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  */
 public class SilverListener implements HttpSessionListener, ServletContextListener {
   // HttpSessionListener methods
+  @Override
   public void sessionCreated(HttpSessionEvent event) {
   }
 
+  @Override
   public void sessionDestroyed(HttpSessionEvent event) {
     remove(event);
   }
 
   // ServletContextListener methods
+  @Override
   public void contextDestroyed(ServletContextEvent event) {
-    SilverTrace.info("peasCore", "SilverListener.contextDestroyed",
-        "peasCore.MSG_END_OF_HTTPSESSION");
+    SilverTrace.info("peasCore", "SilverListener.contextDestroyed", "peasCore.MSG_END_OF_HTTPSESSION");
     SessionManager.getInstance().shutdown();
   }
 
+  @Override
   public void contextInitialized(ServletContextEvent event) {
   }
 

@@ -21,12 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * @author Ludovic BERTIN
- * @version 1.0
- * date 20/9/2001
- */
 package com.silverpeas.authentication;
 
 import com.silverpeas.util.StringUtil;
