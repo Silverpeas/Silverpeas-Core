@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,75 +21,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.organization;
 
-import java.util.Hashtable;
+import com.silverpeas.components.model.AbstractTestDao;
 import java.util.List;
-import java.util.Properties;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.Reference;
-import javax.naming.StringRefAddr;
 
-import org.dbunit.JndiBasedDBTestCase;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.operation.DatabaseOperation;
 import org.junit.Test;
 
-public class UserFavoriteSpaceDAOImplTest extends JndiBasedDBTestCase {
+public class UserFavoriteSpaceDAOImplTest extends AbstractTestDao {
 
-  private String jndiName = "";
-
-  @Override
-  protected void setUp() throws Exception {
-    Hashtable<String, String> env = new Hashtable<String, String>();
-    env.put(Context.INITIAL_CONTEXT_FACTORY,
-        "com.sun.jndi.fscontext.RefFSContextFactory");
-    InitialContext ic = new InitialContext(env);
-    Properties props = new Properties();
-    props.load(UserFavoriteSpaceDAOImplTest.class.getClassLoader().getResourceAsStream(
-        "jdbc.properties"));
-    // Construct BasicDataSource reference
-    Reference ref = new Reference("javax.sql.DataSource",
-        "org.apache.commons.dbcp.BasicDataSourceFactory", null);
-    ref.add(new StringRefAddr("driverClassName", props
-        .getProperty("driverClassName")));
-    ref.add(new StringRefAddr("url", props.getProperty("url")));
-    ref.add(new StringRefAddr("username", props.getProperty("username")));
-    ref.add(new StringRefAddr("password", props.getProperty("password")));
-    ref.add(new StringRefAddr("maxActive", "4"));
-    ref.add(new StringRefAddr("maxWait", "5000"));
-    ref.add(new StringRefAddr("removeAbandoned", "true"));
-    ref.add(new StringRefAddr("removeAbandonedTimeout", "5000"));
-    ic.rebind(props.getProperty("jndi.name"), ref);
-    jndiName = props.getProperty("jndi.name");
-    super.setUp();
-  }
-
-  protected String getLookupName() {
-    return jndiName;
-  }
-
-  protected Properties getJNDIProperties() {
-    Properties env = new Properties();
-    env.put(Context.INITIAL_CONTEXT_FACTORY,
-        "com.sun.jndi.fscontext.RefFSContextFactory");
-    return env;
-  }
-
-  protected IDataSet getDataSet() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
-        UserFavoriteSpaceDAOImplTest.class
-        .getResourceAsStream("test-favoritespace-dataset.xml")));
-    dataSet.addReplacementObject("[NULL]", null);
-    return dataSet;
-  }
-
-  
   @Test
   public void testGetListUserFavoriteSpace() {
     UserFavoriteSpaceDAOImpl ufsDAO = new UserFavoriteSpaceDAOImpl();
@@ -107,12 +48,12 @@ public class UserFavoriteSpaceDAOImplTest extends JndiBasedDBTestCase {
     // Check the new records inside database
     List<UserFavoriteSpaceVO> listUFS = ufsDAO.getListUserFavoriteSpace("0");
     assertEquals(2, listUFS.size());
-    
+
     // Check database constraint on existing userid and space id
     ufsVO = new UserFavoriteSpaceVO(10, 10);
     result = ufsDAO.addUserFavoriteSpace(ufsVO);
     assertEquals(false, result);
-    
+
     // Check default userFavoriteSpaceVO 
     ufsVO = new UserFavoriteSpaceVO();
     assertEquals(-1, ufsVO.getSpaceId());
@@ -120,7 +61,6 @@ public class UserFavoriteSpaceDAOImplTest extends JndiBasedDBTestCase {
     result = ufsDAO.addUserFavoriteSpace(ufsVO);
     assertEquals(false, result);
   }
-  
 
   @Test
   public void testRemoveUserFavoriteSpace() {
@@ -137,17 +77,13 @@ public class UserFavoriteSpaceDAOImplTest extends JndiBasedDBTestCase {
     assertEquals(true, result);
 
     // Delete all favorite space of current user
-    ufsDAO.removeUserFavoriteSpace(new UserFavoriteSpaceVO(0,-1));
+    ufsDAO.removeUserFavoriteSpace(new UserFavoriteSpaceVO(0, -1));
     listUFS = ufsDAO.getListUserFavoriteSpace("0");
     assertEquals(0, listUFS.size());
   }
 
   @Override
-  protected DatabaseOperation getTearDownOperation() throws Exception {
-    return DatabaseOperation.DELETE_ALL;
+  protected String getDatasetFileName() {
+    return "test-favoritespace-dataset.xml";
   }
-
-
-
-
 }
