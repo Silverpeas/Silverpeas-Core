@@ -136,11 +136,9 @@ public final class Admin extends Object {
   public Admin() {
     if (m_sAdminDBDriver == null) {
       // Load silverpeas admin resources
-      ResourceLocator resources = new ResourceLocator(
-          "com.stratelia.webactiv.beans.admin.admin", "");
+      ResourceLocator resources = new ResourceLocator("com.stratelia.webactiv.beans.admin.admin", "");
       roleMapping = new ResourceLocator("com.silverpeas.admin.roleMapping", "");
-      useProfileInheritance = resources.getBoolean("UseProfileInheritance",
-          false);
+      useProfileInheritance = resources.getBoolean("UseProfileInheritance", false);
 
       m_sAdminDBDriver = resources.getString("AdminDBDriver");
       m_sWaProductionDb = resources.getString("WaProductionDb");
@@ -153,8 +151,7 @@ public final class Admin extends Object {
 
       if (m_DBResetScheduler == null) {
         m_DBResetScheduler = new ScheduledDBReset();
-        m_DBResetScheduler.initialize(resources.getString(
-            "DBConnectionResetScheduler", ""));
+        m_DBResetScheduler.initialize(resources.getString("DBConnectionResetScheduler", ""));
       }
 
       m_bFallbackGroupNames = resources.getBoolean("FallbackGroupNames", true);
@@ -211,8 +208,6 @@ public final class Admin extends Object {
     } catch (Exception e) {
       SilverTrace.error(MODULE_ADMIN, "Admin.startServer", "ERROR_WHEN_STARTING_DOMAINS", e);
     }
-
-    // Group[] groups = getRootGroupsOfDomain("-1");
     Group[] groups = getSynchronizedGroups();
     List<String> synchronizedGroupIds = new ArrayList<String>();
     Group group = null;
@@ -222,15 +217,12 @@ public final class Admin extends Object {
         synchronizedGroupIds.add(group.getId());
       }
     }
-
     groupSynchroScheduler = new SynchroGroupScheduler();
-    groupSynchroScheduler.initialize(m_groupSynchroCron, this,
-        synchronizedGroupIds);
+    groupSynchroScheduler.initialize(m_groupSynchroCron, this, synchronizedGroupIds);
   }
 
   private void addSpaceInTreeCache(SpaceInstLight space, boolean addSpaceToSuperSpace)
-      throws NumberFormatException,
-      AdminException {
+      throws NumberFormatException, AdminException {
     Space spaceInCache = new Space();
     spaceInCache.setSpace(space);
 
@@ -266,7 +258,7 @@ public final class Admin extends Object {
 
     SilverTrace.info(MODULE_ADMIN, "admin.createSpaceIndex",
         "root.MSG_GEN_PARAM_VALUE", "Space Name : " + spaceInst.getName()
-            + " Space Id : " + spaceInst.getId());
+        + " Space Id : " + spaceInst.getId());
 
     if (spaceInst != null) {
       // Index the space
@@ -283,7 +275,7 @@ public final class Admin extends Object {
   public void deleteSpaceIndex(SpaceInst spaceInst) {
     SilverTrace.info("admin", "admin.deleteSpaceIndex",
         "root.MSG_GEN_PARAM_VALUE", "Space Name : " + spaceInst.getName()
-            + " Space Id : " + spaceInst.getId());
+        + " Space Id : " + spaceInst.getId());
     // Index the space
     String spaceId = getSpaceId(spaceInst);
     FullIndexEntry indexEntry = new FullIndexEntry("Spaces", "Space", spaceId);
@@ -302,7 +294,7 @@ public final class Admin extends Object {
     try {
       SilverTrace.info(MODULE_ADMIN, "admin.addSpaceInst",
           "root.MSG_GEN_PARAM_VALUE", "Space Name : " + spaceInst.getName()
-              + " NbCompo: " + spaceInst.getNumComponentInst());
+          + " NbCompo: " + spaceInst.getNumComponentInst());
       connectionProd = openConnection(m_sWaProductionDb, m_sWaProductionUser,
           m_sWaProductionPswd, false);
 
@@ -347,7 +339,7 @@ public final class Admin extends Object {
       // indexation de l'espace
       SilverTrace.info(MODULE_ADMIN, "admin.addSpaceInst",
           "root.MSG_GEN_PARAM_VALUE", "Indexation : spaceInst = "
-              + spaceInst.getName());
+          + spaceInst.getName());
       createSpaceIndex(spaceInst);
 
       return spaceInst.getId();
@@ -363,7 +355,7 @@ public final class Admin extends Object {
       }
       throw new AdminException("Admin.addSpaceInst", SilverpeasException.ERROR,
           "admin.EX_ERR_ADD_SPACE", "space name : '" + spaceInst.getName()
-              + "'", e);
+          + "'", e);
     } finally {
       // close connection
       closeConnection(connectionProd);
@@ -472,7 +464,7 @@ public final class Admin extends Object {
       }
       throw new AdminException("Admin.deleteSpaceInstById",
           SilverpeasException.ERROR, "admin.EX_ERR_DELETE_SPACE", "user Id : '"
-              + sUserId + "', space Id : '" + sClientSpaceId + "'", e);
+          + sUserId + "', space Id : '" + sClientSpaceId + "'", e);
     }
   }
 
@@ -521,7 +513,7 @@ public final class Admin extends Object {
       // indexation de l'espace
       SilverTrace.info(MODULE_ADMIN, "admin.restoreSpaceFromBasket",
           "root.MSG_GEN_PARAM_VALUE", "Indexation : spaceInst = "
-              + spaceInst.getName());
+          + spaceInst.getName());
       createSpaceIndex(spaceInst);
       // reset space and eventually subspace
       m_Cache.opAddSpace(spaceInst);
@@ -594,7 +586,7 @@ public final class Admin extends Object {
     } catch (Exception e) {
       throw new AdminException("Admin.getSpaceInstById",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE", " space Id : '"
-              + sSpaceId + "'", e);
+          + sSpaceId + "'", e);
     }
   }
 
@@ -643,7 +635,7 @@ public final class Admin extends Object {
 
       SilverTrace.debug(MODULE_ADMIN, "Admin.updateSpaceInst",
           "root.MSG_GEN_ENTER_METHOD", "Before id: '" + spaceInstNew.getId()
-              + "' after Id: " + getDriverSpaceId(spaceInstNew.getId()));
+          + "' after Id: " + getDriverSpaceId(spaceInstNew.getId()));
       // Convert the client id in driver id
       spaceInstNew.setId(getDriverSpaceId(spaceInstNew.getId()));
 
@@ -662,14 +654,14 @@ public final class Admin extends Object {
 
       // Update space in TreeCache
       SpaceInstLight spaceLight =
-          m_SpaceInstManager.getSpaceInstLightById(m_DDManager, getDriverSpaceId(spaceInstNew
-              .getId()));
+          m_SpaceInstManager.getSpaceInstLightById(m_DDManager, getDriverSpaceId(
+          spaceInstNew.getId()));
       TreeCache.updateSpace(spaceLight);
 
       // indexation de l'espace
       SilverTrace.info(MODULE_ADMIN, "admin.updateSpaceInst",
           "root.MSG_GEN_PARAM_VALUE", "Indexation : spaceInst = "
-              + spaceInstNew.getName());
+          + spaceInstNew.getName());
       createSpaceIndex(spaceInstNew);
 
       return spaceInstNew.getId();
@@ -686,7 +678,7 @@ public final class Admin extends Object {
     try {
       SilverTrace.debug(MODULE_ADMIN, "Admin.updateSpaceOrderNum",
           "root.MSG_GEN_ENTER_METHOD", "Space id: '" + sSpaceId
-              + "' New Order num: " + Integer.toString(orderNum));
+          + "' New Order num: " + Integer.toString(orderNum));
       String sDriverSpaceId = getDriverSpaceId(sSpaceId);
 
       // Open the connections with auto-commit to false
@@ -764,7 +756,7 @@ public final class Admin extends Object {
       rollback();
       throw new AdminException("Admin.updateComponentInst",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_SPACE", "spaceId = "
-              + space.getId(), e);
+          + space.getId(), e);
     }
   }
 
@@ -1012,14 +1004,14 @@ public final class Admin extends Object {
       ComponentInst componentInst = m_Cache.getComponentInst(sDriverComponentId);
       SilverTrace.info(MODULE_ADMIN, "Admin.getComponentInst",
           "root.MSG_GEN_ENTER_METHOD", "componentInst=" + componentInst
-              + " id=" + sDriverComponentId);
+          + " id=" + sDriverComponentId);
       if (componentInst == null) {
         // Get component instance from database
         componentInst = m_ComponentInstManager.getComponentInst(m_DDManager,
             sDriverComponentId, sFatherDriverSpaceId);
         SilverTrace.info(MODULE_ADMIN, "Admin.getComponentInst",
             "root.MSG_GEN_ENTER_METHOD", "componentInst FatherId="
-                + componentInst.getDomainFatherId());
+            + componentInst.getDomainFatherId());
         // Store component instance in cache
         m_Cache.putComponentInst(componentInst);
       }
@@ -1052,7 +1044,7 @@ public final class Admin extends Object {
     } catch (Exception e) {
       SilverTrace.error(MODULE_ADMIN, "Admin.getComponentParameters",
           "admin.EX_ERR_GET_COMPONENT_PARAMS", "sComponentId: '" + sComponentId
-              + "'", e);
+          + "'", e);
       return new ArrayList<SPParameter>();
     }
   }
@@ -1069,7 +1061,7 @@ public final class Admin extends Object {
     } catch (Exception e) {
       SilverTrace.error(MODULE_ADMIN, "Admin.getComponentParameterValue",
           "admin.EX_ERR_GET_COMPONENT_PARAMS", "sComponentId: '" + sComponentId
-              + "'", e);
+          + "'", e);
       return "";
     }
   }
@@ -1105,7 +1097,7 @@ public final class Admin extends Object {
       throw new AdminException("Admin.restoreComponentFromBasket",
           SilverpeasException.ERROR,
           "admin.EX_ERR_RESTORE_COMPONENT_FROM_BASKET", "componentId = "
-              + sComponentId);
+          + sComponentId);
     }
   }
 
@@ -1116,9 +1108,9 @@ public final class Admin extends Object {
       // Index the component
       SilverTrace.debug(MODULE_ADMIN, "Admin.createComponentIndex",
           "root.MSG_GEN_ENTER_METHOD", "componentInst.getName() = "
-              + componentInst.getName() + "' componentInst.getId() = "
-              + componentInst.getId() + " componentInst.getLabel() = "
-              + componentInst.getLabel());
+          + componentInst.getName() + "' componentInst.getId() = "
+          + componentInst.getId() + " componentInst.getLabel() = "
+          + componentInst.getLabel());
 
       String componentId = "";
       if (componentInst.getId().startsWith(componentInst.getName())) {
@@ -1183,8 +1175,8 @@ public final class Admin extends Object {
       String componentName = componentInst.getName();
       String componentId = componentName + componentInst.getId();
 
-      String[] asCompoNames = { componentName };
-      String[] asCompoIds = { componentId };
+      String[] asCompoNames = {componentName};
+      String[] asCompoIds = {componentId};
       instantiateComponents(sUserId, asCompoIds, asCompoNames, spaceInstFather.getId(),
           connectionProd);
 
@@ -1308,8 +1300,8 @@ public final class Admin extends Object {
 
         // Uninstantiate the components
         String componentName = componentInst.getName();
-        String[] asCompoName = { componentName };
-        String[] asCompoId = { sClientComponentId };
+        String[] asCompoName = {componentName};
+        String[] asCompoId = {sClientComponentId};
         unInstantiateComponents(sUserId, asCompoId, asCompoName,
             getClientSpaceId(sFatherClientId), connectionProd);
 
@@ -1396,7 +1388,7 @@ public final class Admin extends Object {
     try {
       SilverTrace.debug(MODULE_ADMIN, "Admin.updateComponentOrderNum",
           "root.MSG_GEN_ENTER_METHOD", "Component id: '" + sComponentId
-              + "' New Order num: " + Integer.toString(orderNum));
+          + "' New Order num: " + Integer.toString(orderNum));
       String sDriverComponentId = getDriverComponentId(sComponentId);
 
       // Open the connections with auto-commit to false
@@ -1630,7 +1622,7 @@ public final class Admin extends Object {
     try {
       SilverTrace.info(MODULE_ADMIN, "admin.moveComponentInst",
           "root.MSG_GEN_PARAM_VALUE", "spaceId= " + spaceId + "  componentId="
-              + componentId);
+          + componentId);
       // Convert the client component Id in driver component Id
       String sDriverComponentId = getDriverComponentId(componentId);
 
@@ -1638,7 +1630,7 @@ public final class Admin extends Object {
       String sDriverSpaceId = getDriverSpaceId(spaceId);
       SilverTrace.info(MODULE_ADMIN, "admin.moveComponentInst",
           "root.MSG_GEN_PARAM_VALUE", "sDriverSpaceId= " + sDriverSpaceId
-              + "  sDriverComponentId=" + sDriverComponentId);
+          + "  sDriverComponentId=" + sDriverComponentId);
 
       ComponentInst componentInst = getComponentInst(componentId);
       String oldSpaceId = componentInst.getDomainFatherId();
@@ -1673,18 +1665,18 @@ public final class Admin extends Object {
       // Set component in order
       SilverTrace.info(MODULE_ADMIN, "admin.moveComponentInst",
           "root.MSG_GEN_PARAM_VALUE", "Avant setComponentPlace: componentId="
-              + componentId + " idComponentBefore=" + idComponentBefore);
+          + componentId + " idComponentBefore=" + idComponentBefore);
       setComponentPlace(componentId, idComponentBefore, componentInsts);
 
       // Update extraParamPage from Space if necessary
       SilverTrace.info(MODULE_ADMIN, "admin.moveComponentInst",
           "root.MSG_GEN_PARAM_VALUE", "FirstPageExtraParam="
-              + getSpaceInstById(oldSpaceId).getFirstPageExtraParam()
-              + " oldSpaceId=" + oldSpaceId);
+          + getSpaceInstById(oldSpaceId).getFirstPageExtraParam()
+          + " oldSpaceId=" + oldSpaceId);
       SpaceInst oldSpaceInst = getSpaceInstById(getDriverSpaceId(oldSpaceId));
       SilverTrace.info(MODULE_ADMIN, "admin.moveComponentInst",
           "root.MSG_GEN_PARAM_VALUE", "oldSpaceInst=" + oldSpaceInst
-              + " componentId=" + componentId);
+          + " componentId=" + componentId);
       if (oldSpaceInst.getFirstPageExtraParam() != null) {
         if (oldSpaceInst.getFirstPageExtraParam().equals(componentId)) {
           oldSpaceInst.setFirstPageExtraParam("");
@@ -1703,9 +1695,8 @@ public final class Admin extends Object {
       // reset treecache list in old and new spaces
       TreeCache.setComponents(getDriverSpaceId(oldSpaceId), m_ComponentInstManager.
           getComponentsInSpace(Integer.parseInt(getDriverSpaceId(oldSpaceId))));
-      TreeCache.setComponents(getDriverSpaceId(spaceId), m_ComponentInstManager
-          .getComponentsInSpace(Integer.
-              parseInt(getDriverSpaceId(spaceId))));
+      TreeCache.setComponents(getDriverSpaceId(spaceId), m_ComponentInstManager.getComponentsInSpace(Integer.
+          parseInt(getDriverSpaceId(spaceId))));
     } catch (Exception e) {
       rollback();
       throw new AdminException("Admin.moveComponentInst",
@@ -1822,7 +1813,7 @@ public final class Admin extends Object {
       String componentId) throws AdminException {
     List<ProfileInst> profiles =
         m_ProfiledObjectManager.getProfiles(m_DDManager, Integer.parseInt(objectId), objectType,
-            Integer.parseInt(getDriverComponentId(componentId)));
+        Integer.parseInt(getDriverComponentId(componentId)));
 
     return profiles;
   }
@@ -1832,8 +1823,7 @@ public final class Admin extends Object {
 
     List<String> groups = getAllGroupsOfUser(userId);
 
-    return m_ProfiledObjectManager.getUserProfileNames(objectId, objectType, Integer
-        .parseInt(getDriverComponentId(
+    return m_ProfiledObjectManager.getUserProfileNames(objectId, objectType, Integer.parseInt(getDriverComponentId(
         componentId)),
         Integer.parseInt(userId), groups);
   }
@@ -2001,8 +1991,8 @@ public final class Admin extends Object {
       // Update the profile in tables
       String sProfileNewId =
           m_ProfileInstManager.updateProfileInst(
-              m_ProfileInstManager.getProfileInst(m_DDManager, profileInstNew.getId(), null),
-              m_DDManager, profileInstNew);
+          m_ProfileInstManager.getProfileInst(m_DDManager, profileInstNew.getId(), null),
+          m_DDManager, profileInstNew);
 
       // Update component to change last modification date
       if (StringUtil.isDefined(userId)
@@ -2069,7 +2059,7 @@ public final class Admin extends Object {
       SpaceInst spaceInstFather = getSpaceInstById(spaceProfileInst.getSpaceFatherId(), false);
       String sSpaceProfileId =
           m_SpaceProfileInstManager.createSpaceProfileInst(spaceProfileInst, m_DDManager,
-              spaceInstFather.getId());
+          spaceInstFather.getId());
       spaceProfileInst.setId(sSpaceProfileId);
 
       if (StringUtil.isDefined(userId)) {
@@ -2197,12 +2187,12 @@ public final class Admin extends Object {
 
       SpaceProfileInst oldSpaceProfile =
           m_SpaceProfileInstManager.getSpaceProfileInst(m_DDManager, spaceProfileInstNew.getId(),
-              null);
+          null);
 
       // Update the space profile in tables
       String sSpaceProfileNewId =
           m_SpaceProfileInstManager.updateSpaceProfileInst(oldSpaceProfile, m_DDManager,
-              spaceProfileInstNew);
+          spaceProfileInstNew);
 
       if (!"Manager".equalsIgnoreCase(oldSpaceProfile.getName())) {
         // spread profile into subspaces and components
@@ -2274,7 +2264,7 @@ public final class Admin extends Object {
       throws AdminException {
     SilverTrace.info("admin", "Admin.spreadSpaceProfile",
         "root.MSG_GEN_ENTER_METHOD", "spaceId = " + space.getId()
-            + ", profile = " + spaceProfile.getName());
+        + ", profile = " + spaceProfile.getName());
 
     // update profile in components
     Iterator<ComponentInst> components = space.getAllComponentsInst().iterator();
@@ -2511,7 +2501,7 @@ public final class Admin extends Object {
     } catch (Exception e) {
       throw new AdminException("Admin.deleteGroupById",
           SilverpeasException.ERROR, "admin.EX_ERR_DELETE_GROUP", "group Id: '"
-              + sGroupId + "'", e);
+          + sGroupId + "'", e);
     }
   }
 
@@ -2821,7 +2811,7 @@ public final class Admin extends Object {
 
         GroupProfileInst oldSpaceProfile =
             m_GroupProfileInstManager.getGroupProfileInst(m_DDManager, null, groupProfileInstNew.
-                getGroupId());
+            getGroupId());
 
         // Update the group profile in tables
         m_GroupProfileInstManager.updateGroupProfileInst(oldSpaceProfile,
@@ -2940,7 +2930,7 @@ public final class Admin extends Object {
           throw new AdminException("Admin.getUserIdByLoginAndDomain",
               SilverpeasException.ERROR,
               "admin.EX_ERR_GET_USER_BY_LOGIN_DOMAIN", "login: '" + sLogin
-                  + "', domain id: '" + sDomainId + "'", e);
+              + "', domain id: '" + sDomainId + "'", e);
         }
       }
       if (valret == null) {
@@ -2992,7 +2982,7 @@ public final class Admin extends Object {
     } catch (Exception e) {
       throw new AdminException("Admin.addUser", SilverpeasException.ERROR,
           "admin.EX_ERR_ADD_USER", userDetail.getFirstName() + " "
-              + userDetail.getLastName(), e);
+          + userDetail.getLastName(), e);
     }
   }
 
@@ -3037,7 +3027,7 @@ public final class Admin extends Object {
       }
       throw new AdminException("Admin.addUser", SilverpeasException.ERROR,
           "admin.EX_ERR_ADD_USER", userDetail.getFirstName() + " "
-              + userDetail.getLastName(), e);
+          + userDetail.getLastName(), e);
     }
   }
 
@@ -3169,7 +3159,7 @@ public final class Admin extends Object {
       }
       throw new AdminException("Admin.updateUserFull",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "user id : '"
-              + user.getId() + "'", e);
+          + user.getId() + "'", e);
     }
   }
 
@@ -3186,7 +3176,7 @@ public final class Admin extends Object {
       for (int nI = 0; nI < asComponentIds.length; nI++) {
         SilverTrace.debug("admin", "Admin.instantiateComponents",
             "root.MSG_GEN_ENTER_METHOD", "spaceid: " + sSpaceId
-                + " and component " + asComponentIds[nI]);
+            + " and component " + asComponentIds[nI]);
 
         m_compoInstanciator.setConnection(connectionProd);
         m_compoInstanciator.setSpaceId(sSpaceId);
@@ -3210,7 +3200,7 @@ public final class Admin extends Object {
       try {
         SilverTrace.debug("admin", "Admin.instantiateComponents",
             "root.MSG_GEN_ENTER_METHOD", "spaceid: " + sSpaceId
-                + " and component " + asComponentIds[nI]);
+            + " and component " + asComponentIds[nI]);
 
         m_compoInstanciator.setConnection(connectionProd);
         m_compoInstanciator.setSpaceId(sSpaceId);
@@ -3220,7 +3210,7 @@ public final class Admin extends Object {
       } catch (Exception e) {
         SilverTrace.warn("admin", "Admin.unInstantiateComponents",
             "admin.EX_ERR_UNINSTANTIATE_COMPONENTS", "Deleting data from component '"
-                + asComponentNames[nI] + "' failed", e);
+            + asComponentNames[nI] + "' failed", e);
       }
     }
 
@@ -3317,7 +3307,7 @@ public final class Admin extends Object {
     } catch (Exception e) {
       throw new AdminException("Admin.addDomain", SilverpeasException.ERROR,
           "admin.EX_ERR_ADD_DOMAIN", "domain name : '" + theDomain.getName()
-              + "'", e);
+          + "'", e);
     }
   }
 
@@ -3330,7 +3320,7 @@ public final class Admin extends Object {
     } catch (Exception e) {
       throw new AdminException("Admin.updateDomain", SilverpeasException.ERROR,
           "admin.EX_ERR_UPDATE_DOMAIN", "domain name : '" + theDomain.getName()
-              + "'", e);
+          + "'", e);
     }
   }
 
@@ -3408,7 +3398,7 @@ public final class Admin extends Object {
     } catch (Exception e) {
       throw new AdminException("Admin.getDomainActions",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_DOMAIN", "domain Id : '"
-              + domainId + "'", e);
+          + domainId + "'", e);
     }
   }
 
@@ -3418,7 +3408,7 @@ public final class Admin extends Object {
     } catch (Exception e) {
       throw new AdminException("Admin.getGroupsOfDomain",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_DOMAIN", "domain Id : '"
-              + domainId + "'", e);
+          + domainId + "'", e);
     }
   }
 
@@ -3438,7 +3428,7 @@ public final class Admin extends Object {
     } catch (Exception e) {
       throw new AdminException("Admin.getRootGroupIdsOfDomain",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_DOMAIN", "domain Id : '"
-              + domainId + "'", e);
+          + domainId + "'", e);
     }
   }
 
@@ -3452,7 +3442,7 @@ public final class Admin extends Object {
     } catch (Exception e) {
       throw new AdminException("Admin.getAllUsersOfGroup",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_DOMAIN", "Group Id : '"
-              + groupId + "'", e);
+          + groupId + "'", e);
     }
   }
 
@@ -3465,7 +3455,7 @@ public final class Admin extends Object {
     } catch (Exception e) {
       throw new AdminException("Admin.getUsersOfDomain",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_DOMAIN", "domain Id : '"
-              + domainId + "'", e);
+          + domainId + "'", e);
     }
   }
 
@@ -3478,7 +3468,7 @@ public final class Admin extends Object {
     } catch (Exception e) {
       throw new AdminException("Admin.getUserIdsOfDomain",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_DOMAIN", "domain Id : '"
-              + domainId + "'", e);
+          + domainId + "'", e);
     }
   }
 
@@ -3527,7 +3517,7 @@ public final class Admin extends Object {
           // user
           SilverTrace.warn("admin", "Admin.authenticate",
               "admin.EX_ERR_USER_NOT_FOUND", "Login: '" + sLogin
-                  + "', Domain: " + sDomainId, ex);
+              + "', Domain: " + sDomainId, ex);
           sUserId = synchronizeImportUserByLogin(sDomainId, sLogin,
               synchroDomain.isSynchroOnLoginRecursToGroups());
         } else {
@@ -3541,7 +3531,7 @@ public final class Admin extends Object {
         } catch (Exception ex) {
           SilverTrace.warn("admin", "Admin.authenticate",
               "admin.MSG_ERR_SYNCHRONIZE_USER", "UserId=" + sUserId
-                  + " Login: '" + sLogin + "', Domain: " + sDomainId, ex);
+              + " Login: '" + sLogin + "', Domain: " + sDomainId, ex);
         }
       }
 
@@ -3552,7 +3542,7 @@ public final class Admin extends Object {
         m_hUserLog.remove(sUserId);
         SilverTrace.info("admin", "Admin.authenticate",
             "admin.MSG_USER_ALREADY_LOGGED", "user id: '" + sUserId
-                + "', log time: " + formatter.format(userLog.getLogDate()));
+            + "', log time: " + formatter.format(userLog.getLogDate()));
       }
 
       // Add the user in the pool of UserLog
@@ -3684,7 +3674,7 @@ public final class Admin extends Object {
       throw new AdminException("Admin.getUserRootSpaceIds",
           SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_ALLOWED_ROOTSPACE_IDS", "user Id : '"
-              + sUserId + "'", e);
+          + sUserId + "'", e);
     }
   }
 
@@ -3706,7 +3696,7 @@ public final class Admin extends Object {
       throw new AdminException("Admin.getUserRootSpaceIds",
           SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_ALLOWED_ROOTSPACE_IDS", "user Id : '"
-              + sUserId + "'", e);
+          + sUserId + "'", e);
     }
   }
 
@@ -3744,7 +3734,7 @@ public final class Admin extends Object {
         for (int s = 0; !find && s < subspaces.size(); s++) {
           find =
               isSpaceContainsOneComponent(componentIds, subspaces.get(s).getShortId(),
-                  checkInSubspaces);
+              checkInSubspaces);
         }
       }
     }
@@ -3764,7 +3754,7 @@ public final class Admin extends Object {
       throws AdminException {
     SilverTrace.info("admin", "Admin.getSubSpacesOfUser",
         "root.MSG_GEN_ENTER_METHOD", "userId = " + userId + ", spaceId = "
-            + spaceId);
+        + spaceId);
     try {
       List<SpaceInstLight> result = new ArrayList<SpaceInstLight>();
 
@@ -3812,7 +3802,7 @@ public final class Admin extends Object {
       throws AdminException {
     SilverTrace.info("admin", "Admin.getAvailCompoInSpace",
         "root.MSG_GEN_ENTER_METHOD", "userId = " + userId + ", spaceId = "
-            + spaceId);
+        + spaceId);
     try {
       List<String> allowedComponentIds = getAllowedComponentIds(userId);
 
@@ -3830,7 +3820,7 @@ public final class Admin extends Object {
       throw new AdminException("Admin.getAvailCompoInSpace",
           SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_ALLOWED_COMPONENTS", "userId = " + userId
-              + ", spaceId = " + spaceId, e);
+          + ", spaceId = " + spaceId, e);
     }
   }
 
@@ -3892,7 +3882,6 @@ public final class Admin extends Object {
    * @author neysseri
    * @throws Exception
    */
-
   public List<SpaceInstLight> getUserSpaceTreeview(String userId) throws Exception {
     SilverTrace.info("admin", "Admin.getUserSpaceTreeview",
         "root.MSG_GEN_ENTER_METHOD", "user id = " + userId);
@@ -3992,7 +3981,7 @@ public final class Admin extends Object {
     } catch (Exception e) {
       throw new AdminException("Admin.getSpaceInstLightById",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE", " space Id : '"
-              + sClientSpaceId + "'", e);
+          + sClientSpaceId + "'", e);
     }
   }
 
@@ -4053,15 +4042,14 @@ public final class Admin extends Object {
       throw new AdminException("Admin.getGroupManageableSpaceIds",
           SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_MANAGEABLE_SPACE_IDS", "group Id : '"
-              + sGroupId + "'", e);
+          + sGroupId + "'", e);
     }
   }
 
   /**
    * Get the spaces ids manageable by given user Id
    */
-  public String[] getUserManageableSpaceIds(String sUserId)
-      throws AdminException {
+  public String[] getUserManageableSpaceIds(String sUserId) throws AdminException {
     String[] asManageableSpaceIds = null;
     ArrayList<String> alManageableSpaceIds = new ArrayList<String>();
 
@@ -4083,8 +4071,7 @@ public final class Admin extends Object {
           }
 
           // calculate manageable space's childs
-          childSpaceIds = m_SpaceInstManager.getAllSubSpaceIds(m_DDManager,
-              asManageableSpaceIds[nI]);
+          childSpaceIds = m_SpaceInstManager.getAllSubSpaceIds(m_DDManager, asManageableSpaceIds[nI]);
 
           // add them in result
           for (int nJ = 0; nJ < childSpaceIds.length; nJ++) {
@@ -4095,7 +4082,7 @@ public final class Admin extends Object {
         }
 
         // Put user manageable space ids in cache
-        asManageableSpaceIds = (String[]) alManageableSpaceIds.toArray(new String[0]);
+        asManageableSpaceIds = alManageableSpaceIds.toArray(new String[alManageableSpaceIds.size()]);
         m_Cache.putManageableSpaceIds(sUserId, asManageableSpaceIds);
       }
       return asManageableSpaceIds;
@@ -4103,7 +4090,7 @@ public final class Admin extends Object {
       throw new AdminException("Admin.getUserManageableSpaceIds",
           SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_MANAGEABLE_SPACE_IDS", "user Id : '" + sUserId
-              + "'", e);
+          + "'", e);
     }
   }
 
@@ -4131,7 +4118,7 @@ public final class Admin extends Object {
       throw new AdminException("Admin.getUserManageableSpaceRootIds",
           SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_MANAGEABLE_SPACE_IDS", "user Id : '" + sUserId
-              + "'", e);
+          + "'", e);
     }
   }
 
@@ -4167,7 +4154,7 @@ public final class Admin extends Object {
       throw new AdminException("Admin.getManageableSubSpaceIds",
           SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_MANAGEABLE_SPACE_IDS", "user Id : '" + sUserId
-              + "' Space = " + sParentSpaceId, e);
+          + "' Space = " + sParentSpaceId, e);
     }
   }
 
@@ -4220,7 +4207,7 @@ public final class Admin extends Object {
       throw new AdminException("Admin.getAvailCompoIds",
           SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user Id : '"
-              + sUserId + "'", e);
+          + sUserId + "'", e);
     }
   }
 
@@ -4232,7 +4219,7 @@ public final class Admin extends Object {
       throw new AdminException("Admin.isComponentAvailable",
           SilverpeasException.ERROR, "admin.EX_ERR_IS_COMPONENT_AVAILABLE",
           "user Id : '" + userId + "'" + " , component Id : '" + componentId
-              + "'", e);
+          + "'", e);
     }
   }
 
@@ -4253,7 +4240,7 @@ public final class Admin extends Object {
       List<String> groupIds = getAllGroupsOfUser(sUserId);
       List<String> asAvailCompoIds =
           m_ComponentInstManager.getAllowedComponentIds(Integer.parseInt(sUserId), groupIds,
-              spaceId);
+          spaceId);
 
       return asAvailCompoIds.toArray(new String[asAvailCompoIds.size()]);
 
@@ -4262,7 +4249,7 @@ public final class Admin extends Object {
       throw new AdminException("Admin.getAvailCompoIds",
           SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user Id : '"
-              + sUserId + "'", e);
+          + sUserId + "'", e);
     }
   }
 
@@ -4298,7 +4285,7 @@ public final class Admin extends Object {
       throw new AdminException("Admin.getAvailCompoIdsAtRoot",
           SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user Id : '"
-              + sUserId + "'", e);
+          + sUserId + "'", e);
     }
   }
 
@@ -4314,7 +4301,7 @@ public final class Admin extends Object {
       throw new AdminException("Admin.getAvailCompoIds",
           SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user Id : '"
-              + sUserId + "'", e);
+          + sUserId + "'", e);
     }
   }
 
@@ -4337,7 +4324,7 @@ public final class Admin extends Object {
       throw new AdminException("Admin.getAvailDriverCompoIds",
           SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user Id : '"
-              + sUserId + "'", e);
+          + sUserId + "'", e);
     }
   }
 
@@ -4463,7 +4450,7 @@ public final class Admin extends Object {
           SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USER_AVAILABLE_INSTANCES_OF_COMPONENT",
           "user Id : '" + sUserId + "', component name: '" + sComponentName
-              + "'", e);
+          + "'", e);
     }
   }
 
@@ -4600,8 +4587,8 @@ public final class Admin extends Object {
     } catch (Exception e) {
       throw new AdminException("Admin.getUsers", SilverpeasException.ERROR,
           "admin.EX_ERR_GET_USERS_FOR_PROFILE_AND_COMPONENT", "profile : '"
-              + sProfile + "', space Id: '" + sClientSpaceId
-              + "' component Id: '" + sClientComponentId, e);
+          + sProfile + "', space Id: '" + sClientSpaceId
+          + "' component Id: '" + sClientComponentId, e);
     }
   }
 
@@ -4685,7 +4672,7 @@ public final class Admin extends Object {
     } catch (Exception e) {
       throw new AdminException("Admin.getUsersOfDomain",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_DOMAIN", "domain Id : '"
-              + domainId + "'", e);
+          + domainId + "'", e);
     }
   }
 
@@ -4865,7 +4852,7 @@ public final class Admin extends Object {
       throws Exception {
     SilverTrace.info("admin", "Admin.getAllComponentIdsRecur",
         "root.MSG_GEN_PARAM_VALUE", "inCurrentSpace=" + inCurrentSpace
-            + " inAllSpaces=" + inAllSpaces);
+        + " inAllSpaces=" + inAllSpaces);
     ArrayList<String> alCompoIds = new ArrayList<String>();
     // In All silverpeas
     if (inAllSpaces) {
@@ -4925,7 +4912,7 @@ public final class Admin extends Object {
           if (compo.getName().equals(componentNameRoot)) {
             SilverTrace.info("admin", "Admin.getAllComponentIdsRecur",
                 "root.MSG_GEN_PARAM.VALUE", "componentId in subspace="
-                    + compo.getId());
+                + compo.getId());
             alCompoIds.add(compo.getId());
           }
         }
@@ -4952,7 +4939,7 @@ public final class Admin extends Object {
 
         SynchroGroupReport.warn("admin.synchronizeGroup",
             "Synchronisation du groupe '" + group.getName()
-                + "' - Regle de synchronisation = \"" + rule + "\"", null);
+            + "' - Regle de synchronisation = \"" + rule + "\"", null);
         String[] actualUserIds = group.getUserIds();
 
         m_DDManager.startTransaction(false);
@@ -4980,13 +4967,12 @@ public final class Admin extends Object {
               // All users by access level
               if (domainId == null) {
                 userIds =
-                    Arrays.asList(m_DDManager.organization.user
-                        .getUserIdsByAccessLevel(accessLevel));
+                    Arrays.asList(m_DDManager.organization.user.getUserIdsByAccessLevel(accessLevel));
               } else {
                 userIds =
                     Arrays.asList(m_UserManager.getUserIdsOfDomainAndAccessLevel(m_DDManager,
-                        domainId,
-                        accessLevel));
+                    domainId,
+                    accessLevel));
               }
             }
           } else if (rule.toLowerCase().startsWith("ds_domain")) {
@@ -4997,7 +4983,7 @@ public final class Admin extends Object {
             if ("-1".equals(domainId)) {
               userIds =
                   Arrays.asList(
-                      m_DDManager.organization.user.getUserIdsOfDomain(Integer.parseInt(dId)));
+                  m_DDManager.organization.user.getUserIdsOfDomain(Integer.parseInt(dId)));
             }
           }
         } else if (rule.toLowerCase().startsWith("dc_")) {
@@ -5021,7 +5007,7 @@ public final class Admin extends Object {
         } else {
           SilverTrace.error("admin", "Admin.synchronizeGroup",
               "admin.MSG_ERR_SYNCHRONIZE_GROUP", "rule '" + rule
-                  + "' for groupId '" + groupId + "' is not correct !");
+              + "' for groupId '" + groupId + "' is not correct !");
         }
 
         // Add users
@@ -5115,7 +5101,7 @@ public final class Admin extends Object {
         if (users == null) {
           SynchroGroupReport.info("admin.getUserIdsBySpecificProperty",
               "La propriété '" + propertyName
-                  + "' n'est pas définie dans le domaine " + iDomainId, null);
+              + "' n'est pas définie dans le domaine " + iDomainId, null);
         }
       } catch (Exception e) {
         SynchroGroupReport.info("admin.getUserIdsBySpecificProperty", "Domain "
@@ -5216,7 +5202,7 @@ public final class Admin extends Object {
                 {
                   SilverTrace.warn("admin", "Admin.difSynchro",
                       "admin.MSG_ERR_SYNCHRONIZE_USER", "UserId="
-                          + silverpeasId + " SpecId=" + specificId, ex);
+                      + silverpeasId + " SpecId=" + specificId, ex);
                 }
               }
             }
@@ -5233,7 +5219,7 @@ public final class Admin extends Object {
               try {
                 silverpeasId =
                     m_GroupManager.getGroupIdBySpecificIdAndDomainId(m_DDManager, specificId,
-                        domainId);
+                    domainId);
               } catch (AdminException e) {
                 SilverTrace.warn("admin", "Admin.difSynchro",
                     "admin.EX_ERR_GROUP_NOT_FOUND", "SpecId=" + specificId, e);
@@ -5265,7 +5251,7 @@ public final class Admin extends Object {
                 {
                   SilverTrace.warn("admin", "Admin.difSynchro",
                       "admin.MSG_ERR_SYNCHRONIZE_GROUP", "GroupId="
-                          + silverpeasId + " SpecId=" + specificId, ex);
+                      + silverpeasId + " SpecId=" + specificId, ex);
                 }
               }
             }
@@ -5298,7 +5284,7 @@ public final class Admin extends Object {
                     SilverTrace.info("admin", "admin.difSynchro",
                         "root.MSG_GEN_PARAM_VALUE",
                         "%%%%DIFFSYNCHRO%%%%>Delete User : "
-                            + silverpeasUDs[nI]);
+                        + silverpeasUDs[nI]);
                     m_UserManager.deleteUser(m_DDManager, silverpeasUDs[nI], true);
                     listUsersRemove.add(distantUDs[nI]);
                   } catch (AdminException aeDel) {
@@ -5311,7 +5297,7 @@ public final class Admin extends Object {
               }
               SilverTrace.warn("admin", "admin.difSynchro",
                   "root.MSG_GEN_PARAM_VALUE", nbDeletedUsers
-                      + " users have been deleted !");
+                  + " users have been deleted !");
             }
 
             // All the synchro is finished -> set the new timestamp
@@ -5331,10 +5317,10 @@ public final class Admin extends Object {
     } catch (Exception e) {
       SynchroReport.error("admin.difSynchro",
           "Problème lors de la synchronisation des utilisateurs : "
-              + e.getMessage(), null);
+          + e.getMessage(), null);
       throw new AdminException("admin.difSynchro", SilverpeasException.ERROR,
           "admin.EX_ERR_SYNCHRONIZE_DOMAIN_USERS", "domain id : '" + domainId
-              + "'\nReport:" + sReport, e);
+          + "'\nReport:" + sReport, e);
     }
   }
 
@@ -5361,7 +5347,7 @@ public final class Admin extends Object {
           {
             SilverTrace.warn("admin", "Admin.translateGroupIds",
                 "admin.MSG_ERR_SYNCHRONIZE_GROUP", "SpecId="
-                    + groupSpecificIds[i], ex);
+                + groupSpecificIds[i], ex);
             groupId = null;
           }
         }
@@ -5470,8 +5456,7 @@ public final class Admin extends Object {
       }
     }
     if ((parentId == null)
-        &&
-        ((parentSpecificIds.length > 0) || ((askedParentId != null) && (askedParentId.length() > 0)))) {// We
+        && ((parentSpecificIds.length > 0) || ((askedParentId != null) && (askedParentId.length() > 0)))) {// We
       // can't
       // add
       // the
@@ -5526,9 +5511,8 @@ public final class Admin extends Object {
         existingGroupId = null;
         try {
           existingGroupId =
-              m_GroupManager.getGroupIdBySpecificIdAndDomainId(m_DDManager, childs[i]
-                  .getSpecificId(), latestGroup.
-                  getDomainId());
+              m_GroupManager.getGroupIdBySpecificIdAndDomainId(m_DDManager,
+              childs[i].getSpecificId(), latestGroup.getDomainId());
           existingGroup = getGroup(existingGroupId);
           if (existingGroup.getSuperGroupId().equals(latestGroup.getId())) { // Only
             // synchronize
@@ -5627,7 +5611,7 @@ public final class Admin extends Object {
       rollback();
       throw new AdminException("Admin.synchronizeUser",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "user id : '"
-              + userId + "'", e);
+          + userId + "'", e);
     }
   }
 
@@ -5727,7 +5711,7 @@ public final class Admin extends Object {
       try {
         SynchroReport.warn("admin.synchronizeSilverpeasWithDomain",
             "Domaine : " + m_DDManager.getDomain(sDomainId).getName()
-                + ", ID : " + sDomainId, null);
+            + ", ID : " + sDomainId, null);
         // Start synchronization
         m_DDManager.beginSynchronization(sDomainId);
 
@@ -5737,7 +5721,7 @@ public final class Admin extends Object {
         toTimeStamp = synchroDomain.getTimeStamp(fromTimeStamp);
         SilverTrace.info("admin", "admin.synchronizeSilverpeasWithDomain",
             "root.MSG_GEN_ENTER_METHOD", "TimeStamps from " + fromTimeStamp
-                + " to " + toTimeStamp);
+            + " to " + toTimeStamp);
 
         // Start transaction
         m_DDManager.startTransaction(false);
@@ -5824,7 +5808,7 @@ public final class Admin extends Object {
           "AJOUT ou MISE A JOUR des utilisateurs dans la base...", null);
       SynchroReport.info("admin.synchronizeUsers",
           "Valeur du paramètre 'm_bFallbackUserLogins' = "
-              + m_bFallbackUserLogins, null);
+          + m_bFallbackUserLogins, null);
 
       // Add new users or update existing ones from distant datasource
       for (int nI = 0; nI < distantUDs.length; nI++) {
@@ -5832,13 +5816,13 @@ public final class Admin extends Object {
         specificId = distantUDs[nI].getSpecificId();
         SilverTrace.info("admin", "admin.synchronizeUsers",
             "root.MSG_GEN_PARAM_VALUE", "%%%%FULLSYNCHRO%%%%>Deal with user : "
-                + specificId);
+            + specificId);
 
         // search for user in Silverpeas database
         for (int nJ = 0; nJ < silverpeasUDs.length && !bFound; nJ++) {
           if (silverpeasUDs[nJ].getSpecificId().equals(specificId)
               || (m_bFallbackUserLogins && silverpeasUDs[nJ].getLogin().equals(
-                  distantUDs[nI].getLogin()))) {
+              distantUDs[nI].getLogin()))) {
             bFound = true;
             distantUDs[nI].setId(silverpeasUDs[nJ].getId());
             distantUDs[nI].setAccessLevel(silverpeasUDs[nJ].getAccessLevel());
@@ -5889,7 +5873,7 @@ public final class Admin extends Object {
               iNbUsersAdded++;
               SilverTrace.info("admin", "admin.synchronizeUsers",
                   "root.MSG_GEN_PARAM_VALUE", "%%%%FULLSYNCHRO%%%%>Add User : "
-                      + silverpeasId);
+                  + silverpeasId);
               listUsersCreate.add(distantUDs[nI]);
               sReport += "adding user " + distantUDs[nI].getFirstName() + " "
                   + distantUDs[nI].getLastName() + "(id:" + silverpeasId
@@ -5924,7 +5908,7 @@ public final class Admin extends Object {
         for (int nJ = 0; nJ < distantUDs.length && !bFound; nJ++) {
           if (distantUDs[nJ].getSpecificId().equals(specificId)
               || (m_bFallbackUserLogins && silverpeasUDs[nI].getLogin().equals(
-                  distantUDs[nJ].getLogin()))) {
+              distantUDs[nJ].getLogin()))) {
             bFound = true;
           }
         }
@@ -5943,8 +5927,8 @@ public final class Admin extends Object {
                 + ")\n";
             SynchroReport.warn("admin.synchronizeUsers",
                 "suppression utilisateur " + silverpeasUDs[nI].getFirstName()
-                    + " " + silverpeasUDs[nI].getLastName() + " (specificId:"
-                    + specificId + ") OK", null);
+                + " " + silverpeasUDs[nI].getLastName() + " (specificId:"
+                + specificId + ") OK", null);
           } catch (AdminException aeDel) {
             SilverTrace.info("admin", "admin.synchronizeUsers",
                 "root.MSG_GEN_PARAM_VALUE",
@@ -5967,14 +5951,14 @@ public final class Admin extends Object {
       sReport += "User synchronization terminated\n";
       SynchroReport.info("admin.synchronizeUsers",
           "Nombre d'utilisateurs mis à jour : " + iNbUsersMaj + ", ajoutés : "
-              + iNbUsersAdded + ", supprimés : " + iNbUsersDeleted, null);
+          + iNbUsersAdded + ", supprimés : " + iNbUsersDeleted, null);
       SynchroReport.warn("admin.synchronizeUsers",
           "Synchronisation utilisateurs terminée", null);
       return sReport;
     } catch (Exception e) {
       SynchroReport.error("admin.synchronizeUsers",
           "Problème lors de la synchronisation des utilisateurs : "
-              + e.getMessage(), null);
+          + e.getMessage(), null);
       throw new AdminException("admin.synchronizeUsers",
           SilverpeasException.ERROR, "admin.EX_ERR_SYNCHRONIZE_DOMAIN_USERS",
           "domain id : '" + domainId + "'\nReport:" + sReport, e);
@@ -6013,7 +5997,7 @@ public final class Admin extends Object {
           "MISE A JOUR ou SUPPRESSION des utilisateurs dans la base...", null);
       SynchroReport.info("admin.synchronizeOnlyExistingUsers",
           "Valeur du paramètre 'm_bFallbackUserLogins' = "
-              + m_bFallbackUserLogins, null);
+          + m_bFallbackUserLogins, null);
 
       UserDetail userSP = null;
       UserDetail userLDAP = null;
@@ -6029,7 +6013,7 @@ public final class Admin extends Object {
           userLDAP = distantUDs[nJ];
           if (userLDAP.getSpecificId().equals(specificId)
               || (m_bFallbackUserLogins && userLDAP.getLogin().equals(
-                  userSP.getLogin()))) {
+              userSP.getLogin()))) {
             bFound = true;
             userLDAP.setId(userSP.getId());
             userLDAP.setAccessLevel(userSP.getAccessLevel());
@@ -6050,7 +6034,7 @@ public final class Admin extends Object {
             iNbUsersMaj++;
             SynchroReport.warn("admin.synchronizeOnlyExistingUsers",
                 "maj utilisateur " + userLDAP.getDisplayedName() + " (id:"
-                    + silverpeasId + " / specificId:" + specificId + ") OK",
+                + silverpeasId + " / specificId:" + specificId + ") OK",
                 null);
             sReport += "updating user " + userLDAP.getDisplayedName() + "(id:"
                 + specificId + ")\n";
@@ -6075,7 +6059,7 @@ public final class Admin extends Object {
                 + specificId + ")\n";
             SynchroReport.warn("admin.synchronizeOnlyExistingUsers",
                 "suppression utilisateur " + userSP.getDisplayedName()
-                    + " (specificId:" + specificId + ") OK", null);
+                + " (specificId:" + specificId + ") OK", null);
           } catch (AdminException aeDel) {
             SilverTrace.info("admin", "admin.synchronizeOnlyExistingUsers",
                 "root.MSG_GEN_PARAM_VALUE",
@@ -6097,14 +6081,14 @@ public final class Admin extends Object {
       sReport += "User synchronization terminated\n";
       SynchroReport.info("admin.synchronizeOnlyExistingUsers",
           "Nombre d'utilisateurs mis à jour : " + iNbUsersMaj + ", ajoutés : "
-              + iNbUsersAdded + ", supprimés : " + iNbUsersDeleted, null);
+          + iNbUsersAdded + ", supprimés : " + iNbUsersDeleted, null);
       SynchroReport.warn("admin.synchronizeOnlyExistingUsers",
           "Synchronisation utilisateurs terminée", null);
       return sReport;
     } catch (Exception e) {
       SynchroReport.error("admin.synchronizeOnlyExistingUsers",
           "Problème lors de la synchronisation des utilisateurs : "
-              + e.getMessage(), null);
+          + e.getMessage(), null);
       throw new AdminException("admin.synchronizeOnlyExistingUsers",
           SilverpeasException.ERROR, "admin.EX_ERR_SYNCHRONIZE_DOMAIN_USERS",
           "domain id : '" + domainId + "'\nReport:" + sReport, e);
@@ -6196,7 +6180,7 @@ public final class Admin extends Object {
             SilverTrace.info("admin", "admin.synchronizeGroups",
                 "root.MSG_GEN_PARAM_VALUE",
                 "%%%%FULLSYNCHRO%%%%>Delete group : "
-                    + silverpeasGroups[nI].getId() + " - " + specificId);
+                + silverpeasGroups[nI].getId() + " - " + specificId);
             m_GroupManager.deleteGroupById(m_DDManager, silverpeasGroups[nI],
                 true);
             iNbGroupsDeleted++;
@@ -6219,14 +6203,14 @@ public final class Admin extends Object {
       sReport += "Group synchronization terminated\n";
       SynchroReport.info("admin.synchronizeGroups",
           "Nombre de groupes mis à jour : " + iNbGroupsMaj + ", ajoutés : "
-              + iNbGroupsAdded + ", supprimés : " + iNbGroupsDeleted, null);
+          + iNbGroupsAdded + ", supprimés : " + iNbGroupsDeleted, null);
       SynchroReport.warn("admin.synchronizeGroups",
           "Synchronisation groupes terminée", null);
       return sReport;
     } catch (Exception e) {
       SynchroReport.error("admin.synchronizeGroups",
           "Problème lors de la synchronisation des groupes : "
-              + e.getMessage(), null);
+          + e.getMessage(), null);
       throw new AdminException("admin.synchronizeGroups",
           SilverpeasException.ERROR, "admin.EX_ERR_SYNCHRONIZE_DOMAIN_GROUPS",
           "domain id : '" + domainId + "'\nReport:" + sReport, e);
@@ -6262,7 +6246,7 @@ public final class Admin extends Object {
 
       SilverTrace.info("admin", "admin.checkOutGroups",
           "root.MSG_GEN_PARAM_VALUE", "%%%%FULLSYNCHRO%%%%>Deal with group : "
-              + specificId);
+          + specificId);
       // search for group in Silverpeas database
       for (int nJ = 0; nJ < existingGroups.length && !bFound; nJ++) {
         if (existingGroups[nJ].getSpecificId().equals(specificId)) {
@@ -6270,7 +6254,7 @@ public final class Admin extends Object {
           testedGroups[nI].setId(existingGroups[nJ].getId());
         } else if (m_bFallbackGroupNames
             && existingGroups[nJ].getSpecificId().equals(
-                testedGroups[nI].getName())) {
+            testedGroups[nI].getName())) {
           bFound = true;
           testedGroups[nI].setId(existingGroups[nJ].getId());
         }
@@ -6321,7 +6305,7 @@ public final class Admin extends Object {
         try {
           SilverTrace.info("admin", "admin.checkOutGroups",
               "root.MSG_GEN_PARAM_VALUE", "%%%%FULLSYNCHRO%%%%>Update group : "
-                  + testedGroups[nI].getId());
+              + testedGroups[nI].getId());
           sResult = m_GroupManager.updateGroup(m_DDManager, testedGroups[nI],
               true);
           if (!sResult.equals("")) {
@@ -6356,7 +6340,7 @@ public final class Admin extends Object {
             iNbGroupsAdded++;
             SilverTrace.info("admin", "admin.checkOutGroups",
                 "root.MSG_GEN_PARAM_VALUE", "%%%%FULLSYNCHRO%%%%>Add group : "
-                    + silverpeasId);
+                + silverpeasId);
             sReport += "adding group " + testedGroups[nI].getName() + "(id:"
                 + specificId + ")\n";
             SynchroReport.warn("admin.checkOutGroups", "ajout groupe "
@@ -6387,7 +6371,7 @@ public final class Admin extends Object {
           if (cleanSubGroups != null && cleanSubGroups.length > 0) {
             SynchroReport.info("admin.checkOutGroups",
                 "Ajout ou mise à jour de " + cleanSubGroups.length
-                    + " groupes fils du groupe " + specificId + "...", null);
+                + " groupes fils du groupe " + specificId + "...", null);
             sReport += checkOutGroups(domainId, existingGroups, cleanSubGroups,
                 allIncluededGroups, userIds, silverpeasId, iNbGroupsAdded,
                 iNbGroupsMaj, iNbGroupsDeleted);
@@ -6412,7 +6396,7 @@ public final class Admin extends Object {
       } else {
         SilverTrace.warn("admin", "Admin.removeCrossReferences",
             "root.MSG_GEN_PARAM_VALUE", "Cross removed for child : "
-                + subGroups[nI].getSpecificId() + " of father : " + fatherId);
+            + subGroups[nI].getSpecificId() + " of father : " + fatherId);
       }
     }
     return (Group[]) cleanSubGroups.toArray(new Group[0]);
@@ -6574,7 +6558,8 @@ public final class Admin extends Object {
       try {
         indexUsers(domain.getId());
       } catch (Exception e) {
-        SilverTrace.error("admin", "Admin.indexAllUsers", "admin.CANT_INDEX_USERS", "domainId = "+domain.getId(), e);
+        SilverTrace.error("admin", "Admin.indexAllUsers", "admin.CANT_INDEX_USERS", "domainId = " + domain.
+            getId(), e);
       }
     }
   }
@@ -6608,7 +6593,7 @@ public final class Admin extends Object {
     // Rename if componentName already exists in the destination space
     String label =
         renameComponentName(newCompo.getLabel(I18NHelper.defaultLanguage), destinationSpace.
-            getAllComponentsInst());
+        getAllComponentsInst());
     newCompo.setLabel(label);
 
     // Delete inherited profiles only
@@ -6623,11 +6608,11 @@ public final class Admin extends Object {
       PasteDetail pasteDetail = new PasteDetail(componentId, sComponentId, userId);
       String componentRootName = URLManager.getComponentNameFromComponentId(componentId);
       String className =
-          "com.silverpeas.component." + componentRootName + "." + componentRootName.
-              substring(0, 1).toUpperCase() + componentRootName.substring(1) + "Paste";
+          "com.silverpeas.component." + componentRootName + "." + componentRootName.substring(0, 1).
+          toUpperCase() + componentRootName.substring(1) + "Paste";
       if (Class.forName(className).getClass() != null) {
-        ComponentPasteInterface componentPaste = (ComponentPasteInterface) Class.
-            forName(className).newInstance();
+        ComponentPasteInterface componentPaste = (ComponentPasteInterface) Class.forName(className).
+            newInstance();
         componentPaste.paste(pasteDetail);
       }
     } catch (Exception e) {

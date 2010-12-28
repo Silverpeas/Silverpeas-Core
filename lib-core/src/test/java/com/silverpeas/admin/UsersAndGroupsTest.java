@@ -28,7 +28,6 @@ import com.silverpeas.components.model.AbstractTestDao;
 import java.util.List;
 
 
-import org.dbunit.operation.DatabaseOperation;
 import org.junit.Test;
 
 import com.stratelia.webactiv.beans.admin.Admin;
@@ -50,14 +49,14 @@ public class UsersAndGroupsTest extends AbstractTestDao {
     user.setFirstName("Nicolas");
     user.setLastName("EYSSERIC");
     user.setLogin("neysseri");
-    AdminController ac = new AdminController(null);
+    AdminController ac = getAdminController();
     String userId = ac.addUser(user);
     assertEquals("2", userId);
   }
 
   @Test
   public void testUpdateUser() {
-    AdminController ac = new AdminController(null);
+    AdminController ac = getAdminController();
     UserDetail user = ac.getUserDetail("1");
     String newEmail = "ney@silverpeas.com";
     user.seteMail(newEmail);
@@ -68,7 +67,7 @@ public class UsersAndGroupsTest extends AbstractTestDao {
 
   @Test
   public void testDeleteUser() {
-    AdminController ac = new AdminController(null);
+    AdminController ac = getAdminController();
     String userId = ac.deleteUser("1");
     assertEquals("1", userId);
     UserDetail user = ac.getUserDetail(userId);
@@ -77,7 +76,7 @@ public class UsersAndGroupsTest extends AbstractTestDao {
 
   @Test
   public void testAddGroup() {
-    AdminController ac = new AdminController(null);
+    AdminController ac = getAdminController();
     Group group = new Group();
     group.setDomainId("0");
     group.setName("Groupe 2");
@@ -87,7 +86,7 @@ public class UsersAndGroupsTest extends AbstractTestDao {
 
   @Test
   public void testUpdateGroup() {
-    AdminController ac = new AdminController(null);
+    AdminController ac = getAdminController();
     String desc = "New description";
     Group group = ac.getGroupById("1");
     group.setDescription(desc);
@@ -98,7 +97,7 @@ public class UsersAndGroupsTest extends AbstractTestDao {
 
   @Test
   public void testDeleteGroup() {
-    AdminController ac = new AdminController(null);
+    AdminController ac = getAdminController();
     ac.deleteGroupById("1");
     Group group = ac.getGroupById("1");
     assertNull(group.getId());
@@ -106,7 +105,7 @@ public class UsersAndGroupsTest extends AbstractTestDao {
 
   @Test
   public void testUsersInGroup() {
-    AdminController ac = new AdminController(null);
+    AdminController ac = getAdminController();
     Group subGroup = new Group();
     subGroup.setDomainId("0");
     subGroup.setName("Groupe 1-1");
@@ -136,7 +135,7 @@ public class UsersAndGroupsTest extends AbstractTestDao {
 
   @Test
   public void testGroupManager() throws AdminException {
-    AdminController ac = new AdminController(null);
+    AdminController ac = getAdminController();
     GroupProfileInst profile = ac.getGroupProfile("1");
     profile.addUser("1");
     ac.updateGroupProfile(profile);
@@ -148,6 +147,12 @@ public class UsersAndGroupsTest extends AbstractTestDao {
   @Override
   protected String getDatasetFileName() {
     return "test-usersandgroups-dataset.xml";
+  }
+  
+    private AdminController getAdminController() {
+    AdminController ac = new AdminController(null);
+    ac.reloadAdminCache();
+    return ac;
   }
 
 }

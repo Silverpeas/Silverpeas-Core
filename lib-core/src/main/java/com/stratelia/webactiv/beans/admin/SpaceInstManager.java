@@ -78,10 +78,7 @@ public class SpaceInstManager {
     // Create a copy of array of subspaces ids
     String[] asSubSpaceIdsToCopy = spaceInstToCopy.getSubSpaceIds();
     String[] asSubSpaceIds = new String[asSubSpaceIdsToCopy.length];
-
-    for (int nI = 0; nI < asSubSpaceIdsToCopy.length; nI++) {
-      asSubSpaceIds[nI] = asSubSpaceIdsToCopy[nI];
-    }
+    System.arraycopy(asSubSpaceIdsToCopy, 0, asSubSpaceIds, 0, asSubSpaceIdsToCopy.length);
 
     spaceInst.setSubSpaceIds(asSubSpaceIds);
 
