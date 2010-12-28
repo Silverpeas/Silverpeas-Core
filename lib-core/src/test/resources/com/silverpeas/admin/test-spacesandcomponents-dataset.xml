@@ -56,5 +56,6 @@
   <st_userrole_user_rel/>
   <st_spaceuserrole />
   <st_spaceuserrole_user_rel />
+  <st_spaceuserrole_group_rel />
 
 </dataset>

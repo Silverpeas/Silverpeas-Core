@@ -176,9 +176,7 @@ public class DBUtil {
         }
       }
       privateConnection.setAutoCommit(false);
-      return getNextId(privateConnection,
-          tableName,
-          idName);
+      return getNextId(privateConnection, tableName, idName);
     } catch (Exception exe) {
       SilverTrace.debug("util", "DBUtil.getNextId", "impossible de recupérer le prochain id", exe);
       if (privateConnection != null) {
