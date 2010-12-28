@@ -183,6 +183,7 @@ public final class Admin extends Object {
   public final void reloadCache() {
     m_Cache.resetCache();
     TreeCache.clearCache();
+    GroupCache.clearCache();
     // Init tree cache
     try {
       SilverTrace.info(MODULE_ADMIN, "admin.startServer",
