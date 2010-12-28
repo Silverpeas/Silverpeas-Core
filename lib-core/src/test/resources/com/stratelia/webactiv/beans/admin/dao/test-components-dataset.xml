@@ -30,7 +30,7 @@
   <st_group_user_rel groupid="2" userid="1"/>
   <st_group_user_rel groupid="2" userid="2"/>
   <st_group_user_rel groupid="2" userid="3"/>
-    <st_space id="1" domainFatherId="[NULL]" spacestatus="[NULL]" name="Espace de test" description="Pour les composants testés" createdby="0" firstpagetype="2" firstpageextraparam="" ordernum="0" createtime="1280759652574" updatetime="1281450309000" updatedby="0" isinheritanceblocked="0" displayspacefirst="1"/>
+  <st_space id="1" domainFatherId="[NULL]" spacestatus="[NULL]" name="Espace de test" description="Pour les composants testés" createdby="0" firstpagetype="2" firstpageextraparam="" ordernum="0" createtime="1280759652574" updatetime="1281450309000" updatedby="0" isinheritanceblocked="0" displayspacefirst="1"/>
   <st_space id="2" spacestatus="[NULL]" domainfatherid="1" name="MyTests" description="" createdby="0" firstpagetype="0" firstpageextraparam="" ordernum="0" createtime="1281941919845" isinheritanceblocked="0" displayspacefirst="1"/>
   <st_space id="3" spacestatus="[NULL]" domainfatherid="2" name="Kmelia" description="" createdby="0" firstpagetype="2" firstpageextraparam="" ordernum="0" createtime="1281941936340" updatetime="1286529406290" updatedby="0" isinheritanceblocked="0" displayspacefirst="1"/>
   <st_space id="4" spacestatus="[NULL]" domainfatherid="2" name="Moving Space" description="C&apos;est un espace qui peut bouger ôhé ôhé" createdby="0" firstpagetype="0" firstpageextraparam="" ordernum="1" createtime="1284539615504" isinheritanceblocked="0" displayspacefirst="1"/>

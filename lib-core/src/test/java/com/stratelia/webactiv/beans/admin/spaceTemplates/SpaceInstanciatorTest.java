@@ -25,11 +25,8 @@ package com.stratelia.webactiv.beans.admin.spaceTemplates;
 
 import com.silverpeas.util.PathTestUtil;
 import java.io.File;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
-import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -47,22 +44,6 @@ public class SpaceInstanciatorTest {
           + "test-classes" + File.separatorChar + "xmlspacetemplates";
 
   public SpaceInstanciatorTest() {
-  }
-
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-  }
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {
-  }
-
-  @Before
-  public void setUp() {
-  }
-
-  @After
-  public void tearDown() {
   }
 
   /**

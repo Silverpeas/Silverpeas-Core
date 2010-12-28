@@ -8,7 +8,6 @@ import com.silverpeas.components.model.AbstractTestDao;
 import com.google.common.collect.Lists;
 import java.sql.Connection;
 import java.util.List;
-import org.hamcrest.collection.IsIterableContainingInAnyOrder;
 import org.junit.Test;
 import org.junit.internal.matchers.IsCollectionContaining;
 import static org.junit.Assert.*;
