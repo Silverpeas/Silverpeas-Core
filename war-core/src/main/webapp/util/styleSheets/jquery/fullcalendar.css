@@ -108,23 +108,6 @@ table.fc-header {
 	cursor: pointer;
 	}
 
-/*.fc-header .fc-state-default {
-	border-width: 1px 0;
-	padding: 0 1px;
-	}
-
-.fc-header .fc-state-default,
-.fc-header .fc-state-default a {
-	border-style: solid;
-	}
-
-.fc-header .fc-state-default a {
-	display: block;
-	border-width: 0 1px;
-	margin: 0 -1px;
-	width: 100%;
-	text-decoration: none;
-	}*/
 
 .fc-header .fc-state-default span {
 	margin-top: 0;
@@ -175,18 +158,7 @@ table.fc-header {
 	padding-right: 0;
 	}
 
-/* DEFAULT button COLORS */
 
-/*.fc-header .fc-state-default,
-.fc-header .fc-state-default a {
-	border-color: #777;  outer border
-	color: #333;
-	}*/
-
-/*.fc-header .fc-state-default span {
-	border-color: #fff #fff #d1d1d1;  inner border
-	background: #e8e8e8;
-	}*/
 
 /* PRESSED button COLORS (down and active) */
 
@@ -202,22 +174,11 @@ table.fc-header {
 
 /* DISABLED button COLORS */
 
-/*.fc-header .fc-state-disabled a {
-	color: #000000;
-	}*/
+
 .fc-header .fc-state-disabled {
   color: #000000;
     }
 
-/*.fc-header .fc-state-disabled,
-.fc-header .fc-state-disabled a {
-	border-color: #ccc;  outer border
-	}*/
-
-/*.fc-header .fc-state-disabled span {
-	border-color: #fff #fff #f0f0f0;  inner border
-	background: #f0f0f0;
-	}*/
 
 
 
@@ -237,8 +198,18 @@ table.fc-header {
 	border-color: #ccc; /* inner border color */
 	}
 
+.fc-grid tbody td.fc-state-default {
+	height:80px !important;
+	}
+
 .fc-content .fc-state-highlight { /* today */
 	background: #ffc;
+	}
+.fc-content .fc-state-highlight .fc-day-number {
+	background-color: #FAD163;
+    display: block;
+    float: none;
+    text-align: right;
 	}
 
 .fc-content .fc-not-today { /* override jq-ui highlight (TODO: ui-widget-content) */
@@ -266,10 +237,10 @@ table.fc-header {
 .fc-event,
 .fc-agenda .fc-event-time,
 .fc-event a {
+	-moz-border-radius:0.5em 0.5em 0.5em 0.5em;
 	border-style: solid;
-	/*border-color: #36c;*/     /* default BORDER color (probably the same as background-color) */
-	background-color: #444444; /* default BACKGROUND color */
-	color: #fff;            /* default TEXT color */
+	background-color: #536ca6;
+	color: #fff;           
 	}
 
 	/* Use the 'className' CalEvent property and the following
@@ -290,7 +261,8 @@ table.fc-header {
 
 .fc-event a {
 	overflow: hidden;
-	font-size: .85em;
+	font-size:1em;
+	line-height:1.25em;
 	text-decoration: none;
 	cursor: pointer;
 	}
@@ -301,7 +273,7 @@ table.fc-header {
 
 .fc-event-time,
 .fc-event-title {
-	padding: 0 1px;
+	padding:0 3px 0 3px;
 	}
 
 /* for fake rounded corners */
@@ -398,6 +370,9 @@ table.fc-header {
 .fc .fc-grid th {
 	border-width: 0 0 0 1px;
 	text-align: center;
+	font-size:11px;
+	color:#666;
+	background-color:#ECECEC;
 	}
 
 .fc .fc-grid td {
@@ -430,7 +405,7 @@ table.fc-header {
 /* event styles */
 
 .fc-grid .fc-event-time {
-	font-weight: bold;
+	
 	}
 
 /* right-to-left */
@@ -466,7 +441,24 @@ table.fc-header {
 
 .fc-agenda-head tr.fc-last th {
 	border-bottom-width: 1px;
+	font-size:11px;
+	color:#666;
+	background-color:#ECECEC;
 	}
+
+.fc .fc-agenda-body, .fc .fc-agenda-bg, .fc .fc-agenda-body table{
+	width:100% !important;
+	}
+
+.fc .fc-agenda-body{
+	z-index:2;
+	overflow-x:hidden;
+	
+	} 
+.fc .fc-agenda-bg{
+	z-index:1;
+}
+
 
 .fc .fc-agenda-head td,
 .fc .fc-agenda-body td {
@@ -486,6 +478,7 @@ table.fc-header {
 	white-space: nowrap;
 	text-align: right;
 	font-weight: normal;
+	font-size:11px;
 	}
 
 /* all-day event cells at top */
