@@ -37,8 +37,8 @@ import java.util.Map;
  * @version 1.0
  */
 public class NotificationData implements Serializable {
-  private static final long serialVersionUID = -3772511721152323046L;
 
+  private static final long serialVersionUID = -3772511721152323046L;
   // private fields
   private String mLoginUser;
   private String mLoginPassword;
@@ -458,7 +458,7 @@ public class NotificationData implements Serializable {
     if (!Objects.equal(mTargetName, that.mTargetName)) {
       return false;
     }
-    if (Maps.difference(mTargetParam, that.mTargetParam).areEqual()) {
+    if (!Maps.difference(mTargetParam, that.mTargetParam).areEqual()) {
       return false;
     }
     if (!Objects.equal(mTargetReceipt, that.mTargetReceipt)) {
@@ -484,24 +484,36 @@ public class NotificationData implements Serializable {
     hash = 83 * hash + (this.mTargetParam != null ? this.mTargetParam.hashCode() : 0);
     hash = 83 * hash + (this.mPrioritySpeed != null ? this.mPrioritySpeed.hashCode() : 0);
     hash =
-        83 * hash +
-            (this.mReportToSenderStatus != null ? this.mReportToSenderStatus.hashCode() : 0);
+        83 * hash
+        + (this.mReportToSenderStatus != null ? this.mReportToSenderStatus.hashCode() : 0);
     hash =
-        83 *
-            hash +
-            (this.mReportToSenderTargetChannel != null ? this.mReportToSenderTargetChannel
-                .hashCode() : 0);
+        83
+        * hash
+        + (this.mReportToSenderTargetChannel != null ? this.mReportToSenderTargetChannel.hashCode() : 0);
     hash =
-        83 *
-            hash +
-            (this.mReportToSenderTargetReceipt != null ? this.mReportToSenderTargetReceipt
-                .hashCode() : 0);
+        83
+        * hash
+        + (this.mReportToSenderTargetReceipt != null ? this.mReportToSenderTargetReceipt.hashCode() : 0);
     hash =
-        83 *
-            hash +
-            (this.mReportToSenderTargetParam != null ? this.mReportToSenderTargetParam.hashCode()
-                : 0);
+        83
+        * hash
+        + (this.mReportToSenderTargetParam != null ? this.mReportToSenderTargetParam.hashCode()
+        : 0);
     hash = 83 * hash + (this.mReportToLogStatus != null ? this.mReportToLogStatus.hashCode() : 0);
     return hash;
+  }
+
+  @Override
+  public String toString() {
+    return "NotificationData{" + "mLoginUser=" + mLoginUser + ", mLoginPassword=" + mLoginPassword 
+        + ", mMessage=" + mMessage + ", mNotificationId=" + mNotificationId + ", mSenderId=" 
+        + mSenderId + ", mSenderName=" + mSenderName + ", mAnswerAllowed=" + mAnswerAllowed 
+        + ", mComment=" + mComment + ", mTargetChannel=" + mTargetChannel + ", mTargetReceipt=" 
+        + mTargetReceipt + ", mTargetName=" + mTargetName + ", mTargetParam=" + mTargetParam 
+        + ", mPrioritySpeed=" + mPrioritySpeed + ", mReportToSenderStatus=" + mReportToSenderStatus 
+        + ", mReportToSenderTargetChannel=" + mReportToSenderTargetChannel 
+        + ", mReportToSenderTargetReceipt=" + mReportToSenderTargetReceipt 
+        + ", mReportToSenderTargetParam=" + mReportToSenderTargetParam 
+        + ", mReportToLogStatus=" + mReportToLogStatus + '}';
   }
 }

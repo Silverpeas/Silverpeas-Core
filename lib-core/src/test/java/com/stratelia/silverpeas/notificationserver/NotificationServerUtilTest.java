@@ -73,7 +73,8 @@ public class NotificationServerUtilTest {
   public void testConvertNotificationDataToXML() throws Exception {
     NotificationData p_Data = new NotificationData();
     Map<String, Object> params = new HashMap<String, Object>(2);
-    params.put("date", RandomGenerator.getRandomCalendar().getTime());
+    Date dateParam = RandomGenerator.getRandomCalendar().getTime();
+    params.put("date", dateParam);
     params.put("string", "bonjour le monde; 0 + 0 = la tête à toto");
     p_Data.setAnswerAllowed(true);
     p_Data.setComment("comment");
@@ -100,7 +101,7 @@ public class NotificationServerUtilTest {
         + ".com]]></ID>		<NAME><![CDATA[Bart Simpson]]></NAME>		<ANSWERALLOWED>true"
         + "</ANSWERALLOWED>	</SENDER>	<COMMENT><![CDATA[comment]]></COMMENT>	<TARGET CHANNEL=\"SMTP\">"
         + "		<NAME><![CDATA[Home Simpson]]></NAME>		<RECEIPT><![CDATA[receipt]]></RECEIPT>		"
-        + "<PARAM><![CDATA[date=#DATE#1358963160000;string=bonjour le monde;; 0 + 0 == la tête à "
+        + "<PARAM><![CDATA[date=#DATE#" + dateParam.getTime() + ";string=bonjour le monde;; 0 + 0 == la tête à "
         + "toto]]></PARAM>	</TARGET>	<PRIORITY SPEED=\"fast\"/>	<REPORT>	</REPORT></NOTIFY>", result);
   }
 
@@ -110,24 +111,25 @@ public class NotificationServerUtilTest {
    */
   @Test
   public void testConvertXMLToNotificationData() throws Exception {
+    Date dateParam = RandomGenerator.getRandomCalendar().getTime();
     String p_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<NOTIFY>	<LOGIN>		<USER>"
         + "<![CDATA[user]]></USER>		<PASSWORD><![CDATA[password]]></PASSWORD>	</LOGIN>	"
         + "<MESSAGE><![CDATA[message]]></MESSAGE>	<SENDER>		<ID><![CDATA[bart.simpson@silverpeas"
         + ".com]]></ID>		<NAME><![CDATA[Bart Simpson]]></NAME>		<ANSWERALLOWED>true"
         + "</ANSWERALLOWED>	</SENDER>	<COMMENT><![CDATA[comment]]></COMMENT>	<TARGET CHANNEL=\"SMTP\">"
         + "		<NAME><![CDATA[Home Simpson]]></NAME>		<RECEIPT><![CDATA[receipt]]></RECEIPT>		"
-        + "<PARAM><![CDATA[date=#DATE#1358963160000;string=bonjour le monde;; 0 + 0 == la tête à "
+        + "<PARAM><![CDATA[date=#DATE#" + dateParam.getTime() + ";string=bonjour le monde;; 0 + 0 == la tête à "
         + "toto]]></PARAM>	</TARGET>	<PRIORITY SPEED=\"fast\"/>	<REPORT>	</REPORT></NOTIFY>";
     NotificationData expResult = new NotificationData();
-    Map<String, Object> params = new HashMap<String, Object>(2);
-    params.put("date", RandomGenerator.getRandomCalendar().getTime());
+    Map<String, Object> params = new HashMap<String, Object>(2);    
     params.put("string", "bonjour le monde; 0 + 0 = la tête à toto");
+    params.put("date", dateParam);
     expResult.setAnswerAllowed(true);
     expResult.setComment("comment");
     expResult.setLoginPassword("password");
     expResult.setLoginUser("user");
     expResult.setMessage("message");
-    expResult.setNotificationId(RandomGenerator.getRandomLong());
+    expResult.setNotificationId(0L);
     expResult.setPrioritySpeed("fast");
     expResult.setSenderId("bart.simpson@silverpeas.com");
     expResult.setSenderName("Bart Simpson");
