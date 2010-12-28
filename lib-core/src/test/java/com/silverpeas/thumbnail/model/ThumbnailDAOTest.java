@@ -21,86 +21,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.silverpeas.thumbnail.model;
 
+import com.silverpeas.components.model.AbstractTestDao;
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Hashtable;
-import java.util.Properties;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.Reference;
-import javax.naming.StringRefAddr;
-
-import org.dbunit.JndiBasedDBTestCase;
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.operation.DatabaseOperation;
 
 /**
  *
  * @author srochet
  */
-public class ThumbnailDAOTest extends JndiBasedDBTestCase {
+public class ThumbnailDAOTest extends AbstractTestDao {
 
   public ThumbnailDAOTest() {
-  }
-
-  private String jndiName = "";
-
-  protected void setUp() throws Exception {
-    Hashtable<String, String> env = new Hashtable<String, String>();
-    env.put(Context.INITIAL_CONTEXT_FACTORY,
-        "com.sun.jndi.fscontext.RefFSContextFactory");
-    InitialContext ic = new InitialContext(env);
-    Properties props = new Properties();
-    props.load(ThumbnailDAO.class.getClassLoader().getResourceAsStream(
-        "jdbc.properties"));
-    // Construct BasicDataSource reference
-    Reference ref = new Reference("javax.sql.DataSource",
-        "org.apache.commons.dbcp.BasicDataSourceFactory", null);
-    ref.add(new StringRefAddr("driverClassName", props
-        .getProperty("driverClassName")));
-    ref.add(new StringRefAddr("url", props.getProperty("url")));
-    ref.add(new StringRefAddr("username", props.getProperty("username")));
-    ref.add(new StringRefAddr("password", props.getProperty("password")));
-    ref.add(new StringRefAddr("maxActive", "4"));
-    ref.add(new StringRefAddr("maxWait", "5000"));
-    ref.add(new StringRefAddr("removeAbandoned", "true"));
-    ref.add(new StringRefAddr("removeAbandonedTimeout", "5000"));
-    ic.rebind(props.getProperty("jndi.name"), ref);
-    jndiName = props.getProperty("jndi.name");
-    
-    // populate database
-    IDatabaseConnection connection = null;
-    try{
-      connection = getDatabaseTester().getConnection();
-      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-      DatabaseOperation.CLEAN_INSERT.execute(connection, getDataSet());
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    } finally {
-      if (connection != null) {
-        try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-    }
-    
-    }
-
-  @Override
-  protected DatabaseOperation getTearDownOperation() throws Exception {
-    return DatabaseOperation.DELETE_ALL;
   }
 
   /**
@@ -109,9 +41,8 @@ public class ThumbnailDAOTest extends JndiBasedDBTestCase {
    */
   @org.junit.Test
   public void testInsertThumbnail() throws Exception {
-    System.out.println("insertRow");
     Connection con = getConnection().getConnection();
-    
+
     String instanceId = "kmelia57";
     int objectId = 999999;
     int objectType = ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE;
@@ -122,8 +53,8 @@ public class ThumbnailDAOTest extends JndiBasedDBTestCase {
     int y_start = 27;
     int x_length = 99;
     int y_length = 111;
-    
-    ThumbnailDetail detail = new ThumbnailDetail(instanceId,objectId,objectType);
+
+    ThumbnailDetail detail = new ThumbnailDetail(instanceId, objectId, objectType);
     detail.setOriginalFileName(originalFileName);
     detail.setMimeType(mimeType);
     detail.setCropFileName(cropFileName);
@@ -131,7 +62,7 @@ public class ThumbnailDAOTest extends JndiBasedDBTestCase {
     detail.setYStart(y_start);
     detail.setXLength(x_length);
     detail.setYLength(y_length);
-    
+
     ThumbnailDAO.insertThumbnail(con, detail);
     ThumbnailDetail result = ThumbnailDAO.selectByKey(con, instanceId, objectId, objectType);
     assertNotNull(result);
@@ -145,7 +76,7 @@ public class ThumbnailDAOTest extends JndiBasedDBTestCase {
     assertEquals(detail.getXLength(), result.getXLength());
     assertEquals(detail.getYStart(), result.getYStart());
     assertEquals(detail.getYLength(), result.getYLength());
-    
+
     ThumbnailDAO.deleteThumbnail(con, objectId, objectType, instanceId);
   }
 
@@ -169,7 +100,7 @@ public class ThumbnailDAOTest extends JndiBasedDBTestCase {
     assertEquals(11, result.getYStart());
     assertEquals(321, result.getYLength());
   }
-  
+
   /**
    * Test of delete method, of class ThumbnailDAO.
    * insert row, delete row, test by select
@@ -178,7 +109,7 @@ public class ThumbnailDAOTest extends JndiBasedDBTestCase {
   public void testDeleteThumbnail() throws Exception {
     System.out.println("insertRow");
     Connection con = getConnection().getConnection();
-    
+
     String instanceId = "kmelia57";
     int objectId = 999999;
     int objectType = ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE;
@@ -189,8 +120,8 @@ public class ThumbnailDAOTest extends JndiBasedDBTestCase {
     int y_start = 27;
     int x_length = 99;
     int y_length = 111;
-    
-    ThumbnailDetail detail = new ThumbnailDetail(instanceId,objectId,objectType);
+
+    ThumbnailDetail detail = new ThumbnailDetail(instanceId, objectId, objectType);
     detail.setOriginalFileName(originalFileName);
     detail.setMimeType(mimeType);
     detail.setCropFileName(cropFileName);
@@ -198,17 +129,16 @@ public class ThumbnailDAOTest extends JndiBasedDBTestCase {
     detail.setYStart(y_start);
     detail.setXLength(x_length);
     detail.setYLength(y_length);
-    
+
     ThumbnailDAO.insertThumbnail(con, detail);
-    
+
     ThumbnailDAO.deleteThumbnail(con, objectId, objectType, instanceId);
-    
+
     ThumbnailDetail result = ThumbnailDAO.selectByKey(con, instanceId, objectId, objectType);
     assertNull(result);
-    
+
   }
-  
-  
+
   /**
    * Test of delete method, of class ThumbnailDAO.
    * insert row, delete row, test by select
@@ -217,7 +147,7 @@ public class ThumbnailDAOTest extends JndiBasedDBTestCase {
   public void testDeleteAllThumbnails() throws Exception {
     System.out.println("deleteAllRows");
     Connection con = getConnection().getConnection();
-    
+
     String instanceId = "kmelia58";
     int objectId = 999999;
     int objectType = ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE;
@@ -228,8 +158,8 @@ public class ThumbnailDAOTest extends JndiBasedDBTestCase {
     int y_start = 27;
     int x_length = 99;
     int y_length = 111;
-    
-    ThumbnailDetail detail = new ThumbnailDetail(instanceId,objectId,objectType);
+
+    ThumbnailDetail detail = new ThumbnailDetail(instanceId, objectId, objectType);
     detail.setOriginalFileName(originalFileName);
     detail.setMimeType(mimeType);
     detail.setCropFileName(cropFileName);
@@ -237,24 +167,23 @@ public class ThumbnailDAOTest extends JndiBasedDBTestCase {
     detail.setYStart(y_start);
     detail.setXLength(x_length);
     detail.setYLength(y_length);
-    
+
     ThumbnailDAO.insertThumbnail(con, detail);
-    
+
     int objectId2 = 777777;
     detail.setObjectId(objectId2);
-    
+
     ThumbnailDAO.insertThumbnail(con, detail);
-    
+
     ThumbnailDAO.deleteAllThumbnails(con, instanceId);
-    
+
     ThumbnailDetail result = ThumbnailDAO.selectByKey(con, instanceId, objectId, objectType);
     assertNull(result);
     ThumbnailDetail result2 = ThumbnailDAO.selectByKey(con, instanceId, objectId2, objectType);
     assertNull(result2);
-    
+
   }
-  
-  
+
   /**
    * Test of update method, of class ThumbnailDAO.
    * insert row, test by select, update row, test by select, delete row
@@ -263,7 +192,7 @@ public class ThumbnailDAOTest extends JndiBasedDBTestCase {
   public void testUpdateRow() throws Exception {
     System.out.println("updateRow");
     Connection con = getConnection().getConnection();
-    
+
     String instanceId = "kmelia57";
     int objectId = 999999;
     int objectType = ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE;
@@ -274,8 +203,8 @@ public class ThumbnailDAOTest extends JndiBasedDBTestCase {
     int y_start = 27;
     int x_length = 99;
     int y_length = 111;
-    
-    ThumbnailDetail detail = new ThumbnailDetail(instanceId,objectId,objectType);
+
+    ThumbnailDetail detail = new ThumbnailDetail(instanceId, objectId, objectType);
     detail.setOriginalFileName(originalFileName);
     detail.setMimeType(mimeType);
     detail.setCropFileName("");
@@ -283,9 +212,9 @@ public class ThumbnailDAOTest extends JndiBasedDBTestCase {
     detail.setYStart(0);
     detail.setXLength(0);
     detail.setYLength(0);
-    
+
     ThumbnailDAO.insertThumbnail(con, detail);
-    
+
     ThumbnailDetail result = ThumbnailDAO.selectByKey(con, instanceId, objectId, objectType);
     assertNotNull(result);
     assertEquals(detail.getCropFileName(), "");
@@ -293,15 +222,15 @@ public class ThumbnailDAOTest extends JndiBasedDBTestCase {
     assertEquals(detail.getXLength(), 0);
     assertEquals(detail.getYStart(), 0);
     assertEquals(detail.getYLength(), 0);
-    
+
     detail.setCropFileName(cropFileName);
     detail.setXStart(x_start);
     detail.setYStart(y_start);
     detail.setXLength(x_length);
     detail.setYLength(y_length);
-    
+
     ThumbnailDAO.updateThumbnail(con, detail);
-    
+
     result = ThumbnailDAO.selectByKey(con, instanceId, objectId, objectType);
     assertNotNull(result);
     assertEquals(detail.getInstanceId(), result.getInstanceId());
@@ -314,22 +243,13 @@ public class ThumbnailDAOTest extends JndiBasedDBTestCase {
     assertEquals(detail.getXLength(), result.getXLength());
     assertEquals(detail.getYStart(), result.getYStart());
     assertEquals(detail.getYLength(), result.getYLength());
-    
+
     ThumbnailDAO.deleteThumbnail(con, objectId, objectType, instanceId);
-    
-  }  
 
-@Override
-protected String getLookupName() {
-	return jndiName;
-}
+  }
 
-@Override
-protected IDataSet getDataSet() throws Exception {
-	ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
-	        ThumbnailDAOTest.class
-	            .getResourceAsStream("test-thumbnail-dao-dataset.xml")));
-	    dataSet.addReplacementObject("[NULL]", null);
-	    return dataSet;
-	}
+  @Override
+  protected String getDatasetFileName() {
+    return "test-thumbnail-dao-dataset.xml";
+  }
 }
