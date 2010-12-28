@@ -5,8 +5,6 @@
 package com.stratelia.webactiv.organization;
 
 import com.silverpeas.components.model.AbstractTestDao;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -69,7 +67,6 @@ public class SpaceTableTest extends AbstractTestDao {
     assertArrayEquals(expResult, result);
   }
 
-
   /**
    * Test of getDirectSubSpaceIds method, of class SpaceTable.
    */
@@ -78,10 +75,9 @@ public class SpaceTableTest extends AbstractTestDao {
     OrganizationSchema schema = new OrganizationSchema(1, getConnection().getConnection());
     SpaceTable instance = schema.space;
     String[] result = instance.getDirectSubSpaceIds(2);
-    String[] expResult = new String[]{ "3", "4"};
-   assertNotNull(result);
+    String[] expResult = new String[]{"3", "4"};
+    assertNotNull(result);
     assertEquals(expResult.length, result.length);
     assertArrayEquals(expResult, result);
   }
-
 }
