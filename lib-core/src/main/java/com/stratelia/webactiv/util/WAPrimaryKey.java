@@ -27,8 +27,12 @@ package com.stratelia.webactiv.util;
 import java.io.Serializable;
 
 /**
- * The webactiv primary key for a entity bean defines : - the row id in the database, - the space, -
- * the component name.
+ * The webactiv primary key for a entity bean defines : 
+ * <ul>
+ * <li>the row id in the database</li>
+ * <li>the space</li>
+ * <li>the component name</li>
+ * </ul>
  * @author Nicolas Eysseric
  * @version 1.0
  */
