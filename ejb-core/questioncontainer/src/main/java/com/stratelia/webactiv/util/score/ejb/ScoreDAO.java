@@ -49,6 +49,15 @@ public class ScoreDAO {
   public static final String SCORECOLUMNNAMES =
       "scoreId, qcId, userId, scoreParticipationId, scoreScore, scoreElapsedTime,scoreParticipationDate,scoreSuggestion";
 
+  private static final String DELETE_SCORE_FOR_QUESTION =
+      "DELETE FROM sb_question_score WHERE qcid = ? ";
+
+  private static final String AVERAGE_SCORE_FOR_QUESTION =
+      "SELECT SUM(scoreScore) FROM sb_question_score WHERE qcId = ? ";
+
+  private static final String ADD_SCORE_FOR_QUESTION =
+      "INSERT INTO sb_question_score values(?, ?, ?, ?, ?, ?, ?, ?) ";
+
   /**
    * Method declaration
    * @param rs
@@ -85,14 +94,10 @@ public class ScoreDAO {
   public static void addScore(Connection con, ScoreDetail scoreDetail)
       throws SQLException {
     int newId = 0;
-    String insertStatement = "insert into "
-        + scoreDetail.getScorePK().getTableName()
-        + " values(?, ?, ?, ?, ?, ?, ?, ?) ";
 
     try {
       /* Recherche de la nouvelle PK de la table */
-      newId = DBUtil.getNextId(scoreDetail.getScorePK().getTableName(),
-          new String("scoreId"));
+      newId = DBUtil.getNextId(scoreDetail.getScorePK().getTableName(), "scoreId");
     } catch (UtilException ue) {
       throw new ScoreRuntimeException("ScoreDAO.addScore()",
           SilverpeasRuntimeException.ERROR, "score.EX_RECORD_GETNEXTID_FAILED",
@@ -106,7 +111,7 @@ public class ScoreDAO {
     PreparedStatement prepStmt = null;
 
     try {
-      prepStmt = con.prepareStatement(insertStatement);
+      prepStmt = con.prepareStatement(ADD_SCORE_FOR_QUESTION);
       prepStmt.setInt(1, newId);
       prepStmt.setInt(2, new Integer(scoreDetail.getFatherId()).intValue());
       prepStmt.setString(3, scoreDetail.getUserId());
@@ -179,14 +184,11 @@ public class ScoreDAO {
    */
   public static void deleteScoreByFatherPK(Connection con, ScorePK scorePK,
       String fatherId) throws SQLException {
-    String deleteStatement = "delete from " + scorePK.getTableName()
-        + " where qcId = ? ";
-    PreparedStatement prepStmt = null;
 
+    PreparedStatement prepStmt = null;
     try {
-      prepStmt = con.prepareStatement(deleteStatement);
-      prepStmt.setInt(1, new Integer(fatherId).intValue());
-      // prepStmt.setString(2,questionPK.getComponentName());
+      prepStmt = con.prepareStatement(DELETE_SCORE_FOR_QUESTION);
+      prepStmt.setInt(1, Integer.parseInt(fatherId));
       prepStmt.executeUpdate();
       prepStmt.close();
     } finally {
@@ -400,19 +402,17 @@ public class ScoreDAO {
 
     if (nbVoters > 0) {
       ResultSet rs = null;
-      String selectStatement = "select sum(scoreScore) from "
-          + scorePK.getTableName() + " where qcId = ?";
       PreparedStatement prepStmt = null;
 
       try {
-        prepStmt = con.prepareStatement(selectStatement);
+        prepStmt = con.prepareStatement(AVERAGE_SCORE_FOR_QUESTION);
         prepStmt.setInt(1, new Integer(fatherId).intValue());
         rs = prepStmt.executeQuery();
         if (rs.next()) {
           sumPoints = rs.getInt(1);
           average = Math
               .round(((new Float(sumPoints).floatValue()) / (new Float(nbVoters)
-              .floatValue())) * 10)
+                  .floatValue())) * 10)
               / (new Float(10).floatValue());
         }
       } finally {
@@ -475,7 +475,13 @@ public class ScoreDAO {
   }
 
   /**
-   * @roseuid 3ACC3F0302E7
+   * @param con the current database connection
+   * @param scorePK
+   * @param fatherId
+   * @param userId
+   * @param participationId
+   * @return
+   * @throws SQLException
    */
   public static int getUserPositionByFatherIdAndParticipationId(Connection con,
       ScorePK scorePK, String fatherId, String userId, int participationId)

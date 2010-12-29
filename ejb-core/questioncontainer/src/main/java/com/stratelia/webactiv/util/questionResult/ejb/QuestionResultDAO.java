@@ -290,7 +290,7 @@ public class QuestionResultDAO {
 
     try {
       /* Recherche de la nouvelle PK de la table */
-      newId = DBUtil.getNextId(tableName, new String("qrId"));
+      newId = DBUtil.getNextId(tableName, "qrId");
     } catch (UtilException ue) {
       throw new QuestionResultRuntimeException(
           "QuestionResultDAO.setQuestionResultToUser()",

@@ -190,7 +190,7 @@ public class AnswerDAO {
 
     try {
       /* Recherche de la nouvelle PK de la table */
-      newId = DBUtil.getNextId(answerPK.getTableName(), new String("answerId"));
+      newId = DBUtil.getNextId(answerPK.getTableName(), "answerId");
     } catch (Exception e) {
       throw new AnswerRuntimeException("AnswerDAO.addAnswerToAQuestion()",
           SilverpeasRuntimeException.ERROR, "root.EX_GET_NEXTID_FAILED", e);

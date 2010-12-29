@@ -60,9 +60,9 @@ public class QuestionContainerDAO {
       "yyyy/MM/dd");
 
   // if beginDate is null, it will be replace in database with it
-  private static String nullBeginDate = new String("0000/00/00");
+  private static String nullBeginDate = "0000/00/00";
   // if endDate is null, it will be replace in database with it
-  private static String nullEndDate = new String("9999/99/99");
+  private static String nullEndDate = "9999/99/99";
 
   /**
    * Method declaration
@@ -702,8 +702,7 @@ public class QuestionContainerDAO {
 
     try {
       /* Recherche de la nouvelle PK de la table */
-      newId = DBUtil.getNextId(commentPK.getTableName(),
-          new String("commentId"));
+      newId = DBUtil.getNextId(commentPK.getTableName(), "commentId");
     } catch (Exception e) {
       throw new QuestionContainerRuntimeException(
           "QuestionContainerDAO.addComment()",

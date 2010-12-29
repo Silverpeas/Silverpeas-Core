@@ -175,8 +175,7 @@ public class QuestionDAO {
 
     try {
       /* Recherche de la nouvelle PK de la table */
-      newId = DBUtil.getNextId(question.getPK().getTableName(), new String(
-          "questionId"));
+      newId = DBUtil.getNextId(question.getPK().getTableName(), "questionId");
     } catch (Exception e) {
       throw new QuestionRuntimeException("QuestionDAO.createQuestion()",
           SilverpeasRuntimeException.ERROR, "root.EX_GET_NEXTID_FAILED", e);

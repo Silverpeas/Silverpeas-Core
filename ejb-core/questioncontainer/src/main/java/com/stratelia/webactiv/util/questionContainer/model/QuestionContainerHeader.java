@@ -322,7 +322,7 @@ public class QuestionContainerHeader extends AbstractI18NBean implements java.io
     return getName();
   }
 
-  public Iterator getLanguages() {
+  public Iterator<String> getLanguages() {
     return null;
   }
 
