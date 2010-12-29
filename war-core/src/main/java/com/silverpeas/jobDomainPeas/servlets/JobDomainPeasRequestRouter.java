@@ -155,18 +155,7 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
           }
 
           // process extra properties
-          HashMap<String, String> properties = new HashMap<String, String>();
-          Enumeration<String> parameters = request.getParameterNames();
-          String parameterName = null;
-          String property = null;
-          while (parameters.hasMoreElements()) {
-            parameterName = parameters.nextElement();
-            if (parameterName.startsWith("prop_")) {
-              property = parameterName.substring(5, parameterName.length()); // remove
-              // "prop_"
-              properties.put(property, request.getParameter(parameterName));
-            }
-          }
+          HashMap<String, String> properties = getExtraPropertyValues(request);
 
           jobDomainSC.createUser(EncodeHelper.htmlStringToJavaString(request
               .getParameter("userLogin")), EncodeHelper
@@ -194,18 +183,7 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
           }
 
           // process extra properties
-          HashMap<String, String> properties = new HashMap<String, String>();
-          Enumeration<String> parameters = request.getParameterNames();
-          String parameterName = null;
-          String property = null;
-          while (parameters.hasMoreElements()) {
-            parameterName = parameters.nextElement();
-            if (parameterName.startsWith("prop_")) {
-              property = parameterName.substring(5, parameterName.length()); // remove
-              // "prop_"
-              properties.put(property, request.getParameter(parameterName));
-            }
-          }
+          HashMap<String, String> properties = getExtraPropertyValues(request);
 
           jobDomainSC.modifyUser(request.getParameter("Iduser"), EncodeHelper
               .htmlStringToJavaString(request.getParameter("userLastName")),
@@ -219,9 +197,18 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
         } else if (function.startsWith("userDelete")) {
           jobDomainSC.deleteUser(request.getParameter("Iduser"));
         } else if (function.startsWith("userMS")) {
-          jobDomainSC.modifySynchronizedUser(request.getParameter("Iduser"),
-              EncodeHelper.htmlStringToJavaString(request
-                  .getParameter("userAccessLevel")));
+          String userId = request.getParameter("Iduser");
+          String accessLevel = request.getParameter("userAccessLevel");
+
+          // process extra properties
+          HashMap<String, String> properties = getExtraPropertyValues(request);
+
+          if (properties.isEmpty()) {
+            jobDomainSC.modifySynchronizedUser(userId, accessLevel);
+          } else {
+            // extra properties have been set, modify user full
+            jobDomainSC.modifyUserFull(userId, accessLevel, properties);
+          }
         } else if (function.startsWith("userSearchToImport")) {
           Hashtable<String, String> query = null;
           List<UserDetail> users = null;
@@ -559,11 +546,13 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
                   + "..."));
           request.setAttribute("minLengthLogin", Integer.valueOf(jobDomainSC.getMinLengthLogin()));
           request.setAttribute("minLengthPwd", Integer.valueOf(jobDomainSC.getMinLengthPwd()));
-          request.setAttribute("blanksAllowedInPwd", Boolean.valueOf(jobDomainSC.isBlanksAllowedInPwd()));
+          request.setAttribute("blanksAllowedInPwd", Boolean.valueOf(jobDomainSC
+              .isBlanksAllowedInPwd()));
           request.setAttribute("CurrentUser", jobDomainSC.getUserDetail());
           // if community management is activated, add groups on this user is manager
           if (JobDomainSettings.m_UseCommunityManagement) {
-            request.setAttribute("GroupsManagedByCurrentUser", jobDomainSC.getUserManageableGroups());
+            request.setAttribute("GroupsManagedByCurrentUser", jobDomainSC
+                .getUserManageableGroups());
           }
 
           destination = "userCreate.jsp";
@@ -587,13 +576,14 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
                   + "..."));
           request.setAttribute("minLengthLogin", Integer.valueOf(jobDomainSC.getMinLengthLogin()));
           request.setAttribute("minLengthPwd", Integer.valueOf(jobDomainSC.getMinLengthPwd()));
-          request.setAttribute("blanksAllowedInPwd", Boolean.valueOf(jobDomainSC.isBlanksAllowedInPwd()));
+          request.setAttribute("blanksAllowedInPwd", Boolean.valueOf(jobDomainSC
+              .isBlanksAllowedInPwd()));
           request.setAttribute("CurrentUser", jobDomainSC.getUserDetail());
           destination = "userCreate.jsp";
         } else if (function.startsWith("displayUserMS")) {
           request.setAttribute("userObject", jobDomainSC.getTargetUserFull());
           request.setAttribute("action", "userMS");
-          request.setAttribute("groupsPath", jobDomainSC.getPath( (String) 
+          request.setAttribute("groupsPath", jobDomainSC.getPath((String)
               request.getAttribute("myComponentURL"), jobDomainSC.getString("JDP.userUpdate")
                   + "..."));
           request.setAttribute("minLengthLogin", Integer.valueOf(jobDomainSC.getMinLengthLogin()));
@@ -609,8 +599,10 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
           request.setAttribute("FirstUserIndex", Integer.valueOf(jobDomainSC
               .getIndexOfFirstItemToDisplay()));
           request.setAttribute("groupsPath", jobDomainSC.getPath(
-              (String) request.getAttribute("myComponentURL"), jobDomainSC.getString("JDP.userImport")
-                  + "..."));
+              (String) request.getAttribute("myComponentURL"), jobDomainSC
+                  .getString("JDP.userImport")
+                  +
+                  "..."));
           request.setAttribute("properties", jobDomainSC.getPropertiesToImport());
           destination = "userImport.jsp";
         } else if (function.startsWith("displayDomainCreate")) {
@@ -656,9 +648,9 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
 
         // création de la liste des domaines
         String[][] allDomains = jobDomainSC.getAllDomains();
-        String[] domainsByList = new String[allDomains.length-1];
+        String[] domainsByList = new String[allDomains.length - 1];
         for (int n = 1; n < allDomains.length; n++) {
-          domainsByList[n-1] = allDomains[n][1];
+          domainsByList[n - 1] = allDomains[n][1];
         }
         template.setAttribute("listDomains", domainsByList);
         request.setAttribute("Content", template.applyFileTemplate("register_" +
@@ -833,5 +825,21 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
       memSelected.remove(id);
     }
     jobDomainSC.setListSelectedUsers(memSelected);
+  }
+
+  private HashMap<String, String> getExtraPropertyValues(HttpServletRequest request) {
+    // process extra properties
+    HashMap<String, String> properties = new HashMap<String, String>();
+    Enumeration<String> parameters = request.getParameterNames();
+    String parameterName = null;
+    String property = null;
+    while (parameters.hasMoreElements()) {
+      parameterName = parameters.nextElement();
+      if (parameterName.startsWith("prop_")) {
+        property = parameterName.substring(5, parameterName.length()); // remove "prop_"
+        properties.put(property, request.getParameter(parameterName));
+      }
+    }
+    return properties;
   }
 }

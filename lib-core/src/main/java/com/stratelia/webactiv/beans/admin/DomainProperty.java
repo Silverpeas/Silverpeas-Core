@@ -124,5 +124,9 @@ public class DomainProperty {
   public boolean isUpdateAllowedToUser() {
     return PROPERTY_UPDATEALLOWED_USER.equalsIgnoreCase(updateAllowedTo);
   }
+  
+  public boolean isUpdateAllowedToAdmin() {
+    return PROPERTY_UPDATEALLOWED_ADMIN.equalsIgnoreCase(updateAllowedTo);
+  }
 
 }

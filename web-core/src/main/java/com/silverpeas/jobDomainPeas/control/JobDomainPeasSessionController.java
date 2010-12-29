@@ -824,16 +824,13 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       String userFirstName, String userEMail, String userAccessLevel,
       boolean userPasswordValid, String userPassword, HashMap<String, String> properties)
       throws JobDomainPeasException {
-    UserFull theModifiedUser = null;
-    String idRet = null;
-
     SilverTrace.info("jobDomainPeas",
         "JobDomainPeasSessionController.modifyUser()",
         "root.MSG_GEN_ENTER_METHOD", "UserId=" + idUser + " userLastName="
         + userLastName + " userFirstName=" + userFirstName + " userEMail="
         + userEMail + " userAccessLevel=" + userAccessLevel);
 
-    theModifiedUser = m_AdminCtrl.getUserFull(idUser);
+    UserFull theModifiedUser = m_AdminCtrl.getUserFull(idUser);
     if (theModifiedUser == null) {
       throw new JobDomainPeasException(
           "JobDomainPeasSessionController.modifyUser()",
@@ -854,18 +851,13 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     // process extra properties
     Set<String> keys = properties.keySet();
-    Iterator<String> iKeys = keys.iterator();
-    String key = null;
-    String value = null;
-    while (iKeys.hasNext()) {
-      key = iKeys.next();
-      value = properties.get(key);
-
+    for (String key : keys) {
+      String value = properties.get(key);
       theModifiedUser.setValue(key, value);
     }
 
-    idRet = m_AdminCtrl.updateUserFull(theModifiedUser);
-    if ((idRet == null) || (idRet.length() <= 0)) {
+    String idRet = m_AdminCtrl.updateUserFull(theModifiedUser);
+    if (!StringUtil.isDefined(idRet)) {
       throw new JobDomainPeasException(
           "JobDomainPeasSessionController.modifyUser()",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "UserId="
@@ -880,26 +872,57 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public void modifySynchronizedUser(String idUser, String userAccessLevel)
       throws JobDomainPeasException {
-    UserDetail theModifiedUser = null;
-    String idRet = null;
-
     SilverTrace.info("jobDomainPeas",
         "JobDomainPeasSessionController.modifySynchronizedUser()",
         "root.MSG_GEN_ENTER_METHOD", "UserId=" + idUser);
 
-    theModifiedUser = m_AdminCtrl.getUserDetail(idUser);
+    UserDetail theModifiedUser = m_AdminCtrl.getUserDetail(idUser);
     if (theModifiedUser == null) {
       throw new JobDomainPeasException(
           "JobDomainPeasSessionController.modifySynchronizedUser()",
           SilverpeasException.ERROR, "admin.EX_ERR_UNKNOWN_USER");
     }
     theModifiedUser.setAccessLevel(userAccessLevel);
-    idRet = m_AdminCtrl.updateSynchronizedUser(theModifiedUser);
-    if ((idRet == null) || (idRet.length() <= 0)) {
+    String idRet = m_AdminCtrl.updateSynchronizedUser(theModifiedUser);
+    if (!StringUtil.isDefined(idRet)) {
       throw new JobDomainPeasException(
           "JobDomainPeasSessionController.modifySynchronizedUser()",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "UserId="
           + idUser);
+    }
+    refresh();
+    setTargetUser(idRet);
+  }
+  
+  public void modifyUserFull(String idUser, String userAccessLevel,
+      HashMap<String, String> properties)
+      throws JobDomainPeasException {
+    SilverTrace.info("jobDomainPeas",
+        "JobDomainPeasSessionController.modifyUserFull()",
+        "root.MSG_GEN_ENTER_METHOD", "UserId=" + idUser + " userAccessLevel=" + userAccessLevel);
+
+    UserFull theModifiedUser = m_AdminCtrl.getUserFull(idUser);
+    if (theModifiedUser == null) {
+      throw new JobDomainPeasException(
+          "JobDomainPeasSessionController.modifyUserFull()",
+          SilverpeasException.ERROR, "admin.EX_ERR_UNKNOWN_USER");
+    }
+
+    theModifiedUser.setAccessLevel(userAccessLevel);
+
+    // process extra properties
+    Set<String> keys = properties.keySet();
+    for (String key : keys) {
+      String value = properties.get(key);
+      theModifiedUser.setValue(key, value);
+    }
+
+    String idRet = m_AdminCtrl.updateUserFull(theModifiedUser);
+    if (!StringUtil.isDefined(idRet)) {
+      throw new JobDomainPeasException(
+          "JobDomainPeasSessionController.modifyUserFull()",
+          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "UserId="
+              + idUser);
     }
     refresh();
     setTargetUser(idRet);

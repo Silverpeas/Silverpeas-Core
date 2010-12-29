@@ -284,6 +284,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       }
 
       // Fill silverpeas info of user details
+      uf.setLogin(ur.login);
       uf.setId(userId);
       uf.setSpecificId(ur.specificId);
       uf.setDomainId(idAsString(ur.domainId));

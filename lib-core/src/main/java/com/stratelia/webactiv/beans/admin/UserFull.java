@@ -162,6 +162,35 @@ public class UserFull extends UserDetail {
     return false;
   }
 
+  public boolean isPropertyUpdatableByAdmin(String property) {
+    if (m_pDomainDriver != null) {
+      DomainProperty domainProperty = m_pDomainDriver.getProperty(property);
+      if (domainProperty != null) {
+        return domainProperty.isUpdateAllowedToAdmin();
+      }
+    }
+    return false;
+  }
+
+  public boolean isAtLeastOnePropertyUpdatableByAdmin() {
+    if (m_pDomainDriver != null) {
+      String[] properties = m_pDomainDriver.getPropertiesNames();
+      for (String property : properties) {
+        if (isPropertyUpdatableByAdmin(property)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  public DomainProperty getProperty(String property) {
+    if (m_pDomainDriver != null) {
+      return m_pDomainDriver.getProperty(property);
+    }
+    return null;
+  }
+
   // Values' setters
   public void setValue(String propertyName, String value) {
     m_hInfos.put(propertyName, value);
