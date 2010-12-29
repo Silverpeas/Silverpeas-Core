@@ -61,15 +61,16 @@ public class JdbcFieldDisplayerTest {
     pagesContext.setUserId("0");
     JdbcFieldDisplayer instance = new JdbcFieldDisplayer();
     instance.displayScripts(printer, template, pagesContext);
-    assertEquals("if (isWhitespace(stripInitialWhitespace(field.value))) {\n"
-        + "\t\terrorMsg+=\"  - 'Mon champs JDBC' doit être renseigné\\n \";\n"
-        + "\t\terrorNb++;\n"
-        + "\t}\n"
-        + " try { \n"
-        + "if (typeof(checkmonChamps) == 'function')\n"
-        + " 	checkmonChamps('fr');\n"
-        + " } catch (e) { \n"
-        + " 	//catch all exceptions\n"
+    String lineSeparator = System.getProperty("line.separator");
+    assertEquals("if (isWhitespace(stripInitialWhitespace(field.value))) {" + lineSeparator
+        + "\t\terrorMsg+=\"  - 'Mon champs JDBC' doit être renseigné\\n \";" + lineSeparator
+        + "\t\terrorNb++;" + lineSeparator
+        + "\t}" + lineSeparator
+        + " try { " + lineSeparator
+        + "if (typeof(checkmonChamps) == 'function')" + lineSeparator
+        + " 	checkmonChamps('fr');" + lineSeparator
+        + " } catch (e) { " + lineSeparator
+        + " 	//catch all exceptions" + lineSeparator
         + " }", new String(out.toByteArray(), Charsets.UTF_8).trim());
   }
 
