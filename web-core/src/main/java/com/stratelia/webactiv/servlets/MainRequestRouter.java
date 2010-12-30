@@ -40,7 +40,7 @@ public class MainRequestRouter extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Get the session
-    HttpSession m_Session = request.getSession(true);
+    HttpSession m_Session = request.getSession(false);
     // Get the context
     String sURI = request.getRequestURI();
     String sServletPath = request.getServletPath();

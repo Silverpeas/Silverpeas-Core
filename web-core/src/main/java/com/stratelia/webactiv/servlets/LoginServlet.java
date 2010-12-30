@@ -37,6 +37,7 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import java.io.IOException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -140,6 +141,11 @@ public class LoginServlet extends HttpServlet {
       absoluteUrl.append("/Login.jsp");
     }
     absoluteUrl.append(";jsessionid=").append(session.getId());
+    final Cookie sessionCookie = new Cookie("JSESSIONID", session.getId());
+    sessionCookie.setMaxAge(-1);
+    sessionCookie.setSecure(false);
+    sessionCookie.setPath(request.getContextPath());
+    response.addCookie(sessionCookie);
     response.sendRedirect(response.encodeRedirectURL(absoluteUrl.toString()));
   }
 
