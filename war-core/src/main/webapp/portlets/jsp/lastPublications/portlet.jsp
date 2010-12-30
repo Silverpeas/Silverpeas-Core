@@ -85,4 +85,4 @@ Iterator publications = ((List) pReq.getAttribute("Publications")).iterator();
     }
 %>
 <br/>
-<a href="<c:url value="${rssUrl}" />" class="rss_link"><img src="<c:url value="/util/icons/rss.gif" />" border="0" alt="RSS"/></a>
+<a href="<c:url value="${rssUrl}" />" class="rss_link"><img src="<c:url value="/util/icons/rss.gif" />" border="0" alt="rss"/></a>
