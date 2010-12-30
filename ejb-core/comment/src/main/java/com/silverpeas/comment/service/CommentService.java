@@ -25,7 +25,6 @@
 package com.silverpeas.comment.service;
 
 import com.silverpeas.comment.dao.CommentDAO;
-import com.silverpeas.comment.dao.jdbc.JDBCCommentDAO;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
