@@ -26,7 +26,7 @@
 -->
 
 <database name="fast_Silverpeas" engine="postgresql">
-    <jndi name="java:/Silverpeas" />
+    <jndi name="Silverpeas" />
     <mapping href="file:///C:/Silverpeas/KMEdition/Production/silverpeas/resources/instanceManager/fast_mapping.xml" />
 </database>
 

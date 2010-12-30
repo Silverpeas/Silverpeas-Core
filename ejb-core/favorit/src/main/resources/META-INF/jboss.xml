@@ -34,7 +34,7 @@
             <jndi-name>ejb/FavoritBm</jndi-name>
 	    <resource-ref>
 		<res-ref-name>jdbc/Silverpeas</res-ref-name>
-		<jndi-name>java:/Silverpeas</jndi-name>
+		<jndi-name>Silverpeas</jndi-name>
 	    </resource-ref>
         </session>
     </enterprise-beans>

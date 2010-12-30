@@ -34,7 +34,7 @@
             <jndi-name>ejb/QuestionContainerBm</jndi-name>
 		    <resource-ref>
 				<res-ref-name>jdbc/Silverpeas</res-ref-name>
-				<jndi-name>java:/Silverpeas</jndi-name>
+				<jndi-name>Silverpeas</jndi-name>
 		    </resource-ref>
         </session>
         <session>
@@ -42,7 +42,7 @@
             <jndi-name>ejb/AnswerBm</jndi-name>
 		    <resource-ref>
 				<res-ref-name>jdbc/Silverpeas</res-ref-name>
-				<jndi-name>java:/Silverpeas</jndi-name>
+				<jndi-name>Silverpeas</jndi-name>
 		    </resource-ref>
         </session>
         <session>
@@ -50,7 +50,7 @@
             <jndi-name>ejb/QuestionBm</jndi-name>
 		    <resource-ref>
 				<res-ref-name>jdbc/Silverpeas</res-ref-name>
-				<jndi-name>java:/Silverpeas</jndi-name>
+				<jndi-name>Silverpeas</jndi-name>
 		    </resource-ref>
         </session>
         <session>
@@ -58,7 +58,7 @@
             <jndi-name>ejb/QuestionResultBm</jndi-name>
 		    <resource-ref>
 				<res-ref-name>jdbc/Silverpeas</res-ref-name>
-				<jndi-name>java:/Silverpeas</jndi-name>
+				<jndi-name>Silverpeas</jndi-name>
 		    </resource-ref>
         </session>
         <session>
@@ -66,7 +66,7 @@
             <jndi-name>ejb/ScoreBm</jndi-name>
 		    <resource-ref>
 				<res-ref-name>jdbc/Silverpeas</res-ref-name>
-				<jndi-name>java:/Silverpeas</jndi-name>
+				<jndi-name>Silverpeas</jndi-name>
 		    </resource-ref>
         </session>
     </enterprise-beans>

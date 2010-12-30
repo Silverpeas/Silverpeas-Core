@@ -32,7 +32,7 @@
 		JDBC : use  JDBC url to access database
 	-->
 	<connectionType>JNDI</connectionType>
-	<JndiName>java:Silverpeas</JndiName>
+	<JndiName>Silverpeas</JndiName>
 	<!-- complete following information only if you use JDBC to access database --> 
 	<driver>org.postgresql.Driver</driver>
 	<url>jdbc:postgresql://localhost:5432/SilverpeasV5</url>

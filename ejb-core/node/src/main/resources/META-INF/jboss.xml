@@ -38,7 +38,7 @@
 	    	</ejb-ref>
 	    	<resource-ref>
 				<res-ref-name>jdbc/Silverpeas</res-ref-name>
-				<jndi-name>java:/Silverpeas</jndi-name>
+				<jndi-name>Silverpeas</jndi-name>
 	    	</resource-ref>
         </session>
 		<entity>
@@ -46,7 +46,7 @@
             <jndi-name>ejb/Node</jndi-name>
 	    	<resource-ref>
 				<res-ref-name>jdbc/Silverpeas</res-ref-name>
-				<jndi-name>java:/Silverpeas</jndi-name>
+				<jndi-name>Silverpeas</jndi-name>
 		    </resource-ref>
         </entity>
         <session>
@@ -54,7 +54,7 @@
             <jndi-name>ejb/CoordinatesBm</jndi-name>
 		    <resource-ref>
 				<res-ref-name>jdbc/Silverpeas</res-ref-name>
-				<jndi-name>java:/Silverpeas</jndi-name>
+				<jndi-name>Silverpeas</jndi-name>
 			</resource-ref>
         </session>
         <session>
@@ -62,7 +62,7 @@
             <jndi-name>ejb/SubscribeBm</jndi-name>
 		    <resource-ref>
 				<res-ref-name>jdbc/Silverpeas</res-ref-name>
-				<jndi-name>java:/Silverpeas</jndi-name>
+				<jndi-name>Silverpeas</jndi-name>
 	    	</resource-ref>
         </session>
     </enterprise-beans>
