@@ -165,7 +165,8 @@ function openPopup(action, larg, haut)
 <% } %>
 
 function clipboardPaste() {
-    top.IdleFrame.document.location.replace('../..<%=URLManager.getURL(URLManager.CMP_CLIPBOARD)%>paste?compR=RjobStartPagePeas&JSPPage=<%=response.encodeURL("StartPageInfo")%>&TargetFrame=TopFrame&message=REFRESH');
+	$.progressMessage();
+	location.href="paste";
 }
 
 function clipboardCopy() {
