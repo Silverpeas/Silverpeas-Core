@@ -1012,7 +1012,9 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
     Publication pub = findPublication(pubPK);
 
     try {
-      return pub.getCompletePublication();
+      CompletePublication cp = pub.getCompletePublication();
+      cp.setValidationSteps(getValidationSteps(pubPK));
+      return cp;
     } catch (Exception e) {
       throw new PublicationRuntimeException(
         "PublicationBmEJB.getCompletePublication()",

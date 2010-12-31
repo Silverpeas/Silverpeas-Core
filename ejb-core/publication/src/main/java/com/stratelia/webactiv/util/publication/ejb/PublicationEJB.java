@@ -128,6 +128,8 @@ public class PublicationEJB implements EntityBean {
 
     pubDetail.setTranslations(translations);
     pubDetail.setDraftOutDate(draftOutDate);
+    pubDetail.setValidatorId(validatorId);
+    pubDetail.setValidateDate(validateDate);
 
     return pubDetail;
   }
@@ -872,6 +874,8 @@ public class PublicationEJB implements EntityBean {
       cloneStatus = pubDetail.getCloneStatus();
       lang = pubDetail.getLanguage();
       draftOutDate = pubDetail.getDraftOutDate();
+      validatorId = pubDetail.getValidatorId();
+      validateDate = pubDetail.getValidateDate();
 
       getTranslations();
 
@@ -897,13 +901,6 @@ public class PublicationEJB implements EntityBean {
     if (pk == null) {
       return;
     }
-    // Transform the 'special' caracters
-    /*
-     * name = Encode.transformStringForBD(name); description =
-     * Encode.transformStringForBD(description); keywords = Encode.transformStringForBD(keywords);
-     * auhor = Encode.transformStringForBD(author);
-     */
-
     PublicationDetail detail = new PublicationDetail(pk, name, description,
         creationDate, beginDate, endDate, creatorId, importance, version,
         keywords, content, status, updateDate, updaterId,

@@ -54,6 +54,8 @@ public class CompletePublication implements Serializable {
    * The publications which are a reference to the current publication
    */
   private List<ForeignPK> reverseLinkList = null;
+  
+  private List<ValidationStep> validationSteps = null;
 
   /**
    * @param pubDetail
@@ -147,5 +149,13 @@ public class CompletePublication implements Serializable {
    */
   public void setReverseLinkList(List<ForeignPK> reverseLinkList) {
     this.reverseLinkList = reverseLinkList;
+  }
+
+  public void setValidationSteps(List<ValidationStep> validationSteps) {
+    this.validationSteps = validationSteps;
+  }
+
+  public List<ValidationStep> getValidationSteps() {
+    return validationSteps;
   }
 }
