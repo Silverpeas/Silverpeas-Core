@@ -25,15 +25,14 @@ body {
 	background-image: none;
 	background-repeat: repeat-x;
 	background-attachment: fixed;
+	font-family:Arial, Helvetica, sans-serif;
 }
-body, td, div, a {
+body, td, div, a , input, select, textarea{
 	font-family: Arial;
 	font-size: 11px;
 }
 .fondDomainsBar {
-	background-image: url("/silverpeas/admin/jsp/icons/silverpeas_light/fondNav.jpg");
-	background-repeat: no-repeat;
-	background-attachment: scroll;	
+	background:url("/silverpeas/admin/jsp/icons/silverpeas_light/fondNav.jpg")  no-repeat scroll ;
 }
 #pdcFrame {
 	background-color:#9BD94A;
@@ -48,15 +47,32 @@ body, td, div, a {
 }
 #outils {
 	bottom:inherit;
-	font-family:inherit;
 	font-size:10px;
-	height:15px;
+	height:auto;
 	position:absolute;
 	right:15px;
 	text-align:right;
-	width:100%;
-	top:2px;
+	width:auto;
+	top:0px;
+	padding:2px 8px;
+	background-color:#FFFFFF;
+	border:1px solid #BFBFBF ;
+	-moz-border-radius: 0px 0px 10px 10px;
+	-webkit-border-radius: 0px 0px 10px 10px;
+	border-radius: 0px 0px 10px 10px;
+	-moz-box-shadow:0 10px 10px 2px #EAEAE8 inset; 
+	-webkit-box-shadow:0 10px 10px 2px #EAEAE8 inset; 
+	box-shadow:0 10px 10px 2px #EAEAE8 inset; 
+	border-top:0;
 }
+
+#outils a {
+	color:#666;
+	line-height:20px
+	}
+#outils a:hover, #outils a:focus {
+	color:#000;}
+
 #administration{
 	top: 68px;
 	right: 10px;
@@ -124,7 +140,7 @@ body, td, div, a {
 	background-color:transparent;
 	border:medium none;
 	color:#666666;
-	font-size:10px;
+	font-size:11px;
 	margin-left:15px;
 	margin-top:25px;
 	width:160px;
@@ -156,7 +172,7 @@ body, td, div, a {
 	padding-left:5px;
 	font-weight: bold;
 }
-#browseBar #breadCrumb a:visited, #browseBar #breadCrumb a:active, #browseBar #breadCrumb a:link, #browseBar #breadCrumb a:hover,  #browseBar #breadCrumb {
+#browseBar #breadCrumb a:visited, #browseBar #breadCrumb a:active, #browseBar #breadCrumb a:link, #browseBar #breadCrumb a:hover,  #browseBar #breadCrumb, #browseBar .information{
 	color: #444444;
 	font-weight: normal;
 	font-size:12px;
@@ -164,9 +180,6 @@ body, td, div, a {
 #browseBar {
 	margin-left:3px;
 	margin-top:3px;
-}
-.txtBaseline {
-	color:#444444;
 }
 
 #spaces, #spacePerso {
@@ -190,7 +203,6 @@ body, td, div, a {
 	padding-top:7px;
 	margin-top: 15px;
 	background-color:#FFF;
-	
 	border: 1px solid #cacaca;
 	width:170px;
 	background-image:url("/silverpeas/admin/jsp/icons/silverpeas_light/spacePerso.png");
@@ -247,9 +259,7 @@ body, td, div, a {
 .spaceLevel1On {
 	padding-top:12px;
 }
-.browseIconComponent {
-	/*display: none;*/
-}
+
 #domainsBar #spaceMenuDivId #spaces .spaceLevel1 .spaceURL, #domainsBar #spaceMenuDivId #spaces .spaceLevel1On .spaceURL, #domainsBar #spaceMenuDivId #spacePerso .spaceURL {
 	color: #444444;
 	font-size:14px;
@@ -277,6 +287,63 @@ body, td, div, a {
 	padding-left: 10px;
 	padding-right: 10px;
 }
+
+
+#topBar #shortcuts {
+	right:136px;
+	bottom:34px;
+	}
+
+#shortcuts a { 
+	color: #333333;
+    font-weight: bold;
+	display:block;
+}
+#shortcuts a:hover, #shortcuts a:visited, #shortcuts td.activeShortcut a{
+	color:#548F1A;
+	}
+#shortcuts td.activeShortcut a { text-decoration:underline;}
+#shortcuts td {
+	background-image: none;
+	background-color:#EAEAE8;
+	border-bottom:1px solid #BFBFBF ;
+	border-top:1px solid #BFBFBF ;
+	-moz-box-shadow:0 20px 20px -10px  #DBDBDB inset; 
+	-webkit-box-shadow:0 20px 20px -10px  #DBDBDB inset; 
+	box-shadow:0 20px 20px -10px  #DBDBDB inset; 
+	padding:0;
+	border-bottom:0;
+	height:30px;
+	}
+#shortcuts td.activeShortcut {	
+	background-image:none;
+    border:0;
+    padding:0px;
+	border-top:1px solid #BFBFBF ;
+}
+
+#shortcuts td.gaucheShortcuts{
+	background-image: none;
+	background-color:#EAEAE8;
+	border:1px solid #BFBFBF ;
+	-moz-border-radius: 10px 0 0 0;
+	-webkit-border-radius: 10px 0 0 0;
+	border-radius: 10px 0px 0px 0;
+	padding-left: 10px;
+	border-right:0;
+	border-bottom:0;
+	}
+#shortcuts td.droiteShortcuts{
+	background-image: none;
+	background-color:#EAEAE8;
+	border:1px solid #BFBFBF ;
+	-moz-border-radius: 0 10px 0px 0px;
+	-webkit-border-radius: 0 10px 0px 0px;
+	border-radius: 0 10px 0px 0px;
+	padding-right: 10px;
+	border-left:0;
+	border-bottom:0;
+	}
 
 #domainsBar .milieuBoutonV5 a , .milieuBoutonV5 a {
 	color: #444444;
@@ -411,10 +478,8 @@ td.milieuOngletOn {
 	font-weight:normal;
 	color:#B3775A;
 }
-.txtnav, .txtlibform  {
-	color:#9C451B;
-}
-.ArrayColumn {
+
+.ArrayColumn , #classifieds .tableFrame #categories .categoryTitle{
 	background-color:#C8ED99;
 	background-image:none;
 	color:#000000;
@@ -467,9 +532,8 @@ td.milieuOngletOn {
 	background-image: none;
 	font-family: MS trebuchet;
 }
-#blog #titresTopics a , #blog #titresArchives a, #blog #titresLiens a {
-	color:#9C451B;
-}
+
+
 .navigationListTitle {
 	background-color:#9BD94A;
 	background-image:none;
@@ -520,6 +584,10 @@ td.milieuOngletOn {
 }
 #portletPages h2.portlet-title {
 	color:#9C451B;	
+	font-size:11px;
+	text-transform:uppercase;
+	padding-top:3px;
+	letter-spacing:1px;
 }
 #portletPages dl.sort dt {
 	-moz-border-radius-topleft: 8px;
@@ -551,6 +619,8 @@ td.milieuOngletOn {
 	border-left: 1px solid #cccccc;
 	border-bottom: 1px solid #cccccc;
 	border-right: 1px solid #cccccc;
+	font-size:11px;
+	color:#666666;
 }
 #pubList {
 	padding:10px;
@@ -626,4 +696,14 @@ td.milieuOngletOn {
 .yuimenu a:hover {
 	color:#222222;
 	background-color: #9BD94A;
+}
+
+#dNdActionLabel { 
+	line-height:30px;
+	cursor:pointer;
+	display:block;}
+
+/* regroupement des styles mise en couleur*/
+.txtnav, .txtlibform, #blog #titresTopics a , #blog #titresArchives a, #blog #titresLiens a {
+	color:#9C451B;
 }
