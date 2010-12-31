@@ -126,7 +126,7 @@ public class AjaxServletLookV5 extends HttpServlet {
 
     if (StringUtil.isDefined(componentId)) {
       helper.setComponentIdAndSpaceIds(null, null, componentId);
-    } else if (StringUtil.isDefined(spaceId) && !isPersonnalSpace(spaceId)) {
+    } else if (StringUtil.isDefined(spaceId) && !isPersonalSpace(spaceId)) {
       helper.setSpaceIdAndSubSpaceId(spaceId);
     }
     if (StringUtil.isDefined(userMenuDisplayMode)) {
@@ -174,7 +174,7 @@ public class AjaxServletLookV5 extends HttpServlet {
         SilverTrace.error("lookSilverpeasV5", "Ajax", "root.ERROR");
       }
     } else if (StringUtil.isDefined(spaceId)) {
-      if (isPersonnalSpace(spaceId)) {
+      if (isPersonalSpace(spaceId)) {
         // Affichage de l'espace perso
         ResourceLocator settings = gef.getFavoriteLookSettings();
         ResourceLocator message = new ResourceLocator(
@@ -309,7 +309,7 @@ public class AjaxServletLookV5 extends HttpServlet {
 
     // Affichage de l'espace collaboratif
     SpaceInstLight space = orgaController.getSpaceInstLightById(spaceId);
-    if (space != null && isSpaceVisible(userId, spaceId, orgaController)) {
+    if (space != null && isSpaceVisible(userId, spaceId, orgaController, helper)) {
       StringBuilder itemSB = new StringBuilder(200);
       itemSB.append("<item open=\"").append(open).append("\" ");
       itemSB.append(getSpaceAttributes(space, language, defaultLook, helper));
@@ -382,7 +382,7 @@ public class AjaxServletLookV5 extends HttpServlet {
       spaceId = availableSpaceIds[nI];
       boolean loadCurSpace = isLoadingContentNeeded(userMenuDisplayMode, userId, spaceId, listUFS,
           orgaController);
-      if (loadCurSpace && isSpaceVisible(userId, spaceId, orgaController)) {
+      if (loadCurSpace && isSpaceVisible(userId, spaceId, orgaController, helper)) {
         displaySpace(spaceId, targetComponentId, spacePath, userId, language,
             defaultLook, false, false, orgaController, helper, out, listUFS, userMenuDisplayMode);
       }
@@ -428,7 +428,7 @@ public class AjaxServletLookV5 extends HttpServlet {
       spaceId = availableSpaceIds[nI];
       boolean loadCurSpace = isLoadingContentNeeded(userMenuDisplayMode, userId, spaceId, listUFS,
           orgaController);
-      if (loadCurSpace && isSpaceVisible(userId, spaceId, orgaController)) {
+      if (loadCurSpace && isSpaceVisible(userId, spaceId, orgaController, helper)) {
         space = orgaController.getSpaceInstLightById(spaceId);
         if (space != null) {
           StringBuilder itemSB = new StringBuilder(200);
@@ -462,7 +462,7 @@ public class AjaxServletLookV5 extends HttpServlet {
         // Check user favorite space
         loadCurSpace = isLoadingContentNeeded(userMenuDisplayMode, userId, subSpaceId, listUFS,
             orgaController);
-        if (loadCurSpace && isSpaceVisible(userId, subSpaceId, orgaController)) {
+        if (loadCurSpace && isSpaceVisible(userId, subSpaceId, orgaController, helper)) {
           StringBuilder itemSB = new StringBuilder(200);
           itemSB.append("<item ");
           itemSB.append(getSpaceAttributes(space, language, defaultLook, helper));
@@ -681,7 +681,7 @@ public class AjaxServletLookV5 extends HttpServlet {
     return rootSpaceIds.toArray(new String[rootSpaceIds.size()]);
   }
 
-  protected boolean isPersonnalSpace(String spaceId) {
+  protected boolean isPersonalSpace(String spaceId) {
     return "spacePerso".equalsIgnoreCase(spaceId);
   }
 
@@ -837,7 +837,10 @@ public class AjaxServletLookV5 extends HttpServlet {
    * @param orgaController
    * @return true or false
    */
-  protected boolean isSpaceVisible(String userId, String spaceId, OrganizationController orgaController) {
+  protected boolean isSpaceVisible(String userId, String spaceId, OrganizationController orgaController, LookHelper helper) {
+     if (helper.getSettings("displaySpaceContainingOnlyHiddenComponents", true)) {
+       return true;
+     }
      String compoIds[] = orgaController.getAvailCompoIds(spaceId, userId);
      for (String id : compoIds) {
        ComponentInst compInst = orgaController.getComponentInst(id);
