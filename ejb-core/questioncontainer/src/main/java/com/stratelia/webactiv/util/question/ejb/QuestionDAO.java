@@ -104,7 +104,7 @@ public class QuestionDAO {
 
     try {
       prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setInt(1, new Integer(questionPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(questionPK.getId()));
       rs = prepStmt.executeQuery();
       if (rs.next()) {
         question = getQuestionFromResultSet(rs, questionPK);
@@ -127,8 +127,7 @@ public class QuestionDAO {
   public static Collection<Question> getQuestionsByFatherPK(Connection con,
       QuestionPK questionPK, String fatherId) throws SQLException {
     SilverTrace.info("question", "QuestionDAO.getQuestionsByFatherPK()",
-        "root.MSG_GEN_ENTER_METHOD", "questionPK = " + questionPK
-        + ", fatherId = " + fatherId);
+        "root.MSG_GEN_ENTER_METHOD", "questionPK = " + questionPK + ", fatherId = " + fatherId);
 
     List<Question> result = new ArrayList<Question>();
     ResultSet rs = null;
@@ -142,7 +141,7 @@ public class QuestionDAO {
 
     try {
       prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setInt(1, new Integer(fatherId).intValue());
+      prepStmt.setInt(1, Integer.parseInt(fatherId));
       prepStmt.setString(2, questionPK.getComponentName());
       rs = prepStmt.executeQuery();
 
@@ -183,14 +182,14 @@ public class QuestionDAO {
 
     QuestionPK questionPK = question.getPK();
 
-    questionPK.setId(new Integer(newId).toString());
+    questionPK.setId(Integer.toString(newId));
 
     PreparedStatement prepStmt = null;
 
     try {
       prepStmt = con.prepareStatement(insertStatement);
       prepStmt.setInt(1, newId);
-      prepStmt.setInt(2, new Integer(question.getFatherId()).intValue());
+      prepStmt.setInt(2, Integer.parseInt(question.getFatherId()));
       prepStmt.setString(3, question.getLabel());
       prepStmt.setString(4, question.getDescription());
       prepStmt.setString(5, question.getClue());
@@ -267,7 +266,7 @@ public class QuestionDAO {
       prepStmt.setInt(12, question.getNbPointsMax());
       prepStmt.setString(13, question.getPK().getComponentName());
       prepStmt.setString(14, question.getStyle());
-      prepStmt.setInt(15, new Integer(question.getPK().getId()).intValue());
+      prepStmt.setInt(15, Integer.parseInt(question.getPK().getId()));
 
       prepStmt.executeUpdate();
     } finally {
@@ -283,17 +282,16 @@ public class QuestionDAO {
    */
   public static void deleteQuestion(Connection con, QuestionPK questionPK)
       throws SQLException {
-    SilverTrace.info("question", "QuestionDAO.deleteQuestion()",
-        "root.MSG_GEN_ENTER_METHOD", "questionPK = " + questionPK);
+    SilverTrace.info("question", "QuestionDAO.deleteQuestion()", "root.MSG_GEN_ENTER_METHOD",
+        "questionPK = " + questionPK);
 
-    String deleteStatement = "delete from " + questionPK.getTableName()
-        + " where questionId = ? ";
+    String deleteStatement = "DELETE FROM sb_question_question WHERE questionId = ? ";
 
     PreparedStatement prepStmt = null;
 
     try {
       prepStmt = con.prepareStatement(deleteStatement);
-      prepStmt.setInt(1, new Integer(questionPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(questionPK.getId()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -310,17 +308,15 @@ public class QuestionDAO {
   public static void deleteQuestionsByFatherPK(Connection con,
       QuestionPK questionPK, String fatherId) throws SQLException {
     SilverTrace.info("question", "QuestionDAO.deleteQuestionsByFatherPK()",
-        "root.MSG_GEN_ENTER_METHOD", "questionPK = " + questionPK
-        + ", fatherId = " + fatherId);
+        "root.MSG_GEN_ENTER_METHOD", "questionPK = " + questionPK + ", fatherId = " + fatherId);
 
-    String deleteStatement = "delete from " + questionPK.getTableName()
-        + " where qcId = ? and instanceId = ?";
+    String deleteStatement = "DELETE FROM sb_question_question WHERE qcId = ? AND instanceId = ?";
 
     PreparedStatement prepStmt = null;
 
     try {
       prepStmt = con.prepareStatement(deleteStatement);
-      prepStmt.setInt(1, new Integer(fatherId).intValue());
+      prepStmt.setInt(1, Integer.parseInt(fatherId));
       prepStmt.setString(2, questionPK.getComponentName());
       prepStmt.executeUpdate();
     } finally {

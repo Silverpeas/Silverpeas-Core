@@ -58,8 +58,9 @@ public class QuestionContainerPK extends WAPrimaryKey implements Serializable {
   }
 
   public boolean equals(Object other) {
-    if (!(other instanceof QuestionContainerPK))
+    if (!(other instanceof QuestionContainerPK)) {
       return false;
+    }
     return (id.equals(((QuestionContainerPK) other).getId()))
         && (space.equals(((QuestionContainerPK) other).getSpace()))
         && (componentName.equals(((QuestionContainerPK) other)

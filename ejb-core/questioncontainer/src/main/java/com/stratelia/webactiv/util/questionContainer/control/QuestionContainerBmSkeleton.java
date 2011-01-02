@@ -28,6 +28,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
+import java.util.Vector;
 
 import com.stratelia.webactiv.util.question.model.Question;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail;
@@ -51,7 +52,7 @@ public interface QuestionContainerBmSkeleton {
    * @see
    */
   public void recordReplyToQuestionContainerByUser(
-      QuestionContainerPK questionContainerPK, String userId, Hashtable reply)
+      QuestionContainerPK questionContainerPK, String userId, Hashtable<String, Vector<String>> reply)
       throws RemoteException;
 
   /**
@@ -65,7 +66,7 @@ public interface QuestionContainerBmSkeleton {
    * @see
    */
   public void recordReplyToQuestionContainerByUser(
-      QuestionContainerPK questionContainerPK, String userId, Hashtable reply,
+      QuestionContainerPK questionContainerPK, String userId, Hashtable<String, Vector<String>> reply,
       String comment, boolean isAnonymousComment) throws RemoteException;
 
   /**

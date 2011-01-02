@@ -65,16 +65,16 @@ public class AnswerDAO {
     int nbPoints = rs.getInt(4);
     boolean isSolution = false;
 
-    if (rs.getInt(5) != 0)
+    if (rs.getInt(5) != 0) {
       isSolution = true;
-
+    }
     String comment = rs.getString(6);
     int nbVoters = rs.getInt(7);
     boolean isOpened = false;
 
-    if (rs.getInt(8) != 0)
+    if (rs.getInt(8) != 0) {
       isOpened = true;
-
+    }
     String image = rs.getString(9);
     String questionLink = rs.getString(10);
     Answer result = new Answer(new AnswerPK(id, answerPK), new ForeignPK(
@@ -107,7 +107,7 @@ public class AnswerDAO {
 
     try {
       prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setInt(1, new Integer(questionPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(questionPK.getId()));
       rs = prepStmt.executeQuery();
 
       while (rs.next()) {
@@ -141,8 +141,8 @@ public class AnswerDAO {
 
     try {
       prepStmt = con.prepareStatement(updateStatement);
-      prepStmt.setInt(1, new Integer(answerPK.getId()).intValue());
-      prepStmt.setInt(2, new Integer(questionPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(answerPK.getId()));
+      prepStmt.setInt(2, Integer.parseInt(questionPK.getId()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -201,19 +201,21 @@ public class AnswerDAO {
     try {
       prepStmt = con.prepareStatement(updateStatement);
       prepStmt.setInt(1, newId);
-      prepStmt.setInt(2, new Integer(questionPK.getId()).intValue());
+      prepStmt.setInt(2, Integer.parseInt(questionPK.getId()));
       prepStmt.setString(3, answer.getLabel());
       prepStmt.setInt(4, answer.getNbPoints());
-      if (answer.isSolution())
+      if (answer.isSolution()) {
         prepStmt.setInt(5, 1);
-      else
+      } else {
         prepStmt.setInt(5, 0);
+      }
       prepStmt.setString(6, answer.getComment());
       prepStmt.setInt(7, 0);
-      if (answer.isOpened())
+      if (answer.isOpened()) {
         prepStmt.setInt(8, 1);
-      else
+      } else {
         prepStmt.setInt(8, 0);
+      }
       prepStmt.setString(9, answer.getImage());
       prepStmt.setString(10, answer.getQuestionLink());
       prepStmt.executeUpdate();
@@ -241,7 +243,7 @@ public class AnswerDAO {
 
     try {
       prepStmt = con.prepareStatement(deleteStatement);
-      prepStmt.setInt(1, new Integer(questionPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(questionPK.getId()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -269,8 +271,8 @@ public class AnswerDAO {
 
     try {
       prepStmt = con.prepareStatement(deleteStatement);
-      prepStmt.setInt(1, new Integer(questionPK.getId()).intValue());
-      prepStmt.setInt(2, new Integer(answerId).intValue());
+      prepStmt.setInt(1, Integer.parseInt(questionPK.getId()));
+      prepStmt.setInt(2, Integer.parseInt(answerId));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -302,23 +304,23 @@ public class AnswerDAO {
 
     try {
       prepStmt = con.prepareStatement(updateStatement);
-      prepStmt.setInt(1, new Integer(questionPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(questionPK.getId()));
       prepStmt.setString(2, answer.getLabel());
       prepStmt.setInt(3, answer.getNbPoints());
 
-      if (answer.isSolution())
+      if (answer.isSolution()) {
         prepStmt.setInt(4, 1);
-      else
+      } else {
         prepStmt.setInt(4, 0);
-
+      } 
       prepStmt.setString(5, answer.getComment());
       prepStmt.setInt(6, answer.getNbVoters());
 
-      if (answer.isOpened())
+      if (answer.isOpened()) {
         prepStmt.setInt(7, 1);
-      else
+      } else {
         prepStmt.setInt(7, 0);
-
+      } 
       prepStmt.setString(8, answer.getImage());
       prepStmt.setString(9, answer.getQuestionLink());
       prepStmt.setString(10, answer.getPK().getId());

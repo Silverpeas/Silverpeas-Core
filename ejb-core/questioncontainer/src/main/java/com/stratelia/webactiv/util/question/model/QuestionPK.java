@@ -92,8 +92,9 @@ public class QuestionPK extends WAPrimaryKey implements Serializable {
    * @roseuid 3AB73436002C
    */
   public boolean equals(Object other) {
-    if (!(other instanceof QuestionPK))
+    if (!(other instanceof QuestionPK)) {
       return false;
+    }
     return (id.equals(((QuestionPK) other).getId()))
         && (space.equals(((QuestionPK) other).getSpace()))
         && (componentName.equals(((QuestionPK) other).getComponentName()));

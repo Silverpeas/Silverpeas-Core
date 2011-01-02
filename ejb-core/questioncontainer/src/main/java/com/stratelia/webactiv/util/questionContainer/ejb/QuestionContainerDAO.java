@@ -29,6 +29,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -56,13 +57,12 @@ public class QuestionContainerDAO {
       "commentId, commentFatherId, userId, commentComment, commentIsAnonymous, commentDate";
 
   // the date format used in database to represent a date
-  private static java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat(
-      "yyyy/MM/dd");
+  private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
 
   // if beginDate is null, it will be replace in database with it
-  private static String nullBeginDate = "0000/00/00";
+  private static final String nullBeginDate = "0000/00/00";
   // if endDate is null, it will be replace in database with it
-  private static String nullEndDate = "9999/99/99";
+  private static final String nullEndDate = "9999/99/99";
 
   /**
    * Method declaration
@@ -75,7 +75,7 @@ public class QuestionContainerDAO {
   public static QuestionContainerHeader getQuestionContainerHeaderFromResultSet(
       ResultSet rs, QuestionContainerPK questionContainerPK)
       throws SQLException {
-    String id = new Integer(rs.getInt(1)).toString();
+    String id = Integer.toString(rs.getInt(1));
     String title = rs.getString(2);
     String description = rs.getString(3);
     String comment = rs.getString(4);
@@ -128,7 +128,7 @@ public class QuestionContainerDAO {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.getQuestionContainers()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-        + questionContainerPK);
+            + questionContainerPK);
 
     ResultSet rs = null;
     QuestionContainerHeader questionContainerHeader = null;
@@ -218,7 +218,7 @@ public class QuestionContainerDAO {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.getOpenedQuestionContainers()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-        + questionContainerPK);
+            + questionContainerPK);
     ResultSet rs = null;
     QuestionContainerHeader questionContainerHeader = null;
 
@@ -261,7 +261,7 @@ public class QuestionContainerDAO {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.getNotClosedQuestionContainers()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-        + questionContainerPK);
+            + questionContainerPK);
 
     ResultSet rs = null;
     QuestionContainerHeader questionContainerHeader = null;
@@ -302,7 +302,7 @@ public class QuestionContainerDAO {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.getClosedQuestionContainers()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-        + questionContainerPK);
+            + questionContainerPK);
 
     ResultSet rs = null;
     QuestionContainerHeader questionContainerHeader = null;
@@ -384,7 +384,7 @@ public class QuestionContainerDAO {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.getQuestionContainerHeader()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-        + questionContainerPK);
+            + questionContainerPK);
     ResultSet rs = null;
     QuestionContainerHeader questionContainerHeader = null;
 
@@ -395,7 +395,7 @@ public class QuestionContainerDAO {
 
     try {
       prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setInt(1, new Integer(questionContainerPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(questionContainerPK.getId()));
       rs = prepStmt.executeQuery();
       if (rs.next()) {
         questionContainerHeader = getQuestionContainerHeaderFromResultSet(rs,
@@ -420,7 +420,7 @@ public class QuestionContainerDAO {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.closeQuestionContainer()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-        + questionContainerPK);
+            + questionContainerPK);
 
     String updateStatement = "update " + questionContainerPK.getTableName()
         + " set qcIsClosed = 1 , instanceId = ?" + " where qcId = ? ";
@@ -430,7 +430,7 @@ public class QuestionContainerDAO {
     try {
       prepStmt = con.prepareStatement(updateStatement);
       prepStmt.setString(1, questionContainerPK.getComponentName());
-      prepStmt.setInt(2, new Integer(questionContainerPK.getId()).intValue());
+      prepStmt.setInt(2, Integer.parseInt(questionContainerPK.getId()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -449,7 +449,7 @@ public class QuestionContainerDAO {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.openQuestionContainer()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-        + questionContainerPK);
+            + questionContainerPK);
 
     String updateStatement = "update " + questionContainerPK.getTableName()
         + " set qcIsClosed = 0 , instanceId = ?" + " where qcId = ? ";
@@ -459,7 +459,7 @@ public class QuestionContainerDAO {
     try {
       prepStmt = con.prepareStatement(updateStatement);
       prepStmt.setString(1, questionContainerPK.getComponentName());
-      prepStmt.setInt(2, new Integer(questionContainerPK.getId()).intValue());
+      prepStmt.setInt(2, Integer.parseInt(questionContainerPK.getId()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -480,7 +480,7 @@ public class QuestionContainerDAO {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.createQuestionContainerHeader()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerHeader = "
-        + questionContainerHeader);
+            + questionContainerHeader);
     int newId = 0;
 
     String insertStatement = "insert into "
@@ -488,9 +488,8 @@ public class QuestionContainerDAO {
         + " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 
     try {
-      /* Recherche de la nouvelle PK de la table */
-      newId = DBUtil.getNextId(questionContainerHeader.getPK().getTableName(),
-          new String("qcId"));
+      /* Retrieve next sequence identifier */
+      newId = DBUtil.getNextId(questionContainerHeader.getPK().getTableName(), "qcId");
     } catch (Exception e) {
       throw new QuestionContainerRuntimeException(
           "QuestionContainerDAO.createQuestionContainerHeader()",
@@ -499,7 +498,7 @@ public class QuestionContainerDAO {
 
     QuestionContainerPK questionContainerPK = questionContainerHeader.getPK();
 
-    questionContainerPK.setId(new Integer(newId).toString());
+    questionContainerPK.setId(Integer.toString(newId));
 
     PreparedStatement prepStmt = null;
 
@@ -556,7 +555,7 @@ public class QuestionContainerDAO {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.updateQuestionContainerHeader()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerHeader = "
-        + questionContainerHeader);
+            + questionContainerHeader);
 
     String insertStatement = "update "
         + questionContainerHeader.getPK().getTableName() + " set qcTitle = ?,"
@@ -596,8 +595,7 @@ public class QuestionContainerDAO {
       } else {
         prepStmt.setInt(12, 0);
       }
-      prepStmt.setInt(13, new Integer(questionContainerHeader.getPK().getId())
-          .intValue());
+      prepStmt.setInt(13, Integer.parseInt(questionContainerHeader.getPK().getId()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -616,7 +614,7 @@ public class QuestionContainerDAO {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.deleteQuestionContainerHeader()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-        + questionContainerPK);
+            + questionContainerPK);
 
     String deleteStatement = "delete from "
         + questionContainerPK.getTableName() + " where qcId = ? ";
@@ -625,7 +623,7 @@ public class QuestionContainerDAO {
 
     try {
       prepStmt = con.prepareStatement(deleteStatement);
-      prepStmt.setInt(1, new Integer(questionContainerPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(questionContainerPK.getId()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -643,7 +641,7 @@ public class QuestionContainerDAO {
       QuestionContainerPK questionContainerPK) throws SQLException {
     SilverTrace.info("questionContainer", "QuestionContainerDAO.addAVoter()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-        + questionContainerPK);
+            + questionContainerPK);
 
     String updateStatement = "update " + questionContainerPK.getTableName()
         + " set qcNbVoters = qcNbVoters + 1 " + " where qcId = ? ";
@@ -652,7 +650,7 @@ public class QuestionContainerDAO {
 
     try {
       prepStmt = con.prepareStatement(updateStatement);
-      prepStmt.setInt(1, new Integer(questionContainerPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(questionContainerPK.getId()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -672,7 +670,7 @@ public class QuestionContainerDAO {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.getCommentFromResultSet()",
         "root.MSG_GEN_ENTER_METHOD", "qcPK = " + qcPK);
-    String id = new Integer(rs.getInt(1)).toString();
+    String id = Integer.toString(rs.getInt(1));
     String userId = rs.getString(3);
     String comment = rs.getString(4);
     boolean isAnonymous = (rs.getInt(5) == 1);
@@ -714,7 +712,7 @@ public class QuestionContainerDAO {
     try {
       prepStmt = con.prepareStatement(insertStatement);
       prepStmt.setInt(1, newId);
-      prepStmt.setInt(2, new Integer(questionContainerPK.getId()).intValue());
+      prepStmt.setInt(2, Integer.parseInt(questionContainerPK.getId()));
       prepStmt.setString(3, comment.getUserId());
       prepStmt.setString(4, comment.getComment());
       if (comment.isAnonymous()) {
@@ -754,7 +752,7 @@ public class QuestionContainerDAO {
 
     try {
       prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setInt(1, new Integer(qcPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(qcPK.getId()));
       rs = prepStmt.executeQuery();
       List<Comment> list = new ArrayList<Comment>();
       while (rs.next()) {
@@ -788,7 +786,7 @@ public class QuestionContainerDAO {
 
     try {
       prepStmt = con.prepareStatement(deleteStatement);
-      prepStmt.setInt(1, new Integer(qcPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(qcPK.getId()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);

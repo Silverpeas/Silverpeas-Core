@@ -44,9 +44,9 @@ public class QuestionContainerSelection extends ClipboardSelection implements Se
     try {
       QuestionContainerDetailFlavor =
           new DataFlavor(
-          Class
-          .forName("com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail"),
-          "QuestionContainer");
+              Class
+                  .forName("com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail"),
+              "QuestionContainer");
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
     }
@@ -75,10 +75,11 @@ public class QuestionContainerSelection extends ClipboardSelection implements Se
     try {
       transferedData = super.getTransferData(parFlavor);
     } catch (UnsupportedFlavorException e) {
-      if (parFlavor.equals(QuestionContainerDetailFlavor))
+      if (parFlavor.equals(QuestionContainerDetailFlavor)) {
         transferedData = m_questionContainer;
-      else
+      } else {
         throw e;
+      }
     }
     return transferedData;
   }
@@ -92,7 +93,7 @@ public class QuestionContainerSelection extends ClipboardSelection implements Se
     QuestionContainerPK questionContainerPK = m_questionContainer.getHeader().getPK();
     indexEntry =
         new IndexEntry(questionContainerPK.getComponentName(), "QuestionContainer",
-        questionContainerPK.getId());
+            questionContainerPK.getId());
     indexEntry.setTitle(m_questionContainer.getHeader().getName());
     return indexEntry;
   }
@@ -107,10 +108,11 @@ public class QuestionContainerSelection extends ClipboardSelection implements Se
     keyData.setTitle(m_questionContainer.getHeader().getName());
     keyData.setAuthor(m_questionContainer.getHeader().getCreatorId());
     keyData.setCreationDate(new Date(m_questionContainer.getHeader().getCreationDate()));
+
     keyData.setDesc(m_questionContainer.getHeader().getDescription());
     try {
-      keyData.setProperty("BEGINDATE", m_questionContainer.getHeader().getBeginDate().toString());
-      keyData.setProperty("ENDDATE", m_questionContainer.getHeader().getEndDate().toString());
+      keyData.setProperty("BEGINDATE", m_questionContainer.getHeader().getBeginDate());
+      keyData.setProperty("ENDDATE", m_questionContainer.getHeader().getEndDate());
     } catch (SKDException e) {
       SilverTrace.error("questionContainer", "QuestionContainerSelection.getKeyData",
           "questionContainer.ERROR_KEY_DATA", e);

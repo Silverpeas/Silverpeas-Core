@@ -68,8 +68,8 @@ public class ScoreDAO {
    */
   private static ScoreDetail getScoreFromResultSet(ResultSet rs, ScorePK scorePK)
       throws SQLException {
-    String id = new Integer(rs.getInt(1)).toString();
-    String fatherId = new Integer(rs.getInt(2)).toString();
+    String id = Integer.toString(rs.getInt(1));
+    String fatherId = Integer.toString(rs.getInt(2));
     String userId = rs.getString(3);
     int participationId = rs.getInt(4);
     int score = rs.getInt(5);
@@ -106,14 +106,14 @@ public class ScoreDAO {
 
     ScorePK scorePK = scoreDetail.getScorePK();
 
-    scorePK.setId(new Integer(newId).toString());
+    scorePK.setId(Integer.toString(newId));
 
     PreparedStatement prepStmt = null;
 
     try {
       prepStmt = con.prepareStatement(ADD_SCORE_FOR_QUESTION);
       prepStmt.setInt(1, newId);
-      prepStmt.setInt(2, new Integer(scoreDetail.getFatherId()).intValue());
+      prepStmt.setInt(2, Integer.parseInt(scoreDetail.getFatherId()));
       prepStmt.setString(3, scoreDetail.getUserId());
       prepStmt.setInt(4, scoreDetail.getParticipationId());
       prepStmt.setInt(5, scoreDetail.getScore());
@@ -145,8 +145,7 @@ public class ScoreDAO {
     try {
       prepStmt = con.prepareStatement(insertStatement);
       prepStmt.setString(1, scoreDetail.getSuggestion());
-      prepStmt.setInt(2, new Integer(scoreDetail.getScorePK().getId())
-          .intValue());
+      prepStmt.setInt(2, Integer.parseInt(scoreDetail.getScorePK().getId()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -164,7 +163,7 @@ public class ScoreDAO {
 
     try {
       prepStmt = con.prepareStatement(deleteStatement);
-      prepStmt.setInt(1, new Integer(scorePK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(scorePK.getId()));
       prepStmt.executeUpdate();
       prepStmt.close();
     } finally {
@@ -238,7 +237,7 @@ public class ScoreDAO {
 
     try {
       prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setInt(1, new Integer(userId).intValue());
+      prepStmt.setInt(1, Integer.parseInt(userId));
       rs = prepStmt.executeQuery();
       List<ScoreDetail> result = new ArrayList<ScoreDetail>();
       while (rs.next()) {
@@ -265,7 +264,7 @@ public class ScoreDAO {
 
     try {
       prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setInt(1, new Integer(fatherId).intValue());
+      prepStmt.setInt(1, Integer.parseInt(fatherId));
       prepStmt.setString(2, userId);
       rs = prepStmt.executeQuery();
       List<ScoreDetail> result = new ArrayList<ScoreDetail>();
@@ -298,7 +297,7 @@ public class ScoreDAO {
 
     try {
       prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setInt(1, new Integer(fatherId).intValue());
+      prepStmt.setInt(1, Integer.parseInt(fatherId));
       rs = prepStmt.executeQuery();
       List<ScoreDetail> result = new ArrayList<ScoreDetail>();
       while (rs.next()) {
@@ -326,7 +325,7 @@ public class ScoreDAO {
 
     try {
       prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setInt(1, new Integer(fatherId).intValue());
+      prepStmt.setInt(1, Integer.parseInt(fatherId));
       rs = prepStmt.executeQuery();
       List<ScoreDetail> result = new ArrayList<ScoreDetail>();
       while ((rs.next()) && (nbRecord < nbBestScores)) {
@@ -354,7 +353,7 @@ public class ScoreDAO {
 
     try {
       prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setInt(1, new Integer(fatherId).intValue());
+      prepStmt.setInt(1, Integer.parseInt(fatherId));
       rs = prepStmt.executeQuery();
       List<ScoreDetail> result = new ArrayList<ScoreDetail>();
       while ((rs.next()) && (nbRecord < nbWorstScores)) {
@@ -380,7 +379,7 @@ public class ScoreDAO {
 
     try {
       prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setInt(1, new Integer(fatherId).intValue());
+      prepStmt.setInt(1, Integer.parseInt(fatherId));
       rs = prepStmt.executeQuery();
       if (rs.next()) {
         return rs.getInt(1);
@@ -406,14 +405,11 @@ public class ScoreDAO {
 
       try {
         prepStmt = con.prepareStatement(AVERAGE_SCORE_FOR_QUESTION);
-        prepStmt.setInt(1, new Integer(fatherId).intValue());
+        prepStmt.setInt(1, Integer.parseInt(fatherId));
         rs = prepStmt.executeQuery();
         if (rs.next()) {
           sumPoints = rs.getInt(1);
-          average = Math
-              .round(((new Float(sumPoints).floatValue()) / (new Float(nbVoters)
-                  .floatValue())) * 10)
-              / (new Float(10).floatValue());
+          average = Math.round((sumPoints / nbVoters) * 10) / 10;
         }
       } finally {
         DBUtil.close(rs, prepStmt);
@@ -437,7 +433,7 @@ public class ScoreDAO {
 
     try {
       prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setInt(1, new Integer(fatherId).intValue());
+      prepStmt.setInt(1, Integer.parseInt(fatherId));
       prepStmt.setString(2, userId);
       prepStmt.setInt(3, participationId);
       rs = prepStmt.executeQuery();
@@ -462,7 +458,7 @@ public class ScoreDAO {
 
     try {
       prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setInt(1, new Integer(fatherId).intValue());
+      prepStmt.setInt(1, Integer.parseInt(fatherId));
       prepStmt.setString(2, userId);
       rs = prepStmt.executeQuery();
       if (rs.next()) {
@@ -496,7 +492,7 @@ public class ScoreDAO {
       ScoreDetail scoreDetail = it.next();
 
       if ((previousScore != null)
-          && (scoreDetail.getScore() == new Integer(previousScore).intValue())) {
+          && (scoreDetail.getScore() == Integer.parseInt(previousScore))) {
         nbPosition++;
       } else {
         position += nbPosition + 1;
@@ -507,7 +503,7 @@ public class ScoreDAO {
           && (scoreDetail.getParticipationId() == participationId)) {
         return position;
       }
-      previousScore = new Integer(scoreDetail.getScore()).toString();
+      previousScore = Integer.toString(scoreDetail.getScore());
 
     }
     return 0;

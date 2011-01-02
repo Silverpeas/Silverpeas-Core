@@ -51,7 +51,7 @@ public class QuestionResultDAO {
 
   public static final String QUESTIONRESULTCOLUMNNAMES =
       "qrId, questionId, userId, answerId, qrOpenAnswer, qrNbPoints, qrPollDate, qrElapsedTime, qrParticipationId";
-  private static SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy/MM/dd");
+  private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
 
   private static QuestionResult getQuestionResultFromResultSet(ResultSet rs, ForeignPK questionPK)
       throws SQLException {
@@ -60,10 +60,10 @@ public class QuestionResultDAO {
         "QuestionResultDAO.getQuestionResultFromResultSet()",
         "root.MSG_GEN_ENTER_METHOD",
         "questionPK =" + questionPK);
-    String id = new Integer(rs.getInt(1)).toString();
-    String questionId = new Integer(rs.getInt(2)).toString();
+    String id = Integer.toString(rs.getInt(1));
+    String questionId = Integer.toString(rs.getInt(2));
     String userId = rs.getString(3);
-    String answerId = new Integer(rs.getInt(4)).toString();
+    String answerId = Integer.toString(rs.getInt(4));
     String openAnswer = rs.getString(5);
     int nbPoints = rs.getInt(6);
     String pollDate = rs.getString(7);
@@ -109,7 +109,7 @@ public class QuestionResultDAO {
 
     try {
       prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setInt(1, new Integer(questionPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(questionPK.getId()));
       prepStmt.setString(2, userId);
       rs = prepStmt.executeQuery();
       List<QuestionResult> result = new ArrayList<QuestionResult>();
@@ -135,7 +135,7 @@ public class QuestionResultDAO {
 
     try {
       prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setInt(1, new Integer(answerId).intValue());
+      prepStmt.setInt(1, Integer.parseInt(answerId));
       rs = prepStmt.executeQuery();
       ArrayList<String> result = new ArrayList<String>();
       String userId;
@@ -178,7 +178,7 @@ public class QuestionResultDAO {
 
     try {
       prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setInt(1, new Integer(questionPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(questionPK.getId()));
       prepStmt.setString(2, userId);
       prepStmt.setInt(3, participationId);
       rs = prepStmt.executeQuery();
@@ -212,7 +212,7 @@ public class QuestionResultDAO {
 
     try {
       prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setInt(1, new Integer(questionPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(questionPK.getId()));
       rs = prepStmt.executeQuery();
       List<QuestionResult> result = new ArrayList<QuestionResult>();
       while (rs.next()) {
@@ -251,7 +251,7 @@ public class QuestionResultDAO {
 
     try {
       prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setInt(1, new Integer(questionPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(questionPK.getId()));
       prepStmt.setInt(2, participationId);
       rs = prepStmt.executeQuery();
       List<QuestionResult> result = new ArrayList<QuestionResult>();
@@ -274,7 +274,6 @@ public class QuestionResultDAO {
         "questionResult =" + result);
 
     int newId = 0;
-    String tableName = new QuestionResultPK("", result.getQuestionPK()).getTableName();
     String questionId = result.getQuestionPK().getId();
     String answerId = result.getAnswerPK().getId();
     String userId = result.getUserId();
@@ -290,7 +289,7 @@ public class QuestionResultDAO {
 
     try {
       /* Recherche de la nouvelle PK de la table */
-      newId = DBUtil.getNextId(tableName, "qrId");
+      newId = DBUtil.getNextId("sb_question_questionresult", "qrId");
     } catch (UtilException ue) {
       throw new QuestionResultRuntimeException(
           "QuestionResultDAO.setQuestionResultToUser()",
@@ -299,16 +298,16 @@ public class QuestionResultDAO {
           ue);
     }
 
-    String selectStatement = "insert into " + tableName + " values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    String selectStatement = "INSERT INTO sb_question_questionresult VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     PreparedStatement prepStmt = null;
 
     try {
       prepStmt = con.prepareStatement(selectStatement);
       prepStmt.setInt(1, newId);
-      prepStmt.setInt(2, new Integer(questionId).intValue());
+      prepStmt.setInt(2, Integer.parseInt(questionId));
       prepStmt.setString(3, userId);
-      prepStmt.setInt(4, new Integer(answerId).intValue());
+      prepStmt.setInt(4, Integer.parseInt(answerId));
       prepStmt.setString(5, openAnswer);
       prepStmt.setInt(6, nbPoints);
       prepStmt.setString(7, voteDate);
@@ -325,21 +324,19 @@ public class QuestionResultDAO {
 
   public static void deleteQuestionResultToQuestion(Connection con, ForeignPK questionPK)
       throws SQLException {
-    SilverTrace.info(
-        "questionResult",
+    SilverTrace.info("questionResult",
         "QuestionResultDAO.deleteQuestionResultToQuestion()",
-        "root.MSG_GEN_ENTER_METHOD",
-        "questionPK =" + questionPK);
-    QuestionResultPK questionResultPK = new QuestionResultPK("unknown", questionPK);
+        "root.MSG_GEN_ENTER_METHOD", "questionPK =" + questionPK);
+    //QuestionResultPK questionResultPK = new QuestionResultPK("unknown", questionPK);
 
     String deleteStatement =
-        "delete from " + questionResultPK.getTableName() + " where questionId = ? ";
+        "DELETE FROM sb_question_questionresult WHERE questionId = ? ";
 
     PreparedStatement prepStmt = null;
 
     try {
       prepStmt = con.prepareStatement(deleteStatement);
-      prepStmt.setInt(1, new Integer(questionPK.getId()).intValue());
+      prepStmt.setInt(1, Integer.parseInt(questionPK.getId()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
