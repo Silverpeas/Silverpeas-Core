@@ -51,92 +51,91 @@ public class Question implements Serializable {
   private Collection<QuestionResult> questionResults = null;
   private String style = null;
 
-  public Question(QuestionPK pk, String fatherId, String label,
-      String description, String clue, String image, String style, int type) {
-    setPK(pk);
-    setFatherId(fatherId);
-    setLabel(label);
-    setDescription(description);
-    setClue(clue);
-    setImage(image);
-    setStyle(style);
-    setType(type);
+  /**
+   * Question constructor
+   * @param pk
+   * @param fatherId
+   * @param label
+   * @param description
+   * @param clue
+   * @param image
+   * @param style
+   * @param type
+   */
+  public Question(QuestionPK pk, String fatherId, String label, String description, String clue,
+      String image, String style, int type) {
+    super();
+    this.pk = pk;
+    this.fatherId = fatherId;
+    this.label = label;
+    this.description = description;
+    this.clue = clue;
+    this.image = image;
+    this.style = style;
+    this.type = type;
   }
 
-  public Question(QuestionPK pk, String fatherId, String label,
-      String description, String clue, String image, boolean isQCM, int type,
-      boolean open) {
-    setPK(pk);
-    setFatherId(fatherId);
-    setLabel(label);
-    setDescription(description);
-    setClue(clue);
-    setImage(image);
-    setQCM(isQCM);
-    setType(type);
-    setOpen(open);
+  /**
+   * @param pk
+   * @param fatherId
+   * @param label
+   * @param description
+   * @param clue
+   * @param image
+   * @param isQCM
+   * @param type
+   * @param open
+   */
+  public Question(QuestionPK pk, String fatherId, String label, String description, String clue,
+      String image, boolean isQCM, int type, boolean open) {
+    this(pk, fatherId, label, description, clue, image, null, type);
+    this.qcm = isQCM;
+    this.isOpen = open;
   }
 
-  public Question(QuestionPK pk, String fatherId, String label,
-      String description, String clue, String image, boolean isQCM, int type,
-      boolean open, int cluePenalty, int maxTime, int displayOrder,
-      int nbPointsMin, int nbPointsMax, String style) {
-    setPK(pk);
-    setFatherId(fatherId);
-    setLabel(label);
-    setDescription(description);
-    setClue(clue);
-    setImage(image);
-    setQCM(isQCM);
-    setType(type);
-    setOpen(open);
-    setCluePenalty(cluePenalty);
-    setMaxTime(maxTime);
-    setDisplayOrder(displayOrder);
-    setNbPointsMin(nbPointsMin);
-    setNbPointsMax(nbPointsMax);
-    setStyle(style);
-  }
-
-  public Question(QuestionPK pk, String fatherId, String label,
-      String description, String clue, String image, boolean isQCM, int type,
-      boolean open, int cluePenalty, int maxTime, int displayOrder,
+  /**
+   * @param pk
+   * @param fatherId
+   * @param label
+   * @param description
+   * @param clue
+   * @param image
+   * @param type
+   * @param style
+   * @param cluePenalty
+   * @param maxTime
+   * @param displayOrder
+   * @param nbPointsMin
+   * @param nbPointsMax
+   */
+  public Question(QuestionPK pk, String fatherId, String label, String description, String clue,
+      String image, int type, String style, int cluePenalty, int maxTime, int displayOrder,
       int nbPointsMin, int nbPointsMax) {
-    setPK(pk);
-    setFatherId(fatherId);
-    setLabel(label);
-    setDescription(description);
-    setClue(clue);
-    setImage(image);
-    setQCM(isQCM);
-    setType(type);
-    setOpen(open);
-    setCluePenalty(cluePenalty);
-    setMaxTime(maxTime);
-    setDisplayOrder(displayOrder);
-    setNbPointsMin(nbPointsMin);
-    setNbPointsMax(nbPointsMax);
+    this(pk, fatherId, label, description, clue, image, style, type);
+    this.cluePenalty = cluePenalty;
+    this.maxTime = maxTime;
+    this.displayOrder = displayOrder;
+    this.nbPointsMin = nbPointsMin;
+    this.nbPointsMax = nbPointsMax;
   }
 
-  public Question(QuestionPK pk, String fatherId, String label,
-      String description, String clue, String image, int type, String style,
-      int cluePenalty, int maxTime, int displayOrder, int nbPointsMin,
-      int nbPointsMax) {
-    setPK(pk);
-    setFatherId(fatherId);
-    setLabel(label);
-    setDescription(description);
-    setClue(clue);
-    setImage(image);
-    // setQCM(isQCM);
-    setType(type);
-    // setOpen(open);
-    setCluePenalty(cluePenalty);
-    setMaxTime(maxTime);
-    setDisplayOrder(displayOrder);
-    setNbPointsMin(nbPointsMin);
-    setNbPointsMax(nbPointsMax);
-    setStyle(style);
+  public Question(QuestionPK pk, String fatherId, String label, String description, String clue,
+      String image, boolean isQCM, int type, boolean open, int cluePenalty, int maxTime,
+      int displayOrder, int nbPointsMin, int nbPointsMax) {
+    this(pk, fatherId, label, description, clue, image, isQCM, type, open);
+    this.cluePenalty = cluePenalty;
+    this.maxTime = maxTime;
+    this.displayOrder = displayOrder;
+    this.nbPointsMin = nbPointsMin;
+    this.nbPointsMax = nbPointsMax;
+  }
+
+  public Question(QuestionPK pk, String fatherId, String label, String description, String clue,
+      String image, boolean isQCM, int type, boolean open, int cluePenalty, int maxTime,
+      int displayOrder, int nbPointsMin, int nbPointsMax, String style) {
+    this(pk, fatherId, label, description, clue, image, isQCM, type, open, cluePenalty, maxTime,
+        displayOrder, nbPointsMin, nbPointsMax);
+    this.style = style;
   }
 
   public void setPK(QuestionPK pk) {
@@ -317,9 +316,9 @@ public class Question implements Serializable {
     return this.questionResults;
   }
 
+  @Override
   public String toString() {
-    StringBuffer result = new StringBuffer("Question {\n");
-
+    StringBuilder result = new StringBuilder("Question {\n");
     result.append("  getPK() = " + getPK() + "\n");
     result.append("  getLabel() = " + getLabel() + "\n");
     result.append("}");

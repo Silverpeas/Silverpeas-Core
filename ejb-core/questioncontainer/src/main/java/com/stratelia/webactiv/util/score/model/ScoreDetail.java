@@ -41,21 +41,19 @@ public class ScoreDetail implements java.io.Serializable {
   private ScorePK scorePK = null;
 
   /**
-   * @roseuid 3ACC381C00DD
+   * Default empty constructor
    */
-  public ScoreDetail(ScorePK scorePK, String fatherId, String userId,
-      int participationId, String participationDate, int score,
-      int elapsedTime, String suggestion, int nbParticipations, int position) {
-    setScorePK(scorePK);
-    setFatherId(fatherId);
-    setUserId(userId);
-    setParticipationId(participationId);
-    setParticipationDate(participationDate);
-    setScore(score);
-    setElapsedTime(elapsedTime);
-    setSuggestion(suggestion);
-    setNbParticipations(nbParticipations);
-    setPosition(position);
+  public ScoreDetail() {
+    super();
+  }
+
+  /**
+   * Unused constructor
+   * @param scorePK the score primary key
+   */
+  public ScoreDetail(ScorePK scorePK) {
+    this();
+    this.scorePK = scorePK;
   }
 
   /**
@@ -70,104 +68,102 @@ public class ScoreDetail implements java.io.Serializable {
    * @param suggestion
    * @see
    */
-  public ScoreDetail(ScorePK scorePK, String fatherId, String userId,
-      int participationId, String participationDate, int score,
-      int elapsedTime, String suggestion) {
-    setScorePK(scorePK);
-    setFatherId(fatherId);
-    setUserId(userId);
-    setParticipationId(participationId);
-    setParticipationDate(participationDate);
-    setScore(score);
-    setElapsedTime(elapsedTime);
-    setSuggestion(suggestion);
+  public ScoreDetail(ScorePK scorePK, String fatherId, String userId, int participationId,
+      String participationDate, int score, int elapsedTime, String suggestion) {
+    this(scorePK);
+    this.fatherId = fatherId;
+    this.userId = userId;
+    this.participationId = participationId;
+    this.participationDate = participationDate;
+    this.score = score;
+    this.elapsedTime = elapsedTime;
+    this.suggestion = suggestion;
   }
 
   /**
-   * @roseuid 3ACC3A1500A7
+   * Seems to be an unused constructor
+   * @deprecated
    */
-  public ScoreDetail(ScorePK scorePK) {
-    setScorePK(scorePK);
+  public ScoreDetail(ScorePK scorePK, String fatherId, String userId, int participationId,
+      String participationDate, int score, int elapsedTime, String suggestion,
+      int nbParticipations, int position) {
+    this(scorePK, fatherId, userId, participationId, participationDate, score, elapsedTime, suggestion);
+    this.nbParticipations = nbParticipations;
+    this.position = position;
   }
 
   /**
-   * @roseuid 3ACC3A300291
-   */
-  public ScoreDetail() {
-  }
-
-  /**
-   * @roseuid 3ACC35E80281
+   * @param scorePK the Score Primary Key to set
    */
   public void setScorePK(ScorePK scorePK) {
     this.scorePK = scorePK;
   }
 
   /**
-   * @roseuid 3ACC3625006C
+   * @param fatherId the father identifier to set
    */
   public void setFatherId(String fatherId) {
     this.fatherId = fatherId;
   }
 
   /**
-   * @roseuid 3ACC3646004B
+   * @param userId the user identifier to set
    */
   public void setUserId(String userId) {
     this.userId = userId;
   }
 
   /**
-   * @roseuid 3ACC3661032F
+   * @param participationId
    */
   public void setParticipationId(int participationId) {
     this.participationId = participationId;
   }
 
   /**
-   * @roseuid 3ACC3684009B
+   * @param participationDate the participation date to set
    */
   public void setParticipationDate(String participationDate) {
     this.participationDate = participationDate;
   }
 
   /**
-   * @roseuid 3ACC36970106
+   * @param score the score to set
    */
   public void setScore(int score) {
     this.score = score;
   }
 
   /**
-   * @roseuid 3ACC36AC0020
+   * @param elapsedTime the elapsed time to set
    */
   public void setElapsedTime(int elapsedTime) {
     this.elapsedTime = elapsedTime;
   }
 
   /**
-   * @roseuid 3ACC36C401AB
+   * @param suggestion the suggestion to set
    */
   public void setSuggestion(String suggestion) {
     this.suggestion = suggestion;
   }
 
   /**
-   * @roseuid 3ACC36DD01C5
+   * @param nbParticipations the number of participations to set
    */
   public void setNbParticipations(int nbParticipations) {
     this.nbParticipations = nbParticipations;
   }
 
   /**
-   * @roseuid 3ACC375D00ED
+   * @param position the postion to set
    */
   public void setPosition(int position) {
     this.position = position;
   }
 
   /**
-   * @roseuid 3ACC37790061
+   * @return ScorePK
    */
   public ScorePK getScorePK() {
     return scorePK;

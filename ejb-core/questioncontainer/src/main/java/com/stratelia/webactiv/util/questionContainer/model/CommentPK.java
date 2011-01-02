@@ -86,8 +86,9 @@ public class CommentPK extends WAPrimaryKey implements Serializable {
    * @since 1.0
    */
   public boolean equals(Object other) {
-    if (!(other instanceof CommentPK))
+    if (!(other instanceof CommentPK)) {
       return false;
+    }
     return (id.equals(((CommentPK) other).getId()))
         && (space.equals(((CommentPK) other).getSpace()))
         && (componentName.equals(((CommentPK) other).getComponentName()));

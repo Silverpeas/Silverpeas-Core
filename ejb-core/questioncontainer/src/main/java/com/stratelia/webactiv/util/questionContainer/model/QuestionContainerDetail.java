@@ -39,46 +39,63 @@ public class QuestionContainerDetail implements java.io.Serializable {
   private Collection<QuestionResult> votes = null; // QuestionResult Collection of Current user
 
   public QuestionContainerDetail() {
-    init(null, null, null, null);
+    super();
   }
 
   public QuestionContainerDetail(QuestionContainerHeader header,
       Collection<Question> questions, Collection<Comment> comments, Collection<QuestionResult> votes) {
-    init(header, questions, comments, votes);
+    super();
+    this.header = header;
+    this.questions = questions;
+    this.comments = comments;
+    this.votes = votes;
   }
 
-  private void init(QuestionContainerHeader header, Collection<Question> questions,
-      Collection<Comment> comments, Collection<QuestionResult> votes) {
-    setHeader(header);
-    setQuestions(questions);
-    setComments(comments);
-    setCurrentUserVotes(votes);
-  }
-
+  /**
+   * @param header the Question Container header to set
+   */
   public void setHeader(QuestionContainerHeader header) {
     this.header = header;
   }
 
+  /**
+   * @param questions the collection of questions to set
+   */
   public void setQuestions(Collection<Question> questions) {
     this.questions = questions;
   }
 
+  /**
+   * @param comments the collection of comments to set
+   */
   public void setComments(Collection<Comment> comments) {
     this.comments = comments;
   }
 
+  /**
+   * @param votes the collection of QuestionResult to set
+   */
   public void setCurrentUserVotes(Collection<QuestionResult> votes) {
     this.votes = votes;
   }
 
+  /**
+   * @return the question container header
+   */
   public QuestionContainerHeader getHeader() {
     return this.header;
   }
 
+  /**
+   * @return the collection of questions
+   */
   public Collection<Question> getQuestions() {
     return this.questions;
   }
 
+  /**
+   * @return the first question
+   */
   public Question getFirstQuestion() {
     Question question = null;
     Collection<Question> questions = getQuestions();
@@ -89,10 +106,16 @@ public class QuestionContainerDetail implements java.io.Serializable {
     return question;
   }
 
+  /**
+   * @return the collection of comments
+   */
   public Collection<Comment> getComments() {
     return this.comments;
   }
 
+  /**
+   * @return the collection of question result
+   */
   public Collection<QuestionResult> getCurrentUserVotes() {
     return this.votes;
   }

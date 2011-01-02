@@ -41,55 +41,42 @@ public class QuestionResult implements Serializable {
   private String voteDate = null;
   private int nbPoints = 0;
 
-  public QuestionResult(QuestionResultPK pk, ForeignPK questionPK,
-      AnswerPK answerPK, String userId, String openedAnswer, String voteDate) {
-    setQuestionResultPK(pk);
-    setAnswerPK(answerPK);
-    setQuestionPK(questionPK);
-    setUserId(userId);
-    setOpenedAnswer(openedAnswer);
-    setVoteDate(voteDate);
-    setElapsedTime(0);
-    setParticipationId(1);
-  }
-
-  public QuestionResult(QuestionResultPK pk, ForeignPK questionPK,
-      AnswerPK answerPK, String userId, String openedAnswer, String voteDate,
-      int elapsedTime, int participationId) {
-    setQuestionResultPK(pk);
-    setAnswerPK(answerPK);
-    setQuestionPK(questionPK);
-    setUserId(userId);
-    setOpenedAnswer(openedAnswer);
-    setVoteDate(voteDate);
-    setElapsedTime(elapsedTime);
-    setParticipationId(participationId);
-  }
-
-  public QuestionResult(QuestionResultPK pk, ForeignPK questionPK,
-      AnswerPK answerPK, String userId, String openedAnswer, int nbPoints,
-      String voteDate, int elapsedTime, int participationId) {
-    setQuestionResultPK(pk);
-    setAnswerPK(answerPK);
-    setQuestionPK(questionPK);
-    setUserId(userId);
-    setOpenedAnswer(openedAnswer);
-    setNbPoints(nbPoints);
-    setVoteDate(voteDate);
-    setElapsedTime(elapsedTime);
-    setParticipationId(participationId);
-  }
-
+  /**
+   * Smallest QuestionResult Constructor
+   * @param pk a QuestionResultPK object
+   * @param questionPK a ForeignPK object
+   * @param answerPK
+   * @param userId
+   * @param openedAnswer
+   */
   public QuestionResult(QuestionResultPK pk, ForeignPK questionPK,
       AnswerPK answerPK, String userId, String openedAnswer) {
-    setQuestionResultPK(pk);
-    setAnswerPK(answerPK);
-    setQuestionPK(questionPK);
-    setUserId(userId);
-    setOpenedAnswer(openedAnswer);
-    setVoteDate(null);
-    setElapsedTime(0);
-    setParticipationId(1);
+    super();
+    this.pk = pk;
+    this.answerPK = answerPK;
+    this.questionPK = questionPK;
+    this.userId = userId;
+    this.openedAnswer = openedAnswer;
+  }
+
+  public QuestionResult(QuestionResultPK pk, ForeignPK questionPK, AnswerPK answerPK,
+      String userId, String openedAnswer, String voteDate) {
+    this(pk, questionPK, answerPK, userId, openedAnswer);
+    this.voteDate = voteDate;
+  }
+
+  public QuestionResult(QuestionResultPK pk, ForeignPK questionPK, AnswerPK answerPK,
+      String userId, String openedAnswer, String voteDate, int elapsedTime, int participationId) {
+    this(pk, questionPK, answerPK, userId, openedAnswer, voteDate);
+    this.elapsedTime = elapsedTime;
+    this.participationId = participationId;
+  }
+
+  public QuestionResult(QuestionResultPK pk, ForeignPK questionPK, AnswerPK answerPK,
+      String userId, String openedAnswer, int nbPoints, String voteDate, int elapsedTime,
+      int participationId) {
+    this(pk, questionPK, answerPK, userId, openedAnswer, voteDate, elapsedTime, participationId);
+    this.nbPoints = nbPoints;
   }
 
   public void setQuestionResultPK(QuestionResultPK pk) {

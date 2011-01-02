@@ -24,8 +24,9 @@
 
 package com.stratelia.webactiv.util.answer.model;
 
-import com.silverpeas.util.ForeignPK;
 import java.io.Serializable;
+
+import com.silverpeas.util.ForeignPK;
 
 public class Answer implements Serializable {
   private static final long serialVersionUID = 7915608110782813687L;
@@ -45,48 +46,35 @@ public class Answer implements Serializable {
   private String questionLink;
 
   /* @deprecated */
-  public Answer(AnswerPK pk, ForeignPK questionPK, String label,
-      int nbPointsPos, int nbPointsNeg, boolean isSolution, String comment,
-      int nbVoters, boolean isOpened, String image) {
-    setQuestionPK(questionPK);
-    setLabel(label);
-    setNbVoters(nbVoters);
-    setPK(pk);
-    setNbPoints(0);
-    setIsSolution(isSolution);
-    setComment(comment);
-    setIsOpened(isOpened);
-    setImage(image);
+  public Answer(AnswerPK pk, ForeignPK questionPK, String label, int nbPointsPos, int nbPointsNeg,
+      boolean isSolution, String comment, int nbVoters, boolean isOpened, String image) {
+    this.questionPK = questionPK;
+    this.label = label;
+    this.nbVoters = nbVoters;
+    this.pk = pk;
+    this.isSolution = isSolution;
+    this.comment = comment;
+    this.isOpened = isOpened;
+    this.image = image;
   }
 
-  public Answer(AnswerPK pk, ForeignPK questionPK, String label, int nbPoints,
-      boolean isSolution, String comment, int nbVoters, boolean isOpened,
-      String image, String questionLink) {
-    setQuestionPK(questionPK);
-    setLabel(label);
-    setNbVoters(nbVoters);
-    setPK(pk);
-    setNbPoints(nbPoints);
-    setIsSolution(isSolution);
-    setComment(comment);
-    setIsOpened(isOpened);
-    setImage(image);
-    setQuestionLink(questionLink);
+  public Answer(AnswerPK pk, ForeignPK questionPK, String label, int nbPoints, boolean isSolution,
+      String comment, int nbVoters, boolean isOpened, String image, String questionLink) {
+    this.questionPK = questionPK;
+    this.label = label;
+    this.nbVoters = nbVoters;
+    this.pk = pk;
+    this.isSolution = isSolution;
+    this.comment = comment;
+    this.isOpened = isOpened;
+    this.image = image;
+    this.questionLink = questionLink;
+    this.nbPoints = nbPoints;
   }
 
-  public Answer(AnswerPK pk, ForeignPK questionPK, String label,
-      String comment, int nbVoters, boolean isOpened, String image,
-      String questionLink) {
-    setQuestionPK(questionPK);
-    setLabel(label);
-    setNbVoters(nbVoters);
-    setPK(pk);
-    setNbPoints(0);
-    setIsSolution(false);
-    setComment(comment);
-    setIsOpened(isOpened);
-    setImage(image);
-    setQuestionLink(questionLink);
+  public Answer(AnswerPK pk, ForeignPK questionPK, String label, String comment, int nbVoters,
+      boolean isOpened, String image, String questionLink) {
+    this(pk, questionPK, label, 0, false, comment, nbVoters, isOpened, image, questionLink);
   }
 
   public void setPK(AnswerPK pk) {
@@ -169,8 +157,9 @@ public class Answer implements Serializable {
     return this.questionLink;
   }
 
+  @Override
   public String toString() {
-    StringBuffer result = new StringBuffer("Answer {\n");
+    StringBuilder result = new StringBuilder("Answer {\n");
 
     result.append("  getQuestionPK() = " + getQuestionPK() + "\n");
     result.append("  getLabel() = " + getLabel() + "\n");
