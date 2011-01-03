@@ -4,6 +4,7 @@
  */
 package com.silverpeas.util;
 
+import javax.mail.internet.InternetAddress;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -44,5 +45,17 @@ public class MailUtilTest {
     String unauthorizedEmail = "toto@slashdot.com";
     result = MailUtil.getAuthorizedEmail(unauthorizedEmail);
     assertEquals("silverpeas@silverpeas.com", result);
+  }
+  
+  
+  @Test
+  public void testGetAuthorizedEmailAddress() throws Exception {
+    MailUtil.reloadConfiguration( "Silverpeas.COM,silverpeas.org");
+    String authorizedEmail = "toto@silverpeas.com";
+    InternetAddress result = MailUtil.getAuthorizedEmailAddress(authorizedEmail); 
+    assertEquals(new InternetAddress("\"toto\"<toto@silverpeas.com>"), result);
+    String unauthorizedEmail = "toto@slashdot.com";
+    result = MailUtil.getAuthorizedEmailAddress(unauthorizedEmail);
+    assertEquals(new InternetAddress("\"toto\"<silverpeas@silverpeas.com>"), result);
   }
 }

@@ -25,13 +25,17 @@ package com.silverpeas.util;
 
 import com.google.common.base.Splitter;
 import com.stratelia.webactiv.util.ResourceLocator;
+import java.io.UnsupportedEncodingException;
+import java.text.MessageFormat;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 
 /**
  *
  * @author ehugonnet
  */
 public class MailUtil {
-  
+
   public static final String SMTP_SERVER = "SMTPServer";
   public static final String SMTP_AUTH = "SMTPAuthentication";
   public static final String SMTP_PORT = "SMTPPort";
@@ -39,9 +43,6 @@ public class MailUtil {
   public static final String SMTP_PASSWORD = "SMTPPwd";
   public static final String SMTP_DEBUG = "SMTPDebug";
   public static final String SMTP_SECURE = "SMTPSecure";
-  
-  
-  
   static final Splitter DOMAIN_SPLITTER = Splitter.on(',').trimResults();
   private static final String mailhost;
   private static final boolean authenticated;
@@ -54,6 +55,7 @@ public class MailUtil {
   private static Iterable<String> domains;
   public static final ResourceLocator configuration = new ResourceLocator(
       "com.stratelia.silverpeas.notificationserver.channel.smtp.smtpSettings", "");
+  private static final MessageFormat emailFormatter = new MessageFormat("\"{0}\"<{1}>");
 
   static {
     mailhost = configuration.getString(SMTP_SERVER);
@@ -66,6 +68,7 @@ public class MailUtil {
     notificationAddress = configuration.getString("NotificationAddress");
     reloadConfiguration(configuration.getString("AuthorizedDomains", ""));
   }
+
   /**
    * Should be used only in tests.
    * @param domainsList the list of coma separated authorized domains for email sender addresses.
@@ -78,18 +81,56 @@ public class MailUtil {
     if (StringUtil.isDefined(email)) {
       String emailAddress = email.toLowerCase();
       for (String domain : domains) {
-        if(emailAddress.endsWith(domain.toLowerCase())) {
+        if (emailAddress.endsWith(domain.toLowerCase())) {
           return true;
         }
       }
     }
     return false;
   }
-  
+
+  public static synchronized InternetAddress getAuthorizedEmailAddress(String pFrom) throws
+      AddressException, UnsupportedEncodingException {
+    String senderAddress = getAuthorizedEmail(pFrom);
+    return new InternetAddress(emailFormatter.format(new String[]{pFrom.substring(0, pFrom.indexOf(
+          '@')), senderAddress}), true);
+  }
+
   public synchronized static String getAuthorizedEmail(String email) {
-    if(isDomainAuthorized(email)) {
+    if (isDomainAuthorized(email)) {
       return email;
     }
     return notificationAddress;
+  }
+
+  public static String getMailServer() {
+    return mailhost;
+  }
+
+  public static boolean isAuthenticated() {
+    return authenticated;
+  }
+
+  public static boolean isDebug() {
+    return debug;
+  }
+
+  public static String getLogin() {
+    return login;
+  }
+
+  public static String getPassword() {
+    return password;
+  }
+
+  public static int getPort() {
+    return port;
+  }
+
+  public static boolean isSecure() {
+    return secure;
+  }
+
+  private MailUtil() {
   }
 }
