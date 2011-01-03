@@ -237,12 +237,13 @@ table.fc-header {
 .fc-event,
 .fc-agenda .fc-event-time,
 .fc-event a {
-	-moz-border-radius:0.5em 0.5em 0.5em 0.5em;
-	border-style: solid;
-	background-color: #536ca6;
+	border-color:#536ca6;
+	border-style:solid;
 	color: #fff;           
 	}
-
+.fc-event a {
+	background-color: #536ca6;
+}
 	/* Use the 'className' CalEvent property and the following
 	 * example CSS to change event color on a per-event basis:
 	 *
@@ -271,9 +272,11 @@ table.fc-header {
 	cursor: pointer;
 	}
 
-.fc-event-time,
+.fc-event-time {
+	padding:0 3px 0 0px;
+	}
 .fc-event-title {
-	padding:0 3px 0 3px;
+	padding:0 0  0 3px;
 	}
 
 /* for fake rounded corners */
@@ -302,7 +305,6 @@ table.fc-header {
 	}
 
 
-
 /* Horizontal Events
 ------------------------------------------------------------------------*/
 
@@ -310,33 +312,33 @@ table.fc-header {
 	border-width: 1px 0;
 	margin-bottom: 1px;
 	}
-
+	
 .fc-event-hori a {
 	border-width: 0;
 	}
-
+	
 /* for fake rounded corners */
-
+	
 .fc-content .fc-corner-left {
 	margin-left: 1px;
 	}
-
+	
 .fc-content .fc-corner-left a {
 	margin-left: -1px;
 	border-left-width: 1px;
 	}
-
+	
 .fc-content .fc-corner-right {
 	margin-right: 1px;
 	}
-
+	
 .fc-content .fc-corner-right a {
 	margin-right: -1px;
 	border-right-width: 1px;
 	}
-
+	
 /* resizable */
-
+	
 .fc-event-hori .ui-resizable-e {
 	top: 0           !important; /* importants override pre jquery ui 1.7 styles */
 	right: -3px      !important;
@@ -344,7 +346,7 @@ table.fc-header {
 	height: 100%     !important;
 	cursor: e-resize;
 	}
-
+	
 .fc-event-hori .ui-resizable-w {
 	top: 0           !important;
 	left: -3px       !important;
@@ -352,13 +354,13 @@ table.fc-header {
 	height: 100%     !important;
 	cursor: w-resize;
 	}
-
+	
 .fc-event-hori .ui-resizable-handle {
 	_padding-bottom: 14px; /* IE6 had 0 height */
 	}
-
-
-
+	
+	
+	
 
 /* Month View, Basic Week View, Basic Day View
 ------------------------------------------------------------------------*/
@@ -388,6 +390,10 @@ table.fc-header {
 	float: right;
 	padding: 0 2px;
 	}
+	
+.fc-grid .fc-other-month {
+	background-color:#ECECEC;
+}
 
 .fc-grid .fc-other-month .fc-day-number {
 	opacity: 0.3;
