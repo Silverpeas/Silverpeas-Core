@@ -1,0 +1,95 @@
+/**
+ * Copyright (C) 2000 - 2009 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://repository.silverpeas.com/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package com.silverpeas.util;
+
+import com.google.common.base.Splitter;
+import com.stratelia.webactiv.util.ResourceLocator;
+
+/**
+ *
+ * @author ehugonnet
+ */
+public class MailUtil {
+  
+  public static final String SMTP_SERVER = "SMTPServer";
+  public static final String SMTP_AUTH = "SMTPAuthentication";
+  public static final String SMTP_PORT = "SMTPPort";
+  public static final String SMTP_LOGIN = "SMTPUser";
+  public static final String SMTP_PASSWORD = "SMTPPwd";
+  public static final String SMTP_DEBUG = "SMTPDebug";
+  public static final String SMTP_SECURE = "SMTPSecure";
+  
+  
+  
+  static final Splitter DOMAIN_SPLITTER = Splitter.on(',').trimResults();
+  private static final String mailhost;
+  private static final boolean authenticated;
+  private static final boolean secure;
+  private static final boolean debug;
+  private static final int port;
+  private static final String login;
+  private static final String password;
+  private static final String notificationAddress;
+  private static Iterable<String> domains;
+  public static final ResourceLocator configuration = new ResourceLocator(
+      "com.stratelia.silverpeas.notificationserver.channel.smtp.smtpSettings", "");
+
+  static {
+    mailhost = configuration.getString(SMTP_SERVER);
+    authenticated = configuration.getBoolean(SMTP_AUTH, false);
+    port = configuration.getInteger(SMTP_PORT, 25);
+    login = configuration.getString(SMTP_LOGIN);
+    password = configuration.getString(SMTP_PASSWORD);
+    debug = configuration.getBoolean(SMTP_DEBUG, false);
+    secure = configuration.getBoolean(SMTP_SECURE, false);
+    notificationAddress = configuration.getString("NotificationAddress");
+    reloadConfiguration(configuration.getString("AuthorizedDomains", ""));
+  }
+  /**
+   * Should be used only in tests.
+   * @param domainsList the list of coma separated authorized domains for email sender addresses.
+   */
+  static void reloadConfiguration(String domainsList) {
+    domains = DOMAIN_SPLITTER.split(domainsList);
+  }
+
+  public synchronized static boolean isDomainAuthorized(String email) {
+    if (StringUtil.isDefined(email)) {
+      String emailAddress = email.toLowerCase();
+      for (String domain : domains) {
+        if(emailAddress.endsWith(domain.toLowerCase())) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  
+  public synchronized static String getAuthorizedEmail(String email) {
+    if(isDomainAuthorized(email)) {
+      return email;
+    }
+    return notificationAddress;
+  }
+}
