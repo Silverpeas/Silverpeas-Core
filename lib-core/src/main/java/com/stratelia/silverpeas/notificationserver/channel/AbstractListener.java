@@ -106,13 +106,10 @@ public abstract class AbstractListener implements INotificationServerChannel, Me
    * send
    */
   protected void processMessage(Message msg) throws NotificationServerException {
-    NotificationData nd;
-
     extractData(msg);
-    nd = NotificationServerUtil.convertXMLToNotificationData(m_payload);
+    NotificationData nd = NotificationServerUtil.convertXMLToNotificationData(m_payload);
     if (nd != null) {
-      SilverTrace.info("notificationServer",
-          "AbstractListener.processMessage()",
+      SilverTrace.info("notificationServer", "AbstractListener.processMessage()",
           "notificationServer.INFO_PROCESS_MESSAGE");
       nd.traceObject();
     }
