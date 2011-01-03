@@ -113,8 +113,8 @@ public class SPDesktopServlet extends HttpServlet {
 
     String spaceHomePage = null;
     String spaceId = request.getParameter("SpaceId");
-    request.getSession().setAttribute("Silverpeas_Portlet_SpaceId", spaceId);
     if (StringUtil.isDefined(spaceId)) {
+      request.getSession().setAttribute("Silverpeas_Portlet_SpaceId", spaceId);
       spaceHomePage = getSpaceHomepage(spaceId, request);
     }
 
@@ -206,12 +206,14 @@ public class SPDesktopServlet extends HttpServlet {
       String portletWindowName) {
     HttpSession session = request.getSession(true);
     PortletWindowData portletWindowData = null;
+    @SuppressWarnings("unchecked")
     Map<String, SortedSet<PortletWindowData>> portletWindowContents =
-        (Map) session.getAttribute(DesktopConstants.PORTLET_WINDOWS);
+        (Map<String, SortedSet<PortletWindowData>>) session.getAttribute(
+        DesktopConstants.PORTLET_WINDOWS);
     boolean found = false;
     if (portletWindowContents != null) {
-      Set set = portletWindowContents.entrySet();
-      Iterator<Map.Entry> setItr = set.iterator();
+      Set<Map.Entry<String, SortedSet<PortletWindowData>>> set = portletWindowContents.entrySet();
+      Iterator<Map.Entry<String, SortedSet<PortletWindowData>>> setItr = set.iterator();
       while (setItr.hasNext()) {
         Map.Entry<String, SortedSet<PortletWindowData>> mapEntry = setItr.next();
         SortedSet<PortletWindowData> portletWindowDataSet = mapEntry.getValue();
@@ -367,10 +369,9 @@ public class SPDesktopServlet extends HttpServlet {
       portletContent.setPortletWindowMode(getCurrentPortletWindowMode(request, portletWindowName));
       portletContent
           .setPortletWindowState(getCurrentPortletWindowState(request, portletWindowName));
-      StringBuffer buffer = null;
       String title = portletContent.getDefaultTitle();
       Map portletContents = new HashMap();
-      portletContents.put(DesktopConstants.PORTLET_CONTENT, buffer);
+      portletContents.put(DesktopConstants.PORTLET_CONTENT, null);
       portletContents.put(DesktopConstants.PORTLET_TITLE, title);
       portletTitlesMap.put(portletWindowName, portletContents);
     }
@@ -385,8 +386,7 @@ public class SPDesktopServlet extends HttpServlet {
    * @return a Map of PortletWindowData for the portlet windows
    */
   private Map<String, SortedSet<PortletWindowData>> getPortletWindowContents(
-      HttpServletRequest request,
-      Map portletContents, PortletRegistryContext portletRegistryContext) {
+      HttpServletRequest request, Map portletContents, PortletRegistryContext portletRegistryContext) {
     Iterator itr = portletContents.keySet().iterator();
     String portletWindowName;
     SortedSet<PortletWindowData> portletWindowContentsThin = new TreeSet<PortletWindowData>();
