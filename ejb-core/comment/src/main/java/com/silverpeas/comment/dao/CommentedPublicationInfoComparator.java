@@ -24,12 +24,17 @@
 
 package com.silverpeas.comment.dao;
 
+import com.silverpeas.comment.model.CommentedPublicationInfo;
 import java.util.Comparator;
 
-public class CommentInfoComparator implements Comparator<CommentInfo> {
+/**
+ * A comparator of commented publication information instances.
+ * The comparator compares two commented publications by their number of comments.
+ */
+public class CommentedPublicationInfoComparator implements Comparator<CommentedPublicationInfo> {
 
   @Override
-  public int compare(CommentInfo o1, CommentInfo o2) {
+  public int compare(CommentedPublicationInfo o1, CommentedPublicationInfo o2) {
     return o2.getCommentCount() - o1.getCommentCount();
   }
 

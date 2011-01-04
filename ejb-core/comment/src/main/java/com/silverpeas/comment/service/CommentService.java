@@ -28,6 +28,7 @@ import com.silverpeas.comment.dao.CommentDAO;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
+import com.silverpeas.comment.model.CommentedPublicationInfo;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -36,6 +37,7 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
+import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -188,7 +190,7 @@ public class CommentService {
    * @param fromPK the identifier of the source publication.
    * @param toPK the identifier of the destination publication.
    */
-  public void moveAndReindexComments(final ForeignPK fromPK, final ForeignPK toPK) {
+  public void moveAndReindexComments(final WAPrimaryKey fromPK, final WAPrimaryKey toPK) {
     moveComments(fromPK, toPK);
     indexAllCommentsOnPublication(toPK);
   }
@@ -242,6 +244,37 @@ public class CommentService {
       comment.setOwner(getUserName(comment));
     }
     return vComments;
+  }
+
+  /**
+   * Gets information about the commented publications among the specified ones. The publication
+   * information are returned ordered down to the lesser comment publication.
+   * @param pks a collection of primary keys refering the publications to get information and to
+   * order by comments count.
+   * @return an ordered list of information about the most commented publication. The list is
+   * sorted by their comments count in a descendent order.
+   */
+  public List<CommentedPublicationInfo> getMostCommentedPublicationsInfo(final List<WAPrimaryKey> pks) {
+    return  getCommentDAO().getMostCommentedPublications(pks);
+  }
+
+  /**
+   * Gets information about all the commented publications in Silverpeas. The publication
+   * information are returned ordered down to the lesser comment publication.
+   * @return an ordered list of information about the most commented publication. The list is
+   * sorted by their comments count in a descendent order.
+   */
+  public List<CommentedPublicationInfo> getAllMostCommentedPublicationsInfo() {
+    return  getCommentDAO().getAllMostCommentedPublications();
+  }
+
+  /**
+   * Gets the count of comments on the publication identified by the specified identifier.
+   * @param pk the identifier of the publication.
+   * @return the number of comments on the publication.
+   */
+  public int getCommentsCountOnPublication(final WAPrimaryKey pk) {
+    return getCommentDAO().getCommentsCountByForeignKey(new ForeignPK(pk));
   }
 
   /**

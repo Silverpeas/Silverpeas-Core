@@ -21,28 +21,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.comment.dao.jdbc;
 
 import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.comment.dao.CommentDAO;
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.comment.model.Comment;
-import com.silverpeas.comment.dao.CommentInfo;
-import com.silverpeas.comment.dao.CommentInfoComparator;
+import com.silverpeas.comment.model.CommentedPublicationInfo;
+import com.silverpeas.comment.dao.CommentedPublicationInfoComparator;
 import com.silverpeas.comment.model.CommentPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import org.springframework.stereotype.Repository;
 
@@ -127,7 +126,7 @@ public class JDBCCommentDAO implements CommentDAO {
   }
 
   @Override
-  public Comment getComment(CommentPK pk)  {
+  public Comment getComment(CommentPK pk) {
     Connection con = openConnection();
     Comment comment;
     try {
@@ -147,13 +146,14 @@ public class JDBCCommentDAO implements CommentDAO {
   }
 
   @Override
-  public List<CommentInfo> getAllMostCommentedPublications() {
+  public List<CommentedPublicationInfo> getAllMostCommentedPublications() {
     Connection con = openConnection();
     try {
       JDBCCommentRequester commentDAO = getCommentDAO();
       return commentDAO.getMostCommentedAllPublications(con);
     } catch (Exception e) {
-      throw new CommentRuntimeException(getClass().getSimpleName() + ".getMostCommentedAllPublications()",
+      throw new CommentRuntimeException(getClass().getSimpleName()
+          + ".getMostCommentedAllPublications()",
           SilverpeasRuntimeException.FATAL,
           "comment.GET_COMMENT_FAILED",
           e);
@@ -163,27 +163,23 @@ public class JDBCCommentDAO implements CommentDAO {
   }
 
   @Override
-  public List<CommentInfo> getMostCommentedPublications(final Collection<ForeignPK> pks, int commentsCount) {
-    List<CommentInfo> comments = new ArrayList<CommentInfo>();
+  public List<CommentedPublicationInfo> getMostCommentedPublications(final List<WAPrimaryKey> pks) {
+    List<CommentedPublicationInfo> commentedPubs = new ArrayList<CommentedPublicationInfo>();
     Connection con = openConnection();
     JDBCCommentRequester commentDAO = getCommentDAO();
     if (pks != null && !pks.isEmpty()) {
       try {
-        for (ForeignPK foreignPk : pks) {
-          comments.add(new CommentInfo(commentDAO.getCommentsCount(con,
-              foreignPk), foreignPk.getInstanceId(), foreignPk.getId()));
+        for (WAPrimaryKey pubKey : pks) {
+          commentedPubs.add(new CommentedPublicationInfo(pubKey.getId(), pubKey.getInstanceId(),
+              commentDAO.getCommentsCount(con, pubKey)));
         }
-        Collections.sort(comments, new CommentInfoComparator());
-        if (comments.size() > commentsCount) {
-          comments.subList(0, commentsCount);
-        }
+        Collections.sort(commentedPubs, new CommentedPublicationInfoComparator());
       } catch (Exception e) {
-
       } finally {
         closeConnection(con);
       }
     }
-    return comments;
+    return commentedPubs;
   }
 
   @Override
@@ -229,8 +225,8 @@ public class JDBCCommentDAO implements CommentDAO {
   }
 
   private static String getUserName(Comment cmt) {
-    UserDetail userDetail = (new OrganizationController()).getUserDetail(String
-        .valueOf(cmt.getOwnerId()));
+    UserDetail userDetail = (new OrganizationController()).getUserDetail(String.valueOf(cmt.
+        getOwnerId()));
     return getUserName(userDetail);
   }
 

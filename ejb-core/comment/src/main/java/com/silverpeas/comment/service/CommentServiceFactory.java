@@ -24,6 +24,7 @@
 
 package com.silverpeas.comment.service;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -50,6 +51,12 @@ public class CommentServiceFactory {
    * @return a CommentService instance.
    */
   public CommentService getCommentService() {
+    if (commentService == null) {
+      SilverTrace.warn("comment", getClass().getSimpleName() + ".getCommentService()",
+          "EX_NO_MESSAGES", "IoC container not bootstrapped or no CommentService bean found! "
+          + "Creates explicitly the bean");
+      commentService = new CommentService();
+    }
     return commentService;
   }
 

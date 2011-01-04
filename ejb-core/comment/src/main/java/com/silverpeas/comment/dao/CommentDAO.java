@@ -24,10 +24,11 @@
 
 package com.silverpeas.comment.dao;
 
+import com.silverpeas.comment.model.CommentedPublicationInfo;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.util.ForeignPK;
-import java.rmi.RemoteException;
+import com.stratelia.webactiv.util.WAPrimaryKey;
 import java.util.Collection;
 import java.util.List;
 
@@ -56,7 +57,6 @@ public interface CommentDAO {
   /**
    * Deletes the comment identified by the specified primary key
    * @param pk
-   * @throws RemoteException
    */
   void removeComment(final CommentPK pk);
 
@@ -84,20 +84,19 @@ public interface CommentDAO {
   int getCommentsCountByForeignKey(final ForeignPK pk);
 
   /**
-   * Among all the publications identified by the specified foreign keys, gets the most commented ones.
-   * @param pks a collection of foreign keys refering some publications.
-   * @param commentsCount the number of comment above which a publication is considered as most commented.
+   * Among all the publications identified by the specified primary keys, gets the most commented ones.
+   * @param pks a list of primary keys refering some publications.
    * @return a list of information about the most commented publication (publication primary key,
    * number of comments, and so on).
    */
-  List<CommentInfo> getMostCommentedPublications(final Collection<ForeignPK> pks, int commentsCount);
+  List<CommentedPublicationInfo> getMostCommentedPublications(final List<WAPrimaryKey> pks);
 
   /**
    * Among all available commented publications, gets the most commented ones.
    * @return a list of information about the most commented publication (publication primary key,
    * number of comments, and so on).
    */
-  List<CommentInfo> getAllMostCommentedPublications();
+  List<CommentedPublicationInfo> getAllMostCommentedPublications();
 
   /**
    * Moves all the comments from the publication identified by the specified foreign key to the

@@ -23,7 +23,7 @@
  */
 package com.silverpeas.comment.dao.jdbc;
 
-import com.silverpeas.comment.dao.CommentInfo;
+import com.silverpeas.comment.model.CommentedPublicationInfo;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import java.sql.Connection;
@@ -187,13 +187,13 @@ public class JDBCCommentRequester {
     }
   }
 
-  public List<CommentInfo> getMostCommentedAllPublications(Connection con)
+  public List<CommentedPublicationInfo> getMostCommentedAllPublications(Connection con)
       throws SQLException {
     String select_query = "SELECT COUNT(commentId) as nb_comment, foreignId, instanceId FROM "
         + "sb_comment_comment GROUP BY foreignId, instanceId ORDER BY nb_comment desc;";
     Statement prep_stmt = null;
     ResultSet rs = null;
-    List<CommentInfo> listPublisCommentsCount = new ArrayList<CommentInfo>();
+    List<CommentedPublicationInfo> listPublisCommentsCount = new ArrayList<CommentedPublicationInfo>();
     try {
       prep_stmt = con.createStatement();
       rs = prep_stmt.executeQuery(select_query);
@@ -201,8 +201,8 @@ public class JDBCCommentRequester {
         Integer countComment = Integer.valueOf(rs.getInt("nb_comment"));
         Integer foreignId = Integer.valueOf(rs.getInt("foreignId"));
         String instanceId = rs.getString("instanceId");
-        listPublisCommentsCount.add(new CommentInfo(countComment.intValue(), instanceId,
-            foreignId.toString()));
+        listPublisCommentsCount.add(new CommentedPublicationInfo(
+            foreignId.toString(), instanceId, countComment.intValue()));
       }
     } finally {
       DBUtil.close(rs, prep_stmt);
@@ -272,7 +272,7 @@ public class JDBCCommentRequester {
   public void deleteAllComments(Connection con, ForeignPK pk)
       throws SQLException {
     String delete_query = "DELETE FROM sb_comment_comment WHERE foreignId = ? AND instanceId = ? ";
-    PreparedStatement prep_stmt = null;    
+    PreparedStatement prep_stmt = null;
     try {
       prep_stmt = con.prepareStatement(delete_query);
       prep_stmt.setInt(1, Integer.parseInt(pk.getId()));

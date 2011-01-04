@@ -21,34 +21,53 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package com.silverpeas.comment.dao;
+package com.silverpeas.comment.model;
 
 import java.io.Serializable;
 
-public class CommentInfo implements Serializable {
+/**
+ * Short information about a commented publication.
+ */
+public class CommentedPublicationInfo implements Serializable {
 
   private static final long serialVersionUID = 4433090666272026427L;
   private int commentCount;
   private String componentId;
   private String elementId;
 
-  public CommentInfo(int commentCount, String componentId, String elementId) {
+  /**
+   * Constructs a new CommentedPublicationInfo instance.
+   * @param publicationId identifier of the commented publication.
+   * @param componentId identifier of the Silverpeas component to which the publication belongs.
+   * @param commentCount number of comments on the publucation.
+   */
+  public CommentedPublicationInfo(String publicationId, String componentId, int commentCount) {
     this.commentCount = commentCount;
     this.componentId = componentId;
-    this.elementId = elementId;
+    this.elementId = publicationId;
   }
 
+  /**
+   * Gets the number of comments on the publication.
+   * @return the comments count.
+   */
   public int getCommentCount() {
     return commentCount;
   }
 
+  /**
+   * Gets the identifier of the Silverpeas component to which the publication belongs.
+   * @return the Silverpeas component instance identifier.
+   */
   public String getComponentId() {
     return componentId;
   }
 
-  public String getElementId() {
+  /**
+   * Gets the identifier of the publication.
+   * @return the publication identifier.
+   */
+  public String getPublicationId() {
     return elementId;
   }
-
 }
