@@ -126,7 +126,7 @@ public class JDBCCommentRequester {
       prep_stmt.setString(3, cmt.getMessage());
       prep_stmt.setInt(4, Integer.parseInt(cmt.getForeignKey().getId()));
       prep_stmt.setString(5, cmt.getCommentPK().getComponentName());
-      prep_stmt.setString(6, cmt.getCommentPK().getId());
+      prep_stmt.setInt(6, Integer.parseInt(cmt.getCommentPK().getId()));
       prep_stmt.executeUpdate();
     } finally {
       DBUtil.close(prep_stmt);
