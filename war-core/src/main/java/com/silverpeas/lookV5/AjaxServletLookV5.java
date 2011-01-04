@@ -40,7 +40,7 @@ import javax.servlet.http.HttpSession;
 
 import com.silverpeas.external.filesharing.model.FileSharingInterface;
 import com.silverpeas.external.filesharing.model.FileSharingInterfaceImpl;
-import com.silverpeas.external.webConnections.dao.WebConnectionsImpl;
+import com.silverpeas.external.webConnections.dao.WebConnectionService;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
 import com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings;
 import com.silverpeas.look.LookHelper;
@@ -744,8 +744,8 @@ public class AjaxServletLookV5 extends HttpServlet {
       }
       // mes connexions
       if (readBoolean(settings, "webconnectionsVisible", true)) {
-        WebConnectionsInterface webConnections = new WebConnectionsImpl();
-        if (webConnections.getConnectionsByUser(userId).size() > 0) {
+        WebConnectionsInterface webConnections = new WebConnectionService();
+        if (webConnections.listWebConnectionsOfUser(userId).size() > 0) {
           writer.write("<item id=\"webConnections\" name=\""
               + EncodeHelper.escapeXml(message.getString("WebConnections"))
               + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""

@@ -41,7 +41,7 @@ import org.json.JSONObject;
 
 import com.silverpeas.external.filesharing.model.FileSharingInterface;
 import com.silverpeas.external.filesharing.model.FileSharingInterfaceImpl;
-import com.silverpeas.external.webConnections.dao.WebConnectionsImpl;
+import com.silverpeas.external.webConnections.dao.WebConnectionService;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
 import com.silverpeas.look.LookHelper;
 import com.silverpeas.util.StringUtil;
@@ -304,9 +304,9 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
       }
       // mes connexions
       if (helper.getSettings("webconnectionsVisible", true)) {
-        WebConnectionsInterface webConnections = new WebConnectionsImpl();
+        WebConnectionsInterface webConnections = new WebConnectionService();
         try {
-          if (webConnections.getConnectionsByUser(helper.getUserId()).size() > 0) {
+          if (webConnections.listWebConnectionsOfUser(helper.getUserId()).size() > 0) {
             JSONObject tool =
                 getToolAsJSONObject("webConnections", message.getString("WebConnections"),
                     URLManager.getURL(URLManager.CMP_WEBCONNECTIONS) + "Main");

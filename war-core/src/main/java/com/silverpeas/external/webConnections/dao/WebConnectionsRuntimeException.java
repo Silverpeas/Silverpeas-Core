@@ -24,18 +24,11 @@
 
 package com.silverpeas.external.webConnections.dao;
 
-import com.stratelia.webactiv.util.exception.*;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class WebConnectionsRuntimeException extends SilverpeasRuntimeException {
-  /**
-	 * 
-	 */
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = -5698912998591946797L;
 
-  /**
-   * --------------------------------------------------------------------------constructors
-   * constructors
-   */
   public WebConnectionsRuntimeException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }
@@ -55,9 +48,6 @@ public class WebConnectionsRuntimeException extends SilverpeasRuntimeException {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 
-  /**
-   * --------------------------------------------------------------------------getModule getModule
-   */
   public String getModule() {
     return "webConnections";
   }

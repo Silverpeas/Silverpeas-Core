@@ -40,14 +40,14 @@ import com.stratelia.webactiv.util.exception.UtilException;
 /**
  * @author
  */
-public class WebConnectionsImpl implements WebConnectionsInterface {
+public class WebConnectionService implements WebConnectionsInterface {
   private ConnectionDAO dao;
 
-  public WebConnectionsImpl() {
+  public WebConnectionService() {
     dao = new ConnectionDAO();
   }
 
-  public ConnectionDetail getConnection(String componentId, String userId) {
+  public ConnectionDetail getWebConnection(String componentId, String userId) {
     Connection con = initCon();
     try {
       return dao.getConnection(con, componentId, userId);
@@ -59,7 +59,7 @@ public class WebConnectionsImpl implements WebConnectionsInterface {
     }
   }
 
-  public ConnectionDetail getConnectionById(String connectionId) {
+  public ConnectionDetail getWebConnectionById(String connectionId) {
     Connection con = initCon();
     try {
       return dao.getConnectionById(con, connectionId);
@@ -71,7 +71,7 @@ public class WebConnectionsImpl implements WebConnectionsInterface {
     }
   }
 
-  public void createConnection(ConnectionDetail connection) {
+  public void createWebConnection(ConnectionDetail connection) {
     Connection con = initCon();
     try {
       dao.createConnection(con, connection);
@@ -83,7 +83,7 @@ public class WebConnectionsImpl implements WebConnectionsInterface {
     }
   }
 
-  public void deleteConnection(String connectionId) {
+  public void deleteWebConnection(String connectionId) {
     Connection con = initCon();
     try {
       dao.deleteConnection(con, connectionId);
@@ -95,7 +95,7 @@ public class WebConnectionsImpl implements WebConnectionsInterface {
     }
   }
 
-  public void updateConnection(String connectionId, String login, String password) {
+  public void updateWebConnection(String connectionId, String login, String password) {
     Connection con = initCon();
     try {
       dao.updateConnection(con, connectionId, login, password);
@@ -107,7 +107,7 @@ public class WebConnectionsImpl implements WebConnectionsInterface {
     }
   }
 
-  public List<ConnectionDetail> getConnectionsByUser(String userId) throws RemoteException {
+  public List<ConnectionDetail> listWebConnectionsOfUser(String userId) throws RemoteException {
     Connection con = initCon();
     try {
       return dao.getConnectionsByUser(con, userId);

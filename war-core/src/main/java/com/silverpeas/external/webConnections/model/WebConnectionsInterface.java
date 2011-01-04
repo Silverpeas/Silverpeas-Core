@@ -35,26 +35,26 @@ public interface WebConnectionsInterface {
    * @param userId : String
    * @return connection : ConnectionDetail
    */
-  public ConnectionDetail getConnection(String componentId, String userId);
+  public ConnectionDetail getWebConnection(String componentId, String userId);
 
   /**
    * get the connection corresponding to connectionId
    * @param connectionId : String
    * @return connection : ConnectionDetail
    */
-  public ConnectionDetail getConnectionById(String connectionId);
+  public ConnectionDetail getWebConnectionById(String connectionId);
 
   /**
    * create a new connection
    * @param connection : ConnectionDetail
    */
-  public void createConnection(ConnectionDetail connection);
+  public void createWebConnection(ConnectionDetail connection);
 
   /**
    * delete the connection corresponding to connectionId
    * @param connectionId : String
    */
-  public void deleteConnection(String connectionId);
+  public void deleteWebConnection(String connectionId);
 
   /**
    * update the connection corresponding to connectionId, with login and password
@@ -62,7 +62,7 @@ public interface WebConnectionsInterface {
    * @param login : String
    * @param password : String
    */
-  public void updateConnection(String connectionId, String login, String password);
+  public void updateWebConnection(String connectionId, String login, String password);
 
   /**
    * get all connections for the user corresponding to userId
@@ -70,6 +70,6 @@ public interface WebConnectionsInterface {
    * @return a list of ConnectionDetail
    * @throws RemoteException
    */
-  public List<ConnectionDetail> getConnectionsByUser(String userId) throws RemoteException;
+  public List<ConnectionDetail> listWebConnectionsOfUser(String userId) throws RemoteException;
 
 }

@@ -30,7 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.silverpeas.external.webConnections.dao.WebConnectionsImpl;
+import com.silverpeas.external.webConnections.dao.WebConnectionService;
 import com.silverpeas.external.webConnections.model.ConnectionDetail;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
 import com.silverpeas.util.StringUtil;
@@ -61,7 +61,7 @@ public class WebConnectionsSessionController extends AbstractComponentSessionCon
    */
   public ConnectionDetail getConnection(String componentId) {
     ConnectionDetail connection = null;
-    connection = getWebConnectionsInterface().getConnection(componentId, getUserId());
+    connection = getWebConnectionsInterface().getWebConnection(componentId, getUserId());
     if (connection != null) {
       addParamToConnection(connection);
     }
@@ -101,7 +101,7 @@ public class WebConnectionsSessionController extends AbstractComponentSessionCon
    */
   public ConnectionDetail getConnectionById(String connectionId) {
     ConnectionDetail connection = null;
-    connection = getWebConnectionsInterface().getConnectionById(connectionId);
+    connection = getWebConnectionsInterface().getWebConnectionById(connectionId);
     if (connection != null) {
       addParamToConnection(connection);
     }
@@ -115,7 +115,7 @@ public class WebConnectionsSessionController extends AbstractComponentSessionCon
    * @param password : String
    */
   public void updateConnection(String connectionId, String login, String password) {
-    getWebConnectionsInterface().updateConnection(connectionId, login, password);
+    getWebConnectionsInterface().updateWebConnection(connectionId, login, password);
   }
 
   /**
@@ -123,7 +123,7 @@ public class WebConnectionsSessionController extends AbstractComponentSessionCon
    * @param connectionId : String
    */
   public void deleteConnection(String connectionId) {
-    getWebConnectionsInterface().deleteConnection(connectionId);
+    getWebConnectionsInterface().deleteWebConnection(connectionId);
   }
 
   /**
@@ -132,7 +132,7 @@ public class WebConnectionsSessionController extends AbstractComponentSessionCon
    */
   public void createConnection(ConnectionDetail connection) {
     connection.setUserId(getUserId());
-    getWebConnectionsInterface().createConnection(connection);
+    getWebConnectionsInterface().createWebConnection(connection);
   }
 
   /**
@@ -142,7 +142,7 @@ public class WebConnectionsSessionController extends AbstractComponentSessionCon
    */
   public List<ConnectionDetail> getConnectionsByUser() throws RemoteException {
     List<ConnectionDetail> connections =
-        getWebConnectionsInterface().getConnectionsByUser(getUserId());
+        getWebConnectionsInterface().listWebConnectionsOfUser(getUserId());
     List<ConnectionDetail> newConnections = new ArrayList<ConnectionDetail>();
     Iterator<ConnectionDetail> it = connections.iterator();
     while (it.hasNext()) {
@@ -157,6 +157,6 @@ public class WebConnectionsSessionController extends AbstractComponentSessionCon
    * @return WebConnectionsInterface
    */
   private WebConnectionsInterface getWebConnectionsInterface() {
-    return new WebConnectionsImpl();
+    return new WebConnectionService();
   }
 }
