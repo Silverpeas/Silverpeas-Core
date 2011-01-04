@@ -24,43 +24,25 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
 <%@ page isELIgnored="false"%>
-<%@ page language="java" contentType="text/html; charset=UTF-8"%>
-<%@page import="com.silverpeas.external.webConnections.model.ConnectionDetail"%>
-<%@page import="com.silverpeas.util.StringUtil"%>
-<%@page import="java.util.Map"%>
-<%@page import="java.util.Set"%>
-<%@page import="java.util.Iterator"%>
-
-<%
-	// récupération des paramètres
-	ConnectionDetail connection = (ConnectionDetail) request.getAttribute("Connection");	
-	String methodType			= (String) request.getAttribute("Method");
-%>
-
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<script language="javascript">
-function sendForm() {
-	document.connectionForm.submit();
-}
-</script>		
-</head>
-<body onload="javascript:sendForm()">
-<form name="connectionForm" action="<%=connection.getUrl()%>" method="<%=methodType%>">
-	<%
-	Map param = connection.getParam();
-	Set keys = param.keySet();
-	Iterator iKeys = keys.iterator();
-	while (iKeys.hasNext()) {
-		String name = (String) iKeys.next();
-		String value = (String) param.get(name);
-		%>
-		<input type="hidden" name="<%=name%>" value="<%=value%>"/>
-	<% } %>
-</form>
-</body>
+  <head>
+    <title>_________________/ Silverpeas - Corporate portal organizer \_________________/</title>
+    <view:looknfeel />
+    <script language="javascript">
+      function sendForm() {
+        document.connectionForm.submit();
+      }
+    </script>		
+  </head>
+  <body onload="javascript:sendForm()">
+    <form name="connectionForm" action="<c:out value="${requestScope.Connection.url}"/>" method="<c:out value="${requestScope.Method}"/>">
+      <c:forEach items="${requestScope.Connection.entrySet}" var="param" >
+        <input type="hidden" name="<c:out value="${param.key}" />" value="<c:out value="${param.value}" />"/>
+      </c:forEach>
+    </form>
+  </body>
 </html>
