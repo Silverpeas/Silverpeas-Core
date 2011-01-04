@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.silvermail;
 
-public class SILVERMAILConstant {
+public interface SILVERMAILConstant {
   public static final String CHANNEL = "SILVERMAIL";
 
 }

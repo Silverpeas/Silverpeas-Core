@@ -12,7 +12,15 @@
   <packaging>ejb</packaging>
   <name>EJB Notification Channels</name>
 
-
+  <dependencies>
+    <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>lib-core</artifactId>
+      <version>${project.parent.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+  
   <build>
     <plugins>
       <plugin>

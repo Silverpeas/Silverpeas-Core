@@ -24,7 +24,8 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.smtp;
 
-public class SMTPConstant {
+public interface SMTPConstant {
+  
   public static final String CHANNEL = "SMTP";
 
   public static final String SECURE_TRANSPORT = "smtps";

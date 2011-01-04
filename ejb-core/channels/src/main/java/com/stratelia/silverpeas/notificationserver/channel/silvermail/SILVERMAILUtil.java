@@ -21,10 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.silverpeas.notificationserver.channel.silvermail;
 
 import java.util.Collection;
@@ -37,16 +33,16 @@ import com.stratelia.webactiv.util.ResourceLocator;
  * @version %I%, %G%
  */
 public class SILVERMAILUtil {
-  // private String language = "";
+
   private String userId = "";
   private ResourceLocator message = null;
 
   /**
    * Constructor declaration
+   * @param userId 
    * @see
    */
-  public SILVERMAILUtil(String userId, String language) {
-    // this.language = language;
+  public SILVERMAILUtil(String userId) {
     this.userId = userId;
   }
 
@@ -54,12 +50,12 @@ public class SILVERMAILUtil {
    * Method declaration
    * @param folderName
    * @return
+   * @throws SILVERMAILException 
    * @see
    */
-  public Collection getFolderMessageList(String folderName)
-      throws SILVERMAILException {
-    return SILVERMAILPersistence.getMessageOfFolder(Integer.parseInt(userId),
-        folderName);
+  public Collection<SILVERMAILMessage> getFolderMessageList(String folderName) throws
+      SILVERMAILException {
+    return SILVERMAILPersistence.getMessageOfFolder(Integer.parseInt(userId), folderName);
   }
 
   /**
@@ -71,9 +67,7 @@ public class SILVERMAILUtil {
   public String getString(String resName) {
     if (message == null) {
       return resName;
-    } else {
-      return message.getString(resName);
     }
+    return message.getString(resName);
   }
-
 }

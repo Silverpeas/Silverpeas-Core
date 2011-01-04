@@ -21,10 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.silverpeas.notificationserver.channel.silvermail;
 
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -34,11 +30,15 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * @author eDurand
  * @version 1.0
  */
-
 public class SILVERMAILException extends SilverpeasException {
+
+  private static final long serialVersionUID = 1266360603211222081L;
+
   /**
-   * -------------------------------------------------------------------------- constructor
-   * constructor
+   * 
+   * @param callingClass
+   * @param errorLevel
+   * @param message 
    */
   public SILVERMAILException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
@@ -52,8 +52,8 @@ public class SILVERMAILException extends SilverpeasException {
    * @param extraParams
    * @see
    */
-  public SILVERMAILException(String callingClass, int errorLevel,
-      String message, String extraParams) {
+  public SILVERMAILException(String callingClass, int errorLevel, String message, 
+      String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
@@ -65,8 +65,8 @@ public class SILVERMAILException extends SilverpeasException {
    * @param nested
    * @see
    */
-  public SILVERMAILException(String callingClass, int errorLevel,
-      String message, Exception nested) {
+  public SILVERMAILException(String callingClass, int errorLevel, String message, 
+      Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
@@ -79,14 +79,15 @@ public class SILVERMAILException extends SilverpeasException {
    * @param nested
    * @see
    */
-  public SILVERMAILException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
+  public SILVERMAILException(String callingClass, int errorLevel, String message, String extraParams,
+      Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 
   /**
    * -------------------------------------------------------------------------- getModule getModule
    */
+  @Override
   public String getModule() {
     return "silvermail";
   }

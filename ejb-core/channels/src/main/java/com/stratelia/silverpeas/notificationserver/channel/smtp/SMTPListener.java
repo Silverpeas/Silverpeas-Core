@@ -24,14 +24,13 @@
 package com.stratelia.silverpeas.notificationserver.channel.smtp;
 
 import java.util.Date;
-import java.util.NoSuchElementException;
 import java.util.Properties;
 
 import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-
+import static com.silverpeas.util.MailUtil.*;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.notificationserver.NotificationData;
@@ -42,32 +41,16 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.util.Map;
 
-public class SMTPListener extends AbstractListener {
+public class SMTPListener extends AbstractListener implements SMTPConstant {
+  
+  private static final long serialVersionUID = -241712070051475710L;
 
-  private String m_Host;
-  private String m_User;
-  private String m_Pwd;
-  private int m_Port;
-  private boolean m_SmtpAuthentication;
-  private boolean m_SmtpDebug;
-  private boolean isSmtpSecure = false;
 
   public SMTPListener() {
   }
 
   @Override
   public void ejbCreate() {
-    ResourceLocator mailerSettings = new ResourceLocator(
-        "com.stratelia.silverpeas.notificationserver.channel.smtp.smtpSettings", "");
-    m_Host = mailerSettings.getString("SMTPServer");
-    m_SmtpAuthentication = mailerSettings.getBoolean("SMTPAuthentication", false);
-    if (m_SmtpAuthentication) {
-      m_Port = Integer.parseInt(mailerSettings.getString("SMTPPort"));
-      m_User = mailerSettings.getString("SMTPUser");
-      m_Pwd = mailerSettings.getString("SMTPPwd");
-    }
-    m_SmtpDebug = mailerSettings.getBoolean("SMTPDebug", false);
-    isSmtpSecure = mailerSettings.getBoolean("SMTPSecure", false);
   }
 
   /**
@@ -147,14 +130,13 @@ public class SMTPListener extends AbstractListener {
     // retrieves system properties and set up Delivery Status Notification
     // @see RFC1891
     Transport transport = null;
-
     Properties properties = System.getProperties();
-    properties.put("mail.smtp.host", m_Host);
-    properties.put("mail.smtp.auth", String.valueOf(m_SmtpAuthentication));
+    properties.put("mail.smtp.host", getMailServer());
+    properties.put("mail.smtp.auth", String.valueOf(isAuthenticated()));
     javax.mail.Session session = javax.mail.Session.getInstance(properties, null);
-    session.setDebug(m_SmtpDebug); // print on the console all SMTP messages.
+    session.setDebug(isDebug()); // print on the console all SMTP messages.
     try {
-      InternetAddress fromAddress = new InternetAddress(pFrom);
+      InternetAddress fromAddress = getAuthorizedEmailAddress(pFrom);     
       InternetAddress[] toAddress = null;
       // parsing destination address for compliance with RFC822
       try {
@@ -167,7 +149,7 @@ public class SMTPListener extends AbstractListener {
       email.setFrom(fromAddress);
       email.setRecipients(javax.mail.Message.RecipientType.TO, toAddress);
       email.setHeader("Precedence", "list");
-      email.setHeader("List-ID", pFrom);
+      email.setHeader("List-ID", fromAddress.getAddress());
       String subject = pSubject;
       if (subject == null) {
         subject = "";
@@ -185,16 +167,16 @@ public class SMTPListener extends AbstractListener {
       email.setSentDate(new Date());
 
       // create a Transport connection (TCP)
-      if (isSmtpSecure) {
-        transport = session.getTransport(SMTPConstant.SECURE_TRANSPORT);
+      if (isSecure()) {
+        transport = session.getTransport(SECURE_TRANSPORT);
       } else {
-        transport = session.getTransport(SMTPConstant.SIMPLE_TRANSPORT);
+        transport = session.getTransport(SIMPLE_TRANSPORT);
       }
-      if (m_SmtpAuthentication) {
+      if (isAuthenticated()) {
         SilverTrace.info("smtp", "SMTPListner.sendEmail()",
-            "root.MSG_GEN_PARAM_VALUE", "m_Host = " + m_Host + " m_Port="
-            + m_Port + " m_User=" + m_User);
-        transport.connect(m_Host, m_Port, m_User, m_Pwd);
+            "root.MSG_GEN_PARAM_VALUE", "m_Host = " + getMailServer() + " m_Port="
+            + getPort() + " m_User=" + getLogin());
+        transport.connect(getMailServer(), getPort(), getLogin(), getPassword());
       } else {
         transport.connect();
       }

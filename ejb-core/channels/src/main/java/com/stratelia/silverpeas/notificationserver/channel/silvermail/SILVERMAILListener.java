@@ -36,15 +36,18 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.util.Map;
 
 public class SILVERMAILListener extends AbstractListener {
+  private static final long serialVersionUID = -6357231434570565933L;
 
   public SILVERMAILListener() {
   }
 
+  @Override
   public void ejbCreate() {
   }
 
   /**
    * listener of NotificationServer JMS message
+   * @param msg 
    */
   @Override
   public void onMessage(Message msg) {
@@ -54,29 +57,19 @@ public class SILVERMAILListener extends AbstractListener {
       processMessage(msg);
     } catch (NotificationServerException e) {
       SilverTrace.error("silvermail", "SILVERMAILListener.onMessage()",
-          "silvermail.EX_CANT_PROCESS_MSG", "JMS Message = " + msg.toString(),
-          e);
+          "silvermail.EX_CANT_PROCESS_MSG", "JMS Message = " + msg.toString(), e);
     }
   }
 
   @Override
-  public void send(NotificationData p_Message)
-      throws NotificationServerException {
+  public void send(NotificationData p_Message) throws NotificationServerException {
     try {
       Map<String, Object> keyValue = p_Message.getTargetParam();
-      String tmpSubjectString = (String) keyValue.get("SUBJECT"); // retrieves
-      // the SUBJECT
-      // key value.
-      String tmpSourceString = (String) keyValue.get("SOURCE"); // retrieves the
-      // SOURCE key
-      // value.
-      String tmpUrlString = (String) keyValue.get("URL"); // retrieves the URL
-      // key value.
-      Date tmpDate = (Date) keyValue.get("DATE"); // retrieves the DATE key
-      // value.
-
+      String tmpSubjectString = (String) keyValue.get("SUBJECT"); //retrieves the SUBJECT key value.
+      String tmpSourceString = (String) keyValue.get("SOURCE"); //retrieves the SOURCE key value.
+      String tmpUrlString = (String) keyValue.get("URL"); // retrieves the URL key value.
+      Date tmpDate = (Date) keyValue.get("DATE"); // retrieves the DATE key value.
       SILVERMAILMessage sm = new SILVERMAILMessage();
-
       sm.setUserId(Integer.parseInt(p_Message.getTargetReceipt()));
       sm.setSenderName(p_Message.getSenderName());
       sm.setSubject(tmpSubjectString);
