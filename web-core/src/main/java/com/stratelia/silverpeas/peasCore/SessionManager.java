@@ -103,7 +103,7 @@ public class SessionManager
   /**
    * Init attributes
    */
-  private void initSessionManager() {
+  private synchronized void initSessionManager() {
     ResourceBundle resources = null;
 
     try {
@@ -179,18 +179,15 @@ public class SessionManager
    * @param session
    * @see ComponentRequestRouter and ClipboardRequestRouter
    */
-  public void setLastAccess(HttpSession session) {
+  public synchronized void setLastAccess(HttpSession session) {
     SessionInfo si = userDataSessions.get(session.getId());
     if (si != null) {
-      si.m_DateLastAccess = new Date().getTime();
+      si.m_DateLastAccess = System.currentTimeMillis();
     } else {
-      SilverTrace.debug(
-          "peasCore",
-          "SessionManager.setLastAccess",
+      SilverTrace.debug("peasCore", "SessionManager.setLastAccess", 
           "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! - sessionId = "
           + session.getId());
     }
-    // reset previous notification
     userNotificationSessions.remove(session.getId());
   }
 
@@ -268,7 +265,7 @@ public class SessionManager
     removeSession(session.getId());
   }
 
-  public void removeSession(String sessionId) {
+  public synchronized void removeSession(String sessionId) {
     SessionInfo si = userDataSessions.get(sessionId);
     if (si != null) {
       removeSession(si);
@@ -282,7 +279,7 @@ public class SessionManager
     }
   }
 
-  protected void removeSession(SessionInfo si) {
+  protected synchronized void removeSession(SessionInfo si) {
     try {
       SilverTrace.debug("peasCore", "SessionManager.removeSession",
           "START on session=" + si.m_SessionId + " - " + si.getLog());
@@ -311,7 +308,7 @@ public class SessionManager
     }
   }
 
-  public SessionInfo getUserDataSession(String sessionId) {
+  public synchronized SessionInfo getUserDataSession(String sessionId) {
     return userDataSessions.get(sessionId);
   }
 
@@ -346,14 +343,12 @@ public class SessionManager
     }
   }
 
-  public void setIsAlived(HttpSession session) {
+  public synchronized void setIsAlived(HttpSession session) {
     SessionInfo si = userDataSessions.get(session.getId());
     if (si != null) {
-      si.m_DateIsAlive = new Date().getTime();
+      si.m_DateIsAlive = System.currentTimeMillis();
     } else {
-      SilverTrace.debug(
-          "peasCore",
-          "SessionManager.setIsAlived",
+      SilverTrace.debug("peasCore", "SessionManager.setIsAlived",
           "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! - sessionId = "
           + session.getId());
     }
@@ -363,7 +358,7 @@ public class SessionManager
    * Gets all the connected users and the duration of their session.
    * @return
    */
-  public Collection<SessionInfo> getConnectedUsersList() {
+  public synchronized Collection<SessionInfo> getConnectedUsersList() {
     return userDataSessions.values();
   }
 
@@ -403,7 +398,7 @@ public class SessionManager
    * @param currentDate the date when the method is called by the scheduler
    * @see SimpleScheduler for parameters, addSession, setLastAccess
    */
-  public void doSessionManagement(Date currentDate) {
+  public synchronized void doSessionManagement(Date currentDate) {
     try {
       long currentTime = currentDate.getTime();
 
@@ -475,7 +470,7 @@ public class SessionManager
    * This method remove and invalidates all sessions. The unique instance of the SessionManager will
    * be destroyed.
    */
-  public void shutdown() {
+  public synchronized void shutdown() {
     SilverTrace.debug("peasCore", "SessionManager.shutdown()", "");
     // Remove previous scheduled job
     SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
@@ -497,7 +492,7 @@ public class SessionManager
     myInstance = null;
   }
 
-  public void closeHttpSession(HttpSession session) {
+  public synchronized void closeHttpSession(HttpSession session) {
     SilverTrace.debug("peasCore", "SessionManager.closeHttpSession",
         "sesionId=" + session.getId());
     SessionInfo si = userDataSessions.get(session.getId());
