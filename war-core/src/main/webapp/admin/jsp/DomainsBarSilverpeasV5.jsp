@@ -42,9 +42,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<!-- Retrieve user menu display mode -->
+<%-- Retrieve user menu display mode --%>
 <c:set var="curHelper" value="${sessionScope.Silverpeas_LookHelper}" />
-<!-- Set resource bundle -->
+<%-- Set resource bundle --%>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle basename="com.silverpeas.lookSilverpeasV5.multilang.lookBundle"/>
 
