@@ -599,4 +599,49 @@
       <type>java.util.List</type>
     </attribute>
   </tag>
+  <tag>
+    <description>Simple tag to encode a java String into a Javascript String.</description>
+    <name>encodeJs</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.JavascriptEncoderTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>Java String</description>
+      <name>string</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to encode a java String into an HTML String.</description>
+    <name>encodeHtml</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.HtmlEncoderTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>Java String</description>
+      <name>string</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to encode a java String into a XML escaped String.</description>
+    <name>encodeXml</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.XmlEncoderTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>Java String</description>
+      <name>string</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
 </taglib>

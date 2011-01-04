@@ -36,7 +36,7 @@ import org.apache.commons.codec.binary.Base64;
  * @author lloiseau
  * @version 1.0
  */
-public class EncodeHelper extends Object {
+public class EncodeHelper {
 
   /**
    * Convert a java string to a javascript string Replace \,\n,\r and "
@@ -67,43 +67,7 @@ public class EncodeHelper extends Object {
   }
 
   public static String escapeXml(String javastring) {
-    if (javastring == null) {
-      return "";
-    }
-
-    StringBuilder sb = new StringBuilder(javastring.length());
-    for (int i = 0; i < javastring.length(); i++) {
-      char ch = javastring.charAt(i);
-      if (ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z' || ch >= '0' && ch <= '9') {
-        // safe
-        sb.append(ch);
-      } else if (Character.isWhitespace(ch)) {
-        // paranoid version: whitespaces are unsafe - escape
-        // conversion of (int)ch is naive
-        sb.append("&#").append((int) ch).append(";");
-      } else if (Character.isISOControl(ch)) {
-        // paranoid version:isISOControl which are not isWhitespace removed !
-        // do nothing do not include in output !
-      } else if (Character.isHighSurrogate(ch)) {
-        int codePoint;
-        if (i + 1 < javastring.length() && Character.isSurrogatePair(ch, javastring.charAt(i + 1))
-            && Character.isDefined(codePoint = (Character.toCodePoint(ch, javastring.charAt(i + 1))))) {
-          sb.append("&#").append(codePoint).append(";");
-        }
-        i++; //in both ways move forward
-      } else if (Character.isLowSurrogate(ch)) {
-        // wrong char[] sequence,
-        i++; // move forward,do nothing do not include in output !
-      } else {
-        if (Character.isDefined(ch)) {
-          // paranoid version
-          // the rest is unsafe, including <127 control chars
-          sb.append("&#").append((int) ch).append(";");
-        }
-        //do nothing do not include undefined in output!
-      }
-    }
-    return sb.toString();
+    return StringEscapeUtils.escapeXml(javastring);
   }
 
   /**
@@ -243,5 +207,8 @@ public class EncodeHelper extends Object {
     } catch (UnsupportedEncodingException ex) {
       return filename;
     }
+  }
+
+  private EncodeHelper() {
   }
 }
