@@ -239,7 +239,7 @@ table.fc-header {
 .fc-event a {
 	border-color:#536ca6;
 	border-style:solid;
-	color: #fff;           
+	color: #fff;
 	}
 .fc-event a {
 	background-color: #536ca6;
@@ -312,33 +312,33 @@ table.fc-header {
 	border-width: 1px 0;
 	margin-bottom: 1px;
 	}
-	
+
 .fc-event-hori a {
 	border-width: 0;
 	}
-	
+
 /* for fake rounded corners */
-	
+
 .fc-content .fc-corner-left {
 	margin-left: 1px;
 	}
-	
+
 .fc-content .fc-corner-left a {
 	margin-left: -1px;
 	border-left-width: 1px;
 	}
-	
+
 .fc-content .fc-corner-right {
 	margin-right: 1px;
 	}
-	
+
 .fc-content .fc-corner-right a {
 	margin-right: -1px;
 	border-right-width: 1px;
 	}
-	
+
 /* resizable */
-	
+
 .fc-event-hori .ui-resizable-e {
 	top: 0           !important; /* importants override pre jquery ui 1.7 styles */
 	right: -3px      !important;
@@ -346,7 +346,7 @@ table.fc-header {
 	height: 100%     !important;
 	cursor: e-resize;
 	}
-	
+
 .fc-event-hori .ui-resizable-w {
 	top: 0           !important;
 	left: -3px       !important;
@@ -354,13 +354,13 @@ table.fc-header {
 	height: 100%     !important;
 	cursor: w-resize;
 	}
-	
+
 .fc-event-hori .ui-resizable-handle {
 	_padding-bottom: 14px; /* IE6 had 0 height */
 	}
-	
-	
-	
+
+
+
 
 /* Month View, Basic Week View, Basic Day View
 ------------------------------------------------------------------------*/
@@ -379,6 +379,7 @@ table.fc-header {
 
 .fc .fc-grid td {
 	border-width: 1px 0 0 1px;
+    cursor: pointer;
 	}
 
 .fc-grid th.fc-leftmost,
@@ -390,7 +391,7 @@ table.fc-header {
 	float: right;
 	padding: 0 2px;
 	}
-	
+
 .fc-grid .fc-other-month {
 	background-color:#ECECEC;
 }
@@ -411,7 +412,7 @@ table.fc-header {
 /* event styles */
 
 .fc-grid .fc-event-time {
-	
+
 	}
 
 /* right-to-left */
@@ -459,8 +460,8 @@ table.fc-header {
 .fc .fc-agenda-body{
 	z-index:2;
 	overflow-x:hidden;
-	
-	} 
+
+	}
 .fc .fc-agenda-bg{
 	z-index:1;
 }
@@ -527,7 +528,9 @@ table.fc-header {
 	background-image: none; /* tall column, don't want repeating background image */
 	}
 
-
+.fc .fc-agenda-body td {
+  cursor: pointer;
+}
 
 /* Vertical Events
 ------------------------------------------------------------------------*/
@@ -604,5 +607,4 @@ table.fc-header {
 	text-align: center;
 	cursor: s-resize;
 	}
-
 
