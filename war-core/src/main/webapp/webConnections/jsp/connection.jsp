@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.com/legal/licensing"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,8 +39,11 @@
     </script>		
   </head>
   <body onload="javascript:sendForm()">
+    <c:set var="connection" value="${requestScope.Connection}" scope="page"/>
+    <c:set var="connectionParams" value="${connection.param}" scope="page"/>
+    <% pageContext.setAttribute("entries", ((java.util.Map)pageContext.getAttribute("connectionParams")).entrySet()); %>
     <form name="connectionForm" action="<c:out value="${requestScope.Connection.url}"/>" method="<c:out value="${requestScope.Method}"/>">
-      <c:forEach items="${requestScope.Connection.entrySet}" var="param" >
+      <c:forEach items="${pageScope.entries}" var="param" >
         <input type="hidden" name="<c:out value="${param.key}" />" value="<c:out value="${param.value}" />"/>
       </c:forEach>
     </form>
