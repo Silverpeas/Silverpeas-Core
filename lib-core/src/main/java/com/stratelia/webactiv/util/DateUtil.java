@@ -31,6 +31,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang.time.FastDateFormat;
 
 /**
@@ -55,6 +56,7 @@ public class DateUtil {
   public static final SimpleDateFormat DATETIME_PARSER;
   public static final FastDateFormat DATETIME_FORMATTER;
   public static final FastDateFormat ISO8601DATE_FORMATTER;
+  public static final FastDateFormat ISO8601DAY_FORMATTER;
   /**
    * Format and parse dates.
    */
@@ -71,6 +73,7 @@ public class DateUtil {
     TIME_PARSER.setLenient(false);
     TIME_FORMATTER = FastDateFormat.getInstance("HH:mm");
     ISO8601DATE_FORMATTER = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm");
+    ISO8601DAY_FORMATTER = FastDateFormat.getInstance("yyyy-MM-dd");
   }
 
   /**
@@ -552,6 +555,27 @@ public class DateUtil {
    */
   public static String formatAsISO8601Date(final Date date) {
     return ISO8601DATE_FORMATTER.format(date);
+  }
+
+  /**
+   * Formats the specified date according to the short ISO 8601 format (only the day date is rendered).
+   * @param date the date to format.
+   * @return a String representation of the date in one of the short ISO 8601 format (yyyy-MM-dd).
+   */
+  public static String formatAsISO8601Day(final Date date) {
+    return ISO8601DAY_FORMATTER.format(date);
+  }
+
+  /**
+   * Parses the specified ISO 8601 formatted date and returns it as a Date instance.
+   * @param date the date to parse (must satisfy one of the following pattern yyyy-MM-ddTHH:mm or
+   * yyyy-MM-dd).
+   * @return a date object, resulting of the parsing.
+   * @exception ParseException if the specified date is not in the one of the expected formats.
+   */
+  public static Date parseISO8601Date(final String date) throws ParseException {
+    return DateUtils.parseDate(date, new String[]{ ISO8601DATE_FORMATTER.getPattern(),
+      ISO8601DAY_FORMATTER.getPattern() });
   }
 
   private DateUtil() {
