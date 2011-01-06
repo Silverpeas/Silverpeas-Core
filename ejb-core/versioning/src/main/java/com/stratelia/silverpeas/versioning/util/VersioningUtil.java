@@ -47,7 +47,7 @@ import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.model.DocumentVersionPK;
 import com.stratelia.silverpeas.versioning.model.Reader;
 import com.stratelia.silverpeas.versioning.model.Worker;
-import com.stratelia.webactiv.SilverpeasRole;
+import static com.stratelia.webactiv.SilverpeasRole.*;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.Group;
@@ -80,10 +80,10 @@ public class VersioningUtil {
   public final static String NO_UPDATE_MODE = "0";
   public final static String UPDATE_DIRECT_MODE = "1";
   public final static String UPDATE_SHORTCUT_MODE = "2";
-  public static final String ADMIN = "admin";
-  public static final String PUBLISHER = "publisher";
-  public static final String READER = "user";
-  public static final String WRITER = "writer";
+  public static final String ADMIN = admin.toString();
+  public static final String PUBLISHER = publisher.toString();
+  public static final String READER = user.toString();
+  public static final String WRITER = writer.toString();
 
   public VersioningUtil() {
   }
@@ -196,11 +196,11 @@ public class VersioningUtil {
 
   public ArrayList getAllNoReader(Document document) throws RemoteException {
     noReaderMap.clear();
-    noReaderMap.putAll(getAllUsersForProfile(document, SilverpeasRole.publisher.toString()));
-    noReaderMap.putAll(getAllUsersForProfile(document, SilverpeasRole.admin.toString()));
+    noReaderMap.putAll(getAllUsersForProfile(document, publisher.toString()));
+    noReaderMap.putAll(getAllUsersForProfile(document, admin.toString()));
 
     ArrayList writers = new ArrayList();
-    writers.addAll(getAllUsersForProfile(document, SilverpeasRole.writer.toString()).values());
+    writers.addAll(getAllUsersForProfile(document, writer.toString()).values());
     int creator_id = getDocumentCreator(document.getPk());
     for (int i = 0; i < writers.size(); i++) {
       Reader user = (Reader) writers.get(i);
@@ -735,8 +735,8 @@ public class VersioningUtil {
   public ProfileInst getDocumentProfile(String role) throws RemoteException {
     ProfileInst profileInst = null;
     String documentId = getDocument().getPk().getId();
-    List profiles = getAdmin().getProfilesByObject(documentId,
-        ObjectType.DOCUMENT, getDocument().getInstanceId());
+    List profiles = getAdmin().getProfilesByObject(documentId, ObjectType.DOCUMENT.getCode(),
+        getDocument().getInstanceId());
     if (profiles != null && !profiles.isEmpty()) {
       if (!profiles.isEmpty()) {
         // Rights by file exists ?
@@ -785,9 +785,8 @@ public class VersioningUtil {
   public ArrayList getAccessListGroups(String role) throws RemoteException {
     if (role.equals(READER)) {
       return getVersioningBm().getReadersAccessListGroups(getComponentId());
-    } else {
-      return getVersioningBm().getWorkersAccessListGroups(getComponentId());
     }
+    return getVersioningBm().getWorkersAccessListGroups(getComponentId());
   }
 
   /**
@@ -795,10 +794,8 @@ public class VersioningUtil {
    * @param role
    * @return
    */
-  private ProfileInst getProfile(List profiles, String role) {
-    ProfileInst profile = null;
-    for (int p = 0; p < profiles.size(); p++) {
-      profile = (ProfileInst) profiles.get(p);
+  private ProfileInst getProfile(List<ProfileInst> profiles, String role) {
+    for (ProfileInst profile : profiles) {
       if (role.equals(profile.getName())) {
         return profile;
       }
@@ -817,7 +814,7 @@ public class VersioningUtil {
     if (!StringUtil.isDefined(profile.getId())) {
       // Create the profile
       profile.setObjectId(Integer.parseInt(documentId));
-      profile.setObjectType(ObjectType.DOCUMENT);
+      profile.setObjectType(ObjectType.DOCUMENT.getCode());
       profile.setComponentFatherId(getComponentId());
       profile.setGroupsAndUsers(sel.getSelectedSets(), sel.getSelectedElements());
       getAdmin().addProfileInst(profile);
@@ -830,15 +827,13 @@ public class VersioningUtil {
    * @return
    */
   public ProfileInst getTopicProfile(String role, String topicId) {
-    List profiles = getAdmin().getProfilesByObject(topicId, ObjectType.NODE,
+    List<ProfileInst> profiles = getAdmin().getProfilesByObject(topicId, ObjectType.NODE.getCode(),
         getComponentId());
-    for (int p = 0; profiles != null && p < profiles.size(); p++) {
-      ProfileInst profile = (ProfileInst) profiles.get(p);
+    for (ProfileInst profile : profiles) {
       if (profile.getName().equals(role)) {
         return profile;
       }
     }
-
     ProfileInst profile = new ProfileInst();
     profile.setName(role);
     return profile;

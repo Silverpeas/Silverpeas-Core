@@ -21,9 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.peasCore;
 
+import com.silverpeas.util.ComponentHelper;
 import java.util.Properties;
 
 import static com.silverpeas.util.StringUtil.*;
@@ -38,6 +38,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 public class URLManager {
   // List only available for bus-components (NOT FOR INSTANCIABLE COMPONENTS
   // !!!)
+
   public final static String CMP_ADMIN = "admin";
   public final static String CMP_AGENDA = "agenda";
   public final static String CMP_ATTACHMENT = "attachment";
@@ -51,8 +52,7 @@ public class URLManager {
   public final static String CMP_TREEVIEW = "treeview";
   public final static String CMP_WORKFLOW = "workflow";
   public final static String CMP_WYSIWYG = "wysiwyg";
-  public final static String CMP_SCHEDULE_EVENT= "scheduleEvent";
-
+  public final static String CMP_SCHEDULE_EVENT = "scheduleEvent";
   public final static String CMP_CLIPBOARD = "clipboard";
   public final static String CMP_NOTIFICATIONUSER = "notificationUser";
   public final static String CMP_COMMUNICATIONUSER = "communicationUser";
@@ -64,11 +64,9 @@ public class URLManager {
   public final static String CMP_JOBORGANIZATIONPEAS = "jobOrganizationPeas";
   public final static String CMP_JOBREPORTPEAS = "jobReportPeas";
   public final static String CMP_JOBTOOLSPEAS = "jobToolsPeas";
-
   public final static String CMP_SELECTIONPEAS = "selectionPeas";
   public final static String CMP_ALERTUSERPEAS = "alertUserPeas";
   public final static String CMP_GENERICPANELPEAS = "genericPanelPeas";
-
   public final static String CMP_SILVERSTATISTICSPEAS = "silverStatisticsPeas";
   public final static String CMP_PDC = "pdc";
   public final static String CMP_THESAURUS = "thesaurus";
@@ -78,18 +76,14 @@ public class URLManager {
   public final static String CMP_VERSIONINGPEAS = "versioningPeas";
   public final static String CMP_FILESHARING = "fileSharing";
   public final static String CMP_WEBCONNECTIONS = "webConnections";
-
   public final static String CMP_EXPERTLOCATORPEAS = "expertLocatorPeas";
-
   // For white pages only : this component have a 'BusIHM like' state
   public final static String CMP_WHITEPAGESPEAS = "whitePagesPeas";
   public final static String CMP_VSICPUZZLE = "vsicPuzzle";
   public final static String CMP_INFOLETTER = "infoLetter";
-
   public final static String CMP_JOBBACKUP = "jobBackup";
   public final static String CMP_TEMPLATEDESIGNER = "templateDesigner";
   public final static String CMP_MYPROFILE = "MyProfile";
-
   public final static int URL_SPACE = 0;
   public final static int URL_COMPONENT = 1;
   public final static int URL_PUBLI = 2;
@@ -100,21 +94,18 @@ public class URLManager {
   public final static int URL_MESSAGE = 7;
   public final static int URL_DOCUMENT = 8;
   public final static int URL_VERSION = 9;
-
   static Properties specialsURL = null;
   static Admin admin = null;
   static String httpMode = null;
   static boolean displayUniversalLinks = false;
 
   static {
-    ResourceLocator resources = new ResourceLocator(
-        "com.stratelia.silverpeas.peasCore.URLManager", "");
+    ResourceLocator resources = new ResourceLocator("com.stratelia.silverpeas.peasCore.URLManager",
+        "");
     specialsURL = resources.getProperties();
     admin = new Admin();
     httpMode = resources.getString("httpMode");
-
-    String universalLinks = resources.getString("displayUniversalLinks",
-        "false");
+    String universalLinks = resources.getString("displayUniversalLinks", "false");
     displayUniversalLinks = "true".equals(universalLinks);
   }
 
@@ -131,18 +122,16 @@ public class URLManager {
     if (!isDefined(sComponentName) && !isDefined(sComponentId)) {
       return "";
     }
-
     if (!isDefined(sureCompName)) {
       sureCompName = getComponentNameFromComponentId(sComponentId);
     }
     String specialString = specialsURL.getProperty(sureCompName);
     if (isDefined(specialString)) {
       return specialString;
-    } else {
-      // Build the standard path : /RcompName/CompId/
-      // Workaround for Container/Content !!!!!!!!!!!
-      return buildStandardURL(sureCompName, sComponentId, false);
     }
+    // Build the standard path : /RcompName/CompId/
+    // Workaround for Container/Content !!!!!!!!!!!
+    return buildStandardURL(sureCompName, sComponentId, false);
   }
 
   public static String getURL(String sComponentName) {
@@ -192,17 +181,19 @@ public class URLManager {
       if (componentName.equals("sources") || componentName.equals("whitePages")
           || componentName.equals("expertLocator")
           || componentName.equals("infoTracker")
-          || componentName.equals("documentation"))
+          || componentName.equals("documentation")) {
         standardURL = "/RpdcSearch/" + sComponentId
             + "/GlobalContentForward?contentURL=Consult?";
+      }
     } else {
       if (componentName.equals("sources") /*
-                                           * || componentName.equals("whitePages")
-                                           */
+           * || componentName.equals("whitePages")
+           */
           || componentName.equals("expertLocator")
           || componentName.equals("infoTracker")
-          || componentName.equals("documentation"))
+          || componentName.equals("documentation")) {
         standardURL = "/RpdcSearch/" + sComponentId + "/";
+      }
     }
     return standardURL;
   }
@@ -211,18 +202,7 @@ public class URLManager {
    * Returns kmelia for parameter kmelia23
    */
   public static String getComponentNameFromComponentId(String sClientComponentId) {
-    if (sClientComponentId == null || sClientComponentId.length() == 0)
-      return "";
-
-    StringBuffer componentName = new StringBuffer();
-    for (int i = 0; i < sClientComponentId.length(); i++) {
-      char c = sClientComponentId.charAt(i);
-      if (Character.isDigit(c))
-        return componentName.toString();
-      else
-        componentName.append(c);
-    }
-    return componentName.toString();
+    return ComponentHelper.getInstance().extractComponentName(sClientComponentId);
   }
 
   /**
@@ -231,8 +211,9 @@ public class URLManager {
   public static String getApplicationURL() {
     if (applicationURL == null) {
       applicationURL = GeneralPropertiesManager.getString("ApplicationURL");
-      if (applicationURL == null)
+      if (applicationURL == null) {
         applicationURL = "/silverpeas";
+      }
     }
     return applicationURL;
   }
@@ -240,7 +221,6 @@ public class URLManager {
   public static String getHttpMode() {
     return httpMode;
   }
-
   private static String applicationURL = null;
 
   /**
@@ -258,8 +238,9 @@ public class URLManager {
       boolean appendContext, String forumId) {
     // pour faire le permalien sur les messages des forums
     String url = "";
-    if (appendContext)
+    if (appendContext) {
       url = getApplicationURL();
+    }
     switch (type) {
       case URL_MESSAGE:
         url += "/ForumsMessage/" + id + "?ForumId=" + forumId;
@@ -272,8 +253,9 @@ public class URLManager {
       boolean appendContext) {
 
     String url = "";
-    if (appendContext)
+    if (appendContext) {
       url = getApplicationURL();
+    }
     switch (type) {
       case URL_SPACE:
         url += "/Space/" + id;
@@ -283,8 +265,9 @@ public class URLManager {
         break;
       case URL_PUBLI:
         url += "/Publication/" + id;
-        if (isDefined(componentId))
+        if (isDefined(componentId)) {
           url += "?ComponentId=" + componentId;
+        }
         break;
       case URL_TOPIC:
         url += "/Topic/" + id + "?ComponentId=" + componentId;

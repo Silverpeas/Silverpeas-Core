@@ -22,20 +22,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// TODO : reporter dans CVS (done)
 package com.stratelia.webactiv.util.node.ejb;
 
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.silverpeas.util.i18n.Translation;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodeI18NDetail;
 import com.stratelia.webactiv.util.node.model.NodeI18NPK;
 import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
-import com.stratelia.webactiv.util.exception.*;
-import com.stratelia.silverpeas.silvertrace.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * This is the Node Data Access Object.

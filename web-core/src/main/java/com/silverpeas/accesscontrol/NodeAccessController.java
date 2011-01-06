@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2000 - 2009 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
@@ -9,9 +9,9 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,21 +21,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.silverpeas.accesscontrol;
 
-package com.stratelia.webactiv.beans.admin;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.webactiv.beans.admin.ObjectType;
+import com.stratelia.webactiv.util.node.model.NodePK;
 
-public enum ObjectType {
-  SPACE("S"), INSTANCE("I"), GROUP("G"),OBJECT("O"), NODE("O"),DOCUMENT("D");
-  
-  private String code;
-  
-  ObjectType(String code) {
-    this.code = code;
-  }  
-  
-  public String getCode() {
-    return this.code;
+/**
+ *
+ * @author ehugonnet
+ */
+public class NodeAccessController implements AccessController<NodePK> {
+
+  @Override
+  public boolean isUserAuthorized(MainSessionController controller, String componentId,
+      NodePK object) throws Exception {
+    return controller.getOrganizationController().isObjectAvailable(Integer.parseInt(
+        object.getId()), ObjectType.NODE, componentId, controller.getUserId());
+
   }
-
-
 }

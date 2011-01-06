@@ -944,7 +944,7 @@ public final class Admin extends Object {
   /**
    * Return all the components of silverpeas read in the xmlComponent directory
    */
-  public Hashtable<String, WAComponent> getAllComponents() {
+  public Map<String, WAComponent> getAllComponents() {
     return Instanciateur.getWAComponents();
   }
 

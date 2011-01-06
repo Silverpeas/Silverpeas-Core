@@ -1400,16 +1400,15 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     ProfileInst profileInst = null;
     String documentId = getEditingDocument().getPk().getId();
     List<ProfileInst> profiles = getAdmin().getProfilesByObject(documentId,
-        ObjectType.DOCUMENT, getComponentId());
+        ObjectType.DOCUMENT.getCode(), getComponentId());
     if (profiles != null && !profiles.isEmpty()) {
       if (!profiles.isEmpty()) {
-        // Rights by file exists ?
         profileInst = getProfile(profiles, role);
       }
     }
     if (profileInst == null) {
       profileInst = new ProfileInst();
-      profileInst.setObjectType(ObjectType.DOCUMENT);
+      profileInst.setObjectType(ObjectType.DOCUMENT.getCode());
       profileInst.setObjectId(new Integer(documentId).intValue());
       profileInst.setComponentFatherId(getComponentId());
       profileInst.setName(role);
@@ -1425,8 +1424,8 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   public ProfileInst getCurrentProfile(String role) throws RemoteException {
     ProfileInst profileInst = null;
     String documentId = getEditingDocument().getPk().getId();
-    List<ProfileInst> profiles = getAdmin().getProfilesByObject(documentId, ObjectType.DOCUMENT,
-        getComponentId());
+    List<ProfileInst> profiles = getAdmin().getProfilesByObject(documentId, 
+        ObjectType.DOCUMENT.getCode(), getComponentId());
     if (profiles != null && !profiles.isEmpty()) {
       profileInst = getProfile(profiles, role);
     }
@@ -1472,7 +1471,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    */
   public ProfileInst getTopicProfile(String role, String topicId) {
     List<ProfileInst> profiles = getAdmin().getProfilesByObject(topicId,
-        ObjectType.NODE, getComponentId());
+        ObjectType.NODE.getCode(), getComponentId());
     for (ProfileInst profile : profiles) {
       if (profile.getName().equals(role)) {
         return profile;

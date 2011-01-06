@@ -384,7 +384,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
   }
 
   /** Return all the components of silverpeas read in the xmlComponent directory */
-  public Hashtable<String, WAComponent> getAllComponents() {
+  public Map<String, WAComponent> getAllComponents() {
     SilverTrace.info("admin", "AdminController.getAllComponents",
         "root.MSG_GEN_ENTER_METHOD");
     try {

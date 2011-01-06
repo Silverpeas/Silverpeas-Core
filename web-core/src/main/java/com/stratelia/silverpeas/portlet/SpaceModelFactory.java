@@ -21,10 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.silverpeas.portlet;
 
 /**
@@ -36,9 +32,8 @@ package com.stratelia.silverpeas.portlet;
  * @author       Eric BURGEL
  * @version 1.0
  */
-
+import com.silverpeas.util.StringUtil;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Iterator;
 
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -58,6 +53,8 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The SpaceModelFactory is a class used for its statics methods. its construct and maintain the
@@ -66,85 +63,59 @@ import com.stratelia.webactiv.util.exception.UtilException;
  * the portlets (min, max or normal) either.
  */
 public class SpaceModelFactory {
-  static protected OrganizationController oc = null;
-  static protected Hashtable compoDescriptors = null;
 
-  static {
-    oc = new OrganizationController();
-    compoDescriptors = (new AdminController(null)).getAllComponents();
-  }
-
-  // private static java.util.HashMap spaceModels ;
-
-  /*
-   * static private DataSource dataSource ; // Static initializer : i.e. executed only one time for
-   * the class static { try { // Get the initialContext Context ctx = new InitialContext(); // Look
-   * up myDataSource dataSource = (DataSource) ctx.lookup ("jdbc/Silverpeas"); //Create a connection
-   * object } catch(NamingException e) { e.printStackTrace(); } }
-   */
+  static final protected OrganizationController oc = new OrganizationController();
+  static final protected Map<String, WAComponent> compoDescriptors = (new AdminController(null)).
+      getAllComponents();
 
   /**
    * As the SpaceModelFactory is a class used for its statics methods, It doesn't need any
    * contructor
    */
-
   private SpaceModelFactory() {
   }
 
   /**
    * Read a spaceModel from database and construct a SpaceModel in memory
+   * @param os 
    * @param aSpaceId the space database Id
    * @return a spaceModel
+   * @throws PortletException  
    */
-  public static SpaceModel getSpaceModel(PortletSchema os, String aSpaceId)
-      throws PortletException {
-    SpaceModel sm;
+  public static SpaceModel getSpaceModel(PortletSchema os, String aSpaceId) throws PortletException {
     // Test the arguments
-    if (aSpaceId == null) {
+    if (!StringUtil.isDefined(aSpaceId)) {
       throw new PortletException(
           "SpaceModelFactory.getSpaceModel(PortletSchema os, String aSpaceId)",
           SilverpeasException.ERROR, "portlet.EX_SPACE_NULL");
-    }
-    if (aSpaceId.equalsIgnoreCase("")) {
-      throw new PortletException(
-          "SpaceModelFactory.getSpaceModel(PortletSchema os, String aSpaceId)",
-          SilverpeasException.ERROR, "portlet.EX_SPACE_EMPTY");
     }
     int spaceNum = Integer.parseInt(aSpaceId);
 
     try {
       PortletColumnTable tPortletColumn = os.portletColumn;
       PortletRowTable tPortletRow = os.portletRow;
-
       // Get all the columns for this spaceId
-      PortletColumnRow[] portletColumns = tPortletColumn.getAllBySpaceId(
-          spaceNum, "nbCol");
-
-      sm = new SpaceModel(aSpaceId);
-
+      PortletColumnRow[] portletColumns = tPortletColumn.getAllBySpaceId(spaceNum, "nbCol");
+      SpaceModel sm = new SpaceModel(aSpaceId);
       // for each of the columns
       for (int i = 0; i < portletColumns.length; i++) {
         PortletColumnRow pc = portletColumns[i];
         SpaceColumn sc = new SpaceColumn(i, pc.getColumnWidth());
-        PortletRowRow[] portletRows = tPortletRow.getAllByPortletColumnId(pc
-            .getId(), "nbRow");
-
+        PortletRowRow[] portletRows = tPortletRow.getAllByPortletColumnId(pc.getId(), "nbRow");
         // for each row in the column
         for (int j = 0; j < portletRows.length; j++) {
           PortletRowRow prr = portletRows[j];
           Portlet portlet = getPortlet(prr.getInstanceId(), prr.getId());
-
           sc.addPortlet(portlet);
         }
         sm.addColumn(sc);
       }
+      return sm;
     } catch (UtilException e) {
       throw new PortletException(
           "SpaceModelFactory.getSpaceModel(PortletSchema os, String aSpaceId)",
           SilverpeasException.ERROR, "portlet.EX_CANT_GET_SPACE_MODEL", e);
     }
-
-    return sm;
   }
 
   /**
@@ -354,25 +325,19 @@ public class SpaceModelFactory {
    */
   public static PortletComponent[] getPortletList(SpaceModel space) {
     SpaceInst sinst = oc.getSpaceInstById("WA" + space.getSpaceId());
-    ArrayList clist = sinst.getAllComponentsInst();
-    Iterator it = clist.iterator();
-    ArrayList ar = new ArrayList();
-    ComponentInst cinst;
-    WAComponent cdesc;
-    int cid;
+    List<ComponentInst> clist = sinst.getAllComponentsInst();
+    List<PortletComponent> ar = new ArrayList<PortletComponent>(clist.size());
 
     // Remove the components already used from the list
-    while (it.hasNext()) {
-      cinst = (ComponentInst) it.next();
-      cdesc = (WAComponent) compoDescriptors.get(cinst.getName());
-      cid = Integer.parseInt(extractLastNumber(cinst.getId()));
-      if (cdesc != null && cdesc.isPortlet()
-          && (space.getPortletIndex(cid) < 0)) {
-        ar.add(new PortletComponent(cid, space.getSpaceId(), cinst.getLabel(),
-            cinst.getName(), cinst.getDescription()));
+    for (ComponentInst cinst : clist) {
+      WAComponent cdesc = compoDescriptors.get(cinst.getName());
+      int cid = Integer.parseInt(extractLastNumber(cinst.getId()));
+      if (cdesc != null && cdesc.isPortlet() && (space.getPortletIndex(cid) < 0)) {
+        ar.add(new PortletComponent(cid, space.getSpaceId(), cinst.getLabel(), cinst.getName(),
+            cinst.getDescription()));
       }
     }
-    return (PortletComponent[]) ar.toArray(new PortletComponent[0]);
+    return ar.toArray(new PortletComponent[ar.size()]);
   }
 
   /**
@@ -391,8 +356,7 @@ public class SpaceModelFactory {
       PortletRowTable tPortletRow = os.portletRow;
 
       // Retrieve all the column for this spaceId
-      PortletColumnRow[] pRows = tPortletColumn.getAllBySpaceId(space
-          .getSpaceId(), null);
+      PortletColumnRow[] pRows = tPortletColumn.getAllBySpaceId(space.getSpaceId(), null);
 
       // Delete old configuration from database
       // Cascading delete of all the column for this spaceId
@@ -410,8 +374,7 @@ public class SpaceModelFactory {
 
         // Create the columns
         SpaceColumn sc = space.getColumn(i);
-        PortletColumnRow pcr = new PortletColumnRow(-1, space.getSpaceId(), sc
-            .getColumnWidth(), i);
+        PortletColumnRow pcr = new PortletColumnRow(-1, space.getSpaceId(), sc.getColumnWidth(), i);
 
         tPortletColumn.create(pcr);
         int columnId = pcr.getId();
@@ -505,7 +468,8 @@ public class SpaceModelFactory {
         availComponents[i] = extractLastNumber(availComponents[i]);
       }
 
-      search: for (int i = 0; i < ciRows.length; i++) {
+      search:
+      for (int i = 0; i < ciRows.length; i++) {
         PortletRowRow cir = ciRows[i];
         // Get the space id and the component id required by the user
         String componentId = String.valueOf(cir.getInstanceId());
@@ -531,5 +495,4 @@ public class SpaceModelFactory {
     }
     return ret;
   }
-
 }

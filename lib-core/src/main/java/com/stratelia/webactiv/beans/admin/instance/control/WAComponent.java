@@ -25,6 +25,7 @@
 package com.stratelia.webactiv.beans.admin.instance.control;
 
 import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.StringUtil;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -83,8 +84,7 @@ public class WAComponent {
       Node nvisible = WADOMUtil.findNode(document, "visible");
       Node nvisibleInPersonalSpace = WADOMUtil.findNode(document, "visibleInPersonalSpace");
       Node nportlet = WADOMUtil.findNode(document, "portlet");
-      Node ninstanceClassName = WADOMUtil.findNode(document,
-          "instanceClassName");
+      Node ninstanceClassName = WADOMUtil.findNode(document,"instanceClassName");
       Node ntableList = WADOMUtil.findNode(document, "tableList");
       Node nprofilList = WADOMUtil.findNode(document, "Profiles");
 
@@ -383,13 +383,7 @@ public class WAComponent {
   }
 
   protected boolean stringToBoolean(String s) {
-    if ((s != null)
-        && ((s.equalsIgnoreCase("no")) || (s.equalsIgnoreCase("n"))
-        || (s.equalsIgnoreCase("non")) || (s.equalsIgnoreCase("0")) || (s
-        .equalsIgnoreCase("false")))) {
-      return false;
-    }
-    return true;
+    return StringUtil.getBooleanValue(s);
   }
 
   public boolean isVisibleInPersonalSpace() {

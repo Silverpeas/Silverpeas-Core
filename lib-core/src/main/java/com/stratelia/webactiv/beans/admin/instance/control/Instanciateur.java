@@ -27,7 +27,6 @@
  *
  * Created on 13 juillet 2000, 09:33
  */
-
 package com.stratelia.webactiv.beans.admin.instance.control;
 
 /**
@@ -35,15 +34,19 @@ package com.stratelia.webactiv.beans.admin.instance.control;
  * @author  akhadrou
  * @version
  */
-
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
-import java.util.*;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
@@ -54,22 +57,18 @@ public class Instanciateur extends Object {
 
   private static ResourceLocator resources = null;
   private static String xmlPackage = "";
-
   private static Connection m_Connection = null;
   private static String m_sSpaceId = "";
   private static String m_sComponentId = "";
   private static String m_sUserId = "";
-  private static Hashtable<String, WAComponent> WAComponents = new Hashtable<String, WAComponent>();
+  private static Map<String, WAComponent> WAComponents = new HashMap<String, WAComponent>();
 
   // Init Function
   static {
     try {
       resources = new ResourceLocator(
-          "com.stratelia.webactiv.beans.admin.instance.control.instanciator",
-          "");
-      xmlPackage = resources.getString("xmlPackage");
-      xmlPackage = xmlPackage.trim();
-
+          "com.stratelia.webactiv.beans.admin.instance.control.instanciator", "");
+      xmlPackage = resources.getString("xmlPackage").trim();
       buildWAComponentList();
     } catch (Exception mre) {
       SilverTrace.fatal("admin", "Instanciateur.static",
@@ -79,7 +78,6 @@ public class Instanciateur extends Object {
 
   /** Creates new instantiator */
   public Instanciateur() {
-
   }
 
   public Connection getConnection() {
@@ -138,10 +136,8 @@ public class Instanciateur extends Object {
       SilverTrace.info("admin", "Instanciateur.instantiateComponent",
           "admin.MSG_INFO_INSTANCIATE_COMPONENT", wac.toString());
       Class c = Class.forName(wac.getInstanceClassName());
-      ComponentsInstanciatorIntf myInstantiator = (ComponentsInstanciatorIntf) c
-          .newInstance();
-      myInstantiator
-          .create(m_Connection, m_sSpaceId, m_sComponentId, m_sUserId);
+      ComponentsInstanciatorIntf myInstantiator = (ComponentsInstanciatorIntf) c.newInstance();
+      myInstantiator.create(m_Connection, m_sSpaceId, m_sComponentId, m_sUserId);
     } catch (ClassNotFoundException cnfe) {
       throw new InstanciationException("Instanciateur.instantiateComponent",
           SilverpeasException.FATAL, "root.EX_CLASS_NOT_FOUND", cnfe);
@@ -154,8 +150,7 @@ public class Instanciateur extends Object {
     }
   }
 
-  public void unInstantiateComponentName(String componentName)
-      throws InstanciationException {
+  public void unInstantiateComponentName(String componentName) throws InstanciationException {
     String fullPath = null;
     try {
       fullPath = getDescriptorFullPath(componentName);
@@ -172,10 +167,8 @@ public class Instanciateur extends Object {
       SilverTrace.info("admin", "Instanciateur.unInstantiateComponent",
           "admin.MSG_INFO_UNINSTANCIATE_COMPONENT", wac.toString());
       Class c = Class.forName(wac.getInstanceClassName());
-      ComponentsInstanciatorIntf myInstantiator = (ComponentsInstanciatorIntf) c
-          .newInstance();
-      myInstantiator
-          .delete(m_Connection, m_sSpaceId, m_sComponentId, m_sUserId);
+      ComponentsInstanciatorIntf myInstantiator = (ComponentsInstanciatorIntf) c.newInstance();
+      myInstantiator.delete(m_Connection, m_sSpaceId, m_sComponentId, m_sUserId);
     } catch (ClassNotFoundException cnfe) {
       throw new InstanciationException("Instanciateur.unInstantiateComponent",
           SilverpeasException.FATAL, "root.EX_CLASS_NOT_FOUND", cnfe);
@@ -188,31 +181,27 @@ public class Instanciateur extends Object {
     }
   }
 
-  public static WAComponent getWAComponent(String componentName) {
+  public synchronized static WAComponent getWAComponent(String componentName) {
     return WAComponents.get(componentName);
   }
 
-  public static Hashtable<String, WAComponent> getWAComponents() {
-    return WAComponents;
+  public synchronized static Map<String, WAComponent> getWAComponents() {
+    return Collections.unmodifiableMap(WAComponents);
   }
 
-  public static Map<String, String> getAllComponentsNames() {
+  public synchronized static Map<String, String> getAllComponentsNames() {
     Map<String, String> hComponents = new HashMap<String, String>();
-
-    Enumeration<WAComponent> e = WAComponents.elements();
-    while (e.hasMoreElements()) {
-      WAComponent waComponent = e.nextElement();
-      hComponents.put(waComponent.getName(), waComponent.getLabel());
+    Collection<WAComponent> components = WAComponents.values();
+    for (WAComponent component : components) {
+      hComponents.put(component.getName(), component.getLabel());
     }
-
     return hComponents;
   }
 
-  public static List<WAComponent> getVisibleComponentsForPersonalSpace() {
+  public synchronized static List<WAComponent> getVisibleComponentsForPersonalSpace() {
     List<WAComponent> visibleComponents = new ArrayList<WAComponent>();
-    Enumeration<WAComponent> e = WAComponents.elements();
-    while (e.hasMoreElements()) {
-      WAComponent component = e.nextElement();
+    Collection<WAComponent> components = WAComponents.values();
+    for (WAComponent component : components) {
       if (component.isVisibleInPersonalSpace()) {
         visibleComponents.add(component);
       }
@@ -224,27 +213,20 @@ public class Instanciateur extends Object {
    * Method reads the WAComponent descriptor files again and rebuild the component descriptor cache
    * @throws InstanciationException when something goes wrong
    */
-  public static void rebuildWAComponentCache() throws InstanciationException {
-    // Synchronised on WAComponents because
-    // will erase and rebuild them
-    //
-    synchronized (WAComponents) {
-      WAComponents.clear();
-
-      try {
-        buildWAComponentList();
-      } catch (IOException e) {
-        SilverTrace.fatal("admin", "Instanciateur.rebuildWAComponentCache()",
-            "admin.MSG_INSTANCIATEUR_RESOURCES_NOT_FOUND", e);
-        throw new InstanciationException(
-            "Instanciateur.rebuildWAComponentCache()",
-            SilverpeasException.FATAL, "admin.EX_ERR_INSTANTIATE_COMPONENTS", e);
-      }
+  public synchronized static void rebuildWAComponentCache() throws InstanciationException {
+    WAComponents.clear();
+    try {
+      buildWAComponentList();
+    } catch (IOException e) {
+      SilverTrace.fatal("admin", "Instanciateur.rebuildWAComponentCache()",
+          "admin.MSG_INSTANCIATEUR_RESOURCES_NOT_FOUND", e);
+      throw new InstanciationException("Instanciateur.rebuildWAComponentCache()",
+          SilverpeasException.FATAL, "admin.EX_ERR_INSTANTIATE_COMPONENTS", e);
     }
   }
 
   private static Collection<File> getFileList() {
-    return FileUtils.listFiles(new File(xmlPackage), new String[] { "xml" }, true);
+    return FileUtils.listFiles(new File(xmlPackage), new String[]{"xml"}, true);
   }
 
   private static String getDescriptorFullPath(String componentName) throws IOException {
@@ -257,7 +239,7 @@ public class Instanciateur extends Object {
     return new File(xmlPackage, componentName + ".xml").getCanonicalPath();
   }
 
-  private static void buildWAComponentList() throws IOException {
+  private synchronized static void buildWAComponentList() throws IOException {
     Collection<File> files = getFileList();
 
     for (File xmlFile : files) {
