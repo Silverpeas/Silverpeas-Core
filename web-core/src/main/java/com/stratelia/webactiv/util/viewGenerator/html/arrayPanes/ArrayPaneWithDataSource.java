@@ -24,14 +24,19 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
+import java.util.Collections;
 import java.util.Vector;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.PageContext;
-import javax.servlet.http.*;
-import javax.servlet.*;
-import com.stratelia.webactiv.util.*;
-import com.stratelia.webactiv.util.viewGenerator.html.*;
-import com.stratelia.webactiv.util.datapaginator.*;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.datapaginator.WADataPage;
+import com.stratelia.webactiv.util.datapaginator.WADataPaginator;
+import com.stratelia.webactiv.util.datapaginator.WAItem;
+import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 /**
  * The default implementation of ArrayPane interface.
@@ -664,7 +669,7 @@ public class ArrayPaneWithDataSource implements ArrayPane {
     int last = -1;
 
     if (getColumnToSort() != 0) {
-      java.util.Collections.sort(lines);
+      Collections.sort(lines);
     }
 
     int columnsCount = columns.size();
@@ -874,4 +879,21 @@ public class ArrayPaneWithDataSource implements ArrayPane {
     this.isXHTML = isXHTML;
   }
 
+  @Override
+  public boolean getExportData() {
+    return false;
+  }
+
+  @Override
+  public void setExportData(boolean export) {
+  }
+
+  @Override
+  public String getExportDataURL() {
+    return null;
+  }
+
+  @Override
+  public void setExportDataURL(String exportDataURL) {
+  }
 }

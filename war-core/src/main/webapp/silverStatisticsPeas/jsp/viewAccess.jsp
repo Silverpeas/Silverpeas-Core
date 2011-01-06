@@ -27,14 +27,23 @@
 
 <%@ include file="checkSilverStatistics.jsp" %>
 
-<%
-//Recuperation des parametres
-ArrayLine arrayLine = null;
-Iterator   iter1 = null;
+<%-- Include tag library --%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-	Collection cMonthBegin = (Collection)request.getAttribute("MonthBegin");
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+
+<c:set var="ctxPath" value="${pageContext.request.contextPath}"/>
+
+<%
+	//Recuperation des parametres
+	ArrayLine arrayLine = null;
+	Iterator   iter1 = null;
 	String monthBegin = "";
-	Collection cYearBegin = (Collection)request.getAttribute("YearBegin");
 	String yearBegin = "";
 	String filterLibGroup = (String)request.getAttribute("FilterLibGroup");
 	String filterIdGroup = (String) request.getAttribute("FilterIdGroup");
@@ -42,21 +51,19 @@ Iterator   iter1 = null;
 	String filterIdUser = (String) request.getAttribute("FilterIdUser");
 	String spaceId = (String) request.getAttribute("SpaceId");
 	Vector vPath = (Vector) request.getAttribute("Path");
-    Vector vStatsData = (Vector)request.getAttribute("StatsData");
-    String userProfile = (String) request.getAttribute("UserProfile");
+  Vector vStatsData = (Vector)request.getAttribute("StatsData");
+  String userProfile = (String) request.getAttribute("UserProfile");
 %>
 
 
 <html>
-<HEAD>
-<TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
-<!--[ JAVASCRIPT ]-->
+<head>
+<title><fmt:message key="GML.popupTitle" /></title>
+<view:looknfeel />
+
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<SCRIPT LANGUAGE="JAVASCRIPT">
+<script language="javascript">
 	// This function open a silverpeas window
 	function openSPWindow(fonction,windowName){
 		fonction = fonction + "?MonthBegin=" + accessFormulaire.MonthBegin.value;
@@ -83,40 +90,29 @@ Iterator   iter1 = null;
 	function validerForm(){
 		accessFormulaire.FilterLibGroup.disabled = false;
 		accessFormulaire.FilterLibUser.disabled = false;		
-		document.accessFormulaire.submit()
+		document.accessFormulaire.submit();
 	}
 
-</SCRIPT>
-</HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 onLoad="">
-<%  
+</script>
+</head>
+<body marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" onLoad="">
+<c:forEach items="${requestScope['MonthBegin']}" var="mBegin" varStatus="status">
+	<c:set var="curValue" value="${mBegin[0]}" />
+	<c:if test="${fn:contains(curValue, 'selected')}">
+		<c:set var="monthBegin" value="${fn:substringBefore(curValue, ' selected')}" scope="page" />
+	</c:if>
+</c:forEach>
+<c:forEach items="${requestScope['YearBegin']}" var="yBegin" varStatus="status">
+	<c:set var="curValue" value="${yBegin[0]}" />
+	<c:if test="${fn:contains(curValue, 'selected')}">
+		<c:set var="yearBegin" value="${fn:substringBefore(curValue, ' selected')}" scope="page"/>
+	</c:if>
+</c:forEach>
 
-	String optionsMonthBegin = "";
-	iter1 = cMonthBegin.iterator();
-	while (iter1.hasNext())
-	{
-    	String[] item = (String[]) iter1.next();
-    	String theValue = item[0];
-		optionsMonthBegin += "<option value="+ theValue +">"+resources.getString(item[1])+"</option>";
-  		int indexOfSelected = theValue.indexOf("selected");
-  		if(indexOfSelected != -1)
-  			monthBegin = theValue.substring(0, indexOfSelected - 1);
-  	}
-  	
-  	String optionsYearBegin = "";
-  	iter1 = cYearBegin.iterator();
-	while (iter1.hasNext())
-	{
-    	String[] item = (String[]) iter1.next();
-    	String theValue = item[0];
-  		optionsYearBegin += "<option value="+ theValue +">"+item[1]+"</option>";
-  		int indexOfSelected = theValue.indexOf("selected");
-  		if(indexOfSelected != -1)
-  			yearBegin = theValue.substring(0, indexOfSelected - 1);
-  	}
-          	
+
+<%  
 	browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics"));
-    browseBar.setComponentName(resources.getString("silverStatisticsPeas.Access"), "ValidateViewAccess?MonthBegin="+monthBegin+"&YearBegin="+yearBegin+"&FilterLibGroup="+filterLibGroup+"&FilterIdGroup="+filterIdGroup+"&FilterLibUser="+filterLibUser+"&FilterIdUser="+filterIdUser+"&SpaceId=");
+    browseBar.setComponentName(resources.getString("silverStatisticsPeas.Access"), "ValidateViewAccess?MonthBegin="+pageContext.getAttribute("monthBegin")+"&YearBegin="+pageContext.getAttribute("yearBegin")+"&FilterLibGroup="+filterLibGroup+"&FilterIdGroup="+filterIdGroup+"&FilterLibUser="+filterLibUser+"&FilterIdUser="+filterIdUser+"&SpaceId=");
     
 	if (spaceId != null && ! "".equals(spaceId))
 	{
@@ -127,7 +123,7 @@ Iterator   iter1 = null;
 		{
 			String[] pathItem = (String[]) i.next();
 			if(userProfile.equals("A")) {//Administrateur
-				path += separator + "<a href=\"ValidateViewAccess?MonthBegin="+monthBegin+"&YearBegin="+yearBegin+"&FilterLibGroup="+filterLibGroup+"&FilterIdGroup="+filterIdGroup+"&FilterLibUser="+filterLibUser+"&FilterIdUser="+filterIdUser+( (pathItem[0]==null) ? "" : ("&SpaceId="+pathItem[0]) )+"\">"+pathItem[1]+ "</a>";
+				path += separator + "<a href=\"ValidateViewAccess?MonthBegin="+pageContext.getAttribute("monthBegin")+"&YearBegin="+pageContext.getAttribute("yearBegin")+"&FilterLibGroup="+filterLibGroup+"&FilterIdGroup="+filterIdGroup+"&FilterLibUser="+filterLibUser+"&FilterIdUser="+filterIdUser+( (pathItem[0]==null) ? "" : ("&SpaceId="+pathItem[0]) )+"\">"+pathItem[1]+ "</a>";
 			} else {//manager d'espaces
 				path += separator + pathItem[1];
 			}
@@ -138,32 +134,52 @@ Iterator   iter1 = null;
 	}
 	
 	operationPane.addOperation(resources.getIcon("silverStatisticsPeas.icoGenExcel"),resources.getString("silverStatisticsPeas.export"),"javascript:openSPWindow('ExportAccess.txt','')");
-	
+		
 	out.println(window.printBefore());
 	out.println(frame.printBefore());
 	out.println(board.printBefore());
 %>
-<CENTER>
-  <table width="100%" border="0" cellspacing="0" cellpadding="4">
-    <form name="accessFormulaire" action="ValidateViewAccess" method="post">
+<center>
+  <form name="accessFormulaire" action="ValidateViewAccess" method="post">
+    <table width="100%" border="0" cellspacing="0" cellpadding="4">
       <tr> 
-        <td width="300" nowrap class=txtlibform><%=resources.getString("GML.date")%>&nbsp;:</td>
+        <td width="300" nowrap class=txtlibform><fmt:message key="GML.date" />&nbsp;:</td>
         <td nowrap> 
           <select name="MonthBegin" size="1">
-		    <%
-		    out.print(optionsMonthBegin);
-          	%>
+			<c:forEach items="${requestScope['MonthBegin']}" var="mBegin" varStatus="status">
+				<c:set var="curValue" value="${mBegin[0]}" />
+				<c:set var="curSel" value="" />
+				<c:choose>
+					<c:when test="${fn:contains(curValue, 'selected')}">
+						<c:set var="monthBegin" value="${fn:substringBefore(curValue, ' selected')}" scope="page" />
+						<option value="${monthBegin}" selected><fmt:message key="${mBegin[1]}" /></option>
+					</c:when>
+					<c:otherwise>
+						<option value="${curValue}"><fmt:message key="${mBegin[1]}" /></option>
+					</c:otherwise>
+				</c:choose>
+			</c:forEach>
           </select>
           &nbsp;&nbsp; 
           <select name="YearBegin" size="1">
-		    <%
-        	out.print(optionsYearBegin);
-          	%>
+			<c:forEach items="${requestScope['YearBegin']}" var="yBegin" varStatus="status">
+				<c:set var="curValue" value="${yBegin[0]}" />
+				<c:set var="curSel" value="" />
+				<c:choose>
+					<c:when test="${fn:contains(curValue, 'selected')}">
+						<c:set var="yearBegin" value="${fn:substringBefore(curValue, ' selected')}" scope="page"/>
+						<option value="${yearBegin}" selected><c:out value="${yBegin[1]}" /></option>
+					</c:when>
+					<c:otherwise>
+						<option value="${curValue}"><c:out value="${yBegin[1]}" /></option>
+					</c:otherwise>
+				</c:choose>
+			</c:forEach>
           </select>
         </td>
       </tr>
       <tr> 
-        <td nowrap class=txtlibform><%=resources.getString("silverStatisticsPeas.group")%>&nbsp;:</td>
+        <td nowrap class=txtlibform><fmt:message key="silverStatisticsPeas.group" />&nbsp;:</td>
         <td nowrap colspan="2"> 
           <input type="text" name="FilterLibGroup" value="<%=filterLibGroup%>" size="25" disabled>
 		  <input type="hidden" name="FilterIdGroup" value="<%=filterIdGroup%>">
@@ -180,17 +196,24 @@ Iterator   iter1 = null;
           <a href=javascript:clearFilterUser()><img src="<%=resources.getIcon("silverStatisticsPeas.icoClearGroupUser")%>" align="absmiddle" alt="<%=resources.getString("silverStatisticsPeas.ClearUserPanelPeas")%>" border=0 title="<%=resources.getString("silverStatisticsPeas.ClearUserPanelPeas")%>"></a> 
         </td>
       </tr>
-      <input type="hidden" name="SpaceId" value="<%=(spaceId==null) ? "" : spaceId%>">
-      </form>
-  </table>
+    </table>
+      <input type="hidden" name="SpaceId" value="<%=(spaceId==null) ? "" : spaceId%>" />
+  </form>
   <%
   
 	out.println(board.printAfter());
-  	
-    ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton((Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:validerForm()", false));
-	buttonPane.addButton((Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:document.cancelAccessForm.submit()", false));
-    out.println("<br><center>"+buttonPane.print()+"</center><br>");
+  %>
+  <div id="stats_viewConnectionButton">
+	  <center>
+	  	<view:buttonPane>
+		  	<fmt:message key="GML.validate" var="labelValidate" />
+		  	<fmt:message key="GML.cancel" var="labelCancel" />
+		    <view:button label="${labelValidate}" action="javascript:validerForm()" ></view:button>
+		    <view:button label="${labelCancel}" action="javascript:document.cancelAccessForm.submit()"></view:button>
+	  	</view:buttonPane>
+	  </center>
+  </div>
+  <%
   
    //Graphiques
    if (vStatsData != null)
@@ -208,7 +231,7 @@ Iterator   iter1 = null;
  	
 	// Tableau
 
-          ArrayPane arrayPane = gef.getArrayPane("List", "ValidateViewAccess?MonthBegin="+monthBegin+"&YearBegin="+yearBegin+"&FilterLibGroup="+filterLibGroup+"&FilterIdGroup="+filterIdGroup+"&FilterLibUser="+filterLibUser+"&FilterIdUser="+filterIdUser+"&SpaceId="+spaceId, request,session);
+          ArrayPane arrayPane = gef.getArrayPane("List", "ValidateViewAccess?MonthBegin="+ pageContext.getAttribute("monthBegin") +"&YearBegin="+pageContext.getAttribute("yearBegin")+"&FilterLibGroup="+filterLibGroup+"&FilterIdGroup="+filterIdGroup+"&FilterLibUser="+filterLibUser+"&FilterIdUser="+filterIdUser+"&SpaceId="+spaceId, request,session);
           arrayPane.setVisibleLineNumber(50);
 		  
           ArrayColumn arrayColumn1 = arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.organisation"));
@@ -238,7 +261,7 @@ Iterator   iter1 = null;
             	
             	title = resources.getString("silverStatisticsPeas.Historique");
             	if ( "SPACE".equals(item[0]) ) {
-          			arrayLine.addArrayCellLink("<B>"+item[2]+"</B>", "ValidateViewAccess?MonthBegin="+monthBegin+"&YearBegin="+yearBegin+"&FilterLibGroup="+filterLibGroup+"&FilterIdGroup="+filterIdGroup+"&FilterLibUser="+filterLibUser+"&FilterIdUser="+filterIdUser+"&SpaceId="+item[1]);
+          			arrayLine.addArrayCellLink("<B>"+item[2]+"</B>", "ValidateViewAccess?MonthBegin="+pageContext.getAttribute("monthBegin")+"&YearBegin="+pageContext.getAttribute("yearBegin")+"&FilterLibGroup="+filterLibGroup+"&FilterIdGroup="+filterIdGroup+"&FilterLibUser="+filterLibUser+"&FilterIdUser="+filterIdUser+"&SpaceId="+item[1]);
           			title += " ["+item[2]+"]";
           		} else {
           			arrayLine.addArrayCellText(item[2]);
@@ -273,12 +296,12 @@ Iterator   iter1 = null;
         out.println("");
     }
     %>
-</CENTER>
+</center>
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 <form name="cancelAccessForm" action="ViewAccess" method="post">
 </form>
-</BODY>
-</HTML>
+</body>
+</html>

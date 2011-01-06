@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
@@ -39,50 +40,6 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-
-/*
- * CVS Informations
- *
- * $Id: SilverStatisticsPeasDAOVolumeServer.java,v 1.6 2007/03/29 16:21:29 cbonin Exp $
- *
- * $Log: SilverStatisticsPeasDAOVolumeServer.java,v $
- * Revision 1.6  2007/03/29 16:21:29  cbonin
- * Modifs Gestionnaires de sous-espace
- *
- * Revision 1.5  2007/03/27 12:13:36  cbonin
- * Correction de bug remise à jour de la hashtable de résultat
- *
- * Revision 1.4  2007/03/20 13:02:20  neysseri
- * no message
- *
- * Revision 1.3.6.2  2007/01/23 10:46:55  cbonin
- * *** empty log message ***
- *
- * Revision 1.3.6.1  2007/01/19 16:52:36  cbonin
- * *** empty log message ***
- *
- * Revision 1.3  2005/02/28 16:54:50  neysseri
- * Bug sur les années Accès et Volume + nettoyage sources
- *
- * Revision 1.2  2003/11/24 14:14:41  cbonin
- * no message
- *
- * Revision 1.1.1.1  2002/08/06 14:47:56  nchaix
- * no message
- *
- * Revision 1.3  2002/04/05 07:47:45  mguillem
- * SilverStatisticsPeas
- *
- * Revision 1.2  2002/03/25 08:07:13  mguillem
- * SilverStatisticsPeas
- *
- * Revision 1.1  2002/03/22 13:03:40  mguillem
- * SilverStatisticsPeas
- *
- * Revision 1.7  2002/03/21 14:26:34  mguillem
- * SilverStatisticsPeas
- *
- */
 
 /**
  * Class declaration Get stat size directory data from database
@@ -106,7 +63,7 @@ public class SilverStatisticsPeasDAOVolumeServer {
    * @throws SQLException
    * @see
    */
-  public static Collection getStatsVolumeServer() throws SQLException {
+  public static Collection<String[]> getStatsVolumeServer() throws SQLException {
     SilverTrace.info("silverStatisticsPeas",
         "SilverStatisticsPeasDAOVolumeServer.getStatsVolumeServer",
         "root.MSG_GEN_ENTER_METHOD");
@@ -157,14 +114,14 @@ public class SilverStatisticsPeasDAOVolumeServer {
    * @throws SQLException
    * @see
    */
-  private static Collection getStatsVolumeServerFromQuery(String selectQuery)
+  private static Collection<String[]> getStatsVolumeServerFromQuery(String selectQuery)
       throws SQLException {
     SilverTrace.debug("silverStatisticsPeas",
         "SilverStatisticsPeasDAOVolumeServer.getStatsVolumeServerFromQuery",
         "selectQuery=" + selectQuery);
     Statement stmt = null;
     ResultSet rs = null;
-    Collection list = null;
+    Collection<String[]> list = null;
     Connection myCon = getConnection();
 
     try {
@@ -186,9 +143,9 @@ public class SilverStatisticsPeasDAOVolumeServer {
    * @throws SQLException
    * @see
    */
-  private static Collection getStatsVolumeServerFromResultSet(ResultSet rs)
+  private static Collection<String[]> getStatsVolumeServerFromResultSet(ResultSet rs)
       throws SQLException {
-    ArrayList myList = new ArrayList();
+    List<String[]> myList = new ArrayList<String[]>();
     String stat[] = null;
 
     while (rs.next()) {
@@ -213,28 +170,29 @@ public class SilverStatisticsPeasDAOVolumeServer {
    * @return
    * @throws SQLException
    */
-  public static Hashtable getStatsAttachmentsVentil(String currentUserId)
+  public static Hashtable<String, String[]> getStatsAttachmentsVentil(String currentUserId)
       throws SQLException {
     SilverTrace.info("silverStatisticsPeas",
         "SilverStatisticsPeasDAOVolumeServer.getStatsAttachmentsVentil",
         "root.MSG_GEN_ENTER_METHOD");
 
-    Hashtable resultat = new Hashtable(); // key=componentId, value=new
+    Hashtable<String, String[]> resultat = new Hashtable<String, String[]>(); // key=componentId,
+    // value=new
     // String[3] {nb, null, null}
 
     String selectQuery = "SELECT instanceId, COUNT(*) "
         + "FROM SB_Attachment_Attachment " + "GROUP BY instanceId "
         + "ORDER BY COUNT(*) DESC";
 
-    Hashtable intermedHash = getHashtableFromQuery(selectQuery);
+    Hashtable<String, String> intermedHash = getHashtableFromQuery(selectQuery);
 
-    Iterator it = intermedHash.keySet().iterator();
+    Iterator<String> it = intermedHash.keySet().iterator();
     String cmpId;
     AdminController myAdminController = new AdminController("");
     String[] values;
 
     while (it.hasNext()) {
-      cmpId = (String) it.next();
+      cmpId = it.next();
 
       // filtre les composants autorisés selon les droits de l'utilisateur
       // (Admin ou Gestionnaire d'espace)
@@ -253,25 +211,25 @@ public class SilverStatisticsPeasDAOVolumeServer {
    * @return
    * @throws SQLException
    */
-  public static Hashtable getStatsVersionnedAttachmentsVentil(
+  public static Hashtable<String, String[]> getStatsVersionnedAttachmentsVentil(
       String currentUserId) throws SQLException {
     SilverTrace
         .info(
-        "silverStatisticsPeas",
-        "SilverStatisticsPeasDAOVolumeServer.getStatsVersionnedAttachmentsVentil",
-        "root.MSG_GEN_ENTER_METHOD");
-
-    Hashtable resultat = new Hashtable(); // key=componentId, value=new
+            "silverStatisticsPeas",
+            "SilverStatisticsPeasDAOVolumeServer.getStatsVersionnedAttachmentsVentil",
+            "root.MSG_GEN_ENTER_METHOD");
+    // key=componentId, value=new
     // String[3] {nb, null, null}
+    Hashtable<String, String[]> resultat = new Hashtable<String, String[]>();
 
     String selectQuery = "SELECT v.instanceId, COUNT(*) "
         + "FROM SB_Version_Version v , SB_Version_Document d "
         + "WHERE v.documentId = d.documentId " + "GROUP BY v.instanceId "
         + "ORDER BY COUNT(*) DESC";
 
-    Hashtable intermedHash = getHashtableFromQuery(selectQuery);
+    Hashtable<String, String> intermedHash = getHashtableFromQuery(selectQuery);
 
-    Iterator it = intermedHash.keySet().iterator();
+    Iterator<String> it = intermedHash.keySet().iterator();
     String cmpId;
     AdminController myAdminController = new AdminController("");
     String[] values;
@@ -282,13 +240,12 @@ public class SilverStatisticsPeasDAOVolumeServer {
 
     while (it.hasNext()) {
       ok = false;
-      cmpId = (String) it.next();
+      cmpId = it.next();
 
       compInst = myAdminController.getComponentInst(cmpId);
       spaceId = compInst.getDomainFatherId(); // ex : WA123
 
-      tabManageableSpaceIds = myAdminController
-          .getUserManageableSpaceClientIds(currentUserId);
+      tabManageableSpaceIds = myAdminController.getUserManageableSpaceClientIds(currentUserId);
 
       // filtre les composants autorisés selon les droits de l'utilisateur
       // (Admin ou Gestionnaire d'espace)
@@ -314,23 +271,24 @@ public class SilverStatisticsPeasDAOVolumeServer {
    * @return
    * @throws SQLException
    */
-  public static Hashtable getStatsAttachmentsSizeVentil(String currentUserId)
+  public static Hashtable<String, String[]> getStatsAttachmentsSizeVentil(String currentUserId)
       throws SQLException {
     SilverTrace.info("silverStatisticsPeas",
         "SilverStatisticsPeasDAOVolumeServer.getStatsAttachmentsSizeVentil",
         "root.MSG_GEN_ENTER_METHOD");
 
-    Hashtable resultat = new Hashtable(); // key=componentId, value=new
-    // String[3] {nb, null, null}
+    // key = componentId,
+    // value = new String[3] {nb, null, null}
+    Hashtable<String, String[]> resultat = new Hashtable<String, String[]>();
 
     String selectQuery = "SELECT instanceId, SUM(CAST(attachmentSize AS decimal)) "
         + "FROM SB_Attachment_Attachment "
         + "GROUP BY instanceId "
         + "ORDER BY SUM(CAST(attachmentSize AS decimal)) DESC";
 
-    Hashtable intermedHash = getHashtableFromQuery(selectQuery);
+    Hashtable<String, String> intermedHash = getHashtableFromQuery(selectQuery);
 
-    Iterator it = intermedHash.keySet().iterator();
+    Iterator<String> it = intermedHash.keySet().iterator();
     String cmpId;
     AdminController myAdminController = new AdminController("");
     String[] values;
@@ -346,8 +304,7 @@ public class SilverStatisticsPeasDAOVolumeServer {
       compInst = myAdminController.getComponentInst(cmpId);
       spaceId = compInst.getDomainFatherId(); // ex : WA123
 
-      tabManageableSpaceIds = myAdminController
-          .getUserManageableSpaceClientIds(currentUserId);
+      tabManageableSpaceIds = myAdminController.getUserManageableSpaceClientIds(currentUserId);
 
       // filtre les composants autorisés selon les droits de l'utilisateur
       // (Admin ou Gestionnaire d'espace)
@@ -373,15 +330,16 @@ public class SilverStatisticsPeasDAOVolumeServer {
    * @return
    * @throws SQLException
    */
-  public static Hashtable getStatsVersionnedAttachmentsSizeVentil(
+  public static Hashtable<String, String[]> getStatsVersionnedAttachmentsSizeVentil(
       String currentUserId) throws SQLException {
     SilverTrace
         .info(
-        "silverStatisticsPeas",
-        "SilverStatisticsPeasDAOVolumeServer.getStatsVersionnedAttachmentsSizeVentil",
-        "root.MSG_GEN_ENTER_METHOD");
+            "silverStatisticsPeas",
+            "SilverStatisticsPeasDAOVolumeServer.getStatsVersionnedAttachmentsSizeVentil",
+            "root.MSG_GEN_ENTER_METHOD");
 
-    Hashtable resultat = new Hashtable(); // key=componentId, value=new
+    Hashtable<String, String[]> resultat = new Hashtable<String, String[]>(); // key=componentId,
+    // value=new
     // String[3] {nb, null, null}
 
     String selectQuery = "SELECT v.instanceId, SUM(versionSize) "
@@ -389,9 +347,9 @@ public class SilverStatisticsPeasDAOVolumeServer {
         + "WHERE v.documentId = d.documentId " + "GROUP BY v.instanceId "
         + "ORDER BY SUM(versionSize) DESC";
 
-    Hashtable intermedHash = getHashtableFromQuery(selectQuery);
+    Hashtable<String, String> intermedHash = getHashtableFromQuery(selectQuery);
 
-    Iterator it = intermedHash.keySet().iterator();
+    Iterator<String> it = intermedHash.keySet().iterator();
     String cmpId;
     AdminController myAdminController = new AdminController("");
     String[] values;
@@ -402,13 +360,12 @@ public class SilverStatisticsPeasDAOVolumeServer {
 
     while (it.hasNext()) {
       ok = false;
-      cmpId = (String) it.next();
+      cmpId = it.next();
 
       compInst = myAdminController.getComponentInst(cmpId);
       spaceId = compInst.getDomainFatherId(); // ex : WA123
 
-      tabManageableSpaceIds = myAdminController
-          .getUserManageableSpaceClientIds(currentUserId);
+      tabManageableSpaceIds = myAdminController.getUserManageableSpaceClientIds(currentUserId);
 
       // filtre les composants autorisés selon les droits de l'utilisateur
       // (Admin ou Gestionnaire d'espace)
@@ -429,14 +386,20 @@ public class SilverStatisticsPeasDAOVolumeServer {
     return resultat;
   }
 
-  private static Hashtable getHashtableFromQuery(String selectQuery)
+  /**
+   * Retrieve a hashtable of result from select database query
+   * @param selectQuery the select SQL query
+   * @return
+   * @throws SQLException
+   */
+  private static Hashtable<String, String> getHashtableFromQuery(String selectQuery)
       throws SQLException {
     SilverTrace.debug("silverStatisticsPeas",
         "SilverStatisticsPeasDAOVolumeServer.getHashtableFromQuery",
         "selectQuery=" + selectQuery);
     Statement stmt = null;
     ResultSet rs = null;
-    Hashtable ht = null;
+    Hashtable<String, String> ht = null;
     Connection myCon = getConnection();
 
     try {
@@ -451,9 +414,15 @@ public class SilverStatisticsPeasDAOVolumeServer {
     return ht;
   }
 
-  private static Hashtable getHashtableFromResultset(ResultSet rs)
+  /**
+   * Transform a ResultSet into a Hashtable
+   * @param rs the ResultSet
+   * @return a hashtable from database query result set
+   * @throws SQLException
+   */
+  private static Hashtable<String, String> getHashtableFromResultset(ResultSet rs)
       throws SQLException {
-    Hashtable result = new Hashtable();
+    Hashtable<String, String> result = new Hashtable<String, String>();
     long count = 0;
 
     while (rs.next()) {

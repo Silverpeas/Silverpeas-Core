@@ -47,6 +47,9 @@ public class ArrayPaneTag extends TagSupport {
   private String routingAddress = null;
   public static final String ARRAY_PANE_PAGE_ATT = "pageContextArrayPane";
 
+  private boolean export = false;
+  private String exportDataURL = null;
+
   public String getRoutingAddress() {
     return routingAddress;
   }
@@ -70,6 +73,10 @@ public class ArrayPaneTag extends TagSupport {
     }
     if (StringUtil.isDefined(isXHTML)) {
       arrayPane.setXHTML(isXHTML.equalsIgnoreCase("true"));
+    }
+    arrayPane.setExportData(export);
+    if (export) {
+      arrayPane.setExportDataURL(exportDataURL);
     }
     pageContext.setAttribute(ARRAY_PANE_PAGE_ATT, arrayPane);
     return EVAL_BODY_INCLUDE;
@@ -106,5 +113,13 @@ public class ArrayPaneTag extends TagSupport {
 
   public void setSummary(final String summary) {
     this.summary = summary;
+  }
+
+  public void setExport(boolean export) {
+    this.export = export;
+  }
+
+  public void setExportDataURL(String exportDataURL) {
+    this.exportDataURL = exportDataURL;
   }
 }

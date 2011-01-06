@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
@@ -53,7 +54,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
   public static final String TYPE_ACCES = "Acces";
   public static final String TYPE_VOLUME = "Volume";
 
-  public static Collection getYears(String typeReq) throws SQLException {
+  public static Collection<String> getYears(String typeReq) throws SQLException {
     // String selectQuery = " SELECT DISTINCT LEFT(dateStat,4)";
     // DLE
     String selectQuery = " SELECT DISTINCT dateStat";
@@ -73,14 +74,15 @@ public class SilverStatisticsPeasDAOAccesVolume {
    * @return
    * @throws SQLException
    */
-  public static Hashtable getStatsUserVentil(String dateStat,
+  public static Hashtable<String, String[]> getStatsUserVentil(String dateStat,
       String currentUserId, String filterIdGroup, String filterIdUser)
       throws SQLException {
     SilverTrace.info("silverStatisticsPeas",
         "SilverStatisticsPeasDAOAccessVolume.getStatsUserVentil",
         "root.MSG_GEN_ENTER_METHOD");
 
-    Hashtable resultat = new Hashtable(); // key=componentId, value=new
+    Hashtable<String, String[]> resultat = new Hashtable<String, String[]>(); // key=componentId,
+                                                                              // value=new
     // String[3] {tout, groupe, user}
 
     // Query Tout
@@ -89,9 +91,9 @@ public class SilverStatisticsPeasDAOAccesVolume {
         + " GROUP BY dateStat, componentId"
         + " ORDER BY dateStat ASC, SUM(countAccess) DESC";
 
-    Hashtable hashTout = getHashtableFromQuery(selectQuery);
+    Hashtable<String, String> hashTout = getHashtableFromQuery(selectQuery);
 
-    Iterator it = hashTout.keySet().iterator();
+    Iterator<String> it = hashTout.keySet().iterator();
     AdminController myAdminController = new AdminController("");
 
     String cmpId;
@@ -103,7 +105,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
     while (it.hasNext()) {
       ok = false;
-      cmpId = (String) it.next();
+      cmpId = it.next();
 
       compInst = myAdminController.getComponentInst(cmpId);
       spaceId = compInst.getDomainFatherId(); // ex : WA123
@@ -147,7 +149,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
           + " GROUP BY dateStat, componentId"
           + " ORDER BY dateStat ASC, SUM(countAccess) DESC";
 
-      Hashtable hashGroupe = getHashtableFromQuery(selectQuery);
+      Hashtable<String, String> hashGroupe = getHashtableFromQuery(selectQuery);
 
       it = hashGroupe.keySet().iterator();
       while (it.hasNext()) {
@@ -178,7 +180,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
           + " AND userId=" + filterIdUser + " GROUP BY dateStat, componentId"
           + " ORDER BY dateStat ASC, SUM(countAccess) DESC";
 
-      Hashtable hashUser = getHashtableFromQuery(selectQuery);
+      Hashtable<String, String> hashUser = getHashtableFromQuery(selectQuery);
 
       it = hashUser.keySet().iterator();
       while (it.hasNext()) {
@@ -201,7 +203,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
    * @throws SQLException
    * @throws ParseException
    */
-  public static Collection getStatsUserEvolution(String entite,
+  public static Collection<String[]> getStatsUserEvolution(String entite,
       String entiteId, String filterIdGroup, String filterIdUser)
       throws SQLException, ParseException {
     SilverTrace.info("silverStatisticsPeas",
@@ -270,14 +272,14 @@ public class SilverStatisticsPeasDAOAccesVolume {
    * @throws ParseException
    * @see
    */
-  private static Collection getStatsUserFromQuery(String selectQuery)
+  private static Collection<String[]> getStatsUserFromQuery(String selectQuery)
       throws SQLException, ParseException {
     SilverTrace.debug("silverStatisticsPeas",
         "SilverStatisticsPeasDAOAccessVolume.getStatsUserFromQuery",
         "selectQuery=" + selectQuery);
     Statement stmt = null;
     ResultSet rs = null;
-    Collection list = null;
+    Collection<String[]> list = null;
     Connection myCon = getConnection();
 
     try {
@@ -300,9 +302,9 @@ public class SilverStatisticsPeasDAOAccesVolume {
    * @throws ParseException
    * @see
    */
-  private static Collection getStatsUserFromResultSet(ResultSet rs)
+  private static Collection<String[]> getStatsUserFromResultSet(ResultSet rs)
       throws SQLException, ParseException {
-    ArrayList myList = new ArrayList();
+    List<String[]> myList = new ArrayList<String[]>();
     String stat[] = null;
     String date;
     long count = 0;
@@ -350,14 +352,14 @@ public class SilverStatisticsPeasDAOAccesVolume {
    * @throws SQLException
    * @see
    */
-  private static Hashtable getHashtableFromQuery(String selectQuery)
+  private static Hashtable<String, String> getHashtableFromQuery(String selectQuery)
       throws SQLException {
     SilverTrace.debug("silverStatisticsPeas",
         "SilverStatisticsPeasDAOAccessVolume.getHashtableFromQuery",
         "selectQuery=" + selectQuery);
     Statement stmt = null;
     ResultSet rs = null;
-    Hashtable ht = null;
+    Hashtable<String, String> ht = null;
     Connection myCon = getConnection();
 
     try {
@@ -379,9 +381,9 @@ public class SilverStatisticsPeasDAOAccesVolume {
    * @throws SQLException
    * @see
    */
-  private static Hashtable getHashtableFromResultset(ResultSet rs)
+  private static Hashtable<String, String> getHashtableFromResultset(ResultSet rs)
       throws SQLException {
-    Hashtable result = new Hashtable();
+    Hashtable<String, String> result = new Hashtable<String, String>();
     long count = 0;
 
     while (rs.next()) {
@@ -396,14 +398,14 @@ public class SilverStatisticsPeasDAOAccesVolume {
    * @return
    * @throws SQLException
    */
-  public static Hashtable getStatsPublicationsVentil(String dateStat,
+  public static Hashtable<String, String[]> getStatsPublicationsVentil(String dateStat,
       String currentUserId, String filterIdGroup, String filterIdUser)
       throws SQLException {
     SilverTrace.info("silverStatisticsPeas",
         "SilverStatisticsPeasDAOAccessVolume.getStatsPublicationsVentil",
         "root.MSG_GEN_ENTER_METHOD");
 
-    Hashtable resultat = new Hashtable(); // key=componentId, value=new
+    Hashtable<String, String[]> resultat = new Hashtable<String, String[]>(); // key=componentId, value=new
     // String[3] {tout, groupe, user}
 
     // Query Tout
@@ -412,9 +414,9 @@ public class SilverStatisticsPeasDAOAccesVolume {
         + " GROUP BY dateStat, componentId"
         + " ORDER BY dateStat ASC, SUM(countVolume) DESC";
 
-    Hashtable hashTout = getHashtableFromQuery(selectQuery);
+    Hashtable<String, String> hashTout = getHashtableFromQuery(selectQuery);
 
-    Iterator it = hashTout.keySet().iterator();
+    Iterator<String> it = hashTout.keySet().iterator();
     String cmpId;
     AdminController myAdminController = new AdminController("");
     String[] values;
@@ -425,13 +427,12 @@ public class SilverStatisticsPeasDAOAccesVolume {
 
     while (it.hasNext()) {
       ok = false;
-      cmpId = (String) it.next();
+      cmpId = it.next();
 
       compInst = myAdminController.getComponentInst(cmpId);
       spaceId = compInst.getDomainFatherId(); // ex : WA123
 
-      tabManageableSpaceIds = myAdminController
-          .getUserManageableSpaceClientIds(currentUserId);
+      tabManageableSpaceIds = myAdminController.getUserManageableSpaceClientIds(currentUserId);
 
       // filtre les composants autorisés selon les droits de l'utilisateur
       // (Admin ou Gestionnaire d'espace)
@@ -469,11 +470,11 @@ public class SilverStatisticsPeasDAOAccesVolume {
           + " GROUP BY dateStat, componentId"
           + " ORDER BY dateStat ASC, SUM(countVolume) DESC";
 
-      Hashtable hashGroupe = getHashtableFromQuery(selectQuery);
+      Hashtable<String, String> hashGroupe = getHashtableFromQuery(selectQuery);
 
       it = hashGroupe.keySet().iterator();
       while (it.hasNext()) {
-        cmpId = (String) it.next();
+        cmpId = it.next();
 
         values = (String[]) resultat.get(cmpId);
         if (values != null) {
@@ -500,7 +501,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
           + " AND userId=" + filterIdUser + " GROUP BY dateStat, componentId"
           + " ORDER BY dateStat ASC, SUM(countVolume) DESC";
 
-      Hashtable hashUser = getHashtableFromQuery(selectQuery);
+      Hashtable<String, String> hashUser = getHashtableFromQuery(selectQuery);
 
       it = hashUser.keySet().iterator();
       while (it.hasNext()) {
@@ -517,8 +518,8 @@ public class SilverStatisticsPeasDAOAccesVolume {
     return resultat;
   }
 
-  private static Collection getYearsConnexion(ResultSet rs) throws SQLException {
-    ArrayList myList = new ArrayList();
+  private static Collection<String> getYearsConnexion(ResultSet rs) throws SQLException {
+    List<String> myList = new ArrayList<String>();
     String year = "";
 
     while (rs.next()) {
@@ -530,11 +531,11 @@ public class SilverStatisticsPeasDAOAccesVolume {
     return myList;
   }
 
-  private static Collection getYearsFromQuery(String selectQuery)
+  private static Collection<String> getYearsFromQuery(String selectQuery)
       throws SQLException {
     Statement stmt = null;
     ResultSet rs = null;
-    Collection years = null;
+    Collection<String> years = null;
     Connection myCon = getConnection();
 
     try {

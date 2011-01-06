@@ -202,10 +202,30 @@ public interface ArrayPane extends SimpleGraphicElement {
   public void setCellsConfiguration(int spacing, int padding, int borderWidth);
 
   public void setPaginationJavaScriptCallback(String callback);
-  
+
   public void setSummary(String summary);
-  
+
   public String getSummary();
-  
+
   public void setXHTML(boolean isXHTML);
+
+  /**
+   * @return true if the current array pane can be exported, false else if
+   */
+  public boolean getExportData();
+
+  /**
+   * @param enable/disable export data from array pane
+   */
+  public void setExportData(boolean export);
+
+  /**
+   * @return export data URL used to export current ArrayPane data
+   */
+  public String getExportDataURL();
+
+  /**
+   * @param exportDataURL the URL to set used to export array pane data
+   */
+  public void setExportDataURL(String exportDataURL);
 }

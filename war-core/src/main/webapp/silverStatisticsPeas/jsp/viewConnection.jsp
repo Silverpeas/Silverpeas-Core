@@ -26,55 +26,57 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkSilverStatistics.jsp" %>
+<%-- Include tag library --%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+
+<c:set var="ctxPath" value="${pageContext.request.contextPath}"/>
 
 <%
 //Recuperation des parametres
 	ArrayLine  arrayLine = null;
 	Iterator   iter = null;
-	Collection cMonthBegin = (Collection)request.getAttribute("MonthBegin");
 	String monthBegin = "";
-	Collection cYearBegin = (Collection)request.getAttribute("YearBegin");
 	String yearBegin = "";
-	Collection cMonthEnd = (Collection)request.getAttribute("MonthEnd");	
 	String monthEnd = "";
-	Collection cYearEnd = (Collection)request.getAttribute("YearEnd");
 	String yearEnd = "";
 	Collection cActorDetail = (Collection)request.getAttribute("ActorDetail");	
 	String actorDetail = "";
 	String filterType = (String)request.getAttribute("FilterType");
 	String filterLib = (String)request.getAttribute("FilterLib");
 	String filterId = (String)request.getAttribute("FilterId");
-    Collection cResultData = (Collection)request.getAttribute("ResultData");
-    String userProfile = (String)request.getAttribute("UserProfile");
-    
-    String[] item = null;
-    String theValue = null;
-    int indexOfSelected;
+  Collection cResultData = (Collection)request.getAttribute("ResultData");
+  String userProfile = (String)request.getAttribute("UserProfile");
+  
+  String[] item = null;
+  String theValue = null;
+  int indexOfSelected;
 
 %>
 
 <%
-	browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics"));
-    browseBar.setComponentName(resources.getString("silverStatisticsPeas.Connections"));
-    browseBar.setPath(resources.getString("silverStatisticsPeas.LoginNumber"));
+  browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics"));
+  browseBar.setComponentName(resources.getString("silverStatisticsPeas.Connections"));
+  browseBar.setPath(resources.getString("silverStatisticsPeas.LoginNumber"));
 
-	TabbedPane tabbedPane = gef.getTabbedPane();
-	tabbedPane.addTab(resources.getString("silverStatisticsPeas.usersWithSession"), m_context+"/RsilverStatisticsPeas/jsp/Main",false);
-	tabbedPane.addTab(resources.getString("silverStatisticsPeas.connectionNumber"), m_context+"/RsilverStatisticsPeas/jsp/ViewConnections",true);
-	tabbedPane.addTab(resources.getString("silverStatisticsPeas.connectionFrequence"), m_context+"/RsilverStatisticsPeas/jsp/ViewFrequence",false);
 %>
 
 <html>
-<HEAD>
-<TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
-<!--[ JAVASCRIPT ]-->
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<head>
+<title><fmt:message key="GML.popupTitle" /></title>
+<view:looknfeel />
 
-<SCRIPT LANGUAGE="JAVASCRIPT">
+<!--[ JAVASCRIPT ]-->
+<script type="text/javascript" src="<c:out value="${ctxPath}"/>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<c:out value="${ctxPath}"/>/util/javaScript/checkForm.js"></script>
+
+<script language="javascript">
 
 	// This function open a silverpeas window
 	function openSPWindow(fonction,windowName){
@@ -107,91 +109,101 @@
 	}
 	
 
-</SCRIPT>
+</script>
 
-</HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 onLoad="">
+</head>
+<body marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" onLoad="">
 <%
           out.println(window.printBefore());          
           if (userProfile.equals("A")) {
-			out.println(tabbedPane.print());
+%>
+<view:tabs>
+	<fmt:message var="userTabLabel" key="silverStatisticsPeas.usersWithSession" />
+	<view:tab label="${userTabLabel}" selected="false" action="${ctxPath}/RsilverStatisticsPeas/jsp/Main"></view:tab>
+	<fmt:message var="connectionLabel" key="silverStatisticsPeas.connectionNumber" />
+	<view:tab label="${connectionLabel}" selected="true" action="${ctxPath}/RsilverStatisticsPeas/jsp/ViewConnections"></view:tab>
+	<fmt:message var="frequenceLabel" key="silverStatisticsPeas.connectionFrequence" />
+	<view:tab label="${frequenceLabel}" selected="false" action="${ctxPath}/RsilverStatisticsPeas/jsp/ViewFrequence"></view:tab>
+</view:tabs>
+
+<% 
     	  }
           out.println(frame.printBefore());
           out.println(board.printBefore());
 %>
-<CENTER>
+<center>
+<form name="connexionFormulaire" action="ValidateViewConnection" method="post">
   <table width="100%" border="0" cellspacing="0" cellpadding="4">
-    <FORM name="connexionFormulaire" action="ValidateViewConnection" method="post">
       <tr> 
-        <td width="300" nowrap class=txtlibform><%=resources.getString("silverStatisticsPeas.since")%>&nbsp;:</td>
+        <td width="300" nowrap class=txtlibform><fmt:message key="silverStatisticsPeas.since" />&nbsp;:</td>
         <td nowrap> 
           <select name="MonthBegin" size="1">
-		    <%
-        	iter = cMonthBegin.iterator();
-        	while (iter.hasNext())
-        	{
-            	item = (String[]) iter.next();
-            	theValue = item[0];
-          		out.print("<option value="+ theValue +">"+resources.getString(item[1])+"</option>");
-          		indexOfSelected = theValue.indexOf("selected");
-          		if(indexOfSelected != -1)
-          			monthBegin = theValue.substring(0, indexOfSelected - 1);
-          	}
-          	%>
+			<c:forEach items="${requestScope['MonthBegin']}" var="mBegin" varStatus="status">
+				<c:set var="curValue" value="${mBegin[0]}" />
+				<c:set var="curSel" value="" />
+				<c:choose>
+					<c:when test="${fn:contains(curValue, 'selected')}">
+						<option value="${fn:substringBefore(curValue, ' selected')}" selected><fmt:message key="${mBegin[1]}" /></option>
+					</c:when>
+					<c:otherwise>
+						<option value="${curValue}"><fmt:message key="${mBegin[1]}" /></option>
+					</c:otherwise>
+				</c:choose>
+			</c:forEach>
           </select>
 	      &nbsp;&nbsp;
           <select name="YearBegin" size="1">
-		    <%
-        	iter = cYearBegin.iterator();
-        	while (iter.hasNext())
-        	{
-            	item = (String[]) iter.next();
-            	theValue = item[0];
-          		out.print("<option value="+ theValue +">"+item[1]+"</option>");
-          		indexOfSelected = theValue.indexOf("selected");
-          		if(indexOfSelected != -1)
-          			yearBegin = theValue.substring(0, indexOfSelected - 1);
-          	}
-          	%>
+			<c:forEach items="${requestScope['YearBegin']}" var="yBegin" varStatus="status">
+				<c:set var="curValue" value="${yBegin[0]}" />
+				<c:set var="curSel" value="" />
+				<c:choose>
+					<c:when test="${fn:contains(curValue, 'selected')}">
+						<option value="${fn:substringBefore(curValue, ' selected')}" selected><c:out value="${yBegin[1]}" /></option>
+					</c:when>
+					<c:otherwise>
+						<option value="${curValue}"><c:out value="${yBegin[1]}" /></option>
+					</c:otherwise>
+				</c:choose>
+			</c:forEach>
           </select>
         </td>
       </tr>
       <tr> 
-        <td nowrap class=txtlibform><%=resources.getString("silverStatisticsPeas.to")%>&nbsp;:</td>
+        <td nowrap class=txtlibform><fmt:message key="silverStatisticsPeas.to" />&nbsp;:</td>
         <td nowrap> 
           <select name="MonthEnd" size="1">
-		    <%
-        	iter = cMonthEnd.iterator();
-        	while (iter.hasNext())
-        	{
-            	item = (String[]) iter.next();
-            	theValue = item[0];
-          		out.print("<option value="+ theValue +">"+resources.getString(item[1])+"</option>");
-          		indexOfSelected = theValue.indexOf("selected");
-          		if(indexOfSelected != -1)
-          			monthEnd = theValue.substring(0, indexOfSelected - 1);
-          	}
-          	%>
+			<c:forEach items="${requestScope['MonthEnd']}" var="mEnd" varStatus="status">
+				<c:set var="curValue" value="${mEnd[0]}" />
+				<c:set var="curSel" value="" />
+				<c:choose>
+					<c:when test="${fn:contains(curValue, 'selected')}">
+						<option value="${fn:substringBefore(curValue, ' selected')}" selected><fmt:message key="${mEnd[1]}" /></option>
+					</c:when>
+					<c:otherwise>
+						<option value="${curValue}"><fmt:message key="${mEnd[1]}" /></option>
+					</c:otherwise>
+				</c:choose>
+			</c:forEach>
           </select>
         	&nbsp;&nbsp;
           <select name="YearEnd" size="1">
-		    <%
-        	iter = cYearEnd.iterator();
-        	while (iter.hasNext())
-        	{
-            	item = (String[]) iter.next();
-            	theValue = item[0];
-          		out.print("<option value="+ theValue +">"+item[1]+"</option>");
-          		indexOfSelected = theValue.indexOf("selected");
-          		if(indexOfSelected != -1)
-          			yearEnd = theValue.substring(0, indexOfSelected - 1);
-          	}
-          	%>
+			<c:forEach items="${requestScope['YearEnd']}" var="yEnd" varStatus="status">
+				<c:set var="curValue" value="${yEnd[0]}" />
+				<c:set var="curSel" value="" />
+				<c:choose>
+					<c:when test="${fn:contains(curValue, 'selected')}">
+						<option value="${fn:substringBefore(curValue, ' selected')}" selected><c:out value="${yEnd[1]}" /></option>
+					</c:when>
+					<c:otherwise>
+						<option value="${curValue}"><c:out value="${yEnd[1]}" /></option>
+					</c:otherwise>
+				</c:choose>
+			</c:forEach>		    
           </select>
         </td>
       </tr>
       <tr> 
-        <td nowrap class=txtlibform><%=resources.getString("GML.detail")%>&nbsp;:</td>
+        <td nowrap class=txtlibform><fmt:message key="GML.detail" />&nbsp;:</td>
         <td nowrap> 
           <select name="ActorDetail" size="1" onChange="changeDetail()">
 		    <%
@@ -210,7 +222,7 @@
         </td>
       </tr>
       <tr> 
-        <td nowrap class=txtlibform><%=resources.getString("silverStatisticsPeas.filter")+ " ("+resources.getString("silverStatisticsPeas.group")+ " - " + resources.getString("GML.user") + ")"%>&nbsp;:</td>
+        <td nowrap class=txtlibform><fmt:message key="silverStatisticsPeas.filter" />&nbsp;(<fmt:message key="silverStatisticsPeas.group" />&nbsp;-&nbsp;<fmt:message key="GML.user" />)&nbsp;:</td>
         <td nowrap> 
           <input type="text" name="FilterLib" value="<%=( filterLib == null ? "" : filterLib )%>" size="25" disabled>
 		  <input type="hidden" name="FilterType" value="<%=filterType%>">
@@ -219,20 +231,31 @@
           <a href=javascript:clearFilter()><img src="<%=resources.getIcon("silverStatisticsPeas.icoClearGroupUser")%>" align="absmiddle" alt="<%=resources.getString("silverStatisticsPeas.ClearUserPanelPeas")%>" border=0 title="<%=resources.getString("silverStatisticsPeas.ClearUserPanelPeas")%>"></a> 
         </td>
       </tr>
-	</FORM>    
   </table>
-  
+</form>
   <%
   	out.println(board.printAfter());
+  %>
+  <br>
+  <div id="stats_viewConnectionButton">
+  <center>
+  	<view:buttonPane>
+	  	<fmt:message key="GML.validate" var="labelValidate" />
+	  	<fmt:message key="GML.cancel" var="labelCancel" />
+	    <view:button label="${labelValidate}" action="javascript:validerForm()" ></view:button>
+	    <view:button label="${labelCancel}" action="javascript:document.cancelConnectionForm.submit()"></view:button>
+  	</view:buttonPane>
+  </center>
+  </div>
+  <br> 
   
-    ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton((Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:validerForm()", false));
-	buttonPane.addButton((Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:document.cancelConnectionForm.submit()", false));
-    out.println("<br><center>"+buttonPane.print()+"</center><br>");
-  
-  	  // Tableau
 
+  <% 
+  
+  	  	// Tableau
           ArrayPane arrayPane = gef.getArrayPane("List", "", request,session);
+          arrayPane.setExportData(true);
+          arrayPane.setExportDataURL(m_context + "/RsilverStatisticsPeas/jsp/ExportViewConnection");
 
           arrayPane.addArrayColumn(resources.getString("GML.name"));
           arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.connectionNumber"));
@@ -258,11 +281,11 @@
         	if(request.getAttribute("GraphicDistinctUser") != null && Boolean.TRUE.equals(request.getAttribute("GraphicDistinctUser"))) 
         	{
       %>
-		<img src="<%=m_context%>/ChartServlet/?chart=LOGIN_CHART&random=<%=(new Date()).getTime()%>">
+		<img src="<c:out value="${ctxPath}"/>/ChartServlet/?chart=LOGIN_CHART&random=<%=(new Date()).getTime()%>">
 	  <%
 			}
 	  %>
-		<img src="<%=m_context%>/ChartServlet/?chart=USER_CHART&random=<%=(new Date()).getTime()%>">
+		<img src="<c:out value="${ctxPath}"/>/ChartServlet/?chart=USER_CHART&random=<%=(new Date()).getTime()%>">
 	  </div>
       <%
         	iter = cResultData.iterator();
@@ -307,10 +330,38 @@
 				arrayLine.addArrayCellText("0");
 				arrayLine.addArrayCellText("0");
 	        }
+        	
         	out.println(arrayPane.print());
+			
+%>
+<%-- 
+   <view:arrayPane var="connectionArrayPane" >
+	<fmt:message var="gmlName" key="GML.name" />
+  	<view:arrayColumn title="${gmlName}" />
+  	<fmt:message var="sspConNumberLabel" key="silverStatisticsPeas.connectionNumber" />
+  	<view:arrayColumn title="${sspConNumberLabel}" />
+  	<fmt:message var="sspDurationAVG" key="silverStatisticsPeas.durationAvg" />
+  	<view:arrayColumn title="${sspDurationAVG}" />
+  	<c:forEach items="${requestScope['ResultData']}" var="lineResult">
+	  	<view:arrayLine>
+			<view:arrayCellText text="${lineResult[0]"></view:arrayCellText>
+			<view:arrayCellText text="Coucou2"></view:arrayCellText>
+			<view:arrayCellText text="Coucou3"></view:arrayCellText>
+	  	</view:arrayLine>
+  	</c:forEach>
+  	<view:arrayLine>
+		<view:arrayCellText text="Coucou1"></view:arrayCellText>
+		<view:arrayCellText text="Coucou2"></view:arrayCellText>
+		<view:arrayCellText text="Coucou3"></view:arrayCellText>
+  	</view:arrayLine>
+  </view:arrayPane>
+--%>
+
+<%        	
 		}
-  %> 
-</CENTER>
+%> 
+</center>
+
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());
@@ -318,5 +369,5 @@ out.println(window.printAfter());
 	
 <form name="cancelConnectionForm" action="ViewConnections" method="post">
 </form>
-</BODY>
-</HTML>
+</body>
+</html>

@@ -22,38 +22,63 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.silverStatisticsPeas.control;
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+ ---*/
 
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+package com.stratelia.silverpeas.silverStatisticsPeas.vo;
+
+import java.io.Serializable;
+
+import com.silverpeas.util.ForeignPK;
+
 /**
- * Specific StatisticsPeasRuntime Exception
+ * Class declaration
+ * @author
  */
-public class SilverStatisticsPeasRuntimeException extends SilverpeasRuntimeException {
+public class AccessPublicationVO implements Serializable {
 
-  private static final long serialVersionUID = 2208742790780319098L;
+  private static final long serialVersionUID = 1L;
+  
+  private ForeignPK foreignPK;
+  private int nbAccess;
 
-  public SilverStatisticsPeasRuntimeException(String callingClass,
-      int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  /**
+   * Constructor declaration
+   * @param componentId
+   * @param objectId
+   * @param nbAccess
+   */
+  public AccessPublicationVO(ForeignPK foreignPK, int nbAccess) {
+    super();
+    this.foreignPK = foreignPK;
+    this.nbAccess = nbAccess;
+  }
+  
+  /**
+   * @return the foreignPK
+   */
+  public ForeignPK getForeignPK() {
+    return foreignPK;
   }
 
-  public SilverStatisticsPeasRuntimeException(String callingClass,
-      int errorLevel, String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  /**
+   * @param foreignPK the foreignPK to set
+   */
+  public void setForeignPK(ForeignPK foreignPK) {
+    this.foreignPK = foreignPK;
   }
 
-  public SilverStatisticsPeasRuntimeException(String callingClass,
-      int errorLevel, String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  /**
+   * @return the nbAccess
+   */
+  public int getNbAccess() {
+    return nbAccess;
   }
 
-  public SilverStatisticsPeasRuntimeException(String callingClass,
-      int errorLevel, String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
+  /**
+   * @param nbAccess the nbAccess to set
+   */
+  public void setNbAccess(int nbAccess) {
+    this.nbAccess = nbAccess;
   }
-
-  public String getModule() {
-    return "silverStatisticsPeas";
-  }
-
 }

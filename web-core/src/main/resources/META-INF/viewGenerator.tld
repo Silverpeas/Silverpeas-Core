@@ -374,6 +374,20 @@
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
+    <attribute>
+      <description>Export data parameter.</description>
+      <name>export</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
+    <attribute>
+      <description>URL to be used to export data.</description>
+      <name>exportURL</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
   </tag>
   <tag>
     <description>Tag to create a column header for an ArrayPane</description>

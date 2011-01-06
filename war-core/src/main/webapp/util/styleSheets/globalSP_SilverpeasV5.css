@@ -3364,3 +3364,29 @@ ul#attachmentList li.attachmentListItem .lineMain {
 
 
 /*- [ comment END ] ------------------------- */
+
+/*- [ statictics BEGIN ] -------------------- */
+#stats_viewConnectionButton {
+	margin-top: 10px;
+}
+
+/*- [Specific export BEGIN ] ---------------- */
+div.exportlinks {
+  background-color: #eee;
+  border: 1px dotted #999;
+  padding: 8px 4px 2px 4px;
+  margin: 2px auto 10px auto;
+  width: 79%;
+}
+
+span.export {
+  padding: 0 4px 1px 20px;
+  display: inline;
+  display: inline-block;
+  cursor: pointer;
+}
+
+span.csv {
+  background-image: url(../icons/fileType/ico_file_csv.png);
+  background-repeat:no-repeat;
+}

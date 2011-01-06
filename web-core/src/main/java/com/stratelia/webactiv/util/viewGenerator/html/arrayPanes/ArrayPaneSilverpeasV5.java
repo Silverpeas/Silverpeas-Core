@@ -23,7 +23,12 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.PageContext;
 
@@ -31,11 +36,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.ecs.xhtml.address;
 
 /**
  * The default implementation of ArrayPane interface.
@@ -71,6 +71,12 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
   private String paginationJavaScriptCallback = null;
 
   /**
+   * Parameter attribute to enable/disable ArrayPane export feature
+   */
+  private boolean exportData = false;
+  private String exportDataURL = null;
+
+  /**
    * Default constructor as this class may be instanciated by method newInstance(), constructor
    * contains no parameter. init methods must be used to initialize properly the instance.
    * @see init
@@ -91,7 +97,6 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
   }
 
   /**
-   *
    * @param name
    * @param request
    * @param session
@@ -167,7 +172,6 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
   /**
    * This method allows for the change of cell presentation values. A negative value means 'do not
    * change this value'
-   *
    * @param spacing
    * @param padding
    * @param borderWidth
@@ -350,8 +354,7 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
    * @see
    */
   private String printPseudoColumn() {
-    return ("<td><img src=\"" + GraphicElementFactory.getIconsPath()
-        + "/1px.gif\" width=\"2\" height=\"2\" alt=\"\"/></td>");
+    return ("<td><img src=\"" + GraphicElementFactory.getIconsPath() + "/1px.gif\" width=\"2\" height=\"2\" alt=\"\"/></td>");
   }
 
   /**
@@ -380,13 +383,14 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
     }
     url.append(ACTION_PARAMETER_NAME).append("=ChangePage").append(sep).
         append(TARGET_PARAMETER_NAME).append("=").append(getName()).append(sep).append(
-        INDEX_PARAMETER_NAME).append("=");
+            INDEX_PARAMETER_NAME).append("=");
     pagination.setBaseURL(url.toString());
 
     int columnsCount = columns.size();
 
     if ((lines.size() > 0) && (getColumnToSort() != 0) && (getColumnToSort() <= columnsCount)) {
-      SilverTrace.info("viewgenerator", "ArrayPaneWA.print()", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.info("viewgenerator", "ArrayPaneSilverpeasV5.print()",
+          "root.MSG_GEN_PARAM_VALUE",
           "Tri des lignes");
       Collections.sort(lines);
     }
@@ -410,6 +414,15 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
       result.append("<td colspan=\"").append(columnsCount).append("\">");
       result.append("<img src=\"").append(getIconsPath()).append(
           "/1px.gif\" width=\"1\" height=\"1\" alt=\"\"/>");
+      result.append("</td>");
+      result.append("</tr>\n");
+    }
+    // Display ArrayPane Title
+    if (getTitle() != null) {
+      result.append("<tr class=\"titleLine\">");
+      result.append("<td class=\"txttitrecol\" colspan=\"")
+          .append(columnsCount).append("\">");
+      result.append(getTitle());
       result.append("</td>");
       result.append("</tr>\n");
     }
@@ -458,6 +471,16 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
     }
 
     result.append("</td></tr></table>\n");
+
+    // Add export data GUI
+    if (this.exportData) {
+      result.append("<div class=\"exportlinks\">");
+      result.append(gef.getMultilang().getString("GEF.export.label")).append(":");
+      result.append("<a href=\"").append(getUrl()).append(exportDataURL).append(
+          "\"><span class=\"export csv\">");
+      result.append(gef.getMultilang().getString("GEF.export.option.csv")).append("</span></a>");
+      result.append("</div>");
+    }
     return result.toString();
   }
 
@@ -535,4 +558,25 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
   public void setXHTML(boolean isXHTML) {
     this.isXHTML = isXHTML;
   }
+
+  @Override
+  public boolean getExportData() {
+    return exportData;
+  }
+
+  @Override
+  public void setExportData(boolean exportData) {
+    this.exportData = exportData;
+  }
+
+  @Override
+  public String getExportDataURL() {
+    return this.exportDataURL;
+  }
+
+  @Override
+  public void setExportDataURL(String exportDataURL) {
+    this.exportDataURL = exportDataURL;
+  }
+
 }

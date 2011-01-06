@@ -153,6 +153,10 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
         JobManagerService.LEVEL_OPERATION, m_context
         + URLManager.getURL(URLManager.CMP_SILVERSTATISTICSPEAS)
         + "ViewVolumeServices", null, false);
+    JobManagerService jSTAT4 = new JobManagerService("34", "JSTAT4",
+        JobManagerService.LEVEL_OPERATION, m_context
+        + URLManager.getURL(URLManager.CMP_SILVERSTATISTICSPEAS)
+        + "ViewPDCAccess", null, false);
 
     boolean kmServiceAllowed = false;
     int nbServices = 0;
@@ -163,7 +167,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
       jDesigner = new JobManagerService("1", "JD",
           JobManagerService.LEVEL_SERVICE, null, id, false);
 
-      String[] id2 = { "31", "32", "33" };
+      String[] id2 = { "31", "32", "33", "34" };
       jSTAT = new JobManagerService("3", "JSTAT",
           JobManagerService.LEVEL_SERVICE, null, id2, false);
 
@@ -228,7 +232,8 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
       services.put(jSTAT1.getId(), jSTAT1);
       services.put(jSTAT2.getId(), jSTAT2);
       services.put(jSTAT3.getId(), jSTAT3);
-
+      services.put(jSTAT4.getId(), jSTAT4);
+      
       // services.put(jRepositoryImport.getId(), jRepositoryImport);
       // services.put(jImportExport.getId(), jImportExport);
     } else if (isManager) {

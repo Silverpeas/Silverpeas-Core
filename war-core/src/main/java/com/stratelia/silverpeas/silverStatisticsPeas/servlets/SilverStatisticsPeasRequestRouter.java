@@ -21,7 +21,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.silverStatisticsPeas.servlets;
+
+import java.util.Calendar;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.jCharts.Chart;
+import org.jCharts.nonAxisChart.PieChart2D;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -29,11 +38,11 @@ import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silverStatisticsPeas.control.SilverStatisticsPeasSessionController;
+import com.stratelia.silverpeas.silverStatisticsPeas.vo.AxisStatsFilter;
+import com.stratelia.silverpeas.silverStatisticsPeas.vo.CrossAxisStatsFilter;
+import com.stratelia.silverpeas.silverStatisticsPeas.vo.CrossStatisticVO;
+import com.stratelia.silverpeas.silverStatisticsPeas.vo.StatisticVO;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import java.util.Calendar;
-import javax.servlet.http.HttpServletRequest;
-import org.jCharts.Chart;
-import org.jCharts.nonAxisChart.PieChart2D;
 
 /**
  * Class declaration
@@ -48,17 +57,18 @@ public class SilverStatisticsPeasRequestRouter extends ComponentRequestRouter {
    * @param mainSessionCtrl
    * @param componentContext
    * @return
+   * @see
    */
   @Override
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-    return new SilverStatisticsPeasSessionController(mainSessionCtrl, componentContext);
+    return new SilverStatisticsPeasSessionController(mainSessionCtrl,
+        componentContext);
   }
 
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
-   * @return 
    */
   @Override
   public String getSessionControlBeanName() {
@@ -77,14 +87,14 @@ public class SilverStatisticsPeasRequestRouter extends ComponentRequestRouter {
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
     String destination = "";
-    SilverStatisticsPeasSessionController silverStatisticsSC =
+    SilverStatisticsPeasSessionController statsSC =
         (SilverStatisticsPeasSessionController) componentSC;
     SilverTrace.info("silverStatisticsPeas",
         "SilverStatisticsPeasRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + silverStatisticsSC.getUserId()
-        + " Function=" + function);
+        "root.MSG_GEN_PARAM_VALUE", "User=" + statsSC.getUserId()
+            + " Function=" + function);
 
-    String userProfile = silverStatisticsSC.getUserProfile();
+    String userProfile = statsSC.getUserProfile();
     if ("A".equals(userProfile)
         || SilverStatisticsPeasSessionController.SPACE_ADMIN.equals(userProfile)) {
       request.setAttribute("UserProfile", userProfile);
@@ -103,46 +113,47 @@ public class SilverStatisticsPeasRequestRouter extends ComponentRequestRouter {
       if (function.startsWith("Main")) {
         // We only enter in the main case on the first access to the
         // silverStatistics pages
-        request.setAttribute("ConnectedUsersList", silverStatisticsSC.getConnectedUsersList());
+        request.setAttribute("ConnectedUsersList", statsSC
+            .getConnectedUsersList());
         destination = "/silverStatisticsPeas/jsp/connections.jsp";
       } else if (function.equals("KickSession")) {
-        silverStatisticsSC.KickSession(request.getParameter("theSessionId"));
-        request.setAttribute("ConnectedUsersList", silverStatisticsSC.getConnectedUsersList());
+        statsSC.KickSession(request.getParameter("theSessionId"));
+        request.setAttribute("ConnectedUsersList", statsSC.getConnectedUsersList());
         destination = "/silverStatisticsPeas/jsp/connections.jsp";
       } else if (function.equals("DisplayNotifySession")) {
-        request.setAttribute("userDetail", silverStatisticsSC.getTargetUserDetail(request.
-            getParameter("theUserId")));
+        request.setAttribute("userDetail", statsSC.getTargetUserDetail(request
+            .getParameter("theUserId")));
         request.setAttribute("action", "NotifyUser");
         destination = "/silverStatisticsPeas/jsp/writeMessage.jsp";
       } else if (function.equals("DisplayNotifyAllSessions")) {
         request.setAttribute("action", "NotifyAllUsers");
         destination = "/silverStatisticsPeas/jsp/writeMessage.jsp";
       } else if (function.equals("ToAlert")) {
-        silverStatisticsSC.notifySession(request.getParameter("theUserId"),
-            request.getParameter("messageAux"));
+        statsSC
+            .notifySession(request.getParameter("theUserId"), request.getParameter("messageAux"));
         request.setAttribute("action", "Close");
         destination = "/silverStatisticsPeas/jsp/writeMessage.jsp";
       } else if (function.equals("ToAlertAllUsers")) {
-        silverStatisticsSC.notifyAllSessions(silverStatisticsSC.getConnectedUsersList(), request.
-            getParameter("messageAux"));
+        statsSC.notifyAllSessions(statsSC.getConnectedUsersList(), request
+            .getParameter("messageAux"));
         request.setAttribute("action", "Close");
         destination = "/silverStatisticsPeas/jsp/writeMessage.jsp";
       } else if (function.startsWith("ViewConnections")) {
-        silverStatisticsSC.setMonthBegin(currentMonth);
-        silverStatisticsSC.setYearBegin(currentYear);
-        silverStatisticsSC.setMonthEnd(currentMonth);
-        silverStatisticsSC.setYearEnd(currentYear);
-        silverStatisticsSC.setActorDetail("0");
-        silverStatisticsSC.setFilterType("");
-        silverStatisticsSC.setFilterLib("");
-        silverStatisticsSC.setFilterId("");
+        statsSC.setMonthBegin(currentMonth);
+        statsSC.setYearBegin(currentYear);
+        statsSC.setMonthEnd(currentMonth);
+        statsSC.setYearEnd(currentYear);
+        statsSC.setActorDetail("0");
+        statsSC.setFilterType("");
+        statsSC.setFilterLib("");
+        statsSC.setFilterId("");
 
         // init formulaire
-        request.setAttribute("MonthBegin", silverStatisticsSC.getMonth(currentMonth));
-        request.setAttribute("YearBegin", silverStatisticsSC.getYearConnection(currentYear));
-        request.setAttribute("MonthEnd", silverStatisticsSC.getMonth(currentMonth));
-        request.setAttribute("YearEnd", silverStatisticsSC.getYearConnection(currentYear));
-        request.setAttribute("ActorDetail", silverStatisticsSC.getDetail("0"));
+        request.setAttribute("MonthBegin", statsSC.getMonth(currentMonth));
+        request.setAttribute("YearBegin", statsSC.getYearConnection(currentYear));
+        request.setAttribute("MonthEnd", statsSC.getMonth(currentMonth));
+        request.setAttribute("YearEnd", statsSC.getYearConnection(currentYear));
+        request.setAttribute("ActorDetail", statsSC.getDetail("0"));
         request.setAttribute("FilterType", "");
         request.setAttribute("FilterLib", "");
         request.setAttribute("FilterId", "");
@@ -150,407 +161,537 @@ public class SilverStatisticsPeasRequestRouter extends ComponentRequestRouter {
         destination = "/silverStatisticsPeas/jsp/viewConnection.jsp";
       } else if (function.startsWith("ValidateViewConnection")) {
         // save request param
-        saveConnectionParam(request, silverStatisticsSC);
+        saveConnectionParam(request, statsSC);
 
-        String hostMonthBegin = silverStatisticsSC.getMonthBegin();
-        String hostYearBegin = silverStatisticsSC.getYearBegin();
-        String hostMonthEnd = silverStatisticsSC.getMonthEnd();
-        String hostYearEnd = silverStatisticsSC.getYearEnd();
+        String hostMonthBegin = statsSC.getMonthBegin();
+        String hostYearBegin = statsSC.getYearBegin();
+        String hostMonthEnd = statsSC.getMonthEnd();
+        String hostYearEnd = statsSC.getYearEnd();
         String hostDateBegin = getRequestDate(hostYearBegin, hostMonthBegin);
         String hostDateEnd = getRequestDate(hostYearEnd, hostMonthEnd);
-        String hostStatDetail = silverStatisticsSC.getActorDetail();
-        String filterType = silverStatisticsSC.getFilterType();
-        String filterId = silverStatisticsSC.getFilterId();
+        String hostStatDetail = statsSC.getActorDetail();
+        String filterType = statsSC.getFilterType();
+        String filterId = statsSC.getFilterId();
 
         // compute result
-        if ("0".equals(hostStatDetail)) {
-          if (!StringUtil.isDefined(filterType)) {
-            request.setAttribute("ResultData", silverStatisticsSC.getStatsConnexionAllAll(
-                hostDateBegin, hostDateEnd));
+        if ("0".equals(hostStatDetail))// All
+        {
+          if (!StringUtil.isDefined(filterType)) // no filter
+          {
+            request.setAttribute("ResultData", statsSC.getStatsConnexionAllAll(hostDateBegin,
+                hostDateEnd));
+
             // graphiques
             request.setAttribute("GraphicDistinctUser", Boolean.TRUE);
-            Chart loginChart = silverStatisticsSC.getDistinctUserConnectionsChart(hostDateBegin,
-                hostDateEnd);
+            Chart loginChart = statsSC.getDistinctUserConnectionsChart(hostDateBegin, hostDateEnd);
             request.getSession(true).setAttribute(ChartServlet.LOGINCHART, loginChart);
-            Chart userChart = silverStatisticsSC.getUserConnectionsChart(hostDateBegin, hostDateEnd);
+
+            Chart userChart = statsSC.getUserConnectionsChart(hostDateBegin, hostDateEnd);
             request.getSession(true).setAttribute(ChartServlet.USERCHART,
                 userChart);
 
-          } else if ("0".equals(filterType)) {
-            // filter group
+          } else if ("0".equals(filterType)) // filter group
+          {
             request.setAttribute("ResultData",
-                silverStatisticsSC.getStatsConnexionAllGroup(hostDateBegin,
+                statsSC.getStatsConnexionAllGroup(hostDateBegin,
+                    hostDateEnd, filterId));
+
+            // graphiques
+            Chart userChart = statsSC.getUserConnectionsGroupChart(
+                hostDateBegin, hostDateEnd, filterId);
+            request.getSession(true).setAttribute(ChartServlet.USERCHART,
+                userChart);
+          } else if ("1".equals(filterType)) // filter user
+          {
+            request.setAttribute("ResultData", statsSC.getStatsConnexionAllUser(hostDateBegin,
                 hostDateEnd, filterId));
 
             // graphiques
-            Chart userChart = silverStatisticsSC.getUserConnectionsGroupChart(
-                hostDateBegin, hostDateEnd, filterId);
-            request.getSession(true).setAttribute(ChartServlet.USERCHART,
-                userChart);
-          } else if (filterType.equals("1")) // filter user
-          {
-            request.setAttribute("ResultData", silverStatisticsSC.getStatsConnexionAllUser(
-                hostDateBegin, hostDateEnd,
-                filterId));
-
-            // graphiques
-            Chart userChart = silverStatisticsSC.getUserConnectionsUserChart(
-                hostDateBegin, hostDateEnd, filterId);
-            request.getSession(true).setAttribute(ChartServlet.USERCHART,
-                userChart);
+            Chart userChart =
+                statsSC.getUserConnectionsUserChart(hostDateBegin, hostDateEnd, filterId);
+            request.getSession(true).setAttribute(ChartServlet.USERCHART, userChart);
           }
-        } else if (hostStatDetail.equals("1"))// Groups
+        } else if ("1".equals(hostStatDetail))// Groups
         {
           if (filterType.equals("")) // no filter
           {
-            request.setAttribute("ResultData", silverStatisticsSC.getStatsConnexionGroupAll(
-                hostDateBegin, hostDateEnd));
+            request.setAttribute("ResultData", statsSC
+                .getStatsConnexionGroupAll(hostDateBegin, hostDateEnd));
 
             String entiteId = request.getParameter("EntiteId");
 
             if (entiteId != null) {
               // graphiques
-              Chart userChart = silverStatisticsSC.getUserConnectionsGroupChart(hostDateBegin,
-                  hostDateEnd, entiteId);
+              Chart userChart =
+                  statsSC.getUserConnectionsGroupChart(hostDateBegin, hostDateEnd, entiteId);
               request.getSession(true).setAttribute(ChartServlet.USERCHART, userChart);
             } else {
               // graphiques
-              Chart userChart = silverStatisticsSC.getUserConnectionsChart(
-                  hostDateBegin, hostDateEnd);
-              request.getSession(true).setAttribute(ChartServlet.USERCHART,
-                  userChart);
+              Chart userChart = statsSC.getUserConnectionsChart(hostDateBegin, hostDateEnd);
+              request.getSession(true).setAttribute(ChartServlet.USERCHART, userChart);
             }
-          } else if (filterType.equals("0")) // filter group
+          } else if ("0".equals(filterType)) // filter group
           {
-            request.setAttribute("ResultData", silverStatisticsSC.getStatsConnexionGroupUser(
-                hostDateBegin, hostDateEnd, filterId));
+            request.setAttribute("ResultData", statsSC.getStatsConnexionGroupUser(hostDateBegin,
+                hostDateEnd, filterId));
 
             // graphiques
-            Chart userChart = silverStatisticsSC.getUserConnectionsGroupChart(
-                hostDateBegin, hostDateEnd, filterId);
+            Chart userChart =
+                statsSC.getUserConnectionsGroupChart(hostDateBegin, hostDateEnd, filterId);
             request.getSession(true).setAttribute(ChartServlet.USERCHART, userChart);
-          } // filter user return no result else if (filterType.equals("1")) 
+          }
         } else if (hostStatDetail.equals("2"))// Users
         {
-          if (filterType.equals("")) // no filter
+          if (!StringUtil.isDefined(filterType)) // no filter
           {
-            request.setAttribute("ResultData", silverStatisticsSC.getStatsConnexionUserAll(
-                hostDateBegin, hostDateEnd));
+            request.setAttribute("ResultData", statsSC.getStatsConnexionUserAll(hostDateBegin,
+                hostDateEnd));
+
             String entiteId = request.getParameter("EntiteId");
 
             if (entiteId != null) {
               // graphiques
-              Chart userChart = silverStatisticsSC.getUserConnectionsUserChart(hostDateBegin,
-                  hostDateEnd, entiteId);
+              Chart userChart =
+                  statsSC.getUserConnectionsUserChart(hostDateBegin, hostDateEnd, entiteId);
               request.getSession(true).setAttribute(ChartServlet.USERCHART, userChart);
             } else {
               // graphiques
-              Chart userChart = silverStatisticsSC.getUserConnectionsChart(hostDateBegin,
-                  hostDateEnd);
+              Chart userChart = statsSC.getUserConnectionsChart(hostDateBegin, hostDateEnd);
               request.getSession(true).setAttribute(ChartServlet.USERCHART, userChart);
             }
-          } // else if (filterType.equals("0"))  filter group retruns no result
-          else if (filterType.equals("1")) // filter user
+          } else if (filterType.equals("1")) // filter user
           {
-            request.setAttribute("ResultData",
-                silverStatisticsSC.getStatsConnexionUserUser(hostDateBegin,
+            request.setAttribute("ResultData", statsSC.getStatsConnexionUserUser(hostDateBegin,
                 hostDateEnd, filterId));
 
             // graphiques
-            Chart userChart = silverStatisticsSC.getUserConnectionsUserChart(
-                hostDateBegin, hostDateEnd, filterId);
-            request.getSession(true).setAttribute(ChartServlet.USERCHART,
-                userChart);
+            Chart userChart =
+                statsSC.getUserConnectionsUserChart(hostDateBegin, hostDateEnd, filterId);
+            request.getSession(true).setAttribute(ChartServlet.USERCHART, userChart);
           }
         }
 
-        restoreConnectionParam(request, silverStatisticsSC);
+        restoreConnectionParam(request, statsSC);
         destination = "/silverStatisticsPeas/jsp/viewConnection.jsp";
+      } else if (function.startsWith("ExportViewConnection")) {
+        String hostMonthBegin = statsSC.getMonthBegin();
+        String hostYearBegin = statsSC.getYearBegin();
+        String hostMonthEnd = statsSC.getMonthEnd();
+        String hostYearEnd = statsSC.getYearEnd();
+        String hostDateBegin = getRequestDate(hostYearBegin, hostMonthBegin);
+        String hostDateEnd = getRequestDate(hostYearEnd, hostMonthEnd);
+        String hostStatDetail = statsSC.getActorDetail();
+        String filterType = statsSC.getFilterType();
+        String filterId = statsSC.getFilterId();
+
+        // compute result
+        if ("0".equals(hostStatDetail))// All
+        {
+          if ("".equals(filterType)) { // no filter
+            request.setAttribute("ResultData", statsSC.getStatsConnexionAllAll(hostDateBegin,
+                hostDateEnd));
+          } else if ("0".equals(filterType)) { // filter group
+            request.setAttribute("ResultData", statsSC.getStatsConnexionAllGroup(hostDateBegin,
+                hostDateEnd, filterId));
+
+          } else if ("1".equals(filterType)) { // filter user
+            request.setAttribute("ResultData", statsSC.getStatsConnexionAllUser(hostDateBegin,
+                hostDateEnd, filterId));
+          }
+        } else if ("1".equals(hostStatDetail)) { // Groups
+          if ("".equals(filterType)) { // no filter
+            request.setAttribute("ResultData", statsSC
+                .getStatsConnexionGroupAll(hostDateBegin, hostDateEnd));
+          } else if ("0".equals(filterType)) { // filter group
+            request.setAttribute("ResultData", statsSC
+                .getStatsConnexionGroupUser(hostDateBegin, hostDateEnd, filterId));
+          }
+        } else if (hostStatDetail.equals("2")) { // Users
+          if ("".equals(filterType)) { // no filter
+            request.setAttribute("ResultData", statsSC
+                .getStatsConnexionUserAll(hostDateBegin, hostDateEnd));
+          } else if ("1".equals(filterType)) { // filter user
+            request.setAttribute("ResultData",
+                statsSC.getStatsConnexionUserUser(hostDateBegin, hostDateEnd, filterId));
+          }
+        }
+
+        destination = "/silverStatisticsPeas/jsp/exportViewConnection.jsp";
       } else if (function.startsWith("CallUserPanel")) {
         // save request param
-        saveConnectionParam(request, silverStatisticsSC);
+        saveConnectionParam(request, statsSC);
 
         // init user panel
-        destination = silverStatisticsSC.initUserPanel();
+        destination = statsSC.initUserPanel();
       } else if (function.startsWith("ReturnFromUserPanel")) {
         // get user panel data (update FilterType and FilterLib, FilterId)
-        silverStatisticsSC.retourUserPanel();
+        statsSC.retourUserPanel();
 
         // restore request param
-        restoreConnectionParam(request, silverStatisticsSC);
+        restoreConnectionParam(request, statsSC);
 
         destination = "/silverStatisticsPeas/jsp/viewConnection.jsp";
       } else if (function.startsWith("ViewFrequence")) {
-        silverStatisticsSC.setMonthBegin(currentMonth);
-        silverStatisticsSC.setYearBegin(currentYear);
-        silverStatisticsSC.setMonthEnd(currentMonth);
-        silverStatisticsSC.setYearEnd(currentYear);
-        silverStatisticsSC.setFrequenceDetail("0");
+        statsSC.setMonthBegin(currentMonth);
+        statsSC.setYearBegin(currentYear);
+        statsSC.setMonthEnd(currentMonth);
+        statsSC.setYearEnd(currentYear);
+        statsSC.setFrequenceDetail("0");
 
         // init formulaire
-        request.setAttribute("MonthBegin", silverStatisticsSC.getMonth(currentMonth));
-        request.setAttribute("YearBegin", silverStatisticsSC.getYearConnection(currentYear));
-        request.setAttribute("MonthEnd", silverStatisticsSC.getMonth(currentMonth));
-        request.setAttribute("YearEnd", silverStatisticsSC.getYearConnection(currentYear));
-        request.setAttribute("FrequenceDetail", silverStatisticsSC.getFrequenceDetail("0"));
+        request.setAttribute("MonthBegin", statsSC.getMonth(currentMonth));
+        request.setAttribute("YearBegin", statsSC.getYearConnection(currentYear));
+        request.setAttribute("MonthEnd", statsSC.getMonth(currentMonth));
+        request.setAttribute("YearEnd", statsSC.getYearConnection(currentYear));
+        request.setAttribute("FrequenceDetail", statsSC.getFrequenceDetail("0"));
 
         destination = "/silverStatisticsPeas/jsp/viewFrequence.jsp";
       } else if (function.startsWith("ValidateViewFrequence")) {
         // save request param
         String hostMonthBegin = request.getParameter("MonthBegin");
         if (hostMonthBegin != null && !hostMonthBegin.equals("")) {
-          silverStatisticsSC.setMonthBegin(request.getParameter("MonthBegin"));
-          silverStatisticsSC.setYearBegin(request.getParameter("YearBegin"));
-          silverStatisticsSC.setMonthEnd(request.getParameter("MonthEnd"));
-          silverStatisticsSC.setYearEnd(request.getParameter("YearEnd"));
-          silverStatisticsSC.setFrequenceDetail(request.getParameter("FrequenceDetail"));
+          statsSC.setMonthBegin(request.getParameter("MonthBegin"));
+          statsSC.setYearBegin(request.getParameter("YearBegin"));
+          statsSC.setMonthEnd(request.getParameter("MonthEnd"));
+          statsSC.setYearEnd(request.getParameter("YearEnd"));
+          statsSC.setFrequenceDetail(request.getParameter("FrequenceDetail"));
         }
 
-        hostMonthBegin = silverStatisticsSC.getMonthBegin();
-        String hostYearBegin = silverStatisticsSC.getYearBegin();
-        String hostMonthEnd = silverStatisticsSC.getMonthEnd();
-        String hostYearEnd = silverStatisticsSC.getYearEnd();
+        hostMonthBegin = statsSC.getMonthBegin();
+        String hostYearBegin = statsSC.getYearBegin();
+        String hostMonthEnd = statsSC.getMonthEnd();
+        String hostYearEnd = statsSC.getYearEnd();
         String hostDateBegin = getRequestDate(hostYearBegin, hostMonthBegin);
         String hostDateEnd = getRequestDate(hostYearEnd, hostMonthEnd);
-        String hostStatDetail = silverStatisticsSC.getFrequenceDetail();
+        String hostStatDetail = statsSC.getFrequenceDetail();
 
         // graphiques
-        Chart userFqChart = silverStatisticsSC.getUserConnectionsFqChart(
+        Chart userFqChart = statsSC.getUserConnectionsFqChart(
             hostDateBegin, hostDateEnd, hostStatDetail);
-        request.getSession(true).setAttribute(ChartServlet.USERFQCHART,
-            userFqChart);
+        request.getSession(true).setAttribute(ChartServlet.USERFQCHART, userFqChart);
         request.setAttribute("Graphic", Boolean.TRUE);
 
-        request.setAttribute("MonthBegin", silverStatisticsSC.getMonth(silverStatisticsSC.
-            getMonthBegin()));
-        request.setAttribute("YearBegin", silverStatisticsSC.getYearConnection(silverStatisticsSC.
-            getYearBegin()));
-        request.setAttribute("MonthEnd", silverStatisticsSC.getMonth(
-            silverStatisticsSC.getMonthEnd()));
-        request.setAttribute("YearEnd", silverStatisticsSC.getYearConnection(silverStatisticsSC.
-            getYearEnd()));
-        request.setAttribute("FrequenceDetail", silverStatisticsSC.getFrequenceDetail(silverStatisticsSC.
-            getFrequenceDetail()));
+        request.setAttribute("MonthBegin", statsSC.getMonth(statsSC.getMonthBegin()));
+        request.setAttribute("YearBegin", statsSC.getYearConnection(statsSC.getYearBegin()));
+        request.setAttribute("MonthEnd", statsSC.getMonth(statsSC.getMonthEnd()));
+        request.setAttribute("YearEnd", statsSC.getYearConnection(statsSC.getYearEnd()));
+        request.setAttribute("FrequenceDetail", statsSC.getFrequenceDetail(statsSC
+            .getFrequenceDetail()));
 
         destination = "/silverStatisticsPeas/jsp/viewFrequence.jsp";
-      } // Onglet Acces
-      else if (function.startsWith("ViewAccess")) {
-        silverStatisticsSC.setAccessMonthBegin(currentMonth);
-        silverStatisticsSC.setAccessYearBegin(currentYear);
-        silverStatisticsSC.setAccessFilterLibGroup("");
-        silverStatisticsSC.setAccessFilterIdGroup("");
-        silverStatisticsSC.setAccessFilterLibUser("");
-        silverStatisticsSC.setAccessFilterIdUser("");
-        silverStatisticsSC.setAccessSpaceId("");
-        silverStatisticsSC.clearCurrentStats();
+      } else if (function.startsWith("ViewAccess")) {
+        // Onglet Acces
+        statsSC.setAccessMonthBegin(currentMonth);
+        statsSC.setAccessYearBegin(currentYear);
+        statsSC.setAccessFilterLibGroup("");
+        statsSC.setAccessFilterIdGroup("");
+        statsSC.setAccessFilterLibUser("");
+        statsSC.setAccessFilterIdUser("");
+        statsSC.setAccessSpaceId("");
+        statsSC.clearCurrentStats();
 
         // init formulaire access
-        request.setAttribute("MonthBegin", silverStatisticsSC.getMonth(currentMonth));
-        request.setAttribute("YearBegin", silverStatisticsSC.getYearAccess(currentYear));
-        request.setAttribute("FilterLibGroup", silverStatisticsSC.getAccessFilterLibGroup());
-        request.setAttribute("FilterIdGroup", silverStatisticsSC.getAccessFilterIdGroup());
-        request.setAttribute("FilterLibUser", silverStatisticsSC.getAccessFilterLibUser());
-        request.setAttribute("FilterIdUser", silverStatisticsSC.getAccessFilterIdUser());
-        request.setAttribute("SpaceId", silverStatisticsSC.getAccessSpaceId());
-        request.setAttribute("Path", silverStatisticsSC.getPath());
+        request.setAttribute("MonthBegin", statsSC.getMonth(currentMonth));
+        request.setAttribute("YearBegin", statsSC.getYearAccess(currentYear));
+        request.setAttribute("FilterLibGroup", statsSC.getAccessFilterLibGroup());
+        request.setAttribute("FilterIdGroup", statsSC.getAccessFilterIdGroup());
+        request.setAttribute("FilterLibUser", statsSC.getAccessFilterLibUser());
+        request.setAttribute("FilterIdUser", statsSC.getAccessFilterIdUser());
+        request.setAttribute("SpaceId", statsSC.getAccessSpaceId());
+        request.setAttribute("Path", statsSC.getPath());
 
         destination = "/silverStatisticsPeas/jsp/viewAccess.jsp";
       } else if (function.startsWith("ValidateViewAccess")) {
         // save request param
-        saveAccessVolumeParam(request, silverStatisticsSC);
+        saveAccessVolumeParam(request, statsSC);
 
-        String hostMonthBegin = silverStatisticsSC.getAccessMonthBegin();
-        String hostYearBegin = silverStatisticsSC.getAccessYearBegin();
-        String filterIdGroup = silverStatisticsSC.getAccessFilterIdGroup();
-        String filterIdUser = silverStatisticsSC.getAccessFilterIdUser();
-        String spaceId = silverStatisticsSC.getAccessSpaceId();
+        String hostMonthBegin = statsSC.getAccessMonthBegin();
+        String hostYearBegin = statsSC.getAccessYearBegin();
+        String filterIdGroup = statsSC.getAccessFilterIdGroup();
+        String filterIdUser = statsSC.getAccessFilterIdUser();
+        String spaceId = statsSC.getAccessSpaceId();
 
         // compute result
-        PieChart2D pieChart = silverStatisticsSC.getUserVentilChart(
+        PieChart2D pieChart = statsSC.getUserVentilChart(
             getRequestDate(hostYearBegin, hostMonthBegin), filterIdGroup,
             filterIdUser, spaceId);
         request.getSession(true).setAttribute(ChartServlet.USERVENTILCHART,
             pieChart);
-        request.setAttribute("StatsData", silverStatisticsSC.getCurrentStats());
+        request.setAttribute("StatsData", statsSC.getCurrentStats());
 
         // restore request param
-        restoreAccessParam(request, silverStatisticsSC);
+        restoreAccessParam(request, statsSC);
         destination = "/silverStatisticsPeas/jsp/viewAccess.jsp";
       } else if (function.startsWith("AccessCallUserPanelGroup")) {
         // save request param
-        saveAccessVolumeParam(request, silverStatisticsSC);
+        saveAccessVolumeParam(request, statsSC);
 
         // init user panel
-        destination = silverStatisticsSC.initAccessUserPanelGroup();
+        destination = statsSC.initAccessUserPanelGroup();
       } else if (function.startsWith("AccessReturnFromUserPanelGroup")) {
         // get user panel data (update FilterLib, FilterId)
-        silverStatisticsSC.retourAccessUserPanelGroup();
+        statsSC.retourAccessUserPanelGroup();
 
         // restore request param
-        restoreAccessParam(request, silverStatisticsSC);
+        restoreAccessParam(request, statsSC);
 
         destination = "/silverStatisticsPeas/jsp/viewAccess.jsp";
       } else if (function.startsWith("AccessCallUserPanelUser")) {
         // save request param
-        saveAccessVolumeParam(request, silverStatisticsSC);
+        saveAccessVolumeParam(request, statsSC);
 
         // init user panel
-        destination = silverStatisticsSC.initAccessUserPanelUser();
+        destination = statsSC.initAccessUserPanelUser();
       } else if (function.startsWith("AccessReturnFromUserPanelUser")) {
         // get user panel data (update FilterLib, FilterId)
-        silverStatisticsSC.retourAccessUserPanelUser();
+        statsSC.retourAccessUserPanelUser();
 
         // restore request param
-        restoreAccessParam(request, silverStatisticsSC);
+        restoreAccessParam(request, statsSC);
 
         destination = "/silverStatisticsPeas/jsp/viewAccess.jsp";
       } else if (function.startsWith("ExportAccess.txt")) {
         // compute result
-        request.setAttribute("FilterIdGroup", silverStatisticsSC.getAccessFilterIdGroup());
-        request.setAttribute("FilterIdUser", silverStatisticsSC.getAccessFilterIdUser());
-        request.setAttribute("StatsData", silverStatisticsSC.getCurrentStats());
+        request.setAttribute("FilterIdGroup", statsSC.getAccessFilterIdGroup());
+        request.setAttribute("FilterIdUser", statsSC.getAccessFilterIdUser());
+        request.setAttribute("StatsData", statsSC.getCurrentStats());
 
         destination = "/silverStatisticsPeas/jsp/exportDataAccess.jsp";
       } else if (function.startsWith("ViewEvolutionAccess")) {
         String entite = request.getParameter("Entite");
         String entiteId = request.getParameter("Id");
 
-        String filterLibGroup = silverStatisticsSC.getAccessFilterLibGroup();
-        String filterIdGroup = silverStatisticsSC.getAccessFilterIdGroup();
-        String filterLibUser = silverStatisticsSC.getAccessFilterLibUser();
-        String filterIdUser = silverStatisticsSC.getAccessFilterIdUser();
+        String filterLibGroup = statsSC.getAccessFilterLibGroup();
+        String filterIdGroup = statsSC.getAccessFilterIdGroup();
+        String filterLibUser = statsSC.getAccessFilterLibUser();
+        String filterIdUser = statsSC.getAccessFilterIdUser();
 
         // compute result
-        Chart lineChart = silverStatisticsSC.getEvolutionUserChart(entite,
-            entiteId, filterLibGroup, filterIdGroup, filterLibUser,
-            filterIdUser);
-        request.getSession(true).setAttribute(ChartServlet.EVOLUTIONUSERCHART,
-            lineChart);
-        request.setAttribute("StatsData", silverStatisticsSC.getCurrentStats());
+        Chart lineChart =
+            statsSC.getEvolutionUserChart(entite, entiteId, filterLibGroup, filterIdGroup,
+                filterLibUser, filterIdUser);
+        request.getSession(true).setAttribute(ChartServlet.EVOLUTIONUSERCHART, lineChart);
+        request.setAttribute("StatsData", statsSC.getCurrentStats());
 
         // restore request param
         request.setAttribute("Entite", entite);
         request.setAttribute("Id", entiteId);
-        restoreAccessParam(request, silverStatisticsSC);
+        restoreAccessParam(request, statsSC);
         destination = "/silverStatisticsPeas/jsp/viewEvolutionAccess.jsp";
-      } // Onglet Volume
-      else if (function.startsWith("ViewVolumeServices")) {
+      } else if (function.startsWith("ViewVolumeServices")) {
+        // Onglet Volume
         if (!userProfile.equals("A")) {
           return getDestination("ViewVolumePublication", componentSC, request);
         }
 
-        PieChart2D pieChart = silverStatisticsSC.getVolumeServicesChart();
-        request.getSession(true).setAttribute(ChartServlet.KMINSTANCESCHART,
-            pieChart);
-        request.setAttribute("StatsData", silverStatisticsSC.getCurrentStats());
+        PieChart2D pieChart = statsSC.getVolumeServicesChart();
+        request.getSession(true).setAttribute(ChartServlet.KMINSTANCESCHART, pieChart);
+        request.setAttribute("StatsData", statsSC.getCurrentStats());
 
         destination = "/silverStatisticsPeas/jsp/viewVolumeServices.jsp";
       } else if (function.startsWith("ViewVolumePublication")) {
-        silverStatisticsSC.setAccessMonthBegin(currentMonth);
-        silverStatisticsSC.setAccessYearBegin(currentYear);
-        silverStatisticsSC.setAccessFilterLibGroup("");
-        silverStatisticsSC.setAccessFilterIdGroup("");
-        silverStatisticsSC.setAccessFilterLibUser("");
-        silverStatisticsSC.setAccessFilterIdUser("");
-        silverStatisticsSC.setAccessSpaceId("");
-        silverStatisticsSC.clearCurrentStats();
+        statsSC.setAccessMonthBegin(currentMonth);
+        statsSC.setAccessYearBegin(currentYear);
+        statsSC.setAccessFilterLibGroup("");
+        statsSC.setAccessFilterIdGroup("");
+        statsSC.setAccessFilterLibUser("");
+        statsSC.setAccessFilterIdUser("");
+        statsSC.setAccessSpaceId("");
+        statsSC.clearCurrentStats();
 
         // init formulaire
-        request.setAttribute("MonthBegin", silverStatisticsSC.getMonth(currentMonth));
-        request.setAttribute("YearBegin", silverStatisticsSC.getYearVolume(currentYear));
-        request.setAttribute("FilterLibGroup", silverStatisticsSC.getAccessFilterLibGroup());
-        request.setAttribute("FilterIdGroup", silverStatisticsSC.getAccessFilterIdGroup());
-        request.setAttribute("FilterLibUser", silverStatisticsSC.getAccessFilterLibUser());
-        request.setAttribute("FilterIdUser", silverStatisticsSC.getAccessFilterIdUser());
-        request.setAttribute("SpaceId", silverStatisticsSC.getAccessSpaceId());
-        request.setAttribute("Path", silverStatisticsSC.getPath());
+        request.setAttribute("MonthBegin", statsSC.getMonth(currentMonth));
+        request.setAttribute("YearBegin", statsSC.getYearVolume(currentYear));
+        request.setAttribute("FilterLibGroup", statsSC.getAccessFilterLibGroup());
+        request.setAttribute("FilterIdGroup", statsSC.getAccessFilterIdGroup());
+        request.setAttribute("FilterLibUser", statsSC.getAccessFilterLibUser());
+        request.setAttribute("FilterIdUser", statsSC.getAccessFilterIdUser());
+        request.setAttribute("SpaceId", statsSC.getAccessSpaceId());
+        request.setAttribute("Path", statsSC.getPath());
 
         destination = "/silverStatisticsPeas/jsp/viewVolume.jsp";
       } else if (function.startsWith("ValidateViewVolume")) {
         // save request param
-        saveAccessVolumeParam(request, silverStatisticsSC);
+        saveAccessVolumeParam(request, statsSC);
 
-        String hostMonthBegin = silverStatisticsSC.getAccessMonthBegin();
-        String hostYearBegin = silverStatisticsSC.getAccessYearBegin();
-        String filterIdGroup = silverStatisticsSC.getAccessFilterIdGroup();
-        String filterIdUser = silverStatisticsSC.getAccessFilterIdUser();
-        String spaceId = silverStatisticsSC.getAccessSpaceId();
+        String hostMonthBegin = statsSC.getAccessMonthBegin();
+        String hostYearBegin = statsSC.getAccessYearBegin();
+        String filterIdGroup = statsSC.getAccessFilterIdGroup();
+        String filterIdUser = statsSC.getAccessFilterIdUser();
+        String spaceId = statsSC.getAccessSpaceId();
 
         // compute result
-        PieChart2D pieChart = silverStatisticsSC.getPubliVentilChart(
-            getRequestDate(hostYearBegin, hostMonthBegin), filterIdGroup,
-            filterIdUser, spaceId);
-        request.getSession(true).setAttribute(ChartServlet.PUBLIVENTILCHART,
-            pieChart);
-        request.setAttribute("StatsData", silverStatisticsSC.getCurrentStats());
+        PieChart2D pieChart =
+            statsSC.getPubliVentilChart(getRequestDate(hostYearBegin, hostMonthBegin),
+                filterIdGroup, filterIdUser, spaceId);
+        request.getSession(true).setAttribute(ChartServlet.PUBLIVENTILCHART, pieChart);
+        request.setAttribute("StatsData", statsSC.getCurrentStats());
 
         // restore request param
-        restoreVolumeParam(request, silverStatisticsSC);
+        restoreVolumeParam(request, statsSC);
 
         destination = "/silverStatisticsPeas/jsp/viewVolume.jsp";
       } else if (function.startsWith("VolumeCallUserPanelGroup")) {
         // save request param
-        saveAccessVolumeParam(request, silverStatisticsSC);
+        saveAccessVolumeParam(request, statsSC);
 
         // init user panel
-        destination = silverStatisticsSC.initVolumeUserPanelGroup();
+        destination = statsSC.initVolumeUserPanelGroup();
       } else if (function.startsWith("VolumeReturnFromUserPanelGroup")) {
         // get user panel data (update FilterLib, FilterId)
-        silverStatisticsSC.retourAccessUserPanelGroup();
+        statsSC.retourAccessUserPanelGroup();
 
         // restore request param
-        restoreVolumeParam(request, silverStatisticsSC);
+        restoreVolumeParam(request, statsSC);
 
         destination = "/silverStatisticsPeas/jsp/viewVolume.jsp";
       } else if (function.startsWith("VolumeCallUserPanelUser")) {
         // save request param
-        saveAccessVolumeParam(request, silverStatisticsSC);
+        saveAccessVolumeParam(request, statsSC);
 
         // init user panel
-        destination = silverStatisticsSC.initVolumeUserPanelUser();
+        destination = statsSC.initVolumeUserPanelUser();
       } else if (function.startsWith("VolumeReturnFromUserPanelUser")) {
         // get user panel data (update FilterLib, FilterId)
-        silverStatisticsSC.retourAccessUserPanelUser();
+        statsSC.retourAccessUserPanelUser();
 
         // restore request param
-        restoreVolumeParam(request, silverStatisticsSC);
+        restoreVolumeParam(request, statsSC);
 
         destination = "/silverStatisticsPeas/jsp/viewVolume.jsp";
-      } // Nbre de fichiers joints sur le serveur
+      }
+
+      // Nbre de fichiers joints sur le serveur
       else if (function.startsWith("ViewVolumeServer")) {
-        silverStatisticsSC.setAccessSpaceId(request.getParameter("SpaceId"));
-        String spaceId = silverStatisticsSC.getAccessSpaceId();
+        statsSC.setAccessSpaceId(request.getParameter("SpaceId"));
+        String spaceId = statsSC.getAccessSpaceId();
 
         // compute result
-        PieChart2D pieChart = silverStatisticsSC.getDocsVentilChart(spaceId);
-        request.getSession(true).setAttribute(ChartServlet.DOCVENTILCHART,
-            pieChart);
-        request.setAttribute("StatsData", silverStatisticsSC.getCurrentStats());
-        request.setAttribute("SpaceId", silverStatisticsSC.getAccessSpaceId());
-        request.setAttribute("Path", silverStatisticsSC.getPath());
+        PieChart2D pieChart = statsSC.getDocsVentilChart(spaceId);
+        request.getSession(true).setAttribute(ChartServlet.DOCVENTILCHART, pieChart);
+        request.setAttribute("StatsData", statsSC.getCurrentStats());
+        request.setAttribute("SpaceId", statsSC.getAccessSpaceId());
+        request.setAttribute("Path", statsSC.getPath());
 
         destination = "/silverStatisticsPeas/jsp/viewVolumeServer.jsp";
       } else if (function.startsWith("ViewVolumeSizeServer")) {
-        silverStatisticsSC.setAccessSpaceId(request.getParameter("SpaceId"));
-        String spaceId = silverStatisticsSC.getAccessSpaceId();
+        statsSC.setAccessSpaceId(request.getParameter("SpaceId"));
+        String spaceId = statsSC.getAccessSpaceId();
 
         // compute result
-        PieChart2D pieChart = silverStatisticsSC.getDocsSizeVentilChart(spaceId);
-        request.getSession(true).setAttribute(ChartServlet.DOCSIZEVENTILCHART,
-            pieChart);
-        request.setAttribute("StatsData", silverStatisticsSC.getCurrentStats());
-        request.setAttribute("SpaceId", silverStatisticsSC.getAccessSpaceId());
-        request.setAttribute("Path", silverStatisticsSC.getPath());
+        PieChart2D pieChart = statsSC.getDocsSizeVentilChart(spaceId);
+        request.getSession(true).setAttribute(ChartServlet.DOCSIZEVENTILCHART, pieChart);
+        request.setAttribute("StatsData", statsSC.getCurrentStats());
+        request.setAttribute("SpaceId", statsSC.getAccessSpaceId());
+        request.setAttribute("Path", statsSC.getPath());
 
         destination = "/silverStatisticsPeas/jsp/viewVolumeSizeServer.jsp";
       } else if (function.startsWith("ViewEvolutionVolumeSizeServer")) {
         // compute result
-        Chart lineChart = silverStatisticsSC.getEvolutionDocsSizeChart();
-        request.getSession(true).setAttribute(
-            ChartServlet.EVOLUTIONDOCSIZECHART, lineChart);
-        request.setAttribute("StatsData", silverStatisticsSC.getCurrentStats());
+        Chart lineChart = statsSC.getEvolutionDocsSizeChart();
+        request.getSession(true).setAttribute(ChartServlet.EVOLUTIONDOCSIZECHART, lineChart);
+        request.setAttribute("StatsData", statsSC.getCurrentStats());
 
         destination = "/silverStatisticsPeas/jsp/viewEvolutionVolumeSizeServer.jsp";
+      } else if (function.startsWith("ViewPDCAccess")) {
+        // Initialize statistics session controller parameter
+        statsSC.setMonthBegin(currentMonth);
+        statsSC.setYearBegin(currentYear);
+        statsSC.setMonthEnd(currentMonth);
+        statsSC.setYearEnd(currentYear);
+        statsSC.clearCurrentStats();
+
+        // init formulaire access
+        request.setAttribute("MonthBegin", statsSC.getMonth(statsSC.getMonthBegin()));
+        request.setAttribute("YearBegin", statsSC.getYearConnection(statsSC.getYearBegin()));
+        request.setAttribute("MonthEnd", statsSC.getMonth(statsSC.getMonthEnd()));
+        request.setAttribute("YearEnd", statsSC.getYearConnection(statsSC.getYearEnd()));
+        // Add setter on PDC
+        // request.setAttribute("PrimaryAxis", statsSC.getPrimaryAxis());
+        // request.setAttribute("StatsData", statsSC.getAxisStats(statsFilter));
+
+        destination = "/silverStatisticsPeas/jsp/viewAccessPDC.jsp";
+      } else if (function.startsWith("ValidateViewPDCAccess")) {
+        // save request param
+        saveAccessPDCParam(request, statsSC);
+
+        String monthBegin = getMonthParam(statsSC.getMonthBegin());
+        String yearBegin = statsSC.getYearBegin();
+        String monthEnd = getMonthParam(statsSC.getMonthEnd());
+        String yearEnd = statsSC.getYearEnd();
+
+        AxisStatsFilter axisStatsFilter =
+            new AxisStatsFilter(monthBegin, yearBegin, monthEnd, yearEnd);
+
+        // Retrieve selected axis from request
+        String axisId = request.getParameter("AxisId");
+        if (StringUtil.isDefined(axisId)) {
+          // set this data inside AxisStatsFilter
+          axisStatsFilter.setAxisId(Integer.parseInt(axisId));
+        }
+        String axisValue = request.getParameter("AxisValue");
+        if (StringUtil.isDefined(axisValue)) {
+          axisStatsFilter.setAxisValue(axisValue);
+        }
+
+        // compute result
+        List<StatisticVO> axisStats = statsSC.getAxisStats(axisStatsFilter);
+        // restore request param
+        request.setAttribute("StatsData", axisStats);
+        request.setAttribute("MonthBegin", statsSC.getMonth(statsSC.getMonthBegin()));
+        request.setAttribute("YearBegin", statsSC.getYearConnection(statsSC.getYearBegin()));
+        request.setAttribute("MonthEnd", statsSC.getMonth(statsSC.getMonthEnd()));
+        request.setAttribute("YearEnd", statsSC.getYearConnection(statsSC.getYearEnd()));
+
+        destination = "/silverStatisticsPeas/jsp/viewAccessPDC.jsp";
+      } else if (function.startsWith("ViewCrossPDCAccess")) {
+        statsSC.setMonthBegin(currentMonth);
+        statsSC.setYearBegin(currentYear);
+        statsSC.setMonthEnd(currentMonth);
+        statsSC.setYearEnd(currentYear);
+
+        statsSC.clearCurrentStats();
+
+        // init formulaire access
+        request.setAttribute("MonthBegin", statsSC.getMonth(statsSC.getMonthBegin()));
+        request.setAttribute("YearBegin", statsSC.getYearConnection(statsSC.getYearBegin()));
+        request.setAttribute("MonthEnd", statsSC.getMonth(statsSC.getMonthEnd()));
+        request.setAttribute("YearEnd", statsSC.getYearConnection(statsSC.getYearEnd()));
+        // Add setter on PDC
+        request.setAttribute("PrimaryAxis", statsSC.getPrimaryAxis());
+        // request.setAttribute("StatsData", statsSC.getAxisStats(statsFilter));
+        destination = "/silverStatisticsPeas/jsp/viewCrossPDCAccess.jsp";
+      } else if (function.startsWith("ValidateViewCrossPDCAccess")) {
+        // save request param
+        saveAccessPDCParam(request, statsSC);
+
+        String monthBegin = getMonthParam(statsSC.getMonthBegin());
+        String yearBegin = statsSC.getYearBegin();
+        String monthEnd = getMonthParam(statsSC.getMonthEnd());
+        String yearEnd = statsSC.getYearEnd();
+
+        // Retrieve selected axis from request
+        int firstAxisId = Integer.parseInt(request.getParameter("FirstAxis"));
+        int secondAxisId = Integer.parseInt(request.getParameter("SecondAxis"));
+
+        // Initialize cross axis stats filter
+        CrossAxisStatsFilter axisStatsFilter =
+            new CrossAxisStatsFilter(monthBegin, yearBegin, monthEnd, yearEnd, firstAxisId,
+                secondAxisId);
+
+        CrossStatisticVO crossAxisStats = statsSC.getCrossAxisStats(axisStatsFilter);
+
+        request.setAttribute("MonthBegin", statsSC.getMonth(statsSC.getMonthBegin()));
+        request.setAttribute("YearBegin", statsSC.getYearConnection(statsSC.getYearBegin()));
+        request.setAttribute("MonthEnd", statsSC.getMonth(statsSC.getMonthEnd()));
+        request.setAttribute("YearEnd", statsSC.getYearConnection(statsSC.getYearEnd()));
+        // Add PDC data inside request
+        request.setAttribute("PrimaryAxis", statsSC.getPrimaryAxis());
+        request.setAttribute("FirstAxis", firstAxisId);
+        request.setAttribute("SecondAxis", secondAxisId);
+        request.setAttribute("StatsData", crossAxisStats);
+
+        destination = "/silverStatisticsPeas/jsp/viewCrossPDCAccess.jsp";
       } else {
         destination = "/silverStatisticsPeas/jsp/" + function;
       }
@@ -566,84 +707,120 @@ public class SilverStatisticsPeasRequestRouter extends ComponentRequestRouter {
     return destination;
   }
 
+  /**
+   * @param monthParam string month parameter
+   * @return String representation of the month with two digits
+   */
+  private String getMonthParam(String monthParam) {
+    String monthBegin = "" + (Integer.parseInt(monthParam) + 1);
+    if (monthBegin.length() < 2) {
+      monthBegin = "0" + monthBegin;
+    }
+    return monthBegin;
+  }
+
+  /**
+   * Set statistics session controller attributes from HttpServletRequest
+   * @param request which contains the parameters
+   * @param statsSC the statistics session controller Object
+   */
   private void saveConnectionParam(HttpServletRequest request,
-      SilverStatisticsPeasSessionController silverStatisticsSC) {
+      SilverStatisticsPeasSessionController statsSC) {
     String hostMonthBegin = request.getParameter("MonthBegin");
     if (hostMonthBegin != null && !hostMonthBegin.equals("")) {
-      silverStatisticsSC.setMonthBegin(request.getParameter("MonthBegin"));
-      silverStatisticsSC.setYearBegin(request.getParameter("YearBegin"));
-      silverStatisticsSC.setMonthEnd(request.getParameter("MonthEnd"));
-      silverStatisticsSC.setYearEnd(request.getParameter("YearEnd"));
-      silverStatisticsSC.setActorDetail(request.getParameter("ActorDetail"));
-      silverStatisticsSC.setFilterType(request.getParameter("FilterType"));
-      silverStatisticsSC.setFilterLib(request.getParameter("FilterLib"));
-      silverStatisticsSC.setFilterId(request.getParameter("FilterId"));
+      statsSC.setMonthBegin(request.getParameter("MonthBegin"));
+      statsSC.setYearBegin(request.getParameter("YearBegin"));
+      statsSC.setMonthEnd(request.getParameter("MonthEnd"));
+      statsSC.setYearEnd(request.getParameter("YearEnd"));
+      statsSC.setActorDetail(request.getParameter("ActorDetail"));
+      statsSC.setFilterType(request.getParameter("FilterType"));
+      statsSC.setFilterLib(request.getParameter("FilterLib"));
+      statsSC.setFilterId(request.getParameter("FilterId"));
     }
   }
 
+  /**
+   * Set connection parameter in request attributes
+   * @param request the HttpServlet
+   * @param statsSC the SilverStatisticsPeasSessionController object
+   */
   private void restoreConnectionParam(HttpServletRequest request,
-      SilverStatisticsPeasSessionController silverStatisticsSC) {
-    request.setAttribute("MonthBegin", silverStatisticsSC.getMonth(
-        silverStatisticsSC.getMonthBegin()));
-    request.setAttribute("YearBegin", silverStatisticsSC.getYearConnection(silverStatisticsSC.
-        getYearBegin()));
-    request.setAttribute("MonthEnd", silverStatisticsSC.getMonth(silverStatisticsSC.getMonthEnd()));
-    request.setAttribute("YearEnd", silverStatisticsSC.getYearConnection(silverStatisticsSC.
-        getYearEnd()));
-    request.setAttribute("ActorDetail", silverStatisticsSC.getDetail(silverStatisticsSC.
-        getActorDetail()));
-    request.setAttribute("FilterType", silverStatisticsSC.getFilterType());
-    request.setAttribute("FilterLib", silverStatisticsSC.getFilterLib());
-    request.setAttribute("FilterId", silverStatisticsSC.getFilterId());
+      SilverStatisticsPeasSessionController statsSC) {
+    request.setAttribute("MonthBegin", statsSC.getMonth(statsSC.getMonthBegin()));
+    request.setAttribute("YearBegin", statsSC.getYearConnection(statsSC.getYearBegin()));
+    request.setAttribute("MonthEnd", statsSC.getMonth(statsSC.getMonthEnd()));
+    request.setAttribute("YearEnd", statsSC.getYearConnection(statsSC.getYearEnd()));
+    request.setAttribute("ActorDetail", statsSC.getDetail(statsSC.getActorDetail()));
+    request.setAttribute("FilterType", statsSC.getFilterType());
+    request.setAttribute("FilterLib", statsSC.getFilterLib());
+    request.setAttribute("FilterId", statsSC.getFilterId());
   }
 
   private void saveAccessVolumeParam(HttpServletRequest request,
-      SilverStatisticsPeasSessionController silverStatisticsSC) {
+      SilverStatisticsPeasSessionController statsSC) {
     String hostMonthBegin = request.getParameter("MonthBegin");
     if (hostMonthBegin != null && !hostMonthBegin.equals("")) {
-      silverStatisticsSC.setAccessMonthBegin(request.getParameter("MonthBegin"));
-      silverStatisticsSC.setAccessYearBegin(request.getParameter("YearBegin"));
-      silverStatisticsSC.setAccessFilterLibGroup(request.getParameter("FilterLibGroup"));
-      silverStatisticsSC.setAccessFilterIdGroup(request.getParameter("FilterIdGroup"));
-      silverStatisticsSC.setAccessFilterLibUser(request.getParameter("FilterLibUser"));
-      silverStatisticsSC.setAccessFilterIdUser(request.getParameter("FilterIdUser"));
-      silverStatisticsSC.setAccessSpaceId(request.getParameter("SpaceId"));
+      statsSC.setAccessMonthBegin(request.getParameter("MonthBegin"));
+      statsSC.setAccessYearBegin(request.getParameter("YearBegin"));
+      statsSC.setAccessFilterLibGroup(request.getParameter("FilterLibGroup"));
+      statsSC.setAccessFilterIdGroup(request.getParameter("FilterIdGroup"));
+      statsSC.setAccessFilterLibUser(request.getParameter("FilterLibUser"));
+      statsSC.setAccessFilterIdUser(request.getParameter("FilterIdUser"));
+      statsSC.setAccessSpaceId(request.getParameter("SpaceId"));
     }
   }
 
   private void restoreAccessParam(HttpServletRequest request,
-      SilverStatisticsPeasSessionController silverStatisticsSC) {
-    request.setAttribute("MonthBegin", silverStatisticsSC.getMonth(silverStatisticsSC.
-        getAccessMonthBegin()));
-    request.setAttribute("YearBegin", silverStatisticsSC.getYearAccess(silverStatisticsSC.
-        getAccessYearBegin()));
-    request.setAttribute("FilterLibGroup", silverStatisticsSC.getAccessFilterLibGroup());
-    request.setAttribute("FilterIdGroup", silverStatisticsSC.getAccessFilterIdGroup());
-    request.setAttribute("FilterLibUser", silverStatisticsSC.getAccessFilterLibUser());
-    request.setAttribute("FilterIdUser", silverStatisticsSC.getAccessFilterIdUser());
-    request.setAttribute("SpaceId", silverStatisticsSC.getAccessSpaceId());
-    request.setAttribute("Path", silverStatisticsSC.getPath());
+      SilverStatisticsPeasSessionController statsSC) {
+    request.setAttribute("MonthBegin", statsSC.getMonth(statsSC.getAccessMonthBegin()));
+    request.setAttribute("YearBegin", statsSC.getYearAccess(statsSC.getAccessYearBegin()));
+    request.setAttribute("FilterLibGroup", statsSC.getAccessFilterLibGroup());
+    request.setAttribute("FilterIdGroup", statsSC.getAccessFilterIdGroup());
+    request.setAttribute("FilterLibUser", statsSC.getAccessFilterLibUser());
+    request.setAttribute("FilterIdUser", statsSC.getAccessFilterIdUser());
+    request.setAttribute("SpaceId", statsSC.getAccessSpaceId());
+    request.setAttribute("Path", statsSC.getPath());
   }
 
   private void restoreVolumeParam(HttpServletRequest request,
-      SilverStatisticsPeasSessionController silverStatisticsSC) {
-    request.setAttribute("MonthBegin", silverStatisticsSC.getMonth(silverStatisticsSC.
-        getAccessMonthBegin()));
-    request.setAttribute("YearBegin", silverStatisticsSC.getYearVolume(silverStatisticsSC.
-        getAccessYearBegin()));
-    request.setAttribute("FilterLibGroup", silverStatisticsSC.getAccessFilterLibGroup());
-    request.setAttribute("FilterIdGroup", silverStatisticsSC.getAccessFilterIdGroup());
-    request.setAttribute("FilterLibUser", silverStatisticsSC.getAccessFilterLibUser());
-    request.setAttribute("FilterIdUser", silverStatisticsSC.getAccessFilterIdUser());
-    request.setAttribute("SpaceId", silverStatisticsSC.getAccessSpaceId());
-    request.setAttribute("Path", silverStatisticsSC.getPath());
+      SilverStatisticsPeasSessionController statsSC) {
+    request.setAttribute("MonthBegin", statsSC.getMonth(statsSC.getAccessMonthBegin()));
+    request.setAttribute("YearBegin", statsSC.getYearVolume(statsSC.getAccessYearBegin()));
+    request.setAttribute("FilterLibGroup", statsSC.getAccessFilterLibGroup());
+    request.setAttribute("FilterIdGroup", statsSC.getAccessFilterIdGroup());
+    request.setAttribute("FilterLibUser", statsSC.getAccessFilterLibUser());
+    request.setAttribute("FilterIdUser", statsSC.getAccessFilterIdUser());
+    request.setAttribute("SpaceId", statsSC.getAccessSpaceId());
+    request.setAttribute("Path", statsSC.getPath());
   }
 
+  /**
+   * Format a year and month parameter
+   * @param sYear the year to format
+   * @param sMonth the month to format
+   * @return a request date string with the following format sYear-sMonth-01
+   */
   private String getRequestDate(String sYear, String sMonth) {
-    String month = java.lang.Integer.toString(Integer.parseInt(sMonth) + 1);
+    String month = Integer.toString(Integer.parseInt(sMonth) + 1);
     if (month.length() < 2) {
       month = "0" + month;
     }
     return sYear + "-" + month + "-" + "01";
+  }
+
+  /**
+   * Set silver statistics session controller attributes from request
+   * @param request the current http request
+   * @param statsSC the statistics session controller.
+   */
+  private void saveAccessPDCParam(HttpServletRequest request,
+      SilverStatisticsPeasSessionController statsSC) {
+    String monthBegin = request.getParameter("MonthBegin");
+    if (StringUtil.isDefined(monthBegin)) {
+      statsSC.setMonthBegin(request.getParameter("MonthBegin"));
+      statsSC.setYearBegin(request.getParameter("YearBegin"));
+      statsSC.setMonthEnd(request.getParameter("MonthEnd"));
+      statsSC.setYearEnd(request.getParameter("YearEnd"));
+    }
   }
 }
