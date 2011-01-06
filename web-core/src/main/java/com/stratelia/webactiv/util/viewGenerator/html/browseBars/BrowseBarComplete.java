@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.viewGenerator.html.browseBars;
 
 import java.io.IOException;
@@ -59,8 +58,9 @@ public class BrowseBarComplete extends AbstractBrowseBar {
    * @return
    * @see
    */
+  @Override
   public String print() {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
 
     result.append("<div id=\"browseBar\">");
 
@@ -79,7 +79,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
   }
 
   private String printBreadCrumb() {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
     String information = getExtraInformation();
     String path = getPath();
 
@@ -99,7 +99,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
       if (StringUtil.isDefined(getComponentId())) {
         spaces =
             getMainSessionController().getOrganizationController().getSpacePathToComponent(
-                getComponentId());
+            getComponentId());
       } else {
         spaces = getMainSessionController().getOrganizationController().getSpacePath(getSpaceId());
       }
@@ -131,18 +131,18 @@ public class BrowseBarComplete extends AbstractBrowseBar {
         // Display component's label
         ComponentInstLight componentInstLight =
             getMainSessionController().getOrganizationController().getComponentInstLight(
-                getComponentId());
+            getComponentId());
         if (componentInstLight != null) {
           result.append(CONNECTOR);
           result.append("<a href=\"");
           if (!isClickable()) {
             result.append("#");
           } else if (StringUtil.isDefined(getComponentJavascriptCallback())) {
-            result.append("javascript:").append(getComponentJavascriptCallback()).append("('")
-                .append(getComponentId()).append("')");
+            result.append("javascript:").append(getComponentJavascriptCallback()).append("('").
+                append(getComponentId()).append("')");
           } else {
-            result.append(URLManager.getApplicationURL() +
-                URLManager.getURL(getSpaceId(), getComponentId()));
+            result.append(URLManager.getApplicationURL()).append(URLManager.getURL(getSpaceId(),
+                getComponentId()));
             if (ignoreComponentLink()) {
               result.append("Main");
             } else {
@@ -238,5 +238,4 @@ public class BrowseBarComplete extends AbstractBrowseBar {
     HtmlCleaner cleaner = new HtmlCleaner();
     return cleaner.cleanHtmlFragment(html);
   }
-
 }

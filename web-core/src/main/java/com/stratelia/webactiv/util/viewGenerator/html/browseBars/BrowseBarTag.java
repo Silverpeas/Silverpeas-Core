@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.viewGenerator.html.browseBars;
 
 import javax.servlet.jsp.JspException;
@@ -31,11 +30,9 @@ import com.stratelia.webactiv.util.viewGenerator.html.NeedWindowTag;
 import com.stratelia.webactiv.util.viewGenerator.html.window.Window;
 
 public class BrowseBarTag extends NeedWindowTag {
-  
+
   private static final long serialVersionUID = 2496136938371562945L;
-
   private BrowseBar browseBar;
-
   private String extraInformations;
   private String path;
   private String componentId;
@@ -44,11 +41,11 @@ public class BrowseBarTag extends NeedWindowTag {
   public void setExtraInformations(String extraInformations) {
     this.extraInformations = extraInformations;
   }
-  
+
   public void setPath(String path) {
     this.path = path;
   }
-  
+
   public void setComponentId(String componentId) {
     this.componentId = componentId;
   }
@@ -57,6 +54,7 @@ public class BrowseBarTag extends NeedWindowTag {
     this.ignoreComponentLink = ignoreComponentLink;
   }
 
+  @Override
   public int doEndTag() throws JspException {
     return EVAL_PAGE;
   }
@@ -65,6 +63,7 @@ public class BrowseBarTag extends NeedWindowTag {
     browseBar.addElement(element);
   }
 
+  @Override
   public int doStartTag() throws JspException {
     Window window = getWindow();
     browseBar = window.getBrowseBar();

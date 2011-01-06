@@ -45,6 +45,7 @@ public class BrowseBarElementTag extends TagSupport {
     this.link = link;
   }
 
+  @Override
   public void setId(String id) {
     this.eltId = id;
   }

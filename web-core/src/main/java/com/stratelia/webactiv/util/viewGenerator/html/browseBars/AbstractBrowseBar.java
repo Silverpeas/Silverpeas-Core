@@ -39,7 +39,6 @@ import com.silverpeas.util.i18n.I18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
-import java.util.Collections;
 
 /**
  * The default implementation of ArrayPane interface
@@ -259,8 +258,8 @@ public abstract class AbstractBrowseBar implements BrowseBar {
     this.language = language;
   }
 
-  public boolean isI18N() {
-    return getI18NBean() != null || getUrl() != null || getLanguages() != null;
+ public boolean isI18N() {
+    return I18NHelper.isI18N && (getI18NBean() != null || getUrl() != null || getLanguages() != null);
   }
 
   public String getI18NHTMLLinks() {

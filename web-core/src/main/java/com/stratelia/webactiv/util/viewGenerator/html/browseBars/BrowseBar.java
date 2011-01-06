@@ -90,6 +90,7 @@ public interface BrowseBar extends SimpleGraphicElement {
    * Print the browseBar in an html format.
    * @return The html based line code
    */
+  @Override
   public String print();
 
   public void addElement(BrowseBarElement element);
