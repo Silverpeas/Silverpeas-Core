@@ -42,6 +42,9 @@ import com.silverpeas.util.MimeTypes;
 import com.stratelia.silverpeas.versioning.jcr.JcrDocumentService;
 import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
+import javax.annotation.Resource;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class TestJcrDocumentService extends AbstractJcrTestCase {
 
@@ -69,12 +72,13 @@ public class TestJcrDocumentService extends AbstractJcrTestCase {
   }
 
   @Override
-  protected void onTearDown() throws Exception {
+  public void onTearDown() throws Exception {
     super.onTearDown();
     File uploadDir = new File(UPLOAD_DIR);
     uploadDir.delete();
   }
 
+  @Resource
   public void setJcrDocumentManager(JcrDocumentService service) {
     this.service = service;
   }
@@ -106,6 +110,7 @@ public class TestJcrDocumentService extends AbstractJcrTestCase {
     }
   }
 
+  @Test
   public void testCreateDocument() throws Exception {
     registerSilverpeasNodeTypes();
     prepareUploadedFile("FrenchScrum.odp", "1210692002788.odp");
@@ -165,6 +170,7 @@ public class TestJcrDocumentService extends AbstractJcrTestCase {
     }
   }
 
+  @Test
   public void testGetUpdatedDocument() throws Exception {
     createTempFile(UPLOAD_DIR + "test.txt", "Ceci est un test.");
     DocumentVersion doc = new DocumentVersion();
@@ -211,6 +217,7 @@ public class TestJcrDocumentService extends AbstractJcrTestCase {
     }
   }
 
+  @Test
   public void testDeleteDocument() throws Exception {
     createTempFile(UPLOAD_DIR + "test.txt", "Ceci est un test.");
     DocumentVersion doc = new DocumentVersion();
@@ -251,6 +258,7 @@ public class TestJcrDocumentService extends AbstractJcrTestCase {
     }
   }
 
+  @Test
   public void testUpdateDocument() throws Exception {
     createTempFile(UPLOAD_DIR + "test.txt", "Ceci est un test.");
     DocumentVersion doc = new DocumentVersion();

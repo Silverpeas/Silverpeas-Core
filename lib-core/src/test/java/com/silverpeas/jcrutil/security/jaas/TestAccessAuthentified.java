@@ -40,13 +40,17 @@ import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.jcrutil.JcrConstants;
 import com.silverpeas.jcrutil.model.impl.AbstractJcrRegisteringTestCase;
 import com.silverpeas.util.MimeTypes;
+import org.junit.Test;
+import org.springframework.test.context.ContextConfiguration;
+import static org.junit.Assert.*;
 
+@ContextConfiguration(inheritLocations=false, locations={"/spring-jaas.xml"})
 public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
   private static boolean jaas_registred = false;
   static {
-    registred = false;
+    setRegistred(false);
   }
-  
+
   private static final String FOLDER_NAME = "SimpleTest";
   private static final String SUB_FOLDER_NAME = "SubTest";
   private static final String FILE_NAME = "MyTest";
@@ -54,19 +58,15 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
   private static final String BART_LOGIN = "bsimpson";
   private static final String BART_PASSWORD = "bart";
 
-  @Override
-  protected String[] getConfigLocations() {
-    return new String[]{"spring-jaas.xml"};
-  }
 
   @Override
-  protected void onSetUp() throws Exception {    
+  public void onSetUp() throws Exception {
     super.onSetUp();
     Session session = null;
     try {
-      registred = jaas_registred;
+      setRegistred(jaas_registred);
       if(!jaas_registred) {
-        BasicDaoFactory.getInstance().setApplicationContext(this.getContext(getConfigLocations()));
+        /*BasicDaoFactory.getInstance().setApplicationContext(this.getContext(getConfigLocations()));*/
         jaas_registred = true;
       }
       registerSilverpeasNodeTypes();
@@ -81,6 +81,7 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
     }
   }
 
+  @Test
   public void testAccessFileOwnable() throws Exception {
     Session session = null;
     try {
@@ -133,6 +134,7 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
     }
   }
 
+  @Test
   public void testAccessFileNotOwnable() throws Exception {
     Session session = null;
     try {
@@ -216,6 +218,7 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
         JcrConstants.SLV_OWNABLE_MIXIN, folderNode));
   }
 
+  @Test
   public void testAccessFolderOwnable() throws Exception {
     Session session = null;
     try {
@@ -261,6 +264,7 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
     }
   }
 
+  @Test
   public void testAccessFolderNotOwnable() throws Exception {
     Session session = null;
     try {

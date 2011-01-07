@@ -39,17 +39,19 @@ import org.dbunit.dataset.xml.FlatXmlDataSet;
 
 import com.silverpeas.jcrutil.model.impl.AbstractJcrRegisteringTestCase;
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
 
-  public TestBasicDaoFactory(String name) {
-    super(name);
+  public TestBasicDaoFactory() {
   }
 
   protected String[] getConfigLocations() {
-    return new String[] { "spring-in-memory-jcr.xml" };
+    return new String[] { "/spring-in-memory-jcr.xml" };
   }
 
+  @Override
   protected IDataSet getDataSet() throws Exception {
     ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(this
         .getClass().getResourceAsStream("test-jcrutil-dataset.xml")));
@@ -57,10 +59,11 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
     return dataSet;
   }
 
+  @Override
   protected void clearRepository() throws Exception {
     Session session = null;
     try {
-      session = repository.login(new SilverpeasSystemCredentials());
+      session = getRepository().login(new SilverpeasSystemCredentials());
       session.getRootNode().getNode("kmelia36").remove();
       session.save();
     } catch (PathNotFoundException pex) {
@@ -71,15 +74,17 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
     }
   }
 
-  protected void onSetUp() {    
+  @Override
+  public void onSetUp() throws Exception {
     try {
       super.onSetUp();
       registerSilverpeasNodeTypes();
     } catch (Exception pex) {
-      pex.printStackTrace();
+      throw pex;
     }
   }
 
+  @Test
   public void testGetComponentId() throws Exception {
     Session session = null;
     try {
@@ -105,6 +110,7 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
     }
   }
 
+  @Test
   public void testAddStringProperty() throws Exception {
     Session session = null;
     try {
@@ -133,6 +139,7 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
     }
   }
 
+  @Test
   public void testAddDateProperty() throws Exception {
     Session session = null;
     try {
@@ -155,6 +162,7 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
     }
   }
 
+  @Test
   public void testAddCalendarProperty() throws Exception {
     Session session = null;
     try {
@@ -177,6 +185,7 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
     }
   }
 
+  @Test
   public void testGetStringProperty() throws Exception {
     Session session = null;
     try {
@@ -196,6 +205,7 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
     }
   }
 
+  @Test
   public void testGetCalendarProperty() throws Exception {
     Session session = null;
     try {
@@ -217,6 +227,7 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
     }
   }
 
+  @Test
   public void testGetDateProperty() throws Exception {
     Session session = null;
     try {
@@ -238,6 +249,7 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
     }
   }
 
+  @Test
   public void testGetIntProperty() throws Exception {
     Session session = null;
     try {
@@ -259,6 +271,7 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
     }
   }
 
+  @Test
   public void testGetLongProperty() throws Exception {
     Session session = null;
     try {
@@ -280,6 +293,7 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
     }
   }
 
+  @Test
   public void testRemoveReference() throws Exception {
     String uuid1 = RandomGenerator.getRandomString();
     String uuid2 = RandomGenerator.getRandomString();
@@ -304,6 +318,7 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
     assertEquals(uuid4, result[2].getString());
   }
 
+  @Test
   public void testComputeUniqueName() throws Exception {
     Session session = null;
     try {

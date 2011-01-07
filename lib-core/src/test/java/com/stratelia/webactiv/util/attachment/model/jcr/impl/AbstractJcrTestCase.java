@@ -43,15 +43,13 @@ import javax.jcr.ValueFormatException;
 import org.apache.jackrabbit.JcrConstants;
 
 import com.silverpeas.jcrutil.model.impl.AbstractJcrRegisteringTestCase;
+import org.springframework.test.context.ContextConfiguration;
 
+@ContextConfiguration(inheritLocations=false, locations={"/spring-in-memory-jcr.xml"})
 public abstract class AbstractJcrTestCase extends AbstractJcrRegisteringTestCase {
 
   public AbstractJcrTestCase() {
     super();
-  }
-
-  public AbstractJcrTestCase(String name) {
-    super(name);
   }
 
   @Override
@@ -107,6 +105,7 @@ public abstract class AbstractJcrTestCase extends AbstractJcrRegisteringTestCase
     }
   }
 
+  @Override
   protected String readFileFromNode(Node fileNode) throws IOException,
       ValueFormatException, PathNotFoundException, RepositoryException {
     CharArrayWriter writer = null;
@@ -136,10 +135,5 @@ public abstract class AbstractJcrTestCase extends AbstractJcrRegisteringTestCase
         writer.close();
       }
     }
-  }
-
-  @Override
-  protected String[] getConfigLocations() {
-    return new String[] { "spring-in-memory-jcr.xml" };
   }
 }

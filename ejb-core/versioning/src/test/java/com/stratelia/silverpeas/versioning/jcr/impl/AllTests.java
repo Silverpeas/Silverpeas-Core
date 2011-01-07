@@ -33,8 +33,8 @@ public class AllTests {
     TestSuite suite = new TestSuite(
         "Test for com.stratelia.silverpeas.versioning.jcr.impl");
     //$JUnit-BEGIN$
-    suite.addTestSuite(TestJcrDocumentService.class);
-    suite.addTestSuite(TestJcrDocumentDao.class);
+//    suite.addTestSuite(TestJcrDocumentService.class);
+//    suite.addTestSuite(TestJcrDocumentDao.class);
     //$JUnit-END$
     return suite;
   }

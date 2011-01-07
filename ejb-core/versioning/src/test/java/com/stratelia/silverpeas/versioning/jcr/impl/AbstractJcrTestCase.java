@@ -48,7 +48,8 @@ import org.dbunit.dataset.xml.FlatXmlDataSet;
 import com.silverpeas.jcrutil.model.impl.AbstractJcrRegisteringTestCase;
 
 public abstract class AbstractJcrTestCase extends AbstractJcrRegisteringTestCase {
-  
+
+  @Override
   protected String readFile(String path) throws IOException {
     CharArrayWriter writer = null;
     InputStream in = null;
@@ -78,6 +79,7 @@ public abstract class AbstractJcrTestCase extends AbstractJcrRegisteringTestCase
     }
   }
 
+  @Override
   protected String readFileFromNode(Node fileNode) throws IOException,
       ValueFormatException, PathNotFoundException, RepositoryException {
     CharArrayWriter writer = null;
@@ -109,6 +111,7 @@ public abstract class AbstractJcrTestCase extends AbstractJcrRegisteringTestCase
     }
   }
 
+  @Override
   protected void createTempFile(String path, String content) throws IOException {
     File attachmentFile = new File(path);
     attachmentFile.getParentFile().mkdirs();
@@ -133,7 +136,8 @@ public abstract class AbstractJcrTestCase extends AbstractJcrRegisteringTestCase
     return new String[] { "spring-in-memory-jcr.xml" };
   }
 
-  
+
+  @Override
   protected IDataSet getDataSet() throws Exception {
     ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(this
         .getClass().getResourceAsStream("test-versioning-dataset.xml")));

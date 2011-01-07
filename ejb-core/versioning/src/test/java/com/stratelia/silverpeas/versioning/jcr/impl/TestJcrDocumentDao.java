@@ -42,9 +42,14 @@ import com.silverpeas.util.MimeTypes;
 import com.stratelia.silverpeas.versioning.jcr.JcrDocumentDao;
 import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
+import javax.annotation.Resource;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 
 public class TestJcrDocumentDao extends AbstractJcrTestCase {
 
+  @Resource
   private JcrDocumentDao jcrDocumentDao;
   private static final String instanceId = "kmelia60";
   private static final String UPLOAD_DIR = System.getProperty("basedir") + File.separatorChar + "target"
@@ -52,7 +57,7 @@ public class TestJcrDocumentDao extends AbstractJcrTestCase {
           + "Versioning"  + File.separatorChar;
 
   @Override
-  protected void onTearDown() throws Exception {
+  public void onTearDown() throws Exception {
     super.onTearDown();
     File uploadDir = new File(UPLOAD_DIR);
     uploadDir.delete();
@@ -71,10 +76,6 @@ public class TestJcrDocumentDao extends AbstractJcrTestCase {
         BasicDaoFactory.logout(session);
       }
     }
-  }
-
-  public void setJcrDocumentDao(JcrDocumentDao jcrDocumentDao) {
-    this.jcrDocumentDao = jcrDocumentDao;
   }
 
   protected void prepareUploadedFile(String fileName, String physicalName)
@@ -104,6 +105,7 @@ public class TestJcrDocumentDao extends AbstractJcrTestCase {
     }
   }
 
+  @Test
   public void testCreateDocumentNode() throws Exception {
     Session session = null;
     try {
@@ -158,6 +160,7 @@ public class TestJcrDocumentDao extends AbstractJcrTestCase {
     }
   }
 
+  @Test
   public void testDeleteDocumentNode() throws Exception {
     Session session = null;
     try {
@@ -196,6 +199,7 @@ public class TestJcrDocumentDao extends AbstractJcrTestCase {
     }
   }
 
+  @Test
   public void testUpdateNodeDocument() throws Exception {
     Session session = null;
     try {
@@ -235,6 +239,7 @@ public class TestJcrDocumentDao extends AbstractJcrTestCase {
     }
   }
 
+  @Test
   public void testUpdateDocument() throws Exception {
     Session session = null;
     try {

@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.attachment.model.jcr.impl;
 
 import java.io.ByteArrayInputStream;
@@ -40,24 +39,23 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.attachment.model.jcr.JcrAttachmentService;
+import javax.annotation.Resource;
+import org.junit.Test;
 import static com.silverpeas.util.PathTestUtil.*;
+import static org.junit.Assert.*;
 
 public class TestJcrAttachmentService extends AbstractJcrTestCase {
 
+  @Resource
   private JcrAttachmentService service;
-
+  private Calendar calend;
   private static final String instanceId = "kmelia57";
-
-  private static final String UPLOAD_DIR = BUILD_PATH + SEPARATOR + "uploads" +
-      SEPARATOR + instanceId + SEPARATOR + "Attachment" + SEPARATOR + "tests" +
-      SEPARATOR + "simpson" + SEPARATOR + "bart" + SEPARATOR;
-
-  public void setJcrAttachmentManager(JcrAttachmentService service) {
-    this.service = service;
-  }
+  private static final String UPLOAD_DIR = BUILD_PATH + SEPARATOR + "uploads" + SEPARATOR
+      + instanceId + SEPARATOR + "Attachment" + SEPARATOR + "tests" + SEPARATOR + "simpson"
+      + SEPARATOR + "bart" + SEPARATOR;
 
   @Override
-  protected void onTearDown() throws Exception {
+  public void onTearDown() throws Exception {
     super.onTearDown();
     clearRepository();
     File uploadDir = new File(UPLOAD_DIR);
@@ -92,7 +90,7 @@ public class TestJcrAttachmentService extends AbstractJcrTestCase {
   }
 
   @Override
-  protected void onSetUp() throws Exception {
+  public void onSetUp() throws Exception {
     super.onSetUp();
     calend = Calendar.getInstance();
     calend.set(Calendar.MILLISECOND, 0);
@@ -104,6 +102,7 @@ public class TestJcrAttachmentService extends AbstractJcrTestCase {
     calend.set(Calendar.YEAR, 2008);
   }
 
+  @Test
   public void testCreateAttachmentWithLanguage() throws Exception {
     registerSilverpeasNodeTypes();
     prepareUploadedFile("FrenchScrum.odp",
@@ -153,15 +152,14 @@ public class TestJcrAttachmentService extends AbstractJcrTestCase {
           "attachments/" + instanceId + "/Attachment/tests/simpson/bart");
       assertNotNull(pathNode);
       assertEquals("nt:folder", pathNode.getPrimaryNodeType().getName());
-      pathNode = session.getRootNode()
-          .getNode(
-              "attachments/" + instanceId
-                  + "/Attachment/tests/simpson/bart/100/en");
+      pathNode = session.getRootNode().getNode(
+          "attachments/" + instanceId
+          + "/Attachment/tests/simpson/bart/100/en");
       assertNotNull(pathNode);
       assertEquals("nt:folder", pathNode.getPrimaryNodeType().getName());
       Node fileNode = session.getRootNode().getNode(
           "attachments/" + instanceId + "/"
-              + "Attachment/tests/simpson/bart/100/en/frenchScrum.odp");
+          + "Attachment/tests/simpson/bart/100/en/frenchScrum.odp");
       assertNotNull(fileNode);
       assertEquals("nt:file", fileNode.getPrimaryNodeType().getName());
       Node content = fileNode.getNode("jcr:content");
@@ -169,8 +167,8 @@ public class TestJcrAttachmentService extends AbstractJcrTestCase {
       assertNotNull(content);
       assertEquals("nt:resource", content.getPrimaryNodeType().getName());
       assertNotNull(content.getProperty("jcr:mimeType"));
-      assertEquals("application/vnd.oasis.opendocument.presentation", content
-          .getProperty("jcr:mimeType").getString());
+      assertEquals("application/vnd.oasis.opendocument.presentation", content.getProperty(
+          "jcr:mimeType").getString());
     } finally {
       if (session != null) {
         session.logout();
@@ -178,6 +176,7 @@ public class TestJcrAttachmentService extends AbstractJcrTestCase {
     }
   }
 
+  @Test
   public void testCreateAttachmentWithoutLanguage() throws Exception {
     registerSilverpeasNodeTypes();
     AttachmentPK pk = new AttachmentPK("100", instanceId);
@@ -231,7 +230,7 @@ public class TestJcrAttachmentService extends AbstractJcrTestCase {
       assertEquals("nt:folder", pathNode.getPrimaryNodeType().getName());
       Node fileNode = session.getRootNode().getNode(
           "attachments/" + instanceId + "/"
-              + "Attachment/tests/simpson/bart/100/frenchScrum.odp");
+          + "Attachment/tests/simpson/bart/100/frenchScrum.odp");
       assertNotNull(fileNode);
       assertEquals("nt:file", fileNode.getPrimaryNodeType().getName());
       Node content = fileNode.getNode("jcr:content");
@@ -239,8 +238,8 @@ public class TestJcrAttachmentService extends AbstractJcrTestCase {
       assertNotNull(content);
       assertEquals("nt:resource", content.getPrimaryNodeType().getName());
       assertNotNull(content.getProperty("jcr:mimeType"));
-      assertEquals("application/vnd.oasis.opendocument.presentation", content
-          .getProperty("jcr:mimeType").getString());
+      assertEquals("application/vnd.oasis.opendocument.presentation", content.getProperty(
+          "jcr:mimeType").getString());
     } finally {
       if (session != null) {
         session.logout();
@@ -248,6 +247,7 @@ public class TestJcrAttachmentService extends AbstractJcrTestCase {
     }
   }
 
+  @Test
   public void testGetUpdatedDocument() throws Exception {
     registerSilverpeasNodeTypes();
     createTempFile(UPLOAD_DIR + "test_update.txt", "Ceci est un test.");
@@ -273,13 +273,12 @@ public class TestJcrAttachmentService extends AbstractJcrTestCase {
       session = BasicDaoFactory.getSystemSession();
       Node content = session.getRootNode().getNode(
           "attachments/" + instanceId + "/"
-              + "Attachment/tests/simpson/bart/100/test_update.txt/jcr:content");
+          + "Attachment/tests/simpson/bart/100/test_update.txt/jcr:content");
       assertNotNull(content);
       assertEquals("nt:resource", content.getPrimaryNodeType().getName());
-      assertEquals("application/vnd.oasis.opendocument.presentation", content
-          .getProperty("jcr:mimeType").getString());
-      ByteArrayInputStream in = new ByteArrayInputStream("Ce test fonctionne."
-          .getBytes());
+      assertEquals("application/vnd.oasis.opendocument.presentation", content.getProperty(
+          "jcr:mimeType").getString());
+      ByteArrayInputStream in = new ByteArrayInputStream("Ce test fonctionne.".getBytes());
       content.setProperty("jcr:data", in);
       session.save();
     } finally {
@@ -292,6 +291,7 @@ public class TestJcrAttachmentService extends AbstractJcrTestCase {
     assertEquals("Ce test fonctionne.", result);
   }
 
+  @Test
   public void testDeleteAttachment() throws Exception {
     registerSilverpeasNodeTypes();
     AttachmentPK pk = new AttachmentPK("100", instanceId);
@@ -347,7 +347,7 @@ public class TestJcrAttachmentService extends AbstractJcrTestCase {
       try {
         session.getRootNode().getNode(
             "attachments/" + instanceId + "/"
-                + "Attachment/tests/simpson/bart/scrum.odp");
+            + "Attachment/tests/simpson/bart/scrum.odp");
         fail("Node not deleted");
       } catch (PathNotFoundException ex) {
       }
@@ -366,7 +366,6 @@ public class TestJcrAttachmentService extends AbstractJcrTestCase {
       session.getRootNode().getNode("attachments").remove();
       session.save();
     } catch (PathNotFoundException pex) {
-
     } finally {
       if (session != null) {
         session.logout();

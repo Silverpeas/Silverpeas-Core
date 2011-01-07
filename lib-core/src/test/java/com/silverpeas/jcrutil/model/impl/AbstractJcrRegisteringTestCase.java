@@ -36,24 +36,30 @@ import org.apache.jackrabbit.core.nodetype.InvalidNodeTypeDefException;
 import org.apache.jackrabbit.core.nodetype.compact.ParseException;
 
 import com.silverpeas.jcrutil.model.SilverpeasRegister;
+import javax.annotation.Resource;
 
 public abstract class AbstractJcrRegisteringTestCase extends
     AbstractJcrTestCase {
 
-  protected static boolean registred = false;
+  private static boolean registred = false;
 
-  protected Repository repository;
+  @Resource
+  private Repository repository;
 
-  public void setRepository(Repository repository) {
-    this.repository = repository;
+  public static void setRegistred(boolean isRegistred) {
+    registred = isRegistred;
+  }
+
+  public static boolean isRegistred() {
+    return registred;
+  }
+
+  public Repository getRepository() {
+    return this.repository;
   }
 
   public AbstractJcrRegisteringTestCase() {
     super();
-  }
-
-  public AbstractJcrRegisteringTestCase(String name) {
-    super(name);
   }
 
   public void registerSilverpeasNodeTypes() throws NamespaceException,

@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.attachment.model.jcr.impl;
 
 import java.io.ByteArrayInputStream;
@@ -41,20 +40,21 @@ import com.silverpeas.util.MimeTypes;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.attachment.model.jcr.JcrAttachmentDao;
+import javax.annotation.Resource;
+import org.junit.Test;
 import static com.silverpeas.util.PathTestUtil.*;
+import static org.junit.Assert.*;
 
 public class TestJcrAttachmentDao extends AbstractJcrTestCase {
 
   private static final String instanceId = "kmelia57";
-  private static final String UPLOAD_DIR = BUILD_PATH + SEPARATOR + "uploads" +
-      SEPARATOR + instanceId + SEPARATOR + "Attachment" + SEPARATOR + "tests" +
-      SEPARATOR + "simpson" + SEPARATOR + "bart" + SEPARATOR;
+  private static final String UPLOAD_DIR = BUILD_PATH + SEPARATOR + "uploads" + SEPARATOR
+      + instanceId + SEPARATOR + "Attachment" + SEPARATOR + "tests" + SEPARATOR + "simpson"
+      + SEPARATOR + "bart" + SEPARATOR;
   private Calendar calend;
+  
+  @Resource
   private JcrAttachmentDao jcrAttachmentDao;
-
-  public void setJcrAttachmentDao(JcrAttachmentDao jcrAttachmentDao) {
-    this.jcrAttachmentDao = jcrAttachmentDao;
-  }
 
   protected void prepareUploadedFile(String fileName, String physicalName)
       throws IOException {
@@ -92,7 +92,8 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
     return file;
   }
 
-  protected void onSetUp() {
+  @Override
+  public void onSetUp() {
     calend = Calendar.getInstance();
     calend.set(Calendar.MILLISECOND, 0);
     calend.set(Calendar.SECOND, 0);
@@ -103,13 +104,15 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
     calend.set(Calendar.YEAR, 2008);
   }
 
-  protected void onTearDown() throws Exception {
+  @Override
+  public void onTearDown() throws Exception {
     clearRepository();
     File uploadDir = new File(UPLOAD_DIR);
     uploadDir.delete();
 
   }
 
+  @Test
   public void testCreateAttachmentNode() throws Exception {
     Session session = null;
     try {
@@ -165,8 +168,7 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
       assertEquals(JcrConstants.NT_FOLDER,
           pathNode.getPrimaryNodeType().getName());
       Node fileNode = session.getRootNode().getNode(
-          "attachments/" + instanceId +
-          "/Attachment/tests/simpson/bart/100/frenchScrum.odp");
+          "attachments/" + instanceId + "/Attachment/tests/simpson/bart/100/frenchScrum.odp");
       assertNotNull(fileNode);
       assertEquals(JcrConstants.NT_FILE, fileNode.getPrimaryNodeType().getName());
       Node content = fileNode.getNode(JcrConstants.JCR_CONTENT);
@@ -183,6 +185,7 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
     }
   }
 
+  @Test
   public void testUpdateAttachment() throws Exception {
     Session session = null;
     try {
@@ -206,16 +209,14 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
       jcrAttachmentDao.createAttachmentNode(session, attachment, null);
       // update of the content
       Node content = session.getRootNode().getNode(
-          "attachments/" + instanceId +
-          "/Attachment/tests/simpson/bart/100/test.txt/" +
-          JcrConstants.JCR_CONTENT);
+          "attachments/" + instanceId + "/Attachment/tests/simpson/bart/100/test.txt/"
+          + JcrConstants.JCR_CONTENT);
       assertNotNull(content);
       assertEquals(JcrConstants.NT_RESOURCE, content.getPrimaryNodeType().
           getName());
       assertEquals(MimeTypes.MIME_TYPE_OO_PRESENTATION, content.getProperty(
           JcrConstants.JCR_MIMETYPE).getString());
-      ByteArrayInputStream in = new ByteArrayInputStream("Ce test fonctionne.".
-          getBytes());
+      ByteArrayInputStream in = new ByteArrayInputStream("Ce test fonctionne.".getBytes());
       content.setProperty(JcrConstants.JCR_DATA, in);
       session.save();
       jcrAttachmentDao.updateAttachment(session, attachment, null);
@@ -226,6 +227,7 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
     }
   }
 
+  @Test
   public void testIsNodeLocked() throws Exception {
     Session session = null;
     Session session2 = null;
@@ -249,13 +251,11 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
       attachment.setTitle("Test OpenOffice");
       jcrAttachmentDao.createAttachmentNode(session, attachment, null);
       Node fileNode = session.getRootNode().getNode(
-          "attachments/" + instanceId +
-          "/Attachment/tests/simpson/bart/100/test_update.txt");
+          "attachments/" + instanceId + "/Attachment/tests/simpson/bart/100/test_update.txt");
       fileNode.addMixin(JcrConstants.MIX_LOCKABLE);
       session.save();
       fileNode = session.getRootNode().getNode(
-          "attachments/" + instanceId +
-          "/Attachment/tests/simpson/bart/100/test_update.txt");
+          "attachments/" + instanceId + "/Attachment/tests/simpson/bart/100/test_update.txt");
       assertNotNull(fileNode);
       assertEquals(JcrConstants.NT_FILE, fileNode.getPrimaryNodeType().getName());
       assertFalse(fileNode.isLocked());
@@ -263,8 +263,7 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
       assertTrue(fileNode.isLocked());
       session2 = BasicDaoFactory.getSystemSession();
       Node fileNode2 = session2.getRootNode().getNode(
-          "attachments/" + instanceId +
-          "/Attachment/tests/simpson/bart/100/test_update.txt");
+          "attachments/" + instanceId + "/Attachment/tests/simpson/bart/100/test_update.txt");
       assertNotNull(fileNode2);
       assertEquals(JcrConstants.NT_FILE,
           fileNode2.getPrimaryNodeType().getName());
@@ -277,7 +276,7 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
       BasicDaoFactory.logout(session2);
     }
   }
-
+  @Test
   public void testUpdateNodeAttachment() throws Exception {
     Session session = null;
     try {
@@ -301,9 +300,8 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
       jcrAttachmentDao.createAttachmentNode(session, attachment, null);
       // update of the content
       Node content = session.getRootNode().getNode(
-          "attachments/" + instanceId +
-          "/Attachment/tests/simpson/bart/100/test_update.txt/" +
-          JcrConstants.JCR_CONTENT);
+          "attachments/" + instanceId + "/Attachment/tests/simpson/bart/100/test_update.txt/"
+          + JcrConstants.JCR_CONTENT);
       assertNotNull(content);
       assertEquals(JcrConstants.NT_RESOURCE, content.getPrimaryNodeType().
           getName());
@@ -320,13 +318,13 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
       assertEquals("Le test fonctionne.", result);
       assertEquals("Le test fonctionne.", readFileFromNode(session.getRootNode().
           getNode(
-          "attachments/" + instanceId +
-          "/Attachment/tests/simpson/bart/100/test_update.txt")));
+          "attachments/" + instanceId + "/Attachment/tests/simpson/bart/100/test_update.txt")));
     } finally {
       BasicDaoFactory.logout(session);
     }
   }
 
+  @Test
   public void testDeleteAttachmentNode() throws Exception {
     Session session = null;
     try {
@@ -350,9 +348,8 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
       jcrAttachmentDao.createAttachmentNode(session, attachment, null);
       // delete the content
       Node content = session.getRootNode().getNode(
-          "attachments/kmelia57/" +
-          "Attachment/tests/simpson/bart/100/testBis.txt/" +
-          JcrConstants.JCR_CONTENT);
+          "attachments/kmelia57/" + "Attachment/tests/simpson/bart/100/testBis.txt/"
+          + JcrConstants.JCR_CONTENT);
       assertEquals(JcrConstants.NT_RESOURCE, content.getPrimaryNodeType().
           getName());
       assertNotNull(content);
@@ -366,8 +363,7 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
       assertNotNull(folder);
       try {
         session.getRootNode().getNode(
-            "attachments/kmelia57/Attachment/tests/" +
-            "simpson/bart/100/testBis.txt");
+            "attachments/kmelia57/Attachment/tests/" + "simpson/bart/100/testBis.txt");
         fail("Node still in repository");
       } catch (PathNotFoundException pnfex) {
       }
@@ -381,6 +377,7 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
     }
   }
 
+  @Test
   public void testAddFolder() throws Exception {
     Session session = null;
     try {
@@ -400,6 +397,7 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
     }
   }
 
+  @Test
   public void testAddFile() throws Exception {
     Session session = null;
     try {

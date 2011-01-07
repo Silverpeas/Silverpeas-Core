@@ -29,7 +29,6 @@ import java.util.Calendar;
 
 import junit.framework.TestCase;
 
-import com.silverpeas.jcrutil.converter.ConverterUtil;
 
 public class TestConverterUtil extends TestCase {
 
@@ -63,7 +62,7 @@ public class TestConverterUtil extends TestCase {
     assertEquals("/theme test", ConverterUtil
         .convertFromJcrPath("/theme__test"));
     assertEquals("/theme test/sous theme test", ConverterUtil
-        .convertFromJcrPath("/theme__test/sous__theme__test"));    
+        .convertFromJcrPath("/theme__test/sous__theme__test"));
     assertEquals("/theme test|", ConverterUtil.convertFromJcrPath("/theme__test%7C"));
     assertEquals("/theme test\t", ConverterUtil.convertFromJcrPath("/theme__test%09"));
     assertEquals("/theme test\r", ConverterUtil.convertFromJcrPath("/theme__test%0D"));

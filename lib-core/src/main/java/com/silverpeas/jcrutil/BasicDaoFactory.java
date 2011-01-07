@@ -79,6 +79,11 @@ public class BasicDaoFactory implements ApplicationContextAware {
   private BasicDaoFactory() {
   }
 
+  protected ApplicationContext getApplicationContext() {
+    return context;
+  }
+
+  @Override
   public void setApplicationContext(ApplicationContext context)
       throws BeansException {
     this.context = context;
@@ -94,7 +99,7 @@ public class BasicDaoFactory implements ApplicationContextAware {
   }
 
   public static Object getBean(String name) {
-    return getInstance().context.getBean(name);
+    return getInstance().getApplicationContext().getBean(name);
   }
 
   /**
@@ -105,7 +110,7 @@ public class BasicDaoFactory implements ApplicationContextAware {
    */
   public static Session getSystemSession() throws LoginException,
       RepositoryException {
-    return ((Repository) getInstance().context.getBean(JRC_REPOSITORY))
+    return ((Repository) getInstance().getApplicationContext().getBean(JRC_REPOSITORY))
         .login(new SilverpeasSystemCredentials());
   }
 
@@ -119,7 +124,7 @@ public class BasicDaoFactory implements ApplicationContextAware {
    */
   public static Session getAuthentifiedSession(String login, String password)
       throws LoginException, RepositoryException {
-    return ((Repository) getInstance().context.getBean(JRC_REPOSITORY))
+    return ((Repository) getInstance().getApplicationContext().getBean(JRC_REPOSITORY))
         .login(new SimpleCredentials(login, password.toCharArray()));
   }
 
@@ -228,10 +233,6 @@ public class BasicDaoFactory implements ApplicationContextAware {
    * @return the String value of the property - null if the property doesn't exist.
    * @throws RepositoryException
    * @throws ValueFormatException
-   * @throws VersionException
-   * @throws LockException
-   * @throws ConstraintViolationException
-   * @throws RepositoryException
    */
   public static String getStringProperty(Node node, String propertyName)
       throws ValueFormatException, RepositoryException {
@@ -250,10 +251,6 @@ public class BasicDaoFactory implements ApplicationContextAware {
    * @return the Calendar value of the property - null if the property doesn't exist.
    * @throws RepositoryException
    * @throws ValueFormatException
-   * @throws VersionException
-   * @throws LockException
-   * @throws ConstraintViolationException
-   * @throws RepositoryException
    */
   public static Calendar getCalendarProperty(Node node, String propertyName)
       throws ValueFormatException, RepositoryException {
@@ -272,10 +269,6 @@ public class BasicDaoFactory implements ApplicationContextAware {
    * @return the java.util.Date value of the property - null if the property doesn't exist.
    * @throws RepositoryException
    * @throws ValueFormatException
-   * @throws VersionException
-   * @throws LockException
-   * @throws ConstraintViolationException
-   * @throws RepositoryException
    */
   public static Date getDateProperty(Node node, String propertyName)
       throws ValueFormatException, RepositoryException {
@@ -293,10 +286,6 @@ public class BasicDaoFactory implements ApplicationContextAware {
    * @return the int value of the property - 0 if the property doesn't exist.
    * @throws RepositoryException
    * @throws ValueFormatException
-   * @throws VersionException
-   * @throws LockException
-   * @throws ConstraintViolationException
-   * @throws RepositoryException
    */
   public static int getIntProperty(Node node, String propertyName)
       throws ValueFormatException, RepositoryException {
@@ -314,10 +303,6 @@ public class BasicDaoFactory implements ApplicationContextAware {
    * @return the long value of the property - 0 if the property doesn't exist.
    * @throws RepositoryException
    * @throws ValueFormatException
-   * @throws VersionException
-   * @throws LockException
-   * @throws ConstraintViolationException
-   * @throws RepositoryException
    */
   public static long getLongProperty(Node node, String propertyName)
       throws ValueFormatException, RepositoryException {
@@ -343,10 +328,10 @@ public class BasicDaoFactory implements ApplicationContextAware {
     List<Value> references = new ArrayList<Value>(Arrays.asList(values));
     Iterator<Value> iter = references.iterator();
     while (iter.hasNext()) {
-      Value value = (Value) iter.next();
+      Value value = iter.next();
       if (uuid.equals(value.getString())) {
         iter.remove();
-        return (Value[]) references.toArray(new Value[values.length - 1]);
+        return references.toArray(new Value[values.length - 1]);
       }
     }
     return values;
@@ -355,9 +340,9 @@ public class BasicDaoFactory implements ApplicationContextAware {
   /**
    * Compute a unique node name if a node with the same name already exists under the same parent
    * node.
+   * @param prefix
    * @param tableName the name of the column used to stored the id.
    * @return the name of the node.
-   * @throws RepositoryException
    * @throws UtilException
    */
   public static String computeUniqueName(String prefix, String tableName)

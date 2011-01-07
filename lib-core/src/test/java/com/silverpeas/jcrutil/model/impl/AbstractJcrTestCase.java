@@ -36,7 +36,6 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.sql.SQLException;
-import java.util.Calendar;
 import java.util.Hashtable;
 
 import javax.jcr.Node;
@@ -58,29 +57,30 @@ import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
 import com.stratelia.webactiv.util.JNDINames;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import javax.annotation.Resource;
+import org.junit.After;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-public abstract class AbstractJcrTestCase extends AbstractDependencyInjectionSpringContextTests {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={"/spring-in-memory-jcr.xml"})
+public abstract class AbstractJcrTestCase {
+
+  private DataSource datasource;
 
   public AbstractJcrTestCase() {
-    super();
   }
-
-  public AbstractJcrTestCase(String name) {
-    super(name);
-  }
-  protected Calendar calend;
-  protected DataSource datasource;
 
   public DataSource getDataSource() {
     return datasource;
   }
 
+  @Resource
   public void setDataSource(DataSource datasource) {
     this.datasource = datasource;
     try {
@@ -205,45 +205,29 @@ public abstract class AbstractJcrTestCase extends AbstractDependencyInjectionSpr
     }
   }
 
-  @Override
-  protected String[] getConfigLocations() {
-    return new String[]{"spring-in-memory-jcr.xml"};
-  }
-
-  @Override
   @Before
-  protected void onSetUp() throws Exception {
-    super.onSetUp();
+  public void onSetUp() throws Exception {
     System.getProperties().put(Context.INITIAL_CONTEXT_FACTORY,
         "com.sun.jndi.fscontext.RefFSContextFactory");
-    calend = Calendar.getInstance();
-    calend.set(Calendar.MILLISECOND, 0);
-    calend.set(Calendar.SECOND, 0);
-    calend.set(Calendar.MINUTE, 15);
-    calend.set(Calendar.HOUR, 9);
-    calend.set(Calendar.DAY_OF_MONTH, 12);
-    calend.set(Calendar.MONTH, Calendar.MARCH);
-    calend.set(Calendar.YEAR, 2008);
     IDatabaseConnection connection = null;
     try {
       connection = new DatabaseConnection(datasource.getConnection());
       DatabaseOperation.CLEAN_INSERT.execute(connection, getDataSet());
     } catch (Exception ex) {
-      ex.printStackTrace();
+      throw ex;
     } finally {
       if (connection != null) {
         try {
           connection.getConnection().close();
         } catch (SQLException e) {
-          e.printStackTrace();
+          throw e;
         }
       }
     }
   }
 
-  @Override
-  protected void onTearDown() throws Exception {
-    super.onTearDown();
+  @After
+  public void onTearDown() throws Exception {
     clearRepository();
     IDatabaseConnection connection = null;
     try {
@@ -251,13 +235,13 @@ public abstract class AbstractJcrTestCase extends AbstractDependencyInjectionSpr
       DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
       cleanJndi();
     } catch (Exception ex) {
-      ex.printStackTrace();
+      throw ex;
     } finally {
       if (connection != null) {
         try {
           connection.getConnection().close();
         } catch (SQLException e) {
-          e.printStackTrace();
+          throw e;
         }
       }
     }

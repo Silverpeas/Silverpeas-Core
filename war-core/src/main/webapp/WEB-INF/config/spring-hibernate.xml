@@ -30,9 +30,9 @@
   xmlns:aop="http://www.springframework.org/schema/aop"
   xmlns:tx="http://www.springframework.org/schema/tx"
   xsi:schemaLocation="
-       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
-       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
   <bean id="txManager" name="txManager"
     class="org.springframework.orm.hibernate3.HibernateTransactionManager">
@@ -45,7 +45,7 @@
 		<list>
 			<value>WEB-INF/mappings</value>
 		</list>
-	</property> 
+	</property>
 
     <property name="hibernateProperties">
       <props>
@@ -78,7 +78,7 @@
     <aop:pointcut id="daoOperation" expression="execution(* *..*DaoImpl.*(..))" />
     <aop:advisor pointcut-ref="daoOperation" advice-ref="txDaoAdvice" />
   </aop:config>
-
+  
   <tx:advice id="txAdvice" transaction-manager="txManager">
     <tx:attributes>
       <tx:method name="list*" read-only="true" propagation="REQUIRED" />

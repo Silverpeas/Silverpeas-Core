@@ -6,7 +6,7 @@
     <artifactId>ejb-core</artifactId>
     <version>5.5-SNAPSHOT</version>
   </parent>
-	
+
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>versioning</artifactId>
   <packaging>ejb</packaging>
@@ -53,6 +53,18 @@
     <dependency>
       <groupId>org.dbunit</groupId>
       <artifactId>dbunit</artifactId>
+    </dependency>
+    <dependency>
+      <artifactId>spring-modules-jcr</artifactId>
+      <groupId>org.springmodules</groupId>
+      <type>jar</type>
+      <version>0.8a</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>spring</artifactId>
+          <groupId>org.springframework</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 </project>

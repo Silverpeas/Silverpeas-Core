@@ -25,8 +25,18 @@
 
 -->
 
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:ctx="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+  <ctx:annotation-config/>
+  <ctx:component-scan base-package="com.stratelia.webactiv.util.attachment.model"/>
+  <ctx:component-scan base-package="com.silverpeas.jcrutil"/>
+
 
   <bean id="repository" class="com.silverpeas.jcrutil.BetterRepositoryFactoryBean">
     <property name="configuration" value="classpath:repository-in-memory.xml" />
@@ -37,7 +47,7 @@
       </list>
     </property>
   </bean>
-  
+
   <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="locations">
       <list>
@@ -47,7 +57,7 @@
     </property>
     <property name="searchSystemEnvironment" value="true" />
   </bean>
-  
+
   <bean id="dataSource" name="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
     <property name="driverClassName" value="${jdbc.driver}" />
     <property name="url" value="${jdbc.url}" />
