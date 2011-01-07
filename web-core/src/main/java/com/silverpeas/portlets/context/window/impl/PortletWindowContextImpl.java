@@ -89,12 +89,11 @@ public class PortletWindowContextImpl implements PortletWindowContext {
   public void init(HttpServletRequest request) {
     this.request = request;
     String spaceId = (String) request.getAttribute("SpaceId");
+    this.elementId = spaceId;
     if (!StringUtil.isDefined(elementId)) {
       elementId = (String) request.getAttribute("UserId");
     }
-
-    this.elementId = spaceId;
-
+    
     try {
       PortletRegistryContextAbstractFactory afactory = new PortletRegistryContextAbstractFactory();
       PortletRegistryContextFactory factory = afactory.getPortletRegistryContextFactory();
