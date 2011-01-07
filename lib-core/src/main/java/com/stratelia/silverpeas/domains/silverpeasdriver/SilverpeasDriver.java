@@ -708,4 +708,9 @@ public class SilverpeasDriver extends AbstractDomainDriver {
 
     return gr;
   }
+  
+  public List<String> getUserAttributes() throws Exception {
+    // no attributes for this driver
+    return null;
+  }
 }

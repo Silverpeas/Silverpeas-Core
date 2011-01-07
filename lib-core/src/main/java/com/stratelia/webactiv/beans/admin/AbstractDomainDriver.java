@@ -679,4 +679,16 @@ abstract public class AbstractDomainDriver extends Object {
   static protected String idAsString(int id) {
     return Integer.toString(id);
   }
+  
+  /**
+   * get user specifics attributes for the driver
+   * @param userId
+   * @return List of attributes name
+   * @throws Exception
+   */
+  public List<String> getUserAttributes() throws Exception {
+    throw new AdminException("AbstractDomainDriver.getUserAttributes",
+        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
+        "DomainId=" + Integer.toString(m_DomainId));
+  }
 }

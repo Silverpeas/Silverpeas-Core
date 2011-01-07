@@ -331,5 +331,16 @@ public class LDAPUser extends Object {
         .getUsersLoginField());
     return theTimeStamp;
   }
+  
+  public String[] getUserAttributes(){
+    List<String> lAttrs = new ArrayList<String>();
+    String[] userAttributes = driverSettings.getUserAttributes();
+    if (userAttributes != null) {
+      lAttrs.addAll(Arrays.asList(userAttributes));
+      if (driverParent.getMapParameters() != null)
+        lAttrs.addAll(Arrays.asList(driverParent.getMapParameters()));
+    }
+    return lAttrs.toArray(new String[lAttrs.size()]);
+  }
 
 }

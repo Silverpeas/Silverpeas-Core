@@ -27,6 +27,7 @@ package com.stratelia.silverpeas.domains.sqldriver;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.silverpeas.util.cryptage.CryptMD5;
@@ -628,5 +629,9 @@ public class SQLDriver extends AbstractDomainDriver {
       throw new AdminException("SQLDriver.rollback",
           SilverpeasException.ERROR, "admin.EX_ERR_ROLLBACK", e);
     }
+  }
+  
+  public List<String> getUserAttributes() throws Exception {
+    return Arrays.asList(getPropertiesNames());
   }
 }

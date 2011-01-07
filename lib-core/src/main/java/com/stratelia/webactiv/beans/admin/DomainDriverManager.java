@@ -26,6 +26,7 @@ package com.stratelia.webactiv.beans.admin;
 
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
@@ -1198,4 +1199,10 @@ public class DomainDriverManager extends AbstractDomainDriver {
     }
     return (String[]) specificIds.toArray(new String[0]);
   }
+  
+  public List<String> getUserAttributes() throws Exception {
+    // no attributes for this driver
+    return null;
+  }
+  
 }

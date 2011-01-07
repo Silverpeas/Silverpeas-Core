@@ -24,6 +24,8 @@
 
 package com.stratelia.silverpeas.domains.ldapdriver;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -553,6 +555,10 @@ public class LDAPDriver extends AbstractDomainDriver {
    */
   public void rollback() throws Exception {
     // Access in read only -> no need to support transaction mode
+  }
+  
+  public List<String> getUserAttributes() throws Exception {
+   return Arrays.asList(userTranslator.getUserAttributes());
   }
 
 }
