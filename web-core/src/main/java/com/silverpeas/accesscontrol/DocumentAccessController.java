@@ -27,17 +27,14 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import java.rmi.RemoteException;
 import java.util.Collection;
-import javax.ejb.CreateException;
 
 /**
- *
+ * Check the access to a document for a user.
  * @author ehugonnet
  */
 public class DocumentAccessController implements AccessController<Document> {
@@ -46,6 +43,14 @@ public class DocumentAccessController implements AccessController<Document> {
 
   public DocumentAccessController() {
     accessController = new NodeAccessController();
+  }
+  
+  /**
+   * For tests only.
+   * @param accessController 
+   */
+  DocumentAccessController(NodeAccessController accessController) {
+    this.accessController = accessController;
   }
 
   @Override

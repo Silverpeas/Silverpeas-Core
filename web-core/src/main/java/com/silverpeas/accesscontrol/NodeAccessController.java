@@ -28,7 +28,7 @@ import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
 /**
- *
+ * Check the access to a node for a user.
  * @author ehugonnet
  */
 public class NodeAccessController implements AccessController<NodePK> {

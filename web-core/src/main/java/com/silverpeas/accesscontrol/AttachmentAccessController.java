@@ -23,6 +23,7 @@
  */
 package com.silverpeas.accesscontrol;
 
+import com.silverpeas.util.ComponentHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -31,11 +32,10 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import java.rmi.RemoteException;
 import java.util.Collection;
 
 /**
- *
+ * Check the access to an attachment for a user.
  * @author ehugonnet
  */
 public class AttachmentAccessController implements AccessController<AttachmentDetail> {
@@ -45,18 +45,29 @@ public class AttachmentAccessController implements AccessController<AttachmentDe
   public AttachmentAccessController() {
     accessController = new NodeAccessController();
   }
+  
+  /**
+   * For test only.
+   * @param accessController 
+   */
+  AttachmentAccessController(NodeAccessController accessController) {
+    this.accessController = accessController;
+  }
 
   @Override
   public boolean isUserAuthorized(MainSessionController controller, String componentId,
       AttachmentDetail object) throws Exception {
-    Collection<NodePK> nodes = getPublicationBm().getAllFatherPK(new PublicationPK(
-        object.getForeignKey().getId(), componentId));
-    for (NodePK nodePk : nodes) {
-      if (accessController.isUserAuthorized(controller, componentId, nodePk)) {
-        return true;
+    if (ComponentHelper.getInstance().isThemeTracker(object.getForeignKey().getComponentName())) {
+      Collection<NodePK> nodes = getPublicationBm().getAllFatherPK(new PublicationPK(
+          object.getForeignKey().getId(), componentId));
+      for (NodePK nodePk : nodes) {
+        if (accessController.isUserAuthorized(controller, componentId, nodePk)) {
+          return true;
+        }
       }
+      return false;
     }
-    return false;
+    return true;
   }
 
   protected PublicationBm getPublicationBm() throws Exception {

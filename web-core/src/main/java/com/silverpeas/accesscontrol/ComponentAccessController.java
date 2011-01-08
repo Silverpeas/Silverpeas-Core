@@ -28,7 +28,7 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 
 /**
- *
+ * Check the access to a component for a user.
  * @author ehugonnet
  */
 public class ComponentAccessController {
@@ -40,8 +40,8 @@ public class ComponentAccessController {
    * @return 
    */
   public boolean isRightOnTopicsEnabled(MainSessionController controller, String componentId) {
-    return StringUtil.getBooleanValue(controller.getComponentParameterValue(componentId,
-        "rightsOnTopics")) && isThemeTracker(componentId);
+    return isThemeTracker(componentId) && StringUtil.getBooleanValue(controller.
+        getComponentParameterValue(componentId, "rightsOnTopics"));
   }
 
   private boolean isThemeTracker(String componentId) {

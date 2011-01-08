@@ -27,6 +27,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 
 /**
  *
+ * @param <T> The type of object we are checking the access on.
  * @author ehugonnet
  */
 public interface AccessController<T> {

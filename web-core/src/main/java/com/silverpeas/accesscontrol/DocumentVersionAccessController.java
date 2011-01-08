@@ -29,7 +29,7 @@ import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 
 /**
- *
+ * Check the access to a document version for a user.
  * @author ehugonnet
  */
 public class DocumentVersionAccessController implements AccessController<DocumentVersion> {
@@ -39,6 +39,14 @@ public class DocumentVersionAccessController implements AccessController<Documen
 
   public DocumentVersionAccessController() {
     versioning = new VersioningUtil();
+  }
+  
+  /**
+   * For test only.
+   * @param versioning 
+   */
+  DocumentVersionAccessController(VersioningUtil versioning) {
+    this.versioning = versioning;
   }
 
   @Override
