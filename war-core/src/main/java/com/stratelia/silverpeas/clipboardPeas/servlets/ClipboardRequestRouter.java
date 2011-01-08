@@ -58,6 +58,7 @@ public class ClipboardRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
+   * @return 
    */
   @Override
   public String getSessionControlBeanName() {

@@ -3623,11 +3623,11 @@ public final class Admin extends Object {
       allGroupsOfUser = new ArrayList<String>();
       String[] directGroupIds = m_GroupManager.getDirectGroupsOfUser(m_DDManager, userId);
       for (int g = 0; g < directGroupIds.length; g++) {
-        Group group = m_GroupManager.getGroup(directGroupIds[g], false);
+        Group group = m_GroupManager.getGroup(directGroupIds[g]);
         if (group != null) {
           allGroupsOfUser.add(group.getId());
           while (StringUtil.isDefined(group.getSuperGroupId())) {
-            group = m_GroupManager.getGroup(group.getSuperGroupId(), false);
+            group = m_GroupManager.getGroup(group.getSuperGroupId());
             if (group != null) {
               allGroupsOfUser.add(group.getId());
             }

@@ -75,8 +75,6 @@ public class ThumbnailController {
       //first, delete former thumbnail
       if (completeThumbnail != null) {
         if (completeThumbnail.getCropFileName() != null) {
-          // on garde toujours le meme nom de fichier par contre on le supprime
-          // puis le recreer avec les nouvelles coordonnees
           deleteThumbnailFileOnServer(completeThumbnail.getInstanceId(), completeThumbnail.getCropFileName());
         }
         thumbnailService.deleteThumbnail(thumbDetail);
@@ -86,40 +84,7 @@ public class ThumbnailController {
       thumbDetail.setXStart(-1);
       thumbDetail.setYLength(-1);
       thumbDetail.setYStart(-1);
-      thumbnailService.createThumbnail(thumbDetail);
-      /*ThumbnailDetail completeThumbnail = thumbnailService.getCompleteThumbnail(thumbDetail);
-      if (completeThumbnail == null) {
-        createThumbnail(thumbDetail, thumbnailWidth, thumbnailHeight);
-      } else {
-        if (completeThumbnail.getCropFileName() != null) {
-          // on garde toujours le meme nom de fichier par contre on le supprime
-          // puis le recreer avec les nouvelles coordonnees
-          deleteThumbnailFileOnServer(completeThumbnail.getInstanceId(), completeThumbnail
-              .getCropFileName());
-        } else {
-          // case creation
-          String extension = FilenameUtils.getExtension(completeThumbnail.getOriginalFileName());
-          String cropFileName = String.valueOf(new Date().getTime()) + '.' + extension;
-          completeThumbnail.setCropFileName(cropFileName);
-        }
-        String pathCropdir = getImageDirectory(completeThumbnail.getInstanceId());
-        String pathOriginalFile = pathCropdir + completeThumbnail.getOriginalFileName();
-        if (thumbDetail.getXStart() != -1 && thumbDetail.getYStart() != -1 &&
-            thumbDetail.getXLength() != -1 && thumbDetail.getYLength() != -1) {
-          // recup new crop definition
-          completeThumbnail.setXStart(thumbDetail.getXStart());
-          completeThumbnail.setYStart(thumbDetail.getYStart());
-          completeThumbnail.setXLength(thumbDetail.getXLength());
-          completeThumbnail.setYLength(thumbDetail.getYLength());
-          String pathCropFile = pathCropdir + completeThumbnail.getCropFileName();
-          createCropThumbnailFileOnServer(pathOriginalFile, pathCropdir, pathCropFile,
-                  completeThumbnail, thumbnailWidth, thumbnailHeight);
-          thumbnailService.updateThumbnail(completeThumbnail);
-        } else {
-          pathOriginalFile = pathCropdir + thumbDetail.getOriginalFileName();
-          cropFromPath(pathOriginalFile, thumbDetail, thumbnailHeight, thumbnailWidth);
-        }
-      }*/
+      thumbnailService.createThumbnail(thumbDetail);     
     } catch (Exception e) {
       throw new ThumbnailRuntimeException("ThumbnailController.updateThumbnail()",
               SilverpeasRuntimeException.ERROR, "thumbnail_MSG_UPDATE_THUMBNAIL_KO", e);

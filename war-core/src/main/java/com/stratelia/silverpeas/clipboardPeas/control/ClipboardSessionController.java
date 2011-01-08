@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.clipboardPeas.control;
 
 import java.awt.datatransfer.Transferable;
@@ -64,12 +63,10 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
   private String m_CallerRooterName;
   private String m_CallerJSPPage;
   private String m_CallerTargetFrame;
-
   /**
    * The bundle containing all the settings.
    */
   private ResourceLocator settings = null;
-
   private String sessionId = null;
 
   /**
@@ -79,8 +76,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
    */
   public ClipboardSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context) {
-    super(mainSessionCtrl, context,
-        "com.stratelia.webactiv.clipboard.multilang.clipboard",
+    super(mainSessionCtrl, context, "com.stratelia.webactiv.clipboard.multilang.clipboard",
         "com.stratelia.webactiv.clipboard.settings.clipboardIcons");
     sessionId = mainSessionCtrl.getSessionId();
   }
@@ -129,15 +125,15 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
 
       if (message.equals("SHOWCLIPBOARD")) {
         // portage netscape
-        str
-            .append("top.ClipboardWindow = window.open('../../Rclipboard/jsp/clipboard.jsp','Clipboard','width=500,height=350,alwaysRaised');");
+        str.append(
+            "top.ClipboardWindow = window.open('../../Rclipboard/jsp/clipboard.jsp','Clipboard','width=500,height=350,alwaysRaised');");
         str.append("top.ClipboardWindow.focus();");
       } else if (message.equals("REFRESHCLIPBOARD")) {
         // portage netscape
         str.append("if(top.ClipboardWindow!=null){");
         str.append("if (!top.ClipboardWindow.closed) {");
-        str
-            .append("top.ClipboardWindow = window.open('../../Rclipboard/jsp/clipboardRefresh.jsp','Clipboard','width=350,height=300,alwaysRaised');");
+        str.append(
+            "top.ClipboardWindow = window.open('../../Rclipboard/jsp/clipboardRefresh.jsp','Clipboard','width=350,height=300,alwaysRaised');");
         str.append("}");
         str.append("}");
 
@@ -156,8 +152,8 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
         str.append("document.refreshform.submit();");
       } else if (message.equals("IDLE")) {
         com.stratelia.silverpeas.notificationserver.channel.server.SilverMessage serverMessage =
-            com.stratelia.silverpeas.notificationserver.channel.server.SilverMessageFactory
-            .read(getUserId(), sessionId);
+            com.stratelia.silverpeas.notificationserver.channel.server.SilverMessageFactory.read(
+            getUserId(), sessionId);
 
         if (serverMessage != null) {
           SilverTrace.info("clipboardPeas",
@@ -165,15 +161,13 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
               "root.MSG_GEN_PARAM_VALUE", " serverMessage = " + serverMessage);
           if (serverMessage.getWhat().equals("ALERT")) {
             str.append("alert ('");
-            str.append(EncodeHelper.javaStringToJsString(serverMessage
-                .getContent()));
+            str.append(EncodeHelper.javaStringToJsString(serverMessage.getContent()));
             str.append("');");
-            str.append("self.location.href = '../../Rclipboard/jsp/Idle.jsp?message=DELMSG&messageTYPE=SERVER&messageID=").
-                append(serverMessage.getID())
-                .append("';");
+            str.append(
+                "self.location.href = '../../Rclipboard/jsp/Idle.jsp?message=DELMSG&messageTYPE=SERVER&messageID=").
+                append(serverMessage.getID()).append("';");
           } else if (serverMessage.getWhat().equals("JAVASCRIPT")) {
-            str.append(EncodeHelper.javaStringToJsString(serverMessage
-                .getContent()));
+            str.append(EncodeHelper.javaStringToJsString(serverMessage.getContent()));
           }
         } else {
           SilverMessage popupMessage = SilverMessageFactory.read(getUserId());
@@ -197,10 +191,10 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
                   append(URLManager.getURL(URLManager.CMP_POPUP)).
                   append("ReadMessage.jsp?MessageID=").append(popupMessage.getID()).
                   append("','popupmsg").
-                  append(new Long(new Date().getTime()).toString()).append("',500,260,'scrollbars=yes');");
+                  append(new Long(new Date().getTime()).toString()).append(
+                  "',500,260,'scrollbars=yes');");
             } else if (popupMessage.getWhat().equals("JAVASCRIPT")) {
-              str.append(EncodeHelper.javaStringToJsString(popupMessage
-                  .getContent()));
+              str.append(EncodeHelper.javaStringToJsString(popupMessage.getContent()));
             } else if (popupMessage.getWhat().equals("COMMUNICATION")) {
               SilverTrace.info("clipboardPeas",
                   "ClipboardSessionController.getDestination()",
@@ -216,22 +210,20 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
                   append(URLManager.getURL(URLManager.CMP_COMMUNICATIONUSER)).
                   append("OpenDiscussion?userId=").append(popupMessage.getSenderId()).
                   append("&MessageID=").append(popupMessage.getID()).append("','popupDiscussion").
-                  append(popupMessage.getSenderId()).append("',650,400,'menubar=no,scrollbars=no,statusbar=no');");
+                  append(popupMessage.getSenderId()).append(
+                  "',650,400,'menubar=no,scrollbars=no,statusbar=no');");
             }
           }
         }
-      } else if (message.equals("DELMSG")) {
-        String ID = request.getParameter("messageID");
-        String TYPE = request.getParameter("messageTYPE");
-
-        if (TYPE != null) {
-          if (TYPE.equals("SERVER")) {
-            com.stratelia.silverpeas.notificationserver.channel.server.SilverMessageFactory
-                .del(ID);
-          } else if (TYPE.equals("POPUP")) {
-            com.stratelia.silverpeas.notificationserver.channel.popup.SilverMessageFactory
-                .del(ID);
-          }
+      } else if ("DELMSG".equals(message)) {
+        String messageId = request.getParameter("messageID");
+        String messageType = request.getParameter("messageTYPE");
+        if ("SERVER".equals(messageType)) {
+          com.stratelia.silverpeas.notificationserver.channel.server.SilverMessageFactory.del(
+              messageId);
+        } else if ("POPUP".equals(messageType)) {
+          com.stratelia.silverpeas.notificationserver.channel.popup.SilverMessageFactory.del(
+              messageId);
         }
       }
     }
@@ -240,22 +232,18 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
 
   /**
    * Method getJavaScriptTask
+   * @param request 
    * @return
    * @see
    */
   public String getHF_HTMLForm(HttpServletRequest request) {
     String message = request.getParameter("message");
     StringBuilder str = new StringBuilder("");
-
-    if (message != null) {
-      if (message.equals("ALERT")) {
-      } else if (message.equals("REFRESH")) {
-        str
-            .append("<form name='refreshform' action='' method='post' target='MyMain'>");
-        str.append("<input type='hidden' name='Space'>");
-        str.append("<input type='hidden' name='Component'>");
-        str.append("</form>");
-      }
+    if ("REFRESH".equals(message)) {
+      str.append("<form name='refreshform' action='' method='post' target='MyMain'>");
+      str.append("<input type='hidden' name='Space'>");
+      str.append("<input type='hidden' name='Component'>");
+      str.append("</form>");
     }
     return str.toString();
   }
@@ -295,8 +283,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
         try {
           IndexEntry indexEntry;
 
-          indexEntry = (IndexEntry) clipObject
-              .getTransferData(ClipboardSelection.IndexFlavor);
+          indexEntry = (IndexEntry) clipObject.getTransferData(ClipboardSelection.IndexFlavor);
           result.add(indexEntry);
         } catch (Exception e) {
           SilverTrace.error("clipboardPeas",
@@ -343,7 +330,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
     if (spaceInst != null) {
       return spaceInst.getName();
     }
-      return spaceId;
+    return spaceId;
   }
 
   /**
@@ -360,7 +347,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
       return componentInst.getName();
     }
     SilverTrace.error("clipboardPeas", "ClipboardSessionController.getComponentLabel()",
-          "clipboardPeas.EX_CANT_GET_COMPO_LABEL");
+        "clipboardPeas.EX_CANT_GET_COMPO_LABEL");
     return componentId;
   }
 
@@ -409,8 +396,6 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
     return m_CallerRooterName;
   }
 
-
-
   /**
    *
    * @return
@@ -435,5 +420,4 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
   public String getIntervalInSec() {
     return getSettings().getString("IntervalInSec");
   }
-
 }

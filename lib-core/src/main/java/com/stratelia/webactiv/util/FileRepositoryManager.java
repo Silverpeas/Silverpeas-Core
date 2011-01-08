@@ -47,7 +47,6 @@ public class FileRepositoryManager extends Object {
   final static String s_sUpLoadPath = GeneralPropertiesManager.getString("uploadsPath");
   static String s_sIndexUpLoadPath = GeneralPropertiesManager.getString("uploadsIndexPath");
   static String s_sTempPath = "";
-  static FileFolderManager s_FileFolderManager = new FileFolderManager();
   final static ResourceLocator uploadSettings=  new ResourceLocator(
           "com.stratelia.webactiv.util.uploads.uploadSettings", "");
   static final ResourceLocator utilMessages = new ResourceLocator("com.silverpeas.util.multilang.util", "");

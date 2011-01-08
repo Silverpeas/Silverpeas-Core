@@ -833,26 +833,15 @@ public class GenericRecordSetManager {
       select = con.prepareStatement(SELECT_FIELDS);
       select.setInt(1, record.getInternalId());
       rs = select.executeQuery();
-
-      Field field = null;
-      // int fieldIndex ;
-      String fieldName;
-      String fieldValue;
       while (rs.next()) {
-        // fieldIndex = rs.getInt(2);
-        fieldName = rs.getString(2);
-        fieldValue = rs.getString(3);
+        String fieldName = rs.getString("fieldName");
+        String fieldValue = rs.getString("fieldValue");
 
-        field = record.getField(fieldName);
-        if (field != null) {
-          // We have found a field corresponding to the fieldName
+        Field field = record.getField(fieldName);
+        if (field != null) {// We have found a field corresponding to the fieldName
           SilverTrace.debug("form", "GenericRecordSetManager.selectFieldRows",
-              "root.MSG_GEN_PARAM_VALUE", "fieldName = " + fieldName
-              + ", fieldValue = " + fieldValue);
+              "root.MSG_GEN_PARAM_VALUE", "fieldName=" + fieldName + ", fieldValue=" + fieldValue);
           field.setStringValue(fieldValue);
-        } else {
-          // We have not found a field corresponding to the fieldName
-          // Maybe the form has changed and the field has been deleted
         }
       }
     } finally {
@@ -865,21 +854,17 @@ public class GenericRecordSetManager {
       throws SQLException, FormException {
     PreparedStatement select = null;
     ResultSet rs = null;
-
     List<String> languages = new ArrayList<String>();
     try {
       select = con.prepareStatement(SELECT_RECORD);
-
       select.setInt(1, template.getInternalId());
       select.setString(2, externalId);
-
       rs = select.executeQuery();
-
-      String language = null;
       while (rs.next()) {
-        language = rs.getString(4);
-        if (!StringUtil.isDefined(language))
+        String language = rs.getString("lang");
+        if (!StringUtil.isDefined(language)) {
           language = I18NHelper.defaultLanguage;
+        }
         languages.add(language);
       }
       return languages;
@@ -1025,8 +1010,8 @@ public class GenericRecordSetManager {
 
   static final private String RECORD_COLUMNS = "recordId,templateId,externalId,lang";
 
-  static final private String SELECT_RECORD = "select " + RECORD_COLUMNS
-      + " from " + RECORD_TABLE + " where templateId=? and externalId=?";
+  static final private String SELECT_RECORD = "SELECT recordId, templateId, externalId, lang FROM " +
+      "sb_formtemplate_record WHERE templateId=? AND externalId=?";
 
   static final private String INSERT_RECORD = "insert into " + RECORD_TABLE
       + "(" + RECORD_COLUMNS + ")" + " values (?,?,?,?)";
@@ -1043,9 +1028,8 @@ public class GenericRecordSetManager {
 
   static final private String FIELDS_COLUMNS = "recordId,fieldName,fieldValue";
 
-  static final private String SELECT_FIELDS = "select " + FIELDS_COLUMNS
-      + " from " + FIELDS_TABLE + " where recordId=?";
-  // + " order by fieldIndex";
+  static final private String SELECT_FIELDS = "SELECT recordId, fieldName, fieldValue FROM " +
+      "sb_formtemplate_textfield WHERE recordId=?";
 
   static final private String INSERT_FIELD = "insert into " + FIELDS_TABLE
       + "(" + FIELDS_COLUMNS + ")" + " values (?,?,?)";

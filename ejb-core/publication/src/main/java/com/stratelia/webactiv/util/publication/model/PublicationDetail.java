@@ -91,7 +91,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   private String targetValidatorId;
   private String cloneId;
   private String cloneStatus;
-  private Date   draftOutDate;
+  private Date draftOutDate;
   private String silverObjectId; // added for the components - PDC integration
   private String iconUrl;
   // added for the taglib
@@ -165,25 +165,6 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     this.keywords = keywords;
     this.content = content;
   }
-
- /* public PublicationDetail(String id, String name, String description,
-      Date creationDate, Date beginDate, Date endDate, String creatorId,
-      String importance, String version, String keywords, String content,
-      String updaterId, String author) {
-    this.pk = new PublicationPK(id);
-    this.name = name;
-    this.description = description;
-    this.creationDate = creationDate;
-    this.beginDate = beginDate;
-    this.endDate = endDate;
-    this.creatorId = creatorId;
-    this.importance = new Integer(importance).intValue();
-    this.version = version;
-    this.keywords = keywords;
-    this.content = content;
-    this.updaterId = updaterId;
-    this.author = author;
-  }*/
 
   public PublicationDetail(PublicationPK pk, String name, String description,
       Date creationDate, Date beginDate, Date endDate, String creatorId,
@@ -612,40 +593,46 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   }
 
   public String getImage() {
-	  try{
-		  if(getPK() != null && getPK().getInstanceId() != null && getPK().getId() != null && StringUtil.isInteger( getPK().getId())){
-			  ThumbnailDetail thumbDetail = new ThumbnailDetail(getPK().getInstanceId(), Integer.valueOf(getPK().getId()), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
-			  // default size if creation
-			  String[] imageProps = ThumbnailController.getImageAndMimeType(thumbDetail, -1, -1);
-			  return imageProps[0];
-		  }else{
-			  return null;
-		  }
-	  }catch(Exception e){
-		  SilverTrace.error("publication","PublicationDetail.getImage()","publication.GET_THUMBNAIL_ERROR",e);
-	  }
-	  return null;
+    try {
+      if (getPK() != null && getPK().getInstanceId() != null && getPK().getId() != null && StringUtil.
+          isInteger(getPK().getId())) {
+        ThumbnailDetail thumbDetail = new ThumbnailDetail(getPK().getInstanceId(), Integer.valueOf(getPK().
+            getId()), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
+        // default size if creation
+        String[] imageProps = ThumbnailController.getImageAndMimeType(thumbDetail, -1, -1);
+        return imageProps[0];
+      } else {
+        return null;
+      }
+    } catch (Exception e) {
+      SilverTrace.error("publication", "PublicationDetail.getImage()",
+          "publication.GET_THUMBNAIL_ERROR", e);
+    }
+    return null;
   }
 
   public String getImageMimeType() {
-	  try{
-		  if(getPK() != null && getPK().getInstanceId() != null && getPK().getId() != null){
-			  ThumbnailDetail thumbDetail = new ThumbnailDetail(getPK().getInstanceId(), Integer.valueOf(getPK().getId()), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
-			  // default size if creation
-			  String[] imageProps = ThumbnailController.getImageAndMimeType(thumbDetail, -1, -1);
-			  return imageProps[1];
-		  }else{
-			  return null;
-		  }
-	  }catch(Exception e){
-		  SilverTrace.error("publication","PublicationDetail.getImageMimeType()","publication.GET_THUMBNAIL_ERROR",e);
-	  }
-	  return null;
+    try {
+      if (getPK() != null && getPK().getInstanceId() != null && getPK().getId() != null) {
+        ThumbnailDetail thumbDetail = new ThumbnailDetail(getPK().getInstanceId(), Integer.valueOf(getPK().
+            getId()), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
+        // default size if creation
+        String[] imageProps = ThumbnailController.getImageAndMimeType(thumbDetail, -1, -1);
+        return imageProps[1];
+      } else {
+        return null;
+      }
+    } catch (Exception e) {
+      SilverTrace.error("publication", "PublicationDetail.getImageMimeType()",
+          "publication.GET_THUMBNAIL_ERROR", e);
+    }
+    return null;
   }
-  
+
   public ThumbnailDetail getThumbnail() {
-    if(getPK() != null && getPK().getInstanceId() != null && getPK().getId() != null){
-      ThumbnailDetail thumbDetail = new ThumbnailDetail(getPK().getInstanceId(), Integer.valueOf(getPK().getId()), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
+    if (getPK() != null && getPK().getInstanceId() != null && getPK().getId() != null) {
+      ThumbnailDetail thumbDetail = new ThumbnailDetail(getPK().getInstanceId(), Integer.valueOf(getPK().
+          getId()), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
       return ThumbnailController.getCompleteThumbnail(thumbDetail);
     }
     return null;
@@ -663,19 +650,18 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     return author;
   }
 
+  @Override
   public String toString() {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
     result.append("PublicationDetail {").append("\n");
     if (getPK() != null) {
       result.append("  getPK().getId() = ").append(getPK().getId()).append("\n");
-      result.append("  getPK().getEd() = ").append(getPK().getSpace()).append(
-          "\n");
+      result.append("  getPK().getEd() = ").append(getPK().getSpace()).append("\n");
       result.append("  getPK().getCo() = ").append(getPK().getComponentName()).append("\n");
     }
     result.append("  getName() = ").append(getName()).append("\n");
     result.append("  getDescription() = ").append(getDescription()).append("\n");
-    result.append("  getCreationDate() = ").append(getCreationDate()).append(
-        "\n");
+    result.append("  getCreationDate() = ").append(getCreationDate()).append("\n");
     result.append("  getBeginDate() = ").append(getBeginDate()).append("\n");
     result.append("  getBeginHour()  = ").append(getBeginHour()).append("\n");
     result.append("  getEndDate() = ").append(getEndDate()).append("\n");
@@ -688,10 +674,8 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     result.append("  getStatus() = ").append(getStatus()).append("\n");
     result.append("  getUpdateDate() = ").append(getUpdateDate()).append("\n");
     result.append("  getUpdaterId()  = ").append(getUpdaterId()).append("\n");
-    result.append("  getValidateDate() = ").append(getValidateDate()).append(
-        "\n");
-    result.append("  getValidatorId()  = ").append(getValidatorId()).append(
-        "\n");
+    result.append("  getValidateDate() = ").append(getValidateDate()).append("\n");
+    result.append("  getValidatorId()  = ").append(getValidatorId()).append("\n");
     result.append("  getSilverObjectId()  = ").append(getSilverObjectId()).append("\n");
     result.append("  getAuthor()  = ").append(getAuthor()).append("\n");
     result.append("}");
@@ -742,27 +726,30 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     return this.silverObjectId;
   }
 
-  // methods to be implemented by SilverContentInterface
+  @Override
   public String getURL() {
     return "searchResult?Type=Publication&Id=" + getId();
   }
 
+  @Override
   public String getId() {
     return getPK().getId();
   }
 
+  @Override
   public String getInstanceId() {
     return getPK().getComponentName();
   }
 
+  @Override
   public String getDate() {
     if (getUpdateDate() != null) {
       return DateUtil.date2SQLDate(getUpdateDate());
-    } else {
-      return DateUtil.date2SQLDate(getCreationDate());
     }
+    return DateUtil.date2SQLDate(getCreationDate());
   }
 
+  @Override
   public String getSilverCreationDate() {
     return DateUtil.date2SQLDate(getCreationDate());
   }
@@ -775,6 +762,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     this.iconUrl = iconUrl;
   }
 
+  @Override
   public String getIconUrl() {
     return this.iconUrl;
   }
@@ -782,16 +770,20 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   /****************************************************************************************/
   /** FormTemplate exposition for taglibs */
   /****************************************************************************************/
+  /**
+   * 
+   * @return 
+   */
   public List<XMLField> getXmlFields() {
     return getXmlFields(null);
   }
 
+  @SuppressWarnings("unchecked")
   public List<XMLField> getXmlFields(String language) {
     if (xmlFields == null) {
       try {
         xmlFields = getFormTemplateBm().getXMLFieldsForExport(
-            getPK().getInstanceId() + ":" + getInfoId(), getPK().getId(),
-            language);
+            getPK().getInstanceId() + ":" + getInfoId(), getPK().getId(), language);
       } catch (Exception e) {
         throw new PublicationRuntimeException(
             "PublicationDetail.getDataRecord()",
@@ -827,15 +819,12 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
           if (fieldValue == null) {
             fieldValue = "";
           } else {
-            if (fieldValue.startsWith("image_")
-                || fieldValue.startsWith("file_")) {
+            if (fieldValue.startsWith("image_") || fieldValue.startsWith("file_")) {
               String attachmentId = fieldValue.substring(fieldValue.indexOf("_") + 1, fieldValue.
                   length());
-              if (attachmentId != null && attachmentId.length() > 0
-                  && !attachmentId.equals("null")) {
-                AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(
-                    attachmentId,
-                    "useless", getPK().getInstanceId()));
+              if (StringUtil.isDefined(attachmentId)) {
+                AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(
+                    new AttachmentPK(attachmentId, "useless", getPK().getInstanceId()));
                 if (attachment != null) {
                   attachment.setLogicalName(attachment.getLogicalName(language));
                   attachment.setPhysicalName(attachment.getPhysicalName(language));
@@ -861,9 +850,8 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
           "publication.EX_IMPOSSIBLE_DE_FABRIQUER_FORMTEMPLATEBM_HOME", e);
     }
 
-    SilverTrace.info("publication", "PublicationDetail.getModelContent('"
-        + fieldName + "')", "root.MSG_GEN_EXIT_METHOD", "fieldValue = "
-        + fieldValue);
+    SilverTrace.info("publication", "PublicationDetail.getModelContent('" + fieldName + "')",
+        "root.MSG_GEN_EXIT_METHOD", "fieldValue = " + fieldValue);
     return fieldValue;
   }
 
@@ -886,6 +874,10 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   }
 
   /****************************************************************************************/
+  /**
+   * 
+   * @return 
+   */
   public InfoDetail getInfoDetail() {
     if (infoDetail == null) {
       try {
@@ -901,32 +893,27 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   }
 
   public String getModelContent() {
-    Collection<InfoTextDetail> allInfoText = null;
-    StringBuffer content = new StringBuffer();
-
-    InfoDetail infoDetail = getInfoDetail();
-    if (infoDetail != null) {
-      allInfoText = infoDetail.getInfoTextList();
-    }
-
-    if (allInfoText != null) {
-      Iterator<InfoTextDetail> it = allInfoText.iterator();
-      while (it.hasNext()) {
-        InfoTextDetail textDetail = it.next();
-        content.append(textDetail.getContent());
+    StringBuilder buffer = new StringBuilder();
+    InfoDetail currentInfoSetail = getInfoDetail();
+    if (currentInfoSetail != null) {
+      Collection<InfoTextDetail> allInfoText = currentInfoSetail.getInfoTextList();
+      if (allInfoText != null) {
+        for (InfoTextDetail textDetail : allInfoText) {
+          buffer.append(textDetail.getContent());
+        }
       }
     }
-    return content.toString();
+    return buffer.toString();
   }
 
   public String getModelContent(int fieldIndex) {
     SilverTrace.info("publication", "PublicationDetail.getModelContent()",
         "root.MSG_GEN_ENTER_METHOD", "fieldIndex = " + fieldIndex);
     String fieldContent = "";
-    InfoDetail infoDetail = getInfoDetail();
+    InfoDetail currentInfoDetail = getInfoDetail();
     ArrayList<InfoTextDetail> allInfoText = null;
-    if (infoDetail != null) {
-      allInfoText = (ArrayList<InfoTextDetail>) infoDetail.getInfoTextList();
+    if (currentInfoDetail != null) {
+      allInfoText = (ArrayList<InfoTextDetail>) currentInfoDetail.getInfoTextList();
     }
 
     if (allInfoText != null) {
@@ -939,11 +926,11 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
 
   public InfoImageDetail getImage(int fieldIndex) {
     InfoImageDetail infoImageDetail = null;
-    InfoDetail infoDetail = getInfoDetail();
+    InfoDetail currentInfoDetail = getInfoDetail();
     ArrayList<InfoImageDetail> allInfoImage = null;
 
-    if (infoDetail != null) {
-      allInfoImage = (ArrayList<InfoImageDetail>) infoDetail.getInfoImageList();
+    if (currentInfoDetail != null) {
+      allInfoImage = (ArrayList<InfoImageDetail>) currentInfoDetail.getInfoImageList();
     }
 
     if (allInfoImage != null) {
@@ -1193,11 +1180,19 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     return VALID.equals(this.status);
   }
 
+  @Override
   public boolean equals(Object o) {
     if (o instanceof PublicationDetail) {
       PublicationDetail anotherPublication = (PublicationDetail) o;
       return this.pk.equals(anotherPublication.getPK());
     }
     return false;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 23 * hash + (this.pk != null ? this.pk.hashCode() : 0);
+    return hash;
   }
 }

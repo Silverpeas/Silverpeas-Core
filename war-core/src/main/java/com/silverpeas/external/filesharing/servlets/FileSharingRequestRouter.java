@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.external.filesharing.servlets;
 
 import java.rmi.RemoteException;
@@ -48,6 +47,7 @@ import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 
 public class FileSharingRequestRouter extends ComponentRequestRouter {
+
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
@@ -76,6 +76,7 @@ public class FileSharingRequestRouter extends ComponentRequestRouter {
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
+  @Override
   public String getDestination(String function, ComponentSessionController componentSC,
       HttpServletRequest request) {
     String destination = "";
@@ -90,7 +91,7 @@ public class FileSharingRequestRouter extends ComponentRequestRouter {
         destination = getDestination("ViewTickets", fileSharingSC, request);
       } else if (function.equals("ViewTickets")) {
         // liste des tickets visibles pour l'utilisateur
-        List<TicketDetail> tickets = (List<TicketDetail>) fileSharingSC.getTicketsByUser();
+        List<TicketDetail> tickets = fileSharingSC.getTicketsByUser();
         request.setAttribute("Tickets", tickets);
         destination = rootDest + "viewTickets.jsp";
       } else if (function.equals("DeleteTicket")) {
@@ -98,9 +99,7 @@ public class FileSharingRequestRouter extends ComponentRequestRouter {
         String keyFile = request.getParameter("KeyFile");
         fileSharingSC.deleteTicket(keyFile);
         destination = getDestination("ViewTickets", fileSharingSC, request);
-      }
-
-      else if (function.equals("NewTicket")) {
+      } else if (function.equals("NewTicket")) {
         // récupération des données venant de attachment ou versioning
         String fileId = request.getParameter("FileId");
         String componentId = request.getParameter("ComponentId");
@@ -120,7 +119,7 @@ public class FileSharingRequestRouter extends ComponentRequestRouter {
 
         // passage des paramètres
         request.setAttribute("FileId", fileId);
-        request.setAttribute("Versioning", new Boolean("version".equalsIgnoreCase(type)));
+        request.setAttribute("Versioning", Boolean.valueOf("version".equalsIgnoreCase(type)));
         request.setAttribute("ComponentId", componentId);
         request.setAttribute("FileName", logicalName);
         request.setAttribute("CreatorName", fileSharingSC.getUserDetail().getDisplayedName());
@@ -150,14 +149,11 @@ public class FileSharingRequestRouter extends ComponentRequestRouter {
         fileSharingSC.updateTicket(ticket);
         // retour sur le liste des tickets
         destination = getDestination("ViewTickets", fileSharingSC, request);
-      } else if (function.equals("DownloadFile")) {
-        // contrôler
+      } else {
+        if ("!DownloadFile".equals(function)) {
+          destination = rootDest + function;
+        }
       }
-
-      else {
-        destination = rootDest + function;
-      }
-
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
@@ -175,8 +171,9 @@ public class FileSharingRequestRouter extends ComponentRequestRouter {
     int fileId = Integer.parseInt(request.getParameter("FileId"));
     String componentId = request.getParameter("ComponentId");
     boolean versioning = false;
-    if ("true".equals(request.getParameter("Versioning")))
+    if ("true".equals(request.getParameter("Versioning"))) {
       versioning = true;
+    }
     String date = request.getParameter("EndDate");
     Date endDate = DateUtil.stringToDate(date, fileSharingSC.getLanguage());
     int nbAccessMax = Integer.parseInt(request.getParameter("NbAccessMax"));

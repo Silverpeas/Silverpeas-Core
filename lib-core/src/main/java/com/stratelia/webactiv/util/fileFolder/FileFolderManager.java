@@ -54,15 +54,15 @@ import org.apache.commons.io.FilenameUtils;
 public class FileFolderManager {
 
   /**
-   * getAllSubFolder : retourne une Collection d'objets File qui representent les repertoires (et
+   * retourne une Collection d'objets File qui representent les repertoires (et
    * seulement les repertoires, pas les fichiers) contenus dans le repertoire passe en parametre
-   * Param = chemin du repertoire
+   * @param chemin le chemin du repertoire
+   * @return une Collection d'objets File qui representent les repertoires (et
+   * seulement les repertoires, pas les fichiers) contenus dans le repertoire passe en parametre
+   * @throws UtilException 
    */
   public static Collection<File> getAllSubFolder(String chemin) throws UtilException {
-    /* ex chemin = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite */
-
     List<File> resultat = new ArrayList<File>();
-
     File directory = new File(chemin);
     if (directory.isDirectory()) {
       File[] list = directory.listFiles();
@@ -72,10 +72,9 @@ public class FileFolderManager {
         }
       }
     } else {
-      SilverTrace.error("util", "FileFolderManager.getAllSubFolder",
-          "util.EX_NO_CHEMIN_REPOS", chemin);
-      throw new UtilException("FileFolderManager.getAllSubFolder",
-          "util.EX_NO_CHEMIN_REPOS", chemin);
+      SilverTrace.error("util", "FileFolderManager.getAllSubFolder", "util.EX_NO_CHEMIN_REPOS",
+          chemin);
+      throw new UtilException("FileFolderManager.getAllSubFolder", "util.EX_NO_CHEMIN_REPOS", chemin);
     }
     return resultat;
   }
@@ -140,13 +139,14 @@ public class FileFolderManager {
   }
 
   /**
-   * getAllWebPages : retourne une Collection d'objets File qui representent les fichiers du site
-   * web contenus dans le repertoire passe en parametre et ses sous repertoires Param = chemin du
-   * repertoire du site
+   * Retourne une Collection d'objets File qui representent les fichiers du site
+   * web contenus dans le repertoire passe en parametre et ses sous repertoires
+   * @param chemin le chemin du repertoire du site
+   * @return une Collection d'objets File qui representent les fichiers du site
+   * web contenus dans le repertoire passe en parametre et ses sous repertoires
+   * @throws UtilException 
    */
   public static Collection<File> getAllWebPages(String chemin) throws UtilException {
-    /* ex chemin = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\rep */
-
     List<File> resultat = new ArrayList<File>();
 
     File directory = new File(chemin);
@@ -178,8 +178,6 @@ public class FileFolderManager {
    * chemin du repertoire du site
    */
   public static Collection<File> getAllWebPages2(String chemin) throws Exception {
-    /* ex chemin = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\rep */
-
     List<File> resultat = new ArrayList<File>();
 
     File directory = new File(chemin);
@@ -190,8 +188,7 @@ public class FileFolderManager {
           String fichier = file.getName();
           int indexPoint = fichier.lastIndexOf(".");
           String type = fichier.substring(indexPoint + 1);
-          if ("htm".equals(type.toLowerCase())
-              || "html".equals(type.toLowerCase())) {
+          if ("htm".equals(type.toLowerCase())|| "html".equals(type.toLowerCase())) {
             resultat.add(file);
           }
         }
@@ -206,14 +203,15 @@ public class FileFolderManager {
   }
 
   /**
-   * createFolder : creation d'un repertoire Param = chemin du repertoire
+   * creation d'un repertoire
+   * @param chemin le chemin du repertoire
+   * @throws UtilException 
    */
   public static void createFolder(String chemin) throws UtilException {
     SilverTrace.info("util", "FileFolderManager.createFolder",
         "root.MSG_GEN_PARAM_VALUE", "chemin=" + chemin);
     File directory = new File(chemin);
-    if (directory != null && directory.exists() && directory.isDirectory()) {
-    } else {
+    if (directory == null ||  !directory.exists() || directory.isDirectory()) {
       createFolder(directory);
     }
   }
@@ -394,5 +392,8 @@ public class FileFolderManager {
           "util.util.EX_WRONG_CHEMLIN_SPEC", cheminFichier);
     }
     return res;
+  }
+
+  private FileFolderManager() {
   }
 }

@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
 import java.util.ArrayList;
@@ -52,6 +51,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
   private static final long serialVersionUID = -1233766141114104308L;
 
+  @Override
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new PdcSessionController(mainSessionCtrl, componentContext,
@@ -63,18 +63,18 @@ public class PdcRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for notificationUser, returns
    * "notificationUser"
+   * @return 
    */
+  @Override
   public String getSessionControlBeanName() {
     return "pdcPeas";
   }
-
   /**
    * This is the separator string between the name of axis or values and their order in the option
    * html tag
    */
   private static final String sepOptionValueTag = "#_$#";
-  private static final int lenOfSeparator = PdcRequestRouter.sepOptionValueTag
-      .length();
+  private static final int lenOfSeparator = PdcRequestRouter.sepOptionValueTag.length();
 
   /**
    * This method has to be implemented by the component request rooter it has to compute a
@@ -85,17 +85,11 @@ public class PdcRequestRouter extends ComponentRequestRouter {
    * @return The complete destination URL for a forward (ex :
    * "/notificationUser/jsp/notificationUser.jsp?flag=user")
    */
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+  @Override
+  public String getDestination(String function, ComponentSessionController componentSC,
+      HttpServletRequest request) {
     PdcSessionController pdcSC = (PdcSessionController) componentSC; // get the
-    // session
-    // controller
-    // to
-    // inform
-    // the
-    // request
     String destination = "";
-
     try {
       // récupération de la langue et passage en paramètre à la jsp
       setLanguageAsAttribute(pdcSC, request);
@@ -105,8 +99,9 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
         // get values to set into the request
         String creationAllowed = "1"; // by default the creation is allowed
-        if (!pdcSC.isCreationAllowed())
+        if (!pdcSC.isCreationAllowed()) {
           creationAllowed = "0";
+        }
 
         SilverTrace.info("Pdc", "PdcRequestRouter.Main",
             "root.MSG_GEN_PARAM_VALUE", "creationAllowed = " + creationAllowed);
@@ -114,20 +109,16 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         // assign attributes into the request
         request.setAttribute("AxisList", list); // set a sorted list
         request.setAttribute("CreationAllowed", creationAllowed);
-        request.setAttribute("ViewType", pdcSC.getCurrentView()); // the type of
-        // the axe
-
-        request.setAttribute("IsAdmin", new Boolean(pdcSC.isPDCAdmin()));
-
-        if (!pdcSC.isPDCAdmin())
+        request.setAttribute("ViewType", pdcSC.getCurrentView()); // the type of the axis
+        request.setAttribute("IsAdmin", Boolean.valueOf(pdcSC.isPDCAdmin()));
+        if (!pdcSC.isPDCAdmin()) {
           request.setAttribute("ManageableAxis", pdcSC.getAxisManageables());
+        }
 
-        SilverTrace.info("Pdc", "PdcRequestRouter.Main",
-            "root.MSG_GEN_PARAM_VALUE", "list.size() = " + list.size());
-
+        SilverTrace.info("Pdc", "PdcRequestRouter.Main",  "root.MSG_GEN_PARAM_VALUE", 
+            "list.size() = " + list.size());
         // create the new destination
         destination = "/pdcPeas/jsp/pdc.jsp";
-
       } else if (function.equals("ChangeLanguage")) {
         // récupération de la langue choisie
         String currentLanguage = request.getParameter("SwitchLanguage");
@@ -163,8 +154,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
           currentValue.setNbObjects(0);
         }
         request.setAttribute("Value", currentValue);
-        request.setAttribute("Path", pdcSC.getFullPath(currentValue.getPK()
-            .getId()));
+        request.setAttribute("Path", pdcSC.getFullPath(currentValue.getPK().getId()));
 
         // mise à jour de la langue courante
         pdcSC.setCurrentLanguage(currentLanguage);
@@ -208,13 +198,15 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         String axeId = request.getParameter("Id"); // get the id of the selected
         // axe
 
-        if (!StringUtil.isDefined(axeId))
+        if (!StringUtil.isDefined(axeId)) {
           axeId = pdcSC.getCurrentAxis().getAxisHeader().getPK().getId();
+        }
 
         // check user rights
-        if (!pdcSC.isPDCAdmin() && !pdcSC.isAxisManager(axeId))
+        if (!pdcSC.isPDCAdmin() && !pdcSC.isAxisManager(axeId)) {
           throw new AccessForbiddenException("PdcRequestRouter.EditAxit",
               SilverpeasException.WARNING, null);
+        }
 
         String viewType = pdcSC.getCurrentView(); // get the type of the current
         // axe
@@ -245,8 +237,9 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
         String translation = request.getParameter("Translation");
         if (translation == null || translation.equals("null")
-            || translation.length() != 0)
+            || translation.length() != 0) {
           translation = pdcSC.getCurrentLanguage();
+        }
 
         request.setAttribute("Translation", translation);
 
@@ -256,9 +249,10 @@ public class PdcRequestRouter extends ComponentRequestRouter {
       } else if (function.startsWith("DeleteAxis")) {
         // the user deletes an axe from the PDC.
 
-        if (!pdcSC.isPDCAdmin())
+        if (!pdcSC.isPDCAdmin()) {
           throw new AccessForbiddenException("PdcRequestRouter." + function,
               SilverpeasException.WARNING, null);
+        }
 
         // get URL parameters
         String axesId = request.getParameter("Ids"); // get ids of selected axes
@@ -287,8 +281,9 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         // get rights for this axis and this user
         boolean isAxisManager = pdcSC.isAxisManager(axeId);
         request.setAttribute("IsAdmin", new Boolean(isAxisManager));
-        if (!isAxisManager)
+        if (!isAxisManager) {
           request.setAttribute("UserRights", pdcSC.getRights());
+        }
 
         // create the new destination
         destination = "/pdcPeas/jsp/tree.jsp";
@@ -407,10 +402,11 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         String axisId = request.getParameter("AxisId"); // get the id of the axe
 
         Value currentValue = null;
-        if (!StringUtil.isDefined(valueId))
+        if (!StringUtil.isDefined(valueId)) {
           currentValue = pdcSC.getCurrentValue();
-        else
+        } else {
           currentValue = pdcSC.getValue(axisId, valueId);
+        }
 
         if (currentValue == null) {// il n'y a pas de documents classés dans
           // cette valeur
@@ -419,13 +415,13 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         }
         request.setAttribute("AxisId", axisId);
         request.setAttribute("Value", currentValue);
-        request.setAttribute("Path", pdcSC.getFullPath(currentValue.getPK()
-            .getId()));
+        request.setAttribute("Path", pdcSC.getFullPath(currentValue.getPK().getId()));
 
-        if (currentValue.getLevelNumber() == 0)
+        if (currentValue.getLevelNumber() == 0) {
           request.setAttribute("Root", "1");
-        else
+        } else {
           request.setAttribute("Root", "0");
+        }
 
         boolean isAdmin = pdcSC.isPDCAdmin() || pdcSC.isAxisManager()
             || pdcSC.isInheritedManager();
@@ -444,16 +440,16 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
         request.setAttribute("Value", currentValue);
         request.setAttribute("Sisters", getSisterValues(currentAxis, oldValue));
-        request.setAttribute("Path", pdcSC
-            .getFullPath(oldValue.getPK().getId()));
+        request.setAttribute("Path", pdcSC.getFullPath(oldValue.getPK().getId()));
 
         boolean isAdmin = pdcSC.isPDCAdmin() || pdcSC.isAxisManager()
             || pdcSC.isInheritedManager();
         request.setAttribute("IsAdmin", new Boolean(isAdmin));
 
         String translation = request.getParameter("Translation");
-        if (!StringUtil.isDefined(translation))
+        if (!StringUtil.isDefined(translation)) {
           translation = pdcSC.getCurrentLanguage();
+        }
 
         request.setAttribute("Translation", translation);
 
@@ -468,19 +464,19 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
         request.setAttribute("Axis", currentAxis);
         request.setAttribute("Value", currentValue);
-        request.setAttribute("Path", pdcSC.getFullPath(currentValue.getPK()
-            .getId()));
+        request.setAttribute("Path", pdcSC.getFullPath(currentValue.getPK().getId()));
 
         String translation = request.getParameter("Translation");
-        if (!StringUtil.isDefined(translation))
+        if (!StringUtil.isDefined(translation)) {
           translation = pdcSC.getCurrentLanguage();
+        }
 
         request.setAttribute("Translation", translation);
 
         // get rights for this axis and this user and if user is admin or
         // kmAdmin
-        Boolean KMadmin = new Boolean((pdcSC.getUserDetail()
-            .isAccessKMManager() || pdcSC.getUserDetail().isAccessAdmin()));
+        Boolean KMadmin = new Boolean((pdcSC.getUserDetail().isAccessKMManager() || pdcSC.
+            getUserDetail().isAccessAdmin()));
         request.setAttribute("KMAdmin", KMadmin);
         request.setAttribute("UserRights", pdcSC.getRights());
 
@@ -495,8 +491,8 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
         if (!newFatherId.equals(currentValue.getFatherId())) {
           // get values to newFatherId
-          List<Value> newSisters = getDaughterValues(pdcSC.getCurrentAxis(), pdcSC
-              .getAxisValue(newFatherId, false));
+          List<Value> newSisters = getDaughterValues(pdcSC.getCurrentAxis(), pdcSC.getAxisValue(
+              newFatherId, false));
 
           request.setAttribute("Sisters", newSisters);
           request.setAttribute("newFatherId", newFatherId);
@@ -514,13 +510,14 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         String newFatherId = request.getParameter("newFatherId");
         String valueOrder = extractOrder(request.getParameter("Order"));
 
-        if (!StringUtil.isDefined(newFatherId))
+        if (!StringUtil.isDefined(newFatherId)) {
           newFatherId = (String) request.getAttribute("newFatherId");
+        }
 
         int status = 1;
-        if (!newFatherId.equals(currentValue.getFatherId()))
-          status = pdcSC.moveCurrentValueToNewFatherId(newFatherId, Integer
-              .parseInt(valueOrder));
+        if (!newFatherId.equals(currentValue.getFatherId())) {
+          status = pdcSC.moveCurrentValueToNewFatherId(newFatherId, Integer.parseInt(valueOrder));
+        }
 
         switch (status) {
           case 1:
@@ -536,9 +533,10 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
         boolean isAdmin = pdcSC.isPDCAdmin() || pdcSC.isAxisManager()
             || pdcSC.isInheritedManager();
-        if (!isAdmin)
+        if (!isAdmin) {
           throw new AccessForbiddenException("PdcRequestRouter.DeleteValue",
               SilverpeasException.WARNING, null);
+        }
 
         // remove the value
         String valueId = pdcSC.getCurrentValue().getValuePK().getId();
@@ -551,15 +549,15 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         } else {
           Value currentValue = pdcSC.getAxisValue(valueId);
           request.setAttribute("Value", currentValue);
-          request.setAttribute("Path", pdcSC.getFullPath(currentValue.getPK()
-              .getId()));
+          request.setAttribute("Path", pdcSC.getFullPath(currentValue.getPK().getId()));
 
           // String rootId = new
           // Integer(currentAxis.getAxisHeader().getRootId()).toString();
-          if (currentValue.getLevelNumber() == 0)
+          if (currentValue.getLevelNumber() == 0) {
             request.setAttribute("Root", "1");
-          else
+          } else {
             request.setAttribute("Root", "0");
+          }
 
           request.setAttribute("Id", valueId);
           request.setAttribute("DaughterNameWhichAlreadyExist", daughterName);
@@ -571,13 +569,13 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
         boolean isAdmin = pdcSC.isPDCAdmin() || pdcSC.isAxisManager()
             || pdcSC.isInheritedManager();
-        if (!isAdmin)
+        if (!isAdmin) {
           throw new AccessForbiddenException("PdcRequestRouter.DeleteValue",
               SilverpeasException.WARNING, null);
+        }
 
         // remove the value and subtree
-        pdcSC.deleteValueAndSubtree(pdcSC.getCurrentValue().getValuePK()
-            .getId());
+        pdcSC.deleteValueAndSubtree(pdcSC.getCurrentValue().getValuePK().getId());
 
         // create the new destination
         destination = "/pdcPeas/jsp/reloadAxis.jsp";
@@ -593,10 +591,11 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         request.setAttribute("Sisters", getSisterValues(currentAxis,
             currentValue));
 
-        if (currentValue.getLevelNumber() == 0)
+        if (currentValue.getLevelNumber() == 0) {
           request.setAttribute("Root", "1");
-        else
+        } else {
           request.setAttribute("Root", "0");
+        }
 
         request.setAttribute("Translation", pdcSC.getCurrentLanguage());
 
@@ -608,8 +607,8 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
         // set into the request
         request.setAttribute("AddType", "M");
-        request.setAttribute("Sisters", getDaughterValues(pdcSC
-            .getCurrentAxis(), pdcSC.getCurrentValue()));
+        request.setAttribute("Sisters", getDaughterValues(pdcSC.getCurrentAxis(), pdcSC.
+            getCurrentValue()));
         request.setAttribute("Value", pdcSC.getCurrentValue());
 
         request.setAttribute("Translation", pdcSC.getCurrentLanguage());
@@ -629,8 +628,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         Value currentValue = pdcSC.getAxisValue(valueId);
         // update the value object
         Value updatedValue = new Value(valueId, "unknown", valueName,
-            valueDescription, null, null, null, -1, (new Integer(valueOrder))
-            .intValue(), null);
+            valueDescription, null, null, null, -1, (new Integer(valueOrder)).intValue(), null);
 
         // récupération des traductions
         I18NHelper.setI18NInfo(updatedValue, request);
@@ -643,12 +641,12 @@ public class PdcRequestRouter extends ComponentRequestRouter {
             request.setAttribute("AlreadyExist", "1"); // already exist
             request.setAttribute("Sisters", getSisterValues(currentAxis,
                 currentValue));
-            request.setAttribute("Path", pdcSC.getFullPath(currentValue.getPK()
-                .getId()));
-            if (currentValue.getLevelNumber() == 0)
+            request.setAttribute("Path", pdcSC.getFullPath(currentValue.getPK().getId()));
+            if (currentValue.getLevelNumber() == 0) {
               request.setAttribute("Root", "1");
-            else
+            } else {
               request.setAttribute("Root", "0");
+            }
 
             destination = "/pdcPeas/jsp/editValue.jsp";// destination =
             // getDestination("EditValue",
@@ -674,8 +672,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
         // create the axe
         Value value = new Value("UNKNOWN", "unknown", valueName,
-            valueDescription, null, null, null, -1, (new Integer(valueOrder))
-            .intValue(), null);
+            valueDescription, null, null, null, -1, (new Integer(valueOrder)).intValue(), null);
         int status = pdcSC.insertMotherValue(value);
 
         switch (status) {
@@ -685,10 +682,11 @@ public class PdcRequestRouter extends ComponentRequestRouter {
             // String rootId = new
             // Integer(pdcSC.getCurrentAxis().getAxisHeader().getRootId()).toString();
             Value currentValue = pdcSC.getCurrentValue();
-            if (currentValue.getLevelNumber() == 0)
+            if (currentValue.getLevelNumber() == 0) {
               request.setAttribute("Root", "1");
-            else
+            } else {
               request.setAttribute("Root", "0");
+            }
             destination = getDestination("NewMotherValue", componentSC, request);
             break;
           default:
@@ -711,8 +709,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
         // create the axe
         Value value = new Value("UNKNOWN", "unknown", valueName,
-            valueDescription, null, null, null, -1, (new Integer(valueOrder))
-            .intValue(), null);
+            valueDescription, null, null, null, -1, (new Integer(valueOrder)).intValue(), null);
         int status = pdcSC.createDaughterValue(value);
 
         I18NHelper.setI18NInfo(value, request);
@@ -795,8 +792,9 @@ public class PdcRequestRouter extends ComponentRequestRouter {
       } else if (function.startsWith("vsicAddList")) {
         // assign attributes into the request
         String values = (String) request.getParameter("Values");
-        if (values != null)
+        if (values != null) {
           pdcSC.setValuesToPdcAddAPosteriori(values);
+        }
 
         request.setAttribute("AxisList", pdcSC.getAxis()); // set a sorted list
         request.setAttribute("ViewType", pdcSC.getCurrentView()); // the type of
@@ -811,39 +809,28 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         pdcSC.setCurrentView(type);
         destination = getDestination("vsicAddList", componentSC, request);
 
-      } else if (function.startsWith("vsicAddTree")) {
-        // get URL parameters
-        String axeId = request.getParameter("Id"); // get the id of the selected
-        // axe
-
+      } else if (function.startsWith("vsicAddTree")) {// get URL parameters
+        String axeId = request.getParameter("Id"); // get the id of the selected axis
         request.setAttribute("Axis", pdcSC.getAxisDetail(axeId));
         destination = "/pdcPeas/jsp/directValuesAxis.jsp";
 
       } else if (function.startsWith("vsicAddAxis")) {
-        String valueId = (String) request.getParameter("valueId"); // get the id
-        // of the
-        // selected
-        // axe
+        String valueId = request.getParameter("valueId"); // get the id of the selected axis
         String res = pdcSC.getValuesToPdcAddAPosteriori();
         String val = "";
-
         // just to set the current value
         pdcSC.getAxisValue(valueId);
-
-        if (res != null && !"".equals(res)) {
+        if (StringUtil.isDefined(res)) {
           StringTokenizer st = new StringTokenizer(res, ";");
           while (st.hasMoreTokens()) {
             val = st.nextToken();
-            Value newValue = new Value("UNKNOWN", "unknown", val, val, null,
-                null, null, -1, -1, null);
+            Value newValue = new Value("UNKNOWN", "unknown", val, val, null, null, null, -1, -1,
+                null);
             pdcSC.createDaughterValue(newValue);
           }
         }
 
         destination = "/pdcPeas/jsp/addPdc_test.jsp";
-      }
-
-      else {
       }
     } catch (AccessForbiddenException afe) {
       destination = "/admin/jsp/accessForbidden.jsp";
@@ -931,10 +918,11 @@ public class PdcRequestRouter extends ComponentRequestRouter {
     if (StringUtil.isDefined(text)) {
       int separatorIdx = text.lastIndexOf(PdcRequestRouter.sepOptionValueTag);
       // the separator don't exist. Maybe, it's the last item of the selection
-      if (separatorIdx != -1)
+      if (separatorIdx != -1) {
         return text.substring(separatorIdx + PdcRequestRouter.lenOfSeparator);
-      else
+      } else {
         return text;
+      }
     }
     return "0";
   }
@@ -943,9 +931,9 @@ public class PdcRequestRouter extends ComponentRequestRouter {
       HttpServletRequest request) {
     // récupération de la langue et passage en paramètre à la jsp
     String currentLanguage = pdcSC.getCurrentLanguage();
-    if (!StringUtil.isDefined(currentLanguage))
+    if (!StringUtil.isDefined(currentLanguage)) {
       currentLanguage = I18NHelper.defaultLanguage;
+    }
     request.setAttribute("DisplayLanguage", currentLanguage);
   }
-
 }

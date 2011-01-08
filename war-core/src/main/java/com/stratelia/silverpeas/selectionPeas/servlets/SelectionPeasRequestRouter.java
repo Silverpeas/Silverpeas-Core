@@ -21,10 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.silverpeas.selectionPeas.servlets;
 
 import java.lang.reflect.InvocationTargetException;
@@ -65,6 +61,7 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
    * @return
    * @see
    */
+  @Override
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new SelectionPeasSessionController(mainSessionCtrl, componentContext);
@@ -73,7 +70,9 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
+   * @return 
    */
+  @Override
   public String getSessionControlBeanName() {
     return "selectionPeas";
   }
@@ -86,8 +85,9 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+  @Override
+  public String getDestination(String function, ComponentSessionController componentSC,
+      HttpServletRequest request) {
     String destination = "";
     SelectionPeasSessionController selectionPeasSC = (SelectionPeasSessionController) componentSC;
     SilverTrace.info("selectionPeas", "getDestination()",
@@ -96,12 +96,9 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
     try {
       if (function.equals("Main")) {
         selectionPeasSC.initSC(request.getParameter("SelectionType"));
-
-        if (Selection.TYPE_JDBC_CONNECTOR.equals(selectionPeasSC
-            .getSelectionType())) {
+        if (Selection.TYPE_JDBC_CONNECTOR.equals(selectionPeasSC.getSelectionType())) {
           initJdbcConnectorSetting(request, selectionPeasSC);
         }
-
         function = selectionPeasSC.getStartingFunction();
       } else if (function.equals("ReturnSearchElement")) {
         function = selectionPeasSC.returnSearchElement();
@@ -126,34 +123,26 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("ValidateAndSetOpener")) {
         selectionPeasSC.validate();
 
-        if (Selection.TYPE_USERS_GROUPS.equals(selectionPeasSC
-            .getSelectionType())) {
-          request.setAttribute("formName", selectionPeasSC.getSelection()
-              .getHtmlFormName());
-          request.setAttribute("elementId", selectionPeasSC.getSelection()
-              .getHtmlFormElementId());
-          request.setAttribute("elementName", selectionPeasSC.getSelection()
-              .getHtmlFormElementName());
+        if (Selection.TYPE_USERS_GROUPS.equals(selectionPeasSC.getSelectionType())) {
+          request.setAttribute("formName", selectionPeasSC.getSelection().getHtmlFormName());
+          request.setAttribute("elementId", selectionPeasSC.getSelection().getHtmlFormElementId());
+          request.setAttribute("elementName",
+              selectionPeasSC.getSelection().getHtmlFormElementName());
 
           if (!selectionPeasSC.isMultiSelect()) {
-            UserDetail user = selectionPeasSC.getUserDetail(selectionPeasSC
-                .getSelection().getFirstSelectedElement());
+            UserDetail user = selectionPeasSC.getUserDetail(selectionPeasSC.getSelection().
+                getFirstSelectedElement());
             if (user != null) {
               request.setAttribute("user", user);
             }
           } else {
-            UserDetail[] users = selectionPeasSC.getOrganizationController()
-                .getUserDetails(
-                selectionPeasSC.getSelection().getSelectedElements());
+            UserDetail[] users = selectionPeasSC.getOrganizationController().getUserDetails(selectionPeasSC.
+                getSelection().getSelectedElements());
             if (users != null && users.length > 0) {
               request.setAttribute("users", users);
             }
           }
-        } else if (Selection.TYPE_JDBC_CONNECTOR.equals(selectionPeasSC
-            .getSelectionType())) {
-
         }
-
         destination = "closeWrapper.jsp";
       } else if (function.equals("Cancel")) {
         request.setAttribute("HostUrl", selectionPeasSC.getCancelURL());
@@ -162,10 +151,9 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
         String elementId = request.getParameter("elementId");
         request.setAttribute("infos", selectionPeasSC.getInfos(
             CacheManager.CM_ELEMENT, elementId));
-        request.setAttribute("contentText", selectionPeasSC
-            .getContentText(CacheManager.CM_ELEMENT));
-        request.setAttribute("contentColumns", selectionPeasSC
-            .getContentColumns(CacheManager.CM_ELEMENT));
+        request.setAttribute("contentText", selectionPeasSC.getContentText(CacheManager.CM_ELEMENT));
+        request.setAttribute("contentColumns", selectionPeasSC.getContentColumns(
+            CacheManager.CM_ELEMENT));
         request.setAttribute("content", selectionPeasSC.getContent(
             CacheManager.CM_ELEMENT, elementId));
         request.setAttribute("action", "ZoomToElementInfos?elementId="
@@ -175,17 +163,16 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
         String setId = request.getParameter("elementId");
         request.setAttribute("infos", selectionPeasSC.getInfos(
             CacheManager.CM_SET, setId));
-        request.setAttribute("contentText", selectionPeasSC
-            .getContentText(CacheManager.CM_SET));
-        request.setAttribute("contentColumns", selectionPeasSC
-            .getContentColumns(CacheManager.CM_SET));
+        request.setAttribute("contentText", selectionPeasSC.getContentText(CacheManager.CM_SET));
+        request.setAttribute("contentColumns",
+            selectionPeasSC.getContentColumns(CacheManager.CM_SET));
         request.setAttribute("content", selectionPeasSC.getContent(
             CacheManager.CM_SET, setId));
         request.setAttribute("action", "ZoomToSetInfos?elementId=" + setId);
         destination = "elementView.jsp";
       } else if (function.equals("BrowseOperation")) {
-        destination = doBrowseOperation(request
-            .getParameter("SpecificOperation"), selectionPeasSC, request);
+        destination = doBrowseOperation(request.getParameter("SpecificOperation"), selectionPeasSC,
+            request);
       } else if (function.equals("CartDoOperation")) {
         destination = doCartOperation(
             request.getParameter("SpecificOperation"), selectionPeasSC, request);
@@ -194,100 +181,83 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
       }
 
       if (!destination.startsWith("/")) {
-        request.setAttribute("isSetSelectable", new Boolean(selectionPeasSC
-            .isSetSelectable()));
-        request.setAttribute("isElementSelectable", new Boolean(selectionPeasSC
-            .isElementSelectable()));
-        request.setAttribute("isMultiSelect", new Boolean(selectionPeasSC
-            .isMultiSelect()));
-        request.setAttribute("HostSpaceName", selectionPeasSC
-            .getHostSpaceName());
-        request.setAttribute("HostComponentName", selectionPeasSC
-            .getHostComponentName());
+        request.setAttribute("isSetSelectable", Boolean.valueOf(selectionPeasSC.isSetSelectable()));
+        request.setAttribute("isElementSelectable", Boolean.valueOf(selectionPeasSC.
+            isElementSelectable()));
+        request.setAttribute("isMultiSelect", Boolean.valueOf(selectionPeasSC.isMultiSelect()));
+        request.setAttribute("HostSpaceName", selectionPeasSC.getHostSpaceName());
+        request.setAttribute("HostComponentName", selectionPeasSC.getHostComponentName());
         request.setAttribute("HostPath", selectionPeasSC.getHostPath());
-        request.setAttribute("ToPopup", new Boolean(selectionPeasSC.isPopup()));
+        request.setAttribute("ToPopup", Boolean.valueOf(selectionPeasSC.isPopup()));
 
         // Prepare the parameters
         if (destination.equals("selectionPeas.jsp")) {
-          request.setAttribute("setsColumnsHeader", selectionPeasSC
-              .getColumnsHeader(CacheManager.CM_SET));
-          request.setAttribute("elementsColumnsHeader", selectionPeasSC
-              .getColumnsHeader(CacheManager.CM_ELEMENT));
+          request.setAttribute("setsColumnsHeader", selectionPeasSC.getColumnsHeader(
+              CacheManager.CM_SET));
+          request.setAttribute("elementsColumnsHeader", selectionPeasSC.getColumnsHeader(
+              CacheManager.CM_ELEMENT));
 
-          if (Selection.TYPE_USERS_GROUPS.equals(selectionPeasSC
-              .getSelectionType())) {
-            request.setAttribute("operationsToDisplay", selectionPeasSC
-                .getOperations("DisplayBrowse"));
+          if (Selection.TYPE_USERS_GROUPS.equals(selectionPeasSC.getSelectionType())) {
+            request.setAttribute("operationsToDisplay", selectionPeasSC.getOperations(
+                "DisplayBrowse"));
           }
 
-          if (Selection.TYPE_JDBC_CONNECTOR.equals(selectionPeasSC
-              .getSelectionType())) {
-            request.setAttribute("isDisplaySets", new Boolean(false));
-            request.setAttribute("isZoomToSetValid", new Boolean(false));
-            request.setAttribute("isZoomToElementValid", new Boolean(true));
+          if (Selection.TYPE_JDBC_CONNECTOR.equals(selectionPeasSC.getSelectionType())) {
+            request.setAttribute("isDisplaySets", Boolean.FALSE);
+            request.setAttribute("isZoomToSetValid", Boolean.FALSE);
+            request.setAttribute("isZoomToElementValid", Boolean.TRUE);
             request.setAttribute("externalFunctionName", "updateField");
-            SelectionExtraParams selectionParams = selectionPeasSC
-                .getSelection().getExtraParams();
-            request.setAttribute("referenceColumnsNames", selectionParams
-                .getParameter("columnsNames"));
-            request.setAttribute("originFormIndex", new Integer(selectionParams
-                .getParameter("formIndex")));
-            request.setAttribute("originFieldsNames", selectionParams
-                .getParameter("fieldsNames"));
+            SelectionExtraParams selectionParams = selectionPeasSC.getSelection().getExtraParams();
+            request.setAttribute("referenceColumnsNames", selectionParams.getParameter(
+                "columnsNames"));
+            request.setAttribute("originFormIndex", new Integer(selectionParams.getParameter(
+                "formIndex")));
+            request.setAttribute("originFieldsNames", selectionParams.getParameter("fieldsNames"));
           } else {
-            request.setAttribute("isDisplaySets", new Boolean(true));
-            request.setAttribute("isZoomToSetValid", new Boolean(true));
-            request.setAttribute("isZoomToElementValid", new Boolean(false));
+            request.setAttribute("isDisplaySets", Boolean.TRUE);
+            request.setAttribute("isZoomToSetValid", Boolean.TRUE);
+            request.setAttribute("isZoomToElementValid", Boolean.FALSE);
             request.setAttribute("originFormIndex", new Integer(0));
             request.setAttribute("originFieldName", "");
           }
 
-          request.setAttribute("setMiniFilterSelect", selectionPeasSC
-              .getMiniFilterString(CacheManager.CM_SET));
-          request.setAttribute("elementMiniFilterSelect", selectionPeasSC
-              .getMiniFilterString(CacheManager.CM_ELEMENT));
-          request.setAttribute("setText", selectionPeasSC
-              .getText(CacheManager.CM_SET));
-          request.setAttribute("elementText", selectionPeasSC
-              .getText(CacheManager.CM_ELEMENT));
-          request.setAttribute("pageSetNavigation", selectionPeasSC
-              .getNavigation(CacheManager.CM_SET));
-          request.setAttribute("pageElementNavigation", selectionPeasSC
-              .getNavigation(CacheManager.CM_ELEMENT));
-          request.setAttribute("setsToDisplay", selectionPeasSC
-              .getPage(CacheManager.CM_SET));
-          request.setAttribute("elementsToDisplay", selectionPeasSC
-              .getPage(CacheManager.CM_ELEMENT));
+          request.setAttribute("setMiniFilterSelect", selectionPeasSC.getMiniFilterString(
+              CacheManager.CM_SET));
+          request.setAttribute("elementMiniFilterSelect", selectionPeasSC.getMiniFilterString(
+              CacheManager.CM_ELEMENT));
+          request.setAttribute("setText", selectionPeasSC.getText(CacheManager.CM_SET));
+          request.setAttribute("elementText", selectionPeasSC.getText(CacheManager.CM_ELEMENT));
+          request.setAttribute("pageSetNavigation", selectionPeasSC.getNavigation(
+              CacheManager.CM_SET));
+          request.setAttribute("pageElementNavigation", selectionPeasSC.getNavigation(
+              CacheManager.CM_ELEMENT));
+          request.setAttribute("setsToDisplay", selectionPeasSC.getPage(CacheManager.CM_SET));
+          request.setAttribute("elementsToDisplay", selectionPeasSC.getPage(CacheManager.CM_ELEMENT));
 
-          request.setAttribute("selectedNumber", selectionPeasSC
-              .getSelectedNumber());
+          request.setAttribute("selectedNumber", selectionPeasSC.getSelectedNumber());
           request.setAttribute("SetPath", selectionPeasSC.getSetPath());
         } else if (destination.equals("selectionCart.jsp")) {
-          request.setAttribute("setsColumnsHeader", selectionPeasSC
-              .getCartColumnsHeader(CacheManager.CM_SET));
-          request.setAttribute("elementsColumnsHeader", selectionPeasSC
-              .getCartColumnsHeader(CacheManager.CM_ELEMENT));
+          request.setAttribute("setsColumnsHeader", selectionPeasSC.getCartColumnsHeader(
+              CacheManager.CM_SET));
+          request.setAttribute("elementsColumnsHeader", selectionPeasSC.getCartColumnsHeader(
+              CacheManager.CM_ELEMENT));
 
-          request.setAttribute("operationsToDisplay", selectionPeasSC
-              .getOperations("DisplayCart"));
-          request.setAttribute("setMiniFilterSelect", selectionPeasSC
-              .getCartMiniFilterString(CacheManager.CM_SET));
-          request.setAttribute("elementMiniFilterSelect", selectionPeasSC
-              .getCartMiniFilterString(CacheManager.CM_ELEMENT));
-          request.setAttribute("setText", selectionPeasSC
-              .getCartText(CacheManager.CM_SET));
-          request.setAttribute("elementText", selectionPeasSC
-              .getCartText(CacheManager.CM_ELEMENT));
-          request.setAttribute("pageSetNavigation", selectionPeasSC
-              .getCartNavigation(CacheManager.CM_SET));
-          request.setAttribute("pageElementNavigation", selectionPeasSC
-              .getCartNavigation(CacheManager.CM_ELEMENT));
-          request.setAttribute("setsToDisplay", selectionPeasSC
-              .getCartPage(CacheManager.CM_SET));
-          request.setAttribute("elementsToDisplay", selectionPeasSC
-              .getCartPage(CacheManager.CM_ELEMENT));
-          request.setAttribute("isZoomToSetValid", new Boolean(false));
-          request.setAttribute("isZoomToElementValid", new Boolean(false));
+          request.setAttribute("operationsToDisplay", selectionPeasSC.getOperations("DisplayCart"));
+          request.setAttribute("setMiniFilterSelect", selectionPeasSC.getCartMiniFilterString(
+              CacheManager.CM_SET));
+          request.setAttribute("elementMiniFilterSelect", selectionPeasSC.getCartMiniFilterString(
+              CacheManager.CM_ELEMENT));
+          request.setAttribute("setText", selectionPeasSC.getCartText(CacheManager.CM_SET));
+          request.setAttribute("elementText", selectionPeasSC.getCartText(CacheManager.CM_ELEMENT));
+          request.setAttribute("pageSetNavigation", selectionPeasSC.getCartNavigation(
+              CacheManager.CM_SET));
+          request.setAttribute("pageElementNavigation", selectionPeasSC.getCartNavigation(
+              CacheManager.CM_ELEMENT));
+          request.setAttribute("setsToDisplay", selectionPeasSC.getCartPage(CacheManager.CM_SET));
+          request.setAttribute("elementsToDisplay", selectionPeasSC.getCartPage(
+              CacheManager.CM_ELEMENT));
+          request.setAttribute("isZoomToSetValid", Boolean.FALSE);
+          request.setAttribute("isZoomToElementValid", Boolean.FALSE);
         }
 
         destination = "/selectionPeas/jsp/" + destination;
@@ -310,12 +280,12 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
       SelectionPeasSessionController selectionPeasSC, HttpServletRequest request) {
     String destination = "";
 
-    selectionPeasSC.setCartSelected(CacheManager.CM_SET, getValues(request
-        .getParameter("SelectedSets")), getValues(request.getParameter("NonSelectedSets")));
+    selectionPeasSC.setCartSelected(CacheManager.CM_SET, getValues(request.getParameter(
+        "SelectedSets")), getValues(request.getParameter("NonSelectedSets")));
 
     selectionPeasSC.setCartSelected(CacheManager.CM_ELEMENT,
-        getValues(request.getParameter("SelectedElements")), getValues(request
-        .getParameter("NonSelectedElements")));
+        getValues(request.getParameter("SelectedElements")), getValues(request.getParameter(
+        "NonSelectedElements")));
 
     SilverTrace.info("selectionPeas", "doCartOperation()",
         "root.MSG_GEN_PARAM_VALUE", "Operation=" + op);
@@ -323,8 +293,8 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
       destination = "selectionCart.jsp";
     } else if ((op != null) && (op.startsWith("GENERICPANELMINIFILTER"))) {
       selectionPeasSC.setCartMiniFilter(request.getParameter("miniFilter"
-          + op.substring("GENERICPANELMINIFILTER".length())), op
-          .substring("GENERICPANELMINIFILTER".length()));
+          + op.substring("GENERICPANELMINIFILTER".length())), op.substring("GENERICPANELMINIFILTER".
+          length()));
       destination = "selectionCart.jsp";
     } else if ("RemoveSelectedFromCart".equals(op)) {
       selectionPeasSC.removeSelectedFromCart();
@@ -346,12 +316,12 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
     String destination = "";
 
     if (selectionPeasSC.isMultiSelect()) {
-      selectionPeasSC.setSelected(CacheManager.CM_SET, getValues(request
-          .getParameter("SelectedSets")), getValues(request.getParameter("NonSelectedSets")));
+      selectionPeasSC.setSelected(CacheManager.CM_SET, getValues(
+          request.getParameter("SelectedSets")), getValues(request.getParameter("NonSelectedSets")));
 
       selectionPeasSC.setSelected(CacheManager.CM_ELEMENT,
-          getValues(request.getParameter("SelectedElements")), getValues(request
-          .getParameter("NonSelectedElements")));
+          getValues(request.getParameter("SelectedElements")), getValues(request.getParameter(
+          "NonSelectedElements")));
     }
 
     SilverTrace.info("selectionPeas", "doBrowseOperation()",
@@ -365,8 +335,8 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
       destination = "selectionPeas.jsp";
     } else if ((op != null) && (op.startsWith("GENERICPANELMINIFILTER"))) {
       selectionPeasSC.setMiniFilter(request.getParameter("miniFilter"
-          + op.substring("GENERICPANELMINIFILTER".length())), op
-          .substring("GENERICPANELMINIFILTER".length()));
+          + op.substring("GENERICPANELMINIFILTER".length())), op.substring("GENERICPANELMINIFILTER".
+          length()));
       destination = "selectionPeas.jsp";
     } else if ((op != null) && (op.length() > 0)) { // Operation
       destination = getDestination(op, selectionPeasSC, request);
@@ -388,8 +358,9 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
       if (selectionPeasSC.getSelection().getHtmlFormName() != null) {
         destination = getDestination("ValidateAndSetOpener", selectionPeasSC,
             request);
-      } else
+      } else {
         destination = getDestination("Validate", selectionPeasSC, request);
+      }
     }
     return destination;
   }
@@ -428,8 +399,8 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
     String formIndex = request.getParameter("formIndex");
     String tableName = request.getParameter("tableName");
 
-    StringBuffer fieldsNames = new StringBuffer();
-    StringBuffer columnsNames = new StringBuffer();
+    StringBuilder fieldsNames = new StringBuilder();
+    StringBuilder columnsNames = new StringBuilder();
     int i = 0;
     String fieldName = request.getParameter("fieldName" + i);
     String columnName = request.getParameter("columnName" + i);
@@ -445,15 +416,14 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
       columnName = request.getParameter("columnName" + i);
     }
 
-    ComponentSessionController componentSessionController = (ComponentSessionController) request
-        .getSession(true).getAttribute(
+    ComponentSessionController componentSessionController = (ComponentSessionController) request.
+        getSession(true).getAttribute(
         "Silverpeas_" + beanName + "_" + componentId);
     Method m = componentSessionController.getClass().getMethod(method, null);
-    JdbcConnectorSetting jdbcSetting = (JdbcConnectorSetting) m.invoke(
-        componentSessionController, null);
+    JdbcConnectorSetting jdbcSetting = (JdbcConnectorSetting) m.invoke(componentSessionController,
+        null);
 
-    selectionPeasSC.updateJdbcParameters(jdbcSetting, tableName, columnsNames
-        .toString(), formIndex, fieldsNames.toString());
+    selectionPeasSC.updateJdbcParameters(jdbcSetting, tableName, columnsNames.toString(), formIndex,
+        fieldsNames.toString());
   }
-
 }
