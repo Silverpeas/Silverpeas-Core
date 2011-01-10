@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.util;
 
 import java.io.File;
@@ -50,11 +49,8 @@ public class FileUtil implements MimeTypes {
 
   private static final ResourceLocator MIME_TYPES_EXTENSIONS = new ResourceLocator(
       "com.stratelia.webactiv.util.attachment.mime_types", "");
-
   public static final String CONTEXT_TOKEN = ",";
-
   public static final String BASE_CONTEXT = "Attachment";
-
   private static final MimetypesFileTypeMap MIME_TYPES = new MimetypesFileTypeMap();
 
   /**
@@ -76,10 +72,10 @@ public class FileUtil implements MimeTypes {
     if (mimeType == null) {
       MIME_TYPES.getContentType(fileName);
     }
-    if (ARCHIVE_MIME_TYPE.equalsIgnoreCase(mimeType)) {
-      if (JAR_EXTENSION.equalsIgnoreCase(fileExtension)
-          || WAR_EXTENSION.equalsIgnoreCase(fileExtension)
-          || EAR_EXTENSION.equalsIgnoreCase(fileExtension)) {
+    if (ARCHIVE_MIME_TYPE.equalsIgnoreCase(mimeType) || SHORT_ARCHIVE_MIME_TYPE.equalsIgnoreCase(
+        mimeType)) {
+      if (JAR_EXTENSION.equalsIgnoreCase(fileExtension) || WAR_EXTENSION.equalsIgnoreCase(
+          fileExtension) || EAR_EXTENSION.equalsIgnoreCase(fileExtension)) {
         mimeType = JAVA_ARCHIVE_MIME_TYPE;
       } else if ("3D".equalsIgnoreCase(fileExtension)) {
         mimeType = SPINFIRE_MIME_TYPE;
@@ -92,14 +88,14 @@ public class FileUtil implements MimeTypes {
   }
 
   /**
-   * to create the array of the string this array represents the repertories where the files must be
+   * Create the array of strings this array represents the repertories where the files must be
    * stored.
-   * @param str : type String: the string of repertories
-   * @param token : type String: the token separating the repertories
+   * @param context
+   * @return 
    */
   public static String[] getAttachmentContext(String context) {
     if (!StringUtil.isDefined(context)) {
-      return new String[] { BASE_CONTEXT };
+      return new String[]{BASE_CONTEXT};
     }
     StringTokenizer strToken = new StringTokenizer(context, CONTEXT_TOKEN);
     List<String> folders = new ArrayList<String>(10);
@@ -167,8 +163,8 @@ public class FileUtil implements MimeTypes {
     if (loc == null) {
       loc = Locale.ROOT;
     }
-    return ResourceBundle.getBundle(name, loc, new ConfigurationClassLoader(FileUtil.class
-        .getClassLoader()));
+    return ResourceBundle.getBundle(name, loc, new ConfigurationClassLoader(FileUtil.class.
+        getClassLoader()));
   }
 
   /**
@@ -177,6 +173,17 @@ public class FileUtil implements MimeTypes {
    */
   public static boolean isWindows() {
     return OsEnum.getOS().isWindows();
+  }
+  
+  /**
+   * Indicates if the current file is of type archive.
+   * @param filename the name of the file.
+   * @return true is the file s of type archive - false otherwise.
+   */  
+  public static boolean isArchive(String filename) {
+    String mimeType = getMimeType(filename);
+    return ARCHIVE_MIME_TYPE.equalsIgnoreCase(mimeType) || SHORT_ARCHIVE_MIME_TYPE.equalsIgnoreCase(
+        mimeType) || JAVA_ARCHIVE_MIME_TYPE.equalsIgnoreCase(mimeType);
   }
 
   private FileUtil() {

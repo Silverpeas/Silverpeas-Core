@@ -21,16 +21,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.silverpeas.util;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.Reader;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import org.junit.After;
@@ -102,9 +94,18 @@ public class FileUtilTest {
    */
   @Test
   public void testLoadBundle() {
-    System.out.println("loadBundle");
     String name = "com/stratelia/webactiv/multilang/generalMultilang";
     ResourceBundle result = FileUtil.loadBundle(name, Locale.FRENCH);
     assertNotNull(result);
+  }
+
+  @Test
+  public void testIsArchive() {
+    assertTrue(FileUtil.isArchive("toto.zip"));
+    assertFalse(FileUtil.isArchive("toto.tar.gz"));
+    assertTrue(FileUtil.isArchive("toto.jar"));
+    assertFalse(FileUtil.isArchive("toto.war"));
+    assertFalse(FileUtil.isArchive("toto.ear"));
+    assertFalse(FileUtil.isArchive("toto.txt"));
   }
 }

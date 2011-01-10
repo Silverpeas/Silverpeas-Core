@@ -41,6 +41,7 @@ public interface MimeTypes {
   public final String XML_MIME_TYPE = "text/xml";
   public final String PLAIN_TEXT_MIME_TYPE = "text/plain";
   public final String ARCHIVE_MIME_TYPE = "application/x-zip-compressed";
+  public final  String SHORT_ARCHIVE_MIME_TYPE = "application/zip";
   public final String JAVA_ARCHIVE_MIME_TYPE = "application/java-archive";
   public final String WORD_2007_MIME_TYPE =
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
