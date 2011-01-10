@@ -280,7 +280,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
         // get rights for this axis and this user
         boolean isAxisManager = pdcSC.isAxisManager(axeId);
-        request.setAttribute("IsAdmin", new Boolean(isAxisManager));
+        request.setAttribute("IsAdmin", Boolean.valueOf(isAxisManager));
         if (!isAxisManager) {
           request.setAttribute("UserRights", pdcSC.getRights());
         }
@@ -305,7 +305,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
         // create the axe
         AxisHeader axisHeader = new AxisHeader(new AxisPK("unknown"), axeName,
-            axeType, (new Integer(axeOrder)).intValue(), null, null, -1,
+            axeType, ( Integer.parseInt(axeOrder)), null, null, -1,
             axeDescription);
         SilverTrace.info("Pdc", "PdcRequestRouter.CreateAxis",
             "root.MSG_GEN_PARAM_VALUE", "Before creation");
@@ -368,7 +368,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         // axeOrder is not null then the user has no change the order
         int order = -1;
         if (axeOrder != null) {
-          order = (new Integer(axeOrder)).intValue();
+          order = Integer.parseInt(axeOrder);
         }
 
         // update axis
@@ -425,7 +425,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
         boolean isAdmin = pdcSC.isPDCAdmin() || pdcSC.isAxisManager()
             || pdcSC.isInheritedManager();
-        request.setAttribute("IsAdmin", new Boolean(isAdmin));
+        request.setAttribute("IsAdmin", Boolean.valueOf(isAdmin));
 
         // create the new destination
         destination = "/pdcPeas/jsp/value.jsp";
@@ -444,7 +444,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
         boolean isAdmin = pdcSC.isPDCAdmin() || pdcSC.isAxisManager()
             || pdcSC.isInheritedManager();
-        request.setAttribute("IsAdmin", new Boolean(isAdmin));
+        request.setAttribute("IsAdmin", Boolean.valueOf(isAdmin));
 
         String translation = request.getParameter("Translation");
         if (!StringUtil.isDefined(translation)) {
@@ -475,7 +475,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
         // get rights for this axis and this user and if user is admin or
         // kmAdmin
-        Boolean KMadmin = new Boolean((pdcSC.getUserDetail().isAccessKMManager() || pdcSC.
+        Boolean KMadmin = Boolean.valueOf((pdcSC.getUserDetail().isAccessKMManager() || pdcSC.
             getUserDetail().isAccessAdmin()));
         request.setAttribute("KMAdmin", KMadmin);
         request.setAttribute("UserRights", pdcSC.getRights());
@@ -540,7 +540,6 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
         // remove the value
         String valueId = pdcSC.getCurrentValue().getValuePK().getId();
-
         String daughterName = pdcSC.deleteValue(valueId);
 
         if (daughterName == null) {
@@ -550,9 +549,6 @@ public class PdcRequestRouter extends ComponentRequestRouter {
           Value currentValue = pdcSC.getAxisValue(valueId);
           request.setAttribute("Value", currentValue);
           request.setAttribute("Path", pdcSC.getFullPath(currentValue.getPK().getId()));
-
-          // String rootId = new
-          // Integer(currentAxis.getAxisHeader().getRootId()).toString();
           if (currentValue.getLevelNumber() == 0) {
             request.setAttribute("Root", "1");
           } else {
@@ -628,7 +624,7 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         Value currentValue = pdcSC.getAxisValue(valueId);
         // update the value object
         Value updatedValue = new Value(valueId, "unknown", valueName,
-            valueDescription, null, null, null, -1, (new Integer(valueOrder)).intValue(), null);
+            valueDescription, null, null, null, -1, (Integer.parseInt(valueOrder)), null);
 
         // récupération des traductions
         I18NHelper.setI18NInfo(updatedValue, request);
@@ -672,15 +668,12 @@ public class PdcRequestRouter extends ComponentRequestRouter {
 
         // create the axe
         Value value = new Value("UNKNOWN", "unknown", valueName,
-            valueDescription, null, null, null, -1, (new Integer(valueOrder)).intValue(), null);
+            valueDescription, null, null, null, -1, (Integer.parseInt(valueOrder)), null);
         int status = pdcSC.insertMotherValue(value);
 
         switch (status) {
           case 1:
             request.setAttribute("ValueToCreate", value);
-
-            // String rootId = new
-            // Integer(pdcSC.getCurrentAxis().getAxisHeader().getRootId()).toString();
             Value currentValue = pdcSC.getCurrentValue();
             if (currentValue.getLevelNumber() == 0) {
               request.setAttribute("Root", "1");
@@ -700,16 +693,12 @@ public class PdcRequestRouter extends ComponentRequestRouter {
         String valueName = request.getParameter("Name").trim(); // get the name
         // of the axe
         String valueDescription = request.getParameter("Description").trim(); // get
-        // the
-        // description
-        // of
-        // the
-        // axe
+        // the description of the axe
         String valueOrder = extractOrder(request.getParameter("Order"));
 
         // create the axe
         Value value = new Value("UNKNOWN", "unknown", valueName,
-            valueDescription, null, null, null, -1, (new Integer(valueOrder)).intValue(), null);
+            valueDescription, null, null, null, -1, (Integer.parseInt(valueOrder)), null);
         int status = pdcSC.createDaughterValue(value);
 
         I18NHelper.setI18NInfo(value, request);

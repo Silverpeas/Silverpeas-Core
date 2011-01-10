@@ -140,12 +140,12 @@ public class PdcSearchRequestRouterHelper {
 
     String paramNbResToDisplay = request.getParameter("nbRes");
     if (paramNbResToDisplay != null) {
-      int nbResToDisplay = new Integer(paramNbResToDisplay).intValue();
+      int nbResToDisplay = Integer.parseInt(paramNbResToDisplay);
       pdcSC.setNbResToDisplay(nbResToDisplay);
     }
     String paramSortRes = request.getParameter("sortRes");
     if (paramSortRes != null) {
-      int sortRes = new Integer(paramSortRes).intValue();
+      int sortRes = Integer.parseInt(paramSortRes);
       pdcSC.setSortValue(sortRes);
     }
     String paramSortOrder = request.getParameter("sortOrder");   
@@ -189,8 +189,8 @@ public class PdcSearchRequestRouterHelper {
     }
     request.setAttribute("DisplayParamChoices", pdcSC.getDisplayParamChoices());
     request.setAttribute("ChoiceNbResToDisplay", pdcSC.getListChoiceNbResToDisplay());
-    request.setAttribute("NbResToDisplay", new Integer(pdcSC.getNbResToDisplay()));
-    request.setAttribute("SortValue", new Integer(pdcSC.getSortValue()));
+    request.setAttribute("NbResToDisplay", Integer.valueOf(pdcSC.getNbResToDisplay()));
+    request.setAttribute("SortValue", Integer.valueOf(pdcSC.getSortValue()));
     request.setAttribute("SortOrder", pdcSC.getSortOrder());
 
     // List of user favorite requests
@@ -210,7 +210,7 @@ public class PdcSearchRequestRouterHelper {
     }
     request.setAttribute("synonyms", pdcSC.getSynonyms());
     // put search type
-    request.setAttribute("SearchType", new Integer(pdcSC.getSearchType()));
+    request.setAttribute("SearchType", Integer.valueOf(pdcSC.getSearchType()));
   }
 
   /**
@@ -378,8 +378,8 @@ public class PdcSearchRequestRouterHelper {
         if (isExistInSecondaryAxis || isExistInPrimaryAxis) {
           searchValue = getLastValueOf(sc.getValue());
           // on creait un axis
-          axis = pdcSC.getAxisDetail(new Integer(searchAxisId).toString());
-          treeId = new Integer(axis.getAxisHeader().getRootId()).toString();
+          axis = pdcSC.getAxisDetail(String.valueOf(searchAxisId));
+          treeId = String.valueOf(axis.getAxisHeader().getRootId());
           @SuppressWarnings("unchecked")
           List<Value> fullPath = pdcSC.getFullPath(searchValue, treeId);
           pathCriteria.add(fullPath);

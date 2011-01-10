@@ -39,8 +39,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 
-public class ScheduledImport
-    implements SchedulerEventListener {
+public class ScheduledImport implements SchedulerEventListener {
 
   public static final String IMPORTENGINE_JOB_NAME = "ImportEngineJob";
   private ResourceLocator resources = new ResourceLocator(
@@ -61,7 +60,7 @@ public class ScheduledImport
             + "' does not exists !");
       } else {
         SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
-      Scheduler scheduler = schedulerFactory.getScheduler();
+        Scheduler scheduler = schedulerFactory.getScheduler();
         scheduler.unscheduleJob(IMPORTENGINE_JOB_NAME);
         JobTrigger trigger = JobTrigger.triggerAt(cron);
         scheduler.scheduleJob(IMPORTENGINE_JOB_NAME, trigger, this);
@@ -77,15 +76,11 @@ public class ScheduledImport
         "root.MSG_GEN_ENTER_METHOD");
 
     String userId = resources.getString("userIdAsCreatorId");
-
     ImportExport importExport = new ImportExport();
-
     OrganizationController orga = new OrganizationController();
     UserDetail user = orga.getUserDetail(userId);
-
     ResourceLocator multilang = new ResourceLocator(
-        "com.silverpeas.importExportPeas.multilang.importExportPeasBundle",
-        "fr");
+        "com.silverpeas.importExportPeas.multilang.importExportPeasBundle", "fr");
     ResourcesWrapper resource = new ResourcesWrapper(multilang, "fr");
 
     File[] files = dir.listFiles();
@@ -101,17 +96,13 @@ public class ScheduledImport
             ImportReport importReport = importExport.processImport(user, file.getAbsolutePath());
             importExport.writeImportToLog(importReport, resource);
           } catch (ImportExportException e) {
-            SilverTrace.error("importExport",
-                "ScheduledImport.doScheduledImport()",
-                "importExport.EX_CANT_PROCESS_IMPORT", "file = "
-                + file.getAbsolutePath(), e);
+            SilverTrace.error("importExport", "ScheduledImport.doScheduledImport()",
+                "importExport.EX_CANT_PROCESS_IMPORT", "file = " + file.getAbsolutePath(), e);
           } finally {
-            if (postPolicy.equalsIgnoreCase("remove")) {
+            if ("remove".equalsIgnoreCase(postPolicy)) {
               file.delete();
-            } else if (postPolicy.equalsIgnoreCase("rename")) {
+            } else if ("rename".equalsIgnoreCase(postPolicy)) {
               file.renameTo(new File(file.getAbsolutePath() + ".old"));
-            } else {
-              // We let it as it is !
             }
           }
         }
@@ -123,23 +114,20 @@ public class ScheduledImport
 
   @Override
   public void triggerFired(SchedulerEvent anEvent) throws Exception {
-    SilverTrace.debug("importExport",
-        "ScheduledImport.handleSchedulerEvent", "The job '"
+    SilverTrace.debug("importExport", "ScheduledImport.handleSchedulerEvent", "The job '"
         + anEvent.getJobExecutionContext().getJobName() + "' is executing");
     doScheduledImport();
   }
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
-    SilverTrace.debug("importExport",
-        "ScheduledImport.handleSchedulerEvent", "The job '"
+    SilverTrace.debug("importExport", "ScheduledImport.handleSchedulerEvent", "The job '"
         + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
   }
 
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
-    SilverTrace.error("importExport",
-        "ScheduledImport.handleSchedulerEvent", "The job '"
+    SilverTrace.error("importExport", "ScheduledImport.handleSchedulerEvent", "The job '"
         + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
   }
 }

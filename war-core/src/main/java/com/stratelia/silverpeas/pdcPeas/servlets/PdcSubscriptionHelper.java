@@ -141,23 +141,18 @@ public class PdcSubscriptionHelper {
   }
 
   // build a SearchContext according to request parameters
-  public static SearchContext getSearchContextFromRequest(
-      HttpServletRequest request) {
+  public static SearchContext getSearchContextFromRequest(HttpServletRequest request) {
     String axisValueCouples = request.getParameter("AxisValueCouples");
-    String axisValueCouple = null;
     StringTokenizer tokenizer = new StringTokenizer(axisValueCouples, ",");
     SearchContext context = new SearchContext();
-    String axisId = null;
-    String valuePath = null;
     int i = -1;
     while (tokenizer.hasMoreTokens()) {
-      axisValueCouple = (String) tokenizer.nextToken();
-      i = axisValueCouple.indexOf("-");
+      String axisValueCouple = tokenizer.nextToken();
+      i = axisValueCouple.indexOf('-');
       if (i != -1) {
-        axisId = axisValueCouple.substring(0, i);
-        valuePath = axisValueCouple.substring(i + 1);
-        context.addCriteria(new SearchCriteria(Integer.parseInt(axisId),
-            valuePath));
+        String axisId = axisValueCouple.substring(0, i);
+        String valuePath = axisValueCouple.substring(i + 1);
+        context.addCriteria(new SearchCriteria(Integer.parseInt(axisId), valuePath));
       }
     }
     return context;

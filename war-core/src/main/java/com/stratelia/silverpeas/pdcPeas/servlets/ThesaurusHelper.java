@@ -55,7 +55,10 @@ public class ThesaurusHelper {
       HttpServletRequest request, boolean isThesaurusActive) {
     Jargon jargon = pdcSC.getJargon();
     request.setAttribute("Jargon", jargon);
-    request.setAttribute("ActiveThesaurus", new Boolean(isThesaurusActive));
+    request.setAttribute("ActiveThesaurus", Boolean.valueOf(isThesaurusActive));
+  }
+
+  private ThesaurusHelper() {
   }
 
 }
