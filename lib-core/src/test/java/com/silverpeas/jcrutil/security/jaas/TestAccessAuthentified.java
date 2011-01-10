@@ -66,7 +66,6 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
     try {
       setRegistred(jaas_registred);
       if(!jaas_registred) {
-        /*BasicDaoFactory.getInstance().setApplicationContext(this.getContext(getConfigLocations()));*/
         jaas_registred = true;
       }
       registerSilverpeasNodeTypes();

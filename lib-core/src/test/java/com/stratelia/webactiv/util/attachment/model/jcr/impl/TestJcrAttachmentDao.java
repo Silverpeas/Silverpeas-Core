@@ -23,6 +23,8 @@
  */
 package com.stratelia.webactiv.util.attachment.model.jcr.impl;
 
+import org.springframework.test.context.ContextConfiguration;
+import com.silverpeas.jcrutil.model.impl.AbstractJcrTestCase;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -45,6 +47,7 @@ import org.junit.Test;
 import static com.silverpeas.util.PathTestUtil.*;
 import static org.junit.Assert.*;
 
+@ContextConfiguration(inheritLocations=false, locations={"/spring-in-memory-jcr.xml"})
 public class TestJcrAttachmentDao extends AbstractJcrTestCase {
 
   private static final String instanceId = "kmelia57";

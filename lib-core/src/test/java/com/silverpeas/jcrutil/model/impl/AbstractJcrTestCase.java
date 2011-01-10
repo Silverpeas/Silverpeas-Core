@@ -64,11 +64,9 @@ import java.util.StringTokenizer;
 import javax.annotation.Resource;
 import org.junit.After;
 import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"/spring-in-memory-jcr.xml"})
 public abstract class AbstractJcrTestCase {
 
   private DataSource datasource;
@@ -121,7 +119,8 @@ public abstract class AbstractJcrTestCase {
   }
 
   protected IDataSet getDataSet() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(this.getClass().getResourceAsStream("test-attachment-dataset.xml")));
+    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
+        this.getClass().getResourceAsStream("test-attachment-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
     return dataSet;
   }

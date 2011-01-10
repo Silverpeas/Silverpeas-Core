@@ -24,6 +24,7 @@
 
 package com.silverpeas.jcrutil;
 
+import org.springframework.test.context.ContextConfiguration;
 import java.util.Calendar;
 
 import javax.jcr.Node;
@@ -42,14 +43,12 @@ import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+@ContextConfiguration(inheritLocations=false, locations={"/spring-in-memory-jcr.xml"})
 public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
 
   public TestBasicDaoFactory() {
   }
 
-  protected String[] getConfigLocations() {
-    return new String[] { "/spring-in-memory-jcr.xml" };
-  }
 
   @Override
   protected IDataSet getDataSet() throws Exception {
@@ -323,18 +322,13 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
-      Node componentNode = session.getRootNode().addNode("kmelia36",
-          JcrConstants.NT_FOLDER);
-      String firstNodeName = BasicDaoFactory.computeUniqueName("",
-          "SB_Node_Node");
-      Node firstNode = componentNode.addNode(firstNodeName,
-          JcrConstants.NT_FOLDER);
+      Node componentNode = session.getRootNode().addNode("kmelia36", JcrConstants.NT_FOLDER);
+      String firstNodeName = BasicDaoFactory.computeUniqueName("", "SB_Node_Node");
+      Node firstNode = componentNode.addNode(firstNodeName, JcrConstants.NT_FOLDER);
       assertNotNull(firstNode);
-      String secondNodeName = BasicDaoFactory.computeUniqueName("",
-          "SB_Node_Node");
+      String secondNodeName = BasicDaoFactory.computeUniqueName("", "SB_Node_Node");
       assertEquals((Integer.parseInt(firstNodeName) + 1) + "", secondNodeName);
-      Node secondNode = componentNode.addNode(secondNodeName,
-          JcrConstants.NT_FOLDER);
+      Node secondNode = componentNode.addNode(secondNodeName, JcrConstants.NT_FOLDER);
       assertNotNull(secondNode);
     } finally {
       BasicDaoFactory.logout(session);

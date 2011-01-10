@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.util.attachment.model.jcr.impl;
 
+import org.springframework.test.context.ContextConfiguration;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -35,6 +36,7 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.Session;
 
 import com.silverpeas.jcrutil.BasicDaoFactory;
+import com.silverpeas.jcrutil.model.impl.AbstractJcrRegisteringTestCase;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
@@ -44,7 +46,8 @@ import org.junit.Test;
 import static com.silverpeas.util.PathTestUtil.*;
 import static org.junit.Assert.*;
 
-public class TestJcrAttachmentService extends AbstractJcrTestCase {
+@ContextConfiguration(inheritLocations=false, locations={"/spring-in-memory-jcr.xml"})
+public class TestJcrAttachmentService extends AbstractJcrRegisteringTestCase {
 
   @Resource
   private JcrAttachmentService service;
