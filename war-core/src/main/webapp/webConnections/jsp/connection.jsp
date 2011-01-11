@@ -43,8 +43,8 @@
     <c:set var="connectionParams" value="${connection.param}" scope="page"/>
     <% pageContext.setAttribute("entries", ((java.util.Map)pageContext.getAttribute("connectionParams")).entrySet()); %>
     <form name="connectionForm" action="<c:out value="${requestScope.Connection.url}"/>" method="<c:out value="${requestScope.Method}"/>">
-      <c:forEach items="${pageScope.entries}" var="param" >
-        <input type="hidden" name="<c:out value="${param.key}" />" value="<c:out value="${param.value}" />"/>
+      <c:forEach items="${pageScope.entries}" var="connectionParam" >
+        <input type="hidden" name="<c:out value="${connectionParam.key}" />" value="<c:out value="${connectionParam.value}" />"/>
       </c:forEach>
     </form>
   </body>
