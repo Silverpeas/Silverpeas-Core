@@ -101,7 +101,7 @@ public class VersioningBmEJB implements SessionBean {
     Connection con = openConnection();
     List<Document> result = null;
     try {
-      result =  VersioningDAO.getDocuments(con, foreignPK);
+      result = VersioningDAO.getDocuments(con, foreignPK);
     } catch (Exception re) {
       throw new VersioningRuntimeException("VersioningBmEJB.getDocuments",
           SilverpeasRuntimeException.ERROR,
@@ -212,7 +212,7 @@ public class VersioningBmEJB implements SessionBean {
 
   public boolean checkDocumentOut(DocumentPK documentPK, int ownerId, java.util.Date checkOutDate) {
     Connection con = openConnection();
-    SilverTrace.debug("versioning", "checkDocumentOut", "root.MSG_GEN_PARAM_VALUE", 
+    SilverTrace.debug("versioning", "checkDocumentOut", "root.MSG_GEN_PARAM_VALUE",
         "instanceId = " + documentPK.getId());
     try {
       Document doc = getDocument(documentPK);
@@ -242,12 +242,12 @@ public class VersioningBmEJB implements SessionBean {
 
   public void checkDocumentIn(DocumentPK documentPK, int userId) {
     Connection con = openConnection();
-    SilverTrace.debug("versioning", "checkDocumentIn", "root.MSG_GEN_PARAM_VALUE", 
+    SilverTrace.debug("versioning", "checkDocumentIn", "root.MSG_GEN_PARAM_VALUE",
         "instanceId = " + documentPK.getId());
     try {
       Document doc = VersioningDAO.getDocument(con, documentPK);
 
-      SilverTrace.debug("versioning", "checkDocumentIn", "root.MSG_GEN_PARAM_VALUE", 
+      SilverTrace.debug("versioning", "checkDocumentIn", "root.MSG_GEN_PARAM_VALUE",
           "doc.getTypeWorkList() = " + doc.getTypeWorkList() + " / doc.getTypeWorkList() = "
           + doc.getTypeWorkList());
 
@@ -436,12 +436,13 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * From Ejb remote interface. Containing business logic for adding new version
+   * 
+   * @param doc
+   * @param newVersion
+   * @return 
    */
-  public DocumentVersion addDocumentVersion(Document doc,
-      DocumentVersion newVersion) {
-
+  public DocumentVersion addDocumentVersion(Document doc, DocumentVersion newVersion) {
     newVersion.setDocumentPK(doc.getPk());
-
     int typeWorkList = doc.getTypeWorkList();
     if (typeWorkList == 0) {
       return addNonOrderedNonValidatedVersion(doc, newVersion);
@@ -457,9 +458,11 @@ public class VersioningBmEJB implements SessionBean {
   /**
    * Adding new <code>DocumentVersion</code> in a case of Non-ordered and Non-validated document
    * type
+   * @param doc
+   * @param newVersion
+   * @return 
    */
-  public DocumentVersion addNonOrderedNonValidatedVersion(Document doc,
-      DocumentVersion newVersion) {
+  public DocumentVersion addNonOrderedNonValidatedVersion(Document doc, DocumentVersion newVersion) {
     if (newVersion.getType() == DocumentVersion.TYPE_PUBLIC_VERSION) {
       newVersion.setMinorNumber(0);
       newVersion.setMajorNumber(newVersion.getMajorNumber() + 1);
@@ -472,20 +475,14 @@ public class VersioningBmEJB implements SessionBean {
       con = openConnection();
       DocumentVersionPK pk = addVersion(newVersion);
       if (pk == null) {
-        throw new VersioningRuntimeException(
-            "VersioninBmEJB.addNonOrderedNonValidatedVersion",
-            SilverpeasRuntimeException.ERROR,
-            "versioning.CANNOT_CREATE_NEWVERSION", newVersion);
+        throw new VersioningRuntimeException("VersioninBmEJB.addNonOrderedNonValidatedVersion",
+            SilverpeasRuntimeException.ERROR, "versioning.CANNOT_CREATE_NEWVERSION", newVersion);
       }
       newVersion.setPk(pk);
-
       VersioningDAO.checkDocumentIn(con, newVersion.getDocumentPK());
-
     } catch (SQLException e) {
-      throw new VersioningRuntimeException(
-          "VersioninBmEJB.addNonOrderedNonValidatedVersion",
-          SilverpeasRuntimeException.ERROR, "versioning.ADDVERSION_EXCEPTION",
-          newVersion, e);
+      throw new VersioningRuntimeException("VersioninBmEJB.addNonOrderedNonValidatedVersion",
+          SilverpeasRuntimeException.ERROR, "versioning.ADDVERSION_EXCEPTION", newVersion, e);
     } finally {
       closeConnection(con);
     }
@@ -494,10 +491,12 @@ public class VersioningBmEJB implements SessionBean {
   }
 
   /**
-   * Adding new <code>DocumentVersion</code> in a case of Non-ordered and Validated document type
+   * Adding new <code>DocumentVersion</code> in a case of Non-ordered and Validated document type.
+   * @param doc
+   * @param newVersion
+   * @return 
    */
-  public DocumentVersion addNonOrderedValidatedVersion(Document doc,
-      DocumentVersion newVersion) {
+  public DocumentVersion addNonOrderedValidatedVersion(Document doc, DocumentVersion newVersion) {
     boolean validate = false;
     int currUser = doc.getOwnerId();
     Worker worker = findValidator(doc.getWorkList());
@@ -516,8 +515,7 @@ public class VersioningBmEJB implements SessionBean {
 
         newVersion.setStatus(DocumentVersion.STATUS_VALIDATION_NOT_REQ);
         try {
-          DocumentVersionPK pk = VersioningDAO.addDocumentVersion(con,
-              newVersion);
+          DocumentVersionPK pk = VersioningDAO.addDocumentVersion(con, newVersion);
           if (pk == null) {
             throw new VersioningRuntimeException(
                 "VersioninBmEJB.addNonOrderedValidatedVersion",
@@ -604,8 +602,7 @@ public class VersioningBmEJB implements SessionBean {
   /**
    * Adding new <code>DocumentVersion</code> in a case of Ordered and Validated document type
    */
-  public DocumentVersion addOrderedValidatedVersion(Document doc,
-      DocumentVersion newVersion) {
+  public DocumentVersion addOrderedValidatedVersion(Document doc, DocumentVersion newVersion) {
 
     int currUserNum = doc.getCurrentWorkListOrder();
     List<Worker> workList = doc.getWorkList();
@@ -614,13 +611,12 @@ public class VersioningBmEJB implements SessionBean {
     Connection con = openConnection();
 
     try {
-      Worker currWorker = (Worker) workList.get(currUserNum);
+      Worker currWorker = workList.get(currUserNum);
       nextWorker = getNextWorker(workList, currUserNum, true);
 
       if (nextWorker != null) {
         nextUserID = nextWorker.getId();
-        if (currWorker.getOrder() == nextWorker.getOrder()
-            || !nextWorker.isWriter()) {
+        if (currWorker.getOrder() == nextWorker.getOrder() || !nextWorker.isWriter()) {
           newVersion.setStatus(DocumentVersion.STATUS_VALIDATION_REQUIRED);
         } else {
           newVersion.setStatus(DocumentVersion.STATUS_VALIDATION_NOT_REQ);
@@ -660,8 +656,7 @@ public class VersioningBmEJB implements SessionBean {
         try {
           String message =
               (newVersion.getStatus() == DocumentVersion.STATUS_VALIDATION_REQUIRED)
-              ? "notification.pleaseValidate"
-              : "notification.processWork";
+              ? "notification.pleaseValidate": "notification.processWork";
           sendNotification(nextUserID, message, docUrl, currWorker.getId(), doc);
         } catch (NotificationManagerException e) {
           SilverTrace.error("versioning", "VersioningBmEJB.sendNotification",
@@ -834,22 +829,18 @@ public class VersioningBmEJB implements SessionBean {
     try {
       if (isDocumentClosed(currDoc)) {
         throw new VersioningRuntimeException("VersioninBmEJB.validateDocument",
-            SilverpeasRuntimeException.ERROR, "versioning.DOCUMENT_CLOSED",
-            currDoc);
+            SilverpeasRuntimeException.ERROR, "versioning.DOCUMENT_CLOSED", currDoc);
       }
 
       if (!isCheckoutedBy(currDoc, validatorID)) {
         throw new VersioningRuntimeException("VersioninBmEJB.validateDocument",
-            SilverpeasRuntimeException.ERROR,
-            "versioning.DOCUMENT_NOT_CHECKOUTED", currDoc);
+            SilverpeasRuntimeException.ERROR, "versioning.DOCUMENT_NOT_CHECKOUTED", currDoc);
       }
       if (currDoc.getTypeWorkList() == 1) {
-        validateApprovalNonOrdered(currDoc, validatorID, comment,
-            validationDate, con);
+        validateApprovalNonOrdered(currDoc, validatorID, comment, validationDate, con);
 
       } else if (currDoc.getTypeWorkList() == 2) {
-        validateApprovalOrdered(currDoc, validatorID, comment, validationDate,
-            con);
+        validateApprovalOrdered(currDoc, validatorID, comment, validationDate, con);
 
       } else {
         throw new VersioningRuntimeException("VersioninBmEJB.validateDocument",
@@ -864,15 +855,18 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * Process validation in a case of Approval, Ordered list
+   * @param doc
+   * @param validatorID
+   * @param comment
+   * @param validationDate
+   * @param conn 
    */
-  protected void validateApprovalOrdered(Document doc, int validatorID,
-      String comment, java.util.Date validationDate, Connection conn) {
+  protected void validateApprovalOrdered(Document doc, int validatorID, String comment, 
+      Date validationDate, Connection conn) {
 
     if (!isCurrentOrderedValidator(doc, validatorID)) {
-      throw new VersioningRuntimeException(
-          "VersioninBmEJB.validateApprovalOrdered",
-          SilverpeasRuntimeException.ERROR,
-          "versioning.VALIDATION_NOT_REQUIED", doc);
+      throw new VersioningRuntimeException("VersioninBmEJB.validateApprovalOrdered",
+          SilverpeasRuntimeException.ERROR, "versioning.VALIDATION_NOT_REQUIED", doc);
     }
 
     boolean isPublic = false;
@@ -895,11 +889,9 @@ public class VersioningBmEJB implements SessionBean {
     DocumentVersion version = getCurrentDocumentVersion(doc);
 
     if (nextWorker != null && !nextWorker.isWriter() && nextWorker.isApproval()) {
-      validateDocumentVersion(version, comment, validationDate, validatorID,
-          isPublic, true, conn);
+      validateDocumentVersion(version, comment, validationDate, validatorID, isPublic, true, conn);
     } else {
-      validateDocumentVersion(version, comment, validationDate, validatorID,
-          isPublic, false, conn);
+      validateDocumentVersion(version, comment, validationDate, validatorID, isPublic, false, conn);
     }
 
     if (nextUserID == -1) {
@@ -1196,25 +1188,19 @@ public class VersioningBmEJB implements SessionBean {
       String comment, java.util.Date validationDate, Connection conn) {
 
     if (!isCurrentOrderedValidator(doc, validatorID)) {
-      throw new VersioningRuntimeException(
-          "VersioninBmEJB.refuseApprovalOrdered",
-          SilverpeasRuntimeException.ERROR,
-          "versioning.VALIDATION_NOT_REQUIED", doc);
+      throw new VersioningRuntimeException("VersioninBmEJB.refuseApprovalOrdered",
+          SilverpeasRuntimeException.ERROR, "versioning.VALIDATION_NOT_REQUIED", doc);
     }
     int currWorkerid = doc.getOwnerId();
 
     Worker prevWorker = getPrevWorker(doc.getWorkList(), doc.getCurrentWorkListOrder(), true);
     int nextUserID = -1;
-
-    if (prevWorker == null) {
-      nextUserID = -1;
-    } else {
+    if (prevWorker != null) {
       nextUserID = prevWorker.getId();
     }
 
     DocumentVersion version = getCurrentDocumentVersion(doc);
     refuseDocumentVersion(version, comment, validationDate, validatorID, conn);
-
     try {
       VersioningDAO.checkDocumentIn(conn, doc.getPk());
     } catch (Exception e) {
@@ -1224,9 +1210,7 @@ public class VersioningBmEJB implements SessionBean {
           "versioning.VALIDATION_NOT_REQUIED", doc, e);
     }
 
-    if (nextUserID == -1) {
-      // CurrentWorkListOrder should not be changed
-    } else {
+    if (nextUserID != -1) {
       // checkout document for previouse user
       doc.setCurrentWorkListOrder(prevWorker.getOrder());
       updateDocument(doc);
@@ -1419,7 +1403,8 @@ public class VersioningBmEJB implements SessionBean {
   protected String getDefaultUserLanguage(int userID) {
     String lang = "fr";
     try {
-      PersonalizationBmHome personalizationBmHome = (PersonalizationBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PERSONALIZATIONBM_EJBHOME,
+      PersonalizationBmHome personalizationBmHome = (PersonalizationBmHome) EJBUtilitaire.
+          getEJBObjectRef(JNDINames.PERSONALIZATIONBM_EJBHOME,
           PersonalizationBmHome.class);
       PersonalizationBm personalizationBm = personalizationBmHome.create();
       personalizationBm.setActor(String.valueOf(userID));
@@ -1510,7 +1495,8 @@ public class VersioningBmEJB implements SessionBean {
         "root.MSG_GEN_ENTER_METHOD", "documentPK = "
         + document.getPk().toString());
 
-    IndexEntryPK indexEntry = new IndexEntryPK(document.getPk().getComponentName(), "Versioning" + document.getPk().getId(), document.getForeignKey().getId());
+    IndexEntryPK indexEntry = new IndexEntryPK(document.getPk().getComponentName(), "Versioning" + document.
+        getPk().getId(), document.getForeignKey().getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 

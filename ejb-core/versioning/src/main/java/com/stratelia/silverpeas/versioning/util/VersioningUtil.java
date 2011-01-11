@@ -145,12 +145,8 @@ public class VersioningUtil {
     return documents;
   }
 
-  public DocumentVersion getLastPublicVersion(DocumentPK documentPK)
-      throws RemoteException {
-    DocumentVersion version = null;
-    version = getVersioningBm().getLastPublicDocumentVersion(documentPK);
-
-    return version;
+  public DocumentVersion getLastPublicVersion(DocumentPK documentPK) throws RemoteException {
+    return getVersioningBm().getLastPublicDocumentVersion(documentPK);
   }
 
   public DocumentVersion getLastVersion(DocumentPK documentPK)
@@ -190,7 +186,6 @@ public class VersioningUtil {
       Reader reader = readers.get(i);
       mapRead.put(String.valueOf(reader.getUserId()), reader);
     }
-
     return mapRead;
   }
 
@@ -237,8 +232,7 @@ public class VersioningUtil {
 
   public HashMap getAllUsersForProfile(Document document, String nameProfile) {
     OrganizationController orgCntr = new OrganizationController();
-    ComponentInst componentInst = orgCntr.getComponentInst(
-        document.getForeignKey().getComponentName());
+    ComponentInst componentInst = orgCntr.getComponentInst(document.getForeignKey().getComponentName());
 
     HashMap<String, Reader> mapRead = new HashMap<String, Reader>();
     ProfileInst profileInst = null;
@@ -273,8 +267,7 @@ public class VersioningUtil {
       // pair (users id, UsersDetail) to HashTable
       for (int i = 0; i < userIds.size(); i++) {
         // This check avoids duplicate users
-        if (!mapRead.containsKey(userIds.get(i))
-            && !noReaderMap.containsKey(userIds.get(i))) {
+        if (!mapRead.containsKey(userIds.get(i)) && !noReaderMap.containsKey(userIds.get(i))) {
           UserDetail ud = orgCntr.getUserDetail((String) userIds.get(i));
           Reader ru = new Reader(Integer.parseInt(ud.getId()), 0, document.getInstanceId(), 0);
           mapRead.put((String) userIds.get(i), ru);
@@ -381,8 +374,7 @@ public class VersioningUtil {
   public void createIndex(Document documentToIndex, DocumentVersion lastVersion)
       throws RemoteException {
     SilverTrace.info("versioningPeas", "VersioningUtil.createIndex()",
-        "root.MSG_GEN_ENTER_METHOD", "documentToIndex = "
-        + documentToIndex.toString());
+        "root.MSG_GEN_ENTER_METHOD", "documentToIndex = " + documentToIndex.toString());
 
     indexer.createIndex(documentToIndex, lastVersion);
   }
@@ -397,10 +389,8 @@ public class VersioningUtil {
       ForeignPK foreignPK = new ForeignPK(foreignKey, documentPK.getInstanceId());
       getVersioningBm().updateDocumentForeignKey(documentPK, foreignPK);
     } catch (Exception e) {
-      throw new VersioningRuntimeException(
-          "VersioningUtil.updateDocumentForeignKey()",
-          SilverpeasRuntimeException.ERROR, "root.EX_RECORD_INSERTION_FAILED",
-          e);
+      throw new VersioningRuntimeException("VersioningUtil.updateDocumentForeignKey()",
+          SilverpeasRuntimeException.ERROR, "root.EX_RECORD_INSERTION_FAILED", e);
     }
   }
 
@@ -413,10 +403,8 @@ public class VersioningUtil {
     try {
       getVersioningBm().updateDocumentVersion(documentVersion);
     } catch (Exception e) {
-      throw new VersioningRuntimeException(
-          "VersioningUtil.updateDocumentVersion()",
-          SilverpeasRuntimeException.ERROR, "root.EX_RECORD_INSERTION_FAILED",
-          e);
+      throw new VersioningRuntimeException("VersioningUtil.updateDocumentVersion()",
+          SilverpeasRuntimeException.ERROR, "root.EX_RECORD_INSERTION_FAILED", e);
     }
   }
 
@@ -424,8 +412,7 @@ public class VersioningUtil {
     if (versioning_bm == null) {
       try {
         VersioningBmHome vscEjbHome = (VersioningBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.VERSIONING_EJBHOME,
-            VersioningBmHome.class);
+            JNDINames.VERSIONING_EJBHOME, VersioningBmHome.class);
         versioning_bm = vscEjbHome.create();
       } catch (Exception e) {
         // NEED
@@ -442,24 +429,18 @@ public class VersioningUtil {
     return checkinFile(documentId, versionType, comment, null, physicalFileName);
   }
 
-  public boolean checkinFile(String documentId, int versionType,
-      String comment, String userId, String physicalFileName)
-      throws VersioningRuntimeException {
+  public boolean checkinFile(String documentId, int versionType, String comment, String userId, 
+      String physicalFileName) throws VersioningRuntimeException {
     try {
       SilverTrace.debug("versioning", "VersioningUtil.checkinFile()",
-          "root.MSG_GEN_ENTER_METHOD", "documentId = " + documentId
-          + "Type version=" + versionType);
-
-      DocumentVersion documentVersion = getLastVersion(new DocumentPK(
-          new Integer(documentId).intValue()));
+          "root.MSG_GEN_ENTER_METHOD", "documentId = " + documentId + "Type version=" + versionType);
+      DocumentVersion documentVersion = getLastVersion(new DocumentPK(Integer.parseInt(documentId)));
       if (RepositoryHelper.getJcrDocumentService().isNodeLocked(documentVersion)) {
         return false;
       }
       DocumentVersion newDocumentVersion = createNewDocumentVersion(documentVersion);
-
       String theComponentId = documentVersion.getInstanceId();
-
-      newDocumentVersion.setPk(new DocumentVersionPK(new Integer(documentId).intValue()));
+      newDocumentVersion.setPk(new DocumentVersionPK(Integer.parseInt(documentId)));
       newDocumentVersion.setPhysicalName(physicalFileName);
 
       SilverTrace.debug("versioning", "VersioningUtil.checkinOfficeFile()",
@@ -467,20 +448,17 @@ public class VersioningUtil {
           + newDocumentVersion.getPk().getId());
 
       String newVersionFile = FileRepositoryManager.getAbsolutePath(theComponentId)
-          + DocumentVersion.CONTEXT_VERSIONING
-          + newDocumentVersion.getPhysicalName();
+          + DocumentVersion.CONTEXT_VERSIONING + newDocumentVersion.getPhysicalName();
 
       // Create new document version
       long newSize = FileRepositoryManager.getFileSize(newVersionFile);
       newDocumentVersion.setSize(newSize);
       newDocumentVersion.setAuthorId(Integer.parseInt(userId));
       newDocumentVersion.setCreationDate(new Date());
-      newDocumentVersion = addNewDocumentVersion(newDocumentVersion,
-          versionType, comment);
+      newDocumentVersion = addNewDocumentVersion(newDocumentVersion, versionType, comment);
       return true;
     } catch (Exception e) {
-      throw new VersioningRuntimeException(
-          "VersioningUtil.checkinOfficeFile()",
+      throw new VersioningRuntimeException("VersioningUtil.checkinOfficeFile()",
           SilverpeasRuntimeException.ERROR, "versioning.CHECKIN_FAILED", e);
     }
   }
@@ -490,8 +468,8 @@ public class VersioningUtil {
    * @return void
    * @exception RemoteException
    */
-  public boolean checkDocumentOut(DocumentPK documentPK, int ownerID,
-      java.util.Date checkOutDate) throws RemoteException {
+  public boolean checkDocumentOut(DocumentPK documentPK, int ownerID, Date checkOutDate) 
+      throws RemoteException {
     return getVersioningBm().checkDocumentOut(documentPK, ownerID, checkOutDate);
   }
 
@@ -500,19 +478,14 @@ public class VersioningUtil {
    * @param DocumentVersion
    * @return DocumentVersion
    */
-  public DocumentVersion createNewDocumentVersion(
-      DocumentVersion documentVersion) {
-    SilverTrace.debug("versioning",
-        "VersioningUtil.createNewDocumentVersion()",
+  public DocumentVersion createNewDocumentVersion(DocumentVersion documentVersion) {
+    SilverTrace.debug("versioning", "VersioningUtil.createNewDocumentVersion()",
         "root.MSG_GEN_ENTER_METHOD");
     // New Document version started from the previous version
     DocumentVersion newDocumentVersion = (DocumentVersion) documentVersion.clone();
-
     String logicalName = documentVersion.getLogicalName();
-    String suffix = logicalName.substring(logicalName.indexOf(".") + 1,
-        logicalName.length());
-    String newPhysicalName = new Long(new Date().getTime()).toString() + "."
-        + suffix;
+    String suffix = logicalName.substring(logicalName.indexOf('.') + 1, logicalName.length());
+    String newPhysicalName = String.valueOf(System.currentTimeMillis()) + '.' + suffix;
     newDocumentVersion.setPhysicalName(newPhysicalName);
     return newDocumentVersion;
   }
@@ -522,8 +495,8 @@ public class VersioningUtil {
    * @return DocumentVersion
    * @exception RemoteException
    */
-  public DocumentVersion addNewDocumentVersion(DocumentVersion newVersion,
-      int versionType) throws RemoteException {
+  public DocumentVersion addNewDocumentVersion(DocumentVersion newVersion, int versionType) 
+      throws RemoteException {
     return addNewDocumentVersion(newVersion, versionType, "");
   }
 
@@ -532,8 +505,8 @@ public class VersioningUtil {
    * @return DocumentVersion
    * @exception RemoteException
    */
-  public DocumentVersion addNewDocumentVersion(DocumentVersion newVersion,
-      int versionType, String comment) throws RemoteException {
+  public DocumentVersion addNewDocumentVersion(DocumentVersion newVersion, int versionType, 
+      String comment) throws RemoteException {
     DocumentVersion version = null;
 
     DocumentPK document_pk = newVersion.getDocumentPK();
@@ -574,24 +547,17 @@ public class VersioningUtil {
     // ensure directory exists
     createPath(null, toPK.getInstanceId(), null);
 
-    List documents = getVersioningBm().getDocuments(fromPK);
+    List<Document> documents = getVersioningBm().getDocuments(fromPK);
 
-    Document aDocument = null;
     File fromFile = null;
     File toFile = null;
-    for (int a = 0; documents != null && a < documents.size(); a++) {
-      aDocument = (Document) documents.get(a);
-
-      List versions = getVersioningBm().getDocumentVersions(aDocument.getPk());
-
-      DocumentVersion version = null;
-      for (int v = 0; versions != null && v < versions.size(); v++) {
-        version = (DocumentVersion) versions.get(v);
-
+    for (Document aDocument : documents){
+      List<DocumentVersion> versions = getVersioningBm().getDocumentVersions(aDocument.getPk());
+      for (DocumentVersion version : versions) {
         // move file on disk
-        fromFile = new File(fromAbsolutePath + "Versioning" + File.separator
+        fromFile = new File(fromAbsolutePath + "Versioning" + File.separatorChar
             + version.getPhysicalName());
-        toFile = new File(toAbsolutePath + "Versioning" + File.separator
+        toFile = new File(toAbsolutePath + "Versioning" + File.separatorChar
             + version.getPhysicalName());
 
         if (fromFile != null && fromFile.exists()) {
@@ -665,10 +631,8 @@ public class VersioningUtil {
     if (isAccessListExist(role)) {
       if (role.equals(READER)) {
         // We only get Ids
-        sel.setSelectedElements((String[]) getAccessListUsers(role).toArray(
-            new String[0]));
-        sel.setSelectedSets((String[]) getAccessListGroups(role).toArray(
-            new String[0]));
+        sel.setSelectedElements((String[]) getAccessListUsers(role).toArray(new String[0]));
+        sel.setSelectedSets((String[]) getAccessListGroups(role).toArray(new String[0]));
       } else {
         ArrayList workersUsers = getAccessListUsers(WRITER);
         ArrayList workersGroups = getAccessListGroups(WRITER);
@@ -680,14 +644,14 @@ public class VersioningUtil {
         Iterator workersUsersIterator = workersUsers.iterator();
         while (workersUsersIterator.hasNext()) {
           Worker workerUser = (Worker) workersUsersIterator.next();
-          usersIds[i++] = new Integer(workerUser.getId()).toString();
+          usersIds[i++] = String.valueOf(workerUser.getId());
         }
 
         i = 0;
         Iterator workersGroupsIterator = workersGroups.iterator();
         while (workersGroupsIterator.hasNext()) {
           Worker workerGroup = (Worker) workersGroupsIterator.next();
-          groupsIds[i++] = new Integer(workerGroup.getId()).toString();
+          groupsIds[i++] = String.valueOf(workerGroup.getId());
         }
         sel.setSelectedElements(usersIds);
         sel.setSelectedSets(groupsIds);
@@ -709,11 +673,9 @@ public class VersioningUtil {
     if (profile == null && inheritedProfile == null) {
       profile = new ProfileInst();
       profile.setName(role);
-    } else if (profile != null && inheritedProfile == null) {
-      // do nothing
     } else if (profile == null && inheritedProfile != null) {
       profile = inheritedProfile;
-    } else {
+    } else if(profile != null && inheritedProfile != null) {
       profile.addGroups(inheritedProfile.getAllGroups());
       profile.addUsers(inheritedProfile.getAllUsers());
     }
@@ -735,7 +697,7 @@ public class VersioningUtil {
   public ProfileInst getDocumentProfile(String role) throws RemoteException {
     ProfileInst profileInst = null;
     String documentId = getDocument().getPk().getId();
-    List profiles = getAdmin().getProfilesByObject(documentId, ObjectType.DOCUMENT.getCode(),
+    List<ProfileInst> profiles = getAdmin().getProfilesByObject(documentId, ObjectType.DOCUMENT.getCode(),
         getDocument().getInstanceId());
     if (profiles != null && !profiles.isEmpty()) {
       if (!profiles.isEmpty()) {
@@ -770,11 +732,10 @@ public class VersioningUtil {
    * @throws RemoteException
    */
   public ArrayList getAccessListUsers(String role) throws RemoteException {
-    if (role.equals(READER)) {
+    if (READER.equals(role)) {
       return getVersioningBm().getReadersAccessListUsers(getComponentId());
-    } else {
-      return getVersioningBm().getWorkersAccessListUsers(getComponentId());
-    }
+    } 
+    return getVersioningBm().getWorkersAccessListUsers(getComponentId());
   }
 
   /**
@@ -783,7 +744,7 @@ public class VersioningUtil {
    * @throws RemoteException
    */
   public ArrayList getAccessListGroups(String role) throws RemoteException {
-    if (role.equals(READER)) {
+    if (READER.equals(role)) {
       return getVersioningBm().getReadersAccessListGroups(getComponentId());
     }
     return getVersioningBm().getWorkersAccessListGroups(getComponentId());
