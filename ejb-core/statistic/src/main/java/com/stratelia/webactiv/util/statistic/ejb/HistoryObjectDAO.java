@@ -328,7 +328,7 @@ public class HistoryObjectDAO {
     try {
       prepStmt = con.prepareStatement(insertStatement);
       prepStmt.setString(1, toForeignPK.getInstanceId());
-      prepStmt.setString(2, toForeignPK.getId());
+      prepStmt.setInt(2, Integer.parseInt(toForeignPK.getId()));
       prepStmt.setInt(3, actionType);
       prepStmt.setString(4, objectType);
       prepStmt.executeUpdate();
