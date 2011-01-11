@@ -284,6 +284,7 @@ public class TestJcrAttachmentService extends AbstractJcrRegisteringTestCase {
       if (session != null) {
         session.logout();
       }
+      deleteTempFile(UPLOAD_DIR + "test_update.txt");
     }
     service.getUpdatedDocument(attachment, I18NHelper.defaultLanguage);
     String result = readFile(UPLOAD_DIR + "test_update.txt");

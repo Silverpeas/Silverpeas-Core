@@ -228,6 +228,7 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
       assertEquals("Ce test fonctionne.", result);
     } finally {
       BasicDaoFactory.logout(session);
+      deleteTempFile(UPLOAD_DIR + "test.txt");
     }
   }
 
@@ -278,6 +279,7 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
     } finally {
       BasicDaoFactory.logout(session);
       BasicDaoFactory.logout(session2);
+      deleteTempFile(UPLOAD_DIR + "test.txt");
     }
   }
   @Test
@@ -325,6 +327,7 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
           "attachments/" + instanceId + "/Attachment/tests/simpson/bart/100/test_update.txt")));
     } finally {
       BasicDaoFactory.logout(session);
+      deleteTempFile(UPLOAD_DIR + "test.txt");
     }
   }
 
@@ -378,6 +381,7 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
       }
     } finally {
       BasicDaoFactory.logout(session);
+      deleteTempFile(UPLOAD_DIR + "test.txt");
     }
   }
 
@@ -436,6 +440,7 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
           JcrConstants.JCR_MIMETYPE).getString());
     } finally {
       BasicDaoFactory.logout(session);
+      deleteTempFile(UPLOAD_DIR + "testBis.txt");
     }
   }
 

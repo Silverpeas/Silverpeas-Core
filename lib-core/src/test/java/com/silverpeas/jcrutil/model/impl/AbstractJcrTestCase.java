@@ -62,6 +62,7 @@ import com.stratelia.webactiv.util.JNDINames;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import javax.annotation.Resource;
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -156,7 +157,9 @@ public abstract class AbstractJcrTestCase {
 
   protected void createTempFile(String path, String content) throws IOException {
     File attachmentFile = new File(path);
-    attachmentFile.deleteOnExit();
+    if(!attachmentFile.getParentFile().exists()) {
+      attachmentFile.getParentFile().mkdirs();
+    }
     FileOutputStream out = null;
     Writer writer = null;
     try {
@@ -171,6 +174,10 @@ public abstract class AbstractJcrTestCase {
         out.close();
       }
     }
+  }
+  
+  protected void deleteTempFile(String path) {
+     FileUtils.deleteQuietly(new File(path));
   }
 
   protected String readFileFromNode(Node fileNode) throws IOException,
