@@ -21,34 +21,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.jcrutil.model.impl;
 
-import java.io.FileNotFoundException;
 
-import javax.jcr.AccessDeniedException;
-import javax.jcr.NamespaceException;
 import javax.jcr.Repository;
-import javax.jcr.RepositoryException;
-import javax.jcr.UnsupportedRepositoryOperationException;
 
-import org.apache.jackrabbit.core.nodetype.InvalidNodeTypeDefException;
-import org.apache.jackrabbit.core.nodetype.compact.ParseException;
 
 import com.silverpeas.jcrutil.model.SilverpeasRegister;
 import javax.annotation.Resource;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
 
-public abstract class AbstractJcrRegisteringTestCase extends
-    AbstractJcrTestCase {
+public abstract class AbstractJcrRegisteringTestCase extends AbstractJcrTestCase {
 
   private static boolean registred = false;
-
   @Resource
   private Repository repository;
-
-  public static void setRegistred(boolean isRegistred) {
-    registred = isRegistred;
-  }
 
   public static boolean isRegistred() {
     return registred;
@@ -62,17 +51,23 @@ public abstract class AbstractJcrRegisteringTestCase extends
     super();
   }
 
-  public void registerSilverpeasNodeTypes() throws NamespaceException,
-      UnsupportedRepositoryOperationException, AccessDeniedException,
-      RepositoryException, ParseException, FileNotFoundException,
-      InvalidNodeTypeDefException {
-    if (registred) {
-      return;
+  @Before
+  public void registerSilverpeasNodeTypes() throws Exception {
+    System.out.print("Register Silverpeas Node Types");
+    if (!registred) {
+      String cndFileName = AbstractJcrRegisteringTestCase.class.getClassLoader().getResource(
+          "silverpeas-jcr.txt").getFile().toString().replaceAll("%20", " ");
+      SilverpeasRegister.registerNodeTypes(cndFileName);
+      registred = true;
+      System.out.println(" -> node types registered");
+    } else {
+      System.out.println(" -> node types already registered!");
     }
-    String cndFileName = this.getClass().getClassLoader().getResource(
-        "silverpeas-jcr.txt").getFile().toString().replaceAll("%20", " ");
-    SilverpeasRegister.registerNodeTypes(cndFileName);
-    registred = true;
   }
 
+  @AfterClass
+  public static void unregisterSilverpeasNodeTypes() throws Exception {
+    System.out.println("Unregister Silverpeas Node Types");
+    registred = false;
+  }
 }

@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.jcrutil;
 
 import org.springframework.test.context.ContextConfiguration;
@@ -43,17 +42,16 @@ import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-@ContextConfiguration(inheritLocations=false, locations={"/spring-in-memory-jcr.xml"})
+@ContextConfiguration(locations = {"/spring-in-memory-jcr.xml"})
 public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
 
   public TestBasicDaoFactory() {
   }
 
-
   @Override
   protected IDataSet getDataSet() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(this
-        .getClass().getResourceAsStream("test-jcrutil-dataset.xml")));
+    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(this.getClass().
+        getResourceAsStream("test-jcrutil-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
     return dataSet;
   }
@@ -73,18 +71,9 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
     }
   }
 
-  @Override
-  public void onSetUp() throws Exception {
-    try {
-      super.onSetUp();
-      registerSilverpeasNodeTypes();
-    } catch (Exception pex) {
-      throw pex;
-    }
-  }
-
   @Test
   public void testGetComponentId() throws Exception {
+    System.out.println("testGetComponentId");
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
@@ -111,6 +100,7 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testAddStringProperty() throws Exception {
+    System.out.println("testAddStringProperty");
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
@@ -122,8 +112,7 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
       BasicDaoFactory.addStringProperty(node, JcrConstants.SLV_PROPERTY_NAME,
           property);
       assertTrue(node.hasProperty(JcrConstants.SLV_PROPERTY_NAME));
-      assertEquals(property, node.getProperty(JcrConstants.SLV_PROPERTY_NAME)
-          .getString());
+      assertEquals(property, node.getProperty(JcrConstants.SLV_PROPERTY_NAME).getString());
       String description = RandomGenerator.getRandomString();
       BasicDaoFactory.addStringProperty(node,
           JcrConstants.SLV_PROPERTY_DESCRIPTION, description);
@@ -140,6 +129,7 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testAddDateProperty() throws Exception {
+    System.out.println("testAddDateProperty");
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
@@ -163,6 +153,7 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testAddCalendarProperty() throws Exception {
+    System.out.println("testAddCalendarProperty");
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
@@ -186,6 +177,7 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testGetStringProperty() throws Exception {
+    System.out.println("testGetStringProperty");
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
@@ -206,6 +198,7 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testGetCalendarProperty() throws Exception {
+    System.out.println("testGetCalendarProperty");
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
@@ -228,6 +221,7 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testGetDateProperty() throws Exception {
+    System.out.println("testGetDateProperty");
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
@@ -250,6 +244,7 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testGetIntProperty() throws Exception {
+    System.out.println("testGetIntProperty");
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
@@ -258,8 +253,7 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
       String nodeName = RandomGenerator.getRandomString();
       Node node = componentNode.addNode(nodeName, JcrConstants.SLV_LINK);
       int id = RandomGenerator.getRandomYear();
-      Property property = node
-          .setProperty(JcrConstants.SLV_PROPERTY_AUTHOR, id);
+      Property property = node.setProperty(JcrConstants.SLV_PROPERTY_AUTHOR, id);
       assertEquals(id, BasicDaoFactory.getIntProperty(node,
           JcrConstants.SLV_PROPERTY_AUTHOR));
       property.remove();
@@ -272,6 +266,7 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testGetLongProperty() throws Exception {
+    System.out.println("testGetLongProperty");
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
@@ -280,8 +275,7 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
       String nodeName = RandomGenerator.getRandomString();
       Node node = componentNode.addNode(nodeName, JcrConstants.SLV_LINK);
       long id = RandomGenerator.getRandomYear();
-      Property property = node
-          .setProperty(JcrConstants.SLV_PROPERTY_AUTHOR, id);
+      Property property = node.setProperty(JcrConstants.SLV_PROPERTY_AUTHOR, id);
       assertEquals(id, BasicDaoFactory.getLongProperty(node,
           JcrConstants.SLV_PROPERTY_AUTHOR));
       property.remove();
@@ -294,15 +288,16 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testRemoveReference() throws Exception {
+    System.out.println("testRemoveReference");
     String uuid1 = RandomGenerator.getRandomString();
     String uuid2 = RandomGenerator.getRandomString();
     String uuid3 = RandomGenerator.getRandomString();
     String uuid4 = RandomGenerator.getRandomString();
-    Value[] references = new Value[] {
-        ValueFactoryImpl.getInstance().createValue(uuid1),
-        ValueFactoryImpl.getInstance().createValue(uuid2),
-        ValueFactoryImpl.getInstance().createValue(uuid3),
-        ValueFactoryImpl.getInstance().createValue(uuid4) };
+    Value[] references = new Value[]{
+      ValueFactoryImpl.getInstance().createValue(uuid1),
+      ValueFactoryImpl.getInstance().createValue(uuid2),
+      ValueFactoryImpl.getInstance().createValue(uuid3),
+      ValueFactoryImpl.getInstance().createValue(uuid4)};
     Value[] result = BasicDaoFactory.removeReference(references, uuid3);
     assertNotNull(result);
     assertEquals(3, result.length);
@@ -319,6 +314,7 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testComputeUniqueName() throws Exception {
+    System.out.println("testComputeUniqueName");
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
@@ -334,5 +330,4 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
       BasicDaoFactory.logout(session);
     }
   }
-
 }

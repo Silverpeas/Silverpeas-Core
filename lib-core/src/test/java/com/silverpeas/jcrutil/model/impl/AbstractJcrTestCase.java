@@ -205,7 +205,7 @@ public abstract class AbstractJcrTestCase {
   }
 
   @Before
-  public void onSetUp() throws Exception {
+  public void setUpDatabase() throws Exception {
     System.getProperties().put(Context.INITIAL_CONTEXT_FACTORY,
         "com.sun.jndi.fscontext.RefFSContextFactory");
     IDatabaseConnection connection = null;
@@ -226,7 +226,7 @@ public abstract class AbstractJcrTestCase {
   }
 
   @After
-  public void onTearDown() throws Exception {
+  public void tearDownDatabase() throws Exception {
     clearRepository();
     IDatabaseConnection connection = null;
     try {

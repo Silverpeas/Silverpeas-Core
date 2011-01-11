@@ -40,16 +40,13 @@ import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.jcrutil.JcrConstants;
 import com.silverpeas.jcrutil.model.impl.AbstractJcrRegisteringTestCase;
 import com.silverpeas.util.MimeTypes;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import static org.junit.Assert.*;
 
 @ContextConfiguration(inheritLocations=false, locations={"/spring-jaas.xml"})
 public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
-  private static boolean jaas_registred = false;
-  static {
-    setRegistred(false);
-  }
 
   private static final String FOLDER_NAME = "SimpleTest";
   private static final String SUB_FOLDER_NAME = "SubTest";
@@ -59,16 +56,10 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
   private static final String BART_PASSWORD = "bart";
 
 
-  @Override
+  @Before
   public void onSetUp() throws Exception {
-    super.onSetUp();
     Session session = null;
     try {
-      setRegistred(jaas_registred);
-      if(!jaas_registred) {
-        jaas_registred = true;
-      }
-      registerSilverpeasNodeTypes();
       session = BasicDaoFactory.getSystemSession();
       Node rootNode = session.getRootNode();
       rootNode.addNode(FOLDER_NAME, JcrConstants.NT_FOLDER);

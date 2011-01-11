@@ -43,6 +43,8 @@ import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.attachment.model.jcr.JcrAttachmentDao;
 import javax.annotation.Resource;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import static com.silverpeas.util.PathTestUtil.*;
 import static org.junit.Assert.*;
@@ -55,7 +57,7 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
       + instanceId + SEPARATOR + "Attachment" + SEPARATOR + "tests" + SEPARATOR + "simpson"
       + SEPARATOR + "bart" + SEPARATOR;
   private Calendar calend;
-  
+
   @Resource
   private JcrAttachmentDao jcrAttachmentDao;
 
@@ -95,8 +97,8 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
     return file;
   }
 
-  @Override
-  public void onSetUp() {
+  @Before
+  public void onSetUp() throws Exception {
     calend = Calendar.getInstance();
     calend.set(Calendar.MILLISECOND, 0);
     calend.set(Calendar.SECOND, 0);
@@ -107,9 +109,8 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
     calend.set(Calendar.YEAR, 2008);
   }
 
-  @Override
+  @After
   public void onTearDown() throws Exception {
-    clearRepository();
     File uploadDir = new File(UPLOAD_DIR);
     uploadDir.delete();
 

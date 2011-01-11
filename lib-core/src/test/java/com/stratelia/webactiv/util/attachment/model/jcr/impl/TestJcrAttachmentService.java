@@ -42,6 +42,8 @@ import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.attachment.model.jcr.JcrAttachmentService;
 import javax.annotation.Resource;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import static com.silverpeas.util.PathTestUtil.*;
 import static org.junit.Assert.*;
@@ -57,10 +59,8 @@ public class TestJcrAttachmentService extends AbstractJcrRegisteringTestCase {
       + instanceId + SEPARATOR + "Attachment" + SEPARATOR + "tests" + SEPARATOR + "simpson"
       + SEPARATOR + "bart" + SEPARATOR;
 
-  @Override
+  @After
   public void onTearDown() throws Exception {
-    super.onTearDown();
-    clearRepository();
     File uploadDir = new File(UPLOAD_DIR);
     uploadDir.delete();
   }
@@ -92,9 +92,8 @@ public class TestJcrAttachmentService extends AbstractJcrRegisteringTestCase {
     }
   }
 
-  @Override
+  @Before
   public void onSetUp() throws Exception {
-    super.onSetUp();
     calend = Calendar.getInstance();
     calend.set(Calendar.MILLISECOND, 0);
     calend.set(Calendar.SECOND, 0);
@@ -107,7 +106,6 @@ public class TestJcrAttachmentService extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testCreateAttachmentWithLanguage() throws Exception {
-    registerSilverpeasNodeTypes();
     prepareUploadedFile("FrenchScrum.odp",
         "abf562dee7d07e1b5af50a2d1b3d724ef5a88869");
     AttachmentPK pk = new AttachmentPK("100", instanceId);
@@ -181,7 +179,6 @@ public class TestJcrAttachmentService extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testCreateAttachmentWithoutLanguage() throws Exception {
-    registerSilverpeasNodeTypes();
     AttachmentPK pk = new AttachmentPK("100", instanceId);
     AttachmentDetail attachment = new AttachmentDetail();
     attachment.setAuthor("1");
@@ -252,7 +249,6 @@ public class TestJcrAttachmentService extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testGetUpdatedDocument() throws Exception {
-    registerSilverpeasNodeTypes();
     createTempFile(UPLOAD_DIR + "test_update.txt", "Ceci est un test.");
     AttachmentPK pk = new AttachmentPK("100", instanceId);
     AttachmentDetail attachment = new AttachmentDetail();
@@ -296,7 +292,6 @@ public class TestJcrAttachmentService extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testDeleteAttachment() throws Exception {
-    registerSilverpeasNodeTypes();
     AttachmentPK pk = new AttachmentPK("100", instanceId);
     AttachmentDetail attachment = new AttachmentDetail();
     attachment.setAuthor("1");
