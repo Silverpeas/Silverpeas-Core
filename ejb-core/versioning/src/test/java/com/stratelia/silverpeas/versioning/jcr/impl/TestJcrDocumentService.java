@@ -46,7 +46,7 @@ import javax.annotation.Resource;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public class TestJcrDocumentService extends AbstractJcrTestCase {
+public class TestJcrDocumentService extends AbstractJcrRegisteringTestCase {
 
   private JcrDocumentService service;
 

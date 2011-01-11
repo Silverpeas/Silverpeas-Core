@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.jcrutil.model.impl;
+package com.stratelia.silverpeas.versioning.jcr.impl;
 
 import java.io.FileNotFoundException;
 

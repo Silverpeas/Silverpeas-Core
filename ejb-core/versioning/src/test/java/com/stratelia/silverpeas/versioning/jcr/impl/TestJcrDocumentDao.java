@@ -47,7 +47,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 
-public class TestJcrDocumentDao extends AbstractJcrTestCase {
+public class TestJcrDocumentDao extends AbstractJcrRegisteringTestCase {
 
   @Resource
   private JcrDocumentDao jcrDocumentDao;
