@@ -23,83 +23,18 @@
  */
 package com.stratelia.silverpeas.silverStatisticsPeas.vo;
 
-public class AxisStatsFilter {
-  private String monthBegin = null;
-  private String yearBegin = null;
-  private String monthEnd = null;
-  private String yearEnd = null;
+public class AxisStatsFilter extends DateStatsFilter {
   private int axisId = 0;
   private String axisValue = null;
-  
+
   /**
-   * 
    * @param monthBegin
    * @param yearBegin
    * @param monthEnd
    * @param yearEnd
    */
   public AxisStatsFilter(String monthBegin, String yearBegin, String monthEnd, String yearEnd) {
-    super();
-    this.monthBegin = monthBegin;
-    this.yearBegin = yearBegin;
-    this.monthEnd = monthEnd;
-    this.yearEnd = yearEnd;
-  }
-
-  /**
-   * @return the monthBegin
-   */
-  public String getMonthBegin() {
-    return monthBegin;
-  }
-
-  /**
-   * @param monthBegin the monthBegin to set
-   */
-  public void setMonthBegin(String monthBegin) {
-    this.monthBegin = monthBegin;
-  }
-
-  /**
-   * @return the yearBegin
-   */
-  public String getYearBegin() {
-    return yearBegin;
-  }
-
-  /**
-   * @param yearBegin the yearBegin to set
-   */
-  public void setYearBegin(String yearBegin) {
-    this.yearBegin = yearBegin;
-  }
-
-  /**
-   * @return the monthEnd
-   */
-  public String getMonthEnd() {
-    return monthEnd;
-  }
-
-  /**
-   * @param monthEnd the monthEnd to set
-   */
-  public void setMonthEnd(String monthEnd) {
-    this.monthEnd = monthEnd;
-  }
-
-  /**
-   * @return the yearEnd
-   */
-  public String getYearEnd() {
-    return yearEnd;
-  }
-
-  /**
-   * @param yearEnd the yearEnd to set
-   */
-  public void setYearEnd(String yearEnd) {
-    this.yearEnd = yearEnd;
+    super(monthBegin, yearBegin, monthEnd, yearEnd);
   }
 
   /**

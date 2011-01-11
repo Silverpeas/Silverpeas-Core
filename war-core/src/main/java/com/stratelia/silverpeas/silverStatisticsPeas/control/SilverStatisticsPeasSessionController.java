@@ -392,8 +392,9 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     try {
       UserDetail userDetail = admin.getUserDetail(idUser);
       String lastName = "";
-      if (userDetail != null)
+      if (userDetail != null) {
         lastName = userDetail.getLastName();
+      }
       Collection[] statsConnection = SilverStatisticsPeasDAOConnexion
           .getStatsUserConnexion(dateBegin, dateEnd, idUser);
       Collection<String> listDate = statsConnection[0];
