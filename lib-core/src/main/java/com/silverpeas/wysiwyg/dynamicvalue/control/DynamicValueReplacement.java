@@ -178,7 +178,7 @@ public class DynamicValueReplacement {
         matcher.group());
     // get the dynamic value corresponding to a key
     SilverTrace.debug("wysiwyg", DynamicValueReplacement.class.toString(),
-        " key to use to get the dynamic value" + matcher.group(1));
+        " key to use to get the dynamic value : " + EncodeHelper.htmlStringToJavaString(matcher.group(1)));
     DynamicValue value =
         DynamicValueDAO.getValidDynamicValue(conn, EncodeHelper.htmlStringToJavaString(matcher
             .group(1)));
@@ -197,6 +197,11 @@ public class DynamicValueReplacement {
       updatedString = wysiwygText.replaceAll(escapementStr, value.getValue());
 
     }
+    else {
+      SilverTrace.debug("wysiwyg", DynamicValueReplacement.class.toString(),
+          " key not found in database : " + EncodeHelper.htmlStringToJavaString(matcher.group(1)));
+    }
+
     // if value == null, we do nothing
     matcher.reset(updatedString);
     if (matcher.find() && !escapementStr.equalsIgnoreCase(oldMach)) {
