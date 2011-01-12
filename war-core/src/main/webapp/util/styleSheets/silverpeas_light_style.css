@@ -108,7 +108,6 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	width:200px;
 }
 
-
 .cellBodyWindows {
     background-image: none;
     border-top: solid 1px #dedede;
@@ -200,6 +199,9 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 #browseBar {
 	margin-left:3px;
 	margin-top:3px;
+}
+#browseBar #i18n {
+    margin-right: 10px;
 }
 
 #spaces, #spacePerso {
