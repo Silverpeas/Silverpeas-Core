@@ -24,15 +24,11 @@
 package com.silverpeas.socialNetwork.relationShip;
 
 import com.silverpeas.components.model.AbstractTestDao;
-import java.io.IOException;
 import java.util.Calendar;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import javax.naming.NamingException;
-import org.junit.Before;
-import org.junit.BeforeClass;
 
 /**
  *
@@ -42,15 +38,9 @@ public class TestRelationShipService extends AbstractTestDao {
 
   private RelationShipService dao;
 
-  @BeforeClass
-  public static void generalSetUp() throws IOException, NamingException {
-    AbstractTestDao.configureJNDIDatasource();
-  }
-
-  @Before
   @Override
   public void setUp() throws Exception {
-    super.prepareData();
+    super.setUp();
     dao = new RelationShipService();
   }
 

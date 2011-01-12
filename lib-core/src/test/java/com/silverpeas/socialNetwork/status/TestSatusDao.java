@@ -21,38 +21,26 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.socialNetwork.status;
 
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import javax.naming.NamingException;
 
 import org.dbunit.database.IDatabaseConnection;
-import org.junit.Test;
 
 import com.silverpeas.components.model.AbstractTestDao;
-import org.junit.Before;
-import org.junit.BeforeClass;
 
 public class TestSatusDao extends AbstractTestDao {
 
   private StatusDao dao;
-  
-  @BeforeClass
-  public static void generalSetUp() throws IOException, NamingException {
-    AbstractTestDao.configureJNDIDatasource();
-  }
 
-  @Before
+  @Override
   public void setUp() throws Exception {
-    super.prepareData();
+    super.setUp();
     dao = new com.silverpeas.socialNetwork.status.StatusDao();
   }
 
-  @Test
   public void testChangeStatus() throws Exception {
     IDatabaseConnection connexion = null;
     Status status = new Status(1, new Date(), "je teste");
@@ -72,7 +60,6 @@ public class TestSatusDao extends AbstractTestDao {
 
   }
 
-  @Test
   public void testGetStatus() throws Exception {
     IDatabaseConnection connexion = null;
     Status status = new Status(1, toDate(2010, Calendar.FEBRUARY, 01, 10, 34, 15), "je suis là");
@@ -88,29 +75,28 @@ public class TestSatusDao extends AbstractTestDao {
       closeConnection(connexion);
     }
   }
-  
-  @Test
+
   public void testGetLastStatus() throws Exception {
     IDatabaseConnection connexion = null;
-    Status status = new Status(1, toDate(2010, Calendar.JULY, 02, 10, 33, 10), "travaille sur readmine");
+    Status status = new Status(1, toDate(2010, Calendar.JULY, 02, 10, 33, 10),
+        "travaille sur readmine");
     status.setId(4);
-    
+
     int userid = 1;
-    
+
     try {
       connexion = getConnection();
       Status lastStatus = dao.getLastStatus(connexion.getConnection(), userid);
       assertNotNull("Status not found in db", lastStatus);
-      assertEquals(status.getId(),lastStatus.getId());
+      assertEquals(status.getId(), lastStatus.getId());
       assertEquals("Status in db not as expected", status, lastStatus);
 
     } finally {
       closeConnection(connexion);
     }
-    
+
   }
 
-  @Test
   public void testDeleteStatus() throws Exception {
     IDatabaseConnection connexion = null;
     Status expectedStatus = new Status(2, toDate(2010, Calendar.MAY, 11, 15, 25, 32), "congé");
@@ -128,7 +114,6 @@ public class TestSatusDao extends AbstractTestDao {
 
   }
 
-  @Test
   public void testUpdateStatus() throws Exception {
     IDatabaseConnection connexion = null;
     Status updateStatus = new Status(2, toDate(2010, Calendar.MAY, 11, 15, 25, 32), "malade");
@@ -140,15 +125,15 @@ public class TestSatusDao extends AbstractTestDao {
       dao.UpdateStatus(connexion.getConnection(), updateStatus);
       status = dao.getStatus(connexion.getConnection(), 3);
       assertEquals(status, updateStatus);
-      
-      
+
+
     } finally {
       closeConnection(connexion);
     }
 
   }
-  
-   @Override
+
+  @Override
   protected String getDatasetFileName() {
     // TODO Auto-generated method stub
     return "socialNetwork_Status-dataset.xml";
@@ -159,5 +144,4 @@ public class TestSatusDao extends AbstractTestDao {
     return calendar.getTime();
 
   }
-
 }

@@ -43,14 +43,9 @@ public class TestInvitationDao extends AbstractTestDao {
 
   private InvitationDao dao;
 
-  @BeforeClass
-  public static void generalSetUp() throws IOException, NamingException {
-    AbstractTestDao.configureJNDIDatasource();
-  }
-
-  @Before
+  @Override
   public void setUp() throws Exception {
-    super.prepareData();
+    super.setUp();
     dao = new InvitationDao();
   }
 
