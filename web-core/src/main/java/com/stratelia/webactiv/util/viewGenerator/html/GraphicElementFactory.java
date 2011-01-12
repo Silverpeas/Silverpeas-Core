@@ -30,6 +30,7 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html;
 
+import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
@@ -39,6 +40,7 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane;
 import com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPaneSilverpeasV5;
@@ -100,6 +102,9 @@ public class GraphicElementFactory extends Object {
 
   private String componentId = null;
   private MainSessionController mainSessionController = null;
+
+  private String spaceId = null;
+  private final String defaultLookName = "Initial";
 
   private static final String JQUERY_JS = "jquery-1.3.2.min.js";
   private static final String JQUERYUI_JS = "jquery-ui-1.7.3.custom.min.js";
@@ -163,12 +168,12 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Method declaration
-   * @return
+   * @return Customer specific look settings if defined, default look settings otherwise
    * @see
    */
   public ResourceLocator getLookSettings() {
-    SilverTrace.info("viewgenerator",
-        "GraphicElementFactory.getLookSettings()", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookSettings()",
+        "root.MSG_GEN_ENTER_METHOD");
     if (lookSettings == null) {
       ResourceLocator silverpeasSettings = getSilverpeasLookSettings();
       SilverTrace.info("viewgenerator",
@@ -181,8 +186,7 @@ public class GraphicElementFactory extends Object {
                 "com.stratelia.webactiv.util.viewGenerator.settings.lookSettings", "",
                 silverpeasSettings);
       } catch (java.util.MissingResourceException e) {
-        // the customer lookSettings is undefined
-        // get the default silverpeas looks
+        // the customer lookSettings is undefined get the default silverpeas looks
         lookSettings = silverpeasSettings;
       }
     }
@@ -193,7 +197,7 @@ public class GraphicElementFactory extends Object {
 
   /**
    * Method declaration
-   * @return
+   * @return the default look settings ResourceLocator
    * @see
    */
   public ResourceLocator getSilverpeasLookSettings() {
@@ -315,10 +319,7 @@ public class GraphicElementFactory extends Object {
           contextPath).append(standardStyleForIE).append("\"/>\n");
       code.append("<![endif]-->\n");
 
-      if (lookStyle.length() > 0) {
-        code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
-        code.append(lookStyle).append("\"/>\n");
-      }
+      appendSpecificCSS(lookStyle, code);
 
       // append CSS style sheet dedicated to current component
       if (StringUtil.isDefined(componentId) && mainSessionController != null) {
@@ -390,6 +391,60 @@ public class GraphicElementFactory extends Object {
         .info("viewgenerator", "GraphicElementFactory.getLookStyleSheet()",
             "root.MSG_GEN_EXIT_METHOD");
     return code.toString();
+  }
+
+  /**
+   * Retrieve space look <br/>
+   * Look Style behavior algorithm is :
+   * <ul>
+   * <li>Use specific space look if defined</li>
+   * <li>else if use the user defined look settings</li>
+   * <li>else if use the default look settings</li>
+   * </ul>
+   * @param lookStyle the current lookStyle
+   * @param code the appened StringBuilder object 
+   */
+  private void appendSpecificCSS(String lookStyle, StringBuilder code) {
+    // Retrieve specific space look
+    if (StringUtil.isDefined(this.spaceId)) {
+      SpaceInstLight curSpace =
+          mainSessionController.getOrganizationController().getSpaceInstLightById(this.spaceId);
+      String spaceLookStyle = curSpace.getLook();
+      if (StringUtil.isDefined(spaceLookStyle)) {
+        setLook(spaceLookStyle);
+        lookStyle = getFavoriteLookSettings().getString("StyleSheet");
+        if (StringUtil.isDefined(lookStyle)) {
+          code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
+          code.append(lookStyle).append("\"/>\n");
+        }
+      } else {
+        appendDefaultLookCSS(lookStyle, code);
+      }
+    } else {
+      appendDefaultLookCSS(lookStyle, code);
+    }
+  }
+
+  /**
+   * Append default look CSS
+   * @param lookStyle the current lookStyle parameter
+   * @param code the StringBuilder to append
+   */
+  private void appendDefaultLookCSS(String lookStyle, StringBuilder code) {
+    // Retrieve user personal look settings
+    String userLookStyle = this.getDefaultLookName();
+    if (StringUtil.isDefined(userLookStyle)) {
+      setLook(userLookStyle);
+      lookStyle = getFavoriteLookSettings().getString("StyleSheet");
+      code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
+      code.append(lookStyle).append("\"/>\n");
+    } else {
+      // Use default look settings
+      if (lookStyle.length() > 0) {
+        code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
+        code.append(lookStyle).append("\"/>\n");
+      }
+    }
   }
 
   /**
@@ -876,6 +931,38 @@ public class GraphicElementFactory extends Object {
 
   public MainSessionController getMainSessionController() {
     return mainSessionController;
+  }
+
+  /**
+   * @return the space identifier
+   */
+  public String getSpaceId() {
+    return spaceId;
+  }
+
+  /**
+   * @param spaceId the space identifier to set
+   */
+  public void setSpaceId(String spaceId) {
+    this.spaceId = spaceId;
+  }
+
+  /**
+   * Retrieve default look name
+   * @return user personal look settings if defined, default look settings otherwise
+   */
+  public String getDefaultLookName() {
+    // Retrieve user personal look settings
+    String userLookStyle = null;
+    try {
+      userLookStyle = mainSessionController.getPersonalization().getFavoriteLook();
+    } catch (RemoteException e) {
+      userLookStyle = defaultLookName;
+    } catch (Throwable t) {
+      SilverTrace.error("viewgenerator", "GEF", "problem to retrieve user look", t);
+      userLookStyle = defaultLookName;
+    }
+    return userLookStyle;
   }
 
 }

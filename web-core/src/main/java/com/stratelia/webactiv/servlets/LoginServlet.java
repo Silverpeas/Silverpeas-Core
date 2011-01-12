@@ -73,7 +73,7 @@ public class LoginServlet extends HttpServlet {
 
     try {
       // Get the user profile from the admin
-      SilverTrace.info("peasCore", "LoginServlet.doPost()",
+      SilverTrace.info("peasCore", "LoginServlet.service()",
           "root.MSG_GEN_PARAM_VALUE", "session id=" + session.getId());
       controller = new MainSessionController(sKey, session.getId()); // Throws Specific Exception
 
@@ -92,7 +92,7 @@ public class LoginServlet extends HttpServlet {
       }
 
     } catch (Exception e) {
-      SilverTrace.error("peasCore", "LoginServlet.doPost()",
+      SilverTrace.error("peasCore", "LoginServlet.service()",
           "peasCore.EX_LOGIN_SERVLET_CANT_CREATE_MAIN_SESSION_CTRL",
           "session id=" + session.getId(), e);
     }
@@ -114,14 +114,23 @@ public class LoginServlet extends HttpServlet {
         port = String.valueOf(serverPort);
       }
       controller.initServerProps(serverName, port);
+      
+      // Retrieve personal workspace
+      String personalWs = controller.getPersonalization().getPersonalWorkSpace();
+      SilverTrace.debug("peasCore", "LoginServlet.service", "user personal workspace=" + personalWs);
+      
       // Put a graphicElementFactory in the session
       GraphicElementFactory gef = new GraphicElementFactory(controller.getFavoriteLook());
+      if (StringUtil.isDefined(personalWs)) {
+        gef.setSpaceId(personalWs);
+      }
+      gef.setMainSessionController(controller);      
       session.setAttribute("SessionGraphicElementFactory", gef);
 
       String favoriteFrame = gef.getLookFrame();
-      SilverTrace.debug("peasCore", "doPost", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.debug("peasCore", "LoginServlet.service", "root.MSG_GEN_PARAM_VALUE",
           "controller.getUserAccessLevel()=" + controller.getUserAccessLevel());
-      SilverTrace.debug("peasCore", "doPost", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.debug("peasCore", "LoginServlet.service", "root.MSG_GEN_PARAM_VALUE",
           "controller.isAppInMaintenance()=" + controller.isAppInMaintenance());
 
       String sDirectAccessSpace = request.getParameter("DirectAccessSpace");
@@ -136,7 +145,7 @@ public class LoginServlet extends HttpServlet {
       }
     } else {
       // No user define for this login-password combination
-      SilverTrace.error("peasCore", "LoginServlet.doPost()", "peasCore.EX_USER_KEY_NOT_FOUND",
+      SilverTrace.error("peasCore", "LoginServlet.service()", "peasCore.EX_USER_KEY_NOT_FOUND",
           "key=" + sKey);
       absoluteUrl.append("/Login.jsp");
     }

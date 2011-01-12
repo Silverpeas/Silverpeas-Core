@@ -113,7 +113,6 @@ public class AjaxServletLookV5 extends HttpServlet {
     // New request parameter to manage Bookmarks view or classical view
     String userMenuDisplayMode = req.getParameter("UserMenuDisplayMode");
 
-    String defaultLook = gef.getCurrentLookName();
     boolean displayContextualPDC = helper.displayContextualPDC();
     boolean displayPDC = "true".equalsIgnoreCase(getPDC);
 
@@ -124,16 +123,22 @@ public class AjaxServletLookV5 extends HttpServlet {
       listUserFS = ufsDAO.getListUserFavoriteSpace(userId);
     }
 
+    // Set current space and component identifier (helper and gef)
     if (StringUtil.isDefined(componentId)) {
       helper.setComponentIdAndSpaceIds(null, null, componentId);
+      gef.setSpaceId(helper.getSpaceId());
     } else if (StringUtil.isDefined(spaceId) && !isPersonalSpace(spaceId)) {
       helper.setSpaceIdAndSubSpaceId(spaceId);
+      gef.setSpaceId(spaceId);
     }
     if (StringUtil.isDefined(userMenuDisplayMode)) {
       helper.setDisplayUserFavoriteSpace(userMenuDisplayMode);
     } else {
       userMenuDisplayMode = helper.getDisplayUserFavoriteSpace();
     }
+
+    // Retrieve current look
+    String defaultLook = gef.getDefaultLookName();
 
     res.setContentType("text/xml");
     res.setHeader("charset", "UTF-8");
@@ -282,7 +287,7 @@ public class AjaxServletLookV5 extends HttpServlet {
    * @param helper
    * @param writer
    * @param listUFS
-   * @param userMenuDisplayMode TODO
+   * @param userMenuDisplayMode 
    * @throws IOException
    */
   private void displaySpace(String spaceId, String componentId, List<String> spacePath,
