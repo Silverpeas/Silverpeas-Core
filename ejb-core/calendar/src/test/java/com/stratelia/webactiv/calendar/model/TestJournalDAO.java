@@ -7,17 +7,12 @@ package com.stratelia.webactiv.calendar.model;
 import com.stratelia.webactiv.calendar.socialNetwork.SocialInformationEvent;
 import com.silverpeas.components.model.AbstractTestDao;
 
-import com.stratelia.webactiv.calendar.socialNetwork.SocialEvent;
-import java.io.IOException;
 
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.naming.NamingException;
 import org.dbunit.database.IDatabaseConnection;
-import org.junit.Before;
-import org.junit.BeforeClass;
 
 /**
  *
@@ -25,25 +20,11 @@ import org.junit.BeforeClass;
  */
 public class TestJournalDAO extends AbstractTestDao {
 
-  private JournalDAO dao;
-  private SocialEvent socialEvent;
+  private JournalDAO dao = new JournalDAO();;
 
   @Override
   protected String getDatasetFileName() {
     return "calendar-dataset.xml";
-  }
-
-  @BeforeClass
-  public static void generalSetUp() throws IOException, NamingException {
-    AbstractTestDao.configureJNDIDatasource();
-  }
-
-  @Before
-  @Override
-  public void setUp() throws Exception {
-    super.prepareData();
-    dao = new JournalDAO();
-
   }
 
   /*

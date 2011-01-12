@@ -49,31 +49,55 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractTestDao extends JndiBasedDBTestCase {
 
-  protected static String jndiName = "";
+  private static String jndiName = "";
 
-  
-  @After
+  /**
+   * This is called directly when running under JUnit 3.
+   * @throws Exception if an error occurs while tearing down the resources.
+   */
   @Override
   protected void tearDown() throws Exception {
     cleanData();
   }
-  
-  protected void cleanData() throws Exception {
+
+  /**
+   * Frees the previously created data in the database.
+   * This is called directly by JUnit 4 or by the tearDown() method when running in JUnit 3.
+   * @throws Exception if an error occurs while cleaning data.
+   */
+  @After
+  public void cleanData() throws Exception {
     super.tearDown();
   }
-  
-  
-  @Before
+
+
+  /**
+   * This is called directly when running under JUnit 3.
+   * @throws Exception if an error occurs while setting up the resources required by the tests.
+   */
   @Override
   protected void setUp() throws Exception {
+    configureJNDIDatasource();
     prepareData();
   }
 
-  protected void prepareData() throws Exception {
-    configureJNDIDatasource();
+  /**
+   * Prepares the data for the tests in the database.
+   * This is called directly by JUnit 4 or by the setUp() method when running in JUnit 3.
+   * @throws Exception if an error occurs while preparing the data required by the tests.
+   */
+  @Before
+  public void prepareData() throws Exception {
     super.setUp();
   }
-  
+
+  /**
+   * Configure the data source from a JNDI context.
+   * This is called directly by JUnit 4 at test class loading or by the setUp() method at each test
+   * invocation in JUnit 3.
+   * @throws IOException if an error occurs while communicating with the JNDI context.
+   * @throws NamingException if the data source cannot be found in the JNDI context.
+   */
   @BeforeClass
   public static void configureJNDIDatasource() throws IOException, NamingException {
     prepareJndi();

@@ -32,10 +32,6 @@ import java.util.Collection;
 import java.util.Calendar;
 import java.util.List;
 import java.sql.Connection;
-import java.io.IOException;
-import javax.naming.NamingException;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import com.silverpeas.components.model.AbstractTestDao;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
@@ -43,7 +39,6 @@ import java.io.File;
 import java.util.Properties;
 import javax.naming.Context;
 import org.hamcrest.collection.IsIterableContainingInOrder;
-import org.junit.Test;
 import static org.junit.Assert.*;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Calendar.*;
@@ -57,25 +52,19 @@ public class LastPublicationDAOTest extends AbstractTestDao {
   public LastPublicationDAOTest() {
   }
 
-  @BeforeClass
-  public static void generalSetUp() throws IOException, NamingException {
-    AbstractTestDao.configureJNDIDatasource();
-  }
-
-  @Before
   @Override
   public void setUp() throws Exception {
-    super.prepareData();
+    super.setUp();
     Properties props = new Properties();
     props.load(this.getClass().getClassLoader().getResourceAsStream(
-      "jndi.properties"));
+        "jndi.properties"));
     String jndiBaseDir = props.getProperty(Context.PROVIDER_URL).substring(8);
     props = new Properties();
     props.load(this.getClass().getClassLoader().getResourceAsStream(
-      "jdbc.properties"));
+        "jdbc.properties"));
     String jndiPath = props.getProperty("jndi.name", "");
     File jndiDir = new File(jndiBaseDir + File.separatorChar
-      + jndiPath.substring(0, jndiPath.lastIndexOf('/')));
+        + jndiPath.substring(0, jndiPath.lastIndexOf('/')));
     jndiDir.mkdirs();
     super.setUp();
   }
@@ -85,7 +74,6 @@ public class LastPublicationDAOTest extends AbstractTestDao {
     return "test-last-publication-dao-dataset.xml";
   }
 
-  @Test
   public void testSelectPksByStatus() throws Exception {
     Connection con = getConnection().getConnection();
     List<String> componentIds = newArrayList("kmelia100", "kmelia200");
@@ -98,16 +86,15 @@ public class LastPublicationDAOTest extends AbstractTestDao {
     calend.set(SECOND, 0);
     calend.set(MILLISECOND, 0);
     Collection<PublicationPK> keys = PublicationDAO.selectPKsByStatus(con, componentIds,
-      PublicationDetail.VALID);
+        PublicationDetail.VALID);
     assertNotNull(keys);
     assertEquals(4, keys.size());
     assertThat(keys, IsIterableContainingInOrder.contains(new PublicationPK("200", "kmelia200"),
-      new PublicationPK("101", "kmelia100"),new PublicationPK("100", "kmelia100"), new PublicationPK(
-      "202", "kmelia200")));
+        new PublicationPK("101", "kmelia100"), new PublicationPK("100", "kmelia100"), new PublicationPK(
+        "202", "kmelia200")));
     hashCode();
   }
 
-  @Test
   public void testSelectLastPublications() throws Exception {
     Connection con = getConnection().getConnection();
     List<String> componentIds = newArrayList("kmelia100", "kmelia200");
@@ -120,16 +107,16 @@ public class LastPublicationDAOTest extends AbstractTestDao {
     calend.set(SECOND, 0);
     calend.set(MILLISECOND, 0);
     Collection<PublicationPK> keys = PublicationDAO.selectUpdatedPublicationsSince(con,
-      componentIds, PublicationDetail.VALID, calend.getTime(), 0);
+        componentIds, PublicationDetail.VALID, calend.getTime(), 0);
     assertNotNull(keys);
     assertEquals(3, keys.size());
     assertThat(keys, IsIterableContainingInOrder.contains(new PublicationPK("200", "kmelia200"),
-      new PublicationPK("101", "kmelia100"),new PublicationPK("100", "kmelia100")));
+        new PublicationPK("101", "kmelia100"), new PublicationPK("100", "kmelia100")));
     keys = PublicationDAO.selectUpdatedPublicationsSince(con, componentIds, PublicationDetail.VALID,
-      calend.getTime(), 1);
+        calend.getTime(), 1);
     assertNotNull(keys);
     assertEquals(2, keys.size());
     assertThat(keys, IsIterableContainingInOrder.contains(new PublicationPK("200", "kmelia200"),
-      new PublicationPK("101", "kmelia100")));
+        new PublicationPK("101", "kmelia100")));
   }
 }

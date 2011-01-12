@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * 
+ *
  */
 package com.stratelia.webactiv.applicationIndexer.control;
 
@@ -31,14 +31,10 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
-import javax.naming.NamingException;
 
 import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.store.FSDirectory;
 import org.dbunit.operation.DatabaseOperation;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 /**
  * Tests com.stratelia.webactiv.applicationIndexer.control.ApplicationDYMIndexer
@@ -47,15 +43,9 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
 
   private String indexDirectory = "";
 
-  @BeforeClass
-  public static void generalSetUp() throws IOException, NamingException {
-    AbstractTestDao.configureJNDIDatasource();
-  }
-
-  @Before
   @Override
   public void setUp() throws Exception {
-    super.prepareData();
+    super.setUp();
     Properties props = new Properties();
     props.load(this.getClass().getClassLoader().getResourceAsStream(
         "com/stratelia/webactiv/general.properties"));
@@ -70,7 +60,6 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
    * .
    * @throws IOException
    */
-  @Test
   public final void testIndexPersonalComponent() throws IOException {
     String indexSpellcheckerpath =
         indexDirectory + File.separatorChar + "user@0_agenda" + File.separatorChar
@@ -88,7 +77,6 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
    * .
    * @throws IOException
    */
-  @Test
   public final void testIndexPersonalComponents() throws IOException {
     String indexSpellcheckerpath =
         indexDirectory + File.separatorChar + "user@0_todo" + File.separatorChar
@@ -111,7 +99,6 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
    * {@link com.stratelia.webactiv.applicationIndexer.control.ApplicationDYMIndexer#indexPdc()}.
    * @throws IOException
    */
-  @Test
   public final void testIndexPdc() throws IOException {
     String indexSpellcheckerPath =
         indexDirectory + File.separatorChar + "pdc" + File.separatorChar
@@ -128,7 +115,6 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
    * .
    * @throws Exception
    */
-  @Test
   public final void testIndexAllSpaces() throws Exception {
 
     ApplicationDYMIndexer indexer = new ApplicationDYMIndexer();
@@ -173,7 +159,7 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
   }
 
   /**
-   * 
+   *
    */
   private void checkIndexExistence(String path) {
     File dir = new File(path);

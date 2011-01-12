@@ -24,7 +24,6 @@
 //TODO : reporter dans CVS (done)
 package com.stratelia.webactiv.calendar.model;
 
-import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.calendar.socialNetwork.SocialInformationEvent;
 import java.sql.Connection;
@@ -42,8 +41,6 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
-import java.util.Calendar;
-import java.util.Hashtable;
 import java.util.List;
 
 public class JournalDAO {
@@ -60,7 +57,7 @@ public class JournalDAO {
       + "startDay = ?, startHour = ?, endDay = ?, endHour = ?, externalId = ? WHERE id = ?";
   private static final String DELETE_JOURNAL = "DELETE FROM CalendarJournal WHERE id = ?";
 
-  public static String addJournal(Connection con, JournalHeader journal)
+  public String addJournal(Connection con, JournalHeader journal)
       throws SQLException, UtilException, CalendarException {
     PreparedStatement prepStmt = null;
     int id = 0;
@@ -89,7 +86,7 @@ public class JournalDAO {
     return String.valueOf(id);
   }
 
-  public static void updateJournal(Connection con, JournalHeader journal)
+  public void updateJournal(Connection con, JournalHeader journal)
       throws SQLException, CalendarException {
     PreparedStatement prepStmt = null;
     try {
@@ -116,7 +113,7 @@ public class JournalDAO {
 
   }
 
-  public static void removeJournal(Connection con, String id)
+  public void removeJournal(Connection con, String id)
       throws SQLException, CalendarException {
     PreparedStatement prepStmt = null;
     try {
@@ -132,7 +129,7 @@ public class JournalDAO {
     }
   }
 
-  public static boolean hasTentativeJournalsForUser(Connection con,
+  public boolean hasTentativeJournalsForUser(Connection con,
       String userId) throws SQLException, java.text.ParseException {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -145,7 +142,7 @@ public class JournalDAO {
     }
   }
 
-  public static Collection<JournalHeader> getTentativeJournalHeadersForUser(Connection con,
+  public Collection<JournalHeader> getTentativeJournalHeadersForUser(Connection con,
       String userId) throws SQLException, java.text.ParseException {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -163,7 +160,7 @@ public class JournalDAO {
     return list;
   }
 
-  private static PreparedStatement getTentativePreparedStatement(
+  private PreparedStatement getTentativePreparedStatement(
       Connection con, String userId) throws SQLException {
     String selectStatement = "select distinct " + JournalDAO.JOURNALCOLUMNNAMES
         + " from CalendarJournal, CalendarJournalAttendee "
@@ -176,10 +173,10 @@ public class JournalDAO {
     return prepStmt;
   }
 
-  private static Collection<JournalHeader> getJournalHeadersForUser(Connection con,
+  private Collection<JournalHeader> getJournalHeadersForUser(Connection con,
       String day, String userId, String categoryId, String participation,
       String comparator) throws SQLException, java.text.ParseException {
-    StringBuffer selectStatement = new StringBuffer();
+    StringBuilder selectStatement = new StringBuilder();
     selectStatement.append("select distinct ").append(
         JournalDAO.JOURNALCOLUMNNAMES).append(
         " from CalendarJournal, CalendarJournalAttendee ");
@@ -240,14 +237,14 @@ public class JournalDAO {
     return list;
   }
 
-  public static Collection<JournalHeader> getDayJournalHeadersForUser(Connection con,
+  public Collection<JournalHeader> getDayJournalHeadersForUser(Connection con,
       String day, String userId, String categoryId, String participation)
       throws SQLException, java.text.ParseException {
     return getJournalHeadersForUser(con, day, userId, categoryId,
         participation, "=");
   }
 
-  public static Collection<JournalHeader> getNextJournalHeadersForUser(Connection con,
+  public Collection<JournalHeader> getNextJournalHeadersForUser(Connection con,
       String day, String userId, String categoryId, String participation)
       throws SQLException, java.text.ParseException {
     return getJournalHeadersForUser(con, day, userId, categoryId,
@@ -267,7 +264,7 @@ public class JournalDAO {
    * @throws SQLException
    * @throws java.text.ParseException
    */
-  public static List<JournalHeader> getNextEventsForUser(Connection con,
+  public List<JournalHeader> getNextEventsForUser(Connection con,
       String day, String userId, String classification, int limit, int offset)
       throws SQLException, java.text.ParseException {
 
@@ -283,10 +280,10 @@ public class JournalDAO {
         offset);
   }
 
-  public static Collection<SchedulableCount> countMonthJournalsForUser(Connection con,
+  public Collection<SchedulableCount> countMonthJournalsForUser(Connection con,
       String month, String userId, String categoryId, String participation)
       throws SQLException {
-    StringBuffer selectStatement = new StringBuffer(200);
+    StringBuilder selectStatement = new StringBuilder(200);
     String theDay = "";
     selectStatement.append(
         "select count(distinct CalendarJournal.id), ? from CalendarJournal, CalendarJournalAttendee ");
@@ -362,11 +359,11 @@ public class JournalDAO {
     return list;
   }
 
-  public static Collection<JournalHeader> getPeriodJournalHeadersForUser(Connection con,
+  public Collection<JournalHeader> getPeriodJournalHeadersForUser(Connection con,
       String begin, String end, String userId, String categoryId,
       String participation) throws SQLException, java.text.ParseException {
 
-    StringBuffer selectStatement = new StringBuffer(200);
+    StringBuilder selectStatement = new StringBuilder(200);
     selectStatement.append("select distinct ").append(JournalDAO.COLUMNNAMES).append(
         " from CalendarJournal, CalendarJournalAttendee ");
     if (categoryId != null) {
@@ -433,7 +430,7 @@ public class JournalDAO {
     return list;
   }
 
-  public static JournalHeader getJournalHeaderFromResultSet(ResultSet rs)
+  public JournalHeader getJournalHeaderFromResultSet(ResultSet rs)
       throws SQLException, java.text.ParseException {
     String id = "" + rs.getInt(1);
     String name = rs.getString(2);
@@ -456,7 +453,7 @@ public class JournalDAO {
     return journal;
   }
 
-  public static JournalHeader getJournalHeader(Connection con, String journalId)
+  public JournalHeader getJournalHeader(Connection con, String journalId)
       throws SQLException, CalendarException, java.text.ParseException {
 
     String selectStatement = "select " + JournalDAO.COLUMNNAMES
@@ -484,7 +481,7 @@ public class JournalDAO {
     }
   }
 
-  public static Collection<JournalHeader> getOutlookJournalHeadersForUser(Connection con,
+  public Collection<JournalHeader> getOutlookJournalHeadersForUser(Connection con,
       String userId) throws SQLException, CalendarException,
       java.text.ParseException {
 
@@ -512,7 +509,7 @@ public class JournalDAO {
     }
   }
 
-  public static Collection<JournalHeader> getOutlookJournalHeadersForUserAfterDate(
+  public Collection<JournalHeader> getOutlookJournalHeadersForUserAfterDate(
       Connection con, String userId, java.util.Date startDate)
       throws SQLException, CalendarException, java.text.ParseException {
 
@@ -542,7 +539,7 @@ public class JournalDAO {
     }
   }
 
-  public static Collection<JournalHeader> getJournalHeadersForUserAfterDate(Connection con,
+  public Collection<JournalHeader> getJournalHeadersForUserAfterDate(Connection con,
       String userId, java.util.Date startDate, int nbReturned)
       throws SQLException, CalendarException, java.text.ParseException {
 
@@ -556,6 +553,7 @@ public class JournalDAO {
     String startDateString = DateUtil.date2SQLDate(startDate);
     Collection<JournalHeader> list = null;
     try {
+      int count = 0;
       prepStmt = con.prepareStatement(selectStatement);
       prepStmt.setString(1, userId);
       prepStmt.setString(2, startDateString);
@@ -563,10 +561,10 @@ public class JournalDAO {
       prepStmt.setString(4, startDateString);
       rs = prepStmt.executeQuery();
       list = new ArrayList<JournalHeader>();
-      while (rs.next() && nbReturned != 0) {
+      while (rs.next() && nbReturned != count) {
         JournalHeader journal = getJournalHeaderFromResultSet(rs);
         list.add(journal);
-        nbReturned--;
+        count++;
       }
 
       return list;
@@ -586,7 +584,7 @@ public class JournalDAO {
    * @throws SQLException
    * @throws java.text.ParseException
    */
-  private static List<JournalHeader> getNextCalendarJournalForUser_PostgreSQL(Connection con,
+  private List<JournalHeader> getNextCalendarJournalForUser_PostgreSQL(Connection con,
       String day, String userId, String classification, int limit, int offset) throws SQLException,
       java.text.ParseException {
     String selectNextEvents = "select distinct " + JournalDAO.JOURNALCOLUMNNAMES + " from CalendarJournal "
@@ -594,14 +592,14 @@ public class JournalDAO {
     int classificationIndex = 2;
     int limitIndex = 3;
     if (StringUtil.isDefined(classification)) {
-      selectNextEvents = selectNextEvents + " and classification = ? ";
+      selectNextEvents += " and classification = ? ";
       classificationIndex++;
       limitIndex++;
     }
-    selectNextEvents = selectNextEvents + " order by CalendarJournal.startDay, CalendarJournal.startHour ";
+    selectNextEvents += " order by CalendarJournal.startDay, CalendarJournal.startHour ";
 
     if (limit > 0) {
-      selectNextEvents = selectNextEvents + "  limit  ?  offset  ? ";
+      selectNextEvents += "  limit  ?  offset  ? ";
     }
 
     PreparedStatement prepStmt = null;
@@ -644,7 +642,7 @@ public class JournalDAO {
    * @throws SQLException
    * @throws java.text.ParseException
    */
-  private static List<JournalHeader> getNextCalendarJournalForUser_Oracle(Connection con,
+  private List<JournalHeader> getNextCalendarJournalForUser_Oracle(Connection con,
       String day, String userId, String classification, int limit, int offset) throws SQLException,
       java.text.ParseException {
     String selectNextEventsOracle = " select * from (ROWNUM num , table_oracle.* from (";
@@ -652,15 +650,15 @@ public class JournalDAO {
         + " where  delegatorId = ? and endDay >= ? ";
     int classificationIndex = 2, limitIndex = 3;
     if (StringUtil.isDefined(classification)) {
-      selectNextEvents = selectNextEvents + " and classification = ? ";
+      selectNextEvents += " and classification = ? ";
       classificationIndex++;
       limitIndex++;
     }
-    selectNextEvents = selectNextEvents + " order by CalendarJournal.startDay, CalendarJournal.startHour ";
+    selectNextEvents += " order by CalendarJournal.startDay, CalendarJournal.startHour ";
 
-    selectNextEventsOracle = selectNextEventsOracle + " " + selectNextEvents;
+    selectNextEventsOracle += " " + selectNextEvents;
     if (limit > 0) {
-      selectNextEventsOracle = selectNextEventsOracle + "  ) table_oracle) where num between ? and ? ";
+      selectNextEventsOracle += "  ) table_oracle) where num between ? and ? ";
     }
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -706,17 +704,17 @@ public class JournalDAO {
    * @throws SQLException
    * @throws java.text.ParseException
    */
-  private static List<JournalHeader> getNextCalendarJournalForUser_MMS(Connection con,
+  private List<JournalHeader> getNextCalendarJournalForUser_MMS(Connection con,
       String day, String userId, String classification, int limit, int offset) throws SQLException,
       java.text.ParseException {
     String SelectNextEvents = "select distinct " + JournalDAO.JOURNALCOLUMNNAMES + " from CalendarJournal "
         + " where  delegatorId = ? and endDay >= ? ";
     int classificationIndex = 2;
     if (StringUtil.isDefined(classification)) {
-      SelectNextEvents = SelectNextEvents + " and classification = ? ";
+      SelectNextEvents += " and classification = ? ";
       classificationIndex++;
     }
-    SelectNextEvents = SelectNextEvents + " order by CalendarJournal.startDay, CalendarJournal.startHour ";
+    SelectNextEvents += " order by CalendarJournal.startDay, CalendarJournal.startHour ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     List<JournalHeader> list = null;
@@ -760,7 +758,7 @@ public class JournalDAO {
    * @throws SQLException
    * @throws ParseException
    */
-  public static List<SocialInformationEvent> getNextEventsForMyContacts(Connection con, String day,
+  public List<SocialInformationEvent> getNextEventsForMyContacts(Connection con, String day,
       String myId,
       List<String> myContactsIds, int numberOfElement, int firstIndex) throws SQLException,
       ParseException {
@@ -777,7 +775,7 @@ public class JournalDAO {
 
   private static String listToSqlString(List<String> list) {
     String result = "";
-    if (list == null || list.size() == 0) {
+    if (list == null || list.isEmpty()) {
       return "''";
     }
     int size = list.size();
@@ -805,7 +803,7 @@ public class JournalDAO {
    * @throws SQLException
    * @throws java.text.ParseException
    */
-  private static List<SocialInformationEvent> getNextEventsForMyContacts_PostgreSQL(Connection con,
+  private List<SocialInformationEvent> getNextEventsForMyContacts_PostgreSQL(Connection con,
       String day, String myId, List<String> myContactsIds, int numberOfElement, int firstIndex)
       throws
       SQLException,
@@ -852,7 +850,7 @@ public class JournalDAO {
    * @throws SQLException
    * @throws java.text.ParseException
    */
-  private static List<SocialInformationEvent> getNextEventsForMyContacts_Oracle(Connection con,
+  private List<SocialInformationEvent> getNextEventsForMyContacts_Oracle(Connection con,
       String day, String myId, List<String> myContactsIds, int numberOfElement, int firstIndex)
       throws
       SQLException,
@@ -900,7 +898,7 @@ public class JournalDAO {
    * @throws SQLException
    * @throws java.text.ParseException
    */
-  public static List<SocialInformationEvent> getNextEventsForMyContacts_MSS(Connection con,
+  public List<SocialInformationEvent> getNextEventsForMyContacts_MSS(Connection con,
       String day, String myId, List<String> myContactsIds, int numberOfElement, int firstIndex)
       throws
       SQLException,
@@ -945,7 +943,7 @@ public class JournalDAO {
    * @throws SQLException
    * @throws ParseException
    */
-  public static List<SocialInformationEvent> getLastEventsForMyContacts(Connection con, String day,
+  public List<SocialInformationEvent> getLastEventsForMyContacts(Connection con, String day,
       String myId,
       List<String> myContactsIds, int numberOfElement, int firstIndex) throws SQLException,
       ParseException {
@@ -973,7 +971,7 @@ public class JournalDAO {
    * @throws SQLException
    * @throws java.text.ParseException
    */
-  private static List<SocialInformationEvent> getLastEventsForMyContacts_PostgreSQL(Connection con,
+  private List<SocialInformationEvent> getLastEventsForMyContacts_PostgreSQL(Connection con,
       String day, String myId, List<String> myContactsIds, int numberOfElement, int firstIndex)
       throws
       SQLException,
@@ -1019,7 +1017,7 @@ public class JournalDAO {
    * @throws SQLException
    * @throws java.text.ParseException
    */
-  private static List<SocialInformationEvent> getLastEventsForMyContacts_Oracle(Connection con,
+  private List<SocialInformationEvent> getLastEventsForMyContacts_Oracle(Connection con,
       String day, String myId, List<String> myContactsIds, int numberOfElement, int firstIndex)
       throws
       SQLException,
@@ -1067,7 +1065,7 @@ public class JournalDAO {
    * @throws SQLException
    * @throws java.text.ParseException
    */
-  public static List<SocialInformationEvent> getLastEventsForMyContacts_MSS(Connection con,
+  public List<SocialInformationEvent> getLastEventsForMyContacts_MSS(Connection con,
       String day, String myId, List<String> myContactsIds, int numberOfElement, int firstIndex)
       throws
       SQLException,
@@ -1111,7 +1109,7 @@ public class JournalDAO {
    * @throws SQLException
    * @throws ParseException
    */
-  public static List<SocialInformationEvent> getMyLastEvents(Connection con, String day, String myId,
+  public List<SocialInformationEvent> getMyLastEvents(Connection con, String day, String myId,
       int numberOfElement, int firstIndex) throws SQLException,
       ParseException {
     String databaseProductName = con.getMetaData().getDatabaseProductName().toUpperCase();
@@ -1136,7 +1134,7 @@ public class JournalDAO {
    * @throws SQLException
    * @throws java.text.ParseException
    */
-  private static List<SocialInformationEvent> getMyLastEvents_PostgreSQL(Connection con,
+  private List<SocialInformationEvent> getMyLastEvents_PostgreSQL(Connection con,
       String day, String myId, int numberOfElement, int firstIndex) throws
       SQLException,
       java.text.ParseException {
@@ -1181,7 +1179,7 @@ public class JournalDAO {
    * @throws SQLException
    * @throws java.text.ParseException
    */
-  private static List<SocialInformationEvent> getMyLastEvents_Oracle(Connection con,
+  private List<SocialInformationEvent> getMyLastEvents_Oracle(Connection con,
       String day, String myId, int numberOfElement, int firstIndex) throws
       SQLException,
       java.text.ParseException {
@@ -1228,7 +1226,7 @@ public class JournalDAO {
    * @throws SQLException
    * @throws java.text.ParseException
    */
-  public static List<SocialInformationEvent> getMyLastEvents_MSS(Connection con,
+  public  List<SocialInformationEvent> getMyLastEvents_MSS(Connection con,
       String day, String myId, int numberOfElement, int firstIndex) throws
       SQLException,
       java.text.ParseException {

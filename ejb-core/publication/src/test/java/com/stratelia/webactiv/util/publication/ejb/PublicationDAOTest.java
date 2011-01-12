@@ -31,10 +31,6 @@ package com.stratelia.webactiv.util.publication.ejb;
 import java.util.Iterator;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import java.util.Collection;
-import java.io.IOException;
-import javax.naming.NamingException;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import com.silverpeas.components.model.AbstractTestDao;
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.stratelia.webactiv.publication.socialNetwork.SocialInformationPublication;
@@ -59,15 +55,9 @@ public class PublicationDAOTest extends AbstractTestDao {
   public PublicationDAOTest() {
   }
 
-  @BeforeClass
-  public static void generalSetUp() throws IOException, NamingException {
-    AbstractTestDao.configureJNDIDatasource();
-  }
-
-  @Before
   @Override
   public void setUp() throws Exception {
-    super.prepareData();
+    super.setUp();
     Properties props = new Properties();
     props.load(this.getClass().getClassLoader().getResourceAsStream(
         "jndi.properties"));
@@ -85,7 +75,7 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of invalidateLastPublis method, of class PublicationDAO.
    */
-  /*  @org.junit.Test
+  /*
   public void testInvalidateLastPublis() {
   System.out.println("invalidateLastPublis");
   String instanceId = "";
@@ -96,7 +86,7 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of getNbPubInFatherPKs method, of class PublicationDAO.
    */
-  /* @org.junit.Test
+  /*
   public void testGetNbPubInFatherPKs() throws Exception {
   System.out.println("getNbPubInFatherPKs");
   Connection con = null;
@@ -110,7 +100,7 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of getNbPubByFatherPath method, of class PublicationDAO.
    */
-  /*  @org.junit.Test
+  /*
   public void testGetNbPubByFatherPath() throws Exception {
   System.out.println("getNbPubByFatherPath");
   Connection con = null;
@@ -125,7 +115,7 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of getDistribution method, of class PublicationDAO.
    */
-  /* @org.junit.Test
+  /*
   public void testGetDistribution() throws Exception {
   System.out.println("getDistribution");
   Connection con = getConnection().getConnection();
@@ -142,7 +132,6 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of insertRow method, of class PublicationDAO.
    */
-  @org.junit.Test
   public void testInsertRow() throws Exception {
     Connection con = getConnection().getConnection();
     PublicationPK pk = new PublicationPK("500", "kmelia36");
@@ -202,7 +191,7 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of deleteRow method, of class PublicationDAO.
    */
-  /*  @org.junit.Test
+  /*
   public void testDeleteRow() throws Exception {
   System.out.println("deleteRow");
   Connection con = null;
@@ -214,7 +203,6 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectByPrimaryKey method, of class PublicationDAO.
    */
-  @org.junit.Test
   public void testSelectByPrimaryKey() throws Exception {
     System.out.println("selectByPrimaryKey");
     Connection con = getConnection().getConnection();
@@ -243,13 +231,13 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectByPublicationName method, of class PublicationDAO.
    */
-  @org.junit.Test
   public void testSelectByPublicationName() throws Exception {
     System.out.println("selectByPublicationName");
     Connection con = getConnection().getConnection();
     String name = "Publication 1";
     PublicationPK primaryKey = new PublicationPK(null, "kmelia200");
-    PublicationDetail result = PublicationDAO.selectByPublicationName(con, primaryKey, name).pubDetail;
+    PublicationDetail result =
+        PublicationDAO.selectByPublicationName(con, primaryKey, name).pubDetail;
     primaryKey = new PublicationPK("100", "kmelia200");
     assertEquals(primaryKey, result.getPK());
     assertEquals("Homer Simpson", result.getAuthor());
@@ -274,7 +262,6 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectByPublicationNameAndNodeId method, of class PublicationDAO.
    */
-  @org.junit.Test
   public void testSelectByPublicationNameAndNodeId() throws Exception {
     System.out.println("selectByPublicationNameAndNodeId");
     Connection con = getConnection().getConnection();
@@ -307,7 +294,6 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectByFatherPK method, of class PublicationDAO.
    */
-  @org.junit.Test
   public void testSelectByFatherPK_Connection_NodePK() throws Exception {
     System.out.println("selectByFatherPK");
     Connection con = getConnection().getConnection();
@@ -363,7 +349,7 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectByFatherPK method, of class PublicationDAO.
    */
-  /* @org.junit.Test
+  /*
   public void testSelectByFatherPK_3args_1() throws Exception {
   System.out.println("selectByFatherPK");
   Connection con = null;
@@ -378,7 +364,7 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectByFatherPK method, of class PublicationDAO.
    */
-  /*  @org.junit.Test
+  /*
   public void testSelectByFatherPK_4args() throws Exception {
   System.out.println("selectByFatherPK");
   Connection con = null;
@@ -395,7 +381,6 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectByFatherPK method, of class PublicationDAO.
    */
-  @org.junit.Test
   public void testSelectByFatherPK_5args() throws Exception {
     System.out.println("selectByFatherPK");
     Connection con = getConnection().getConnection();
@@ -428,9 +413,10 @@ public class PublicationDAOTest extends AbstractTestDao {
     assertEquals("Valid", detail.getStatus());
     assertEquals("300", detail.getValidatorId());
     assertEquals("Publication 1", detail.getTitle());
-    
+
     filterOnVisibilityPeriod = true;
-    result = PublicationDAO.selectByFatherPK(con, fatherPK, sorting, filterOnVisibilityPeriod, userId);
+    result = PublicationDAO.selectByFatherPK(con, fatherPK, sorting, filterOnVisibilityPeriod,
+        userId);
     assertNotNull(result);
     assertEquals(1, result.size());
     iter = result.iterator();
@@ -454,13 +440,13 @@ public class PublicationDAOTest extends AbstractTestDao {
     assertEquals("Valid", detail.getStatus());
     assertEquals("300", detail.getValidatorId());
     assertEquals("Publication 1", detail.getTitle());
-    
+
   }
 
   /**
    * Test of selectByFatherPK method, of class PublicationDAO.
    */
-  /*@org.junit.Test
+  /*
   public void testSelectByFatherPK_3args_2() throws Exception {
   System.out.println("selectByFatherPK");
   Connection con = null;
@@ -475,7 +461,7 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectNotInFatherPK method, of class PublicationDAO.
    */
-  /* @org.junit.Test
+  /*
   public void testSelectNotInFatherPK_Connection_NodePK() throws Exception {
   System.out.println("selectNotInFatherPK");
   Connection con = null;
@@ -489,7 +475,7 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectNotInFatherPK method, of class PublicationDAO.
    */
-  /* @org.junit.Test
+  /*
   public void testSelectNotInFatherPK_3args() throws Exception {
   System.out.println("selectNotInFatherPK");
   Connection con = null;
@@ -504,7 +490,6 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectByFatherIds method, of class PublicationDAO.
    */
-  @org.junit.Test
   public void testSelectByFatherIds() throws Exception {
     System.out.println("selectByFatherIds");
     Connection con = getConnection().getConnection();
@@ -512,26 +497,28 @@ public class PublicationDAOTest extends AbstractTestDao {
     fatherIds.add("110");
     PublicationPK pubPK = new PublicationPK("useless", "kmelia200");
     String sorting = "P.pubName";
-    List<String >status = new ArrayList<String>();
+    List<String> status = new ArrayList<String>();
     status.add("Valid");
     boolean filterOnVisibilityPeriod = true;
-    ArrayList<PublicationDetail> result = PublicationDAO.selectByFatherIds(con, fatherIds, pubPK, sorting, status,
+    ArrayList<PublicationDetail> result = PublicationDAO.selectByFatherIds(con, fatherIds, pubPK,
+        sorting, status,
         filterOnVisibilityPeriod);
     assertEquals(result.size(), 2);
 
     // Test on an empty node
     fatherIds.clear();
     fatherIds.add("999");
-    
+
     result = PublicationDAO.selectByFatherIds(con, fatherIds, pubPK, sorting, status,
         filterOnVisibilityPeriod);
     assertEquals(result.size(), 0);
-    
+
   }
+
   /**
    * Test of selectByPublicationPKs method, of class PublicationDAO.
    */
-  /*  @org.junit.Test
+  /*
   public void testSelectByPublicationPKs() throws Exception {
   System.out.println("selectByPublicationPKs");
   Connection con = getConnection().getConnection();
@@ -545,7 +532,6 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectByStatus method, of class PublicationDAO.
    */
-  @org.junit.Test
   public void testSelectByStatus_3args_1() throws Exception {
     System.out.println("selectByStatus");
     Connection con = getConnection().getConnection();
@@ -553,15 +539,15 @@ public class PublicationDAOTest extends AbstractTestDao {
     String status = "Valid";
     Collection<PublicationDetail> result = PublicationDAO.selectByStatus(con, pubPK, status);
     assertEquals(result.size(), 2);
-    
+
     status = "Draft";
     result = PublicationDAO.selectByStatus(con, pubPK, status);
     assertEquals(result.size(), 0);
   }
+
   /**
    * Test of selectByStatus method, of class PublicationDAO.
    */
-  @org.junit.Test
   public void testSelectByStatus_3args_2() throws Exception {
     System.out.println("selectByStatus");
     Connection con = getConnection().getConnection();
@@ -571,20 +557,21 @@ public class PublicationDAOTest extends AbstractTestDao {
     String status = "Valid";
     Collection<PublicationDetail> result = PublicationDAO.selectByStatus(con, componentIds, status);
     assertEquals(result.size(), 2);
-    
+
     status = "Draft";
     result = PublicationDAO.selectByStatus(con, componentIds, status);
     assertEquals(result.size(), 0);
-    
+
     status = "Valid";
     componentIds.remove("kmelia200");
     result = PublicationDAO.selectByStatus(con, componentIds, status);
     assertEquals(result.size(), 0);
   }
+
   /**
    * Test of selectPKsByStatus method, of class PublicationDAO.
    */
-  /* @org.junit.Test
+  /*
   public void testSelectPKsByStatus() throws Exception {
   System.out.println("selectPKsByStatus");
   Connection con = null;
@@ -599,7 +586,7 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectAllPublications method, of class PublicationDAO.
    */
-  /* @org.junit.Test
+  /*
   public void testSelectAllPublications_Connection_PublicationPK() throws Exception {
   System.out.println("selectAllPublications");
   Connection con = null;
@@ -613,7 +600,7 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectAllPublications method, of class PublicationDAO.
    */
-  /* @org.junit.Test
+  /*
   public void testSelectAllPublications_3args() throws Exception {
   System.out.println("selectAllPublications");
   Connection con = null;
@@ -628,7 +615,7 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectByBeginDateDescAndStatus method, of class PublicationDAO.
    */
-  /*@org.junit.Test
+  /*
   public void testSelectByBeginDateDescAndStatus() throws Exception {
   System.out.println("selectByBeginDateDescAndStatus");
   Connection con = null;
@@ -643,7 +630,7 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectByBeginDateDescAndStatusAndNotLinkedToFatherId method, of class PublicationDAO.
    */
-  /*@org.junit.Test
+  /*
   public void testSelectByBeginDateDescAndStatusAndNotLinkedToFatherId() throws Exception {
   System.out.println("selectByBeginDateDescAndStatusAndNotLinkedToFatherId");
   Connection con = null;
@@ -661,7 +648,7 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectByBeginDateDesc method, of class PublicationDAO.
    */
-  /*@org.junit.Test
+  /*
   public void testSelectByBeginDateDesc() throws Exception {
   System.out.println("selectByBeginDateDesc");
   Connection con = null;
@@ -675,7 +662,7 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of getOrphanPublications method, of class PublicationDAO.
    */
-  /* @org.junit.Test
+  /*
   public void testGetOrphanPublications() throws Exception {
   System.out.println("getOrphanPublications");
   Connection con = null;
@@ -689,7 +676,7 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of getNotOrphanPublications method, of class PublicationDAO.
    */
-  /*@org.junit.Test
+  /*
   public void testGetNotOrphanPublications() throws Exception {
   System.out.println("getNotOrphanPublications");
   Connection con = null;
@@ -703,7 +690,7 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of deleteOrphanPublicationsByCreatorId method, of class PublicationDAO.
    */
-  /*@org.junit.Test
+  /*
   public void testDeleteOrphanPublicationsByCreatorId() throws Exception {
   System.out.println("deleteOrphanPublicationsByCreatorId");
   Connection con = null;
@@ -716,7 +703,7 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of getUnavailablePublicationsByPublisherId method, of class PublicationDAO.
    */
-  /*@org.junit.Test
+  /*
   public void testGetUnavailablePublicationsByPublisherId() throws Exception {
   System.out.println("getUnavailablePublicationsByPublisherId");
   Connection con = null;
@@ -733,7 +720,6 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of searchByKeywords method, of class PublicationDAO.
    */
-  @org.junit.Test
   public void testSearchByKeywords() throws Exception {
     Connection con = getConnection().getConnection();
     PublicationPK pk = new PublicationPK("100", "kmelia200");
@@ -762,7 +748,6 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of loadRow method, of class PublicationDAO.
    */
-  @org.junit.Test
   public void testLoadRow() throws Exception {
     Connection con = getConnection().getConnection();
     PublicationPK pk = new PublicationPK("100", "kmelia200");
@@ -790,7 +775,6 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of changeInstanceId method, of class PublicationDAO.
    */
-  @org.junit.Test
   public void testChangeInstanceId() throws Exception {
     Connection con = getConnection().getConnection();
     PublicationPK pk = new PublicationPK("100", "kmelia200");
@@ -840,7 +824,6 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of storeRow method, of class PublicationDAO.
    */
-  @org.junit.Test
   public void testStoreRow() throws Exception {
     Connection con = getConnection().getConnection();
     PublicationPK pk = new PublicationPK("100", "kmelia200");
@@ -925,7 +908,6 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectByName method, of class PublicationDAO.
    */
-  @org.junit.Test
   public void testSelectByName() throws Exception {
     Connection con = getConnection().getConnection();
     String name = "Publication 1";
@@ -955,7 +937,6 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectByNameAndNodeId method, of class PublicationDAO.
    */
-  @org.junit.Test
   public void testSelectByNameAndNodeId() throws Exception {
     Connection con = getConnection().getConnection();
     PublicationPK pubPK = new PublicationPK("100", "kmelia200");
@@ -986,7 +967,7 @@ public class PublicationDAOTest extends AbstractTestDao {
    * Test of selectBetweenDate method, of class PublicationDAO.
    */
 
-  /*@org.junit.Test
+  /*
   public void testSelectBetweenDate() throws Exception {
   System.out.println("selectBetweenDate");
   Connection con = null;
@@ -1004,7 +985,6 @@ public class PublicationDAOTest extends AbstractTestDao {
     return "test-publication-dao-dataset.xml";
   }
 
-  @org.junit.Test
   public void testGetAllPublicationsIDbyUserid() throws Exception {
     Connection con = getConnection().getConnection();
     this.setUp();
