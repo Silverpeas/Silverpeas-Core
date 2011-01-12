@@ -21,11 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.workflow.engine.dataRecord;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -92,63 +90,55 @@ public class LazyProcessInstanceDataRecord implements DataRecord {
    * @throw FormException when the fieldName is unknown.
    */
   public Field getField(String fieldName) throws FormException {
-    if ( fieldName.startsWith("folder.") || fieldName.startsWith("instance.") ) {
+    if (fieldName.startsWith("folder.") || fieldName.startsWith("instance.")) {
       int pos = fieldName.indexOf(".");
-      return getFolderField(fieldName.substring(pos+1, fieldName.length()));
+      return getFolderField(fieldName.substring(pos + 1, fieldName.length()));
     }
-    
-    if ( fieldName.startsWith("action.") ) {
+
+    if (fieldName.startsWith("action.")) {
       int pos = fieldName.indexOf(".");
-      return getActionField(fieldName.substring(pos+1, fieldName.length()));
+      return getActionField(fieldName.substring(pos + 1, fieldName.length()));
     }
-    
+
     return null;
   }
 
-  private Field getActionField(String fieldName) throws FormException{
-    
+  private Field getActionField(String fieldName) throws FormException {
+
     try {
       // Action label
-      if ( fieldName.indexOf(".")==-1) {
+      if (fieldName.indexOf(".") == -1) {
         Field field = (Field) new TextFieldImpl();
         Action action = instance.getProcessModel().getAction(fieldName);
-        field.setStringValue( action.getLabel(this.role, this.lang) );
+        field.setStringValue(action.getLabel(this.role, this.lang));
         return field;
-      }
-      
-      // Action label 
-      else if ( fieldName.endsWith(".label")) {
+      } // Action label 
+      else if (fieldName.endsWith(".label")) {
         Field field = (Field) new TextFieldImpl();
-        String actionName = fieldName.substring(0, fieldName.length()-6);
+        String actionName = fieldName.substring(0, fieldName.length() - 6);
         Action action = instance.getProcessModel().getAction(actionName);
-        field.setStringValue( action.getLabel(this.role, this.lang) );
+        field.setStringValue(action.getLabel(this.role, this.lang));
         return field;
-      }
-      
-      // Action last realization date
-      else if ( fieldName.endsWith(".date")) {
-          String actionName = fieldName.substring(0, fieldName.length()-5);
-          HistoryStep step = instance.getMostRecentStep(actionName);
-          if (step != null) {
-            return new DateRoField(step.getActionDate());
-          } else {
-            return new DateRoField(null);
-          }
+      } // Action last realization date
+      else if (fieldName.endsWith(".date")) {
+        String actionName = fieldName.substring(0, fieldName.length() - 5);
+        HistoryStep step = instance.getMostRecentStep(actionName);
+        if (step != null) {
+          return new DateRoField(step.getActionDate());
+        } else {
+          return new DateRoField(null);
         }
-
-      // Action last actor
-      else if ( fieldName.endsWith(".actor")) {
-        String actionName = fieldName.substring(0, fieldName.length()-6);
+      } // Action last actor
+      else if (fieldName.endsWith(".actor")) {
+        String actionName = fieldName.substring(0, fieldName.length() - 6);
         HistoryStep step = instance.getMostRecentStep(actionName);
         if (step != null) {
           return new TextRoField(step.getUser().getFullName());
         } else {
           return new TextRoField(null);
         }
-      }
-      
-      // Relation with action last actor
-      else if ( fieldName.indexOf(".actor.") != -1 ) {
+      } // Relation with action last actor
+      else if (fieldName.indexOf(".actor.") != -1) {
         String actionName = fieldName.substring(0, fieldName.indexOf(".actor."));
         HistoryStep step = instance.getMostRecentStep(actionName);
         if (step != null) {
@@ -158,52 +148,52 @@ public class LazyProcessInstanceDataRecord implements DataRecord {
             if (item.getMapTo() != null && item.getMapTo().length() != 0) {
               User user = Workflow.getUserManager().getUser(
                   step.getUser().getUserId());
-  
+
               Field field = new TextFieldImpl();
-              if (user != null)
+              if (user != null) {
                 field.setStringValue(user.getInfo(item.getMapTo()));
+              }
               return field;
-            }
-            else {
+            } else {
               UserSettings settings = Workflow.getUserManager().getUserSettings(
                   step.getUser().getUserId(), instance.getModelId());
               UserInfo info = settings.getUserInfo(shortFieldName);
 
               Field field = instance.getProcessModel().getUserInfos().toRecordTemplate(
                   role, lang, false).getEmptyRecord().getField(shortFieldName);
-              if (field != null && info != null)
+              if (field != null && info != null) {
                 field.setStringValue(info.getValue());
+              }
               return field;
             }
-          }
-          else {
+          } else {
             return new TextRoField(null);
           }
         } else {
           return new TextRoField(null);
         }
-      }
-      else
+      } else {
         throw new FormFatalException("LazyProcessInstanceDataRecord",
             "form.EXP_FIELD_NOT_FOUND", fieldName);
+      }
     } catch (Exception e) {
       throw new FormFatalException("LazyProcessInstanceDataRecord",
           "form.EXP_FIELD_CONSTRUCTION_FAILED", fieldName);
     }
-    
+
   }
 
   private Field getFolderField(String fieldName) throws FormException {
     Field field;
     try {
       Item fieldItem = instance.getProcessModel().getDataFolder().getItem(fieldName);
-      Class fieldImpl = TypeManager.getFieldImplementation(fieldItem.getType());
+      Class fieldImpl = TypeManager.getInstance().getFieldImplementation(fieldItem.getType());
       Class[] noParameterClass = new Class[0];
       Constructor constructor = fieldImpl.getConstructor(noParameterClass);
       Object[] noParameter = new Object[0];
       field = (Field) constructor.newInstance(noParameter);
-      field.setStringValue( getFieldValue(fieldName) );
-            
+      field.setStringValue(getFieldValue(fieldName));
+
       return field;
     } catch (Exception e) {
       throw new FormFatalException("LazyProcessInstanceDataRecord",
@@ -216,10 +206,11 @@ public class LazyProcessInstanceDataRecord implements DataRecord {
     String rawValue = null;
     if (rawValues.get(fieldName) == null) {
       String folderRecordSetName = instance.getProcessModel().getFolderRecordSetName();
-      rawValue = GenericRecordSetManager.getRawValue(folderRecordSetName, instance.getInstanceId(), fieldName);
+      rawValue = GenericRecordSetManager.getInstance().getRawValue(folderRecordSetName, instance.
+          getInstanceId(), fieldName);
       rawValues.put(fieldName, rawValue);
     }
-    
+
     return rawValue;
   }
 
@@ -242,13 +233,11 @@ public class LazyProcessInstanceDataRecord implements DataRecord {
   public void setLanguage(String lang) {
     // do nothing
   }
-
   /**
    * The process instance whose data are managed by this data record.
    */
   final ProcessInstance instance;
   final String role;
   final String lang;
-
   private Map<String, String> rawValues = new HashMap<String, String>();
 }
