@@ -32,10 +32,10 @@
 
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
 <portlet:defineObjects/>
 
 <view:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle"/>
 
-<fmt:message key="portlets.portlet.iframe.help"/>
+<fmt:message key="portlets.portlet.iFrame.help"/>
