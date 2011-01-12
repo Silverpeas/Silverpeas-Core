@@ -1252,8 +1252,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
   private void setDefaultDataToNavigation(HttpServletRequest request,
       PdcSearchSessionController pdcSC, ResultFilterVO filter) throws Exception {
 
-    pdcSC.setSearchType(PdcSearchSessionController.SEARCH_SIMPLE);
-
     request.setAttribute("Keywords", pdcSC.getQueryParameters().getKeywords());
 
     request.setAttribute("IndexOfFirstResult", Integer.valueOf(pdcSC.getIndexOfFirstResultToDisplay()));
