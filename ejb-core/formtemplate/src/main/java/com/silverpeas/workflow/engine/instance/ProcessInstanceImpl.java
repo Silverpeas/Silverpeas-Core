@@ -991,15 +991,18 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
     
     // special case : wysiwyg, check if data has been put into file and not kept in value field
     try {
+      // first update data folder
       checkWysiwygData(step, actionData);
+      updateFolder(actionData);
+      
+      // then save action record
+      updateWysiwygDataWithStepId(step, actionData);
+      step.setActionRecord(actionData);
     } catch (FormException e) {
       throw new WorkflowException("ProcessInstanceImpl",
           "workflowEngine.EXP_FORM_CREATE_FAILED", e);
     }
-    
-    updateFolder(actionData);
-    step.setActionRecord(actionData);
-  }
+   }
 
   /**
    * Parse fields values and check ones that have wysiwyg displayer.
@@ -1029,7 +1032,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
         if (!updatedField.getStringValue().startsWith(WysiwygFCKFieldDisplayer.dbKey)) {
           WysiwygFCKFieldDisplayer displayer = new WysiwygFCKFieldDisplayer();
           PagesContext context = new PagesContext("dummy", "0", actionData.getLanguage(), false, getModelId(), "dummy");
-          context.setObjectId(getInstanceId());
+          context.setObjectId(instanceId);
           displayer.update(updatedField.getStringValue(), updatedField, tmpl,
               context);
         }
@@ -1037,6 +1040,39 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
     }
   }
 
+  /**
+   * Parse fields values and check ones that have wysiwyg displayer.
+   * In case of new process instance, txt files may not have been created yet.
+   * if yes, value must start with "xmlWysiwygField_"
+   * 
+   * @param step
+   * @param actionData
+   * 
+   * @throws WorkflowException
+   * @throws FormException
+   */
+  private void updateWysiwygDataWithStepId(HistoryStep step, DataRecord actionData) throws WorkflowException,
+      FormException {
+    String actionName = step.getAction();
+    Form form = getProcessModel().getActionForm(actionName);
+    RecordTemplate template = form.toRecordTemplate(step.getUserRoleName(), "");
+    String[] fieldNames = actionData.getFieldNames();
+    
+    for (int i = 0; i < fieldNames.length; i++) {
+      // fieldIndex = i;
+      String fieldName = (String) fieldNames[i];
+      Field updatedField = actionData.getField(fieldName);
+      FieldTemplate tmpl = template.getFieldTemplate(fieldNames[i]);
+      
+      if ("wysiwyg".equals(tmpl.getDisplayerName())) {
+        WysiwygFCKFieldDisplayer displayer = new WysiwygFCKFieldDisplayer();
+        PagesContext context = new PagesContext("dummy", "0", actionData.getLanguage(), false, getModelId(), "dummy");
+        context.setObjectId(instanceId);
+        displayer.duplicateContent(updatedField, tmpl, context, "Step"+step.getId());
+      }
+    }
+  }
+   
   /**
    * Returns the most recent step where this action was performed.
    */

@@ -405,6 +405,17 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
     }
   }
 
+  public void duplicateContent(Field field, FieldTemplate template,
+      PagesContext pageContext, String newObjectId) throws FormException {
+
+    String contentLanguage = I18NHelper.checkLanguage(pageContext.getContentLanguage());
+
+    String code = field.getStringValue();
+    code = getContent(pageContext.getComponentId(), pageContext.getObjectId(), template.getFieldName(), code, contentLanguage);
+    String fileName = setContentIntoFile(pageContext.getComponentId(), newObjectId, template.getFieldName(), code, contentLanguage);
+    field.setValue(dbKey + fileName, pageContext.getLanguage());
+  }
+  
   private String getContent(String componentId, String objectId, String fieldName, String code,
       String language) throws
       FormException {
