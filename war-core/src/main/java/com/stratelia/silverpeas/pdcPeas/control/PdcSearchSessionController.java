@@ -1466,7 +1466,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   private String getSynonymsQueryString(String queryString) {
     String synonymsQueryString = "";
-    if (!StringUtil.isDefined(queryString) || !activeThesaurus) {
+    String header = "";
+    if (queryString == null || queryString.equals("") || !isThesaurusEnableByUser) {
       synonymsQueryString = queryString;
     } else {
       StreamTokenizer st = new StreamTokenizer(new StringReader(queryString));
@@ -1491,10 +1492,16 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           }
           if (!word.isEmpty()) {
             if (!isKeyword(word)) {
+              // Detect field restriction (syntax "field:fieldname query")
+              if (word.indexOf(":") != -1) {
+                header = word.substring(0, word.indexOf(":")+1);
+                word = word.substring(word.indexOf(":")+1, word.length());
+              }
+              
               synonymsString.append("(\"").append(word).append("\"");
               Collection<String> wordSynonyms = getSynonym(word);
               for (String synonym : wordSynonyms) {
-                synonymsString.append(" " + "\"").append(synonym).append("\"");
+                synonymsString.append(" OR " + "\"").append(synonym).append("\"");
               }
               synonymsString.append(")");
             } else // and or
@@ -1506,6 +1513,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             synonymsString.append(specialChar);
           }
         }
+        synonymsString.insert(0, header);
         synonymsQueryString = synonymsString.toString();
       } catch (IOException e) {
         throw new PdcPeasRuntimeException("PdcSearchSessionController.setSynonymsQueryString",
