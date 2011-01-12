@@ -370,7 +370,6 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
     }
 
     Table globalTable = new Table();
-    globalTable.setWidth("100%");
     globalTable.setBorder(0);
     globalTable.setCellPadding(0);
     globalTable.setCellSpacing(0);
@@ -433,13 +432,29 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
         language);
 
     Table table = new Table();
-    table.setWidth("100%");
     table.setBorder(0);
     table.setCellPadding(4);
     table.setCellSpacing(0);
     TR positionsLine = new TR();
+    
+    if (!readOnly) {
+      TD addPositionCell = new TD();
+      addPositionCell.setWidth("30");
+      addPositionCell.setVAlign(AlignType.top);
+      addPositionCell.setAlign(AlignType.center);
+      A addPositionLink = new A();
+      addPositionLink.setHref("javascript:addPositions_" + fieldName + "()");
+      IMG addPositionImg = new IMG();
+      addPositionImg.setSrc(pdcResource.getIcon("pdcPeas.addPosition"));
+      addPositionImg.setAlt(pdcResource.getString("pdcPeas.addPosition"));
+      addPositionImg.setTitle(pdcResource.getString("pdcPeas.addPosition"));
+      addPositionLink.addElement(addPositionImg);
+      addPositionCell.addElement(addPositionLink);
+      positionsLine.addElement(addPositionCell);
+    }
+    
     TD positionsCell = new TD();
-    positionsCell.setWidth("100%");
+    //positionsCell.setWidth("100%");
 
     Div positionsDiv = new Div();
     positionsDiv.setID("pdcPositions_" + fieldName);
@@ -452,21 +467,6 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
     positionsCell.addElement(style);
 
     positionsLine.addElement(positionsCell);
-
-    if (!readOnly) {
-      TD addPositionCell = new TD();
-      addPositionCell.setVAlign(AlignType.top);
-      A addPositionLink = new A();
-      addPositionLink.setHref("javascript:addPositions_" + fieldName + "()");
-      IMG addPositionImg = new IMG();
-      addPositionImg.setSrc(pdcResource.getIcon("pdcPeas.addPosition"));
-      addPositionImg.setAlt(pdcResource.getString("pdcPeas.addPosition"));
-      addPositionImg.setTitle(pdcResource.getString("pdcPeas.addPosition"));
-      addPositionLink.addElement(addPositionImg);
-      addPositionCell.addElement(addPositionLink);
-      positionsLine.addElement(addPositionCell);
-    }
-
     if (mandatory) {
       TD mandatoryCell = new TD();
       mandatoryCell.setVAlign(pattern.length() > 0 ? AlignType.bottom : AlignType.middle);
@@ -581,7 +581,6 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
       String language = pdcResource.getLanguage();
 
       UL positionsUl = new UL();
-      positionsUl.setStyle("margin: -5px 0px 0px -30px");
       for (int i = 0; i < positions.size(); i++) {
         position = positions.get(i);
         LI positionLi = new LI();
