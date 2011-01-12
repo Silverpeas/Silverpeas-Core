@@ -171,7 +171,7 @@ public abstract class ComponentRequestRouter extends HttpServlet {
         + component.getComponentUrl());
 
     if (!"Idle.jsp".equals(function) && !"IdleSilverpeasV5.jsp".equals(function) &&
-        !"ChangeSearchTypeToExpert".equals(function)) {
+        !"ChangeSearchTypeToExpert".equals(function) && !"markAsRead".equals(function)) {
       GraphicElementFactory gef =
           (GraphicElementFactory) session
           .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
