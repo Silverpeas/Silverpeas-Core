@@ -210,7 +210,7 @@ function jumpToComponent(componentId) {
 
 	ArrayColumn column = arrayPane.addArrayColumn(todo.getString("actions"));
 	column.setSortable(false);
-
+	
 	Collection		todos		= todo.getToDos();
     Iterator		i			= todos.iterator();
     Date			today		= new Date();
@@ -218,7 +218,7 @@ function jumpToComponent(componentId) {
 	ToDoHeader		todoHeader	= null;
 	ArrayLine		arrayLine	= null;
 	Date			todoEndDate = null;
-	ComponentInst 	componentI 	= null;
+	ComponentInstLight 	componentI 	= null;
 	String 			spaceId 	= null;
 	String 			spaceLabel 	= "";
 	String 			componentLabel = "";
@@ -227,28 +227,30 @@ function jumpToComponent(componentId) {
 		todoEndDate = todoHeader.getEndDate();
         arrayLine 	= arrayPane.addArrayLine();
         if (todoHeader.getPercentCompleted() < 100)
-			if (todoHeader.getCompletedDay() == null)
-				if (todoEndDate != null)
-					if (today.after(todoEndDate))
+			if (todoHeader.getCompletedDay() == null) {
+				if (todoEndDate != null) {
+					if (today.after(todoEndDate)) {
 						arrayLine.setStyleSheet("ArrayCellHot");
-
-					if (todoHeader.getExternalId() == null) {
-						arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(todoHeader.getName()), "javascript:onClick=viewToDo('"+todoHeader.getId()+"')");
-					} else {
-						componentI 		= todo.getOrganizationController().getComponentInst(todoHeader.getComponentId());
-						componentLabel 	= todoHeader.getComponentId();
-						if (componentI != null)
-						{
-							spaceId 		= componentI.getDomainFatherId();
-							SpaceInst space = todo.getOrganizationController().getSpaceInstById(spaceId);
-							if (space != null)
-								spaceLabel 		= space.getName();
-							componentLabel 	= componentI.getLabel();
-						}
-						//Trick for workflow
-						String externalId = todoHeader.getExternalId().replace('#', '_');
-						arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(spaceLabel+" > "+componentLabel+" > "+todoHeader.getName()), "javascript:onClick=goTo('" + m_context + URLManager.getURL(null, spaceId, todoHeader.getComponentId()) + "','"+externalId+"','com.stratelia.webactiv.calendar.backbone.TodoDetail','"+todoHeader.getComponentId()+"')");
 					}
+				}
+			}
+
+			if (todoHeader.getExternalId() == null) {
+				arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(todoHeader.getName()), "javascript:onClick=viewToDo('"+todoHeader.getId()+"')");
+			} else {
+				componentI 		= todo.getComponentInst(todoHeader.getComponentId());
+				componentLabel 	= todoHeader.getComponentId();
+				if (componentI != null) {
+					spaceId 		= componentI.getDomainFatherId();
+					SpaceInstLight space = todo.getSpaceInst(spaceId);
+					if (space != null)
+						spaceLabel 		= space.getName();
+					componentLabel 	= componentI.getLabel();
+				}
+				//Trick for workflow
+				String externalId = todoHeader.getExternalId().replace('#', '_');
+				arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(spaceLabel+" > "+componentLabel+" > "+todoHeader.getName()), "javascript:onClick=goTo('" + m_context + URLManager.getURL(null, spaceId, todoHeader.getComponentId()) + "','"+externalId+"','com.stratelia.webactiv.calendar.backbone.TodoDetail','"+todoHeader.getComponentId()+"')");
+			}
 			
             ArrayCellText cellText = arrayLine.addArrayCellText(todo.getString("priorite"+todoHeader.getPriority().getValue()));
             cellText.setCompareOn(todoHeader.getPriority());

@@ -28,7 +28,9 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.ejb.RemoveException;
 
@@ -42,6 +44,8 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.calendar.control.CalendarBm;
 import com.stratelia.webactiv.calendar.control.CalendarBmHome;
@@ -70,6 +74,9 @@ public class ToDoSessionController extends AbstractComponentSessionController {
   private Collection currentAttendees = null;
   private NotificationSender notifSender = null;
 
+  private Map<String, ComponentInstLight> componentsMap = new HashMap<String, ComponentInstLight>();
+  private Map<String, SpaceInstLight> spacesMap = new HashMap<String, SpaceInstLight>();
+  
   /**
    * Constructor declaration
    * @see
@@ -688,4 +695,40 @@ public class ToDoSessionController extends AbstractComponentSessionController {
     }
   }
 
+  
+  /**
+   * ComponentInst cache mechanism
+   * @param componentId
+   * @return
+   */
+  public ComponentInstLight getComponentInst(String componentId) {
+    ComponentInstLight resultComp = null;
+    ComponentInstLight cachedComp = componentsMap.get(componentId);
+    if (cachedComp != null) {
+      resultComp = cachedComp;
+    } else {
+      resultComp = getOrganizationController().getComponentInstLight(componentId);
+      componentsMap.put(componentId, resultComp);
+    }
+    return resultComp;
+  }
+  
+  /**
+   * SpaceInst cache mechanism
+   * @param spaceId
+   * @return
+   */
+  public SpaceInstLight getSpaceInst(String spaceId) {
+    SpaceInstLight resultSpace = null;
+    SpaceInstLight cachedSpace = spacesMap.get(spaceId);
+    if (cachedSpace != null) {
+      resultSpace = cachedSpace;
+    } else {
+      resultSpace = getOrganizationController().getSpaceInstLightById(spaceId);
+      spacesMap.put(spaceId, resultSpace);
+    }
+    return resultSpace;
+  }
+  
+  
 }
