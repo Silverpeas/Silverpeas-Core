@@ -1475,8 +1475,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       st.lowerCaseMode(true);
       st.wordChars('\u0000', '\u00FF');
       st.quoteChar('"');
-      st.ordinaryChar('+');
-      st.ordinaryChar('-');
       st.ordinaryChar(')');
       st.ordinaryChar('(');
       st.ordinaryChar(' ');
@@ -1491,8 +1489,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             specialChar = String.valueOf((char) st.ttype);
           }
           if (!word.isEmpty()) {
-            if (!isKeyword(word)) {
-              // Detect field restriction (syntax "field:fieldname query")
+            // Check that it's not a determiner or a lucene specific characters
+            if (!isKeyword(word) &&
+                !(word.indexOf("*") >= 0 || word.indexOf("?") >= 0 || word.indexOf(":") >= 0 ||
+                    word.indexOf("+") >= 0 || word.indexOf("-") >= 0)) {
               if (word.indexOf(":") != -1) {
                 header = word.substring(0, word.indexOf(":")+1);
                 word = word.substring(word.indexOf(":")+1, word.length());
