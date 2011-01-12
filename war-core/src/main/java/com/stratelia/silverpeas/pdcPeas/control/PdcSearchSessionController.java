@@ -1515,6 +1515,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         }
         synonymsString.insert(0, header);
         synonymsQueryString = synonymsString.toString();
+        SilverTrace.info("pdcPeas",
+            "PdcSearchSessionController.getSynonymsQueryString",
+            "root.MSG_GEN_PARAM_VALUE", "queryString = " + queryString + ", with synonyms: "+synonymsQueryString);
       } catch (IOException e) {
         throw new PdcPeasRuntimeException("PdcSearchSessionController.setSynonymsQueryString",
             SilverpeasException.ERROR, "pdcPeas.EX_GET_SYNONYMS", e);
