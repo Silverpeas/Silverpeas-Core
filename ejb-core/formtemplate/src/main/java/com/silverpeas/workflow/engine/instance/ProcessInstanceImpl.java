@@ -30,6 +30,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,7 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
+import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.form.fieldDisplayer.WysiwygFCKFieldDisplayer;
 import com.silverpeas.workflow.api.ProcessModelManager;
@@ -78,6 +80,8 @@ import com.silverpeas.workflow.engine.dataRecord.ProcessInstanceDataRecord;
 import com.silverpeas.workflow.engine.dataRecord.ProcessInstanceRowRecord;
 import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.attachment.control.AttachmentController;
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 
 /**
  * This class is one implementation of interface UpdatableProcessInstance. It uses Castor library to
@@ -1069,6 +1073,23 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
         PagesContext context = new PagesContext("dummy", "0", actionData.getLanguage(), false, getModelId(), "dummy");
         context.setObjectId(instanceId);
         displayer.duplicateContent(updatedField, tmpl, context, "Step"+step.getId());
+      }
+      
+      if ( "file".equals(tmpl.getTypeName()) ) {
+        String attachmentId = updatedField.getValue();
+        if ( attachmentId != null ) {
+          ForeignPK fromPK = new ForeignPK(instanceId, modelId);
+          ForeignPK toPK = new ForeignPK("Step"+step.getId(), modelId);
+          
+          Vector<AttachmentDetail> attachments = AttachmentController.searchAttachmentByCustomerPK(fromPK);
+          for (AttachmentDetail attachment : attachments) {
+            if (attachmentId.equals(attachment.getPK().id)) {
+              Hashtable<String, String> newIds = AttachmentController.copyAttachment(attachment, fromPK, toPK);
+              updatedField.setStringValue(newIds.get(attachmentId));
+              break;
+            }
+          }
+        }
       }
     }
   }
