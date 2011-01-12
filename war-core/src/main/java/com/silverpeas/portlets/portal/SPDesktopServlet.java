@@ -119,7 +119,23 @@ public class SPDesktopServlet extends HttpServlet {
     }
 
     if (StringUtil.isDefined(spaceHomePage)) {
-      response.sendRedirect(spaceHomePage);
+      if (spaceHomePage.startsWith("/")) {
+        // case of forward inside application /silverpeas
+        RequestDispatcher rd = context.getRequestDispatcher(spaceHomePage);
+        rd.forward(request, response);
+      } else {
+        if (spaceHomePage.startsWith("$")) {
+          // case of redirection to another webapp (/weblib for example)
+          String sRequestURL = request.getRequestURL().toString();
+          String m_sAbsolute =
+              sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
+          String baseURL =
+              GeneralPropertiesManager.getGeneralResourceLocator().getString("httpServerBase",
+                  m_sAbsolute);
+          spaceHomePage = baseURL + spaceHomePage.substring(1);
+        }
+        response.sendRedirect(spaceHomePage);
+      }
     } else {
       spContext = getUserIdOrSpaceId(request, false);
       setUserIdAndSpaceIdInRequest(request);
