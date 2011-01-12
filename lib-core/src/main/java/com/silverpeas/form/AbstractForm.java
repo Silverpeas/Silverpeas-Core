@@ -239,27 +239,35 @@ public abstract class AbstractForm implements Form {
       
     for (FieldTemplate fieldTemplate : fieldTemplates) {
       FieldDisplayer fieldDisplayer = null;
-      if (fieldTemplate != null) {
-        String fieldName = fieldTemplate.getFieldName();
-        String fieldType = fieldTemplate.getTypeName();
-        String fieldDisplayerName = fieldTemplate.getDisplayerName();
-        try {
-          if ((fieldDisplayerName == null) || (fieldDisplayerName.isEmpty())) {
-            fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
-          }
-          if ((!"wysiwyg".equals(fieldDisplayerName) || updateWysiwyg)) {
-            fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
-            if (fieldDisplayer != null) {
-              attachmentIds.addAll(fieldDisplayer.update(items, record.getField(fieldName),
-                      fieldTemplate, pagesContext));
+      
+      // Have to check if field is not readonly, if so no need to update
+      if (!fieldTemplate.isReadOnly()) {
+        if (fieldTemplate != null) {
+          String fieldName = fieldTemplate.getFieldName();
+          String fieldType = fieldTemplate.getTypeName();
+          String fieldDisplayerName = fieldTemplate.getDisplayerName();
+          try {
+            if ((fieldDisplayerName == null) || (fieldDisplayerName.isEmpty())) {
+              fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
             }
+            if ((!"wysiwyg".equals(fieldDisplayerName) || updateWysiwyg)) {
+              fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
+              if (fieldDisplayer != null) {
+                attachmentIds.addAll(fieldDisplayer.update(items, record.getField(fieldName),
+                        fieldTemplate, pagesContext));
+              }
+            }
+          } catch (FormException fe) {
+            SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, fe);
+          } catch (Exception e) {
+            SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, e);
           }
-        } catch (FormException fe) {
-          SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, fe);
-        } catch (Exception e) {
-          SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, e);
         }
       }
+      else {
+        SilverTrace.info("form", "AbstractForm.update", "root.MSG_GEN_PARAM_VALUE", fieldTemplate.getFieldName() + " : field value is ignored as field is read only");
+      }
+      
     }
     return attachmentIds;
   }
