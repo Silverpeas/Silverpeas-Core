@@ -28,11 +28,10 @@
 <%@ include file="check.jsp" %>
 
 <% 
-	// r�cup�ration des param�tres :
-	
 	ConnectionDetail 	connection	= (ConnectionDetail) request.getAttribute("Connection");
 	String 				action		= (String) request.getAttribute("Action");
 	ComponentInst		inst		= (ComponentInst) request.getAttribute("ComponentInst");
+	boolean				isAnonymousAccess = ((Boolean) request.getAttribute("IsAnonymousAccess")).booleanValue();
 	
 	String login = "";
 	String password = "";
@@ -64,7 +63,6 @@
 
 <html>
 <head>
-
 <%
 	out.println(gef.getLookStyleSheet());
 %>
@@ -147,11 +145,18 @@ else {
 	
 	out.println(window.printBefore());
     out.println(frame.printBefore());
+%>
+
+	<% if (isAnonymousAccess) { %>
+		<div class="inlineMessage"><%=resource.getString("webConnections.parametersWillNotBeStored")%></div>
+	<% } %>
+
+<%
     out.println(board.printBefore());
 %>
 
-<FORM Name="connectionForm" method="post" action="<%=m_context%>/RwebConnections/jsp/<%=action%>">
-<table CELLPADDING=5 WIDTH="100%">
+<form name="connectionForm" method="post" action="<%=m_context%>/RwebConnections/jsp/<%=action%>">
+<table cellpadding="5" width="100%">
 	<tr>
 		<td class="txtlibform"><%=resource.getString("GML.name") %> :</td>
 		<td><%=inst.getLabel()%></td>
@@ -164,20 +169,19 @@ else {
 	<% } %>
 	<tr>
 		<td class="txtlibform"><%=resource.getString("webConnections.login") %> :</td>
-		<TD><input type="text" name="Login" size="80" maxlength="100" value="<%=login%>">
-			<IMG src="<%=resource.getIcon("webconnections.mandatory")%>" width="5" height="5" border="0">
-		</TD>
+		<td><input type="text" name="Login" size="80" maxlength="100" value="<%=login%>"/>
+			<img src="<%=resource.getIcon("webconnections.mandatory")%>" width="5" height="5"/>
+		</td>
 	</tr>
 	<tr>
 		<td class="txtlibform"><%=resource.getString("webConnections.password")%> :</td>
-		<TD><input type="password" name="Password" size="80" maxlength="100" value="<%=password%>">
-			<input type="hidden" name="ConnectionId" value="<%=connection.getConnectionId()%>">
-			<input type="hidden" name="ComponentId" value="<%=connection.getComponentId()%>">
-		</TD>
+		<td><input type="password" name="Password" size="80" maxlength="100" value="<%=password%>"/>
+			<input type="hidden" name="ConnectionId" value="<%=connection.getConnectionId()%>"/>
+			<input type="hidden" name="ComponentId" value="<%=connection.getComponentId()%>"/>
+		</td>
 	</tr>
-	<tr><td colspan="2">( <img border="0" src=<%=resource.getIcon("webconnections.mandatory")%> width="5" height="5"> : <%=resource.getString("webconnections.mandatory")%> )</td></tr>
-	
-</table>	
+	<tr><td colspan="2">( <img src=<%=resource.getIcon("webconnections.mandatory")%> width="5" height="5"/> : <%=resource.getString("webconnections.mandatory")%> )</td></tr>
+</table>
 </form>
 
 <% 
@@ -185,14 +189,14 @@ else {
 	ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(validateButton);
     buttonPane.addButton(cancelButton);
-	out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
+	out.println("<br/><center>"+buttonPane.print()+"</center><br/>");
  	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
 </body>
 
-<form name="redirectForm" action="" Method="POST">
-	<input type="hidden" name="ComponentId" value="<%=connection.getComponentId()%>">
+<form name="redirectForm" action="" method="post">
+	<input type="hidden" name="ComponentId" value="<%=connection.getComponentId()%>"/>
 </form>
 
 </html>

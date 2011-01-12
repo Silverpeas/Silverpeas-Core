@@ -3390,3 +3390,28 @@ span.csv {
   background-image: url(../icons/fileType/ico_file_csv.png);
   background-repeat:no-repeat;
 }
+
+/*- [Generic inline messages BEGIN ] ---------------- */
+.inlineMessage,
+.inlineMessage-ok,
+.inlineMessage-nok {
+	padding: 5px;
+	margin: 10px;
+	text-align: center;
+	border: 2px solid; 
+}
+
+.inlineMessage {
+	background-color: #FBF7AA;
+	border-color: #F9E98E;
+}
+
+.inlineMessage-ok {
+	background-color: #B5DF7D;
+	border-color: #9BD94A;
+}
+
+.inlineMessage-nok {
+	background-color: #F79992;
+	border-color: #CE6F6F;
+}

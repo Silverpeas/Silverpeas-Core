@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.external.webConnections.control.WebConnectionsSessionController;
 import com.silverpeas.external.webConnections.model.ConnectionDetail;
+import com.silverpeas.look.LookHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
@@ -109,7 +110,10 @@ public class WebConnectionsRequestRouter extends ComponentRequestRouter {
         String componentId = request.getParameter("ComponentId");
         ConnectionDetail connection = new ConnectionDetail(componentId);
         addParamToconnection(connection, request, webConnectionsSC);
-        webConnectionsSC.createConnection(connection);
+        if (!isAnonymousAccess(request)) {
+          // As anonymous user, connection parameters are not stored
+          webConnectionsSC.createConnection(connection);
+        }
         request.setAttribute("Connection", connection);
         destination = getDestination("Redirect", webConnectionsSC, request);
       } else if (function.equals("Redirect")) {
@@ -204,6 +208,15 @@ public class WebConnectionsRequestRouter extends ComponentRequestRouter {
     OrganizationController orga = new OrganizationController();
     ComponentInst inst = orga.getComponentInst(connection.getComponentId());
     request.setAttribute("ComponentInst", inst);
+    request.setAttribute("IsAnonymousAccess", isAnonymousAccess(request));
+  }
+  
+  private boolean isAnonymousAccess(HttpServletRequest request) {
+    LookHelper lookHelper = (LookHelper) request.getSession().getAttribute("Silverpeas_LookHelper");
+    if (lookHelper != null) {
+      return lookHelper.isAnonymousAccess();
+    }
+    return false;
   }
 
 }
