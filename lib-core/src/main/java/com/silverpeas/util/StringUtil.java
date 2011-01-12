@@ -265,29 +265,4 @@ public class StringUtil {
     return numberFormat.parse(value).floatValue();
   }
   
-
-  /**
-   * Return the occurrence number of the substring inside a text
-   * @param text string
-   * @param subString the substring to search
-   * @return the occurrences number of the substring inside a text
-   */
-   public static final int countOccur(String text, String subString) {
-      return countRegexOccur(text, Pattern.quote(subString));
-  }
-
-   /**
-   * Return the occurrences number of a pattern inside a text
-   * @param text string
-   * @param regex regular expression which contains the searched sub string
-   * @return the occurrences number of a pattern inside a text
-   */
-   public static final int countRegexOccur(String text, String regex) {
-      Matcher matcher = Pattern.compile(regex).matcher(text);
-      int occur = 0;
-      while(matcher.find()) {
-          occur ++;
-      }
-      return occur;
-  }  
 }
