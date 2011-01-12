@@ -64,6 +64,7 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	-moz-box-shadow:0 10px 10px 2px #EAEAE8 inset; 
 	-webkit-box-shadow:0 10px 10px 2px #EAEAE8 inset; 
 	border-top:0;
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
 
 #outils a {
@@ -74,22 +75,28 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	color:#000;}
 
 #administration{
+	height:20px;
 	top: 68px;
 	right: 10px;
-	background-color:#C8ED99;
-	border:1px solid #9BD94A;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-	box-shadow:5px 5px 10px #CCCCCC;
-	-moz-box-shadow:5px 5px 10px #CCCCCC;
-	-webkit-box-shadow:5px 5px 10px #CCCCCC;
+	background-color:#FFFFCC;
+	border:1px solid #EF9F59;
+	border-radius:10px;
+	-moz-border-radius:10px;
+	-webkit-border-radius:10px;
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
+
 #administration a {
-	color:#222222;
-	font-weight: normal;
-	font-size:12px;
+	background:url("/silverpeas/util/icons/Perso.gif") 7px 2px  no-repeat;
+	padding:0 0 0 17px;
+	color:#333333;
+	line-height:20px;
+	display:block;
 }
+
+#administration a:hover, #administration a:focus{
+	color:#DF6900;
+	}
 #administration td {
 	background-image: none;
 	border: none;
@@ -119,9 +126,9 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 }
 .tableFrame {
     background-color: transparent;
+	position:relative;
 }
 .hautFrame {
-	background-color: #FFFFFF;
 	-moz-border-radius:0px 0px 15px 15px;
 	padding-bottom:10px;
 }
@@ -169,17 +176,18 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 #menutoggle {
 	background-color: #f1790f;
     color: #FFF;
-    display: block;
+    display:inline-block;
     font-size: 12px;
-    line-height: 25px;
-    padding: 0 15px;
-	border:1px solid #f1790f ;
-	border-radius: 10px 10px 0px 0;
-	-moz-border-radius: 10px 10px 0 0;
-	-webkit-border-radius: 10px 10px 0 0;
-	border-bottom:0;
-	margin:0 10px -2px 0;
+    line-height: 20px;
+    padding: 0 20px  0 30px;
+	border:1px solid #F15F0F ;
+	border-radius: 10px 0 0 10px;
+	-moz-border-radius:  10px 0 0 10px;
+	-webkit-border-radius:  10px 0 0 10px;
+	margin:0 0px 4px 0;
 	text-align:center;
+	border-right:0;
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
 
 #menutoggle img{ display:none;}
@@ -205,6 +213,10 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	padding-top:8px;
 }
 #spacePerso {
+	background-image:url("/silverpeas/admin/jsp/icons/silverpeas_light/spacePerso.png");
+	background-repeat: no-repeat;
+	background-position:2px 2px;
+	margin-left:10px;
 	border-radius: 8px;
 	-moz-border-radius: 8px;
 	-webkit-border-radius: 8px;
@@ -217,10 +229,7 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	background-color:#FFF;
 	border: 1px solid #cacaca;
 	width:170px;
-	background-image:url("/silverpeas/admin/jsp/icons/silverpeas_light/spacePerso.png");
-	background-repeat: no-repeat;
-	background-position:2px 2px;
-	margin-left:10px;
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
 #spacePerso .contentSpace, .spaceLevel1On .contentSpace{
 	margin-top:10px;
@@ -302,52 +311,70 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 
 
 #topBar #shortcuts {
-	right:136px;
-	bottom:34px;
-	}
+    top: 68px;
+    right: 156px;
+}
 
 #shortcuts a { 
 	color: #333333;
     font-weight: bold;
 	display:block;
 }
-#shortcuts a:hover, #shortcuts a:visited, #shortcuts td.activeShortcut a{
-	color:#DF6900;
+#shortcuts a:hover, #shortcuts a:focus, #shortcuts td.activeShortcut a{
+	color:#0C81CF;
 	}
 #shortcuts td.activeShortcut a { text-decoration:underline;}
 #shortcuts td {
+	background-color:#FFFFFF;
 	background-image: none;
-	background-color:#EAEAE8;
+	box-shadow:0 10px 10px 2px #EAEAE8 inset; 
+	-moz-box-shadow:0 10px 10px 2px #EAEAE8 inset; 
+	-webkit-box-shadow:0 10px 10px 2px #EAEAE8 inset; 
 	border-top:1px solid #BFBFBF ;
+	border-bottom:1px solid #BFBFBF;
 	padding:0;
-	height:30px;
+	line-height:20px;
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 	}
 #shortcuts td.activeShortcut {	
 	background-image:none;
     border:0;
     padding:0px;
 	border-top:1px solid #BFBFBF ;
+	border-bottom:1px solid #BFBFBF ;
 }
 
+#shortcuts td img {
+	border-left: 1px solid #DFDFDF;
+    height: 20px;
+    margin: 0 0 0 15px;
+    width: 10px;
+	}
+
 #shortcuts td.gaucheShortcuts{
-	background-image: none;
+	background-image:url("/silverpeas/admin/jsp/icons/silverpeas_light/puceSpace.png");
 	background-color:#EAEAE8;
+	background-position:7px 6px;
+	background-repeat:no-repeat;
+	box-shadow:10px 0px 0px 0px #EAEAE8 inset; 
+	-moz-box-shadow:10px 0px 0px 0px #EAEAE8 inset; 
+	-webkit-box-shadow:10px 0px 0px 0px #EAEAE8 inset; 
 	border:1px solid #BFBFBF ;
-	border-width:1px 0 0 1px;
-	border-radius:10px 0 0 0;
-	-moz-border-radius:10px 0 0 0;
-	-webkit-border-radius:10px 0 0 0;
-	padding-left:10px;
+	padding-left:15px;
+	border-right:0;
+	border-radius:10px  0px 0px 10px;
+	-moz-border-radius:10px  0px 0px 10px;
+	-webkit-border-radius:10px  0px 0px 10px;
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");	
 	}
 #shortcuts td.droiteShortcuts{
-	background-image: none;
-	background-color:#EAEAE8;
-	border:1px solid #BFBFBF;
-	border-width:1px 1px 0 0;
-	border-radius:0 10px 0px 0px;
-	-moz-border-radius:0 10px 0px 0px;
-	-webkit-border-radius:0 10px 0px 0px;
-	padding-right:10px;
+	border:1px solid #BFBFBF ;
+	border-radius: 0px 10px 10px 0px;
+	-moz-border-radius: 0px 10px 10px 0px;
+	-webkit-border-radius: 0px 10px 10px 0px;
+	padding-right:5px;
+	border-left:0px;
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 	}
 
 #domainsBar .milieuBoutonV5 a , .milieuBoutonV5 a {
@@ -369,6 +396,7 @@ td.milieuOngletOn {
 	-webkit-border-radius:8px 8px 0 0;
 	padding-left:10px;
 	padding-right:10px;
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
 
 .milieuOngletOn a {
@@ -385,6 +413,7 @@ td.milieuOngletOn {
 	-webkit-border-radius:8px 8px 0 0;
 	padding-left: 10px;
 	padding-right: 10px;
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
 .milieuOngletOff a {
 	color:#666666;
@@ -415,6 +444,7 @@ td.milieuOngletOn {
 	-webkit-border-radius:8px 8px 0 0;
 	padding-left: 10px;
 	padding-right: 10px;
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
 
 #tabDivId .milieuOngletOn a {
@@ -431,6 +461,7 @@ td.milieuOngletOn {
 	-webkit-border-radius:8px 8px 0 0;
 	padding-left: 10px;
 	padding-right: 10px;
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
 #tabDivId .milieuOngletOff a {
 	color:#6F6F6F;
@@ -469,7 +500,8 @@ td.milieuOngletOn {
 	-moz-box-shadow:5px 5px 10px #cccccc;
 	-webkit-box-shadow:5px 5px 10px #cccccc;
 	padding:7px;
-}
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+	}
 .fondPhoto .txtlibform {
 	color: #ffffff;
 }
@@ -541,13 +573,19 @@ td.milieuOngletOn {
 	box-shadow:5px 5px 10px #cccccc;	
 	-moz-box-shadow:5px 5px 10px #cccccc;
 	-webkit-box-shadow:5px 5px 10px #cccccc;
+	background-color:transparent;
 }
+
+	
 .arrayPane {
 	box-shadow:5px 5px 10px #cccccc;	
 	-moz-box-shadow:5px 5px 10px #cccccc;
 	-webkit-box-shadow:5px 5px 10px #cccccc;
 	
 }
+
+
+
 #portletPages h2.portlet-title {
 	color:#0C81CF;	
 	font-size:11px;
@@ -555,18 +593,24 @@ td.milieuOngletOn {
 	padding-top:3px;
 	letter-spacing:1px;
 }
+
+
+
 #portletPages dl.sort dt {
+	line-height:20px;
+	height:22px;
 	border-radius:8px 8px 0 0;
 	-moz-border-radius:8px 8px 0 0;
 	-webkit-border-radius:8px 8px 0 0;
 }
 #portletPages div.portlet-content {
-	border-color:#CCC;
-	border-radius:0 0 8px 8px ;
-	-moz-border-radius:0 0 8px 8px ;
-	-webkit-border-radius:0 0 8px 8px ;
 	font-size:11px;
 	color:#666666;
+	border-color:#CCCCCC;
+	border-radius:0px 0px 8px 8px ;
+	-moz-border-radius:0px 0px 8px 8px ;
+	-webkit-border-radius:0px 0px 8px 8px ;
+	height:auto;
 }
 #pubList {
 	padding:10px;
@@ -620,20 +664,34 @@ td.milieuOngletOn {
 	border-radius:  8px 0 8px 8px;
 	-moz-border-radius: 8px 0 8px 8px;
 	-webkit-border-radius:  8px 0 8px 8px;
-	box-shadow:8px 8px 10px #CCCCCC;
-	-moz-box-shadow:8px 8px 10px #CCCCCC;
-	-webkit-box-shadow:8px 8px 10px #CCCCCC;
-	margin-top: -2px;
+	margin-top:-3px;
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
 
+#topPage .yuimenu ul, #kmelia .yuimenu ul, #attachmentList .yuimenu ul {
+	border-color:#F1790F;
+	}
 .yuimenu a {
 	font-size:11px;
 	background-color:#FFD5AF;
 	font-weight:bold;
 }
+
+.yuimenu .yuimenuitem{
+	border-bottom:0px solid #f6f7ee ;
+	}
+.yuimenu .yuimenubaritem-selected,
+.yuimenu .yuimenuitem-selected {
+
+    background-color: #FFD5AF;
+
+}
+
+	
 .yuimenu a:hover, #portletPages .yuimenu  a:hover{
 	color:#FFF;
 	background-color: #F1790F;
+	border-color:#F1790F;
 }
 
 #dNdActionLabel { 
