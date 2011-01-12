@@ -111,7 +111,7 @@ public class WorkingUser extends AbstractReferrableObject {
    * @return state name
    */
   public String getState() {
-    return state;
+    return (state==null) ? "" : state;
   }
 
   /**
