@@ -183,10 +183,10 @@ public class WorkflowEngineThread extends Thread {
         if (request != null) {
           try {
             request.process();
-          } catch (WorkflowException we) {
+          } catch (Exception e) {
             SilverTrace.error("workflowEngine", "WorkflowEngineThread",
                 "workflowEngine.EX_ERROR_PROCESSING_REQUEST", request
-                .toString(), we);
+                .toString(), e);
           }
         }
 
@@ -1151,7 +1151,7 @@ class WorkflowTools {
         if (consequence.getItem() != null) {
           Field fieldToCompare = instance.getFolder().getField(
               consequence.getItem());
-          if (fieldToCompare != null)
+          if ((fieldToCompare != null) && (fieldToCompare.getStringValue() != null))
             verified = consequence.isVerified(fieldToCompare.getStringValue());
         } else {
           verified = true;

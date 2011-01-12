@@ -168,4 +168,9 @@ public interface UpdatableProcessInstance extends ProcessInstance {
    */
   public void cancelQuestion(Question question) throws WorkflowException;
 
+  /**
+   * Set the timeout status of this instance
+   * @param timeoutStatus true if this instance is in an active state for a long long time
+   */
+  public void setTimeoutStatus(boolean timeoutStatus);
 }

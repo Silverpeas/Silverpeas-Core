@@ -126,6 +126,34 @@ public class GenericRecordSetManager {
   }
 
   /**
+   * Get value of a field record directly from database.
+   * 
+   * @param templateExternalId  template external id
+   * @param recordExternalId    record external id
+   * @param fieldName           field name
+   * @return the field record value
+   * 
+   * @throws FormException
+   */
+  public String getRawValue(String templateExternalId,
+      String recordExternalId, String fieldName) throws FormException {
+
+    Connection con = null;
+
+    try {
+      con = getConnection();
+
+      return selectRecordFieldsRow(con, templateExternalId, recordExternalId, fieldName);
+    } catch (SQLException e) {
+      throw new FormException("GenericRecordSetManager.getRawValues",
+          "form.EXP_INSERT_FAILED", "templateExternalId : " + templateExternalId + ", recordExternalId : "+recordExternalId, e);
+    } finally {
+      closeConnection(con);
+    }
+  }
+  
+  
+  /**
    * Return the record set known be its external id.
    * @param externalId
    * @return
@@ -897,6 +925,11 @@ public class GenericRecordSetManager {
         field = record.getField(fieldName);
         fieldValue = (String) field.getStringValue();
 
+        SilverTrace.debug("form", "GenericRecordSetManager.updateFieldRows",
+            "root.MSG_GEN_PARAM_VALUE", "fieldName = " + fieldName
+            + ", fieldValue = " + fieldValue
+            + ", recordId = " + recordId);
+        
         update.setString(1, fieldValue);
         update.setInt(2, recordId);
         update.setString(3, fieldName);
@@ -960,6 +993,28 @@ public class GenericRecordSetManager {
     }
   }
 
+   private String selectRecordFieldsRow(Connection con,
+       String templateExternalId, String recordExternalId, String fieldName) throws SQLException{
+     PreparedStatement select = null;
+     ResultSet rs = null;
+
+     try {
+       select = con.prepareStatement(SELECT_TEMPLATE_RECORD_VALUES);
+       select.setString(1, fieldName);
+       select.setString(2, recordExternalId);
+       select.setString(3, templateExternalId);
+       rs = select.executeQuery();
+
+       if (!rs.next()) {
+         return null;
+       }
+       
+       return rs.getString("fieldValue");
+     } finally {
+       DBUtil.close(rs, select);
+     }  
+   }
+   
    private void closeConnection(Connection con) throws FormException {
     if (con != null) {
       try {
@@ -1043,4 +1098,9 @@ public class GenericRecordSetManager {
 
   static final private String DELETE_RECORD_FIELDS = "delete from "
       + FIELDS_TABLE + " where recordId=?";
+  
+  static final private String SELECT_TEMPLATE_RECORD_VALUES = "select fieldValue from " 
+    + FIELDS_TABLE + " tf, "
+    + RECORD_TABLE + " rec, "
+    + TEMPLATE_TABLE + " tpl where tf.fieldName= ? and tf.recordId = rec.recordId and rec.externalId = ? and rec.templateId = tpl.templateId and tpl.externalId = ?";
 }

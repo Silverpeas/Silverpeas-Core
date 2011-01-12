@@ -76,6 +76,7 @@ import com.silverpeas.workflow.api.model.TimeOutAction;
 import com.silverpeas.workflow.api.model.UserInRole;
 import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.workflow.engine.WorkflowHub;
+import com.silverpeas.workflow.engine.dataRecord.LazyProcessInstanceDataRecord;
 import com.silverpeas.workflow.engine.dataRecord.ProcessInstanceDataRecord;
 import com.silverpeas.workflow.engine.dataRecord.ProcessInstanceRowRecord;
 import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
@@ -884,7 +885,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
       if (returnedField == null)
         throw new WorkflowException("ProcessInstanceImpl.getField",
             "workflowEngine.EXP_UNKNOWN_ITEM", "folder." + fieldName);
-      return folder.getField(fieldName);
+      return returnedField;
     } catch (FormException e) {
       throw new WorkflowException("ProcessInstanceImpl.getField",
           "workflowEngine.EXP_UNKNOWN_ITEM", "folder." + fieldName, e);
@@ -1030,10 +1031,14 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
       // fieldIndex = i;
       String fieldName = (String) fieldNames[i];
       Field updatedField = actionData.getField(fieldName);
+      if (updatedField == null) {
+        SilverTrace.error("workflowEngine", "ProcessInstanceImpl.checkWysiwygData",
+            "root.MSG_GEN_ENTER_METHOD", "cannot retrieve field : " + fieldName);
+      }
       FieldTemplate tmpl = template.getFieldTemplate(fieldNames[i]);
       
       if ("wysiwyg".equals(tmpl.getDisplayerName())) {
-        if (!updatedField.getStringValue().startsWith(WysiwygFCKFieldDisplayer.dbKey)) {
+        if ( (!updatedField.isNull()) && (!updatedField.getStringValue().startsWith(WysiwygFCKFieldDisplayer.dbKey)) ) {
           WysiwygFCKFieldDisplayer displayer = new WysiwygFCKFieldDisplayer();
           PagesContext context = new PagesContext("dummy", "0", actionData.getLanguage(), false, getModelId(), "dummy");
           context.setObjectId(instanceId);
@@ -2283,15 +2288,12 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
 
     if (template != null) {
       title = template.getTitle(role, lang);
-      DataRecord data = null;
-      try {
-        data = getAllDataRecord(role, lang);
-      } catch (WorkflowException e) {
-        data = null;
-      }
 
-      if (data != null) {
-        title = DataRecordUtil.applySubstitution(title, data, lang);
+      try {
+        LazyProcessInstanceDataRecord dataRecord = new LazyProcessInstanceDataRecord(this, role, lang);
+        title = DataRecordUtil.applySubstitution(title, dataRecord, lang);
+      } catch (WorkflowException e) {
+        SilverTrace.error("workflowEngine", "ProcessInstanceImpl.getTitle()", "workflowEngine.EX_GET_TITLE");
       }
     }
 
