@@ -121,6 +121,10 @@ public class SPDesktopServlet extends HttpServlet {
     if (StringUtil.isDefined(spaceHomePage)) {
       if (spaceHomePage.startsWith("/")) {
         // case of forward inside application /silverpeas
+        String applicationContext = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+        if (spaceHomePage.startsWith(applicationContext)) {
+          spaceHomePage = spaceHomePage.substring(applicationContext.length());
+        }
         RequestDispatcher rd = context.getRequestDispatcher(spaceHomePage);
         rd.forward(request, response);
       } else {
