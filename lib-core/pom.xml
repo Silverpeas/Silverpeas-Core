@@ -84,6 +84,10 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
+	<dependency>
+	  <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+	</dependency>
     <dependency>
       <groupId>net.sourceforge</groupId>
       <artifactId>cryptolib</artifactId>
@@ -175,6 +179,10 @@
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-spellchecker</artifactId>
     </dependency>
+    <!--<dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-snowball</artifactId>
+    </dependency>-->
     <dependency>
       <groupId>org.jdom</groupId>
       <artifactId>jdom</artifactId>
