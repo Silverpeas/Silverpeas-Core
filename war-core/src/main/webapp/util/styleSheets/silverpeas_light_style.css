@@ -327,17 +327,13 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	}
 #shortcuts td.activeShortcut a { text-decoration:underline;}
 #shortcuts td {
-	background-color:#FFFFFF;
+	background-color:#F4F4F3;
 	background-image: none;
-	box-shadow:0 10px 10px 2px #EAEAE8 inset; 
-	-moz-box-shadow:0 10px 10px 2px #EAEAE8 inset; 
-	-webkit-box-shadow:0 10px 10px 2px #EAEAE8 inset; 
 	border-top:1px solid #BFBFBF ;
 	border-bottom:1px solid #BFBFBF;
 	padding:0;
 	line-height:20px;
-	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
-	}
+}
 #shortcuts td.activeShortcut {	
 	background-image:none;
     border:0;
@@ -355,12 +351,9 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 
 #shortcuts td.gaucheShortcuts{
 	background-image:url("/silverpeas/admin/jsp/icons/silverpeas_light/puceSpace.png");
-	background-color:#EAEAE8;
+	background-color:#F4F4F3;
 	background-position:7px 6px;
 	background-repeat:no-repeat;
-	box-shadow:10px 0px 0px 0px #EAEAE8 inset; 
-	-moz-box-shadow:10px 0px 0px 0px #EAEAE8 inset; 
-	-webkit-box-shadow:10px 0px 0px 0px #EAEAE8 inset; 
 	border:1px solid #BFBFBF ;
 	padding-left:15px;
 	border-right:0;
