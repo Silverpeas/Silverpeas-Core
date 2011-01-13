@@ -288,8 +288,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   public String getPhoto(String filename) {
-    // return getUserDetail().getLogin() + '.' + FileRepositoryManager.getFileExtension(filename);
-    return getUserDetail().getLogin() + '.' + "jpg";
+    return getUserDetail().getAvatarFileName();
   }
 
   public void setCurrentView(String currentView) {

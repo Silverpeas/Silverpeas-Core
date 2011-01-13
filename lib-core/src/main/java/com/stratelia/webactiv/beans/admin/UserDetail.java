@@ -32,6 +32,8 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import java.io.File;
 import java.io.Serializable;
 
+import org.apache.commons.beanutils.BeanUtils;
+
 public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   public static final String ADMIN_ACCESS = "A";
@@ -40,6 +42,8 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   public static final String GUEST_ACCESS = "G";
   public static final String KM_ACCESS = "K";
   public static final String DOMAIN_ACCESS = "D";
+  private static final String AVATAR_PROPERTY = GeneralPropertiesManager.getString("avatar.property", "login");
+  private static final String AVATAR_EXTENSION = GeneralPropertiesManager.getString("avatar.extension", "jpg");
   private static final long serialVersionUID = -109886153681824159L;
   private String m_sId = null;
   private String m_sSpecificId = null;
@@ -345,14 +349,23 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   public String getAvatar() {
-    String avatar = getLogin() + ".jpg";
+    String avatar = getAvatarFileName();
     File image = new File(FileRepositoryManager.getAbsolutePath("avatar")
         + File.separatorChar + avatar);
     if (image.exists()) {
       return "/display/avatar/" + avatar;
-    } else {
-      return "/directory/jsp/icons/avatar.png";
     }
+    return "/directory/jsp/icons/avatar.png";
+  }
+  
+  public String getAvatarFileName() {
+    String propertyValue = getLogin();
+    try {
+      propertyValue = BeanUtils.getSimpleProperty(this, AVATAR_PROPERTY);
+    } catch (Exception e) {
+      SilverTrace.debug("admin", "UserDetail.getAvatarFileName", "admin.MSG_GET_PROPERTY", e);
+    }
+    return propertyValue + "." + AVATAR_EXTENSION;
   }
   
   public String getStatus() {

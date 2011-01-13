@@ -23,6 +23,9 @@
  */
 package com.silverpeas.directory.model;
 
+import java.sql.SQLException;
+import java.util.Collection;
+
 import com.silverpeas.socialNetwork.invitation.InvitationService;
 import com.silverpeas.socialNetwork.relationShip.RelationShipService;
 import com.silverpeas.util.StringUtil;
@@ -30,13 +33,8 @@ import com.stratelia.silverpeas.peasCore.SessionInfo;
 import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import java.io.File;
-import java.sql.SQLException;
-import java.util.Collection;
 
 /**
- *
  * @author ${user}
  */
 public class Member {
@@ -53,17 +51,8 @@ public class Member {
   }
 
   public final void refreshStatus() {
-    //return the url of profil Photo
-    String avatar = getUserDetail().getLogin() + ".jpg";
-    File image = new File(FileRepositoryManager.getAbsolutePath("avatar")
-        + File.separatorChar + avatar);
-    if (image.exists()) {
-      profilPhoto = "/display/avatar/" + avatar;
-      this.avatar = true;
-    } else {
-      profilPhoto = "/directory/jsp/icons/avatar.png";
-
-    }
+    // return the url of profil Photo
+    profilPhoto = getUserDetail().getAvatar();
     Collection<SessionInfo> sessionInfos = SessionManager.getInstance().getConnectedUsersList();
     for (SessionInfo varSi : sessionInfos) {
       if (varSi.m_User.equals(userDetail)) {
@@ -109,61 +98,25 @@ public class Member {
   public String getLastName() {
     return getUserDetail().getLastName();
   }
-  
 
   public String getDuration() {
     return duration;
   }
 
   /**
-   * return  the url of  Profil Photo
-   *
+   * return the url of Profil Photo
    * @return String
-   * 
    */
   public String getProfilPhoto() {
-
     return profilPhoto;
   }
 
-  /**
-   * Transform the milliseconds duration in hours, minutes and seconds.
-   * @param duration in milliseconds
-   * @return "xxHyymnzzs" where xx=hours, yy=minutes, zz=seconds
-   * 
-   */
-  private String formatDuration(long duration) {
-    long millisPerHour = (long) 60 * (long) 60 * (long) 1000;
-    long millisPerMinute = (long) 60 * (long) 1000;
-    long secondDuration = ((duration % millisPerHour) % millisPerMinute) / 1000;
-    long hourDuration = duration / millisPerHour;
-    long minuteDuration = (duration % millisPerHour) / millisPerMinute;
-
-
-    String dHour = Long.toString(hourDuration) + " h ";
-    String dMinute = Long.toString(minuteDuration) + " m ";
-    String dSecond = Long.toString(secondDuration) + " s ";
-
-
-    if (hourDuration < 1) {
-      dHour = "";
-    }
-    if (minuteDuration < 1) {
-
-      dMinute = "";
-    } else {
-      dSecond = "";
-    }
-
-
-    return dHour + dMinute + dSecond;
-  }
-  
-  public boolean isRelationOrInvitation(String myId){
+  public boolean isRelationOrInvitation(String myId) {
     RelationShipService relation = new RelationShipService();
     InvitationService invitation = new InvitationService();
     try {
-      return relation.isInRelationShip(Integer.parseInt(myId), Integer.parseInt(getId())) ||( invitation.getInvitation(Integer.parseInt(myId), Integer.parseInt(getId()))!=null);
+      return relation.isInRelationShip(Integer.parseInt(myId), Integer.parseInt(getId())) ||
+          (invitation.getInvitation(Integer.parseInt(myId), Integer.parseInt(getId())) != null);
     } catch (NumberFormatException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -172,20 +125,20 @@ public class Member {
       e.printStackTrace();
     }
     return false;
-    
+
   }
-  
+
   public boolean haveAvatar() {
     return avatar;
   }
-  
+
   public String getStatus() {
     if (!StringUtil.isDefined(userDetail.getStatus())) {
       return null;
     }
     return userDetail.getStatus();
   }
-  
+
   public String getMail() {
     return userDetail.geteMail();
   }

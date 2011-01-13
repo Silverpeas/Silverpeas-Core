@@ -215,7 +215,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
     String avatar = directorySC.getPhoto(file.getName());
     ImageProfil img = new ImageProfil(avatar, AVATAR_FOLDER);
     img.saveImage(file.getInputStream());
-    String vignette_url = "/display/avatar/" + avatar;
+    String vignette_url = directorySC.getUserDetail().getAvatar();
     request.setAttribute("vignette_url", vignette_url);
 
     return "test.jsp";

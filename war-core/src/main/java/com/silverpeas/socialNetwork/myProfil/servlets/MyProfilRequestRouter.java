@@ -110,7 +110,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
         destination = "/socialNetwork/jsp/myProfil/myProfilTemplate.jsp";
       } else if (function.equalsIgnoreCase("validateChangePhoto")) {
         try {
-          saveAvatar(request, snUserFull.getUserFull().getLogin());
+          saveAvatar(request, snUserFull.getUserFull().getAvatarFileName());
 
           return getDestination("MyInfos", componentSC, request);
         } catch (Exception ex) {
@@ -177,10 +177,9 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
       throws IOException, UtilException {
     List<FileItem> parameters = FileUploadUtil.parseRequest(request);
     FileItem file = FileUploadUtil.getFile(parameters, "WAIMGVAR0");
-    String avatar = nameAvatar + ".jpg";
-    ImageProfil img = new ImageProfil(avatar, AVATAR_FOLDER);
+    ImageProfil img = new ImageProfil(nameAvatar, AVATAR_FOLDER);
     img.saveImage(file.getInputStream());
-    return avatar;
+    return nameAvatar;
   }
   /**
    * methode to choose (x) contacts for display it in the page profil
