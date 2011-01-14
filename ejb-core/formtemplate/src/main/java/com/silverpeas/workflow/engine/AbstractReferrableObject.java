@@ -41,23 +41,29 @@ public abstract class AbstractReferrableObject implements ReferrableObjectIntf {
    * @see equals
    * @see hashCode
    */
+  @Override
   public abstract String getKey();
 
   /**
    * Tests equality with another referrable object
+   * @param theOther 
    * @return true if both object's keys are equals
    */
+  @Override
   public boolean equals(Object theOther) {
-    if (theOther instanceof String)
+    if (theOther instanceof String) {
       return (getKey().equals(theOther));
-    else
+    }
+    else {
       return (getKey().equals(((ReferrableObjectIntf) theOther).getKey()));
+    }
   }
 
   /**
    * Calculate the hashcode for this referrable object
    * @return hashcode
    */
+  @Override
   public int hashCode() {
     return (getKey().hashCode());
   }

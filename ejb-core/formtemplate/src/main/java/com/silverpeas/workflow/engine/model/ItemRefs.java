@@ -33,7 +33,7 @@ import com.silverpeas.workflow.engine.AbstractReferrableObject;
  * TODO remove, not used
  **/
 public class ItemRefs extends AbstractReferrableObject implements Serializable {
-  private Vector itemRefList;
+  private static final long serialVersionUID = 430140382083226328L;
   private String roleName = "default";
 
   /**
@@ -41,14 +41,12 @@ public class ItemRefs extends AbstractReferrableObject implements Serializable {
    */
   public ItemRefs() {
     super();
-    itemRefList = new Vector();
   }
 
   /**
    * TODO remove Get the itemRefs
    * @return the itemRefs as a Vector / public Vector getItemRefList() { return itemRefList; } /**
    * Get the role for which the list of items must be returned
-   * @return role name
    */
   public String getRoleName() {
     return roleName;
@@ -66,6 +64,7 @@ public class ItemRefs extends AbstractReferrableObject implements Serializable {
    * Get the unique key, used by equals method
    * @return unique key
    */
+  @Override
   public String getKey() {
     return (this.roleName);
   }

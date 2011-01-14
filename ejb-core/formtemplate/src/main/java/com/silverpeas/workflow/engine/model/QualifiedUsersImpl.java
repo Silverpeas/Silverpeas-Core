@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.workflow.engine.model;
 
 import java.io.Serializable;
@@ -39,7 +38,7 @@ import com.silverpeas.workflow.api.model.UserInRole;
  * &lt;notifiedUsers&gt; and &lt;interestedUsers&gt; elements of a Process Model.
  **/
 public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
-  
+
   private static final long serialVersionUID = -6137211965745730173L;
   private Vector<UserInRole> userInRoleList;
   private Vector<RelatedUser> relatedUserList;
@@ -63,23 +62,22 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
    */
   public UserInRole getUserInRole(String strRoleName) {
     UserInRole userInRole = new UserInRoleImpl();
-    int idx;
-
     userInRole.setRoleName(strRoleName);
-    idx = userInRoleList.indexOf(userInRole);
+    int idx = userInRoleList.indexOf(userInRole);
 
-    if (idx >= 0)
+    if (idx >= 0) {
       return userInRoleList.get(idx);
-    else
-      return null;
+    }
+    return null;
   }
 
   /**
    * Get the userInRoles
    * @return the userInRoles as an array
    */
+  @Override
   public UserInRole[] getUserInRoles() {
-    return (UserInRole[]) userInRoleList.toArray(new UserInRoleImpl[0]);
+    return userInRoleList.toArray(new UserInRole[userInRoleList.size()]);
   }
 
   /*
@@ -87,6 +85,7 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
    * @see com.silverpeas.workflow.api.model.QualifiedUsers#addUserInRole(com.silverpeas
    * .workflow.api.model.UserInRole)
    */
+  @Override
   public void addUserInRole(UserInRole user) {
     userInRoleList.add(user);
   }
@@ -95,6 +94,7 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.QualifiedUsers#createUserInRole()
    */
+  @Override
   public UserInRole createUserInRole() {
     return new UserInRoleImpl();
   }
@@ -103,6 +103,7 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.QualifiedUsers#iterateUserInRole()
    */
+  @Override
   public Iterator<UserInRole> iterateUserInRole() {
     return userInRoleList.iterator();
   }
@@ -111,6 +112,7 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.QualifiedUsers#removeUserInRoles()
    */
+  @Override
   public void removeUserInRoles() {
     userInRoleList.clear();
   }
@@ -119,16 +121,18 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
    * Get the participants and related users
    * @return the participants and related users as an array
    */
+  @Override
   public RelatedUser[] getRelatedUsers() {
-    return (RelatedUser[]) relatedUserList.toArray(new RelatedUser[0]);
+    return relatedUserList.toArray(new RelatedUser[relatedUserList.size()]);
   }
-  
+
   /**
    * Get the related groups
    * @return the related groups as an array
    */
+  @Override
   public RelatedGroup[] getRelatedGroups() {
-    return (RelatedGroup[]) relatedGroupList.toArray(new RelatedGroup[0]);
+    return relatedGroupList.toArray(new RelatedGroup[relatedUserList.size()]);
   }
 
   /*
@@ -136,27 +140,27 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
    * @see com.silverpeas.workflow.api.model.QualifiedUsers#getRelatedUser(com.silverpeas
    * .workflow.api.model.RelatedUser)
    */
+  @Override
   public RelatedUser getRelatedUser(RelatedUser relatedUser) {
     int idx = relatedUserList.indexOf(relatedUser);
-
-    if (idx >= 0)
+    if (idx >= 0) {
       return relatedUserList.get(idx);
-    else
-      return null;
+    }
+    return null;
   }
-  
+
   /*
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.QualifiedUsers#getRelatedGroup(com.silverpeas
    * .workflow.api.model.RelatedGroup)
    */
+  @Override
   public RelatedGroup getRelatedGroup(RelatedGroup relatedGroup) {
     int idx = relatedGroupList.indexOf(relatedGroup);
-
-    if (idx >= 0)
+    if (idx >= 0) {
       return relatedGroupList.get(idx);
-    else
-      return null;
+    }
+    return null;
   }
 
   /*
@@ -164,15 +168,17 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
    * @see com.silverpeas.workflow.api.model.QualifiedUsers#addRelatedUser(com.silverpeas
    * .workflow.api.model.RelatedUser)
    */
+  @Override
   public void addRelatedUser(RelatedUser user) {
     relatedUserList.add(user);
   }
-  
+
   /*
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.QualifiedUsers#addRelatedGroup(com.silverpeas
    * .workflow.api.model.RelatedGroup)
    */
+  @Override
   public void addRelatedGroup(RelatedGroup group) {
     relatedGroupList.add(group);
   }
@@ -181,14 +187,16 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.QualifiedUsers#createRelatedUser()
    */
+  @Override
   public RelatedUser createRelatedUser() {
     return new RelatedUserImpl();
   }
-  
+
   /*
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.QualifiedUsers#createRelatedGroup()
    */
+  @Override
   public RelatedGroup createRelatedGroup() {
     return new RelatedGroupImpl();
   }
@@ -197,14 +205,16 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.QualifiedUsers#iterateRelatedUser()
    */
+  @Override
   public Iterator<RelatedUser> iterateRelatedUser() {
     return relatedUserList.iterator();
   }
-  
+
   /*
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.QualifiedUsers#iterateRelatedGroup()
    */
+  @Override
   public Iterator<RelatedGroup> iterateRelatedGroup() {
     return relatedGroupList.iterator();
   }
@@ -213,29 +223,32 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.QualifiedUsers#removeRelatedUser(RelatedUser )
    */
+  @Override
   public void removeRelatedUser(RelatedUser reference) throws WorkflowException {
-    if (!relatedUserList.remove(reference))
-      throw new WorkflowException("QualifiedUsersImpl.removeRelatedUser()", //$NON-NLS-1$
-          "workflowEngine.EX_RELATED_USER_NOT_FOUND", // $NON-NLS-1$
-          reference == null ? "<null>" //$NON-NLS-1$
-              : reference.getRelation() + ", " + reference.getRole());
+    if (!relatedUserList.remove(reference)) {
+      throw new WorkflowException("QualifiedUsersImpl.removeRelatedUser()",
+          "workflowEngine.EX_RELATED_USER_NOT_FOUND", reference == null ? "<null>" : reference.
+          getRelation() + ", " + reference.getRole());
+    }
   }
-  
+
   /*
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.QualifiedUsers#removeRelatedGroup(RelatedGroup)
    */
+  @Override
   public void removeRelatedGroup(RelatedGroup reference) throws WorkflowException {
-    if (!relatedGroupList.remove(reference))
-      throw new WorkflowException("QualifiedUsersImpl.removeRelatedGroup()", //$NON-NLS-1$
-          "workflowEngine.EX_RELATED_GROUP_NOT_FOUND", // $NON-NLS-1$
-          reference == null ? "<null>" //$NON-NLS-1$
-              : reference.getRole());
+    if (!relatedGroupList.remove(reference)) {
+      throw new WorkflowException("QualifiedUsersImpl.removeRelatedGroup()", 
+          "workflowEngine.EX_RELATED_GROUP_NOT_FOUND", 
+          reference == null ? "<null>" : reference.getRole());
+    }
   }
 
   /**
    * Get the role to which the related user will be affected
    */
+  @Override
   public String getRole() {
     return this.role;
   }
@@ -244,6 +257,7 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.QualifiedUsers#setRole(java.lang.String)
    */
+  @Override
   public void setRole(String role) {
     this.role = role;
   }
@@ -251,6 +265,7 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
   /**
    * Get the message associated to the related users (only used for notification)
    */
+  @Override
   public String getMessage() {
     return this.message;
   }
@@ -259,6 +274,7 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
    * Set the message associated to the related users (only used for notification)
    * @param message message as a String
    */
+  @Override
   public void setMessage(String message) {
     this.message = message;
   }
@@ -266,6 +282,7 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
   /**
    * Get the user id used as sender for message.
    */
+  @Override
   public String getSenderId() {
     return senderId;
   }

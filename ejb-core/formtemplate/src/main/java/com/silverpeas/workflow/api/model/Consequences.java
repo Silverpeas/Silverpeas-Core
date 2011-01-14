@@ -24,8 +24,8 @@
 
 package com.silverpeas.workflow.api.model;
 
+import java.util.List;
 import java.util.Iterator;
-import java.util.Vector;
 
 /**
  * Interface describing a representation of the &lt;consequences&gt; element of a Process Model.
@@ -35,13 +35,13 @@ public interface Consequences {
    * Get the target consequences
    * @return the target consequences as a Vector
    */
-  public Vector getConsequenceList();
+  public List<Consequence> getConsequenceList();
 
   /**
    * Iterate through the Consequence objects
    * @return an Iterator
    */
-  Iterator iterateConsequence();
+  Iterator<Consequence> iterateConsequence();
 
   /**
    * Crate a Consequence
@@ -54,7 +54,4 @@ public interface Consequences {
    * @param consequence to be added
    */
   void addConsequence(Consequence consequence);
-
-  // void removeConsequence( );
-
 }

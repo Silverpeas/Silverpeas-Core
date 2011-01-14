@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.workflow.api.model;
 
 import java.util.Iterator;
@@ -33,6 +32,7 @@ import com.silverpeas.workflow.api.WorkflowException;
  * Interface describing a representation of the &lt;dataFolder&gt; element of a Process Model.
  */
 public interface DataFolder {
+
   /**
    * Get the items
    * @return the items as a Vector
@@ -41,10 +41,14 @@ public interface DataFolder {
 
   /**
    * Converts this object in a RecordTemplate object
+   * @param role 
+   * @param lang 
+   * @param disabled 
    * @return the resulting RecordTemplate
+   * @throws WorkflowException  
    */
-  public RecordTemplate toRecordTemplate(String role, String lang,
-      boolean disabled) throws WorkflowException;
+  public RecordTemplate toRecordTemplate(String role, String lang, boolean disabled) throws
+      WorkflowException;
 
   /**
    * Get item contained in the DataFolder by role name
@@ -57,7 +61,7 @@ public interface DataFolder {
    * Iterate through the Item objects
    * @return an iterator
    */
-  public Iterator iterateItem();
+  public Iterator<Item> iterateItem();
 
   /**
    * Create an Item

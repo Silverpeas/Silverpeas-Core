@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.workflow.engine.model;
 
 import java.io.Serializable;
@@ -37,13 +36,15 @@ import com.silverpeas.workflow.api.model.Participants;
  * Class implementing the representation of the &lt;participants&gt; element of a Process Model.
  **/
 public class ParticipantsImpl implements Serializable, Participants {
-  private List participantList;
+
+  private static final long serialVersionUID = 2184206918365803850L;
+  private List<Participant> participantList;
 
   /**
    * Constructor
    */
   public ParticipantsImpl() {
-    participantList = new ArrayList();
+    participantList = new ArrayList<Participant>();
   }
 
   /*
@@ -51,6 +52,7 @@ public class ParticipantsImpl implements Serializable, Participants {
    * @see com.silverpeas.workflow.api.model.Participants#addParticipant(com.silverpeas
    * .workflow.api.model.Participant)
    */
+  @Override
   public void addParticipant(Participant participant) {
     participantList.add(participant);
   }
@@ -59,6 +61,7 @@ public class ParticipantsImpl implements Serializable, Participants {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Participants#createParticipant()
    */
+  @Override
   public Participant createParticipant() {
     return new ParticipantImpl();
   }
@@ -67,11 +70,12 @@ public class ParticipantsImpl implements Serializable, Participants {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Participants#getParticipants()
    */
+  @Override
   public Participant[] getParticipants() {
-    if (participantList == null)
+    if (participantList == null) {
       return null;
-
-    return (Participant[]) participantList.toArray(new ParticipantImpl[0]);
+    }
+    return participantList.toArray(new Participant[participantList.size()]);
   }
 
   /**
@@ -79,17 +83,16 @@ public class ParticipantsImpl implements Serializable, Participants {
    * @param name participant name
    * @return wanted participant
    */
+  @Override
   public Participant getParticipant(String name) {
-    if (participantList == null)
+    if (participantList == null) {
       return null;
-
-    Participant participant = null;
-    for (int r = 0; r < participantList.size(); r++) {
-      participant = (Participant) participantList.get(r);
-      if (participant.getName().equals(name))
-        return participant;
     }
-
+    for (Participant participant : participantList) {
+      if (participant.getName().equals(name)) {
+        return participant;
+      }
+    }
     return null;
   }
 
@@ -97,7 +100,8 @@ public class ParticipantsImpl implements Serializable, Participants {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Participants#iterateParticipant()
    */
-  public Iterator iterateParticipant() {
+  @Override
+  public Iterator<Participant> iterateParticipant() {
     return participantList.iterator();
   }
 
@@ -105,19 +109,17 @@ public class ParticipantsImpl implements Serializable, Participants {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Participants#removeParticipant(java.lang .String)
    */
-  public void removeParticipant(String strParticipantName)
-      throws WorkflowException {
+  @Override
+  public void removeParticipant(String strParticipantName) throws WorkflowException {
     Participant participant = createParticipant();
-
     participant.setName(strParticipantName);
-
-    if (participantList == null)
+    if (participantList == null) {
       return;
-
-    if (!participantList.remove(participant))
-      throw new WorkflowException("ParticipantsImpl.removeParticipant()", //$NON-NLS-1$
-          "workflowEngine.EX_PARTICIPANT_NOT_FOUND", // $NON-NLS-1$
-          strParticipantName == null ? "<null>" //$NON-NLS-1$
-              : strParticipantName);
+    }
+    if (!participantList.remove(participant)) {
+      throw new WorkflowException("ParticipantsImpl.removeParticipant()",
+          "workflowEngine.EX_PARTICIPANT_NOT_FOUND",
+          strParticipantName == null ? "<null>" : strParticipantName);
+    }
   }
 }

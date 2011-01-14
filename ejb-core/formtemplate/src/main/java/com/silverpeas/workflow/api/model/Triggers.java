@@ -34,14 +34,15 @@ public interface Triggers {
 
   /**
    * Get the referenced Trigger objects as a list
+   * @return 
    */
-  public List getTriggerList();
+  public List<Trigger> getTriggerList();
 
   /**
    * Iterate through the Trigger objects
    * @return an iterator
    */
-  public Iterator iterateTrigger();
+  public Iterator<Trigger> iterateTrigger();
 
   /**
    * Add a trigger to the collection

@@ -37,7 +37,7 @@ public interface Participants {
    * Iterate through the Participant objects
    * @return an iterator
    */
-  public Iterator iterateParticipant();
+  public Iterator<Participant> iterateParticipant();
 
   /**
    * Create an Participant
@@ -53,6 +53,7 @@ public interface Participants {
 
   /**
    * Returns all the Participant elements as an array
+   * @return 
    */
   public Participant[] getParticipants();
 
@@ -68,6 +69,5 @@ public interface Participants {
    * @param strParticipantName the name of the participant to be removed.
    * @throws WorkflowException when the participant could not be deleted.
    */
-  public void removeParticipant(String strParticipantName)
-      throws WorkflowException;
+  public void removeParticipant(String strParticipantName) throws WorkflowException;
 }

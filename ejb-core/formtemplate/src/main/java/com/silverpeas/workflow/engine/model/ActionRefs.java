@@ -21,29 +21,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.workflow.engine.model;
 
 import java.io.Serializable;
 import java.util.Iterator;
-import java.util.Vector;
 
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.model.Action;
 import com.silverpeas.workflow.api.model.AllowedAction;
 import com.silverpeas.workflow.api.model.AllowedActions;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class implementing the representation of the &lt;allowedActions&gt; element of a Process Model.
  **/
 public class ActionRefs implements Serializable, AllowedActions {
-  private Vector actionRefList;
+
+  private static final long serialVersionUID = -8973726281784516470L;
+  private List<AllowedAction> actionRefList;
 
   /**
    * Constructor
    */
   public ActionRefs() {
-    actionRefList = new Vector();
+    actionRefList = new ArrayList<AllowedAction>();
   }
 
   /*
@@ -51,6 +53,7 @@ public class ActionRefs implements Serializable, AllowedActions {
    * @seecom.silverpeas.workflow.api.model.AllowedActions#addAllowedAction(com.
    * silverpeas.workflow.api.model.AllowedAction)
    */
+  @Override
   public void addAllowedAction(AllowedAction allowedAction) {
     actionRefList.add(allowedAction);
   }
@@ -59,6 +62,7 @@ public class ActionRefs implements Serializable, AllowedActions {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.AllowedActions#createAllowedAction()
    */
+  @Override
   public AllowedAction createAllowedAction() {
     return new ActionRef();
   }
@@ -67,7 +71,8 @@ public class ActionRefs implements Serializable, AllowedActions {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.AllowedActions#iterateAllowedAction()
    */
-  public Iterator iterateAllowedAction() {
+  @Override
+  public Iterator<AllowedAction> iterateAllowedAction() {
     return actionRefList.iterator();
   }
 
@@ -75,16 +80,18 @@ public class ActionRefs implements Serializable, AllowedActions {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.AllowedActions#getAllowedActions()
    */
+  @Override
   public Action[] getAllowedActions() {
     Action[] result = null;
 
-    if (actionRefList == null)
+    if (actionRefList == null) {
       return null;
+    }
 
     // construct the Action array
     result = new ActionImpl[actionRefList.size()];
     for (int i = 0; i < actionRefList.size(); i++) {
-      result[i] = ((AllowedAction) actionRefList.get(i)).getAction();
+      result[i] = actionRefList.get(i).getAction();
     }
 
     return result;
@@ -94,26 +101,25 @@ public class ActionRefs implements Serializable, AllowedActions {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.AllowedActions#getAllowedAction(java. lang.String)
    */
+  @Override
   public AllowedAction getAllowedAction(String strActionName) {
     AllowedAction allowedAction = new ActionRef();
     Action action = new ActionImpl();
-    int idx;
-
     action.setName(strActionName);
     allowedAction.setAction(action);
+    int idx = actionRefList.indexOf(allowedAction);
 
-    idx = actionRefList.indexOf(allowedAction);
-
-    if (idx >= 0)
-      return (AllowedAction) actionRefList.get(idx);
-    else
-      return null;
+    if (idx >= 0) {
+      return actionRefList.get(idx);
+    }
+    return null;
   }
 
   /*
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.AllowedActions#removeAllowedAction(java .lang.String)
    */
+  @Override
   public void removeAllowedAction(String strAllowedActionName)
       throws WorkflowException {
     AllowedAction actionRef = createAllowedAction();
@@ -121,9 +127,10 @@ public class ActionRefs implements Serializable, AllowedActions {
 
     action.setName(strAllowedActionName);
     actionRef.setAction(action);
-    if (!actionRefList.remove(actionRef))
+    if (!actionRefList.remove(actionRef)) {
       throw new WorkflowException("ActionRefs.removeAllowedAction(String)",
           "workflowEngine.EX_ALLOWED_ACTION_NOT_FOUND",
           strAllowedActionName == null ? "<null>" : strAllowedActionName);
+    }
   }
 }

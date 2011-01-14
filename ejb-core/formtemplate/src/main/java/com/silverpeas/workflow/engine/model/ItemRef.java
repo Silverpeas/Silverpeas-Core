@@ -39,6 +39,7 @@ import com.silverpeas.workflow.engine.AbstractReferrableObject;
  **/
 public class ItemRef extends AbstractReferrableObject implements Input, AbstractDescriptor,
     Serializable {
+  private static final long serialVersionUID = 4356623937044121281L;
 
   private Item item;
   private boolean readonly = false; // only used in forms construction

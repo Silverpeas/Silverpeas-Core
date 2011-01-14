@@ -34,8 +34,9 @@ public interface Columns {
 
   /**
    * Get the referenced Column objects as a list
+   * @return 
    */
-  public List getColumnList();
+  public List<Column> getColumnList();
 
   /**
    * Get the role for which the list of items must be returned
@@ -60,7 +61,7 @@ public interface Columns {
    * Iterate through the Column objects
    * @return an iterator
    */
-  public Iterator iterateColumn();
+  public Iterator<Column> iterateColumn();
 
   /**
    * Add an column to the collection

@@ -36,7 +36,7 @@ public interface Roles {
    * Iterate through the Role objects
    * @return an iterator
    */
-  public Iterator iterateRole();
+  public Iterator<Role> iterateRole();
 
   /**
    * Create a Role

@@ -28,7 +28,6 @@ import java.io.Serializable;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.model.AbstractDescriptor;
@@ -37,17 +36,20 @@ import com.silverpeas.workflow.api.model.ContextualDesignations;
 import com.silverpeas.workflow.api.model.Item;
 import com.silverpeas.workflow.api.model.Parameter;
 import com.silverpeas.workflow.engine.AbstractReferrableObject;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class implementing the representation of the &lt;item&gt; element of a Process Model.
  **/
 public class ItemImpl extends AbstractReferrableObject implements AbstractDescriptor, Item,
     Serializable {
+  private static final long serialVersionUID = -888974957146029109L;
   private String name;
   private boolean computed = false;
   private ContextualDesignations labels;
   private ContextualDesignations descriptions;
-  private Vector parameters;
+  private List<Parameter> parameters;
   private String type;
   private boolean readonly;
   private String formula;
@@ -66,13 +68,14 @@ public class ItemImpl extends AbstractReferrableObject implements AbstractDescri
   private void reset() {
     labels = new SpecificLabelListHelper();
     descriptions = new SpecificLabelListHelper();
-    parameters = new Vector();
+    parameters = new ArrayList<Parameter>();
   }
 
   /**
    * Get value of computed attribute
    * @return true if item must be computed
    */
+  @Override
   public boolean isComputed() {
     return this.computed;
   }
@@ -81,6 +84,7 @@ public class ItemImpl extends AbstractReferrableObject implements AbstractDescri
    * Get formula to use if item must be computed
    * @return formula of type 'action.Validation.actor'
    */
+  @Override
   public String getFormula() {
     return this.formula;
   }
@@ -89,6 +93,7 @@ public class ItemImpl extends AbstractReferrableObject implements AbstractDescri
    * Get the full user field name, to which this item is map
    * @return full user field name
    */
+  @Override
   public String getMapTo() {
     return this.mapTo;
   }
@@ -97,6 +102,7 @@ public class ItemImpl extends AbstractReferrableObject implements AbstractDescri
    * Get the name of this item
    * @return item's name
    */
+  @Override
   public String getName() {
     return this.name;
   }
@@ -105,6 +111,7 @@ public class ItemImpl extends AbstractReferrableObject implements AbstractDescri
    * Get value of readOnly attribute
    * @return true if item must be readonly
    */
+  @Override
   public boolean isReadonly() {
     return this.readonly;
   }
@@ -113,6 +120,7 @@ public class ItemImpl extends AbstractReferrableObject implements AbstractDescri
    * Get the type of this item
    * @return item's type (text for text field)
    */
+  @Override
   public String getType() {
     return this.type;
   }
@@ -121,6 +129,7 @@ public class ItemImpl extends AbstractReferrableObject implements AbstractDescri
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Item#setComputed(boolean)
    */
+  @Override
   public void setComputed(boolean computed) {
     this.computed = computed;
   }

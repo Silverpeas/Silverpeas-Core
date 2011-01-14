@@ -32,12 +32,14 @@ import java.util.Vector;
 import com.silverpeas.workflow.api.model.Column;
 import com.silverpeas.workflow.api.model.Columns;
 import com.silverpeas.workflow.engine.AbstractReferrableObject;
+import java.util.ArrayList;
 
 /**
  * Class implementing the representation of the &lt;columns&gt; element of a Process Model.
  **/
 public class ColumnsImpl extends AbstractReferrableObject implements Serializable, Columns {
-  private Vector columnList; // a list of columns ( Column objects )
+  private static final long serialVersionUID = -179308759997989687L;
+  private List<Column> columnList; // a list of columns ( Column objects )
   private String roleName = "default"; // the name of the role.
 
   /**
@@ -45,14 +47,15 @@ public class ColumnsImpl extends AbstractReferrableObject implements Serializabl
    */
   public ColumnsImpl() {
     super();
-    columnList = new Vector();
+    columnList = new ArrayList<Column>();
   }
 
   /*
    * (non-Javadoc)
    * @see com.silverpeas.workflow.engine.model.Columns#getItemRefList()
    */
-  public List getColumnList() {
+  @Override
+  public List<Column> getColumnList() {
     return columnList;
   }
 
@@ -60,6 +63,7 @@ public class ColumnsImpl extends AbstractReferrableObject implements Serializabl
    * (non-Javadoc)
    * @see com.silverpeas.workflow.engine.model.Columns#getRoleName()
    */
+  @Override
   public String getRoleName() {
     return roleName;
   }
@@ -68,6 +72,7 @@ public class ColumnsImpl extends AbstractReferrableObject implements Serializabl
    * (non-Javadoc)
    * @see com.silverpeas.workflow.engine.model.Columns#setRoleName(java.lang.String)
    */
+  @Override
   public void setRoleName(String roleName) {
     this.roleName = roleName;
   }
@@ -76,23 +81,23 @@ public class ColumnsImpl extends AbstractReferrableObject implements Serializabl
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Columns#getColumn(java.lang.String)
    */
+  @Override
   public Column getColumn(String strItemName) {
     ItemImpl search = new ItemImpl();
-    int i = 1;
-
     search.setName(strItemName);
-    i = columnList.indexOf(search);
+    int i = columnList.indexOf(search);
 
-    if (i == -1)
+    if (i < 0) {
       return null;
-    else
-      return (Column) columnList.get(i);
+    }
+    return columnList.get(i);
   }
 
   /**
    * Get the unique key, used by equals method
    * @return unique key
    */
+  @Override
   public String getKey() {
     return (this.roleName);
   }
@@ -102,17 +107,17 @@ public class ColumnsImpl extends AbstractReferrableObject implements Serializabl
    * @see com.silverpeas.workflow.api.model.Columns#addColumn(com.silverpeas.workflow
    * .api.model.Column)
    */
+  @Override
   public void addColumn(Column column) {
-    // System.out.println("ColumnnsImpl.addColumn() ");
-    columnList.addElement(column);
+    columnList.add(column);
   }
 
   /*
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Columns#createColumn()
    */
+  @Override
   public Column createColumn() {
-    // System.out.println("ColumnnsImpl.createColumn() ");
     return new ColumnImpl();
   }
 
@@ -120,8 +125,8 @@ public class ColumnsImpl extends AbstractReferrableObject implements Serializabl
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Columns#iterateColumn()
    */
-  public Iterator iterateColumn() {
-    // System.out.println("ColumnnsImpl.iterateColumn() ");
+  @Override
+  public Iterator<Column> iterateColumn() {
     return columnList.iterator();
   }
 
@@ -129,6 +134,7 @@ public class ColumnsImpl extends AbstractReferrableObject implements Serializabl
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Columns#removeAllColumns()
    */
+  @Override
   public void removeAllColumns() {
     columnList.clear();
   }

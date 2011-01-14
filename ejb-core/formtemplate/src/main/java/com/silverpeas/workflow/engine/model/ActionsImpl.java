@@ -37,14 +37,14 @@ import com.silverpeas.workflow.api.model.Actions;
  * Class implementing the representation of the &lt;actions&gt; element of a Process Model.
  **/
 public class ActionsImpl implements Serializable, Actions {
-  // private Hashtable actionList;
-  private List actionList;
+  private static final long serialVersionUID = -8221333788348737417L;
+  private List<Action> actionList;
 
   /**
    * Constructor
    */
   public ActionsImpl() {
-    actionList = new ArrayList();
+    actionList = new ArrayList<Action>();
   }
 
   /*
@@ -52,6 +52,7 @@ public class ActionsImpl implements Serializable, Actions {
    * @see com.silverpeas.workflow.api.model.Actions#addAction(com.silverpeas.workflow
    * .api.model.Action)
    */
+  @Override
   public void addAction(Action action) {
     actionList.add(action);
   }
@@ -60,6 +61,7 @@ public class ActionsImpl implements Serializable, Actions {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Actions#createAction()
    */
+  @Override
   public Action createAction() {
     return new ActionImpl();
   }
@@ -68,20 +70,14 @@ public class ActionsImpl implements Serializable, Actions {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Actions#getAction(java.lang.String)
    */
+  @Override
   public Action getAction(String name) throws WorkflowException {
-    boolean find = false;
-    Action action = null;
-
-    for (int a = 0; !find && a < actionList.size(); a++) {
-      action = (Action) actionList.get(a);
-      if (action != null && action.getName().equals(name))
-        find = true;
+    for (Action action : actionList) {
+      if (action != null && action.getName().equals(name)) {
+        return action;
+      }
     }
-
-    if (find)
-      return action;
-    else
-      throw new WorkflowException("ActionsImpl.getAction(String)",
+    throw new WorkflowException("ActionsImpl.getAction(String)",
           "WorkflowEngine.EX_ERR_ACTION_NOT_FOUND_IN_MODEL", name);
   }
 
@@ -89,18 +85,20 @@ public class ActionsImpl implements Serializable, Actions {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Actions#getActions()
    */
+  @Override
   public Action[] getActions() {
-    if (actionList == null)
+    if (actionList == null) {
       return null;
-
-    return (Action[]) actionList.toArray(new ActionImpl[0]);
+    }
+    return actionList.toArray(new Action[actionList.size()]);
   }
 
   /*
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Actions#iterateAction()
    */
-  public Iterator iterateAction() {
+  @Override
+  public Iterator<Action> iterateAction() {
     return actionList.iterator();
   }
 
@@ -108,18 +106,18 @@ public class ActionsImpl implements Serializable, Actions {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Actions#removeAction(java.lang.String)
    */
+  @Override
   public void removeAction(String strActionName) throws WorkflowException {
-    Action action = createAction();
-
-    action.setName(strActionName);
-
-    if (actionList == null)
+    if (actionList == null) {
       return;
+    }
+    Action action = createAction();
+    action.setName(strActionName);    
 
-    if (!actionList.remove(action))
-      throw new WorkflowException("ActionsImpl.removeAction()", //$NON-NLS-1$
-          "workflowEngine.EX_ERR_ACTION_NOT_FOUND_IN_MODEL", // $NON-NLS-1$
-          strActionName == null ? "<null>" //$NON-NLS-1$
-              : strActionName);
+    if (!actionList.remove(action)) {
+      throw new WorkflowException("ActionsImpl.removeAction()", 
+          "workflowEngine.EX_ERR_ACTION_NOT_FOUND_IN_MODEL", 
+          strActionName == null ? "<null>" : strActionName);
+    }
   }
 }

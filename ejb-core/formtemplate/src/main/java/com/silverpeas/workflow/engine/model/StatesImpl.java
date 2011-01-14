@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.workflow.engine.model;
 
 import java.io.Serializable;
@@ -37,13 +36,15 @@ import com.silverpeas.workflow.api.model.States;
  * Class implementing the representation of the &lt;states&gt; element of a Process Model.
  **/
 public class StatesImpl implements Serializable, States {
-  private List stateList;
+
+  private static final long serialVersionUID = -2580715672830095678L;
+  private List<State> stateList;
 
   /**
    * Constructor
    */
   public StatesImpl() {
-    stateList = new ArrayList();
+    stateList = new ArrayList<State>();
   }
 
   /*
@@ -51,6 +52,7 @@ public class StatesImpl implements Serializable, States {
    * @see com.silverpeas.workflow.api.model.States#addState(com.silverpeas.workflow
    * .api.model.State)
    */
+  @Override
   public void addState(State state) {
     stateList.add(state);
   }
@@ -67,18 +69,13 @@ public class StatesImpl implements Serializable, States {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.States#getState(java.lang.String)
    */
+  @Override
   public State getState(String name) {
-    boolean find = false;
-    State state = null;
-
-    for (int s = 0; !find && s < stateList.size(); s++) {
-      state = (State) stateList.get(s);
-      if (state != null && state.getName().equals(name))
-        find = true;
+    for (State state : stateList) {
+      if (state != null && state.getName().equals(name)) {
+        return state;
+      }
     }
-    if (find)
-      return state;
-
     return null;
   }
 
@@ -86,18 +83,19 @@ public class StatesImpl implements Serializable, States {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.States#getStates()
    */
+  @Override
   public State[] getStates() {
-    if (stateList == null)
+    if (stateList == null) {
       return null;
-
-    return (State[]) stateList.toArray(new StateImpl[0]);
+    }
+    return stateList.toArray(new State[stateList.size()]);
   }
 
   /*
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.States#iterateState()
    */
-  public Iterator iterateState() {
+  public Iterator<State> iterateState() {
     return stateList.iterator();
   }
 
@@ -105,18 +103,17 @@ public class StatesImpl implements Serializable, States {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.States#removeState(java.lang.String)
    */
+  @Override
   public void removeState(String strStateName) throws WorkflowException {
-    State state = createState();
-
-    state.setName(strStateName);
-
-    if (stateList == null)
+     if (stateList == null) {
       return;
+    }
+    State state = createState();
+    state.setName(strStateName);   
 
-    if (!stateList.remove(state))
-      throw new WorkflowException("StatesImpl.removeState()", //$NON-NLS-1$
-          "workflowEngine.EX_STATE_NOT_FOUND", // $NON-NLS-1$
-          strStateName == null ? "<null>" //$NON-NLS-1$
-              : strStateName);
+    if (!stateList.remove(state)) {
+      throw new WorkflowException("StatesImpl.removeState()", "workflowEngine.EX_STATE_NOT_FOUND", 
+          strStateName == null ? "<null>" : strStateName);
+    }
   }
 }

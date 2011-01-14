@@ -95,8 +95,6 @@ public class ExternalAccessFilter implements Filter {
           }
           session.setAttribute("SessionGraphicElementFactory", gef);
         }
-      } else {
-        // Affichage page erreur
       }
     }
     chain.doFilter(request, response);

@@ -90,9 +90,7 @@ public class NavBarManager extends Object {
       if (newElmt.type == DisplaySorted.TYPE_SPACE) {
         DisplaySorted[] oldSpaces = m_Spaces;
         m_Spaces = new DisplaySorted[oldSpaces.length + 1];
-        for (int i = 0; i < oldSpaces.length; i++) {
-          m_Spaces[i] = oldSpaces[i];
-        }
+        System.arraycopy(oldSpaces, 0, m_Spaces, 0, oldSpaces.length);
         m_Spaces[oldSpaces.length] = newElmt;
         Arrays.sort(m_Spaces);
       } else { // Sub Space case :
@@ -194,9 +192,7 @@ public class NavBarManager extends Object {
       }
       spaceIds = m_administrationCtrl.getAllRootSpaceIds();
       m_Spaces = createSpaceObjects(spaceIds, false);
-    } else {
-      // TODO
-    }
+    } 
   }
 
   // Spaces functions

@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.workflow.api.model;
 
 import java.util.Iterator;
@@ -38,7 +37,7 @@ public interface ContextualDesignations {
    * Iterate through the ContextualDesignation objects
    * @return an iterator
    */
-  public Iterator iterateContextualDesignation();
+  public Iterator<ContextualDesignation> iterateContextualDesignation();
 
   /**
    * Create a ContextualDesignation
@@ -50,8 +49,7 @@ public interface ContextualDesignations {
    * Add a contextualDesignation to the collection
    * @param contextualDesignation to be added
    */
-  public void addContextualDesignation(
-      ContextualDesignation contextualDesignation);
+  public void addContextualDesignation(ContextualDesignation contextualDesignation);
 
   /**
    * Remove a matching contextualDesignation from the collection. The collection shall be searched
@@ -59,8 +57,8 @@ public interface ContextualDesignations {
    * @param contextualDesignation a model of the contextualDesignation to be removed.
    * @throws WorkflowException when a matching contextualDescription could not be found.
    */
-  public void removeContextualDesignation(
-      ContextualDesignation contextualDesignation) throws WorkflowException;
+  public void removeContextualDesignation(ContextualDesignation contextualDesignation) throws
+      WorkflowException;
 
   /**
    * Get the designation for the given role and language; make an exact match, do not fall-back to

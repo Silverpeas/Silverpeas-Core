@@ -36,7 +36,7 @@ public interface AllowedActions {
    * Iterate through the AllowedAction objects
    * @return an iterator
    */
-  public Iterator iterateAllowedAction();
+  public Iterator<AllowedAction> iterateAllowedAction();
 
   /**
    * Create an AllowedAction
@@ -66,7 +66,7 @@ public interface AllowedActions {
   /**
    * Remove an allowedAction from the collection
    * @param strAllowedActionName the name of the allowedAction to be removed.
+   * @throws WorkflowException  
    */
-  public void removeAllowedAction(String strAllowedActionName)
-      throws WorkflowException;
+  public void removeAllowedAction(String strAllowedActionName) throws WorkflowException;
 }

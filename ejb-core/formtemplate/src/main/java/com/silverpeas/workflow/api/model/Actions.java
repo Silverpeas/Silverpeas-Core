@@ -37,7 +37,7 @@ public interface Actions {
    * Iterate through the Action objects
    * @return an iterator
    */
-  public Iterator iterateAction();
+  public Iterator<Action> iterateAction();
 
   /**
    * Create an Action
@@ -61,6 +61,7 @@ public interface Actions {
    * Get the action definition with given name
    * @param name action name
    * @return wanted action definition
+   * @throws WorkflowException  
    */
   public Action getAction(String name) throws WorkflowException;
 

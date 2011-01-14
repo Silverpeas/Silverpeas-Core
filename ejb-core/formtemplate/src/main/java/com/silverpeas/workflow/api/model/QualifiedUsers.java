@@ -62,6 +62,7 @@ public interface QualifiedUsers {
 
   /**
    * Get the userInRoles
+   * @param strRoleName 
    * @return the userInRoles as a Vector
    */
   public UserInRole getUserInRole(String strRoleName);
@@ -173,6 +174,7 @@ public interface QualifiedUsers {
 
   /**
    * Get the user id used as sender for message.
+   * @return 
    */
   public String getSenderId();
 }

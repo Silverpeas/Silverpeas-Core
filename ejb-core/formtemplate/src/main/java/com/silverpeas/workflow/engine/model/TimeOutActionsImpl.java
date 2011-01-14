@@ -26,22 +26,24 @@ package com.silverpeas.workflow.engine.model;
 
 import java.io.Serializable;
 import java.util.Iterator;
-import java.util.Vector;
 
 import com.silverpeas.workflow.api.model.TimeOutAction;
 import com.silverpeas.workflow.api.model.TimeOutActions;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class implementing the representation of the &lt;timeoutActions&gt; element of a Process Model.
  **/
 public class TimeOutActionsImpl implements Serializable, TimeOutActions {
-  private Vector timeoutActionList;
+  private static final long serialVersionUID = 7973279591384251532L;
+  private List<TimeOutAction> timeoutActionList;
 
   /**
    * Constructor
    */
   public TimeOutActionsImpl() {
-    timeoutActionList = new Vector();
+    timeoutActionList = new ArrayList<TimeOutAction>();
   }
 
   /*
@@ -58,11 +60,10 @@ public class TimeOutActionsImpl implements Serializable, TimeOutActions {
    */
   public TimeOutAction[] getTimeOutActions() {
 
-    if (timeoutActionList == null)
+    if (timeoutActionList == null) {
       return null;
-
-    // construct the Action array
-    return (TimeOutActionImpl[]) timeoutActionList.toArray(new TimeOutActionImpl[0]);
+    }
+    return timeoutActionList.toArray(new TimeOutAction[timeoutActionList.size()]);
   }
 
   @Override

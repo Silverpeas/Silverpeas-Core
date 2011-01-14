@@ -37,7 +37,7 @@ public interface Forms {
    * Iterate through the Form objects
    * @return an iterator
    */
-  public Iterator iterateForm();
+  public Iterator<Form> iterateForm();
 
   /**
    * Add an form to the collection
@@ -74,6 +74,5 @@ public interface Forms {
    * @param strRole the name of the role, may be <code>null</code>
    * @throws WorkflowException if the role cannot be found
    */
-  public void removeForm(String strName, String strRole)
-      throws WorkflowException;
+  public void removeForm(String strName, String strRole) throws WorkflowException;
 }

@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.wysiwyg.control;
 
 import java.io.BufferedWriter;
@@ -61,9 +60,9 @@ import java.util.Map;
  */
 public class WysiwygController {
 
-  public static String WYSIWYG_CONTEXT = "wysiwyg";
-  public static String WYSIWYG_IMAGES = "Images";
-  public static String WYSIWYG_WEBSITES = "webSites";
+  public final static String WYSIWYG_CONTEXT = "wysiwyg";
+  public final static String WYSIWYG_IMAGES = "Images";
+  public final static String WYSIWYG_WEBSITES = "webSites";
 
   /**
    * the constructor.
@@ -87,8 +86,7 @@ public class WysiwygController {
    * @see AttachmentController
    */
   public static String[][] searchAllAttachments(String id, String spaceId, String componentId,
-      String context) /* throws /*WysiwygException, FinderException, NamingException, SQLException */
-  {
+      String context) /* throws /*WysiwygException, FinderException, NamingException, SQLException */ {
     AttachmentPK foreignKey = new AttachmentPK(id, spaceId, componentId);
 
     List<AttachmentDetail> vectAttachment =
@@ -100,8 +98,8 @@ public class WysiwygController {
       AttachmentDetail attD = vectAttachment.get(i);
 
       String path =
-          FileServerUtils.getUrl(spaceId, componentId, attD.getLogicalName(), attD
-          .getPhysicalName(), attD.getType(), "Attachment/" + context);
+          FileServerUtils.getUrl(spaceId, componentId, attD.getLogicalName(), attD.getPhysicalName(), attD.
+          getType(), "Attachment/" + context);
 
       imagesList[i][0] = path;
       imagesList[i][1] = attD.getLogicalName();
@@ -239,9 +237,9 @@ public class WysiwygController {
     String chemin = currentPath;
     if (chemin != null) {
       chemin = supprAntiSlashFin(chemin); /*
-                                           * c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3\\
-                                           * rep1\\rep11
-                                           */
+       * c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3\\
+       * rep1\\rep11
+       */
 
       int longueur = componentId.length();
       int index = chemin.lastIndexOf(componentId);
@@ -285,10 +283,11 @@ public class WysiwygController {
     /*
      * if (path.substring(longueur - 2).equals("\\\\")) return path.substring(0, longueur - 2); else
      */
-    if (path.substring(longueur - 1).equals("/"))
+    if (path.substring(longueur - 1).equals("/")) {
       return path.substring(0, longueur - 1);
-    else
+    } else {
       return path;
+    }
   }
 
   private static String ignoreSlash(String chemin) {
@@ -300,8 +299,9 @@ public class WysiwygController {
       char car = res.charAt(0);
       if (car == '/') {
         res = res.substring(1);
-      } else
+      } else {
         ok = true;
+      }
     }
     return res;
   }
@@ -317,8 +317,9 @@ public class WysiwygController {
       if (car == '\\') {
         res = res + car;
         i++;
-      } else
+      } else {
         res = res + car;
+      }
       i++;
     }
     return res;
@@ -337,8 +338,9 @@ public class WysiwygController {
        */
       if (car == '\\' || car == '/') {
         res = res.substring(1);
-      } else
+      } else {
         ok = true;
+      }
     }
     return res;
   }
@@ -353,14 +355,10 @@ public class WysiwygController {
       if ((i < res.length()) && (j < res.length())) {
         char car1 = res.charAt(i);
         char car2 = res.charAt(j);
-        if ((car1 == '\\' && car2 == '\\') ||
-            (car1 != '\\' && car2 != '\\')) {
-        } else {
+        if (!((car1 == '\\' && car2 == '\\') || (car1 != '\\' && car2 != '\\'))) {
           String avant = res.substring(0, j);
           String apres = res.substring(j);
-          if ((apres.startsWith("\\\\")) ||
-              (avant.endsWith("\\\\"))) {
-          } else {
+          if (!apres.startsWith("\\\\") && !avant.endsWith("\\\\")) {
             res = avant + '\\' + apres;
             i++;
           }
@@ -368,8 +366,9 @@ public class WysiwygController {
       } else {
         if (i < res.length()) {
           char car = res.charAt(i);
-          if (car == '\\')
+          if (car == '\\') {
             res = res + '\\';
+          }
         }
         ok = false;
       }
@@ -390,10 +389,10 @@ public class WysiwygController {
   }
 
   public static String getWysiwygFileName(String objectId, String language) {
-    if (I18NHelper.isDefaultLanguage(language))
+    if (I18NHelper.isDefaultLanguage(language)) {
       return getWysiwygFileName(objectId);
-    else
-      return objectId + WYSIWYG_CONTEXT + "_" + language + ".txt";
+    }
+    return objectId + WYSIWYG_CONTEXT + "_" + language + ".txt";
   }
 
   /**
@@ -419,8 +418,8 @@ public class WysiwygController {
     Iterator<AttachmentDetail> f = files.iterator();
     while (f.hasNext()) {
       AttachmentDetail file = f.next();
-      if (file != null &&
-          file.getPhysicalName().equalsIgnoreCase(getWysiwygFileName(objectId, language))) {
+      if (file != null
+          && file.getPhysicalName().equalsIgnoreCase(getWysiwygFileName(objectId, language))) {
         AttachmentController.deleteAttachment(file);
       }
     }
@@ -448,17 +447,20 @@ public class WysiwygController {
   public static void createFileAndAttachment(String textHtml, String fileName, String spaceId,
       String componentId, String context, String id, String userId, boolean indexIt)
       throws WysiwygException {
-    createFileAndAttachment(textHtml, fileName, spaceId, componentId, context, id, userId, indexIt, true);
+    createFileAndAttachment(textHtml, fileName, spaceId, componentId, context, id, userId, indexIt,
+        true);
   }
 
   public static void createFileAndAttachment(String textHtml, String fileName, String spaceId,
-      String componentId, String context, String id, String userId, boolean indexIt, boolean invokeCallback)
+      String componentId, String context, String id, String userId, boolean indexIt,
+      boolean invokeCallback)
       throws WysiwygException {
     try {
       int iUserId = -1;
 
-      if (userId != null)
+      if (userId != null) {
         iUserId = Integer.parseInt(userId);
+      }
 
       // create path
       String path = AttachmentController.createPath(componentId, context);
@@ -504,8 +506,7 @@ public class WysiwygController {
    * @see AttachmentController
    */
   public static void createFileAndAttachment(String textHtml, String spaceId, String componentId,
-      String id) throws WysiwygException /* , FinderException, NamingException, SQLException */
-  {
+      String id) throws WysiwygException /* , FinderException, NamingException, SQLException */ {
     String fileName = WysiwygController.getWysiwygFileName(id);
 
     WysiwygController.createFileAndAttachment(textHtml, fileName, spaceId, componentId,
@@ -528,8 +529,8 @@ public class WysiwygController {
       String spaceId, String componentId, String context, String objectId, String userId,
       boolean indexIt) throws WysiwygException {
     SilverTrace.info("wysiwyg", "WysiwygController.updateFileAndAttachment()",
-        "root.MSG_GEN_PARAM_VALUE", "fileName=" + fileName + " context=" + context + "objectId=" +
-        objectId);
+        "root.MSG_GEN_PARAM_VALUE", "fileName=" + fileName + " context=" + context + "objectId="
+        + objectId);
     AttachmentDetail attD =
         WysiwygController.searchAttachmentDetail(fileName, spaceId, componentId, context, objectId);
     if (attD != null) {
@@ -590,8 +591,7 @@ public class WysiwygController {
    * @see AttachmentController
    */
   public static void deleteWysiwygAttachments(String spaceId, String componentId, String objectId)
-      throws WysiwygException /* , FinderException, NamingException, SQLException */
-  {
+      throws WysiwygException /* , FinderException, NamingException, SQLException */ {
     try {
       // delete all the attachments
       AttachmentPK foreignKey = new AttachmentPK(objectId, spaceId, componentId);
@@ -599,8 +599,7 @@ public class WysiwygController {
       AttachmentController.deleteAttachmentByCustomerPK(foreignKey);
       // delete the images directory
       String path =
-          AttachmentController.createPath(componentId, WysiwygController
-          .getImagesFileName(objectId));
+          AttachmentController.createPath(componentId, WysiwygController.getImagesFileName(objectId));
 
       WysiwygController.deletePath(path);
     } catch (Exception exc) {
@@ -618,8 +617,7 @@ public class WysiwygController {
    * @throws WysiwygException
    */
   public static void deleteWysiwygAttachmentsOnly(String spaceId, String componentId,
-      String objectId) throws WysiwygException /* , FinderException, NamingException, SQLException */
-  {
+      String objectId) throws WysiwygException /* , FinderException, NamingException, SQLException */ {
     try {
       // delete all the attachments
       AttachmentPK foreignKey = new AttachmentPK(objectId, spaceId, componentId);
@@ -627,8 +625,7 @@ public class WysiwygController {
       AttachmentController.deleteWysiwygAttachmentByCustomerPK(foreignKey);
       // delete the images directory
       String path =
-          AttachmentController.createPath(componentId, WysiwygController
-          .getImagesFileName(objectId));
+          AttachmentController.createPath(componentId, WysiwygController.getImagesFileName(objectId));
 
       WysiwygController.deletePath(path);
     } catch (Exception exc) {
@@ -723,8 +720,9 @@ public class WysiwygController {
       content =
           WysiwygController.loadFileAndAttachment(fileName, null, componentId, WYSIWYG_CONTEXT);
     }
-    if (content == null)
+    if (content == null) {
       content = "";
+    }
     return content;
   }
 
@@ -767,14 +765,16 @@ public class WysiwygController {
 
       File file = new File(path + getWysiwygFileName(objectId, language));
 
-      if (file.exists())
+      if (file.exists()) {
         return true;
+      }
     }
 
     // check default language
     File file = new File(path + getWysiwygFileName(objectId));
-    if (file.exists())
+    if (file.exists()) {
       return true;
+    }
 
     return false;
   }
@@ -783,10 +783,11 @@ public class WysiwygController {
       String language) {
     try {
       String wysiwygContent = load(componentId, objectId, language);
-      if (wysiwygContent == null)
+      if (wysiwygContent == null) {
         return false;
-      else
+      } else {
         return true;
+      }
     } catch (WysiwygException we) {
       return false;
     }
@@ -841,10 +842,9 @@ public class WysiwygController {
    */
   public static AttachmentDetail searchAttachmentDetail(String spaceId, String componentId,
       String context, String objectId) /*
-                                        * throws /* WysiwygException, FinderException,
-                                        * NamingException, SQLException
-                                        */
-  {
+   * throws /* WysiwygException, FinderException,
+   * NamingException, SQLException
+   */ {
     String fileName = WysiwygController.getWysiwygFileName(objectId);
 
     return WysiwygController.searchAttachmentDetail(fileName, spaceId, componentId, context,
@@ -959,8 +959,8 @@ public class WysiwygController {
       // String oldPath = AttachmentController.createPath(oldSpaceId, oldComponentId,
       // getImagesFileName(oldObjectId));
       String oldPath =
-          FileRepositoryManager.getAbsolutePath(oldComponentId, FileRepositoryManager
-          .getAttachmentContext(getImagesFileName(oldObjectId)));
+          FileRepositoryManager.getAbsolutePath(oldComponentId, FileRepositoryManager.
+          getAttachmentContext(getImagesFileName(oldObjectId)));
       String currentPath = "";
       String nPath = AttachmentController.createPath(componentId, getImagesFileName(objectId));
       String newPath = "";
@@ -978,8 +978,8 @@ public class WysiwygController {
         FileRepositoryManager.copyFile(currentPath, newPath);
         // logically
         AttachmentDetail newAttd =
-            new AttachmentDetail(new AttachmentPK("unknown", spaceId, componentId), attD
-            .getPhysicalName(), attD.getLogicalName(), attD.getDescription(), attD.getType(),
+            new AttachmentDetail(new AttachmentPK("unknown", spaceId, componentId), attD.
+            getPhysicalName(), attD.getLogicalName(), attD.getDescription(), attD.getType(),
             attD.getSize(), getImagesFileName(objectId), new java.util.Date(),
             new AttachmentPK(objectId, spaceId, componentId));
         newAttd.setAuthor(attD.getAuthor());
@@ -1030,8 +1030,8 @@ public class WysiwygController {
 
   private static String replaceInternalImageId(String wysiwygContent, String oldAttachmentId,
       String newAttachmentId) {
-    return wysiwygContent.replaceAll("attachmentId=" + oldAttachmentId + "\"", "attachmentId=" +
-        newAttachmentId + "\"");
+    return wysiwygContent.replaceAll("attachmentId=" + oldAttachmentId + "\"", "attachmentId="
+        + newAttachmentId + "\"");
   }
 
   /**
@@ -1164,7 +1164,6 @@ public class WysiwygController {
    * createFile(AttachmentController.createPath(fromComponentId, WYSIWYG_CONTEXT),
    * getWysiwygFileName(fromObjectId, language), wysiwyg); } }
    */
-
   public static String getWysiwygPath(String componentId, String objectId, String language) {
     String path = AttachmentController.createPath(componentId, WYSIWYG_CONTEXT);
     return path + getWysiwygFileName(objectId, language);
@@ -1182,8 +1181,9 @@ public class WysiwygController {
     for (int c = 0; c < compoIds.length; c++) {
       if ("yes".equalsIgnoreCase(orgaController.getComponentParameterValue("gallery" + compoIds[c],
           "viewInWysiwyg"))) {
-        if (galleries == null)
+        if (galleries == null) {
           galleries = new ArrayList<ComponentInstLight>();
+        }
 
         ComponentInstLight gallery = orgaController.getComponentInstLight("gallery" + compoIds[c]);
         galleries.add(gallery);
@@ -1213,5 +1213,4 @@ public class WysiwygController {
     }
     return components;
   }
-
 }

@@ -24,10 +24,10 @@
 
 package com.silverpeas.workflow.api.model;
 
-import java.util.Hashtable;
 import java.util.Iterator;
 
 import com.silverpeas.workflow.api.WorkflowException;
+import java.util.Hashtable;
 
 /**
  * Interface describing a representation of the &lt;item&gt; element of a Process Model.
@@ -41,13 +41,13 @@ public interface Item {
 
   /**
    * Set the name of this item
-   * @param item 's name
+   * @param name item 's name
    */
   public void setName(String name);
 
   /**
    * Get description in specific language for the given role
-   * @param lang description's language
+   * @param language description's language
    * @param role role for which the description is
    * @return wanted description as a String object. If description is not found, search description
    * with given role and default language, if not found again, return the default description in
@@ -66,16 +66,17 @@ public interface Item {
    * Iterate through the descriptions
    * @return an iterator
    */
-  public Iterator iterateDescription();
+  public Iterator<ContextualDesignation> iterateDescription();
 
   /**
    * Add a description Method needed primarily by Castor
+   * @param description 
    */
   public void addDescription(ContextualDesignation description);
 
   /**
    * Get label in specific language for the given role
-   * @param lang label's language
+   * @param language label's language
    * @param role role for which the label is
    * @return wanted label as a String object. If label is not found, search label with given role
    * and default language, if not found again, return the default label in given language, if not
@@ -94,15 +95,17 @@ public interface Item {
    * Iterate through the Labels
    * @return an iterator
    */
-  public Iterator iterateLabel();
+  public Iterator<ContextualDesignation> iterateLabel();
 
   /**
    * Add a label Method needed primarily by Castor
+   * @param label 
    */
   public void addLabel(ContextualDesignation label);
 
   /**
    * Create an object implementing ContextualDesignation Method needed primarily by Castor
+   * @return 
    */
   public ContextualDesignation createDesignation();
 
@@ -114,7 +117,7 @@ public interface Item {
 
   /**
    * Set value of computed attribute
-   * @param true if item must be computed
+   * @param computed true if item must be computed
    */
   public void setComputed(boolean computed);
 
@@ -138,7 +141,7 @@ public interface Item {
 
   /**
    * Set value of readOnly attribute
-   * @param true if item must be readonly
+   * @param readonly true if item must be readonly
    */
   public void setReadonly(boolean readonly);
 
@@ -150,7 +153,7 @@ public interface Item {
 
   /**
    * Set the type of this item
-   * @param item 's type (text for text field)
+   * @param type item 's type (text for text field)
    */
   public void setType(String type);
 
@@ -175,25 +178,32 @@ public interface Item {
 
   /**
    * Create an object implementing Parameter
+   * @return 
    */
   public Parameter createParameter();
 
   /**
    * Add a Parameter to the collection
+   * @param parameter 
    */
   public void addParameter(Parameter parameter);
 
   /**
    * Return an Iterator over the parameters collection
+   * @return 
    */
-  public Iterator iterateParameter();
+  public Iterator<Parameter> iterateParameter();
 
   /**
    * Remove the parameter specified by its name
-   * @param name the name of the parameter
+   * @param strName the name of the parameter
    * @throws WorkflowException when the parameter cannot be found
    */
   public void removeParameter(String strName) throws WorkflowException;
 
+  /**
+   * 
+   * @return
+   */
   public Hashtable getKeyValuePairs();
 }

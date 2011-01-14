@@ -37,7 +37,7 @@ public interface States {
    * Iterate through the State objects
    * @return an iterator
    */
-  public Iterator iterateState();
+  public Iterator<State> iterateState();
 
   /**
    * Create an State

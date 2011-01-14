@@ -54,6 +54,7 @@ public class TreeBmImpl implements TreeBm {
   private TreeI18NDAO treeI18NDAO = (TreeI18NDAO) new TreeI18NDAO();
 
   @SuppressWarnings("unchecked")
+  @Override
   public TreeNode getRoot(Connection con, String treeId)
       throws TreeManagerException {
     SilverTrace.info("treeManager", "TreeManagerBmImpl.getRoot()",
@@ -212,11 +213,8 @@ public class TreeBmImpl implements TreeBm {
         it = nodesToUpdate.iterator();
         TreeNodePersistence nodeToMove = null;
         while (it.hasNext()) {
-          nodeToMove = (TreeNodePersistence) it.next();
-          if (nodeToMove.getPK().getId().equals(nodeId)) {
-            // C'est le noeud que l'on vient de modifier
-            // Il est à sa place, on ne fait rien
-          } else {
+          nodeToMove = it.next();
+          if (!nodeToMove.getPK().getId().equals(nodeId)) {
             // On modifie l'ordre du noeud en l'incrémentant de 1
             nodeToMove.setOrderNumber(nodeToMove.getOrderNumber() + 1);
             TreeNode treeNode = new TreeNode(nodeToMove);

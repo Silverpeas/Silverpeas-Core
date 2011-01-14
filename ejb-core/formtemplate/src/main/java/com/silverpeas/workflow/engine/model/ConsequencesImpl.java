@@ -26,29 +26,32 @@ package com.silverpeas.workflow.engine.model;
 
 import java.io.Serializable;
 import java.util.Iterator;
-import java.util.Vector;
 
 import com.silverpeas.workflow.api.model.Consequence;
 import com.silverpeas.workflow.api.model.Consequences;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class implementing the representation of the &lt;consequences&gt; element of a Process Model.
  */
 public class ConsequencesImpl implements Consequences, Serializable {
-  private Vector consequenceList;
+  private static final long serialVersionUID = 931366159263133929L;
+  private List<Consequence> consequenceList;
 
   /**
    * Constructor
    */
   public ConsequencesImpl() {
-    consequenceList = new Vector();
+    consequenceList = new ArrayList<Consequence>();
   }
 
   /**
    * Get the actions
    * @return the actions as a Hashtable
    */
-  public Vector getConsequenceList() {
+  @Override
+  public List<Consequence> getConsequenceList() {
     return consequenceList;
   }
 
@@ -57,6 +60,7 @@ public class ConsequencesImpl implements Consequences, Serializable {
    * @see com.silverpeas.workflow.api.model.Consequences#addConsequence(com.silverpeas
    * .workflow.api.model.Consequence)
    */
+  @Override
   public void addConsequence(Consequence consequence) {
     consequenceList.add(consequence);
   }
@@ -65,6 +69,7 @@ public class ConsequencesImpl implements Consequences, Serializable {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Consequences#createConsequence()
    */
+  @Override
   public Consequence createConsequence() {
     return new ConsequenceImpl();
   }
@@ -73,7 +78,8 @@ public class ConsequencesImpl implements Consequences, Serializable {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Consequences#iterateConsequence()
    */
-  public Iterator iterateConsequence() {
+  @Override
+  public Iterator<Consequence> iterateConsequence() {
     return consequenceList.iterator();
   }
 }

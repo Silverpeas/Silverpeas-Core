@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.workflow.engine.model;
 
 import java.io.Serializable;
@@ -38,19 +37,22 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * Class implementing the representation of the &lt;forms&gt; element of a Process Model.
  **/
 public class FormsImpl implements Serializable, Forms {
-  private List formList;
+
+  private static final long serialVersionUID = -4621417980509658490L;
+  private List<Form> formList;
 
   /**
    * Constructor
    */
   public FormsImpl() {
-    formList = new ArrayList();
+    formList = new ArrayList<Form>();
   }
 
   /*
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Forms#addForm(com.silverpeas.workflow .api.model.Form)
    */
+  @Override
   public void addForm(Form form) {
     formList.add(form);
   }
@@ -59,6 +61,7 @@ public class FormsImpl implements Serializable, Forms {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Forms#createForm()
    */
+  @Override
   public Form createForm() {
     return new FormImpl();
   }
@@ -67,11 +70,9 @@ public class FormsImpl implements Serializable, Forms {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Forms#getForm(java.lang.String)
    */
+  @Override
   public Form getForm(String name) {
-    Form form = null;
-
-    for (int f = 0; f < formList.size(); f++) {
-      form = (Form) formList.get(f);
+    for (Form form : formList) {
       if (form.getName().equals(name)) {
         return form;
       }
@@ -83,18 +84,16 @@ public class FormsImpl implements Serializable, Forms {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Forms#getForm(java.lang.String, java.lang.String)
    */
+  @Override
   public Form getForm(String name, String role) {
-    Form form = null;
     Form form2Return = null;
-
-    for (int f = 0; f < formList.size(); f++) {
-      form = (Form) formList.get(f);
-
+    for (Form form : formList) {
       if (name.equals(form.getName())) {
         if (role != null && role.equalsIgnoreCase(form.getRole())) {
           form2Return = form;
-        } else if (form.getRole() == null && form2Return == null)
+        } else if (form.getRole() == null && form2Return == null) {
           form2Return = form;
+        }
       }
     }
 
@@ -105,7 +104,8 @@ public class FormsImpl implements Serializable, Forms {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Forms#iterateForm()
    */
-  public Iterator iterateForm() {
+  @Override
+  public Iterator<Form> iterateForm() {
     return formList.iterator();
   }
 
@@ -113,23 +113,19 @@ public class FormsImpl implements Serializable, Forms {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Forms#removeForm(java.lang.String, java.lang.String)
    */
-  public void removeForm(String strName, String strRole)
-      throws WorkflowException {
-    Form form;
-
-    for (int i = 0; i < formList.size(); i++) {
-      form = (Form) formList.get(i);
-
-      if (form.getName().equals(strName)
-          && (strRole == null && form.getRole() == null || strRole != null
-          && strRole.equals(form.getRole()))) {
-        formList.remove(i);
+  @Override
+  public void removeForm(String strName, String strRole) throws WorkflowException {
+    Iterator<Form> iter = formList.iterator();
+    while (iter.hasNext()) {
+      Form form = iter.next();
+      if (form.getName().equals(strName) && (strRole == null && form.getRole() == null
+          || strRole != null && strRole.equals(form.getRole()))) {
+        iter.remove();
         return;
       }
     }
-
-    throw new WorkflowException("FormsImpl.removeForm", //$NON-NLS-1$
-        SilverpeasException.ERROR, "workflowEngine.EX_FORM_NOT_FOUND"); //$NON-NLS-1$
+    throw new WorkflowException("FormsImpl.removeForm", SilverpeasException.ERROR,
+        "workflowEngine.EX_FORM_NOT_FOUND");
 
   }
 }

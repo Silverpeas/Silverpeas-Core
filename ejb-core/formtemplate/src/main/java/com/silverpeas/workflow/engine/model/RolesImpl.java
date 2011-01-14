@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.workflow.engine.model;
 
 import java.io.Serializable;
@@ -37,19 +36,22 @@ import com.silverpeas.workflow.api.model.Roles;
  * Class implementing the representation of the &lt;roles&gt; element of a Process Model.
  */
 public class RolesImpl implements Serializable, Roles {
-  private List roleList;
+
+  private static final long serialVersionUID = 4241149699620983852L;
+  private List<Role> roleList;
 
   /**
    * Constructor
    */
   public RolesImpl() {
-    roleList = new ArrayList();
+    roleList = new ArrayList<Role>();
   }
 
   /*
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Roles#addRole(com.silverpeas.workflow .api.model.Role)
    */
+  @Override
   public void addRole(Role role) {
     roleList.add(role);
   }
@@ -58,6 +60,7 @@ public class RolesImpl implements Serializable, Roles {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Roles#createRole()
    */
+  @Override
   public Role createRole() {
     return new RoleImpl();
   }
@@ -66,18 +69,16 @@ public class RolesImpl implements Serializable, Roles {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Roles#getRole(java.lang.String)
    */
+  @Override
   public Role getRole(String name) {
-    Role role = null;
-
-    if (roleList == null)
+    if (roleList == null) {
       return null;
-
-    for (int r = 0; r < roleList.size(); r++) {
-      role = (Role) roleList.get(r);
-      if (name.equals(role.getName()))
-        return role;
     }
-
+    for (Role role : roleList) {
+      if (name.equals(role.getName())) {
+        return role;
+      }
+    }
     return null;
   }
 
@@ -85,18 +86,20 @@ public class RolesImpl implements Serializable, Roles {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Roles#getRoles()
    */
+  @Override
   public Role[] getRoles() {
-    if (roleList == null)
+    if (roleList == null) {
       return null;
-
-    return (Role[]) roleList.toArray(new RoleImpl[0]);
+    }
+    return roleList.toArray(new Role[roleList.size()]);
   }
 
   /*
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Roles#iterateRole()
    */
-  public Iterator iterateRole() {
+  @Override
+  public Iterator<Role> iterateRole() {
     return roleList.iterator();
   }
 
@@ -104,18 +107,17 @@ public class RolesImpl implements Serializable, Roles {
    * (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.Roles#removeRole(java.lang.String)
    */
+  @Override
   public void removeRole(String strRoleName) throws WorkflowException {
     Role role = createRole();
-
     role.setName(strRoleName);
-
-    if (roleList == null)
+    if (roleList == null) {
       return;
+    }
 
-    if (!roleList.remove(role))
-      throw new WorkflowException("RolesImpl.removeRole()", //$NON-NLS-1$
-          "workflowEngine.EX_ROLE_NOT_FOUND", // $NON-NLS-1$
-          strRoleName == null ? "<null>" //$NON-NLS-1$
-              : strRoleName);
+    if (!roleList.remove(role)) {
+      throw new WorkflowException("RolesImpl.removeRole()", "workflowEngine.EX_ROLE_NOT_FOUND", 
+          strRoleName == null ? "<null>" : strRoleName);
+    }
   }
 }
