@@ -47,14 +47,25 @@ function openMySpace()
   	{
   		ajaxEngine.sendRequest('getSpaceInfo','ResponseId=spaceUpdater','Init=0','SpaceId=spacePerso');
   		displayMySpace = "on";
-  		
   		try
   		{
-  			parent.MyMain.location.href=getContext()+getPersoHomepage();
+                      homePage = getPersoHomepage()
+                      if(homePage.indexOf('?', 0) > 0 ) {
+                        homePage = homePage + '&SpaceId=-10';
+                      } else {
+                        homePage = homePage + '?SpaceId=-10';
+                      }
+                      parent.MyMain.location.href=getContext()+ homePage;
   		}
   		catch (e)
   		{
-  			parent.MyMain.location.href=getContext()+getHomepage();
+                      homePage = getHomepage()
+                      if(homePage.indexOf('?', 0) > 0 ) {
+                        homePage = homePage + '&SpaceId=-20';
+                      } else {
+                        homePage = homePage + '?SpaceId=-20';
+                      }
+                      parent.MyMain.location.href=getContext()+homePage;
   		}
   	}
   	else
@@ -68,13 +79,7 @@ function openMySpace()
 }
   
 function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
-{
-  	//alert("spaceId = "+spaceId+", currentSpaceId = "+currentSpaceId);
-  	//alert("spaceLevel = "+spaceLevel+", currentSpaceLevel = "+currentSpaceLevel);
-  	//alert("currentSpacePath = "+currentSpacePath);
-  	
-  	//alert ("currentLook = "+currentLook+", spaceLook = "+spaceLook);
-  	
+{ 	
   	if (spaceLook != currentLook)
   	{
   		top.location = getContext()+"/admin/jsp/MainFrameSilverpeasV5.jsp?RedirectToSpaceId="+spaceId;
@@ -487,7 +492,7 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
 		
 		$.ajax({
 			  url: getContext()+'/RAjaxSilverpeasV5/dummy',
-			  data: { ResponseId: 'spaceUpdater',
+			  data: {ResponseId: 'spaceUpdater',
 					  Init:1,
 					  UserMenuDisplayMode: tabId},
 			  success: function(data){
@@ -555,7 +560,7 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
 
 	$.ajax({
 		  url: getContext()+'/RAjaxAction/userMenu',
-		  data: { Action: 'addSpace',
+		  data: {Action: 'addSpace',
 			  	  SpaceId: spaceId},
 		  success: function(data){
 		  			  //updateUserFavoriteSpaceStatus
@@ -589,7 +594,7 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
 
 	$.ajax({
 		  url: getContext()+'/RAjaxAction/userMenu',
-		  data: { Action: 'removeSpace',
+		  data: {Action: 'removeSpace',
 			  	  SpaceId: spaceId},
 		  success: function(data){
 			  		  // Check AJAX servlet response

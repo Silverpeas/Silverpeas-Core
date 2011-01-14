@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.portlets.portal;
 
 import java.io.IOException;
@@ -71,11 +70,11 @@ import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
 import com.sun.portal.portletcontainer.invoker.util.InvokerUtil;
 
 public class SPDesktopServlet extends HttpServlet {
+
+  public static final String PERSONNAL_SPACE_ID = "-10";
+  public static final String DEFAULT_SPACE_ID = "-20";
   private static final long serialVersionUID = -3241648887903159985L;
-
   ServletContext context;
-  String spContext;
-
   private static final Logger logger = Logger.getLogger("com.silverpeas.portlets.portal",
       "com.silverpeas.portlets.PCDLogMessages");
 
@@ -113,7 +112,9 @@ public class SPDesktopServlet extends HttpServlet {
 
     String spaceHomePage = null;
     String spaceId = request.getParameter("SpaceId");
-    if (StringUtil.isDefined(spaceId)) {
+    if (PERSONNAL_SPACE_ID.equals(spaceId) || DEFAULT_SPACE_ID.equals(spaceId)) {
+      request.getSession().removeAttribute("Silverpeas_Portlet_SpaceId");
+    } else if (StringUtil.isDefined(spaceId)) {
       request.getSession().setAttribute("Silverpeas_Portlet_SpaceId", spaceId);
       spaceHomePage = getSpaceHomepage(spaceId, request);
     }
@@ -131,17 +132,16 @@ public class SPDesktopServlet extends HttpServlet {
         if (spaceHomePage.startsWith("$")) {
           // case of redirection to another webapp (/weblib for example)
           String sRequestURL = request.getRequestURL().toString();
-          String m_sAbsolute =
-              sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
-          String baseURL =
-              GeneralPropertiesManager.getGeneralResourceLocator().getString("httpServerBase",
-                  m_sAbsolute);
+          String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().
+              length());
+          String baseURL = GeneralPropertiesManager.getGeneralResourceLocator().getString(
+              "httpServerBase", m_sAbsolute);
           spaceHomePage = baseURL + spaceHomePage.substring(1);
         }
         response.sendRedirect(spaceHomePage);
       }
     } else {
-      spContext = getUserIdOrSpaceId(request, false);
+      String spContext = getUserIdOrSpaceId(request, false);
       setUserIdAndSpaceIdInRequest(request);
 
       DesktopMessages.init(request);
@@ -189,8 +189,8 @@ public class SPDesktopServlet extends HttpServlet {
           } else if (WindowInvokerConstants.RESOURCE.equals(driverAction)) {
             portletContent.setPortletWindowName(portletWindowName);
             ChannelMode portletWindowMode = getCurrentPortletWindowMode(request, portletWindowName);
-            ChannelState portletWindowState =
-                getCurrentPortletWindowState(request, portletWindowName);
+            ChannelState portletWindowState = getCurrentPortletWindowState(request,
+                portletWindowName);
             portletContent.setPortletWindowState(portletWindowState);
             portletContent.setPortletWindowMode(portletWindowMode);
             portletContent.getResources();
@@ -198,10 +198,10 @@ public class SPDesktopServlet extends HttpServlet {
         }
         if (portletContents != null) {
           Map<String, SortedSet<PortletWindowData>> portletWindowContents =
-              getPortletWindowContents(request, portletContents, portletRegistryContext);
+              getPortletWindowContents(request, portletContents, portletRegistryContext, spContext);
           setPortletWindowData(request, portletWindowContents);
-          InvokerUtil.setResponseProperties(request, response, portletContent
-              .getResponseProperties());
+          InvokerUtil.setResponseProperties(request, response,
+              portletContent.getResponseProperties());
           RequestDispatcher rd = context.getRequestDispatcher(getPresentationURI(request));
           rd.forward(request, response);
           InvokerUtil.clearResponseProperties(portletContent.getResponseProperties());
@@ -341,8 +341,7 @@ public class SPDesktopServlet extends HttpServlet {
       portletWindowName = (String) portletList.get(i);
       portletContent.setPortletWindowName(portletWindowName);
       portletContent.setPortletWindowMode(getCurrentPortletWindowMode(request, portletWindowName));
-      portletContent
-          .setPortletWindowState(getCurrentPortletWindowState(request, portletWindowName));
+      portletContent.setPortletWindowState(getCurrentPortletWindowState(request, portletWindowName));
       StringBuffer buffer;
       try {
         buffer = portletContent.getContent();
@@ -358,7 +357,7 @@ public class SPDesktopServlet extends HttpServlet {
           LogRecord logRecord = new LogRecord(Level.SEVERE, "PSPCD_CSPPD0048");
           logRecord.setLoggerName(logger.getName());
           logRecord.setThrown(iex);
-          logRecord.setParameters(new String[] { portletWindowName });
+          logRecord.setParameters(new String[]{portletWindowName});
           logger.log(logRecord);
         }
         title = "";
@@ -387,8 +386,7 @@ public class SPDesktopServlet extends HttpServlet {
       portletWindowName = (String) portletMinimizedList.get(i);
       portletContent.setPortletWindowName(portletWindowName);
       portletContent.setPortletWindowMode(getCurrentPortletWindowMode(request, portletWindowName));
-      portletContent
-          .setPortletWindowState(getCurrentPortletWindowState(request, portletWindowName));
+      portletContent.setPortletWindowState(getCurrentPortletWindowState(request, portletWindowName));
       String title = portletContent.getDefaultTitle();
       Map portletContents = new HashMap();
       portletContents.put(DesktopConstants.PORTLET_CONTENT, null);
@@ -406,7 +404,8 @@ public class SPDesktopServlet extends HttpServlet {
    * @return a Map of PortletWindowData for the portlet windows
    */
   private Map<String, SortedSet<PortletWindowData>> getPortletWindowContents(
-      HttpServletRequest request, Map portletContents, PortletRegistryContext portletRegistryContext) {
+      HttpServletRequest request, Map portletContents, PortletRegistryContext portletRegistryContext,
+      String spContext) {
     Iterator itr = portletContents.keySet().iterator();
     String portletWindowName;
     SortedSet<PortletWindowData> portletWindowContentsThin = new TreeSet<PortletWindowData>();
@@ -418,7 +417,7 @@ public class SPDesktopServlet extends HttpServlet {
       try {
         PortletWindowData portletWindowData =
             getPortletWindowDataObject(request, portletContents, portletRegistryContext,
-            portletWindowName);
+            portletWindowName, spContext);
 
         if (portletWindowData.isThin()) {
           portletWindowContentsThin.add(portletWindowData);
@@ -436,8 +435,8 @@ public class SPDesktopServlet extends HttpServlet {
     Map portletWindowContents = new HashMap();
     portletWindowContents.put(PortletRegistryConstants.WIDTH_THICK, portletWindowContentsThick);
     portletWindowContents.put(PortletRegistryConstants.WIDTH_THIN, portletWindowContentsThin);
-    logger.log(Level.INFO, "PSPCD_CSPPD0022", new String[] { String.valueOf(thinCount),
-        String.valueOf(thickCount) });
+    logger.log(Level.INFO, "PSPCD_CSPPD0022", new String[]{String.valueOf(thinCount),
+          String.valueOf(thickCount)});
 
     return portletWindowContents;
   }
@@ -560,19 +559,19 @@ public class SPDesktopServlet extends HttpServlet {
 
   protected PortletWindowData getPortletWindowDataObject(HttpServletRequest request,
       Map portletContents, PortletRegistryContext portletRegistryContext,
-      String portletWindowName) throws PortletRegistryException {
+      String portletWindowName, String spContext) throws PortletRegistryException {
 
     PortletWindowDataImpl portletWindowData = new PortletWindowDataImpl();
     Map portletContentMap = (Map) portletContents.get(portletWindowName);
     portletWindowData.init(request, portletRegistryContext, portletWindowName);
-    portletWindowData.setContent((StringBuffer) portletContentMap
-        .get(DesktopConstants.PORTLET_CONTENT));
+    portletWindowData.setContent((StringBuffer) portletContentMap.get(
+        DesktopConstants.PORTLET_CONTENT));
     portletWindowData.setTitle((String) portletContentMap.get(DesktopConstants.PORTLET_TITLE));
     portletWindowData.setCurrentMode(getCurrentPortletWindowMode(request, portletWindowName));
-    portletWindowData
-        .setCurrentWindowState(getCurrentPortletWindowState(request, portletWindowName));
-    if (spContext.startsWith("space"))
+    portletWindowData.setCurrentWindowState(getCurrentPortletWindowState(request, portletWindowName));
+    if (spContext.startsWith("space")) {
       portletWindowData.setSpaceId(getUserIdOrSpaceId(request, true));
+    }
     if (isSpaceFrontOffice(request) || isAnonymousUser(request)) {
       portletWindowData.setEdit(false);
       portletWindowData.setHelp(false);
@@ -591,8 +590,9 @@ public class SPDesktopServlet extends HttpServlet {
     if (!StringUtil.isDefined(spaceId) || isSpaceBackOffice(request)) {
       request.setAttribute("SpaceId", spaceId);
 
-      if (isAnonymousUser(request))
+      if (isAnonymousUser(request)) {
         request.setAttribute("DisableMove", Boolean.TRUE);
+      }
 
       return "/portlet/jsp/jsr/desktop.jsp";
     } else {
@@ -615,26 +615,28 @@ public class SPDesktopServlet extends HttpServlet {
     String spaceId = getSpaceId(request);
     request.setAttribute("SpaceId", spaceId);
     request.setAttribute("UserId", getMainSessionController(request).getUserId());
-    SilverTrace.debug("portlet", "SPDesktopServlet.setUserIdAndSpaceIdInRequest", "userId = " +
-        getMainSessionController(request).getUserId());
+    SilverTrace.debug("portlet", "SPDesktopServlet.setUserIdAndSpaceIdInRequest", "userId = "
+        + getMainSessionController(request).getUserId());
   }
 
   private String getUserIdOrSpaceId(HttpServletRequest request, boolean getSpaceIdOnly) {
     String spaceId = getSpaceId(request);
-    if (StringUtil.isDefined(spaceId))
+    if (StringUtil.isDefined(spaceId)) {
       return spaceId;
-
+    }
     return getMainSessionController(request).getUserId();
   }
 
   private String prefixSpaceId(String spaceId) {
     if (StringUtil.isDefined(spaceId)) {
       // Display the space homepage
-      if (spaceId.startsWith("WA"))
+      if (spaceId.startsWith("WA")) {
         spaceId = spaceId.substring("WA".length());
+      }
 
-      if (!spaceId.startsWith("space"))
+      if (!spaceId.startsWith("space")) {
         spaceId = "space" + spaceId;
+      }
     }
     return spaceId;
   }
@@ -658,8 +660,9 @@ public class SPDesktopServlet extends HttpServlet {
         SpaceInst spaceStruct =
             m_MainSessionCtrl.getOrganizationController().getSpaceInstById(spaceId);
         // Page d'accueil de l'espace = Portlet ?
-        if (spaceStruct == null || spaceStruct.getFirstPageType() != SpaceInst.FP_TYPE_PORTLET)
+        if (spaceStruct == null || spaceStruct.getFirstPageType() != SpaceInst.FP_TYPE_PORTLET) {
           spaceId = null;
+        }
       }
     }
 
@@ -679,13 +682,13 @@ public class SPDesktopServlet extends HttpServlet {
   }
 
   private boolean isSpaceBackOffice(HttpServletRequest request) {
-    return (StringUtil.isDefined(getSpaceId(request)) && "admin".equalsIgnoreCase(request
-        .getParameter(WindowInvokerConstants.DRIVER_ROLE)));
+    return (StringUtil.isDefined(getSpaceId(request)) && "admin".equalsIgnoreCase(request.
+        getParameter(WindowInvokerConstants.DRIVER_ROLE)));
   }
 
   private boolean isSpaceFrontOffice(HttpServletRequest request) {
-    return (StringUtil.isDefined(getSpaceId(request)) && !StringUtil.isDefined(request
-        .getParameter(WindowInvokerConstants.DRIVER_ROLE)));
+    return (StringUtil.isDefined(getSpaceId(request)) && !StringUtil.isDefined(request.getParameter(
+        WindowInvokerConstants.DRIVER_ROLE)));
   }
 
   private String getSpaceHomepage(String spaceId, HttpServletRequest request)
@@ -698,24 +701,25 @@ public class SPDesktopServlet extends HttpServlet {
       String userId = m_MainSessionCtrl.getUserId();
 
       // Maintenance Mode
-      if (m_MainSessionCtrl.isSpaceInMaintenance(spaceId) &&
-          m_MainSessionCtrl.getUserAccessLevel().equals("U"))
-        return GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL") +
-            "/admin/jsp/spaceInMaintenance.jsp";
+      if (m_MainSessionCtrl.isSpaceInMaintenance(spaceId)
+          && m_MainSessionCtrl.getUserAccessLevel().equals("U")) {
+        return GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL")
+            + "/admin/jsp/spaceInMaintenance.jsp";
+      }
 
       // Page d'accueil de l'espace = Composant
-      if (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST &&
-          StringUtil.isDefined(spaceStruct.getFirstPageExtraParam())) {
+      if (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST
+          && StringUtil.isDefined(spaceStruct.getFirstPageExtraParam())) {
         String componentId = spaceStruct.getFirstPageExtraParam();
         if (organizationCtrl.isComponentAvailable(componentId, userId)) {
-          return GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL") +
-              URLManager.getURL("useless", componentId) + "Main";
+          return GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL")
+              + URLManager.getURL("useless", componentId) + "Main";
         }
       }
 
       // Page d'accueil de l'espace = URL
-      if (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_HTML_PAGE &&
-          StringUtil.isDefined(spaceStruct.getFirstPageExtraParam())) {
+      if (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_HTML_PAGE
+          && StringUtil.isDefined(spaceStruct.getFirstPageExtraParam())) {
         String s_sUserLogin = "%ST_USER_LOGIN%";
         String s_sUserPassword = "%ST_USER_PASSWORD%";
         String s_sUserEmail = "%ST_USER_EMAIL%";
@@ -727,32 +731,32 @@ public class SPDesktopServlet extends HttpServlet {
 
         String destination = spaceStruct.getFirstPageExtraParam();
         destination =
-            getParsedDestination(destination, s_sUserLogin, m_MainSessionCtrl
-            .getCurrentUserDetail().getLogin());
+            getParsedDestination(destination, s_sUserLogin, m_MainSessionCtrl.getCurrentUserDetail().
+            getLogin());
         destination =
-            getParsedDestination(destination, s_sUserFullName, URLEncoder.encode(m_MainSessionCtrl
-            .getCurrentUserDetail().getDisplayedName(), "UTF-8"));
+            getParsedDestination(destination, s_sUserFullName, URLEncoder.encode(m_MainSessionCtrl.
+            getCurrentUserDetail().getDisplayedName(), "UTF-8"));
         destination =
-            getParsedDestination(destination, s_sUserId, URLEncoder.encode(m_MainSessionCtrl
-            .getUserId(), "UTF-8"));
+            getParsedDestination(destination, s_sUserId, URLEncoder.encode(m_MainSessionCtrl.
+            getUserId(), "UTF-8"));
         destination =
-            getParsedDestination(destination, s_sSessionId, URLEncoder.encode(request.getSession()
-            .getId(), "UTF-8"));
+            getParsedDestination(destination, s_sSessionId, URLEncoder.encode(request.getSession().
+            getId(), "UTF-8"));
         destination =
-            getParsedDestination(destination, s_sUserEmail, m_MainSessionCtrl
-            .getCurrentUserDetail().geteMail());
+            getParsedDestination(destination, s_sUserEmail, m_MainSessionCtrl.getCurrentUserDetail().
+            geteMail());
         destination =
-            getParsedDestination(destination, s_sUserFirstName, URLEncoder.encode(m_MainSessionCtrl
-            .getCurrentUserDetail().getFirstName(), "UTF-8"));
+            getParsedDestination(destination, s_sUserFirstName, URLEncoder.encode(m_MainSessionCtrl.
+            getCurrentUserDetail().getFirstName(), "UTF-8"));
         destination =
-            getParsedDestination(destination, s_sUserLastName, URLEncoder.encode(m_MainSessionCtrl
-            .getCurrentUserDetail().getLastName(), "UTF-8"));
+            getParsedDestination(destination, s_sUserLastName, URLEncoder.encode(m_MainSessionCtrl.
+            getCurrentUserDetail().getLastName(), "UTF-8"));
 
         // !!!! Add the password : this is an uggly patch that use a session variable set in the
         // "AuthenticationServlet" servlet
         destination =
-            this.getParsedDestination(destination, s_sUserPassword, (String) request.getSession()
-            .getAttribute("Silverpeas_pwdForHyperlink"));
+            this.getParsedDestination(destination, s_sUserPassword, (String) request.getSession().
+            getAttribute("Silverpeas_pwdForHyperlink"));
 
         return destination;
       }
@@ -766,10 +770,11 @@ public class SPDesktopServlet extends HttpServlet {
       // Replace the keyword with the actual value
       String sParsed = sDestination.substring(0, nLoginIndex);
       sParsed += sValue;
-      if (sDestination.length() > nLoginIndex + sKeyword.length())
+      if (sDestination.length() > nLoginIndex + sKeyword.length()) {
         sParsed += sDestination.substring(
             nLoginIndex + sKeyword.length(),
             sDestination.length());
+      }
       sDestination = sParsed;
     }
     return sDestination;
