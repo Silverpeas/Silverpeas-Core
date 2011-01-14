@@ -23,7 +23,6 @@
  */
 package com.stratelia.webactiv.publication.socialNetwork;
 
-
 import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.silverpeas.socialNetwork.model.SocialInformationType;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -32,43 +31,43 @@ import java.util.Date;
 
 public class SocialInformationPublication implements SocialInformation {
 
-  
   private final String type = SocialInformationType.PUBLICATION.toString();
-  private  PublicationWithStatus publication;
-  private  String author;
-  private  Date  date;
-  private  String url;
+  private PublicationWithStatus publication;
+  private String author;
+  private Date date;
+  private String url;
 
   /**
    * Constructor with one param
    * @param publication
    */
-  public SocialInformationPublication (PublicationWithStatus publication) {
-    this.publication=publication;
-    if(publication.isUpdate()){
-    this.author = publication.getPublication().getUpdaterId();
-    this.date = publication.getPublication().getUpdateDate();
-    }else{
+  public SocialInformationPublication(PublicationWithStatus publication) {
+    this.publication = publication;
+    if (publication.isUpdate()) {
+      this.author = publication.getPublication().getUpdaterId();
+      this.date = publication.getPublication().getUpdateDate();
+    } else {
       this.author = publication.getPublication().getCreatorId();
       this.date = publication.getPublication().getCreationDate();
     }
-this.url=URLManager.getURL("kmelia", null, publication.getPublication().getPK().getInstanceId())+publication.getPublication().getURL();
-  //  this.url = publication.getPublication().getInstanceId()+"/"+ publication.getPublication().getURL();
-  
-}
-  
+    this.url = URLManager.getURL("kmelia", null,
+        publication.getPublication().getPK().getInstanceId()) + publication.getPublication().getURL();
+
+  }
+
   /**
    * return the icon of this SocialInformation
    * @return String
    */
   @Override
   public String getIcon() {
-      if (isUpdeted()) {
-          return type + "_update.gif";
-      } 
-          return type + "_new.gif";
+    if (isUpdeted()) {
+      return type + "_update.gif";
+    }
+    return type + "_new.gif";
   }
- /**
+
+  /**
    * return the type of this SocialInformation
    * @return String
    */
@@ -77,8 +76,8 @@ this.url=URLManager.getURL("kmelia", null, publication.getPublication().getPK().
     // TODO Auto-generated method stub
     return type;
   }
-  
- /**
+
+  /**
    * return the Title of this SocialInformation
    * @return String
    */
@@ -86,7 +85,8 @@ this.url=URLManager.getURL("kmelia", null, publication.getPublication().getPK().
   public String getTitle() {
     return publication.getPublication().getTitle();
   }
-/**
+
+  /**
    * return the Description of this SocialInformation
    * @return String
    */
@@ -94,7 +94,8 @@ this.url=URLManager.getURL("kmelia", null, publication.getPublication().getPK().
   public String getDescription() {
     return publication.getPublication().getDescription();
   }
-/**
+
+  /**
    * return the Author of this SocialInfo
    * @return String
    */
@@ -102,7 +103,8 @@ this.url=URLManager.getURL("kmelia", null, publication.getPublication().getPK().
   public String getAuthor() {
     return author;
   }
- /**
+
+  /**
    * return the Url of this SocialInfo
    * @return String
    */
@@ -110,7 +112,8 @@ this.url=URLManager.getURL("kmelia", null, publication.getPublication().getPK().
   public String getUrl() {
     return url;
   }
-/**
+
+  /**
    * return the Date of this SocialInfo
    * @return
    */
@@ -118,7 +121,8 @@ this.url=URLManager.getURL("kmelia", null, publication.getPublication().getPK().
   public Date getDate() {
     return date;
   }
-/**
+
+  /**
    * return if this socialInfo was updtated or not
    * @return boolean
    */
@@ -126,14 +130,15 @@ this.url=URLManager.getURL("kmelia", null, publication.getPublication().getPK().
   public boolean isUpdeted() {
     return publication.isUpdate();
   }
-/**
- * compare to SocialInformationPublication if are iquals or not
- * @param obj
- * @return boolean
- */
+
+  /**
+   * compare to SocialInformationPublication if are iquals or not
+   * @param obj
+   * @return boolean
+   */
   @Override
   public boolean equals(Object obj) {
-    if (obj == null||getClass() != obj.getClass()) {
+    if (obj == null || getClass() != obj.getClass()) {
       return false;
     }
     final SocialInformationPublication other = (SocialInformationPublication) obj;
@@ -141,7 +146,7 @@ this.url=URLManager.getURL("kmelia", null, publication.getPublication().getPK().
     if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type)) {
       return false;
     }
-   if ((this.author == null) ? (other.author != null) : !this.author.equals(other.author)) {
+    if ((this.author == null) ? (other.author != null) : !this.author.equals(other.author)) {
       return false;
     }
     if (this.date != other.date && (this.date == null || !this.date.equals(other.date))) {
@@ -150,23 +155,24 @@ this.url=URLManager.getURL("kmelia", null, publication.getPublication().getPK().
     if ((this.url == null) ? (other.url != null) : !this.url.equals(other.url)) {
       return false;
     }
-    if ((this.getTitle() == null) ? (other.getTitle() != null) : !this.getTitle().equals(other.getTitle())) {
+    if ((this.getTitle() == null) ? (other.getTitle() != null) : !this.getTitle().equals(other.
+        getTitle())) {
       return false;
     }
-    if ((this.getDescription() == null) ? (other.getDescription() != null) : !this.getDescription().equals(other.getDescription())) {
+    if ((this.getDescription() == null) ? (other.getDescription() != null) : !this.getDescription().
+        equals(other.getDescription())) {
       return false;
-    }    
+    }
     return true;
   }
-  
+
   /**
    *Indicates whether some other SocialInformation date is befor the date of this one.
    *@param   obj   the reference object with which to compare.
    * @return int
    */
-    @Override
+  @Override
   public int compareTo(SocialInformation o) {
-    return getDate().compareTo(o.getDate())*-1;
+    return getDate().compareTo(o.getDate()) * -1;
   }
-
 }

@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.util.publication.model;
 
+import com.google.common.base.Objects;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -274,7 +275,6 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
    * @param keywords
    * @param content
    * @param status
-   * @param imageMimeType
    */
   public PublicationDetail(String id, String name, String description,
       Date creationDate, Date beginDate, Date endDate, String creatorId,
@@ -379,7 +379,25 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   }
 
   /**
-   * @deprecated
+   * 
+   * @param pk
+   * @param name
+   * @param description
+   * @param creationDate
+   * @param beginDate
+   * @param endDate
+   * @param creatorId
+   * @param importance
+   * @param version
+   * @param keywords
+   * @param content
+   * @param status
+   * @param updateDate
+   * @param updaterId
+   * @param validateDate
+   * @param validatorId 
+   * 
+   * @deprecated 
    */
   public PublicationDetail(PublicationPK pk, String name, String description,
       Date creationDate, Date beginDate, Date endDate, String creatorId,
@@ -475,8 +493,6 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
 
   @Override
   public String getDescription() {
-    SilverTrace.info("publication", "PublicationDetail.getDescription()",
-        "root.MSG_GEN_ENTER_METHOD");
     return description;
   }
 
@@ -547,6 +563,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     return endDate;
   }
 
+  @Override
   public String getCreatorId() {
     return creatorId;
   }
@@ -1154,6 +1171,10 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
 
   public boolean isIndexable() {
     return VALID.equals(this.status);
+  }
+  
+  public boolean isPublicationEditor(String userId) {
+    return Objects.equal(creatorId, userId) ||  Objects.equal(updaterId, userId);
   }
 
   @Override
