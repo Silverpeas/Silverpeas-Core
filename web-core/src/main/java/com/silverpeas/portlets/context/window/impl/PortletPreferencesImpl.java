@@ -290,11 +290,12 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
     }
 
     loadPrefMap(key, def);
-    if (userPrefMap.containsKey(key)) {
-      pref = (String) userPrefMap.get(key);
-    } else {
-      pref = def;
-    }
+//    if (userPrefMap.containsKey(key)) {
+//      pref = (String) userPrefMap.get(key);
+//    } else {
+//      pref = def;
+//    }
+    pref = (String) userPrefMap.get(key);
     return pref;
   }
 
@@ -375,7 +376,7 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
     if (!userPrefMap.containsKey(prefName)) {
       // Get the preference value from User PrefMap, if its not there
       // get it from the pre defined map.
-      String pref = (String) userPrefMap.get(prefName);
+      String pref = (String) defaultMap.get(prefName);
       if (pref == null)
         pref = def;
       if (logger.isLoggable(Level.INFO)) {
