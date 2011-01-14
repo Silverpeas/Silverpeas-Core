@@ -92,7 +92,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
     result.append("<div id=\"breadCrumb\">");
 
     // Display spaces path from root to component
-    String language = getMainSessionController().getFavoriteLanguage();
+    String language = (getMainSessionController() == null) ? "" : getMainSessionController().getFavoriteLanguage();
     if (StringUtil.isDefined(getComponentId()) || StringUtil.isDefined(getSpaceId())) {
       List<SpaceInst> spaces;
 
