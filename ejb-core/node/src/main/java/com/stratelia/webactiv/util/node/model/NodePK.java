@@ -75,6 +75,15 @@ public class NodePK extends WAPrimaryKey implements Serializable {
   public NodePK(String id, WAPrimaryKey pk) {
     super(id, pk);
   }
+  
+  public boolean isTrash() {
+    return BIN_NODE_ID.equals(id);
+  }
+  
+  
+  public boolean isRoot() {
+    return ROOT_NODE_ID.equals(id);
+  }
 
   /**
    * Return the object root table name
