@@ -25,6 +25,11 @@ package com.silverpeas.accesscontrol;
 
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.ObjectType;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.node.control.NodeBm;
+import com.stratelia.webactiv.util.node.control.NodeBmHome;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
 /**
@@ -35,9 +40,21 @@ public class NodeAccessController implements AccessController<NodePK> {
 
   @Override
   public boolean isUserAuthorized(MainSessionController controller, String componentId,
-      NodePK object) throws Exception {
-    return controller.getOrganizationController().isObjectAvailable(Integer.parseInt(
-        object.getId()), ObjectType.NODE, componentId, controller.getUserId());
+      NodePK nodePK) throws Exception {
+    NodeDetail node = getNodeBm().getHeader(nodePK, false);
+    if (node != null) {
+      if (!node.haveRights()) {
+        return true;
+      }
+      return controller.getOrganizationController().isObjectAvailable(node.getRightsDependsOn(),
+          ObjectType.NODE, componentId, controller.getUserId());
+    }
+    return false;
+  }
 
+  public NodeBm getNodeBm() throws Exception {
+    NodeBmHome nodeBmHome = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME,
+        NodeBmHome.class);
+    return nodeBmHome.create();
   }
 }
