@@ -27,9 +27,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import com.silverpeas.form.fieldDisplayer.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.importExport.XMLField;
@@ -55,7 +53,6 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
-import com.stratelia.webactiv.util.publication.info.model.InfoImageDetail;
 import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
 
 /**
@@ -277,7 +274,6 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
    * @param keywords
    * @param content
    * @param status
-   * @param image
    * @param imageMimeType
    */
   public PublicationDetail(String id, String name, String description,
@@ -450,10 +446,12 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     this.infoId = infoId;
   }
 
+  @Override
   public String getName() {
     return name;
   }
 
+  @Override
   public String getName(String lang) {
     if (!I18NHelper.isI18N) {
       return getName();
@@ -475,28 +473,26 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     this.name = name;
   }
 
+  @Override
   public String getDescription() {
-    // System.out.println("PublicationDetail.getDescription()");
     SilverTrace.info("publication", "PublicationDetail.getDescription()",
         "root.MSG_GEN_ENTER_METHOD");
     return description;
   }
 
+  @Override
   public String getDescription(String lang) {
     if (!I18NHelper.isI18N) {
       return getDescription();
     }
-
     PublicationI18N p = (PublicationI18N) getTranslations().get(lang);
     if (p == null) {
       p = (PublicationI18N) getNextTranslation();
     }
-
     if (p != null) {
       return p.getDescription();
-    } else {
-      return getDescription();
     }
+    return getDescription();
   }
 
   public void setDescription(String description) {
@@ -571,17 +567,14 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     if (!I18NHelper.isI18N) {
       return getKeywords();
     }
-
     PublicationI18N p = (PublicationI18N) getTranslations().get(lang);
     if (p == null) {
       p = (PublicationI18N) getNextTranslation();
     }
-
     if (p != null) {
       return p.getKeywords();
-    } else {
-      return getKeywords();
     }
+    return getKeywords();
   }
 
   public String getContent() {
@@ -593,38 +586,20 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   }
 
   public String getImage() {
-    try {
-      if (getPK() != null && getPK().getInstanceId() != null && getPK().getId() != null && StringUtil.
-          isInteger(getPK().getId())) {
-        ThumbnailDetail thumbDetail = new ThumbnailDetail(getPK().getInstanceId(), Integer.valueOf(getPK().
-            getId()), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
-        // default size if creation
-        String[] imageProps = ThumbnailController.getImageAndMimeType(thumbDetail, -1, -1);
-        return imageProps[0];
-      } else {
-        return null;
-      }
-    } catch (Exception e) {
-      SilverTrace.error("publication", "PublicationDetail.getImage()",
-          "publication.GET_THUMBNAIL_ERROR", e);
+    ThumbnailDetail thumbDetail = getThumbnail();
+    if (thumbDetail != null) {
+      String[] imageProps = ThumbnailController.getImageAndMimeType(thumbDetail, -1, -1);
+      return imageProps[0];
     }
     return null;
+
   }
 
   public String getImageMimeType() {
-    try {
-      if (getPK() != null && getPK().getInstanceId() != null && getPK().getId() != null) {
-        ThumbnailDetail thumbDetail = new ThumbnailDetail(getPK().getInstanceId(), Integer.valueOf(getPK().
-            getId()), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
-        // default size if creation
-        String[] imageProps = ThumbnailController.getImageAndMimeType(thumbDetail, -1, -1);
-        return imageProps[1];
-      } else {
-        return null;
-      }
-    } catch (Exception e) {
-      SilverTrace.error("publication", "PublicationDetail.getImageMimeType()",
-          "publication.GET_THUMBNAIL_ERROR", e);
+    ThumbnailDetail thumbDetail = getThumbnail();
+    if (thumbDetail != null) {
+      String[] imageProps = ThumbnailController.getImageAndMimeType(thumbDetail, -1, -1);
+      return imageProps[1];
     }
     return null;
   }
@@ -857,11 +832,12 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
 
   private FormTemplateBm getFormTemplateBm() {
     FormTemplateBm formTemplateBm = null;
+
+
     if (formTemplateBm == null) {
       try {
         FormTemplateBmHome formTemplateBmHome = (FormTemplateBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.FORMTEMPLATEBM_EJBHOME,
-            FormTemplateBmHome.class);
+            JNDINames.FORMTEMPLATEBM_EJBHOME, FormTemplateBmHome.class);
         formTemplateBm = formTemplateBmHome.create();
       } catch (Exception e) {
         throw new PublicationRuntimeException(
@@ -922,41 +898,6 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
       }
     }
     return fieldContent;
-  }
-
-  public InfoImageDetail getImage(int fieldIndex) {
-    InfoImageDetail infoImageDetail = null;
-    InfoDetail currentInfoDetail = getInfoDetail();
-    ArrayList<InfoImageDetail> allInfoImage = null;
-
-    if (currentInfoDetail != null) {
-      allInfoImage = (ArrayList<InfoImageDetail>) currentInfoDetail.getInfoImageList();
-    }
-
-    if (allInfoImage != null) {
-      if (fieldIndex < allInfoImage.size()) {
-        infoImageDetail = allInfoImage.get(fieldIndex);
-      }
-    }
-    return infoImageDetail;
-  }
-
-  public Map<String, String> getImageMappedUrl(int fieldIndex) {
-    Map<String, String> imageMappedURL = null;
-    InfoImageDetail infoImageDetail = getImage(fieldIndex);
-    if (infoImageDetail != null) {
-      imageMappedURL = infoImageDetail.getMappedUrl();
-    }
-    return imageMappedURL;
-  }
-
-  public String getImageUrl(int fieldIndex) {
-    String imageURL = null;
-    InfoImageDetail infoImageDetail = getImage(fieldIndex);
-    if (infoImageDetail != null) {
-      imageURL = infoImageDetail.getWebURL();
-    }
-    return imageURL;
   }
 
   public PublicationBm getPublicationBm() {
@@ -1073,13 +1014,30 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   }
 
   public boolean isClone() {
-    return PublicationDetail.CLONE.equals(getStatus());
+    return CLONE.equalsIgnoreCase(getStatus());
+  }
+
+  public boolean isValid() {
+    return VALID.equalsIgnoreCase(getStatus());
+  }
+
+  public boolean isValidationRequired() {
+    return TO_VALIDATE.equalsIgnoreCase(getStatus());
+  }
+
+  public boolean isRefused() {
+    return REFUSED.equalsIgnoreCase(getStatus());
+  }
+
+  public boolean isDraft() {
+    return DRAFT.equalsIgnoreCase(getStatus());
   }
 
   public PublicationPK getClonePK() {
     return new PublicationPK(getCloneId(), getPK());
   }
 
+  @Override
   public Object clone() {
     PublicationDetail clone = new PublicationDetail();
     clone.setAuthor(author);
@@ -1153,27 +1111,45 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   }
 
   public Date getBeginDateAndHour() {
-    return beginDateAndHour;
+    if (beginDateAndHour != null) {
+      return (Date) beginDateAndHour.clone();
+    }
+    return null;
   }
 
   public void setBeginDateAndHour(Date beginDateAndHour) {
-    this.beginDateAndHour = beginDateAndHour;
+    if (beginDateAndHour != null) {
+      this.beginDateAndHour = (Date) beginDateAndHour.clone();
+    }
+    this.beginDateAndHour = null;
   }
 
   public Date getEndDateAndHour() {
-    return endDateAndHour;
+    if (endDateAndHour != null) {
+      return (Date) endDateAndHour.clone();
+    }
+    return null;
   }
 
   public void setEndDateAndHour(Date endDateAndHour) {
-    this.endDateAndHour = endDateAndHour;
+    if (endDateAndHour != null) {
+      this.endDateAndHour = (Date) endDateAndHour.clone();
+    }
+    this.endDateAndHour = null;
   }
 
   public Date getDraftOutDate() {
-    return draftOutDate;
+    if (draftOutDate != null) {
+      return (Date) draftOutDate.clone();
+    }
+    return null;
   }
 
   public void setDraftOutDate(Date draftOutDate) {
-    this.draftOutDate = draftOutDate;
+    if (draftOutDate != null) {
+      this.draftOutDate = (Date) draftOutDate.clone();
+    }
+    this.draftOutDate = null;
   }
 
   public boolean isIndexable() {
