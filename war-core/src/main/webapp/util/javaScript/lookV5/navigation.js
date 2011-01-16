@@ -80,14 +80,15 @@ function openMySpace()
   
 function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
 { 	
+	var mainFrame = getMainFrame();
   	if (spaceLook != currentLook)
   	{
-  		top.location = getContext()+"/admin/jsp/MainFrameSilverpeasV5.jsp?RedirectToSpaceId="+spaceId;
+  		top.location = getContext()+"/admin/jsp/" + mainFrame + "?RedirectToSpaceId="+spaceId;
   	}
   	
   	if (spaceWallpaper != currentWallpaper)
   	{
-  		top.location = getContext()+"/admin/jsp/MainFrameSilverpeasV5.jsp?RedirectToSpaceId="+spaceId;
+  		top.location = getContext()+"/admin/jsp/" + mainFrame + "?RedirectToSpaceId="+spaceId;
   	}
   	
   	closeCurrentComponent();
