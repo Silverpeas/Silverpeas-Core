@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.attachment.model;
 
 import java.io.File;
@@ -29,6 +28,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.silverpeas.form.importExport.XMLModelContentType;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.AbstractI18NBean;
@@ -39,7 +39,6 @@ import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 
@@ -47,16 +46,15 @@ import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
  * Class declaration
  * @author
  */
-public class AttachmentDetail extends AbstractI18NBean implements Serializable, MimeTypes {
+public final class AttachmentDetail extends AbstractI18NBean implements Serializable, MimeTypes {
 
+  private static final long serialVersionUID = 5441809463555598057L;
   public static final String ATTACHMENTS_FOLDER = "attachments";
   transient public static final int GROUP_FILE = 0;
   transient public static final int GROUP_FILE_LINK = 1;
   transient public static final int GROUP_HTML_LINK = 2;
   transient public static final int GROUP_DIR = 3;
   transient public static final int GROUP_DUMMY = 4;
-  final static String SPINFIRE_MIME_TYPE = "application/xview3d-3d";
-  final static String DEFAULT_MIME_TYPE = "application/octet-stream";
   private AttachmentPK pk = null;
   private String physicalName = null;
   private String logicalName = null;
@@ -64,8 +62,6 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
   private String type = null;
   private Date creationDate;
   private long size;
-  // private Object object = null;
-  // private byte[] objectSerialized = null;
   private String context = null;
   private WAPrimaryKey foreignKey = null;
   private String author = null;
@@ -123,9 +119,11 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
    * @param physicalName : type String: the name file stored in the server
    * @param description : type String: the description of file, size=4000 character
    * @param type : type String: the mime type of file
+   * @param size the size of the file.
    * @param context : type String: the context or the file is recorded
-   * @param fileDate : type Date: the date where the file was added
+   * @param creationDate : type Date: the date where the file was added
    * @param foreignKey : type WAPrimaryKey: the key of custumer object
+   * @param author the creator of the attechment.
    * @see com.stratelia.util.WAPrimaryKey
    * @author Jean-Claude Groccia
    * @version
@@ -261,16 +259,18 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
    * @see
    */
   public void setPK(AttachmentPK pk) {
+    this.pk = pk;
     if (pk == null) {
       SilverTrace.info("attachment", "AttachmentDetail.setPK()",
           "root.MSG_GEN_PARAM_VALUE", "pk is null !");
     } else {
+      this.instanceId = pk.getInstanceId();
       SilverTrace.info("attachment", "AttachmentDetail.setPK()",
           "root.MSG_GEN_PARAM_VALUE", "pk is not null = " + pk.toString());
     }
 
-    this.pk = pk;
-    this.instanceId = pk.getInstanceId();
+
+
   }
 
   /**
@@ -370,7 +370,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
     }
     if (!StringUtil.isDefined(detail.getType())
         || detail.getType().equalsIgnoreCase(DEFAULT_MIME_TYPE)) {
-      return AttachmentController.getMimeType(detail.getLogicalName());
+      return FileUtil.getMimeType(detail.getLogicalName());
     }
     return detail.getType();
   }
@@ -601,8 +601,8 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
    * @see
    */
   public String getAttachmentURL(String language) {
-    return FileServerUtils.getAttachmentURL(pk.getInstanceId(), getLogicalName(language), pk
-        .getId(), language);
+    return FileServerUtils.getAttachmentURL(pk.getInstanceId(), getLogicalName(language), pk.getId(),
+        language);
   }
 
   public String getAttachmentURL() {
@@ -726,8 +726,8 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
     } else {
       if ((attGr == GROUP_FILE) || (attGr == GROUP_DIR)) {
         String theContext =
-            FileRepositoryManager.getRelativePath(FileRepositoryManager
-            .getAttachmentContext(context));
+            FileRepositoryManager.getRelativePath(
+            FileRepositoryManager.getAttachmentContext(context));
         int nodeId = 0;
         if (fatherId == null) {
           nodeId = Integer.parseInt(fatherId);
@@ -842,12 +842,12 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
 
   public boolean isOfficeDocument(String language) {
     boolean isOfficeDocument = false;
-    String type = getType(language);
-    if (type != null) {
+    String mimeType = getType(language);
+    if (mimeType != null) {
       SilverTrace.info("attachment", "AttachmentDetail.isOfficeDocument()",
           "root.MSG_GEN_PARAM_VALUE", "is Office Document = "
-          + MS_OFFICE_MIME_TYPES.contains(type));
-      isOfficeDocument = MS_OFFICE_MIME_TYPES.contains(type);
+          + MS_OFFICE_MIME_TYPES.contains(mimeType));
+      isOfficeDocument = MS_OFFICE_MIME_TYPES.contains(mimeType);
     }
     return isOfficeDocument;
   }
@@ -882,8 +882,8 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
    * @return true if the attachment is compatible with OpenOffice false otherwise.
    */
   public boolean isOpenOfficeCompatible(String language) {
-    String type = getType(language);
-    return OPEN_OFFICE_MIME_TYPES.contains(type);
+    String currentType = getType(language);
+    return OPEN_OFFICE_MIME_TYPES.contains(currentType);
   }
 
   public boolean isOfficeDocument() {
@@ -892,6 +892,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
 
   /**
    * If 3d document
+   * @param language 
    * @return true or false
    */
   public boolean isSpinfireDocument(String language) {
@@ -918,7 +919,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
 
   /**
    * Is the Office file in read-only mode ?
-   * @param attachmentId
+   * @return 
    * @throws AttachmentException
    */
   public boolean isReadOnly() {
@@ -934,6 +935,7 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
     return FileRepositoryManager.getFileExtension(logicalName);
   }
 
+  @Override
   public Object clone() {
     AttachmentDetail clone = new AttachmentDetail();
     clone.setAuthor(author);
@@ -955,6 +957,14 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
     return clone;
   }
 
+  @Override
+  public int hashCode() {
+    int hash = 5;
+    hash = 89 * hash + (this.pk != null ? this.pk.hashCode() : 0);
+    return hash;
+  }
+
+  @Override
   public boolean equals(Object arg0) {
     if (arg0 == null) {
       return false;
@@ -1013,8 +1023,8 @@ public class AttachmentDetail extends AbstractI18NBean implements Serializable, 
    */
   public void checkMimeType() {
     if (logicalName != null
-        && (!StringUtil.isDefined(type) || type.equalsIgnoreCase(DEFAULT_MIME_TYPE))) {
-      type = AttachmentController.getMimeType(logicalName);
+        && (!StringUtil.isDefined(type) || DEFAULT_MIME_TYPE.equalsIgnoreCase(type))) {
+      type = FileUtil.getMimeType(logicalName);
     }
   }
 
