@@ -473,12 +473,9 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     // ... in Forms
     //
     if (m_processModel.getForms() != null) {
-      Iterator iterForm = m_processModel.getForms().iterateForm();
-      Form form;
-
+      Iterator<Form> iterForm = m_processModel.getForms().iterateForm();
       while (iterForm.hasNext()) {
-        form = (Form) iterForm.next();
-
+        Form form = iterForm.next();
         if (strRoleName.equals(form.getRole())) {
           throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeRole",
               SilverpeasException.ERROR, "workflowDesigner.EX_ELEMENT_REFERENCED",
@@ -536,11 +533,6 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
 
     try {
       m_processModel.getRolesEx().removeRole(strRoleName);
-
-      // Was this the last role defined?
-      //
-      if (!m_processModel.getRolesEx().iterateRole().hasNext())
-        ;
       m_processModel.setRoles(null);
     } catch (WorkflowException e) {
       throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeRole",
@@ -1750,7 +1742,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
    * @return a map, where the key is the reference to the object and the value is a textual
    * description of the object location
    */
-  private Map collectContextualDesignations() {
+  private Map<ContextualDesignations, String> collectContextualDesignations() {
     Map<ContextualDesignations, String> map = new IdentityHashMap<ContextualDesignations, String>();
     Roles roles = m_processModel.getRolesEx();
 
@@ -1817,48 +1809,37 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     // UserInfos
     //
     if (m_processModel.getUserInfos() != null) {
-      Item item;
-      Iterator iterItem = m_processModel.getUserInfos().iterateItem();
-
+      Iterator<Item> iterItem = m_processModel.getUserInfos().iterateItem();
       while (iterItem.hasNext()) {
-        item = (Item) iterItem.next();
-        map.put(item.getDescriptions(), "userInfos item: '" + item.getName()
-            + "' : description");
-        map.put(item.getLabels(), "userInfos item: '" + item.getName()
-            + "' : label");
+        Item item = iterItem.next();
+        map.put(item.getDescriptions(), "userInfos item: '" + item.getName() + "' : description");
+        map.put(item.getLabels(), "userInfos item: '" + item.getName() + "' : label");
       }
     }
 
     // DataFolder
     //
     if (m_processModel.getDataFolder() != null) {
-      Item item;
-      Iterator iterItem = m_processModel.getDataFolder().iterateItem();
-
-      while (iterItem.hasNext()) {
-        item = (Item) iterItem.next();
+      Iterator<Item> iterItem = m_processModel.getDataFolder().iterateItem();
+      while (iterItem.hasNext()) {        
+      Item item =  iterItem.next();
         map.put(item.getDescriptions(), "dataFolder item: '" + item.getName()
             + "' : description");
-        map.put(item.getLabels(), "dataFolder item: '" + item.getName()
-            + "' : label");
+        map.put(item.getLabels(), "dataFolder item: '" + item.getName() + "' : label");
       }
     }
 
     // Forms
     //
     if (m_processModel.getForms() != null) {
-      Iterator iterForm = m_processModel.getForms().iterateForm(), iterInput;
-      Form form;
-      Input input;
-      String strFormId;
-
+      Iterator<Form> iterForm = m_processModel.getForms().iterateForm(), iterInput;    
       while (iterForm.hasNext()) {
-        form = (Form) iterForm.next();
+        Form form = iterForm.next();
+        String strFormId;
         if (form.getRole() == null) {
           strFormId = "form: '" + form.getName() + "'";
         } else {
-          strFormId = "form [ name: '" + form.getName() + "', role: '"
-              + form.getRole() + "' ]";
+          strFormId = "form [ name: '" + form.getName() + "', role: '" + form.getRole() + "' ]";
         }
 
         map.put(form.getTitles(), strFormId + " : title");
@@ -1868,7 +1849,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
         iterInput = form.iterateInput();
 
         while (iterInput.hasNext()) {
-          input = (Input) iterInput.next();
+          Input input = (Input) iterInput.next();
           map.put(input.getLabels(), strFormId
               + " : input"
               + (input.getItem() == null ? "" : (" [ item: '"
