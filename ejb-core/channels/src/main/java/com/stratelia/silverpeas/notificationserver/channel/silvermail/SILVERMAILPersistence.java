@@ -104,7 +104,7 @@ public class SILVERMAILPersistence {
     whereClause.append(p_UserId);
     whereClause.append(" AND FOLDERID=").append(convertFolderNameToId(p_FolderName));
     if (readState != -1) {
-      whereClause.append(" readen = ").append(readState);
+      whereClause.append(" and readen = ").append(readState);
     }
     whereClause.append(" ORDER BY ID DESC");
 
