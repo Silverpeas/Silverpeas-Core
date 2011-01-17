@@ -203,7 +203,16 @@ public class UserFull extends UserDetail {
   @Override
   public boolean equals(Object other) {
     if (other instanceof UserFull) {
-      return this.equals((UserFull) other);
+      UserFull cmpUser = (UserFull) other;
+      if (super.equals(cmpUser)) {
+        String[] keys = m_hInfos.keySet().toArray(new String[0]);
+        boolean isTheSame = true;
+        for (int i = 0; (i < keys.length) && isTheSame; i++) {
+          isTheSame = getValue(keys[i]).equals(cmpUser.getValue(keys[i]));
+        }
+        return isTheSame;
+      }
+      return false;
     }
     return false;
   }
@@ -214,18 +223,6 @@ public class UserFull extends UserDetail {
     hash = 53 * hash + (this.m_hInfos != null ? this.m_hInfos.hashCode() : 0);
     hash = 53 * super.hashCode();
     return hash;
-  }
-
-  public boolean equals(UserFull cmpUser) {
-    if (super.equals(cmpUser)) {
-      String[] keys = (String[]) m_hInfos.keySet().toArray(new String[0]);
-      boolean isTheSame = true;
-      for (int i = 0; (i < keys.length) && isTheSame; i++) {
-        isTheSame = getValue(keys[i]).equals(cmpUser.getValue(keys[i]));
-      }
-      return isTheSame;
-    }
-    return false;
   }
 
   @Override

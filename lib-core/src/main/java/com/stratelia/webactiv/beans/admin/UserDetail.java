@@ -289,7 +289,15 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   @Override
   public boolean equals(Object other) {
     if (other instanceof UserDetail) {
-      return this.equals((UserDetail) other);
+      UserDetail cmpUser = (UserDetail)other;
+      return StringUtil.areStringEquals(m_sId, cmpUser.getId())
+        && StringUtil.areStringEquals(m_sSpecificId, cmpUser.getSpecificId())
+        && StringUtil.areStringEquals(m_sDomainId, cmpUser.getDomainId())
+        && StringUtil.areStringEquals(m_sLogin, cmpUser.getLogin())
+        && StringUtil.areStringEquals(m_sFirstName, cmpUser.getFirstName())
+        && StringUtil.areStringEquals(m_sLastName, cmpUser.getLastName())
+        && StringUtil.areStringEquals(m_seMail, cmpUser.geteMail())
+        && StringUtil.areStringEquals(m_sAccessLevel, cmpUser.getAccessLevel());
     }
     return false;
   }
@@ -308,16 +316,6 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     return hash;
   }
 
-  public boolean equals(UserDetail cmpUser) {
-    return StringUtil.areStringEquals(m_sId, cmpUser.getId())
-        && StringUtil.areStringEquals(m_sSpecificId, cmpUser.getSpecificId())
-        && StringUtil.areStringEquals(m_sDomainId, cmpUser.getDomainId())
-        && StringUtil.areStringEquals(m_sLogin, cmpUser.getLogin())
-        && StringUtil.areStringEquals(m_sFirstName, cmpUser.getFirstName())
-        && StringUtil.areStringEquals(m_sLastName, cmpUser.getLastName())
-        && StringUtil.areStringEquals(m_seMail, cmpUser.geteMail())
-        && StringUtil.areStringEquals(m_sAccessLevel, cmpUser.getAccessLevel());
-  }
 
   /**
    * Dump user values to the trace system
