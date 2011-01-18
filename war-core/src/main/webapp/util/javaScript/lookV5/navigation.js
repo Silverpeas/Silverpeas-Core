@@ -79,8 +79,13 @@ function openMySpace()
 }
   
 function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
-{ 	
-	var mainFrame = getMainFrame();
+{
+  var mainFrame = "";
+    try {
+      mainFrame = getMainFrame();
+    } catch(err) {
+      mainFrame = "MainFrameSilverpeasV5.jsp";
+    }
   	if (spaceLook != currentLook)
   	{
   		top.location = getContext()+"/admin/jsp/" + mainFrame + "?RedirectToSpaceId="+spaceId;
