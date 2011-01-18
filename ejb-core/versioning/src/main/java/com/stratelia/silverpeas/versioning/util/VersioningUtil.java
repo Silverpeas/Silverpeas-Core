@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -73,8 +73,6 @@ public class VersioningUtil {
   private String componentId = null;
   private Document document = null;
   private String userId = null;
-  private boolean topicRightsEnabled = false;
-  private String topicId = null;
   private Selection selection;
   // For Office files direct update
   public final static String NO_UPDATE_MODE = "0";
@@ -88,16 +86,10 @@ public class VersioningUtil {
   public VersioningUtil() {
   }
 
-  public VersioningUtil(String componentId, Document doc, String userId,
-      String topicId) {
+  public VersioningUtil(String componentId, Document doc, String userId, String topicId) {
     this.componentId = componentId;
     this.document = doc;
     this.userId = userId;
-    ComponentInst compInst = getAdmin().getComponentInst(componentId);
-    if ("yes".equalsIgnoreCase(compInst.getParameterValue("rightsOnTopics"))) {
-      this.topicRightsEnabled = true;
-      this.topicId = topicId;
-    }
     this.selection = new Selection();
   }
 
@@ -111,14 +103,6 @@ public class VersioningUtil {
 
   private String getUserId() {
     return userId;
-  }
-
-  private boolean isTopicRightsEnabled() {
-    return topicRightsEnabled;
-  }
-
-  private String getTopicId() {
-    return topicId;
   }
 
   private Selection getSelection() {
@@ -375,12 +359,10 @@ public class VersioningUtil {
       throws RemoteException {
     SilverTrace.info("versioningPeas", "VersioningUtil.createIndex()",
         "root.MSG_GEN_ENTER_METHOD", "documentToIndex = " + documentToIndex.toString());
-
     indexer.createIndex(documentToIndex, lastVersion);
   }
 
   public String createPath(String spaceId, String componentId, String context) {
-    // context is always null !
     return indexer.createPath(spaceId, componentId);
   }
 
@@ -396,8 +378,7 @@ public class VersioningUtil {
 
   /**
    * Update document version
-   * @param documentVersionPK
-   * @return DocumentVersion
+   * @param documentVersion
    */
   public void updateDocumentVersion(DocumentVersion documentVersion) {
     try {
@@ -415,9 +396,6 @@ public class VersioningUtil {
             JNDINames.VERSIONING_EJBHOME, VersioningBmHome.class);
         versioning_bm = vscEjbHome.create();
       } catch (Exception e) {
-        // NEED
-        // throw new
-        // ...RuntimeException("VersioningSessionController.initEJB()",SilverpeasRuntimeException.ERROR,"root.EX_CANT_GET_REMOTE_OBJECT",e);
       }
     }
     return versioning_bm;

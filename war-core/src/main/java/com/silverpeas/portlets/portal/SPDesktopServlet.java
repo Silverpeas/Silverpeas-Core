@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -628,24 +628,18 @@ public class SPDesktopServlet extends HttpServlet {
   }
 
   private String prefixSpaceId(String spaceId) {
-    if (StringUtil.isDefined(spaceId)) {
+    String id = spaceId;
+    if (StringUtil.isDefined(id)) {
       // Display the space homepage
-      if (spaceId.startsWith("WA")) {
-        spaceId = spaceId.substring("WA".length());
+      if (id.startsWith("WA")) {
+        id = id.substring("WA".length());
       }
 
-      if (!spaceId.startsWith("space")) {
-        spaceId = "space" + spaceId;
+      if (!id.startsWith("space")) {
+        id = "space" + id;
       }
     }
-    return spaceId;
-  }
-
-  private String unprefixSpaceId(String spaceId) {
-    if (StringUtil.isDefined(spaceId)) {
-      spaceId = spaceId.substring("space".length());
-    }
-    return spaceId;
+    return id;
   }
 
   private String getSpaceId(HttpServletRequest request) {

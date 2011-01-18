@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,10 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.indexEngine.model;
 
-//import java.io.IOException;
+import com.silverpeas.util.StringUtil;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -50,11 +49,14 @@ import com.stratelia.webactiv.util.indexEngine.analysis.SilverTokenizer;
  * the special characters.
  */
 public final class WAAnalyzer extends Analyzer {
+
   /**
    * Returns the analyzer to be used with texts of the given language. The analyzers are cached.
+   * @param language
+   * @return  
    */
   static public Analyzer getAnalyzer(String language) {
-    Analyzer analyzer = (Analyzer) languageMap.get(language);
+    Analyzer analyzer = languageMap.get(language);
 
     if (analyzer == null) {
       analyzer = new WAAnalyzer(language);
@@ -66,33 +68,21 @@ public final class WAAnalyzer extends Analyzer {
 
   /**
    * Returns a tokens stream built on top of the given reader.
+   * @param reader
+   * @return 
    */
   public TokenStream tokenStream(Reader reader) {
-    // TokenStream result = new StandardTokenizer(reader);
     TokenStream result = new SilverTokenizer(reader);
-
     result = new StandardFilter(result); // remove 's and . from token
     result = new LowerCaseFilter(result);
     result = new StopFilter(result, stopWords); // remove some unexplicit terms
     // according to the language
     result = new ElisionFilter(result); // remove [cdjlmnst-qu]' from token
-    // result = new ApostropheFilter(result); //remove [cdlmnst]' from token
     result = new ISOLatin1AccentFilter(result);
-    /*
-     * if (charReplacer != null) { result = new CharFilter(result, charReplacer); //unaccent terms }
-     */
-
-    /*
-     * try { Token token = (Token) result.next(); while (token != null) {
-     * SilverTrace.debug("indexEngine", "WAAnalyzer", "root.MSG_GEN_PARAM_VALUE",
-     * "token = "+token.termText()); token = (Token) result.next(); } } catch (IOException ioe) {
-     * SilverTrace.debug("indexEngine", "WAAnalyzer", "root.MSG_GEN_PARAM_VALUE",
-     * "ioe = "+ioe.toString()); }
-     */
-
     return result;
   }
 
+  @Override
   public TokenStream tokenStream(String arg0, Reader reader) {
     return tokenStream(reader);
   }
@@ -109,14 +99,13 @@ public final class WAAnalyzer extends Analyzer {
    */
   private String[] getStopWords(String language) {
     List<String> wordList = new ArrayList<String>();
-
+    String currentLanguage = language;
     try {
-      if (language == null || language.equals("")) {
-        language = "fr";
+      if (!StringUtil.isDefined(currentLanguage)) {
+        currentLanguage = "fr";
       }
-
       ResourceLocator resource = new ResourceLocator(
-          "com.stratelia.webactiv.util.indexEngine.StopWords", language);
+          "com.stratelia.webactiv.util.indexEngine.StopWords", currentLanguage);
 
       Enumeration<String> stopWord = resource.getKeys();
 
@@ -124,53 +113,13 @@ public final class WAAnalyzer extends Analyzer {
         wordList.add(stopWord.nextElement());
       }
     } catch (MissingResourceException e) {
-      SilverTrace.warn("indexEngine", "WAAnalyzer",
-          "indexEngine.MSG_MISSING_STOPWORDS_DEFINITION");
+      SilverTrace.warn("indexEngine", "WAAnalyzer", "indexEngine.MSG_MISSING_STOPWORDS_DEFINITION");
       return new String[0];
     }
-
-    return (String[]) wordList.toArray(new String[wordList.size()]);
-  }
-
-  /**
-   * Returns an object which while replace all the special characters. Returns null if the replacer
-   * do nothing.
-   */
-  private CharReplacer getCharReplacer(String language) {
-    CharReplacer replacer = new CharReplacer();
-    int replacementCount = 0;
-
-    try {
-      if (language == null || language.equals("")) {
-        language = "fr";
-      }
-
-      ResourceLocator resource = new ResourceLocator(
-          "com.stratelia.webactiv.util.indexEngine.SpecialChars", language);
-
-      Enumeration<String> replacements = resource.getKeys();
-
-      while (replacements.hasMoreElements()) {
-        String oldChars = replacements.nextElement();
-        String newChars = resource.getString(oldChars);
-
-        replacer.setReplacement(oldChars, newChars);
-        replacementCount++;
-      }
-    } catch (MissingResourceException e) {
-      SilverTrace.warn("indexEngine", "WAAnalyzer",
-          "indexEngine.MSG_MISSING_SPECIALCHARS_DEFINITION");
-    }
-
-    if (replacementCount == 0) {
-      return null;
-    } else {
-      return replacer;
-    }
+    return wordList.toArray(new String[wordList.size()]);
   }
 
   static private final Map<String, Analyzer> languageMap = new HashMap<String, Analyzer>();
-
   /**
    * The words which are usually not usefull for searching.
    */

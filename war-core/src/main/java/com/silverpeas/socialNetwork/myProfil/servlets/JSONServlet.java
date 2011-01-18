@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,12 +25,9 @@ package com.silverpeas.socialNetwork.myProfil.servlets;
 
 import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.silverpeas.socialNetwork.myProfil.control.SocialNetworkService;
-import java.io.*;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.json.JSONObject;
 import com.silverpeas.socialNetwork.model.SocialInformationType;
 import com.silverpeas.socialNetwork.user.model.SNContactUser;
@@ -38,11 +35,18 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.json.JSONArray;
 
 public class JSONServlet extends HttpServlet {
@@ -204,14 +208,5 @@ public class JSONServlet extends HttpServlet {
       url = m_context;
     }
     return url;
-  }
-
-  /**
-   * return the title when the type is RELATIONSHIP
-   * @param SocialInformationType type
-   * @return String
-   */
-  private String getTitle(SocialInformation event) {
-    return event.getTitle();
   }
 }

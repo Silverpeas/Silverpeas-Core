@@ -298,49 +298,12 @@ public class AdminServlet extends HttpServlet {
     RequestDispatcher reqd = context.getRequestDispatcher("/portlet/jsp/jsr/admin.jsp");
     reqd.forward(request, response);
   }
-
-  private void movePortletWindow(String portletWindowName, String width,
-      String row, boolean visible, HttpSession session,
-      PortletAdminData portletAdminData) {
-    if (portletWindowName == null) {
-      String message = DesktopMessages
-          .getLocalizedString(AdminConstants.NO_BASE_PORTLET_WINDOW);
-      session.setAttribute(AdminConstants.MODIFY_FAILED_ATTRIBUTE, message);
-    } else {
-      StringBuffer messageBuffer = new StringBuffer(DesktopMessages
-          .getLocalizedString(AdminConstants.MODIFY_FAILED));
-      boolean success = false;
-      try {
-        success = portletAdminData.modifyPortletWindow(portletWindowName,
-            width, visible, row);
-        AdminUtils.setPortletWindowAttributes(session, portletAdminData,
-            portletWindowName);
-      } catch (Exception ex) {
-        messageBuffer.append(".");
-        messageBuffer.append(ex.getMessage());
-      }
-      if (success) {
-        String message = DesktopMessages
-            .getLocalizedString(AdminConstants.MODIFY_SUCCEEDED);
-        session
-            .setAttribute(AdminConstants.MODIFY_SUCCEEDED_ATTRIBUTE, message);
-      } else {
-        session.setAttribute(AdminConstants.MODIFY_FAILED_ATTRIBUTE,
-            messageBuffer.toString());
-      }
-    }
-  }
+  
 
   private boolean validateString(String name, boolean allowSpaces) {
     if (name == null || name.trim().length() == 0) {
       return false;
     }
-
-    /*
-     * String value = name.trim(); for(int i=0; i<value.length(); i++) { char c = value.charAt(i);
-     * if(!Character.isLetterOrDigit(c) && !((c == '_') || (allowSpaces && c == ' '))){ return
-     * false; } }
-     */
     return true;
   }
 

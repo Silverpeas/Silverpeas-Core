@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.external.filesharing.dao;
 
 import java.sql.Connection;
@@ -174,7 +173,7 @@ public class TicketDAO {
       // création de la requête
       String query =
           "insert into SB_fileSharing_ticket (fileId, componentId, versioning, creatorId, creationDate, endDate, nbAccessMax, keyFile)"
-              + " values (?,?,?,?,?,?,?,?)";
+          + " values (?,?,?,?,?,?,?,?)";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, ticket.getFileId());
@@ -211,7 +210,7 @@ public class TicketDAO {
       Date today = new Date();
       String query =
           "update SB_fileSharing_ticket set fileId = ? , componentId = ? , updateId = ? , updateDate = ? , "
-              + "endDate = ? , nbAccessMax = ? , nbAccess = ? where keyfile = ? ";
+          + "endDate = ? , nbAccessMax = ? , nbAccess = ? where keyfile = ? ";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, ticket.getFileId());
@@ -286,7 +285,6 @@ public class TicketDAO {
       prepStmt.setString(1, key);
       prepStmt.executeUpdate();
     } finally {
-      // fermeture
       DBUtil.close(prepStmt);
     }
   }
@@ -295,10 +293,14 @@ public class TicketDAO {
     return UUID.randomUUID().toString().substring(0, 32);
   }
 
+  /**
+   * Recuperation des colonnes du resulSet et construction de l'objet ticket
+   * @param rs
+   * @return
+   * @throws SQLException 
+   */
   protected TicketDetail recupTicket(ResultSet rs) throws SQLException {
     TicketDetail ticket = new TicketDetail();
-    // recuperation des colonnes du resulSet et construction de l'objet ticket
-
     ticket.setFileId(rs.getInt("fileId"));
     ticket.setComponentId(rs.getString("componentId"));
     boolean versioning = "1".equals(rs.getString("versioning"));
@@ -306,33 +308,20 @@ public class TicketDAO {
     ticket.setCreatorId(rs.getString("creatorId"));
     String creationDate = null;
     if (StringUtil.isDefined(rs.getString("creationDate"))) {
-      try {
-        creationDate = (String) rs.getString("creationDate");
-      } catch (Exception e) {
-        throw new SQLException(e.getMessage());
-      }
+      creationDate = rs.getString("creationDate");
       ticket.setCreationDate(new Date(Long.parseLong(creationDate)));
     }
     ticket.setUpdateId(rs.getString("updateId"));
     String updateDate = null;
     if (StringUtil.isDefined(rs.getString("updateDate"))) {
-      try {
-        updateDate = (String) rs.getString("updateDate");
-      } catch (Exception e) {
-        throw new SQLException(e.getMessage());
-      }
+      updateDate = rs.getString("updateDate");
       ticket.setUpdateDate(new Date(Long.parseLong(updateDate)));
     }
     String endDate = null;
     if (StringUtil.isDefined(rs.getString("endDate"))) {
-      try {
-        endDate = (String) rs.getString("endDate");
-      } catch (Exception e) {
-        throw new SQLException(e.getMessage());
-      }
+      endDate = rs.getString("endDate");
       ticket.setEndDate(new Date(Long.parseLong(endDate)));
     }
-
     ticket.setNbAccessMax(rs.getInt("NbAccessMax"));
     ticket.setNbAccess(rs.getInt("NbAccess"));
     ticket.setKeyFile(rs.getString("KeyFile"));
@@ -340,10 +329,14 @@ public class TicketDAO {
     return ticket;
   }
 
+  /**
+   * Recuperation des colonnes du resulSet et construction de l'objet download
+   * @param rs
+   * @return
+   * @throws SQLException 
+   */
   protected DownloadDetail recupDownload(ResultSet rs) throws SQLException {
     DownloadDetail download = new DownloadDetail();
-    // recuperation des colonnes du resulSet et construction de l'objet download
-
     download.setId(rs.getInt("id"));
     download.setKeyFile(rs.getString("keyFile"));
     String downloadDate = rs.getString("downloadDate");
