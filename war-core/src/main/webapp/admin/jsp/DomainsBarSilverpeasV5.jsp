@@ -252,10 +252,6 @@ out.println(gef.getLookStyleSheet());
         }
     }
 
-    function getMainFrame()
-    {
-      return "<%=gef.getFavoriteLookSettings().getString("FrameJSP", "MainFrameSilverpeasV5.jsp")%>";
-    }
     
   	//used by keyword autocompletion
     <%  if(SilverpeasSettings.readBoolean(resourceSearchEngine, "enableAutocompletion", false)){ %>

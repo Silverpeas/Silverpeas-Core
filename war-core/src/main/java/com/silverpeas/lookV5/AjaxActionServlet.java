@@ -49,6 +49,8 @@ import com.stratelia.webactiv.beans.admin.UserFavoriteSpaceManager;
 import com.stratelia.webactiv.organization.DAOFactory;
 import com.stratelia.webactiv.organization.UserFavoriteSpaceDAO;
 import com.stratelia.webactiv.organization.UserFavoriteSpaceVO;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 public class AjaxActionServlet extends HttpServlet {
 
@@ -57,6 +59,8 @@ public class AjaxActionServlet extends HttpServlet {
   // Servlet action controller
   private static final String ACTION_ADD_SPACE = "addSpace";
   private static final String ACTION_REMOVE_SPACE = "removeSpace";
+  private static final String ACTION_GET_FRAME = "getFrame";
+  private static final String DEFAULT_JSP_FRAM = "MainFrameSilverpeasV5.jsp";
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -76,6 +80,8 @@ public class AjaxActionServlet extends HttpServlet {
       result = addSpace(req);
     } else if (ACTION_REMOVE_SPACE.equals(action)) {
       result = removeSpace(req);
+    } else if (ACTION_GET_FRAME.equals(action)) {
+      result = getFrame(req);
     } else {
       result = "{success:false, message:'Unknown action servlet'}";
     }
@@ -238,8 +244,6 @@ public class AjaxActionServlet extends HttpServlet {
     // Retrieve user identifier from session
     String userId = m_MainSessionCtrl.getUserId();
 
-    // JSON result
-    String result = null;
     // Declare JSon result object
     JSONObject jsonRslt = new JSONObject();
 
@@ -348,4 +352,29 @@ public class AjaxActionServlet extends HttpServlet {
     return parentSpaceIds;
   }
 
+  /**
+   * @param req the current HttpServletRequest
+   * @return JSON action result
+   */
+  private String getFrame(HttpServletRequest req) {
+    SilverTrace.debug("lookSilverpeasV5", AjaxActionServlet.class.getName() + ".getFrame",
+            "root.MSG_GEN_ENTER_METHOD");
+    HttpSession session = req.getSession(true);
+    GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
+
+    
+    // Retrieve FrameJSP from look name parameter
+    String lookName = req.getParameter("LookName");
+    String resource = gef.getLookSettings().getString(lookName);
+    ResourceLocator specificSettings = new ResourceLocator(resource, "");
+    String mainFrame = DEFAULT_JSP_FRAM;
+    mainFrame = specificSettings.getString("FrameJSP", DEFAULT_JSP_FRAM);
+
+    // Declare JSon result object
+    JSONObject jsonRslt = new JSONObject();
+    jsonRslt.put("frame", mainFrame);
+    jsonRslt.put("success", true);
+
+    return jsonRslt.toString();
+  }
 }
