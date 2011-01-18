@@ -571,6 +571,10 @@ td.milieuOngletOn {
 	background-color:transparent;
 }
 
+#preview .tableBoard {
+	background-color:#FFF;
+	}  
+
 	
 .arrayPane {
 	box-shadow:5px 5px 10px #cccccc;	
@@ -695,7 +699,7 @@ td.milieuOngletOn {
 	display:block;}
 
 /* regroupement des styles mise en couleur*/
-#blog #titresTopics a , #blog #titresArchives a, #blog #titresLiens a {
+#blog #titresTopics a , #blog #titresArchives a, #blog #titresLiens a , .titreCouleur{
 	color:#0C81CF;
 	
 }
@@ -708,3 +712,5 @@ td.milieuOngletOn {
 	}
 .txtnav { 
 	font-size:12px;}
+	
+
