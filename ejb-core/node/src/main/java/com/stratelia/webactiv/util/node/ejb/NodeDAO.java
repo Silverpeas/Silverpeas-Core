@@ -534,36 +534,32 @@ public class NodeDAO {
     if (status != null && status.length() > 0) {
       if (status.equals(detail.getStatus())) {
         headers.add(detail);
-        headers = getSubTree(con, headers, nodePK, status);
+        getSubTree(con, headers, nodePK, status);
       }
     } else {
       headers.add(detail);
-      headers = getSubTree(con, headers, nodePK, status);
+      getSubTree(con, headers, nodePK, status);
     }
 
     return headers;
   }
 
-  private static List<NodeDetail> getSubTree(Connection con, List<NodeDetail> tree, NodePK nodePK,
+  private static void getSubTree(Connection con, List<NodeDetail> tree, NodePK nodePK,
       String status) throws SQLException {
     Collection<NodeDetail> childrenDetails = getChildrenDetails(con, nodePK);
-    if (childrenDetails.size() > 0) {
-      Iterator<NodeDetail> iterator = childrenDetails.iterator();
-      NodeDetail child = null;
-      while (iterator.hasNext()) {
-        child = iterator.next();
-        if (status != null && status.length() > 0) {
+    if (!childrenDetails.isEmpty()) {
+      for(NodeDetail child : childrenDetails) {
+        if (StringUtil.isDefined(status)) {
           if (status.equals(child.getStatus())) {
             tree.add(child);
-            tree = getSubTree(con, tree, child.getNodePK(), status);
+            getSubTree(con, tree, child.getNodePK(), status);
           }
         } else {
           tree.add(child);
-          tree = getSubTree(con, tree, child.getNodePK(), status);
+          getSubTree(con, tree, child.getNodePK(), status);
         }
       }
     }
-    return tree;
   }
 
   /**
@@ -1049,7 +1045,7 @@ public class NodeDAO {
     SilverTrace.info("node", "NodeDAO.loadRow()", "root.MSG_GEN_PARAM_VALUE",
         "nodePK = " + nodePK);
     NodeDetail detail = null;
-    StringBuffer selectQuery = new StringBuffer();
+    StringBuilder selectQuery = new StringBuilder();
     selectQuery.append("select * from ").append(nodePK.getTableName());
     selectQuery.append(" where lower(nodename)=?");
     selectQuery.append(" and instanceId=?");

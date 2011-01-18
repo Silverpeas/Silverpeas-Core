@@ -4,6 +4,7 @@
  */
 package com.stratelia.webactiv.util.node.ejb;
 
+import com.silverpeas.util.i18n.I18NHelper;
 import org.junit.BeforeClass;
 import com.mockrunner.mock.jdbc.MockConnection;
 import com.mockrunner.jdbc.JDBCTestModule;
@@ -58,15 +59,16 @@ public class MockedNodeDAOTest {
 
   @Test
   public void testLoadRowConnectionNodePKStringInt() throws Exception {
+    I18NHelper.isI18N = false;
     JDBCMockObjectFactory jdbcFactory = new JDBCMockObjectFactory();
     JDBCTestModule module = new JDBCTestModule(jdbcFactory);
     MockConnection mockedConnection = jdbcFactory.getMockConnection();
     PreparedStatementResultSetHandler statementHandler = mockedConnection.getPreparedStatementResultSetHandler();
     MockResultSet result = statementHandler.createResultSet();
-    result.addRow(new Object[]{new Integer(4), "Sous Theme de Test",
+    result.addRow(new Object[]{Integer.valueOf(4), "Sous Theme de Test",
           "Vos publications peuvent se retrouver ici", "2008/05/10", "7",
-          "/0/3/", new Integer(3), new Integer(3), "", "Visible", "",
-          "default", new Integer(1), null, new Integer(-1)});
+          "/0/3/", Integer.valueOf(3), Integer.valueOf(3), "", "Visible", "",
+          "default", Integer.valueOf(1), null, Integer.valueOf(-1)});
     statementHandler.prepareGlobalResultSet(result);
     NodePK resultPk = NodeDAO.selectByNameAndFatherId(mockedConnection, new NodePK("4", INSTANCE_ID),
         "Sous Theme de Test", 3);

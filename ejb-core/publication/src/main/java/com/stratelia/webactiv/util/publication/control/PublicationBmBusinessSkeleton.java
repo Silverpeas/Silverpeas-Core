@@ -34,6 +34,7 @@ import com.stratelia.webactiv.publication.socialNetwork.SocialInformationPublica
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.util.publication.model.NodeTree;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelPK;
@@ -336,8 +337,16 @@ public interface PublicationBmBusinessSkeleton {
    */
   public int getNbPubByFatherPath(NodePK fatherPK, String fatherPath)
     throws RemoteException;
-
-  public Hashtable<String, Integer> getDistribution(String instanceId, String statusSubQuery,
+  
+  /**
+   * * Return the tree of nodes with the number of publication per node.
+   * @param instanceId
+   * @param statusSubQuery
+   * @param checkVisibility
+   * @return the tree of nodes with the number of publication per node
+   * @throws RemoteException 
+   */
+  public NodeTree getDistributionTree(String instanceId, String statusSubQuery,
     boolean checkVisibility) throws RemoteException;
 
   /**

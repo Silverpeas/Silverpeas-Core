@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>parent</artifactId>
-    <version>15-SNAPSHOT</version>
+    <version>17-SNAPSHOT</version>
   </parent>
 
   <description>
@@ -37,7 +37,7 @@
   
   <groupId>com.silverpeas</groupId>
   <artifactId>core</artifactId>
-  <version>5.4-SNAPSHOT</version>
+  <version>5.5-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Silverpeas Core</name>
 
