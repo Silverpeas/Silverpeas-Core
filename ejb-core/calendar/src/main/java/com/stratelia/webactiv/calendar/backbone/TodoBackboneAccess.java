@@ -277,7 +277,7 @@ public class TodoBackboneAccess {
     }
   }
 
-  private CalendarBm getCalendarBm() {
+  private synchronized  CalendarBm getCalendarBm() {
     if (calendarBm == null) {
       try {
         calendarBm = ((CalendarBmHome) EJBUtilitaire.getEJBObjectRef(

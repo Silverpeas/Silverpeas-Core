@@ -33,7 +33,6 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.text.SimpleDateFormat;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.calendar.control.CalendarException;
@@ -520,12 +519,11 @@ public class JournalDAO {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
 
-    SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
     Collection<JournalHeader> list = null;
     try {
       prepStmt = con.prepareStatement(selectStatement);
       prepStmt.setString(1, userId);
-      prepStmt.setString(2, format.format(startDate));
+      prepStmt.setString(2, DateUtil.date2SQLDate(startDate));
       rs = prepStmt.executeQuery();
       list = new ArrayList<JournalHeader>();
       while (rs.next()) {

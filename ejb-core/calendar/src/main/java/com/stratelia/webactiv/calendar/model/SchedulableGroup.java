@@ -38,8 +38,9 @@ public class SchedulableGroup extends SchedulableList {
   public boolean isOver(Schedulable schedule) {
     for (int i = 0; i < content.size(); i++) {
       Schedulable sched = (Schedulable) content.elementAt(i);
-      if (sched.isOver(schedule))
+      if (sched.isOver(schedule)) {
         return true;
+      }
     }
     return false;
   }
@@ -47,16 +48,19 @@ public class SchedulableGroup extends SchedulableList {
   public boolean isOver(SchedulableGroup group) {
     for (int i = 0; i < content.size(); i++) {
       Schedulable sched = (Schedulable) content.elementAt(i);
-      if (group.isOver(sched))
+      if (group.isOver(sched)) {
         return true;
+      }
     }
     return false;
   }
 
+  @Override
   public void add(Schedulable schedule) {
     content.add(schedule);
   }
 
+  @Override
   public void add(SchedulableGroup group) {
     Vector toAdd = group.getContent();
     for (int i = 0; i < toAdd.size(); i++) {
@@ -68,11 +72,13 @@ public class SchedulableGroup extends SchedulableList {
     String result = null;
     for (int i = 0; i < content.size(); i++) {
       Schedulable schedule = (Schedulable) content.elementAt(i);
-      if (result == null)
+      if (result == null) {
         result = schedule.getStartHour();
-      else if (schedule.getStartHour() != null)
+      }
+      else if (schedule.getStartHour() != null) {
         if (schedule.getStartHour().compareTo(result) < 0)
           result = schedule.getStartHour();
+      }
     }
     // Debug.println("Group.startHour = " + result);
     return result;
@@ -82,11 +88,14 @@ public class SchedulableGroup extends SchedulableList {
     String result = null;
     for (int i = 0; i < content.size(); i++) {
       Schedulable schedule = (Schedulable) content.elementAt(i);
-      if (result == null)
+      if (result == null) {
         result = schedule.getEndHour();
-      else if (schedule.getEndHour() != null)
-        if (schedule.getEndHour().compareTo(result) > 0)
+      }
+      else if (schedule.getEndHour() != null) {
+        if (schedule.getEndHour().compareTo(result) > 0) {
           result = schedule.getEndHour();
+        }
+      }
     }
     // Debug.println("Group.endHour = " + result);
     return result;
@@ -104,8 +113,9 @@ public class SchedulableGroup extends SchedulableList {
       if (obj instanceof Schedulable) {
         Schedulable schedule = (Schedulable) obj;
         // if (day.equals(schedule.getStartDay()))
-        if (hour.equals(schedule.getStartHour()))
+        if (hour.equals(schedule.getStartHour())) {
           result.add(schedule);
+        }
       }
     }
     return result;

@@ -54,8 +54,12 @@ public abstract class Schedulable implements java.io.Serializable {
   }
 
   public Schedulable(String name, String delegatorId) {
-    setName(name);
-    setDelegatorId(delegatorId);
+    if (StringUtil.isDefined(name)) {
+      this.name = name;
+    }
+    if (StringUtil.isDefined(delegatorId)) {
+      this.delegatorId = delegatorId;
+    }
   }
 
   public Schedulable(String id, String name, String delegatorId) {
@@ -70,10 +74,11 @@ public abstract class Schedulable implements java.io.Serializable {
   }
 
   public void setName(String name) {
-    this.name = name;
-    if (name != null)
-      if (name.length() == 0)
-        this.name = null;
+    if (StringUtil.isDefined(name)) {
+      this.name = name;
+    } else {
+      this.name = null;
+    }
   }
 
   public String getId() {
@@ -81,17 +86,19 @@ public abstract class Schedulable implements java.io.Serializable {
   }
 
   public void setId(String id) {
-    if (id != null)
-      if (id.length() == 0)
-        this.id = null;
-    this.id = id;
+    if (StringUtil.isDefined(id)) {
+      this.id = id;
+    } else {
+      this.id = null;
+    }
   }
 
   public void setDelegatorId(String delegatorId) {
-    this.delegatorId = delegatorId;
-    if (delegatorId != null)
-      if (delegatorId.length() == 0)
-        this.delegatorId = null;
+    if (StringUtil.isDefined(delegatorId)) {
+      this.delegatorId = delegatorId;
+    } else {
+      this.delegatorId = null;
+    }
   }
 
   public String getDelegatorId() {
@@ -107,14 +114,16 @@ public abstract class Schedulable implements java.io.Serializable {
   }
 
   public Classification getClassification() {
-    if (classification == null)
+    if (classification == null) {
       classification = new Classification();
+    }
     return classification;
   }
 
   public Priority getPriority() {
-    if (priority == null)
+    if (priority == null) {
       priority = new Priority();
+    }
     return priority;
   }
 
@@ -151,13 +160,16 @@ public abstract class Schedulable implements java.io.Serializable {
   }
 
   public java.util.Date getStartDate() {
-    if (getStartDay() == null)
+    if (getStartDay() == null) {
       return null;
+    }
     try {
-      if (getStartHour() == null)
+      if (getStartHour() == null) {
         return dateFormat.parse(getStartDay());
-      else
+      }
+      else {
         return completeFormat.parse(getStartDay() + " " + getStartHour());
+      }
     } catch (java.text.ParseException e) {
       return null;
     }
@@ -213,13 +225,16 @@ public abstract class Schedulable implements java.io.Serializable {
   }
 
   public java.util.Date getEndDate() {
-    if (getEndDay() == null)
+    if (getEndDay() == null) {
       return null;
+    }
     try {
-      if (getEndHour() != null)
+      if (getEndHour() != null) {
         return completeFormat.parse(getEndDay() + " " + getEndHour());
-      else
+      }
+      else {
         return dateFormat.parse(getEndDay());
+      }
     } catch (java.text.ParseException e) {
       return null;
     }
@@ -241,11 +256,11 @@ public abstract class Schedulable implements java.io.Serializable {
 
   public String getStringDuration() {
     try {
-      java.util.Date startDate = completeFormat.parse(getStartDay() + " "
+      java.util.Date aStartDate = completeFormat.parse(getStartDay() + " "
           + getStartHour());
-      java.util.Date endDate = completeFormat.parse(getEndDay() + " "
+      java.util.Date anEndDate = completeFormat.parse(getEndDay() + " "
           + getEndHour());
-      long ms = endDate.getTime() - startDate.getTime();
+      long ms = anEndDate.getTime() - aStartDate.getTime();
       return Schedulable.hourMinuteToString((int) ((ms / (60000)) % 60),
           (int) (ms / 3600000));
     } catch (Exception e) {
@@ -257,11 +272,11 @@ public abstract class Schedulable implements java.io.Serializable {
 
   public int getMinuteDuration() {
     try {
-      java.util.Date startDate = completeFormat.parse(getStartDay() + " "
+      java.util.Date aStartDate = completeFormat.parse(getStartDay() + " "
           + getStartHour());
-      java.util.Date endDate = completeFormat.parse(getEndDay() + " "
+      java.util.Date anEndDate = completeFormat.parse(getEndDay() + " "
           + getEndHour());
-      long ms = endDate.getTime() - startDate.getTime();
+      long ms = anEndDate.getTime() - aStartDate.getTime();
       return (int) (ms / (60000));
     } catch (Exception e) {
       SilverTrace.warn("calendar", "Schedulable.getMinuteDuration() ",
@@ -271,26 +286,33 @@ public abstract class Schedulable implements java.io.Serializable {
   }
 
   public boolean isOver(Schedulable schedule) {
-    if ((getStartHour() == null) || (getEndHour() == null))
+    if ((getStartHour() == null) || (getEndHour() == null)) {
       return false;
-    if ((schedule.getStartHour() == null) || (schedule.getEndHour() == null))
+    }
+    if ((schedule.getStartHour() == null) || (schedule.getEndHour() == null)) {
       return false;
+    }
     if ((getStartDate().compareTo(schedule.getStartDate()) <= 0)
-        && (getEndDate().compareTo(schedule.getStartDate()) > 0))
+        && (getEndDate().compareTo(schedule.getStartDate()) > 0)) {
       return true;
+    }
     if ((getStartDate().compareTo(schedule.getEndDate()) < 0)
-        && (getEndDate().compareTo(schedule.getEndDate()) >= 0))
+        && (getEndDate().compareTo(schedule.getEndDate()) >= 0)) {
       return true;
+    }
     if ((schedule.getStartDate().compareTo(getStartDate()) <= 0)
-        && (schedule.getEndDate().compareTo(getStartDate()) > 0))
+        && (schedule.getEndDate().compareTo(getStartDate()) > 0)) {
       return true;
+    }
     if ((schedule.getStartDate().compareTo(getEndDate()) < 0)
-        && (schedule.getEndDate().compareTo(getEndDate()) >= 0))
+        && (schedule.getEndDate().compareTo(getEndDate()) >= 0)) {
       return true;
+    }
     // }
     return false;
   }
 
+  @Override
   public String toString() {
     String result = " id = " + getId() + " name = " + getName()
         + " delegatorId = " + getDelegatorId() + " description = "
@@ -302,22 +324,26 @@ public abstract class Schedulable implements java.io.Serializable {
 
   public static String hourMinuteToString(int hour, int minute) {
     String h = String.valueOf(hour);
-    if (h.length() < 2)
+    if (h.length() < 2) {
       h = "0" + h;
+    }
     String m = String.valueOf(minute);
-    if (m.length() < 2)
+    if (m.length() < 2) {
       m = "0" + m;
+    }
     return h + ":" + m;
   }
 
   static public String quaterCountToHourString(int quaterCount) {
     String hour = String.valueOf(quaterCount >> 2);
-    if (hour.length() < 2)
+    if (hour.length() < 2) {
       hour = "0" + hour;
+    }
 
     String minute = String.valueOf((quaterCount & 3) * 15);
-    if (minute.length() < 2)
+    if (minute.length() < 2) {
       minute = "0" + minute;
+    }
 
     return hour + ":" + minute;
   }

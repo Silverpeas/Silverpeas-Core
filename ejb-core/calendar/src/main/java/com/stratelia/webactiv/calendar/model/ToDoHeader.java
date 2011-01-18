@@ -59,11 +59,11 @@ public class ToDoHeader extends Schedulable implements Cloneable {
   }
 
   public void setCompletedDate(java.util.Date date) {
-    completedDate = date;
+    completedDate = new java.util.Date(date.getTime());
   }
 
   public java.util.Date getCompletedDate() {
-    return completedDate;
+    return new java.util.Date(completedDate.getTime());
   }
 
   public void setCompletedDay(String day) {
@@ -77,8 +77,9 @@ public class ToDoHeader extends Schedulable implements Cloneable {
   }
 
   public String getCompletedDay() {
-    if (completedDate == null)
+    if (completedDate == null) {
       return null;
+    }
     return dateFormat.format(completedDate);
   }
 
@@ -106,14 +107,17 @@ public class ToDoHeader extends Schedulable implements Cloneable {
     return spaceId;
   }
 
+  @Override
   public void setExternalId(String id) {
     externalId = id;
   }
 
+  @Override
   public String getExternalId() {
     return externalId;
   }
 
+  @Override
   public Schedulable getCopy() {
     try {
       return (ToDoHeader) this.clone();

@@ -61,7 +61,7 @@ public class SocialEvent implements SocialEventsInterface {
    * getEJB
    * @return instance of CalendarBmHome
    */
- private static  CalendarBm getEJB() throws CalendarException {
+ private static synchronized CalendarBm getEJB() throws CalendarException {
     if (calendarBm == null) {
       try {
         calendarBm = ((CalendarBmHome) EJBUtilitaire.getEJBObjectRef(
