@@ -774,12 +774,11 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
    */
   public String getAttachmentIcon(String language) {
     String valret = "";
-    if (getPhysicalName(language).lastIndexOf(".") >= 0) {
+    if (getPhysicalName(language).lastIndexOf('.') >= 0) {
       String fileType = FileRepositoryManager.getFileExtension(getPhysicalName(language));
       valret = FileRepositoryManager.getFileIcon(fileType);
     } else {
-      if (getAttachmentGroup() == GROUP_HTML_LINK
-          || getAttachmentGroup() == GROUP_DUMMY) {
+      if (getAttachmentGroup() == GROUP_HTML_LINK || getAttachmentGroup() == GROUP_DUMMY) {
         valret = FileRepositoryManager.getFileIcon("html");
       }
     }

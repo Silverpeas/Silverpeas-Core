@@ -103,6 +103,7 @@ public abstract class WAPrimaryKey implements Serializable {
    * @param obj the object to compare to this WAPrimaryKey
    * @since 1.0
    */
+  @Override
   public abstract boolean equals(Object obj);
 
   /**
@@ -191,11 +192,8 @@ public abstract class WAPrimaryKey implements Serializable {
    * Get the database table name where the object is stored
    * @return the database table name where the object is stored : space + componentName +
    * rootTableName (ex : ED1KmeliaPublication)
-   * @param #space a space name
-   * @param #componentName a component name
-   * @see #space
-   * @see #componentName
-   * @see #getRootTableName
+   * @param space a space name
+   * @param componentName a component name
    * @since 1.0
    */
   public String getTableName(String space, String componentName) {
@@ -206,15 +204,19 @@ public abstract class WAPrimaryKey implements Serializable {
    * Converts the contents of the key into a readable String.
    * @return The string representation of this object
    */
+  @Override
   public String toString() {
-    return "(id = " + getId() + ", space = " + getSpace()
-        + ", componentName = " + getComponentName() + ")";
+    StringBuilder buffer = new StringBuilder(100);
+    buffer.append("(id = ").append(getId()).append(", space = ").append(getSpace()).
+        append(", componentName = ").append(getComponentName()).append(')');
+    return buffer.toString();
   }
 
   /**
    * Returns a hash code for the key
    * @return A hash code for this object
    */
+  @Override
   public int hashCode() {
     return toString().hashCode();
   }
