@@ -21,14 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
-/*
- * JobManagerSettings.java
- */
-
 package com.silverpeas.jobManagerPeas;
 
 import java.util.Arrays;
@@ -43,6 +35,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
  * @t.leroi
  */
 public class JobManagerSettings {
+
   public static int m_UsersByPage = 10;
   public static int m_GroupsByPage = 10;
   public static boolean m_IsKMVisible = false;
@@ -79,18 +72,19 @@ public class JobManagerSettings {
   static protected boolean readBoolean(ResourceLocator rs, String propName,
       boolean defaultValue) {
     String s = null;
-    if (defaultValue)
+    if (defaultValue) {
       s = rs.getString(propName, "true");
-    else
+    } else {
       s = rs.getString(propName, "false");
+    }
 
     boolean valret = defaultValue;
     if (defaultValue) {
-      if (s.equalsIgnoreCase("false")) {
+      if ("false".equalsIgnoreCase(s)) {
         valret = false;
       }
     } else {
-      if (s.equalsIgnoreCase("true")) {
+      if ("true".equalsIgnoreCase(s)) {
         valret = true;
       }
     }
@@ -99,29 +93,20 @@ public class JobManagerSettings {
   }
 
   static public void sortGroups(Group[] toSort) {
-    Arrays.sort(toSort, new Comparator() {
-      public int compare(Object o1, Object o2) {
-        return (((Group) o1).getName()).compareTo(((Group) o2).getName());
-      }
+    Arrays.sort(toSort, new Comparator<Group>() {
 
-      public boolean equals(Object o) {
-        return false;
+      public int compare(Group o1, Group o2) {
+        return o1.getName().compareTo(o2.getName());
       }
-
     });
   }
 
   static public void sortUsers(UserDetail[] toSort) {
-    Arrays.sort(toSort, new Comparator() {
-      public int compare(Object o1, Object o2) {
-        return (((UserDetail) o1).getLastName()).compareTo(((UserDetail) o2)
-            .getLastName());
-      }
+    Arrays.sort(toSort, new Comparator<UserDetail>() {
 
-      public boolean equals(Object o) {
-        return false;
+      public int compare(UserDetail o1, UserDetail o2) {
+        return o1.getLastName().compareTo(o2.getLastName());
       }
-
     });
   }
 }

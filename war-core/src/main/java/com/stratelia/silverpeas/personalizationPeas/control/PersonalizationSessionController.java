@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,10 +23,6 @@
  */
 package com.stratelia.silverpeas.personalizationPeas.control;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Properties;
 
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
@@ -39,13 +35,16 @@ import com.stratelia.silverpeas.peasCore.PeasCoreException;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Properties;
 
 /**
  * Class declaration
  * @author
  */
-public class PersonalizationSessionController
-    extends AbstractComponentSessionController {
+public class PersonalizationSessionController extends AbstractComponentSessionController {
 
   private NotificationManager notificationManager = null;
 
@@ -55,19 +54,16 @@ public class PersonalizationSessionController
    * @param componentContext
    * @see
    */
-  public PersonalizationSessionController(
-      MainSessionController mainSessionCtrl,
+  public PersonalizationSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
-    super(
-        mainSessionCtrl,
-        componentContext,
+    super(mainSessionCtrl, componentContext,
         "com.stratelia.silverpeas.personalizationPeas.multilang.personalizationBundle",
         "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasIcons",
         "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings");
     setComponentRootName(URLManager.CMP_PERSONALIZATION);
     notificationManager = new NotificationManager(getLanguage());
   }
-  
+
   /**
    * Is the multichannel notification supported?
    * @return true if notifications can be done through several channels, false otherwise.
@@ -75,7 +71,7 @@ public class PersonalizationSessionController
   public boolean isMultiChannelNotification() {
     return notificationManager.isMultiChannelNotification();
   }
-  
+
   /**
    * Method declaration
    * @return
@@ -87,10 +83,8 @@ public class PersonalizationSessionController
     try {
       return notificationManager.getNotificationAddresses(userId);
     } catch (NotificationManagerException e) {
-      throw new PeasCoreException(
-          "PersonalizationSessionController.getNotificationAddresses()",
-          SilverpeasException.ERROR,
-          "personalizationPeas.EX_CANT_GET_NOTIFICATION_ADDRESSES", e);
+      throw new PeasCoreException("PersonalizationSessionController.getNotificationAddresses()",
+          SilverpeasException.ERROR, "personalizationPeas.EX_CANT_GET_NOTIFICATION_ADDRESSES", e);
     }
   }
 
@@ -109,10 +103,8 @@ public class PersonalizationSessionController
     try {
       return notificationManager.getNotificationAddress(id, userId);
     } catch (NotificationManagerException e) {
-      throw new PeasCoreException(
-          "PersonalizationSessionController.getNotificationAddress()",
-          SilverpeasException.ERROR,
-          "personalizationPeas.EX_CANT_GET_NOTIFICATION_ADDRESS", "Id="
+      throw new PeasCoreException("PersonalizationSessionController.getNotificationAddress()",
+          SilverpeasException.ERROR, "personalizationPeas.EX_CANT_GET_NOTIFICATION_ADDRESS", "Id="
           + aNotificationAddressId, e);
     }
   }
@@ -127,10 +119,8 @@ public class PersonalizationSessionController
     try {
       return notificationManager.getNotifChannels();
     } catch (NotificationManagerException e) {
-      throw new PeasCoreException(
-          "PersonalizationSessionController.getNotifChannels()",
-          SilverpeasException.ERROR,
-          "personalizationPeas.EX_CANT_GET_NOTIFICATION_CHANNELS", e);
+      throw new PeasCoreException("PersonalizationSessionController.getNotifChannels()",
+          SilverpeasException.ERROR, "personalizationPeas.EX_CANT_GET_NOTIFICATION_CHANNELS", e);
     }
   }
 
@@ -149,11 +139,9 @@ public class PersonalizationSessionController
     try {
       return notificationManager.getNotifPreference(id, userId);
     } catch (NotificationManagerException e) {
-      throw new PeasCoreException(
-          "PersonalizationSessionController.getNotifPreference()",
-          SilverpeasException.ERROR,
-          "personalizationPeas.EX_CANT_GET_NOTIFICATION_PREFERENCE", "Id="
-          + aPreferenceId, e);
+      throw new PeasCoreException("PersonalizationSessionController.getNotifPreference()",
+          SilverpeasException.ERROR, "personalizationPeas.EX_CANT_GET_NOTIFICATION_PREFERENCE",
+          "Id=" + aPreferenceId, e);
     }
   }
 
@@ -169,10 +157,8 @@ public class PersonalizationSessionController
     try {
       return notificationManager.getNotifPreferences(userId);
     } catch (NotificationManagerException e) {
-      throw new PeasCoreException(
-          "PersonalizationSessionController.getNotifPreferences()",
-          SilverpeasException.ERROR,
-          "personalizationPeas.EX_CANT_GET_NOTIFICATION_PREFERENCES", e);
+      throw new PeasCoreException("PersonalizationSessionController.getNotifPreferences()",
+          SilverpeasException.ERROR, "personalizationPeas.EX_CANT_GET_NOTIFICATION_PREFERENCES", e);
     }
   }
 
@@ -186,16 +172,10 @@ public class PersonalizationSessionController
    * @throws PeasCoreException
    * @see
    */
-  public void saveNotifAddress(String aNotifAddressId,
-      String aNotifName,
-      String aChannelId,
-      String aAddress,
-      String aUsage)
-      throws PeasCoreException {
+  public void saveNotifAddress(String aNotifAddressId, String aNotifName, String aChannelId, 
+      String aAddress, String aUsage) throws PeasCoreException {
     int notifAddressId;
-
-    if (aNotifAddressId.equalsIgnoreCase("")
-        || aNotifAddressId.equalsIgnoreCase("null")) {
+    if (!StringUtil.isDefined(aNotifAddressId)) {
       notifAddressId = -1;
     } else {
       notifAddressId = Integer.parseInt(aNotifAddressId);
@@ -207,13 +187,10 @@ public class PersonalizationSessionController
       notificationManager.saveNotifAddress(notifAddressId, userId, aNotifName,
           channelId, aAddress, aUsage);
     } catch (NotificationManagerException e) {
-      throw new PeasCoreException(
-          "PersonalizationSessionController.saveNotifAddress()",
-          SilverpeasException.ERROR,
-          "personalizationPeas.EX_CANT_SET_NOTIFICATION_ADDRESS",
-          "aNotifAddressId=" + aNotifAddressId + "|aNotifName=" + aNotifName
-          + "|aChannelId=" + aChannelId + "|aAddress=" + aAddress
-          + "|aUsage=" + aUsage, e);
+      throw new PeasCoreException("PersonalizationSessionController.saveNotifAddress()",
+          SilverpeasException.ERROR, "personalizationPeas.EX_CANT_SET_NOTIFICATION_ADDRESS",
+          "aNotifAddressId=" + aNotifAddressId + "|aNotifName=" + aNotifName  + "|aChannelId=" 
+          + aChannelId + "|aAddress=" + aAddress + "|aUsage=" + aUsage, e);
     }
   }
 
@@ -258,8 +235,9 @@ public class PersonalizationSessionController
 
   /**
    * Send a test message to the given notification address Id
-   * @param id of the table ST_NotifAddress row to send notification to.
-   */
+   * @param aNotifAddressId id of the table ST_NotifAddress row to send notification to.
+   * @throws PeasCoreException 
+   */   
   public void testNotifAddress(String aNotifAddressId) throws PeasCoreException {
     // Get the current userId
     int userId = Integer.parseInt(getUserId());
@@ -278,6 +256,8 @@ public class PersonalizationSessionController
 
   /**
    * Get the default Notification address
+   * @return
+   * @throws PeasCoreException 
    */
   public Properties getDefaultAddress() throws PeasCoreException {
     int userId = Integer.parseInt(getUserId());
@@ -295,10 +275,10 @@ public class PersonalizationSessionController
 
   /**
    * Set the default Notification address Id
-   * @param id of the table ST_NotifAddress row to send notification to.
+   * @param aNotifAddressId of the table ST_NotifAddress row to send notification to.
+   * @throws PeasCoreException  
    */
-  public void setDefaultAddress(String aNotifAddressId)
-      throws PeasCoreException {
+  public void setDefaultAddress(String aNotifAddressId) throws PeasCoreException {
     // Get the current userId
     int userId = Integer.parseInt(getUserId());
     int notifAddressId = Integer.parseInt(aNotifAddressId);
@@ -307,11 +287,9 @@ public class PersonalizationSessionController
       notificationManager.deleteAllAddress(userId);
       notificationManager.setDefaultAddress(notifAddressId, userId);
     } catch (NotificationManagerException e) {
-      throw new PeasCoreException(
-          "PersonalizationSessionController.setDefaultAddress()",
-          SilverpeasException.ERROR,
-          "personalizationPeas.EX_CANT_SET_DEFAULT_ADDRESS", "aNotifAddressId="
-          + aNotifAddressId, e);
+      throw new PeasCoreException("PersonalizationSessionController.setDefaultAddress()",
+          SilverpeasException.ERROR, "personalizationPeas.EX_CANT_SET_DEFAULT_ADDRESS",
+          "aNotifAddressId=" + aNotifAddressId, e);
     }
   }
 
@@ -323,21 +301,18 @@ public class PersonalizationSessionController
    * @throws PeasCoreException
    * @see
    */
-  public void addPreference(String componentId,
-      String priorityId,
-      String notificationId) throws PeasCoreException {
+  public void addPreference(String componentId, String priorityId, String notificationId) throws
+      PeasCoreException {
     int userId = Integer.parseInt(getUserId());
 
     try {
       notificationManager.savePreferences(userId,
           Integer.parseInt(componentId), -1, Integer.parseInt(notificationId));
     } catch (NotificationManagerException e) {
-      throw new PeasCoreException(
-          "PersonalizationSessionController.addPreference()",
-          SilverpeasException.ERROR,
-          "personalizationPeas.EX_CANT_ADD_NOTIFICATION_PREFERENCE",
-          "componentId=" + componentId + "|priorityId=" + priorityId
-          + "|notificationId=" + notificationId, e);
+      throw new PeasCoreException("PersonalizationSessionController.addPreference()",
+          SilverpeasException.ERROR, "personalizationPeas.EX_CANT_ADD_NOTIFICATION_PREFERENCE",
+          "componentId=" + componentId + "|priorityId=" + priorityId + "|notificationId=" 
+          + notificationId, e);
     }
   }
 
@@ -357,7 +332,7 @@ public class PersonalizationSessionController
 
     for (int i = 0; i < givenInstancesIds.length; i++) {
       instanceId = givenInstancesIds[i];
-      if (intermed.lastIndexOf((String) instanceId) == i) {
+      if (intermed.lastIndexOf(instanceId) == i) {
         instancesIds.add(instanceId);
       }
     }
@@ -367,6 +342,7 @@ public class PersonalizationSessionController
 
   /**
    * Retourne la liste des composants
+   * @return 
    */
   public ArrayList<Properties> getInstanceList() throws PeasCoreException {
 
@@ -394,7 +370,7 @@ public class PersonalizationSessionController
         p.setProperty("fullName", notificationManager.getComponentFullName(instanceId));
         ar.add(p);
       }
-      Properties[] componentList = (Properties[]) ar.toArray(new Properties[0]);
+      Properties[] componentList = ar.toArray(new Properties[ar.size()]);
 
       Arrays.sort(componentList, new Comparator<Properties>() {
 
@@ -402,17 +378,6 @@ public class PersonalizationSessionController
         public int compare(Properties o1,
             Properties o2) {
           return o1.getProperty("fullName").compareTo(o2.getProperty("fullName"));
-        }
-
-        @Override
-        public boolean equals(Object o) {
-          return false;
-        }
-
-        @Override
-        public int hashCode() {
-          int hash = 3;
-          return hash;
         }
       });
       sortedComponentList = new ArrayList<Properties>(componentList.length);
@@ -426,10 +391,8 @@ public class PersonalizationSessionController
       }
       return sortedComponentList;
     } catch (Exception e) {
-      throw new PeasCoreException(
-          "PersonalizationSessionController.getInstanceList()",
-          SilverpeasException.ERROR,
-          "personalizationPeas.EX_CANT_GET_INSTANCE_LIST", e);
+      throw new PeasCoreException("PersonalizationSessionController.getInstanceList()",
+          SilverpeasException.ERROR, "personalizationPeas.EX_CANT_GET_INSTANCE_LIST", e);
     }
   }
 
@@ -490,24 +453,12 @@ public class PersonalizationSessionController
           EncodeHelper.javaStringToHtmlString(selectText)).append("</option>\n");
     }
     if (bSorted) {
-      Properties[] theList = (Properties[]) ar.toArray(new Properties[0]);
+      Properties[] theList = ar.toArray(new Properties[ar.size()]);
       Arrays.sort(theList, new Comparator<Properties>() {
 
         @Override
-        public int compare(Properties o1,
-            Properties o2) {
+        public int compare(Properties o1, Properties o2) {
           return o1.getProperty("name").toUpperCase().compareTo(o2.getProperty("name").toUpperCase());
-        }
-
-        @Override
-        public boolean equals(Object o) {
-          return false;
-        }
-
-        @Override
-        public int hashCode() {
-          int hash = 3;
-          return hash;
         }
       });
       arToDisplay = new ArrayList<Properties>(theList.length);
@@ -517,16 +468,15 @@ public class PersonalizationSessionController
     }
     if (arToDisplay != null) {
       for (i = 0; i < arToDisplay.size(); i++) {
-        elmt = (Properties) arToDisplay.get(i);
+        elmt = arToDisplay.get(i);
         if (elmt.getProperty("id").equalsIgnoreCase(selectValue)) {
           selected = "SELECTED";
         } else {
           selected = "";
         }
-        valret.append("<option value=\"").append(elmt.getProperty("id")).append("\" ")
-            .append(selected).append(">")
-            .append(EncodeHelper.javaStringToHtmlString(elmt.getProperty("name")))
-            .append("</option>\n");
+        valret.append("<option value=\"").append(elmt.getProperty("id")).append("\" ").append(
+            selected).append(">").append(EncodeHelper.javaStringToHtmlString(
+            elmt.getProperty("name"))).append("</option>\n");
       }
     }
     return valret.toString();
@@ -535,7 +485,6 @@ public class PersonalizationSessionController
   public UserFull getTargetUserFull() {
     UserFull valret = null;
     String IdUserCur = getUserId();
-
     if (StringUtil.isDefined(IdUserCur)) {
       valret = getOrganizationController().getUserFull(IdUserCur);
     }
@@ -553,11 +502,9 @@ public class PersonalizationSessionController
         notificationManager.addAddress(notifAddressId, userId);
       }
     } catch (NotificationManagerException e) {
-      throw new PeasCoreException(
-          "PersonalizationSessionController.setDefaultAddress()",
-          SilverpeasException.ERROR,
-          "personalizationPeas.EX_CANT_SET_DEFAULT_ADDRESS", "aNotifAddressId="
-          + notifAddressId, e);
+      throw new PeasCoreException("PersonalizationSessionController.setDefaultAddress()",
+          SilverpeasException.ERROR, "personalizationPeas.EX_CANT_SET_DEFAULT_ADDRESS", 
+          "aNotifAddressId=" + notifAddressId, e);
     }
   }
 }

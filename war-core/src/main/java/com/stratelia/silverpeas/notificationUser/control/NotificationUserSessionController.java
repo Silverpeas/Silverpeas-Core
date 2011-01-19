@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,15 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
-/*
- * NotificationUserSessionControl.java
- * 
- */
-
 package com.stratelia.silverpeas.notificationUser.control;
 
 import java.util.ArrayList;
@@ -38,6 +29,7 @@ import java.util.Comparator;
 import java.util.Properties;
 
 import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManager;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -61,6 +53,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * @version
  */
 public class NotificationUserSessionController extends AbstractComponentSessionController {
+
   Selection sel = null;
 
   /* paramaters of a notification */
@@ -170,7 +163,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
    * Method declaration
    * @param compoId
    * @param notificationId
-   * @param priorityId
+   * @param currentPriorityId
    * @param txtTitle
    * @param txtMessage
    * @param selectedUsers
@@ -178,19 +171,17 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
    * @throws NotificationManagerException
    * @see
    */
-
   public void sendMessage(String compoId, String notificationId,
       String priorityId, String txtTitle, String txtMessage,
       String[] selectedUsers, String[] selectedGroups)
       throws NotificationManagerException {
     NotificationSender notifSender = new NotificationSender(compoId);
     int notifTypeId = NotificationParameters.ADDRESS_COMPONENT_DEFINED;
-
-    SilverTrace
-        .debug("notificationUser",
+    String currentPriorityId = priorityId;
+    SilverTrace.debug("notificationUser",
         "NotificationUsersessionController.sendMessage()",
         "root.MSG_GEN_PARAM_VALUE", "  AVANT CONTROLE priorityId="
-        + priorityId);
+        + currentPriorityId);
 
     if ((notificationId != null) && (notificationId.length() > 0)) {
       notifTypeId = Integer.parseInt(notificationId);
@@ -198,11 +189,12 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
 
     // pb sous bea, quand prirityId est vide, le Integer.parseInt(priorityId)
     // cause une exception
-    if (priorityId == null || priorityId.length() == 0)
-      priorityId = "0";
+    if (!StringUtil.isDefined(currentPriorityId)) {
+      currentPriorityId = "0";
+    }
 
-    NotificationMetaData notifMetaData = new NotificationMetaData(Integer
-        .parseInt(priorityId), txtTitle, txtMessage);
+    NotificationMetaData notifMetaData = new NotificationMetaData(Integer.parseInt(currentPriorityId),
+        txtTitle, txtMessage);
     notifMetaData.setSender(getUserId());
     notifMetaData.setSource(getString("manualNotification"));
     notifMetaData.addUserRecipients(selectedUsers);
@@ -224,35 +216,33 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     return buildOptions(ar, selectValue, selectText, false);
   }
 
-  public String buildOptions(ArrayList<Properties> ar, String selectValue,
-      String selectText, boolean bSorted) {
-    StringBuffer valret = new StringBuffer();
+  public String buildOptions(ArrayList<Properties> ar, String selectValue, String selectText,
+      boolean bSorted) {
+    StringBuilder valret = new StringBuilder();
     Properties elmt = null;
-    String selected;
-    ArrayList arToDisplay = ar;
+
+    ArrayList<Properties> arToDisplay = ar;
     int i;
 
     if (selectText != null) {
-      if ((selectValue == null) || (selectValue.length() <= 0)) {
+      String selected;
+      if (!StringUtil.isDefined(selectValue)) {
         selected = "SELECTED";
       } else {
         selected = "";
       }
-      valret.append("<option value=\"\" " + selected + ">"
-          + EncodeHelper.javaStringToHtmlString(selectText) + "</option>\n");
+      valret.append("<option value=\"\" ").append(selected).append(">").
+          append(EncodeHelper.javaStringToHtmlString(selectText)).append("</option>\n");
     }
     if (bSorted) {
-      Properties[] theList = (Properties[]) ar.toArray(new Properties[0]);
-      Arrays.sort(theList, new Comparator() {
-          public int compare(Object o1, Object o2) {
-          return (((Properties) o1).getProperty("name")).toUpperCase()
-              .compareTo(((Properties) o2).getProperty("name").toUpperCase());
-          }
+      Properties[] theList = ar.toArray(new Properties[ar.size()]);
+      Arrays.sort(theList, new Comparator<Properties>() {
 
-        public boolean equals(Object o) {
-          return false;
-          }
-                });
+        @Override
+        public int compare(Properties o1, Properties o2) {
+          return o1.getProperty("name").toUpperCase().compareTo(o2.getProperty("name").toUpperCase());
+        }
+      });
       arToDisplay = new ArrayList<Properties>(theList.length);
       for (i = 0; i < theList.length; i++) {
         arToDisplay.add(theList[i]);
@@ -260,16 +250,16 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     }
     if (arToDisplay != null) {
       for (i = 0; i < arToDisplay.size(); i++) {
-        elmt = (Properties) arToDisplay.get(i);
+        elmt = arToDisplay.get(i);
+        String selected;
         if (elmt.getProperty("id").equalsIgnoreCase(selectValue)) {
           selected = "SELECTED";
         } else {
           selected = "";
         }
-        valret.append("<option value=\"" + elmt.getProperty("id") + "\" "
-            + selected + ">"
-            + EncodeHelper.javaStringToHtmlString(elmt.getProperty("name"))
-            + "</option>\n");
+        valret.append("<option value=\"").append(elmt.getProperty("id")).append("\" ").append(
+            selected).append(">").append(EncodeHelper.javaStringToHtmlString(
+            elmt.getProperty("name"))).append("</option>\n");
       }
     }
     return valret.toString();
@@ -282,8 +272,8 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
         "NotificationUsersessionController.initSelectionPeas()",
         "root.MSG_GEN_PARAM_VALUE", "ENTER METHOD");
 
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator()
-        .getString("ApplicationURL");
+    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
+        "ApplicationURL");
     String hostUrl = m_context
         + URLManager.getURL(URLManager.CMP_NOTIFICATIONUSER) + "GetTarget"
         + paramValues;
@@ -325,11 +315,12 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
   public String[] initTargetsUsers(String theTargetsUsers) {
     String[] idUsers = new String[0];
     if (theTargetsUsers != null && theTargetsUsers.length() > 0) {
-      if (theTargetsUsers.equals("Administrators"))
+      if (theTargetsUsers.equals("Administrators")) {
         idUsers = this.getOrganizationController().getAdministratorUserIds(
             getUserId());
-      else
+      } else {
         idUsers = this.getIdsArrayFromIdsLine(theTargetsUsers);
+      }
     }
     return idUsers;
   }

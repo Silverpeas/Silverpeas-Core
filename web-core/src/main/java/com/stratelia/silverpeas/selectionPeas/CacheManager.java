@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,15 +21,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.selectionPeas;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Hashtable;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.genericPanel.PanelLine;
@@ -42,16 +35,23 @@ import com.stratelia.silverpeas.selection.SelectionExtraParams;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 abstract public class CacheManager {
+
   public final static int CM_SET = 0;
   public final static int CM_ELEMENT = 1;
   public final static int CM_NBTOT = 2;
-
-  protected Hashtable<String, PanelLine> m_ElementCache = new Hashtable<String, PanelLine>();
-  protected Hashtable<String, PanelLine> m_SetCache = new Hashtable<String, PanelLine>();
-  protected HashSet<String> m_SelectedElements = new HashSet<String>();
-  protected HashSet<String> m_SelectedSets = new HashSet<String>();
+  protected Map<String, PanelLine> m_ElementCache = new HashMap<String, PanelLine>();
+  protected Map<String, PanelLine> m_SetCache = new HashMap<String, PanelLine>();
+  protected Set<String> m_SelectedElements = new HashSet<String>();
+  protected Set<String> m_SelectedSets = new HashSet<String>();
   protected ResourceLocator m_Local = null;
   protected ResourceLocator m_Global = null;
   protected ResourceLocator m_Icon = null;
@@ -61,8 +61,7 @@ abstract public class CacheManager {
 
   public CacheManager(String language, ResourceLocator local,
       ResourceLocator icon, Selection selection) {
-    m_Context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-        "ApplicationURL");
+    m_Context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
     m_Language = language;
     m_Local = local;
     m_Global = GeneralPropertiesManager.getGeneralMultilang(m_Language);
@@ -117,7 +116,7 @@ abstract public class CacheManager {
   }
 
   public PanelLine getInfos(int what, String id) {
-    PanelLine valret = (PanelLine) (getCache(what).get(id));
+    PanelLine valret = getCache(what).get(id);
 
     if (valret != null) {
       SilverTrace.info("selectionPeas", "CacheManager.getInfos",
@@ -135,17 +134,15 @@ abstract public class CacheManager {
   }
 
   public void unselectAll() {
-    Enumeration<PanelLine> en;
-
-    en = getCache(CM_SET).elements();
-    while (en.hasMoreElements()) {
-      en.nextElement().m_Selected = false;
+    Collection<PanelLine> en = getCache(CM_SET).values();
+    for (PanelLine panel : en) {
+      panel.m_Selected = false;
     }
     getSelected(CM_SET).clear();
 
-    en = getCache(CM_ELEMENT).elements();
-    while (en.hasMoreElements()) {
-      en.nextElement().m_Selected = false;
+    en = getCache(CM_ELEMENT).values();
+    for (PanelLine panel : en) {
+      panel.m_Selected = false;
     }
     getSelected(CM_ELEMENT).clear();
   }
@@ -175,7 +172,7 @@ abstract public class CacheManager {
   }
 
   public String[] getSelectedIds(int what) {
-    return (String[]) getSelected(what).toArray(new String[0]);
+    return getSelected(what).toArray(new String[0]);
   }
 
   public int getSelectedNumber(int what) {
@@ -183,33 +180,19 @@ abstract public class CacheManager {
   }
 
   public PanelLine[] getSelectedLines(int what) {
-    Enumeration<PanelLine> en = getCache(what).elements();
-    ArrayList<PanelLine> ar = new ArrayList<PanelLine>();
-    PanelLine parc;
-    PanelLine[] valret;
-
-    while (en.hasMoreElements()) {
-      parc = en.nextElement();
-      if (parc.m_Selected) {
-        ar.add(parc);
-      }
-    }
-    valret = (PanelLine[]) ar.toArray(new PanelLine[0]);
+    Collection<PanelLine> en = getCache(what).values();
+    PanelLine[] valret = en.toArray(new PanelLine[en.size()]);
     Arrays.sort(valret, new Comparator<PanelLine>() {
-        public int compare(PanelLine o1, PanelLine o2) {
+      @Override
+      public int compare(PanelLine o1, PanelLine o2) {
         return o1.m_Values[0].toUpperCase().compareTo(
             o2.m_Values[0].toUpperCase());
-        }
-
-      public boolean equals(Object o) {
-        return false;
-        }
-
+      }
     });
     return valret;
   }
 
-  protected Hashtable<String, PanelLine> getCache(int what) {
+  protected Map<String, PanelLine> getCache(int what) {
     if (what == CM_SET) {
       return m_SetCache;
     } else if (what == CM_ELEMENT) {
@@ -219,7 +202,7 @@ abstract public class CacheManager {
     }
   }
 
-  protected HashSet<String> getSelected(int what) {
+  protected Set<String> getSelected(int what) {
     if (what == CM_SET) {
       return m_SelectedSets;
     } else if (what == CM_ELEMENT) {

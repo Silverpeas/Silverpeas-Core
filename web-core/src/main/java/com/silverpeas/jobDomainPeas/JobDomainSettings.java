@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,10 +20,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/*
- * JobDomainSettings.java
  */
 
 package com.silverpeas.jobDomainPeas;
@@ -42,9 +38,9 @@ import com.stratelia.webactiv.util.ResourceLocator;
  * @t.leroi
  */
 public class JobDomainSettings extends SilverpeasSettings {
+
   public static int m_UsersByPage = 10;
   public static int m_GroupsByPage = 10;
-
   public static int m_MinLengthLogin = 5;
   public static int m_MinLengthPwd = 4;
   public static boolean m_BlanksAllowedInPwd = true;
@@ -68,26 +64,19 @@ public class JobDomainSettings extends SilverpeasSettings {
 
   static public void sortGroups(Group[] toSort) {
     Arrays.sort(toSort, new Comparator<Group>() {
-        public int compare(Group o1, Group o2) {
+
+      public int compare(Group o1, Group o2) {
         return o1.compareTo(o2);
-        }
-
-      public boolean equals(Object o) {
-        return false;
-        }
-
+      }
     });
   }
 
   static public void sortUsers(UserDetail[] toSort) {
     Arrays.sort(toSort, new Comparator<UserDetail>() {
-        public int compare(UserDetail o1, UserDetail o2) {
-        return o1.compareTo(o2);
-        }
 
-      public boolean equals(Object o) {
-        return false;
-        }
+      public int compare(UserDetail o1, UserDetail o2) {
+        return o1.compareTo(o2);
+      }
 
     });
   }
