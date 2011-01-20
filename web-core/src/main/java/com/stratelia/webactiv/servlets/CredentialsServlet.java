@@ -23,6 +23,16 @@
  */
 package com.stratelia.webactiv.servlets;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.stratelia.webactiv.servlets.credentials.ChangePasswordHandler;
 import com.stratelia.webactiv.servlets.credentials.ChangeQuestionHandler;
 import com.stratelia.webactiv.servlets.credentials.EffectiveChangePasswordHandler;
@@ -35,15 +45,6 @@ import com.stratelia.webactiv.servlets.credentials.ResetPasswordHandler;
 import com.stratelia.webactiv.servlets.credentials.SendMessageHandler;
 import com.stratelia.webactiv.servlets.credentials.ValidationAnswerHandler;
 import com.stratelia.webactiv.servlets.credentials.ValidationQuestionHandler;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * Controller tier for credential management (Used by LoginFilter)
