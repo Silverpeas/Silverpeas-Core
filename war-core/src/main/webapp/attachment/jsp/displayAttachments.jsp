@@ -35,7 +35,6 @@
 <script type="text/javascript" src="<%=m_Context%>/util/yui/container/container_core-min.js"></script>
 <script type="text/javascript" src="<%=m_Context%>/util/yui/animation/animation-min.js"></script>
 <script type="text/javascript" src="<%=m_Context%>/util/yui/menu/menu-min.js"></script>
-
 <link rel="stylesheet" type="text/css" href="<%=m_Context%>/util/yui/menu/assets/menu.css"/>
 
 <%
@@ -73,7 +72,7 @@
       boolean showDownloadEstimation = true;
       boolean showInfo = true;
       boolean showIcon = true;
-	  boolean showMenuNotif = StringUtil.getBooleanValue(request.getParameter("ShowMenuNotif"));
+      boolean showMenuNotif = StringUtil.getBooleanValue(request.getParameter("ShowMenuNotif"));
 
       if (request.getParameter("AttachmentPosition") != null) {
         attachmentPosition = request.getParameter("AttachmentPosition");
@@ -169,7 +168,7 @@
           if (showIcon) {
             out.println(
                 "<img id=\"img_" + attachmentDetail.getPK().getId() + "\" src=\"" + attachmentDetail.
-                getAttachmentIcon(contentLanguage) + "\" width=\"20\" valign=\"absmiddle\" " + iconStyle + ">");
+                getAttachmentIcon(contentLanguage) + "\" width=\"20\" " + iconStyle + ">");
           }
 
           url = m_Context +  attachmentDetail.getAttachmentURL(contentLanguage);
@@ -178,20 +177,20 @@
           }
 
           out.println(
-              "<a id=\"url" + attachmentDetail.getPK().getId() + "\" href=\"" + url + "\" target=_blank>" + title + "</a>");
+              "<a id=\"url" + attachmentDetail.getPK().getId() + "\" href=\"" + url + "\" target=\"_blank\">" + title + "</a>");
 
           if (displayUniversalLinks) {
             String link = URLManager.getSimpleURL(URLManager.URL_FILE, attachmentDetail.getPK().
                 getId());
             String linkIcon = m_Context + "/util/icons/link.gif";
             out.print(
-                " <a href=\"" + link + "\"><img src=\"" + linkIcon + "\" border=\"0\" valign=\"absmiddle\" alt=\"" + attResources.
-                getString("CopyLink") + "\" title=\"" + attResources.getString("CopyLink") + "\" target=_blank></a>");
+                " <a href=\"" + link + "\"><img src=\"" + linkIcon + "\" border=\"0\" alt=\"" + attResources.
+                getString("CopyLink") + "\" title=\"" + attResources.getString("CopyLink") + "\"></a>");
           }
+          out.print("</span>");
 
           if (contextualMenuEnabled) {
-			  
-			com.silverpeas.attachment.MenuHelper.displayActions(attachmentDetail, useXMLForm,
+            com.silverpeas.attachment.MenuHelper.displayActions(attachmentDetail, useXMLForm,
                 useFileSharing, webdavEditingEnable, userId, contentLanguage, attResources,
                 httpServerBase, showMenuNotif, out);
 			
@@ -209,7 +208,7 @@
           } else {
             out.println("<br/>");
           }
-          out.print("</span>");
+          
 
           out.println("<span class=\"lineSize\">");
           if (showFileSize) {
@@ -227,13 +226,12 @@
             out.println("<br/>" + attachmentDetail.getLogicalName(contentLanguage));
           }
           if (StringUtil.isDefined(info) && showInfo) {
-            out.println("<br/><i>" + Encode.javaStringToHtmlParagraphe(info) + "</i>");
+            out.println("<br/><i>" + EncodeHelper.javaStringToHtmlParagraphe(info) + "</i>");
           }
 
           if (StringUtil.isDefined(attachmentDetail.getXmlForm(contentLanguage))) {
             String xmlURL = m_Context + "/RformTemplate/jsp/View?width=400&ObjectId=" + attachmentDetail.
-                getPK().getId() + "&ObjectLanguage=" + contentLanguage + "&ComponentId=" + componentId + "&ObjectType=Attachment&XMLFormName=" + URLEncoder.
-                encode(attachmentDetail.getXmlForm(contentLanguage));
+                getPK().getId() + "&ObjectLanguage=" + contentLanguage + "&ComponentId=" + componentId + "&ObjectType=Attachment&XMLFormName=" + URLEncoder.encode(attachmentDetail.getXmlForm(contentLanguage), "UTF-8");
 %>
 <br/><a rel="<%=xmlURL%>" href="#" title="<%=title%>"><%=attResources.getString("attachment.xmlForm.View")%></a>
 <%
@@ -266,16 +264,19 @@
         }
 
         if ("bottom".equals(attachmentPosition) && a < nbAttachmentPerLine) {
-          out.println("<TD width=\"30\">&nbsp;</TD>");
-        }
+          out.println("<td width=\"30\">&nbsp;</td>");
+        } else if ("right".equals(attachmentPosition)) {
+            out.println("</li>");
+          }
 
         if ("bottom".equals(attachmentPosition) && a == nbAttachmentPerLine) {
-          out.println("</TR>");
+          out.println("</tr>");
           if (itAttachments.hasNext()) {
             out.println(
-                "<TR><TD colspan=\"" + (2 * nbAttachmentPerLine - 1) + "\">&nbsp;</TD></TR>");
+                "<tr><td colspan=\"" + (2 * nbAttachmentPerLine - 1) + "\">&nbsp;</td></tr>");
           }
         }
+          
         author = "";
         if (a == 3) {
           a = 1;
@@ -294,6 +295,7 @@
     <a href="javascript:showHideDragDrop('<%=httpServerBase + m_Context%>/DragAndDrop/drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&PubId=<%=id%>&IndexIt=<%=indexIt%>&Context=<%=context%>','<%=httpServerBase + m_Context%>/upload/explanationShort_<%=language%>.html','<%=attResources.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_Context%>','<%=attResources.getString("GML.DragNDropExpand")%>','<%=attResources.getString("GML.DragNDropCollapse")%>')" id="dNdActionLabel">Déposer rapidement un fichier...</a>
     <div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding: 0px" align="top"></div>
   </td>
+</tr>
   <% }%>
   <% if (contextualMenuEnabled && !dragAndDropEnable) {%>
 <tr><td class="dragNdrop"><br/><a href="javascript:AddAttachment();"><%=attResources.getString("GML.add")%>...</a></td></tr>
