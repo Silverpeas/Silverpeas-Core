@@ -37,11 +37,11 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
 <c:set var="ctxPath" value="${pageContext.request.contextPath}"/>
+<c:set var="userProfile" value="${requestScope['UserProfile']}"/>
 
 <%
 //Recuperation des parametres
 ArrayLine arrayLine = null;
-Iterator   iter1 = null;
 
 String monthBegin = "";
 String yearBegin = "";
@@ -52,7 +52,6 @@ String axisId = (String) request.getAttribute("AxisId");
 String axisValue = (String) request.getAttribute("AxisValue");
 Vector vPath = (Vector) request.getAttribute("Path");
 CrossStatisticVO crossAxis = (CrossStatisticVO) request.getAttribute("StatsData");
-String userProfile = (String) request.getAttribute("UserProfile");
 
 browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics"));
 browseBar.setComponentName(resources.getString("silverStatisticsPeas.access.pdc"));
@@ -125,23 +124,17 @@ browseBar.setPath(resources.getString("silverStatisticsPeas.pdc.axis"));
 </script>
 </head>
 <body marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" onLoad="">
-
-<%
-          out.println(window.printBefore());          
-          if (userProfile.equals("A")) {
-%>
+<view:window>
+  <c:if test="${fn:contains(userProfile, 'A')}">
 <view:tabs>
 	<fmt:message var="axisTabLabel" key="silverStatisticsPeas.pdc.axis" />
 	<view:tab label="${axisTabLabel}" selected="false" action="${ctxPath}/RsilverStatisticsPeas/jsp/ViewPDCAccess"></view:tab>
 	<fmt:message var="crossAxisTabLabel" key="silverStatisticsPeas.pdc.cross" />
 	<view:tab label="${crossAxisTabLabel}" selected="true" action="${ctxPath}/RsilverStatisticsPeas/jsp/ViewCrossPDCAccess"></view:tab>
 </view:tabs>
-
-<% 
-    	  }
-          out.println(frame.printBefore());
-          out.println(board.printBefore());
-%>
+  </c:if>
+  <view:frame>
+    <view:board>
 
 <center>
   <form name="pdcAccessForm" action="ValidateViewCrossPDCAccess" method="post">
@@ -259,9 +252,7 @@ browseBar.setPath(resources.getString("silverStatisticsPeas.pdc.axis"));
       </tr>
     </table>
   </form>
-  <%
-	out.println(board.printAfter());
-  %>
+      </view:board>
   <div id="stats_viewConnectionButton">
 	  <center>
 	  	<view:buttonPane>
@@ -288,27 +279,14 @@ browseBar.setPath(resources.getString("silverStatisticsPeas.pdc.axis"));
   <br>
   
   <%
-	// Tableau
-	//+"&FilterLibGroup="+filterLibGroup+"&FilterIdGroup="+filterIdGroup+"&FilterLibUser="+filterLibUser+"&FilterIdUser="+filterIdUser	
-    //ArrayColumn arrayColumn3 = arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.group"));
-	/*
-    if(filterIdGroup == null || "".equals(filterIdGroup)) {
-		  arrayColumn3.setSortable(false);
-	}
-    ArrayColumn arrayColumn4 = arrayPane.addArrayColumn(resources.getString("GML.user"));
-    if(filterIdUser == null || "".equals(filterIdUser)) {
-		  arrayColumn4.setSortable(false);
-	}
-	*/
-	//ArrayColumn arrayColumn5 = arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.Actions")+"</A>");
-	//arrayColumn5.setSortable(false);
 
 	if (crossAxis != null) {
  		List columns = (List) crossAxis.getColumnHeader();
  		List rows = (List) crossAxis.getFirstRow();
 		List statsArray = (List) crossAxis.getStatsArray();
-  	ArrayPane arrayPane = gef.getArrayPane("List", "ValidateViewAccess?MonthBegin="+monthBegin+"&YearBegin="+yearBegin+"MonthEnd="+monthEnd+"&YearEnd="+yearEnd, request,session);
+  	    ArrayPane arrayPane = gef.getArrayPane("List", "ValidateViewAccess?MonthBegin="+monthBegin+"&YearBegin="+yearBegin+"MonthEnd="+monthEnd+"&YearEnd="+yearEnd, request,session);
 		//arrayPane.setVisibleLineNumber(50);
+        arrayPane.setExportData(true);
 		
 		ArrayColumn arrayColumn1 = arrayPane.addArrayColumn("");
 		arrayColumn1.setSortable(false);
@@ -332,10 +310,8 @@ browseBar.setPath(resources.getString("silverStatisticsPeas.pdc.axis"));
     }
     %>
 </center>
-<%
-out.println(frame.printAfter());
-out.println(window.printAfter());
-%>
+  </view:frame>
+</view:window>
 <form name="cancelAccessForm" action="ViewCrossPDCAccess" method="post">
 </form>
 <view:progressMessage/>

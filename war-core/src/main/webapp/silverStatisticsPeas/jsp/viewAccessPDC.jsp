@@ -37,6 +37,7 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
 <c:set var="ctxPath" value="${pageContext.request.contextPath}"/>
+<c:set var="userProfile" value="${requestScope['UserProfile']}"/>
 
 <%
 //Recuperation des parametres
@@ -52,11 +53,7 @@ String axisId = (String) request.getAttribute("AxisId");
 String axisValue = (String) request.getAttribute("AxisValue");
 Vector vPath = (Vector) request.getAttribute("Path");
 List vStatsData = (List)request.getAttribute("StatsData");
-String userProfile = (String) request.getAttribute("UserProfile");
 
-browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics"));
-browseBar.setComponentName(resources.getString("silverStatisticsPeas.access.pdc"));
-browseBar.setPath(resources.getString("silverStatisticsPeas.pdc.axis"));
 %>
 
 
@@ -113,22 +110,18 @@ browseBar.setPath(resources.getString("silverStatisticsPeas.pdc.axis"));
 </script>
 </head>
 <body marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" onLoad="">
-<%
-  out.println(window.printBefore());          
-  if (userProfile.equals("A")) {
-%>
+<fmt:message var="" key="silverStatisticsPeas.statistics"></fmt:message>
+<view:window>
+  <c:if test="${fn:contains(userProfile, 'A')}">
 <view:tabs>
 	<fmt:message var="axisTabLabel" key="silverStatisticsPeas.pdc.axis" />
 	<view:tab label="${axisTabLabel}" selected="true" action="${ctxPath}/RsilverStatisticsPeas/jsp/ViewPDCAccess"></view:tab>
 	<fmt:message var="crossAxisTabLabel" key="silverStatisticsPeas.pdc.cross" />
 	<view:tab label="${crossAxisTabLabel}" selected="false" action="${ctxPath}/RsilverStatisticsPeas/jsp/ViewCrossPDCAccess"></view:tab>
 </view:tabs>
-
-<% 
-  }
-  out.println(frame.printBefore());
-  out.println(board.printBefore());
-%>
+  </c:if>
+  <view:frame>
+    <view:board>
 
 <center>
   <form name="pdcAccessForm" action="ValidateViewPDCAccess" method="post">
@@ -206,9 +199,7 @@ browseBar.setPath(resources.getString("silverStatisticsPeas.pdc.axis"));
       </tr>
     </table>
   </form>
-  <%
-	out.println(board.printAfter());
-  %>
+    </view:board>
   <div id="stats_viewConnectionButton">
 	  <center>
 	  	<view:buttonPane>
@@ -238,7 +229,8 @@ browseBar.setPath(resources.getString("silverStatisticsPeas.pdc.axis"));
 	// Tableau
 	//+"&FilterLibGroup="+filterLibGroup+"&FilterIdGroup="+filterIdGroup+"&FilterLibUser="+filterLibUser+"&FilterIdUser="+filterIdUser	
     ArrayPane arrayPane = gef.getArrayPane("List", "ValidateViewAccess?MonthBegin="+monthBegin+"&YearBegin="+yearBegin+"MonthEnd="+monthEnd+"&YearEnd="+yearEnd+"&SpaceId="+spaceId, request,session);
-  	arrayPane.setExportData(false);
+  	arrayPane.setExportData(true);
+    
   	//arrayPane.setExportDataURL("ExportPDCAccess");
     arrayPane.setVisibleLineNumber(50);
 
@@ -246,18 +238,6 @@ browseBar.setPath(resources.getString("silverStatisticsPeas.pdc.axis"));
     arrayColumn1.setSortable(false);
     ArrayColumn arrayColumn2 = arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.pdc.th.access"));
     arrayColumn2.setSortable(false);
-    //ArrayColumn arrayColumn3 = arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.group"));
-	/*
-    if(filterIdGroup == null || "".equals(filterIdGroup)) {
-		  arrayColumn3.setSortable(false);
-	}
-    ArrayColumn arrayColumn4 = arrayPane.addArrayColumn(resources.getString("GML.user"));
-    if(filterIdUser == null || "".equals(filterIdUser)) {
-		  arrayColumn4.setSortable(false);
-	}
-	*/
-	//ArrayColumn arrayColumn5 = arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.Actions")+"</A>");
-	//arrayColumn5.setSortable(false);
 
     if (vStatsData != null)
     {
@@ -275,16 +255,14 @@ browseBar.setPath(resources.getString("silverStatisticsPeas.pdc.axis"));
 				}
 				//arrayLine.addArrayCellText(statsVO.getAxisName() + " - " + statsVO.getAxisId());
 				arrayLine.addArrayCellText(statsVO.getNbAccess());
-			}
-      out.println(arrayPane.print());
-      out.println("");
+		}
+        out.println(arrayPane.print());
+        out.println("");
     }
     %>
 </center>
-<%
-out.println(frame.printAfter());
-out.println(window.printAfter());
-%>
+  </view:frame>
+</view:window>
 <form name="cancelAccessForm" action="ViewPDCAccess" method="post">
 </form>
 <view:progressMessage/>

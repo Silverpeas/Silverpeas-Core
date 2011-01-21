@@ -113,8 +113,8 @@
 
 </head>
 <body marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" onLoad="">
+<view:window>
 <%
-          out.println(window.printBefore());          
           if (userProfile.equals("A")) {
 %>
 <view:tabs>
@@ -126,11 +126,10 @@
 	<view:tab label="${frequenceLabel}" selected="false" action="${ctxPath}/RsilverStatisticsPeas/jsp/ViewFrequence"></view:tab>
 </view:tabs>
 
-<% 
-    	  }
-          out.println(frame.printBefore());
-          out.println(board.printBefore());
-%>
+<%      } %>
+
+  <view:frame>
+    <view:board>
 <center>
 <form name="connexionFormulaire" action="ValidateViewConnection" method="post">
   <table width="100%" border="0" cellspacing="0" cellpadding="4">
@@ -227,15 +226,14 @@
           <input type="text" name="FilterLib" value="<%=( filterLib == null ? "" : filterLib )%>" size="25" disabled>
 		  <input type="hidden" name="FilterType" value="<%=filterType%>">
 		  <input type="hidden" name="FilterId" value="<%=filterId%>">
-          <a href=javascript:openSPWindow('CallUserPanel','')><img src="<%=resources.getIcon("silverStatisticsPeas.icoAccessGroupPanelPeas")%>" align="absmiddle" alt="<%=resources.getString("silverStatisticsPeas.openUserPanelPeas")%>" border=0 title="<%=resources.getString("silverStatisticsPeas.openUserPanelPeas")%>"></a> 
-          <a href=javascript:clearFilter()><img src="<%=resources.getIcon("silverStatisticsPeas.icoClearGroupUser")%>" align="absmiddle" alt="<%=resources.getString("silverStatisticsPeas.ClearUserPanelPeas")%>" border=0 title="<%=resources.getString("silverStatisticsPeas.ClearUserPanelPeas")%>"></a> 
+          <a href="javascript:openSPWindow('CallUserPanel','')"><img src="<%=resources.getIcon("silverStatisticsPeas.icoAccessGroupPanelPeas")%>" align="absmiddle" alt="<%=resources.getString("silverStatisticsPeas.openUserPanelPeas")%>" border="0" title="<%=resources.getString("silverStatisticsPeas.openUserPanelPeas")%>"></a> 
+          <a href="javascript:clearFilter()"><img src="<%=resources.getIcon("silverStatisticsPeas.icoClearGroupUser")%>" align="absmiddle" alt="<%=resources.getString("silverStatisticsPeas.ClearUserPanelPeas")%>" border="0" title="<%=resources.getString("silverStatisticsPeas.ClearUserPanelPeas")%>"></a> 
         </td>
       </tr>
   </table>
 </form>
-  <%
-  	out.println(board.printAfter());
-  %>
+</view:board>
+
   <br>
   <div id="stats_viewConnectionButton">
   <center>
@@ -361,12 +359,8 @@
 		}
 %> 
 </center>
-
-<%
-out.println(frame.printAfter());
-out.println(window.printAfter());
-%>
-	
+  </view:frame>
+</view:window>
 <form name="cancelConnectionForm" action="ViewConnections" method="post">
 </form>
 </body>

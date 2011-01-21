@@ -32,7 +32,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.PageContext;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
@@ -75,6 +77,7 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
    */
   private boolean exportData = false;
   private String exportDataURL = null;
+  private static final String EXPORT_URL_SERVLET_MAPPING = "/Export/ArrayPane";
 
   /**
    * Default constructor as this class may be instanciated by method newInstance(), constructor
@@ -131,29 +134,26 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
 
     String target = request.getParameter(TARGET_PARAMETER_NAME);
 
-    if (target != null) {
-      if (target.equals(name)) {
-        String action = request.getParameter(ACTION_PARAMETER_NAME);
-        SilverTrace.info("viewgenerator", "ArrayPaneSilverpeasV4.ArrayPaneSilverpeasV4()",
-            "root.MSG_GEN_PARAM_VALUE", " ACTION_PARAMETER_NAME = '" + action + "'");
-        if (action != null) {
-          if ("Sort".equals(action)) {
-            String newState = request.getParameter(COLUMN_PARAMETER_NAME);
-            if (newState != null) {
-              int ns = Integer.parseInt(newState);
-              if ((ns == state.getSortColumn()) || (ns + state.getSortColumn() == 0)) {
-                state.setSortColumn(-state.getSortColumn());
-              } else {
-                state.setSortColumn(ns);
-              }
-            }
-          } else if ("ChangePage".equals(action)) {
-            String index = request.getParameter(INDEX_PARAMETER_NAME);
-            state.setFirstVisibleLine(Integer.parseInt(index));
+    if (target != null && target.equals(name)) {
+      String action = request.getParameter(ACTION_PARAMETER_NAME);
+      SilverTrace.info("viewgenerator", "ArrayPaneSilverpeasV4.ArrayPaneSilverpeasV4()",
+          "root.MSG_GEN_PARAM_VALUE", " ACTION_PARAMETER_NAME = '" + action + "'");
+      if ("Sort".equals(action)) {
+        String newState = request.getParameter(COLUMN_PARAMETER_NAME);
+        if (newState != null) {
+          int ns = Integer.parseInt(newState);
+          if ((ns == state.getSortColumn()) || (ns + state.getSortColumn() == 0)) {
+            state.setSortColumn(-state.getSortColumn());
+          } else {
+            state.setSortColumn(ns);
           }
         }
+      } else if ("ChangePage".equals(action)) {
+        String index = request.getParameter(INDEX_PARAMETER_NAME);
+        state.setFirstVisibleLine(Integer.parseInt(index));
       }
     }
+
     if (state.getSortColumn() >= 1) {
       setColumnToSort(state.getSortColumn());
     }
@@ -364,10 +364,10 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
    */
   @Override
   public String print() {
-    GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
-        GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-    Pagination pagination = gef.getPagination(lines.size(), state.getMaximumVisibleLine(), state.
-        getFirstVisibleLine());
+    GraphicElementFactory gef =
+        (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+    Pagination pagination =
+        gef.getPagination(lines.size(), state.getMaximumVisibleLine(), state.getFirstVisibleLine());
 
     String sep = "&";
     if (isXHTML) {
@@ -390,8 +390,7 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
 
     if ((lines.size() > 0) && (getColumnToSort() != 0) && (getColumnToSort() <= columnsCount)) {
       SilverTrace.info("viewgenerator", "ArrayPaneSilverpeasV5.print()",
-          "root.MSG_GEN_PARAM_VALUE",
-          "Tri des lignes");
+          "root.MSG_GEN_PARAM_VALUE", "Tri des lignes");
       Collections.sort(lines);
     }
 
@@ -467,10 +466,14 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
     if (this.exportData) {
       result.append("<div class=\"exportlinks\">");
       result.append(gef.getMultilang().getString("GEF.export.label")).append(":");
-      result.append("<a href=\"").append(getUrl()).append(exportDataURL).append(
+      result.append("<a href=\"").append(this.getExportUrl()).append(
           "\"><span class=\"export csv\">");
       result.append(gef.getMultilang().getString("GEF.export.option.csv")).append("</span></a>");
       result.append("</div>");
+      // Be careful we only put a unique name in the session, so we cannot export two ArrayPanes
+      // which are displayed in the same page (use this.name instead of "arraypane")
+      this.session.setAttribute("Silverpeas_arraypane_columns", this.columns);
+      this.session.setAttribute("Silverpeas_arraypane_lines", this.lines);
     }
     return result.toString();
   }
@@ -568,6 +571,23 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
   @Override
   public void setExportDataURL(String exportDataURL) {
     this.exportDataURL = exportDataURL;
+  }
+
+  /**
+   * @return the export array pane URL
+   */
+  private String getExportUrl() {
+    if (StringUtil.isDefined(exportDataURL)) {
+      return exportDataURL;
+    }
+    StringBuilder exportUrl = new StringBuilder();
+    String contextPath =
+        GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+    exportUrl.append(contextPath).append(EXPORT_URL_SERVLET_MAPPING);
+    exportUrl.append("?type=ArrayPane&name=");
+    // Change the name parameter if you want to export 2 arrays which are displayed in the same page
+    exportUrl.append("Silverpeas_arraypane");
+    return exportUrl.toString();
   }
 
 }

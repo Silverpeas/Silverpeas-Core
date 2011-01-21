@@ -522,6 +522,10 @@
     <servlet-name>ThumbnailRequestRouter</servlet-name>
     <servlet-class>com.silverpeas.thumbnail.servlets.ThumbnailRequestRouter</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>ExportServlet</servlet-name>
+    <servlet-class>com.silverpeas.export.servlets.ExportServlet</servlet-class>
+  </servlet>
   <servlet-mapping>
     <servlet-name>AuthenticationServlet</servlet-name>
     <url-pattern>/AuthenticationServlet</url-pattern>
@@ -901,6 +905,11 @@
     <servlet-name>ThumbnailRequestRouter</servlet-name>
     <url-pattern>/Thumbnail/*</url-pattern>
   </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>ExportServlet</servlet-name>
+    <url-pattern>/Export/*</url-pattern>
+  </servlet-mapping>
+  
   <jsp-config>
     <jsp-property-group>
       <url-pattern>*.jsp</url-pattern>
