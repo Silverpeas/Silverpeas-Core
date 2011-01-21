@@ -664,8 +664,9 @@ td.milieuOngletOn {
 	-moz-border-radius: 8px 0 8px 8px;
 	-webkit-border-radius:  8px 0 8px 8px;
 	margin-top:-3px;
-	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
+
+
 
 #topPage .yuimenu ul, #kmelia .yuimenu ul, #attachmentList .yuimenu ul {
 	border-color:#F1790F;
