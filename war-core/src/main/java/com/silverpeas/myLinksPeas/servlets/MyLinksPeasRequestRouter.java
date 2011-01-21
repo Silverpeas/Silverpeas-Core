@@ -24,6 +24,8 @@
 
 package com.silverpeas.myLinksPeas.servlets;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,6 +41,8 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
+
+  private static final long serialVersionUID = 8154867777629797580L;
 
   /**
    * This method has to be implemented in the component request rooter class. returns the session
@@ -134,15 +138,13 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
         // récupération des paramètres venus de l'écran de saisie et
         // création de
         // l'objet LinkDetail
-        LinkDetail link = generateLink(request);
-        myLinksSC.createLink(link);
+        myLinksSC.createLink(generateLink(request, false));
         // retour sur le liste des liens
         destination = getDestination("ViewLinks", myLinksSC, request);
       } else if (function.equals("CreateLinkFromComponent")) {
         // récupération des paramètres transmis et création de l'objet
         // LinkDetail
-        LinkDetail link = generateLink(request);
-        myLinksSC.createLink(link);
+        myLinksSC.createLink(generateLink(request, true));
         // affichage d'une fenêtre de confirmation
         destination = rootDest + "confirm.jsp";
       } else if (function.equals("EditLink")) {
@@ -158,7 +160,7 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("UpdateLink")) {
         // récupération des paramètres venus de l'écran de saisie
         String linkId = request.getParameter("LinkId");
-        LinkDetail link = generateLink(request);
+        LinkDetail link = generateLink(request, false);
         link.setLinkId(Integer.parseInt(linkId));
         // modification du lien
         myLinksSC.updateLink(link);
@@ -185,10 +187,15 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
     return destination;
   }
 
-  private LinkDetail generateLink(HttpServletRequest request) {
+  private LinkDetail generateLink(HttpServletRequest request, boolean decode) throws UnsupportedEncodingException {
     String name = request.getParameter("Name");
     String description = request.getParameter("Description");
+    if (decode) {
+      name = URLDecoder.decode(name, "UTF-8");
+      description = URLDecoder.decode(description, "UTF-8");
+    }    
     String url = request.getParameter("Url");
+    
     // supprimer le context en début d'url
     String sRequestURL = request.getRequestURL().toString();
     String m_sAbsolute =
@@ -201,21 +208,11 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
     if (url.startsWith(context)) {
       url = url.substring(context.length(), url.length());
     }
-    boolean visible = false;
-    if ("true".equals(request.getParameter("Visible"))) {
-      visible = true;
-    }
-    boolean popup = false;
-    if ("true".equals(request.getParameter("Popup"))) {
-      popup = true;
-    }
+    boolean visible = StringUtil.getBooleanValue(request.getParameter("Visible"));
+    boolean popup = StringUtil.getBooleanValue(request.getParameter("Popup"));
     if (!StringUtil.isDefined(name)) {
       name = url;
     }
-    /*
-     * String instanceId = request.getParameter("InstanceId"); if (instanceId != null) return new
-     * LinkDetail(name, description,url,visible,popup, instanceId); else
-     */
     return new LinkDetail(name, description, url, visible, popup);
   }
 }
