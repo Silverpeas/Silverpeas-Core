@@ -258,6 +258,7 @@ table.fc-header {
 
 .fc-event {
 	text-align: left;
+	min-height:12px;
 	}
 
 .fc-event a {
@@ -266,17 +267,11 @@ table.fc-header {
 	line-height:1.25em;
 	text-decoration: none;
 	cursor: pointer;
+	min-height:12px;
 	}
 
 .fc-event-editable {
 	cursor: pointer;
-	}
-
-.fc-event-time {
-	padding:0 3px 0 0px;
-	}
-.fc-event-title {
-	padding:0 0  0 3px;
 	}
 
 /* for fake rounded corners */
@@ -593,6 +588,7 @@ table.fc-header {
 	background: #fff;
 	opacity: .3;
 	filter: alpha(opacity=30); /* for IE */
+	min-height:12px;
 	}
 
 /* resizable */
