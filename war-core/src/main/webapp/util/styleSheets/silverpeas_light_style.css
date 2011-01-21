@@ -693,10 +693,7 @@ td.milieuOngletOn {
 	border-color:#F1790F;
 }
 
-#dNdActionLabel { 
-	line-height:30px;
-	cursor:pointer;
-	display:block;}
+
 
 /* regroupement des styles mise en couleur*/
 #blog #titresTopics a , #blog #titresArchives a, #blog #titresLiens a , .titreCouleur{
