@@ -226,6 +226,10 @@ public class ResourcesWrapper {
     return SilverpeasSettings.readBoolean(specificSettings, key, defaultValue);
   }
 
+  public int getSetting(String key, int defaultValue) {
+    return SilverpeasSettings.readInt(specificSettings, key, defaultValue);
+  }
+
   public String getOutputDate(Date date) {
     return DateUtil.getOutputDate(date, language);
   }
@@ -237,7 +241,7 @@ public class ResourcesWrapper {
   public String getOutputDateAndHour(Date date) {
     return DateUtil.getOutputDateAndHour(date, language);
   }
-  
+
   /**
    * Display first not null date
    * @param date1 date to display
