@@ -24,24 +24,20 @@
 
 package com.stratelia.silverpeas.contentManager;
 
-import java.util.*;
+import java.util.Comparator;
 
 public class GSCNameComparatorDesc implements Comparator<GlobalSilverContent> {
-  static public GSCNameComparatorDesc comparator = new GSCNameComparatorDesc();
+  final static public GSCNameComparatorDesc comparator = new GSCNameComparatorDesc();
 
   /**
    * A matching index entry is greater another if his score is higher. This result is reversed as we
    * want a descending sort.
+   * @param gsc1
+   * @param gsc2
+   * @return 
    */
+  @Override
   public int compare(GlobalSilverContent gsc1, GlobalSilverContent gsc2) {
     return 0 - gsc1.getName().compareTo(gsc2.getName());
-  }
-
-  /**
-   * This comparator equals self only. Use the shared comparator GSCNameComparator.comparator if
-   * multiples comparators are used.
-   */
-  public boolean equals(Object o) {
-    return o == this;
   }
 }

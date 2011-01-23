@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.contentManager;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -31,11 +30,10 @@ public class DefaultGlobalSilverContentProcessor implements IGlobalSilverContent
   @Override
   public GlobalSilverContent getGlobalSilverContent(SilverContentInterface sci,
       UserDetail creatorDetail, String location) {
-    if (creatorDetail != null)
-      return new GlobalSilverContent(sci, location, creatorDetail
-          .getFirstName(), creatorDetail.getLastName());
-    else
-      return new GlobalSilverContent(sci, location, null, null);
+    if (creatorDetail != null) {
+      return new GlobalSilverContent(sci, location, creatorDetail.getFirstName(), creatorDetail.
+          getLastName());
+    }
+    return new GlobalSilverContent(sci, location, null, null);
   }
-
 }

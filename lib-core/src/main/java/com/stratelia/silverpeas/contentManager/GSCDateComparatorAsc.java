@@ -24,15 +24,19 @@
 
 package com.stratelia.silverpeas.contentManager;
 
-import java.util.*;
+import java.util.Comparator;
 
 public class GSCDateComparatorAsc implements Comparator<GlobalSilverContent> {
-  static public GSCDateComparatorAsc comparator = new GSCDateComparatorAsc();
+  final static public GSCDateComparatorAsc comparator = new GSCDateComparatorAsc();
 
   /**
    * A matching index entry is greater another if his score is higher. This result is reversed as we
    * want a descending sort.
+   * @param gsc1
+   * @param gsc2
+   * @return 
    */
+  @Override
   public int compare(GlobalSilverContent gsc1, GlobalSilverContent gsc2) {
     int compareResult = gsc1.getDate().compareTo(gsc2.getDate());
     if (compareResult == 0) {
@@ -41,13 +45,5 @@ public class GSCDateComparatorAsc implements Comparator<GlobalSilverContent> {
     }
 
     return compareResult;
-  }
-
-  /**
-   * This comparator equals self only. Use the shared comparator GSCDateComparatorAsc.comparator if
-   * multiples comparators are used.
-   */
-  public boolean equals(Object o) {
-    return o == this;
   }
 }

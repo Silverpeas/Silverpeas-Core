@@ -24,19 +24,21 @@
 
 package com.stratelia.silverpeas.contentManager;
 
-import java.util.*;
+import java.util.Comparator;
 
 public class GSCCreationDateComparatorDesc implements Comparator<GlobalSilverContent> {
-  static public GSCCreationDateComparatorDesc comparator = new GSCCreationDateComparatorDesc();
+  final static public GSCCreationDateComparatorDesc comparator = new GSCCreationDateComparatorDesc();
 
   /**
    * This result is reversed as we want a descending sort.
+   * @param gsc1
+   * @param gsc2
+   * @return 
    */
+  @Override
   public int compare(GlobalSilverContent gsc1, GlobalSilverContent gsc2) {
-    int compareResult = gsc1.getCreationDate()
-        .compareTo(gsc2.getCreationDate());
+    int compareResult = gsc1.getCreationDate().compareTo(gsc2.getCreationDate());
     if (compareResult == 0) {
-      // both objects have been created on the same date
       compareResult = gsc1.getId().compareTo(gsc2.getId());
     }
 
