@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.searchEngine.model;
 
 import java.util.Comparator;
@@ -30,28 +29,20 @@ import java.util.Comparator;
  * Comparator used to sort the results set.
  */
 public class ScoreComparator implements Comparator<MatchingIndexEntry> {
-  static public ScoreComparator comparator = new ScoreComparator();
+
+  final static public ScoreComparator comparator = new ScoreComparator();
 
   /**
    * A matching index entry is greater another if his score is higher. This result is reversed as we
    * want a descending sort.
    */
+  @Override
   public int compare(MatchingIndexEntry r1, MatchingIndexEntry r2) {
     if (r1.getScore() < r2.getScore()) {
       return 1;
     } else if (r1.getScore() == r2.getScore()) {
       return 0;
-    } else {
-      return -1;
     }
+    return -1;
   }
-
-  /**
-   * This comparator equals self only. Use the shared comparator ScoreComparator.comparator if
-   * multiples comparators are used.
-   */
-  public boolean equals(Object o) {
-    return o == this;
-  }
-
 }

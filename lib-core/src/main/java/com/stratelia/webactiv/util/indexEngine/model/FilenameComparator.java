@@ -29,16 +29,10 @@ import java.util.Comparator;
 
 public class FilenameComparator implements Comparator<File> {
 
-  static public FilenameComparator comparator = new FilenameComparator();
+  final static public FilenameComparator comparator = new FilenameComparator();
 
+  @Override
   public int compare(File file1, File file2) {
     return file1.getName().compareTo(file2.getName());
-  }
-
-  /**
-   * This comparator equals self only.
-   */
-  public boolean equals(Object o) {
-    return o == this;
   }
 }
