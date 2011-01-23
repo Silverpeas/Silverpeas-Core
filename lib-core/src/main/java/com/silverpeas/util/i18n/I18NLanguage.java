@@ -47,9 +47,17 @@ public class I18NLanguage {
     return label;
   }
 
+  @Override
   public boolean equals(Object o) {
     I18NLanguage other = (I18NLanguage) o;
     return other.getCode().equals(code);
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 3;
+    hash = 59 * hash + (this.code != null ? this.code.hashCode() : 0);
+    return hash;
   }
 
   public int getTranslationId() {
