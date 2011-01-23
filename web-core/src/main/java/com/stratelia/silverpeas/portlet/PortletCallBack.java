@@ -38,7 +38,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * Class declaration
  * @author
  */
-public class PortletCallBack extends CallBack {
+public class PortletCallBack implements CallBack {
 
   private final CallBackManager callBackManager = CallBackManager.get();
 

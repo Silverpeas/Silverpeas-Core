@@ -34,7 +34,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 /**
  * @author neysseri
  */
-public class PdcCallBack extends CallBack {
+public class PdcCallBack implements CallBack {
 
   public PdcCallBack() {
   }

@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.silverpeasinitialize;
 
 /**
@@ -29,9 +28,9 @@ package com.stratelia.silverpeas.silverpeasinitialize;
  * @author TLE
  * @version 1.0
  */
-abstract public class CallBack {
-  abstract public void subscribe();
+public interface CallBack {
 
-  abstract public void doInvoke(int action, int iParam, String sParam,
-      Object extraParam);
+  public void subscribe();
+
+  public void doInvoke(int action, int iParam, String sParam, Object extraParam);
 }

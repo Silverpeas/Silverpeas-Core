@@ -76,17 +76,13 @@ public class MenuHelper {
         "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkoutAndEdit(").
         append(attachmentId).append(")\">").
         append(resources.getString("attachment.checkOutAndEditOnline")).append("</a></li>");
-    builder.append("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkin("
-        + attachmentId
-        + ","
-        + attachment.isOpenOfficeCompatible()
-        + ", false)\">"
-        + resources.getString("checkIn")
-        + "</a></li>");
+    builder.append("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkin(").
+        append(attachmentId).append(",").append(attachment.isOpenOfficeCompatible()).
+        append(", false)\">").append(resources.getString("checkIn")).append("</a></li>");
     builder.append("</ul>");
     builder.append("<ul>");
-    builder.append("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:updateAttachment('"
-        + attachmentId + "')\">" + resources.getString("GML.modify") + "</a></li>");
+    builder.append("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:updateAttachment('").
+        append(attachmentId).append("')\">").append(resources.getString("GML.modify")).append("</a></li>");
     if (useXMLForm) {
       builder.append("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:EditXmlForm('"
           + attachmentId
@@ -95,10 +91,8 @@ public class MenuHelper {
           + "')\">"
           + resources.getString("attachment.xmlForm.Edit") + "</a></li>");
     }
-    builder.append("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:deleteAttachment("
-        + attachmentId
-        + ")\">"
-        + resources.getString("GML.delete") + "</a></li>");
+    builder.append("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:deleteAttachment(").
+        append(attachmentId).append(")\">").append(resources.getString("GML.delete")).append("</a></li>");
     builder.append("</ul>");
       builder.append("<ul>");
       builder.append(

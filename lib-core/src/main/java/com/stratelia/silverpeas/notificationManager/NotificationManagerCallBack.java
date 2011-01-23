@@ -36,7 +36,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * Class declaration
  * @author
  */
-public class NotificationManagerCallBack extends CallBack {
+public class NotificationManagerCallBack implements CallBack {
 
   private final CallBackManager callBackManager = CallBackManager.get();
 

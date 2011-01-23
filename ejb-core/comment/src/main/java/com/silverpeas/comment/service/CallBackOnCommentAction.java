@@ -34,7 +34,7 @@ import static com.silverpeas.util.StringUtil.*;
  * behalf should satisfy.
  * This class defines the information a callback recieves at invocation.
  */
-public abstract class CallBackOnCommentAction extends CallBack {
+public abstract class CallBackOnCommentAction implements CallBack {
 
   /**
    * Subscribes to be notified about the comment adding.

@@ -57,9 +57,7 @@ public class NotificationMetaData implements java.io.Serializable {
   private String fileName;
 
   private Map<String, String> titles = new HashMap<String, String>();
-  private Map<String, String> contents = new HashMap<String, String>(); // <"fr",
-  // "bonjour">,
-  // <"en", "hello">
+  private Map<String, String> contents = new HashMap<String, String>(); 
 
   private Map<String, SilverpeasTemplate> templates;
 

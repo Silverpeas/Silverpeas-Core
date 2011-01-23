@@ -38,7 +38,7 @@ import com.stratelia.webactiv.util.subscribe.model.SubscribeRuntimeException;
 /**
  * @author neysseri
  */
-public class SubscribeCallBack extends CallBack {
+public class SubscribeCallBack implements CallBack {
 
   public SubscribeCallBack() {
   }

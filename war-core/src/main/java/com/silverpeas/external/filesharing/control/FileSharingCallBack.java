@@ -34,7 +34,7 @@ import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
-public class FileSharingCallBack extends CallBack {
+public class FileSharingCallBack implements CallBack {
 
   public FileSharingCallBack() {
   }

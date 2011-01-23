@@ -36,7 +36,7 @@ import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 /**
  * @author neysseri
  */
-public class AttachmentCallBack extends CallBack {
+public class AttachmentCallBack implements CallBack {
 
   public AttachmentCallBack() {
   }
