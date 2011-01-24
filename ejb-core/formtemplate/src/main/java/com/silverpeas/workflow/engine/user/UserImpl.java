@@ -107,11 +107,22 @@ public final class UserImpl implements User {
     return userFull.getValue(infoName);
   }
 
+  @Override
+  public int hashCode() {
+    int hash = 3;
+    hash = 29 * hash + (this.getUserId() != null ? this.getUserId().hashCode() : 0);
+    return hash;
+  }
+
   /**
    * compare this user with another
    * @return true if two users are the same
    */
+  @Override
   public boolean equals(Object user) {
+    if(user == null || !(user instanceof UserImpl)) {
+      return false;
+    }
     return this.getUserId().equals(((UserImpl) user).getUserId());
   }
 

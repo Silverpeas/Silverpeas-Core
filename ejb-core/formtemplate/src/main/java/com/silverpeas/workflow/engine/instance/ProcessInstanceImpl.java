@@ -62,7 +62,6 @@ import com.silverpeas.workflow.api.instance.Participant;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
 import com.silverpeas.workflow.api.instance.Question;
 import com.silverpeas.workflow.api.instance.UpdatableProcessInstance;
-import com.silverpeas.workflow.api.model.Action;
 import com.silverpeas.workflow.api.model.Form;
 import com.silverpeas.workflow.api.model.Input;
 import com.silverpeas.workflow.api.model.Presentation;
@@ -358,16 +357,16 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
   /**
    * @param state
    */
+  @Override
   public void addTimeout(State state) throws WorkflowException {
-    ActiveState activeState = null;
     boolean found = false;
 
-    if (activeStates == null || activeStates.size() == 0) {
+    if (activeStates == null || activeStates.isEmpty()) {
       return;
     }
 
     for (int i = 0; (!found) && i < activeStates.size(); i++) {
-      activeState = (ActiveState) activeStates.get(i);
+      ActiveState activeState = (ActiveState) activeStates.get(i);
       if (activeState.getState().equals(state.getName())) {
         found = true;
         activeState.setTimeoutStatus(activeState.getTimeoutStatus() + 1);
@@ -381,18 +380,16 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
   /**
    * @param state
    */
+  @Override
   public void removeTimeout(State state) throws WorkflowException {
     SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.removeTimeout",
         "root.MSG_GEN_ENTER_METHOD", "state =" + state.getName());
-    ActiveState activeState = null;
     boolean found = false;
-
-    if (activeStates == null || activeStates.size() == 0) {
+    if (activeStates == null || activeStates.isEmpty()) {
       return;
     }
-
     for (int i = 0; i < activeStates.size(); i++) {
-      activeState = (ActiveState) activeStates.get(i);
+      ActiveState activeState = (ActiveState) activeStates.get(i);
       SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.removeTimeout",
           "root.MSG_GEN_ENTER_METHOD", "activeState ="
           + activeState.getState());
@@ -413,12 +410,14 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @param user user to add
    * @param state state for which the user can make an action
    * @param role role name under which the user can make an action
+   * @throws WorkflowException
    */
-  public void addWorkingUser(User user, State state, String role)
-      throws WorkflowException {
+  @Override
+  public void addWorkingUser(User user, State state, String role) throws WorkflowException {
     this.addWorkingUser(user, state.getName(), role, null);
   }
 
+  @Override
   public void addWorkingUser(Actor actor, State state) throws WorkflowException {
     addWorkingUser(actor.getUser(), state.getName(), actor.getUserRoleName(), actor.getGroupId());
   }
@@ -453,11 +452,9 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
     // add this operation in undo history
     if (!inUndoProcess) {
       if (user != null) {
-        this.addUndoHistoryStep("addWorkingUser", user.getUserId() + "##" + state
-            + "##" + role);
+        this.addUndoHistoryStep("addWorkingUser", user.getUserId() + "##" + state + "##" + role);
       } else {
-        this.addUndoHistoryStep("addWorkingUser", state
-            + "##" + role);
+        this.addUndoHistoryStep("addWorkingUser", state + "##" + role);
       }
     }
   }
@@ -468,6 +465,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @param state state for which the user could make an action
    * @param role role name under which the user could make an action
    */
+  @Override
   public void removeWorkingUser(User user, State state, String role)
       throws WorkflowException {
     this.removeWorkingUser(user, state.getName(), role);
@@ -512,12 +510,13 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @param user user to add
    * @param state state for which the user is interested
    * @param role role name under which the user is interested
+   * @throws WorkflowException
    */
-  public void addInterestedUser(User user, State state, String role)
-      throws WorkflowException {
+  public void addInterestedUser(User user, State state, String role) throws WorkflowException {
     this.addInterestedUser(user, state.getName(), role, null);
   }
 
+  @Override
   public void addInterestedUser(Actor actor, State state) throws WorkflowException {
     this.addInterestedUser(actor.getUser(), state.getName(), actor.getUserRoleName(), actor.
         getGroupId());
@@ -553,8 +552,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
     // add this operation in undo history
     if (!inUndoProcess) {
       if (user != null) {
-        this.addUndoHistoryStep("addInterestedUser", user.getUserId() + "##"
-            + state + "##" + role);
+        this.addUndoHistoryStep("addInterestedUser", user.getUserId() + "##" + state + "##" + role);
       } else {
         this.addUndoHistoryStep("addInterestedUser", state + "##" + role);
       }
@@ -566,9 +564,9 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @param user user to remove
    * @param state state for which the user is interested
    * @param role role name under which the user is interested
+   * @throws WorkflowException
    */
-  public void removeInterestedUser(User user, State state, String role)
-      throws WorkflowException {
+  public void removeInterestedUser(User user, State state, String role) throws WorkflowException {
     this.removeInterestedUser(user, state.getName(), role);
   }
 
@@ -609,19 +607,19 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
   /**
    * Add a question for this instance
    * @param question the question to add
+   * @throws WorkflowException
    */
   public void addQuestion(Question question) throws WorkflowException {
     questions.add(question);
   }
 
-  /**
-   */
   public void computeValid() {
     this.valid = (workingUsers.size() > 0);
   }
 
   /**
    * @return ProcessModel
+   * @throws WorkflowException
    */
   public ProcessModel getProcessModel() throws WorkflowException {
     if (model == null) {
@@ -634,6 +632,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
   /**
    * Creates this instance in database
    * @return the newly created instance id
+   * @throws WorkflowException
    */
   public String create() throws WorkflowException {
     Database db = null;
@@ -656,6 +655,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
 
   /**
    * Permanently removes this instance from database
+   * @throws WorkflowException
    */
   public void delete() throws WorkflowException {
     Database db = null;
@@ -676,6 +676,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
 
   /**
    * Store modifications of this instance in database
+   * @throws WorkflowException
    */
   public void update() throws WorkflowException {
     Database db = null;
@@ -697,10 +698,11 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
   /**
    * @return HistoryStep[]
    */
+  @Override
   public HistoryStep[] getHistorySteps() {
     if (historySteps != null) {
       Collections.sort(historySteps);
-      return (HistoryStep[]) historySteps.toArray(new HistoryStep[0]);
+      return (HistoryStep[]) historySteps.toArray(new HistoryStep[historySteps.size()]);
     } else {
       return null;
     }
@@ -708,6 +710,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
 
   /**
    * @return HistoryStep
+   * @throws WorkflowException
    */
   public HistoryStep getHistoryStep(String stepId) throws WorkflowException {
     for (int i = 0; i < historySteps.size(); i++) {
@@ -2062,20 +2065,20 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @param content question text
    * @param stepId id of destination step for the question
    * @param fromState the state where the question was asked
-   * @param fromuser the user who asked the question
+   * @param fromUser the user who asked the question
    * @return The state to which the question is
+   * @throws WorkflowException
    */
-  public State addQuestion(String content, String stepId, State fromState,
-      User fromUser) throws WorkflowException {
+  @Override
+  public State addQuestion(String content, String stepId, State fromState, User fromUser) throws
+      WorkflowException {
     HistoryStep step = getStep(stepId);
     State targetState = getProcessModel().getState(step.getResolvedState());
     Participant participant = getParticipant(targetState.getName());
-
     // Save the question
     QuestionImpl question = new QuestionImpl((ProcessInstance) this, content,
         fromState.getName(), step.getResolvedState(), fromUser, participant.getUser());
     addQuestion(question);
-
     return getProcessModel().getState(step.getResolvedState());
   }
 
@@ -2084,27 +2087,24 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @param content response text
    * @param questionId id of question corresponding to this response
    * @return The state where the question was asked
+   * @throws WorkflowException
    */
-  public State answerQuestion(String content, String questionId)
-      throws WorkflowException {
+  @Override
+  public State answerQuestion(String content, String questionId) throws WorkflowException {
     Question question = null;
-
     // search for the question with given id
     for (int i = 0; question == null && i < questions.size(); i++) {
       if (((Question) questions.get(i)).getId().equals(questionId)) {
         question = (Question) questions.get(i);
       }
     }
-
     // if question not found, throw exception
     if (question == null) {
       throw new WorkflowException("ProcessInstanceImpl.answerQuestion",
           "workflowEngine.ERR_QUESTION_NOT_FOUND", "id : " + questionId);
     }
-
     // put the answer in question
     question.answer(content);
-
     // return the state where the question was asked
     return question.getTargetState();
   }
@@ -2114,19 +2114,16 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * @param stateName given state name
    * @return all the questions (not yet answered) asked to the given state
    */
+  @Override
   public Question[] getPendingQuestions(String stateName) {
-    Vector questionsAsked = new Vector();
-    Question question = null;
-
+    List<Question> questionsAsked = new ArrayList<Question>();
     for (int i = 0; i < questions.size(); i++) {
-      question = (Question) questions.get(i);
-      if (question.getTargetState().getName().equals(stateName)
-          && question.getResponseDate() == null) {
+      Question question = (Question) questions.get(i);
+      if (question.getTargetState().getName().equals(stateName) && question.getResponseDate() == null) {
         questionsAsked.add(question);
       }
     }
-
-    return (Question[]) questionsAsked.toArray(new QuestionImpl[0]);
+    return questionsAsked.toArray(new Question[questionsAsked.size()]);
   }
 
   /**
@@ -2343,7 +2340,6 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
 
         // Look for an active state with a timeoutDate in the past
         if (activeState.getTimeoutDate() != null && activeState.getTimeoutDate().before(dateRef)) {
-
           // found, now look which timeout is concerned
           int timeoutStatus = activeState.getTimeoutStatus();
 
@@ -2362,8 +2358,19 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
     return null;
   }
 
+  @Override
   public boolean equals(Object obj) {
+    if (obj == null || !(obj instanceof ProcessInstanceImpl)) {
+      return false;
+    }
     ProcessInstance instance = (ProcessInstance) obj;
     return instance.getInstanceId().equals(this.instanceId);
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 97 * hash + (this.instanceId != null ? this.instanceId.hashCode() : 0);
+    return hash;
   }
 }
