@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.jcrutil.servlets;
 
 import com.silverpeas.jcrutil.BasicDaoFactory;
@@ -66,21 +65,16 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 public class RepositoryAccessServlet extends HttpServlet {
 
   public static final long serialVersionUID = 1L;
-
   /**
    * Context parameter name for 'this' instance.
    */
   private final static String CTX_PARAM_THIS = "repository.access.servlet";
-
   /**
    * the repository
    */
   private transient Repository repository;
-
   private transient PeriodicJcrCleaner cleaner;
-
   private transient RmiConfiguration config;
-
   /**
    * Keeps a strong reference to the server side RMI repository instance to prevent the RMI
    * distributed Garbage Collector from collecting the instance making the repository unaccessible
@@ -103,27 +97,25 @@ public class RepositoryAccessServlet extends HttpServlet {
   public void init() throws ServletException {
     try {
       log("Initializing the repository ...........");
-      SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
-          "RepositoryAccessServlet.init()",
-          "Initializing the repository ...........");
+      SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init",
+          "RepositoryAccessServlet.init()", "Initializing the repository ...........");
       // check if servlet is defined twice
       if (getServletContext().getAttribute(CTX_PARAM_THIS) != null) {
-        throw new ServletException(
-            "Only one repository access servlet allowed per web-app.");
+        throw new ServletException("Only one repository access servlet allowed per web-app.");
       }
       getServletContext().setAttribute(CTX_PARAM_THIS, this);
-      SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
+      SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init",
           "RepositoryAccessServlet.init()", "Spring context loaded.");
       repository = (Repository) BasicDaoFactory.getBean("repository");
       config = (RmiConfiguration) BasicDaoFactory.getBean("rmi-configuration");
-      SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
+      SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init",
           "RepositoryAccessServlet.init()", "About to launch cleaner Thread");
       cleaner = new PeriodicJcrCleaner(repository);
       new Thread(cleaner).start();
-      SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
+      SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init",
           "RepositoryAccessServlet initialized.", repository.toString());
       registerRMI(config);
-      SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
+      SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init",
           "RepositoryAccessServlet.init()", "RMI registred");
       getServletContext().setAttribute(Repository.class.getName(), repository);
       registerSilverpeasNodeTypes();
@@ -172,7 +164,7 @@ public class RepositoryAccessServlet extends HttpServlet {
     super.destroy();
     unregisterRMI(config);
     log("Closing the repository ...........");
-    SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
+    SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init",
         "Closing the repository ...........");
   }
 
@@ -184,7 +176,7 @@ public class RepositoryAccessServlet extends HttpServlet {
       try {
         String user = session.getUserID();
         String name = repository.getDescriptor(Repository.REP_NAME_DESC);
-        SilverTrace.error("jcrUtil", "RepositoryAccessServlet.init()",
+        SilverTrace.info("jcrUtil", "RepositoryAccessServlet.init()",
             "Logged in as " + user + " to a " + name + " repository.");
       } finally {
         session.logout();
@@ -203,11 +195,11 @@ public class RepositoryAccessServlet extends HttpServlet {
    * @return this servlet
    */
   private static RepositoryAccessServlet getInstance(ServletContext ctx) {
-    final RepositoryAccessServlet instance = (RepositoryAccessServlet) ctx
-        .getAttribute(CTX_PARAM_THIS);
+    final RepositoryAccessServlet instance = (RepositoryAccessServlet) ctx.getAttribute(
+        CTX_PARAM_THIS);
     if (instance == null) {
-      throw new IllegalStateException(
-          "No RepositoryAccessServlet instance in ServletContext, RepositoryAccessServlet servlet not initialized?");
+      throw new IllegalStateException("No RepositoryAccessServlet instance in ServletContext, "
+          + "RepositoryAccessServlet servlet not initialized?");
     }
     return instance;
   }
@@ -305,7 +297,7 @@ public class RepositoryAccessServlet extends HttpServlet {
       // potentially active registry. We do not check yet, whether the
       // registry is actually accessible.
       if (reg == null) {
-        SilverTrace.error("attachment", "RepositoryAccessServlet",
+        SilverTrace.info("attachment", "RepositoryAccessServlet",
             "jackrabbit.init", "Trying to access existing registry at "
             + config.getHost() + ":" + config.getPort());
         try {
@@ -321,19 +313,18 @@ public class RepositoryAccessServlet extends HttpServlet {
       // if we finally have a registry, register the repository with the
       // rmiName
       if (reg != null) {
-        SilverTrace.error("attachment", "RepositoryAccessServlet",
+        SilverTrace.info("attachment", "RepositoryAccessServlet",
             "jackrabbit.init", "Registering repository as " + config.getName()
             + " to registry " + reg);
         reg.bind(config.getName(), remote);
 
         // when successfull, keep references
         this.rmiRepository = remote;
-        SilverTrace.error("attachment", "RepositoryAccessServlet",
+        SilverTrace.info("attachment", "RepositoryAccessServlet",
             "jackrabbit.init", "Repository bound via RMI with name: " + rmiUri);
       } else {
         SilverTrace.error("attachment", "RepositoryAccessServlet",
-            "jackrabbit.init",
-            "RMI registry missing, cannot bind repository via RMI");
+            "jackrabbit.init", "RMI registry missing, cannot bind repository via RMI");
       }
 
     } catch (RemoteException e) {
@@ -382,6 +373,7 @@ public class RepositoryAccessServlet extends HttpServlet {
   protected RMIServerSocketFactory getRMIServerSocketFactory(
       final InetAddress hostAddress) {
     return new RMIServerSocketFactory() {
+
       @Override
       public ServerSocket createServerSocket(int port) throws IOException {
         return new ServerSocket(port, -1, hostAddress);
@@ -400,8 +392,7 @@ public class RepositoryAccessServlet extends HttpServlet {
   /**
    * optional class for RMI, will only be used, if RMI server is present
    */
-  protected static class RMIRemoteFactoryDelegater extends
-      RemoteFactoryDelegater {
+  protected static class RMIRemoteFactoryDelegater extends RemoteFactoryDelegater {
 
     private static final RemoteAdapterFactory FACTORY = new JackrabbitServerAdapterFactory();
 
@@ -409,7 +400,5 @@ public class RepositoryAccessServlet extends HttpServlet {
     public Remote createRemoteRepository(Repository repository) throws RemoteException {
       return FACTORY.getRemoteRepository(repository);
     }
-
   }
-
 }

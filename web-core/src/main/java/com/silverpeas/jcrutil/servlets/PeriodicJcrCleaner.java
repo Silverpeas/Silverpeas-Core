@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.jcrutil.servlets;
 
 import javax.jcr.Repository;
@@ -41,12 +40,12 @@ public class PeriodicJcrCleaner implements Runnable {
 
   public PeriodicJcrCleaner(Repository repository) throws ItemStateException,
       RepositoryException {
-    SessionImpl session = (SessionImpl) repository
-        .login(new SilverpeasSystemCredentials());
+    SessionImpl session = (SessionImpl) repository.login(new SilverpeasSystemCredentials());
     gc = session.createDataStoreGarbageCollector();
     this.running = true;
   }
 
+  @Override
   public void run() {
     try {
       while (running) {
@@ -64,7 +63,7 @@ public class PeriodicJcrCleaner implements Runnable {
         Thread.sleep(300000);
       }
     } catch (Exception ex) {
-      ex.printStackTrace();
+      SilverTrace.error("attachment", "PeriodicJcrCleaner", "run", ex);
       running = false;
     }
   }
