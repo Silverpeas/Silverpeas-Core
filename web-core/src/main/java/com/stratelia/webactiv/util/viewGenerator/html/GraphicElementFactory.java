@@ -402,7 +402,7 @@ public class GraphicElementFactory extends Object {
    * <li>else if use the default look settings</li>
    * </ul>
    * @param lookStyle the current lookStyle
-   * @param code the appened StringBuilder object 
+   * @param code the appened StringBuilder object
    */
   private void appendSpecificCSS(String lookStyle, StringBuilder code) {
     // Retrieve specific space look
@@ -410,18 +410,39 @@ public class GraphicElementFactory extends Object {
       SpaceInstLight curSpace =
           mainSessionController.getOrganizationController().getSpaceInstLightById(this.spaceId);
       String spaceLookStyle = curSpace.getLook();
-      if (StringUtil.isDefined(spaceLookStyle)) {
-        setLook(spaceLookStyle);
-        lookStyle = getFavoriteLookSettings().getString("StyleSheet");
-        if (StringUtil.isDefined(lookStyle)) {
-          code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
-          code.append(lookStyle).append("\"/>\n");
-        }
+      getSpaceLook(lookStyle, code, curSpace, spaceLookStyle);
+    } else {
+      appendDefaultLookCSS(lookStyle, code);
+    }
+  }
+
+  /**
+   * @param lookStyle
+   * @param code string builder
+   * @param curSpace 
+   * @param spaceLookStyle
+   */
+  private void getSpaceLook(String lookStyle, StringBuilder code, SpaceInstLight curSpace,
+      String spaceLookStyle) {
+
+    if (StringUtil.isDefined(spaceLookStyle)) {
+      setLook(spaceLookStyle);
+      lookStyle = getFavoriteLookSettings().getString("StyleSheet");
+      if (StringUtil.isDefined(lookStyle)) {
+        code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
+        code.append(lookStyle).append("\"/>\n");
+      }
+    } else {
+      // Check the parent space look (recursive method)
+      if (!curSpace.isRoot()) {
+        String fatherSpaceId = curSpace.getFatherId();
+        SpaceInstLight fatherSpace =
+            mainSessionController.getOrganizationController().getSpaceInstLightById(fatherSpaceId);
+        spaceLookStyle = curSpace.getLook();
+        getSpaceLook(lookStyle, code, fatherSpace, spaceLookStyle);
       } else {
         appendDefaultLookCSS(lookStyle, code);
       }
-    } else {
-      appendDefaultLookCSS(lookStyle, code);
     }
   }
 

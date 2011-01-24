@@ -126,7 +126,11 @@ public class AjaxServletLookV5 extends HttpServlet {
     // Set current space and component identifier (helper and gef)
     if (StringUtil.isDefined(componentId)) {
       helper.setComponentIdAndSpaceIds(null, null, componentId);
-      gef.setSpaceId(helper.getSpaceId());
+      String helperSpaceId = helper.getSubSpaceId();
+      if (!StringUtil.isDefined(helperSpaceId)) {
+        helperSpaceId = helper.getSpaceId();
+      }
+      gef.setSpaceId(helperSpaceId);
     } else if (StringUtil.isDefined(spaceId) && !isPersonalSpace(spaceId)) {
       helper.setSpaceIdAndSubSpaceId(spaceId);
       gef.setSpaceId(spaceId);
@@ -317,7 +321,7 @@ public class AjaxServletLookV5 extends HttpServlet {
     if (space != null && isSpaceVisible(userId, spaceId, orgaController, helper)) {
       StringBuilder itemSB = new StringBuilder(200);
       itemSB.append("<item open=\"").append(open).append("\" ");
-      itemSB.append(getSpaceAttributes(space, language, defaultLook, helper));
+      itemSB.append(getSpaceAttributes(space, language, defaultLook, helper, orgaController));
       itemSB.append(getFavoriteSpaceAttribute(userId, orgaController, listUFS, space, helper));
       itemSB.append(">");
 
@@ -397,11 +401,8 @@ public class AjaxServletLookV5 extends HttpServlet {
   }
 
   private String getSpaceAttributes(SpaceInstLight space, String language,
-      String defaultLook, LookHelper helper) {
-    String spaceLook = space.getLook();
-    if (!StringUtil.isDefined(spaceLook)) {
-      spaceLook = defaultLook;
-    }
+      String defaultLook, LookHelper helper, OrganizationController orga) {
+    String spaceLook = getSpaceLookAttribute(space, defaultLook, orga);
     String spaceWallpaper = getWallPaper(space.getFullId());
 
     boolean isTransverse = helper.getTopSpaceIds().contains(space.getFullId());
@@ -416,6 +417,27 @@ public class AjaxServletLookV5 extends HttpServlet {
         + EncodeHelper.escapeXml(space.getDescription()) + "\" type=\""
         + attributeType + "\" kind=\"space\" level=\"" + space.getLevel()
         + "\" look=\"" + spaceLook + "\" wallpaper=\"" + spaceWallpaper + "\"";
+  }
+
+  /**
+   * Recursive method to get the right look.
+   * @param space 
+   * @param defaultLook : current default look name
+   * @param orga : the organization controller
+   * @return the space style according to the space hierarchy
+   */
+  private String getSpaceLookAttribute(SpaceInstLight space, String defaultLook,
+      OrganizationController orga) {
+    String spaceLook = space.getLook();
+    if (!StringUtil.isDefined(spaceLook)) {
+      if (!space.isRoot()) {
+        SpaceInstLight fatherSpace = orga.getSpaceInstLightById(space.getFatherId());
+        spaceLook = getSpaceLookAttribute(fatherSpace, defaultLook, orga);
+      } else {
+        spaceLook = defaultLook;
+      }
+    }
+    return spaceLook;
   }
 
   private void displayFirstLevelSpaces(String userId, String language,
@@ -438,7 +460,7 @@ public class AjaxServletLookV5 extends HttpServlet {
         if (space != null) {
           StringBuilder itemSB = new StringBuilder(200);
           itemSB.append("<item ");
-          itemSB.append(getSpaceAttributes(space, language, defaultLook, helper));
+          itemSB.append(getSpaceAttributes(space, language, defaultLook, helper, orgaController));
           itemSB.append(getFavoriteSpaceAttribute(userId, orgaController, listUFS, space, helper));
           itemSB.append("/>");
           out.write(itemSB.toString());
@@ -470,7 +492,7 @@ public class AjaxServletLookV5 extends HttpServlet {
         if (loadCurSpace && isSpaceVisible(userId, subSpaceId, orgaController, helper)) {
           StringBuilder itemSB = new StringBuilder(200);
           itemSB.append("<item ");
-          itemSB.append(getSpaceAttributes(space, language, defaultLook, helper));
+          itemSB.append(getSpaceAttributes(space, language, defaultLook, helper, orgaController));
           itemSB.append(" open=\"").append(open).append("\"");
           itemSB.append(getFavoriteSpaceAttribute(userId, orgaController, listUFS, space, helper));
           itemSB.append(">");
