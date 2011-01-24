@@ -44,9 +44,9 @@ String userProfile = (String)request.getAttribute("UserProfile");
 %>
 
 
-<HTML>
-<HEAD>
-<TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
+<html>
+<head>
+<title><%=resources.getString("GML.popupTitle")%></title>
 <%
    out.println(gef.getLookStyleSheet());
 %>
@@ -54,7 +54,7 @@ String userProfile = (String)request.getAttribute("UserProfile");
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 
-<SCRIPT LANGUAGE="JAVASCRIPT">
+<script language="javascript">
 <!--
 	// This function open a silverpeas window
 	function openSPWindow(fonction,windowName){
@@ -75,10 +75,10 @@ function DoIdle()
 { self.location.href = "Main"; }
 
 //-->
-</SCRIPT>
+</script>
 
-</HEAD>
-<BODY>
+</head>
+<body>
 
 <%
 	browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics"));
@@ -94,7 +94,7 @@ function DoIdle()
     }
     out.println(frame.printBefore());
 %>
-<CENTER>
+<center>
 <%
 		  // Tableau
           ArrayPane arrayPane = gef.getArrayPane("List", "", request,session);
@@ -141,11 +141,11 @@ function DoIdle()
         }
         out.println(resources.getString("silverStatisticsPeas.RefreshedEveryMinutes") + "<BR>");
 %>
-</CENTER>
+</center>
 <%       
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 <form name="goBack" action="Main" method="post"></form>
-</BODY>
-</HTML>
+</body>
+</html>
