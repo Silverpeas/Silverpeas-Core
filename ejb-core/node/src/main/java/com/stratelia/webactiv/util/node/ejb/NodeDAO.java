@@ -65,9 +65,8 @@ public class NodeDAO {
       + "nodefatherid = ? AND instanceId = ? ORDER BY nodeid";
   private static final String SELECT_DESCENDANTS_PK = "SELECT nodepath FROM sb_node_node WHERE "
       + "nodeid = ? AND instanceid = ?";
-  private static final String SELECT_DESCENDANTS_ID_BY_PATH =  "SELECT nodeid FROM sb_node_node "
+  private static final String SELECT_DESCENDANTS_ID_BY_PATH = "SELECT nodeid FROM sb_node_node "
       + "WHERE nodePath LIKE ? AND instanceid = ? ORDER BY nodeid";
-  
   private static Hashtable<String, ArrayList<NodeDetail>> alltrees =
       new Hashtable<String, ArrayList<NodeDetail>>();
 
@@ -190,7 +189,7 @@ public class NodeDAO {
         a.add(n); /* Stockage du sous thème */
       }
     } catch (SQLException e) {
-      SilverTrace.error("node", "NodeDAO.getChildrenPKs()", "root.EX_SQL_QUERY_FAILED", 
+      SilverTrace.error("node", "NodeDAO.getChildrenPKs()", "root.EX_SQL_QUERY_FAILED",
           "childrenStatement = " + SELECT_CHILDREN_IDS + " id = " + nodePK.getId()
           + " compo name = " + nodePK.getComponentName(), e);
       throw e;
@@ -548,7 +547,7 @@ public class NodeDAO {
       String status) throws SQLException {
     Collection<NodeDetail> childrenDetails = getChildrenDetails(con, nodePK);
     if (!childrenDetails.isEmpty()) {
-      for(NodeDetail child : childrenDetails) {
+      for (NodeDetail child : childrenDetails) {
         if (StringUtil.isDefined(status)) {
           if (status.equals(child.getStatus())) {
             tree.add(child);
@@ -1169,22 +1168,19 @@ public class NodeDAO {
 
   public static void updateRightsDependency(Connection con, NodePK pk,
       int rightsDependsOn) throws SQLException {
-    SilverTrace.info("node", "NodeDAO.updateRightsDependency()",
-        "root.MSG_GEN_ENTER_METHOD", "nodePK = " + pk.toString()
-        + ", rightsDependsOn = " + rightsDependsOn);
+    SilverTrace.info("node", "NodeDAO.updateRightsDependency()", "root.MSG_GEN_ENTER_METHOD", 
+        "nodePK = " + pk.toString() + ", rightsDependsOn = " + rightsDependsOn);
 
     StringBuilder updateStatement = new StringBuilder();
     updateStatement.append("update ").append(pk.getTableName());
     updateStatement.append(" set rightsDependsOn =  ? ");
     updateStatement.append(" where nodeId = ? and instanceId = ?");
-    // updateStatement.append(" where rightsDependsOn = ? and instanceId = ?");
     PreparedStatement prepStmt = null;
 
     try {
       prepStmt = con.prepareStatement(updateStatement.toString());
       prepStmt.setInt(1, rightsDependsOn);
       prepStmt.setInt(2, Integer.parseInt(pk.getId()));
-      // prepStmt.setInt(2, Integer.parseInt(pk.getId()));
       prepStmt.setString(3, pk.getInstanceId());
       prepStmt.executeUpdate();
     } finally {
@@ -1194,7 +1190,7 @@ public class NodeDAO {
 
   public static void sortNodes(Connection con, List<NodePK> nodePKs) throws SQLException {
     NodePK nodePK = new NodePK("useless");
-    StringBuffer updateQuery = new StringBuffer();
+    StringBuilder updateQuery = new StringBuilder();
     updateQuery.append("update ").append(nodePK.getTableName());
     updateQuery.append(" set orderNumber = ? ");
     updateQuery.append(" where nodeId = ? ");
