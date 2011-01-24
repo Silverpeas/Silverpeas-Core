@@ -73,16 +73,12 @@
     <!--
       persistence manager of the workspace: class: FQN of class implementing the PersistenceManager interface
     -->
-    <!--
-      <PersistenceManager class="org.apache.jackrabbit.core.persistence.bundle.DerbyPersistenceManager"> <param
-      name="url" value="jdbc:derby:${wsp.home}/db;create=true"/> <param name="schemaObjectPrefix" value="${wsp.name}_"/>
-      </PersistenceManager>
-    -->
     <PersistenceManager class="${jcr.configuration.persistence.manager}">
       <param name="url" value="${WaProductionDb}" />
       <param name="password" value="${WaProductionPswd}" />
       <param name="user" value="${WaProductionUser}" />
       <param name="driver" value="${AdminDBDriver}" />
+      <param name="schema" value="${schema}" />
       <param name="schemaObjectPrefix" value="JCR_" />
     </PersistenceManager>
     <!--

@@ -44,6 +44,7 @@ import org.apache.commons.io.IOUtils;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.apache.commons.io.FilenameUtils;
 
 public class FileUtil implements MimeTypes {
 
@@ -184,6 +185,16 @@ public class FileUtil implements MimeTypes {
     String mimeType = getMimeType(filename);
     return ARCHIVE_MIME_TYPE.equalsIgnoreCase(mimeType) || SHORT_ARCHIVE_MIME_TYPE.equalsIgnoreCase(
         mimeType) || JAVA_ARCHIVE_MIME_TYPE.equalsIgnoreCase(mimeType);
+  }
+  
+  
+  /**
+   * Indicates if the current file is of type archive.
+   * @param filename the name of the file.
+   * @return true is the file s of type archive - false otherwise.
+   */  
+  public static boolean isImage(String filename) {
+    return FilenameUtils.isExtension(filename, IMAGE_EXTENTIONS);
   }
 
   private FileUtil() {
