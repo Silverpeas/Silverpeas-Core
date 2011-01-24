@@ -26,6 +26,7 @@ package com.stratelia.webactiv.util.attachment.control;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -803,36 +804,10 @@ public class AttachmentController {
 
   /**
    * to get mime type of the file param extensionFile : type String
-   * @author Mohammed Hguig
-   * @varsion 1.0
+   * @p
    */
   public static String getMimeType(String fileLogicalName) {
-    ResourceLocator resource = null;
-    String mimeType = null;
-    String fileExtension = null;
-
-    try {
-      resource = new ResourceLocator(
-          "com.stratelia.webactiv.util.attachment.mime_types", "");
-      fileExtension = FileRepositoryManager.getFileExtension(fileLogicalName);
-      fileExtension = fileExtension.toLowerCase();
-
-      if (resource != null) {
-        mimeType = resource.getString(fileExtension);
-      }
-    } catch (MissingResourceException e) {
-      SilverTrace.warn("attachment", "AttachmentController",
-          "attachment.MSG_MISSING_MIME_TYPES_PROPERTIES", null, e);
-    } catch (NullPointerException e) {
-      SilverTrace.warn("attachment", "AttachmentController",
-          "attachment.MSG_FILE_LOGICAL_NAME_NULL", null, e);
-    }
-
-    if (mimeType == null) {
-      mimeType = MIME_TYPES.getContentType(fileLogicalName);
-    }
-
-    return mimeType;
+    return FileUtil.getMimeType(fileLogicalName);
   }
 
   public static List<String> getLanguagesOfAttachments(ForeignPK foreignPK) {
