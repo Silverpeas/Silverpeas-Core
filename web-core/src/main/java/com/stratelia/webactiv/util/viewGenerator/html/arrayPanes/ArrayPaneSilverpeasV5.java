@@ -450,31 +450,40 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
     }
     result.append("</tbody>\n");
     result.append("</table>\n");
+    
+    boolean paginationVisible =
+      -1 != state.getMaximumVisibleLine() && lines.size() > state.getMaximumVisibleLine();
 
-    if (-1 != state.getMaximumVisibleLine()
-        && lines.size() > state.getMaximumVisibleLine()) {
+    if (paginationVisible || exportData) {
       result.append(
-          "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n").append(
-          "<tr class=\"intfdcolor\"> \n").append("<td align=\"center\">");
-      result.append(pagination.printIndex(paginationJavaScriptCallback));
-      result.append("</td>").append("</tr>\n").append("</table>");
+          "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n");
+      result.append("<tr class=\"intfdcolor\">\n");
+      if (paginationVisible) {
+        result.append("<td align=\"center\">");
+        result.append(pagination.printIndex(paginationJavaScriptCallback));
+        result.append("</td>");
+      }
+      if (exportData) {
+        // Add export data GUI
+        result.append("<td class=\"exportlinks\">");
+        result.append("<div class=\"pageNav\">");
+        result.append(gef.getMultilang().getString("GEF.export.label")).append(":");
+        result.append("<a href=\"").append(this.getExportUrl()).append(
+            "\"><span class=\"export csv\">");
+        result.append(gef.getMultilang().getString("GEF.export.option.csv")).append("</span></a>");
+        result.append("</div>");
+        // Be careful we only put a unique name in the session, so we cannot export two ArrayPanes
+        // which are displayed in the same page (use this.name instead of "arraypane")
+        this.session.setAttribute("Silverpeas_arraypane_columns", this.columns);
+        this.session.setAttribute("Silverpeas_arraypane_lines", this.lines);
+        result.append("</td>");
+      }
+      result.append("</tr>\n");
+      result.append("</table>");
     }
 
     result.append("</td></tr></table>\n");
 
-    // Add export data GUI
-    if (this.exportData) {
-      result.append("<div class=\"exportlinks\">");
-      result.append(gef.getMultilang().getString("GEF.export.label")).append(":");
-      result.append("<a href=\"").append(this.getExportUrl()).append(
-          "\"><span class=\"export csv\">");
-      result.append(gef.getMultilang().getString("GEF.export.option.csv")).append("</span></a>");
-      result.append("</div>");
-      // Be careful we only put a unique name in the session, so we cannot export two ArrayPanes
-      // which are displayed in the same page (use this.name instead of "arraypane")
-      this.session.setAttribute("Silverpeas_arraypane_columns", this.columns);
-      this.session.setAttribute("Silverpeas_arraypane_lines", this.lines);
-    }
     return result.toString();
   }
 
