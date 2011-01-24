@@ -27,6 +27,7 @@
 
 <%@ page import="com.silverpeas.comment.model.Comment,
                  java.util.Date"%>
+<%@page import="com.silverpeas.util.StringUtil"%>
 <%@ include file="checkComment.jsp" %>
 <%@ include file="graphicUtil.jsp.inc"%>
 <%
@@ -39,12 +40,14 @@ String action 		= request.getParameter("action");
 String component_id = request.getParameter("component_id");
 String user_id 		= request.getParameter("userid");
 String indexIt		= request.getParameter("IndexIt");
+String url 			= request.getParameter("url");
 CommentService commentService = CommentServiceFactory.getFactory().getCommentService();
 if ( "save".equals(action) )
 {
 	boolean bIndexIt = true;
-	if ("0".equals(indexIt))
+	if ("0".equals(indexIt)) {
 		bIndexIt = false;
+	}
 
     String current_date = DateUtil.date2SQLDate(new Date());
 
@@ -70,18 +73,21 @@ if ( "save".equals(action) )
         } else {
           commentService.createComment(comment);
         }
-
+        response.sendRedirect(URLManager.getApplicationURL()+ url);
     }
 %>
+
 <html>
 <title></title>
 <%
     out.println(gef.getLookStyleSheet());
 %>
 <head>
-<script language="Javascript">
+<script type="text/javascript">
+<% if (StringUtil.isDefined("id")) { %>
 window.opener.commentCallBack();
 window.close();
+<% } %>
 </script>
 </head>
 <body>
@@ -97,10 +103,6 @@ else
         Comment comment = commentService.getComment(pk);
         message = comment.getMessage();
     }
-    else
-    {
-        message = "";
-    }
 %>
 
 <html>
@@ -110,17 +112,17 @@ out.println(gef.getLookStyleSheet());
 %>
 <head>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="Javascript">
+<script type="text/javascript">
 function addComment()
 {
     if ( document.addForm.message.value == "" )
     {
-        alert("<%=messages.getString("pleaseFill_single")%>");
+        alert("<%=messages.getString("comment.pleaseFill_single")%>");
         return;
     }
     if (!isValidTextArea(document.addForm.message))
     {
-     	alert("<%=messages.getString("champsTropLong")%>");
+     	alert("<%=messages.getString("comment.champsTropLong")%>");
 	return;
     }
     document.addForm.submit();
@@ -138,26 +140,26 @@ Board board = gef.getBoard();
 <%
 	out.println(board.printBefore());
 %>
-<form name="addForm" action="newComment.jsp?action=save" method="POST">
-<input type="hidden" name="id" value="<%=id%>">
-<input type="hidden" name="foreign_id" value="<%=foreign_id%>">
-<input type="hidden" name="userid" value="<%=user_id%>">
-<input type="hidden" name="component_id" value="<%=component_id%>">
-<input type="hidden" name="IndexIt" value="<%=indexIt%>">
-<span class="txtlibform"><%=messages.getString("comments")%>: </span><BR>
+<form name="addForm" action="newComment.jsp?action=save" method="post">
+<input type="hidden" name="id" value="<%=id%>"/>
+<input type="hidden" name="foreign_id" value="<%=foreign_id%>"/>
+<input type="hidden" name="userid" value="<%=user_id%>"/>
+<input type="hidden" name="component_id" value="<%=component_id%>"/>
+<input type="hidden" name="IndexIt" value="<%=indexIt%>"/>
+<span class="txtlibform"><%=messages.getString("comment.comment")%>: </span><BR>
 <div align="left">
-<TEXTAREA ROWS="6" COLS="100" name="message"><%=message%></TEXTAREA>&nbsp;<IMG border="0" width="5" height="5" src="<%=mandatory_field%>">
+<textarea rows="6" cols="100" name="message"><%=message%></textarea>&nbsp;<img width="5" height="5" src="<%=mandatory_field%>"/>
 </div>
-<br>(<IMG border="0" width="5" height="5" src="<%=mandatory_field%>"> : <%=messages.getString("required")%>)
+<br/>(<img width="5" height="5" src="<%=mandatory_field%>"/> : <%=resources.getString("GML.requiredField")%>)
 </form>
 <%
 	out.println(board.printAfter());
 %>
-<br>
+<br/>
 <%
     ButtonPane buttonPane = gef.getButtonPane();
-	buttonPane.addButton((Button) gef.getFormButton(messages.getString("ok"),"javascript:addComment()", false));
-	buttonPane.addButton((Button) gef.getFormButton(messages.getString("cancel"), "javascript:window.close()", false));
+	buttonPane.addButton((Button) gef.getFormButton(resources.getString("GML.validate"),"javascript:addComment()", false));
+	buttonPane.addButton((Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:window.close()", false));
 	out.println(buttonPane.print());
 %>
 </center>

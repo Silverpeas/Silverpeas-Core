@@ -24,13 +24,13 @@
 
 package com.silverpeas.comment.dao;
 
-import com.silverpeas.comment.model.CommentedPublicationInfo;
+import java.util.List;
+
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
+import com.silverpeas.comment.model.CommentedPublicationInfo;
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.WAPrimaryKey;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * A Data Access Object that provides an access to Comment objects persisted within a data source.

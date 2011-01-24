@@ -24,34 +24,33 @@
 
 package com.silverpeas.comment.service;
 
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+
 import com.silverpeas.comment.dao.CommentDAO;
-import com.silverpeas.util.ForeignPK;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.model.CommentedPublicationInfo;
+import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
-import java.util.List;
-import javax.annotation.Resource;
-import org.springframework.stereotype.Service;
 
 /**
- * A service that provide the features to handle the comments in Silverpeas.
- * Such features are, for example, retrieving comments on a given content, creating a comment into
- * the business layer, indexing them, notifying components interested by the creation or the
- * deletion of a comment, and so on.
- *
- * A comment is text written by users about a content published in Silverpeas.
- * Such comment, as any other contents in Silverpeas, can be indexed in order to be found by the
- * Silverpeas search engine.
- *
- * This service is managed by an IoC container and this be retrieved by dependency injection.
+ * A service that provide the features to handle the comments in Silverpeas. Such features are, for
+ * example, retrieving comments on a given content, creating a comment into the business layer,
+ * indexing them, notifying components interested by the creation or the deletion of a comment, and
+ * so on. A comment is text written by users about a content published in Silverpeas. Such comment,
+ * as any other contents in Silverpeas, can be indexed in order to be found by the Silverpeas search
+ * engine. This service is managed by an IoC container and this be retrieved by dependency
+ * injection.
  */
 @Service("commentService")
 public class CommentService {
@@ -74,13 +73,11 @@ public class CommentService {
   }
 
   /**
-   * Creates the specified comment into the business layer.
-   *
-   * Once created, the comment is saved in this layer and can be uniquely identified by an
-   * identifier (a primary key).
-   * All callback interested by the adding of a comment will be invoked through the CallBackManager.
-   * The callback will recieve as invocation parameters respectively the identifier of the commented
-   * publication, the component instance name, and the new comment.
+   * Creates the specified comment into the business layer. Once created, the comment is saved in
+   * this layer and can be uniquely identified by an identifier (a primary key). All callback
+   * interested by the adding of a comment will be invoked through the CallBackManager. The callback
+   * will recieve as invocation parameters respectively the identifier of the commented publication,
+   * the component instance name, and the new comment.
    * @param cmt the comment to save.
    */
   public void createComment(final Comment cmt) {
@@ -93,14 +90,12 @@ public class CommentService {
   }
 
   /**
-   * Creates and indexes the specified comment into the business layer.
-   *
-   * Once created, the comment is saved in this layer and can be uniquely identified by an
-   * identifier (a primary key). It is indexed so that it can be easily retrieved by the search engine
-   * of Silverpeas.
-   * All callback interested by the adding of a comment will be invoked through the CallBackManager.
-   * The callback will recieve as invocation parameters respectively the identifier of the commented
-   * publication, the component instance name, and the new comment.
+   * Creates and indexes the specified comment into the business layer. Once created, the comment is
+   * saved in this layer and can be uniquely identified by an identifier (a primary key). It is
+   * indexed so that it can be easily retrieved by the search engine of Silverpeas. All callback
+   * interested by the adding of a comment will be invoked through the CallBackManager. The callback
+   * will recieve as invocation parameters respectively the identifier of the commented publication,
+   * the component instance name, and the new comment.
    * @param cmt the comment to save.
    */
   public void createAndIndexComment(final Comment cmt) {
@@ -109,14 +104,11 @@ public class CommentService {
   }
 
   /**
-   * Deletes the comment identified by the specified identifier.
-   *
-   * Any indexes on it are removed.
-   * All callback interested by the deletion of a comment will be invoked through the CallBackManager.
+   * Deletes the comment identified by the specified identifier. Any indexes on it are removed. All
+   * callback interested by the deletion of a comment will be invoked through the CallBackManager.
    * The callback will recieve as invocation parameters respectively the identifier of the commented
-   * publication, the component instance name, and the deleted comment.
-   * If no such comment exists with the specified identifier, then a CommentRuntimeException is
-   * thrown.
+   * publication, the component instance name, and the deleted comment. If no such comment exists
+   * with the specified identifier, then a CommentRuntimeException is thrown.
    * @param pk the unique identifier of the comment to remove from the business layer (the primary
    * key).
    */
@@ -126,14 +118,12 @@ public class CommentService {
   }
 
   /**
-   * Deletes all of the comments on the publication identified by the specified identifier.
-   *
-   * Any indexes on it are removed.
-   * AAll callback interested by the deletion of a comment will be invoked through the CallBackManager.
-   * The callback will recieve as invocation parameters respectively the identifier of the commented
-   * publication, the component instance name, and the deleted comment.
-   * If no such publication exists with the specified identifier, then a CommentRuntimeException is
-   * thrown.
+   * Deletes all of the comments on the publication identified by the specified identifier. Any
+   * indexes on it are removed. AAll callback interested by the deletion of a comment will be
+   * invoked through the CallBackManager. The callback will recieve as invocation parameters
+   * respectively the identifier of the commented publication, the component instance name, and the
+   * deleted comment. If no such publication exists with the specified identifier, then a
+   * CommentRuntimeException is thrown.
    * @param pk the identifier of the publication the comments are on.
    */
   public void deleteAllCommentsOnPublication(final WAPrimaryKey pk) {
@@ -144,14 +134,11 @@ public class CommentService {
   }
 
   /**
-   * Deletes the specified comment.
-   *
-   * Any indexes on it are removed.
-   * If no such comment exists with the specified identifier, then a CommentRuntimeException is
-   * thrown.
-   * All callback interested by the deletion of a comment will be invoked through the CallBackManager.
-   * The callback will recieve as invocation parameters respectively the identifier of the commented
-   * publication, the component instance name, and the deleted comment.
+   * Deletes the specified comment. Any indexes on it are removed. If no such comment exists with
+   * the specified identifier, then a CommentRuntimeException is thrown. All callback interested by
+   * the deletion of a comment will be invoked through the CallBackManager. The callback will
+   * recieve as invocation parameters respectively the identifier of the commented publication, the
+   * component instance name, and the deleted comment.
    * @param comment the comment to remove.
    */
   public void deleteComment(final Comment comment) {
@@ -166,11 +153,10 @@ public class CommentService {
   }
 
   /**
-   * Moves the comments on the specified publication to the another specified publication.
-   * The resulting operation is that the comments will be on the another publication and all the
-   * previous indexes on them are removed.
-   * If at least one of the publications doesn't exist with the specified identifier, then a
-   * CommentRuntimeException is thrown.
+   * Moves the comments on the specified publication to the another specified publication. The
+   * resulting operation is that the comments will be on the another publication and all the
+   * previous indexes on them are removed. If at least one of the publications doesn't exist with
+   * the specified identifier, then a CommentRuntimeException is thrown.
    * @param fromPK the identifier of the source publication.
    * @param toPK the identifier of the destination publication.
    */
@@ -180,11 +166,10 @@ public class CommentService {
   }
 
   /**
-   * Moves the comments on the specified publication to the another specified publication and reindexes
-   * them.
-   * The resulting operation is that the comments are on the another publication and they are reindexed
-   * (or simply indexed if not already) accordingly to the new publication.
-   * If at least one of the publications doesn't exist with the specified identifier, then a
+   * Moves the comments on the specified publication to the another specified publication and
+   * reindexes them. The resulting operation is that the comments are on the another publication and
+   * they are reindexed (or simply indexed if not already) accordingly to the new publication. If at
+   * least one of the publications doesn't exist with the specified identifier, then a
    * CommentRuntimeException is thrown.
    * @param fromPK the identifier of the source publication.
    * @param toPK the identifier of the destination publication.
@@ -195,9 +180,8 @@ public class CommentService {
   }
 
   /**
-   * Updates the specified comment in the business layer.
-   * The comment to update is identified by its unique identifier and the update information are
-   * carried by the given Comment instance.
+   * Updates the specified comment in the business layer. The comment to update is identified by its
+   * unique identifier and the update information are carried by the given Comment instance.
    * @param cmt the updated comment.
    */
   public void updateComment(final Comment cmt) {
@@ -205,9 +189,9 @@ public class CommentService {
   }
 
   /**
-   * Updates and indexes the specified comment in the business layer.
-   * The comment to update in the business layer is identified by its unique identifier and the
-   * update information are carried by the given Comment instance.
+   * Updates and indexes the specified comment in the business layer. The comment to update in the
+   * business layer is identified by its unique identifier and the update information are carried by
+   * the given Comment instance.
    * @param cmt the comment to update and to index.
    */
   public void updateAndIndexComment(final Comment cmt) {
@@ -216,31 +200,29 @@ public class CommentService {
   }
 
   /**
-   * Gets the comment that identified by the specified identifier.
-   * If no such comment exists with the specified identifier, then a CommentRuntimeException is
-   * thrown.
+   * Gets the comment that identified by the specified identifier. If no such comment exists with
+   * the specified identifier, then a CommentRuntimeException is thrown.
    * @param pk the identifier of the comment in the business layer.
    * @return the comment.
    */
   public Comment getComment(final CommentPK pk) {
     Comment newComment = null;
     newComment = getCommentDAO().getComment(pk);
-    newComment.setOwner(getUserName(newComment));
+    setOwnerDetail(newComment);
     return newComment;
   }
 
   /**
-   * Gets all of the comments on the publication identified by the specified identifier.
-   * If no such publication exists with the specified identifier, then a CommentRuntimeException is
-   * thrown.
+   * Gets all of the comments on the publication identified by the specified identifier. If no such
+   * publication exists with the specified identifier, then a CommentRuntimeException is thrown.
    * @param pk the identifier of the publication.
-   * @return a list of the comments on the given publication. The list is empty if the publication isn't
-   * commented.
+   * @return a list of the comments on the given publication. The list is empty if the publication
+   * isn't commented.
    */
   public List<Comment> getAllCommentsOnPublication(final WAPrimaryKey pk) {
     List<Comment> vComments = getCommentDAO().getAllCommentsByForeignKey(new ForeignPK(pk));
     for (Comment comment : vComments) {
-      comment.setOwner(getUserName(comment));
+      setOwnerDetail(comment);
     }
     return vComments;
   }
@@ -250,21 +232,22 @@ public class CommentService {
    * information are returned ordered down to the lesser comment publication.
    * @param pks a collection of primary keys refering the publications to get information and to
    * order by comments count.
-   * @return an ordered list of information about the most commented publication. The list is
-   * sorted by their comments count in a descendent order.
+   * @return an ordered list of information about the most commented publication. The list is sorted
+   * by their comments count in a descendent order.
    */
-  public List<CommentedPublicationInfo> getMostCommentedPublicationsInfo(final List<WAPrimaryKey> pks) {
-    return  getCommentDAO().getMostCommentedPublications(pks);
+  public List<CommentedPublicationInfo> getMostCommentedPublicationsInfo(
+      final List<WAPrimaryKey> pks) {
+    return getCommentDAO().getMostCommentedPublications(pks);
   }
 
   /**
    * Gets information about all the commented publications in Silverpeas. The publication
    * information are returned ordered down to the lesser comment publication.
-   * @return an ordered list of information about the most commented publication. The list is
-   * sorted by their comments count in a descendent order.
+   * @return an ordered list of information about the most commented publication. The list is sorted
+   * by their comments count in a descendent order.
    */
   public List<CommentedPublicationInfo> getAllMostCommentedPublicationsInfo() {
-    return  getCommentDAO().getAllMostCommentedPublications();
+    return getCommentDAO().getAllMostCommentedPublications();
   }
 
   /**
@@ -277,9 +260,8 @@ public class CommentService {
   }
 
   /**
-   * Indexes all the comments on the publication identified by the specified identifier.
-   * If no such publication exists with the specified identifier, then a CommentRuntimeException is
-   * thrown.
+   * Indexes all the comments on the publication identified by the specified identifier. If no such
+   * publication exists with the specified identifier, then a CommentRuntimeException is thrown.
    * @param pk the identifier of the publication.
    */
   public void indexAllCommentsOnPublication(final WAPrimaryKey pk) {
@@ -290,9 +272,9 @@ public class CommentService {
   }
 
   /**
-   * Removes the indexes on all the comments of the publication identified by the specified identifier.
-   * If no such publication exists with the specified identifier, then a CommentRuntimeException is
-   * thrown.
+   * Removes the indexes on all the comments of the publication identified by the specified
+   * identifier. If no such publication exists with the specified identifier, then a
+   * CommentRuntimeException is thrown.
    * @param pk the identifier of the publication.
    */
   public void unindexAllCommentsOnPublication(final WAPrimaryKey pk) {
@@ -347,14 +329,9 @@ public class CommentService {
     }
   }
 
-  private String getUserName(final UserDetail userDetail) {
-    return userDetail.getFirstName() + " " + userDetail.getLastName();
-  }
-
-  private String getUserName(final Comment cmt) {
-    UserDetail userDetail = getOrganizationController().getUserDetail(String
-        .valueOf(cmt.getOwnerId()));
-    return getUserName(userDetail);
+  private void setOwnerDetail(Comment comment) {
+    comment.setOwnerDetail(getOrganizationController().getUserDetail(
+        Integer.toString(comment.getOwnerId())));
   }
 
   /**

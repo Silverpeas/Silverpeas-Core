@@ -136,19 +136,16 @@ public class CommentDAOTest extends AbstractJndiCase {
     assertEquals("15/10/2019", comment.getCreationDate());
     assertNull(comment.getModificationDate());
     String newMessage = RandomGenerator.getRandomString();
-    int newOwnerId = RandomGenerator.getRandomInt();
     String modificationDate = DateUtil.date2SQLDate(RandomGenerator.getRandomCalendar().getTime());
     ForeignPK foreignKey = new ForeignPK(String.valueOf(RandomGenerator.getRandomInt()),
         "instanceId" + RandomGenerator.getRandomInt());
     comment.setMessage(newMessage);
-    comment.setOwnerId(newOwnerId);
     comment.setModificationDate(modificationDate);
     comment.setCreationDate(modificationDate);
     comment.setForeignKey(foreignKey);
     commentDAO.updateComment(con, comment);
     Comment result = commentDAO.getComment(con, pk);
     assertNotNull(result);
-    assertEquals(newOwnerId, result.getOwnerId());
     assertEquals("", result.getOwner());
     assertEquals(newMessage, result.getMessage());
     assertEquals("15/10/2019", result.getCreationDate());

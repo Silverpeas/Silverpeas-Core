@@ -24,6 +24,7 @@
 
 package com.silverpeas.comment.model;
 
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
@@ -37,18 +38,16 @@ public class Comment implements java.io.Serializable {
   private CommentPK pk;
   private WAPrimaryKey foreign_key;
   private int owner_id;
-  private String owner;
   private String message;
   private String creation_date;
   private String modification_date;
+  private UserDetail ownerDetail;
 
   private void init(CommentPK pk, WAPrimaryKey foreign_key, int owner_id,
-      String owner, String message, String creation_date,
-      String modification_date) {
+      String message, String creation_date, String modification_date) {
     this.pk = pk;
     this.foreign_key = foreign_key;
     this.owner_id = owner_id;
-    this.owner = owner;
     this.message = message;
     this.creation_date = creation_date;
     this.modification_date = modification_date;
@@ -57,7 +56,7 @@ public class Comment implements java.io.Serializable {
   public Comment(CommentPK pk, WAPrimaryKey foreign_key, int owner_id,
       String owner, String message, String creation_date,
       String modification_date) {
-    init(pk, foreign_key, owner_id, owner, message, creation_date,
+    init(pk, foreign_key, owner_id, message, creation_date,
         modification_date);
   }
 
@@ -77,20 +76,15 @@ public class Comment implements java.io.Serializable {
     return this.foreign_key;
   }
 
-  public void setOwnerId(int owner_id) {
-    this.owner_id = owner_id;
-  }
-
   public int getOwnerId() {
     return this.owner_id;
   }
 
-  public void setOwner(String owner) {
-    this.owner = owner;
-  }
-
   public String getOwner() {
-    return this.owner;
+    if (getOwnerDetail() != null) {
+      return getOwnerDetail().getDisplayedName();
+    }
+    return "";
   }
 
   public void setMessage(String message) {
@@ -115,6 +109,14 @@ public class Comment implements java.io.Serializable {
 
   public String getModificationDate() {
     return this.modification_date;
+  }
+  
+  public UserDetail getOwnerDetail() {
+    return ownerDetail;
+  }
+
+  public void setOwnerDetail(UserDetail ownerDetail) {
+    this.ownerDetail = ownerDetail;
   }
 
   @Override

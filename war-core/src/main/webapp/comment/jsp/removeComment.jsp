@@ -42,5 +42,5 @@
         commentService.deleteComment(pk);
     }
 
-    response.sendRedirect(URLManager.getApplicationURL()+ url + "?Action=ViewComment&PubId="+pub_id);
+    response.sendRedirect(URLManager.getApplicationURL()+ url);
 %>

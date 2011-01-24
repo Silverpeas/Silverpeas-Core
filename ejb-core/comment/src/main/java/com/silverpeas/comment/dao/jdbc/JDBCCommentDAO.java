@@ -23,27 +23,25 @@
  */
 package com.silverpeas.comment.dao.jdbc;
 
-import com.silverpeas.comment.CommentRuntimeException;
-import com.silverpeas.comment.dao.CommentDAO;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.stereotype.Repository;
 
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.comment.model.Comment;
-import com.silverpeas.comment.model.CommentedPublicationInfo;
+import com.silverpeas.comment.CommentRuntimeException;
+import com.silverpeas.comment.dao.CommentDAO;
 import com.silverpeas.comment.dao.CommentedPublicationInfoComparator;
+import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
+import com.silverpeas.comment.model.CommentedPublicationInfo;
+import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import org.springframework.stereotype.Repository;
 
 @Repository("commentDAO")
 public class JDBCCommentDAO implements CommentDAO {
@@ -175,6 +173,8 @@ public class JDBCCommentDAO implements CommentDAO {
         }
         Collections.sort(commentedPubs, new CommentedPublicationInfoComparator());
       } catch (Exception e) {
+        throw new CommentRuntimeException(getClass().getSimpleName() + ".getCommentsCount()",
+            SilverpeasRuntimeException.ERROR, "comment.GET_MOST_COMMENTED_ITEMS", e);
       } finally {
         closeConnection(con);
       }
@@ -218,16 +218,6 @@ public class JDBCCommentDAO implements CommentDAO {
     } finally {
       closeConnection(con);
     }
-  }
-
-  private static String getUserName(UserDetail userDetail) {
-    return userDetail.getFirstName() + " " + userDetail.getLastName();
-  }
-
-  private static String getUserName(Comment cmt) {
-    UserDetail userDetail = (new OrganizationController()).getUserDetail(String.valueOf(cmt.
-        getOwnerId()));
-    return getUserName(userDetail);
   }
 
   @Override

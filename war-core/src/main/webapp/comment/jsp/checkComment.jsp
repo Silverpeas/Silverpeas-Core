@@ -1,4 +1,5 @@
-<%--
+
+<%@page import="com.stratelia.silverpeas.util.ResourcesWrapper"%><%--
 
     Copyright (C) 2000 - 2009 Silverpeas
 
@@ -70,5 +71,9 @@ MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getA
 String 					language 			= m_MainSessionCtrl.getFavoriteLanguage();
 ResourceLocator 		messages 			= new ResourceLocator("com.stratelia.webactiv.util.comment.multilang.comment", language);
 ResourceLocator 		generalMessage 		= GeneralPropertiesManager.getGeneralMultilang(language);
+
+ResourcesWrapper resources = new ResourcesWrapper(messages,
+    	new ResourceLocator("com.stratelia.webactiv.util.comment.icons", ""), 
+    	new ResourceLocator("com.stratelia.webactiv.util.comment.Comment", ""), language);
 
 %>
