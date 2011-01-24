@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="javax.servlet.*"%>
@@ -53,6 +54,7 @@
 <%@ page import="com.stratelia.webactiv.todo.control.TodoUserException"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.SilverTrace"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="com.silverpeas.util.EncodeHelper" %>
 
 <%@ include file="checkTodo.jsp" %>
 
@@ -63,18 +65,14 @@
   ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(todo.getLanguage());
   ResourceLocator settings = todo.getSettings();
 
-  action = request.getParameter("Action");  //Add || Update || EditDiffusionList (demande � choisir des personnes � affecter) 
-                                                                                                        // || DiffusionListOK (vient de choisir des personnes dans le UserPanel)
-                                                                                                        // ReallyAdd || ReallyUpdate
-                                                                                                        
-//  System.out.println("Action = "+action);
+  action = request.getParameter("Action"); 
 %>
 
 <%
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 %>
-<HTML>
-<HEAD>
+<html>
+<head>
 <%
 out.println(gef.getLookStyleSheet());
 %>
@@ -442,7 +440,7 @@ function test(){
             // en cas de modification
                 operationPane.addOperation(m_context + "/util/icons/task_del.gif",
                         todo.getString("supprimerTodo"),
-                        "javascript:onClick=deleteConfirm('"+Encode.javaStringToHtmlString(Encode.javaStringToJsString(todoHeader.getName()))+"')"
+                        "javascript:onClick=deleteConfirm('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(todoHeader.getName()))+"')"
                 );
         operationPane.addOperation(m_context + "/util/icons/task_assignment.gif",
                         todo.getString("modifierTodo"),
@@ -501,9 +499,9 @@ function test(){
                         
                                 <td class="intfdcolor4" valign="baseline" align=left><span class="txtlibform"><%=todo.getString("nomToDo")%> :</span></td>
                                 <td class="intfdcolor4" align=left valign="baseline">
-                                        <input type="text" name="Name" size="50" maxlength="<%=DBUtil.TextFieldLength%>" <%
+                                        <input type="text" name="Name" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" <%
                                                 if (todoHeader.getName() != null) 
-                                                        out.print("VALUE=\""+Encode.javaStringToHtmlString(todoHeader.getName())+"\" ");
+                                                        out.print("VALUE=\""+EncodeHelper.javaStringToHtmlString(todoHeader.getName())+"\" ");
                                                 if (! todo.getUserId().equals(todoHeader.getDelegatorId()))
                                                         out.print("disabled ");
                                                 %>>&nbsp;<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5">
@@ -545,7 +543,7 @@ function test(){
                                 <td class="intfdcolor4"  align=left valign="baseline"><font size=1><textarea name="Description" wrap="VIRTUAL" rows="6" cols="49" <%
                                                 if (! todo.getUserId().equals(todoHeader.getDelegatorId()))
                                                         out.print("disabled ");
-                                                %>><%if (todoHeader.getDescription() != null) out.print(Encode.javaStringToHtmlString(todoHeader.getDescription()));%></textarea></font>
+                                                %>><%if (todoHeader.getDescription() != null) out.print(EncodeHelper.javaStringToHtmlString(todoHeader.getDescription()));%></textarea></font>
                                 </td>
                         </tr>
                         <tr align=center>
@@ -553,7 +551,7 @@ function test(){
                                 <td class="intfdcolor4" nowrap valign="baseline" align=left><span class="txtlibform"><%=todo.getString("dateDebutToDo")%> :</span>&nbsp;
                                         </td>
                                 <td class="intfdcolor4" nowrap valign="baseline" align=left>
-                                        <input type="text" name="StartDate" id="StartDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" <%
+                                        <input type="text" name="StartDate" id="StartDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>" <%
                                                 if (! todo.getUserId().equals(todoHeader.getDelegatorId())) {
 													out.print("disabled ");
 												} else {
@@ -574,7 +572,7 @@ function test(){
                                                 </span>
                                 </td>
                                 <td class="intfdcolor4" nowrap valign="baseline" align=left>
-                                                <input type="text" name="EndDate" id="EndDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" <%
+                                                <input type="text" name="EndDate" id="EndDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>" <%
                                                 if (! todo.getUserId().equals(todoHeader.getDelegatorId())) {
 													out.print("disabled ");
 												} else {

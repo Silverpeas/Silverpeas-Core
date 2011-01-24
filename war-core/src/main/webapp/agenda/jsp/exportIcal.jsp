@@ -160,12 +160,12 @@ out.println(graphicFactory.getLookStyleSheet());
      <table width="100%" cellpadding="2" cellspacing="2" border="0">
 		    <tr>
 		    	<td align="left" class="txtlibform" width="150"><%=resources.getString("dateDebutNote")%> :</td>
-		    	<td><input type="text" class="dateToPick" name="StartDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>"/><span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
+		    	<td><input type="text" class="dateToPick" name="StartDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>"/><span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
 				  </td>
 			</tr>
 			<tr>
 		    	<td align="left" class="txtlibform"><%=resources.getString("dateFinNote")%> :</td>
-				<td><input type="text" class="dateToPick" name="EndDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>"/><span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
+				<td><input type="text" class="dateToPick" name="EndDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>"/><span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
 				  </td>
 		    </tr>
 	  </table>

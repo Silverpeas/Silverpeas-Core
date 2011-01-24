@@ -661,7 +661,7 @@ else
           </tr>
 		  <tr>
             <td class="txtlibform"><%= agenda.getString("nomNote") %> :</td>
-			<td><input type="text" name="Name" size="62" maxlength="<%=DBUtil.TextFieldLength%>" <% if (journal.getName() != null) out.println("value=\""+Encode.javaStringToHtmlString(journal.getName())+"\"");%> <% if (readOnly) out.print("disabled");%>/>&nbsp;<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5" align="top" alt=""/></td>
+			<td><input type="text" name="Name" size="62" maxlength="<%=DBUtil.getTextFieldLength()%>" <% if (journal.getName() != null) out.println("value=\""+Encode.javaStringToHtmlString(journal.getName())+"\"");%> <% if (readOnly) out.print("disabled");%>/>&nbsp;<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5" align="top" alt=""/></td>
           </tr>
 		  <tr>
             <td class="txtlibform"><%=agenda.getString("descriptionNote")%> :</td>
@@ -670,7 +670,7 @@ else
 		  <tr>
 		    <!-- affichage de la date de d�but de note -->
             <td class="txtlibform"><%= agenda.getString("dateDebutNote") %> :</td>
-			<td><input type="text" class="dateToPick" name="StartDate" id="StartDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" <%
+			<td><input type="text" class="dateToPick" name="StartDate" id="StartDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>" <%
                 if (journal != null) 
                   if (journal.getStartDate() != null)
                     out.println("value=\""+resources.getInputDate(journal.getStartDate())+"\"");%> <% if (readOnly) out.print("disabled=\"disabled\"");%>/>&nbsp;<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5" align="bottom" alt=""/> <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
@@ -727,7 +727,7 @@ else
 		  </tr>
 		  <tr>
 			<td class="txtlibform"><%=agenda.getString("dateFinNote")%> :</td>
-			<td><input type="text" class="dateToPick" name="EndDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" <%
+			<td><input type="text" class="dateToPick" name="EndDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>" <%
                 if (journal != null) {
                   if (journal.getEndDay() != null) {
                     if (journal.getStartDay() == null)
