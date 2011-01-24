@@ -173,17 +173,15 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	background-color: #FFFFFF;
 }
 
-.cellOperation div {
-	position:relative;
-	width:180px;
-	}
+
 
 #menutoggle {
+	position:absolute;
+	top:0;
+	right:0;
 	background-color: #f1790f;
-	margin:0 0px 4px 0;
 	padding:0 20px  0 30px;
-	text-align:center;
-	display:inline-block;
+	text-align:right;
     color: #FFF;
     font-size: 12px;
     line-height: 20px;
@@ -203,8 +201,8 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	font-size:12px;
 }
 #browseBar {
-	margin-left:3px;
-	margin-top:3px;
+	margin:3px 0 0 3px;
+	padding-top:8px;
 }
 #browseBar #i18n {
     margin-right: 10px;
@@ -381,6 +379,9 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 #domainsBar .milieuBoutonV5 a , .milieuBoutonV5 a {
 	color: #444444;
 }
+
+#tabbedPane1 , #tabbedPane0{ position:relative; }
+
 .milieuBoutonV5 a:hover , .milieuOngletOff a:hover  {
 	color: #000000;
 }
@@ -492,6 +493,8 @@ td.milieuOngletOn {
 .ArrayColumn a:hover {
 	color:#444444;
 }
+
+.cadrePhoto { position:relative;}
 .fondPhoto {
 	background-color:#333333;
 	border-radius: 5px;
