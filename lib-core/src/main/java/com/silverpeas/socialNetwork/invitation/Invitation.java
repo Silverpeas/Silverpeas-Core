@@ -146,11 +146,21 @@ public class Invitation {
     if ((this.message == null) ? (other.message != null) : !this.message.equals(other.message)) {
       return false;
     }
-    if (this.invitationDate != other.invitationDate &&
-        (this.invitationDate == null || !this.invitationDate.
-            equals(other.invitationDate))) {
+    if (this.invitationDate != other.invitationDate && (this.invitationDate == null || !this.invitationDate.
+        equals(other.invitationDate))) {
       return false;
     }
     return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 67 * hash + this.id;
+    hash = 67 * hash + this.senderId;
+    hash = 67 * hash + this.receiverId;
+    hash = 67 * hash + (this.message != null ? this.message.hashCode() : 0);
+    hash = 67 * hash + (this.invitationDate != null ? this.invitationDate.hashCode() : 0);
+    return hash;
   }
 }

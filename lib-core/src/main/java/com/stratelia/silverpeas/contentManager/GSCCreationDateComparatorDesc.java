@@ -41,15 +41,7 @@ public class GSCCreationDateComparatorDesc implements Comparator<GlobalSilverCon
     if (compareResult == 0) {
       compareResult = gsc1.getId().compareTo(gsc2.getId());
     }
-
     return 0 - compareResult;
   }
 
-  /**
-   * This comparator equals self only. Use the shared comparator GSCDateComparatorDesc.comparator if
-   * multiples comparators are used.
-   */
-  public boolean equals(Object o) {
-    return o == this;
-  }
 }

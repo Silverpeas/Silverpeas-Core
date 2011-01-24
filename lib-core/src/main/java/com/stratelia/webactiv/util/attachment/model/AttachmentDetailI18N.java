@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.attachment.model;
 
 import java.io.Serializable;
@@ -36,6 +35,8 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
  * @author
  */
 public class AttachmentDetailI18N extends Translation implements Serializable {
+
+  private static final long serialVersionUID = -9079969283559100288L;
   private String physicalName = null;
   private String logicalName = null;
   private String type = null;
@@ -48,14 +49,14 @@ public class AttachmentDetailI18N extends Translation implements Serializable {
   private String xmlForm = null;
 
   public AttachmentDetailI18N() {
-
   }
 
   public AttachmentDetailI18N(AttachmentDetail attachmentDetail) {
     super.setLanguage(attachmentDetail.getLanguage());
     super.setObjectId(attachmentDetail.getPK().getId());
-    if (attachmentDetail.getTranslationId() != null)
+    if (attachmentDetail.getTranslationId() != null) {
       super.setId(Integer.parseInt(attachmentDetail.getTranslationId()));
+    }
 
     this.physicalName = attachmentDetail.getPhysicalName();
     this.logicalName = attachmentDetail.getLogicalName();
@@ -69,16 +70,11 @@ public class AttachmentDetailI18N extends Translation implements Serializable {
     this.xmlForm = attachmentDetail.getXmlForm();
   }
 
-  /**
-   * Constructor
-   * @author Nicolas EYSSERIC
-   * @version
-   */
-  public AttachmentDetailI18N(String lang, String physicalName,
-      String logicalName, String type, Date creationDate, long size,
-      String author, String title, String info, String instanceId) {
-    if (lang != null)
+  public AttachmentDetailI18N(String lang, String physicalName, String logicalName, String type,
+      Date creationDate, long size, String author, String title, String info, String instanceId) {
+    if (lang != null) {
       super.setLanguage(lang);
+    }
 
     this.physicalName = physicalName;
     this.logicalName = logicalName;
@@ -124,8 +120,8 @@ public class AttachmentDetailI18N extends Translation implements Serializable {
    * @see
    */
   public void setLogicalName(String logicalName) {
-    SilverTrace.info("attachment", "AttachmentDetail.setLogicalName()",
-        "root.MSG_GEN_PARAM_VALUE", "logicalName = " + logicalName);
+    SilverTrace.info("attachment", "AttachmentDetail.setLogicalName()", "root.MSG_GEN_PARAM_VALUE",
+        "logicalName = " + logicalName);
     this.logicalName = logicalName;
   }
 
@@ -226,13 +222,20 @@ public class AttachmentDetailI18N extends Translation implements Serializable {
     this.xmlForm = xmlForm;
   }
 
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 67 * hash + this.getId();
+    return hash;
+  }
+
+  @Override
   public boolean equals(Object arg0) {
-    if (arg0 == null)
+    if (arg0 == null || !(arg0 instanceof AttachmentDetailI18N)) {
       return false;
-    if (arg0 instanceof AttachmentDetailI18N) {
-      AttachmentDetailI18N a = (AttachmentDetailI18N) arg0;
-      return a.getId() == getId();
-    } else
-      return false;
+    }
+    AttachmentDetailI18N a = (AttachmentDetailI18N) arg0;
+    return a.getId() == getId();
+
   }
 }

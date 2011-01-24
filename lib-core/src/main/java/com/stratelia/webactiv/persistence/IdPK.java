@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.persistence;
 
 import com.stratelia.webactiv.util.WAPrimaryKey;
@@ -30,9 +29,6 @@ public class IdPK extends WAPrimaryKey {
 
   private static final long serialVersionUID = -5451371913200985128L;
 
-  /**
-   * IdPK()
-   */
   public IdPK() {
     super("");
   }
@@ -58,9 +54,8 @@ public class IdPK extends WAPrimaryKey {
   public boolean equals(Object other) {
     if (!(other instanceof IdPK)) {
       return false;
-    } else {
-      return (getId() == ((IdPK) other).getId());
     }
+    return (getId().equals(((IdPK) other).getId()));
   }
 
   /**
@@ -75,5 +70,12 @@ public class IdPK extends WAPrimaryKey {
    */
   public long getIdAsLong() {
     return new Integer(getId()).longValue();
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 3;
+    hash = 56 * hash + (this.id != null ? this.id.hashCode() : 0);
+    return hash;
   }
 }

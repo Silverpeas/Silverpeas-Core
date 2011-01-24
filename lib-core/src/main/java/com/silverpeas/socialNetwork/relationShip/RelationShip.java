@@ -43,7 +43,6 @@ public class RelationShip {
   }
 
   public RelationShip() {
-    // TODO Auto-generated constructor stub
   }
 
   /**
@@ -169,11 +168,21 @@ public class RelationShip {
     if (this.typeRelationShipId != other.typeRelationShipId) {
       return false;
     }
-    if (this.acceptanceDate != other.acceptanceDate &&
-        (this.acceptanceDate == null || !this.acceptanceDate.
-            equals(other.acceptanceDate))) {
+    if (this.acceptanceDate != other.acceptanceDate && (this.acceptanceDate == null || !this.acceptanceDate.
+        equals(other.acceptanceDate))) {
       return false;
     }
     return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 3;
+    hash = 43 * hash + this.idRelationShip;
+    hash = 43 * hash + this.user1Id;
+    hash = 43 * hash + this.user2Id;
+    hash = 43 * hash + this.typeRelationShipId;
+    hash = 43 * hash + (this.acceptanceDate != null ? this.acceptanceDate.hashCode() : 0);
+    return hash;
   }
 }
