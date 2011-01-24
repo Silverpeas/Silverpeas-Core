@@ -1173,7 +1173,7 @@ public class NodeDAO {
         "root.MSG_GEN_ENTER_METHOD", "nodePK = " + pk.toString()
         + ", rightsDependsOn = " + rightsDependsOn);
 
-    StringBuffer updateStatement = new StringBuffer();
+    StringBuilder updateStatement = new StringBuilder();
     updateStatement.append("update ").append(pk.getTableName());
     updateStatement.append(" set rightsDependsOn =  ? ");
     updateStatement.append(" where nodeId = ? and instanceId = ?");

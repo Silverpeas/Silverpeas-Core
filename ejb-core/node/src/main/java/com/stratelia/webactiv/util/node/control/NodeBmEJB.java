@@ -21,10 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-
 package com.stratelia.webactiv.util.node.control;
-
 
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.i18n.Translation;
@@ -69,12 +66,10 @@ import javax.ejb.SessionContext;
 public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
 
   private static final long serialVersionUID = 1L;
-
   /**
    * Database name where is stored nodes
    */
   private String dbName = JNDINames.NODE_DATASOURCE;
-
   private static final ResourceLocator nodeSettings = new ResourceLocator(
       "com.stratelia.webactiv.util.node.nodeSettings", "fr");
 
@@ -182,8 +177,8 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
       NodeDetail nodeDetail = node.getDetail(sorting);
 
       // Add default translation
-      Translation nodeI18NDetail = new NodeI18NDetail(nodeDetail
-          .getLanguage(), nodeDetail.getName(), nodeDetail.getDescription());
+      Translation nodeI18NDetail = new NodeI18NDetail(nodeDetail.getLanguage(), nodeDetail.getName(), nodeDetail.
+          getDescription());
       nodeDetail.addTranslation((Translation) nodeI18NDetail);
 
       List<Translation> translations = getTranslations(new Integer(pk.getId()).intValue());
@@ -333,8 +328,9 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
       while (it.hasNext()) {
         header = it.next();
         NodeDetail father = tree.get(header.getFatherPK().getId());
-        if (father != null)
+        if (father != null) {
           father.getChildrenDetails().add(header);
+        }
       }
 
       result = new ArrayList<NodeDetail>();
@@ -398,10 +394,11 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
         if (t == 0) {
           oldRootPath = node.getPath();
           node.setFatherPK(toNode);
-          if (node.getLevel() > root.getLevel())
+          if (node.getLevel() > root.getLevel()) {
             deltaLevel = root.getLevel() - node.getLevel();
-          else
+          } else {
             deltaLevel = node.getLevel() - root.getLevel();
+          }
           deltaLevel++;
 
           node.setOrder(root.getChildrenNumber());
@@ -470,8 +467,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
 
       while (i.hasNext()) {
         NodeDetail childDetail = i.next();
-        Collection<NodeDetail> subChildren = NodeDAO.getChildrenDetails(con, childDetail
-            .getNodePK());
+        Collection<NodeDetail> subChildren = NodeDAO.getChildrenDetails(con, childDetail.getNodePK());
         Iterator<NodeDetail> j = subChildren.iterator();
         ArrayList<NodeDetail> subChildrenDetail = new ArrayList<NodeDetail>();
 
@@ -561,8 +557,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
             node.setDetail(nd);
           }
         } else {
-          NodeI18NDAO.removeTranslation(con, Integer.parseInt(nd
-              .getTranslationId()));
+          NodeI18NDAO.removeTranslation(con, Integer.parseInt(nd.getTranslationId()));
         }
       } else {
         // Add or update a translation
@@ -757,25 +752,19 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * @see com.stratelia.webactiv.util.actor.model.ActorPK
    * @since 1.0
    */
-  public NodePK createNode(NodeDetail nd, NodeDetail fatherDetail)
-      throws RemoteException {
+  public NodePK createNode(NodeDetail nd, NodeDetail fatherDetail) throws RemoteException {
     Node newNode = null;
     NodeHome home = getNodeHome();
-
     try {
       if (!NodeDetail.FILE_LINK_TYPE.equals(nd.getType())) {
-        nd.setPath(fatherDetail.getPath() + fatherDetail.getNodePK().getId()
-            + "/");
+        nd.setPath(fatherDetail.getPath() + fatherDetail.getNodePK().getId() + "/");
       }
       nd.setLevel(fatherDetail.getLevel() + 1);
       nd.setFatherPK(fatherDetail.getNodePK());
-      // nd.setRightsDependsOn(fatherDetail.getRightsDependsOn());
-
       if (nd.getLanguage() == null) {
         // translation for the first time
         nd.setLanguage(I18NHelper.defaultLanguage);
       }
-
       newNode = home.create(nd);
       NodeDetail newND = newNode.getDetail();
 
@@ -795,17 +784,13 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
    */
-  public boolean isSameNameSameLevelOnCreation(NodeDetail nd)
-      throws RemoteException {
+  public boolean isSameNameSameLevelOnCreation(NodeDetail nd) throws RemoteException {
     Connection con = getConnection();
-
     try {
       boolean result = NodeDAO.isSameNameSameLevelOnCreation(con, nd);
-
       return result;
     } catch (Exception re) {
-      throw new NodeRuntimeException(
-          "NodeBmEJB.isSameNameSameLevelOnCreation()",
+      throw new NodeRuntimeException("NodeBmEJB.isSameNameSameLevelOnCreation()",
           SilverpeasRuntimeException.ERROR,
           "node.KNOWING_IF_SAME_NAME_SAME_LEVEL_ON_CREATION_FAILED", re);
     } finally {
@@ -821,14 +806,11 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
    */
-  public boolean isSameNameSameLevelOnUpdate(NodeDetail nd)
-      throws RemoteException {
+  @Override
+  public boolean isSameNameSameLevelOnUpdate(NodeDetail nd) throws RemoteException {
     Connection con = getConnection();
-
     try {
-      boolean result = NodeDAO.isSameNameSameLevelOnUpdate(con, nd);
-
-      return result;
+      return NodeDAO.isSameNameSameLevelOnUpdate(con, nd);
     } catch (Exception re) {
       throw new NodeRuntimeException("NodeBmEJB.isSameNameSameLevelOnUpdate()",
           SilverpeasRuntimeException.ERROR,
@@ -846,9 +828,9 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @since 1.0
    */
+  @Override
   public Collection<NodePK> getChildrenPKs(NodePK nodePK) throws RemoteException {
     Connection con = getConnection();
-
     try {
       return NodeDAO.getChildrenPKs(con, nodePK);
     } catch (Exception re) {
@@ -954,50 +936,38 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
     }
   }
 
+  @Override
   public void processWysiwyg(NodePK nodePK) throws RemoteException {
     NodeDetail nodeDetail = getHeader(nodePK);
     createIndex(nodeDetail);
   }
 
-  public void updateRightsDependency(NodeDetail nodeDetail)
-      throws RemoteException {
+  @Override
+  public void updateRightsDependency(NodeDetail nodeDetail) throws RemoteException {
     Node node = findNode(nodeDetail.getNodePK());
     node.setRightsDependsOn(nodeDetail.getRightsDependsOn());
-
-    Connection con = getConnection();
     try {
-      spreadRightsDependency(con, nodeDetail, nodeDetail.getRightsDependsOn());
-      // NodeDAO.updateRightsDependency(con, nodeDetail.getNodePK(),
-      // nodeDetail.getRightsDependsOn());
+      spreadRightsDependency(node, nodeDetail.getRightsDependsOn());
     } catch (Exception e) {
       throw new NodeRuntimeException("NodeBmEJB.updateRightsDependency()",
-          SilverpeasRuntimeException.ERROR,
-          "node.SPREADING_RIGHTS_DEPENDENCY_FAILED", "nodeId = "
+          SilverpeasRuntimeException.ERROR, "node.SPREADING_RIGHTS_DEPENDENCY_FAILED", "nodeId = "
           + nodeDetail.getNodePK().getId(), e);
-    } finally {
-      freeConnection(con);
     }
   }
 
-  private void spreadRightsDependency(Connection con, NodeDetail nodeDetail,
-      int rightsDependsOn) throws SQLException {
-    Iterator<NodeDetail> children = NodeDAO.getChildrenDetails(con, nodeDetail.getNodePK())
-        .iterator();
-    while (children.hasNext()) {
-      NodeDetail child = children.next();
-
+  private void spreadRightsDependency(Node currentNode, int rightsDependsOn) throws
+      RemoteException, SQLException {
+    Collection<NodeDetail> children = currentNode.getChildrenDetails();
+    for (NodeDetail child : children) {
+      Node node = findNode(child.getNodePK());
       if (!child.haveLocalRights()) {
-        NodeDAO.updateRightsDependency(con, child.getNodePK(), rightsDependsOn);
-
-        /*
-         * Node node = findNode(child.getNodePK()); node.setRightsDependsOn(rightsDependsOn);
-         */
-
-        spreadRightsDependency(con, child, rightsDependsOn);
+        node.setRightsDependsOn(rightsDependsOn);
+        spreadRightsDependency(node, rightsDependsOn);
       }
     }
   }
 
+  @Override
   public void sortNodes(List<NodePK> nodePKs) throws RemoteException {
     Connection con = getConnection();
     try {
@@ -1010,9 +980,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
     }
   }
 
-  /**
-   * Called on : - createNode() - setDetail()
-   */
+  @Override
   public void createIndex(NodeDetail nodeDetail) throws RemoteException {
     createIndex(nodeDetail, true);
   }
@@ -1024,23 +992,19 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
 
   private void createIndex(NodeDetail nodeDetail, boolean processWysiwygContent)
       throws RemoteException {
-    SilverTrace.info("node", "NodeBmEJB.createIndex()",
-        "root.MSG_GEN_ENTER_METHOD", "nodeDetail = " + nodeDetail);
+    SilverTrace.info("node", "NodeBmEJB.createIndex()", "root.MSG_GEN_ENTER_METHOD",
+        "nodeDetail = " + nodeDetail);
     FullIndexEntry indexEntry = null;
 
     if (nodeDetail != null) {
       // Index the Node
-      indexEntry = new FullIndexEntry(
-          nodeDetail.getNodePK().getComponentName(), "Node", nodeDetail
-          .getNodePK().getId());
-      // indexEntry.setTitle(nodeDetail.getName());
-      // indexEntry.setPreView(nodeDetail.getDescription());
+      indexEntry = new FullIndexEntry(nodeDetail.getNodePK().getComponentName(), "Node", nodeDetail.
+          getNodePK().getId());
 
       Iterator<String> languages = nodeDetail.getLanguages();
       while (languages.hasNext()) {
         String language = languages.next();
-        NodeI18NDetail translation = (NodeI18NDetail) nodeDetail
-            .getTranslation(language);
+        NodeI18NDetail translation = (NodeI18NDetail) nodeDetail.getTranslation(language);
 
         indexEntry.setTitle(translation.getName(), language);
         indexEntry.setPreview(translation.getDescription(), language);
@@ -1053,8 +1017,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
       if (nodeDetail.getCreatorId() != null) {
         userId = nodeDetail.getCreatorId();
         indexEntry.setCreationUser(userId);
-      }
-      // cas d'une modification
+      } // cas d'une modification
       else {
         NodeDetail node = getHeader(nodeDetail.getNodePK());
         indexEntry.setCreationDate(node.getCreationDate());
@@ -1076,22 +1039,20 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
       }
 
       if (processWysiwygContent) {
-        indexEntry = updateIndexEntryWithWysiwygContent(indexEntry, nodeDetail
-            .getNodePK());
+        indexEntry = updateIndexEntryWithWysiwygContent(indexEntry, nodeDetail.getNodePK());
       }
     }
     IndexEngineProxy.addIndexEntry(indexEntry);
   }
 
-  private FullIndexEntry updateIndexEntryWithWysiwygContent(
-      FullIndexEntry indexEntry, NodePK nodePK) {
+  private FullIndexEntry updateIndexEntryWithWysiwygContent(FullIndexEntry indexEntry, NodePK nodePK) {
     SilverTrace.info("node", "NodeBmEJB.updateIndexEntryWithWysiwygContent()",
         "root.MSG_GEN_ENTER_METHOD", "indexEntry = " + indexEntry.toString()
         + ", nodePK = " + nodePK.toString());
     try {
       if (nodePK != null) {
-        String wysiwygContent = WysiwygController.loadFileAndAttachment(nodePK
-            .getSpace(), nodePK.getComponentName(), "Node_" + nodePK.getId());
+        String wysiwygContent = WysiwygController.loadFileAndAttachment(nodePK.getSpace(), nodePK.
+            getComponentName(), "Node_" + nodePK.getId());
         if (wysiwygContent != null) {
           indexEntry.addTextContent(wysiwygContent);
         }
@@ -1106,11 +1067,8 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    * Called on : - removeNode()
    */
   public void deleteIndex(NodePK pk) {
-    SilverTrace.info("node", "NodeBmEJB.deleteIndex()",
-        "root.MSG_GEN_ENTER_METHOD", "pk = " + pk);
-    IndexEntryPK indexEntry = new IndexEntryPK(pk.getComponentName(), "Node",
-        pk.getId());
-
+    SilverTrace.info("node", "NodeBmEJB.deleteIndex()", "root.MSG_GEN_ENTER_METHOD", "pk = " + pk);
+    IndexEntryPK indexEntry = new IndexEntryPK(pk.getComponentName(), "Node", pk.getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 
@@ -1157,5 +1115,4 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    */
   public void setSessionContext(SessionContext sc) {
   }
-
 }
