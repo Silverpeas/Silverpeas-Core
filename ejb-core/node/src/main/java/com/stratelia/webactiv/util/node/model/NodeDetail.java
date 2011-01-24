@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.node.model;
 
 import java.util.Collection;
@@ -39,8 +40,10 @@ public class NodeDetail extends AbstractI18NBean implements java.io.Serializable
   private static final long serialVersionUID = -1401884517616404337L;
   public final static String DEFAULT_TYPE = "default";
   public final static String FILE_LINK_TYPE = "file_link";
+
   public final static String STATUS_VISIBLE = "Visible";
   public final static String STATUS_INVISIBLE = "Invisible";
+
   private NodePK nodePK;
   private String name;
   private String description;
@@ -52,14 +55,18 @@ public class NodeDetail extends AbstractI18NBean implements java.io.Serializable
   private String modelId = null;
   private String status = null;
   private NodePK fatherPK;
+
   // a NodeDetail collection
   private Collection<NodeDetail> childrenDetails;
   private String type = DEFAULT_TYPE;
   private int order = 0;
+
   private int rightsDependsOn = -1;
+
   private int nbObjects = -1; // No persistence - usefull to store nb objects
   // contained by this node
   private String userRole = null; // No persistence - usefull to store user role
+
   private boolean useId = false;
 
   /**
@@ -74,6 +81,7 @@ public class NodeDetail extends AbstractI18NBean implements java.io.Serializable
    * Create a new NodeDetail
    * @since 1.0
    */
+
   private void init(String id, String name, String description,
       String creationDate, String creatorId, String path, String level,
       String fatherId) {
@@ -259,19 +267,16 @@ public class NodeDetail extends AbstractI18NBean implements java.io.Serializable
   }
 
   public String getName(String language) {
-    if (!I18NHelper.isI18N) {
+    if (!I18NHelper.isI18N)
       return getName();
-    }
 
     NodeI18NDetail s = (NodeI18NDetail) getTranslations().get(language);
-    if (s == null) {
+    if (s == null)
       s = (NodeI18NDetail) getNextTranslation();
-    }
-    if (s == null) {
+    if (s == null)
       return getName();
-    } else {
+    else
       return s.getName();
-    }
   }
 
   /**
@@ -284,14 +289,12 @@ public class NodeDetail extends AbstractI18NBean implements java.io.Serializable
   }
 
   public String getDescription(String language) {
-    if (!I18NHelper.isI18N) {
+    if (!I18NHelper.isI18N)
       return getDescription();
-    }
 
     NodeI18NDetail s = (NodeI18NDetail) getTranslations().get(language);
-    if (s == null) {
+    if (s == null)
       s = (NodeI18NDetail) getNextTranslation();
-    }
 
     return s.getDescription();
   }
@@ -475,14 +478,11 @@ public class NodeDetail extends AbstractI18NBean implements java.io.Serializable
    * Converts the contents of the key into a readable String.
    * @return The string representation of this object
    */
-  @Override
   public String toString() {
-    StringBuilder buffer = new StringBuilder(256);
-    buffer.append("(pk = ").append(getNodePK()).append(", name = ").append(getName()).
-        append(", path = ").append(getPath()).append(", level = ").append(getLevel()).append(
-        ", fatherPK = ").append(getFatherPK()).append(", type = ").append(type).append(
-        ", order = ").append(getOrder()).append(")");
-    return buffer.toString();
+    return "(pk = " + getNodePK().toString() + ", name = " + getName()
+        + ", path = " + getPath() + ", level = " + getLevel() + ", fatherPK = "
+        + getFatherPK().toString() + ", type = " + type + ", order = "
+        + getOrder() + ")";
   }
 
   public String getType() {
@@ -493,14 +493,16 @@ public class NodeDetail extends AbstractI18NBean implements java.io.Serializable
     this.type = type;
   }
 
-  @Override
   public boolean equals(Object other) {
-    if (!(other instanceof NodeDetail)) {
+    if (!(other instanceof NodeDetail))
       return false;
-    }
     return (getNodePK().getId().equals(((NodeDetail) other).getNodePK().getId()))
-        && (getNodePK().getComponentName().equals(
-        ((NodeDetail) other).getNodePK().getComponentName()));
+        && (getNodePK().getComponentName().equals(((NodeDetail) other).getNodePK().getComponentName()));
+  }
+
+  @Override
+  public int hashCode() {
+    return toString().hashCode();
   }
 
   public void setDescription(String description) {
@@ -512,8 +514,6 @@ public class NodeDetail extends AbstractI18NBean implements java.io.Serializable
   }
 
   public String getDefaultUrl(String componentName) {
-    // return
-    // "/R"+componentName+"/"+getNodePK().getInstanceId()+"/searchResult?Type=Node&Id="+getNodePK().getId();
     return URLManager.getURL(null, getNodePK().getInstanceId()) + getURL();
   }
 
@@ -527,10 +527,10 @@ public class NodeDetail extends AbstractI18NBean implements java.io.Serializable
   }
 
   public String getPermalink() {
-    if (URLManager.displayUniversalLinks()) {
+    if (URLManager.displayUniversalLinks())
       return URLManager.getSimpleURL(URLManager.URL_TOPIC, getNodePK().getId(),
           getNodePK().getInstanceId());
-    }
+
     return null;
   }
 

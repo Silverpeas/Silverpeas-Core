@@ -24,14 +24,16 @@
 
 package com.silverpeas.thesaurus.model;
 
-import com.stratelia.webactiv.persistence.*;
-import java.lang.Comparable;
+import com.stratelia.webactiv.persistence.SilverpeasBean;
+import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
+
+
 
 /**
  * This class contains a full information about a Vocabulary
  */
 
-public class Vocabulary extends SilverpeasBean implements Comparable {
+public class Vocabulary extends SilverpeasBean implements Comparable<Vocabulary> {
 
   private static final long serialVersionUID = -5979441125808657400L;
   private String name;
@@ -56,18 +58,40 @@ public class Vocabulary extends SilverpeasBean implements Comparable {
     this.description = description;
   }
 
-  public boolean equals(Object voca) {
-    return this.getName().equals(((Vocabulary) voca).getName());
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final Vocabulary other = (Vocabulary) obj;
+    if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
+      return false;
+    }
+    return true;
   }
 
-  public int compareTo(Object voca) {
-    return this.getName().compareTo(((Vocabulary) voca).getName());
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 29 * hash + (this.name != null ? this.name.hashCode() : 0);
+    return hash;
   }
 
+
+  @Override
+  public int compareTo(Vocabulary voca) {
+    return this.getName().compareTo(voca.getName());
+  }
+
+  @Override
   public String _getTableName() {
     return "SB_Thesaurus_Vocabulary";
   }
 
+  @Override
   public int _getConnectionType() {
     return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }

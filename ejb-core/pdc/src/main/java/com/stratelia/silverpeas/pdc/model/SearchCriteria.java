@@ -44,28 +44,39 @@ public class SearchCriteria extends Criteria implements java.io.Serializable {
     super(axisId, value);
   }
 
-  public boolean equals(Object other) {
-    if (!(other instanceof SearchCriteria))
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof SearchCriteria)) {
       return false;
-    return (getAxisId() == ((SearchCriteria) other).getAxisId())
-        && (getValue().equals(((SearchCriteria) other).getValue()));
+    }
+    SearchCriteria other = (SearchCriteria) obj;
+    return getAxisId() ==  other.getAxisId() && getValue().equals(other.getValue());
   }
 
+  @Override
   public String toString() {
-    String axisId = new Integer(getAxisId()).toString();
-    return "Search Criteria Object : [ axisId=" + axisId + ", value="
-        + getValue() + " ]";
+    String axisId = String.valueOf(getAxisId());
+    return "Search Criteria Object : [ axisId=" + axisId + ", value=" + getValue() + " ]";
   }
 
   /**
    * Support Cloneable Interface
    */
+  @Override
   public Object clone() {
     try {
       return super.clone();
     } catch (CloneNotSupportedException e) {
       return null; // this should never happened
     }
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 71 * hash + this.getAxisId();
+    hash = 71 * hash + (this.getValue() != null ? this.getValue().hashCode() : 0);
+    return hash;
   }
 
 }

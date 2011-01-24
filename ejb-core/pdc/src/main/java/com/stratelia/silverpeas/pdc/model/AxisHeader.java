@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.pdc.model;
 
 import com.silverpeas.util.i18n.AbstractI18NBean;
@@ -36,39 +35,31 @@ public class AxisHeader extends AbstractI18NBean implements java.io.Serializable
 
   // Class version identifier
   private static final long serialVersionUID = 5523411511012194843L;
-
   private WAPrimaryKey pk;
-
   /**
    * The name of the axe
    */
   private String name = null;
-
   /**
    * The type of the axe
    */
   private String type = null;
-
   /**
    * The date of creation of the axe
    */
   private String creationDate = null;
-
   /**
    * The id of the owner of the axe
    */
   private String creatorId = null;
-
   /**
    * The order of the axe
    */
   private int order = -1;
-
   /**
    * The rootId of the axe
    */
   private int rootId = -1;
-
   /**
    * The description of the axe
    */
@@ -77,7 +68,6 @@ public class AxisHeader extends AbstractI18NBean implements java.io.Serializable
   //
   // Constructor
   //
-
   public AxisHeader() {
   }
 
@@ -134,10 +124,6 @@ public class AxisHeader extends AbstractI18NBean implements java.io.Serializable
     setLanguage(persistence.getLang());
   }
 
-  //
-  // public methods
-  //
-
   /**
    * Returns the name of the axe.
    * @return the name
@@ -147,12 +133,13 @@ public class AxisHeader extends AbstractI18NBean implements java.io.Serializable
   }
 
   public String getName(String language) {
-    if (!I18NHelper.isI18N)
+    if (!I18NHelper.isI18N) {
       return getName();
-
+    }
     AxisHeaderI18N s = (AxisHeaderI18N) getTranslations().get(language);
-    if (s == null)
+    if (s == null) {
       s = (AxisHeaderI18N) getNextTranslation();
+    }
 
     return s.getName();
   }
@@ -254,12 +241,14 @@ public class AxisHeader extends AbstractI18NBean implements java.io.Serializable
   }
 
   public String getDescription(String language) {
-    if (!I18NHelper.isI18N)
+    if (!I18NHelper.isI18N) {
       return getDescription();
+    }
 
     AxisHeaderI18N s = (AxisHeaderI18N) getTranslations().get(language);
-    if (s == null)
+    if (s == null) {
       s = (AxisHeaderI18N) getNextTranslation();
+    }
 
     return s.getDescription();
   }
@@ -284,6 +273,7 @@ public class AxisHeader extends AbstractI18NBean implements java.io.Serializable
    * Converts the contents of the key into a readable String.
    * @return The string representation of this object
    */
+  @Override
   public String toString() {
     return "(pk = " + getPK() + ", langage = " + getLanguage() + ", name = "
         + getName() + ", type = " + getAxisType() + ", order = "
@@ -294,9 +284,23 @@ public class AxisHeader extends AbstractI18NBean implements java.io.Serializable
 
   @Override
   public boolean equals(Object obj) {
-    if (!(obj instanceof AxisHeader))
+    if (obj == null) {
       return false;
-    return (getPK().getId().equals(((AxisHeader) obj).getPK().getId()));
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final AxisHeader other = (AxisHeader) obj;
+    if (this.pk != other.pk && (this.pk == null || !this.pk.equals(other.pk))) {
+      return false;
+    }
+    return true;
   }
 
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 71 * hash + (this.pk != null ? this.pk.hashCode() : 0);
+    return hash;
+  }
 }

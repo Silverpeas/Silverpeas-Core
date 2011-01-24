@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.thesaurus.model;
 
 import com.silverpeas.thesaurus.ThesaurusException;
@@ -37,14 +36,12 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * This class contains a full information about a Jargon a Jargon is linked to a Vocabulary and a
  * User (UserDetail or Group)
  */
-
 public class Jargon extends SilverpeasBean {
 
   private static final long serialVersionUID = 2926231339303196258L;
   private int type; // 0=User, 1=Group
   private long idVoca;
   private String idUser;
-
   private ThesaurusBm thesaurus = ThesaurusBm.getInstance();
   private static OrganizationController organizationController = new OrganizationController();
 
@@ -53,38 +50,59 @@ public class Jargon extends SilverpeasBean {
 
   public String readUserName() {
     String userName = null;
-    if (type == 0) // user
-    {
+    if (type == 0) {// user
       UserDetail userDetail = organizationController.getUserDetail(new Long(
           getIdUser()).toString());
-      if (userDetail != null)
+      if (userDetail != null) {
         userName = userDetail.getLastName() + " " + userDetail.getFirstName();
-    } else // group
-    {
-      Group group = organizationController.getGroup(new Long(getIdUser())
-          .toString());
-      if (group != null)
+      }
+    } else { // group
+      Group group = organizationController.getGroup(String.valueOf(getIdUser()));
+      if (group != null) {
         userName = group.getName();
+      }
     }
     return userName;
   }
 
   public String readVocaName() throws ThesaurusException {
     String name = "";
-
     try {
       if (this.idVoca != 0) {
         Vocabulary voca = thesaurus.getVocabulary(this.idVoca);
         name = voca.getName();
       }
     } catch (ThesaurusException e) {
-      throw new ThesaurusException("Jargon.readVocaName",
-          SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_VOCABULARY_NAME",
-          "", e);
+      throw new ThesaurusException("Jargon.readVocaName", SilverpeasException.ERROR,
+          "Thesaurus.EX_CANT_GET_VOCABULARY_NAME", "", e);
     }
-
     return name;
+  }
 
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final Jargon other = (Jargon) obj;
+    if (this.type != other.type) {
+      return false;
+    }
+    if ((this.idUser == null) ? (other.idUser != null) : !this.idUser.equals(other.idUser)) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 5;
+    hash = 67 * hash + this.type;
+    hash = 67 * hash + (this.idUser != null ? this.idUser.hashCode() : 0);
+    return hash;
   }
 
   public int getType() {
@@ -111,10 +129,7 @@ public class Jargon extends SilverpeasBean {
     this.idUser = idUser;
   }
 
-  public boolean equals(Object theOther) {
-    return (getIdUser().equals(((Jargon) theOther).getIdUser()) && getType() == ((Jargon) theOther)
-        .getType());
-  }
+  
 
   public String _getTableName() {
     return "SB_Thesaurus_Jargon";
@@ -123,5 +138,4 @@ public class Jargon extends SilverpeasBean {
   public int _getConnectionType() {
     return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
-
 }

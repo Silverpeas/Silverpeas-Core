@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.pdc.model;
 
 import com.stratelia.webactiv.persistence.SilverpeasBean;
@@ -34,42 +33,34 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 public class AxisHeaderPersistence extends SilverpeasBean implements java.io.Serializable {
 
   private static final long serialVersionUID = 4467724185924160419L;
-
   /**
    * The name of the axe
    */
   private String name = null;
-
   /**
    * The type of the axe
    */
   private String type = null;
-
   /**
    * The date of creation of the axe
    */
   private String creationDate = null;
-
   /**
    * The id of the owner of the axe
    */
   private String creatorId = null;
-
   /**
    * The order of the axe
    */
   private int order = -1;
-
   /**
    * The rootId of the axe
    */
   private int rootId = -1;
-
   /**
    * The description of the axe
    */
   private String description = null;
-
   private String lang = null;
 
   public AxisHeaderPersistence() {
@@ -211,6 +202,7 @@ public class AxisHeaderPersistence extends SilverpeasBean implements java.io.Ser
    * Converts the contents of the key into a readable String.
    * @return The string representation of this object
    */
+  @Override
   public String toString() {
     return "(pk = " + getPK() + ", name = " + getName() + ", type = "
         + getAxisType() + ", order = " + getAxisOrder() + ", creationDate = "
@@ -218,25 +210,32 @@ public class AxisHeaderPersistence extends SilverpeasBean implements java.io.Ser
         + getRootId() + ", description = " + getDescription() + ")";
   }
 
-  /**
-   * determine the connection type to the database
-   */
+  @Override
   public int _getConnectionType() {
     return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
 
-  /**
-   * define the table name
-   */
+  @Override
   public String _getTableName() {
     return "SB_Pdc_Axis";
   }
 
-  public boolean equals(Object other) {
-    if (!(other instanceof AxisHeaderPersistence))
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
       return false;
-    return (getPK().getId().equals(((AxisHeaderPersistence) other).getPK()
-        .getId()));
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final AxisHeaderPersistence other = (AxisHeaderPersistence) obj;
+    return getPK().getId().equals(other.getPK().getId());
   }
 
+  @Override
+  public int hashCode() {
+    int hash = 5;
+    hash = 71 * hash + (this.getPK() != null ? this.getPK().hashCode() : 0);
+    return hash;
+  }
 }

@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.pdcPeas.model;
 
 import java.awt.image.BufferedImage;
@@ -47,7 +46,6 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
   private boolean exportable = false;
   private boolean selected = false;
   private MatchingIndexEntry indexEntry = null;
-
   private boolean hasRead = false; // marks a result as redden
   private int resultId = 0;
   private int hits = -1;
@@ -66,8 +64,6 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
   }
 
   public GlobalSilverResult(MatchingIndexEntry mie) {
-    // super(mie.getTitle(), mie.getPreView(), mie.getObjectId(), null,
-    // mie.getComponent(), mie.getCreationDate(), mie.getCreationUser());
     super(mie);
     indexEntry = mie;
     super.setType(mie.getObjectType());
@@ -75,14 +71,12 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
 
     if (mie.getThumbnail() != null) {
       super.setThumbnailURL(FileServerUtils.getUrl(null, mie.getComponent(),
-          mie.getThumbnail(), mie.getThumbnailMimeType(), mie
-          .getThumbnailDirectory()));
+          mie.getThumbnail(), mie.getThumbnailMimeType(), mie.getThumbnailDirectory()));
 
       String[] directory = new String[1];
       directory[0] = mie.getThumbnailDirectory();
 
-      File image = new File(FileRepositoryManager.getAbsolutePath(mie
-          .getComponent(), directory)
+      File image = new File(FileRepositoryManager.getAbsolutePath(mie.getComponent(), directory)
           + mie.getThumbnail());
 
       try {
@@ -191,12 +185,20 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
     return hits;
   }
 
+  @Override
   public boolean equals(Object other) {
-    if (!(other instanceof GlobalSilverResult))
+    if (!(other instanceof GlobalSilverResult)) {
       return false;
-
+    }
     return (getId().equals(((GlobalSilverResult) other).getId()))
-        && (getInstanceId()
-        .equals(((GlobalSilverResult) other).getInstanceId()));
+        && (getInstanceId().equals(((GlobalSilverResult) other).getInstanceId()));
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 29 * hash + (this.getId() != null ? this.getId().hashCode() : 0);
+    hash = 29 * hash + (this.getInstanceId() != null ? this.getInstanceId().hashCode() : 0);
+    return hash;
   }
 }
