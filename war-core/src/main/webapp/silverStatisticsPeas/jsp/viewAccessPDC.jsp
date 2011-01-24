@@ -110,7 +110,6 @@ List vStatsData = (List)request.getAttribute("StatsData");
 </script>
 </head>
 <body marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" onLoad="">
-<fmt:message var="" key="silverStatisticsPeas.statistics"></fmt:message>
 <view:window>
   <c:if test="${fn:contains(userProfile, 'A')}">
 <view:tabs>
