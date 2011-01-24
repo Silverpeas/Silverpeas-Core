@@ -72,6 +72,7 @@ public class ZipManager {
       Collection<File> listcontenuPath = FileUtils.listFiles(file, null, true);
       for (File content : listcontenuPath) {
         String entryName = content.getPath().substring(file.getParent().length() + 1);
+        entryName = entryName.replace(File.separatorChar, '/');
         zos.putArchiveEntry(new ZipArchiveEntry(entryName));
         InputStream in = new FileInputStream(content);
         IOUtils.copy(in, zos);
