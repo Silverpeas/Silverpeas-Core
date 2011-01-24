@@ -438,7 +438,7 @@ public class GraphicElementFactory extends Object {
         String fatherSpaceId = curSpace.getFatherId();
         SpaceInstLight fatherSpace =
             mainSessionController.getOrganizationController().getSpaceInstLightById(fatherSpaceId);
-        spaceLookStyle = curSpace.getLook();
+        spaceLookStyle = fatherSpace.getLook();
         getSpaceLook(lookStyle, code, fatherSpace, spaceLookStyle);
       } else {
         appendDefaultLookCSS(lookStyle, code);
