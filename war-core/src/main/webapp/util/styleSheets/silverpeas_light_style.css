@@ -172,20 +172,26 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 #TreeDiv1 {
 	background-color: #FFFFFF;
 }
+
+.cellOperation div {
+	position:relative;
+	width:180px;
+	}
+
 #menutoggle {
 	background-color: #f1790f;
+	margin:0 0px 4px 0;
+	padding:0 20px  0 30px;
+	text-align:center;
+	display:inline-block;
     color: #FFF;
-    display:inline-block;
     font-size: 12px;
     line-height: 20px;
-    padding: 0 20px  0 30px;
 	border:1px solid #F15F0F ;
+	border-right:0;
 	border-radius: 10px 0 0 10px;
 	-moz-border-radius:  10px 0 0 10px;
 	-webkit-border-radius:  10px 0 0 10px;
-	margin:0 0px 4px 0;
-	text-align:center;
-	border-right:0;
 	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
 
