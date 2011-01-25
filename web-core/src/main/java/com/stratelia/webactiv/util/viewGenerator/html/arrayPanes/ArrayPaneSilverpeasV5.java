@@ -466,8 +466,8 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
       if (exportData) {
         // Add export data GUI
         result.append("<td class=\"exportlinks\">");
-        result.append("<div class=\"pageNav\">");
-        result.append(gef.getMultilang().getString("GEF.export.label")).append(":");
+        result.append("<div>");
+        result.append(gef.getMultilang().getString("GEF.export.label")).append(" :");
         result.append("<a href=\"").append(this.getExportUrl()).append(
             "\"><span class=\"export csv\">");
         result.append(gef.getMultilang().getString("GEF.export.option.csv")).append("</span></a>");

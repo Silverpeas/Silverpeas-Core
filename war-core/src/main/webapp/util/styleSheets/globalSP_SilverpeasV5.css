@@ -3371,17 +3371,20 @@ ul#attachmentList li.attachmentListItem .lineMain {
 }
 
 /*- [Specific export BEGIN ] ---------------- */
-.exportlinks { padding-bottom:5px;}
-.exportlinks  div {
+.exportlinks { 
+	width: 165px;
+}
+.exportlinks div {
 	float:right;
 	font-weight:bold;
 	margin-right:8px;
 	padding-left:10px;
 	line-height:19px;
-	}
-.exportlinks  a:hover{
-	color:#5E9F09;}
-
+	padding-top: 3px;
+}
+.exportlinks a:hover {
+	color:#5E9F09;
+}
 span.export {
   padding: 0 4px 1px 20px;
   display: inline;
@@ -3390,10 +3393,8 @@ span.export {
   margin:0 10px;
   font-weight:100;
 }
-
 span.csv {
   background:transparent url(../icons/fileType/icon_csv.gif) 0px 0px no-repeat;
- 
 }
 
 /*- [Generic inline messages BEGIN ] ---------------- */
