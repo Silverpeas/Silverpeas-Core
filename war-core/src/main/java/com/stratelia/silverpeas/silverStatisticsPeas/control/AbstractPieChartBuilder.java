@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import org.jCharts.nonAxisChart.PieChart2D;
@@ -40,35 +41,34 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
 /**
- * @author BERTINL TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
+ * @author BERTINL
  */
 public abstract class AbstractPieChartBuilder {
   private static final int LEGEND_MAX_LENGTH = 20;
 
-  Hashtable statsByInstance = null;
-  Admin admin = new Admin();
-  static final String FINESSE_TOUS = "FINESSE_TOUS";
-  static final String FINESSE_GROUPE = "FINESSE_GROUPE";
-  static final String FINESSE_USER = "FINESSE_USER";
-  String niveau_finesse = FINESSE_TOUS;
+  private Hashtable<String, StatItem> statsByInstance = null;
+  private Admin admin = new Admin();
+  private static final String FINESSE_TOUS = "FINESSE_TOUS";
+  private static final String FINESSE_GROUPE = "FINESSE_GROUPE";
+  private static final String FINESSE_USER = "FINESSE_USER";
+  private String niveau_finesse = FINESSE_TOUS;
 
   private void buildStatsByInstance() {
 
     // 0 - init new hashtable
-    statsByInstance = new Hashtable();
+    statsByInstance = new Hashtable<String, StatItem>();
 
     // 1 - Get stats for KM access
-    Hashtable cmpStats = getCmpStats(); // Hashtable key=componentId, value=new
-    // String[3] {tout, groupe, user}
+    // Hashtable key=componentId, value=new String[3] {tout, groupe, user}
+    Hashtable<String, String[]> cmpStats = getCmpStats();
 
     // 2 - build statItems
-    Iterator it = cmpStats.keySet().iterator();
+    Iterator<String> it = cmpStats.keySet().iterator();
     String[] tabValue = null;
     while (it.hasNext()) {
-      String cmpId = (String) it.next();
+      String cmpId = it.next();
 
-      tabValue = (String[]) cmpStats.get(cmpId);
+      tabValue = cmpStats.get(cmpId);
       ComponentInstLight cmp = null;
       try {
         cmp = admin.getComponentInstLight(cmpId);
@@ -83,12 +83,15 @@ public abstract class AbstractPieChartBuilder {
         countValues[1] = 0;
         countValues[2] = 0;
 
-        if (tabValue[0] != null)
+        if (tabValue[0] != null) {
           countValues[0] = Long.parseLong(tabValue[0]);
-        if (tabValue[1] != null)
+        }
+        if (tabValue[1] != null) {
           countValues[1] = Long.parseLong(tabValue[1]);
-        if (tabValue[2] != null)
+        }
+        if (tabValue[2] != null) {
           countValues[2] = Long.parseLong(tabValue[2]);
+        }
 
         StatItem item = new StatItem(cmpId, cmp.getLabel(), countValues);
         statsByInstance.put(cmpId, item);
@@ -96,10 +99,12 @@ public abstract class AbstractPieChartBuilder {
     }
 
     if (tabValue != null) {
-      if (tabValue[1] != null)
+      if (tabValue[1] != null) {
         niveau_finesse = FINESSE_GROUPE;
-      if (tabValue[2] != null)
+      }
+      if (tabValue[2] != null) {
         niveau_finesse = FINESSE_USER;
+      }
     }
   }
 
@@ -115,22 +120,30 @@ public abstract class AbstractPieChartBuilder {
       if ((theSpaceId != null) && (!theSpaceId.startsWith("WA"))) {
         theSpaceId = "WA" + theSpaceId;
       }
-      if (spaceId.equals(theSpaceId))
+      if (spaceId.equals(theSpaceId)) {
         return true;
+      }
     }
     return false;
   }
 
-  public PieChart2D getChart(String spaceId, String currentUserId,
-      Vector currentStats) {
+  /**
+   * 
+   * @param spaceId the space identifier
+   * @param currentUserId current user identifier
+   * @param currentStats list of current statistics
+   * @return a PieChart in 2D
+   */
+  public PieChart2D getChart(String spaceId, String currentUserId, Vector<String[]> currentStats) {
     PieChart2D pieChart = null;
     try {
       // Get statistics
-      if (statsByInstance == null)
+      if (statsByInstance == null) {
         buildStatsByInstance();
+      }
 
       // Get subspaces ids and components
-      Collection listSpaceIds;
+      List<String> listSpaceIds;
       String[] tabSpaceIds = null; // de type WA123
       String[] componentIds = null;
 
@@ -148,7 +161,7 @@ public abstract class AbstractPieChartBuilder {
         } else {// Manager d'espaces ou de sous-espaces
 
           // manager d'espace
-          listSpaceIds = new ArrayList();
+          listSpaceIds = new ArrayList<String>();
           String[] tabManageableSpaceIds = admin
               .getUserManageableSpaceIds(currentUserId); // de type 123
           for (int i = 0; i < tabManageableSpaceIds.length; i++) {
@@ -183,7 +196,7 @@ public abstract class AbstractPieChartBuilder {
 
       // build data
       Vector legend = new Vector();
-      Vector counts = new Vector();
+      List<String> counts = new ArrayList<String>();
       currentStats.clear();
 
       long count1 = 0;
@@ -209,16 +222,17 @@ public abstract class AbstractPieChartBuilder {
           }
         }
 
-        if (FINESSE_TOUS.equals(niveau_finesse))
+        if (FINESSE_TOUS.equals(niveau_finesse)) {
           counts.add(String.valueOf(count1));
-        else if (FINESSE_GROUPE.equals(niveau_finesse))
+        } else if (FINESSE_GROUPE.equals(niveau_finesse)) {
           counts.add(String.valueOf(count2));
-        else if (FINESSE_USER.equals(niveau_finesse))
+        } else if (FINESSE_USER.equals(niveau_finesse)) {
           counts.add(String.valueOf(count3));
+        }
 
         legend.add("["
             + ((space.getName().length() > LEGEND_MAX_LENGTH) ? space.getName()
-            .substring(0, LEGEND_MAX_LENGTH) : space.getName() + "]"));
+                .substring(0, LEGEND_MAX_LENGTH) : space.getName() + "]"));
         currentStats.add(new String[] { "SPACE", tabSpaceIds[i],
             space.getName(), String.valueOf(count1), String.valueOf(count2),
             String.valueOf(count3) });
@@ -226,18 +240,19 @@ public abstract class AbstractPieChartBuilder {
 
       // then manage components
       for (int i = 0; i < componentIds.length; i++) {
-        StatItem item = (StatItem) statsByInstance.get(componentIds[i]);
+        StatItem item = statsByInstance.get(componentIds[i]);
         if (item != null) {
           count1 = item.getCountValues()[0];
           count2 = item.getCountValues()[1];
           count3 = item.getCountValues()[2];
 
-          if (FINESSE_TOUS.equals(niveau_finesse))
+          if (FINESSE_TOUS.equals(niveau_finesse)) {
             counts.add(String.valueOf(count1));
-          else if (FINESSE_GROUPE.equals(niveau_finesse))
+          } else if (FINESSE_GROUPE.equals(niveau_finesse)) {
             counts.add(String.valueOf(count2));
-          else if (FINESSE_USER.equals(niveau_finesse))
+          } else if (FINESSE_USER.equals(niveau_finesse)) {
             counts.add(String.valueOf(count3));
+          }
 
           legend.add((item.getName().length() > LEGEND_MAX_LENGTH) ? item
               .getName().substring(0, LEGEND_MAX_LENGTH) : item.getName());
@@ -249,26 +264,25 @@ public abstract class AbstractPieChartBuilder {
 
       pieChart = ChartUtil.buildPieChart(getChartTitle(),
           buildDoubleArrayFromStringCollection(counts), (String[]) legend
-          .toArray(new String[0]));
+              .toArray(new String[0]));
     } catch (Exception e) {
       SilverTrace.error("silverStatisticsPeas",
           "AbstractPieChartBuilder.getChart()", "root.EX_SQL_QUERY_FAILED", e);
     }
 
     return pieChart;
-
   }
 
   /**
    * @param collection
    * @return
    */
-  private double[] buildDoubleArrayFromStringCollection(Collection collection) {
+  private double[] buildDoubleArrayFromStringCollection(Collection<String> collection) {
     double[] result = new double[collection.size()];
     int i = 0;
-    Iterator it = collection.iterator();
+    Iterator<String> it = collection.iterator();
     while (it.hasNext()) {
-      String value = (String) it.next();
+      String value = it.next();
       result[i++] = Double.parseDouble(value);
     }
 
@@ -277,6 +291,7 @@ public abstract class AbstractPieChartBuilder {
 
   public abstract String getChartTitle();
 
-  abstract Hashtable getCmpStats(); // Hashtable key=componentId, value=new
+  // Hashtable key=componentId, value=new
   // String[3] {tout, groupe, user}
+  abstract Hashtable<String, String[]> getCmpStats();
 }

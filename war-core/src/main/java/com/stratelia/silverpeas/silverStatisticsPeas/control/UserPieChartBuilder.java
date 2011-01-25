@@ -34,8 +34,7 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
- * @author BERTINL TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
+ * @author BERTINL
  */
 public class UserPieChartBuilder extends AbstractPieChartBuilder {
   private String dateStat;
@@ -107,10 +106,10 @@ public class UserPieChartBuilder extends AbstractPieChartBuilder {
    * @see com.stratelia.silverpeas.silverStatisticsPeas.control.AbstractPieChartBuilder
    * #getCmpStats()
    */
-  Hashtable getCmpStats() {
+  Hashtable<String, String[]> getCmpStats() {
     // Hashtable key=componentId, value=new String[3] {tout, groupe, user}
 
-    Hashtable cmpStats = new Hashtable();
+    Hashtable<String, String[]> cmpStats = new Hashtable<String, String[]>();
     try {
       cmpStats.putAll(SilverStatisticsPeasDAOAccesVolume.getStatsUserVentil(
           dateStat, currentUserId, filterIdGroup, filterIdUser));

@@ -33,8 +33,7 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
- * @author BERTINL TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
+ * @author BERTINL 
  */
 public class DocPieChartBuilder extends AbstractPieChartBuilder {
   private String currentUserId;
@@ -73,12 +72,13 @@ public class DocPieChartBuilder extends AbstractPieChartBuilder {
   }
 
   /*
+   * Implements getCmpStats of AbstractPieChartBuilder class
    * (non-Javadoc)
    * @see com.stratelia.silverpeas.silverStatisticsPeas.control.AbstractPieChartBuilder
    * #getCmpStats()
    */
-  Hashtable getCmpStats() {
-    Hashtable cmpStats = new Hashtable();
+  public Hashtable<String, String[]> getCmpStats() {
+    Hashtable<String, String[]> cmpStats = new Hashtable<String, String[]>();
     try {
       cmpStats.putAll(SilverStatisticsPeasDAOVolumeServer
           .getStatsAttachmentsVentil(this.currentUserId));

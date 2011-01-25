@@ -108,9 +108,9 @@ public class PubliPieChartBuilder extends AbstractPieChartBuilder {
    * @see com.stratelia.silverpeas.silverStatisticsPeas.control.AbstractPieChartBuilder
    * #getCmpStats()
    */
-  Hashtable getCmpStats() {
+  Hashtable<String, String[]> getCmpStats() {
     // Hashtable key=componentId, value=new String[3] {tout, groupe, user}
-    Hashtable cmpStats = new Hashtable();
+    Hashtable<String, String[]> cmpStats = new Hashtable<String, String[]>();
     try {
       cmpStats.putAll(SilverStatisticsPeasDAOAccesVolume
           .getStatsPublicationsVentil(dateStat, currentUserId, filterIdGroup,

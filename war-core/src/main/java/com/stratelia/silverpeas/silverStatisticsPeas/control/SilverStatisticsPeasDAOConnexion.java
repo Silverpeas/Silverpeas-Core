@@ -433,10 +433,9 @@ public class SilverStatisticsPeasDAOConnexion {
    * @throws SQLException
    * @throws ParseException
    */
-  public static Collection[] getStatsUserFq(String dateBegin, String dateEnd,
-      int min, int max) throws SQLException, ParseException {
-    SilverTrace.info("silverStatisticsPeas",
-        "SilverStatisticsPeasDAOConnexion.getStatsUserFq",
+  public static Collection[] getStatsUserFq(String dateBegin, String dateEnd, int min, int max)
+      throws SQLException, ParseException {
+    SilverTrace.info("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getStatsUserFq",
         "root.MSG_GEN_ENTER_METHOD");
 
     String selectQuery = " SELECT dateStat, COUNT(userId)"

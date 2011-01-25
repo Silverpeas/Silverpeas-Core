@@ -34,7 +34,8 @@ import java.awt.GradientPaint;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.Stroke;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.jCharts.axisChart.AxisChart;
 import org.jCharts.chartData.AxisChartDataSet;
@@ -58,19 +59,17 @@ import org.jCharts.types.PieLabelType;
 public class ChartUtil {
 
   /**
-   * @param string
-   * @param string2
-   * @param string3
-   * @param strings
-   * @param ds
-   * @return
+   * @param xAxisTitle the w axis title
+   * @param yAxisTitle the y axis title
+   * @param title the chart title
+   * @param xAxisLabels array of axis labels
+   * @param values array of axis values
+   * @return an AxisChart object
    * @throws ChartDataException
    */
-  public static AxisChart buildBarAxisChart(String xAxisTitle,
-      String yAxisTitle, String title, String[] xAxisLabels, double[] values)
-      throws ChartDataException {
-    DataSeries dataSeries = new DataSeries(xAxisLabels, xAxisTitle, yAxisTitle,
-        title);
+  public static AxisChart buildBarAxisChart(String xAxisTitle, String yAxisTitle, String title,
+      String[] xAxisLabels, double[] values) throws ChartDataException {
+    DataSeries dataSeries = new DataSeries(xAxisLabels, xAxisTitle, yAxisTitle, title);
 
     double[][] data = new double[][] { values };
     String[] legendLabels = { "Bugs" };
@@ -91,26 +90,24 @@ public class ChartUtil {
     axisProperties.getYAxisProperties().setAxisTitleChartFont(
         new ChartFont(new Font("Arial", Font.BOLD, 13), Color.black));
 
-    AxisChart axisChart = new AxisChart(dataSeries, chartProperties,
-        axisProperties, null, 500, 300);
+    AxisChart axisChart =
+        new AxisChart(dataSeries, chartProperties, axisProperties, null, 500, 300);
 
     return axisChart;
   }
 
   /**
-   * @param string
-   * @param string2
-   * @param string3
-   * @param strings
-   * @param ds
+   * @param xAxisTitle the x axis title
+   * @param yAxisTitle the y axis title
+   * @param title the chart title
+   * @param xAxisLabels array of x axis labels
+   * @param values array of values
    * @return
    * @throws ChartDataException
    */
-  public static AxisChart buildLineAxisChart(String xAxisTitle,
-      String yAxisTitle, String title, String[] xAxisLabels, double[] values)
-      throws ChartDataException {
-    DataSeries dataSeries = new DataSeries(xAxisLabels, xAxisTitle, yAxisTitle,
-        title);
+  public static AxisChart buildLineAxisChart(String xAxisTitle, String yAxisTitle, String title,
+      String[] xAxisLabels, double[] values) throws ChartDataException {
+    DataSeries dataSeries = new DataSeries(xAxisLabels, xAxisTitle, yAxisTitle, title);
 
     double[][] data = new double[0][0];
     if (values.length > 0) {
@@ -121,14 +118,13 @@ public class ChartUtil {
           new Stroke[] { PointChartProperties.DEFAULT_POINT_BORDER_STROKE },
           new Shape[] { PointChartProperties.SHAPE_CIRCLE });
       Paint[] paints = getRandomPaints(1);
-      AxisChartDataSet axisChartDataSet = new AxisChartDataSet(data,
-          legendLabels, paints, ChartType.LINE, lineChartProperties);
+      AxisChartDataSet axisChartDataSet =
+          new AxisChartDataSet(data, legendLabels, paints, ChartType.LINE, lineChartProperties);
       dataSeries.addIAxisPlotDataSet(axisChartDataSet);
     }
 
     ChartProperties chartProperties = new ChartProperties();
-    chartProperties.setTitleFont(new ChartFont(
-        new Font("Arial", Font.BOLD, 13), Color.black));
+    chartProperties.setTitleFont(new ChartFont(new Font("Arial", Font.BOLD, 13), Color.black));
 
     AxisProperties axisProperties = new AxisProperties();
     axisProperties.getXAxisProperties().setAxisTitleChartFont(
@@ -136,14 +132,21 @@ public class ChartUtil {
     axisProperties.getYAxisProperties().setAxisTitleChartFont(
         new ChartFont(new Font("Arial", Font.BOLD, 13), Color.black));
 
-    AxisChart axisChart = new AxisChart(dataSeries, chartProperties,
-        axisProperties, null, 500, 300);
+    AxisChart axisChart =
+        new AxisChart(dataSeries, chartProperties, axisProperties, null, 500, 300);
 
     return axisChart;
   }
 
-  public static PieChart2D buildPieChart(String title, double[] data,
-      String[] legendLabels) throws ChartDataException {
+  /**
+   * @param title
+   * @param data
+   * @param legendLabels
+   * @return
+   * @throws ChartDataException
+   */
+  public static PieChart2D buildPieChart(String title, double[] data, String[] legendLabels)
+      throws ChartDataException {
     // filter data to remove unsignificant data (<1%)
     // -------------------------------------------------
     // 1 - compute one percent value
@@ -154,11 +157,11 @@ public class ChartUtil {
     onePercent = onePercent / 100;
     // -------------------------------------------------
     // 2 - compute new datas and legends
-    Vector vNewData = new Vector();
-    Vector vNewLegendLabels = new Vector();
+    List<Double> vNewData = new ArrayList<Double>();
+    List<String> vNewLegendLabels = new ArrayList<String>();
     for (int i = 0; i < data.length; i++) {
       if (data[i] > onePercent) {
-        vNewData.add(new Double(data[i]));
+        vNewData.add(data[i]);
         vNewLegendLabels.add(legendLabels[i]);
       }
     }
@@ -167,8 +170,8 @@ public class ChartUtil {
     double[] newData = new double[vNewData.size()];
     String[] newLegendLabels = new String[vNewData.size()];
     for (int i = 0; i < vNewData.size(); i++) {
-      newData[i] = ((Double) vNewData.get(i)).doubleValue();
-      newLegendLabels[i] = (String) vNewLegendLabels.get(i);
+      newData[i] = vNewData.get(i).doubleValue();
+      newLegendLabels[i] = vNewLegendLabels.get(i);
     }
 
     Paint[] paints = getRandomPaints(newLegendLabels.length);
@@ -183,11 +186,9 @@ public class ChartUtil {
         newLegendLabels, paints, pieChart2DProperties);
 
     ChartProperties chartProperties = new ChartProperties();
-    chartProperties.setTitleFont(new ChartFont(
-        new Font("Arial", Font.BOLD, 13), Color.black));
+    chartProperties.setTitleFont(new ChartFont(new Font("Arial", Font.BOLD, 13), Color.black));
 
-    PieChart2D pieChart2D = new PieChart2D(pieChartDataSet, null,
-        chartProperties, 500, 350);
+    PieChart2D pieChart2D = new PieChart2D(pieChartDataSet, null, chartProperties, 500, 350);
 
     return pieChart2D;
   }

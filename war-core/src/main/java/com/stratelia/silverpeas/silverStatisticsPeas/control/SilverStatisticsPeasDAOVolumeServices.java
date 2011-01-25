@@ -58,8 +58,8 @@ public class SilverStatisticsPeasDAOVolumeServices {
         "SilverStatisticsPeasDAOVolumeServices.getStatsInstancesServices",
         "root.MSG_GEN_ENTER_METHOD");
     String selectQuery = " SELECT componentname, count(*)"
-        + " FROM st_componentinstance" + " group by componentname"
-        + " order by count(*) desc";
+        + " FROM st_componentinstance" + " GROUP BY componentname"
+        + " ORDER BY count(*) DESC";
 
     return getCollectionArrayFromQuery(selectQuery);
   }
@@ -77,7 +77,7 @@ public class SilverStatisticsPeasDAOVolumeServices {
     List<String> counts = new ArrayList<String>();
     long count = 0;
     Admin admin = new Admin();
-    Map components = admin.getAllComponents();
+    Map<String, WAComponent> components = admin.getAllComponents();
     String label = null;
 
     while (rs.next()) {

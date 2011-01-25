@@ -31,25 +31,34 @@
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
 /**
- * @author BERTINL TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
+ * @author BERTINL
  */
 public class StatItem {
-  private long[] countValues;
+  private final long[] countValues;
   private String cmpId;
   private String name;
 
-  public StatItem(String cmpId, String name, long[] countValues) {
+  /**
+   * Default constructor
+   * @param cmpId the component identifier
+   * @param name
+   * @param count
+   */
+  public StatItem(String cmpId, String name, long[] count) {
     this.cmpId = cmpId;
     this.name = name;
-    this.countValues = countValues;
+    if (count != null) {
+      this.countValues = count.clone();
+    }else {
+      this.countValues = new long[0];
+    }
   }
 
   /**
    * @return Returns the CountValues.
    */
   public long[] getCountValues() {
-    return this.countValues;
+    return this.countValues.clone();
   }
 
   /**

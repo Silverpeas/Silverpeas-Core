@@ -78,8 +78,8 @@ public class DocSizePieChartBuilder extends AbstractPieChartBuilder {
    * @see com.stratelia.silverpeas.silverStatisticsPeas.control.AbstractPieChartBuilder
    * #getCmpStats()
    */
-  Hashtable getCmpStats() {
-    Hashtable cmpStats = new Hashtable();
+  Hashtable<String, String[]> getCmpStats() {
+    Hashtable<String,String[]> cmpStats = new Hashtable<String, String[]>();
     try {
       cmpStats.putAll(SilverStatisticsPeasDAOVolumeServer
           .getStatsAttachmentsSizeVentil(this.currentUserId));

@@ -115,11 +115,11 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   private Collection<String> yearsAccess = null;
   private Collection<String> yearsVolume = null;
 
-  ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(getLanguage());
+  private ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(getLanguage());
 
   private ResourceLocator settings;
 
-  Admin admin = new Admin();
+  private Admin admin = new Admin();
 
   private PdcBm pdcBm = null;
 
@@ -213,7 +213,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     int i = 0;
     Iterator<String> it = collection.iterator();
     while (it.hasNext()) {
-      String value = (String) it.next();
+      String value = it.next();
       result[i++] = Double.parseDouble(value);
     }
 
@@ -447,14 +447,20 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     return axisChart;
   }
 
-  // donne les stats pour un groupe seulement cad 2 info, la collection contient
-  // donc un seul element
+  /**
+   * donne les stats pour un groupe seulement cad 2 info, la collection contient donc un seul
+   * element
+   * @param dateBegin a begin date string representation yyyy/MM/dd
+   * @param dateEnd an end date string representation yyyy/MM/dd
+   * @param idGroup a user group identifier
+   * @return 
+   */
   public Collection<String[]> getStatsConnexionAllGroup(String dateBegin, String dateEnd,
       String idGroup) {
     Collection<String[]> c = null;
     try {
-      c = SilverStatisticsPeasDAOConnexion.getStatsConnexionAllGroup(dateBegin,
-          dateEnd, Integer.parseInt(idGroup));
+      c = SilverStatisticsPeasDAOConnexion.getStatsConnexionAllGroup(dateBegin, dateEnd,
+          Integer.parseInt(idGroup));
     } catch (Exception e) {
       SilverTrace.error("silverStatisticsPeas",
           "SilverStatisticsPeasSessionController.getStatsConnexionAllGroup()",
@@ -464,10 +470,12 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   }
 
   /**
-   * @return
+   * @param dateBegin a begin date string representation yyyy/MM/dd
+   * @param dateEnd an end date string representation yyyy/MM/dd
+   * @param idGroup a user group identifier
+   * @return an AxisChart statistics
    */
-  public AxisChart getUserConnectionsGroupChart(String dateBegin,
-      String dateEnd, String idGroup) {
+  public AxisChart getUserConnectionsGroupChart(String dateBegin, String dateEnd, String idGroup) {
     AxisChart axisChart = null;
     try {
       Collection[] statsConnection = SilverStatisticsPeasDAOConnexion
@@ -1056,9 +1064,9 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     AxisChart axisChart = null;
     try {
       currentStats.clear();
-      Collection statsDocsSize = SilverStatisticsPeasDAOVolumeServer
+      Collection<String[]> statsDocsSize = SilverStatisticsPeasDAOVolumeServer
           .getStatsVolumeServer();
-      Iterator itStats = statsDocsSize.iterator();
+      Iterator<String[]> itStats = statsDocsSize.iterator();
       String[] values;
       String annee;
       String mois;
@@ -1066,7 +1074,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       double[] size = new double[statsDocsSize.size()];
       int i = 0;
       while (itStats.hasNext()) {
-        values = (String[]) itStats.next();
+        values = itStats.next();
         annee = values[0].substring(0, 4);
         mois = values[0].substring(5, 7);
         dates[i] = mois + "-" + annee;
@@ -1395,7 +1403,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   /**
    * @return Returns the currentStats.
    */
-  public Vector getCurrentStats() {
+  public Vector<String[]> getCurrentStats() {
     return currentStats;
   }
 
@@ -1441,8 +1449,8 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
   /**
    * Retrieve statistics on axis
-   * @param statsFilter
-   * @return
+   * @param statsFilter an axis stats filter
+   * @return a Statistic value object
    */
   public List<StatisticVO> getAxisStats(AxisStatsFilter statsFilter) {
     // Result list
@@ -1475,7 +1483,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
           int nbAxisAccess = 0;
           // String axisVlue = axisHeader.get
           gSC = getPdCPublications(axisId, "/0/", components);
-          nbAxisAccess = computeStatistics(accessPublis, gSC);
+          nbAxisAccess = computeAxisAccessStatistics(accessPublis, gSC);
           StatisticVO curStat =
               new StatisticVO(axisId, axisHeader.getName(), axisHeader.getDescription(),
                   nbAxisAccess);
@@ -1500,7 +1508,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
               curValue.getLevelNumber() == curLevel) {
             // Retrieve all the current axis publications
             gSC = getPdCPublications(Integer.toString(curAxisId), curAxisValue, components);
-            nbAxisAccess = computeStatistics(accessPublis, gSC);
+            nbAxisAccess = computeAxisAccessStatistics(accessPublis, gSC);
             // Create a new statistic value object
             StatisticVO curStat =
                 new StatisticVO(Integer.toString(curAxisId), curValue.getName(), curValue
@@ -1513,7 +1521,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
             String valueId = curAxisValue;
             // Retrieve all the current axis publications
             gSC = getPdCPublications(Integer.toString(curAxisId), valueId, components);
-            nbAxisAccess = computeStatistics(accessPublis, gSC);
+            nbAxisAccess = computeAxisAccessStatistics(accessPublis, gSC);
             // Create a new statistic value object
             StatisticVO curStat =
                 new StatisticVO(Integer.toString(curAxisId), curValue.getName(), curValue
@@ -1651,8 +1659,6 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     // Cross PDC statistics
     CrossStatisticVO crossStat = null;
     List<List<CrossAxisAccessVO>> stats = new ArrayList<List<CrossAxisAccessVO>>();
-    // Another modele structure in order to display statistics
-    List<List<String>> statsArray = new ArrayList<List<String>>();
 
     // Retrieve all the list of components
     List<String> components = buildCustomComponentListWhereToSearch();
@@ -1684,7 +1690,6 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
       for (Value firstValue : firstValues) {
         List<CrossAxisAccessVO> listRowStats = new ArrayList<CrossAxisAccessVO>();
-        List<String> arrayRowStats = new ArrayList<String>();
         String fValue = firstValue.getFullPath();
         String fValueName = firstValue.getName();
         firstRow.add(fValueName);
@@ -1701,7 +1706,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
           searchCtx.addCriteria(new SearchCriteria(secondAxisId, sValue));
           // Retrieve publication on current cross axis
           List<GlobalSilverContent> gSC = getPdCPublications(searchCtx, components);
-          nbAxisAccess = computeStatistics(accessPublis, gSC);
+          nbAxisAccess = computeAxisAccessStatistics(accessPublis, gSC);
           CrossAxisAccessVO crossAxisAccess =
               new CrossAxisAccessVO(firstAxisId, secondAxisId, fValue, sValue, nbAxisAccess);
           listRowStats.add(crossAxisAccess);
@@ -1720,7 +1725,13 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     return crossStat;
   }
 
-  private int computeStatistics(List<AccessPublicationVO> accessPublis,
+  /**
+   * Compute the number of axis access
+   * @param accessPublis the list of publications that have been accessed on specific time period
+   * @param gSC the list of publication which are classified on an axis
+   * @return the global number of access on a specific axis
+   */
+  private int computeAxisAccessStatistics(List<AccessPublicationVO> accessPublis,
       List<GlobalSilverContent> gSC) {
     int nbAxisAccess = 0;
     for (GlobalSilverContent curGSC : gSC) {
