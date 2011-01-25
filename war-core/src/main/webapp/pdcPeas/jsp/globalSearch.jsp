@@ -794,11 +794,13 @@ if (!activeSelection.booleanValue() && !isPDCSubscription)
 					selected	= "";
 					incr		= "";
 					space	= (SpaceInstLight) allSpaces.get(i);
-					if (space.getLevel() == 1)
-						incr = "&nbsp;&nbsp;";
+					for (int j=0; j<space.getLevel(); j++) {
+						incr += "&nbsp;&nbsp;&nbsp;&nbsp;";
+					}
 
-					if (space.getFullId().equals(spaceSelected))
+					if (space.getFullId().equals(spaceSelected)) {
 						selected = " selected";
+					}
 
 					out.println("<option value=\""+space.getFullId()+"\""+selected+">"+incr+space.getName(language)+"</option>");
 				}

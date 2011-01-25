@@ -37,7 +37,6 @@ import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -1531,7 +1530,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       return synonyms.get(mot);
     } else {
       try {
-        @SuppressWarnings("unchecked")
         Collection<String> synos = new ThesaurusManager().getSynonyms(mot, getUserId());
         synonyms.put(mot, synos);
         return synos;
@@ -1937,30 +1935,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * Returns the list of allowed spaces/domains for the current user.
    */
   public List<SpaceInstLight> getAllowedSpaces() {
-    List<SpaceInstLight> allowed = new ArrayList<SpaceInstLight>();
-
-    String[] spaceIds = getOrganizationController().getAllRootSpaceIds(getUserId());
-
-    // add each shared domains
-    for (int nI = 0; nI < spaceIds.length; nI++) {
-      String spaceId = spaceIds[nI];
-      SpaceInstLight spaceInst = getOrganizationController().getSpaceInstLightById(spaceId);
-      if (spaceInst != null && spaceInst.getFatherId().equals("0")) {
-        allowed.add(spaceInst);
-
-        String[] subSpaces = getOrganizationController().getAllSubSpaceIds(
-            spaceId, getUserId());
-        SpaceInstLight subSpaceInst = null;
-        for (int j = 0; j < subSpaces.length; j++) {
-          subSpaceInst = getOrganizationController().getSpaceInstLightById(
-              subSpaces[j]);
-          if (subSpaceInst != null) {
-            allowed.add(subSpaceInst);
-          }
-        }
-      }
-    }
-    return allowed;
+    return getOrganizationController().getSpaceTreeview(getUserId());
   }
 
   /**
