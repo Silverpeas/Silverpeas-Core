@@ -43,18 +43,14 @@
 <%@page import="java.io.File"%>
 <%@page import="com.stratelia.silverpeas.notificationManager.NotificationParameters"%>
 
-<fmt:setLocale value="${sessionScope[sessionController].language}" />
-<view:setBundle bundle="${requestScope.resources.multilangBundle}" var="LML" />
-<view:setBundle basename="com.stratelia.webactiv.multilang.generalMultilang" var="GML" />
-<c:set var="browseContext" value="${requestScope.browseContext}" />
- <c:url value="/RprofilPublic/ProfilPublic" var="profilPublic" />
+<fmt:setLocale value="${requestScope.resources.language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
 <%
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
     List fragments = (List) request.getAttribute("UserFragments");
     Pagination pagination = (Pagination) request.getAttribute("pagination");
-
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -75,7 +71,7 @@
           var title = stripInitialWhitespace($("#txtTitle").val());
           var errorMsg = "";
           if (isWhitespace(title)) {
-              errorMsg = "<fmt:message key="GML.thefield" bundle="${GML}"/>"+ " <fmt:message key="notification.object" />"+ " <fmt:message key="GML.isRequired" bundle="${GML}"/>";
+              errorMsg = "<fmt:message key="GML.thefield" />"+ " <fmt:message key="notification.object" />"+ " <fmt:message key="GML.isRequired" />";
           }
           if (errorMsg == "") {
           	$.getJSON("<%=m_context%>/DirectoryJSON",
@@ -145,7 +141,7 @@
                    <table cellspacing="0" cellpadding="0" border="0">
                         <tbody><tr>
                             <td align="left" class="gaucheBoutonV5"><img alt="" src="/silverpeas/util/viewGenerator/icons/px.gif"/></td>
-                            <td nowrap="nowrap" class="milieuBoutonV5"><a href="javascript:search()"><fmt:message key="GML.search" bundle="${GML}" /></a></td>
+                            <td nowrap="nowrap" class="milieuBoutonV5"><a href="javascript:search()"><fmt:message key="GML.search" /></a></td>
                             <td align="right" class="droiteBoutonV5"><img alt="" src="/silverpeas/util/viewGenerator/icons/px.gif"/></td>
                          </tr></tbody>
                     </table>
@@ -173,7 +169,7 @@
                   indexCSS = "class=\"active\"";
                 }
                 %>
-                <a <%=indexCSS%> href="javascript:viewIndex('tous')"><fmt:message key="directory.scope.all" bundle="${LML}" /></a>
+                <a <%=indexCSS%> href="javascript:viewIndex('tous')"><fmt:message key="directory.scope.all" /></a>
                 <%
                 out.println(" - ");
                 indexCSS = "";
@@ -181,7 +177,7 @@
                   indexCSS = "class=\"active\"";
                 }
                 %>
-                <a <%=indexCSS%> href="javascript:viewIndex('connected')"><fmt:message key="directory.scope.connected" bundle="${LML}" /></a>
+                <a <%=indexCSS%> href="javascript:viewIndex('connected')"><fmt:message key="directory.scope.connected" /></a>
          </div>          
         </div>
         <div id="users">
@@ -213,7 +209,7 @@
         	<table>
           <tr>
             <td class="txtlibform">
-              <fmt:message key="notification.object" bundle="${LML}" /> :
+              <fmt:message key="notification.object" /> :
             </td>
             <td>
               <input type="text" name="txtTitle" id="txtTitle" maxlength="<%=NotificationParameters.MAX_SIZE_TITLE%>" size="50" value=""/>
@@ -222,7 +218,7 @@
           </tr>
           <tr>
             <td class="txtlibform">
-              <fmt:message key="notification.message" bundle="${LML}" /> :
+              <fmt:message key="notification.message" /> :
             </td>
             <td>
               <textarea name="txtMessage" id="txtMessage" cols="49" rows="4"></textarea>
@@ -230,19 +226,19 @@
           </tr>
           <tr>
             <td colspan="2">
-	    (<img src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5" alt="mandatoryField" /> <fmt:message key="GML.requiredField" bundle="${GML}"/>)
+	    (<img src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5" alt="mandatoryField" /> : <fmt:message key="GML.requiredField"/>)
             </td>
           </tr>
           </table>
         </form>
         </view:board>
         <div align="center">
-          <%
-			ButtonPane buttonPane = gef.getButtonPane();
-			buttonPane.addButton((Button) gef.getFormButton("Envoyer", "javascript:sendNotification()", false));
-			buttonPane.addButton((Button) gef.getFormButton("Cancel", "javascript:closeDialog()", false));
-			out.println(buttonPane.print());
-          %>
+        	<view:buttonPane>
+        		<fmt:message key="GML.ok" var="ok_label" />
+        		<fmt:message key="GML.cancel"  var="cancel_label"/>
+        		<view:button label="${ok_label}" action="javascript:sendNotification()" />
+        		<view:button label="${cancel_label}" action="javascript:closeDialog()" />
+        	</view:buttonPane>
         </div>
 	</div>
 	<view:progressMessage/>
