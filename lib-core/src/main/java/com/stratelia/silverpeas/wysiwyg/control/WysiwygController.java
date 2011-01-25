@@ -711,15 +711,20 @@ public class WysiwygController {
   public static String load(String componentId, String objectId, String language)
       throws WysiwygException {
     String content = null;
-    if (language == null || I18NHelper.isDefaultLanguage(language)) {
-      String fileName = WysiwygController.getWysiwygFileName(objectId);
-      content =
-          WysiwygController.loadFileAndAttachment(fileName, null, componentId, WYSIWYG_CONTEXT);
-    } else {
-      String fileName = WysiwygController.getWysiwygFileName(objectId, language);
-      content =
-          WysiwygController.loadFileAndAttachment(fileName, null, componentId, WYSIWYG_CONTEXT);
+    String fileName = null;
+    boolean useDefaultLanguage = (language == null || I18NHelper.isDefaultLanguage(language) );
+    
+    if (!useDefaultLanguage) {
+      fileName = WysiwygController.getWysiwygFileName(objectId, language);
+      content = WysiwygController.loadFileAndAttachment(fileName, null, componentId, WYSIWYG_CONTEXT);
     }
+    
+    // use default language also if content has not been found in specified language
+    if ( (!StringUtil.isDefined(content)) || (useDefaultLanguage) ) {
+      fileName = WysiwygController.getWysiwygFileName(objectId);
+      content = WysiwygController.loadFileAndAttachment(fileName, null, componentId, WYSIWYG_CONTEXT);
+    }
+    
     if (content == null) {
       content = "";
     }
