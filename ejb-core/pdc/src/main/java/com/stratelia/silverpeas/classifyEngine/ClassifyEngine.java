@@ -21,9 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.classifyEngine;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Hashtable;
@@ -35,38 +35,32 @@ import java.sql.SQLException;
 
 import java.text.SimpleDateFormat;
 
-import com.stratelia.webactiv.util.exception.*;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.silverpeas.silvertrace.*;
 import com.stratelia.silverpeas.util.JoinStatement;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * This class represents the ClassifyEngine API It gives access to functions for classifying,
  * unclassifying and searching SilverObjetIds Assumption : The SilverObjetIds processed are int
  * values from 0 to n The axis processed are int values from 0 to n
  */
-
 public class ClassifyEngine extends Object {
   // Maximum number of axis processed by the classifyEngine (from properties)
-  static private int nbMaxAxis = 0;
 
+  static private int nbMaxAxis = 0;
   // Helper object to build all the SQL statements
   private static SQLStatement SQLStatement = new SQLStatement();
-
   // Database
   private static String m_dbName = JNDINames.CLASSIFYENGINE_DATASOURCE;
   private String m_sClassifyTable = "SB_ClassifyEngine_Classify";
   private String m_sPositionIdColumn = "PositionId";
-
   // Registered axis cache
   static private int[] m_anRegisteredAxis = null;
-
   // GetSinglePertinentAxis Cache
   static private Hashtable<String, PertinentAxis> m_hSinglePertinentAxis =
       new Hashtable<String, PertinentAxis>(0);
-
   // the date format used in database to represent a date
   static private SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
 
@@ -109,21 +103,23 @@ public class ClassifyEngine extends Object {
     PreparedStatement prepStmt = null;
 
     // check that thie given axis is not already registered
-    if (this.AxisAlreadyRegistered(nLogicalAxisId))
+    if (this.AxisAlreadyRegistered(nLogicalAxisId)) {
       throw new ClassifyEngineException("ClassifyEngine.registerAxis",
           SilverpeasException.ERROR,
           "classifyEngine.EX_AXIS_ALREADY_REGISTERED", "nLogicalAxisId: "
           + nLogicalAxisId);
+    }
 
     try {
       synchronized (m_anRegisteredAxis) {
         // Get the next unregistered axis
         int nNextAvailableAxis = this.getNextUnregisteredAxis();
-        if (nNextAvailableAxis == -1)
+        if (nNextAvailableAxis == -1) {
           throw new ClassifyEngineException("ClassifyEngine.registerAxis",
               SilverpeasException.ERROR,
               "classifyEngine.EX_NOMORE_AVAILABLE_AXIS", "nLogicalAxisId: "
               + nLogicalAxisId);
+        }
 
         // build the statement to classify
         String sSQLStatement = SQLStatement.buildRegisterAxisStatement(
@@ -216,10 +212,11 @@ public class ClassifyEngine extends Object {
       resSet = prepStmt.executeQuery();
 
       // m_anRegisteredAxis = new int[nbMaxAxis];
-      while (resSet.next())
-        for (int nI = 0; nI < nbMaxAxis; nI++)
-          tempRegisteredAxis[nI] = new Integer(resSet.getString(3 + nI))
-              .intValue();
+      while (resSet.next()) {
+        for (int nI = 0; nI < nbMaxAxis; nI++) {
+          tempRegisteredAxis[nI] = new Integer(resSet.getString(3 + nI)).intValue();
+        }
+      }
 
     } catch (Exception e) {
       throw new ClassifyEngineException("ClassifyEngine.loadRegisteredAxis",
@@ -244,9 +241,11 @@ public class ClassifyEngine extends Object {
   private int getNextUnregisteredAxis() {
     int nNextUnregisteredAxis = -1;
 
-    for (int nI = 0; nI < nbMaxAxis && nNextUnregisteredAxis == -1; nI++)
-      if (m_anRegisteredAxis[nI] == -1)
+    for (int nI = 0; nI < nbMaxAxis && nNextUnregisteredAxis == -1; nI++) {
+      if (m_anRegisteredAxis[nI] == -1) {
         nNextUnregisteredAxis = nI;
+      }
+    }
 
     return nNextUnregisteredAxis;
   }
@@ -254,9 +253,11 @@ public class ClassifyEngine extends Object {
   // Return the physicalAxisId given the LogicalAxisId
   private int getPhysicalAxisId(int nLogicalAxisId)
       throws ClassifyEngineException {
-    for (int nI = 0; nI < nbMaxAxis; nI++)
-      if (m_anRegisteredAxis[nI] == nLogicalAxisId)
+    for (int nI = 0; nI < nbMaxAxis; nI++) {
+      if (m_anRegisteredAxis[nI] == nLogicalAxisId) {
         return nI;
+      }
+    }
 
     SilverTrace.error("classifyEngine", "ClassifyEngine.getPhysicalAxisId",
         "root.MSG_GEN_PARAM_VALUE",
@@ -270,8 +271,9 @@ public class ClassifyEngine extends Object {
   private String printRegisteredAxis() {
     StringBuffer sRegister = new StringBuffer(100);
     sRegister.append("[");
-    for (int nI = 0; nI < nbMaxAxis; nI++)
+    for (int nI = 0; nI < nbMaxAxis; nI++) {
       sRegister.append(m_anRegisteredAxis[nI]).append(", ");
+    }
     sRegister.append("]");
     return sRegister.toString();
   }
@@ -279,10 +281,11 @@ public class ClassifyEngine extends Object {
   // Return the LogicalAxisId given the physicalAxisId
   private int getLogicalAxisId(int nPhysicalAxisId)
       throws ClassifyEngineException {
-    if (nPhysicalAxisId < 0 || nPhysicalAxisId > m_anRegisteredAxis.length)
+    if (nPhysicalAxisId < 0 || nPhysicalAxisId > m_anRegisteredAxis.length) {
       throw new ClassifyEngineException("ClassifyEngine.getLogicalAxisId",
           SilverpeasException.ERROR, "classifyEngine.EX_CANT_GET_LOGICAL_AXIS",
           "nPhysicalAxisId: " + nPhysicalAxisId);
+    }
 
     return m_anRegisteredAxis[nPhysicalAxisId];
   }
@@ -290,9 +293,11 @@ public class ClassifyEngine extends Object {
   // Return if the LogicalAxisId given is already registered
   private boolean AxisAlreadyRegistered(int nLogicalAxisId)
       throws ClassifyEngineException {
-    for (int nI = 0; nI < nbMaxAxis; nI++)
-      if (m_anRegisteredAxis[nI] == nLogicalAxisId)
+    for (int nI = 0; nI < nbMaxAxis; nI++) {
+      if (m_anRegisteredAxis[nI] == nLogicalAxisId) {
         return true;
+      }
+    }
 
     return false;
   }
@@ -337,8 +342,9 @@ public class ClassifyEngine extends Object {
     } finally {
       try {
         DBUtil.close(rs, prepStmt);
-        if (connection != null && !connection.isClosed())
+        if (connection != null && !connection.isClosed()) {
           connection.close();
+        }
       } catch (Exception e) {
         SilverTrace.error("classifyEngine",
             "ClassifyEngine.isPositionAlreadyExists",
@@ -397,8 +403,9 @@ public class ClassifyEngine extends Object {
     } finally {
       try {
         DBUtil.close(prepStmt);
-        if (bCloseConnection && connection != null && !connection.isClosed())
+        if (bCloseConnection && connection != null && !connection.isClosed()) {
           connection.close();
+        }
       } catch (Exception e) {
         SilverTrace.error("classifyEngine",
             "ClassifyEngine.classifySilverObject",
@@ -454,8 +461,9 @@ public class ClassifyEngine extends Object {
     } finally {
       try {
         DBUtil.close(prepStmt);
-        if (bCloseConnection && connection != null && !connection.isClosed())
+        if (bCloseConnection && connection != null && !connection.isClosed()) {
           connection.close();
+        }
       } catch (Exception e) {
         SilverTrace.error("classifyEngine",
             "ClassifyEngine.unclassifySilverObjectByPosition",
@@ -474,8 +482,7 @@ public class ClassifyEngine extends Object {
     PreparedStatement prepStmt = null;
     try {
       // build the statement to remove the position
-      String sSQLStatement = SQLStatement
-          .buildRemoveSilverObjectStatement(nSilverObjectId);
+      String sSQLStatement = SQLStatement.buildRemoveSilverObjectStatement(nSilverObjectId);
 
       // Execute the removal
       SilverTrace.info("classifyEngine",
@@ -512,8 +519,7 @@ public class ClassifyEngine extends Object {
       }
 
       // build the statement to remove the position
-      String sSQLStatement = SQLStatement
-          .buildRemoveByPositionIdStatement(nPositionId);
+      String sSQLStatement = SQLStatement.buildRemoveByPositionIdStatement(nPositionId);
 
       // Execute the removal
       SilverTrace.info("classifyEngine",
@@ -533,8 +539,9 @@ public class ClassifyEngine extends Object {
     } finally {
       try {
         DBUtil.close(prepStmt);
-        if (bCloseConnection && connection != null && !connection.isClosed())
+        if (bCloseConnection && connection != null && !connection.isClosed()) {
           connection.close();
+        }
       } catch (Exception e) {
         SilverTrace.error("classifyEngine",
             "ClassifyEngine.unclassifySilverObjectByPositionId",
@@ -570,8 +577,7 @@ public class ClassifyEngine extends Object {
       }
 
       // build the statement to update the position
-      String sSQLStatement = SQLStatement
-          .buildUpdateByPositionIdStatement(newPosition);
+      String sSQLStatement = SQLStatement.buildUpdateByPositionIdStatement(newPosition);
 
       // Execute the update
       SilverTrace.info("classifyEngine",
@@ -591,8 +597,9 @@ public class ClassifyEngine extends Object {
     } finally {
       try {
         DBUtil.close(prepStmt);
-        if (bCloseConnection && connection != null && !connection.isClosed())
+        if (bCloseConnection && connection != null && !connection.isClosed()) {
           connection.close();
+        }
       } catch (Exception e) {
         SilverTrace.error("classifyEngine",
             "ClassifyEngine.updateSilverObjectPosition",
@@ -647,8 +654,9 @@ public class ClassifyEngine extends Object {
     } finally {
       try {
         DBUtil.close(prepStmt);
-        if (bCloseConnection && connection != null && !connection.isClosed())
+        if (bCloseConnection && connection != null && !connection.isClosed()) {
           connection.close();
+        }
       } catch (Exception e) {
         SilverTrace.error("classifyEngine",
             "ClassifyEngine.updateSilverObjectPosition",
@@ -722,8 +730,9 @@ public class ClassifyEngine extends Object {
           "root.MSG_GEN_PARAM_VALUE", "query executed !");
 
       // Fetch the results
-      while (resSet.next())
+      while (resSet.next()) {
         alObjectIds.add(Integer.valueOf(resSet.getInt(1)));
+      }
 
       return alObjectIds;
     } catch (Exception e) {
@@ -734,8 +743,9 @@ public class ClassifyEngine extends Object {
     } finally {
       try {
         DBUtil.close(resSet, prepStmt);
-        if (connection != null && !connection.isClosed())
+        if (connection != null && !connection.isClosed()) {
           connection.close();
+        }
       } catch (Exception e) {
         SilverTrace.error("classifyEngine",
             "ClassifyEngine.findSilverOjectByCriterias",
@@ -749,8 +759,9 @@ public class ClassifyEngine extends Object {
    */
   public List<Integer> getSilverContentIdsByPositionIds(List<Integer> alPositionids)
       throws ClassifyEngineException {
-    if (alPositionids == null || alPositionids.size() == 0)
+    if (alPositionids == null || alPositionids.size() == 0) {
       return new ArrayList<Integer>();
+    }
 
     Connection connection = null;
     PreparedStatement prepStmt = null;
@@ -760,8 +771,7 @@ public class ClassifyEngine extends Object {
       connection = DBUtil.makeConnection(m_dbName);
 
       // build the statement to get the SilverObjectIds
-      String sSQLStatement = SQLStatement
-          .buildSilverContentIdsByPositionIdsStatement(alPositionids);
+      String sSQLStatement = SQLStatement.buildSilverContentIdsByPositionIdsStatement(alPositionids);
 
       // Execute the finding
       SilverTrace.info("classifyEngine",
@@ -771,8 +781,9 @@ public class ClassifyEngine extends Object {
       resSet = prepStmt.executeQuery();
       // Fetch the results and convert them in Positions
       ArrayList<Integer> alSilverContentIds = new ArrayList<Integer>();
-      while (resSet.next())
+      while (resSet.next()) {
         alSilverContentIds.add(new Integer(resSet.getInt(1)));
+      }
 
       return alSilverContentIds;
     } catch (Exception e) {
@@ -783,8 +794,9 @@ public class ClassifyEngine extends Object {
     } finally {
       try {
         DBUtil.close(resSet, prepStmt);
-        if (connection != null && !connection.isClosed())
+        if (connection != null && !connection.isClosed()) {
           connection.close();
+        }
       } catch (Exception e) {
         SilverTrace.error("classifyEngine",
             "ClassifyEngine.getSilverContentIdsByPositionIds",
@@ -809,12 +821,10 @@ public class ClassifyEngine extends Object {
       connection = DBUtil.makeConnection(m_dbName);
 
       // build the statement to get the SilverObjectIds
-      String sSQLStatement = SQLStatement
-          .buildFindBySilverObjectIdStatement(nSilverObjectId);
+      String sSQLStatement = SQLStatement.buildFindBySilverObjectIdStatement(nSilverObjectId);
 
       // Execute the finding
-      SilverTrace.info("classifyEngine",
-          "ClassifyEngine.findPositionsBySilverOjectId",
+      SilverTrace.info("classifyEngine", "ClassifyEngine.findPositionsBySilverOjectId",
           "root.MSG_GEN_PARAM_VALUE", "sSQLStatement= " + sSQLStatement);
       prepStmt = connection.prepareStatement(sSQLStatement);
       resSet = prepStmt.executeQuery();
@@ -825,7 +835,7 @@ public class ClassifyEngine extends Object {
         Position position = new Position();
         position.setPositionId(resSet.getInt(1));
 
-        ArrayList<Value> alValues = new ArrayList<Value>();
+        List<Value> alValues = new ArrayList<Value>();
         for (int nI = 0; nI < nbMaxAxis; nI++) {
           Value value = new Value();
           value.setAxisId(this.getLogicalAxisId(nI));
@@ -847,8 +857,9 @@ public class ClassifyEngine extends Object {
     } finally {
       try {
         DBUtil.close(resSet, prepStmt);
-        if (connection != null && !connection.isClosed())
+        if (connection != null && !connection.isClosed()) {
           connection.close();
+        }
       } catch (Exception e) {
         SilverTrace.error("classifyEngine",
             "ClassifyEngine.findPositionsBySilverOjectId",
@@ -863,8 +874,7 @@ public class ClassifyEngine extends Object {
     PreparedStatement prepStmt = null;
     try {
       // build the statement to get the SilverObjectIds
-      String sSQLStatement = SQLStatement
-          .buildRemoveAllPositionValuesStatement(nAxisId);
+      String sSQLStatement = SQLStatement.buildRemoveAllPositionValuesStatement(nAxisId);
 
       // Execute the removal
       SilverTrace.info("classifyEngine",
@@ -894,8 +904,7 @@ public class ClassifyEngine extends Object {
     // -----------------------------
 
     // build the statement to get the empty positions
-    String sSQLStatement = SQLStatement
-        .buildGetEmptyPositionsStatement(nbMaxAxis);
+    String sSQLStatement = SQLStatement.buildGetEmptyPositionsStatement(nbMaxAxis);
     ArrayList<Integer> alDeletedPositionIds = new ArrayList<Integer>();
     // Execute the query
     SilverTrace.info("classifyEngine", "ClassifyEngine.removeEmptyPositions",
@@ -907,8 +916,9 @@ public class ClassifyEngine extends Object {
       resSet = prepStmt.executeQuery();
 
       // Fetch the results
-      while (resSet.next())
+      while (resSet.next()) {
         alDeletedPositionIds.add(new Integer(resSet.getInt(1)));
+      }
     } catch (Exception e) {
       throw new ClassifyEngineException("ClassifyEngine.removeEmptyPositions",
           SilverpeasException.ERROR,
@@ -923,8 +933,7 @@ public class ClassifyEngine extends Object {
       // -----------------------------
 
       // build the statement to remove the empty positions
-      sSQLStatement = SQLStatement
-          .buildRemoveEmptyPositionsStatement(nbMaxAxis);
+      sSQLStatement = SQLStatement.buildRemoveEmptyPositionsStatement(nbMaxAxis);
 
       // Execute the removal
       SilverTrace.info("classifyEngine", "ClassifyEngine.removeEmptyPositions",
@@ -963,13 +972,15 @@ public class ClassifyEngine extends Object {
 
       // Check the minimum required
       this.checkAxisId(oldV.getAxisId());
-      if (oldV.getAxisId() != newV.getAxisId())
+      if (oldV.getAxisId() != newV.getAxisId()) {
         throw new ClassifyEngineException("ClassifyEngine.replaceValuesOnAxis",
             SilverpeasException.ERROR,
             "classifyEngine.EX_AXISVALUES_NOT_IDENTICAL");
-      if (oldV.getValue().equals(newV.getValue()))
+      }
+      if (oldV.getValue().equals(newV.getValue())) {
         throw new ClassifyEngineException("ClassifyEngine.replaceValuesOnAxis",
             SilverpeasException.ERROR, "classifyEngine.EX_VALUES_IDENTICAL");
+      }
     }
 
     PreparedStatement prepStmt = null;
@@ -1005,8 +1016,9 @@ public class ClassifyEngine extends Object {
     } finally {
       try {
         DBUtil.close(prepStmt);
-        if (bCloseConnection && connection != null && !connection.isClosed())
+        if (bCloseConnection && connection != null && !connection.isClosed()) {
           connection.close();
+        }
       } catch (Exception e) {
         SilverTrace.error("classifyEngine",
             "ClassifyEngine.replaceValuesOnAxis",
@@ -1017,18 +1029,20 @@ public class ClassifyEngine extends Object {
 
   private void checkSilverObjectId(int nSilverObjectId)
       throws ClassifyEngineException {
-    if (nSilverObjectId < 0)
+    if (nSilverObjectId < 0) {
       throw new ClassifyEngineException("ClassifyEngine.checkParameters",
           SilverpeasException.ERROR,
           "classifyEngine.EX_INCORRECT_SILVEROBJECTID");
+    }
   }
 
   private void checkPosition(Position position) throws ClassifyEngineException {
-    if (position != null)
+    if (position != null) {
       position.checkPosition();
-    else
+    } else {
       throw new ClassifyEngineException("ClassifyEngine.checkParameters",
           SilverpeasException.ERROR, "classifyEngine.EX_POSITION_NULL");
+    }
   }
 
   private void checkParameters(int nSilverObjectId, Position position)
@@ -1039,20 +1053,23 @@ public class ClassifyEngine extends Object {
 
   private void checkCriterias(List<Criteria> alCriterias) throws ClassifyEngineException {
     // Check if the given array of criterias is valid
-    if (alCriterias == null)
+    if (alCriterias == null) {
       throw new ClassifyEngineException("ClassifyEngine.checkCriterias",
           SilverpeasException.ERROR, "classifyEngine.EX_CRITERIAS_ARRAY_NULL");
+    }
 
     // Check that each criteria is valid
-    for (int nI = 0; nI < alCriterias.size(); nI++)
+    for (int nI = 0; nI < alCriterias.size(); nI++) {
       ((Criteria) alCriterias.get(nI)).checkCriteria();
+    }
   }
 
   private void checkAxisId(int nAxisId) throws ClassifyEngineException {
-    if (nAxisId < 0)
+    if (nAxisId < 0) {
       throw new ClassifyEngineException("ClassifyEngine.checkAxisId",
           SilverpeasException.ERROR,
           "classifyEngine.EX_INCORRECT_AXISID_VALUE", "nAxisId: " + nAxisId);
+    }
   }
 
   /*
@@ -1083,8 +1100,7 @@ public class ClassifyEngine extends Object {
       // Call the search On axis one by one
       ArrayList<PertinentAxis> alPertinentAxis = new ArrayList<PertinentAxis>();
       for (int nI = 0; nI < alAxisIds.size(); nI++) {
-        int nAxisId = this.getPhysicalAxisId((alAxisIds.get(nI))
-            .intValue());
+        int nAxisId = this.getPhysicalAxisId((alAxisIds.get(nI)).intValue());
         alPertinentAxis.add(this.getSinglePertinentAxis(connection,
             alCriterias, nAxisId, today));
       }
@@ -1096,8 +1112,9 @@ public class ClassifyEngine extends Object {
           "classifyEngine.EX_CANT_GET_PERTINENT_AXIS", e);
     } finally {
       try {
-        if (connection != null && !connection.isClosed())
+        if (connection != null && !connection.isClosed()) {
           connection.close();
+        }
       } catch (Exception e) {
         SilverTrace.error("classifyEngine", "ClassifyEngine.getPertinentAxis",
             "root.EX_CONNECTION_CLOSE_FAILED", "", e);
@@ -1128,8 +1145,9 @@ public class ClassifyEngine extends Object {
       pAxis = new PertinentAxis();
       pAxis.setAxisId(this.getLogicalAxisId(nAxisId));
       int nDocs = 0;
-      while (resSet.next())
+      while (resSet.next()) {
         nDocs += resSet.getInt(1);
+      }
       pAxis.setNbObjects(nDocs);
     } finally {
       DBUtil.close(resSet, prepStmt);
@@ -1166,8 +1184,7 @@ public class ClassifyEngine extends Object {
       // Call the search On axis one by one
       ArrayList<PertinentAxis> alPertinentAxis = new ArrayList<PertinentAxis>();
       for (int nI = 0; nI < alAxisIds.size(); nI++) {
-        int nAxisId = this.getPhysicalAxisId(((Integer) alAxisIds.get(nI))
-            .intValue());
+        int nAxisId = this.getPhysicalAxisId(((Integer) alAxisIds.get(nI)).intValue());
         alPertinentAxis.add(this.getSinglePertinentAxisByJoin(connection,
             alCriterias, nAxisId, "", joinStatementAllPositions, today));
       }
@@ -1179,8 +1196,9 @@ public class ClassifyEngine extends Object {
           "classifyEngine.EX_CANT_GET_PERTINENT_AXIS", e);
     } finally {
       try {
-        if (connection != null && !connection.isClosed())
+        if (connection != null && !connection.isClosed()) {
           connection.close();
+        }
       } catch (Exception e) {
         SilverTrace.error("classifyEngine",
             "ClassifyEngine.getPertinentAxisByJoin",
@@ -1221,8 +1239,8 @@ public class ClassifyEngine extends Object {
         ArrayList<Criteria> alComputedCriterias = new ArrayList<Criteria>();
         for (int nI = 0; nI < alCriterias.size(); nI++) {
           Criteria criteria = (Criteria) alCriterias.get(nI);
-          alComputedCriterias.add(new Criteria(this.getPhysicalAxisId(criteria
-              .getAxisId()), criteria.getValue()));
+          alComputedCriterias.add(new Criteria(this.getPhysicalAxisId(criteria.getAxisId()), criteria.
+              getValue()));
         }
         alCriterias = alComputedCriterias;
 
@@ -1239,8 +1257,7 @@ public class ClassifyEngine extends Object {
           alCriterias, nAxisId, sRootValue, joinStatementAllPositions,
           todayFormatted);
 
-      PertinentAxis pertinentAxis = (PertinentAxis) m_hSinglePertinentAxis
-          .get(sSQLStatement);
+      PertinentAxis pertinentAxis = (PertinentAxis) m_hSinglePertinentAxis.get(sSQLStatement);
       if (pertinentAxis == null) {
         // Execute the finding
         SilverTrace.info("classifyEngine",
@@ -1256,8 +1273,9 @@ public class ClassifyEngine extends Object {
         pertinentAxis = new PertinentAxis();
         pertinentAxis.setAxisId(this.getLogicalAxisId(nAxisId));
         int nDocs = 0;
-        while (resSet.next())
+        while (resSet.next()) {
           nDocs += resSet.getInt(1);
+        }
         pertinentAxis.setNbObjects(nDocs);
         pertinentAxis.setRootValue(sRootValue);
 
@@ -1274,8 +1292,9 @@ public class ClassifyEngine extends Object {
     } finally {
       try {
         DBUtil.close(resSet, prepStmt);
-        if (bCloseConnection && connection != null && !connection.isClosed())
+        if (bCloseConnection && connection != null && !connection.isClosed()) {
           connection.close();
+        }
       } catch (Exception e) {
         SilverTrace.error("classifyEngine",
             "ClassifyEngine.getSinglePertinentAxisByJoin",
@@ -1346,8 +1365,9 @@ public class ClassifyEngine extends Object {
     } finally {
       try {
         DBUtil.close(resSet, prepStmt);
-        if (connection != null && !connection.isClosed())
+        if (connection != null && !connection.isClosed()) {
           connection.close();
+        }
       } catch (Exception e) {
         SilverTrace.error("classifyEngine",
             "ClassifyEngine.getPertinentValues",
@@ -1388,9 +1408,8 @@ public class ClassifyEngine extends Object {
       String today = formatter.format(new java.util.Date());
 
       // Build the statement
-      String sSQLStatement = SQLStatement
-          .buildGetPertinentValueByJoinStatement(alCriterias, this
-          .getPhysicalAxisId(nLogicalAxisId), joinStatementAllPositions,
+      String sSQLStatement = SQLStatement.buildGetPertinentValueByJoinStatement(alCriterias, this.
+          getPhysicalAxisId(nLogicalAxisId), joinStatementAllPositions,
           today);
 
       // Execute the finding
@@ -1422,8 +1441,9 @@ public class ClassifyEngine extends Object {
     } finally {
       try {
         DBUtil.close(resSet, prepStmt);
-        if (connection != null && !connection.isClosed())
+        if (connection != null && !connection.isClosed()) {
           connection.close();
+        }
       } catch (Exception e) {
         SilverTrace.error("classifyEngine",
             "ClassifyEngine.getPertinentValuesByJoin",
@@ -1464,9 +1484,8 @@ public class ClassifyEngine extends Object {
       String today = formatter.format(new java.util.Date());
 
       // Build the statement
-      String sSQLStatement = SQLStatement
-          .buildGetObjectValuePairsByJoinStatement(alCriterias, this
-          .getPhysicalAxisId(nLogicalAxisId), joinStatementAllPositions,
+      String sSQLStatement = SQLStatement.buildGetObjectValuePairsByJoinStatement(alCriterias, this.
+          getPhysicalAxisId(nLogicalAxisId), joinStatementAllPositions,
           today, true);
 
       // Execute the finding
@@ -1482,8 +1501,8 @@ public class ClassifyEngine extends Object {
       // Fetch the results
       List<ObjectValuePair> objectValuePairs = new ArrayList<ObjectValuePair>();
       while (resSet.next()) {
-        ObjectValuePair ovp = new ObjectValuePair(resSet.getInt(1), resSet
-            .getString(2), resSet.getString(3));
+        ObjectValuePair ovp = new ObjectValuePair(resSet.getInt(1), resSet.getString(2), resSet.
+            getString(3));
 
         objectValuePairs.add(ovp);
       }
@@ -1497,8 +1516,9 @@ public class ClassifyEngine extends Object {
     } finally {
       try {
         DBUtil.close(resSet, prepStmt);
-        if (connection != null && !connection.isClosed())
+        if (connection != null && !connection.isClosed()) {
           connection.close();
+        }
       } catch (Exception e) {
         SilverTrace.error("classifyEngine",
             "ClassifyEngine.getObjectValuePairsByJoin",
@@ -1506,5 +1526,4 @@ public class ClassifyEngine extends Object {
       }
     }
   }
-
 }

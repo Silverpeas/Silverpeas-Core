@@ -31,8 +31,9 @@ import java.util.List;
  */
 public class ClassifyValue extends com.stratelia.silverpeas.classifyEngine.Value implements
     java.io.Serializable {
+  private static final long serialVersionUID = 4641811783387127570L;
 
-  private List fullPath = null;
+  private List<Value> fullPath = null;
 
   private String axisName = null;
 
@@ -43,12 +44,11 @@ public class ClassifyValue extends com.stratelia.silverpeas.classifyEngine.Value
     super(nGivenAxisId, sGivenValue);
   }
 
-  // return a list of Value objects
-  public List getFullPath() {
+  public List<Value> getFullPath() {
     return this.fullPath;
   }
 
-  public void setFullPath(List fullPath) {
+  public void setFullPath(List<Value> fullPath) {
     this.fullPath = fullPath;
   }
 
@@ -60,8 +60,8 @@ public class ClassifyValue extends com.stratelia.silverpeas.classifyEngine.Value
     this.axisName = axisName;
   }
 
+  @Override
   public String toString() {
-    return "ClassifyValue object :[ AxisId=" + getAxisId() + ", " + " value="
-        + getValue();
+    return "ClassifyValue object :[ AxisId=" + getAxisId() + ", " + " value="  + getValue();
   }
 }

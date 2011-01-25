@@ -33,23 +33,22 @@ import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
  */
 public class ClassifyPosition extends com.stratelia.silverpeas.classifyEngine.Position implements
     ContainerPositionInterface, java.io.Serializable {
+  private static final long serialVersionUID = 6588855414301219379L;
 
   public ClassifyPosition() {
   }
 
-  public ClassifyPosition(List values) {
+  public ClassifyPosition(List<ClassifyValue> values) {
     super(values);
   }
 
-  public ClassifyPosition(int nPositionId, List values) {
+  public ClassifyPosition(int nPositionId, List<ClassifyValue> values) {
     super(nPositionId, values);
   }
 
   public String getValueOnAxis(int axisId) {
-    List values = getValues();
-    ClassifyValue value = null;
-    for (int i = 0; i < values.size(); i++) {
-      value = (ClassifyValue) values.get(i);
+    List<ClassifyValue> values = getValues();
+    for (ClassifyValue value : values) {
       if (value.getAxisId() == axisId) {
         return value.getValue();
       }
@@ -71,7 +70,8 @@ public class ClassifyPosition extends com.stratelia.silverpeas.classifyEngine.Po
    * Méthodes nécéssaire pour le mapping castor du module importExport.
    * @return
    */
-  public List getListClassifyValue() {
+  @SuppressWarnings("unchecked")
+  public List<ClassifyValue> getListClassifyValue() {
     return super.getValues();
   }
 
@@ -79,7 +79,7 @@ public class ClassifyPosition extends com.stratelia.silverpeas.classifyEngine.Po
    * Méthodes nécéssaire pour le mapping castor du module importExport.
    * @param values
    */
-  public void setListClassifyValue(List values) {
+  public void setListClassifyValue(List<ClassifyValue> values) {
     super.setValues(values);
   }
 

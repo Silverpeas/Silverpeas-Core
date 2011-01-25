@@ -24,11 +24,12 @@
 
 package com.stratelia.silverpeas.classifyEngine;
 
-import java.util.*;
-
-import com.stratelia.webactiv.util.exception.*;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Position extends Object implements java.io.Serializable {
+  private static final long serialVersionUID = -6444526234909683822L;
   private int nPositionId = -1;
   private List alValues = null; // List of Value
 

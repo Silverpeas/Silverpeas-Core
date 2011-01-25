@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.util.html;
 
 import java.io.IOException;
@@ -40,6 +39,7 @@ import org.cyberneko.html.filters.ElementRemover;
  * @author sfariello
  */
 public class HtmlCleaner {
+
   private XMLParserConfiguration parser;
   private EntitiesRefWriter writer;
 
@@ -50,7 +50,7 @@ public class HtmlCleaner {
     remover.getRecognizedFeatures();
     remover.getRecognizedProperties();
     writer = new EntitiesRefWriter();
-    XMLDocumentFilter[] filters = { new HTMLTagBalancer(), remover, writer };
+    XMLDocumentFilter[] filters = {new HTMLTagBalancer(), remover, writer};
     parser = new HTMLConfiguration();
     parser.setProperty("http://cyberneko.org/html/properties/filters", filters);
     parser.setFeature("http://cyberneko.org/html/features/balance-tags/document-fragment", true);
@@ -66,9 +66,8 @@ public class HtmlCleaner {
   public String cleanHtmlFragment(String html) throws IOException {
     StringWriter content = new StringWriter();
     writer.setWriter(content, "UTF-8");
-    XMLInputSource source =
-        new XMLInputSource("-//W3C//DTD HTML 4.01", null, null, new StringReader(html),
-        "UTF-8");
+    XMLInputSource source = new XMLInputSource("-//W3C//DTD HTML 4.01", null, null, new StringReader(
+        html), "UTF-8");
     parser.parse(source);
     return content.toString();
   }

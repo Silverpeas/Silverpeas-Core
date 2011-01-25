@@ -1612,15 +1612,13 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
    * @return the complet path - It's a List of ArrayList. Each ArrayList contains the name, the id
    * and the treeId of the value in the path.
    */
-  public List getFullPath(String valueId, String treeId) throws PdcException {
+  public List<Value> getFullPath(String valueId, String treeId) throws PdcException {
     Connection con = openConnection(false);
 
     List<Value> listValues = null;
-    List<TreeNode> listTreeNode = null;
-
     try {
       // récupère une collection de Value
-      listTreeNode = tree.getFullPath(con, new TreeNodePK(valueId), treeId);
+       List<TreeNode> listTreeNode = tree.getFullPath(con, new TreeNodePK(valueId), treeId);
       listValues = createValuesList(listTreeNode);
     } catch (Exception exce_delete) {
       throw new PdcException("PdcBmImpl.deleteValue",
@@ -1631,10 +1629,6 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
 
     return listValues;
   }
-
-  //
-  // private
-  //
 
   /**
    * This method searches if a name of axes is alreadey used !
@@ -2300,7 +2294,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
             // enleve le dernier /
             valuePath = valuePath.substring(0, valuePath.length() - 1);
             valueId = valuePath.substring(valuePath.lastIndexOf("/") + 1, valuePath.length());
-            classifyValue.setFullPath(getFullPath(valueId, new Integer(treeId).toString()));
+            classifyValue.setFullPath(getFullPath(valueId, String.valueOf(treeId)));
             classifyValues.add(classifyValue);
           }
         }
