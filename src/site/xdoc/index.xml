@@ -34,7 +34,7 @@
   </head>
   <body>
     <section name="Try Silverpeas easily">
-      <p><img src="/images/izpack_logo.png" alt="izpack"/><br/>We provide an easy way to try Silverpeas using 
+      <p><img src="/images/logos/logo_izPack.png" alt="izpack"/><br/>We provide an easy way to try Silverpeas using 
         <a href="http://izpack.org/">Izpack</a> with a pre-configured JBoss Server and an H2 Database.
         <br/>
         <b>You have to have a Java 6 JDK installed.</b>
