@@ -432,21 +432,26 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
       result.append("<tr><td>&nbsp;</td></tr>\n");
     } else {
 
-      state.setFirstVisibleLine(pagination.getIndexForCurrentPage());
-      int first = pagination.getIndexForCurrentPage();
-      int lastIndex;
-      if (pagination.isLastPage()) {
-        lastIndex = pagination.getLastItemIndex();
+      // No need pagination
+      if (state.getMaximumVisibleLine() == -1) {
+        for (ArrayLine curLine : lines) {
+          printArrayPaneLine(result, curLine);
+        }
       } else {
-        lastIndex = pagination.getIndexForNextPage();
-      }
-      for (int i = first; i < lastIndex; i++) {
-        if (m_CellsSpacing == 0) {
-          result.append(lines.get(i).printWithPseudoColumns());
+        //Paginate ArrayPane result
+        state.setFirstVisibleLine(pagination.getIndexForCurrentPage());
+        int first = pagination.getIndexForCurrentPage();
+        int lastIndex;
+        if (pagination.isLastPage()) {
+          lastIndex = pagination.getLastItemIndex();
         } else {
-          result.append(lines.get(i).print());
+          lastIndex = pagination.getIndexForNextPage();
+        }
+        for (int i = first; i < lastIndex; i++) {
+          printArrayPaneLine(result, lines.get(i));
         }
       }
+      
     }
     result.append("</tbody>\n");
     result.append("</table>\n");
@@ -485,6 +490,19 @@ public class ArrayPaneSilverpeasV5 implements ArrayPane {
     result.append("</td></tr></table>\n");
 
     return result.toString();
+  }
+
+  /**
+   * Print an ArrayPane line
+   * @param result the string builder
+   * @param curLine the array pane line to print
+   */
+  private void printArrayPaneLine(StringBuilder result, ArrayLine curLine) {
+    if (m_CellsSpacing == 0) {
+      result.append(curLine.printWithPseudoColumns());
+    } else {
+      result.append(curLine.print());
+    }
   }
 
   /**
