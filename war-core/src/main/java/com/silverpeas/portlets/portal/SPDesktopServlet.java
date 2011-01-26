@@ -141,7 +141,7 @@ public class SPDesktopServlet extends HttpServlet {
         response.sendRedirect(spaceHomePage);
       }
     } else {
-      String spContext = getUserIdOrSpaceId(request, false);
+      String spContext = getUserIdOrSpaceId(request);
       setUserIdAndSpaceIdInRequest(request);
 
       DesktopMessages.init(request);
@@ -570,7 +570,7 @@ public class SPDesktopServlet extends HttpServlet {
     portletWindowData.setCurrentMode(getCurrentPortletWindowMode(request, portletWindowName));
     portletWindowData.setCurrentWindowState(getCurrentPortletWindowState(request, portletWindowName));
     if (spContext.startsWith("space")) {
-      portletWindowData.setSpaceId(getUserIdOrSpaceId(request, true));
+      portletWindowData.setSpaceId(getUserIdOrSpaceId(request));
     }
     if (isSpaceFrontOffice(request) || isAnonymousUser(request)) {
       portletWindowData.setEdit(false);
@@ -619,9 +619,9 @@ public class SPDesktopServlet extends HttpServlet {
         + getMainSessionController(request).getUserId());
   }
 
-  private String getUserIdOrSpaceId(HttpServletRequest request, boolean getSpaceIdOnly) {
+  private String getUserIdOrSpaceId(HttpServletRequest request) {
     String spaceId = getSpaceId(request);
-    if (StringUtil.isDefined(spaceId)) {
+    if (StringUtil.isDefined(spaceId) && ! PERSONNAL_SPACE_ID.equals(spaceId)) {
       return spaceId;
     }
     return getMainSessionController(request).getUserId();
@@ -648,7 +648,7 @@ public class SPDesktopServlet extends HttpServlet {
     if (!StringUtil.isDefined(spaceId)) {
       spaceId = request.getParameter("SpaceId");
 
-      if (StringUtil.isDefined(spaceId)) {
+      if (StringUtil.isDefined(spaceId) && ! PERSONNAL_SPACE_ID.equals(spaceId)) {
         MainSessionController m_MainSessionCtrl = getMainSessionController(request);
 
         SpaceInst spaceStruct =
@@ -688,7 +688,10 @@ public class SPDesktopServlet extends HttpServlet {
   private String getSpaceHomepage(String spaceId, HttpServletRequest request)
       throws UnsupportedEncodingException {
     OrganizationController organizationCtrl = getOrganizationController(request);
-    SpaceInst spaceStruct = organizationCtrl.getSpaceInstById(spaceId);
+    SpaceInst spaceStruct = null;
+    if(!PERSONNAL_SPACE_ID.equals(spaceId)) {
+      spaceStruct = organizationCtrl.getSpaceInstById(spaceId);
+    }
 
     if (spaceStruct != null) {
       MainSessionController m_MainSessionCtrl = getMainSessionController(request);
