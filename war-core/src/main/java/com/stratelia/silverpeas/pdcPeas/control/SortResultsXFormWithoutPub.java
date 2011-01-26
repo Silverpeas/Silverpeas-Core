@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,34 +21,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.silverpeas.pdcPeas;
-
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.List;
+package com.stratelia.silverpeas.pdcPeas.control;
 
 import com.stratelia.silverpeas.contentManager.XMLFormFieldComparator;
-import com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController;
-import com.stratelia.silverpeas.pdcPeas.control.PdcSessionController;
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.searchEngine.model.WAIndexSearcher;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
-import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * This class sort the result using a form xml field and filter the results to display only the
@@ -56,15 +38,12 @@ import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException
  * @author david derigent
  */
 public class SortResultsXFormWithoutPub implements SortResults {
+
   private PdcSearchSessionController pdcSearchSessionController;
-  
-  /**
-   * 
-   */
+
   public SortResultsXFormWithoutPub() {
   }
 
-  
   /*
    * (non-Javadoc)
    * @see com.stratelia.silverpeas.pdcPeas.SortResults#execute(java.util.List, java.lang.String,
@@ -73,25 +52,23 @@ public class SortResultsXFormWithoutPub implements SortResults {
   @Override
   public List<GlobalSilverResult> execute(List<GlobalSilverResult> originalResults, String sortOrder,
       String sortValue, String language) {
-    
+
     WAIndexSearcher indexSearcher = new WAIndexSearcher();
-    
     List<GlobalSilverResult> modifiedResults = new ArrayList<GlobalSilverResult>(originalResults.size());
-    
     for (GlobalSilverResult originalResult : originalResults) {
       // Retrieve a matching index entry for the publication if
       // the original matching index entry was wrapping an attachment
       if (originalResult.getType() != null && originalResult.getType().startsWith("Attachment")) {
-          MatchingIndexEntry mie = indexSearcher.search(
-              originalResult.getInstanceId(), originalResult.getId(), "Publication");
-          if (mie == null) {
-            continue;
-          }
-          GlobalSilverResult newResult = pdcSearchSessionController.matchingIndexEntry2GlobalSilverResult(mie);
-          modifiedResults.add(newResult);
-      }
-      // If not an attachment or a publication, skip
-      else if ("Publication".equals(originalResult.getType())){
+        MatchingIndexEntry mie = indexSearcher.search(originalResult.getInstanceId(), originalResult.
+            getId(), "Publication");
+        if (mie == null) {
+          continue;
+        }
+        GlobalSilverResult newResult = pdcSearchSessionController.
+            matchingIndexEntry2GlobalSilverResult(mie);
+        modifiedResults.add(newResult);
+      } // If not an attachment or a publication, skip
+      else if ("Publication".equals(originalResult.getType())) {
         modifiedResults.add(originalResult);
       }
     }
@@ -99,7 +76,6 @@ public class SortResultsXFormWithoutPub implements SortResults {
     List<GlobalSilverResult> filteredResults = new ArrayList<GlobalSilverResult>(originalResults.size());
     for (GlobalSilverResult modifiedResult : modifiedResults) {
       IndexEntryPK entryToTest = modifiedResult.getIndexEntry().getPK();
-      
       // Check to see if the corresponding publication is already in the list
       // as we don't want duplicates
       boolean toAdd = true;
@@ -110,19 +86,16 @@ public class SortResultsXFormWithoutPub implements SortResults {
           break;
         }
       }
-      
       if (toAdd) {
         filteredResults.add(modifiedResult);
       }
     }
-    
+
     // sorts the result on a XML form field
     XMLFormFieldComparator comparator = new XMLFormFieldComparator(sortValue, sortOrder);
     Collections.sort(filteredResults, comparator);
-    
     return filteredResults;
   }
-
 
   @Override
   public void setPdcSearchSessionController(PdcSearchSessionController controller) {

@@ -26,7 +26,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
-<%@ page import="com.stratelia.silverpeas.pdcPeas.Keys"%>
+<%@ page import="com.stratelia.silverpeas.pdcPeas.control.Keys"%>
 <%@ page import="com.silverpeas.form.DataRecord"%>
 <%@ page import="com.silverpeas.form.PagesContext"%>
 <%@ page import="com.silverpeas.form.Form"%>

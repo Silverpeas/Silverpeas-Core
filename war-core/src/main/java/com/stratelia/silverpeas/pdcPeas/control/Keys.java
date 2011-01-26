@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,32 +21,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.silverpeas.pdcPeas;
-
-import java.util.List;
-
-import com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController;
-import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
+package com.stratelia.silverpeas.pdcPeas.control;
 
 /**
- * This interface define services allowing to filter or sort a list of GlobalSilverResult object
- * @author David Derigent
+ * Enumerates the values that may be used by the search engine
+ * @author jle
+ *
  */
-public interface SortResults {
+public enum Keys {
+  // Stores the form field that will be used for the sort (form$$field)
+  RequestSortXformField("SortResXForm"),
+  // Stores the kind of sort that will be used (defaultSort, xmlFormSort, ...)
+  RequestSortImplementor("sortImp"),
+  // Stores the class that will make the default sort
+  defaultImplementor("defaultSort"),
+  // Stores the class that will sort the XML forms
+  xmlFormSortImplementor("xmlFormSort");
 
-  /**
-   * realizes the sort or the sorting or filtering of a list of GlobalSilverResult
-   * @param results List of GlobalSilverResult object
-   * @param sortOrder order of sort 
-   * @param sortValue type of sort to realize
-   * @param language
-   * @return a sorting and/or filtering list
-   */
-  public List<GlobalSilverResult> execute(List<GlobalSilverResult> results,String sortOrder, String sortValue, String language);
+  private String keyword = null;
 
-  /**
-   * Sets a PdcSearchSessionController in case this is needed by the sort
-   * @param controller
-   */
-  public void setPdcSearchSessionController(PdcSearchSessionController controller);
+  Keys(String key) {
+    this.keyword = key;
+  }
+
+  public String value() {
+    return keyword;
+
+  }
+
 }

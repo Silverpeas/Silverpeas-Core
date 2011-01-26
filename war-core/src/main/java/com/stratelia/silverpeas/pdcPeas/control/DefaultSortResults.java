@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.silverpeas.pdcPeas;
+package com.stratelia.silverpeas.pdcPeas.control;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -46,23 +46,23 @@ public class DefaultSortResults implements SortResults {
   public List<GlobalSilverResult> execute(List<GlobalSilverResult> results, String sortOrder,
       String sortValue, final String language) {
 
- // Title comparator
+    // Title comparator
     final Comparator<GlobalSilverResult> cTitreAsc = new Comparator<GlobalSilverResult>() {
 
+      @Override
       public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
         String string1 = o1.getName(language);
         String string2 = o2.getName(language);
-
         if (string1 != null && string2 != null) {
           return string1.compareToIgnoreCase(string2);
-        } else {
-          return -1;
         }
+        return -1;
       }
     };
 
     Comparator<GlobalSilverResult> cPertAsc = new Comparator<GlobalSilverResult>() {
 
+      @Override
       public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
         Float float1 = new Float(o1.getRawScore());
         Float float2 = new Float(o2.getRawScore());
@@ -71,14 +71,14 @@ public class DefaultSortResults implements SortResults {
           int result = float1.compareTo(float2);
           // Add comparison on title if we have the same pertinence
           return (result != 0) ? result : cTitreAsc.compare(o1, o2);
-        } else {
-          return -1;
         }
+        return -1;
       }
     };
 
     Comparator<GlobalSilverResult> cAuteurAsc = new Comparator<GlobalSilverResult>() {
 
+      @Override
       public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
         String string1 = o1.getCreatorName();
         String string2 = o2.getCreatorName();
@@ -87,14 +87,14 @@ public class DefaultSortResults implements SortResults {
           int result = string1.compareToIgnoreCase(string2);
           // Add comparison on title if we have the same author
           return (result != 0) ? result : cTitreAsc.compare(o1, o2);
-        } else {
-          return -1;
         }
+        return -1;
       }
     };
 
     Comparator<GlobalSilverResult> cDateAsc = new Comparator<GlobalSilverResult>() {
 
+      @Override
       public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
         String string1 = o1.getCreationDate();
         String string2 = o2.getCreationDate();
@@ -103,14 +103,14 @@ public class DefaultSortResults implements SortResults {
           int result = string1.compareTo(string2);
           // Add comparison on title if we have the same creation date
           return (result != 0) ? result : cTitreAsc.compare(o1, o2);
-        } else {
-          return -1;
         }
+        return -1;
       }
     };
 
     Comparator<GlobalSilverResult> cUpdateDateAsc = new Comparator<GlobalSilverResult>() {
 
+      @Override
       public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
         String string1 = o1.getDate();
         String string2 = o2.getDate();
@@ -119,30 +119,29 @@ public class DefaultSortResults implements SortResults {
           int result = string1.compareTo(string2);
           // Add comparison on title if we have the same update date
           return (result != 0) ? result : cTitreAsc.compare(o1, o2);
-        } else {
-          return -1;
         }
+        return -1;
       }
     };
 
     Comparator<GlobalSilverResult> cEmplAsc = new Comparator<GlobalSilverResult>() {
 
+      @Override
       public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
         String string1 = o1.getLocation();
         String string2 = o2.getLocation();
-
         if (string1 != null && string2 != null) {
           int result = string1.compareToIgnoreCase(string2);
           // Add comparison on title if we have the same emplacement
           return (result != 0) ? result : cTitreAsc.compare(o1, o2);
-        } else {
-          return -1;
         }
+        return -1;
       }
     };
 
     Comparator<GlobalSilverResult> cPopularityAsc = new Comparator<GlobalSilverResult>() {
 
+      @Override
       public int compare(GlobalSilverResult o1, GlobalSilverResult o2) {
         Integer pop1 = Integer.valueOf(o1.getHits());
         Integer pop2 = Integer.valueOf(o2.getHits());
@@ -151,12 +150,11 @@ public class DefaultSortResults implements SortResults {
           int result = pop1.compareTo(pop2);
           // Add comparison on title if we have the same popularity
           return (result != 0) ? result : cTitreAsc.compare(o1, o2);
-        } else {
-          return -1;
         }
+        return -1;
       }
     };
-    
+
     int sortValueInt = Integer.parseInt(sortValue);
 
     if (sortValueInt == 1 && PdcSearchSessionController.SORT_ORDER_ASC.equals(sortOrder)) {
@@ -209,13 +207,12 @@ public class DefaultSortResults implements SortResults {
       Collections.sort(results, cPopularityAsc);
       Collections.reverse(results);
     }
-    
+
     return results;
   }
 
   @Override
   public void setPdcSearchSessionController(PdcSearchSessionController controller) {
-   // Not needed by the default sort
+    // Not needed by the default sort
   }
-
 }

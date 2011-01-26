@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.silverpeas.pdcPeas;
+package com.stratelia.silverpeas.pdcPeas.control;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -48,8 +48,8 @@ public class SortResultsFactory {
 
     ResourceLocator settings = new ResourceLocator(
         "com.silverpeas.searchEngine.searchEngineSettings", "");
-    String className =
-        settings.getString(implementor, "com.stratelia.silverpeas.pdcPeas.DefaultSortResults");
+    String className = settings.getString(implementor,
+        "com.stratelia.silverpeas.pdcPeas.DefaultSortResults");
     if (StringUtil.isDefined(className)) {
       try {
         return (SortResults) Class.forName(className).newInstance();
@@ -61,5 +61,4 @@ public class SortResultsFactory {
     }
     return new DefaultSortResults();
   }
-
 }

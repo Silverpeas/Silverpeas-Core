@@ -38,7 +38,7 @@ import com.stratelia.silverpeas.pdc.model.SearchAxis;
 import com.stratelia.silverpeas.pdc.model.SearchContext;
 import com.stratelia.silverpeas.pdc.model.SearchCriteria;
 import com.stratelia.silverpeas.pdc.model.Value;
-import com.stratelia.silverpeas.pdcPeas.Keys;
+import com.stratelia.silverpeas.pdcPeas.control.Keys;
 import com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController;
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 import com.stratelia.silverpeas.pdcPeas.model.QueryParameters;
