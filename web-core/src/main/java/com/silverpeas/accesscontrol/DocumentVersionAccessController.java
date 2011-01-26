@@ -39,6 +39,7 @@ public class DocumentVersionAccessController implements AccessController<Documen
 
   public DocumentVersionAccessController() {
     versioning = new VersioningUtil();
+    accessController = new DocumentAccessController();
   }
   
   /**
