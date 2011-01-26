@@ -152,7 +152,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("UpdateMySettings")) {
         updateUserSettings(request, myProfilSC);
         
-        destination = getDestination("MySettings", componentSC, request);
+        return getDestination("MySettings", componentSC, request);
       }
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);

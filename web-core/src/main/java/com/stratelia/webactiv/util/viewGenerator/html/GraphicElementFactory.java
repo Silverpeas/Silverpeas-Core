@@ -293,7 +293,6 @@ public class GraphicElementFactory extends Object {
         "root.MSG_GEN_ENTER_METHOD");
     String standardStyle = "/util/styleSheets/globalSP_SilverpeasV5.css";
     String standardStyleForIE = "/util/styleSheets/globalSP_SilverpeasV5-IE.css";
-    String lookStyle = getFavoriteLookSettings().getString("StyleSheet");
     String contextPath = getGeneralSettings().getString("ApplicationURL");
     String charset = getGeneralSettings().getString("charset", "UTF-8");
     StringBuilder code = new StringBuilder();
@@ -319,7 +318,7 @@ public class GraphicElementFactory extends Object {
           contextPath).append(standardStyleForIE).append("\"/>\n");
       code.append("<![endif]-->\n");
 
-      appendSpecificCSS(lookStyle, code);
+      appendSpecificCSS(code);
 
       // append CSS style sheet dedicated to current component
       if (StringUtil.isDefined(componentId) && mainSessionController != null) {
@@ -404,30 +403,30 @@ public class GraphicElementFactory extends Object {
    * @param lookStyle the current lookStyle
    * @param code the appened StringBuilder object
    */
-  private void appendSpecificCSS(String lookStyle, StringBuilder code) {
+  private void appendSpecificCSS(StringBuilder code) {
     // Retrieve specific space look
     if (StringUtil.isDefined(this.spaceId)) {
       SpaceInstLight curSpace =
           mainSessionController.getOrganizationController().getSpaceInstLightById(this.spaceId);
       String spaceLookStyle = curSpace.getLook();
-      getSpaceLook(lookStyle, code, curSpace, spaceLookStyle);
+      getSpaceLook(code, curSpace, spaceLookStyle);
     } else {
-      appendDefaultLookCSS(lookStyle, code);
+      appendDefaultLookCSS(code);
     }
   }
 
   /**
    * @param lookStyle
    * @param code string builder
-   * @param curSpace 
+   * @param curSpace
    * @param spaceLookStyle
    */
-  private void getSpaceLook(String lookStyle, StringBuilder code, SpaceInstLight curSpace,
+  private void getSpaceLook(StringBuilder code, SpaceInstLight curSpace,
       String spaceLookStyle) {
 
     if (StringUtil.isDefined(spaceLookStyle)) {
       setLook(spaceLookStyle);
-      lookStyle = getFavoriteLookSettings().getString("StyleSheet");
+      String lookStyle = getFavoriteLookSettings().getString("StyleSheet");
       if (StringUtil.isDefined(lookStyle)) {
         code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
         code.append(lookStyle).append("\"/>\n");
@@ -439,9 +438,9 @@ public class GraphicElementFactory extends Object {
         SpaceInstLight fatherSpace =
             mainSessionController.getOrganizationController().getSpaceInstLightById(fatherSpaceId);
         spaceLookStyle = fatherSpace.getLook();
-        getSpaceLook(lookStyle, code, fatherSpace, spaceLookStyle);
+        getSpaceLook(code, fatherSpace, spaceLookStyle);
       } else {
-        appendDefaultLookCSS(lookStyle, code);
+        appendDefaultLookCSS(code);
       }
     }
   }
@@ -451,20 +450,15 @@ public class GraphicElementFactory extends Object {
    * @param lookStyle the current lookStyle parameter
    * @param code the StringBuilder to append
    */
-  private void appendDefaultLookCSS(String lookStyle, StringBuilder code) {
+  private void appendDefaultLookCSS(StringBuilder code) {
     // Retrieve user personal look settings
     String userLookStyle = this.getDefaultLookName();
-    if (StringUtil.isDefined(userLookStyle)) {
-      setLook(userLookStyle);
-      lookStyle = getFavoriteLookSettings().getString("StyleSheet");
-      code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
-      code.append(lookStyle).append("\"/>\n");
-    } else {
-      // Use default look settings
-      if (lookStyle.length() > 0) {
+    setLook(userLookStyle);
+    String lookStyle = getFavoriteLookSettings().getString("StyleSheet");
+      
+    if (StringUtil.isDefined(lookStyle)) {
         code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
         code.append(lookStyle).append("\"/>\n");
-      }
     }
   }
 
