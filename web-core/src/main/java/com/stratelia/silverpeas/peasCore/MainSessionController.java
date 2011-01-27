@@ -252,28 +252,27 @@ public class MainSessionController extends AdminReference implements Clipboard {
 
   /** Return the personalization EJB */
   public synchronized PersonalizationBm getPersonalization() {
-    if (m_PersonalizationBm == null) {
+    PersonalizationBm persoBm = null;
       // SilverTrace.info("peasCore",
       // "MainSessionController.getPersonalization()",
       // "root.MSG_GEN_ENTER_METHOD");
-      try {
-        PersonalizationBmHome personalizationBmHome = (PersonalizationBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PERSONALIZATIONBM_EJBHOME,
-            PersonalizationBmHome.class);
-        m_PersonalizationBm = personalizationBmHome.create();
-        m_PersonalizationBm.setActor(getUserId());
-      } catch (Exception e) {
-        SilverTrace.error("peasCore",
-            "MainSessionController.getPersonalization()",
-            "root.EX_CANT_GET_REMOTE_OBJECT", e);
-        throw new PeasCoreRuntimeException(
-            "MainSessionController.getPersonalization()",
-            SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-      }
+    try {
+      PersonalizationBmHome personalizationBmHome = (PersonalizationBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PERSONALIZATIONBM_EJBHOME,
+          PersonalizationBmHome.class);
+      persoBm = personalizationBmHome.create();
+      persoBm.setActor(getUserId());
+    } catch (Exception e) {
+      SilverTrace.error("peasCore",
+          "MainSessionController.getPersonalization()",
+          "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      throw new PeasCoreRuntimeException(
+          "MainSessionController.getPersonalization()",
+          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     // SilverTrace.info("peasCore",
     // "MainSessionController.getPersonalization()",
     // "root.MSG_GEN_EXIT_METHOD");
-    return m_PersonalizationBm;
+    return persoBm;
   }
 
   /**
