@@ -33,6 +33,7 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  * @version 1.0
  */
 public class DocumentVersionPK extends WAPrimaryKey implements Serializable, Cloneable {
+
   private static final long serialVersionUID = -2771550937468713859L;
 
   /**
@@ -91,11 +92,19 @@ public class DocumentVersionPK extends WAPrimaryKey implements Serializable, Clo
    */
   @Override
   public boolean equals(Object other) {
-    if (other == null || !(other instanceof DocumentVersionPK)) {
+    if (this == other) {
+      return true;
+    }
+    if ((other == null) || (getClass() != other.getClass())) {
       return false;
     }
-    return (id.equals(((DocumentVersionPK) other).getId()))
-        && (componentName.equals(((DocumentVersionPK) other).getComponentName()));
+    DocumentVersionPK o = (DocumentVersionPK) other;
+    String thisId = getId();
+    String oId = o.getId();
+    if (thisId == null) {
+      return (oId == null);
+    }
+    return thisId.equals(oId);
   }
 
   /**
@@ -106,7 +115,8 @@ public class DocumentVersionPK extends WAPrimaryKey implements Serializable, Clo
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder(100);
-    builder.append("(id = ").append(getId()).append(", Space = ").append(getSpace());
+    builder.append("(id = ").append(getId()).append(", Space = ").append(
+        getSpace());
     builder.append(", componentName = ").append(getComponentName()).append(")");
     return builder.toString();
   }
@@ -116,7 +126,7 @@ public class DocumentVersionPK extends WAPrimaryKey implements Serializable, Clo
    * @return A hash code for this object
    */
   public int hashCode() {
-    return toString().hashCode();
+    return (getId() != null) ? getId().hashCode() : 0;
   }
 
   /**
