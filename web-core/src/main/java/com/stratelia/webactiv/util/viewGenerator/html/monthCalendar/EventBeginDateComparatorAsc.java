@@ -21,51 +21,40 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.viewGenerator.html.monthCalendar;
 
+import com.silverpeas.util.StringUtil;
 import java.util.Calendar;
 import java.util.Comparator;
 
 public class EventBeginDateComparatorAsc implements Comparator<Event> {
-  static public EventBeginDateComparatorAsc comparator = new EventBeginDateComparatorAsc();
 
+  final static public EventBeginDateComparatorAsc comparator = new EventBeginDateComparatorAsc();
+
+  @Override
   public int compare(Event e1, Event e2) {
     Calendar date1 = Calendar.getInstance();
     date1.setTime(e1.getStartDate());
 
     String startHour = e1.getStartHour(); // 12:30
     String separator = ":";
-    if (startHour != null && startHour.length() > 0
-        && startHour.lastIndexOf(separator) != -1) {
-      int hour = Integer.parseInt(startHour.substring(0, startHour
-          .lastIndexOf(separator)));
-      int minutes = Integer.parseInt(startHour.substring(startHour
-          .lastIndexOf(separator) + 1, startHour.length()));
+    if (StringUtil.isDefined(startHour) && startHour.lastIndexOf(separator) != -1) {
+      int hour = Integer.parseInt(startHour.substring(0, startHour.lastIndexOf(separator)));
+      int minutes = Integer.parseInt(startHour.substring(startHour.lastIndexOf(separator) + 1, 
+          startHour.length()));
       date1.set(Calendar.HOUR_OF_DAY, hour);
       date1.set(Calendar.MINUTE, minutes);
     }
-
     Calendar date2 = Calendar.getInstance();
     date2.setTime(e2.getStartDate());
     startHour = e2.getStartHour();
-    if (startHour != null && startHour.length() > 0
-        && startHour.lastIndexOf(separator) != -1) {
-      int hour = Integer.parseInt(startHour.substring(0, startHour
-          .lastIndexOf(separator)));
-      int minutes = Integer.parseInt(startHour.substring(startHour
-          .lastIndexOf(separator) + 1, startHour.length()));
+    if (StringUtil.isDefined(startHour) && startHour.lastIndexOf(separator) != -1) {
+      int hour = Integer.parseInt(startHour.substring(0, startHour.lastIndexOf(separator)));
+      int minutes = Integer.parseInt(startHour.substring(startHour.lastIndexOf(separator) + 1, 
+          startHour.length()));
       date2.set(Calendar.HOUR_OF_DAY, hour);
       date2.set(Calendar.MINUTE, minutes);
     }
-
-    int compareResult = (new Long(date1.getTimeInMillis())).compareTo(new Long(
-        (date2.getTimeInMillis())));
-
-    return compareResult;
-  }
-
-  public boolean equals(Object o) {
-    return o == this;
+    return (int) (date1.getTimeInMillis() - date2.getTimeInMillis());
   }
 }

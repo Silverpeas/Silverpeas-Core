@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -164,6 +164,16 @@ public class SocialInformationPublication implements SocialInformation {
       return false;
     }
     return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 43 * hash + (this.type != null ? this.type.hashCode() : 0);
+    hash = 43 * hash + (this.author != null ? this.author.hashCode() : 0);
+    hash = 43 * hash + (this.date != null ? this.date.hashCode() : 0);
+    hash = 43 * hash + (this.url != null ? this.url.hashCode() : 0);
+    return hash;
   }
 
   /**

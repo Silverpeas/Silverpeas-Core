@@ -49,7 +49,7 @@ public class SortResultsFactory {
     ResourceLocator settings = new ResourceLocator(
         "com.silverpeas.searchEngine.searchEngineSettings", "");
     String className = settings.getString(implementor,
-        "com.stratelia.silverpeas.pdcPeas.DefaultSortResults");
+        "com.stratelia.silverpeas.pdcPeas.control.DefaultSortResults");
     if (StringUtil.isDefined(className)) {
       try {
         return (SortResults) Class.forName(className).newInstance();

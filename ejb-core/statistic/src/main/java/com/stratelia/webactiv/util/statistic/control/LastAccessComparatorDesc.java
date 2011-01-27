@@ -30,13 +30,12 @@ import java.util.Date;
 import com.stratelia.webactiv.util.statistic.model.HistoryByUser;
 
 public class LastAccessComparatorDesc implements Comparator<HistoryByUser> {
-  static public LastAccessComparatorDesc comparator = new LastAccessComparatorDesc();
+  final static public LastAccessComparatorDesc comparator = new LastAccessComparatorDesc();
 
+  @Override
   public int compare(HistoryByUser historyUser1, HistoryByUser historyUser2) {
-
     Date dateUser1 = historyUser1.getLastAccess();
     Date dateUser2 = historyUser2.getLastAccess();
-
     int compareResult = 0;
 
     if (dateUser1 != null && dateUser2 != null) {
@@ -49,11 +48,6 @@ public class LastAccessComparatorDesc implements Comparator<HistoryByUser> {
         compareResult = 1;
       }
     }
-
     return 0 - compareResult;
-  }
-
-  public boolean equals(Object o) {
-    return o == this;
   }
 }
