@@ -21,12 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/** 
- * @author  lbertin
- * @version 1.0
- */
-
 package com.stratelia.webactiv.beans.admin;
 
 import java.io.Serializable;
@@ -162,6 +156,7 @@ public class SpaceProfileInst extends Object implements Serializable {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   protected SpaceProfileInst clone() {
     SpaceProfileInst clone = new SpaceProfileInst();
     
@@ -170,11 +165,9 @@ public class SpaceProfileInst extends Object implements Serializable {
     clone.setInherited(isInherited);
     clone.setLabel(m_sLabel);
     clone.setName(m_sName);
-    clone.setSpaceFatherId(m_sSpaceFatherId);
-    
+    clone.setSpaceFatherId(m_sSpaceFatherId);    
     clone.addGroups((List<String>) m_alGroups.clone());
-    clone.addUsers((List<String>) m_alUsers.clone());
-    
+    clone.addUsers((List<String>) m_alUsers.clone());    
     return clone;
   }
 }

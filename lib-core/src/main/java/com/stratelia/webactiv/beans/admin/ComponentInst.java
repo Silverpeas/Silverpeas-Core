@@ -21,13 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/**
- *
- * @author  nchaix
- * @version
- */
-
 package com.stratelia.webactiv.beans.admin;
 
 import java.io.Serializable;
@@ -44,32 +37,26 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
     Comparable<ComponentInst> {
 
   private static final long serialVersionUID = 1L;
-
   public final static String STATUS_REMOVED = "R";
-
   private String m_sId;
   private String m_sName;
   private String m_sLabel;
   private String m_sDescription;
   private String m_sDomainFatherId;
   private int m_iOrderNum;
-
   private Date createDate = null;
   private Date updateDate = null;
   private Date removeDate = null;
   private String status = null;
-
   private String creatorUserId;
   private UserDetail creator;
   private String updaterUserId;
   private UserDetail updater;
   private String removerUserId;
   private UserDetail remover;
-
   private boolean isPublic = false;
   private boolean isHidden = false;
   private boolean isInheritanceBlocked = false;
-
   private ArrayList<ProfileInst> m_alProfileInst;
   private SPParameters parameters = null;
 
@@ -236,10 +223,11 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
   }
 
   public void deleteProfileInst(ProfileInst profileInst) {
-    for (int nI = 0; nI < m_alProfileInst.size(); nI++)
-      if (((ProfileInst) m_alProfileInst.get(nI)).getName().equals(
-          profileInst.getName()))
+    for (int nI = 0; nI < m_alProfileInst.size(); nI++) {
+      if (m_alProfileInst.get(nI).getName().equals(profileInst.getName())) {
         m_alProfileInst.remove(nI);
+      }
+    }
   }
 
   public ArrayList<ProfileInst> getAllProfilesInst() {
@@ -250,8 +238,9 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
     List<ProfileInst> profiles = new ArrayList<ProfileInst>();
     for (int nI = 0; nI < m_alProfileInst.size(); nI++) {
       ProfileInst profile = m_alProfileInst.get(nI);
-      if (profile.isInherited())
+      if (profile.isInherited()) {
         profiles.add(profile);
+      }
     }
 
     return profiles;
@@ -261,8 +250,9 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
     List<ProfileInst> profiles = new ArrayList<ProfileInst>();
     for (int nI = 0; nI < m_alProfileInst.size(); nI++) {
       ProfileInst profile = m_alProfileInst.get(nI);
-      if (!profile.isInherited())
+      if (!profile.isInherited()) {
         profiles.add(profile);
+      }
     }
 
     return profiles;
@@ -275,8 +265,9 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
   public ProfileInst getProfileInst(String sProfileName) {
     for (int nI = 0; nI < m_alProfileInst.size(); nI++) {
       ProfileInst profile = m_alProfileInst.get(nI);
-      if (!profile.isInherited() && profile.getName().equals(sProfileName))
+      if (!profile.isInherited() && profile.getName().equals(sProfileName)) {
         return profile;
+      }
     }
     return null;
   }
@@ -284,8 +275,9 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
   public ProfileInst getInheritedProfileInst(String sProfileName) {
     for (int nI = 0; nI < m_alProfileInst.size(); nI++) {
       ProfileInst profile = m_alProfileInst.get(nI);
-      if (profile.isInherited() && profile.getName().equals(sProfileName))
+      if (profile.isInherited() && profile.getName().equals(sProfileName)) {
         return profile;
+      }
     }
     return null;
   }
@@ -321,23 +313,21 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
     return parameters.getParameterValue(parameterName);
   }
 
-  /**
-   * I18N
-   */
   public String getLabel(String language) {
     ComponentI18N s = (ComponentI18N) getTranslations().get(language);
-    if (s != null)
+    if (s != null) {
       return s.getName();
-    else
+    } else {
       return getLabel();
+    }
   }
 
   public String getDescription(String language) {
     ComponentI18N s = (ComponentI18N) getTranslations().get(language);
-    if (s != null)
+    if (s != null) {
       return s.getDescription();
-    else
-      return getDescription();
+    }
+    return getDescription();
   }
 
   public boolean isHidden() {
@@ -395,7 +385,7 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
   public void setRemover(UserDetail remover) {
     this.remover = remover;
   }
-  
+
   public void removeInheritedProfiles() {
     ArrayList<ProfileInst> newProfiles = new ArrayList<ProfileInst>();
     for (ProfileInst profile : m_alProfileInst) {
@@ -405,5 +395,4 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
     }
     m_alProfileInst = newProfiles;
   }
-
 }

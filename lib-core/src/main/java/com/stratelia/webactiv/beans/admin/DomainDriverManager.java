@@ -21,14 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.beans.admin;
 
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Vector;
-
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.organization.AdminPersistenceException;
@@ -41,16 +36,20 @@ import com.stratelia.webactiv.organization.UserRow;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.List;
 
 public class DomainDriverManager extends AbstractDomainDriver {
+
   public OrganizationSchema organization = null;
-  private Hashtable<String, AbstractDomainDriver> domainDriverInstances =
-      new Hashtable<String, AbstractDomainDriver>(0);
+  private Hashtable<String, AbstractDomainDriver> domainDriverInstances = new Hashtable<String, AbstractDomainDriver>(
+      0);
   private DomainSynchroThread theThread = null;
 
   public DomainDriverManager() {
   }
-
   // when we are in a transaction the connection must not be released.
   private boolean inTransaction = false;
   private int nbConnected = 0;
@@ -71,8 +70,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
         }
       }
       nbConnected++;
-      // SilverTrace.debug("admin", "----------------------->", "+++ ORG SCH",
-      // "nbConnected = " + nbConnected);
     }
   }
 
@@ -82,18 +79,13 @@ public class DomainDriverManager extends AbstractDomainDriver {
   public void releaseOrganizationSchema() throws AdminException {
     synchronized (semaphore) {
       nbConnected--;
-      // SilverTrace.debug("admin", "----------------------->", "--- ORG SCH",
-      // "nbConnected = " + nbConnected);
       if (organization != null && !inTransaction && nbConnected <= 0) {
-        OrganizationSchemaPool.releaseOrganizationSchema(organization);
+        com.stratelia.webactiv.organization.OrganizationSchemaPool.releaseOrganizationSchema(
+            organization);
         organization = null;
       }
     }
   }
-
-  // -------------------------------------------------------------------------
-  // Start Server actions
-  // -------------------------------------------------------------------------
 
   public void startServer(Admin theAdmin, long nbSleepSec) throws Exception {
     Domain[] doms = getAllDomains();
@@ -126,15 +118,16 @@ public class DomainDriverManager extends AbstractDomainDriver {
     }
   }
 
-  /**
-   * @param m_User
-   * @return String
+  /***
+   * Create a new User.
+   * @param user
+   * @return
+   * @throws Exception 
    */
   public String createUser(UserFull user) throws Exception {
     try {
       // Get a DomainDriver instance
-      AbstractDomainDriver domainDriver = this.getDomainDriver(idAsInt(user
-          .getDomainId()));
+      AbstractDomainDriver domainDriver = this.getDomainDriver(idAsInt(user.getDomainId()));
 
       // Create User in specific domain
       String sUserId = domainDriver.createUser(user);
@@ -142,34 +135,38 @@ public class DomainDriverManager extends AbstractDomainDriver {
       return sUserId;
     } catch (AdminException e) {
       throw new AdminException("DomainDriverManager.createUser",
-          SilverpeasException.ERROR, "admin.EX_ERR_ADD_USER", user
-          .getFirstName()
+          SilverpeasException.ERROR, "admin.EX_ERR_ADD_USER", user.getFirstName()
           + " " + user.getLastName(), e);
     }
   }
 
+  /**
+   * Create a new User.
+   * @param user
+   * @return
+   * @throws Exception 
+   */
+  @Override
   public String createUser(UserDetail user) throws Exception {
     try {
       // Get a DomainDriver instance
-      AbstractDomainDriver domainDriver = this.getDomainDriver(idAsInt(user
-          .getDomainId()));
+      AbstractDomainDriver domainDriver = this.getDomainDriver(idAsInt(user.getDomainId()));
 
       // Create User in specific domain
       String sUserId = domainDriver.createUser(user);
-
       return sUserId;
     } catch (AdminException e) {
-      throw new AdminException("DomainDriverManager.createUser",
-          SilverpeasException.ERROR, "admin.EX_ERR_ADD_USER", user
-          .getFirstName()
-          + " " + user.getLastName(), e);
+      throw new AdminException("DomainDriverManager.createUser", SilverpeasException.ERROR,
+          "admin.EX_ERR_ADD_USER", user.getFirstName() + " " + user.getLastName(), e);
     }
   }
 
   /**
    * Delete given user from Silverpeas
    * @param userId user Id
+   * @throws Exception  
    */
+  @Override
   public void deleteUser(String userId) throws Exception {
     try {
       // Set the OrganizationSchema (if not already done)
@@ -177,17 +174,14 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
       // Get the user information
       UserRow ur = organization.user.getUser(idAsInt(userId));
-      if (ur == null)
-        throw new AdminException("DomainDriverManager.deleteUser",
-            SilverpeasException.ERROR, "admin.EX_ERR_USER_NOT_FOUND",
-            "user Id: '" + userId + "'");
-
+      if (ur == null) {
+        throw new AdminException("DomainDriverManager.deleteUser", SilverpeasException.ERROR,
+            "admin.EX_ERR_USER_NOT_FOUND", "user Id: '" + userId + "'");
+      }
       // Get a DomainDriver instance
       AbstractDomainDriver domainDriver = this.getDomainDriver(ur.domainId);
-
       // Get User detail from specific domain
       domainDriver.deleteUser(ur.specificId);
-      
       // Delete index to given user
       unindexUser(userId);
     } catch (AdminException e) {
@@ -200,76 +194,68 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * @param m_User
+   * @param user
+   * @throws Exception  
    */
+  @Override
   public void updateUserDetail(UserDetail user) throws Exception {
     try {
       // Get a DomainDriver instance
-      AbstractDomainDriver domainDriver = this.getDomainDriver(idAsInt(user
-          .getDomainId()));
-
+      AbstractDomainDriver domainDriver = this.getDomainDriver(idAsInt(user.getDomainId()));
       // Update User detail in specific domain
       domainDriver.updateUserDetail(user);
     } catch (AdminException e) {
-      throw new AdminException("DomainDriverManager.updateUser",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", user
-          .getFirstName()
-          + " " + user.getLastName(), e);
+      throw new AdminException("DomainDriverManager.updateUser", SilverpeasException.ERROR,
+          "admin.EX_ERR_UPDATE_USER", user.getFirstName() + " " + user.getLastName(), e);
     }
   }
 
   /**
-   * @param m_User
+   * @param user
+   * @throws Exception  
    */
+  @Override
   public void updateUserFull(UserFull user) throws Exception {
     try {
       // Get a DomainDriver instance
-      AbstractDomainDriver domainDriver = this.getDomainDriver(idAsInt(user
-          .getDomainId()));
-
+      AbstractDomainDriver domainDriver = this.getDomainDriver(idAsInt(user.getDomainId()));
       // Update User detail in specific domain
       domainDriver.updateUserFull(user);
-      
+
       // index informations relative to given user
       indexUser(user.getId());
     } catch (AdminException e) {
-      throw new AdminException("DomainDriverManager.updateUser",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", user
-          .getFirstName()
-          + " " + user.getLastName(), e);
+      throw new AdminException("DomainDriverManager.updateUser", SilverpeasException.ERROR,
+          "admin.EX_ERR_UPDATE_USER", user.getFirstName() + " " + user.getLastName(), e);
     }
   }
-  
+
   public String[] getUserIdsOfDomain(String domainId) throws Exception {
-    // Set the OrganizationSchema (if not already done)
     getOrganizationSchema();
     try {
       return organization.user.getUserIdsOfDomain(Integer.parseInt(domainId));
     } catch (AdminException e) {
-      throw new AdminException("DomainDriverManager.getUser",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_USERS", "domainId = " + domainId, e);
+      throw new AdminException("DomainDriverManager.getUser", SilverpeasException.ERROR,
+          "admin.EX_ERR_GET_USERS", "domainId = " + domainId, e);
     } finally {
       releaseOrganizationSchema();
     }
   }
 
+  @Override
   public UserFull getUserFull(String userId) throws Exception {
     UserFull uf = null;
-
     try {
       // Set the OrganizationSchema (if not already done)
       this.getOrganizationSchema();
-
       // Get the user information
       UserRow ur = organization.user.getUser(idAsInt(userId));
-      if (ur == null)
-        throw new AdminException("DomainDriverManager.getUser",
-            SilverpeasException.ERROR, "admin.EX_ERR_USER_NOT_FOUND",
-            "user Id: '" + userId + "'");
-
+      if (ur == null) {
+        throw new AdminException("DomainDriverManager.getUser", SilverpeasException.ERROR,
+            "admin.EX_ERR_USER_NOT_FOUND", "user Id: '" + userId + "'");
+      }
       // Get a DomainDriver instance
       AbstractDomainDriver domainDriver = this.getDomainDriver(ur.domainId);
-
       // Get User detail from specific domain
       try {
         uf = domainDriver.getUserFull(ur.specificId);
@@ -293,9 +279,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
       uf.setLoginQuestion(ur.loginQuestion);
       uf.setLoginAnswer(ur.loginAnswer);
     } catch (AdminException e) {
-      throw new AdminException("DomainDriverManager.getUser",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_USER", "user Id: '"
-          + userId + "', domain Id: '" + userId + "'", e);
+      throw new AdminException("DomainDriverManager.getUser", SilverpeasException.ERROR,
+          "admin.EX_ERR_GET_USER", "user Id: '" + userId + "', domain Id: '" + userId + "'", e);
     } finally {
       this.releaseOrganizationSchema();
     }
@@ -305,20 +290,20 @@ public class DomainDriverManager extends AbstractDomainDriver {
   /**
    * @param userId
    * @return User
+   * @throws Exception  
    */
   public UserDetail getUserDetail(String userId) throws Exception {
     UserDetail ud = null;
-
     try {
       // Set the OrganizationSchema (if not already done)
       this.getOrganizationSchema();
 
       // Get the user information
       UserRow ur = organization.user.getUser(idAsInt(userId));
-      if (ur == null)
-        throw new AdminException("DomainDriverManager.getUser",
-            SilverpeasException.ERROR, "admin.EX_ERR_USER_NOT_FOUND",
-            "user Id: '" + userId + "'");
+      if (ur == null) {
+        throw new AdminException("DomainDriverManager.getUser", SilverpeasException.ERROR,
+            "admin.EX_ERR_USER_NOT_FOUND", "user Id: '" + userId + "'");
+      }
 
       // Get a DomainDriver instance
       AbstractDomainDriver domainDriver = this.getDomainDriver(ur.domainId);
@@ -327,9 +312,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
       try {
         ud = domainDriver.getUser(ur.specificId);
       } catch (AdminException e) {
-        SilverTrace.error("admin", "DomainDriverManager.getUser",
-            "admin.MSG_ERR_GET_USER", "user Id: '" + userId + "', domain Id: '"
-            + ur.domainId + "'", e);
+        SilverTrace.error("admin", "DomainDriverManager.getUser", "admin.MSG_ERR_GET_USER",
+            "user Id: '" + userId + "', domain Id: '" + ur.domainId + "'", e);
         ud = new UserDetail();
         ud.setLogin(ur.login);
         ud.setFirstName(ur.firstName);
@@ -343,9 +327,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
       ud.setDomainId(idAsString(ur.domainId));
       ud.setAccessLevel(ur.accessLevel);
     } catch (AdminException e) {
-      throw new AdminException("DomainDriverManager.getUser",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_USER", "user Id: '"
-          + userId + "', domain Id: '" + userId + "'", e);
+      throw new AdminException("DomainDriverManager.getUser", SilverpeasException.ERROR,
+          "admin.EX_ERR_GET_USER", "user Id: '" + userId + "', domain Id: '" + userId + "'", e);
     } finally {
       this.releaseOrganizationSchema();
     }
@@ -353,32 +336,37 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * @param userId
-   * @return User[]
+   * 
+   * @param userIds
+   * @return
+   * @throws Exception 
    */
   public UserDetail[] getUsers(String[] userIds) throws Exception {
     UserDetail[] uds = new UserDetail[userIds.length];
-
     try {
       for (int nI = 0; nI < userIds.length; nI++) {
         uds[nI] = this.getUser(userIds[nI]);
       }
     } catch (AdminException e) {
-      throw new AdminException("DomainDriverManager.getUsers",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_USERS", e);
+      throw new AdminException("DomainDriverManager.getUsers", SilverpeasException.ERROR,
+          "admin.EX_ERR_GET_USERS", e);
     }
     return uds;
   }
 
   /**
    * @return User[]
+   * @throws Exception  
    */
+  @Override
   public UserDetail[] getAllUsers() throws Exception {
     return null;
   }
 
   /**
+   * @param domainId 
    * @return User[]
+   * @throws Exception  
    */
   public UserDetail[] getAllUsers(String domainId) throws Exception {
     UserDetail[] uds = null;
@@ -386,23 +374,20 @@ public class DomainDriverManager extends AbstractDomainDriver {
     try {
       // Set the OrganizationSchema (if not already done)
       this.getOrganizationSchema();
-
       // Get a DomainDriver instance
-      AbstractDomainDriver domainDriver = this
-          .getDomainDriver(idAsInt(domainId));
+      AbstractDomainDriver domainDriver = this.getDomainDriver(idAsInt(domainId));
 
       // Get User detail from specific domain
       uds = domainDriver.getAllUsers();
     } catch (AdminException e) {
-      throw new AdminException("DomainDriverManager.getAllUsers",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_USERS",
-          "domain Id: '" + domainId + "'", e);
+      throw new AdminException("DomainDriverManager.getAllUsers", SilverpeasException.ERROR,
+          "admin.EX_ERR_GET_ALL_USERS", "domain Id: '" + domainId + "'", e);
     } finally {
       this.releaseOrganizationSchema();
     }
     return uds;
   }
-  
+
   /**
    * Indexing all users information of given domain
    * @param domainId
@@ -414,7 +399,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       indexUser(userId);
     }
   }
-  
+
   public void indexUser(String userId) {
     UserFull userFull = null;
     try {
@@ -450,15 +435,17 @@ public class DomainDriverManager extends AbstractDomainDriver {
       IndexEngineProxy.addIndexEntry(indexEntry);
     }
   }
-  
+
   public void unindexUser(String userId) {
     FullIndexEntry indexEntry = new FullIndexEntry("users", "UserFull", userId);
     IndexEngineProxy.removeIndexEntry(indexEntry.getPK());
   }
 
   /**
-   * @param m_Group
-   * @return String
+   * 
+   * @param group
+   * @return
+   * @throws Exception 
    */
   public String createGroup(Group group) throws Exception {
     GroupRow gr = null;
@@ -466,36 +453,35 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
     try {
       // Set supergroup specific Id
-      if ((group.getSuperGroupId() != null)
-          && (group.getSuperGroupId().length() > 0)) {
+      if (StringUtil.isDefined(group.getSuperGroupId())) {
         // Get the user information
         gr = organization.group.getGroup(idAsInt(group.getSuperGroupId()));
-        if (gr == null)
-          throw new AdminException("DomainDriverManager.createGroup",
-              SilverpeasException.ERROR, "admin.EX_ERR_GROUP_NOT_FOUND",
-              "group Id: '" + group.getSuperGroupId() + "'");
+        if (gr == null) {
+          throw new AdminException("DomainDriverManager.createGroup", SilverpeasException.ERROR,
+              "admin.EX_ERR_GROUP_NOT_FOUND", "group Id: '" + group.getSuperGroupId() + "'");
+        }
         specificGroup.setSuperGroupId(gr.specificId);
       }
       // Set subUsers specific Id
-      specificGroup.setUserIds(translateUserIdsToSpecificIds(idAsInt(group
-          .getDomainId()), group.getUserIds()));
-
+      specificGroup.setUserIds(translateUserIdsToSpecificIds(idAsInt(group.getDomainId()), group.
+          getUserIds()));
       // Get a DomainDriver instance
-      AbstractDomainDriver domainDriver = this.getDomainDriver(idAsInt(group
-          .getDomainId()));
+      AbstractDomainDriver domainDriver = this.getDomainDriver(idAsInt(group.getDomainId()));
 
       // Update Group in specific domain
       return domainDriver.createGroup(specificGroup);
     } catch (AdminException e) {
-      throw new AdminException("DomainDriverManager.createGroup",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_GROUP", "group Id: '"
-          + group.getId() + "'", e);
+      throw new AdminException("DomainDriverManager.createGroup", SilverpeasException.ERROR,
+          "admin.EX_ERR_UPDATE_GROUP", "group Id: '" + group.getId() + "'", e);
     }
   }
 
   /**
+   * 
    * @param groupId
+   * @throws Exception 
    */
+  @Override
   public void deleteGroup(String groupId) throws Exception {
     try {
       // Set the OrganizationSchema (if not already done)
@@ -503,10 +489,11 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
       // Get the group information
       GroupRow gr = organization.group.getGroup(idAsInt(groupId));
-      if (gr == null)
-        throw new AdminException("DomainDriverManager.deleteGroup",
-            SilverpeasException.ERROR, "admin.EX_ERR_GROUP_NOT_FOUND",
+      if (gr == null) {
+        throw new AdminException("DomainDriverManager.deleteGroup", SilverpeasException.ERROR,
+            "admin.EX_ERR_GROUP_NOT_FOUND",
             "group Id: '" + groupId + "'");
+      }
 
       // Get a DomainDriver instance
       AbstractDomainDriver domainDriver = this.getDomainDriver(gr.domainId);
@@ -532,30 +519,29 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
     try {
       // Set supergroup specific Id
-      if ((group.getSuperGroupId() != null)
-          && (group.getSuperGroupId().length() > 0)) {
+      if (StringUtil.isDefined(group.getSuperGroupId())) {
         // Get the user information
         gr = organization.group.getGroup(idAsInt(group.getSuperGroupId()));
-        if (gr == null)
+        if (gr == null) {
           throw new AdminException("DomainDriverManager.updateGroup",
               SilverpeasException.ERROR, "admin.EX_ERR_GROUP_NOT_FOUND",
               "group Id: '" + group.getSuperGroupId() + "'");
+        }
         specificGroup.setSuperGroupId(gr.specificId);
       }
       // Set subUsers specific Id
-      specificGroup.setUserIds(translateUserIdsToSpecificIds(idAsInt(group
-          .getDomainId()), group.getUserIds()));
+      specificGroup.setUserIds(translateUserIdsToSpecificIds(idAsInt(group.getDomainId()), group.
+          getUserIds()));
 
       // Get the group information
       gr = organization.group.getGroup(idAsInt(group.getId()));
-      if (gr == null)
-        throw new AdminException("DomainDriverManager.updateGroup",
-            SilverpeasException.ERROR, "admin.EX_ERR_GROUP_NOT_FOUND",
-            "group Id: '" + group.getId() + "'");
+      if (gr == null) {
+        throw new AdminException("DomainDriverManager.updateGroup", SilverpeasException.ERROR,
+            "admin.EX_ERR_GROUP_NOT_FOUND", "group Id: '" + group.getId() + "'");
+      }
       // Get a DomainDriver instance
       AbstractDomainDriver domainDriver = this.getDomainDriver(gr.domainId);
       specificGroup.setId(gr.specificId);
-
       // Update Group in specific domain
       domainDriver.updateGroup(specificGroup);
     } catch (AdminException e) {
@@ -576,17 +562,15 @@ public class DomainDriverManager extends AbstractDomainDriver {
     try {
       // Set the OrganizationSchema (if not already done)
       this.getOrganizationSchema();
-
       // Get the user information
       GroupRow gr = organization.group.getGroup(idAsInt(groupId));
-      if (gr == null)
+      if (gr == null) {
         throw new AdminException("DomainDriverManager.getGroup",
             SilverpeasException.ERROR, "admin.EX_ERR_GROUP_NOT_FOUND",
             "group Id: '" + groupId + "'");
-
+      }
       // Get a DomainDriver instance
       AbstractDomainDriver domainDriver = this.getDomainDriver(gr.domainId);
-
       // Get Group detail from specific domain
       group = domainDriver.getGroup(gr.specificId);
 
@@ -595,9 +579,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
       group.setSpecificId(gr.specificId);
       group.setDomainId(idAsString(gr.domainId));
     } catch (AdminException e) {
-      throw new AdminException("DomainDriverManager.getGroup",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_GROUP", "group Id: '"
-          + groupId + "'", e);
+      throw new AdminException("DomainDriverManager.getGroup", SilverpeasException.ERROR,
+          "admin.EX_ERR_GET_GROUP", "group Id: '" + groupId + "'", e);
     } finally {
       this.releaseOrganizationSchema();
     }
@@ -618,8 +601,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       this.getOrganizationSchema();
 
       // Get a DomainDriver instance
-      AbstractDomainDriver domainDriver = this
-          .getDomainDriver(idAsInt(domainId));
+      AbstractDomainDriver domainDriver = this.getDomainDriver(idAsInt(domainId));
 
       // Get the group information without id and userId[]
       group = domainDriver.getGroupByName(groupName);
@@ -647,10 +629,11 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
       // Get the user information
       GroupRow gr = organization.group.getGroup(idAsInt(groupId));
-      if (gr == null)
+      if (gr == null) {
         throw new AdminException("DomainDriverManager.getGroups",
             SilverpeasException.ERROR, "admin.EX_ERR_GROUP_NOT_FOUND",
             "group Id: '" + groupId + "'");
+      }
 
       // Get a DomainDriver instance
       AbstractDomainDriver domainDriver = this.getDomainDriver(gr.domainId);
@@ -675,18 +658,18 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
+   * 
+   * @param domainId
    * @return Group[]
+   * @throws Exception 
    */
   public Group[] getAllGroups(String domainId) throws Exception {
     Group[] groups = null;
-
     try {
       // Set the OrganizationSchema (if not already done)
       this.getOrganizationSchema();
-
       // Get a DomainDriver instance
-      AbstractDomainDriver domainDriver = this
-          .getDomainDriver(idAsInt(domainId));
+      AbstractDomainDriver domainDriver = this.getDomainDriver(idAsInt(domainId));
 
       // Get Group from specific domain
       groups = domainDriver.getAllGroups();
@@ -701,17 +684,22 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * @return Group[]
+   * 
+   * @return
+   * @throws Exception 
    */
   public Group[] getAllRootGroups() throws Exception {
     return null;
   }
 
   /**
-   * @return Group[]
+   * 
+   * @param domainId
+   * @param groupId
+   * @return
+   * @throws Exception 
    */
-  public String[] getGroupMemberGroupIds(String domainId, String groupId)
-      throws Exception {
+  public String[] getGroupMemberGroupIds(String domainId, String groupId) throws Exception {
     String[] groups = null;
 
     try {
@@ -719,8 +707,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       this.getOrganizationSchema();
 
       // Get a DomainDriver instance
-      AbstractDomainDriver domainDriver = this
-          .getDomainDriver(idAsInt(domainId));
+      AbstractDomainDriver domainDriver = this.getDomainDriver(idAsInt(domainId));
 
       // Get Group from specific domain
       groups = domainDriver.getGroupMemberGroupIds(groupId);
@@ -735,7 +722,10 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * @return Group[]
+   * 
+   * @param domainId
+   * @return
+   * @throws Exception 
    */
   public Group[] getAllRootGroups(String domainId) throws Exception {
     Group[] groups = null;
@@ -743,11 +733,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
     try {
       // Set the OrganizationSchema (if not already done)
       this.getOrganizationSchema();
-
       // Get a DomainDriver instance
-      AbstractDomainDriver domainDriver = this
-          .getDomainDriver(idAsInt(domainId));
-
+      AbstractDomainDriver domainDriver = this.getDomainDriver(idAsInt(domainId));
       // Get Group from specific domain
       groups = domainDriver.getAllRootGroups();
     } catch (AdminException e) {
@@ -785,10 +772,11 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
       // Get the domain information
       KeyStoreRow ksr = organization.keyStore.getRecordByKey(idAsInt(sKey));
-      if (ksr == null)
+      if (ksr == null) {
         throw new AdminException("DomainDriverManager.authenticate",
             SilverpeasException.ERROR, "admin.EX_ERR_KEY_NOT_FOUND", "key: '"
             + sKey + "'");
+      }
 
       loginDomainId.put("login", ksr.login);
       loginDomainId.put("domainId", idAsString(ksr.domainId));
@@ -827,14 +815,15 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
       // Get the domain information
       DomainRow[] drs = organization.domain.getAllDomains();
-      if ((drs == null) || (drs.length <= 0))
+      if ((drs == null) || (drs.length <= 0)) {
         throw new AdminException("DomainDriverManager.getAllDomains",
             SilverpeasException.ERROR, "admin.EX_ERR_NO_DOMAIN_FOUND");
+      }
 
       valret = new Domain[drs.length];
       for (i = 0; i < drs.length; i++) {
         valret[i] = new Domain();
-        valret[i].setId(Integer.toString(drs[i].id));
+        valret[i].setId(java.lang.Integer.toString(drs[i].id));
         valret[i].setName(drs[i].name);
         valret[i].setDescription(drs[i].description);
         valret[i].setDriverClassName(drs[i].className);
@@ -852,8 +841,10 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * @param groupId
-   * @return Domain
+   * 
+   * @param domainId
+   * @return
+   * @throws Exception 
    */
   public long getDomainActions(String domainId) throws Exception {
     return getDomainDriver(idAsInt(domainId)).getDriverActions();
@@ -982,13 +973,13 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
       // Get the domain information
       DomainRow dr = organization.domain.getDomain(idAsInt(domainId));
-      if (dr == null)
-        throw new AdminException("DomainDriverManager.getDomain",
-            SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_NOT_FOUND",
-            "domain Id: '" + domainId + "'");
+      if (dr == null) {
+        throw new AdminException("DomainDriverManager.getDomain", SilverpeasException.ERROR,
+            "admin.EX_ERR_DOMAIN_NOT_FOUND", "domain Id: '" + domainId + "'");
+      }
 
       valret = new Domain();
-      valret.setId(Integer.toString(dr.id));
+      valret.setId(java.lang.Integer.toString(dr.id));
       valret.setName(dr.name);
       valret.setDescription(dr.description);
       valret.setDriverClassName(dr.className);
@@ -997,9 +988,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
       valret.setTheTimeStamp(dr.theTimeStamp);
       valret.setSilverpeasServerURL(dr.silverpeasServerURL);
     } catch (AdminPersistenceException e) {
-      throw new AdminException("DomainDriverManager.getDomain",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_DOMAIN", "domain id: '"
-          + domainId + "'", e);
+      throw new AdminException("DomainDriverManager.getDomain", SilverpeasException.ERROR,
+          "admin.EX_ERR_GET_DOMAIN", "domain id: '" + domainId + "'", e);
     } finally {
       this.releaseOrganizationSchema();
     }
@@ -1013,7 +1003,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
   public AbstractDomainDriver getDomainDriver(int domainId) throws Exception {
     AbstractDomainDriver domainDriver = null;
     boolean osAllocated = false;
-
     try {
       domainDriver = domainDriverInstances.get(idAsString(domainId));
       if (domainDriver == null) {
@@ -1023,15 +1012,15 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
         // Get the domain information
         DomainRow dr = organization.domain.getDomain(domainId);
-        if (dr == null)
+        if (dr == null) {
           throw new AdminException("DomainDriverManager.getDomainDriver",
               SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_NOT_FOUND",
               "domain Id: '" + domainId + "'");
+        }
 
         // Get the driver class name
         try {
-          domainDriver = (AbstractDomainDriver) Class.forName(dr.className)
-              .newInstance();
+          domainDriver = (AbstractDomainDriver) Class.forName(dr.className).newInstance();
           domainDriver.init(domainId, dr.propFileName, dr.authenticationServer);
         } catch (ClassNotFoundException e) {
           throw new AdminException("DomainDriverManager.getDomainDriver",
@@ -1065,9 +1054,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
    */
   public void beginSynchronization(String sdomainId) throws Exception {
     // Get a DomainDriver instance
-    AbstractDomainDriver domainDriver = this
-        .getDomainDriver(idAsInt(sdomainId));
-
+    AbstractDomainDriver domainDriver = this.getDomainDriver(idAsInt(sdomainId));
     domainDriver.beginSynchronization();
   }
 
@@ -1075,12 +1062,9 @@ public class DomainDriverManager extends AbstractDomainDriver {
    * Called when Admin ends the synchronization
    * @param cancelSynchro true if the synchronization is cancelled, false if it ends normally
    */
-  public String endSynchronization(String sdomainId, boolean cancelSynchro)
-      throws Exception {
+  public String endSynchronization(String sdomainId, boolean cancelSynchro) throws Exception {
     // Get a DomainDriver instance
-    AbstractDomainDriver domainDriver = this
-        .getDomainDriver(idAsInt(sdomainId));
-
+    AbstractDomainDriver domainDriver = this.getDomainDriver(idAsInt(sdomainId));
     return domainDriver.endSynchronization(cancelSynchro);
   }
 
@@ -1125,13 +1109,10 @@ public class DomainDriverManager extends AbstractDomainDriver {
   /**
    * Start a new transaction in specific domain driver
    */
-  public void startTransaction(String domainId, boolean bAutoCommit)
-      throws Exception {
+  public void startTransaction(String domainId, boolean bAutoCommit) throws Exception {
     try {
       // Get a AbstractDomainDriver instance
-      AbstractDomainDriver domainDriver = this
-          .getDomainDriver(idAsInt(domainId));
-
+      AbstractDomainDriver domainDriver = this.getDomainDriver(idAsInt(domainId));
       // Start transaction
       domainDriver.startTransaction(bAutoCommit);
     } catch (Exception e) {
@@ -1147,15 +1128,12 @@ public class DomainDriverManager extends AbstractDomainDriver {
   public void commit(String domainId) throws Exception {
     try {
       // Get a DomainDriver instance
-      AbstractDomainDriver domainDriver = this
-          .getDomainDriver(idAsInt(domainId));
-
+      AbstractDomainDriver domainDriver = this.getDomainDriver(idAsInt(domainId));
       // Commit transaction
       domainDriver.commit();
     } catch (Exception e) {
-      throw new AdminException("DomainDriverManager.commit",
-          SilverpeasException.ERROR, "root.EX_ERR_COMMIT", "domain Id: '"
-          + domainId + "'", e);
+      throw new AdminException("DomainDriverManager.commit", SilverpeasException.ERROR,
+          "root.EX_ERR_COMMIT", "domain Id: '" + domainId + "'", e);
     }
   }
 
@@ -1165,9 +1143,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
   public void rollback(String domainId) throws Exception {
     try {
       // Get a DomainDriver instance
-      AbstractDomainDriver domainDriver = this
-          .getDomainDriver(idAsInt(domainId));
-
+      AbstractDomainDriver domainDriver = this.getDomainDriver(idAsInt(domainId));
       // Commit transaction
       domainDriver.rollback();
     } catch (Exception e) {
@@ -1178,31 +1154,28 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   protected String[] translateUserIdsToSpecificIds(int domainId, String[] ids) {
-    Vector<String> specificIds = null;
-    int i = 0;
-    UserRow ur = null;
-
-    if (ids == null)
+    List<String> specificIds = new ArrayList<String>();
+    if (ids == null) {
       return null;
+    }
 
-    specificIds = new Vector<String>();
-    for (i = 0; i < ids.length; i++) {
+    for (int i = 0; i < ids.length; i++) {
       // Get the user information
       try {
-        ur = organization.user.getUser(idAsInt(ids[i]));
-        if ((ur != null) && (ur.domainId == domainId))
+        UserRow ur = organization.user.getUser(idAsInt(ids[i]));
+        if ((ur != null) && (ur.domainId == domainId)) {
           specificIds.add(ur.specificId);
+        }
       } catch (Exception e) {
         SilverTrace.error("admin", "DomainDriverManager.getUser",
             "admin.MSG_ERR_GET_USER", "user Id: '" + ids[i] + "'", e);
       }
     }
-    return (String[]) specificIds.toArray(new String[0]);
+    return specificIds.toArray(new String[specificIds.size()]);
   }
-  
+
+  @Override
   public List<String> getUserAttributes() throws Exception {
-    // no attributes for this driver
     return null;
   }
-  
 }

@@ -42,10 +42,8 @@ public class UserFavoriteSpaceManager {
    */
   public static boolean isUserFavoriteSpace(List<UserFavoriteSpaceVO> listUFS, String spaceId) {
     boolean result = false;
-    String cleanSpaceId =
-        (spaceId.startsWith(Admin.SPACE_KEY_PREFIX)) ? spaceId.substring(Admin.SPACE_KEY_PREFIX
-        .length()) : spaceId;
-
+    String cleanSpaceId =(spaceId.startsWith(Admin.SPACE_KEY_PREFIX)) ? spaceId.substring(
+        Admin.SPACE_KEY_PREFIX.length()) : spaceId;
     if (listUFS != null && !listUFS.isEmpty()) {
       for (UserFavoriteSpaceVO userFavoriteSpaceVO : listUFS) {
         if (Integer.parseInt(cleanSpaceId) == userFavoriteSpaceVO.getSpaceId()) {

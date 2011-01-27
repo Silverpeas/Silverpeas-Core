@@ -21,9 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.beans.admin;
 
+import com.silverpeas.util.StringUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -34,9 +34,9 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 abstract public class AbstractDomainDriver extends Object {
+
   protected int m_DomainId = -1; // The domainId of this instance of domain
   // driver
-
   protected List<DomainProperty> m_Properties = new ArrayList<DomainProperty>(); // liste ordonnée
   // des
   // properties du bundle
@@ -48,10 +48,8 @@ abstract public class AbstractDomainDriver extends Object {
   protected Hashtable<String, HashMap<String, String>> m_PropertiesDescriptions =
       new Hashtable<String, HashMap<String, String>>();
   protected String[] m_mapParameters = null;
-
   protected boolean synchroInProcess = false;
   protected boolean x509Enabled = false;
-
   /**
    * No possible actions Mask
    * @see #getDriverActions
@@ -142,17 +140,14 @@ abstract public class AbstractDomainDriver extends Object {
    * @see #getDriverActions
    */
   final static public long ACTION_MASK_ALL = 0xFFFFFFFF;
-
   final static public long ACTION_MASK_RW = ACTION_READ_USER
       | ACTION_READ_GROUP | ACTION_UPDATE_USER | ACTION_UPDATE_GROUP
       | ACTION_CREATE_USER | ACTION_CREATE_GROUP | ACTION_DELETE_USER
       | ACTION_DELETE_GROUP | ACTION_EDIT_USER_IN_GROUP;
-
   final static public long ACTION_MASK_RO = ACTION_READ_USER
       | ACTION_READ_GROUP | ACTION_IMPORT_USER | ACTION_SYNCHRO_USER
       | ACTION_REMOVE_USER | ACTION_IMPORT_GROUP | ACTION_SYNCHRO_GROUP
       | ACTION_REMOVE_GROUP;
-
   final static public long ACTION_MASK_MIXED_GROUPS = ACTION_READ_GROUP
       | ACTION_UPDATE_GROUP | ACTION_CREATE_GROUP | ACTION_DELETE_GROUP
       | ACTION_EDIT_USER_IN_GROUP;
@@ -188,7 +183,7 @@ abstract public class AbstractDomainDriver extends Object {
     for (i = 1; i <= nbProps; i++) {
       s = rs.getString("property_" + Integer.toString(i) + ".Name");
       if ((s != null) && (s.length() > 0)) {
-        newElmt = new DomainProperty(rs, Integer.toString(i)); // Retreives all
+        newElmt = new DomainProperty(rs, String.valueOf(i)); // Retreives all
         // property's
         // infos
         m_Properties.add(newElmt);
@@ -213,8 +208,9 @@ abstract public class AbstractDomainDriver extends Object {
     DomainProperty domainProp;
     while (it.hasNext()) {
       domainProp = it.next();
-      if (domainProp.getName().equals(propName))
+      if (domainProp.getName().equals(propName)) {
         return domainProp;
+      }
     }
     return null;
   }
@@ -247,23 +243,22 @@ abstract public class AbstractDomainDriver extends Object {
   }
 
   public void addPropertiesToImport(List<DomainProperty> props) {
-
   }
 
-  public void addPropertiesToImport(List<DomainProperty> props,
-      HashMap<String, String> theDescriptions) {
-
+  /**
+   * 
+   * @param props
+   * @param theDescriptions 
+   */
+  public void addPropertiesToImport(List<DomainProperty> props, HashMap<String, String> theDescriptions) {
   }
 
   public HashMap<String, String> getPropertiesLabels(String language) {
     HashMap<String, String> valret = m_PropertiesLabels.get(language);
-
     if (valret == null) {
       HashMap<String, String> newLabels = new HashMap<String, String>();
       ResourceLocator rs = new ResourceLocator(m_PropertiesMultilang, language);
-      int i;
-
-      for (i = 0; i < m_aKeys.length; i++) {
+      for (int i = 0; i < m_aKeys.length; i++) {
         newLabels.put(m_aKeys[i], rs.getString(m_aKeys[i]));
       }
       m_PropertiesLabels.put(language, newLabels);
@@ -278,11 +273,8 @@ abstract public class AbstractDomainDriver extends Object {
     if (valret == null) {
       HashMap<String, String> newDescriptions = new HashMap<String, String>();
       ResourceLocator rs = new ResourceLocator(m_PropertiesMultilang, language);
-      int i;
-
-      for (i = 0; i < m_aKeys.length; i++) {
-        newDescriptions.put(m_aKeys[i], rs.getString(m_aKeys[i]
-            + ".description"));
+      for (int i = 0; i < m_aKeys.length; i++) {
+        newDescriptions.put(m_aKeys[i], rs.getString(m_aKeys[i] + ".description"));
       }
       m_PropertiesDescriptions.put(language, newDescriptions);
       valret = newDescriptions;
@@ -302,10 +294,10 @@ abstract public class AbstractDomainDriver extends Object {
    * Called when Admin starts the synchronization
    */
   public long getDriverActions() {
-    if (x509Enabled)
+    if (x509Enabled) {
       return ACTION_MASK_RW | AbstractDomainDriver.ACTION_X509_USER;
-    else
-      return ACTION_MASK_RW;
+    }
+    return ACTION_MASK_RW;
   }
 
   public boolean isSynchroOnLoginEnabled() {
@@ -555,6 +547,7 @@ abstract public class AbstractDomainDriver extends Object {
   /**
    * Update group information in database
    * @param m_Group The Group object that contains user information
+   * @throws Exception  
    */
   public void updateGroup(Group m_Group) throws Exception {
     throw new AdminException("AbstractDomainDriver.updateGroup",
@@ -566,6 +559,7 @@ abstract public class AbstractDomainDriver extends Object {
    * Retrieve group information from database
    * @param groupId The group id as stored in the database
    * @return The Group object that contains group information
+   * @throws Exception  
    */
   public Group getGroup(String groupId) throws Exception {
     throw new AdminException("AbstractDomainDriver.getGroup",
@@ -577,6 +571,7 @@ abstract public class AbstractDomainDriver extends Object {
    * Retrieve group information from database
    * @param groupName The group name as stored in the database
    * @return The Group object that contains group information
+   * @throws Exception  
    */
   public Group getGroupByName(String groupName) throws Exception {
     throw new AdminException("AbstractDomainDriver.getGroupByName",
@@ -588,6 +583,7 @@ abstract public class AbstractDomainDriver extends Object {
    * Retrieve all groups contained in the given group
    * @param groupId The group id as stored in the database
    * @return Group[] An array of Group Objects that contain groups information
+   * @throws Exception  
    */
   public Group[] getGroups(String groupId) throws Exception {
     throw new AdminException("AbstractDomainDriver.getGroups",
@@ -598,6 +594,7 @@ abstract public class AbstractDomainDriver extends Object {
   /**
    * Retrieve all groups from the database
    * @return Group[] An array of Group Objects that contain groups information
+   * @throws Exception  
    */
   public Group[] getAllGroups() throws Exception {
     throw new AdminException("AbstractDomainDriver.getAllGroups",
@@ -608,6 +605,7 @@ abstract public class AbstractDomainDriver extends Object {
   /**
    * Retrieve all root groups from the database
    * @return Group[] An array of Group Objects that contain groups information
+   * @throws Exception  
    */
   public Group[] getAllRootGroups() throws Exception {
     throw new AdminException("AbstractDomainDriver.getAllRootGroups",
@@ -619,6 +617,7 @@ abstract public class AbstractDomainDriver extends Object {
    * Retrieve group's parents
    * @param groupId The group id as stored in the database
    * @return The Group's parents specific Ids
+   * @throws Exception  
    */
   public String[] getGroupMemberGroupIds(String groupId) throws Exception {
     throw new AdminException("AbstractDomainDriver.getGroupMemberGroupIds",
@@ -630,6 +629,7 @@ abstract public class AbstractDomainDriver extends Object {
    * Start a new transaction
    * @param bAutoCommit Specifies is transaction is automatically committed (without explicit
    * 'commit' statement)
+   * @throws Exception  
    */
   public void startTransaction(boolean bAutoCommit) throws Exception {
     throw new AdminException("AbstractDomainDriver.startTransaction",
@@ -639,6 +639,7 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * Commit transaction
+   * @throws Exception  
    */
   public void commit() throws Exception {
     throw new AdminException("AbstractDomainDriver.commit",
@@ -648,6 +649,7 @@ abstract public class AbstractDomainDriver extends Object {
 
   /**
    * Rollback transaction
+   * @throws Exception  
    */
   public void rollback() throws Exception {
     throw new AdminException("AbstractDomainDriver.rollback",
@@ -655,16 +657,10 @@ abstract public class AbstractDomainDriver extends Object {
         "DomainId=" + Integer.toString(m_DomainId));
   }
 
-  // Tools functions
-  // ---------------
-  /**
-   * Convert String Id to int Id
-   * @param id id to convert
-   */
   static protected int idAsInt(String id) {
-    if (id == null || id.length() == 0)
+    if (!StringUtil.isDefined(id)) {
       return -1; // the null id.
-
+    }
     try {
       return Integer.parseInt(id);
     } catch (NumberFormatException e) {
@@ -677,9 +673,9 @@ abstract public class AbstractDomainDriver extends Object {
    * @param id id to convert
    */
   static protected String idAsString(int id) {
-    return Integer.toString(id);
+    return String.valueOf(id);
   }
-  
+
   /**
    * get user specifics attributes for the driver
    * @param userId

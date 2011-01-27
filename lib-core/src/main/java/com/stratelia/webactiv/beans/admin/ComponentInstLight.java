@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.beans.admin;
 
 import java.io.Serializable;
@@ -52,7 +51,6 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
 
   /* instance Type */
   private String m_sName;
-
   private Date createDate = null;
   private Date updateDate = null;
   private Date removeDate = null;
@@ -61,11 +59,9 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
   private int updatedBy = -1;
   private int removedBy = -1;
   private int orderNum = -1;
-
   private String creatorName = null;
   private String updaterName = null;
   private String removerName = null;
-
   private List<SpaceInstLight> path = null;
 
   /**
@@ -89,12 +85,15 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
     m_sDescription = compo.description;
     m_sName = compo.componentName;
 
-    if (compo.createTime != null)
+    if (compo.createTime != null) {
       createDate = new Date(Long.parseLong(compo.createTime));
-    if (compo.updateTime != null)
+    }
+    if (compo.updateTime != null) {
       updateDate = new Date(Long.parseLong(compo.updateTime));
-    if (compo.removeTime != null)
+    }
+    if (compo.removeTime != null) {
       removeDate = new Date(Long.parseLong(compo.removeTime));
+    }
     status = compo.status;
 
     createdBy = compo.createdBy;
@@ -217,8 +216,9 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
     if (path != null) {
       SpaceInstLight space = null;
       for (int i = 0; i < path.size(); i++) {
-        if (i > 0)
+        if (i > 0) {
           sPath += separator;
+        }
 
         space = path.get(i);
         sPath += space.getName();
@@ -236,18 +236,18 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
    */
   public String getLabel(String language) {
     ComponentI18N s = (ComponentI18N) getTranslations().get(language);
-    if (s != null)
+    if (s != null) {
       return s.getName();
-    else
-      return getLabel();
+    }
+    return getLabel();
   }
 
   public String getDescription(String language) {
     ComponentI18N s = (ComponentI18N) getTranslations().get(language);
-    if (s != null)
+    if (s != null) {
       return s.getDescription();
-    else
-      return getDescription();
+    }
+    return getDescription();
   }
 
   public void setName(String name) {
@@ -272,19 +272,23 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     ComponentInstLight other = (ComponentInstLight) obj;
     if (m_sId == null) {
-      if (other.m_sId != null)
+      if (other.m_sId != null) {
         return false;
-    } else if (!m_sId.equals(other.m_sId))
+      }
+    } else if (!m_sId.equals(other.m_sId)) {
       return false;
+    }
     return true;
   }
-
 }
