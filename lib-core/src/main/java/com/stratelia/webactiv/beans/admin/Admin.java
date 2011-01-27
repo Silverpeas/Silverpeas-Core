@@ -6120,7 +6120,7 @@ public final class Admin extends Object {
         }
       } catch (Exception e) {
         SilverTrace.warn("admin", "admin.synchronizeOnlyExistingUsers",
-            "root.MSG_GEN_PARAM_VALUE", "Pb Loading class traitement Users ! ");
+            "root.MSG_GEN_PARAM_VALUE", "Pb Loading class traitement Users ! ", e);
         synchroUser = null;
       }
     }
