@@ -1640,11 +1640,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
         || componentId.startsWith("kmelia")) {
       boolean isPrivateSearch = "yes".equalsIgnoreCase(getOrganizationController().
           getComponentParameterValue(componentId, "privateSearch"));
-      if (isPrivateSearch) {
-        return false;
-      } else {
-        return true;
-      }
+      return !isPrivateSearch;
     } else {
       return true;
     }

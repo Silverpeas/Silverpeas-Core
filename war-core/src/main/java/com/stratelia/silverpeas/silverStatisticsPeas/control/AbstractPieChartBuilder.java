@@ -51,7 +51,7 @@ public abstract class AbstractPieChartBuilder {
   private static final String FINESSE_TOUS = "FINESSE_TOUS";
   private static final String FINESSE_GROUPE = "FINESSE_GROUPE";
   private static final String FINESSE_USER = "FINESSE_USER";
-  private String niveau_finesse = FINESSE_TOUS;
+  private String niveauFinesse = FINESSE_TOUS;
 
   private void buildStatsByInstance() {
 
@@ -100,10 +100,10 @@ public abstract class AbstractPieChartBuilder {
 
     if (tabValue != null) {
       if (tabValue[1] != null) {
-        niveau_finesse = FINESSE_GROUPE;
+        niveauFinesse = FINESSE_GROUPE;
       }
       if (tabValue[2] != null) {
-        niveau_finesse = FINESSE_USER;
+        niveauFinesse = FINESSE_USER;
       }
     }
   }
@@ -195,7 +195,7 @@ public abstract class AbstractPieChartBuilder {
       }
 
       // build data
-      Vector legend = new Vector();
+      Vector<String> legend = new Vector<String>();
       List<String> counts = new ArrayList<String>();
       currentStats.clear();
 
@@ -222,11 +222,11 @@ public abstract class AbstractPieChartBuilder {
           }
         }
 
-        if (FINESSE_TOUS.equals(niveau_finesse)) {
+        if (FINESSE_TOUS.equals(niveauFinesse)) {
           counts.add(String.valueOf(count1));
-        } else if (FINESSE_GROUPE.equals(niveau_finesse)) {
+        } else if (FINESSE_GROUPE.equals(niveauFinesse)) {
           counts.add(String.valueOf(count2));
-        } else if (FINESSE_USER.equals(niveau_finesse)) {
+        } else if (FINESSE_USER.equals(niveauFinesse)) {
           counts.add(String.valueOf(count3));
         }
 
@@ -246,11 +246,11 @@ public abstract class AbstractPieChartBuilder {
           count2 = item.getCountValues()[1];
           count3 = item.getCountValues()[2];
 
-          if (FINESSE_TOUS.equals(niveau_finesse)) {
+          if (FINESSE_TOUS.equals(niveauFinesse)) {
             counts.add(String.valueOf(count1));
-          } else if (FINESSE_GROUPE.equals(niveau_finesse)) {
+          } else if (FINESSE_GROUPE.equals(niveauFinesse)) {
             counts.add(String.valueOf(count2));
-          } else if (FINESSE_USER.equals(niveau_finesse)) {
+          } else if (FINESSE_USER.equals(niveauFinesse)) {
             counts.add(String.valueOf(count3));
           }
 
