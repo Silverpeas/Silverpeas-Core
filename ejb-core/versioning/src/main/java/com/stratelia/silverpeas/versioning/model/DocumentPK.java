@@ -35,8 +35,7 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  */
 
 public class DocumentPK extends WAPrimaryKey implements Serializable, Cloneable {
-
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = -93533696421871014L;
 
   /**
    * Constructor declaration
@@ -78,31 +77,23 @@ public class DocumentPK extends WAPrimaryKey implements Serializable, Cloneable 
     super(String.valueOf(id), pk);
   }
 
-  /**
-   * **********
-   */
-
+  @Override
   public String getRootTableName() {
     return "Version";
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
+  @Override
   public String getTableName() {
     return "SB_Version_Document";
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
+
+  @Override
   public String toString() {
-    return "(id = " + getId() + ", space = " + getSpace()
-        + ", componentName = " + getComponentName() + ")";
+    StringBuilder builder = new StringBuilder(200);
+    builder.append("(id = ").append(getId()).append(", space = ").append(getSpace());
+    builder.append(", componentName = ").append(getComponentName()).append(")");
+    return builder.toString();
   }
 
 
@@ -110,6 +101,7 @@ public class DocumentPK extends WAPrimaryKey implements Serializable, Cloneable 
   /**
    * Support Cloneable Interface
    */
+  @Override
   public Object clone() {
     try {
       return super.clone();
@@ -119,12 +111,11 @@ public class DocumentPK extends WAPrimaryKey implements Serializable, Cloneable 
   }
 
   @Override
-  public
-  boolean equals(Object o) {
+  public boolean equals(Object o) {
     if (this == o) {
       return true;
     }
-    if (o == null || getClass() != o.getClass()) {
+    if (o == null || !(o instanceof DocumentPK)) {
       return false;
     }
     DocumentPK that = (DocumentPK) o;
@@ -138,7 +129,6 @@ public class DocumentPK extends WAPrimaryKey implements Serializable, Cloneable 
     if (space != null ? !space.equals(that.space) : that.space != null) {
       return false;
     }
-
     return true;
   }
 

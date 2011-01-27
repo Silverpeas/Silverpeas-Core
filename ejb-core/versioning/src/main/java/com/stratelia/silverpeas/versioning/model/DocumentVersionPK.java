@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.versioning.model;
 
 import java.io.Serializable;
@@ -33,10 +32,8 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  * @author Georgy Shakirin
  * @version 1.0
  */
-
 public class DocumentVersionPK extends WAPrimaryKey implements Serializable, Cloneable {
-
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = -2771550937468713859L;
 
   /**
    * Constructor declaration
@@ -71,7 +68,7 @@ public class DocumentVersionPK extends WAPrimaryKey implements Serializable, Clo
   /**
    * **********
    */
-
+  @Override
   public String getRootTableName() {
     return "Version";
   }
@@ -81,6 +78,7 @@ public class DocumentVersionPK extends WAPrimaryKey implements Serializable, Clo
    * @return
    * @see
    */
+  @Override
   public String getTableName() {
     return "SB_Version_Version";
   }
@@ -91,13 +89,13 @@ public class DocumentVersionPK extends WAPrimaryKey implements Serializable, Clo
    * @return
    * @see
    */
+  @Override
   public boolean equals(Object other) {
-    if (!(other instanceof DocumentPK)) {
+    if (other == null || !(other instanceof DocumentVersionPK)) {
       return false;
     }
-    return (id.equals(((DocumentPK) other).getId()))
-        && (space.equals(((DocumentPK) other).getSpace()))
-        && (componentName.equals(((DocumentPK) other).getComponentName()));
+    return (id.equals(((DocumentVersionPK) other).getId()))
+        && (componentName.equals(((DocumentVersionPK) other).getComponentName()));
   }
 
   /**
@@ -105,9 +103,12 @@ public class DocumentVersionPK extends WAPrimaryKey implements Serializable, Clo
    * @return
    * @see
    */
+  @Override
   public String toString() {
-    return "(id = " + getId() + ", Space = " + getSpace()
-        + ", componentName = " + getComponentName() + ")";
+    StringBuilder builder = new StringBuilder(100);
+    builder.append("(id = ").append(getId()).append(", Space = ").append(getSpace());
+    builder.append(", componentName = ").append(getComponentName()).append(")");
+    return builder.toString();
   }
 
   /**
@@ -128,5 +129,4 @@ public class DocumentVersionPK extends WAPrimaryKey implements Serializable, Clo
       return null; // this should never happened
     }
   }
-
 }
