@@ -105,9 +105,9 @@ public class DomainDriverManager extends AbstractDomainDriver {
         synchroDomain = getDomainDriver(Integer.parseInt(doms[i].getId()));
       } catch (Exception e) {
         SilverTrace.warn("admin", "DomainDriverManager.startServer",
-            "admin.CANT_GET_DOMAIN");
+            "admin.CANT_GET_DOMAIN", e);
       }
-      if (synchroDomain.isSynchroThreaded()) {
+      if (synchroDomain != null && synchroDomain.isSynchroThreaded()) {
         theThread.addDomain(doms[i].getId());
       }
     }
