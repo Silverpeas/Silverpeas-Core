@@ -57,7 +57,7 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
   private String[][] currentGroups = null;
   private String[] currentSpaces = null;
   private List currentProfiles = null;
-  private Map componentOfficialNames = null;
+  private Map<String, WAComponent> componentOfficialNames = null;
 
   /**
    * Standard Session Controller Constructeur
@@ -301,7 +301,7 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
    * @return a map of the official (business) names of the installed components indexed by the
    * internal names
    */
-  private Map getComponentOfficialNames() {
+  private Map<String, WAComponent> getComponentOfficialNames() {
     if (componentOfficialNames == null) {
       componentOfficialNames = getAdminController().getAllComponents();
     }
@@ -313,8 +313,11 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
    */
   private String getComponentOfficialName(String internalName) {
     try {
-      return ((WAComponent) getComponentOfficialNames().get(internalName))
-          .getLabel();
+      WAComponent component = getComponentOfficialNames().get(internalName);
+      if (component != null) {
+       return component.getLabel(); 
+      }
+      return internalName;
     } catch (Exception e) {
       SilverTrace.info("jobOrganizationPeas",
           "JobOrganizationPeasSessionController.getComponentOfficialName",
