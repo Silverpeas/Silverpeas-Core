@@ -60,7 +60,7 @@ public class AdminImportExport {
   /**
    * @return un objet AdminController
    */
-  private AdminController getAdminController() {
+  private synchronized AdminController getAdminController() {
     if (ac == null) {
       ac = new AdminController("unknown");
     }

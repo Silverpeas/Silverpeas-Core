@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Created on 24 janv. 2005
- */
 package com.silverpeas.attachment.importExport;
 
 import java.util.List;

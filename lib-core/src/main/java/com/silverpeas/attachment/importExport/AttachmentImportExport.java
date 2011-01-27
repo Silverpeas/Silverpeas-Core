@@ -22,10 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Created on 25 janv. 2005
- *
- */
 package com.silverpeas.attachment.importExport;
 
 import java.io.File;
@@ -284,8 +280,7 @@ public class AttachmentImportExport {
       updateRule = AttachmentDetail.IMPORT_UPDATE_RULE_ADD;
     }
 
-    SilverTrace.info("attachment",
-        "AttachmentImportExport.addAttachmentToPublication()",
+    SilverTrace.info("attachment", "AttachmentImportExport.addAttachmentToPublication()",
         "root.MSG_GEN_PARAM_VALUE", "updateRule=" + updateRule);
 
     // Verification s'il existe un attachment de meme nom, si oui, ajout
@@ -299,8 +294,7 @@ public class AttachmentImportExport {
           logicalName = a_Detail.getLogicalName();
           int extPosition = logicalName.lastIndexOf('.');
           if (extPosition != -1) {
-            logicalName = logicalName.substring(0, extPosition) + "_"
-                + (++incrementSuffixe)
+            logicalName = logicalName.substring(0, extPosition) + "_" + (++incrementSuffixe)
                 + logicalName.substring(extPosition, logicalName.length());
           } else {
             logicalName += "_" + (++incrementSuffixe);
@@ -343,12 +337,7 @@ public class AttachmentImportExport {
     // Recuperation des attachments
     Vector<AttachmentDetail> listAttachment = AttachmentController.searchAttachmentByCustomerPK(pk);
     Vector<AttachmentDetail> listToReturn = new Vector<AttachmentDetail>();
-    if (listAttachment != null && listAttachment.isEmpty())// Si on
-    // recoit
-    // une liste
-    // vide, on
-    // retourne
-    // null
+    if (listAttachment != null && listAttachment.isEmpty())
     {
       listAttachment = null;
     }

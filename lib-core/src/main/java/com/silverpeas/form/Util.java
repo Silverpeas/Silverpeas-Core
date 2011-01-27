@@ -37,7 +37,7 @@ public class Util {
       "com.silverpeas.form.settings.formIcons", "");
   private static final ResourceLocator settings = new ResourceLocator(
       "com.silverpeas.form.settings.form", "");
-  private static final String path = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+  private static final String path = URLManager.getApplicationURL();
   private static ResourceLocator generalMessage;
   private static ResourceLocator message;
   private static String language = null;
@@ -81,8 +81,7 @@ public class Util {
     // includes external scripts once because
     // including several times the same script (once per field) can provide
     // dysfunction on this fields
-    String webContext =
-        GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+    String webContext =path;
     addExternalStyleSheet(includes, webContext, "/util/yui/fonts/fonts-min.css");
     addExternalStyleSheet(includes, webContext,"/util/yui/autocomplete/assets/skins/sam/autocomplete.css");
     addExternalScript(includes, webContext, "/util/yui/yahoo-dom-event/yahoo-dom-event.js");
@@ -121,12 +120,10 @@ public class Util {
   }
 
   private synchronized static void setLanguage(String lg) {
-    if ((language == null)
-        || (!language.trim().toLowerCase().equals(lg.trim().toLowerCase()))) {
+    if ((language == null) || (!language.trim().toLowerCase().equals(lg.trim().toLowerCase()))) {
       language = lg;
       generalMessage = GeneralPropertiesManager.getGeneralMultilang(language);
-      message = new ResourceLocator("com.silverpeas.form.multilang.formBundle",
-          language);
+      message = new ResourceLocator("com.silverpeas.form.multilang.formBundle",language);
     }
   }
 
@@ -141,6 +138,6 @@ public class Util {
 
   public static boolean getBooleanValue(Map<String, String> parameters, String parameter) {
     String paramValue = parameters.containsKey(parameter) ? parameters.get(parameter) : "false";
-    return Boolean.valueOf(paramValue).booleanValue();
+    return Boolean.parseBoolean(paramValue);
   }
 }
