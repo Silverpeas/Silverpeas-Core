@@ -91,8 +91,8 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
         destination = getDestination("ViewLinks", myLinksSC, request);
       } else if (function.equals("ComponentLinks")) {
         // recupere l'id de l'instance
-        String instanceId = (String) request.getParameter("InstanceId");
-        String url = (String) request.getParameter("UrlReturn");
+        String instanceId = request.getParameter("InstanceId");
+        String url = request.getParameter("UrlReturn");
         myLinksSC.setInstanceId(instanceId);
         myLinksSC.setUrl(url);
         request.setAttribute("UrlReturn", url);
@@ -101,9 +101,9 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
         destination = getDestination("ViewLinks", myLinksSC, request);
       } else if (function.equals("ObjectLinks")) {
         // recupere l'id de l'objet et de l'instance
-        String objectId = (String) request.getParameter("ObjectId");
-        String instanceId = (String) request.getParameter("InstanceId");
-        String url = (String) request.getParameter("UrlReturn");
+        String objectId = request.getParameter("ObjectId");
+        String instanceId = request.getParameter("InstanceId");
+        String url = request.getParameter("UrlReturn");
         myLinksSC.setUrl(url);
         myLinksSC.setInstanceId(instanceId);
         myLinksSC.setObjectId(objectId);
@@ -128,9 +128,7 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
         request.setAttribute("InstanceId", myLinksSC.getInstanceId());
         destination = rootDest + "viewLinks.jsp";
       } else if (function.equals("NewLink")) {
-        boolean isVisible = false;
-        if (myLinksSC.getScope() == MyLinksPeasSessionController.SCOPE_USER)
-          isVisible = true;
+        boolean isVisible = myLinksSC.getScope() == MyLinksPeasSessionController.SCOPE_USER;
         request.setAttribute("IsVisible", new Boolean(isVisible));
         // appel jsp
         destination = rootDest + "linkManager.jsp";
@@ -151,9 +149,7 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter {
         String linkId = request.getParameter("LinkId");
         LinkDetail link = myLinksSC.getLink(linkId);
         request.setAttribute("Link", link);
-        boolean isVisible = false;
-        if (myLinksSC.getScope() == MyLinksPeasSessionController.SCOPE_USER)
-          isVisible = true;
+        boolean isVisible = myLinksSC.getScope() == MyLinksPeasSessionController.SCOPE_USER;
         request.setAttribute("IsVisible", new Boolean(isVisible));
         // appel jsp
         destination = rootDest + "linkManager.jsp";
