@@ -380,7 +380,7 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	color: #444444;
 }
 
-#tabbedPane1 , #tabbedPane0{ position:relative; }
+#tabbedPane, #tabbedPane2 , #tabbedPane1 , #tabbedPane0{ position:relative; }
 
 .milieuBoutonV5 a:hover , .milieuOngletOff a:hover  {
 	color: #000000;
