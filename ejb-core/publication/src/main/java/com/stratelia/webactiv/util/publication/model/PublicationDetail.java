@@ -815,13 +815,18 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
               String attachmentId = fieldValue.substring(fieldValue.indexOf("_") + 1, fieldValue.
                   length());
               if (StringUtil.isDefined(attachmentId)) {
-                AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(
-                    new AttachmentPK(attachmentId, "useless", getPK().getInstanceId()));
-                if (attachment != null) {
-                  attachment.setLogicalName(attachment.getLogicalName(language));
-                  attachment.setPhysicalName(attachment.getPhysicalName(language));
-                  attachment.setType(attachment.getType(language));
-                  fieldValue = attachment.getWebURL();
+                if (attachmentId.startsWith("/")) {
+                  // case of an image provided by a gallery
+                  fieldValue = attachmentId;
+                } else {
+                  AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(
+                      new AttachmentPK(attachmentId, "useless", getPK().getInstanceId()));
+                  if (attachment != null) {
+                    attachment.setLogicalName(attachment.getLogicalName(language));
+                    attachment.setPhysicalName(attachment.getPhysicalName(language));
+                    attachment.setType(attachment.getType(language));
+                    fieldValue = attachment.getWebURL();
+                  }
                 }
               } else {
                 fieldValue = "";
