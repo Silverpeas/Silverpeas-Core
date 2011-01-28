@@ -3421,3 +3421,9 @@ span.csv {
 	background-color: #F79992;
 	border-color: #CE6F6F;
 }
+
+table.pdcPositionsField {
+	border-spacing: 0;
+    padding: 0;
+    width: 100%;
+}
