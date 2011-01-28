@@ -143,11 +143,7 @@ public class RepositoryAccessServlet extends HttpServlet {
       SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
           "RepositoryAccessServlet error", e);
       throw e;
-    } catch (Throwable e) {
-      SilverTrace.error("RepositoryAccessServlet", "jackrabbit.init",
-          "RepositoryAccessServlet error", e);
-      throw new ServletException(e);
-    }
+    } 
   }
 
   private void registerSilverpeasNodeTypes() throws NamespaceException,

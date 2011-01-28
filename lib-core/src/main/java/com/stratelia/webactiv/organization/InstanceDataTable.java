@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.organization;
 
 import java.sql.PreparedStatement;
@@ -36,12 +35,11 @@ import com.stratelia.webactiv.beans.admin.instance.control.SPParameters;
 /**
  * A InstanceData object manages component parameters
  */
+public class InstanceDataTable extends Table<InstanceDataRow> {
 
-public class InstanceDataTable extends Table {
   public InstanceDataTable(OrganizationSchema organization) {
     super(organization, "ST_Instance_Data");
   }
-
   static final private String INSTANCEDATA_COLUMNS = "id,componentId,name,label,value";
 
   /**
@@ -49,7 +47,6 @@ public class InstanceDataTable extends Table {
    */
   protected InstanceDataRow fetchUserSet(ResultSet rs) throws SQLException {
     InstanceDataRow idr = new InstanceDataRow();
-
     idr.id = rs.getInt(1);
     idr.componentId = rs.getInt(2);
     idr.name = rs.getString(3);
@@ -62,8 +59,8 @@ public class InstanceDataTable extends Table {
   /**
    * Inserts in the database a new instanceData row.
    */
-  public void createInstanceData(int componentId, SPParameter parameter)
-      throws AdminPersistenceException, SQLException {
+  public void createInstanceData(int componentId, SPParameter parameter) throws
+      AdminPersistenceException, SQLException {
     SilverTrace.info("admin", "InstanceDataTable.createInstanceData",
         "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId
         + ", parameter = " + parameter.toString());
@@ -77,40 +74,33 @@ public class InstanceDataTable extends Table {
 
     insertRow(INSERT_INSTANCEDATA, idr);
   }
-
   static final private String INSERT_INSTANCEDATA = "insert into ST_Instance_Data("
       + INSTANCEDATA_COLUMNS + ") values (?,?,?,?,?)";
 
   /**
    * Returns the instance whith the given id.
    */
-  public InstanceDataRow getInstanceData(int id)
-      throws AdminPersistenceException {
-    return (InstanceDataRow) getUniqueRow(SELECT_INSTANCEDATA_BY_ID, id);
+  public InstanceDataRow getInstanceData(int id) throws AdminPersistenceException {
+    return getUniqueRow(SELECT_INSTANCEDATA_BY_ID, id);
   }
-
   static final private String SELECT_INSTANCEDATA_BY_ID = "select "
       + INSTANCEDATA_COLUMNS + " from ST_Instance_Data where id = ?";
 
-  protected void prepareInsert(String insertQuery, PreparedStatement insert,
-      Object row) throws SQLException {
-    InstanceDataRow idr = (InstanceDataRow) row;
-
-    insert.setInt(1, idr.id);
-    insert.setInt(2, idr.componentId);
-    insert.setString(3, idr.name);
-    insert.setString(4, idr.label);
-    insert.setString(5, idr.value);
+  @Override
+  protected void prepareInsert(String insertQuery, PreparedStatement insert, InstanceDataRow row)
+      throws SQLException {
+    insert.setInt(1, row.id);
+    insert.setInt(2, row.componentId);
+    insert.setString(3, row.name);
+    insert.setString(4, row.label);
+    insert.setString(5, row.value);
   }
 
   /**
    * Returns all the parameters of the given component (List of SPParameter)
    */
-  @SuppressWarnings("unchecked")
-  public SPParameters getAllParametersInComponent(int componentId)
-      throws AdminPersistenceException {
-    List<InstanceDataRow> rows =
-        (List<InstanceDataRow>) getRows(SELECT_ALL_COMPONENT_PARAMETERS, componentId);
+  public SPParameters getAllParametersInComponent(int componentId) throws AdminPersistenceException {
+    List<InstanceDataRow> rows = getRows(SELECT_ALL_COMPONENT_PARAMETERS, componentId);
     SPParameters params = new SPParameters();
     for (InstanceDataRow row : rows) {
       SPParameter param = new SPParameter(row.name, row.value, row.label);
@@ -119,7 +109,6 @@ public class InstanceDataTable extends Table {
 
     return params;
   }
-
   static final private String SELECT_ALL_COMPONENT_PARAMETERS = "select "
       + INSTANCEDATA_COLUMNS
       + " from ST_Instance_Data where componentId = ? order by id";
@@ -141,7 +130,6 @@ public class InstanceDataTable extends Table {
       createInstanceData(componentId, parameter);
     }
   }
-
   static final private String UPDATE_INSTANCEDATA = "UPDATE ST_Instance_Data"
       + " SET value = ?" + " where componentId = ? and name = ?";
 
@@ -149,19 +137,16 @@ public class InstanceDataTable extends Table {
    * Removes a instance data row.
    */
   public void removeInstanceData(int id) throws AdminPersistenceException {
-    // InstanceDataRow idr = getInstanceData(id);
-    // if (idr == null) return;
-
     updateRelation(REMOVE_INSTANCEDATA, id);
   }
-
   static final private String REMOVE_INSTANCEDATA = "delete from ST_Instance_Data"
       + " where componentid = ?";
 
   /**
    * Fetch the current instanceData row from a resultSet.
    */
-  protected Object fetchRow(ResultSet rs) throws SQLException {
+  @Override
+  protected InstanceDataRow fetchRow(ResultSet rs) throws SQLException {
     return fetchInstanceData(rs);
   }
 
@@ -180,12 +165,11 @@ public class InstanceDataTable extends Table {
     return idr;
   }
 
+  @Override
   protected void prepareUpdate(String updateQuery, PreparedStatement update,
-      Object row) throws SQLException {
-    InstanceDataRow idr = (InstanceDataRow) row;
-
-    update.setString(1, idr.value);
-    update.setInt(2, idr.componentId);
-    update.setString(3, idr.name);
+      InstanceDataRow row) throws SQLException {
+    update.setString(1, row.value);
+    update.setInt(2, row.componentId);
+    update.setString(3, row.name);
   }
 }

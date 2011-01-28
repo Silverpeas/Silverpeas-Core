@@ -28,7 +28,7 @@
 <project xmlns="http://maven.apache.org/DECORATION/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
   <bannerLeft>
     <name>Silverpeas</name>
-    <src>images/bandeauTop-.jpg</src>
+    <src>http://www.silverpeas.org/docs/core/images/logo-silverpeas.png</src>
     <href>http://www.silverpeas.org/</href>
   </bannerLeft>
   <publishDate position="right" format="yyyy-MM-dd" />
@@ -36,7 +36,7 @@
   <skin>
     <groupId>com.silverpeas.services</groupId>
     <artifactId>silverpeas-site-skin</artifactId>
-    <version>1.3</version>
+    <version>1.5</version>
   </skin>
   <!-- Powered By -->
   <poweredBy>

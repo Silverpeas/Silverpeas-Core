@@ -36,7 +36,7 @@
   <skin>
     <groupId>com.silverpeas.services</groupId>
     <artifactId>silverpeas-site-skin</artifactId>
-    <version>1.4</version>
+    <version>1.5</version>
   </skin>
   <!-- Powered By -->
   <poweredBy>

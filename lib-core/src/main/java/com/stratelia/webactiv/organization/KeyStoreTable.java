@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.organization;
 
 import java.sql.PreparedStatement;
@@ -31,12 +30,11 @@ import java.sql.SQLException;
 /**
  * A KeyStoreTable object manages the ST_KeyStore table.
  */
+public class KeyStoreTable extends Table<KeyStoreRow> {
 
-public class KeyStoreTable extends Table {
   public KeyStoreTable(OrganizationSchema organization) {
     super(organization, "ST_KeyStore");
   }
-
   static final private String KEYSTORE_COLUMNS = "userKey, login, domainId";
 
   /**
@@ -56,9 +54,8 @@ public class KeyStoreTable extends Table {
    * Get a keystore record by userKey
    */
   public KeyStoreRow getRecordByKey(int nKey) throws AdminPersistenceException {
-    return (KeyStoreRow) getUniqueRow(SELECT_RECORD_BY_KEY, nKey);
+    return getUniqueRow(SELECT_RECORD_BY_KEY, nKey);
   }
-
   static final private String SELECT_RECORD_BY_KEY = "select "
       + KEYSTORE_COLUMNS + " from ST_KeyStore where userKey = ?";
 
@@ -68,30 +65,26 @@ public class KeyStoreTable extends Table {
   public void removeKeyStoreRecord(int nKey) throws AdminPersistenceException {
     updateRelation(DELETE_RECORD, nKey);
   }
-
   static final private String DELETE_RECORD = "delete from ST_KeyStore where userKey = ?";
 
   /**
    * Fetch the current accessLevel row from a resultSet.
    */
-  protected Object fetchRow(ResultSet rs) throws SQLException {
+  protected KeyStoreRow fetchRow(ResultSet rs) throws SQLException {
     return fetchKeyStore(rs);
   }
 
   /**
    * update a KeyStore
    */
-  protected void prepareUpdate(String updateQuery, PreparedStatement update,
-      Object row) {
+  protected void prepareUpdate(String updateQuery, PreparedStatement update, KeyStoreRow row) {
     // not implemented
   }
 
   /**
    * insert a KeyStore
    */
-  protected void prepareInsert(String insertQuery, PreparedStatement insert,
-      Object row) {
+  protected void prepareInsert(String insertQuery, PreparedStatement insert, KeyStoreRow row) {
     // not implemented
   }
-
 }

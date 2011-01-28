@@ -21,26 +21,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.organization;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-/**
- * A AccessLevelTable object manages the ST_ACCESSLEVEL table.
- */
+public class AccessLevelTable extends Table<AccessLevelRow> {
 
-public class AccessLevelTable extends Table {
   public AccessLevelTable(OrganizationSchema organization) {
     super(organization, "ST_AccessLevel");
   }
-
   static final private String ACCESSLEVEL_COLUMNS = "id,name";
 
   /**
    * Fetch the current access level row from a resultSet.
+   * @param rs
+   * @return the current access level row from a resultSet.
+   * @throws SQLException 
    */
   protected AccessLevelRow fetchAccessLevel(ResultSet rs) throws SQLException {
     AccessLevelRow a = new AccessLevelRow();
@@ -53,47 +51,51 @@ public class AccessLevelTable extends Table {
 
   /**
    * Returns all the Access levels.
+   * @return all the Access levels.
+   * @throws AdminPersistenceException 
    */
   public AccessLevelRow[] getAllAccessLevels() throws AdminPersistenceException {
-    return (AccessLevelRow[]) getRows(SELECT_ALL_ACCESSLEVELS).toArray(
-        new AccessLevelRow[0]);
+    return getRows(SELECT_ALL_ACCESSLEVELS).toArray(new AccessLevelRow[0]);
   }
-
   static final private String SELECT_ALL_ACCESSLEVELS = "select "
       + ACCESSLEVEL_COLUMNS + " from ST_AccessLevel";
 
   /**
    * Returns the Access level whith the given id.
+   * @param id
+   * @return the Access level whith the given id.
+   * @throws AdminPersistenceException 
    */
-  public AccessLevelRow getAccessLevel(String id)
-      throws AdminPersistenceException {
-    return (AccessLevelRow) getUniqueRow(SELECT_ACCESSLEVEL_BY_ID, id);
+  public AccessLevelRow getAccessLevel(String id) throws AdminPersistenceException {
+    return getUniqueRow(SELECT_ACCESSLEVEL_BY_ID, id);
   }
-
   static final private String SELECT_ACCESSLEVEL_BY_ID = "select "
       + ACCESSLEVEL_COLUMNS + " from ST_AccessLevel where id = ?";
 
   /**
    * Fetch the current accessLevel row from a resultSet.
+   * @param rs
+   * @return the current accessLevel row from a resultSet.
+   * @throws SQLException 
    */
-  protected Object fetchRow(ResultSet rs) throws SQLException {
+  @Override
+  protected AccessLevelRow fetchRow(ResultSet rs) throws SQLException {
     return fetchAccessLevel(rs);
   }
 
   /**
    * update a accessLevel
    */
-  protected void prepareUpdate(String updateQuery, PreparedStatement update,
-      Object row) {
+  @Override
+  protected void prepareUpdate(String updateQuery, PreparedStatement update, AccessLevelRow row) {
     // not implemented
   }
 
   /**
    * insert a accessLevel
    */
-  protected void prepareInsert(String insertQuery, PreparedStatement insert,
-      Object row) {
+  @Override
+  protected void prepareInsert(String insertQuery, PreparedStatement insert, AccessLevelRow row) {
     // not implemented
   }
-
 }

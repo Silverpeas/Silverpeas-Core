@@ -21,13 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/**
- * GraphicElementFactory.java
- *
- * Created on 10 octobre 2000, 16:26
- */
-
 package com.stratelia.webactiv.util.viewGenerator.html;
 
 import java.rmi.RemoteException;
@@ -38,6 +31,7 @@ import java.util.List;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
@@ -83,36 +77,30 @@ import java.util.ArrayList;
  * this factory ! This class uses the "factory design pattern".
  */
 public class GraphicElementFactory extends Object {
+
   public static final String GE_FACTORY_SESSION_ATT = "SessionGraphicElementFactory";
   private final static ResourceLocator settings = new ResourceLocator(
-          "com.stratelia.webactiv.util.viewGenerator.settings.graphicElementFactorySettings", "");
+      "com.stratelia.webactiv.util.viewGenerator.settings.graphicElementFactorySettings", "");
   private ResourceLocator lookSettings = null;
   private ResourceLocator silverpeasLookSettings = null;
   private ResourceLocator favoriteLookSettings = null;
   private String defaultLook = "com.stratelia.webactiv.util.viewGenerator.settings.Initial";
-  private final static ResourceLocator generalSettings =
-      new ResourceLocator("com.stratelia.webactiv.general",
-          I18NHelper.defaultLanguage);
-  private final static String iconsPath = generalSettings.getString("ApplicationURL")
-      + settings.getString("IconsPath");
+  private final static ResourceLocator generalSettings = new ResourceLocator(
+      "com.stratelia.webactiv.general", I18NHelper.defaultLanguage);
+  private final static String iconsPath = URLManager.getApplicationURL() + settings.getString(
+      "IconsPath");
   private ResourceLocator multilang = null;
-
   private String currentLookName = null;
   private String externalStylesheet = null;
-
   private String componentId = null;
   private MainSessionController mainSessionController = null;
-
   private String spaceId = null;
   private final String defaultLookName = "Initial";
-
   private static final String JQUERY_JS = "jquery-1.3.2.min.js";
   private static final String JQUERYUI_JS = "jquery-ui-1.7.3.custom.min.js";
   private static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.7.3.custom.css";
-
   private static final String FLOWPLAYER_JS = "flowplayer/flowplayer-3.2.4.min.js";
   private static final String FLOWPLAYER_CSS = "flowplayer.css";
-
   private static final String JQUERY_QTIP = "jquery.qtip-1.0.0-rc3.min.js";
   private static final String JQUERY_QTIP_STYLE = "silverpeas-qtip-style.js";
 
@@ -183,8 +171,8 @@ public class GraphicElementFactory extends Object {
       try {
         lookSettings =
             new ResourceLocator(
-                "com.stratelia.webactiv.util.viewGenerator.settings.lookSettings", "",
-                silverpeasSettings);
+            "com.stratelia.webactiv.util.viewGenerator.settings.lookSettings", "",
+            silverpeasSettings);
       } catch (java.util.MissingResourceException e) {
         // the customer lookSettings is undefined get the default silverpeas looks
         lookSettings = silverpeasSettings;
@@ -249,7 +237,7 @@ public class GraphicElementFactory extends Object {
 
     SilverTrace.info("viewgenerator", "GraphicElementFactory.setLook()",
         "root.MSG_GEN_PARAM_VALUE", " look = " + look
-            + " | corresponding settings = " + selectedLook);
+        + " | corresponding settings = " + selectedLook);
     this.favoriteLookSettings = new ResourceLocator(selectedLook, "");
 
     currentLookName = look;
@@ -279,7 +267,7 @@ public class GraphicElementFactory extends Object {
   public String getLookFrame() {
     SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookFrame()",
         "root.MSG_GEN_PARAM_VALUE", " FrameJSP = "
-            + getFavoriteLookSettings().getString("FrameJSP"));
+        + getFavoriteLookSettings().getString("FrameJSP"));
     return getFavoriteLookSettings().getString("FrameJSP");
   }
 
@@ -327,10 +315,9 @@ public class GraphicElementFactory extends Object {
         if (component != null) {
           String componentName = component.getName();
           String genericComponentName = getGenericComponentName(componentName);
-          code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(contextPath)
-              .append("/").append(genericComponentName).append("/jsp/styleSheets/").append(
-                  genericComponentName)
-              .append(".css").append("\"/>\n");
+          code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(contextPath).
+              append("/").append(genericComponentName).append("/jsp/styleSheets/").append(
+              genericComponentName).append(".css").append("\"/>\n");
 
           String specificStyle = getFavoriteLookSettings().getString("StyleSheet." + componentName);
           if (StringUtil.isDefined(specificStyle)) {
@@ -343,8 +330,8 @@ public class GraphicElementFactory extends Object {
       }
 
     } else {
-      code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(externalStylesheet)
-          .append("\"/>\n");
+      code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(externalStylesheet).
+          append("\"/>\n");
     }
 
     // append javascript
@@ -382,13 +369,12 @@ public class GraphicElementFactory extends Object {
         "/util/javaScript/jquery/").append(JQUERY_QTIP_STYLE).append("\"></script>\n");
 
     if (getFavoriteLookSettings() != null
-        && getFavoriteLookSettings().getString("OperationPane").toLowerCase()
-            .endsWith("web20"))
+        && getFavoriteLookSettings().getString("OperationPane").toLowerCase().endsWith("web20")) {
       code.append(getYahooElements());
+    }
 
-    SilverTrace
-        .info("viewgenerator", "GraphicElementFactory.getLookStyleSheet()",
-            "root.MSG_GEN_EXIT_METHOD");
+    SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookStyleSheet()",
+        "root.MSG_GEN_EXIT_METHOD");
     return code.toString();
   }
 
@@ -455,10 +441,10 @@ public class GraphicElementFactory extends Object {
     String userLookStyle = this.getDefaultLookName();
     setLook(userLookStyle);
     String lookStyle = getFavoriteLookSettings().getString("StyleSheet");
-      
+
     if (StringUtil.isDefined(lookStyle)) {
-        code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
-        code.append(lookStyle).append("\"/>\n");
+      code.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
+      code.append(lookStyle).append("\"/>\n");
     }
   }
 
@@ -600,8 +586,7 @@ public class GraphicElementFactory extends Object {
         "NavigationList");
 
     try {
-      navigationList = (NavigationList) Class.forName(navigationListClassName)
-          .newInstance();
+      navigationList = (NavigationList) Class.forName(navigationListClassName).newInstance();
     } catch (Exception e) {
       SilverTrace.error("viewgenerator",
           "GraphicElementFactory.getNavigationList()",
@@ -637,8 +622,7 @@ public class GraphicElementFactory extends Object {
     TabbedPane tabbedPane = null;
 
     try {
-      tabbedPane = (TabbedPane) Class.forName(tabbedPaneClassName)
-          .newInstance();
+      tabbedPane = (TabbedPane) Class.forName(tabbedPaneClassName).newInstance();
     } catch (Exception e) {
       SilverTrace.error("viewgenerator",
           "GraphicElementFactory.getTabbedPane()",
@@ -660,8 +644,7 @@ public class GraphicElementFactory extends Object {
     TabbedPane tabbedPane = null;
 
     try {
-      tabbedPane = (TabbedPane) Class.forName(tabbedPaneClassName)
-          .newInstance();
+      tabbedPane = (TabbedPane) Class.forName(tabbedPaneClassName).newInstance();
     } catch (Exception e) {
       SilverTrace.error("viewgenerator",
           "GraphicElementFactory.getTabbedPane()",
@@ -685,8 +668,7 @@ public class GraphicElementFactory extends Object {
    */
   public ArrayPane getArrayPane(String name,
       javax.servlet.jsp.PageContext pageContext) {
-    String arrayPaneClassName = getFavoriteLookSettings()
-        .getString("ArrayPane");
+    String arrayPaneClassName = getFavoriteLookSettings().getString("ArrayPane");
     ArrayPane arrayPane = null;
 
     try {
@@ -715,8 +697,7 @@ public class GraphicElementFactory extends Object {
   public ArrayPane getArrayPane(String name,
       javax.servlet.ServletRequest request,
       javax.servlet.http.HttpSession session) {
-    String arrayPaneClassName = getFavoriteLookSettings()
-        .getString("ArrayPane");
+    String arrayPaneClassName = getFavoriteLookSettings().getString("ArrayPane");
     ArrayPane arrayPane = null;
 
     try {
@@ -746,8 +727,7 @@ public class GraphicElementFactory extends Object {
   public ArrayPane getArrayPane(String name, String url,
       javax.servlet.ServletRequest request,
       javax.servlet.http.HttpSession session) {
-    String arrayPaneClassName = getFavoriteLookSettings()
-        .getString("ArrayPane");
+    String arrayPaneClassName = getFavoriteLookSettings().getString("ArrayPane");
     ArrayPane arrayPane = null;
 
     try {
@@ -855,8 +835,7 @@ public class GraphicElementFactory extends Object {
    * @return An object implementing the BrowseBar interface.
    */
   public BrowseBar getBrowseBar() {
-    String browseBarClassName = getFavoriteLookSettings()
-        .getString("BrowseBar");
+    String browseBarClassName = getFavoriteLookSettings().getString("BrowseBar");
 
     try {
       BrowseBar browseBar = (BrowseBar) Class.forName(browseBarClassName).newInstance();
@@ -973,11 +952,10 @@ public class GraphicElementFactory extends Object {
       userLookStyle = mainSessionController.getPersonalization().getFavoriteLook();
     } catch (RemoteException e) {
       userLookStyle = defaultLookName;
-    } catch (Throwable t) {
+    } catch (Exception t) {
       SilverTrace.error("viewgenerator", "GEF", "problem to retrieve user look", t);
       userLookStyle = defaultLookName;
     }
     return userLookStyle;
   }
-
 }
