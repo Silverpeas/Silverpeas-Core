@@ -28,7 +28,6 @@ import com.silverpeas.scheduler.Job;
 import com.silverpeas.scheduler.JobExecutionContext;
 import com.silverpeas.scheduler.ScheduledJob;
 import com.silverpeas.scheduler.SchedulerEventListener;
-import com.silverpeas.scheduler.SchedulerFactory;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.io.Serializable;
@@ -81,8 +80,9 @@ public class QuartzSchedulerJob implements ScheduledJob, Serializable {
   }
 
   /**
-   * Specified a scheduler event listener that will recieve all of the events concerning this job.
+   * Specifies a scheduler event listener that will recieve all of the events concerning this job.
    * @param listener a scheduler event listener.
+   * @return  itself.
    */
   protected QuartzSchedulerJob withSchedulerEventListener(final SchedulerEventListener listener) {
     this.listener = listener;

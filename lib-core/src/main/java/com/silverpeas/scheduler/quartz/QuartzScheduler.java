@@ -32,12 +32,12 @@ import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerException;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import javax.inject.Named;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionException;
 import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
-import org.springframework.stereotype.Service;
 import static com.silverpeas.scheduler.SchedulerFactory.*;
 import static com.silverpeas.util.AssertArgument.*;
 
@@ -46,7 +46,7 @@ import static com.silverpeas.util.AssertArgument.*;
  * It wraps a Quartz scheduler and delegates to it all of the call after transforming the parameters
  * into their Quartz counterparts.
  */
-@Service("scheduler")
+@Named("scheduler")
 public class QuartzScheduler
     implements Scheduler {
 

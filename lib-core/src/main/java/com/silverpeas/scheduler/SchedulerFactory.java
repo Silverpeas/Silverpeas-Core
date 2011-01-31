@@ -24,7 +24,7 @@
 package com.silverpeas.scheduler;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.inject.Inject;
 
 /**
  * The factory of Scheduler objects.
@@ -41,7 +41,7 @@ public class SchedulerFactory {
    */
   public static final String MODULE_NAME = "scheduler";
   private static final SchedulerFactory instance = new SchedulerFactory();
-  @Autowired
+  @Inject
   private Scheduler actualScheduler;
 
   /**
@@ -58,8 +58,8 @@ public class SchedulerFactory {
    */
   public Scheduler getScheduler() {
     if (actualScheduler == null) {
-      SilverTrace.error(SchedulerFactory.MODULE_NAME, getClass().getSimpleName() +
-          ".getScheduler()", "root.EX_NO_MESSAGE", "Unable to initialize the scheduling backend");
+      SilverTrace.error(SchedulerFactory.MODULE_NAME, getClass().getSimpleName() + ".getScheduler()",
+          "root.EX_NO_MESSAGE", "Unable to initialize the scheduling backend");
     }
     return actualScheduler;
   }

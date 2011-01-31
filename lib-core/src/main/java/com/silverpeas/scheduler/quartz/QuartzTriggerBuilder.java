@@ -45,10 +45,8 @@ public final class QuartzTriggerBuilder implements JobTriggerVisitor {
 
   /**
    * Builds a Quartz trigger from the specified QuartzSchedulerJob instance.
-   * @param the Quartz scheduler job with the data required to build a Quartz trigger that will fire
-   * it.
+   * @param job the scheduler job implementation for Quartz.
    * @return a Quartz scheduler trigger.
-   * @throws Exception if the build of a Quartz trigger failed.
    */
   public Trigger buildFrom(final QuartzSchedulerJob job) {
     job.getTrigger().accept(this);
