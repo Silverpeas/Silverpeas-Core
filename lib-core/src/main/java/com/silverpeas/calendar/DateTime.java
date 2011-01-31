@@ -69,6 +69,11 @@ public class DateTime extends java.util.Date implements Datable<DateTime> {
   }
 
   @Override
+  public java.util.Date asDate() {
+    return new java.util.Date(getTime());
+  }
+
+  @Override
   public String toISO8601() {
     FastDateFormat formatter = FastDateFormat.getInstance(SHORT_ISO_8601_PATTERN, getTimeZone());
     return formatter.format(this);

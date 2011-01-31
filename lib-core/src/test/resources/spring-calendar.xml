@@ -34,14 +34,8 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
  <ctx:annotation-config/>
- <ctx:component-scan base-package="com.silverpeas.export"/>
  <ctx:component-scan base-package="com.silverpeas.calendar"/>
 
  <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
-
-  <!-- the exporter factory from which Silverpeas components access the differents available exporters.
-        It wraps and provides an access to the actual exporter implementations -->
-  <bean id="exporterFactory" class="com.silverpeas.export.ExporterFactory"
-        factory-method="getFactory"/>
 
 </beans>

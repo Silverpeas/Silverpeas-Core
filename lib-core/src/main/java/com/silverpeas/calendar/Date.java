@@ -96,6 +96,11 @@ public class Date extends java.util.Date implements Datable<Date> {
     return new Date(new java.util.Date(getTime()));
   }
 
+  @Override
+  public java.util.Date asDate() {
+    return new java.util.Date(getTime());
+  }
+
   /**
    * The time zone for a date has no meaning.
    * @param timeZone the time zone to set to this date.?

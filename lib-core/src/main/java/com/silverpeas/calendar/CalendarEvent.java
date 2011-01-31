@@ -23,6 +23,7 @@
  */
 package com.silverpeas.calendar;
 
+import com.silverpeas.annotation.DateRange;
 import com.silverpeas.export.Exportable;
 import java.net.URL;
 import static com.silverpeas.util.StringUtil.*;
@@ -32,6 +33,7 @@ import static com.silverpeas.util.StringUtil.*;
  * The event in a calendar.
  * An event in the calendar is described by a starting and an ending date and a name.
  */
+@DateRange(startDate="startDate", endDate="endDate")
 public class CalendarEvent implements Exportable {
 
   private Datable<?> startDate;

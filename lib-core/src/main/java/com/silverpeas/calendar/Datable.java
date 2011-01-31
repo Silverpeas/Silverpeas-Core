@@ -64,6 +64,12 @@ public interface Datable<T extends Datable<T>> {
   T clone();
 
   /**
+   * Gets the java Date representation of this datable.
+   * @return a Date representation of this datable.
+   */
+  java.util.Date asDate();
+
+  /**
    * Is this datable strictly before in time the specified another one?
    * @param anotherDatable the another datable to which this is compared.
    * @return true if this datable is strictly before the another one.
