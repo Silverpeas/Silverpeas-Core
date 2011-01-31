@@ -1,0 +1,99 @@
+/*
+ * Copyright (C) 2000 - 2009 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package com.silverpeas.export.ical.ical4j;
+
+import com.silverpeas.export.EncodingException;
+import com.silverpeas.calendar.Datable;
+import com.silverpeas.calendar.DateTime;
+import java.text.ParseException;
+
+/**
+ * A decoder/encoder of iCal4J dates with Silverpeas dates.
+ */
+public class ICal4JDateCodec {
+
+  /**
+   * Sets a shareable instance accessible through the anICal4DateCodec() class method.
+   * It is always possible to manage in a multiple instances way this codec by calling explicitly
+   * and directly the constructor.
+   */
+  private static final ICal4JDateCodec instance = new ICal4JDateCodec();
+
+  /**
+   * Gets an instance of the ICal4JDateCodec class.
+   * @return an ICal4JDateCodec instance.
+   */
+  public static ICal4JDateCodec anICal4JDateCodec() {
+    return instance;
+  }
+
+  /**
+   * Encodes a Silverpeas date into an iCal4J date.
+   * @param aDate the date to encode.
+   * @return an iCal4J date.
+   * @throws EncodingException if the encoding fails.
+   */
+  public net.fortuna.ical4j.model.Date encode(final Datable<?> aDate) throws EncodingException {
+    return encode(aDate, false);
+  }
+
+  /**
+   * Encodes the specified Silverpeas date into an iCal4J date set in UTC.
+   * @param aDate the date to encode.
+   * @return an iCal4J date.
+   * @throws EncodingException if the encoding fails.
+   */
+  public net.fortuna.ical4j.model.Date encodeInUTC(final Datable<?> aDate) throws EncodingException {
+    return encode(aDate, true);
+  }
+
+  /**
+   * Encodes the specified Silverpeas date into an iCal4J date set or not in UTC according to the
+   * specified UTC flag. If the UTC flag is positioned at false, then the encoded date is set in
+   * the same timezone than the specified date to encode.
+   * @param aDate the date to encode.
+   * @param inUTC the UTC flag indicating whether the iCal4J date must be set in UTC. If false, the
+   * encoded date will be in the same timezone than the specified date.
+   * @return an iCal4J date.
+   * @throws EncodingException if the encoding fails.
+   */
+  public net.fortuna.ical4j.model.Date encode(final Datable<?> aDate, boolean inUTC) throws
+      EncodingException {
+    net.fortuna.ical4j.model.Date iCal4JDate = null;
+    try {
+      if (aDate instanceof DateTime) {
+        if (inUTC) {
+          iCal4JDate = new net.fortuna.ical4j.model.DateTime(aDate.toICalInUTC());
+        } else {
+          iCal4JDate = new net.fortuna.ical4j.model.DateTime(aDate.toICal());
+        }
+      } else if (aDate instanceof com.silverpeas.calendar.Date) {
+        iCal4JDate = new net.fortuna.ical4j.model.Date(aDate.toICal());
+      }
+    } catch (ParseException ex) {
+      throw new EncodingException(ex.getMessage(), ex);
+    }
+    return iCal4JDate;
+  }
+}
