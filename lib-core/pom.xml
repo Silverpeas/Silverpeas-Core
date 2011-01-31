@@ -84,10 +84,10 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
-	<dependency>
-	  <groupId>commons-beanutils</groupId>
+    <dependency>
+      <groupId>commons-beanutils</groupId>
       <artifactId>commons-beanutils</artifactId>
-	</dependency>
+    </dependency>
     <dependency>
       <groupId>net.sourceforge</groupId>
       <artifactId>cryptolib</artifactId>
@@ -153,6 +153,10 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.enterprise</groupId>
+      <artifactId>cdi-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.codehaus.castor</groupId>

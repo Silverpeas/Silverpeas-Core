@@ -23,6 +23,8 @@
  */
 package com.stratelia.webactiv.util;
 
+import com.silverpeas.calendar.Datable;
+import com.silverpeas.calendar.DateTime;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.text.ParseException;
@@ -31,6 +33,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang.time.FastDateFormat;
 
@@ -44,10 +47,10 @@ public class DateUtil {
   private static final long millisPerMinute = 60l * 1000l;
   private static Map<String, FastDateFormat> outputFormatters =
       new HashMap<String, FastDateFormat>(
-          5);
+      5);
   private static Map<String, SimpleDateFormat> inputParsers =
       new HashMap<String, SimpleDateFormat>(
-          5);
+      5);
   /**
    * Format and parse dates.
    */
@@ -57,6 +60,9 @@ public class DateUtil {
   public static final FastDateFormat DATETIME_FORMATTER;
   public static final FastDateFormat ISO8601DATE_FORMATTER;
   public static final FastDateFormat ISO8601DAY_FORMATTER;
+  public static final FastDateFormat ICALDAY_FORMATTER;
+  public static final FastDateFormat ICALDATE_FORMATTER;
+  public static final FastDateFormat ICALUTCDATE_FORMATTER;
   /**
    * Format and parse dates.
    */
@@ -74,6 +80,10 @@ public class DateUtil {
     TIME_FORMATTER = FastDateFormat.getInstance("HH:mm");
     ISO8601DATE_FORMATTER = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm");
     ISO8601DAY_FORMATTER = FastDateFormat.getInstance("yyyy-MM-dd");
+    ICALDAY_FORMATTER = FastDateFormat.getInstance("yyyyMMdd");
+    ICALDATE_FORMATTER = FastDateFormat.getInstance("yyyyMMdd'T'HHmmss");
+    ICALUTCDATE_FORMATTER = FastDateFormat.getInstance("yyyyMMdd'T'HHmmss'Z'",
+        TimeZone.getTimeZone("UTC"));
   }
 
   /**
@@ -567,6 +577,37 @@ public class DateUtil {
   }
 
   /**
+   * Formats the specified date according to the ISO 8601 format of the iCal format (in the timezone
+   * of the date).
+   * @param date the date to format.
+   * @return a String representation of the date the ISO 8601 format of the iCal format
+   * (down to the second).
+   */
+  public static String formatAsICalDate(final Date date) {
+    return ICALDATE_FORMATTER.format(date);
+  }
+
+  /**
+   * Formats the specified date according to the ISO 8601 format of the iCal format (in UTC).
+   * @param date the date to format.
+   * @return a String representation of the date the ISO 8601 format of the iCal format
+   * (down to the second in UTC).
+   */
+  public static String formatAsICalUTCDate(final Date date) {
+    return ICALUTCDATE_FORMATTER.format(date);
+  }
+
+  /**
+   * Formats the specified date according to the short ISO 8601 format (only the day date is rendered)
+   * used in the iCal format.
+   * @param date the date to format.
+   * @return a String representation of the date in one of the short ISO 8601 format (yyyyMMdd).
+   */
+  public static String formatAsICalDay(final Date date) {
+    return ICALDAY_FORMATTER.format(date);
+  }
+
+  /**
    * Parses the specified ISO 8601 formatted date and returns it as a Date instance.
    * @param date the date to parse (must satisfy one of the following pattern yyyy-MM-ddTHH:mm or
    * yyyy-MM-dd).
@@ -574,8 +615,24 @@ public class DateUtil {
    * @exception ParseException if the specified date is not in the one of the expected formats.
    */
   public static Date parseISO8601Date(final String date) throws ParseException {
-    return DateUtils.parseDate(date, new String[]{ ISO8601DATE_FORMATTER.getPattern(),
-      ISO8601DAY_FORMATTER.getPattern() });
+    return DateUtils.parseDate(date, new String[]{ISO8601DATE_FORMATTER.getPattern(),
+          ISO8601DAY_FORMATTER.getPattern()});
+  }
+
+  /**
+   * Converts the specified date as a Datable object with the time set or not.
+   * @param aDate a Java date to convert.
+   * @param withTime the time in the Java date has to be taken into account.
+   * @return a Datable object.
+   */
+  public static Datable<?> asDatable(final java.util.Date aDate, boolean withTime) {
+    Datable<?> datable;
+    if (withTime) {
+      datable = new DateTime(aDate);
+    } else {
+      datable = new com.silverpeas.calendar.Date(aDate);
+    }
+    return datable;
   }
 
   private DateUtil() {
