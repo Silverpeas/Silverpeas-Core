@@ -58,6 +58,7 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import java.io.FileWriter;
 import static com.silverpeas.calendar.CalendarEvent.*;
 
 /**
@@ -120,7 +121,8 @@ public class ExportIcalManager {
     Exporter<CalendarEvent> iCalExporter = exporterFactory.getICalExporter();
 
     try {
-      ExportDescriptor descriptor = new ExportDescriptor(filePath);
+      FileWriter fileWriter = new FileWriter(filePath);
+      ExportDescriptor descriptor = new ExportDescriptor(fileWriter);
       List<CalendarEvent> events = getCalendarEvents(startDate, endDate);
       if (events.isEmpty()) {
         returnCode = AgendaSessionController.EXPORT_EMPTY;
@@ -131,8 +133,7 @@ public class ExportIcalManager {
       try {
         SilverTrace.error("agenda", getClass().getSimpleName() + ".exportIcalAgenda()",
             "root.EX_NO_MESSAGE", ex);
-        FileFolderManager.deleteFile(FileRepositoryManager.getTemporaryPath()
-            + calendarIcsFileName);
+        FileFolderManager.deleteFile(filePath);
       } catch (UtilException ex1) {
         SilverTrace.error("agenda", getClass().getSimpleName() + ".exportIcalAgenda()",
             "root.EX_NO_MESSAGE", ex1);
@@ -173,7 +174,8 @@ public class ExportIcalManager {
       List<CalendarEvent> events = getCalendarEvents(null, null);
       if (!events.isEmpty()) {
         filePath = FileRepositoryManager.getTemporaryPath() + calendarIcsFileName;
-        ExportDescriptor descriptor = new ExportDescriptor(filePath);
+        FileWriter fileWriter = new FileWriter(filePath);
+        ExportDescriptor descriptor = new ExportDescriptor(fileWriter);
         iCalExporter.export(descriptor, events);
       }
     } catch (Exception ex) {

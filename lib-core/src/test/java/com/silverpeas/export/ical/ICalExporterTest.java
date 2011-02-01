@@ -29,11 +29,13 @@ import com.silverpeas.calendar.DateTime;
 import com.silverpeas.calendar.Date;
 import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.export.ExporterFactory;
+import java.io.IOException;
 import java.util.Arrays;
 import com.silverpeas.export.Exporter;
 import com.silverpeas.export.NoDataToExportException;
 import com.silverpeas.util.PathTestUtil;
 import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -63,18 +65,19 @@ public class ICalExporterTest {
   private static final String ICS_PATH = PathTestUtil.TARGET_DIR
       + "test-classes" + File.separatorChar + "myexport.ics";
   private Exporter<CalendarEvent> exporter;
-  private ExportDescriptor descriptor = new ExportDescriptor(ICS_PATH);
+  private ExportDescriptor descriptor;
 
   public ICalExporterTest() {
   }
 
   @Before
-  public void setUp() {
+  public void setUp() throws IOException {
     ExporterFactory factory = ExporterFactory.getFactory();
     exporter = factory.getICalExporter();
     assertNotNull(exporter);
 
     assertThat(new File(ICS_PATH).exists(), is(false));
+    descriptor = new ExportDescriptor(new FileWriter(ICS_PATH));
   }
 
   @After
