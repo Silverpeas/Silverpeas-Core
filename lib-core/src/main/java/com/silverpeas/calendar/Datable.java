@@ -74,21 +74,21 @@ public interface Datable<T extends Datable<T>> {
    * @param anotherDatable the another datable to which this is compared.
    * @return true if this datable is strictly before the another one.
    */
-  boolean before(final T anotherDatable);
+  boolean isBefore(final T anotherDatable);
 
   /**
    * Is this datable strictly after in time the specified another one?
    * @param anotherDatable the another datable to which this is compared.
    * @return true if this datable is strictly after the another one.
    */
-  boolean after(final T anotherDatable);
+  boolean isAfter(final T anotherDatable);
 
   /**
    * Is this datable equal in time to the specified another one?
    * @param anotherDatable the another datable to which this is compared.
    * @return true if this datable is equal with the another one.
    */
-  boolean equals(final T anotherDatable);
+  boolean isEqualTo(final T anotherDatable);
 
   /**
    * Sets the time zone this datable is defined for.

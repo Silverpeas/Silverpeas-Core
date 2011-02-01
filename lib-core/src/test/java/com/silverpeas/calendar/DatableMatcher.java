@@ -82,23 +82,23 @@ public class DatableMatcher extends BaseMatcher<Datable<?>> {
     switch (operator) {
       case BEFORE:
         if (actual instanceof DateTime) {
-          matching = ((DateTime)actual).before((DateTime)expected);
+          matching = ((DateTime)actual).isBefore((DateTime)expected);
         } else {
-          matching = ((Date)actual).before((Date)expected);
+          matching = ((Date)actual).isBefore((Date)expected);
         }
         break;
       case AFTER:
         if (actual instanceof DateTime) {
-          matching = ((DateTime)actual).after((DateTime)expected);
+          matching = ((DateTime)actual).isAfter((DateTime)expected);
         } else {
-          matching = ((Date)actual).after((Date)expected);
+          matching = ((Date)actual).isAfter((Date)expected);
         }
         break;
       case EQUAL:
         if (actual instanceof DateTime) {
-          matching = ((DateTime)actual).equals((DateTime)expected);
+          matching = ((DateTime)actual).isEqualTo((DateTime)expected);
         } else {
-          matching = ((Date)actual).equals((Date)expected);
+          matching = ((Date)actual).isEqualTo((Date)expected);
         }
         break;
     }

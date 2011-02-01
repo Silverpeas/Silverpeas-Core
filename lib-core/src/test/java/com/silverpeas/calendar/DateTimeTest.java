@@ -133,7 +133,7 @@ public class DateTimeTest {
     aDate.add(HOUR_OF_DAY, 1);
     DateTime afterOneHour = new DateTime(aDate.getTime());
 
-    assertThat(now.before(afterOneHour), is(true));
+    assertThat(now.isBefore(afterOneHour), is(true));
   }
 
   /**
@@ -146,7 +146,7 @@ public class DateTimeTest {
     aDate.add(HOUR_OF_DAY, -1);
     DateTime afterOneHour = new DateTime(aDate.getTime());
 
-    assertThat(now.after(afterOneHour), is(true));
+    assertThat(now.isAfter(afterOneHour), is(true));
   }
 
   /**
@@ -158,7 +158,7 @@ public class DateTimeTest {
     DateTime expected = new DateTime(aDate.getTime());
     DateTime actual = new DateTime(aDate.getTime());
 
-    assertThat(actual.equals(expected), is(true));
+    assertThat(actual.isEqualTo(expected), is(true));
   }
 
   private DateTime aDateTime() {
