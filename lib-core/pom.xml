@@ -155,6 +155,10 @@
       <artifactId>spring-webmvc</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.sun.jersey.contribs</groupId>
+      <artifactId>jersey-spring</artifactId>
+    </dependency>
+    <dependency>
       <groupId>javax.enterprise</groupId>
       <artifactId>cdi-api</artifactId>
     </dependency>

@@ -101,17 +101,44 @@ public class DateTime extends java.util.Date implements Datable<DateTime> {
   }
 
   @Override
-  public boolean before(DateTime anotherDatable) {
+  public boolean isBefore(DateTime anotherDatable) {
     return super.before(anotherDatable);
   }
 
   @Override
-  public boolean after(DateTime anotherDatable) {
+  public boolean isAfter(DateTime anotherDatable) {
     return super.after(anotherDatable);
   }
 
   @Override
-  public boolean equals(DateTime anotherDatable) {
+  public boolean isEqualTo(DateTime anotherDatable) {
     return super.equals(anotherDatable);
+  }
+
+  /**
+   * Is the date in this datetime before the specified date.
+   * @param otherDate the other date.
+   * @return true if the date part of this datetime is before the other date.
+   */
+  public boolean isBefore(Date otherDate) {
+    return otherDate.isBefore(new Date(this));
+  }
+
+  /**
+   * Is the date in this datetime after the specified date.
+   * @param otherDate the other date.
+   * @return true if the date part of this datetime is after the other date.
+   */
+  public boolean isAfter(Date otherDate) {
+    return otherDate.isAfter(new Date(this));
+  }
+
+  /**
+   * Is the date in this datetime equal to the specified date.
+   * @param otherDate the other date.
+   * @return true if the date part of this datetime is equal to the other date.
+   */
+  public boolean isEqualTo(Date otherDate) {
+    return otherDate.isEqualTo(new Date(this));
   }
 }

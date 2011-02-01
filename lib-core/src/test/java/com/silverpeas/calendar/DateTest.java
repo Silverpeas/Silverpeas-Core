@@ -192,7 +192,7 @@ public class DateTest {
     aDate.add(DAY_OF_MONTH, 1);
     Date tomorrow = new Date(aDate.getTime());
 
-    assertThat(today.before(tomorrow), is(true));
+    assertThat(today.isBefore(tomorrow), is(true));
   }
 
   /**
@@ -205,7 +205,7 @@ public class DateTest {
     aDate.add(DAY_OF_MONTH, -1);
     Date yesterday = new Date(aDate.getTime());
 
-    assertThat(today.after(yesterday), is(true));
+    assertThat(today.isAfter(yesterday), is(true));
   }
 
   /**
@@ -217,6 +217,6 @@ public class DateTest {
     Date expected = new Date(aDate.getTime());
 
     Date actual = new Date(aDate.getTime());
-    assertThat(actual.equals(expected), is(true));
+    assertThat(actual.isEqualTo(expected), is(true));
   }
 }

@@ -39,6 +39,10 @@ public interface Exporter<T extends Exportable> {
   /**
    * Exports the specified exportable resources according to the export information carried by the
    * specified export descriptor.
+   * The exportable resources are exported by using the writer provided by the descriptor. According
+   * to the kind of writer, the way the resources are actually exported can be customized (export in
+   * a file, in a string, through a web service, ...).
+   * Once the export is done (with success or failure), the writer is closed.
    * @param descriptor the export descriptor in which information about the export process is
    * indicated.
    * @param exportables the exportable resources to export.
@@ -50,6 +54,10 @@ public interface Exporter<T extends Exportable> {
   /**
    * Exports the specified list of exportable resources according to the export information carried
    * by the specified export descriptor.
+   * The exportable resources are exported by using the writer provided by the descriptor. According
+   * to the kind of writer, the way the resources are actually exported can be customized (export in
+   * a file, in a string, through a web service, ...).
+   * Once the export is done (with success or failure), the writer is closed.
    * @param descriptor the export descriptor in which information about the export process is
    * indicated.
    * @param exportables the exportable resources to export.
