@@ -23,7 +23,6 @@
  */
 package com.stratelia.silverpeas.peasCore;
 
-
 import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
@@ -51,7 +50,6 @@ public class AbstractComponentSessionController implements ComponentSessionContr
    * The default character encoded supported by Silverpeas.
    */
   public static final String CHARACTER_ENCODING = "UTF-8";
-
   private MainSessionController controller = null;
   protected ComponentContext context = null;
   private String rootName = null;
@@ -99,7 +97,6 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   public AbstractComponentSessionController(MainSessionController controller,
       ComponentContext context, String resourceFileName) {
     this.controller = controller;
-    // this.messageLanguage = controller.getFavoriteLanguage();
     this.context = context;
     setComponentRootName(URLManager.getComponentNameFromComponentId(
         getComponentId()));
@@ -109,7 +106,6 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   public AbstractComponentSessionController(MainSessionController controller,
       ComponentContext context, String multilangFileName, String iconFileName) {
     this.controller = controller;
-    // this.messageLanguage = controller.getFavoriteLanguage();
     this.context = context;
     setComponentRootName(URLManager.getComponentNameFromComponentId(
         getComponentId()));
@@ -131,13 +127,9 @@ public class AbstractComponentSessionController implements ComponentSessionContr
 
   @Override
   public ResourceLocator getMultilang() {
-    SilverTrace.info("peasCore",
-        "AbstractComponentSessionController.getMultilang()",
-        "root.MSG_GEN_ENTER_METHOD", "Current Language="
-        + controller.getFavoriteLanguage());
-    if (message != null
-        && !message.getLanguage().equals(controller.getFavoriteLanguage())) {
-      // the resourcelocator language doesn't match with the current language
+    SilverTrace.info("peasCore", "AbstractComponentSessionController.getMultilang()",
+        "root.MSG_GEN_ENTER_METHOD", "Current Language=" + controller.getFavoriteLanguage());
+    if (message != null && !message.getLanguage().equals(controller.getFavoriteLanguage())) {
       setMultilangFileName(messageFile);
     }
     return message;
@@ -145,9 +137,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
 
   @Override
   public ResourceLocator getIcon() {
-    if (icon != null
-        && !icon.getLanguage().equals(controller.getFavoriteLanguage())) {
-      // the resourcelocator language doesn't match with the current language
+    if (icon != null && !icon.getLanguage().equals(controller.getFavoriteLanguage())) {
       setIconFileName(iconFile);
     }
     return icon;
@@ -172,15 +162,12 @@ public class AbstractComponentSessionController implements ComponentSessionContr
       try {
         messageLanguage = getLanguage();
         message = new ResourceLocator(messageFile, messageLanguage);
-        // messageLanguage = getLanguage();
-        SilverTrace.info("peasCore",
-            "AbstractComponentSessionController.setResourceFileName()",
+        SilverTrace.info("peasCore", "AbstractComponentSessionController.setResourceFileName()",
             "root.MSG_GEN_EXIT_METHOD", "Language=" + messageLanguage);
       } catch (Exception e) {
-        SilverTrace.error("peasCore",
-            "AbstractComponentSessionController.setResourceFileName()",
-            "root.EX_CANT_GET_LANGUAGE_RESOURCE", "File=" + messageFile
-            + "|Language=" + getLanguage(), e);
+        SilverTrace.error("peasCore", "AbstractComponentSessionController.setResourceFileName()",
+            "root.EX_CANT_GET_LANGUAGE_RESOURCE",
+            "File=" + messageFile + "|Language=" + getLanguage(), e);
         message = new ResourceLocator(messageFile, "fr");
         // Une erreur s'est produite : on se rabat sur la langue par defaut.
         // Cependant, messageLanguage doit rester a la bonne valeur et ne pas
@@ -204,13 +191,10 @@ public class AbstractComponentSessionController implements ComponentSessionContr
       try {
         messageLanguage = getLanguage();
         icon = new ResourceLocator(iconFile, messageLanguage);
-        // messageLanguage = getLanguage();
-        SilverTrace.info("peasCore",
-            "AbstractComponentSessionController.setResourceFileName()",
+        SilverTrace.info("peasCore", "AbstractComponentSessionController.setResourceFileName()",
             "root.MSG_GEN_EXIT_METHOD", "Language=" + messageLanguage);
       } catch (Exception e) {
-        SilverTrace.error("peasCore",
-            "AbstractComponentSessionController.setResourceFileName()",
+        SilverTrace.error("peasCore", "AbstractComponentSessionController.setResourceFileName()",
             "root.EX_CANT_GET_LANGUAGE_RESOURCE", "File=" + messageFile
             + "|Language=" + getLanguage(), e);
         icon = new ResourceLocator(iconFile, "fr");
@@ -238,7 +222,6 @@ public class AbstractComponentSessionController implements ComponentSessionContr
       try {
         messageLanguage = getLanguage();
         message = new ResourceLocator(messageFile, messageLanguage);
-        // messageLanguage = getLanguage();
         SilverTrace.info("peasCore",
             "AbstractComponentSessionController.setResourceFileName()",
             "root.MSG_GEN_EXIT_METHOD", "Language=" + messageLanguage);
@@ -269,26 +252,15 @@ public class AbstractComponentSessionController implements ComponentSessionContr
 
     // If the language changed, Re-open a new ResourceLocator
     if ((theLanguage != null) || (message == null)) {
-      if ((message == null) || (messageLanguage == null)
-          || (messageLanguage.equals(theLanguage) == false)) {
+      if ((message == null) || (messageLanguage == null) || !messageLanguage.equals(theLanguage)) {
         setResourceFileName(messageFile);
       }
     }
 
     if (message == null) {
       return resName;
-    } else {
-      return message.getString(resName);
     }
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  private MainSessionController getMainSessionController() {
-    return controller;
+    return message.getString(resName);
   }
 
   /**
