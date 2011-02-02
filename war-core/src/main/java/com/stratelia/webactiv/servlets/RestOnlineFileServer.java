@@ -85,7 +85,7 @@ public class RestOnlineFileServer extends HttpServlet {
     } catch (IllegalAccessException ex) {
       res.setStatus(HttpServletResponse.SC_FORBIDDEN);
       return;
-    }catch (Exception ex) {
+    } catch (Exception ex) {
       throw new ServletException(ex);
     }
     displayWarningHtmlCode(res);
@@ -230,12 +230,13 @@ public class RestOnlineFileServer extends HttpServlet {
     SilverpeasWebUtil util = new SilverpeasWebUtil();
     MainSessionController controller = util.getMainSessionController(request.getWebRequest());
     ComponentAccessController componentAccessController = new ComponentAccessController();
-    if (controller != null && componentAccessController.isUserAuthorized(controller, componentId)) {
-      if (componentAccessController.isRightOnTopicsEnabled(controller, componentId)) {
+    if (controller != null && componentAccessController.isUserAuthorized(controller.getUserId(),
+        componentId)) {
+      if (componentAccessController.isRightOnTopicsEnabled(controller.getUserId(), componentId)) {
         if (object instanceof DocumentVersion) {
-          return isDocumentVersionAuthorized(controller, componentId, (DocumentVersion) object);
+          return isDocumentVersionAuthorized(controller.getUserId(), (DocumentVersion) object);
         } else if (object instanceof AttachmentDetail) {
-          return isAttachmentAuthorized(controller, componentId, (AttachmentDetail) object);
+          return isAttachmentAuthorized(controller.getUserId(), (AttachmentDetail) object);
         }
         return false;
       }
@@ -244,15 +245,15 @@ public class RestOnlineFileServer extends HttpServlet {
     return false;
   }
 
-  private boolean isAttachmentAuthorized(MainSessionController controller, String componentId,
-      AttachmentDetail attachment) throws Exception {
+  private boolean isAttachmentAuthorized(String userId, AttachmentDetail attachment) throws
+      Exception {
     AttachmentAccessController accessController = new AttachmentAccessController();
-    return accessController.isUserAuthorized(controller, componentId, attachment);
+    return accessController.isUserAuthorized(userId, attachment);
   }
 
-  private boolean isDocumentVersionAuthorized(MainSessionController controller, String componentId,
-      DocumentVersion version) throws Exception {
+  private boolean isDocumentVersionAuthorized(String userId, DocumentVersion version) throws
+      Exception {
     DocumentVersionAccessController accessController = new DocumentVersionAccessController();
-    return accessController.isUserAuthorized(controller, componentId, version);
+    return accessController.isUserAuthorized(userId, version);
   }
 }

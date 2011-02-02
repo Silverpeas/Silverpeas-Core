@@ -23,8 +23,6 @@
  */
 package com.silverpeas.accesscontrol;
 
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-
 /**
  *
  * @param <T> The type of object we are checking the access on.
@@ -40,7 +38,6 @@ public interface AccessController<T> {
    * @return true if access is granted - false otherwise.
    * @throws Exception
    */
-  public boolean isUserAuthorized(MainSessionController controller, String componentId, T object) 
-      throws Exception ;
+  public boolean isUserAuthorized(String userId, T object)  throws Exception ;
 
 }

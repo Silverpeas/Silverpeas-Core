@@ -23,7 +23,6 @@
  */
 package com.silverpeas.accesscontrol;
 
-import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
@@ -41,7 +40,7 @@ public class DocumentVersionAccessController implements AccessController<Documen
     versioning = new VersioningUtil();
     accessController = new DocumentAccessController();
   }
-  
+
   /**
    * For test only.
    * @param versioning 
@@ -51,9 +50,8 @@ public class DocumentVersionAccessController implements AccessController<Documen
   }
 
   @Override
-  public boolean isUserAuthorized(MainSessionController controller, String componentId,
-      DocumentVersion object) throws Exception {
+  public boolean isUserAuthorized(String userId, DocumentVersion object) throws Exception {
     Document doc = versioning.getDocument(object.getDocumentPK());
-    return accessController.isUserAuthorized(controller, componentId, doc);
+    return accessController.isUserAuthorized(userId, doc);
   }
 }
