@@ -37,7 +37,9 @@ public class NodePK extends WAPrimaryKey implements Serializable {
   private static final long serialVersionUID = 444396186497175804L;
 
   public static final String ROOT_NODE_ID = "0";
-  public static final String BIN_NODE_ID = "1";
+  public static final String BIN_NODE_ID = "1";  
+    public static final String UNCLASSED_NODE_ID = "2";
+
 
   /** To apply the fat key pattern. */
   transient public NodeDetail nodeDetail = null;
@@ -83,6 +85,10 @@ public class NodePK extends WAPrimaryKey implements Serializable {
   
   public boolean isRoot() {
     return ROOT_NODE_ID.equals(id);
+  }
+  
+  public boolean isUnclassed() {
+    return UNCLASSED_NODE_ID.equals(id);
   }
 
   /**

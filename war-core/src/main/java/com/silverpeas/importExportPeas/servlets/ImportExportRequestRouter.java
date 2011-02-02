@@ -21,11 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.importExportPeas.servlets;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -79,10 +77,10 @@ public class ImportExportRequestRouter extends ComponentRequestRouter {
   @Override
   public String getDestination(String function, ComponentSessionController componentSC,
       HttpServletRequest request) {
-    ImportExportSessionController importExportSC = (ImportExportSessionController) componentSC; 
+    ImportExportSessionController importExportSC = (ImportExportSessionController) componentSC;
     String destination = "";
     try {
-      if (function.startsWith("Main")) { 
+      if (function.startsWith("Main")) {
         destination = "/importExportPeas/jsp/welcome.jsp";
       } else if ("Import".equals(function)) {
         File file = null;
@@ -95,13 +93,14 @@ public class ImportExportRequestRouter extends ComponentRequestRouter {
           }
         }
         ImportReport importReport =
-            importExportSC.processImport(file.getAbsolutePath(), (ResourcesWrapper) request
-            .getAttribute("resources"));
+            importExportSC.processImport(file.getAbsolutePath(), (ResourcesWrapper) request.
+            getAttribute("resources"));
         request.setAttribute("importReport", importReport);
         destination = "/importExportPeas/jsp/viewSPExchange.jsp";
       } else if (function.equals("ExportItems")) {
-        List<WAAttributeValuePair> itemPKs = 
-            (List<WAAttributeValuePair>) request.getAttribute("selectedResultsWa");
+        @SuppressWarnings("unchecked")
+        List<WAAttributeValuePair> itemPKs = (List<WAAttributeValuePair>) request.getAttribute(
+            "selectedResultsWa");
         String rootId = (String) request.getAttribute("RootId");
         if (itemPKs != null && !itemPKs.isEmpty()) {
           importExportSC.processExport(importExportSC.getLanguage(), itemPKs, rootId);
@@ -157,8 +156,8 @@ public class ImportExportRequestRouter extends ComponentRequestRouter {
         String timeCriteria = (String) request.getAttribute("TimeCriteria");
 
         if (itemPKs != null && !itemPKs.isEmpty()) {
-          ExportReport report = importExportSC.processExportKmax(importExportSC.getLanguage(), 
-              itemPKs, combination,  timeCriteria);
+          ExportReport report = importExportSC.processExportKmax(importExportSC.getLanguage(),
+              itemPKs, combination, timeCriteria);
           request.setAttribute("ExportReport", report);
           destination = "/importExportPeas/jsp/downloadZip.jsp";
         } else {

@@ -21,15 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * Created on 24 janv. 2005
- *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 package com.silverpeas.pdc.importExport;
 
+import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import java.util.List;
 
 /**
@@ -37,19 +31,19 @@ import java.util.List;
  */
 public class PdcPositionsType {
 
-  private List listClassifyPosition;// List de ClassifyPosition
+  private List<ClassifyPosition>  listClassifyPosition;// List de ClassifyPosition
 
   /**
    * @return
    */
-  public List getListClassifyPosition() {
+  public List<ClassifyPosition> getListClassifyPosition() {
     return listClassifyPosition;
   }
 
   /**
    * @param listClassifyPosition
    */
-  public void setListClassifyPosition(List listClassifyPosition) {
+  public void setListClassifyPosition(List<ClassifyPosition> listClassifyPosition) {
     this.listClassifyPosition = listClassifyPosition;
   }
 }

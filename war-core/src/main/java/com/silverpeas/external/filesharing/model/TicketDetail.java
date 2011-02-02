@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.external.filesharing.model;
 
 import java.io.Serializable;
@@ -40,6 +39,7 @@ import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 
 public class TicketDetail implements Serializable {
+
   private int fileId;
   private String componentId;
   private boolean versioning;
@@ -56,7 +56,6 @@ public class TicketDetail implements Serializable {
   private Collection<DownloadDetail> downloads;
 
   public TicketDetail() {
-
   }
 
   public TicketDetail(int fileId, String componentId, boolean versioning, String creatorId,
@@ -187,10 +186,10 @@ public class TicketDetail implements Serializable {
   }
 
   public boolean isValid() {
-    if (StringUtil.isDefined(getKeyFile()))
+    if (StringUtil.isDefined(getKeyFile())) {
       return (getEndDate().after(new Date()) && getNbAccess() < getNbAccessMax());
-    else
-      return false;
+    }
+    return false;
   }
 
   public AttachmentDetail getAttachmentDetail() {

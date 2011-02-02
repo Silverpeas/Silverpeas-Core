@@ -21,15 +21,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * Created on 23 févr. 2005
- */
 package com.silverpeas.importExport.report;
 
-import java.io.File;
-import java.util.Iterator;
-import java.util.List;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
@@ -40,6 +33,7 @@ import com.silverpeas.publication.importExport.DBModelContentType;
 import com.silverpeas.publication.importExport.XMLModelContentType;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
@@ -48,6 +42,10 @@ import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import java.io.File;
+import java.util.Iterator;
+import java.util.List;
+import org.apache.ecs.xhtml.a;
 
 /**
  * Classe générant le code html d'une publication exportée
@@ -61,18 +59,11 @@ public class HtmlExportPublicationGenerator {
   private XMLModelContentType xmlModelContent;
   private ModelDetail modelDetail;
   private String wysiwygText;
-  private List listAttDetail;
+  private List<AttachmentDetail> listAttDetail;
   private String urlPub;
 
-  // Constructeurs
-  private HtmlExportPublicationGenerator() {
-  }
-
-  public HtmlExportPublicationGenerator(PublicationType publicationType, /*
-       * DBModelContentType
-       * dbModelContent ,
-       */
-      ModelDetail modelDetail, String wysiwygText, String urlPub) {
+  public HtmlExportPublicationGenerator(PublicationType publicationType, ModelDetail modelDetail,
+      String wysiwygText, String urlPub) {
     this.publicationDetail = publicationType.getPublicationDetail();
     if (publicationType.getPublicationContentType() != null) {
       this.dbModelContent = publicationType.getPublicationContentType().getDBModelContentType();
@@ -107,28 +98,25 @@ public class HtmlExportPublicationGenerator {
     String htmlCreatorName = HtmlExportGenerator.encode(publicationDetail.getCreatorName());
     String dateString = DateUtil.dateToString(publicationDetail.getCreationDate(), "fr");
 
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append("&#149;&nbsp;");
     if (StringUtil.isDefined(target)) {
-      sb.append("<a target=\"" + target + "\" href=\"").append(urlPub).append(
-          "\">");
+      a link = new a();
+      sb.append("<a target=\"").append(target).append("\" href=\"").append(urlPub).append("\">");
     } else {
       sb.append("<a href=\"").append(urlPub).append("\">");
     }
-    sb.append("<B>").append(htmlPubName).append("</B>").append("</a>").append(
-        "\n");
-    if (htmlCreatorName.length() != 0) {
+    sb.append("<b>").append(htmlPubName).append("</b>").append("</a>").append("\n");
+    if (StringUtil.isDefined(htmlCreatorName)) {
       sb.append(" - ").append(htmlCreatorName);
     }
-    if (dateString.length() != 0) {
+    if (StringUtil.isDefined(dateString)) {
       sb.append(" (").append(dateString).append(")");
     }
-    sb.append("<BR />\n");
-    if (htmlPubDescription.length() != 0) {
-      sb.append("<I>").append(htmlPubDescription).append("</I>").append(
-          "<BR /><BR />\n");
+    sb.append("<br/>\n");
+    if (StringUtil.isDefined(htmlPubDescription)) {
+      sb.append("<i>").append(htmlPubDescription).append("</i>").append("<br/><br/>\n");
     }
-
     return sb.toString();
   }
 
@@ -142,7 +130,7 @@ public class HtmlExportPublicationGenerator {
     String htmlCreatorName = HtmlExportGenerator.encode(publicationDetail.getCreatorName());
     String dateString = DateUtil.dateToString(publicationDetail.getCreationDate(), "fr");
 
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
 
     sb.append(
         "<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"1\" bgcolor=\"#B3BFD1\">\n");
@@ -164,7 +152,7 @@ public class HtmlExportPublicationGenerator {
    * @return
    */
   private String toHtmlInfoModel() {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     // TODO: faire passer ce parametre depuis le controleur?
     String toParse = modelDetail.getHtmlDisplayer();
 
@@ -196,15 +184,12 @@ public class HtmlExportPublicationGenerator {
       } else if (toParse.startsWith("%WAIMGDATA%")) {
         if (imageIterator != null && imageIterator.hasNext()) {
           String imagePath = (String) imageIterator.next();
-          String type = FileRepositoryManager.getFileExtension(imagePath);
           String imageName = imagePath.substring(imagePath.lastIndexOf(File.separator) + 1, imagePath.
               length());
-          if (type.equalsIgnoreCase("gif") || type.equalsIgnoreCase("jpg")
-              || type.equalsIgnoreCase("jpe") || type.equalsIgnoreCase("jpeg")
-              || type.equalsIgnoreCase("png")) {
-            sb.append("<IMG BORDER=\"0\" SRC=\"" + imageName + "\">");
+          if (FileUtil.isImage(imageName)) {
+            sb.append("<img border=\"0\" src=\"" + imageName + "\">");
           } else {
-            sb.append("<B>FileNotImage</B>");
+            sb.append("<b>FileNotImage</b>");
           }
         }
         toParse = toParse.substring(11);
@@ -220,8 +205,8 @@ public class HtmlExportPublicationGenerator {
   public String toHtmlXMLModel() {
     PublicationTemplateImpl template = null;
     try {
-      template = (PublicationTemplateImpl) PublicationTemplateManager.getInstance()
-              .getPublicationTemplate(publicationDetail.getPK().getInstanceId()
+      template = (PublicationTemplateImpl) PublicationTemplateManager.getInstance().
+          getPublicationTemplate(publicationDetail.getPK().getInstanceId()
           + ":" + publicationDetail.getInfoId());
     } catch (Exception e) {
       return "Error getting publication template !";
@@ -229,20 +214,15 @@ public class HtmlExportPublicationGenerator {
 
     try {
       Form formView = template.getViewForm();
-
       RecordSet recordSet = template.getRecordSet();
       DataRecord dataRecord = recordSet.getRecord(publicationDetail.getPK().getId());
-
       PagesContext context = new PagesContext();
       String htmlResult = formView.toString(context, dataRecord);
-
       htmlResult = replaceImagesPathForExport(htmlResult);
       htmlResult = replaceFilesPathForExport(htmlResult);
-
       return htmlResult;
     } catch (Exception e) {
-      SilverTrace.error("form",
-          "HtmlExportPublicationGenerator.toHtmlXMLModel",
+      SilverTrace.error("form", "HtmlExportPublicationGenerator.toHtmlXMLModel",
           "root.MSG_GEN_PARAM_VALUE", e);
     }
     return null;
@@ -280,7 +260,7 @@ public class HtmlExportPublicationGenerator {
     }
 
     sb.append("</td>").append("\n");
-    if ((listAttDetail != null) && (listAttDetail.size() != 0)) {
+    if (listAttDetail != null && !listAttDetail.isEmpty()) {
       sb.append("<td valign=\"top\" align=\"right\" width=\"20%\">");
       sb.append("<table  border=\"0\" cellpadding=\"3\" cellspacing=\"1\" bgcolor=\"#B3BFD1\">");
       sb.append("<tr><td bgcolor=\"#FFFFFF\">");
@@ -301,11 +281,9 @@ public class HtmlExportPublicationGenerator {
    * @return
    */
   private String toHtmlAttachments() {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     if (listAttDetail != null) {
-      Iterator itListAttDetail = listAttDetail.iterator();
-      while (itListAttDetail.hasNext()) {
-        AttachmentDetail attDetail = (AttachmentDetail) itListAttDetail.next();
+      for(AttachmentDetail attDetail : listAttDetail) {
         sb.append(toHtmlAttachmentInfos(attDetail));
       }
     }
@@ -320,13 +298,12 @@ public class HtmlExportPublicationGenerator {
     String htmlLogicalName = attDetail.getLogicalName();
     String htmlFormatedFileSize = HtmlExportGenerator.encode(FileRepositoryManager.formatFileSize(attDetail.
         getSize()));
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
 
     sb.append("&#149;&nbsp;");
     sb.append("<a href=\"").append(
         FileServerUtils.replaceAccentChars(htmlLogicalName)).append("\">");
-    sb.append(FileServerUtils.replaceAccentChars(htmlLogicalName)).append(
-        "</a>&nbsp;");
+    sb.append(FileServerUtils.replaceAccentChars(htmlLogicalName)).append("</a>&nbsp;");
     sb.append(htmlFormatedFileSize).append("<br>\n");
     if (attDetail.getTitle() != null) {
       sb.append("<I>").append(attDetail.getTitle()).append("<I>");
@@ -334,7 +311,7 @@ public class HtmlExportPublicationGenerator {
         sb.append(" - ").append("<I>").append(
             HtmlExportGenerator.encode(attDetail.getInfo())).append("</I>");
       }
-      sb.append("<BR>\n");
+      sb.append("<br/>\n");
     } else if (attDetail.getInfo() != null) {
       sb.append("<I>").append(HtmlExportGenerator.encode(attDetail.getInfo())).append("</I>").append(
           "<BR>\n");

@@ -24,6 +24,7 @@
 
 package com.stratelia.silverpeas.pdc.model;
 
+import com.stratelia.silverpeas.classifyEngine.Position;
 import java.util.List;
 
 import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
@@ -31,7 +32,7 @@ import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
 /**
  * @author Nicolas EYSSERIC
  */
-public class ClassifyPosition extends com.stratelia.silverpeas.classifyEngine.Position implements
+public class ClassifyPosition extends Position<ClassifyValue> implements
     ContainerPositionInterface, java.io.Serializable {
   private static final long serialVersionUID = 6588855414301219379L;
 
@@ -56,11 +57,15 @@ public class ClassifyPosition extends com.stratelia.silverpeas.classifyEngine.Po
     return null;
   }
 
-  /** Return true if the position is empty */
+  /** 
+   * Return true if the position is empty
+   * @return 
+   */
   public boolean isEmpty() {
     return (getPositionId() == -1 || getValues() == null);
   }
 
+  @Override
   public String toString() {
     return "ClassifyPosition object :[ positionId=" + getPositionId() + ", "
         + " value=" + getValues();

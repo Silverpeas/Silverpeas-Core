@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.importExport;
 
 import java.io.File;
@@ -52,12 +51,11 @@ public class FormTemplateImportExport {
       XMLModelContentType xmlModel, String userId) throws Exception {
     String externalId = pk.getInstanceId() + ":" + xmlModel.getName();
     if (StringUtil.isDefined(objectType)) {
-      externalId = pk.getInstanceId() + ":" + objectType + ":"
-          + xmlModel.getName();
+      externalId = pk.getInstanceId() + ":" + objectType + ":" + xmlModel.getName();
     }
 
     PublicationTemplateManager publicationTemplateManager =
-            PublicationTemplateManager.getInstance();
+        PublicationTemplateManager.getInstance();
     publicationTemplateManager.addDynamicPublicationTemplate(externalId, xmlModel.getName());
 
     PublicationTemplate pub = publicationTemplateManager.getPublicationTemplate(externalId);
@@ -71,89 +69,68 @@ public class FormTemplateImportExport {
     }
 
     List<XMLField> xmlFields = xmlModel.getFields();
-    XMLField xmlField = null;
-    Field field = null;
-    String xmlFieldName = null;
-    String xmlFieldValue = null;
-    String fieldValue = null;
-    for (int f = 0; f < xmlFields.size(); f++) {
-      xmlField = xmlFields.get(f);
-      xmlFieldName = xmlField.getName();
-      xmlFieldValue = xmlField.getValue();
-      field = data.getField(xmlFieldName);
+    for (XMLField xmlField : xmlFields) {
+      String xmlFieldName = xmlField.getName();
+      String xmlFieldValue = xmlField.getValue();
+      Field field = data.getField(xmlFieldName);
       if (field != null) {
-        FieldTemplate fieldTemplate = pub.getRecordTemplate().getFieldTemplate(
-            xmlFieldName);
+        FieldTemplate fieldTemplate = pub.getRecordTemplate().getFieldTemplate(xmlFieldName);
         if (fieldTemplate != null) {
-          FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(field
-              .getTypeName(), fieldTemplate.getDisplayerName());
+          FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(field.getTypeName(), 
+              fieldTemplate.getDisplayerName());
+          String fieldValue;
           if (Field.TYPE_FILE.equals(field.getTypeName())) {
             String context = null;
-            if (fieldTemplate.getDisplayerName().equals("image")) {
+            if ("image".equals(fieldTemplate.getDisplayerName())) {
               context = AbstractForm.CONTEXT_FORM_IMAGE;
-            }
-            else {
+            } else {
               context = AbstractForm.CONTEXT_FORM_FILE;
             }
 
             String imagePath = xmlFieldValue;
-            String imageName = imagePath.substring(imagePath
-                .lastIndexOf(File.separator) + 1, imagePath.length());
-            String imageExtension = FileRepositoryManager
-                .getFileExtension(imagePath);
+            String imageName = imagePath.substring(imagePath.lastIndexOf(File.separator) + 1, 
+                imagePath.length());
+            String imageExtension = FileRepositoryManager.getFileExtension(imagePath);
             String imageMimeType = AttachmentController.getMimeType(imagePath);
 
-            String physicalName = new Long(new Date().getTime()).toString()
-                + "." + imageExtension;
+            String physicalName = String.valueOf(System.currentTimeMillis()) + "." + imageExtension;
 
-            String path = AttachmentController.createPath(pk.getInstanceId(),
-                context);
+            String path = AttachmentController.createPath(pk.getInstanceId(), context);
             FileRepositoryManager.copyFile(imagePath, path + physicalName);
             File file = new File(path + physicalName);
             long size = file.length();
-
             if (size > 0) {
-              AttachmentDetail ad = createAttachmentDetail(pk.getId(), pk
-                  .getInstanceId(), physicalName, imageName, imageMimeType,
-                  size, context, userId);
+              AttachmentDetail ad = createAttachmentDetail(pk.getId(), pk.getInstanceId(),
+                  physicalName, imageName, imageMimeType, size, context, userId);
               ad = AttachmentController.createAttachment(ad, true);
               fieldValue = ad.getPK().getId();
             } else {
-              // le fichier à tout de même été créé sur le serveur avec
-              // une
-              // taille 0!, il faut le supprimer
+              // le fichier à tout de même été créé sur le serveur, il faut le supprimer
               FileFolderManager.deleteFolder(path + physicalName);
+              fieldValue = null;
             }
           } else {
             fieldValue = xmlFieldValue;
           }
-
-          fieldDisplayer.update(fieldValue, field, fieldTemplate,
-              new PagesContext());
+          fieldDisplayer.update(fieldValue, field, fieldTemplate, new PagesContext());
         }
       }
     }
     set.save(data);
   }
 
-  private AttachmentDetail createAttachmentDetail(String objectId,
-      String componentId, String physicalName, String logicalName,
-      String mimeType, long size, String context, String userId) {
-    // create AttachmentPK with spaceId and componentId
+  private AttachmentDetail createAttachmentDetail(String objectId, String componentId,
+      String physicalName, String logicalName, String mimeType, long size, String context,
+      String userId) {
     AttachmentPK atPK = new AttachmentPK(null, "useless", componentId);
-
-    // create foreignKey with spaceId, componentId and id
-    // use AttachmentPK to build the foreign key of customer object.
     AttachmentPK foreignKey = new AttachmentPK("-1", "useless", componentId);
     if (objectId != null) {
       foreignKey.setId(objectId);
     }
-
     // create AttachmentDetail Object
-    AttachmentDetail ad = new AttachmentDetail(atPK, physicalName, logicalName,
-        null, mimeType, size, context, new Date(), foreignKey);
+    AttachmentDetail ad = new AttachmentDetail(atPK, physicalName, logicalName, null, mimeType, size,
+        context, new Date(), foreignKey);
     ad.setAuthor(userId);
-
     return ad;
   }
 }

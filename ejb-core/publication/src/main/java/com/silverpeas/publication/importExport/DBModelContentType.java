@@ -22,25 +22,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Created on 24 janv. 2005
- *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 package com.silverpeas.publication.importExport;
 
 import java.util.ArrayList;
+import java.util.List;
 
-/**
- * @author tleroi To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 public class DBModelContentType {
 
   private int id = -1;
-  private ArrayList listTextParts;
-  private ArrayList listImageParts;
+  private List<String> listTextParts = new ArrayList<String>();
+  private List<String> listImageParts = new ArrayList<String>();
 
   /**
    * @return
@@ -59,28 +50,28 @@ public class DBModelContentType {
   /**
    * @return Returns the listImageParts.
    */
-  public ArrayList getListImageParts() {
+  public List<String> getListImageParts() {
     return listImageParts;
   }
 
   /**
    * @param listImageParts The listImageParts to set.
    */
-  public void setListImageParts(ArrayList listImageParts) {
+  public void setListImageParts(List<String> listImageParts) {
     this.listImageParts = listImageParts;
   }
 
   /**
    * @return Returns the listTextParts.
    */
-  public ArrayList getListTextParts() {
+  public List<String> getListTextParts() {
     return listTextParts;
   }
 
   /**
    * @param listTextParts The listTextParts to set.
    */
-  public void setListTextParts(ArrayList listTextParts) {
+  public void setListTextParts(List<String> listTextParts) {
     this.listTextParts = listTextParts;
   }
 }

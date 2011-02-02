@@ -21,13 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.attachment.importExport;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,19 +41,16 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.util.Collection;
+import org.apache.commons.io.FileUtils;
 
 /**
  * Classe de gestion des attachments dans le moteur d'importExport de silverpeas.
  * @author sdevolder
  */
 public class AttachmentImportExport {
-
-  // Variables
-  private static int BUFFER_SIZE = 1024;
 
   // Methodes
   /**
@@ -202,9 +196,9 @@ public class AttachmentImportExport {
 
     long size = 0;
     try {
-      // Copie du fichier dans silverpeas
-      size = copyFileToDisk(fileToUpload, fileToCreate);
-    } catch (Exception e) {
+      FileUtils.copyFile(new File(fileToUpload), fileToCreate);
+      size = fileToCreate.length();
+    } catch (IOException e) {
       SilverTrace.error("attachment", "AttachmentImportExport.copyFile()",
           "attachment.EX_FILE_COPY_ERROR", e);
     }
@@ -222,37 +216,6 @@ public class AttachmentImportExport {
     return a_Detail;
   }
 
-  private long copyFileToDisk(String from, File to) throws AttachmentException {
-    FileInputStream fl_in = null;
-    FileOutputStream fl_out = null;
-
-    long size = 0;
-    try {
-      fl_in = new FileInputStream(from);
-    } catch (FileNotFoundException ex) {
-      throw new AttachmentException("AttachmentsType.copyFileToDisk()",
-          SilverpeasException.ERROR, "attachment.EX_FILE_TO_UPLOAD_NOTFOUND",
-          ex);
-    }
-    try {
-      fl_out = new FileOutputStream(to);
-
-      byte[] data = new byte[BUFFER_SIZE];
-      int bytes_readed = fl_in.read(data);
-      while (bytes_readed > 0) {
-        size += bytes_readed;
-        fl_out.write(data, 0, bytes_readed);
-        bytes_readed = fl_in.read(data);
-      }
-      fl_in.close();
-      fl_out.close();
-    } catch (Exception ex) {
-      throw new AttachmentException("AttachmentsType.copyFileToDisk()",
-          SilverpeasException.ERROR, "attachment.EX_FILE_COPY_ERROR", ex);
-    }
-    return size;
-  }
-
   /**
    * Methode utilisee par la methode importAttachement(String,String,AttachmentDetail) pour creer un
    * attachement sur la publication creee dans la methode citee.
@@ -261,12 +224,11 @@ public class AttachmentImportExport {
    * @param a_Detail - obejt contenant les informations necessaire e la creation de l'attachment
    * @return AttachmentDetail cree
    */
-  private AttachmentDetail addAttachmentToPublication(String pubId,
-      String componentId, AttachmentDetail a_Detail, String context,
-      boolean indexIt) {
+  private AttachmentDetail addAttachmentToPublication(String pubId, String componentId,
+      AttachmentDetail a_Detail, String context, boolean indexIt) {
 
-    AttachmentDetail ad_toCreate = null;
     int incrementSuffixe = 0;
+    AttachmentDetail ad_toCreate = null;
     AttachmentPK atPK = new AttachmentPK(null, componentId);
     AttachmentPK foreignKey = new AttachmentPK(pubId, componentId);
     Vector<AttachmentDetail> attachments = AttachmentController.searchAttachmentByCustomerPK(
@@ -329,16 +291,17 @@ public class AttachmentImportExport {
    * @param pk - PrimaryKey de l'obijet dont on veut les attachments?
    * @param exportPath - Repertoire dans lequel copier les fichiers
    * @param relativeExportPath chemin relatif du fichier copie
+   * @param extensionFilter 
    * @return une liste des attachmentDetail trouves
    */
-  public Vector<AttachmentDetail> getAttachments(WAPrimaryKey pk, String exportPath,
+  public List<AttachmentDetail> getAttachments(WAPrimaryKey pk, String exportPath,
       String relativeExportPath, String extensionFilter) {
 
     // Recuperation des attachments
-    Vector<AttachmentDetail> listAttachment = AttachmentController.searchAttachmentByCustomerPK(pk);
-    Vector<AttachmentDetail> listToReturn = new Vector<AttachmentDetail>();
-    if (listAttachment != null && listAttachment.isEmpty())
-    {
+    Collection<AttachmentDetail> listAttachment = AttachmentController.searchAttachmentByCustomerPK(
+        pk);
+    List<AttachmentDetail> listToReturn = new ArrayList<AttachmentDetail>();
+    if (listAttachment != null && listAttachment.isEmpty()) {
       listAttachment = null;
     }
     if (listAttachment != null) {
@@ -357,8 +320,7 @@ public class AttachmentImportExport {
             copyAttachment(attDetail, pk, exportPath);
 
             // Le nom physique correspond maintenant au fichier copie
-            attDetail.setPhysicalName(relativeExportPath
-                + File.separator
+            attDetail.setPhysicalName(relativeExportPath + File.separator
                 + FileServerUtils.replaceAccentChars(attDetail.getLogicalName()));
 
           } catch (IOException ex) {
@@ -387,15 +349,13 @@ public class AttachmentImportExport {
     return listToReturn;
   }
 
-  private void copyAttachment(AttachmentDetail attDetail, WAPrimaryKey pk,
-      String exportPath) throws FileNotFoundException, IOException {
+  private void copyAttachment(AttachmentDetail attDetail, WAPrimaryKey pk, String exportPath) throws
+      FileNotFoundException, IOException {
     String fichierJoint = AttachmentController.createPath(pk.getInstanceId(),
-        attDetail.getContext())
-        + File.separator + attDetail.getPhysicalName();
+        attDetail.getContext()) + File.separator + attDetail.getPhysicalName();
 
-    String fichierJointExport = exportPath + File.separator
-        + FileServerUtils.replaceAccentChars(attDetail.getLogicalName());
-
+    String fichierJointExport = exportPath + File.separator + FileServerUtils.replaceAccentChars(
+        attDetail.getLogicalName());
     FileRepositoryManager.copyFile(fichierJoint, fichierJointExport);
   }
 
@@ -407,17 +367,16 @@ public class AttachmentImportExport {
    * @return le chemin recherche
    */
   private String getPath(String componentId) {
-    String path = AttachmentController.createPath(componentId,
-        AbstractForm.CONTEXT_FORM_FILE);
-    SilverTrace.info("attachment", "AttachmentImportExport.getPath()",
-        "root.MSG_GEN_PARAM_VALUE", "path=" + path);
+    String path = AttachmentController.createPath(componentId, AbstractForm.CONTEXT_FORM_FILE);
+    SilverTrace.info("attachment", "AttachmentImportExport.getPath()", "root.MSG_GEN_PARAM_VALUE",
+        "path=" + path);
     return path;
   }
 
   private String getPathWysiwyg(String componentId, String context) {
     String path = AttachmentController.createPath(componentId, context);
-    SilverTrace.info("attachment", "AttachmentImportExport.getPath()",
-        "root.MSG_GEN_PARAM_VALUE", "path=" + path);
+    SilverTrace.info("attachment", "AttachmentImportExport.getPath()", "root.MSG_GEN_PARAM_VALUE",
+        "path=" + path);
     return path;
   }
 }

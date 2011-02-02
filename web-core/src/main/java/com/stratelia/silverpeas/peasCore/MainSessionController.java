@@ -132,7 +132,6 @@ public class MainSessionController extends AdminReference implements Clipboard {
    */
   private String checkSpaceId(String spaceId) {
     if (spaceId != null && spaceId.startsWith(Admin.SPACE_KEY_PREFIX)) {
-      // spaceId starts with "WA", return it without prefix
       return spaceId.substring(Admin.SPACE_KEY_PREFIX.length(), spaceId.length());
     }
     return spaceId;
@@ -143,8 +142,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
   /** parameter sKey replaced by sUserId */
   public MainSessionController(String sKey, String sSessionId) throws Exception {
     SilverTrace.info("peasCore", "MainSessionController.constructor()",
-        "root.MSG_GEN_PARAM_VALUE", "sKey = " + sKey + " sSessionId="
-        + sSessionId);
+        "root.MSG_GEN_PARAM_VALUE", "sKey = " + sKey + " sSessionId=" + sSessionId);
     try {
       // Authenticate the user
       m_sUserId = m_Admin.authenticate(sKey, sSessionId, isAppInMaintenance());
@@ -153,10 +151,8 @@ public class MainSessionController extends AdminReference implements Clipboard {
       // Get the user language
       userLanguage = getPersonalization().getFavoriteLanguage();
     } catch (Exception e) {
-      throw new PeasCoreException(
-          "MainSessionController.MainSessionController",
-          SilverpeasException.ERROR, "peasCore.EX_CANT_GET_USER_PROFILE",
-          "sKey=" + sKey, e);
+      throw new PeasCoreException( "MainSessionController.MainSessionController",
+          SilverpeasException.ERROR, "peasCore.EX_CANT_GET_USER_PROFILE", "sKey=" + sKey, e);
     }
   }
 
@@ -441,8 +437,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
   /**
    * Return the value of the parameter for the given component and the given name of parameter
    */
-  public String getComponentParameterValue(String sComponentId,
-      String parameterName) {
+  public String getComponentParameterValue(String sComponentId, String parameterName) {
     return m_Admin.getComponentParameterValue(sComponentId, parameterName);
   }
 

@@ -34,8 +34,7 @@ public class ComponentImportExport {
   public ComponentImportExport() {
   }
 
-  public ComponentImportExport(UserDetail curentUserDetail,
-      String currentComponentId) {
+  public ComponentImportExport(UserDetail curentUserDetail, String currentComponentId) {
     this.curentUserDetail = curentUserDetail;
     this.currentComponentId = currentComponentId;
   }

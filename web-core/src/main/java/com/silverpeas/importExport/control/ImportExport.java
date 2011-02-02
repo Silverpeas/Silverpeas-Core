@@ -467,10 +467,8 @@ public class ImportExport {
         publicationsType = pub_Typ_Mger.processExport(exportReport, userDetail, listItemsToExport,
             fileExportDir.getPath(), true);
         if (publicationsType == null) {
-          // les noms des thèmes et des publication est trop long ou au moins >
-          // 200 caractères
-          // création des répertoires avec les Id des thèmes et des
-          // publications
+          // les noms des thèmes et des publication est trop long ou au moins > 200 caractères
+          // création des répertoires avec les Id des thèmes et des publications
           try {
             exportReport = new ExportReport();
             exportReport.setDateDebut(new Date());
@@ -519,8 +517,7 @@ public class ImportExport {
       }
 
       if (rootId == null) {
-        // dans le cas de l'export depuis le moteur de recherche, créer l'index
-        // "a plat"
+        // dans le cas de l'export depuis le moteur de recherche, créer l'index "a plat"
         // Création du sommaire HTML
         File fileHTML = new File(tempDir + thisExportDir + File.separator + "index.html");
 
@@ -582,7 +579,7 @@ public class ImportExport {
           try {
             fileTopicHTML.createNewFile();
             fileWriter = new OutputStreamWriter(new FileOutputStream(fileTopicHTML.getPath()), Charsets.UTF_8);
-            fileWriter.write(h.toHTML(fileTopicHTML.getName(), (List) topicIds.get(topicId)));
+            fileWriter.write(h.toHTML(fileTopicHTML.getName(), topicIds.get(topicId)));
           } catch (IOException ex) {
             throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
           } finally {

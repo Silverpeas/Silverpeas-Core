@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.formTemplate.ejb;
 
 import java.rmi.RemoteException;
@@ -30,6 +29,7 @@ import java.util.List;
 import javax.ejb.EJBObject;
 
 import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 
 /**
@@ -37,19 +37,16 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
  * @author neysseri
  */
 public interface FormTemplateBm extends EJBObject {
-  public DataRecord getRecord(String externalId, String id)
-      throws RemoteException;
 
-  public PublicationTemplate getPublicationTemplate(String externalId)
-      throws RemoteException;
+  public DataRecord getRecord(String externalId, String id) throws RemoteException;
 
-  public List getXMLFieldsForExport(String externalId, String id)
-      throws RemoteException;
+  public PublicationTemplate getPublicationTemplate(String externalId) throws RemoteException;
 
-  public List getXMLFieldsForExport(String externalId, String id,
-      String language) throws RemoteException;
+  public List<XMLField> getXMLFieldsForExport(String externalId, String id) throws RemoteException;
+
+  public List<XMLField> getXMLFieldsForExport(String externalId, String id, String language) throws
+      RemoteException;
 
   public String getWysiwygContent(String componentId, String objectId, String fieldName,
-	      String language) throws RemoteException;
-  
+      String language) throws RemoteException;
 }

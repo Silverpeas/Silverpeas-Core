@@ -22,17 +22,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Created on 9 févr. 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package com.silverpeas.pdc.importExport;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -64,82 +57,63 @@ public class PdcImportExport {
    * @return false si une des données est incorrecte, true sinon
    * @throws PdcException
    */
-  public boolean addPositions(int silverObjectId, String componentId,
-      PdcPositionsType positions) throws PdcException {
+  public boolean addPositions(int silverObjectId, String componentId, PdcPositionsType positions)
+      throws PdcException {
     boolean result = true;
-
-    List listPositions = positions.getListClassifyPosition();
-
+    List<ClassifyPosition> listPositions = positions.getListClassifyPosition();
     // récupération des positions valides
-    List validPositions = getValidPositions(componentId, listPositions);
-
+    List<ClassifyPosition> validPositions = getValidPositions(componentId, listPositions);
     if (listPositions.size() != validPositions.size()) {
       result = false;
     }
-
     if (validPositions != null) {
-      Iterator itListPosition = validPositions.iterator();
-      while (itListPosition.hasNext()) {
-        ClassifyPosition classifyPos = (ClassifyPosition) itListPosition.next();
+      for (ClassifyPosition classifyPos : validPositions) {
         try {
           getPdcBm().addPosition(silverObjectId, classifyPos, componentId);
         } catch (PdcException ex) {
           result = false;
-          SilverTrace.error("Pdc",
-              "PdcImportExport.addPositions(int,String,PdcPositionsType)",
+          SilverTrace.error("Pdc", "PdcImportExport.addPositions(int,String,PdcPositionsType)",
               "Pdc.CANNOT_INSERT_VALUE", ex);
         }
       }
     }
-
     return result;
   }
 
-  public List getValidPositions(String componentId, List positions)
-      throws PdcException {
-    List validPositions = new ArrayList();
-
+  public List<ClassifyPosition> getValidPositions(String componentId,
+      List<ClassifyPosition> positions) throws PdcException {
+    List<ClassifyPosition> validPositions = new ArrayList<ClassifyPosition>();
     // récupération des axes utilisés par le composant
     List<UsedAxis> usedAxis = getPdcBm().getUsedAxisByInstanceId(componentId);
-
-    if (usedAxis != null && usedAxis.size() > 0) {
+    if (usedAxis != null && !usedAxis.isEmpty()) {
       if (positions != null) {
-        Iterator itListPosition = positions.iterator();
-        while (itListPosition.hasNext()) {
-          ClassifyPosition classifyPos = (ClassifyPosition) itListPosition
-              .next();
-
-          if (isValidPosition(usedAxis, classifyPos))
+        for (ClassifyPosition classifyPos : positions) {
+          if (isValidPosition(usedAxis, classifyPos)) {
             validPositions.add(classifyPos);
+          }
         }
       }
     }
-
     return validPositions;
   }
 
-  private boolean isValidPosition(List usedAxis, ClassifyPosition position) {
-    List values = position.getValues();
-    ClassifyValue value = null;
+  private boolean isValidPosition(List<UsedAxis> usedAxis, ClassifyPosition position) {
+    List<ClassifyValue> values = position.getValues();
     boolean valueExist = true;
-    for (int v = 0; valueExist && v < values.size(); v++) {
-      value = (ClassifyValue) values.get(v);
+    for (ClassifyValue value : values) {
       valueExist = isExistingValue(value);
     }
     if (!valueExist) {
       // une des valeurs n'est pas correcte
       return false;
-    } else {
-      // toutes les valeurs sont correctes
-      // Il faut encore vérifier que le classement est complet
-      return isCompletePosition(usedAxis, position);
     }
+    // toutes les valeurs sont correctes
+    // Il faut encore vérifier que le classement est complet
+    return isCompletePosition(usedAxis, position);
   }
 
-  private boolean isCompletePosition(List usedAxis, ClassifyPosition position) {
-    UsedAxis axis = null;
-    for (int u = 0; u < usedAxis.size(); u++) {
-      axis = (UsedAxis) usedAxis.get(u);
+  private boolean isCompletePosition(List<UsedAxis> usedAxis, ClassifyPosition position) {
+    for (UsedAxis axis : usedAxis) {
       if (!isUsedAxisOK(axis, position)) {
         return false;
       }
@@ -152,10 +126,11 @@ public class PdcImportExport {
       // l'utilisation de cet axe est obligatoire
       // Est ce qu'il y a une valeur sur cet axe
       String valueId = position.getValueOnAxis(axis.getAxisId());
-      if (valueId == null)
+      if (valueId == null) {
         return false;
-      else
+      } else {
         return true;
+      }
     }
     // le classement sur cet axe est facultatif
     return true;
@@ -175,8 +150,9 @@ public class PdcImportExport {
         return false;
       } else {
         // Si la valeur existe, on vérifie que le chemin fournit est correct
-        if (!existingValue.getFullPath().equals(path))
+        if (!existingValue.getFullPath().equals(path)) {
           return false;
+        }
       }
     } catch (Exception e) {
       return false;
@@ -197,11 +173,12 @@ public class PdcImportExport {
    * @return - liste de ClassifyPosition
    * @throws PdcException
    */
-  public List getPositions(int silverObjectId, String sComponentId)
+  public List<ClassifyPosition> getPositions(int silverObjectId, String sComponentId)
       throws PdcException {
-    List list = getPdcBm().getPositions(silverObjectId, sComponentId);
-    if (list.size() == 0)// Pas géré dans l'EJB!!!
+    List<ClassifyPosition> list = getPdcBm().getPositions(silverObjectId, sComponentId);
+    if (list.isEmpty()) {
       return null;
+    }
     return list;
   }
 
@@ -215,29 +192,23 @@ public class PdcImportExport {
    * @return un objet PdcType contenant les axes recherchés
    * @throws PdcException
    */
-  public PdcType getPdc(List listClassifyPosition) throws PdcException {
+  public PdcType getPdc(List<ClassifyPosition> listClassifyPosition) throws PdcException {
 
     // On construit une liste des axes à exporter
-    Set set = new HashSet();
-    Iterator itListClassifyPosition = listClassifyPosition.iterator();
-    while (itListClassifyPosition.hasNext()) {
-      ClassifyPosition classPos = (ClassifyPosition) itListClassifyPosition
-          .next();
-      List listClassVal = classPos.getListClassifyValue();
-      Iterator itListClassVal = listClassVal.iterator();
-      while (itListClassVal.hasNext()) {
-        ClassifyValue classVal = (ClassifyValue) itListClassVal.next();
-        set.add(new Integer(classVal.getAxisId()));
+    Set<Integer> set = new HashSet<Integer>();
+    for (ClassifyPosition classPos : listClassifyPosition) {
+      List<ClassifyValue> listClassVal = classPos.getListClassifyValue();
+      for (ClassifyValue classVal : listClassVal) {
+        set.add(Integer.valueOf(classVal.getAxisId()));
       }
     }
 
     // On parcours la liste des axes à exporter
     PdcType pdcType = new PdcType();
-    List listAxisType = new ArrayList();
+    List<AxisType> listAxisType = new ArrayList<AxisType>();
     pdcType.setListAxisType(listAxisType);
-    Iterator itSet = set.iterator();
-    while (itSet.hasNext()) {
-      int axisId = ((Integer) itSet.next()).intValue();
+    for (Integer axis : set) {
+      int axisId = axis.intValue();
       // Récupération de la "value" root de l'axe
       Value valueRoot = getPdcBm().getRoot(Integer.toString(axisId));
       AxisType axisType = new AxisType();
@@ -247,8 +218,7 @@ public class PdcImportExport {
       listAxisType.add(axisType);
       // Récupération de la totalité de l'arbre de l'axe avec la méthode
       // récursive getValueTree
-      List listPdcValueType = getValueTree(axisId, valueRoot.getPK()
-          .getId());
+      List listPdcValueType = getValueTree(axisId, valueRoot.getPK().getId());
       axisType.setListPdcValueType(listPdcValueType);
     }
     return pdcType;
@@ -262,20 +232,13 @@ public class PdcImportExport {
    * de l'arbre
    * @throws PdcException
    */
-  private ArrayList getValueTree(int axisId, String fatherValueId)
-      throws PdcException {
-
-    List listValueId = null;
-    ArrayList listChildrenPdcValue = null;
+  private List<PdcValueType> getValueTree(int axisId, String fatherValueId) throws PdcException {
+    List<PdcValueType> listChildrenPdcValue = new ArrayList<PdcValueType>();
     // Récupération des ids des valeurs filles directes du value père
-    listValueId = getPdcBm().getDaughterValues(Integer.toString(axisId),
-        fatherValueId);
+    List<String> listValueId = getPdcBm().getDaughterValues(Integer.toString(axisId), fatherValueId);
     if (listValueId != null) {// L'exception oject non trouvé n'est pas gérée
       // dans la méthode DAO!!!
-      Iterator itListValues = listValueId.iterator();
-      // Parcours des id des valeurs filles trouvés
-      while (itListValues.hasNext()) {
-        String valueId = (String) itListValues.next();
+      for (String valueId : listValueId) {
         // Récupération de l'objet value et remplissage de l'objet de mapping
         Value value = getPdcBm().getValue(Integer.toString(axisId), valueId);
         PdcValueType pdcValueType = new PdcValueType();
@@ -283,12 +246,9 @@ public class PdcImportExport {
         pdcValueType.setName(value.getName());
         pdcValueType.setDescription(value.getDescription());
         pdcValueType.setPath(value.getFullPath());
-        if (listChildrenPdcValue == null)
-          listChildrenPdcValue = new ArrayList();
         listChildrenPdcValue.add(pdcValueType);
         // Parcours récursif
-        pdcValueType.setListPdcValueType(getValueTree(axisId, pdcValueType
-            .getPK().getId()));
+        pdcValueType.setListPdcValueType(getValueTree(axisId, pdcValueType.getPK().getId()));
       }
     }
 

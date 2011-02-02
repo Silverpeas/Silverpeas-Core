@@ -21,11 +21,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.importExport.report;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author sdevolder
@@ -38,7 +39,8 @@ public class ExportReport {
   private String zipFileName;
   private String zipFilePath;
   private long zipFileSize;
-  private HashMap mapPublicationPath = null;
+  private HashMap<String, HtmlExportPublicationGenerator> mapPublicationPath = 
+      new HashMap<String, HtmlExportPublicationGenerator>();
 
   public Date getDateDebut() {
     return dateDebut;
@@ -72,15 +74,12 @@ public class ExportReport {
     this.zipFileSize = zipFileSize;
   }
 
-  public void addHtmlIndex(String publicationId,
-      HtmlExportPublicationGenerator sommaireEntry) {
-    if (mapPublicationPath == null)
-      mapPublicationPath = new HashMap();
+  public void addHtmlIndex(String publicationId, HtmlExportPublicationGenerator sommaireEntry) {
     mapPublicationPath.put(publicationId, sommaireEntry);
   }
 
-  public HashMap getMapIndexHtmlPaths() {
-    return mapPublicationPath;
+  public Map<String, HtmlExportPublicationGenerator> getMapIndexHtmlPaths() {
+    return Collections.unmodifiableMap(mapPublicationPath);
   }
 
   public long getDuration() {
@@ -94,5 +93,4 @@ public class ExportReport {
   public void setZipFileName(String string) {
     zipFileName = string;
   }
-
 }

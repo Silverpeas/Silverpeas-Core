@@ -34,19 +34,19 @@ import java.util.List;
  * @author sdevolder
  */
 public class NodeTreesType {
-  private List listNodeTreeType;// liste de NodeTreeType
+  private List<NodeTreeType> listNodeTreeType;// liste de NodeTreeType
 
   /**
    * @return
    */
-  public List getListNodeTreeType() {
+  public List<NodeTreeType> getListNodeTreeType() {
     return listNodeTreeType;
   }
 
   /**
    * @param list
    */
-  public void setListNodeTreeType(List list) {
+  public void setListNodeTreeType(List<NodeTreeType> list) {
     listNodeTreeType = list;
   }
 
