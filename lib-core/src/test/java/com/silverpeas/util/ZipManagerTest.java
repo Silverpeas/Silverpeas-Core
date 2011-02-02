@@ -24,19 +24,24 @@
 
 package com.silverpeas.util;
 
-import java.util.Enumeration;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.util.Enumeration;
 import java.util.zip.ZipEntry;
+
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
- *
  * @author ehugonnet
  */
 public class ZipManagerTest {
@@ -67,24 +72,28 @@ public class ZipManagerTest {
     String path = base + File.separatorChar + "target" + File.separatorChar
             + "test-classes" + File.separatorChar + "ZipSample";
     String outfilename = base + File.separatorChar + "target" + File.separatorChar
-            + "temp" + File.separatorChar + "testCompressPathToZip.zip";   
+            + "temp" + File.separatorChar + "testCompressPathToZip.zip";
     ZipManager.compressPathToZip(path, outfilename);
     ZipFile zipFile = new ZipFile(new File(outfilename), "UTF-8");
-    Enumeration<? extends ZipEntry> entries = zipFile.getEntries();
-    int nbEntries = 0;
-    while (entries.hasMoreElements()) {
-      ZipEntry entry = entries.nextElement();
-      System.out.println("Compressed entry: " + entry.getName());
-      nbEntries++;
+    try {
+      Enumeration<? extends ZipEntry> entries = zipFile.getEntries();
+      int nbEntries = 0;
+      while (entries.hasMoreElements()) {
+        ZipEntry entry = entries.nextElement();
+        System.out.println("Compressed entry: " + entry.getName());
+        nbEntries++;
+      }
+      assertEquals(5, nbEntries);
+      assertNotNull(zipFile.getEntry("ZipSample/simple.txt"));
+      assertNotNull(zipFile.getEntry("ZipSample/level1/simple.txt"));
+      assertNotNull(zipFile.getEntry("ZipSample/level1/level2b/simple.txt"));
+      assertNotNull(zipFile.getEntry("ZipSample/level1/level2a/simple.txt"));
+      assertNotNull(zipFile.getEntry("ZipSample/level1/level2a/" +
+          new String("sïmplifié.txt".getBytes("UTF-8"), Charset.defaultCharset())));
+      assertNull(zipFile.getEntry("ZipSample/level1/level2c/"));
+    } finally {
+      zipFile.close();
     }
-    assertEquals(5, nbEntries);
-    assertNotNull(zipFile.getEntry("ZipSample" + File.separatorChar + "simple.txt"));
-    assertNotNull(zipFile.getEntry("ZipSample" + File.separatorChar + "level1" + File.separatorChar + "simple.txt"));
-    assertNotNull(zipFile.getEntry("ZipSample" + File.separatorChar + "level1" + File.separatorChar + "level2b" + File.separatorChar + "simple.txt"));
-    assertNotNull(zipFile.getEntry("ZipSample" + File.separatorChar + "level1" + File.separatorChar + "level2a" + File.separatorChar + "simple.txt"));
-    assertNotNull(zipFile.getEntry("ZipSample" + File.separatorChar + "level1" + File.separatorChar + "level2a" + File.separatorChar + "sïmplifié.txt"));
-    assertNull(zipFile.getEntry("ZipSample" + File.separatorChar + "level1" + File.separatorChar + "level2c" + File.separatorChar));
-    zipFile.close();
   }
 
   /**
@@ -92,10 +101,16 @@ public class ZipManagerTest {
    */
   @Test
   public void testCompressStreamToZip() throws Exception {
-    InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("FrenchScrum.odp");
-    String filePathNameToCreate = File.separatorChar + "dir1" + File.separatorChar + "dir2" + File.separatorChar + "FrenchScrum.odp";
-    String outfilename = base + File.separatorChar + "target" + File.separatorChar + "temp" + File.separatorChar + "testCompressStreamToZip.zip";
+    InputStream inputStream =
+        this.getClass().getClassLoader().getResourceAsStream("FrenchScrum.odp");
+    String filePathNameToCreate =
+        File.separatorChar + "dir1" + File.separatorChar + "dir2" + File.separatorChar +
+            "FrenchScrum.odp";
+    String outfilename =
+        base + File.separatorChar + "target" + File.separatorChar + "temp" + File.separatorChar +
+            "testCompressStreamToZip.zip";
     ZipManager.compressStreamToZip(inputStream, filePathNameToCreate, outfilename);
+    inputStream.close();
     File file = new File(outfilename);
     assertNotNull(file);
     assertTrue(file.exists());
@@ -103,7 +118,8 @@ public class ZipManagerTest {
     int result = ZipManager.getNbFiles(new File(outfilename));
     assertEquals(1, result);
     ZipFile zipFile = new ZipFile(file);
-    assertNotNull(zipFile.getEntry(File.separatorChar + "dir1" + File.separatorChar + "dir2" + File.separatorChar + "FrenchScrum.odp"));
+    assertNotNull(zipFile.getEntry(File.separatorChar + "dir1" + File.separatorChar + "dir2" +
+        File.separatorChar + "FrenchScrum.odp"));
     zipFile.close();
   }
 
@@ -113,8 +129,12 @@ public class ZipManagerTest {
   @Test
   public void testExtract() throws Exception {
     System.out.println("extract");
-    File source = new File(base + File.separatorChar + "target" + File.separatorChar + "test-classes" + File.separatorChar + "testExtract.zip");
-    File dest = new File(base + File.separatorChar + "target" + File.separatorChar + "temp" + File.separatorChar + "extract");
+    File source =
+        new File(base + File.separatorChar + "target" + File.separatorChar + "test-classes" +
+            File.separatorChar + "testExtract.zip");
+    File dest =
+        new File(base + File.separatorChar + "target" + File.separatorChar + "temp" +
+            File.separatorChar + "extract");
     dest.mkdirs();
     ZipManager.extract(source, dest);
     assertNotNull(dest);
@@ -128,7 +148,8 @@ public class ZipManagerTest {
     assertNotNull(base);
     String path = base + File.separatorChar + "target" + File.separatorChar
             + "test-classes" + File.separatorChar + "ZipSample";
-    String outfilename = base + File.separatorChar + "target" + File.separatorChar + "temp" + File.separatorChar
+    String outfilename =
+        base + File.separatorChar + "target" + File.separatorChar + "temp" + File.separatorChar
             + "testGetNbFiles.zip";
     ZipManager.compressPathToZip(path, outfilename);
     File file = new File(outfilename);
