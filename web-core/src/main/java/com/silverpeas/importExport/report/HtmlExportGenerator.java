@@ -37,6 +37,18 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import java.util.Map;
+import org.apache.ecs.ElementContainer;
+import org.apache.ecs.xhtml.b;
+import org.apache.ecs.xhtml.br;
+import org.apache.ecs.xhtml.head;
+import org.apache.ecs.xhtml.link;
+import org.apache.ecs.xhtml.meta;
+import org.apache.ecs.xhtml.script;
+import org.apache.ecs.xhtml.style;
+import org.apache.ecs.xhtml.table;
+import org.apache.ecs.xhtml.td;
+import org.apache.ecs.xhtml.title;
+import org.apache.ecs.xhtml.tr;
 
 /**
  * @author sdevolder Classe generant le code html du sommaire d une exportation
@@ -44,18 +56,16 @@ import java.util.Map;
 public class HtmlExportGenerator {
 
   private static final String NEW_LINE = "<br/>\n";
-  // Variables
   private String fileExportDir;
   private ExportReport exportReport;
   private ResourceLocator resourceLocator;
 
-  // Constructeurs
-  private HtmlExportGenerator() {
-  }
 
   public HtmlExportGenerator(ExportReport exportReport, String fileExportDir) {
     this.fileExportDir = fileExportDir;
     this.exportReport = exportReport;
+    this.resourceLocator = new ResourceLocator(
+        "com.silverpeas.importExport.multilang.importExportBundle", "");
   }
 
   public HtmlExportGenerator(ExportReport exportReport, String fileExportDir,
@@ -70,75 +80,73 @@ public class HtmlExportGenerator {
    * @return
    */
   public static String encode(String javastring) {
-    String res = "";
-
-    if (javastring == null) {
-      return res;
-    }
-    res = EncodeHelper.javaStringToHtmlString(res);
-    for (int i = 0; i < javastring.length(); i++) {
-      switch (javastring.charAt(i)) {
-        case '\n':
-          res += "<br>";
-          break;
-        case '\t':
-          res += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-          break;
-        default:
-          res += javastring.charAt(i);
+    StringBuilder sb = new StringBuilder("");
+    if (javastring != null) {
+      String res = EncodeHelper.javaStringToHtmlString(javastring);
+      for (int i = 0; i < res.length(); i++) {
+        switch (res.charAt(i)) {
+          case '\n':
+            sb.append("<br/>");
+            break;
+          case '\t':
+            sb.append("&nbsp;&nbsp;");
+            break;
+          default:
+            sb.append(res.charAt(i));
+        }
       }
     }
-    return res;
+    return sb.toString();
   }
 
   public static String getHtmlStyle() {
-    StringBuilder sb = new StringBuilder();
-    // Ajout d'un style a tout le document
-    sb.append("<style type=\"text/css\">\n");
-    sb.append("<!--\n");
-    sb.append(
-        "body,td,th {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; color: #000000;}\n");
-    sb.append("body {margin-left: 5px; margin-top: 5px; margin-right: 5px; margin-bottom: 5px;}\n");
-    sb.append(
-        "A { font-family: Verdana,Arial, sans-serif; font-size: 10px; text-decoration: none; color: #000000}\n");
-    sb.append("A:hover {color: #666699;}\n");
-    sb.append("// -->\n");
-    sb.append("</style>\n");
-    return sb.toString();
+    ElementContainer xhtmlcontainer = new ElementContainer();
+    style css = new style();
+    css.addElement("\n<!--\nbody,td,th {font-family: Verdana, Arial, Helvetica, sans-serif; "
+        + "font-size: 10px; color: #000000;}\nbody {margin-left: 5px; margin-top: 5px; "
+        + "margin-right: 5px; margin-bottom: 5px;}\nA { font-family: Verdana,Arial, sans-serif; "
+        + "font-size: 10px; text-decoration: none; color: #000000}\nA:hover {color: #666699;}\n"
+        + "// -->\n");
+    css.setType("text/css");
+    xhtmlcontainer.addElement(css);
+    return xhtmlcontainer.toString();
   }
 
   /**
    * @param text
    * @return
    */
-  private String writeEnTeteSommaire(String text) {
-    String htmlText = encode(text);
-    StringBuilder sb = new StringBuilder();
-    sb.append("<TABLE border=\"0\" width=\"100%\" align=\"center\" bgcolor=\"#B3BFD1\">\n");
-    sb.append("<TR>").append("\n");
-    sb.append("<TD align=\"center\">").append("\n");
-    sb.append("<b>").append(htmlText).append("</b><BR>").append("\n");
-    sb.append("</TD>").append("\n");
-    sb.append("</TABLE>").append("\n");
-
-    return sb.toString();
+  String writeEnTeteSommaire(String text) {
+    ElementContainer xhtmlcontainer = new ElementContainer();
+    table entete = new table();
+    entete.setBorder(0);
+    entete.setWidth("100%");
+    entete.setAlign("center");
+    entete.setBgColor("#B3BFD1");
+    td cell = new td(new b(encode(text)));
+    cell.setAlign("center");
+    cell.addElement(new br());
+    entete.addElement(new tr(cell));
+    xhtmlcontainer.addElement(entete);
+    return xhtmlcontainer.toString();
   }
 
-  private String getBeginningOfPage(String title, boolean treeview) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<html>\n");
-    sb.append("<head>\n");
-    sb.append("<title>").append(title).append("</title>");
-    sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>");
-    sb.append(getHtmlStyle());
+  String getBeginningOfPage(String title, boolean treeview) {
+    ElementContainer xhtmlcontainer = new ElementContainer();
+    head header = new head();
+    header.addElement(new title(title));
+    header.addElement(new meta().setContent("text/html; charset=UTF-8").setHttpEquiv("Content-Type"));
+    header.addElement(getHtmlStyle());
     if (treeview) {
-      sb.append("<script type=\"text/javascript\" src=\"treeview/TreeView.js\"></script>\n");
-      sb.append("<script type=\"text/javascript\" src=\"treeview/TreeViewElements.js\"></script>\n");
-      sb.append("<link type=\"text/css\" rel=\"stylesheet\" href=\"treeview/treeview.css\">\n");
+      header.addElement(new script().setType("text/javascript").setSrc("treeview/TreeView.js"));
+      header.addElement(new script().setType("text/javascript").setSrc(
+          "treeview/TreeViewElements.js"));
+      header.addElement(new link().setType("text/css").setRel("stylesheet").setHref(
+          "treeview/treeview.css"));
     }
-    sb.append("</head>\n");
-    sb.append("<body>\n");
-    return sb.toString();
+    xhtmlcontainer.addElement("<html>");
+    xhtmlcontainer.addElement(header);
+    return xhtmlcontainer.toString();
   }
 
   /**
@@ -148,6 +156,7 @@ public class HtmlExportGenerator {
     StringBuilder sb = new StringBuilder();
     String htmlFileExportDir = encode(fileExportDir);
     sb.append(getBeginningOfPage("Sommaire de " + htmlFileExportDir, false));
+    sb.append("<body>\n");
     Map<String, HtmlExportPublicationGenerator> map = exportReport.getMapIndexHtmlPaths();
     if (map != null) {
       StringBuilder entete = new StringBuilder(100);
@@ -174,6 +183,7 @@ public class HtmlExportGenerator {
     String htmlFileExportDir = encode(fileName);
 
     sb.append(getBeginningOfPage(htmlFileExportDir, false));
+    sb.append("<body>\n");
 
     // ajout des publications dans le fichier HTML
     Map<String, HtmlExportPublicationGenerator> map = exportReport.getMapIndexHtmlPaths();
@@ -204,6 +214,7 @@ public class HtmlExportGenerator {
     String htmlFileExportDir = encode(fileName);
 
     sb.append(getBeginningOfPage(htmlFileExportDir, false));
+    sb.append("<body>\n");
     sb.append(writeEnTeteSommaire("0 " + resourceLocator.getString("importExport.document")));
     sb.append(NEW_LINE);
     sb.append(resourceLocator.getString("importExport.empty"));
@@ -219,6 +230,7 @@ public class HtmlExportGenerator {
 
     sb.append(getBeginningOfPage(resourceLocator.getString("importExport.index") + " "
         + htmlFileExportDir, true));
+    sb.append("<body>\n");
     sb.append("<table>\n");
     sb.append("<tr>\n");
     sb.append("<td nowrap>\n");
@@ -399,6 +411,7 @@ public class HtmlExportGenerator {
     String htmlFileExportDir = encode(fileExportDir);
     sb.append(getBeginningOfPage(resourceLocator.getString("importExport.index") + htmlFileExportDir,
         false));
+    sb.append("<body>\n");
     sb.append("<script language=\"JavaScript\" type=\"text/javascript\">\n");
     sb.append("function submit(nbAxis) { \n");
     sb.append("var selection=\"\"; \n");
