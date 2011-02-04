@@ -25,21 +25,35 @@ package com.silverpeas.accesscontrol;
 
 import com.silverpeas.util.ComponentHelper;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 
 /**
  * Check the access to a component for a user.
  * @author ehugonnet
  */
-public class ComponentAccessController {
+public class ComponentAccessController implements AccessController<String> {
+
+  private final OrganizationController controller;
+
+  public ComponentAccessController() {
+    this(new OrganizationController());
+  }
+
+  /**
+   * For tests only.
+   * @param controller 
+   */  
+  ComponentAccessController(OrganizationController controller) {
+    this.controller = controller;
+  }
 
   /**
    * Indicates that the rights are set on node as well as the component.
-   * @param controller
+   * @param userId 
    * @param componentId
    * @return 
    */
-  public boolean isRightOnTopicsEnabled(MainSessionController controller, String componentId) {
+  public boolean isRightOnTopicsEnabled(String userId, String componentId) {
     return isThemeTracker(componentId) && StringUtil.getBooleanValue(controller.
         getComponentParameterValue(componentId, "rightsOnTopics"));
   }
@@ -48,15 +62,14 @@ public class ComponentAccessController {
     return ComponentHelper.getInstance().isThemeTracker(componentId);
   }
 
-  public boolean isUserAuthorized(MainSessionController controller, String componentId) throws
-      Exception {
+  @Override
+  public boolean isUserAuthorized(String userId, String componentId) throws Exception {
     if (componentId == null) { // Personal space
       return true;
     }
     if (StringUtil.getBooleanValue(controller.getComponentParameterValue(componentId, "publicFiles"))) {
       return true;
     }
-    return controller.getOrganizationController().isComponentAvailable(componentId, controller.
-        getUserId());
+    return controller.isComponentAvailable(componentId, userId);
   }
 }

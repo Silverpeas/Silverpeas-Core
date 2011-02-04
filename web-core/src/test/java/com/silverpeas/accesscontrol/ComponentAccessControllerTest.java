@@ -53,7 +53,7 @@ public class ComponentAccessControllerTest {
    */
   @Test
   public void testIsRightOnTopicsEnabled() {
-    MainSessionController controller = mock(MainSessionController.class);
+    OrganizationController controller = mock(OrganizationController.class);
     String componentIdWithRigths = "kmelia18";
     String componentIdWithoutRigths = "kmelia20";
     String componentId = "yellowpages154";
@@ -70,14 +70,14 @@ public class ComponentAccessControllerTest {
     when(controller.getComponentParameterValue(componentIdWithoutRigths, "rightsOnTopics")).
         thenReturn("false");
 
-    ComponentAccessController instance = new ComponentAccessController();
-    boolean result = instance.isRightOnTopicsEnabled(controller, componentId);
+    ComponentAccessController instance = new ComponentAccessController(controller);
+    boolean result = instance.isRightOnTopicsEnabled("", componentId);
     assertEquals(false, result);
 
-    result = instance.isRightOnTopicsEnabled(controller, componentIdWithoutRigths);
+    result = instance.isRightOnTopicsEnabled("", componentIdWithoutRigths);
     assertEquals(false, result);
 
-    result = instance.isRightOnTopicsEnabled(controller, componentIdWithRigths);
+    result = instance.isRightOnTopicsEnabled("", componentIdWithRigths);
     assertEquals(true, result);
   }
 
@@ -92,13 +92,9 @@ public class ComponentAccessControllerTest {
     
     String userId = "bart";
     
-    OrganizationController organizationController = mock(OrganizationController.class);
-    when(organizationController.isComponentAvailable(componentId, userId)).thenReturn(Boolean.TRUE);
-    when(organizationController.isComponentAvailable(forbiddenComponent, userId)).thenReturn(Boolean.FALSE);
-    
-    MainSessionController controller = mock(MainSessionController.class);
-    when(controller.getOrganizationController()).thenReturn(organizationController);
-    when(controller.getUserId()).thenReturn(userId);
+    OrganizationController controller = mock(OrganizationController.class);
+    when(controller.isComponentAvailable(componentId, userId)).thenReturn(Boolean.TRUE);
+    when(controller.isComponentAvailable(forbiddenComponent, userId)).thenReturn(Boolean.FALSE);
     
     mockStatic(Instanciateur.class);
     WAComponent kmeliaComponent = new WAComponent("kmelia", "kmelia", "kmelia", "kmelia", true, true,
@@ -115,18 +111,18 @@ public class ComponentAccessControllerTest {
     when(controller.getComponentParameterValue(forbiddenComponent, "rightsOnTopics")).
         thenReturn("false");
 
-    ComponentAccessController instance = new ComponentAccessController();
-    boolean result = instance.isUserAuthorized(controller, null);
+    ComponentAccessController instance = new ComponentAccessController(controller);
+    boolean result = instance.isUserAuthorized(userId, null);
     assertEquals(true, result);
 
-    result = instance.isUserAuthorized(controller, publicComponentId);
+    result = instance.isUserAuthorized(userId, publicComponentId);
     assertEquals(true, result);
 
-    result = instance.isUserAuthorized(controller, componentId);
+    result = instance.isUserAuthorized(userId, componentId);
     assertEquals(true, result);
     
     
-    result = instance.isUserAuthorized(controller, forbiddenComponent);
+    result = instance.isUserAuthorized(userId, forbiddenComponent);
     assertEquals(false, result);
   }
 }

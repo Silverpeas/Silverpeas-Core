@@ -23,6 +23,7 @@
  */
 package com.silverpeas.accesscontrol;
 
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import org.hamcrest.Matchers;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -50,7 +51,9 @@ import static org.junit.Assert.*;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(EJBUtilitaire.class)
 public class DocumentAccessControllerTest {
-  
+
+  private final String userId = "bart";
+
   public DocumentAccessControllerTest() {
   }
 
@@ -72,20 +75,19 @@ public class DocumentAccessControllerTest {
     Mockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
         PublicationBmHome.class)).thenReturn(home);
     Mockito.when(publicationBm.getAllFatherPK(pk)).thenReturn(fathers);
-    MainSessionController controller = Mockito.mock(MainSessionController.class);
     Document document = new Document();
     document.setForeignKey(new ForeignPK(pk));
     NodeAccessController accessController = Mockito.mock(NodeAccessController.class);
-    Mockito.when(accessController.isUserAuthorized(controller, componentId, nodePk1)).thenReturn(
-        false);
-     Mockito.when(accessController.isUserAuthorized(controller, componentId, nodePk2)).thenReturn(
+
+    Mockito.when(accessController.isUserAuthorized(userId, nodePk1)).thenReturn(false);
+    Mockito.when(accessController.isUserAuthorized(userId, nodePk2)).thenReturn(
         true);
     DocumentAccessController instance = new DocumentAccessController(accessController);
-    boolean result = instance.isUserAuthorized(controller, componentId, document);
+    boolean result = instance.isUserAuthorized(userId, document);
     assertThat(result, Matchers.is(true));
   }
-  
-   /**
+
+  /**
    * Test of isUserAuthorized method, of class DocumentAccessController.
    * @throws Exception 
    */
@@ -104,16 +106,13 @@ public class DocumentAccessControllerTest {
         PublicationBmHome.class)).
         thenReturn(home);
     Mockito.when(publicationBm.getAllFatherPK(pk)).thenReturn(fathers);
-    MainSessionController controller = Mockito.mock(MainSessionController.class);
     Document document = new Document();
     document.setForeignKey(new ForeignPK(pk));
     NodeAccessController accessController = Mockito.mock(NodeAccessController.class);
-    Mockito.when(accessController.isUserAuthorized(controller, componentId, nodePk1)).thenReturn(
-        false);
-     Mockito.when(accessController.isUserAuthorized(controller, componentId, nodePk2)).thenReturn(
-        false);
+    Mockito.when(accessController.isUserAuthorized(userId, nodePk1)).thenReturn(false);
+    Mockito.when(accessController.isUserAuthorized(userId, nodePk2)).thenReturn(false);
     DocumentAccessController instance = new DocumentAccessController(accessController);
-    boolean result = instance.isUserAuthorized(controller, componentId, document);
+    boolean result = instance.isUserAuthorized(userId, document);
     assertThat(result, Matchers.is(false));
   }
 }

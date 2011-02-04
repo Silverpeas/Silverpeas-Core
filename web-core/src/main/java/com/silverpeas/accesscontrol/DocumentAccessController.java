@@ -42,9 +42,9 @@ public class DocumentAccessController implements AccessController<Document> {
   private NodeAccessController accessController;
 
   public DocumentAccessController() {
-    accessController = new NodeAccessController();
+    this(new NodeAccessController());
   }
-  
+
   /**
    * For tests only.
    * @param accessController 
@@ -54,12 +54,11 @@ public class DocumentAccessController implements AccessController<Document> {
   }
 
   @Override
-  public boolean isUserAuthorized(MainSessionController controller, String componentId,
-      Document object) throws Exception {
+  public boolean isUserAuthorized(String userId, Document object) throws Exception {
     Collection<NodePK> nodes = getPublicationBm().getAllFatherPK(new PublicationPK(object.
-        getForeignKey().getId(), componentId));
+        getForeignKey().getId(), object.getInstanceId()));
     for (NodePK nodePk : nodes) {
-      if (accessController.isUserAuthorized(controller, componentId, nodePk)) {
+      if (accessController.isUserAuthorized(userId, nodePk)) {
         return true;
       }
     }

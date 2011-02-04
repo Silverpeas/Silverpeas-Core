@@ -55,13 +55,12 @@ public class AttachmentAccessController implements AccessController<AttachmentDe
   }
 
   @Override
-  public boolean isUserAuthorized(MainSessionController controller, String componentId,
-      AttachmentDetail object) throws Exception {
+  public boolean isUserAuthorized(String userId, AttachmentDetail object) throws Exception {
     if (ComponentHelper.getInstance().isThemeTracker(object.getForeignKey().getComponentName())) {
       Collection<NodePK> nodes = getPublicationBm().getAllFatherPK(new PublicationPK(
-          object.getForeignKey().getId(), componentId));
+          object.getForeignKey().getId(), object.getInstanceId()));
       for (NodePK nodePk : nodes) {
-        if (accessController.isUserAuthorized(controller, componentId, nodePk)) {
+        if (accessController.isUserAuthorized(userId, nodePk)) {
           return true;
         }
       }

@@ -49,6 +49,9 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @PrepareForTest(EJBUtilitaire.class)
 public class NodeAccessControllerTest {
 
+  private final String userId = "5";
+  private final String componentId = "kmelia18";
+
   public NodeAccessControllerTest() {
   }
 
@@ -58,7 +61,7 @@ public class NodeAccessControllerTest {
    */
   @Test
   public void userIsAuthorizedWhenNodeHaveNoSpecificRights() throws Exception {
-    NodePK nodPk = new NodePK("10");
+    NodePK nodPk = new NodePK("10", componentId);
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
     PowerMockito.mockStatic(EJBUtilitaire.class);
@@ -68,10 +71,8 @@ public class NodeAccessControllerTest {
     Mockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class)).
         thenReturn(home);
     Mockito.when(nodeBm.getHeader(nodPk, false)).thenReturn(node);
-    MainSessionController controller = Mockito.mock(MainSessionController.class);
-    String componentId = "";
     NodeAccessController instance = new NodeAccessController();
-    boolean result = instance.isUserAuthorized(controller, componentId, nodPk);
+    boolean result = instance.isUserAuthorized(userId, nodPk);
     Assert.assertThat(result, Matchers.is(true));
   }
 
@@ -80,9 +81,8 @@ public class NodeAccessControllerTest {
    * @throws Exception 
    */
   @Test
-  public void userIsAuthorizedWhithRightsDependOn() throws Exception {
-    NodePK nodPk = new NodePK("10");
-    String componentId = "test";
+  public void userIsAuthorizedWhithRightsDependOn() throws Exception {    
+    NodePK nodPk = new NodePK("10", componentId);
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
     node.setRightsDependsOn(5);
@@ -93,15 +93,12 @@ public class NodeAccessControllerTest {
     Mockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class)).
         thenReturn(home);
     Mockito.when(nodeBm.getHeader(nodPk, false)).thenReturn(node);
-    MainSessionController controller = Mockito.mock(MainSessionController.class);
-    Mockito.when(controller.getUserId()).thenReturn("5");
     OrganizationController orga = Mockito.mock(OrganizationController.class);
-    Mockito.when(orga.isObjectAvailable(5, ObjectType.NODE, componentId, "5")).thenReturn(true);
-    Mockito.when(controller.getOrganizationController()).thenReturn(orga);
-    NodeAccessController instance = new NodeAccessController();
-    boolean result = instance.isUserAuthorized(controller, componentId, nodPk);
+    Mockito.when(orga.isObjectAvailable(5, ObjectType.NODE, componentId, userId)).thenReturn(true);
+    NodeAccessController instance = new NodeAccessController(orga);
+    boolean result = instance.isUserAuthorized(userId, nodPk);
     Assert.assertThat(result, Matchers.is(true));
-    Mockito.verify(orga, Mockito.times(1)).isObjectAvailable(5, ObjectType.NODE, componentId, "5");
+    Mockito.verify(orga, Mockito.times(1)).isObjectAvailable(5, ObjectType.NODE, componentId, userId);
   }
 
   /**
@@ -110,8 +107,7 @@ public class NodeAccessControllerTest {
    */
   @Test
   public void userIsNotAuthorizedWhithRightsDependOn() throws Exception {
-    NodePK nodPk = new NodePK("10");
-    String componentId = "test";
+    NodePK nodPk = new NodePK("10", componentId);
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
     node.setRightsDependsOn(5);
@@ -122,13 +118,10 @@ public class NodeAccessControllerTest {
     Mockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class)).
         thenReturn(home);
     Mockito.when(nodeBm.getHeader(nodPk, false)).thenReturn(node);
-    MainSessionController controller = Mockito.mock(MainSessionController.class);
-    Mockito.when(controller.getUserId()).thenReturn("5");
     OrganizationController orga = Mockito.mock(OrganizationController.class);
     Mockito.when(orga.isObjectAvailable(5, ObjectType.NODE, componentId, "5")).thenReturn(false);
-    Mockito.when(controller.getOrganizationController()).thenReturn(orga);
-    NodeAccessController instance = new NodeAccessController();
-    boolean result = instance.isUserAuthorized(controller, componentId, nodPk);
+    NodeAccessController instance = new NodeAccessController(orga);
+    boolean result = instance.isUserAuthorized(userId, nodPk);
     Assert.assertThat(result, Matchers.is(false));
     Mockito.verify(orga, Mockito.times(1)).isObjectAvailable(5, ObjectType.NODE, componentId, "5");
 
