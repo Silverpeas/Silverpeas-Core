@@ -52,6 +52,7 @@ public class AuthenticationServlet extends HttpServlet {
    * Method invoked when called from a form or directly by URL
    * @param request the HTTP request.
    * @param response the HTTP response.
+   * @throws IOException when an error occurs while recieving the request or sending the response.
    */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -201,6 +202,8 @@ public class AuthenticationServlet extends HttpServlet {
    * Method invoked when called from a form or directly by URL
    * @param request the HTTP request.
    * @param response the HTTP response.
+   * @throws ServletException if the servlet fails to answer the request.
+   * @throws IOException  if an IO error occurs with the client.
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)

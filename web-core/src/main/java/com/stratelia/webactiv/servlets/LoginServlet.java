@@ -23,7 +23,6 @@
  */
 package com.stratelia.webactiv.servlets;
 
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.authentication.Authentication;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -42,11 +41,25 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import static com.silverpeas.util.StringUtil.*;
 
 public class LoginServlet extends HttpServlet {
 
   private static final long serialVersionUID = 8524810441906567361L;
   private static final int HTTP_DEFAULT_PORT = 80;
+  private final String anonymousUserId;
+
+  public LoginServlet() {
+    super();
+    ResourceLocator settings = new ResourceLocator(
+        "com.stratelia.silverpeas.lookAndFeel.generalLook", "");
+    String id = settings.getString("anonymousId");
+    if (!isDefined(id)) {
+      anonymousUserId = "";
+    } else {
+      anonymousUserId = id;
+    }
+  }
 
   @Override
   public void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -61,7 +74,8 @@ public class LoginServlet extends HttpServlet {
       absoluteUrl.append(request.getScheme());
     }
     absoluteUrl.append("://").append(request.getServerName()).append(':');
-    int serverPort = GeneralPropertiesManager.getInteger("server.http.port", request.getServerPort());
+    int serverPort =
+        GeneralPropertiesManager.getInteger("server.http.port", request.getServerPort());
     absoluteUrl.append(serverPort);
     absoluteUrl.append(URLManager.getApplicationURL());
     // Get the parameters from the login page
@@ -80,7 +94,7 @@ public class LoginServlet extends HttpServlet {
       // Get and store password change capabilities
       String allowPasswordChange = (String) session.getAttribute(
           Authentication.PASSWORD_CHANGE_ALLOWED);
-      controller.setAllowPasswordChange(StringUtil.getBooleanValue(allowPasswordChange));
+      controller.setAllowPasswordChange(getBooleanValue(allowPasswordChange));
 
       // Notify user about password expiration if needed
       Boolean alertUserAboutPwdExpiration = (Boolean) session.getAttribute(
@@ -100,7 +114,9 @@ public class LoginServlet extends HttpServlet {
     if ((controller != null) && (!controller.getCurrentUserDetail().isAccessRemoved())) {
       // Init session management and session object !!! This method reset the
       // Session Object
-      SessionManager.getInstance().addSession(session, request, controller);
+      if (!controller.getUserId().equals(getAnonymousUserId())) {
+        SessionManager.getInstance().addSession(session, request, controller);
+      }
 
       // Put the main session controller in the session
       session.setAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT, controller);
@@ -114,17 +130,17 @@ public class LoginServlet extends HttpServlet {
         port = String.valueOf(serverPort);
       }
       controller.initServerProps(serverName, port);
-      
+
       // Retrieve personal workspace
       String personalWs = controller.getPersonalization().getPersonalWorkSpace();
       SilverTrace.debug("peasCore", "LoginServlet.service", "user personal workspace=" + personalWs);
-      
+
       // Put a graphicElementFactory in the session
       GraphicElementFactory gef = new GraphicElementFactory(controller.getFavoriteLook());
-      if (StringUtil.isDefined(personalWs)) {
+      if (isDefined(personalWs)) {
         gef.setSpaceId(personalWs);
       }
-      gef.setMainSessionController(controller);      
+      gef.setMainSessionController(controller);
       session.setAttribute("SessionGraphicElementFactory", gef);
 
       String favoriteFrame = gef.getLookFrame();
@@ -138,7 +154,8 @@ public class LoginServlet extends HttpServlet {
 
       if (controller.isAppInMaintenance() && !controller.getCurrentUserDetail().isAccessAdmin()) {
         absoluteUrl.append("/admin/jsp/appInMaintenance.jsp");
-      } else if (StringUtil.isDefined(sDirectAccessSpace) && StringUtil.isDefined(sDirectAccessCompo)) {
+      } else if (isDefined(sDirectAccessSpace)
+          && isDefined(sDirectAccessCompo)) {
         absoluteUrl.append(URLManager.getURL(sDirectAccessSpace, sDirectAccessCompo)).append("Main");
       } else {
         absoluteUrl.append("/Main/").append(favoriteFrame);
@@ -174,5 +191,9 @@ public class LoginServlet extends HttpServlet {
       SilverTrace.warn("peasCore", "LoginServlet.alertUserAboutPwdExpiration",
           "peasCore.EX_CANT_SEND_PASSWORD_EXPIRATION_ALERT", "userId = " + userId, e);
     }
+  }
+
+  private String getAnonymousUserId() {
+    return anonymousUserId;
   }
 }
