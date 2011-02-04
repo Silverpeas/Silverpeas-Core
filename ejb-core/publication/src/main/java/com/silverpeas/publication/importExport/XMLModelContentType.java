@@ -21,27 +21,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.publication.importExport;
 
-import java.util.ArrayList;
-
 import com.silverpeas.form.importExport.XMLField;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * @author neysseri To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 public class XMLModelContentType {
 
   private String name = null;
-  private ArrayList<XMLField> fields;
+  private List<XMLField> fields = new ArrayList<XMLField>();
 
   public XMLModelContentType() {
   }
 
   public XMLModelContentType(String name) {
-    setName(name);
+    this.name = name;
   }
 
   /**
@@ -52,30 +47,28 @@ public class XMLModelContentType {
   }
 
   /**
-   * @param i
+   * 
+   * @param name 
    */
   public void setName(String name) {
     this.name = name;
   }
 
   /**
-   * @return Returns the listImageParts.
+   * @return Returns the fields.
    */
-  public ArrayList<XMLField> getFields() {
+  public List<XMLField> getFields() {
     return fields;
   }
 
   /**
-   * @param listImageParts The listImageParts to set.
+   * @param fields the fields to add.
    */
-  public void setFields(ArrayList<XMLField> fields) {
+  public void setFields(List<XMLField> fields) {
     this.fields = fields;
   }
 
   public void addField(XMLField field) {
-    if (fields == null)
-      fields = new ArrayList<XMLField>();
-
     fields.add(field);
   }
 }

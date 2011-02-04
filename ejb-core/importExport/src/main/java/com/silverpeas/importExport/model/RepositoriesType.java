@@ -22,12 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Created on 24 janv. 2005
- *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 package com.silverpeas.importExport.model;
 
 import java.util.List;
@@ -38,19 +32,19 @@ import java.util.List;
  */
 public class RepositoriesType {
 
-  private List listRepositoryType; // ArrayList de RepositoryType
+  private List<RepositoryType> listRepositoryType;
 
   /**
    * @return Returns the listRepositoryType.
    */
-  public List getListRepositoryType() {
+  public List<RepositoryType> getListRepositoryType() {
     return listRepositoryType;
   }
 
   /**
    * @param listRepositoryType The listRepositoryType to set.
    */
-  public void setListRepositoryType(List listRepositoryType) {
+  public void setListRepositoryType(List<RepositoryType> listRepositoryType) {
     this.listRepositoryType = listRepositoryType;
   }
 }

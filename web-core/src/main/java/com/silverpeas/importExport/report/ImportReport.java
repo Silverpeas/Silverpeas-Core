@@ -21,36 +21,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * Created on 24 janv. 2005
- *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 package com.silverpeas.importExport.report;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
-/**
- * @author tleroi To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 public class ImportReport {
 
   private Date startDate;
   private Date endDate;
   private int nbFilesProcessed;
   private int nbFilesNotImported;
-  private List listComponentReport = new ArrayList();
+  private List<ComponentReport> listComponentReport = new ArrayList<ComponentReport>();
 
   public void addComponentReport(ComponentReport componentReport) {
     listComponentReport.add(componentReport);
@@ -98,7 +86,7 @@ public class ImportReport {
   /**
    * @return Returns the listComponentReport.
    */
-  public List getListComponentReport() {
+  public List<ComponentReport> getListComponentReport() {
     return listComponentReport;
   }
 
@@ -107,8 +95,7 @@ public class ImportReport {
   }
 
   public String getDuration() {
-    return DateUtil.formatDuration(getEndDate().getTime()
-        - getStartDate().getTime());
+    return DateUtil.formatDuration(getEndDate().getTime() - getStartDate().getTime());
   }
 
   /**
@@ -120,10 +107,7 @@ public class ImportReport {
 
   public long getTotalImportedFileSize() {
     long size = 0;
-    Iterator itCompReport = getListComponentReport().iterator();
-    ComponentReport componentRpt = null;
-    while (itCompReport.hasNext()) {
-      componentRpt = (ComponentReport) itCompReport.next();
+    for (ComponentReport componentRpt : getListComponentReport()) {
       size += componentRpt.getTotalImportedFileSize();
     }
     return size;
@@ -135,120 +119,91 @@ public class ImportReport {
    * @return
    */
   public String writeToLog(ResourcesWrapper resource) {
-
-    String returnValue = null;
-    StringBuffer sb = new StringBuffer();
-    Date date = new Date();
-    SimpleDateFormat dateFormat = new SimpleDateFormat(
-        "[yyyy-MM-dd-HH'H'mm'm'ss's']");
-    String dateFormatee = dateFormat.format(date);
+    StringBuilder sb = new StringBuilder();
+    SimpleDateFormat dateFormat = new SimpleDateFormat("[yyyy-MM-dd-HH'H'mm'm'ss's']");
+    String dateFormatee = dateFormat.format(new Date());
     sb.append("**********************************************\n");
     sb.append(dateFormatee).append("\n\n");
-    sb.append(resource.getString("importExportPeas.StatGlobal") + "\n\n");
-    sb.append(resource.getString("importExportPeas.ImportDuration") + " : "
-        + getDuration() + "\n");
-    sb.append(resource.getString("importExportPeas.NbFilesImported") + " : "
-        + getNbFilesProcessed() + "\n");
-    sb.append(resource.getString("importExportPeas.NbFilesNotFound") + " : "
-        + getNbFilesNotImported() + "\n");
-    sb.append(resource.getString("importExportPeas.TotalFileUploadedSize")
-        + " : "
-        + FileRepositoryManager.formatFileSize(getTotalImportedFileSize())
-        + "\n\n");
-    sb.append(resource.getString("importExportPeas.StatComponent") + "\n");
+    sb.append(resource.getString("importExportPeas.StatGlobal")).append("\n\n");
+    sb.append(resource.getString("importExportPeas.ImportDuration")).append(" : ");
+    sb.append(getDuration()).append("\n");
+    sb.append(resource.getString("importExportPeas.NbFilesImported")).append(" : ");
+    sb.append(getNbFilesProcessed()).append("\n");
+    sb.append(resource.getString("importExportPeas.NbFilesNotFound")).append(" : ");
+    sb.append(getNbFilesNotImported()).append("\n");
+    sb.append(resource.getString("importExportPeas.TotalFileUploadedSize")).append(" : ");
+    sb.append(FileRepositoryManager.formatFileSize(getTotalImportedFileSize())).append("\n\n");
+    sb.append(resource.getString("importExportPeas.StatComponent")).append("\n");
 
-    Iterator itCompReport = getListComponentReport().iterator();
-    while (itCompReport.hasNext()) {
-      ComponentReport componentRpt = (ComponentReport) itCompReport.next();
-      sb.append("\n" + resource.getString("importExportPeas.Composant") + " : "
-          + componentRpt.getComponentName() + " : " + "("
-          + componentRpt.getComponentId() + ")\n");
-      sb.append(resource.getString("importExportPeas.NbPubCreated") + " : "
-          + componentRpt.getNbPublicationsCreated() + "\n");
-      sb.append(resource.getString("importExportPeas.NbPubUpdated") + " : "
-          + componentRpt.getNbPublicationsUpdated() + "\n");
-      sb.append(resource.getString("importExportPeas.NbTopicCreated") + " : "
-          + componentRpt.getNbTopicsCreated() + "\n");
-      sb.append(resource.getString("importExportPeas.TotalFileUploadedSize")
-          + " : "
-          + FileRepositoryManager.formatFileSize(componentRpt
-          .getTotalImportedFileSize()) + "\n");
+    for (ComponentReport componentRpt : getListComponentReport()) {
+      sb.append("\n").append(resource.getString("importExportPeas.Composant")).append(" : ");
+      sb.append(componentRpt.getComponentName()).append(" : " + "(");
+      sb.append(componentRpt.getComponentId()).append(")\n");
+      sb.append(resource.getString("importExportPeas.NbPubCreated")).append(" : ");
+      sb.append(componentRpt.getNbPublicationsCreated()).append("\n");
+      sb.append(resource.getString("importExportPeas.NbPubUpdated")).append(" : ");
+      sb.append(componentRpt.getNbPublicationsUpdated()).append("\n");
+      sb.append(resource.getString("importExportPeas.NbTopicCreated")).append(" : ");
+      sb.append(componentRpt.getNbTopicsCreated()).append("\n");
+      sb.append(resource.getString("importExportPeas.TotalFileUploadedSize")).append(" : ");
+      sb.append(FileRepositoryManager.formatFileSize(componentRpt.getTotalImportedFileSize()));
+      sb.append("\n");
       // Affichage des rapports unitaires
-      List unitReports = componentRpt.getListUnitReports();
+      List<UnitReport> unitReports = componentRpt.getListUnitReports();
       if (unitReports != null) {
-        Iterator itUnitReports = unitReports.iterator();
-        UnitReport unitReport = null;
-        while (itUnitReports.hasNext()) {
-          unitReport = (UnitReport) itUnitReports.next();
+        for (UnitReport unitReport : unitReports) {
           if (unitReport.getError() != -1) {
-            sb.append(unitReport.getLabel()
-                + " : "
-                + unitReport.getItemName()
-                + ", "
-                + resource.getString("GML.error")
-                + " : "
-                + resource.getString("importExportPeas.ImportError"
-                + unitReport.getError())
-                + ", "
-                + resource.getString("importExportPeas.Status")
-                + " : "
-                + resource.getString("importExportPeas.ImportStatus"
-                + unitReport.getStatus()) + "\n");
+            logUnitReport(resource, unitReport);
           }
         }
       }
       // Affichage des rapports massifs
-      List massiveReports = componentRpt.getListMassiveReports();
+      List<MassiveReport> massiveReports = componentRpt.getListMassiveReports();
       if (massiveReports != null) {
-        Iterator itMassiveReports = massiveReports.iterator();
-        MassiveReport massiveReport = null;
-        while (itMassiveReports.hasNext()) {
-          massiveReport = (MassiveReport) itMassiveReports.next();
-
-          sb.append(resource.getString("importExportPeas.Repository") + " "
-              + massiveReport.getRepositoryPath() + "\n");
-          if (massiveReport.getError() != -1) {
-            sb.append(resource.getString("GML.error")
-                + " : "
-                + resource.getString("importExportPeas.ImportError"
-                + massiveReport.getError()) + "\n");
-          }
-          sb.append(resource.getString("importExportPeas.NbPubCreated") + " : "
-              + massiveReport.getNbPublicationsCreated() + "\n");
-          sb.append(resource.getString("importExportPeas.NbPubUpdated") + " : "
-              + massiveReport.getNbPublicationsUpdated() + "\n");
-          sb.append(resource.getString("importExportPeas.NbTopicCreated")
-              + " : " + massiveReport.getNbTopicsCreated() + "\n");
-
-          unitReports = massiveReport.getListUnitReports();
-          if (unitReports != null) {
-            Iterator itUnitReports = unitReports.iterator();
-            UnitReport unitReport = null;
-            while (itUnitReports.hasNext()) {
-              unitReport = (UnitReport) itUnitReports.next();
-              if (unitReport.getError() != -1) {
-                sb.append(unitReport.getLabel()
-                    + " : "
-                    + unitReport.getItemName()
-                    + ", "
-                    + resource.getString("GML.error")
-                    + " : "
-                    + resource.getString("importExportPeas.ImportError"
-                    + unitReport.getError())
-                    + ", "
-                    + resource.getString("importExportPeas.Status")
-                    + " : "
-                    + resource.getString("importExportPeas.ImportStatus"
-                    + unitReport.getStatus()) + "\n");
-              }
-            }
-          }
+        for (MassiveReport massiveReport : massiveReports) {
+          logMassiveReport(resource, massiveReport);
         }
       }
       sb.append("\n");
-      returnValue = sb.toString();
     }
-    return returnValue;
+    return sb.toString();
   }
 
+  private String logUnitReport(ResourcesWrapper resource, UnitReport unitReport) {
+    StringBuilder sb = new StringBuilder(200);
+    sb.append(unitReport.getLabel()).append(" : ").append(unitReport.getItemName());
+    sb.append(", ").append(resource.getString("GML.error")).append(" : ");
+    sb.append(resource.getString("importExportPeas.ImportError" + unitReport.getError()));
+    sb.append(", ").append(resource.getString("importExportPeas.Status")).append(" : ");
+    sb.append(resource.getString("importExportPeas.ImportStatus" + unitReport.getStatus()));
+    sb.append("\n");
+    return sb.toString();
+  }
+
+  private String logMassiveReport(ResourcesWrapper resource, MassiveReport massiveReport) {
+    StringBuilder sb = new StringBuilder(500);
+    sb.append(resource.getString("importExportPeas.Repository")).append(" ");
+    sb.append(massiveReport.getRepositoryPath()).append("\n");
+    if (massiveReport.getError() != -1) {
+      sb.append(resource.getString("GML.error")).append(" : ");
+      sb.append(resource.getString("importExportPeas.ImportError" + massiveReport.getError()));
+      sb.append("\n");
+    }
+    sb.append(resource.getString("importExportPeas.NbPubCreated")).append(" : ");
+    sb.append(massiveReport.getNbPublicationsCreated()).append("\n");
+    sb.append(resource.getString("importExportPeas.NbPubUpdated")).append(" : ");
+    sb.append(massiveReport.getNbPublicationsUpdated()).append("\n");
+    sb.append(resource.getString("importExportPeas.NbTopicCreated")).append(" : ");
+    sb.append(massiveReport.getNbTopicsCreated()).append("\n");
+
+    List<UnitReport> unitReports = massiveReport.getListUnitReports();
+    if (unitReports != null) {
+      for (UnitReport unitReport : unitReports) {
+        if (unitReport.getError() != -1) {
+          logUnitReport(resource, unitReport);
+        }
+      }
+    }
+    return sb.toString();
+  }
 }

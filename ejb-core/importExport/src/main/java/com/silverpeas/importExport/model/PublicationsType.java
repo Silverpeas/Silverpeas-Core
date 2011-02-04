@@ -22,35 +22,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Created on 24 janv. 2005
- *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 package com.silverpeas.importExport.model;
 
 import java.util.List;
 
-/**
- * @author tleroi To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 public class PublicationsType {
 
-  private List listPublicationType;// liste de d'objets PublicationType
+  private List<PublicationType> listPublicationType;
 
   /**
    * @return
    */
-  public List getListPublicationType() {
+  public List<PublicationType> getListPublicationType() {
     return listPublicationType;
   }
 
   /**
    * @param list
    */
-  public void setListPublicationType(List list) {
+  public void setListPublicationType(List<PublicationType> list) {
     listPublicationType = list;
   }
 

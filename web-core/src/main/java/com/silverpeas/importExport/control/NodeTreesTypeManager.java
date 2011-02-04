@@ -21,24 +21,20 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * $Id$ Copyright (c) 2009, Silverpeas
- */
 package com.silverpeas.importExport.control;
-
-import java.util.Collection;
-import java.util.List;
 
 import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.importExport.report.ImportReportManager;
 import com.silverpeas.importExport.report.UnitReport;
 import com.silverpeas.node.importexport.NodeTreeType;
 import com.silverpeas.node.importexport.NodeTreesType;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Classe de gestion des importations unitaires de thèmes dans KMelia pour le moteur d'importExport
@@ -64,46 +60,38 @@ public class NodeTreesTypeManager {
    */
   public void processImport(UserDetail userDetail, NodeTreesType nodeTreesType,
       String targetComponentId) {
-
-    OrganizationController orgaController = null;
     int nbTopicTree = 1;
     int nbTopic = 1;
-
-    GEDImportExport gedIE = ImportExportFactory
-        .createGEDImportExport(userDetail, targetComponentId);
-    List<NodeTreeType> listNodeTreeType = (List<NodeTreeType>) nodeTreesType.getListNodeTreeType();
-
+    GEDImportExport gedIE = ImportExportFactory.createGEDImportExport(userDetail, targetComponentId);
+    List<NodeTreeType> listNodeTreeType = nodeTreesType.getListNodeTreeType();
     if (!listNodeTreeType.isEmpty()) {
-      orgaController = new OrganizationController();
-    }
+      OrganizationController orgaController = new OrganizationController();
+      // On parcours les objets NodeTreeType
+      for (NodeTreeType nodeTreeType : listNodeTreeType) {
 
-    // On parcours les objets NodeTreeType
-    for (NodeTreeType nodeTreeType : listNodeTreeType) {
+        // On détermine si on doit utiliser le componentId par défaut
+        String componentId;
+        if (!StringUtil.isDefined(nodeTreeType.getComponentId())) {
+          componentId = targetComponentId;
+        } else {
+          componentId = nodeTreeType.getComponentId();
+        }
+        gedIE.setCurrentComponentId(componentId);
+        // Création du rapport unitaire
+        UnitReport unitReport = new UnitReport("<topicTree> #" + nbTopicTree);
+        ImportReportManager.addUnitReport(unitReport, componentId);
 
-      // On détermine si on doit utiliser le componentId par défaut
-      String componentId;
-      if ((nodeTreeType.getComponentId() == null) || (nodeTreeType.getComponentId().length() == 0)) {
-        componentId = targetComponentId;
-      } else {
-        componentId = nodeTreeType.getComponentId();
-      }
-
-      gedIE.setCurrentComponentId(componentId);
-
-      // Création du rapport unitaire
-      UnitReport unitReport = new UnitReport("<topicTree> #" + nbTopicTree);
-      ImportReportManager.addUnitReport(unitReport, componentId);
-
-      ComponentInst component = orgaController.getComponentInst(componentId);
-      if (component == null) {
-        // le composant n'existe pas
-        unitReport.setError(UnitReport.ERROR_NOT_EXISTS_COMPONENT);
-        unitReport.setStatus(UnitReport.STATUS_PUBLICATION_NOT_CREATED);
-      } else {
-        ImportReportManager.setComponentName(componentId, component.getLabel());
-        nbTopic = processImportNodeInternal(nodeTreeType.getNodeDetail(), null, gedIE, nbTopic,
-            componentId);
-        nbTopicTree++;
+        ComponentInst component = orgaController.getComponentInst(componentId);
+        if (component == null) {
+          // le composant n'existe pas
+          unitReport.setError(UnitReport.ERROR_NOT_EXISTS_COMPONENT);
+          unitReport.setStatus(UnitReport.STATUS_PUBLICATION_NOT_CREATED);
+        } else {
+          ImportReportManager.setComponentName(componentId, component.getLabel());
+          nbTopic = processImportNodeInternal(nodeTreeType.getNodeDetail(), null, gedIE, nbTopic,
+              componentId);
+          nbTopicTree++;
+        }
       }
     }
   }
@@ -153,7 +141,7 @@ public class NodeTreesTypeManager {
 
       // On vérifie s'il existe des sous-topics dans la description passée
       // en paramètre
-      Collection<NodeDetail> children = (Collection<NodeDetail>) node.getChildrenDetails();
+      Collection<NodeDetail> children = node.getChildrenDetails();
       if (children == null) {
         return nbTopic;
       }

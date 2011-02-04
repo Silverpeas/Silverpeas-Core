@@ -21,12 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.importExport;
 
-import java.io.Serializable;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.io.Serializable;
 
 /**
  * @author neysseri To change the template for this generated type comment go to
@@ -42,10 +41,10 @@ public class XMLField implements Serializable {
   }
 
   public XMLField(String name, String value) {
-    SilverTrace.info("form", "XMLField.contructor",
-        "root.MSG_GEN_ENTER_METHOD", "name = " + name + ", value = " + value);
-    setName(name);
-    setValue(value);
+    SilverTrace.info("form", "XMLField.contructor", "root.MSG_GEN_ENTER_METHOD",
+        "name = " + name + ", value = " + value);
+    this.name = name;
+    this.value = value;
   }
 
   /**
@@ -56,7 +55,7 @@ public class XMLField implements Serializable {
   }
 
   /**
-   * @param i
+   * @param name
    */
   public void setName(String name) {
     this.name = name;

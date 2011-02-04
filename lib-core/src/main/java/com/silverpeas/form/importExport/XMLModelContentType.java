@@ -25,6 +25,7 @@
 package com.silverpeas.form.importExport;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -33,13 +34,13 @@ import java.util.ArrayList;
 public class XMLModelContentType {
 
   private String name = null;
-  private ArrayList<XMLField> fields;
+  private List<XMLField> fields;
 
   public XMLModelContentType() {
   }
 
   public XMLModelContentType(String name) {
-    setName(name);
+    this.name = name;
   }
 
   /**
@@ -59,14 +60,14 @@ public class XMLModelContentType {
   /**
    * @return Returns the listImageParts.
    */
-  public ArrayList<XMLField> getFields() {
+  public List<XMLField> getFields() {
     return fields;
   }
 
   /**
    * @param listImageParts The listImageParts to set.
    */
-  public void setFields(ArrayList<XMLField> fields) {
+  public void setFields(List<XMLField> fields) {
     this.fields = fields;
   }
 

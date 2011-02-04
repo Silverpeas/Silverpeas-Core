@@ -35,20 +35,20 @@ import java.util.List;
  */
 public class NodePositionsType {
 
-  private List listNodePositionType;
+  private List<NodePositionType> listNodePositionType;
 
   /**
    * @return Returns the listNodePositionType.
    */
 
-  public List getListNodePositionType() {
+  public List<NodePositionType> getListNodePositionType() {
     return listNodePositionType;
   }
 
   /**
    * @param listNodePositionType The listNodePositionType to set.
    */
-  public void setListNodePositionType(List listNodePositionType) {
+  public void setListNodePositionType(List<NodePositionType> listNodePositionType) {
     this.listNodePositionType = listNodePositionType;
   }
 }

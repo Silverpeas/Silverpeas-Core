@@ -22,12 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Created on 24 janv. 2005
- *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 package com.silverpeas.importExport.report;
 
 import java.util.ArrayList;
@@ -47,11 +41,11 @@ public class ComponentReport {
   private int nbTopicsCreated = -1;
   private long totalImportedFileSize = 0;
 
-  private List listMassiveReports;
-  private List listUnitReports;
+  private List<MassiveReport> listMassiveReports = new ArrayList<MassiveReport>();
+  private List<UnitReport> listUnitReports = new ArrayList<UnitReport>();
 
   public ComponentReport(String componentId) {
-    setComponentId(componentId);
+    this.componentId  = componentId;
   }
 
   public String getComponentId() {
@@ -66,29 +60,15 @@ public class ComponentReport {
    * @param Report
    */
   public void addUnitReport(UnitReport report) {
-    if (listUnitReports == null)
-      listUnitReports = new ArrayList();
     listUnitReports.add(report);
-    /*
-     * switch (report.getStatus()) { case UnitReport.STATUS_PUBLICATION_CREATED:
-     * this.nbPublicationsCreated++; break; case UnitReport.STATUS_PUBLICATION_UPDATED:
-     * this.nbPublicationsUpdated++; break; }
-     */
-
   }
 
   /**
    * @param report
    */
   public void addMassiveReport(MassiveReport report) {
-    if (listMassiveReports == null)
-      listMassiveReports = new ArrayList();
     listMassiveReports.add(report);
     report.setComponentReport(this);
-    /*
-     * nbPublicationsCreated += report.getNbPublicationsCreated(); nbPublicationsUpdated +=
-     * report.getNbPublicationsUpdated();
-     */
   }
 
   /**
@@ -135,14 +115,14 @@ public class ComponentReport {
   /**
    * @return Returns the listMassiveReports.
    */
-  public List getListMassiveReports() {
+  public List<MassiveReport> getListMassiveReports() {
     return listMassiveReports;
   }
 
   /**
    * @return Returns the listUnitReports.
    */
-  public List getListUnitReports() {
+  public List<UnitReport> getListUnitReports() {
     return listUnitReports;
   }
 
@@ -165,29 +145,21 @@ public class ComponentReport {
     nbPublicationsCreated = 0;
     nbPublicationsUpdated = 0;
     nbTopicsCreated = 0;
-
-    UnitReport unitReport = null;
-    for (int u = 0; listUnitReports != null && u < listUnitReports.size(); u++) {
-      unitReport = (UnitReport) listUnitReports.get(u);
+    for (UnitReport unitReport : listUnitReports) {
       switch (unitReport.getStatus()) {
         case UnitReport.STATUS_PUBLICATION_CREATED:
           nbPublicationsCreated++;
           break;
-
         case UnitReport.STATUS_PUBLICATION_UPDATED:
           nbPublicationsUpdated++;
           break;
-
         case UnitReport.STATUS_TOPIC_CREATED:
           nbTopicsCreated++;
 
       }
     }
 
-    MassiveReport massiveReport = null;
-    for (int u = 0; listMassiveReports != null && u < listMassiveReports.size(); u++) {
-      massiveReport = (MassiveReport) listMassiveReports.get(u);
-
+    for (MassiveReport massiveReport : listMassiveReports) {
       nbPublicationsCreated += massiveReport.getNbPublicationsCreated();
       nbPublicationsUpdated += massiveReport.getNbPublicationsUpdated();
       nbTopicsCreated += massiveReport.getNbTopicsCreated();

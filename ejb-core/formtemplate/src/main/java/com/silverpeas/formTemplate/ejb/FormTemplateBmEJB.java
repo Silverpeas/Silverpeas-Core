@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.formTemplate.ejb;
 
 import java.rmi.RemoteException;
@@ -46,6 +45,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 public class FormTemplateBmEJB implements javax.ejb.SessionBean {
+
   public FormTemplateBmEJB() {
   }
 
@@ -74,41 +74,36 @@ public class FormTemplateBmEJB implements javax.ejb.SessionBean {
     return pub;
   }
 
-  public List getXMLFieldsForExport(String externalId, String id) {
+  public List<XMLField> getXMLFieldsForExport(String externalId, String id) {
     return getXMLFieldsForExport(externalId, id, null);
   }
 
-  public List getXMLFieldsForExport(String externalId, String id,
-      String language) {
-    SilverTrace.info("form", "FormTemplateBmEJB.getXMLFields",
-        "root.MSG_GEN_ENTER_METHOD", "externalId = " + externalId + ", id = "
-        + id + ", language = " + language);
+  public List<XMLField> getXMLFieldsForExport(String externalId, String id, String language) {
+    SilverTrace.info("form", "FormTemplateBmEJB.getXMLFields", "root.MSG_GEN_ENTER_METHOD",
+        "externalId = " + externalId + ", id = " + id + ", language = " + language);
 
     PublicationTemplateImpl template = (PublicationTemplateImpl) getPublicationTemplate(externalId);
-
     DataRecord data = getRecord(id, template, language);
-
-    List fields = new ArrayList();
+    List<XMLField> fields = new ArrayList<XMLField>();
 
     if (data != null) {
-      SilverTrace.debug("form", "FormTemplateBmEJB.getXMLFields",
-          "root.MSG_GEN_PARAM_VALUE", "data != null");
+      SilverTrace.debug("form", "FormTemplateBmEJB.getXMLFields", "root.MSG_GEN_PARAM_VALUE",
+          "data != null");
       try {
         String[] fieldNames = template.getRecordTemplate().getFieldNames();
         String fieldName = null;
         String fieldValue = null;
         for (int f = 0; fieldNames != null && f < fieldNames.length; f++) {
           fieldName = fieldNames[f];
-          SilverTrace.debug("form", "FormTemplateBmEJB.getXMLFields",
-              "root.MSG_GEN_PARAM_VALUE", "fieldName = " + fieldName);
+          SilverTrace.debug("form", "FormTemplateBmEJB.getXMLFields", "root.MSG_GEN_PARAM_VALUE",
+              "fieldName = " + fieldName);
           Field field = data.getField(fieldName);
           if (field != null) {
-            SilverTrace.debug("form", "FormTemplateBmEJB.getXMLFields",
-                "root.MSG_GEN_PARAM_VALUE", "field != null");
+            SilverTrace.debug("form", "FormTemplateBmEJB.getXMLFields", "root.MSG_GEN_PARAM_VALUE",
+                "field != null");
             fieldValue = field.getStringValue();
             if (field.getTypeName().equals(FileField.TYPE)) {
-              FieldTemplate fieldTemplate = template.getRecordTemplate()
-                  .getFieldTemplate(fieldName);
+              FieldTemplate fieldTemplate = template.getRecordTemplate().getFieldTemplate(fieldName);
               if (fieldTemplate != null) {
                 if ("image".equals(fieldTemplate.getDisplayerName())) {
                   fieldValue = "image_" + fieldValue;
@@ -117,35 +112,32 @@ public class FormTemplateBmEJB implements javax.ejb.SessionBean {
                 }
               }
             }
-            /*
-             * else { fieldValue = field.getStringValue(); }
-             */
             XMLField xmlField = new XMLField(fieldName, fieldValue);
             fields.add(xmlField);
           }
         }
       } catch (Exception e) {
-        throw new FormTemplateBmRuntimeException(
-            "FormTemplateBmEJB.getXMLFields", SilverpeasException.ERROR,
-            "Getting fields for externalId = " + externalId + " and id = " + id
-            + " failed !", e);
+        throw new FormTemplateBmRuntimeException("FormTemplateBmEJB.getXMLFields",
+            SilverpeasException.ERROR, "Getting fields for externalId = " + externalId
+            + " and id = " + id + " failed !", e);
       }
     }
     return fields;
   }
-  
+
   public String getWysiwygContent(String componentId, String objectId, String fieldName,
-	      String language) throws RemoteException{
-	  String wysiwygContent = null;
-	  try {
-		  wysiwygContent = WysiwygFCKFieldDisplayer.getContentFromFile(componentId, objectId, fieldName, language);
-	  } catch (UtilException e) {
-			throw new FormTemplateBmRuntimeException(
-		            "FormTemplateBmEJB.getWysiwigContent", SilverpeasException.ERROR,
-		            "Getting Wysiwig content for componentId = " + componentId + " and id = " + objectId
-		            + " failed !", e);
-	  }
-	  return wysiwygContent;
+      String language) throws RemoteException {
+    String wysiwygContent = null;
+    try {
+      wysiwygContent = WysiwygFCKFieldDisplayer.getContentFromFile(componentId, objectId, fieldName,
+          language);
+    } catch (UtilException e) {
+      throw new FormTemplateBmRuntimeException(
+          "FormTemplateBmEJB.getWysiwigContent", SilverpeasException.ERROR,
+          "Getting Wysiwig content for componentId = " + componentId + " and id = " + objectId
+          + " failed !", e);
+    }
+    return wysiwygContent;
   }
 
   private DataRecord getRecord(String id, PublicationTemplate pub,
@@ -156,27 +148,28 @@ public class FormTemplateBmEJB implements javax.ejb.SessionBean {
       data = set.getRecord(id, language);
     } catch (Exception e) {
       throw new FormTemplateBmRuntimeException("FormTemplateBmEJB.getRecord",
-          SilverpeasException.ERROR, "Getting record for id '" + id
-          + " failed !", e);
+          SilverpeasException.ERROR, "Getting record for id '" + id + " failed !", e);
     }
     return data;
   }
 
   /* Ejb Methods */
-
   public void ejbCreate() {
   }
 
+  @Override
   public void ejbRemove() {
   }
 
+  @Override
   public void ejbActivate() {
   }
 
+  @Override
   public void ejbPassivate() {
   }
 
+  @Override
   public void setSessionContext(SessionContext sc) {
   }
-
 }

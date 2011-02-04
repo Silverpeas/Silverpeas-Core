@@ -26,7 +26,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.silverpeas.importExport.control;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -39,37 +38,30 @@ import java.util.logging.Logger;
  * @author ehugonnet
  */
 public class ImportExportFactory {
-  public static GEDImportExport createGEDImportExport(
-      UserDetail curentUserDetail, String currentComponentId) {
+
+  public static GEDImportExport createGEDImportExport(UserDetail curentUserDetail,
+      String currentComponentId) {
     Class gedImportExportClass;
     try {
-      gedImportExportClass = Class
-          .forName("com.silverpeas.kmelia.importexport.KmeliaImportExport");
-      Constructor gedImportExportConstructor = gedImportExportClass
-          .getConstructor(UserDetail.class, String.class);
-      return (GEDImportExport) gedImportExportConstructor.newInstance(
-          curentUserDetail, currentComponentId);
+      gedImportExportClass = Class.forName("com.silverpeas.kmelia.importexport.KmeliaImportExport");
+      Constructor gedImportExportConstructor = gedImportExportClass.getConstructor(UserDetail.class,
+          String.class);
+      return (GEDImportExport) gedImportExportConstructor.newInstance(curentUserDetail,
+          currentComponentId);
     } catch (InstantiationException ex) {
-      Logger.getLogger(ImportExportFactory.class.getName()).log(Level.SEVERE,
-          null, ex);
+      Logger.getLogger(ImportExportFactory.class.getName()).log(Level.SEVERE, null, ex);
     } catch (IllegalAccessException ex) {
-      Logger.getLogger(ImportExportFactory.class.getName()).log(Level.SEVERE,
-          null, ex);
+      Logger.getLogger(ImportExportFactory.class.getName()).log(Level.SEVERE, null, ex);
     } catch (IllegalArgumentException ex) {
-      Logger.getLogger(ImportExportFactory.class.getName()).log(Level.SEVERE,
-          null, ex);
+      Logger.getLogger(ImportExportFactory.class.getName()).log(Level.SEVERE, null, ex);
     } catch (InvocationTargetException ex) {
-      Logger.getLogger(ImportExportFactory.class.getName()).log(Level.SEVERE,
-          null, ex);
+      Logger.getLogger(ImportExportFactory.class.getName()).log(Level.SEVERE, null, ex);
     } catch (NoSuchMethodException ex) {
-      Logger.getLogger(ImportExportFactory.class.getName()).log(Level.SEVERE,
-          null, ex);
+      Logger.getLogger(ImportExportFactory.class.getName()).log(Level.SEVERE, null, ex);
     } catch (SecurityException ex) {
-      Logger.getLogger(ImportExportFactory.class.getName()).log(Level.SEVERE,
-          null, ex);
+      Logger.getLogger(ImportExportFactory.class.getName()).log(Level.SEVERE, null, ex);
     } catch (ClassNotFoundException ex) {
-      Logger.getLogger(ImportExportFactory.class.getName()).log(Level.SEVERE,
-          null, ex);
+      Logger.getLogger(ImportExportFactory.class.getName()).log(Level.SEVERE, null, ex);
     }
     return null;
   }

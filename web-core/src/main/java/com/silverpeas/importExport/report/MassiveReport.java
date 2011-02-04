@@ -22,21 +22,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Created on 24 janv. 2005
- *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 package com.silverpeas.importExport.report;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author tleroi To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 public class MassiveReport {
 
   private String repositoryPath;
@@ -47,7 +37,7 @@ public class MassiveReport {
   private int nbPublicationsUpdated = -1;
   private int nbTopicsCreated = 0;
 
-  private List listUnitReports;
+  private List<UnitReport> listUnitReports = new ArrayList<UnitReport>();
 
   /**
    * @return
@@ -109,43 +99,25 @@ public class MassiveReport {
     return nbTopicsCreated;
   }
 
-  public List getListUnitReports() {
+  public List<UnitReport> getListUnitReports() {
     return listUnitReports;
   }
 
-  public void addUnitReport(UnitReport unitReport) {
-    if (listUnitReports == null)
-      listUnitReports = new ArrayList();
+  public void addUnitReport(UnitReport unitReport) {     
     listUnitReports.add(unitReport);
-    /*
-     * switch (unitReport.getStatus()) { case UnitReport.STATUS_PUBLICATION_CREATED:
-     * this.nbPublicationsCreated++; getComponentReport
-     * ().setNbPublicationsCreated(getComponentReport().getNbPublicationsCreated ()+1); break; case
-     * UnitReport.STATUS_PUBLICATION_UPDATED: this.nbPublicationsUpdated++;
-     * getComponentReport().setNbPublicationsUpdated
-     * (getComponentReport().getNbPublicationsUpdated()+1); break; }
-     */
   }
 
   private void processStats() {
     nbPublicationsCreated = 0;
     nbPublicationsUpdated = 0;
-    // nbTopicsCreated = 0;
-
-    UnitReport unitReport = null;
-    for (int u = 0; listUnitReports != null && u < listUnitReports.size(); u++) {
-      unitReport = (UnitReport) listUnitReports.get(u);
+    for (UnitReport unitReport :listUnitReports) {
       switch (unitReport.getStatus()) {
         case UnitReport.STATUS_PUBLICATION_CREATED:
           nbPublicationsCreated++;
           break;
-
         case UnitReport.STATUS_PUBLICATION_UPDATED:
           nbPublicationsUpdated++;
           break;
-
-        // case UnitReport.STATUS_TOPIC_CREATED : nbTopicsCreated++;
-
       }
     }
   }

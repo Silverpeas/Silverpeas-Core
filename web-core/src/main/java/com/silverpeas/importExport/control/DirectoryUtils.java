@@ -21,10 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * Created on 22 févr. 2005
- */
 package com.silverpeas.importExport.control;
 
 import java.io.File;
@@ -38,13 +34,11 @@ public class DirectoryUtils {
    * Retourne une chaine ne contenant que des caractères autorisés pour le nommage des dossiers. en
    * évitant de convertir les séparateurs de fichier. On suppose que ? ne pourra jamais être un
    * séparateur de fichiers.
-   * @param directoryName
+   * @param directoryPath
    * @return
    */
   public static String formatToDirectoryPathNamingCompliant(String directoryPath) {
-
     String tempDir = directoryPath.trim();
-
     tempDir = tempDir.replace('?', '_');
     tempDir = tempDir.replace(File.separatorChar, '?');
     tempDir = tempDir.replace('\\', '_');
@@ -68,9 +62,7 @@ public class DirectoryUtils {
    * @return
    */
   public static String formatToDirectoryNamingCompliant(String directoryName) {
-
     String tempDir = directoryName.trim();
-
     tempDir = tempDir.replace('?', '_');
     tempDir = tempDir.replace('\\', '_');
     tempDir = tempDir.replace('/', '_');

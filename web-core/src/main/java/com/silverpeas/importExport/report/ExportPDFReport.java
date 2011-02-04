@@ -21,11 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.importExport.report;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 public class ExportPDFReport {
 
@@ -34,16 +34,13 @@ public class ExportPDFReport {
   private String pdfFileName;
   private String pdfFilePath;
   private long pdfFileSize;
-  private HashMap mapPublicationPath = null;
+  private Map<String, HtmlExportPublicationGenerator> mapPublicationPath = new HashMap<String, HtmlExportPublicationGenerator>();
 
-  public void addHtmlIndex(String publicationId,
-      HtmlExportPublicationGenerator sommaireEntry) {
-    if (mapPublicationPath == null)
-      mapPublicationPath = new HashMap();
+  public void addHtmlIndex(String publicationId, HtmlExportPublicationGenerator sommaireEntry) {
     mapPublicationPath.put(publicationId, sommaireEntry);
   }
 
-  public HashMap getMapIndexHtmlPaths() {
+  public Map<String, HtmlExportPublicationGenerator> getMapIndexHtmlPaths() {
     return mapPublicationPath;
   }
 

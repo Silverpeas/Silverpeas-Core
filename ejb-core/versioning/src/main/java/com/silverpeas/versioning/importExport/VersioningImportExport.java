@@ -21,11 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * Created on 11 févr. 2005
- *
- */
 package com.silverpeas.versioning.importExport;
 
 import java.io.File;
@@ -196,9 +191,9 @@ public class VersioningImportExport {
    * @return
    * @throws RemoteException
    */
-  public Vector exportDocuments(WAPrimaryKey pk, String exportPath,
+  public List<AttachmentDetail> exportDocuments(WAPrimaryKey pk, String exportPath,
       String relativeExportPath, String extensionFilter) throws RemoteException {
-    Vector<AttachmentDetail> attachments = new Vector<AttachmentDetail>();
+    List<AttachmentDetail> attachments = new ArrayList<AttachmentDetail>();
     String componentId = pk.getInstanceId();
     ForeignPK pubPK = new ForeignPK(pk.getId(), componentId);
     // get existing documents of object
@@ -209,10 +204,8 @@ public class VersioningImportExport {
       DocumentVersion version = getVersioningBm().getLastPublicDocumentVersion(document.getPk());
       if (version != null) {
         AttachmentDetail attachment = getAttachmentDetail(document, version);
-        if (extensionFilter == null
-            || attachment.getExtension().equalsIgnoreCase(extensionFilter)) {
-          attachments.add(copyAttachment(attachment, exportPath,
-              relativeExportPath, componentId));
+        if (extensionFilter == null || attachment.getExtension().equalsIgnoreCase(extensionFilter)) {
+          attachments.add(copyAttachment(attachment, exportPath, relativeExportPath, componentId));
           attachments.add(attachment);
         }
       }
@@ -220,18 +213,16 @@ public class VersioningImportExport {
 
     if (attachments.isEmpty()) {
       return null;
-    } else {
-      return attachments;
     }
+    return attachments;
   }
 
   private AttachmentDetail copyAttachment(AttachmentDetail attachment,
       String exportPath, String relativeExportPath, String componentId) {
     AttachmentDetail attachmentCopy = attachment;
-    String fichierJoint = getVersioningPath(componentId) + File.separator
-        + attachmentCopy.getPhysicalName();
-    String fichierJointExport = exportPath
-        + File.separator
+    String fichierJoint = getVersioningPath(componentId) + File.separator + attachmentCopy.
+        getPhysicalName();
+    String fichierJointExport = exportPath + File.separator
         + FileServerUtils.replaceAccentChars(attachmentCopy.getLogicalName());
     try {
       FileRepositoryManager.copyFile(fichierJoint, fichierJointExport);
@@ -243,7 +234,8 @@ public class VersioningImportExport {
     attachmentCopy.setPhysicalName(relativeExportPath
         + File.separator
         + FileServerUtils.replaceAccentChars(attachmentCopy.getLogicalName()));
-    attachmentCopy.setLogicalName(FileServerUtils.replaceAccentChars(attachmentCopy.getLogicalName()));
+    attachmentCopy.setLogicalName(
+        FileServerUtils.replaceAccentChars(attachmentCopy.getLogicalName()));
     return attachmentCopy;
   }
 
@@ -254,7 +246,8 @@ public class VersioningImportExport {
   private VersioningBm getVersioningBm() {
     if (versioningBm == null) {
       try {
-        VersioningBmHome versioningBmHome = (VersioningBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.VERSIONING_EJBHOME,
+        VersioningBmHome versioningBmHome = (VersioningBmHome) EJBUtilitaire.getEJBObjectRef(
+            JNDINames.VERSIONING_EJBHOME,
             VersioningBmHome.class);
         versioningBm = versioningBmHome.create();
       } catch (Exception e) {
@@ -268,7 +261,7 @@ public class VersioningImportExport {
 
   private Document isDocumentExist(List<Document> documents, AttachmentDetail attachment) {
     String documentName = attachment.getTitle();
-    if (! StringUtil.isDefined(documentName)) {
+    if (!StringUtil.isDefined(documentName)) {
       documentName = attachment.getLogicalName();
     }
     for (Document document : documents) {
@@ -282,8 +275,10 @@ public class VersioningImportExport {
   private AttachmentDetail getAttachmentDetail(Document document,
       DocumentVersion version) {
     AttachmentPK pk = new AttachmentPK("useless", "useless", version.getPk().getInstanceId());
-    AttachmentDetail attachment = new AttachmentDetail(pk, version.getPhysicalName(), version.getLogicalName(), version.getComments(),
-        version.getMimeType(), version.getSize(), "Versioning", version.getCreationDate(), document.getForeignKey());
+    AttachmentDetail attachment = new AttachmentDetail(pk, version.getPhysicalName(), version.
+        getLogicalName(), version.getComments(),
+        version.getMimeType(), version.getSize(), "Versioning", version.getCreationDate(), document.
+        getForeignKey());
     attachment.setTitle(document.getName());
 
     String info = document.getDescription();
@@ -325,7 +320,7 @@ public class VersioningImportExport {
       }
       if (existingDocument == null) {
         existingDocument = isDocumentExist(existingDocuments, document.getName());
-        if(existingDocument != null) {
+        if (existingDocument != null) {
           document.setPk(existingDocument.getPk());
         }
       }
@@ -333,7 +328,8 @@ public class VersioningImportExport {
       if (existingDocument != null) {
         // Un document portant le même nom existe déjà
         // On ajoute les nouvelles versions au document
-        List<DocumentVersion> versions = getVersioningBm().getDocumentVersions(existingDocument.getPk());
+        List<DocumentVersion> versions = getVersioningBm().getDocumentVersions(existingDocument.
+            getPk());
         if (versions != null && !versions.isEmpty()) {
           DocumentVersion lastVersion = versions.get(0);
           int majorNumber = lastVersion.getMajorNumber();
@@ -368,7 +364,8 @@ public class VersioningImportExport {
                   xmlIE = new FormTemplateImportExport();
                 }
 
-                ForeignPK pk = new ForeignPK(version.getPk().getId(), version.getPk().getInstanceId());
+                ForeignPK pk = new ForeignPK(version.getPk().getId(),
+                    version.getPk().getInstanceId());
                 xmlIE.importXMLModelContentType(pk, "Versioning", xmlContent,
                     Integer.toString(version.getAuthorId()));
               }
@@ -394,7 +391,7 @@ public class VersioningImportExport {
             // Création du nouveau document
             DocumentPK docPK = new DocumentPK(-1, "useless", objectPK.getInstanceId());
             document = new Document(docPK, objectPK, document.getName(),
-                document.getDescription(),Document.STATUS_CHECKOUTED, -1, new Date(), null,
+                document.getDescription(), Document.STATUS_CHECKOUTED, -1, new Date(), null,
                 objectPK.getInstanceId(), new ArrayList<Worker>(), new ArrayList(), 0, 0);
 
             // et on y ajoute la première version
@@ -485,7 +482,8 @@ public class VersioningImportExport {
       if (launchCallback) {
         CallBackManager callBackManager = CallBackManager.get();
         callBackManager.invoke(CallBackManager.ACTION_VERSIONING_UPDATE,
-            userIdCallback, document.getForeignKey().getInstanceId(), document.getForeignKey().getId());
+            userIdCallback, document.getForeignKey().getInstanceId(),
+            document.getForeignKey().getId());
       }
     }
     return nbFilesProcessed;
@@ -504,7 +502,7 @@ public class VersioningImportExport {
     List<DocumentVersion> copiedAttachments = new ArrayList<DocumentVersion>();
     for (Document document : documents) {
       List<DocumentVersion> versions = document.getVersionsType().getListVersions();
-      for( DocumentVersion version: versions) {
+      for (DocumentVersion version : versions) {
         copyFile(componentId, version, path);
         if (version.getSize() != 0) {
           copiedAttachments.add(version);
