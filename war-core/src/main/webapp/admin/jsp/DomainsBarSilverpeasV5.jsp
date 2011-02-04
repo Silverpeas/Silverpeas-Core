@@ -213,6 +213,10 @@ out.println(gef.getLookStyleSheet());
         return "<%=helper.displayPDCInNavigationFrame()%>";
     }
 
+    function displayContextualPDC() {
+        return <%=helper.displayContextualPDC()%>;
+    }
+
     function getTopBarPage()
     {
         return "TopBarSilverpeasV5.jsp";
