@@ -120,7 +120,8 @@ For example to limit the size of an uploaded file to 15 Mo, the value should be 
         This can be achieved by configuring the 
           <b>Silvertrace</b>.
           <br/>
-        Edit the file <i>${SILVERPEAS_HOME}/silvertrace/rootModule.properties</i> and configure like this :
+        Edit the file 
+          <i>${SILVERPEAS_HOME}/silvertrace/rootModule.properties</i> and configure like this :
           <br/>
           <source>
 appender0.enabled=true
@@ -141,14 +142,29 @@ appender0.rollingMode=ROLLING_MODE_WEEK
   <part id="install">
 
     <title>Configuration</title>
-
-    <faq id="how-install">
+    <faq id="csv-import">
       <question>
-        How do I unactivate the display of the importance of a publication (the stars) in <b>Theme Tracker</b> ?
+        What is the format of the CSV file for importing users in Silverpeas ?
       </question>
       <answer>
-        <p>This can be done by editing the value of <b>showImportance</b> in the file <i>$SILVERPEAS_HOME/properties/com/stratelia/webactiv/kmelia/settings/kmeliaSettings.properties</i>.
-        The accepted values are : <ul><li>yes : activated</li><li>no : desactivated</li></ul></p>
+        <p>The format is :</p><source>LastName;FirstName;Login;Email;Profile(Ex: Admin, AdminPdc, AdminDomain, User, Guest);Password</source>
+      </answer>
+    </faq>
+    <faq id="how-install">
+      <question>
+        How do I unactivate the display of the importance of a publication (the stars) in 
+        <b>Theme Tracker</b> ?
+      </question>
+      <answer>
+        <p>This can be done by editing the value of 
+          <b>showImportance</b> in the file 
+          <i>$SILVERPEAS_HOME/properties/com/stratelia/webactiv/kmelia/settings/kmeliaSettings.properties</i>.
+        The accepted values are : 
+          <ul>
+            <li>yes : activated</li>
+            <li>no : desactivated</li>
+          </ul>
+        </p>
       </answer>
     </faq>
 
