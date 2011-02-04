@@ -60,18 +60,14 @@ public class DateRangeValidator implements ConstraintValidator<DateRange, Object
       endDateField.setAccessible(true);
       Datable<?> startDate = (Datable<?>) startDateField.get(object);
       Datable<?> endDate = (Datable<?>) endDateField.get(object);
-      if (startDate instanceof Date) {
-        Date start = (Date) startDate;
-        Date end = new Date(endDate.asDate());
-        isValid = start.before(end) || start.equals(end);
-      } else if (endDate instanceof Date) {
+      if (startDate instanceof Date || endDate instanceof Date) {
         Date start = new Date(startDate.asDate());
-        Date end = (Date) endDate;
-        isValid = start.before(end) || start.equals(end);
+        Date end = new Date(endDate.asDate());
+        isValid = start.isBefore(end) || start.isEqualTo(end);
       } else {
         DateTime start = (DateTime) startDate;
         DateTime end = (DateTime) endDate;
-        isValid = start.before(end) || start.equals(end);
+        isValid = start.isBefore(end) || start.isEqualTo(end);
       }
     } catch (Exception ex) {
       isValid = false;

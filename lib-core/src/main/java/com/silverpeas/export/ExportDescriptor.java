@@ -24,13 +24,17 @@
 
 package com.silverpeas.export;
 
-import com.silverpeas.util.StringUtil;
+import static com.silverpeas.util.StringUtil.*;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
- * It represents a descriptor about the export of resources into a file. As such it defines the
- * path of the file and the format into which the resources have to be exported. For all export
- * operations that require more information about the export of a given type of resources, a new
- * descriptor class can be defined by subclassing ExportDescriptor.
+ * It represents a descriptor about the export of resources into a writer. As such it defines the
+ * writer and the format into which the resources have to be exported. With the descriptor parameters,
+ * additional information about the export process can be passed to the exporter.
  */
 public class ExportDescriptor {
 
@@ -41,32 +45,34 @@ public class ExportDescriptor {
    */
   public static final String NO_FORMAT = "";
 
-  private String filePath = "";
+  private Writer writer = null;
   private String exportFormat = NO_FORMAT;
+  private Map<String, Object> parameters = new HashMap<String, Object> ();
 
   /**
-   * Constructs a new ExportDescriptor instance by specifying the path of the export destination file.
-   * @param filePath the path of the export destination file.
+   * Constructs a new export descriptor with the specified writer and export format.
+   * @param writer the writer into wich the export will be serialized.
+   * @param exportFormat the format of the export.
    */
-  public ExportDescriptor(String filePath) {
-    if (! StringUtil.isDefined(filePath)) {
-      throw new IllegalArgumentException("The file path should be set");
+  public ExportDescriptor(final Writer writer, String exportFormat) {
+    if (writer == null) {
+      throw new IllegalArgumentException("The writer cannot be null!");
     }
-    this.filePath = filePath;
+    this.writer = writer;
+    if (! isDefined(exportFormat)) {
+      this.exportFormat = NO_FORMAT;
+    } else {
+      this.exportFormat = exportFormat;
+    }
   }
 
   /**
-   * Constructs a new ExportDescriptor instance by specifying both the path of the export destination
-   * file and the format into which the resources have to be exported.
-   * @param filePath the path of the export destination file.
-   * @param exportFormat the export format.
+   * Constructs a new export descriptor with the specified writer. No specific format information
+   * will be passed to the exporter.
+   * @param writer the writer into wich the export will be serialized.
    */
-  public ExportDescriptor(String filePath, String exportFormat) {
-    if (! StringUtil.isDefined(filePath) || ! StringUtil.isDefined(exportFormat)) {
-      throw new IllegalArgumentException("The file path or the export format should be set");
-    }
-    this.filePath = filePath;
-    this.exportFormat = exportFormat;
+  public ExportDescriptor(final Writer writer) {
+    this(writer, NO_FORMAT);
   }
 
   /**
@@ -83,30 +89,77 @@ public class ExportDescriptor {
    * @param exportFormat the export format to set.
    */
   public void setExportFormat(String exportFormat) {
-    if (! StringUtil.isDefined(exportFormat)) {
-      throw new IllegalArgumentException("The export format should be set");
+    if (! isDefined(exportFormat)) {
+      this.exportFormat = NO_FORMAT;
     }
     this.exportFormat = exportFormat;
   }
 
   /**
-   * Gets the path of the file into which the resources have to be exported.
-   * @return the export destination file path.
+   * Gets the writer with which the resources have to be exported.
+   * @return the writer.
    */
-  public String getFilePath() {
-    return filePath;
+  public Writer getWriter() {
+    return this.writer;
   }
 
   /**
-   * Sets an export destination file path.
-   * @param filePath the file path to set.
+   * Sets a new writer with this descriptor.
+   * @param writer the writer with which some resources will be exported.
    */
-  public void setFilePath(String filePath) {
-    if (! StringUtil.isDefined(filePath)) {
-      throw new IllegalArgumentException("The file path should be set");
+  public void setWriter(final Writer writer) {
+    if (writer == null) {
+      throw new IllegalArgumentException("The writer cannot be null!");
     }
-    this.filePath = filePath;
+    this.writer = writer;
   }
 
+  /**
+   * Adds a new export parameter. If a parameter already exists with the specifed name, the value
+   * is replaced.
+   * @param <T> the type of the parameter value.
+   * @param name the parameter name.
+   * @param value the parameter value.
+   */
+  public <T> void addParameter(String name, final T value) {
+    this.parameters.put(name, value);
+  }
 
+  /**
+   * Removes the export parameter identified by the specified name. If no parameter with the
+   * specified name exists, nothing is done.
+   * @param name the parameter name.
+   */
+  public void removeParameter(String name) {
+    this.parameters.remove(name);
+  }
+
+  /**
+   * Gets the parameter identified by the specified name. If no parameter with the specified name
+   * exists, null is returned.
+   * @param <T> the type of the parameter value.
+   * @param name the parameter name.
+   * @return the value of the parameter or null if no such parameter exists.
+   */
+  @SuppressWarnings("unchecked")
+  public <T> T getParameter(String name) {
+    return (T) this.parameters.get(name);
+  }
+
+  /**
+   * Gets a list of the parameter names from this descriptor.
+   * @return a list of parameter names.
+   */
+  public List<String> getParameters() {
+    return new ArrayList<String>(this.parameters.keySet());
+  }
+
+  /**
+   * Is the parameter identified by the specified name set within this descriptor?
+   * @param name the parameter name
+   * @return true if the parameter is set, false otherwise.
+   */
+  public boolean isParameterSet(String name) {
+    return this.parameters.containsKey(name);
+  }
 }

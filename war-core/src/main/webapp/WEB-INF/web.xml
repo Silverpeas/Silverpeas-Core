@@ -102,6 +102,9 @@
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
   <listener>
+    <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+  </listener>
+  <listener>
     <listener-class>com.stratelia.silverpeas.silverpeasinitialize.SilverpeasContextInitializer</listener-class>
   </listener>
   <listener>
@@ -116,6 +119,10 @@
   <listener>
     <listener-class>org.apache.commons.fileupload.servlet.FileCleanerCleanup</listener-class>
   </listener>
+  <servlet>
+    <servlet-name>REST Container</servlet-name>
+    <servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
+  </servlet>
   <servlet>
     <servlet-name>AuthenticationServlet</servlet-name>
     <servlet-class>com.silverpeas.authentication.AuthenticationServlet</servlet-class>
@@ -527,6 +534,10 @@
     <servlet-class>com.silverpeas.export.servlets.ExportServlet</servlet-class>
   </servlet>
   <servlet-mapping>
+    <servlet-name>REST Container</servlet-name>
+    <url-pattern>/services/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
     <servlet-name>AuthenticationServlet</servlet-name>
     <url-pattern>/AuthenticationServlet</url-pattern>
   </servlet-mapping>
@@ -909,14 +920,14 @@
     <servlet-name>ExportServlet</servlet-name>
     <url-pattern>/Export/*</url-pattern>
   </servlet-mapping>
-  
+
   <jsp-config>
     <jsp-property-group>
       <url-pattern>*.jsp</url-pattern>
       <page-encoding>UTF-8</page-encoding>
     </jsp-property-group>
   </jsp-config>
-  
+
   <security-constraint>
     <display-name>Authentification</display-name>
     <web-resource-collection>

@@ -158,7 +158,7 @@ public class Date extends java.util.Date implements Datable<Date> {
   }
 
   @Override
-  public boolean before(Date anotherDatable) {
+  public boolean isBefore(Date anotherDatable) {
     Calendar self = getInstance();
     self.setTime(this);
     Calendar other = getInstance();
@@ -169,7 +169,7 @@ public class Date extends java.util.Date implements Datable<Date> {
   }
 
   @Override
-  public boolean after(Date anotherDatable) {
+  public boolean isAfter(Date anotherDatable) {
     Calendar self = getInstance();
     self.setTime(this);
     Calendar other = getInstance();
@@ -180,7 +180,7 @@ public class Date extends java.util.Date implements Datable<Date> {
   }
 
   @Override
-  public boolean equals(Date anotherDatable) {
+  public boolean isEqualTo(Date anotherDatable) {
     Calendar self = getInstance();
     self.setTime(this);
     Calendar other = getInstance();
