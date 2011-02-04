@@ -45,7 +45,16 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
+import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.a;
+import org.apache.ecs.xhtml.b;
+import org.apache.ecs.xhtml.br;
+import org.apache.ecs.xhtml.div;
+import org.apache.ecs.xhtml.i;
+import org.apache.ecs.xhtml.strong;
+import org.apache.ecs.xhtml.table;
+import org.apache.ecs.xhtml.td;
+import org.apache.ecs.xhtml.tr;
 
 /**
  * Classe générant le code html d'une publication exportée
@@ -92,60 +101,69 @@ public class HtmlExportPublicationGenerator {
    * @return
    */
   public String toHtmlSommairePublication(String target) {
-
+    ElementContainer xhtmlcontainer = new ElementContainer();
     String htmlPubName = HtmlExportGenerator.encode(publicationDetail.getName());
     String htmlPubDescription = HtmlExportGenerator.encode(publicationDetail.getDescription());
     String htmlCreatorName = HtmlExportGenerator.encode(publicationDetail.getCreatorName());
     String dateString = DateUtil.dateToString(publicationDetail.getCreationDate(), "fr");
-
-    StringBuilder sb = new StringBuilder();
-    sb.append("&#149;&nbsp;");
-    if (StringUtil.isDefined(target)) {
-      a link = new a();
-      sb.append("<a target=\"").append(target).append("\" href=\"").append(urlPub).append("\">");
-    } else {
-      sb.append("<a href=\"").append(urlPub).append("\">");
-    }
-    sb.append("<b>").append(htmlPubName).append("</b>").append("</a>").append("\n");
+    xhtmlcontainer.addElement("&#149;&nbsp;");
+    a link = new a();
+    link.setHref(urlPub);
+    if (StringUtil.isDefined(target)) {     
+      link.setTarget(target);
+    } 
+    link.addElement(new b(htmlPubName));
+    xhtmlcontainer.addElement(link);
     if (StringUtil.isDefined(htmlCreatorName)) {
-      sb.append(" - ").append(htmlCreatorName);
+      xhtmlcontainer.addElement(" - ");
+      xhtmlcontainer.addElement(htmlCreatorName);
     }
     if (StringUtil.isDefined(dateString)) {
-      sb.append(" (").append(dateString).append(")");
+      xhtmlcontainer.addElement(" (");      
+      xhtmlcontainer.addElement(dateString);
+      xhtmlcontainer.addElement(")");      
     }
-    sb.append("<br/>\n");
+    xhtmlcontainer.addElement(new br());
     if (StringUtil.isDefined(htmlPubDescription)) {
-      sb.append("<i>").append(htmlPubDescription).append("</i>").append("<br/><br/>\n");
+      xhtmlcontainer.addElement(new i(htmlPubDescription));
+      xhtmlcontainer.addElement(new br());
+      xhtmlcontainer.addElement(new br());
     }
-    return sb.toString();
+    return xhtmlcontainer.toString();
   }
 
   /**
    * @return
    */
-  private String toHtmlEnTetePublication() {
-
+  String toHtmlEnTetePublication() {
     String htmlPubName = HtmlExportGenerator.encode(publicationDetail.getName());
     String htmlPubDescription = HtmlExportGenerator.encode(publicationDetail.getDescription());
     String htmlCreatorName = HtmlExportGenerator.encode(publicationDetail.getCreatorName());
     String dateString = DateUtil.dateToString(publicationDetail.getCreationDate(), "fr");
-
-    StringBuilder sb = new StringBuilder();
-
-    sb.append(
-        "<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"1\" bgcolor=\"#B3BFD1\">\n");
-    sb.append("<tr><td>\n");
-    sb.append(
-        "<table width=\"100%\" border=\"0\" cellpadding=\"3\" cellspacing=\"0\" bgcolor=\"#EFEFEF\"><tr>\n");
-    sb.append("<td><strong>").append(htmlPubName).append("</strong></td>\n");
-    sb.append("<td><div align=\"right\">").append(htmlCreatorName).append(
-        "</div></td> </tr>\n");
-    sb.append("<tr><td>").append(htmlPubDescription).append("</td>\n");
-    sb.append("<td><div align=\"right\">").append(dateString).append(
-        "</div></td></tr>\n");
-    sb.append("</table></td>");
-    sb.append("</tr></table>");
-    return sb.toString();
+    ElementContainer xhtmlcontainer = new ElementContainer();
+    table borderTable = new table();
+    borderTable.setWidth("100%");
+    borderTable.setBorder(0);
+    borderTable.setCellPadding(0);
+    borderTable.setCellSpacing(1);
+    borderTable.setBgColor("#B3BFD1");
+    
+    
+    table contentTable = new table();
+    contentTable.setWidth("100%");
+    contentTable.setBorder(0);
+    contentTable.setCellPadding(3);
+    contentTable.setCellSpacing(0);
+    contentTable.setBgColor("#EFEFEF");
+    tr tr = new tr(new td(new strong(htmlPubName)));
+    tr.addElement(new td((new div(htmlCreatorName)).addAttribute("align", "right")));
+    contentTable.addElement(tr);
+    tr = new tr(new td(htmlPubDescription));
+    tr.addElement(new td((new div(dateString)).addAttribute("align", "right")));
+    contentTable.addElement(tr);
+    borderTable.addElement(new tr(new td (contentTable)));
+    xhtmlcontainer.addElement(borderTable);
+    return xhtmlcontainer.toString();
   }
 
   /**
@@ -156,18 +174,11 @@ public class HtmlExportPublicationGenerator {
     // TODO: faire passer ce parametre depuis le controleur?
     String toParse = modelDetail.getHtmlDisplayer();
 
-    List textList = dbModelContent.getListTextParts();
-    List imageList = dbModelContent.getListImageParts();
+    List<String> textList = dbModelContent.getListTextParts();
+    List<String> imageList = dbModelContent.getListImageParts();
 
-    Iterator textIterator = null;
-    Iterator imageIterator = null;
-
-    if (textList != null) {
-      textIterator = textList.iterator();
-    }
-    if (imageList != null) {
-      imageIterator = imageList.iterator();
-    }
+    Iterator<String> textIterator = textList.iterator();
+    Iterator<String> imageIterator = imageList.iterator();
 
     int posit = toParse.indexOf("%WA");
     while (posit != -1) {
@@ -176,18 +187,18 @@ public class HtmlExportPublicationGenerator {
         toParse = toParse.substring(posit);
       }
       if (toParse.startsWith("%WATXTDATA%")) {
-        if (textIterator != null && textIterator.hasNext()) {
-          String textPart = (String) textIterator.next();
+        if (textIterator.hasNext()) {
+          String textPart = textIterator.next();
           sb.append(HtmlExportGenerator.encode(textPart));
         }
         toParse = toParse.substring(11);
       } else if (toParse.startsWith("%WAIMGDATA%")) {
-        if (imageIterator != null && imageIterator.hasNext()) {
-          String imagePath = (String) imageIterator.next();
-          String imageName = imagePath.substring(imagePath.lastIndexOf(File.separator) + 1, imagePath.
-              length());
+        if (imageIterator.hasNext()) {
+          String imagePath = imageIterator.next();
+          String imageName = imagePath.substring(imagePath.lastIndexOf(File.separatorChar) + 1,
+              imagePath.length());
           if (FileUtil.isImage(imageName)) {
-            sb.append("<img border=\"0\" src=\"" + imageName + "\">");
+            sb.append("<img border='0' src='").append(imageName).append("' />");
           } else {
             sb.append("<b>FileNotImage</b>");
           }

@@ -59,7 +59,7 @@ public class EncodeHelper {
     if (javastring == null) {
       return "";
     }
-    return StringEscapeUtils.escapeHtml(javastring);
+    return StringEscapeUtils.escapeHtml(javastring).replace("œ", "&oelig;");
   }
 
   public static String javaStringToXmlString(String javastring) {
