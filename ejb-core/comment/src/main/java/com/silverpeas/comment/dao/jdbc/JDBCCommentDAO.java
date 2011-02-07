@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.stereotype.Repository;
 
 import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.comment.dao.CommentDAO;
@@ -42,8 +41,9 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import javax.inject.Named;
 
-@Repository("commentDAO")
+@Named("commentDAO")
 public class JDBCCommentDAO implements CommentDAO {
 
   private static final long serialVersionUID = -4880326368611108874L;

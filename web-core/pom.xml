@@ -66,11 +66,11 @@
       <groupId>com.sun.portal.portletcontainer</groupId>
       <artifactId>java-portlet-container</artifactId>
     </dependency>
-	<dependency>
+    <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
-	<dependency>
+    <dependency>
       <groupId>commons-beanutils</groupId>
       <artifactId>commons-beanutils</artifactId>
     </dependency>
@@ -156,9 +156,19 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>comment</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>com.metaparadigm</groupId>
       <artifactId>json-rpc</artifactId>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-mapper-lgpl</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>

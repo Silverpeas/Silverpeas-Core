@@ -453,7 +453,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
    * @param dateBegin a begin date string representation yyyy/MM/dd
    * @param dateEnd an end date string representation yyyy/MM/dd
    * @param idGroup a user group identifier
-   * @return 
+   * @return
    */
   public Collection<String[]> getStatsConnexionAllGroup(String dateBegin, String dateEnd,
       String idGroup) {
@@ -656,10 +656,10 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       Iterator<SessionInfo> itListUserDetail = listUserDetail.iterator();
       while (itListUserDetail.hasNext()) {
         SessionInfo sessionInfo = (SessionInfo) itListUserDetail.next();
-        if (!notifiedUsers.contains(sessionInfo.m_User.getId())
-            || sessionInfo.m_User.isAccessGuest()) {
-          notifySession(sessionInfo.m_User.getId(), message);
-          notifiedUsers.add(sessionInfo.m_User.getId());
+        if (!notifiedUsers.contains(sessionInfo.getUserDetail().getId())
+            || sessionInfo.getUserDetail().isAccessGuest()) {
+          notifySession(sessionInfo.getUserDetail().getId(), message);
+          notifiedUsers.add(sessionInfo.getUserDetail().getId());
         }
       }
     }
@@ -1259,7 +1259,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   }
 
   /**
-   * 
+   *
    */
   public ResourceLocator getSettings() {
     if (settings == null) {

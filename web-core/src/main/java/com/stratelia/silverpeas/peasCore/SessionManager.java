@@ -41,7 +41,6 @@ import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerException;
 import com.silverpeas.scheduler.SchedulerFactory;
-import com.silverpeas.scheduler.simple.SimpleScheduler;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
 
@@ -51,6 +50,7 @@ import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
+import com.stratelia.webactiv.servlets.LogoutServlet;
 
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.ArrayList;
@@ -182,9 +182,9 @@ public class SessionManager
   public synchronized void setLastAccess(HttpSession session) {
     SessionInfo si = userDataSessions.get(session.getId());
     if (si != null) {
-      si.m_DateLastAccess = System.currentTimeMillis();
+      si.updateLastAccess();
     } else {
-      SilverTrace.debug("peasCore", "SessionManager.setLastAccess", 
+      SilverTrace.debug("peasCore", "SessionManager.setLastAccess",
           "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! - sessionId = "
           + session.getId());
     }
@@ -246,9 +246,9 @@ public class SessionManager
       removeInQueueMessages(controller.getCurrentUserDetail().getId(), session.getId());
       removeSession(session);
       SessionInfo si = new SessionInfo(session, anIP, controller.getCurrentUserDetail());
-      userDataSessions.put(si.m_SessionId, si);
+      userDataSessions.put(si.getSessionId(), si);
       // Writing journal
-      SilverLog.logConnexion("login", si.m_IP, si.getLog());
+      SilverLog.logConnexion("login", si.getUserHostIP(), si.getLog());
     } catch (Exception ex) {
       // because no journal writing
       SilverTrace.error("peasCore", "SessionManager.addSession",
@@ -282,23 +282,23 @@ public class SessionManager
   protected synchronized void removeSession(SessionInfo si) {
     try {
       SilverTrace.debug("peasCore", "SessionManager.removeSession",
-          "START on session=" + si.m_SessionId + " - " + si.getLog());
+          "START on session=" + si.getSessionId() + " - " + si.getLog());
       // Writing journal
-      SilverLog.logConnexion("logout", si.m_IP, si.getLog());
+      SilverLog.logConnexion("logout", si.getUserHostIP(), si.getLog());
       // Notify statistics
       Date now = new java.util.Date();
-      long duration = now.getTime() - si.m_DateBegin;
-      myStatisticsManager.addStatConnection(si.m_User.getId(), now, 1, duration);
+      long duration = now.getTime() - si.getStartDate();
+      myStatisticsManager.addStatConnection(si.getUserDetail().getId(), now, 1, duration);
 
       // Delete in wait server messages corresponding to the session to
       // invalidate
-      removeInQueueMessages(si.m_User.getId(), si.m_SessionId);
+      removeInQueueMessages(si.getUserDetail().getId(), si.getSessionId());
 
       // Remove the session from lists
-      userDataSessions.remove(si.m_SessionId);
-      userNotificationSessions.remove(si.m_SessionId);
+      userDataSessions.remove(si.getSessionId());
+      userNotificationSessions.remove(si.getSessionId());
       SilverTrace.debug("peasCore", "SessionManager.removeSession",
-          "DONE on session=" + si.m_SessionId + " - " + si.getLog());
+          "DONE on session=" + si.getSessionId() + " - " + si.getLog());
 
       si.cleanSession();
     } catch (Exception ex) {
@@ -346,7 +346,7 @@ public class SessionManager
   public synchronized void setIsAlived(HttpSession session) {
     SessionInfo si = userDataSessions.get(session.getId());
     if (si != null) {
-      si.m_DateIsAlive = System.currentTimeMillis();
+      si.updateIsAlive();
     } else {
       SilverTrace.debug("peasCore", "SessionManager.setIsAlived",
           "L'objet de session n'a pas ete retrouve dans la variable userDataSessions !!! - sessionId = "
@@ -371,10 +371,10 @@ public class SessionManager
     Map<String, SessionInfo> distinctConnectedUsersList = new HashMap<String, SessionInfo>();
     Collection<SessionInfo> sessionsInfos = getConnectedUsersList();
     for (SessionInfo si : sessionsInfos) {
-      String userLogin = si.m_User.getLogin();
+      String userLogin = si.getUserDetail().getLogin();
       // keep users with distinct login
       if (!distinctConnectedUsersList.containsKey(userLogin)
-          && !si.m_User.isAccessGuest()) {
+          && !si.getUserDetail().isAccessGuest()) {
         distinctConnectedUsersList.put(userLogin, si);
       }
     }
@@ -404,25 +404,25 @@ public class SessionManager
 
       Collection<SessionInfo> allSI = userDataSessions.values();
       for (SessionInfo si : allSI) {
-        long userSessionTimeoutMillis = (si.m_User.isAccessAdmin()) ? adminSessionTimeout
+        long userSessionTimeoutMillis = (si.getUserDetail().isAccessAdmin()) ? adminSessionTimeout
             : userSessionTimeout;
         // Has the session expired (timeout)
-        if (currentTime - si.m_DateLastAccess >= userSessionTimeoutMillis) {
-          long duration = currentTime - si.m_DateIsAlive;
+        if (currentTime - si.getLastAccessDate() >= userSessionTimeoutMillis) {
+          long duration = currentTime - si.getIsAliveDate();
           // Has the user been notified (only for living client)
           if ((duration < maxRefreshInterval)
-              && !userNotificationSessions.contains(si.m_SessionId)) {
+              && !userNotificationSessions.contains(si.getSessionId())) {
             try {
-              notifyEndOfSession(si.m_User.getId(), currentTime
-                  + scheduledSessionManagementTimeStamp, si.m_SessionId);
+              notifyEndOfSession(si.getUserDetail().getId(), currentTime
+                  + scheduledSessionManagementTimeStamp, si.getSessionId());
             } catch (NotificationManagerException ex) {
               SilverTrace.error("peasCore",
                   "SessionManager.doSessionManagement",
                   "notificationManager.EX_CANT_SEND_USER_NOTIFICATION",
-                  "sessionId=" + si.m_SessionId + " - user=" + si.getLog(), ex);
+                  "sessionId=" + si.getSessionId() + " - user=" + si.getLog(), ex);
             } finally {
               // Add to the notifications
-              userNotificationSessions.add(si.m_SessionId);
+              userNotificationSessions.add(si.getSessionId());
             }
           } else {
             // Remove dead session or timeout with a notification

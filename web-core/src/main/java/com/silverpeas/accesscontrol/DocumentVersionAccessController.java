@@ -23,9 +23,11 @@
  */
 package com.silverpeas.accesscontrol;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
+import java.rmi.RemoteException;
 
 /**
  * Check the access to a document version for a user.
@@ -43,15 +45,22 @@ public class DocumentVersionAccessController implements AccessController<Documen
 
   /**
    * For test only.
-   * @param versioning 
+   * @param versioning
    */
   DocumentVersionAccessController(VersioningUtil versioning) {
     this.versioning = versioning;
   }
 
   @Override
-  public boolean isUserAuthorized(String userId, DocumentVersion object) throws Exception {
-    Document doc = versioning.getDocument(object.getDocumentPK());
+  public boolean isUserAuthorized(String userId, DocumentVersion object) {
+    Document doc;
+    try {
+      doc = versioning.getDocument(object.getDocumentPK());
+    } catch (RemoteException ex) {
+      SilverTrace.error("accesscontrol", getClass().getSimpleName() + ".isUserAuthorized()",
+          "root.NO_EX_MESSAGE", ex);
+      return false;
+    }
     return accessController.isUserAuthorized(userId, doc);
   }
 }

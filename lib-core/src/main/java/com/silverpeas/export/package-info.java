@@ -23,18 +23,22 @@
  */
 
 /**
- * Provides the different exporters of Silverpeas objects to files in a specific format (PDF, iCal,
- * and so on).
+ * Provides the different exporters and importers of serializable Silverpeas resources in a specific
+ * format (PDF, iCal, JSON, and so on).
  *
- * An exporter is a processor dedicated to take a given type of Silverpeas resource and to serialize
- * it into a file in a dedicated format, so that the Silverpeas information can be shared with
- * outside persons and with other tools.
- * In order to open an access to the different exporters available in Silverpeas, an
- * ExporterFactory object is provided. This factory publishes for each availble exporter a method
- * to get it.
- * It is dedicated to to the exporter provider to enrich the interface of the ExporterFactory class
- * by adding a method to obtain an instance of its exporter (in the form of
- * <pre>Exporter<MySilverpeasResourcerType></pre>) and to exposes an implementation of this one by
- * CDI. To have an idea about that, please glance at the ICalExporter exemple.
+ * An exporter is a processor aimed to take a given type of a Silverpeas resource for serializing
+ * it in a dedicated format into an output stream.
+ * An importer is a processor aimed to take an input stream for deserializing from it a
+ * Silverpeas resource.
+ * Exporters and importers aren't for data source access purpose. Prefer the use of a dedicated ORM
+ * for doing.
+ * 
+ * Some core exporters and importers are provided for Silverpeas components. To access theses core
+ * exporters and importers, an ExporterFactory and an ImporterFactory is provided; they encapsulate
+ * the concrete implemenentation of the core exporters and importers, so that their client are
+ * protected from implementation change.
+ * So, for all new core exporters and importers, please enrich the interface of the ExporterFactory
+ * and of the ImporterFactory classes to add an access to the implementation of your new core
+ * exporters or importers. (Glance at the ICalExporter exemple to know how to do that).
  */
 package com.silverpeas.export;

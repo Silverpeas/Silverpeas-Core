@@ -22,11 +22,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.export;
+package com.silverpeas.comment.web.json;
+
+import com.silverpeas.comment.model.Comment;
+import com.silverpeas.export.Exporter;
 
 /**
- * This interface defines the capability of an object to be exportable into well-formatted resource.
+ * An exporter of comments in the JSON format.
+ * The concrete implementation of this interface is published under the name "jsonCommentExporter".
+ * Any client should depend only on this interface.
  */
-public interface Exportable {
+public interface JSONCommentExporter extends Exporter<Comment> {
 
 }

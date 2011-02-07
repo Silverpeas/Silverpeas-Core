@@ -305,7 +305,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
     Collection<SessionInfo> sessions = SessionManager.getInstance().getDistinctConnectedUsersList();
     for (SessionInfo session : sessions) {
-      connectedUsers.add(session.m_User);
+      connectedUsers.add(session.getUserDetail());
     }
 
     ArrayList<UserDetail> users = new ArrayList<UserDetail>(lastAlllistUsersCalled);

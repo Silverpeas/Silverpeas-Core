@@ -103,30 +103,30 @@ function enterPopup(userId)
 		arrayColumn1.setSortable(true);
     }
 	arrayColumn1 = arrayPane.addArrayColumn("");
-    ArrayCellText cellText;         
+    ArrayCellText cellText;
 
     if (cResultData != null)
     {
-		long currentTime = new Date().getTime();        
+		long currentTime = new Date().getTime();
 		iter = cResultData.iterator();
 		while (iter.hasNext())
 		{
 			SessionInfo item = (SessionInfo) iter.next();
-			if (!item.m_User.getId().equals(communicationScc.getUserId()))
+			if (!item.getUserDetail().getId().equals(communicationScc.getUserId()))
 			{
 				List userList = new ArrayList();
-				userList.add(item.m_User.getId());
+				userList.add(item.getUserDetail().getId());
 				Hashtable usersLanguages = orgaController.getUsersLanguage(userList);
 
 				arrayLine = arrayPane.addArrayLine();
 				arrayLine.addArrayCellText("<div align=right><img src=\""+icoMonitor+"\" border=0></div>");
-				arrayLine.addArrayCellText(item.m_User.getDisplayedName());
+				arrayLine.addArrayCellText(item.getUserDetail().getDisplayedName());
 				if (settings.getBoolean("displayColumnLanguage",false))
-					arrayLine.addArrayCellText(usersLanguages.get(item.m_User.getId()).toString());
+					arrayLine.addArrayCellText(usersLanguages.get(item.getUserDetail().getId()).toString());
 
 				//CBO : UPDATE
-				//arrayLine.addArrayCellText("<div align=left><a href=#><img alt=\"" + resources.getString("notifyUser") + "\" src=\""+icoNotify+"\" border=0 onclick=\"javascript:openSPWindow('NotifyUser?theUserId=" + item.m_User.getId() + "','DisplayNotifySession')\"></A></div>");				
-				arrayLine.addArrayCellText("<div align=left><a href=#><img alt=\"" + resources.getString("notifyUser") + "\" src=\""+icoNotify+"\" border=0 onclick=\"javascript:enterPopup('" + item.m_User.getId() + "')\"></A></div>");
+				//arrayLine.addArrayCellText("<div align=left><a href=#><img alt=\"" + resources.getString("notifyUser") + "\" src=\""+icoNotify+"\" border=0 onclick=\"javascript:openSPWindow('NotifyUser?theUserId=" + item.m_User.getId() + "','DisplayNotifySession')\"></A></div>");
+				arrayLine.addArrayCellText("<div align=left><a href=#><img alt=\"" + resources.getString("notifyUser") + "\" src=\""+icoNotify+"\" border=0 onclick=\"javascript:enterPopup('" + item.getUserDetail().getId() + "')\"></A></div>");
 			}
 		}
 		out.println(arrayPane.print());
@@ -134,7 +134,7 @@ function enterPopup(userId)
     out.println(resources.getString("refreshedTime") + "&nbsp;" + settings.getString("refreshList")+ "&nbsp;" + resources.getString("seconds") + "<BR>");
 %>
 </CENTER>
-<%       
+<%
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>

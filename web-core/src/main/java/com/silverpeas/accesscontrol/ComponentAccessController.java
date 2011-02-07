@@ -41,17 +41,17 @@ public class ComponentAccessController implements AccessController<String> {
 
   /**
    * For tests only.
-   * @param controller 
-   */  
+   * @param controller
+   */
   ComponentAccessController(OrganizationController controller) {
     this.controller = controller;
   }
 
   /**
    * Indicates that the rights are set on node as well as the component.
-   * @param userId 
+   * @param userId
    * @param componentId
-   * @return 
+   * @return
    */
   public boolean isRightOnTopicsEnabled(String userId, String componentId) {
     return isThemeTracker(componentId) && StringUtil.getBooleanValue(controller.
@@ -63,7 +63,7 @@ public class ComponentAccessController implements AccessController<String> {
   }
 
   @Override
-  public boolean isUserAuthorized(String userId, String componentId) throws Exception {
+  public boolean isUserAuthorized(String userId, String componentId) {
     if (componentId == null) { // Personal space
       return true;
     }

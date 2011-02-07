@@ -23,7 +23,7 @@
  */
 package com.silverpeas.accesscontrol;
 
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -47,16 +47,24 @@ public class DocumentAccessController implements AccessController<Document> {
 
   /**
    * For tests only.
-   * @param accessController 
+   * @param accessController
    */
   DocumentAccessController(NodeAccessController accessController) {
     this.accessController = accessController;
   }
 
   @Override
-  public boolean isUserAuthorized(String userId, Document object) throws Exception {
-    Collection<NodePK> nodes = getPublicationBm().getAllFatherPK(new PublicationPK(object.
-        getForeignKey().getId(), object.getInstanceId()));
+  public boolean isUserAuthorized(String userId, Document object) {
+    Collection<NodePK> nodes;
+    try {
+      nodes =
+          getPublicationBm().getAllFatherPK(new PublicationPK(object.getForeignKey().getId(), object.
+          getInstanceId()));
+    } catch (Exception ex) {
+      SilverTrace.error("accesscontrol", getClass().getSimpleName() + ".isUserAuthorized()",
+          "root.NO_EX_MESSAGE", ex);
+      return false;
+    }
     for (NodePK nodePk : nodes) {
       if (accessController.isUserAuthorized(userId, nodePk)) {
         return true;

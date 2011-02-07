@@ -26,9 +26,7 @@ package com.silverpeas.comment.service;
 
 import java.util.List;
 
-import javax.annotation.Resource;
 
-import org.springframework.stereotype.Service;
 
 import com.silverpeas.comment.dao.CommentDAO;
 import com.silverpeas.comment.model.Comment;
@@ -42,6 +40,8 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * A service that provide the features to handle the comments in Silverpeas. Such features are, for
@@ -52,10 +52,10 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
  * engine. This service is managed by an IoC container and this be retrieved by dependency
  * injection.
  */
-@Service("commentService")
+@Named("commentService")
 public class CommentService {
 
-  @Resource
+  @Inject
   private CommentDAO commentDAO;
 
   /**

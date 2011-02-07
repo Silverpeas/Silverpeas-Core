@@ -21,20 +21,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.accesscontrol;
+
+package com.silverpeas.comment.web.json;
+
+import com.silverpeas.comment.model.Comment;
+import com.silverpeas.export.Importer;
 
 /**
- * A controller of accesses on the Silverpeas resources by a user..
- * @param <T> The type of object we are checking the access on.
- * @author ehugonnet
+ * An importer of comments in the JSON format.
+ * The concrete implementation of this interface is published under the name "jsonCommentImporter".
+ * Any client should depend only on this interface.
  */
-public interface AccessController<T> {
+public interface JSONCommentImporter extends Importer<Comment> {
 
-  /**
-   * Checks if the specified user may access the specified object.
-   * @param userId the unique identifier of the user.
-   * @param object the object to be accessed.
-   * @return true if access is granted - false otherwise.
-   */
-  public boolean isUserAuthorized(String userId, T object);
 }

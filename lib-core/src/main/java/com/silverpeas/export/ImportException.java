@@ -22,44 +22,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.comment.service;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import javax.inject.Inject;
+package com.silverpeas.export;
 
 /**
- * A factory of CommentService objects. Its aim is to manage the life-cycle of such objects and
- * so to encapsulates from the CommentService client the adopted policy about that life-cycle.
+ * Exception thrown when the import of a Silverpeas resource failed.
+ * It is a business exception that occurs when a business operation invoked by a user fails.
  */
-public class CommentServiceFactory {
+public class ImportException extends Exception {
 
-  private static final CommentServiceFactory instance = new CommentServiceFactory();
-
-  @Inject
-  private CommentService commentService;
+  private static final long serialVersionUID = 7791895284880044020L;
 
   /**
-   * Gets an instance of this CommentServiceFactory class.
-   * @return a CommentServiceFactory instance.
+   * Constructs a new ImportException by specifying the cause.
+   * @param thrwbl the cause of this exception.
    */
-  public static CommentServiceFactory getFactory() {
-    return instance;
+  public ImportException(Throwable thrwbl) {
+    super(thrwbl);
   }
 
   /**
-   * Gets a CommentService instance.
-   * @return a CommentService instance.
+   * Constructs a new ImportException with the specified message and cause.
+   * @param message the message about the problem.
+   * @param thrwbl the cause of the exception.
    */
-  public CommentService getCommentService() {
-    if (commentService == null) {
-      SilverTrace.warn("comment", getClass().getSimpleName() + ".getCommentService()",
-          "EX_NO_MESSAGES", "IoC container not bootstrapped or no CommentService bean found! "
-          + "Creates explicitly the bean");
-      commentService = new CommentService();
-    }
-    return commentService;
+  public ImportException(String message, Throwable thrwbl) {
+    super(message, thrwbl);
   }
 
-  private CommentServiceFactory() {
+  /**
+   * Constructs a new ImportException with the specified message.
+   * @param message the message about the problem.
+   */
+  public ImportException(String message) {
+    super(message);
   }
+
 }
