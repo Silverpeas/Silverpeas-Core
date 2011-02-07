@@ -120,26 +120,25 @@ public class SPDesktopServlet extends HttpServlet {
     }
 
     if (StringUtil.isDefined(spaceHomePage)) {
+      String sRequestURL = request.getRequestURL().toString();
+      String m_sAbsolute =
+          sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
+      String baseURL = GeneralPropertiesManager.getString("httpServerBase", m_sAbsolute);
       if (spaceHomePage.startsWith("/")) {
         // case of forward inside application /silverpeas
-        String applicationContext = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+        String applicationContext = URLManager.getApplicationURL();
         if (spaceHomePage.startsWith(applicationContext)) {
-          spaceHomePage = spaceHomePage.substring(applicationContext.length());
+          spaceHomePage = baseURL + spaceHomePage;
+        } else {
+          spaceHomePage = baseURL + applicationContext + spaceHomePage;
         }
-        RequestDispatcher rd = context.getRequestDispatcher(spaceHomePage);
-        rd.forward(request, response);
       } else {
         if (spaceHomePage.startsWith("$")) {
           // case of redirection to another webapp (/weblib for example)
-          String sRequestURL = request.getRequestURL().toString();
-          String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().
-              length());
-          String baseURL = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-              "httpServerBase", m_sAbsolute);
           spaceHomePage = baseURL + spaceHomePage.substring(1);
         }
-        response.sendRedirect(spaceHomePage);
       }
+      response.sendRedirect(spaceHomePage);
     } else {
       String spContext = getUserIdOrSpaceId(request);
       setUserIdAndSpaceIdInRequest(request);
