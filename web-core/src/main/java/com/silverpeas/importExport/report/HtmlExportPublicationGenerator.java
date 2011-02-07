@@ -227,13 +227,10 @@ public class HtmlExportPublicationGenerator {
       Form formView = template.getViewForm();
       RecordSet recordSet = template.getRecordSet();
       DataRecord dataRecord = recordSet.getRecord(publicationDetail.getPK().getId());
-      for (String fieldName : dataRecord.getFieldNames()) {
-        dataRecord.getField(fieldName).setValue(xmlModelContent.getField(fieldName).getValue());
-      }
       PagesContext context = new PagesContext();
       String htmlResult = formView.toString(context, dataRecord);
-      /*htmlResult = replaceImagesPathForExport(htmlResult);
-      htmlResult = replaceFilesPathForExport(htmlResult);*/
+      htmlResult = replaceImagesPathForExport(htmlResult);
+      htmlResult = replaceFilesPathForExport(htmlResult);
       return htmlResult;
     } catch (Exception e) {
       SilverTrace.error("form", "HtmlExportPublicationGenerator.toHtmlXMLModel",
@@ -346,7 +343,7 @@ public class HtmlExportPublicationGenerator {
     String lowerHtml = htmlText.toLowerCase();
     int finPath = 0;
     int debutPath = 0;
-    StringBuffer newHtmlText = new StringBuffer();
+    StringBuilder newHtmlText = new StringBuilder();
     String imageSrc = "";
     if (lowerHtml.indexOf("src=\"", finPath) == -1) {
       // pas d'images dans le fichier
@@ -354,16 +351,13 @@ public class HtmlExportPublicationGenerator {
     } else {
       while ((debutPath = lowerHtml.indexOf("src=\"", finPath)) != -1) {
         debutPath += 5;
-
         newHtmlText.append(htmlText.substring(finPath, debutPath));
-        finPath = lowerHtml.indexOf("\"", debutPath);
+        finPath = lowerHtml.indexOf('\"', debutPath);
         imageSrc = lowerHtml.substring(debutPath, finPath);
         int d = imageSrc.indexOf("/attached_file/");
         if (d >= 0) {
-          // C'est une image stockée dans Silverpeas : extraction du nom de l'image
-          d += 12;
-          int f = imageSrc.indexOf("?");
-          imageSrc = imageSrc.substring(d, f);
+          int f = imageSrc.lastIndexOf('/');
+          imageSrc = imageSrc.substring(f + 1);
           newHtmlText.append(imageSrc);
         } else {
           newHtmlText.append(htmlText.substring(debutPath, finPath));
@@ -374,7 +368,7 @@ public class HtmlExportPublicationGenerator {
     return newHtmlText.toString();
   }
 
-  private String replaceFilesPathForExport(String htmlText) {
+  public static String replaceFilesPathForExport(String htmlText) {
     String lowerHtml = htmlText.toLowerCase();
     int finPath = 0;
     int debutPath = 0;
@@ -388,14 +382,14 @@ public class HtmlExportPublicationGenerator {
         debutPath += 6;
 
         newHtmlText.append(htmlText.substring(finPath, debutPath));
-        finPath = lowerHtml.indexOf("\"", debutPath);
+        finPath = lowerHtml.indexOf('\"', debutPath);
         imageSrc = lowerHtml.substring(debutPath, finPath);
         int d = imageSrc.indexOf("/attached_file/");
-        if (d != -1) {
+        if (d >= 0) {
           // C'est une image stockée dans Silverpeas : extraction du nom de l'image
           d += 12;
-          int f = imageSrc.indexOf("?");
-          imageSrc = imageSrc.substring(d, f);
+          int f = imageSrc.lastIndexOf('/');
+          imageSrc = imageSrc.substring(f + 1);
           newHtmlText.append(imageSrc);
         } else {
           newHtmlText.append(htmlText.substring(debutPath, finPath));

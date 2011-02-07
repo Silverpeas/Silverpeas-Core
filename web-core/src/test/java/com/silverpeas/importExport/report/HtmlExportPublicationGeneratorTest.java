@@ -20,9 +20,10 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */ 
+ */
 package com.silverpeas.importExport.report;
 
+import org.hamcrest.Matchers;
 import java.util.Calendar;
 import com.silverpeas.importExport.model.PublicationType;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
@@ -104,6 +105,40 @@ public class HtmlExportPublicationGeneratorTest {
         + "tests</td><td><div align='right'></div></td></tr></table></td></tr></table>";
     String result = instance.toHtmlEnTetePublication();
     assertEquals(expResult, result);
+
+  }
+
+  @Test
+  public void testReplaceFilesPathForExport() {
+    String html = "<a href=\"/attached_file/test/01/image.jpg\">Mon image</a>";
+    String result = HtmlExportPublicationGenerator.replaceFilesPathForExport(html);
+    assertThat(result, Matchers.is("<a href=\"image.jpg\">Mon image</a>"));
+
+    html = "<p><a href=\"/attached_file/test/01/image.png\">Mon image</a> est plus belle que "
+        + "<href=\"/attached_file/test/02/image.jpg\">Son image</a></p>";
+    result = HtmlExportPublicationGenerator.replaceFilesPathForExport(html);
+    assertThat(result, Matchers.is("<p><a href=\"image.png\">Mon image</a> est plus belle que "
+        + "<href=\"image.jpg\">Son image</a></p>"));
     
+    html = "<a href=\"/silverpeas/test/01/image.jpg\">Mon image</a>";
+    result = HtmlExportPublicationGenerator.replaceFilesPathForExport(html);
+    assertThat(result, Matchers.is("<a href=\"/silverpeas/test/01/image.jpg\">Mon image</a>"));
+  }
+  
+  @Test
+  public void testReplaceImagesPathForExport() {
+    String html = "<img src=\"/attached_file/test/01/image.jpg\" />";
+    String result = HtmlExportPublicationGenerator.replaceImagesPathForExport(html);
+    assertThat(result, Matchers.is("<img src=\"image.jpg\" />"));
+
+    html = "<p><img src=\"/attached_file/test/01/image.png\"/> Mon image est plus belle que "
+        + "<img src=\"/attached_file/test/02/image.jpg\"/> Son image</p>";
+    result = HtmlExportPublicationGenerator.replaceImagesPathForExport(html);
+    assertThat(result, Matchers.is("<p><img src=\"image.png\"/> Mon image est plus belle que "
+        + "<img src=\"image.jpg\"/> Son image</p>"));
+    
+    html = "<img src=\"/silverpeas/test/01/image.jpg\" />";
+    result = HtmlExportPublicationGenerator.replaceImagesPathForExport(html);
+    assertThat(result, Matchers.is("<img src=\"/silverpeas/test/01/image.jpg\" />"));
   }
 }
