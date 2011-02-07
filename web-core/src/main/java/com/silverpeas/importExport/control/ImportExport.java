@@ -21,14 +21,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.importExport.control;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Closeables;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -37,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -93,6 +90,7 @@ import com.silverpeas.pdc.importExport.PdcImportExport;
 import com.silverpeas.pdc.importExport.PdcPositionsType;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ZipManager;
+import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
@@ -230,8 +228,8 @@ public class ImportExport {
 
       } catch (SAXException ex) {
         SilverTrace.debug("importExport", "ImportExportSessionController.loadSilverpeasExchange",
-            "root.MSG_GEN_PARAM_VALUE", (new StringBuilder("XML File ")).append(xmlFileName)
-            .append(" is not valid according to default schema").toString());
+            "root.MSG_GEN_PARAM_VALUE", (new StringBuilder("XML File ")).append(xmlFileName).append(
+            " is not valid according to default schema").toString());
 
         // If case the default schema is not the one specified by the
         // XML import file, try to get the right XML-schema and
@@ -261,9 +259,9 @@ public class ImportExport {
         }
 
         SilverTrace.debug("importExport", "ImportExportSessionController.loadSilverpeasExchange",
-            "root.MSG_GEN_PARAM_VALUE", (new StringBuilder(
-            "Trying again using schema specification located at ")).append(altXsdSystemId)
-            .toString());
+            "root.MSG_GEN_PARAM_VALUE",
+            (new StringBuilder(
+            "Trying again using schema specification located at ")).append(altXsdSystemId).toString());
 
         // Try again to load, parse and validate the XML import file,
         // using the new schema specification
@@ -399,8 +397,8 @@ public class ImportExport {
     if (silverExType.getNodeTreesType() != null) {
       // Traitement de l'élément <topicTrees>
       NodeTreesTypeManager typeMgr = new NodeTreesTypeManager();
-      typeMgr.processImport(userDetail, silverExType.getNodeTreesType(), silverExType
-          .getTargetComponentId());
+      typeMgr.processImport(userDetail, silverExType.getNodeTreesType(), silverExType.
+          getTargetComponentId());
     }
 
     // Créations unitaires de nouvelles publications ou modifications
@@ -408,31 +406,27 @@ public class ImportExport {
     if (silverExType.getPublicationsType() != null) {
       // Traitement de l'élément <publications>
       PublicationsTypeManager typeMgr = new PublicationsTypeManager();
-      typeMgr.processImport(userDetail, silverExType.getPublicationsType(), silverExType
-          .getTargetComponentId(), silverExType.isPOIUsed());
+      typeMgr.processImport(userDetail, silverExType.getPublicationsType(), silverExType.
+          getTargetComponentId(), silverExType.isPOIUsed());
     }
 
     // Cas des imports en masse de thèmes et de publications
     if (silverExType.getRepositoriesType() != null) {
       // Traitement de l'élément <repositories>
       RepositoriesTypeManager typeMgr = new RepositoriesTypeManager();
-      typeMgr.processImport(userDetail, silverExType.getRepositoriesType(), silverExType
-          .isPOIUsed());
+      typeMgr.processImport(userDetail, silverExType.getRepositoriesType(), silverExType.isPOIUsed());
     }
     ImportReportManager.setEndDate(new Date());
-
     return ImportReportManager.getImportReport();
   }
 
-
-  public ExportReport processExport(UserDetail userDetail, String language, List listItemsToExport)
-      throws ImportExportException {
+  public ExportReport processExport(UserDetail userDetail, String language,
+      List<WAAttributeValuePair> listItemsToExport) throws ImportExportException {
     return processExport(userDetail, language, listItemsToExport, null);
   }
 
-  @SuppressWarnings("unchecked")
-  public ExportReport processExport(UserDetail userDetail, String language, List listItemsToExport,
-      String rootId) throws ImportExportException {
+  public ExportReport processExport(UserDetail userDetail, String language,
+      List<WAAttributeValuePair> listItemsToExport, String rootId) throws ImportExportException {
     // pour le multilangue
     ResourceLocator resourceLocator = new ResourceLocator(
         "com.silverpeas.importExport.multilang.importExportBundle", language);
@@ -496,12 +490,11 @@ public class ImportExport {
 
       // Récupération de la liste de id des composants
       List<String> listComponentId = new ArrayList<String>();
-      List listClassifyPosition = new ArrayList();
-      @SuppressWarnings("unchecked")
-      List<PublicationType>listPubType = publicationsType.getListPublicationType();
-      for(PublicationType pubType : listPubType) {
+      List<ClassifyPosition> listClassifyPosition = new ArrayList<ClassifyPosition>();
+      List<PublicationType> listPubType = publicationsType.getListPublicationType();
+      for (PublicationType pubType : listPubType) {
         listComponentId.add(pubType.getComponentId());
-         PdcPositionsType pdcPos = pubType.getPdcPositionsType();
+        PdcPositionsType pdcPos = pubType.getPdcPositionsType();
         if (pdcPos != null) {
           listClassifyPosition.addAll(pdcPos.getListClassifyPosition());
         }
@@ -525,7 +518,8 @@ public class ImportExport {
         Writer fileWriter = null;
         try {
           fileHTML.createNewFile();
-          fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML.getPath()), Charsets.UTF_8);
+          fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML.getPath()),
+              Charsets.UTF_8);
           fileWriter.write(h.toHTML());
         } catch (IOException ex) {
           throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
@@ -537,57 +531,20 @@ public class ImportExport {
         }
         // Fin création du sommaire HTML
       } else {
-        // dans le cas de l'export d'un composant ou d'un thème, créer l'index
-        // en treeview
+        // dans le cas de l'export d'un composant ou d'un thème, créer l'index en treeview
 
         // Création des sommaires HTML par Thèmes
         // --------------------------------------
-        HtmlExportGenerator h = new HtmlExportGenerator(exportReport, fileExportDir.getName(),
+        HtmlExportGenerator htmlGenerator = new HtmlExportGenerator(exportReport, fileExportDir.getName(),
             resourceLocator);
 
-        Map<String, List<String>> topicIds = new HashMap<String, List<String>>();
-        // parcours la liste des publicationType
-        listPubType = publicationsType.getListPublicationType();
-        for(PublicationType publicationType : listPubType) {
-          // pour chaque publication : parcourir ses noeuds
-          @SuppressWarnings("unchecked")
-          List<NodePositionType> listNodePositionType = 
-              publicationType.getNodePositionsType().getListNodePositionType();
-          for(NodePositionType nodePositionType : listNodePositionType) {
-            // pour chaque topic : récupérer l'Id
-            int topicId = nodePositionType.getId();
-            // ajouter la référence
-            String pubId = Integer.toString(publicationType.getId());
-            // recherche s'il existe une ligne pour ce topic
-            List<String> pubIds = new ArrayList<String>();
-            if (topicIds.get(Integer.toString(topicId)) != null) {
-              // le topic existe, ajouter la publication à sa liste
-              pubIds = topicIds.get(Integer.toString(topicId));
-            }
-            pubIds.add(pubId);
-            topicIds.put(Integer.toString(topicId), pubIds);
-          }
-        }
+        Map<String, List<String>> topicIds = prepareTopicsMap(publicationsType);
 
         // parcours de la liste des topics et création du fichier
         Set<String> keys = topicIds.keySet();
-        for(String topicId : keys) {
+        for (String topicId : keys) {
           // créer le fichier
-          File fileTopicHTML = new File(tempDir + thisExportDir + File.separator + "indexTopic"
-              + topicId + ".html");
-          Writer fileWriter = null;
-          try {
-            fileTopicHTML.createNewFile();
-            fileWriter = new OutputStreamWriter(new FileOutputStream(fileTopicHTML.getPath()), Charsets.UTF_8);
-            fileWriter.write(h.toHTML(fileTopicHTML.getName(), topicIds.get(topicId)));
-          } catch (IOException ex) {
-            throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
-          } finally {
-            try {
-              fileWriter.close();
-            } catch (Exception ex) {
-            }
-          }
+          createTopicHtmlFile(thisExportDir, tempDir, htmlGenerator, topicIds, topicId);
         }
         // création d'un fichier sommaire vide pour les topics vides
         File fileTopicHTML = new File(tempDir + thisExportDir + File.separator
@@ -595,8 +552,9 @@ public class ImportExport {
         Writer fileWriter = null;
         try {
           fileTopicHTML.createNewFile();
-          fileWriter = new OutputStreamWriter(new FileOutputStream(fileTopicHTML.getPath()), Charsets.UTF_8);
-          fileWriter.write(h.toHTML(fileTopicHTML.getName()));
+          fileWriter = new OutputStreamWriter(new FileOutputStream(fileTopicHTML.getPath()),
+              Charsets.UTF_8);
+          fileWriter.write(htmlGenerator.toHTML(fileTopicHTML.getName()));
         } catch (IOException ex) {
           throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
         } finally {
@@ -609,21 +567,7 @@ public class ImportExport {
 
         // création du fichier index contenant l'arborescence des thèmes
         // -------------------------------------------------------------
-        File fileHTML = new File(tempDir + thisExportDir + File.separator + "index.html");
-        fileWriter = null;
-        try {
-          fileHTML.createNewFile();
-          fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML.getPath()), Charsets.UTF_8);
-          Set<String> topics = topicIds.keySet();
-          fileWriter.write(h.indexToHTML(fileHTML.getName(), topics, nodeTreesType, rootId));
-        } catch (IOException ex) {
-          throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
-        } finally {
-          try {
-            fileWriter.close();
-          } catch (Exception ex) {
-          }
-        }
+        createTreeview(rootId, thisExportDir, tempDir, nodeTreesType, htmlGenerator, topicIds);
         // FIN : création du fichier index contenant l'arborescence
 
         // Création du répertoire pour le treeview
@@ -638,7 +582,7 @@ public class ImportExport {
           }
           chemin = chemin + "treeview";
           Collection<File> files = FileFolderManager.getAllFile(chemin);
-          for(File file : files){
+          for (File file : files) {
             File newFile = new File(tempDir + thisExportDir + File.separator + "treeview"
                 + File.separator + file.getName());
             FileRepositoryManager.copyFile(file.getPath(), newFile.getPath());
@@ -671,6 +615,73 @@ public class ImportExport {
       throw new ImportExportException("importExport", "ImportExport.processExport()", ex);
     }
     return exportReport;
+  }
+
+  private void createTreeview(String rootId, String thisExportDir, String tempDir,
+      NodeTreesType nodeTreesType, HtmlExportGenerator htmlGenerator,
+      Map<String, List<String>> topicIds) throws ImportExportException {
+    Writer fileWriter;File fileHTML = new File(tempDir + thisExportDir + File.separator + "index.html");
+    fileWriter = null;
+    try {
+      fileHTML.createNewFile();
+      fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML.getPath()),
+          Charsets.UTF_8);
+      Set<String> topics = topicIds.keySet();
+      fileWriter.write(htmlGenerator.indexToHTML(fileHTML.getName(), topics, nodeTreesType, rootId));
+    } catch (IOException ex) {
+      throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
+    } finally {
+      try {
+        fileWriter.close();
+      } catch (Exception ex) {
+      }
+    }
+  }
+
+  private Map<String, List<String>> prepareTopicsMap(PublicationsType publicationsType) {
+    List<PublicationType> listPubType;
+    Map<String, List<String>> topicIds = new HashMap<String, List<String>>();
+    // parcours la liste des publicationType
+    listPubType = publicationsType.getListPublicationType();
+    for (PublicationType publicationType : listPubType) {
+      String pubId = Integer.toString(publicationType.getId());
+      // pour chaque publication : parcourir ses noeuds
+      @SuppressWarnings("unchecked")
+      List<NodePositionType> listNodePositionType = publicationType.getNodePositionsType().getListNodePositionType();
+      for (NodePositionType nodePositionType : listNodePositionType) {
+        // pour chaque topic : récupérer l'Id
+        String topicId = String.valueOf(nodePositionType.getId());
+        // recherche s'il existe une ligne pour ce topic
+        List<String> pubIds = new ArrayList<String>();
+        if (topicIds.containsKey(topicId)) {
+          // le topic existe, ajouter la publication à sa liste
+          pubIds = topicIds.get(topicId);
+        }
+        pubIds.add(pubId);
+        topicIds.put(topicId, pubIds);
+      }
+    }
+    return topicIds;
+  }
+
+  private void createTopicHtmlFile(String thisExportDir, String tempDir, HtmlExportGenerator h,
+      Map<String, List<String>> topicIds, String topicId) throws ImportExportException {
+    File fileTopicHTML = new File(tempDir + thisExportDir + File.separator + "indexTopic"
+        + topicId + ".html");
+    Writer fileWriter = null;
+    try {
+      fileTopicHTML.createNewFile();
+      fileWriter = new OutputStreamWriter(new FileOutputStream(fileTopicHTML.getPath()),
+          Charsets.UTF_8);
+      fileWriter.write(h.toHTML(fileTopicHTML.getName(), topicIds.get(topicId)));
+    } catch (IOException ex) {
+      throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
+    } finally {
+      try {
+        fileWriter.close();
+      } catch (Exception ex) {
+      }
+    }
   }
 
   /**
@@ -849,9 +860,6 @@ public class ImportExport {
       // ================ EXPORT SELECTED PUBLICATIONS ======================
 
       if (combination != null) {
-        // Publication list searched by criterias, create publications index in
-        // flat mode
-
         // Création du sommaire HTML
         File fileHTML = new File(tempDir + thisExportDir + File.separator + "index.html");
 
@@ -860,11 +868,13 @@ public class ImportExport {
         Writer fileWriter = null;
         try {
           fileHTML.createNewFile();
-          fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML.getPath()), Charsets.UTF_8);
+          fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML.getPath()),
+              Charsets.UTF_8);
           // Create header with axes and values selected
-          List<String> positionsLabels = coordinateImportExport.getCombinationLabels(combination, componentId);
-          fileWriter.write(h.kmaxPublicationsToHTML(positionsLabels, timeCriteria,
-              iframePublication));
+          List<String> positionsLabels = coordinateImportExport.getCombinationLabels(combination,
+              componentId);
+          fileWriter.write(
+              h.kmaxPublicationsToHTML(positionsLabels, timeCriteria, iframePublication));
         } catch (IOException ex) {
           throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
         } finally {
@@ -882,7 +892,8 @@ public class ImportExport {
         Writer fileWriter = null;
         try {
           emptyFileHTML.createNewFile();
-          fileWriter = new OutputStreamWriter(new FileOutputStream(emptyFileHTML.getPath()), Charsets.UTF_8);
+          fileWriter = new OutputStreamWriter(new FileOutputStream(emptyFileHTML.getPath()),
+              Charsets.UTF_8);
         } catch (IOException ex) {
           throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
         } finally {
@@ -903,7 +914,8 @@ public class ImportExport {
             resourceLocator);
         try {
           unclassifiedFileHTML.createNewFile();
-          fileWriter = new OutputStreamWriter(new FileOutputStream(unclassifiedFileHTML.getPath(), true), Charsets.UTF_8);
+          fileWriter = new OutputStreamWriter(new FileOutputStream(unclassifiedFileHTML.getPath(),
+              true), Charsets.UTF_8);
           fileWriter.write(h.toHtmlPublicationsByPositionStart());
         } catch (IOException ex) {
           throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
@@ -913,12 +925,12 @@ public class ImportExport {
           } catch (Exception ex) {
           }
         }
-
+        String publicationFileNameRelativePath = null;
         // Fill unbalanced file html index
-        List<PublicationDetail> unbalancedPublications = PublicationImportExport.getUnbalancedPublications(componentId);
-        String publicationFileNameRelativePath = "";
+        List<PublicationDetail> unbalancedPublications = PublicationImportExport.
+            getUnbalancedPublications(componentId);
         String componentLabel = FileServerUtils.replaceAccentChars(componentInst.getLabel());
-        for(PublicationDetail pubDetail : unbalancedPublications) {
+        for (PublicationDetail pubDetail : unbalancedPublications) {
           PublicationType publicationType = gedIE.getPublicationCompleteById(String.valueOf(
               pubDetail.getId()), componentId);
           publicationFileNameRelativePath = componentLabel + File.separator + pubDetail.getId()
@@ -928,7 +940,8 @@ public class ImportExport {
           exportReport.addHtmlIndex(pubDetail.getId(), unbalanced);
           fileWriter = null;
           try {
-            fileWriter = new OutputStreamWriter(new FileOutputStream(unclassifiedFileHTML.getPath(), true), Charsets.UTF_8);
+            fileWriter = new OutputStreamWriter(new FileOutputStream(unclassifiedFileHTML.getPath(),
+                true), Charsets.UTF_8);
             fileWriter.write(unbalanced.toHtmlSommairePublication(iframePublication));
           } catch (IOException ex) {
             throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
@@ -945,9 +958,10 @@ public class ImportExport {
         h = new HtmlExportGenerator(exportReport, fileExportDir.getName(), resourceLocator);
         try {
           fileHTML.createNewFile();
-          fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML.getPath()), Charsets.UTF_8);
+          fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML.getPath()),
+              Charsets.UTF_8);
           // Create header with axes and values selected
-          List axis = coordinateImportExport.getAxis(componentId);
+          List<NodeDetail> axis = coordinateImportExport.getAxis(componentId);
           fileWriter.write(h.kmaxAxisToHTML(axis, language));
         } catch (IOException ex) {
           throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
@@ -962,14 +976,15 @@ public class ImportExport {
         // --------------------------------------
         String exportPath = fileExportDir.getPath();
         String exportSummaryPath = exportPath;
-        List<NodeDetail> listAxis = coordinateImportExport.getAxisHeadersWithChildren(componentId, true, true);
+        List<NodeDetail> listAxis = coordinateImportExport.getAxisHeadersWithChildren(componentId,
+            true, true);
 
         // Remove unclassified node
         listAxis.remove(0);
         int nbAxis = listAxis.size();
         // Get list axis with values
         List<Collection<NodeDetail>> listAxisWithChildren = new ArrayList<Collection<NodeDetail>>();
-        for(NodeDetail currentAxisNodeDetail : listAxis) {
+        for (NodeDetail currentAxisNodeDetail : listAxis) {
           Collection<NodeDetail> childrenNodeDetails = currentAxisNodeDetail.getChildrenDetails();
           if (childrenNodeDetails != null && !childrenNodeDetails.isEmpty()) {
             listAxisWithChildren.add(childrenNodeDetails);
@@ -978,8 +993,8 @@ public class ImportExport {
 
         // Create List with all nodes Details
         List<String> nodesIds = new ArrayList<String>();
-        for(Collection<NodeDetail> currentAxis : listAxisWithChildren) {
-          for(NodeDetail axisNode : currentAxis){
+        for (Collection<NodeDetail> currentAxis : listAxisWithChildren) {
+          for (NodeDetail axisNode : currentAxis) {
             String nodeId = String.valueOf(axisNode.getId());
             nodesIds.add(nodeId);
           }
@@ -994,7 +1009,7 @@ public class ImportExport {
               0, tuple, null, nbAxis);
         }
         // Create positions index files
-        for(String positionNameId : indexFilesPositions) {
+        for (String positionNameId : indexFilesPositions) {
           // fileName / index-x-x.html
           // Create positions index file
           fileHTML = new File(exportSummaryPath + File.separator + positionNameId);
@@ -1002,7 +1017,8 @@ public class ImportExport {
           fileWriter = null;
           try {
             fileHTML.createNewFile();
-            fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML.getPath()), Charsets.UTF_8);
+            fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML.getPath()),
+                Charsets.UTF_8);
             fileWriter.write(h.toHtmlPublicationsByPositionStart());
           } finally {
             try {
@@ -1016,7 +1032,7 @@ public class ImportExport {
         // Publications to export
         exportPath = fileExportDir.getPath();
         exportSummaryPath = exportPath;
-        for(WAAttributeValuePair attValue : listItemsToExport) {
+        for (WAAttributeValuePair attValue : listItemsToExport) {
           List<String> filesPositionsHTMLToFill = new ArrayList<String>();
           String pubId = attValue.getName();
           componentId = attValue.getValue();
@@ -1028,10 +1044,10 @@ public class ImportExport {
           publicationType.setCoordinatesPositionsType(new CoordinatesPositionsType());
           List<CoordinatePoint> listCoordinatesPositions = new ArrayList<CoordinatePoint>();
           Collection<Coordinate> coordinates = gedIE.getPublicationCoordinates(pubId, componentId);
-          for(Coordinate coordinate : coordinates ) {
+          for (Coordinate coordinate : coordinates) {
             positionFileNameHTML = "index";
             Collection<CoordinatePoint> coordinatesPoints = coordinate.getCoordinatePoints();
-            for(CoordinatePoint coordinatePoint : coordinatesPoints) {
+            for (CoordinatePoint coordinatePoint : coordinatesPoints) {
               positionFileNameHTML += "-" + coordinatePoint.getNodeId();
               listCoordinatesPositions.add(coordinatePoint);
             }
@@ -1086,14 +1102,15 @@ public class ImportExport {
               null, null, publicationFileNameRelativePath);
           exportReport.addHtmlIndex(pubId, s);
 
-          for(String filePositions : filesPositionsHTMLToFill) {
-            fileHTML = new File(exportSummaryPath + File.separator+ filePositions);
+          for (String filePositions : filesPositionsHTMLToFill) {
+            fileHTML = new File(exportSummaryPath + File.separator + filePositions);
             SilverTrace.debug("importExport", "ImportExport.processExportKmax",
                 "root.MSG_GEN_PARAM_VALUE", "pubId = " + pubId);
             fileWriter = null;
             try {
               if (fileHTML.exists()) {
-                fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML.getPath(), true), Charsets.UTF_8);
+                fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML.getPath(), true),
+                    Charsets.UTF_8);
                 fileWriter.write(s.toHtmlSommairePublication(iframePublication));
               }
             } finally {
@@ -1153,7 +1170,8 @@ public class ImportExport {
         if (!file.exists()) {
           file.createNewFile();
         }
-        fileWriter = new OutputStreamWriter(new FileOutputStream(file.getPath(), true), Charsets.UTF_8);
+        fileWriter = new OutputStreamWriter(new FileOutputStream(file.getPath(), true),
+            Charsets.UTF_8);
 
         fileWriter.write(importReport.writeToLog(resource));
       } catch (Exception ex) {

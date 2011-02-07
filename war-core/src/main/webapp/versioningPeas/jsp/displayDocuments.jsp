@@ -140,7 +140,7 @@ ResourcesWrapper resources, String httpServerBase, VersioningSessionController v
 		builder.append("<script type=\"text/javascript\">");
 
 			builder.append("var oMenu"+documentId+";");
-			builder.append("var webDav"+documentId+" = \""+URLEncoder.encode(httpServerBase+version.getWebdavUrl())+"\";");
+			builder.append("var webDav"+documentId+" = \""+URLEncoder.encode(httpServerBase+version.getWebdavUrl(), "UTF-8")+"\";");
 			builder.append("YAHOO.util.Event.onContentReady(\"basicmenu"+documentId+"\", function () {");
 				builder.append("oMenu"+documentId+" = new YAHOO.widget.ContextMenu(\"basicmenu"+documentId+"\", { trigger: \"img_"+documentId+"\", hidedelay: 100, effect: { effect: YAHOO.widget.ContainerEffect.FADE, duration: 0.30}});");
 				builder.append("oMenu"+documentId+".render();");
@@ -365,7 +365,7 @@ ResourcesWrapper resources, String httpServerBase, VersioningSessionController v
 								out.println(" - " + resources.getOutputDate(document_version.getCreationDate()));
 								out.println("</span>");
 								if (StringUtil.isDefined(document.getDescription()) && showInfo)
-									out.println("<br/><i>"+Encode.javaStringToHtmlParagraphe(document.getDescription())+"</i>");
+									out.println("<br/><i>"+EncodeHelper.javaStringToHtmlParagraphe(document.getDescription())+"</i>");
 
 								if (document_version.isSpinfireDocument() && spinfireViewerEnable)
 							    {
