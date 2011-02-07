@@ -23,18 +23,6 @@
  */
 package com.silverpeas.importExport.control;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
 
 import com.silverpeas.attachment.importExport.AttachmentImportExport;
 import com.silverpeas.form.DataRecord;
@@ -53,7 +41,6 @@ import com.silverpeas.importExport.model.PublicationType;
 import com.silverpeas.importExport.report.ImportReportManager;
 import com.silverpeas.importExport.report.MassiveReport;
 import com.silverpeas.importExport.report.UnitReport;
-import com.silverpeas.node.importexport.NodePositionType;
 import com.silverpeas.publication.importExport.DBModelContentType;
 import com.silverpeas.publication.importExport.PublicationContentType;
 import com.silverpeas.publication.importExport.XMLModelContentType;
@@ -81,10 +68,6 @@ import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
-import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
@@ -96,6 +79,18 @@ import com.stratelia.webactiv.util.publication.info.model.ModelPK;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
 import org.apache.commons.io.FilenameUtils;
 
 /**
@@ -108,7 +103,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
   private static final OrganizationController organizationController = new OrganizationController();
   private PublicationBm publicationBm = null;
   private FormTemplateBm formTemplateBm = null;
-  private NodeBm nodeBm = null;
+  private com.stratelia.webactiv.util.node.control.NodeBm nodeBm = null;
   private AttachmentImportExport attachmentIE = new AttachmentImportExport();
 
   /**
@@ -158,12 +153,12 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @return l'EJB NodeBM
    * @throws ImportExportException
    */
-  protected NodeBm getNodeBm() throws ImportExportException {
+  protected com.stratelia.webactiv.util.node.control.NodeBm getNodeBm() throws ImportExportException {
 
     if (nodeBm == null) {
       try {
-        NodeBmHome kscEjbHome = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
+        com.stratelia.webactiv.util.node.control.NodeBmHome kscEjbHome = (com.stratelia.webactiv.util.node.control.NodeBmHome) EJBUtilitaire.getEJBObjectRef(
+            JNDINames.NODEBM_EJBHOME, com.stratelia.webactiv.util.node.control.NodeBmHome.class);
         nodeBm = kscEjbHome.create();
       } catch (Exception e) {
         throw new ImportExportException("GEDImportExport.getNodeBm()",
@@ -184,11 +179,10 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @throws ImportExportException
    */
   private PublicationDetail processPublicationDetail(UnitReport unitReport, UserDetail userDetail,
-      PublicationDetail pubDetailToCreate, List<NodePositionType> listOfNodeTypes) {
-
+      PublicationDetail pubDetailToCreate, List<com.silverpeas.node.importexport.NodePositionType> listOfNodeTypes) {
     // verification des ids de theme
 
-    List<NodePositionType> existingTopics = new ArrayList<NodePositionType>();
+    List<com.silverpeas.node.importexport.NodePositionType> existingTopics = new ArrayList<com.silverpeas.node.importexport.NodePositionType>();
     if (isKmax()) {
       existingTopics = listOfNodeTypes;
     } else {
@@ -220,9 +214,9 @@ public abstract class GEDImportExport extends ComponentImportExport {
       }
       if (!pubIdExists) {
         try {
-          Iterator<NodePositionType> itListNode_Type = existingTopics.iterator();
+          Iterator<com.silverpeas.node.importexport.NodePositionType> itListNode_Type = existingTopics.iterator();
           if (itListNode_Type.hasNext()) {
-            NodePositionType node_Type = itListNode_Type.next();
+            com.silverpeas.node.importexport.NodePositionType node_Type = itListNode_Type.next();
             pubDet_temp = getPublicationBm().getDetailByNameAndNodeId(pubDetailToCreate.getPK(),
                 pubDetailToCreate.getName(), node_Type.getId());
           }
@@ -239,7 +233,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
       }
       if (isKmax()) {
         try {
-          pubDet_temp = getPublicationBm().getDetailByName(pubDetailToCreate.getPK(),
+          pubDet_temp = getPublicationBm().getDetailByName(pubDetailToCreate.getPK(), 
               pubDetailToCreate.getName());
           if (pubDet_temp != null) {
             pubAlreadyExist = true;
@@ -276,11 +270,11 @@ public abstract class GEDImportExport extends ComponentImportExport {
         }
       } else {
         // Ajout de la publication aux topics
-        Iterator<NodePositionType> itListNode_Type = existingTopics.iterator();
+        Iterator<com.silverpeas.node.importexport.NodePositionType> itListNode_Type = existingTopics.iterator();
         if (!pubAlreadyExist) {
-          NodePositionType node_Type = itListNode_Type.next();
+          com.silverpeas.node.importexport.NodePositionType node_Type = itListNode_Type.next();
           try {
-            NodePK topicPK = new NodePK(Integer.toString(node_Type.getId()),
+            com.stratelia.webactiv.util.node.model.NodePK topicPK = new com.stratelia.webactiv.util.node.model.NodePK(java.lang.Integer.toString(node_Type.getId()),
                 pubDetailToCreate.getPK());
             pubId = createPublicationIntoTopic(pubDet_temp, topicPK, userDetail);
             pubDet_temp.getPK().setId(pubId);
@@ -292,9 +286,9 @@ public abstract class GEDImportExport extends ComponentImportExport {
         if (isKmelia()) {
           while (itListNode_Type.hasNext()) {
             // On ajoute la publication creee aux autres topics
-            NodePositionType node_Type = itListNode_Type.next();
+            com.silverpeas.node.importexport.NodePositionType node_Type = itListNode_Type.next();
             try {
-              NodePK topicPK = new NodePK(Integer.toString(node_Type.getId()), pubDetailToCreate.
+              com.stratelia.webactiv.util.node.model.NodePK topicPK = new com.stratelia.webactiv.util.node.model.NodePK(java.lang.Integer.toString(node_Type.getId()), pubDetailToCreate.
                   getPK());
               PublicationPK pubPK = new PublicationPK(pubId, pubDetailToCreate.getPK());
               if (pubAlreadyExist) {
@@ -354,12 +348,12 @@ public abstract class GEDImportExport extends ComponentImportExport {
     try {
       if (dbModelType != null) {
         // Contenu DBModel
-        createDBModelContent(unitReport, dbModelType, Integer.toString(pubId));
+        createDBModelContent(unitReport, dbModelType, java.lang.Integer.toString(pubId));
       } else if (wysiwygType != null) {
         // Contenu Wysiwyg
         createWysiwygContent(unitReport, pubId, wysiwygType, userId, webContext);
       } else if (xmlModel != null) {
-        createXMLModelContent(unitReport, xmlModel, Integer.toString(pubId), userId);
+        createXMLModelContent(unitReport, xmlModel, java.lang.Integer.toString(pubId), userId);
       }
     } catch (ImportExportException ex) {
       throw ex;
@@ -485,7 +479,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
     PublicationPK pubPK = new PublicationPK(pubId, "useless", getCurrentComponentId());
     InfoDetail infoDetailFromPub = getPublicationBm().getInfoDetail(pubPK);
-    ModelPK modelPK = new ModelPK(Integer.toString(dbModelType.getId()), "useless",
+    ModelPK modelPK = new ModelPK(java.lang.Integer.toString(dbModelType.getId()), "useless",
         getCurrentComponentId());
 
     ModelDetail modelDetail = getPublicationBm().getModelDetail(modelPK);
@@ -582,10 +576,9 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * Wysiwyg
    */
   private void createWysiwygContent(UnitReport unitReport, int pubId, WysiwygContentType wysiwygType,
-      String userId, String webContext) throws UtilException, WysiwygException,
-      ImportExportException {
+      String userId, String webContext) throws UtilException, WysiwygException, ImportExportException {
 
-    String wysiwygFileName = WysiwygController.getWysiwygFileName(Integer.toString(pubId));
+    String wysiwygFileName = WysiwygController.getWysiwygFileName(java.lang.Integer.toString(pubId));
     String wysiwygPath = AttachmentController.createPath(getCurrentComponentId(), "wysiwyg");
 
     // Recuperation du nouveau contenu wysiwyg
@@ -616,10 +609,10 @@ public abstract class GEDImportExport extends ComponentImportExport {
     }
 
     // Suppression de tout le contenu wysiwyg s il existe
-    if (WysiwygController.haveGotWysiwyg("useless", getCurrentComponentId(), Integer.toString(pubId))) {
+    if (WysiwygController.haveGotWysiwyg("useless", getCurrentComponentId(), java.lang.Integer.toString(pubId))) {
       // TODO: verifier d abord que la mise a jour est valide?!
       try {
-        WysiwygController.deleteWysiwygAttachmentsOnly("useless", getCurrentComponentId(), Integer.
+        WysiwygController.deleteWysiwygAttachmentsOnly("useless", getCurrentComponentId(), java.lang.Integer.
             toString(pubId));
       } catch (WysiwygException ex) {/* TODO: gerer l exception */
 
@@ -629,13 +622,13 @@ public abstract class GEDImportExport extends ComponentImportExport {
     }
 
     // Creation du fichier de contenu wysiwyg sur les serveur
-    String imagesContext = WysiwygController.getImagesFileName(Integer.toString(pubId));
+    String imagesContext = WysiwygController.getImagesFileName(java.lang.Integer.toString(pubId));
     String newWysiwygText = replaceWysiwygImagesPathForImport(unitReport, pubId, f.getParent(),
         wysiwygText, imagesContext, webContext);
     newWysiwygText = removeWysiwygStringsForImport(newWysiwygText);
     newWysiwygText = replaceWysiwygStringsForImport(newWysiwygText);
     WysiwygController.createFileAndAttachment(newWysiwygText, wysiwygFileName, "useless",
-        getCurrentComponentId(), "wysiwyg", Integer.toString(pubId), userId);
+        getCurrentComponentId(), "wysiwyg", java.lang.Integer.toString(pubId), userId);
   }
 
   /**
@@ -676,7 +669,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
           }
           // TODO: chercher autres infos utiles pour la creation des attachments ensuite
           try {
-            attDetail = attachmentIE.importWysiwygAttachment(Integer.toString(pubId),
+            attDetail = attachmentIE.importWysiwygAttachment(java.lang.Integer.toString(pubId),
                 getCurrentComponentId(), attDetail, imageContext);
             ImportReportManager.addNumberOfFilesProcessed(1);
             if (attDetail == null || attDetail.getSize() == 0) {
@@ -873,10 +866,10 @@ public abstract class GEDImportExport extends ComponentImportExport {
     }
   }
 
-  private List<NodePositionType> getExistingTopics(List<NodePositionType> nodeTypes,
+  private List<com.silverpeas.node.importexport.NodePositionType> getExistingTopics(List<com.silverpeas.node.importexport.NodePositionType> nodeTypes,
       String componentId) {
-    List<NodePositionType> topics = new ArrayList<NodePositionType>();
-    for (NodePositionType node : nodeTypes) {
+    List<com.silverpeas.node.importexport.NodePositionType> topics = new ArrayList<com.silverpeas.node.importexport.NodePositionType>();
+    for (com.silverpeas.node.importexport.NodePositionType node : nodeTypes) {
       if (isTopicExist(node.getId(), componentId)) {
         topics.add(node);
       }
@@ -886,7 +879,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   private boolean isTopicExist(int nodeId, String componentId) {
     try {
-      getNodeBm().getHeader(new NodePK(Integer.toString(nodeId), "useless", componentId));
+      getNodeBm().getHeader(new com.stratelia.webactiv.util.node.model.NodePK(java.lang.Integer.toString(nodeId), "useless", componentId));
     } catch (Exception e) {
       return false;
     }
@@ -904,7 +897,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * identifiant non modifie).
    * @throws ImportExportException en cas d'anomalie lors de la creation du noeud.
    */
-  protected abstract NodePK addSubTopicToTopic(NodeDetail nodeDetail, int topicId,
+  protected abstract com.stratelia.webactiv.util.node.model.NodePK addSubTopicToTopic(com.stratelia.webactiv.util.node.model.NodeDetail nodeDetail, int topicId,
       UnitReport unitReport) throws ImportExportException;
 
   /**
@@ -917,7 +910,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @return un objet cle primaire du nouveau theme cree.
    * @throws ImportExportException en cas d'anomalie lors de la creation du noeud.
    */
-  protected abstract NodePK addSubTopicToTopic(NodeDetail nodeDetail, int topicId,
+  protected abstract com.stratelia.webactiv.util.node.model.NodePK addSubTopicToTopic(com.stratelia.webactiv.util.node.model.NodeDetail nodeDetail, int topicId,
       MassiveReport massiveReport) throws ImportExportException;
 
   /**
@@ -931,10 +924,10 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * particulier si un noeud de meme ID existe deja ).
    * @throws ImportExportException en cas d'anomalie lors de la creation du noeud.
    */
-  public NodeDetail createTopicForUnitImport(UnitReport unitReport, NodeDetail nodeDetail,
+  public com.stratelia.webactiv.util.node.model.NodeDetail createTopicForUnitImport(UnitReport unitReport, com.stratelia.webactiv.util.node.model.NodeDetail nodeDetail,
       int parentTopicId) throws ImportExportException {
     unitReport.setItemName(nodeDetail.getName());
-    NodePK nodePk = addSubTopicToTopic(nodeDetail, parentTopicId, unitReport);
+    com.stratelia.webactiv.util.node.model.NodePK nodePk = addSubTopicToTopic(nodeDetail, parentTopicId, unitReport);
     try {
       return getNodeBm().getDetail(nodePk);
     } catch (RemoteException ex) {
@@ -956,7 +949,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @return 
    */
   public PublicationDetail createPublicationForUnitImport(UnitReport unitReport,
-      UserDetail userDetail, PublicationDetail pubDetail, List<NodePositionType> listNode_Type) {
+      UserDetail userDetail, PublicationDetail pubDetail, List<com.silverpeas.node.importexport.NodePositionType> listNode_Type) {
     unitReport.setItemName(pubDetail.getName());
     // On cree la publication
     return processPublicationDetail(unitReport, userDetail, pubDetail, listNode_Type);
@@ -974,9 +967,9 @@ public abstract class GEDImportExport extends ComponentImportExport {
   public PublicationDetail createPublicationForMassiveImport(UnitReport unitReport,
       UserDetail userDetail, PublicationDetail pubDetail, int nodeId) throws ImportExportException {
     unitReport.setItemName(pubDetail.getName());
-    NodePositionType nodePosType = new NodePositionType();
+    com.silverpeas.node.importexport.NodePositionType nodePosType = new com.silverpeas.node.importexport.NodePositionType();
     nodePosType.setId(nodeId);
-    List<NodePositionType> listNode_Type = new ArrayList<NodePositionType>(1);
+    List<com.silverpeas.node.importexport.NodePositionType> listNode_Type = new ArrayList<com.silverpeas.node.importexport.NodePositionType>(1);
     listNode_Type.add(nodePosType);
     return processPublicationDetail(unitReport, userDetail, pubDetail, listNode_Type);
   }
@@ -991,11 +984,11 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @return un objet qui represente le nouveau noeud cree.
    * @throws ImportExportException en cas d'anomalie lors de la creation du noeud.
    */
-  public NodeDetail addSubTopicToTopic(File directory, int topicId, MassiveReport massiveReport)
+  public com.stratelia.webactiv.util.node.model.NodeDetail addSubTopicToTopic(File directory, int topicId, MassiveReport massiveReport)
       throws ImportExportException {
     try {
       String directoryName = directory.getName();
-      NodeDetail nodeDetail = new NodeDetail("unknow", directoryName, directoryName, null, null,
+      com.stratelia.webactiv.util.node.model.NodeDetail nodeDetail = new com.stratelia.webactiv.util.node.model.NodeDetail("unknow", directoryName, directoryName, null, null,
           null, "0", "useless");
       nodeDetail.setNodePK(addSubTopicToTopic(nodeDetail, topicId, massiveReport));
       return nodeDetail;
@@ -1115,10 +1108,10 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @return - liste des nodesPk de la publication
    * @throws ImportExportException
    */
-  public List<NodePK> getAllTopicsOfPublication(String pubId, String componentId)
+  public List<com.stratelia.webactiv.util.node.model.NodePK> getAllTopicsOfPublication(String pubId, String componentId)
       throws ImportExportException {
 
-    Collection<NodePK> listNodePk = new ArrayList<NodePK>();
+    Collection<com.stratelia.webactiv.util.node.model.NodePK> listNodePk = new ArrayList<com.stratelia.webactiv.util.node.model.NodePK>();
     PublicationPK pubPK = new PublicationPK(pubId, "Useless", componentId);
 
     try {
@@ -1126,7 +1119,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
     } catch (RemoteException ex) {
       throw new ImportExportException("", "", ex);// TODO: completer!!
     }
-    return new ArrayList<NodePK>(listNodePk);
+    return new ArrayList<com.stratelia.webactiv.util.node.model.NodePK>(listNodePk);
 
   }
 
@@ -1134,7 +1127,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
     ModelDetail modelDetail = null;
     try {
-      modelDetail = getPublicationBm().getModelDetail(new ModelPK(Integer.toString(idModelDetail)));
+      modelDetail = getPublicationBm().getModelDetail(new ModelPK(java.lang.Integer.toString(idModelDetail)));
     } catch (RemoteException ex) {
       throw new ImportExportException("", "", ex);// TODO: completer!!
     }
@@ -1200,9 +1193,9 @@ public abstract class GEDImportExport extends ComponentImportExport {
       PublicationDetail pubDetailToCreate, UserDetail userDetail) throws Exception;
 
   protected abstract String createPublicationIntoTopic(PublicationDetail pubDet_temp,
-      NodePK topicPK, UserDetail userDetail) throws Exception;
+      com.stratelia.webactiv.util.node.model.NodePK topicPK, UserDetail userDetail) throws Exception;
 
-  protected abstract void addPublicationToTopic(PublicationPK pubPK, NodePK topicPK)
+  protected abstract void addPublicationToTopic(PublicationPK pubPK, com.stratelia.webactiv.util.node.model.NodePK topicPK)
       throws Exception;
 
   protected abstract CompletePublication getCompletePublication(PublicationPK pk) throws Exception;

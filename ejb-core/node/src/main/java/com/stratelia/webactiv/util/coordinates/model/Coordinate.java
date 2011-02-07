@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.webactiv.util.coordinates.model;
 
 import java.io.Serializable;
@@ -98,8 +95,9 @@ public class Coordinate implements Serializable {
    * @return
    * @see
    */
+  @Override
   public String toString() {
-    StringBuffer result = new StringBuffer("Coordinate {\n");
+    StringBuilder result = new StringBuilder("Coordinate {\n");
     result.append("  getCoordinateId() = ").append(getCoordinateId()).append("\n");    
     result.append("  getCoordinatePoints() = ").append(getCoordinatePoints().toString()).append("\n");
     result.append("}");

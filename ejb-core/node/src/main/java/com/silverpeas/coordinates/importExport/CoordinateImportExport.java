@@ -21,13 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.coordinates.importExport;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -71,27 +69,25 @@ public class CoordinateImportExport {
     try {
       NodeBm nodeBm = getNodeBm();
       // enrich combination by get ancestors
-      List<CoordinatePoint> allnodes = new ArrayList<CoordinatePoint>();      
-      String anscestorId = "";
+      List<CoordinatePoint> allnodes = new ArrayList<CoordinatePoint>();
       int i = 1;
-      for(String nodeId : combination) {
+      for (String nodeId : combination) {
         SilverTrace.info("coordinates", "CoordinateImportExport.addPositions()",
             "root.MSG_GEN_PARAM_VALUE", "nodeId = " + nodeId);
         NodePK nodePK = new NodePK(nodeId, componentId);
         SilverTrace.info("coordinates", "CoordinateImportExport.addPositions()",
             "root.MSG_GEN_PARAM_VALUE", "avant nodeBm.getPath() ! i = " + i);
         Collection<NodeDetail> path = nodeBm.getPath(nodePK);
-        SilverTrace.info("coordinates", "CoordinateImportExport.addPositions()", 
+        SilverTrace.info("coordinates", "CoordinateImportExport.addPositions()",
             "root.MSG_GEN_PARAM_VALUE", "path for nodeId " + nodeId + " = " + path.toString());
-        for(NodeDetail nodeDetail : path) {
-          anscestorId = nodeDetail.getNodePK().getId();
+        for (NodeDetail nodeDetail : path) {
+          String anscestorId = nodeDetail.getNodePK().getId();
           int nodeLevel = nodeDetail.getLevel();
-          if (!"0".equals(anscestorId)) {
+          if (!nodeDetail.getNodePK().isRoot()) {
             CoordinatePoint point;
             if (anscestorId.equals(nodeId)) {
               point = new CoordinatePoint(-1, Integer.parseInt(anscestorId), true, nodeLevel, i);
-            }
-            else {
+            } else {
               point = new CoordinatePoint(-1, Integer.parseInt(anscestorId), false, nodeLevel, i);
             }
             allnodes.add(point);
@@ -101,10 +97,8 @@ public class CoordinateImportExport {
       }
       coordinateId = getCoordinatesBm().addCoordinate(coordinatePK, allnodes);
     } catch (Exception e) {
-      throw new CoordinateRuntimeException(
-          "CoordinateImportExport.addPositions()",
-          SilverpeasRuntimeException.ERROR,
-          "coordinates.ADDING_COORDINATES_COMBINATION_FAILED", e);
+      throw new CoordinateRuntimeException("CoordinateImportExport.addPositions()",
+          SilverpeasRuntimeException.ERROR, "coordinates.ADDING_COORDINATES_COMBINATION_FAILED", e);
     }
     SilverTrace.debug("coordinates", "CoordinateImportExport.addPositions()",
         "root.MSG_GEN_PARAM_VALUE", "coordinateId = " + coordinateId);
@@ -112,23 +106,23 @@ public class CoordinateImportExport {
   }
 
   /**
-   * Get NodeByName
+   * Get a node by its name.
+   * @param name
+   * @param nodeRootId
+   * @param componentId
+   * @return 
    */
-  public NodeDetail getNodeDetailByName(String name, int nodeRootId,
-      String componentId) {
-    SilverTrace.debug("coordinates",
-        "CoordinateImportExport.getNodeDetailByName()",
-        "root.MSG_GEN_PARAM_VALUE", "name = " + name + " nodeRootId="
-        + nodeRootId + " componentId=" + componentId);
+  public NodeDetail getNodeDetailByName(String name, int nodeRootId, String componentId) {
+    SilverTrace.debug("coordinates", "CoordinateImportExport.getNodeDetailByName()",
+        "root.MSG_GEN_PARAM_VALUE", "name = " + name + " nodeRootId=" + nodeRootId
+        + " componentId=" + componentId);
     try {
-      NodeDetail nodeDetail = getNodeBm().getDetailByNameAndFatherId(
-          new NodePK("useless", componentId), name, nodeRootId);
+      NodeDetail nodeDetail = getNodeBm().getDetailByNameAndFatherId(new NodePK("useless",
+          componentId), name, nodeRootId);
       return nodeDetail;
     } catch (Exception e) {
-      throw new CoordinateRuntimeException(
-          "CoordinateImportExport.addNodesToPublication()",
-          SilverpeasRuntimeException.ERROR,
-          "coordinates.ATTACHING_NODES_TO_PUBLICATION_FAILED", e);
+      throw new CoordinateRuntimeException("CoordinateImportExport.addNodesToPublication()",
+          SilverpeasRuntimeException.ERROR, "coordinates.ATTACHING_NODES_TO_PUBLICATION_FAILED", e);
     }
   }
 
@@ -142,7 +136,6 @@ public class CoordinateImportExport {
     List<String> combination = new ArrayList<String>();
     while (st.hasMoreTokens()) {
       String axisValue = st.nextToken();
-      // axisValue is xx/xx/xx where xx are nodeId
       axisValue = axisValue.substring(axisValue.lastIndexOf('/') + 1, axisValue.length());
       combination.add(axisValue);
     }
@@ -157,9 +150,9 @@ public class CoordinateImportExport {
    * @return a List of displayName: Axe1 > value15
    * @throws RemoteException 
    */
-  public List<String> getCombinationLabels(List<String> combination, String componentId) 
+  public List<String> getCombinationLabels(List<String> combination, String componentId)
       throws RemoteException {
-    List<String> coordinatesLabels = new ArrayList<String>();    
+    List<String> coordinatesLabels = new ArrayList<String>();
     for (String position : combination) {
       StringTokenizer st = new StringTokenizer(position, "/");
       StringBuilder pathName = new StringBuilder();
@@ -170,11 +163,9 @@ public class CoordinateImportExport {
         if (nodeDetail.getLevel() > 1) {
           if (nodeDetail.getLevel() == 2) {
             pathName.append("<b>").append(nodeDetail.getName()).append("</b>").append(" > ");
-          }
-          else if (!st.hasMoreTokens()) {
+          } else if (!st.hasMoreTokens()) {
             pathName.append(nodeDetail.getName()).append("<br />");
-          }
-          else {
+          } else {
             pathName.append(nodeDetail.getName()).append(" > ");
           }
         }
@@ -200,22 +191,23 @@ public class CoordinateImportExport {
    * @param componentId
    * @return
    */
-  public List getAxis(String componentId) {
+  public List<NodeDetail> getAxis(String componentId) {
     ResourceLocator nodeSettings = new ResourceLocator(
         "com.stratelia.webactiv.util.node.nodeSettings", "");
     String sortField = nodeSettings.getString("sortField", "nodepath");
     String sortOrder = nodeSettings.getString("sortOrder", "asc");
-    List axis = new ArrayList();
+    List<NodeDetail> axis = new ArrayList<NodeDetail>();
     try {
       List headers = getAxisHeaders(componentId);
       NodeDetail header = null;
       for (int h = 0; h < headers.size(); h++) {
         header = (NodeDetail) headers.get(h);
         // Do not get hidden nodes (Basket and unclassified)
-        if (!NodeDetail.STATUS_INVISIBLE.equals(header.getStatus()))
-          // get content of this axis
+        if (!NodeDetail.STATUS_INVISIBLE.equals(header.getStatus())) // get content of this axis
+        {
           axis.addAll(getNodeBm().getSubTree(header.getNodePK(),
               sortField + " " + sortOrder));
+        }
       }
     } catch (Exception e) {
       throw new CoordinateRuntimeException("CoordinateImportExport.getAxis()",
@@ -230,36 +222,29 @@ public class CoordinateImportExport {
    * @param componentId
    * @return
    */
-  public List getAxisHeadersWithChildren(String componentId,
-      boolean includeUnclassified, boolean takeAxisInChildrenList) {
+  public List<NodeDetail> getAxisHeadersWithChildren(String componentId, boolean includeUnclassified,
+      boolean takeAxisInChildrenList) {
     ResourceLocator nodeSettings = new ResourceLocator(
         "com.stratelia.webactiv.util.node.nodeSettings", "");
     String sortField = nodeSettings.getString("sortField", "nodepath");
     String sortOrder = nodeSettings.getString("sortOrder", "asc");
-    List axis = new ArrayList();
+    List<NodeDetail> axis = new ArrayList<NodeDetail>();
     try {
-      List headers = getAxisHeaders(componentId);
-      NodeDetail header = null;
-      for (int h = 0; h < headers.size(); h++) {
-        header = (NodeDetail) headers.get(h);
-        Collection children = new ArrayList();
-        if (new Integer(header.getNodePK().getId()).intValue() > 1
-            && includeUnclassified) {
-          // children = getNodeBm().getSubTree(header.getNodePK(),
-          // sortField+" "+sortOrder);
-          children = getNodeBm().getSubTree(header.getNodePK(),
-              sortField + " " + sortOrder);
-          if (!takeAxisInChildrenList)
-            children.remove((NodeDetail) children.iterator().next());
+      List<NodeDetail> headers = getAxisHeaders(componentId);
+      for (NodeDetail header : headers) {
+        Collection<NodeDetail> children = new ArrayList<NodeDetail>();
+        if (Integer.parseInt(header.getNodePK().getId()) > 1 && includeUnclassified) {
+          children = getNodeBm().getSubTree(header.getNodePK(), sortField + " " + sortOrder);
+          if (!takeAxisInChildrenList) {
+            children.remove(children.iterator().next());
+          }
           header.setChildrenDetails(children);
           axis.add(header);
         }
       }
     } catch (Exception e) {
-      throw new CoordinateRuntimeException(
-          "CoordinateImportExport.getAxisHeadersWithChildren()",
-          SilverpeasRuntimeException.ERROR,
-          "coordinates.EX_IMPOSSIBLE_DOBTENIR_LES_AXES", e);
+      throw new CoordinateRuntimeException("CoordinateImportExport.getAxisHeadersWithChildren()",
+          SilverpeasRuntimeException.ERROR, "coordinates.EX_IMPOSSIBLE_DOBTENIR_LES_AXES", e);
     }
     return axis;
   }
@@ -275,16 +260,16 @@ public class CoordinateImportExport {
         "com.stratelia.webactiv.util.node.nodeSettings", "");
     String sortField = nodeSettings.getString("sortField", "nodepath");
     String sortOrder = nodeSettings.getString("sortOrder", "asc");
-    List children = new ArrayList();
+    List<NodeDetail> children = new ArrayList<NodeDetail>();
     try {
       children = getNodeBm().getSubTree(nodePK, sortField + " " + sortOrder);
-      if (!takeAxisInChildrenList)
-        children.remove((NodeDetail) children.iterator().next());
+      if (!takeAxisInChildrenList) {
+        children.remove(children.iterator().next());
+      }
     } catch (Exception e) {
-      throw new CoordinateRuntimeException(
-          "CoordinateImportExport.getAxisChildren()",
-          SilverpeasRuntimeException.ERROR,
-          "coordinates.EX_IMPOSSIBLE_DOBTENIR_LES_VALEURS_DUN_AXE", e);
+      throw new CoordinateRuntimeException("CoordinateImportExport.getAxisChildren()",
+          SilverpeasRuntimeException.ERROR, "coordinates.EX_IMPOSSIBLE_DOBTENIR_LES_VALEURS_DUN_AXE",
+          e);
     }
     return children;
   }
@@ -293,18 +278,14 @@ public class CoordinateImportExport {
    * @param componentId
    * @return
    */
-  public List getAxisHeaders(String componentId) {
-    List axisHeaders = null;
+  public List<NodeDetail> getAxisHeaders(String componentId) {
     try {
-      axisHeaders = getNodeBm().getHeadersByLevel(
-          new NodePK("useless", componentId), 2);
+      return getNodeBm().getHeadersByLevel(new NodePK("useless", componentId), 2);
     } catch (Exception e) {
-      throw new CoordinateRuntimeException(
-          "CoordinateImportExport.getAxisHeaders()",
+      throw new CoordinateRuntimeException("CoordinateImportExport.getAxisHeaders()",
           SilverpeasRuntimeException.ERROR,
           "coordinates.EX_IMPOSSIBLE_DOBTENIR_LES_ENTETES_DES_AXES", e);
     }
-    return axisHeaders;
   }
 
   /**
@@ -312,8 +293,7 @@ public class CoordinateImportExport {
    * @param position , ComponentId
    * @return nodePK
    */
-  public NodeDetail addPosition(NodeDetail position, String axisId,
-      String componentId) {
+  public NodeDetail addPosition(NodeDetail position, String axisId, String componentId) {
     SilverTrace.info("coordinates", "CoordinateImportExport.addPosition()",
         "root.MSG_GEN_PARAM_VALUE", "fatherId = " + axisId + " And position = "
         + position.toString());
@@ -324,8 +304,7 @@ public class CoordinateImportExport {
     NodeDetail positionDetail = null;
 
     fatherDetail = getNodeHeader(axisId, componentId);
-    SilverTrace
-        .info("coordinates", "CoordinateImportExport.addPosition()",
+    SilverTrace.info("coordinates", "CoordinateImportExport.addPosition()",
         "root.MSG_GEN_PARAM_VALUE", "fatherDetail = "
         + fatherDetail.toString());
     try {
@@ -392,8 +371,8 @@ public class CoordinateImportExport {
   private CoordinatesBm getCoordinatesBm() {
     CoordinatesBm coordinatesBm = null;
     try {
-      CoordinatesBmHome kscEjbHome = (CoordinatesBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.COORDINATESBM_EJBHOME,
+      CoordinatesBmHome kscEjbHome = (CoordinatesBmHome) EJBUtilitaire.getEJBObjectRef(
+          JNDINames.COORDINATESBM_EJBHOME,
           CoordinatesBmHome.class);
       coordinatesBm = kscEjbHome.create();
     } catch (Exception e) {
@@ -432,28 +411,27 @@ public class CoordinateImportExport {
    * @param prefixeId
    * @return
    */
-  public List coupleIds(List filesNames, List nodeIds, int cur, int loop,
-      int nTuple, String prefixeId, int nbAxis) {
-    String tmp;
+  public List<String> coupleIds(List<String> filesNames, List<String> nodeIds, int cur, int loop,
+      int nTuple, String prefixeId, int nbAxis) {    
     for (int i = cur; i < nodeIds.size(); i++) {
-      String terme = (String) nodeIds.get(i);
+      String terme =  nodeIds.get(i);
+      String tmp;
       if (prefixeId == null) {
         tmp = "" + terme;
       } else {
         tmp = prefixeId + "-" + terme;
       }
-
       if (loop < nTuple - 1) {
         coupleIds(filesNames, nodeIds, i + 1, loop + 1, nTuple, tmp, nbAxis);
       } else {
         String positionNameId = "index-" + tmp + ".html";
         StringTokenizer st = new StringTokenizer(positionNameId, "-");
-        // Take only file with used positions
         if (st.countTokens() - 1 == nbAxis) // don't consider first token: index
+        {
           filesNames.add(positionNameId);
+        }
       }
     }
     return filesNames;
   }
-
 }
