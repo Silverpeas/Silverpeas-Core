@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2009 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses />.
+
+-->
+<faqs xmlns="http://maven.apache.org/FML/1.0.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/FML/1.0.1 http://maven.apache.org/xsd/fml-1.0.1.xsd"
+  title="Frequently Asked Questions" toplink="false">
+
+  <part id="tech-admin">
+    <title>Technical Administration</title>
+
+    <faq id="jcr">
+      <question>
+        How to fix a corrupted JCR ?
+      </question>
+      <answer>
+        <p>Symptoms: </p>        
+        <ul>
+          <li>Silverpeas doesn't start.</li>
+          <li>You have something like this in the 
+            <i>traces.txt</i>
+          </li>
+        </ul>
+        <source>
+ERROR : failed to read bundle: b623a49a-d944-4f33-9412-efca41c7a75f: java.lang.IllegalArgumentException: Invalid namespace index: 11
+ERROR : Node /attachments/kmelia76/Attachment/Images/4825 (ac61b0c4-1b92-429d-b695-f62950e73627) has missing child 'Cahier de gestion de l Education juin 2010.xls' (b623a49a-d944-4f33-9412-efca41c7a75f)
+ERROR : Failed to initialize workspace 'jackrabbit'
+javax.jcr.RepositoryException: Error indexing workspace: Error indexing workspace: Error indexing workspace
+        </source>
+        <ol>
+          <li>Stop Silverpeas.</li>
+          <li>Edit the file 
+            <i>repository.xml</i> adding into the section 
+            <b>"PersistenceManager"</b> :
+            <source><![CDATA[<param name="consistencyCheck" value="true" />
+<param name="consistencyFix" value="true" />]]>
+            </source>
+          </li>
+          <li> Comment the section 
+            <b>"SearchIndex"</b>
+          </li>
+          <li>Restart Silverpeas </li>
+          <li>Check the traces for verifying that the fix is done.</li>
+          <li>Stop Silverpeas and put the file 
+            <i>repository.xml</i> into its previous state.
+          </li>
+        </ol>                
+        <p>The JCR should be ok.</p>
+      </answer>
+    </faq>
+    <faq id="Upgrade">
+      <question>
+        How do I upgrade my Silverpeas installation ?
+      </question>
+      <answer>
+        <p>Edit the file 
+          <i>$SILVERPEAS_HOME/bin/pom.xml</i> and change the version value (fort example, use 5.3.).
+          <br/>
+        In order to know the last available version got to 
+          <a href="http://www.silverpeas.org/redmine/projects/silverpeas/roadmap?completed=1&amp;with_subprojects=0&amp;with_subprojects=1">http://www.silverpeas.org/redmine/projects/silverpeas/roadmap?completed=1&amp;with_subprojects=0&amp;with_subprojects=1</a>.
+        </p>
+      </answer>
+    </faq>
+    <faq id="dad-config">
+      <question>
+        How do I configure the maximum size for an uploaded file ?
+      </question>
+      <answer>
+        <p>The maximum size for an uploaded file is configured in the file 
+          <i>${SILVERPEAS_HOME}/properties/com/stratelia/webactiv/util/uploads/uploadSettings</i>.
+You have to change the value for the key 
+          <source>MaximumFileSize</source> with a size expressed  in bytes.
+          <br/>
+For example to limit the size of an uploaded file to 15 Mo, the value should be (15 x 1024 x 1024) :
+          <source>MaximumFileSize=15728640</source>
+        </p>
+      </answer>
+    </faq>
+    <faq id="files-workflow">
+      <question>
+        How do I restore files sent into a workflow ?
+      </question>
+      <answer>
+        <p>The files are stored in the directory 
+          <source>${SILVERPEAS_DATA_HOME}/data/workspaces/Attachment</source>
+        </p>
+      </answer>
+    </faq>
+    <faq id="files-workflow">
+      <question>
+        How to configure Silverpeas to use rolling log files?
+      </question>
+      <answer>
+        <p>The file 
+          <i>traces.txt</i> can grow significally. You can use a rolling file for the logs.
+          <br/>
+        This can be achieved by configuring the 
+          <b>Silvertrace</b>.
+          <br/>
+        Edit the file 
+          <i>${SILVERPEAS_HOME}/silvertrace/rootModule.properties</i> and configure like this :
+          <br/>
+          <source>
+appender0.enabled=true
+appender0.type=APPENDER_ROLLING_FILE
+appender0.module=root
+appender0.layout=LAYOUT_DETAILED
+appender0.fileName=@ErrorDir@/traces.txt
+appender0.rollingMode=ROLLING_MODE_WEEK
+          </source>
+        </p>
+        <p> Thus the file 
+          <i>traces.txt</i> will be renammed each week. 
+        </p>
+      </answer>
+    </faq>
+  </part>
+
+  <part id="install">
+
+    <title>Configuration</title>
+    <faq id="csv-import">
+      <question>
+        What is the format of the CSV file for importing users in Silverpeas ?
+      </question>
+      <answer>
+        <p>The format is :</p><source>LastName;FirstName;Login;Email;Profile(Ex: Admin, AdminPdc, AdminDomain, User, Guest);Password</source>
+      </answer>
+    </faq>
+    <faq id="how-install">
+      <question>
+        How do I unactivate the display of the importance of a publication (the stars) in 
+        <b>Theme Tracker</b> ?
+      </question>
+      <answer>
+        <p>This can be done by editing the value of 
+          <b>showImportance</b> in the file 
+          <i>$SILVERPEAS_HOME/properties/com/stratelia/webactiv/kmelia/settings/kmeliaSettings.properties</i>.
+        The accepted values are : 
+          <ul>
+            <li>yes : activated</li>
+            <li>no : desactivated</li>
+          </ul>
+        </p>
+      </answer>
+    </faq>
+
+  </part>
+
+</faqs>

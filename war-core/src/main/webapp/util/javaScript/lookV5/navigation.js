@@ -41,6 +41,8 @@ var displayUserFavoriteSpace = false;
 // When user favorite space is enabled, this following parameter enable/disable the "contains sub favorite space" state.
 var enableAllUFSStates = false;
 
+var displayContextualPDC = true;
+
 function openMySpace()
 {
   	if (displayMySpace == "off")
@@ -181,13 +183,15 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
   
   function displayPDCFrame(spaceId, componentId)
   {
-	  try
-	  {
-		  top.pdcFrame.location.href=getFooterPage()+"spaces="+spaceId+"&componentSearch="+componentId;
-	  }
-	  catch (e)
-	  {
-		  //frame named 'pdcFrame' does not exist
+	  if (displayContextualPDC) {
+		  try
+		  {
+			  top.pdcFrame.location.href=getFooterPage()+"spaces="+spaceId+"&componentSearch="+componentId;
+		  }
+		  catch (e)
+		  {
+			  //frame named 'pdcFrame' does not exist
+		  }
 	  }
   }
   
@@ -728,6 +732,12 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
   	
   	//Check displayUserMenuDisplayMode in order to enable/disable user favorite space feature
   	ajaxEngine.sendRequest('getSpaceInfo','ResponseId=spaceUpdater','Init=1','GetPDC='+displayPDC(),'SpaceId='+getSpaceIdToInit(),'ComponentId='+getComponentIdToInit(),'UserMenuDisplayMode='+getUserMenuDisplayMode());
+  	
+  	try {
+  		displayContextualPDC = displayContextualPDC();
+  	} catch (e) {
+  		displayContextualPDC = true;
+  	}
   	
   	displayPDCFrame(getSpaceIdToInit(), getComponentIdToInit());
   });
