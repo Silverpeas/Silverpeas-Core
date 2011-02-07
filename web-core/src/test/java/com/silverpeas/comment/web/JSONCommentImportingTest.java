@@ -7,7 +7,7 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
+ * the GPL, you may redistribute this Program in connection withReader Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
@@ -19,7 +19,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along withReader this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.comment.web;
 
@@ -28,7 +28,6 @@ import com.silverpeas.comment.model.CommentPK;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.web.json.JSONCommentImporter;
-import com.silverpeas.export.ImportDescriptor;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.io.IOException;
 import java.io.StringReader;
@@ -47,6 +46,7 @@ import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static com.silverpeas.comment.web.json.JSONCommentFields.*;
 import static com.silverpeas.comment.web.CommentMatcher.*;
+import static com.silverpeas.export.ImportDescriptor.*;
 
 /**
  * Unit tests on the importing from JSON of comment instances.
@@ -78,7 +78,7 @@ public class JSONCommentImportingTest {
     String theCommentInJson = aJSONRepresentationOf(aComment);
     System.out.println("JSON:\n" + theCommentInJson);
     StringReader reader = new StringReader(theCommentInJson);
-    List<Comment> comments = jsonImporter.importFrom(new ImportDescriptor(reader));
+    List<Comment> comments = jsonImporter.importFrom(withReader(reader));
     assertThat(comments, hasSize(1));
     assertThat(comments.get(0), matches(aComment));
   }
@@ -91,7 +91,7 @@ public class JSONCommentImportingTest {
     String theCommentInJson = aJSONRepresentationOf(aComment1, aComment2, aComment3);
     System.out.println("JSON:\n" + theCommentInJson);
     StringReader reader = new StringReader(theCommentInJson);
-    List<Comment> comments = jsonImporter.importFrom(new ImportDescriptor(reader));
+    List<Comment> comments = jsonImporter.importFrom(withReader(reader));
     assertThat(comments, hasSize(3));
     assertThat(comments.get(0), matches(aComment1));
     assertThat(comments.get(1), matches(aComment2));

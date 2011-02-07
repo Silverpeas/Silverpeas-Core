@@ -7,7 +7,7 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
+ * the GPL, you may redistribute this Program in connection withWriter Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
@@ -19,18 +19,21 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along withWriter this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.silverpeas.comment.web;
 
+import com.silverpeas.export.Exporter;
 import com.silverpeas.accesscontrol.ComponentAccessController;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.comment.web.json.JSONCommentExporter;
 import com.stratelia.silverpeas.peasCore.SessionInfo;
 import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import java.io.StringWriter;
 import javax.inject.Inject;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
@@ -41,6 +44,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import static com.silverpeas.export.ExportDescriptor.*;
 
 /**
  * A REST Web resource representing a given comment.
@@ -53,6 +57,9 @@ public class CommentResource {
 
   @Inject
   private CommentService commentService;
+
+  @Inject
+  private JSONCommentExporter jsonExporter;
 
   @HeaderParam("X-Silverpeas-SessionKey")
   private String sessionKey;
@@ -76,20 +83,21 @@ public class CommentResource {
   @Produces(MediaType.APPLICATION_JSON)
   public String getComment(@PathParam("commentId") String commentId) {
     checkUserPriviledges();
+    StringWriter writer = new StringWriter();
     try {
-      Comment comment = commentService.getComment(new CommentPK(commentId, componentId));
-      
+      Comment comment = getCommentService().getComment(new CommentPK(commentId, getComponentId()));
+      getJSONExporter().export(withWriter(writer), comment);
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
-    return "";
+    return writer.toString();
   }
 
   /**
    * Gets the key of the user session.
    * @return the user session key.
    */
-  private String getUserSessionKey() {
+  protected String getUserSessionKey() {
     return sessionKey;
   }
 
@@ -97,7 +105,7 @@ public class CommentResource {
    * Gets the identifier of the Silverpeas instance to which the commented content belongs.
    * @return the Silverpeas component instance identifier.
    */
-  public String getComponentId() {
+  protected String getComponentId() {
     return componentId;
   }
 
@@ -105,25 +113,41 @@ public class CommentResource {
    * Gets the identifier of the content that is commentable.
    * @return the identifier of the commentable content.
    */
-  public String getContentId() {
+  protected String getContentId() {
     return contentId;
   }
 
   /**
+   * Gets a business service on comments.
+   * @return a comment service instance.
+   */
+  protected CommentService getCommentService() {
+    return commentService;
+  }
+
+  /**
+   * Gets an exporter able to export the comments in the JSON format.
+   * @return a JSON comment exporter.
+   */
+  protected Exporter<Comment> getJSONExporter() {
+    return jsonExporter;
+  }
+
+  /**
    * Checks the user has the correct priviledges to access the underlying referenced resource.
-   * It the check fail, a WebException is thrown with the HTTP status code set according to the
+   * It the check fail, a WebException is thrown withWriter the HTTP status code set according to the
    * failure.
    */
   private void checkUserPriviledges() {
     SessionManager sessionManager = SessionManager.getInstance();
-    SessionInfo sessionInfo = sessionManager.getUserDataSession(sessionKey);
+    SessionInfo sessionInfo = sessionManager.getUserDataSession(getUserSessionKey());
     if (sessionInfo == null) {
       throw new WebApplicationException(Status.UNAUTHORIZED);
     }
-    UserDetail user = sessionInfo.getUserDetail();
 
+    UserDetail user = sessionInfo.getUserDetail();
     ComponentAccessController accessController = new ComponentAccessController();
-    if (!accessController.isUserAuthorized(user.getId(), componentId)) {
+    if (!accessController.isUserAuthorized(user.getId(), getComponentId())) {
       throw new WebApplicationException(Status.FORBIDDEN);
     }
   }

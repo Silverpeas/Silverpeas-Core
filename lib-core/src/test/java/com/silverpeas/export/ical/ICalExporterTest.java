@@ -7,7 +7,7 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
+ * the GPL, you may redistribute this Program in connection withWriter Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
@@ -19,7 +19,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along withWriter this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.export.ical;
 
@@ -77,7 +77,7 @@ public class ICalExporterTest {
     assertNotNull(exporter);
 
     assertThat(new File(ICS_PATH).exists(), is(false));
-    descriptor = new ExportDescriptor(new FileWriter(ICS_PATH));
+    descriptor = ExportDescriptor.withWriter(new FileWriter(ICS_PATH));
   }
 
   @After
@@ -185,7 +185,7 @@ public class ICalExporterTest {
   }
 
   /**
-   * Export one recurring event with a recurring end date in iCal format into a specified file.
+   * Export one recurring event withWriter a recurring end date in iCal format into a specified file.
    * The recurring information of the event should be indicated in the iCal file.
    * @throws Exception if the export fails.
    */
@@ -205,7 +205,7 @@ public class ICalExporterTest {
   }
 
   /**
-   * Export one recurring event with a recurring end date in iCal format into a specified file.
+   * Export one recurring event withWriter a recurring end date in iCal format into a specified file.
    * The recurring information of the event should be indicated in the iCal file.
    * @throws Exception if the export fails.
    */

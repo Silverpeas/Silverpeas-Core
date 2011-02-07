@@ -57,34 +57,40 @@ public abstract class ImportExportDescriptor {
   }
 
   /**
-   * Sets a format into which the resource have to be exported.
-   * @param format the export format to set.
+   * Sets a format in which the resource to export will be or the resource to import is.
+   * @param format the export/import format to set.
+   * @return itself.
    */
-  public void setFormat(String format) {
+  public ImportExportDescriptor inFormat(String format) {
     if (! isDefined(format)) {
       this.format = NO_FORMAT;
     }
     this.format = format;
+    return this;
   }
 
   /**
-   * Adds a new preocess parameter. If a parameter already exists with the specifed name, the value
+   * Adds a new process parameter. If a parameter already exists with the specifed name, the value
    * is replaced.
    * @param <T> the type of the parameter value.
    * @param name the parameter name.
    * @param value the parameter value.
+   * @return itself.
    */
-  public <T> void addParameter(String name, final T value) {
+  public <T> ImportExportDescriptor withParameter(String name, final T value) {
     this.parameters.put(name, value);
+    return this;
   }
 
   /**
    * Removes the process parameter identified by the specified name. If no parameter with the
    * specified name exists, nothing is done.
    * @param name the parameter name.
+   * @return itself.
    */
-  public void removeParameter(String name) {
+  public ImportExportDescriptor withoutParameter(String name) {
     this.parameters.remove(name);
+    return this;
   }
 
   /**

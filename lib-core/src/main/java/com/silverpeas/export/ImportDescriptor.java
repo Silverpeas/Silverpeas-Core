@@ -7,7 +7,7 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
+ * the GPL, you may redistribute this Program in connection withReader Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
@@ -19,7 +19,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along withReader this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.silverpeas.export;
@@ -36,44 +36,34 @@ public class ImportDescriptor extends ImportExportDescriptor {
   private Reader reader = null;
 
   /**
-   * Constructs a new import descriptor with the specified reader and import format.
-   * @param reader the reader from wich the import will be deserialized.
-   * @param importFormat the format in which are resources to import.
+   * Creates and initializes a new descriptor on an export process withReader the specified reader and
+   * import format.
+   * @param reader the reader to use for importing the serializable resources.
+   * @return an import descriptor.
    */
-  public ImportDescriptor(final Reader reader, String importFormat) {
+  public static ImportDescriptor withReader(final Reader reader) {
+    return new ImportDescriptor(reader);
+  }
+
+  /**
+   * Constructs a new import descriptor withReader the specified reader. No specific format information
+   * will be passed to the importer.
+   * @param reader the reader from wich the resources will be deserialized.
+   */
+  private ImportDescriptor(final Reader reader) {
+    super();
     if (reader == null) {
       throw new IllegalArgumentException("The reader cannot be null!");
     }
     this.reader = reader;
-    setFormat(importFormat);
   }
 
   /**
-   * Constructs a new import descriptor with the specified reader. No specific format information
-   * will be passed to the importer.
-   * @param reader the reader from wich the resources will be deserialized.
-   */
-  public ImportDescriptor(final Reader reader) {
-    this(reader, NO_FORMAT);
-  }
-
-  /**
-   * Gets the reader with which the resources have to be imported.
+   * Gets the reader withReader which the resources have to be imported.
    * @return the reader.
    */
   public Reader getReader() {
     return this.reader;
-  }
-
-  /**
-   * Sets a new reader with this descriptor.
-   * @param reader the reader with which some resources will be imported.
-   */
-  public void setReader(final Reader reader) {
-    if (reader == null) {
-      throw new IllegalArgumentException("The reader cannot be null!");
-    }
-    this.reader = reader;
   }
 
 }

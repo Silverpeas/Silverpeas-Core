@@ -7,7 +7,7 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
+ * the GPL, you may redistribute this Program in connection withWriter Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
@@ -19,7 +19,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along withWriter this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.silverpeas.export;
@@ -36,44 +36,33 @@ public class ExportDescriptor extends ImportExportDescriptor {
   private Writer writer = null;
 
   /**
-   * Constructs a new export descriptor with the specified writer and export format.
-   * @param writer the writer into wich the export will be serialized.
-   * @param exportFormat the format of the export.
+   * Creates and initializes a new descriptor on an export process withWriter the specified writer.
+   * @param writer the writer to use for exporting the serializable resources.
+   * @return an export descriptor.
    */
-  public ExportDescriptor(final Writer writer, String exportFormat) {
+  public static ExportDescriptor withWriter(final Writer writer) {
+    return new ExportDescriptor(writer);
+  }
+
+  /**
+   * Constructs a new export descriptor withWriter the specified writer. No specific format information
+   * will be passed to the exporter.
+   * @param writer the writer into wich the resources will be serialized.
+   */
+  private ExportDescriptor(final Writer writer) {
+    super();
     if (writer == null) {
       throw new IllegalArgumentException("The writer cannot be null!");
     }
     this.writer = writer;
-    setFormat(exportFormat);
   }
 
   /**
-   * Constructs a new export descriptor with the specified writer. No specific format information
-   * will be passed to the exporter.
-   * @param writer the writer into wich the resources will be serialized.
-   */
-  public ExportDescriptor(final Writer writer) {
-    this(writer, NO_FORMAT);
-  }
-
-  /**
-   * Gets the writer with which the resources have to be exported.
+   * Gets the writer withWriter which the resources have to be exported.
    * @return the writer.
    */
   public Writer getWriter() {
     return this.writer;
-  }
-
-  /**
-   * Sets a new writer with this descriptor.
-   * @param writer the writer with which some resources will be exported.
-   */
-  public void setWriter(final Writer writer) {
-    if (writer == null) {
-      throw new IllegalArgumentException("The writer cannot be null!");
-    }
-    this.writer = writer;
   }
 
 }
