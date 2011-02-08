@@ -35,6 +35,7 @@ import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.io.StringWriter;
 import javax.inject.Inject;
+import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -79,6 +80,7 @@ public class CommentResource {
    * @param commentId the unique identifier of the comment.
    * @return the JSON representation of the asked comment.
    */
+  @GET
   @Path("{commentId}")
   @Produces(MediaType.APPLICATION_JSON)
   public String getComment(@PathParam("commentId") String commentId) {
