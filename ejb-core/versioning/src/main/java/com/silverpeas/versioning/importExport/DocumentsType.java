@@ -21,9 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.versioning.importExport;
 
+import com.stratelia.silverpeas.versioning.model.Document;
 import java.util.List;
 
 /**
@@ -32,20 +32,19 @@ import java.util.List;
  */
 public class DocumentsType {
 
-  private List listDocuments; // Document
+  private List<Document> listDocuments; // Document
 
   /**
    * @return
    */
-  public List getListDocuments() {
+  public List<Document> getListDocuments() {
     return listDocuments;
   }
 
   /**
    * @param list
    */
-  public void setListDocuments(List list) {
+  public void setListDocuments(List<Document> list) {
     listDocuments = list;
   }
-
 }
