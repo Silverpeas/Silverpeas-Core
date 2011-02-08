@@ -42,12 +42,11 @@
     wikis,
     images gallery and its own Enterprise Content Management tool.
   </description>
-
+  
   <scm>
-    <connection>scm:svn:https://www.silverpeas.org/svn/silverpeas/core/trunk</connection>
-    <developerConnection>scm:svn:https://www.silverpeas.org/svn/silverpeas/core/trunk
-    </developerConnection>
-    <url>http://www.silverpeas.org/websvn/repos/Silverpeas/list/core/trunk/</url>
+    <connection>scm:git:git@github.com:Silverpeas/Silverpeas-Core.git</connection>
+    <developerConnection>scm:git:git@github.com:Silverpeas/Silverpeas-Core.git</developerConnection>
+    <url>http://gitub.com/Silverpeas/Silverpeas-Core.git</url>
   </scm>
 
   <repositories>
