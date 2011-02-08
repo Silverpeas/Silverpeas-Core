@@ -25,18 +25,30 @@ package com.silverpeas.publication.importExport;
 
 import com.silverpeas.form.importExport.XMLField;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class XMLModelContentType {
 
   private String name = null;
+  private Map<String, XMLField> filesByName = new HashMap<String, XMLField>();
   private List<XMLField> fields = new ArrayList<XMLField>();
+  private boolean reindexed = false;
 
   public XMLModelContentType() {
   }
 
   public XMLModelContentType(String name) {
     this.name = name;
+  }
+
+  private void reindex() {
+    if (!reindexed) {
+      for (XMLField field : fields) {
+        filesByName.put(field.getName(), field);
+      }
+    }
   }
 
   /**
@@ -66,9 +78,17 @@ public class XMLModelContentType {
    */
   public void setFields(List<XMLField> fields) {
     this.fields = fields;
+    reindex();
   }
 
   public void addField(XMLField field) {
     fields.add(field);
+    filesByName.put(field.getName(), field);
+  }
+
+  public XMLField getField(String name) {
+    reindex();
+    reindexed = true;
+    return filesByName.get(name);
   }
 }

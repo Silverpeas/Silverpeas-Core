@@ -108,8 +108,7 @@ public class PublicationsTypeManager {
    */
   public PublicationsType processExport(ExportReport exportReport, UserDetail userDetail,
       List<WAAttributeValuePair> listItemsToExport, String exportPath, boolean useNameForFolders)
-      throws
-      ImportExportException, IOException {
+      throws ImportExportException, IOException {
     AttachmentImportExport attachmentIE = new AttachmentImportExport();
     VersioningImportExport versioningIE = new VersioningImportExport();
     PublicationsType publicationsType = new PublicationsType();
@@ -124,22 +123,17 @@ public class PublicationsTypeManager {
     // Parcours des publications à exporter
     for (WAAttributeValuePair attValue : listItemsToExport) {
       SilverTrace.debug("importExport", "PublicationTypeManager.processExport",
-          "root.MSG_GEN_PARAM_VALUE", "objectId = " + attValue.getName()
-          + ", instanceId = " + attValue.getValue());
+          "root.MSG_GEN_PARAM_VALUE", "objectId = " + attValue.getName() + ", instanceId = "
+          + attValue.getValue());
 
       String pubId = attValue.getName();
       String componentId = attValue.getValue();
-
       ComponentInst componentInst = orgaController.getComponentInst(componentId);
-
       GEDImportExport gedIE = ImportExportFactory.createGEDImportExport(userDetail, componentId);
-
       // Récupération du PublicationType
       PublicationType publicationType = gedIE.getPublicationCompleteById(pubId, componentId);
-
       SilverTrace.debug("importExport", "PublicationTypeManager.processExport",
           "root.MSG_GEN_PARAM_VALUE", "publicationType retrieved");
-
       PublicationDetail publicationDetail = publicationType.getPublicationDetail();
       listPubType.add(publicationType);
 
@@ -164,9 +158,8 @@ public class PublicationsTypeManager {
         SilverTrace.debug("importExport", "PublicationTypeManager.processExport",
             "root.MSG_GEN_PARAM_VALUE", "nodePositions added");
 
-        // Création de l'arborescence de dossiers pour la création de l'export
-        // de publication
-        NodePositionType nodePositionType = (NodePositionType) publicationType.getNodePositionsType().
+        // Création de l'arborescence de dossiers pour la création de l'export de publication
+        NodePositionType nodePositionType = publicationType.getNodePositionsType().
             getListNodePositionType().get(0);
         exportPublicationRelativePath = createPathDirectoryForPublicationExport(
             exportPath, nodePositionType.getId(), componentId, componentInst.getLabel(),
@@ -190,88 +183,118 @@ public class PublicationsTypeManager {
           }
           modelDetail = gedIE.getModelDetail(dbModelContent.getId());
         } else if (wysiwygContent != null) {
-          String wysiwygFileName = wysiwygContent.getPath();
-          gedIE.copyWysiwygImageForExport(pubId, componentId, exportPublicationPath);
-
-          try {
-            wysiwygText = WysiwygController.loadFileAndAttachment("useless", componentId, pubId);
-            wysiwygText = HtmlExportPublicationGenerator.replaceImagesPathForExport(wysiwygText);
-
-            if (wysiwygText == null) {
-              wysiwygText = ""; // To avoid exception in createFile below
-            }
-            // Enregistrement du nouveau fichier généré
-            FileFolderManager.createFile(exportPublicationPath, wysiwygFileName, wysiwygText);
-          } catch (Exception e) {
-            throw new ImportExportException("importExport",
-                "importExport.EX_CANT_GET_WYSIWYG", e);
-          }
-
-          wysiwygContent.setPath(exportPublicationRelativePath + File.separator
-              + wysiwygFileName);
+          wysiwygText = exportWysiwygContent(pubId, componentId, gedIE,
+              exportPublicationRelativePath, exportPublicationPath, wysiwygContent);
         } else if (xmlModel != null) {
           exportXmlForm(componentId, exportPublicationRelativePath, exportPublicationPath,
               xmlModel);
         }
       }
-
-      // Récupération des attachments et copie des fichiers
-      try {
-        List<AttachmentDetail> attachments;
-        if (ImportExportHelper.isVersioningUsed(componentInst)) {
-          attachments = versioningIE.exportDocuments(publicationDetail.getPK(),
-              exportPublicationPath, exportPublicationRelativePath, null);
-        } else {
-          attachments = attachmentIE.getAttachments(publicationDetail.getPK(),
-              exportPublicationPath, exportPublicationRelativePath, null);
-        }
-        if (attachments != null && attachments.size() > 0) {
-          publicationType.setAttachmentsType(new AttachmentsType());
-          publicationType.getAttachmentsType().setListAttachmentDetail(attachments);
-        }
-      } catch (Exception ex) {
-        // En cas d"objet non trouvé: pas d'exception gérée par le système
-        throw new ImportExportException("importExport",
-            "importExport.EX_CANT_GET_ATTACHMENTS", ex);
-      }
-      // Récupération du classement pdc
-      try {
-        List<ClassifyPosition> listClassifyPostion = pdc_impExp.getPositions(gedIE.getSilverObjectId(
-            pubId), publicationType.getComponentId());
-        if (listClassifyPostion != null && !listClassifyPostion.isEmpty()) {
-          publicationType.setPdcPositionsType(new PdcPositionsType());
-          publicationType.getPdcPositionsType().setListClassifyPosition(listClassifyPostion);
-        }
-      } catch (Exception ex) {
-        // En cas d"objet non trouvé: pas d'exception gérée par le système
-        throw new ImportExportException("importExport", "importExport.EX_CANT_GET_PDC_POSITION", ex);
-      }
-      String htmlNameIndex = "index.html";
-      HtmlExportPublicationGenerator s = new HtmlExportPublicationGenerator(publicationType,
-          modelDetail, wysiwygText, exportPublicationRelativePath + File.separator + htmlNameIndex);
-      exportReport.addHtmlIndex(pubId, s);
-      File fileHTML = new File(exportPublicationPath + File.separator + htmlNameIndex);
-      SilverTrace.debug("importExport", "PublicationTypeManager.processExport",
-          "root.MSG_GEN_PARAM_VALUE", "pubId = " + pubId);
-      Writer fileWriter = null;
-      try {
-        fileHTML.createNewFile();
-        fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML), "UTF-8");
-        fileWriter.write(s.toHtml());
-      } catch (IOException ex) {
+      exportAttachments(attachmentIE, versioningIE, componentInst, publicationType,
+          publicationDetail, exportPublicationRelativePath, exportPublicationPath);
+      exportPdc(pdc_impExp, pubId, gedIE, publicationType);
+      if (!writePublicationHtml(exportReport, wysiwygText, pubId, publicationType,
+          exportPublicationRelativePath, exportPublicationPath, modelDetail)) {
         return null;
-      } finally {
-        try {
-          fileWriter.close();
-        } catch (Exception ex) {
-          SilverTrace.debug("importExport", "PublicationTypeManager.processExport",
-              "root.MSG_GEN_PARAM_VALUE", "Exception = " + ex);
-        }
       }
       wysiwygText = null;
     }
     publicationsType.setListPublicationType(listPubType);
     return publicationsType;
+  }
+
+  String exportWysiwygContent(String pubId, String componentId, GEDImportExport gedIE,
+      String exportPublicationRelativePath, String exportPublicationPath,
+      WysiwygContentType wysiwygContent) throws ImportExportException {
+    String wysiwygText;
+    String wysiwygFileName = wysiwygContent.getPath();
+    gedIE.copyWysiwygImageForExport(pubId, componentId, exportPublicationPath);
+
+    try {
+      wysiwygText = WysiwygController.loadFileAndAttachment("useless", componentId, pubId);
+      wysiwygText = HtmlExportPublicationGenerator.replaceImagesPathForExport(wysiwygText);
+      if (wysiwygText == null) {
+        wysiwygText = ""; // To avoid exception in createFile below
+      }
+      // Enregistrement du nouveau fichier généré
+      FileFolderManager.createFile(exportPublicationPath, wysiwygFileName, wysiwygText);
+    } catch (Exception e) {
+      throw new ImportExportException("importExport",
+          "importExport.EX_CANT_GET_WYSIWYG", e);
+    }
+
+    wysiwygContent.setPath(exportPublicationRelativePath + File.separator
+        + wysiwygFileName);
+    return wysiwygText;
+  }
+
+  boolean writePublicationHtml(ExportReport exportReport, String wysiwygText, String pubId,
+      PublicationType publicationType, String exportPublicationRelativePath,
+      String exportPublicationPath, ModelDetail modelDetail) {
+    String htmlNameIndex = "index.html";
+    HtmlExportPublicationGenerator s = new HtmlExportPublicationGenerator(publicationType,
+        modelDetail, wysiwygText, exportPublicationRelativePath + File.separator + htmlNameIndex);
+    exportReport.addHtmlIndex(pubId, s);
+    File fileHTML = new File(exportPublicationPath + File.separator + htmlNameIndex);
+    SilverTrace.debug("importExport", "PublicationTypeManager.processExport",
+        "root.MSG_GEN_PARAM_VALUE", "pubId = " + pubId);
+    Writer fileWriter = null;
+    try {
+      fileHTML.createNewFile();
+      fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML), "UTF-8");
+      fileWriter.write(s.toHtml());
+    } catch (IOException ex) {
+      return false;
+    } finally {
+      try {
+        fileWriter.close();
+      } catch (Exception ex) {
+        SilverTrace.debug("importExport", "PublicationTypeManager.processExport",
+            "root.MSG_GEN_PARAM_VALUE", "Exception = " + ex);
+      }
+    }
+    return true;
+  }
+
+  void exportPdc(PdcImportExport pdc_impExp, String pubId, GEDImportExport gedIE,
+      PublicationType publicationType) throws ImportExportException {
+    // Récupération du classement pdc
+    try {
+      List<ClassifyPosition> listClassifyPostion = pdc_impExp.getPositions(gedIE.getSilverObjectId(
+          pubId), publicationType.getComponentId());
+      if (listClassifyPostion != null && !listClassifyPostion.isEmpty()) {
+        publicationType.setPdcPositionsType(new PdcPositionsType());
+        publicationType.getPdcPositionsType().setListClassifyPosition(listClassifyPostion);
+      }
+    } catch (Exception ex) {
+      // En cas d"objet non trouvé: pas d'exception gérée par le système
+      throw new ImportExportException("importExport", "importExport.EX_CANT_GET_PDC_POSITION", ex);
+    }
+  }
+
+  void exportAttachments(AttachmentImportExport attachmentIE, VersioningImportExport versioningIE,
+      ComponentInst componentInst, PublicationType publicationType,
+      PublicationDetail publicationDetail, String exportPublicationRelativePath,
+      String exportPublicationPath) throws ImportExportException {
+    // Récupération des attachments et copie des fichiers
+    try {
+      List<AttachmentDetail> attachments;
+      if (ImportExportHelper.isVersioningUsed(componentInst)) {
+        attachments = versioningIE.exportDocuments(publicationDetail.getPK(),
+            exportPublicationPath, exportPublicationRelativePath, null);
+      } else {
+        attachments = attachmentIE.getAttachments(publicationDetail.getPK(),
+            exportPublicationPath, exportPublicationRelativePath, null);
+      }
+      if (attachments != null && attachments.size() > 0) {
+        publicationType.setAttachmentsType(new AttachmentsType());
+        publicationType.getAttachmentsType().setListAttachmentDetail(attachments);
+      }
+    } catch (Exception ex) {
+      // En cas d"objet non trouvé: pas d'exception gérée par le système
+      throw new ImportExportException("importExport",
+          "importExport.EX_CANT_GET_ATTACHMENTS", ex);
+    }
   }
 
   void exportXmlForm(String componentId, String exportPublicationRelativePath,
@@ -316,7 +339,6 @@ public class PublicationsTypeManager {
               SilverTrace.warn("importExport", "PublicationTypeManager.processExport",
                   "root.EX_CANT_WRITE_FILE", e);
             }
-
             xmlField.setValue(exportPublicationRelativePath + File.separator + attachment.
                 getLogicalName());
           }
@@ -346,7 +368,7 @@ public class PublicationsTypeManager {
    * @param topicId - id du topic dont on veut la branche
    * @param componentId - id du composant de la publication
    * @param componentLabel - label du composant
-   * @param pub - la publication
+   * @param pubName - nom de la publication
    * @return le chemin relatif créé
    */
   private String createPathDirectoryForPublicationExport(String exportPath, int topicId,
@@ -474,7 +496,7 @@ public class PublicationsTypeManager {
    * @param positionPath - ensemble des noeuds sur laquelle la publication est classée
    * @param componentId - id du composant de la publication
    * @param componentLabel - label du composant
-   * @param pubName - nom de la publication
+   * @param pub - la publication
    * @return le chemin relatif créé
    */
   private String createPathDirectoryForKmaxPublicationExport(String exportPath,
@@ -603,187 +625,189 @@ public class PublicationsTypeManager {
             pubDetailToCreate = new PublicationDetail();
           }
         }
-        pubDetailToCreate.setPk(new PublicationPK(null, "useless", componentId));
-        // Le mapping contient l'élément publicationHeader
-        if (pubType.getId() != -1) {
-          pubDetailToCreate.getPK().setId(java.lang.Integer.toString(pubType.getId()));
-        }
+        if (pubDetailToCreate != null) {
+          pubDetailToCreate.setPk(new PublicationPK(null, "useless", componentId));
+          // Le mapping contient l'élément publicationHeader
+          if (pubType.getId() != -1) {
+            pubDetailToCreate.getPK().setId(java.lang.Integer.toString(pubType.getId()));
+          }
 
-        // Vérifie les données nécessaires à la création de la publication
-        checkPublication(pubDetailToCreate, userDetail);
+          // Vérifie les données nécessaires à la création de la publication
+          checkPublication(pubDetailToCreate, userDetail);
 
-        // Specific classify for kmax
-        if (isKmax(componentId)) {
-          // kmax : Get coordinates with value (name of the position)
-          List<Coordinate> coordinates = pubType.getCoordinatesPositionsType().
-              getCoordinatesPositions();
-          boolean createCoordinateAllowed = pubType.getCoordinatesPositionsType().getCreateEnable();
-          if (coordinates != null) {
-            for (Coordinate coordinate : coordinates) {
-              if (coordinate != null) {
-                Collection<CoordinatePointType> listCoordinatePointsType = coordinate.
-                    getCoordinatePoints();
-                if (listCoordinatePointsType != null) {
-                  StringBuffer coordinatePointsPath = new StringBuffer("");
-                  boolean first = true;
-                  for (CoordinatePointType coordinatePointType : listCoordinatePointsType) {
-                    if (StringUtil.isDefined(coordinatePointType.getValue())) {
-                      // Get NodeDetail by his name
-                      NodeDetail nodeDetail = coordinateIE.getNodeDetailByName(
-                          coordinatePointType.getValue(), coordinatePointType.getAxisId(),
-                          componentId);
-                      SilverTrace.debug("importExport", "PublicationsTypeManager.processImport",
-                          "root.MSG_GEN_PARAM_VALUE", "nodeDetail avant= " + nodeDetail);
-                      if (nodeDetail == null && createCoordinateAllowed) {
-                        NodeDetail position = new NodeDetail("toDefine",
-                            coordinatePointType.getValue(), "", null, userDetail.getId(), null,
-                            "0", String.valueOf(coordinatePointType.getAxisId()), null);
-                        nodeDetail = coordinateIE.addPosition(position, String.valueOf(
-                            coordinatePointType.getAxisId()), componentId);
+          // Specific classify for kmax
+          if (isKmax(componentId)) {
+            // kmax : Get coordinates with value (name of the position)
+            List<Coordinate> coordinates = pubType.getCoordinatesPositionsType().
+                getCoordinatesPositions();
+            boolean createCoordinateAllowed = pubType.getCoordinatesPositionsType().getCreateEnable();
+            if (coordinates != null) {
+              for (Coordinate coordinate : coordinates) {
+                if (coordinate != null) {
+                  Collection<CoordinatePointType> listCoordinatePointsType = coordinate.
+                      getCoordinatePoints();
+                  if (listCoordinatePointsType != null) {
+                    StringBuffer coordinatePointsPath = new StringBuffer("");
+                    boolean first = true;
+                    for (CoordinatePointType coordinatePointType : listCoordinatePointsType) {
+                      if (StringUtil.isDefined(coordinatePointType.getValue())) {
+                        // Get NodeDetail by his name
+                        NodeDetail nodeDetail = coordinateIE.getNodeDetailByName(
+                            coordinatePointType.getValue(), coordinatePointType.getAxisId(),
+                            componentId);
                         SilverTrace.debug("importExport", "PublicationsTypeManager.processImport",
-                            "root.MSG_GEN_PARAM_VALUE", "nodeDetail apres création= " + nodeDetail);
-                      }
-                      if (nodeDetail != null) {
-                        if (first) {
-                          coordinatePointsPath.append(nodeDetail.getPath()).append(
-                              nodeDetail.getId());
-                          first = false;
-                        } else {
-                          coordinatePointsPath.append(",").
-                              append(nodeDetail.getPath()).append(nodeDetail.getId());
+                            "root.MSG_GEN_PARAM_VALUE", "nodeDetail avant= " + nodeDetail);
+                        if (nodeDetail == null && createCoordinateAllowed) {
+                          NodeDetail position = new NodeDetail("toDefine",
+                              coordinatePointType.getValue(), "", null, userDetail.getId(), null,
+                              NodePK.ROOT_NODE_ID, String.valueOf(coordinatePointType.getAxisId()), null);
+                          nodeDetail = coordinateIE.addPosition(position, String.valueOf(
+                              coordinatePointType.getAxisId()), componentId);
+                          SilverTrace.debug("importExport", "PublicationsTypeManager.processImport",
+                              "root.MSG_GEN_PARAM_VALUE", "nodeDetail apres création= " + nodeDetail);
+                        }
+                        if (nodeDetail != null) {
+                          if (first) {
+                            coordinatePointsPath.append(nodeDetail.getPath()).append(
+                                nodeDetail.getId());
+                            first = false;
+                          } else {
+                            coordinatePointsPath.append(",").
+                                append(nodeDetail.getPath()).append(nodeDetail.getId());
+                          }
                         }
                       }
                     }
-                  }
-                  SilverTrace.debug("importExport", "PublicationsTypeManager.processImport",
-                      "root.MSG_GEN_PARAM_VALUE", "coordinatePointsPath = " + coordinatePointsPath);
-                  // Add coordinate (set of coordinatePoints)
-                  int coordinateId = coordinateIE.addPositions(componentId, coordinatePointsPath.
-                      toString());
-                  if (coordinateId == 0) {
-                    unitReport.setError(UnitReport.ERROR_INCORRECT_CLASSIFICATION_ON_COMPONENT);
-                  } else {
-                    nodesKmax.add(Integer.valueOf(coordinateId));
+                    SilverTrace.debug("importExport", "PublicationsTypeManager.processImport",
+                        "root.MSG_GEN_PARAM_VALUE", "coordinatePointsPath = " + coordinatePointsPath);
+                    // Add coordinate (set of coordinatePoints)
+                    int coordinateId = coordinateIE.addPositions(componentId, coordinatePointsPath.
+                        toString());
+                    if (coordinateId == 0) {
+                      unitReport.setError(UnitReport.ERROR_INCORRECT_CLASSIFICATION_ON_COMPONENT);
+                    } else {
+                      nodesKmax.add(Integer.valueOf(coordinateId));
+                    }
                   }
                 }
               }
             }
+            SilverTrace.debug("importExport", "PublicationsTypeManager.processImport",
+                "root.MSG_GEN_PARAM_VALUE", "TOTAL List coordinatesId = " + nodesKmax);
+          } else // récupère les thèmes dans lesquels la publication doit être créée
+          {
+            nodes = pubType.getNodePositionsType().getListNodePositionType();
           }
-          SilverTrace.debug("importExport", "PublicationsTypeManager.processImport",
-              "root.MSG_GEN_PARAM_VALUE", "TOTAL List coordinatesId = " + nodesKmax);
-        } else // récupère les thèmes dans lesquels la publication doit être créée
-        {
-          nodes = pubType.getNodePositionsType().getListNodePositionType();
-        }
 
-        // Création ou modification de la publication
-        PublicationDetail pubDetail = gedIE.createPublicationForUnitImport(unitReport, userDetail,
-            pubDetailToCreate, nodes);
+          // Création ou modification de la publication
+          PublicationDetail pubDetail = gedIE.createPublicationForUnitImport(unitReport, userDetail,
+              pubDetailToCreate, nodes);
 
-        try {
-          if (pubDetail != null) {
-            if (isKmax(componentId)) {
-              PublicationImportExport.addNodesToPublication(pubDetail.getPK(), nodesKmax);
-            }
-            // traitement du contenu de la publi
-            if (pubType.getPublicationContentType() != null) {
-              try {
-                gedIE.createPublicationContent(unitReport, Integer.parseInt(pubDetail.getId()),
-                    pubType.getPublicationContentType(), userDetail.getId());
-              } catch (ImportExportException ex) {
-                if (unitReport.getError() == UnitReport.ERROR_NO_ERROR) {
-                  unitReport.setError(UnitReport.ERROR_CANT_CREATE_CONTENT);
+          try {
+            if (pubDetail != null) {
+              if (isKmax(componentId)) {
+                PublicationImportExport.addNodesToPublication(pubDetail.getPK(), nodesKmax);
+              }
+              // traitement du contenu de la publi
+              if (pubType.getPublicationContentType() != null) {
+                try {
+                  gedIE.createPublicationContent(unitReport, Integer.parseInt(pubDetail.getId()),
+                      pubType.getPublicationContentType(), userDetail.getId());
+                } catch (ImportExportException ex) {
+                  if (unitReport.getError() == UnitReport.ERROR_NO_ERROR) {
+                    unitReport.setError(UnitReport.ERROR_CANT_CREATE_CONTENT);
+                  }
                 }
               }
-            }
 
-            // traitement des fichiers joints à la publi
-            if (attachments != null) {
-              List<AttachmentDetail> copiedAttachments;
-              if (ImportExportHelper.isVersioningUsed(componentInst)) {
-                // Mode versioning
-                // copie des fichiers sur le serveur et enrichissement des AttachmentDetail
-                copiedAttachments = attachmentIE.copyFiles(componentId, attachments, versioningIE.
+              // traitement des fichiers joints à la publi
+              if (attachments != null) {
+                List<AttachmentDetail> copiedAttachments;
+                if (ImportExportHelper.isVersioningUsed(componentInst)) {
+                  // Mode versioning
+                  // copie des fichiers sur le serveur et enrichissement des AttachmentDetail
+                  copiedAttachments = attachmentIE.copyFiles(componentId, attachments, versioningIE.
+                      getVersioningPath(componentId));
+                  if (copiedAttachments.size() != attachments.size()) {
+                    unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
+                  }
+                  versioningIE.importDocuments(pubDetail.getId(), componentId, copiedAttachments,
+                      Integer.parseInt(userDetail.getId()), pubDetail.isIndexable());
+                } else {
+                  // Ajout des attachments
+                  copiedAttachments = attachmentIE.importAttachments(pubDetail.getId(), componentId,
+                      attachments, userDetail.getId(), pubDetail.isIndexable());
+                  if (copiedAttachments.size() != attachments.size()) {
+                    unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
+                  }
+                }
+                ImportReportManager.addNumberOfFilesProcessed(copiedAttachments.size());
+                ImportReportManager.addNumberOfFilesNotImported(attachments.size()
+                    - copiedAttachments.size());
+
+                // On additionne la taille des fichiers importés au niveau du rapport
+                for (AttachmentDetail attdetail : copiedAttachments) {
+                  ImportReportManager.addImportedFileSize(attdetail.getSize(), componentId);
+                }
+              }
+              if (documents != null && ImportExportHelper.isVersioningUsed(componentInst)) {
+                // Get number of versions
+                int nbFiles = 0;
+                for (Document document : documents) {
+                  nbFiles += document.getVersionsType().getListVersions().size();
+                }
+
+                // Copy files on disk, set info on each version
+                List<DocumentVersion> copiedFiles = versioningIE.copyFiles(componentId, documents, versioningIE.
                     getVersioningPath(componentId));
-                if (copiedAttachments.size() != attachments.size()) {
-                  unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
-                }
-                versioningIE.importDocuments(pubDetail.getId(), componentId, copiedAttachments,
-                    Integer.parseInt(userDetail.getId()), pubDetail.isIndexable());
-              } else {
-                // Ajout des attachments
-                copiedAttachments = attachmentIE.importAttachments(pubDetail.getId(), componentId,
-                    attachments, userDetail.getId(), pubDetail.isIndexable());
-                if (copiedAttachments.size() != attachments.size()) {
-                  unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
+                ImportReportManager.addNumberOfFilesProcessed(copiedFiles.size());
+                ImportReportManager.addNumberOfFilesNotImported(nbFiles - copiedFiles.size());
+
+                // Create documents and versions in DB
+                versioningIE.importDocuments(new ForeignPK(pubDetail.getId(), componentId),
+                    documents, Integer.parseInt(userDetail.getId()), ImportExportHelper.isIndexable(
+                    pubDetail));
+
+                // On additionne la taille des fichiers importés au niveau du rapport
+                for (DocumentVersion version : copiedFiles) {
+                  ImportReportManager.addImportedFileSize(version.getSize(), componentId);
                 }
               }
-              ImportReportManager.addNumberOfFilesProcessed(copiedAttachments.size());
-              ImportReportManager.addNumberOfFilesNotImported(attachments.size()
-                  - copiedAttachments.size());
 
-              // On additionne la taille des fichiers importés au niveau du rapport
-              for (AttachmentDetail attdetail : copiedAttachments) {
-                ImportReportManager.addImportedFileSize(attdetail.getSize(), componentId);
+              // traitement du classement PDC
+              try {
+                int silverObjectId = gedIE.getSilverObjectId(pubDetail.getId());
+
+                // Ajout au plan de classement s'il y en a
+                if (pubType.getPdcPositionsType() != null) {
+                  boolean pdcOK =
+                      pdcIE.addPositions(silverObjectId, componentId, pubType.getPdcPositionsType());
+                  if (!pdcOK) {
+                    unitReport.setError(UnitReport.ERROR_INCORRECT_CLASSIFICATION_ON_COMPONENT);
+                  }
+                }
+
+                List<ClassifyPosition> positions = pdcIE.getPositions(silverObjectId, componentId);
+                if (positions == null) {
+                  // La publication n'est pas classée sur le PDC
+                  // Si le mode brouillon est activé et que le classement est obligatoire, la
+                  // publication passe en mode "Draft"
+                  if (pdcIE.isClassifyingMandatory(componentId) && ImportExportHelper.isDraftUsed(
+                      componentInst)) {
+                    gedIE.publicationNotClassifiedOnPDC(pubDetail.getId());
+                  }
+                }
+              } catch (Exception e) {
+                unitReport.setError(UnitReport.ERROR_INCORRECT_CLASSIFICATION_ON_COMPONENT);
               }
             }
-            if (documents != null && ImportExportHelper.isVersioningUsed(componentInst)) {
-              // Get number of versions
-              int nbFiles = 0;
-              for (Document document : documents) {
-                nbFiles += document.getVersionsType().getListVersions().size();
-              }
-
-              // Copy files on disk, set info on each version
-              List<DocumentVersion> copiedFiles = versioningIE.copyFiles(componentId, documents, versioningIE.
-                  getVersioningPath(componentId));
-              ImportReportManager.addNumberOfFilesProcessed(copiedFiles.size());
-              ImportReportManager.addNumberOfFilesNotImported(nbFiles - copiedFiles.size());
-
-              // Create documents and versions in DB
-              versioningIE.importDocuments(new ForeignPK(pubDetail.getId(), componentId),
-                  documents, Integer.parseInt(userDetail.getId()), ImportExportHelper.isIndexable(
-                  pubDetail));
-
-              // On additionne la taille des fichiers importés au niveau du rapport
-              for (DocumentVersion version : copiedFiles) {
-                ImportReportManager.addImportedFileSize(version.getSize(), componentId);
-              }
-            }
-
-            // traitement du classement PDC
-            try {
-              int silverObjectId = gedIE.getSilverObjectId(pubDetail.getId());
-
-              // Ajout au plan de classement s'il y en a
-              if (pubType.getPdcPositionsType() != null) {
-                boolean pdcOK =
-                    pdcIE.addPositions(silverObjectId, componentId, pubType.getPdcPositionsType());
-                if (!pdcOK) {
-                  unitReport.setError(UnitReport.ERROR_INCORRECT_CLASSIFICATION_ON_COMPONENT);
-                }
-              }
-
-              List<ClassifyPosition> positions = pdcIE.getPositions(silverObjectId, componentId);
-              if (positions == null) {
-                // La publication n'est pas classée sur le PDC
-                // Si le mode brouillon est activé et que le classement est obligatoire, la
-                // publication passe en mode "Draft"
-                if (pdcIE.isClassifyingMandatory(componentId) && ImportExportHelper.isDraftUsed(
-                    componentInst)) {
-                  gedIE.publicationNotClassifiedOnPDC(pubDetail.getId());
-                }
-              }
-            } catch (Exception e) {
-              unitReport.setError(UnitReport.ERROR_INCORRECT_CLASSIFICATION_ON_COMPONENT);
-            }
+          } catch (Exception ex) {
+            unitReport.setError(UnitReport.ERROR_ERROR);
+            SilverTrace.error("importExport", "PublicationsTypeManager.processImport()",
+                "root.EX_NO_MESSAGE", ex);
           }
-        } catch (Exception ex) {
-          unitReport.setError(UnitReport.ERROR_ERROR);
-          SilverTrace.error("importExport", "PublicationsTypeManager.processImport()",
-              "root.EX_NO_MESSAGE", ex);
+          attachments = null;
         }
-        attachments = null;
       }
       nbItem++;
     }
