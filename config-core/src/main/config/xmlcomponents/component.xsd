@@ -27,37 +27,33 @@ targetNamespace="http://silverpeas.org/xml/ns/component">
       </xs:documentation>
     </xs:annotation>
   </xs:element>
-  <xs:complexType name="tableListType">
-    <xs:sequence maxOccurs="unbounded" minOccurs="1">
-      <xs:element type="xs:string" name="tabletpl"/>
-    </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="ProfileType">
-    <xs:simpleContent>
-      <xs:extension base="xs:string">
-        <xs:attribute type="xs:string" name="name" use="optional"/>
+  <xs:complexType name="ProfileType" >    
+    <xs:complexContent>     
+      <xs:extension base="multilang" >
+        <xs:attribute type="xs:string" name="name"/>
       </xs:extension>
-    </xs:simpleContent>
+    </xs:complexContent>    
   </xs:complexType>
   <xs:complexType name="ProfilesType">
     <xs:sequence>
-      <xs:element type="ProfileType" name="Profile" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element type="ProfileType" name="profile" maxOccurs="unbounded" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="ParameterHelpType">
+  <xs:complexType name="multilang">
     <xs:sequence>
-      <xs:element type="xs:string" name="ParameterHelpFr" />
-      <xs:element type="xs:string" name="ParameterHelpEn" />
+      <xs:element type="xs:string" name="fr" />
+      <xs:element type="xs:string" name="en" />
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="ParameterType">
-    <xs:all>
-      <xs:element name="ParameterName" type="xs:string" />
-      <xs:element name="ParameterLabel" type="xs:string" />
-      <xs:element name="ParameterOrder" type="xs:int" />
-      <xs:element name="ParameterValue" type="xs:string"/>
-      <xs:element name="ParameterMandatory" type="boolean" />
-      <xs:element name="ParameterType">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" />
+      <xs:element name="label" type="multilang" />
+      <xs:element name="order" type="xs:int" />      
+      <xs:element name="mandatory" type="boolean" />
+        <xs:element name="value" type="xs:string"/>
+        <xs:element type="ParameterOptionsType" name="options" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element name="type">
         <xs:simpleType>
           <xs:restriction base="xs:string">
             <xs:enumeration value="checkbox"/>
@@ -67,22 +63,27 @@ targetNamespace="http://silverpeas.org/xml/ns/component">
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
-      <xs:element name="ParameterSize" type="xs:int" minOccurs="0" />
-      <xs:element type="xs:string" name="ParameterUpdatable"/>
-      <xs:element type="ParameterHelpType" name="ParameterHelp"/>
-      <xs:element type="ParameterOptionsType" name="ParameterOptions" minOccurs="0" />
-      <xs:element type="boolean" name="ParameterValueForPersonalSpace" minOccurs="0" maxOccurs="1" />  
-    </xs:all>
+      <xs:element name="size" type="xs:int" minOccurs="0" />
+      <xs:element type="xs:string" name="updatable"/>
+      <xs:element type="multilang" name="help"/>
+      <xs:element type="boolean" name="usedForPersonalSpace" minOccurs="0" maxOccurs="1" />  
+    </xs:sequence>   
   </xs:complexType>
+  <xs:simpleType name="UpdatableType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="always"/>
+      <xs:enumeration value="creation"/>
+    </xs:restriction>
+  </xs:simpleType>
   <xs:complexType name="ParameterOptionType">
     <xs:sequence>
-      <xs:element name="Name" type="xs:string"/>
-      <xs:element name="Value" type="xs:string"/>
+      <xs:element name="name" type="multilang"/>
+      <xs:element name="value" type="xs:string"/>
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="ParameterOptionsType">
     <xs:sequence>
-      <xs:element type="ParameterOptionType" name="ParameterOption" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element type="ParameterOptionType" name="option" maxOccurs="unbounded" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
   <xs:simpleType name="boolean">
@@ -93,22 +94,21 @@ targetNamespace="http://silverpeas.org/xml/ns/component">
   </xs:simpleType>
   <xs:complexType name="ParametersType">
     <xs:sequence>
-      <xs:element type="ParameterType" name="Parameter" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element type="ParameterType" name="parameter" maxOccurs="unbounded" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="WAComponentType">
     <xs:sequence>
       <xs:element type="xs:string" name="name"/>
-      <xs:element type="xs:string" name="label"/>
-      <xs:element type="xs:string" name="description"/>
-      <xs:element type="xs:string" name="suite"/>
+      <xs:element type="multilang" name="label"/>
+      <xs:element type="multilang" name="description"/>
+      <xs:element type="multilang" name="suite"/>
       <xs:element type="boolean" name="visible"/>     
       <xs:element type="boolean" name="visibleInPersonalSpace" minOccurs="0" maxOccurs="1" />
       <xs:element type="boolean" name="portlet"/>
       <xs:element type="xs:string" name="instanceClassName"/>
-      <xs:element type="tableListType" name="tableList" minOccurs="0" maxOccurs="1" />
-      <xs:element type="ProfilesType" name="Profiles"/>
-      <xs:element type="ParametersType" name="Parameters" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element type="ProfilesType" name="profiles"/>
+      <xs:element type="ParametersType" name="parameters" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
 </xs:schema>
