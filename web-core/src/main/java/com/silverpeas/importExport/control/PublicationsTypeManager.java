@@ -210,68 +210,8 @@ public class PublicationsTypeManager {
           wysiwygContent.setPath(exportPublicationRelativePath + File.separator
               + wysiwygFileName);
         } else if (xmlModel != null) {
-          List<XMLField> xmlFields = xmlModel.getFields();
-          String value = null;
-          for (XMLField xmlField : xmlFields) {
-            value = xmlField.getValue();
-            if (StringUtil.isDefined(value)) {
-              if (value.startsWith("xmlWysiwygField")) {
-                String wysiwygFile = value.substring(value.indexOf('_') + 1);
-                try {
-                  String fromPath = FileRepositoryManager.getAbsolutePath(componentId)
-                      + "xmlWysiwyg" + File.separator + wysiwygFile;
-                  FileRepositoryManager.copyFile(fromPath,
-                      exportPublicationPath + File.separator + wysiwygFile);
-                } catch (Exception e) {
-                  SilverTrace.warn("importExport", "PublicationTypeManager.processExport",
-                      "root.EX_CANT_WRITE_FILE_XMLWYSIWYG", e);
-                }
-
-              } else if (value.startsWith("image")) {
-                String imageId = value.substring(value.indexOf('_') + 1, value.length());
-                AttachmentDetail attachment = null;
-                try {
-                  attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(imageId,
-                      componentId));
-                } catch (RuntimeException e1) {
-                  SilverTrace.warn("importExport", "PublicationTypeManager.processExport",
-                      "root.EX_CANT_WRITE_FILE", e1);
-                }
-
-                if (attachment != null) {
-                  String[] context = FileRepositoryManager.getAttachmentContext("XMLFormImages");
-                  String fromPath = FileRepositoryManager.getAbsolutePath(componentId, context)
-                      + attachment.getPhysicalName();
-
-                  try {
-                    FileRepositoryManager.copyFile(fromPath, exportPublicationPath + File.separator
-                        + attachment.getLogicalName());
-                  } catch (Exception e) {
-                    SilverTrace.warn("importExport", "PublicationTypeManager.processExport",
-                        "root.EX_CANT_WRITE_FILE", e);
-                  }
-
-                  xmlField.setValue(exportPublicationRelativePath + File.separator + attachment.
-                      getLogicalName());
-                }
-              } else if (value.startsWith("file")) {
-                String fileId = value.substring(value.indexOf('_') + 1, value.length());
-
-                AttachmentDetail attachment = null;
-                try {
-                  attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(fileId,
-                      componentId));
-                } catch (RuntimeException e1) {
-                  SilverTrace.warn("importExport", "PublicationTypeManager.processExport",
-                      "root.EX_CANT_WRITE_FILE", e1);
-                }
-                if (attachment != null) {
-                  xmlField.setValue(exportPublicationRelativePath + File.separator + attachment.
-                      getLogicalName());
-                }
-              }
-            }
-          }
+          exportXmlForm(componentId, exportPublicationRelativePath, exportPublicationPath,
+              xmlModel);
         }
       }
 
@@ -334,13 +274,79 @@ public class PublicationsTypeManager {
     return publicationsType;
   }
 
+  void exportXmlForm(String componentId, String exportPublicationRelativePath,
+      String exportPublicationPath, XMLModelContentType xmlModel) {
+    List<XMLField> xmlFields = xmlModel.getFields();
+    String value = null;
+    for (XMLField xmlField : xmlFields) {
+      value = xmlField.getValue();
+      if (StringUtil.isDefined(value)) {
+        if (value.startsWith("xmlWysiwygField")) {
+          String wysiwygFile = value.substring(value.indexOf('_') + 1);
+          try {
+            String fromPath = FileRepositoryManager.getAbsolutePath(componentId)
+                + "xmlWysiwyg" + File.separator + wysiwygFile;
+            FileRepositoryManager.copyFile(fromPath,
+                exportPublicationPath + File.separator + wysiwygFile);
+          } catch (Exception e) {
+            SilverTrace.warn("importExport", "PublicationTypeManager.processExport",
+                "root.EX_CANT_WRITE_FILE_XMLWYSIWYG", e);
+          }
+
+        } else if (value.startsWith("image")) {
+          String imageId = value.substring(value.indexOf('_') + 1, value.length());
+          AttachmentDetail attachment = null;
+          try {
+            attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(imageId,
+                componentId));
+          } catch (RuntimeException e1) {
+            SilverTrace.warn("importExport", "PublicationTypeManager.processExport",
+                "root.EX_CANT_WRITE_FILE", e1);
+          }
+
+          if (attachment != null) {
+            String[] context = FileRepositoryManager.getAttachmentContext("XMLFormImages");
+            String fromPath = FileRepositoryManager.getAbsolutePath(componentId, context)
+                + attachment.getPhysicalName();
+
+            try {
+              FileRepositoryManager.copyFile(fromPath, exportPublicationPath + File.separator
+                  + attachment.getLogicalName());
+            } catch (Exception e) {
+              SilverTrace.warn("importExport", "PublicationTypeManager.processExport",
+                  "root.EX_CANT_WRITE_FILE", e);
+            }
+
+            xmlField.setValue(exportPublicationRelativePath + File.separator + attachment.
+                getLogicalName());
+          }
+        } else if (value.startsWith("file")) {
+          String fileId = value.substring(value.indexOf('_') + 1, value.length());
+
+          AttachmentDetail attachment = null;
+          try {
+            attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(fileId,
+                componentId));
+          } catch (RuntimeException e1) {
+            SilverTrace.warn("importExport", "PublicationTypeManager.processExport",
+                "root.EX_CANT_WRITE_FILE", e1);
+          }
+          if (attachment != null) {
+            xmlField.setValue(exportPublicationRelativePath + File.separator + attachment.
+                getLogicalName());
+          }
+        }
+      }
+    }
+  }
+
   /**
    * Méthode créant l'arboresecne des répertoires pour une publication exportée
    * @param exportPath - dossier dans lequel creer notre arborescence de dossiers
    * @param topicId - id du topic dont on veut la branche
    * @param componentId - id du composant de la publication
    * @param componentLabel - label du composant
-   * @param pubName - nom de la publication
+   * @param pub - la publication
    * @return le chemin relatif créé
    */
   private String createPathDirectoryForPublicationExport(String exportPath, int topicId,
