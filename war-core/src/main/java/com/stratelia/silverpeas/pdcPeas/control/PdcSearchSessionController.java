@@ -518,7 +518,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     // Tous les résultats
     List<GlobalSilverResult> results =
         matchingIndexEntries2GlobalSilverResults(filterMatchingIndexEntries(indexEntries));
-    setGlobalSR(results);
+    setGlobalSR(results, true);
     return results;
   }
 
@@ -526,7 +526,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       throws Exception {
     // Tous les résultats
     List<GlobalSilverResult> results = globalSilverContents2GlobalSilverResults(silverContents);
-    setGlobalSR(results);
+    setGlobalSR(results, true);
 
     // case of PDC results : pertinence sort is not applicable
     // sort by updateDate desc
@@ -578,7 +578,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       sortedResultsToDisplay = filterResult(filter, sortedResults);
     } else {
       // Put the full result list in session
-      setGlobalSR(sortedResults);
+      setGlobalSR(sortedResults, false);
 
       // get the part of results to display
       sortedResultsToDisplay = sortedResults.subList(
@@ -2382,8 +2382,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * Set the list of current global silver result
    * @param globalSR : the current list of result
    */
-  public void setGlobalSR(List<GlobalSilverResult> globalSR) {
-    setExtraInfoToResultsToDisplay(globalSR);
+  private void setGlobalSR(List<GlobalSilverResult> globalSR, boolean setExtraInfo) {
+    if (setExtraInfo) {
+      setExtraInfoToResultsToDisplay(globalSR);
+    }
     this.globalSR = globalSR;
     clearFilteredSR();
   }

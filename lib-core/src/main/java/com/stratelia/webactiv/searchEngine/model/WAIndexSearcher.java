@@ -43,7 +43,6 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.RangeQuery;
@@ -63,6 +62,7 @@ import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
 import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
+import com.stratelia.webactiv.util.indexEngine.model.IndexSearchersCache;
 import com.stratelia.webactiv.util.indexEngine.model.SpaceComponentPair;
 
 /**
@@ -234,14 +234,6 @@ public class WAIndexSearcher {
       SilverTrace.fatal("searchEngine", "WAIndexSearcher.search()",
           "searchEngine.MSG_CORRUPTED_INDEX_FILE", ioe);
       results = new ArrayList<MatchingIndexEntry>();
-    } finally {
-      try {
-        if (searcher != null)
-          searcher.close();
-      } catch (IOException ioe) {
-        SilverTrace.fatal("searchEngine", "WAIndexSearcher.search()",
-            "searchEngine.MSG_CANNOT_CLOSE_SEARCHER", ioe);
-      }
     }
     long endTime = System.nanoTime();
 
@@ -504,12 +496,8 @@ public class WAIndexSearcher {
     List<Searcher> searcherList = new ArrayList<Searcher>();
     Set<String> indexPathSet = getIndexPathSet(spaceComponentPairSet);
 
-    Iterator<String> i = indexPathSet.iterator();
-
-    while (i.hasNext()) {
-      String path = i.next();
+    for (String path : indexPathSet) {
       Searcher searcher = getSearcher(path);
-
       if (searcher != null) {
         searcherList.add(searcher);
       }
@@ -532,15 +520,7 @@ public class WAIndexSearcher {
   public Set<String> getIndexPathSet(Set<SpaceComponentPair> spaceComponentPairSet) {
     Set<String> pathSet = new HashSet<String>();
 
-    Iterator<SpaceComponentPair> i = spaceComponentPairSet.iterator();
-
-    SpaceComponentPair pair = null;
-    String space = null;
-    String component = null;
-    while (i.hasNext()) {
-      pair = i.next();
-      space = pair.getSpace();
-      component = pair.getComponent();
+    for (SpaceComponentPair pair : spaceComponentPairSet) {
 
       // Both cases.
       // 1 - space == null && component != null : search in an component's
@@ -548,8 +528,8 @@ public class WAIndexSearcher {
       // 2 - space != null && component != null : search in pdc or user's
       // components (todo, agenda...)
 
-      if (component != null) {
-        pathSet.add(indexManager.getIndexDirectoryPath(space, component));
+      if (pair != null && pair.getComponent() != null) {
+        pathSet.add(indexManager.getIndexDirectoryPath(pair.getSpace(), pair.getComponent()));
       }
     }
     return pathSet;
@@ -563,16 +543,7 @@ public class WAIndexSearcher {
    * without any indexed documents).
    */
   private Searcher getSearcher(String path) {
-    Searcher searcher = null;
-
-    try {
-      searcher = new IndexSearcher(path);
-    } catch (IOException ioe) {
-      SilverTrace.debug("searchEngine", "WAIndexSearcher.getSearcher()",
-          "searchEngine.MSG_CANT_READ_INDEX_FILE", ioe);
-    }
-
-    return searcher;
+    return IndexSearchersCache.getIndexSearcher(path);
   }
 
   protected RangeQuery getRangeQueryOnCreationDate(QueryDescription query) {
