@@ -29,11 +29,10 @@ You should have received a copy of the GNU Affero General Public License
   <property name="ks.server.url" value="https://cockpit.kalistick.fr"/>
   <property name="ks.project.id" value="silverpeas_core" />
   <property name="ks.login" value="agent_silverpeas_core"/>
-  <property name="ks.password" value="eV3Jee3p" />
   <property name="ks.release.analysisType" value="validation"/>
-  <property name="ks.scm.url" value="scm:svn:https://www.silverpeas.org/svn/silverpeas/core/trunk"/>
-  <property name="ks.fetch.dir" value="/home/ehugonnet/tmp/kalistick/fetch"/>
-  <property name="ks.archives.dir" value="/home/ehugonnet/tmp/kalistick/archives"/>
+  <property name="ks.scm.url" value="scm:git:https://github.com/Silverpeas/Silverpeas-Core.git"/>
+  <property name="ks.fetch.dir" value="/var/lib/jenkins/tmp/kalistick/fetch"/>
+  <property name="ks.archives.dir" value="/var/lib/jenkins/tmp/kalistick/archives"/>
   <property name="ks.release.language" value="java-6"/>
-  <property name="ks.work.dir" location="/home/ehugonnet/tmp/kalistick/work" />
+  <property name="ks.work.dir" location="/var/lib/jenkins/tmp/kalistick/work" />
 </project>
