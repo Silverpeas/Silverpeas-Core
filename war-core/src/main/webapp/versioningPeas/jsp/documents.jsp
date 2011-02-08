@@ -46,7 +46,7 @@
 	boolean topicRightsEnabled = false;
 	if (StringUtil.isDefined(s_topicRightsEnabled))
   {
-		topicRightsEnabled = new Boolean(s_topicRightsEnabled).booleanValue();
+		topicRightsEnabled = Boolean.parseBoolean(s_topicRightsEnabled);
   }
 	boolean bIndexIt = true;
 	if (indexIt != null && !"null".equals(indexIt) && indexIt.length()!=0 && "0".equals(indexIt))
@@ -152,7 +152,7 @@ function ShareAttachment(id)
     Document document = (Document) (documents_iterator.next());
     if (versioningSC.hasAccess(document, userId))
     {
-      List versions = versioningSC.getDocumentFilteredVersions(document.getPk(), new Integer(versioningSC.getUserId()).intValue());
+      List versions = versioningSC.getDocumentFilteredVersions(document.getPk(), Integer.parseInt(versioningSC.getUserId()));
       if ( versions.size() > 0 )
       {
         DocumentVersion document_version = (DocumentVersion)(versions.get(versions.size()-1));

@@ -25,7 +25,9 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.silverpeas</groupId>
@@ -36,14 +38,15 @@
   <description>
     Silverpeas is a Collaborative Portal tool usefull to build your Intranet/Extranet.Silverpeas is
     used to classify and organize the contents in themes independant of the spaces and folders in
-    which they are stored. These contents can be shared through collabotaive tools such as blog, wikis,
+    which they are stored. These contents can be shared through collabotaive tools such as blog,
+    wikis,
     images gallery and its own Enterprise Content Management tool.
   </description>
-
+  
   <scm>
-    <connection>scm:svn:https://www.silverpeas.org/svn/silverpeas/core/trunk</connection>
-    <developerConnection>scm:svn:https://www.silverpeas.org/svn/silverpeas/core/trunk</developerConnection>
-    <url>http://www.silverpeas.org/websvn/repos/Silverpeas/list/core/trunk/</url>
+    <connection>scm:git:git@github.com:Silverpeas/Silverpeas-Core.git</connection>
+    <developerConnection>scm:git:git@github.com:Silverpeas/Silverpeas-Core.git</developerConnection>
+    <url>http://gitub.com/Silverpeas/Silverpeas-Core.git</url>
   </scm>
 
   <repositories>
@@ -154,15 +157,16 @@
       -->
     </plugins>
   </build>
-  
+
   <profiles>
     <profile>
       <id>Quality</id>
       <build>
         <plugins>
           <plugin>
-            <groupId>com.kalistick.soa</groupId>
-            <artifactId>ks-agent</artifactId>
+            <groupId>com.kalistick.client.connector</groupId>
+            <artifactId>kalistick</artifactId>
+            <version>3.0.1</version>
             <configuration>
               <configFile>${project.basedir}/src/config/agent_cockpit/kalistick-new.xml</configFile>
               <version>${project.version}-${build.timestamp}</version>
@@ -187,7 +191,7 @@
         </plugins>
       </build>
     </profile>
-    
+
   </profiles>
 
   <modules>

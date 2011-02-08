@@ -60,7 +60,6 @@ public class HtmlExportGenerator {
   private ExportReport exportReport;
   private ResourceLocator resourceLocator;
 
-
   public HtmlExportGenerator(ExportReport exportReport, String fileExportDir) {
     this.fileExportDir = fileExportDir;
     this.exportReport = exportReport;
@@ -282,7 +281,7 @@ public class HtmlExportGenerator {
 
   private String nodeTreeToHTML(List<NodeTreeType> nodeTrees, Set<String> topicIds, String rootId) {
     StringBuilder sb = new StringBuilder();
-    OrganizationController orgaController = null;
+    OrganizationController orgaController = new OrganizationController();
 
     for (NodeTreeType nodeTree : nodeTrees) {
       NodeDetail node = nodeTree.getNodeDetail();
@@ -293,21 +292,14 @@ public class HtmlExportGenerator {
       }
 
       if (NodePK.ROOT_NODE_ID.equals(rootId)) {
-        if (orgaController == null) {
-          orgaController = new OrganizationController();
-        }
         String componentName = orgaController.getComponentInstLight(node.getNodePK().getInstanceId()).
             getLabel();
 
         // regarder si ce topic contient des publications
         if (topicIds.contains(nodeId)) {
-          sb.append("elements_treeview.addElement(\"").append(componentName).append("\", ").
-              append(nodeId).append(", ").append(fatherId).append(", \"dossier\", \"folder\", ").
-              append(nodeId).append(");\n");
+          sb.append(filledTreeElement(componentName, nodeId, fatherId));
         } else {
-          sb.append("elements_treeview.addElement(\"").append(componentName).append("\", ");
-          sb.append(nodeId).append(", ").append(fatherId);
-          sb.append(", \"dossier\", \"folder\", \"Empty\");\n");
+          sb.append(emptyTreeElement(node.getName(), nodeId, fatherId));
         }
       }
       Collection<NodeDetail> childrens = node.getChildrenDetails();
@@ -325,22 +317,21 @@ public class HtmlExportGenerator {
       String fatherId = node.getFatherPK().getId();
       String nodeId = node.getNodePK().getId();
       if ("-1".equals(fatherId)) {
-        fatherId = "0";
+        fatherId = NodePK.ROOT_NODE_ID;
       }
       if (!NodePK.ROOT_NODE_ID.equals(rootId) && !found) {
         Collection<NodeDetail> childrens = node.getChildrenDetails();
         // regarder si on est sur le topic "rootId" donc on met "0" pour son Id
-        // pour en faire la racine (et "0" pour son p�re)
+        // pour en faire la racine (et "0" pour son pere)
         if (nodeId.equals(rootId)) {
           // on est sur "rootId", donc on met "0" pour son Id pour en faire la
-          // racine (et "0" pour son p�re)
+          // racine (et "0" pour son pere)
           if (topicIds.contains(nodeId)) {
             sb.append("elements_treeview.addElement(\"").append(node.getName());
             sb.append("\", 0, 0, \"dossier\", \"folder\", ");
             sb.append(nodeId).append(");\n");
           } else {
-            sb.append("elements_treeview.addElement(\"").append(node.getName());
-            sb.append("\", 0, 0, \"dossier\", \"folder\", \"Empty\");\n");
+            sb.append(emptyTreeElement(node.getName(), "0", "0"));
           }
           if (childrens != null) {
             sb.append(topicToHTML(childrens, topicIds, rootId, true));
@@ -357,24 +348,18 @@ public class HtmlExportGenerator {
           // on est dans les enfants du "rootId" donc on met "0" dans fatherId
           // pour les racrocher
           if (topicIds.contains(nodeId)) {
-            sb.append("elements_treeview.addElement(\"").append(node.getName()).append("\", ");
-            sb.append(nodeId).append(", 0, \"dossier\", \"folder\", ").append(nodeId).append(");\n");
+            sb.append(filledTreeElement(node.getName(), nodeId, "0"));
           } else {
-            sb.append("elements_treeview.addElement(\"").append(node.getName()).append("\", ");
-            sb.append(nodeId).append(", 0, \"dossier\", \"folder\", \"Empty\");\n");
+            sb.append(emptyTreeElement(node.getName(), "0", "0"));
           }
         } else {
-          // on n'affiche pas ni la corbeille ni les d�class�s
+          // on n'affiche pas ni la corbeille ni les declasses
           if (!node.getNodePK().isTrash() && !node.getNodePK().isUnclassed()) {
             // regarder si ce topic contient des publications
             if (topicIds.contains(nodeId)) {
-              sb.append("elements_treeview.addElement(\"").append(node.getName()).append("\", ");
-              sb.append(nodeId).append(", ").append(fatherId).append(", \"dossier\", \"folder\", ");
-              sb.append(nodeId).append(");\n");
+              sb.append(filledTreeElement(node.getName(), nodeId, fatherId));
             } else {
-              sb.append("elements_treeview.addElement(\"").append(node.getName()).append("\", ");
-              sb.append(nodeId).append(", ").append(fatherId);
-              sb.append(", \"dossier\", \"folder\", \"Empty\");\n");
+              sb.append(emptyTreeElement(node.getName(), nodeId, fatherId));
             }
           }
         }
@@ -384,6 +369,22 @@ public class HtmlExportGenerator {
         }
       }
     }
+    return sb.toString();
+  }
+
+  String emptyTreeElement(String name, String nodeId, String fatherId) {
+    StringBuilder sb = new StringBuilder(200);
+    sb.append("elements_treeview.addElement(\"").append(name).append("\", ");
+    sb.append(nodeId).append(", ").append(fatherId);
+    sb.append(", \"dossier\", \"folder\", \"Empty\");\n");
+    return sb.toString();
+  }
+
+  String filledTreeElement(String name, String nodeId, String fatherId) {
+    StringBuilder sb = new StringBuilder(200);
+    sb.append("elements_treeview.addElement(\"").append(name).append("\", ");
+    sb.append(nodeId).append(", ").append(fatherId).append(", \"dossier\", \"folder\", ");
+    sb.append(nodeId).append(");\n");
     return sb.toString();
   }
 
