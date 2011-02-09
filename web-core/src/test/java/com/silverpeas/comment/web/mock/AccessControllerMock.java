@@ -22,16 +22,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.comment.web.json;
+package com.silverpeas.comment.web.mock;
 
-import com.silverpeas.comment.web.CommentEntity;
-import com.silverpeas.export.Importer;
+import com.silverpeas.accesscontrol.AccessController;
+import javax.inject.Named;
 
 /**
- * An importer of comments in the JSON format.
- * The concrete implementation of this interface is published under the name "jsonCommentImporter".
- * Any client should depend only on this interface.
+ * A mock of an user access controller for testing purpose.
  */
-public interface JSONCommentImporter extends Importer<CommentEntity> {
+@Named("componentAccessController")
+public class AccessControllerMock implements AccessController<String> {
+
+  private boolean authorization = true;
+
+  public void setAuthorization(boolean isUsersAuthorized) {
+    authorization = isUsersAuthorized;
+  }
+
+  @Override
+  public boolean isUserAuthorized(String userId, String object) {
+    return authorization;
+  }
 
 }

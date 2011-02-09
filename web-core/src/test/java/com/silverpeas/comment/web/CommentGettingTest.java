@@ -23,38 +23,29 @@
  */
 package com.silverpeas.comment.web;
 
+import com.silverpeas.comment.model.Comment;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
-import com.sun.jersey.test.framework.WebAppDescriptor;
-import org.springframework.web.context.ContextLoaderListener;
-import com.sun.jersey.test.framework.JerseyTest;
+import java.util.UUID;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
+import static com.silverpeas.comment.web.json.JSONCommentMatcher.*;
 
 /**
- * Tests on the web service that handle the comments.
+ * Tests on the comment getting by the CommentResource web service.
  */
-public class CommentResourceTest extends JerseyTest {
+public class CommentGettingTest  extends BaseCommentResourceTest {
 
-  private static final String HEADER_SESSION_KEY = "X-Silverpeas-SessionKey";
-  private static final String COMPONENT_ID = "kmelia2";
-  private static final String CONTENT_ID = "1";
-  private static final String RESOURCE_PATH = "comments/" + COMPONENT_ID + "/" + CONTENT_ID;
-
-  public CommentResourceTest() {
-    super(new WebAppDescriptor.Builder("com.silverpeas.comment.web").contextPath("silverpeas").
-        contextParam("contextConfigLocation", "classpath:/spring-comment.xml").
-        requestListenerClass(org.springframework.web.context.request.RequestContextListener.class).
-        servletClass(SpringServlet.class).contextListenerClass(ContextLoaderListener.class).
-        build());
+  public CommentGettingTest() {
+    super();
   }
 
   @Test
-  public void testCallByANonAuthenticatedUser() {
+  public void getACommentByANonAuthenticatedUser() {
     WebResource resource = resource();
     try {
       resource.path(RESOURCE_PATH + "/3").accept(MediaType.APPLICATION_JSON).get(String.class);
@@ -64,5 +55,92 @@ public class CommentResourceTest extends JerseyTest {
       int unauthorized = Status.UNAUTHORIZED.getStatusCode();
       assertThat(recievedStatus, is(unauthorized));
     }
+  }
+
+  @Test
+  public void getACommentWithADeprecatedSession() {
+    WebResource resource = resource();
+    try {
+      resource.path(RESOURCE_PATH + "/3").header(HEADER_SESSION_KEY, UUID.randomUUID().toString()).
+          accept(MediaType.APPLICATION_JSON).get(String.class);
+      fail("A user shouldn't access the comment through an expired session");
+    } catch (UniformInterfaceException ex) {
+      int recievedStatus = ex.getResponse().getStatus();
+      int unauthorized = Status.UNAUTHORIZED.getStatusCode();
+      assertThat(recievedStatus, is(unauthorized));
+    }
+  }
+
+  @Test
+  public void getANonAuthorizedComment() {
+    UserDetail user = aUser();
+    String sessionKey = authenticate(user);
+    Comment comment = aUser(user).commentTheResource(CONTENT_ID).inComponent(COMPONENT_ID).
+        withAsText("ceci est un commentaire");
+    denieAuthorizationToUsers();
+
+    WebResource resource = resource();
+    try {
+      resource.path(RESOURCE_PATH + "/" + comment.getCommentPK().getId()).
+          header(HEADER_SESSION_KEY, sessionKey).
+          accept(MediaType.APPLICATION_JSON).
+          get(String.class);
+      fail("A user shouldn't access a non authorized comment");
+    } catch (UniformInterfaceException ex) {
+      int recievedStatus = ex.getResponse().getStatus();
+      int forbidden = Status.FORBIDDEN.getStatusCode();
+      assertThat(recievedStatus, is(forbidden));
+    }
+  }
+
+  @Test
+  public void getAnUnexistingComment() {
+    String sessionKey = authenticate(aUser());
+    WebResource resource = resource();
+    try {
+      resource.path(RESOURCE_PATH + "/3").
+          header(HEADER_SESSION_KEY, sessionKey).
+          accept(MediaType.APPLICATION_JSON).
+          get(String.class);
+      fail("A user shouldn't get an unexisting comment");
+    } catch (UniformInterfaceException ex) {
+      int recievedStatus = ex.getResponse().getStatus();
+      int notFound = Status.NOT_FOUND.getStatusCode();
+      assertThat(recievedStatus, is(notFound));
+    }
+  }
+
+  @Test
+  public void getAComment() {
+    UserDetail user = aUser();
+    String sessionKey = authenticate(user);
+    Comment theComment = aUser(user).commentTheResource(CONTENT_ID).inComponent(COMPONENT_ID).
+        withAsText("ceci est un commentaire");
+
+    WebResource resource = resource();
+    String theJsonComment =  resource.path(RESOURCE_PATH + "/" + theComment.getCommentPK().getId()).
+          header(HEADER_SESSION_KEY, sessionKey).
+          accept(MediaType.APPLICATION_JSON).
+          get(String.class);
+    assertThat(theJsonComment, represents(theComment));
+  }
+
+  @Test
+  public void getAllComments() {
+    UserDetail user = aUser();
+    String sessionKey = authenticate(user);
+    Comment theComment1 = aUser(user).commentTheResource(CONTENT_ID).inComponent(COMPONENT_ID).
+        withAsText("ceci est un commentaire 1");
+    Comment theComment2 = aUser(user).commentTheResource(CONTENT_ID).inComponent(COMPONENT_ID).
+        withAsText("ceci est un commentaire 2");
+    Comment theComment3 = aUser(user).commentTheResource(CONTENT_ID).inComponent(COMPONENT_ID).
+        withAsText("ceci est un commentaire 3");
+
+    WebResource resource = resource();
+    String theJsonComment =  resource.path(RESOURCE_PATH).
+          header(HEADER_SESSION_KEY, sessionKey).
+          accept(MediaType.APPLICATION_JSON).
+          get(String.class);
+    assertThat(theJsonComment, represents(theComment1, theComment2, theComment3));
   }
 }

@@ -24,7 +24,7 @@
 
 package com.silverpeas.comment.web.json;
 
-import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.web.CommentEntity;
 import com.silverpeas.export.Exporter;
 
 /**
@@ -32,6 +32,6 @@ import com.silverpeas.export.Exporter;
  * The concrete implementation of this interface is published under the name "jsonCommentExporter".
  * Any client should depend only on this interface.
  */
-public interface JSONCommentExporter extends Exporter<Comment> {
+public interface JSONCommentExporter extends Exporter<CommentEntity> {
 
 }

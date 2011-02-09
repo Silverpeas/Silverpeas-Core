@@ -34,7 +34,9 @@ import javax.inject.Named;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 /**
  * The class of the Silverpeas REST web services.
@@ -42,7 +44,7 @@ import javax.ws.rs.core.Response.Status;
  * user priviledge checking.
  */
 public abstract class RESTWebService {
-  
+
   @Inject
   @Named("sessionManager")
   private SessionManagement sessionManager;
@@ -53,6 +55,9 @@ public abstract class RESTWebService {
 
   @DefaultValue("") @HeaderParam("X-Silverpeas-SessionKey")
   private String sessionKey;
+
+  @Context
+  private UriInfo uriInfo;
 
   /**
    * Gets the controller of user access on the silverpeas resources.
@@ -101,6 +106,14 @@ public abstract class RESTWebService {
    */
   protected String getUserSessionKey() {
     return sessionKey;
+  }
+
+  /**
+   * Gets information about the URI with which this web service was invoked.
+   * @return an UriInfo instance.
+   */
+  protected UriInfo getUriInfo() {
+    return uriInfo;
   }
 
   /**

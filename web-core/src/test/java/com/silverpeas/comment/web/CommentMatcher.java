@@ -31,32 +31,31 @@ import org.hamcrest.Description;
 /**
  * A matcher of two comment objects. The comments match if some of their properties are equal.
  */
-public class CommentMatcher extends BaseMatcher<Comment> {
+public class CommentMatcher extends BaseMatcher<CommentEntity> {
 
-  private Comment comment;
+  private CommentEntity comment;
 
   /**
    * Creates a new matcher with the specified comment.
    * @param theComment the comment to match.
    * @return a comment matcher.
    */
-  public static CommentMatcher matches(final Comment theComment) {
+  public static CommentMatcher matches(final CommentEntity theComment) {
     return new CommentMatcher(theComment);
   }
 
   @Override
   public boolean matches(Object item) {
     boolean match = false;
-    if (item instanceof Comment) {
-      Comment actual = (Comment) item;
-      match = actual.getCommentPK().getId().equals(comment.getCommentPK().getId()) &&
-          actual.getCommentPK().getInstanceId().equals(comment.getCommentPK().getInstanceId()) &&
-          actual.getForeignKey().getId().equals(comment.getForeignKey().getId()) &&
-          actual.getForeignKey().getInstanceId().equals(comment.getForeignKey().getInstanceId()) &&
+    if (item instanceof CommentEntity) {
+      CommentEntity actual = (CommentEntity) item;
+      match = actual.getId().equals(comment.getId()) &&
+          actual.getComponentId().equals(comment.getComponentId()) &&
+          actual.getContentId().equals(comment.getContentId()) &&
           actual.getCreationDate().equals(comment.getCreationDate()) &&
-          actual.getMessage().equals(comment.getMessage()) &&
+          actual.getText().equals(comment.getText()) &&
           actual.getModificationDate().equals(comment.getModificationDate()) &&
-          actual.getOwnerId() == comment.getOwnerId();
+          actual.getWriter().getId().equals(comment.getWriter().getId());
     }
     return match;
   }
@@ -66,7 +65,7 @@ public class CommentMatcher extends BaseMatcher<Comment> {
     description.appendValue(comment);
   }
 
-  private CommentMatcher(final Comment comment) {
+  private CommentMatcher(final CommentEntity comment) {
     this.comment = comment;
   }
 

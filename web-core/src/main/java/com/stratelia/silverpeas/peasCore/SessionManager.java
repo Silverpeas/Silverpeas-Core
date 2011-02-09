@@ -71,7 +71,7 @@ import javax.servlet.http.HttpSession;
  * @author Marc Guillemin
  */
 public class SessionManager
-    implements SchedulerEventListener {
+    implements SchedulerEventListener, SessionManagement {
   // Global constants
 
   public static final SimpleDateFormat NOTIFY_DATE_FORMAT = new SimpleDateFormat(
@@ -233,7 +233,7 @@ public class SessionManager
    * @param session the session to store
    * @param request
    * @param controller
-   * @see removeSession
+   * @see closeSession
    */
   public synchronized void addSession(HttpSession session,
       HttpServletRequest request,
@@ -262,10 +262,11 @@ public class SessionManager
    * @see LogoutServlet
    */
   public void removeSession(HttpSession session) {
-    removeSession(session.getId());
+    closeSession(session.getId());
   }
 
-  public synchronized void removeSession(String sessionId) {
+  @Override
+  public synchronized void closeSession(String sessionId) {
     SessionInfo si = userDataSessions.get(sessionId);
     if (si != null) {
       removeSession(si);
@@ -308,7 +309,8 @@ public class SessionManager
     }
   }
 
-  public synchronized SessionInfo getUserDataSession(String sessionId) {
+  @Override
+  public synchronized SessionInfo getSessionInfo(String sessionId) {
     return userDataSessions.get(sessionId);
   }
 
@@ -367,6 +369,7 @@ public class SessionManager
    * @author dlesimple
    * @return Collection of SessionInfo
    */
+  @Override
   public Collection<SessionInfo> getDistinctConnectedUsersList() {
     Map<String, SessionInfo> distinctConnectedUsersList = new HashMap<String, SessionInfo>();
     Collection<SessionInfo> sessionsInfos = getConnectedUsersList();
@@ -386,6 +389,7 @@ public class SessionManager
    * @author dlesimple
    * @return nb of connected users
    */
+  @Override
   public int getNbConnectedUsersList() {
     return getDistinctConnectedUsersList().size();
   }
@@ -555,5 +559,15 @@ public class SessionManager
     SilverTrace.error("peasCore", "SessionManager.handleSchedulerEvent",
             "The job '" + anEvent.getJobExecutionContext().getJobName()
             + "' was not successfull");
+  }
+
+  /**
+   * This operation is not implemented. Call the addSession method instead.
+   * @param sessionInfo information about the session to open.
+   * @return the session key.
+   */
+  @Override
+  public String openSession(SessionInfo sessionInfo) {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 }

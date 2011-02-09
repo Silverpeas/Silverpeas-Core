@@ -96,7 +96,7 @@ public class ImportDragAndDrop extends HttpServlet {
       if (!StringUtil.isDefined(topicId)) {
         String sessionId = request.getParameter("SessionId");
         HttpSession session =
-            SessionManager.getInstance().getUserDataSession(sessionId).getHttpSession();
+            SessionManager.getInstance().getSessionInfo(sessionId).getHttpSession();
         topicId = (String) session.getAttribute("Silverpeas_DragAndDrop_TopicId");
       }
       String userId = request.getParameter("UserId");
