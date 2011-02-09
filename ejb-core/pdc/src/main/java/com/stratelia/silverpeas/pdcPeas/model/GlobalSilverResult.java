@@ -28,6 +28,8 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 
+import com.silverpeas.util.ImageUtil;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -70,42 +72,27 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
     super.setScore(mie.getScore());
 
     if (mie.getThumbnail() != null) {
-      super.setThumbnailURL(FileServerUtils.getUrl(null, mie.getComponent(),
-          mie.getThumbnail(), mie.getThumbnailMimeType(), mie.getThumbnailDirectory()));
+      if (mie.getThumbnail().startsWith("/")) {
+        // case of a thumbnail picked up in a gallery
+        super.setThumbnailURL(mie.getThumbnail());
+        setThumbnailWidth("60");
+      } else {
+        // case of an uploaded image
+        super.setThumbnailURL(FileServerUtils.getUrl(null, mie.getComponent(),
+            mie.getThumbnail(), mie.getThumbnailMimeType(), mie.getThumbnailDirectory()));
 
-      String[] directory = new String[1];
-      directory[0] = mie.getThumbnailDirectory();
+        String[] directory = new String[1];
+        directory[0] = mie.getThumbnailDirectory();
 
-      File image = new File(FileRepositoryManager.getAbsolutePath(mie.getComponent(), directory)
-          + mie.getThumbnail());
+        File image = new File(FileRepositoryManager.getAbsolutePath(mie.getComponent(), directory)
+            + mie.getThumbnail());
 
-      try {
-        BufferedImage inputBuf = ImageIO.read(image);
-        // calcul de la taille de la sortie
-        double inputBufWidth;
-        double inputBufHeight;
-        double widthParam = 60;
-        double width = widthParam;
-        double ratio;
-        double height;
-        if (inputBuf.getWidth() > inputBuf.getHeight()) {
-          inputBufWidth = inputBuf.getWidth();
-          inputBufHeight = inputBuf.getHeight();
-          width = widthParam;
-          ratio = inputBufWidth / width;
-          height = inputBufHeight / ratio;
-        } else {
-          inputBufWidth = inputBuf.getHeight();
-          inputBufHeight = inputBuf.getWidth();
-          height = widthParam;
-          ratio = inputBufWidth / width;
-          width = inputBufHeight / ratio;
+        String[] dimensions = ImageUtil.getWidthAndHeightByWidth(image, 60);
+        if (!StringUtil.isDefined(dimensions[0])) {
+          dimensions[0] = "60";
         }
-        super.setThumbnailWidth(Double.toString(width));
-        super.setThumbnailHeight(Double.toString(height));
-      } catch (Exception e) {
-        super.setThumbnailHeight("60");
-        super.setThumbnailWidth("60");
+        setThumbnailWidth(dimensions[0]);
+        setThumbnailHeight(dimensions[1]);
       }
     }
   }
