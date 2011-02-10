@@ -65,9 +65,9 @@ targetNamespace="http://silverpeas.org/xml/ns/component">
         </xs:simpleType>
       </xs:element>
       <xs:element name="size" type="xs:int" minOccurs="0" />
-      <xs:element type="xs:string" name="updatable"/>
+      <xs:element type="UpdatableType" name="updatable"/>
       <xs:element type="multilang" name="help"/>
-      <xs:element type="boolean" name="usedForPersonalSpace" minOccurs="0" maxOccurs="1" />  
+      <xs:element type="xs:string" name="personalSpaceValue" minOccurs="0" maxOccurs="1" />  
     </xs:sequence>   
   </xs:complexType>
   <xs:simpleType name="UpdatableType">
