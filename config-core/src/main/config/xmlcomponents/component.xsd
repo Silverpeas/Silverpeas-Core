@@ -60,6 +60,7 @@ targetNamespace="http://silverpeas.org/xml/ns/component">
             <xs:enumeration value="select"/>
             <xs:enumeration value="xmltemplates"/>
             <xs:enumeration value="text"/>
+            <xs:enumeration value="radio"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
