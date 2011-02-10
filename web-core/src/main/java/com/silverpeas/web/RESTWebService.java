@@ -27,6 +27,6 @@ package com.silverpeas.web;
 /**
  *
  */
-public class WebService {
+public class RESTWebService {
 
 }
