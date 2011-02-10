@@ -74,6 +74,7 @@ targetNamespace="http://silverpeas.org/xml/ns/component">
     <xs:restriction base="xs:string">
       <xs:enumeration value="always"/>
       <xs:enumeration value="creation"/>
+      <xs:enumeration value="never" />
     </xs:restriction>
   </xs:simpleType>
   <xs:complexType name="ParameterOptionType">
