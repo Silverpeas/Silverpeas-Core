@@ -32,7 +32,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>parent</artifactId>
-    <version>18-SNAPSHOT</version>
+    <version>19-SNAPSHOT</version>
   </parent>
 
   <description>
@@ -42,12 +42,11 @@
     wikis,
     images gallery and its own Enterprise Content Management tool.
   </description>
-
+  
   <scm>
-    <connection>scm:svn:https://www.silverpeas.org/svn/silverpeas/core/trunk</connection>
-    <developerConnection>scm:svn:https://www.silverpeas.org/svn/silverpeas/core/trunk
-    </developerConnection>
-    <url>http://www.silverpeas.org/websvn/repos/Silverpeas/list/core/trunk/</url>
+    <connection>scm:git:git@github.com:Silverpeas/Silverpeas-Core.git</connection>
+    <developerConnection>scm:git:git@github.com:Silverpeas/Silverpeas-Core.git</developerConnection>
+    <url>http://gitub.com/Silverpeas/Silverpeas-Core.git</url>
   </scm>
 
   <repositories>
@@ -167,7 +166,7 @@
           <plugin>
             <groupId>com.kalistick.client.connector</groupId>
             <artifactId>kalistick</artifactId>
-            <version>3.0</version>
+            <version>3.0.1</version>
             <configuration>
               <configFile>${project.basedir}/src/config/agent_cockpit/kalistick-new.xml</configFile>
               <version>${project.version}-${build.timestamp}</version>

@@ -23,7 +23,6 @@
  */
 package com.silverpeas.directory.model;
 
-import java.sql.SQLException;
 import java.util.Collection;
 
 import com.silverpeas.socialNetwork.invitation.InvitationService;
@@ -31,11 +30,12 @@ import com.silverpeas.socialNetwork.relationShip.RelationShipService;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.SessionInfo;
 import com.stratelia.silverpeas.peasCore.SessionManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 
 /**
- * @author ${user}
+ * A user as a member of something (silverpeas?).
  */
 public class Member {
 
@@ -46,7 +46,6 @@ public class Member {
   private boolean avatar = false;
 
   public void setUserDetail(UserDetail userDetail) {
-
     this.userDetail = userDetail;
   }
 
@@ -55,9 +54,9 @@ public class Member {
     profilPhoto = getUserDetail().getAvatar();
     Collection<SessionInfo> sessionInfos = SessionManager.getInstance().getConnectedUsersList();
     for (SessionInfo varSi : sessionInfos) {
-      if (varSi.m_User.equals(userDetail)) {
+      if (varSi.getUserDetail().equals(userDetail)) {
 
-        this.duration = DateUtil.formatDuration(new java.util.Date().getTime() - varSi.m_DateBegin);
+        this.duration = DateUtil.formatDuration(new java.util.Date().getTime() - varSi.getStartDate());
         this.connected = true;
         return;
       }
@@ -117,12 +116,8 @@ public class Member {
     try {
       return relation.isInRelationShip(Integer.parseInt(myId), Integer.parseInt(getId())) ||
           (invitation.getInvitation(Integer.parseInt(myId), Integer.parseInt(getId())) != null);
-    } catch (NumberFormatException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (SQLException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    } catch (Exception e) {
+      SilverTrace.warn("directory", getClass().getSimpleName(), "root.EX_NO_MESSAGE", e);
     }
     return false;
 

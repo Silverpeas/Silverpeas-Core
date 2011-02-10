@@ -24,7 +24,7 @@
 package com.silverpeas.calendar;
 
 import com.silverpeas.annotation.DateRange;
-import com.silverpeas.export.Exportable;
+import java.io.Serializable;
 import java.net.URL;
 import static com.silverpeas.util.StringUtil.*;
 
@@ -34,7 +34,8 @@ import static com.silverpeas.util.StringUtil.*;
  * An event in the calendar is described by a starting and an ending date and a name.
  */
 @DateRange(startDate="startDate", endDate="endDate")
-public class CalendarEvent implements Exportable {
+public class CalendarEvent implements Serializable {
+  private static final long serialVersionUID = 1L;
 
   private Datable<?> startDate;
   private Datable<?> endDate;

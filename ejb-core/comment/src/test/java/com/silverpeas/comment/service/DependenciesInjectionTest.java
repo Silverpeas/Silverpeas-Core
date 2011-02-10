@@ -21,45 +21,46 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.comment.service;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import javax.inject.Inject;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import static org.junit.Assert.*;
 
 /**
- * A factory of CommentService objects. Its aim is to manage the life-cycle of such objects and
- * so to encapsulates from the CommentService client the adopted policy about that life-cycle.
+ * Unit tests on the dependencies injection of the service on the comments.
  */
-public class CommentServiceFactory {
-
-  private static final CommentServiceFactory instance = new CommentServiceFactory();
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = "/spring-comment.xml")
+public class DependenciesInjectionTest {
 
   @Inject
-  private CommentService commentService;
+  private CommentService service;
 
-  /**
-   * Gets an instance of this CommentServiceFactory class.
-   * @return a CommentServiceFactory instance.
-   */
-  public static CommentServiceFactory getFactory() {
-    return instance;
+  public DependenciesInjectionTest() {
   }
 
   /**
-   * Gets a CommentService instance.
-   * @return a CommentService instance.
+   * The service on the comments and its dependencies should be injected by the IoC container.
    */
-  public CommentService getCommentService() {
-    if (commentService == null) {
-      SilverTrace.warn("comment", getClass().getSimpleName() + ".getCommentService()",
-          "EX_NO_MESSAGES", "IoC container not bootstrapped or no CommentService bean found! "
-          + "Creates explicitly the bean");
-      commentService = new CommentService();
-    }
-    return commentService;
+  @Test
+  public void theCommentServiceShouldBeInjected() {
+    assertNotNull(service);
+    assertNotNull(service.getCommentDAO());
   }
 
-  private CommentServiceFactory() {
+  /**
+   * The service should have its dependency correctly set by the IoC container when getting by its
+   * factory.
+   */
+  @Test
+  public void theCommentServiceShouldBeGetByTheFactory() {
+    CommentServiceFactory commentServiceFactory = CommentServiceFactory.getFactory();
+    CommentService commentService = commentServiceFactory.getCommentService();
+    assertNotNull(service);
+    assertNotNull(service.getCommentDAO());
   }
 }

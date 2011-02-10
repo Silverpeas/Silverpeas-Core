@@ -24,46 +24,47 @@
 
 package com.silverpeas.export;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
- * This interface defines the features an exporter of exportable resources in Silverpeas have to
+ * This interface defines the features an exporter of serializable resources in Silverpeas have to
  * satisfy. All exporter in Silverpeas should implement this interface.
  *
- * An exporter in Silverpeas is defined for a specific type of exportable resources and it has the
+ * An exporter in Silverpeas is defined for a specific type of serializable resources and it has the
  * responsability to know how to export them into a specific or a specified format.
- * @param <T> The type of the exportable resources to export.
+ * @param <T> The type of the serializable resources to export.
  */
-public interface Exporter<T extends Exportable> {
+public interface Exporter<T extends Serializable> {
 
   /**
-   * Exports the specified exportable resources according to the export information carried by the
+   * Exports the specified serializable resources according to the export information carried by the
    * specified export descriptor.
-   * The exportable resources are exported by using the writer provided by the descriptor. According
+   * The serializable resources are exported by using the writer provided by the descriptor. According
    * to the kind of writer, the way the resources are actually exported can be customized (export in
    * a file, in a string, through a web service, ...).
    * Once the export is done (with success or failure), the writer is closed.
    * @param descriptor the export descriptor in which information about the export process is
    * indicated.
-   * @param exportables the exportable resources to export.
+   * @param serializables the serializable resources to export.
    * @throws ExportException when an unexpected error occurs while exporting
    * the resources.
    */
-  void export(final ExportDescriptor descriptor, final T ... exportables) throws ExportException;
+  void export(final ExportDescriptor descriptor, final T ... serializables) throws ExportException;
 
   /**
-   * Exports the specified list of exportable resources according to the export information carried
+   * Exports the specified list of serializable resources according to the export information carried
    * by the specified export descriptor.
-   * The exportable resources are exported by using the writer provided by the descriptor. According
+   * The serializable resources are exported by using the writer provided by the descriptor. According
    * to the kind of writer, the way the resources are actually exported can be customized (export in
    * a file, in a string, through a web service, ...).
    * Once the export is done (with success or failure), the writer is closed.
    * @param descriptor the export descriptor in which information about the export process is
    * indicated.
-   * @param exportables the exportable resources to export.
+   * @param serializables the list of serializable resources to export.
    * @throws ExportException when an unexpected error occurs while exporting
    * the resources.
    */
-  void export(final ExportDescriptor descriptor, final List<T> exportables) throws ExportException;
+  void export(final ExportDescriptor descriptor, final List<T> serializables) throws ExportException;
 
 }

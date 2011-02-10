@@ -24,7 +24,7 @@
 package com.silverpeas.accesscontrol;
 
 import com.silverpeas.util.ComponentHelper;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
@@ -45,20 +45,28 @@ public class AttachmentAccessController implements AccessController<AttachmentDe
   public AttachmentAccessController() {
     accessController = new NodeAccessController();
   }
-  
+
   /**
    * For test only.
-   * @param accessController 
+   * @param accessController
    */
   AttachmentAccessController(NodeAccessController accessController) {
     this.accessController = accessController;
   }
 
   @Override
-  public boolean isUserAuthorized(String userId, AttachmentDetail object) throws Exception {
+  public boolean isUserAuthorized(String userId, AttachmentDetail object) {
     if (ComponentHelper.getInstance().isThemeTracker(object.getForeignKey().getComponentName())) {
-      Collection<NodePK> nodes = getPublicationBm().getAllFatherPK(new PublicationPK(
-          object.getForeignKey().getId(), object.getInstanceId()));
+      Collection<NodePK> nodes;
+      try {
+        nodes =
+            getPublicationBm().getAllFatherPK(new PublicationPK(
+            object.getForeignKey().getId(), object.getInstanceId()));
+      } catch (Exception ex) {
+        SilverTrace.error("accesscontrol", getClass().getSimpleName() + ".isUserAuthorized()",
+            "root.NO_EX_MESSAGE", ex);
+        return false;
+      }
       for (NodePK nodePk : nodes) {
         if (accessController.isUserAuthorized(userId, nodePk)) {
           return true;

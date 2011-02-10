@@ -24,37 +24,29 @@
 
 package com.silverpeas.export;
 
+import java.io.Serializable;
+import java.util.List;
+
 /**
- * Exception thrown when the export of a Silverpeas resource failed.
- * It is a business exception that occurs when a business operation invoked by a user fails.
+ * This interface defines the features an immporter of serializable resources in Silverpeas have to
+ * satisfy. All importer in Silverpeas should implement this interface.
+ *
+ * An importer in Silverpeas is defined for a specific type of serializable resources and it has the
+ * responsability to know how to import them from a specific or a specified format.
+ * @param <T> The type of the serializable resources to import.
  */
-public class ExportException extends Exception {
-
-  private static final long serialVersionUID = 7791895284880044020L;
+public interface Importer<T extends Serializable> {
 
   /**
-   * Constructs a new ExportException by specifying the cause.
-   * @param thrwbl the cause of this exception.
+   * Imports the serialized resources from the reader and the import parameters carried by the specified
+   * descriptor.
+   * The resources are deserialized each of them in an instance of T and they are returned in a list.
+   * @param descriptor the import descriptor in which information about the import process is
+   * indicated.
+   * @throws ImportException when an unexpected error occurs while importing
+   * the resources.
+   * @return a list of instances of T corresponfding to the imported resources.
    */
-  public ExportException(Throwable thrwbl) {
-    super(thrwbl);
-  }
-
-  /**
-   * Constructs a new ExportException with the specified message and cause.
-   * @param message the message about the problem.
-   * @param thrwbl the cause of the exception.
-   */
-  public ExportException(String message, Throwable thrwbl) {
-    super(message, thrwbl);
-  }
-
-  /**
-   * Constructs a new ExportException with the specified message.
-   * @param message the message about the problem.
-   */
-  public ExportException(String message) {
-    super(message);
-  }
-
+  List<T> importFrom(final ImportDescriptor descriptor) throws ImportException;
+  
 }

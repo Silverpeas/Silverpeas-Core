@@ -7,7 +7,7 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
+ * the GPL, you may redistribute this Program in connection withWriter Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
@@ -19,7 +19,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along withWriter this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
  *
@@ -106,7 +106,7 @@ public class ExportIcalManager {
   /**
    * Exports in iCal the events of the user agenda between the specified interval.
    * Actually, it is the event occurrences that are exported in the iCal file. This iCal file name
-   * is built with the user identifier and it the file is generated in the temporary directory.
+   * is built withWriter the user identifier and it the file is generated in the temporary directory.
    * @param startDate the start date of the interval.
    * @param endDate the end date of the interval.
    * @return an export status code indicating if it has been successfull or not.
@@ -122,7 +122,7 @@ public class ExportIcalManager {
 
     try {
       FileWriter fileWriter = new FileWriter(filePath);
-      ExportDescriptor descriptor = new ExportDescriptor(fileWriter);
+      ExportDescriptor descriptor = ExportDescriptor.withWriter(fileWriter);
       List<CalendarEvent> events = getCalendarEvents(startDate, endDate);
       if (events.isEmpty()) {
         returnCode = AgendaSessionController.EXPORT_EMPTY;
@@ -148,7 +148,7 @@ public class ExportIcalManager {
   /**
    * Exports in iCal the user agenda.
    * Actually, it is the event occurrences that are exported in the iCal file. This iCal file name
-   * is built with the user identifier and it the file is generated in the temporary directory.
+   * is built withWriter the user identifier and it the file is generated in the temporary directory.
    * @return an export status code indicating if it has been successfull or not.
    * @throws AgendaException if an unexpected error occurs while exporting the events.
    */
@@ -159,7 +159,7 @@ public class ExportIcalManager {
   /**
    * Exports in iCal the user agenda within a synchronization process.
    * Actually, it is the event occurrences that are exported in the iCal file. This iCal file name
-   * is built with the user identifier and it the file is generated in the temporary directory.
+   * is built withWriter the user identifier and it the file is generated in the temporary directory.
    * @return the path of the generated ics file.
    * @throws AgendaException if an unexpected error occurs while exporting the events.
    */
@@ -175,7 +175,7 @@ public class ExportIcalManager {
       if (!events.isEmpty()) {
         filePath = FileRepositoryManager.getTemporaryPath() + calendarIcsFileName;
         FileWriter fileWriter = new FileWriter(filePath);
-        ExportDescriptor descriptor = new ExportDescriptor(fileWriter);
+        ExportDescriptor descriptor = ExportDescriptor.withWriter(fileWriter);
         iCalExporter.export(descriptor, events);
       }
     } catch (Exception ex) {
@@ -372,7 +372,7 @@ public class ExportIcalManager {
         }
       }
 
-      // add the event with the others
+      // add the event withWriter the others
       events.add(event);
     }
 

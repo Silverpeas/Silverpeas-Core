@@ -23,6 +23,27 @@
  */
 package com.stratelia.webactiv.util.indexEngine.model;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.Map.Entry;
+
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Field.Index;
+import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.index.IndexWriter.MaxFieldLength;
+
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -32,25 +53,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.SearchEnginePropertiesManager;
 import com.stratelia.webactiv.util.indexEngine.parser.Parser;
 import com.stratelia.webactiv.util.indexEngine.parser.ParserManager;
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.MissingResourceException;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriter.MaxFieldLength;
-import org.apache.lucene.index.Term;
 
 /**
  * An IndexManager manage all the web'activ's index. An IndexManager is NOT thread safe : to share
@@ -86,6 +88,7 @@ public class IndexManager {
   public static final int REMOVE = 1;
   public static final int READD = 2;
   private Map<String, IndexWriter> indexWriters = new HashMap<String, IndexWriter>();
+  
 
   /**
    * The constructor takes no parameters and all the index engine parameters are taken from the
@@ -170,7 +173,12 @@ public class IndexManager {
   private void removeIndexEntry(IndexWriter writer, IndexEntryPK indexEntry) {
     Term term = new Term(KEY, indexEntry.toString());
     try {
+      // removing document according to indexEntryPK 
       writer.deleteDocuments(term);
+      
+      // closing associated index searcher and removing it from cache
+      IndexSearchersCache.removeIndexSearcher(getIndexDirectoryPath(indexEntry));
+      
     } catch (Exception e) {
       SilverTrace.error("indexEngine", "IndexManager",
           "indexEngine.MSG_REMOVE_REQUEST_FAILED", indexEntry.toString(), e);
@@ -634,7 +642,7 @@ public class IndexManager {
         && (indexEntry.getComponent().startsWith("kmelia") 
         || indexEntry.getComponent().startsWith("kmax"));
   }
-
+  
   /*
    * The lucene index engine parameters.
    */

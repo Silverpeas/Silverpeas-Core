@@ -23,6 +23,7 @@
  */
 package com.silverpeas.accesscontrol;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -39,22 +40,29 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 public class NodeAccessController implements AccessController<NodePK> {
 
   private final OrganizationController controller;
-  
+
   public NodeAccessController() {
     this(new OrganizationController());
   }
-  
+
   /**
    * For tests only.
-   * @param controller 
-   */  
+   * @param controller
+   */
   NodeAccessController(OrganizationController controller) {
     this.controller = controller;
   }
 
   @Override
-  public boolean isUserAuthorized(String userId, NodePK nodePK) throws Exception {
-    NodeDetail node = getNodeBm().getHeader(nodePK, false);
+  public boolean isUserAuthorized(String userId, NodePK nodePK) {
+    NodeDetail node;
+    try {
+      node = getNodeBm().getHeader(nodePK, false);
+    } catch (Exception ex) {
+      SilverTrace.error("accesscontrol", getClass().getSimpleName() + ".isUserAuthorized()",
+          "root.NO_EX_MESSAGE", ex);
+      return false;
+    }
     if (node != null) {
       if (!node.haveRights()) {
         return true;

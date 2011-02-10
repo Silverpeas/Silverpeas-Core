@@ -84,9 +84,9 @@ function DoIdle()
 	browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics"));
     browseBar.setComponentName(resources.getString("silverStatisticsPeas.Connections"));
     browseBar.setPath(resources.getString("silverStatisticsPeas.usersWithSession"));
-    
+
 	operationPane.addOperation(resources.getIcon("silverStatisticsPeas.icoNotifyAll"),resources.getString("silverStatisticsPeas.notifyAllUser"),"javascript:openSPWindow('DisplayNotifyAllSessions','DisplayNotifyAllSessions')");
-	
+
     out.println(window.printBefore());
     if (userProfile.equals("A"))
     {
@@ -112,11 +112,11 @@ function DoIdle()
           arrayColumn1 = arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.Actions")+"</A>");
           arrayColumn1.setSortable(false);
 
-        ArrayCellText cellText;         
+        ArrayCellText cellText;
 
         if (cResultData != null)
         {
-            long currentTime = new Date().getTime();        
+            long currentTime = new Date().getTime();
         	iter = cResultData.iterator();
         	while (iter.hasNext())
         	{
@@ -126,23 +126,23 @@ function DoIdle()
 
                 arrayLine.addArrayCellText("<div align=\"right\"><img src=\""+resources.getIcon("silverStatisticsPeas.icoMonitor")+"\" alt=\"\"/></div>");
 
-          		arrayLine.addArrayCellText(item.m_IP);
-				
+          		arrayLine.addArrayCellText(item.getUserHostIP());
+
 				arrayLine.addArrayCellText(item.getLog());
 
-				long duration = currentTime - item.m_DateBegin;
+				long duration = currentTime - item.getStartDate();
 				cellText = arrayLine.addArrayCellText(item.formatDuration(duration));
 				cellText.setCompareOn(new Long(duration));
 
-                arrayLine.addArrayCellText("<div align=\"left\"><a href=\"#\"><img src=\""+resources.getIcon("silverStatisticsPeas.icoNotifySession")+"\" onclick=\"javascript:openSPWindow('DisplayNotifySession?theUserId=" + item.m_User.getId() + "','DisplayNotifySession')\"></a>&nbsp;<a href=\"javascript:ConfirmAndSend('KickSession?theSessionId=" + URLEncoder.encode(item.m_SessionId) + "','" + Encode.javaStringToJsString(resources.getString("silverStatisticsPeas.ConfirmKickSession") + item.m_User.getLogin() + " (" + item.m_User.getDisplayedName()) + ") ?')\"><img src=\""+resources.getIcon("silverStatisticsPeas.icoKillSession")+"\"/></a></div>");
+                arrayLine.addArrayCellText("<div align=\"left\"><a href=\"#\"><img src=\""+resources.getIcon("silverStatisticsPeas.icoNotifySession")+"\" onclick=\"javascript:openSPWindow('DisplayNotifySession?theUserId=" + item.getUserDetail().getId() + "','DisplayNotifySession')\"></a>&nbsp;<a href=\"javascript:ConfirmAndSend('KickSession?theSessionId=" + URLEncoder.encode(item.getSessionId()) + "','" + Encode.javaStringToJsString(resources.getString("silverStatisticsPeas.ConfirmKickSession") + item.getUserDetail().getLogin() + " (" + item.getUserDetail().getDisplayedName()) + ") ?')\"><img src=\""+resources.getIcon("silverStatisticsPeas.icoKillSession")+"\"/></a></div>");
             }
-        
+
         	out.println(arrayPane.print());
         }
         out.println(resources.getString("silverStatisticsPeas.RefreshedEveryMinutes") + "<BR>");
 %>
 </center>
-<%       
+<%
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>

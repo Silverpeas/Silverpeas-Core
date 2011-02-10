@@ -14,7 +14,7 @@ import java.io.File;
 import java.util.Collection;
 
 /**
- *
+ * A social network user.
  * @author Bensalem Nabil
  */
 public class SNFullUser {
@@ -41,9 +41,9 @@ public class SNFullUser {
     }
     Collection<SessionInfo> sessionInfos = SessionManager.getInstance().getConnectedUsersList();
     for (SessionInfo varSi : sessionInfos) {
-      if (varSi.m_User.getId().equals(userId)) {
+      if (varSi.getUserDetail().getId().equals(userId)) {
 
-        this.duration = DateUtil.formatDuration(new java.util.Date().getTime() - varSi.m_DateBegin);
+        this.duration = DateUtil.formatDuration(new java.util.Date().getTime() - varSi.getStartDate());
         this.connected = true;
         return;
       }

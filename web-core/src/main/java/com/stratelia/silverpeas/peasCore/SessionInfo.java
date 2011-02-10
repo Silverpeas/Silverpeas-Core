@@ -37,21 +37,88 @@ public class SessionInfo extends Object {
   private static final long millisPerHour = (long) 60 * (long) 60 * (long) 1000;
   private static final long millisPerMinute = (long) 60 * (long) 1000;
 
-  protected HttpSession m_Session = null;
+  private HttpSession m_Session = null;
 
-  public String m_SessionId = "";
-  public String m_IP = null;
-  public UserDetail m_User = null;
-  public long m_DateBegin = 0;
+  private String m_SessionId = "";
+  private String m_IP = null;
+  private UserDetail m_User = null;
+  private long m_DateBegin = 0;
 
-  public long m_DateLastAccess = 0;
-  public long m_DateIsAlive = 0;
+  private long m_DateLastAccess = 0;
+  private long m_DateIsAlive = 0;
 
   public SessionInfo() {
   }
 
   /**
+   * Updates the last access by the user of its session.
+   */
+  protected void updateLastAccess() {
+    m_DateLastAccess = System.currentTimeMillis();
+  }
+
+  /**
+   * Updates the isalive status of the session.
+   */
+  protected void updateIsAlive() {
+    m_DateIsAlive = System.currentTimeMillis();
+  }
+
+  /**
+   * Gets the date at which the session has started.
+   * @return the the session start date.
+   */
+  public long getStartDate() {
+    return m_DateBegin;
+  }
+
+  /**
+   * Gets the date at which the session is alive.
+   * @return the isalive date
+   */
+  public long getIsAliveDate() {
+    return m_DateIsAlive;
+  }
+
+  /**
+   * Gets the last date at which the user has used its opened session.
+   * @return the session last access date.
+   */
+  public long getLastAccessDate() {
+    return m_DateLastAccess;
+  }
+
+  /**
+   * Gets the IP address of the host from which the user is connected and is accessing Silverpeas.
+   * @return the session client host address IP.
+   */
+  public String getUserHostIP() {
+    return m_IP;
+  }
+
+  /**
+   * Gets the unique identifier of the session refered by this session information.
+   * @return the session unique identifier.
+   */
+  public String getSessionId() {
+    return m_SessionId;
+  }
+
+  /**
+   * Gets the detail about the connected user.
+   * @return the user detail concerned by the session.
+   */
+  public UserDetail getUserDetail() {
+    return m_User;
+  }
+
+
+
+  /**
    * Prevent the class from being instantiate (private)
+   * @param session the HTTP session to wrap.
+   * @param IP the remote user host address IP.
+   * @param ud the detail about the connected user.
    */
   public SessionInfo(HttpSession session, String IP, UserDetail ud) {
     m_Session = session;
@@ -152,16 +219,23 @@ public class SessionInfo extends Object {
     String dMinute = Long.toString(minuteDuration);
     String dSecond = Long.toString(secondDuration);
 
-    if (hourDuration < 10)
+    if (hourDuration < 10) {
       dHour = "0" + dHour;
-    if (minuteDuration < 10)
+    }
+    if (minuteDuration < 10) {
       dMinute = "0" + dMinute;
-    if (secondDuration < 10)
+    }
+    if (secondDuration < 10) {
       dSecond = "0" + dSecond;
+    }
 
     return dHour + "h" + dMinute + "m" + dSecond + "s";
   }
 
+  /**
+   * Gets the HTTP session refered by this session information.
+   * @return the backed HTTP session.
+   */
   public HttpSession getHttpSession() {
     return this.m_Session;
   }
