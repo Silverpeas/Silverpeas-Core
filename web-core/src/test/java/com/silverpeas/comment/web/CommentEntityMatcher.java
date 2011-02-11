@@ -29,19 +29,19 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 
 /**
- * A matcher of two comment objects. The comments match if some of their properties are equal.
+ * A matcher between a web comment entity and a comment it should represent.
  */
-public class CommentMatcher extends BaseMatcher<CommentEntity> {
+public class CommentEntityMatcher extends BaseMatcher<CommentEntity> {
 
-  private CommentEntity comment;
+  private Comment comment;
 
   /**
    * Creates a new matcher with the specified comment.
    * @param theComment the comment to match.
    * @return a comment matcher.
    */
-  public static CommentMatcher matches(final CommentEntity theComment) {
-    return new CommentMatcher(theComment);
+  public static CommentEntityMatcher matches(final Comment theComment) {
+    return new CommentEntityMatcher(theComment);
   }
 
   @Override
@@ -49,13 +49,16 @@ public class CommentMatcher extends BaseMatcher<CommentEntity> {
     boolean match = false;
     if (item instanceof CommentEntity) {
       CommentEntity actual = (CommentEntity) item;
-      match = actual.getId().equals(comment.getId()) &&
-          actual.getComponentId().equals(comment.getComponentId()) &&
-          actual.getContentId().equals(comment.getContentId()) &&
-          actual.getCreationDate().equals(comment.getCreationDate()) &&
-          actual.getText().equals(comment.getText()) &&
-          actual.getModificationDate().equals(comment.getModificationDate()) &&
-          actual.getWriter().getId().equals(comment.getWriter().getId());
+      match = comment.getCommentPK().getId().equals(actual.getId()) &&
+          comment.getCommentPK().getInstanceId().equals(actual.getComponentId()) &&
+          comment.getForeignKey().getId().equals(actual.getResourceId()) &&
+          comment.getCreationDate().equals(actual.getCreationDate()) &&
+          comment.getMessage().equals(actual.getText()) &&
+          comment.getModificationDate().equals(actual.getModificationDate()) &&
+          comment.getOwnerDetail().getId().equals(actual.getAuthor().getId());
+          if (!actual.getAuthor().getAvatar().isEmpty()) {
+            match &= comment.getOwnerDetail().getAvatar().equals(actual.getAuthor().getAvatar());
+          }
     }
     return match;
   }
@@ -65,7 +68,7 @@ public class CommentMatcher extends BaseMatcher<CommentEntity> {
     description.appendValue(comment);
   }
 
-  private CommentMatcher(final CommentEntity comment) {
+  private CommentEntityMatcher(final Comment comment) {
     this.comment = comment;
   }
 

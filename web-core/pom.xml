@@ -210,7 +210,11 @@
       <artifactId>jersey-test-support</artifactId>
       <scope>test</scope>
     </dependency>
-
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-json</artifactId>
+      <version>1.6-ea02</version>
+    </dependency>
   </dependencies>
 
   <build>

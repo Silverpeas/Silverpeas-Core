@@ -78,10 +78,15 @@ public class JSONCommentMatcher extends BaseMatcher<String> {
         match = json.startsWith("{") && json.endsWith("}");
       }
       for (Comment comment : comments) {
-        match &= json.contains(commentIdOf(comment)) && json.contains(resourceIdOf(comment)) && json.
-            contains(componentIdOf(comment)) && json.contains(textOf(comment)) && json.contains(creationDateOf(
-            comment)) && json.contains(modificationDateOf(
-            comment)) && json.contains(writerOf(comment));
+        match &= json.contains(commentIdOf(comment)) &&
+            json.contains(resourceIdOf(comment)) &&
+            json.contains(componentIdOf(comment)) &&
+            json.contains(textOf(comment)) &&
+            json.contains(creationDateOf(comment)) &&
+            json.contains(modificationDateOf( comment)) &&
+            json.contains(authorIdOf(comment)) &&
+            json.contains(authorAvatarOf(comment)) &&
+            json.contains(authorNameOf(comment));
       }
     }
     return match;
@@ -99,9 +104,10 @@ public class JSONCommentMatcher extends BaseMatcher<String> {
         builder.append(",");
       }
       builder.append("{").append(commentIdOf(comment)).append(",").append(resourceIdOf(
-          comment)).append(",").append(textOf(comment)).append(",").append(writerOf(
-          comment)).append(",").append(creationDateOf(
-          comment)).append(",").append(modificationDateOf(comment)).append("}");
+          comment)).append(",").append(textOf(comment)).append(",").append(authorIdOf(
+          comment)).append(",").append(authorNameOf(comment)).append(",").
+          append(authorAvatarOf(comment)).append(",").append(creationDateOf(comment)).append(",").
+          append(modificationDateOf(comment)).append("}");
     }
     if (comments.length > 1) {
       builder.append("]");
@@ -115,32 +121,39 @@ public class JSONCommentMatcher extends BaseMatcher<String> {
   }
 
   private static String commentIdOf(Comment theComment) {
-    return "\"" + COMMENT_ID + "\":\"" + theComment.getCommentPK().getId() + "\"";
+    return "\"" + COMMENT_ID_FIELD + "\":\"" + theComment.getCommentPK().getId() + "\"";
   }
 
   private static String componentIdOf(Comment theComment) {
-    return "\"" + COMPONENT_ID + "\":\"" + theComment.getCommentPK().getInstanceId() + "\"";
+    return "\"" + COMPONENT_ID_FIELD + "\":\"" + theComment.getCommentPK().getInstanceId() + "\"";
   }
 
   private static String resourceIdOf(Comment theComment) {
-    return "\"" + RESOURCE_ID + "\":\"" + theComment.getForeignKey().getId() + "\"";
+    return "\"" + RESOURCE_ID_FIELD + "\":\"" + theComment.getForeignKey().getId() + "\"";
   }
 
   private static String textOf(Comment theComment) {
-    return "\"" + TEXT + "\":\"" + theComment.getMessage() + "\"";
+    return "\"" + TEXT_FIELD + "\":\"" + theComment.getMessage() + "\"";
   }
 
-  private static String writerOf(final Comment theComment) {
-    return "\"" + WRITER + "\":{\"" + WRITER_ID + "\":\"" + theComment.getOwnerDetail().getId()
-        + "\",\"" + WRITER_NAME + "\":\"" + theComment.getOwnerDetail().getDisplayedName() + "\""
-        + ",\"" + WRITER_AVATAR + "\":\"" + theComment.getOwnerDetail().getAvatar() + "\"}";
+  private static String authorIdOf(final Comment theComment) {
+    return "\"" + AUTHOR_ID_FIELD + "\":\"" + theComment.getOwnerDetail().getId() + "\"";
+  }
+
+  private static String authorAvatarOf(final Comment theComment) {
+    return "\"" + AUTHOR_AVATAR_FIELD + "\":\"" + theComment.getOwnerDetail().getAvatar() + "\"";
+  }
+
+  private static String authorNameOf(final Comment theComment) {
+    return "\"" + AUTHOR_NAME_FIELD + "\":\"" + theComment.getOwnerDetail().getDisplayedName()
+        + "\"";
   }
 
   private static String creationDateOf(Comment theComment) {
-    return "\"" + CREATION_DATE + "\":\"" + theComment.getCreationDate() + "\"";
+    return "\"" + CREATION_DATE_FIELD + "\":\"" + theComment.getCreationDate() + "\"";
   }
 
   private static String modificationDateOf(Comment theComment) {
-    return "\"" + MODIFICATION_DATE + "\":\"" + theComment.getModificationDate() + "\"";
+    return "\"" + MODIFICATION_DATE_FIELD + "\":\"" + theComment.getModificationDate() + "\"";
   }
 }
