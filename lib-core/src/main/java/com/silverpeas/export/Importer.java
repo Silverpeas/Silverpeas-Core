@@ -48,5 +48,5 @@ public interface Importer<T extends Serializable> {
    * @return a list of instances of T corresponfding to the imported resources.
    */
   List<T> importFrom(final ImportDescriptor descriptor) throws ImportException;
-  
+
 }

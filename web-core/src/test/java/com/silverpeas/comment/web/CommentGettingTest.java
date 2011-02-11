@@ -30,18 +30,31 @@ import com.sun.jersey.api.client.WebResource;
 import java.util.UUID;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
+import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-import static com.silverpeas.comment.web.json.JSONCommentMatcher.*;
+import static com.silverpeas.comment.web.CommentEntityMatcher.*;
 
 /**
  * Tests on the comment getting by the CommentResource web service.
  */
-public class CommentResourceTest  extends BaseCommentResourceTest {
+public class CommentGettingTest extends BaseCommentResourceTest {
 
-  public CommentResourceTest() {
+  private UserDetail user;
+  private String sessionKey;
+  private Comment theComment;
+
+  public CommentGettingTest() {
     super();
+  }
+
+  @Before
+  public void createAUserAndAComment() {
+    user = aUser();
+    sessionKey = authenticate(user);
+    theComment = aUser(user).commentTheResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID).
+        andSaveItWithAsText("ceci est un commentaire");
   }
 
   @Test
@@ -73,15 +86,11 @@ public class CommentResourceTest  extends BaseCommentResourceTest {
 
   @Test
   public void getANonAuthorizedComment() {
-    UserDetail user = aUser();
-    String sessionKey = authenticate(user);
-    Comment comment = aUser(user).commentTheResource(CONTENT_ID).inComponent(COMPONENT_ID).
-        withAsText("ceci est un commentaire");
     denieAuthorizationToUsers();
 
     WebResource resource = resource();
     try {
-      resource.path(RESOURCE_PATH + "/" + comment.getCommentPK().getId()).
+      resource.path(RESOURCE_PATH + "/" + theComment.getCommentPK().getId()).
           header(HEADER_SESSION_KEY, sessionKey).
           accept(MediaType.APPLICATION_JSON).
           get(String.class);
@@ -95,7 +104,6 @@ public class CommentResourceTest  extends BaseCommentResourceTest {
 
   @Test
   public void getAnUnexistingComment() {
-    String sessionKey = authenticate(aUser());
     WebResource resource = resource();
     try {
       resource.path(RESOURCE_PATH + "/3").
@@ -112,35 +120,33 @@ public class CommentResourceTest  extends BaseCommentResourceTest {
 
   @Test
   public void getAComment() {
-    UserDetail user = aUser();
-    String sessionKey = authenticate(user);
-    Comment theComment = aUser(user).commentTheResource(CONTENT_ID).inComponent(COMPONENT_ID).
-        withAsText("ceci est un commentaire");
-
     WebResource resource = resource();
-    String theJsonComment =  resource.path(RESOURCE_PATH + "/" + theComment.getCommentPK().getId()).
-          header(HEADER_SESSION_KEY, sessionKey).
-          accept(MediaType.APPLICATION_JSON).
-          get(String.class);
-    assertThat(theJsonComment, represents(theComment));
+    CommentEntity entity = resource.path(RESOURCE_PATH + "/" + theComment.getCommentPK().getId()).
+        header(HEADER_SESSION_KEY, sessionKey).
+        accept(MediaType.APPLICATION_JSON).
+        get(CommentEntity.class);
+    assertNotNull(entity);
+    assertThat(entity, matches(theComment));
   }
 
   @Test
   public void getAllComments() {
-    UserDetail user = aUser();
-    String sessionKey = authenticate(user);
-    Comment theComment1 = aUser(user).commentTheResource(CONTENT_ID).inComponent(COMPONENT_ID).
-        withAsText("ceci est un commentaire 1");
-    Comment theComment2 = aUser(user).commentTheResource(CONTENT_ID).inComponent(COMPONENT_ID).
-        withAsText("ceci est un commentaire 2");
-    Comment theComment3 = aUser(user).commentTheResource(CONTENT_ID).inComponent(COMPONENT_ID).
-        withAsText("ceci est un commentaire 3");
+    Comment theComment1 = aUser(user).commentTheResource(CONTENT_ID).inComponent(
+        COMPONENT_INSTANCE_ID).
+        andSaveItWithAsText("ceci est un commentaire 1");
+    Comment theComment2 = aUser(user).commentTheResource(CONTENT_ID).inComponent(
+        COMPONENT_INSTANCE_ID).
+        andSaveItWithAsText("ceci est un commentaire 2");
+    Comment theComment3 = aUser(user).commentTheResource(CONTENT_ID).inComponent(
+        COMPONENT_INSTANCE_ID).
+        andSaveItWithAsText("ceci est un commentaire 3");
 
-    WebResource resource = resource();
-    String theJsonComment =  resource.path(RESOURCE_PATH).
-          header(HEADER_SESSION_KEY, sessionKey).
-          accept(MediaType.APPLICATION_JSON).
-          get(String.class);
-    assertThat(theJsonComment, represents(theComment1, theComment2, theComment3));
+    CommentEntity[] entities = resource().path(RESOURCE_PATH).
+        header(HEADER_SESSION_KEY, sessionKey).
+        accept(MediaType.APPLICATION_JSON).
+        get(CommentEntity[].class);
+    assertNotNull(entities);
+    assertThat(entities.length, equalTo(4));
   }
+
 }

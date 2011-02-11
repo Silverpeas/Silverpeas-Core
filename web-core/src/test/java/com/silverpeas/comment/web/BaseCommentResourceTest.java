@@ -24,11 +24,13 @@
 
 package com.silverpeas.comment.web;
 
+import com.sun.jersey.api.client.Client;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.stratelia.silverpeas.peasCore.SessionInfo;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.sun.jersey.api.client.WebResource;
 import java.util.Date;
 import java.util.UUID;
 import javax.servlet.http.HttpSession;
@@ -36,6 +38,9 @@ import com.riffpie.common.testing.AbstractSpringAwareJerseyTest;
 import com.silverpeas.comment.web.mock.AccessControllerMock;
 import com.silverpeas.comment.web.mock.CommentServiceMock;
 import com.stratelia.silverpeas.peasCore.SessionManagement;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 import com.sun.jersey.test.framework.WebAppDescriptor;
 import org.junit.Before;
@@ -50,9 +55,10 @@ import static org.mockito.Mockito.*;
 public abstract class BaseCommentResourceTest extends AbstractSpringAwareJerseyTest {
 
   protected static final String HEADER_SESSION_KEY = "X-Silverpeas-SessionKey";
-  protected static final String COMPONENT_ID = "kmelia2";
+  protected static final String COMPONENT_INSTANCE_ID = "kmelia2";
   protected static final String CONTENT_ID = "1";
-  protected static final String RESOURCE_PATH = "comments/" + COMPONENT_ID + "/" + CONTENT_ID;
+  protected static final String RESOURCE_PATH = "comments/" + COMPONENT_INSTANCE_ID + "/" + CONTENT_ID;
+  protected static final String CONTEXT_NAME = "silverpeas";
 
   @Autowired
   private SessionManagement sessionManager;
@@ -60,13 +66,20 @@ public abstract class BaseCommentResourceTest extends AbstractSpringAwareJerseyT
   private AccessControllerMock accessController;
   @Autowired
   private CommentServiceMock commentService;
+  private Client webClient;
 
   public BaseCommentResourceTest() {
-    super(new WebAppDescriptor.Builder("com.silverpeas.comment.web").contextPath("silverpeas").
+    super(new WebAppDescriptor.Builder("com.silverpeas.comment.web").
+        contextPath(CONTEXT_NAME).
         contextParam("contextConfigLocation", "classpath:/spring-comment-webservice.xml").
+        initParam(JSONConfiguration.FEATURE_POJO_MAPPING, "true").
         requestListenerClass(org.springframework.web.context.request.RequestContextListener.class).
-        servletClass(SpringServlet.class).contextListenerClass(ContextLoaderListener.class).
+        servletClass(SpringServlet.class).
+        contextListenerClass(ContextLoaderListener.class).
         build());
+    ClientConfig config = new DefaultClientConfig();
+    config.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, true);
+    webClient = Client.create(config);
   }
 
   @Before
@@ -117,6 +130,13 @@ public abstract class BaseCommentResourceTest extends AbstractSpringAwareJerseyT
     return new CommentBuilder().withUser(user);
   }
 
+  @Override
+  public WebResource resource() {
+    return webClient.resource(getBaseURI() + CONTEXT_NAME + "/");
+  }
+
+
+
   /**
    * The builder of comments for testing purpose.
    */
@@ -144,9 +164,14 @@ public abstract class BaseCommentResourceTest extends AbstractSpringAwareJerseyT
     public Comment withAsText(String theText) {
       Date now = new Date();
       Comment comment = new Comment(new CommentPK("", componentId), new PublicationPK(
-          resourceId, componentId), Integer.valueOf(user.getId()), user.getDisplayedName(), theText, now.
-          toString(), now.toString());
+          resourceId, componentId), Integer.valueOf(user.getId()), user.getDisplayedName(), theText,
+          now.toString(), now.toString());
       comment.setOwnerDetail(user);
+      return comment;
+    }
+
+    public Comment andSaveItWithAsText(String theText) {
+      Comment comment = withAsText(theText);
       commentService.createComment(comment);
       return comment;
     }

@@ -99,8 +99,9 @@ public class JSONCommentExportingTest {
         new PublicationPK(publicationId, componentId), Integer.valueOf(user.getId()),
         user.getDisplayedName(), "Ceci est un commentaire " + offset, "11/12/2002", "11/12/2002");
     aComment.setOwnerDetail(user);
-    return CommentEntity.fromComment(aComment).
+    CommentEntity entity = CommentEntity.fromComment(aComment).
         withURI(new URI("http://localhost/silverpeas/services/comments/" + commentId));
+    return entity;
   }
 }
 
