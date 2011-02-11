@@ -166,7 +166,7 @@
           <plugin>
             <groupId>com.kalistick.client.connector</groupId>
             <artifactId>kalistick</artifactId>
-            <version>3.0.1</version>
+            <version>3.0.2-SNAPSHOT</version>
             <configuration>
               <configFile>${project.basedir}/src/config/agent_cockpit/kalistick-new.xml</configFile>
               <version>${project.version}-${build.timestamp}</version>

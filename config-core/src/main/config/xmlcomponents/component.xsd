@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="http://silverpeas.org/xml/ns/component" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+targetNamespace="http://silverpeas.org/xml/ns/component">
+  <xs:element name="WAComponent" type="WAComponentType">
+    <xs:annotation>
+      <xs:documentation>Copyright (C) 2000 - 2011 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have recieved a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see &lt;http://www.gnu.org/licenses/>.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:complexType name="ProfileType" >    
+    <xs:complexContent>     
+      <xs:extension base="multilang" >
+        <xs:attribute type="xs:string" name="name"/>
+      </xs:extension>
+    </xs:complexContent>    
+  </xs:complexType>
+  <xs:complexType name="ProfilesType">
+    <xs:sequence>
+      <xs:element type="ProfileType" name="profile" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="multilang">
+    <xs:sequence>
+      <xs:element type="xs:string" name="fr" />
+      <xs:element type="xs:string" name="en" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ParameterType">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" />
+      <xs:element name="label" type="multilang" />
+      <xs:element name="order" type="xs:int" />      
+      <xs:element name="mandatory" type="boolean" />
+        <xs:element name="value" type="xs:string"/>
+        <xs:element type="ParameterOptionsType" name="options" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element name="type">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="checkbox"/>
+            <xs:enumeration value="select"/>
+            <xs:enumeration value="xmltemplates"/>
+            <xs:enumeration value="text"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="size" type="xs:int" minOccurs="0" />
+      <xs:element type="xs:string" name="updatable"/>
+      <xs:element type="multilang" name="help"/>
+      <xs:element type="boolean" name="usedForPersonalSpace" minOccurs="0" maxOccurs="1" />  
+    </xs:sequence>   
+  </xs:complexType>
+  <xs:simpleType name="UpdatableType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="always"/>
+      <xs:enumeration value="creation"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="ParameterOptionType">
+    <xs:sequence>
+      <xs:element name="name" type="multilang"/>
+      <xs:element name="value" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ParameterOptionsType">
+    <xs:sequence>
+      <xs:element type="ParameterOptionType" name="option" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="boolean">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Y"/>
+      <xs:enumeration value="N"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="ParametersType">
+    <xs:sequence>
+      <xs:element type="ParameterType" name="parameter" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="WAComponentType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="name"/>
+      <xs:element type="multilang" name="label"/>
+      <xs:element type="multilang" name="description"/>
+      <xs:element type="multilang" name="suite"/>
+      <xs:element type="boolean" name="visible"/>     
+      <xs:element type="boolean" name="visibleInPersonalSpace" minOccurs="0" maxOccurs="1" />
+      <xs:element type="boolean" name="portlet"/>
+      <xs:element type="xs:string" name="instanceClassName"/>
+      <xs:element type="ProfilesType" name="profiles"/>
+      <xs:element type="ParametersType" name="parameters" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

@@ -142,7 +142,6 @@ public abstract class RESTWebService {
     if (user == null) {
       throw new WebApplicationException(Status.UNAUTHORIZED);
     }
-
     if (!getAccessController().isUserAuthorized(user.getId(), componentId)) {
       throw new WebApplicationException(Status.FORBIDDEN);
     }
