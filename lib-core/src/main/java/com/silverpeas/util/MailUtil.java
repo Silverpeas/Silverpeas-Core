@@ -27,6 +27,7 @@ import com.google.common.base.Splitter;
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
+import java.util.Collections;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
@@ -74,13 +75,18 @@ public class MailUtil {
    * @param domainsList the list of coma separated authorized domains for email sender addresses.
    */
   static void reloadConfiguration(String domainsList) {
-    domains = DOMAIN_SPLITTER.split(domainsList);
+    if (StringUtil.isDefined(domainsList)) {
+      domains = DOMAIN_SPLITTER.split(domainsList);
+    } else {
+      domains = Collections.singletonList("");
+    }
   }
 
   public synchronized static boolean isDomainAuthorized(String email) {
     if (StringUtil.isDefined(email)) {
       String emailAddress = email.toLowerCase();
-      for (String domain : domains) {
+      for (String domain :
+          domains) {
         if (emailAddress.endsWith(domain.toLowerCase())) {
           return true;
         }
