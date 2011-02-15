@@ -76,7 +76,7 @@ public class ComponentInstManager {
       componentInst.addProfileInst(profile);
     }
 
-    SPParameters parameters = componentInstToCopy.getSPParameters();
+    List<Parameter> parameters = componentInstToCopy.getSPParameters();
     componentInst.setSPParameters(parameters);
 
     componentInst.setLanguage(componentInstToCopy.getLanguage());
@@ -436,7 +436,7 @@ public class ComponentInstManager {
 
     try {
       // Compute the Old component profile list
-      ArrayList<ProfileInst> alProfileInst = componentInst.getAllProfilesInst();
+      List<ProfileInst> alProfileInst = componentInst.getAllProfilesInst();
       for (int nI = 0; nI < alProfileInst.size(); nI++) {
         alOldCompoProfile.add(alProfileInst.get(nI).getName());
       }
@@ -493,7 +493,7 @@ public class ComponentInstManager {
   public String updateComponentInst(DomainDriverManager ddManager,
       ComponentInst compoInstNew) throws AdminException {
     try {
-      List<SPParameter> parameters = compoInstNew.getParameters();
+      List<Parameter> parameters = compoInstNew.getParameters();
       for (int nI = 0; nI < parameters.size(); nI++) {
         ddManager.organization.instanceData.updateInstanceData(
             idAsInt(compoInstNew.getId()), parameters.get(nI));

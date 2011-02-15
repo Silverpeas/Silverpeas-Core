@@ -78,9 +78,7 @@ targetNamespace="http://silverpeas.org/xml/ns/component">
       <xs:element type="multilang" name="help"/>
       <xs:element type="xs:string" name="personalSpaceValue" minOccurs="0" maxOccurs="1" />  
     </xs:sequence>   
-  </xs:complexType>
-  
-
+  </xs:complexType>  
   <xs:complexType name="ParameterOptionType">
     <xs:sequence>
       <xs:element name="name" type="multilang"/>
@@ -95,7 +93,8 @@ targetNamespace="http://silverpeas.org/xml/ns/component">
       <xs:element type="multilang" name="suite"/>
       <xs:element type="xs:boolean" name="visible"/>     
       <xs:element type="xs:boolean" name="visibleInPersonalSpace" minOccurs="0" maxOccurs="1" />
-      <xs:element type="xs:boolean" name="portlet"/>
+      <xs:element type="xs:boolean" name="portlet"/>      
+      <xs:element name="router" type="xs:string" minOccurs="0" />
       <xs:element type="xs:string" name="instanceClassName"/>
       <xs:element name="profiles">
         <xs:complexType>

@@ -55,7 +55,10 @@ import com.stratelia.webactiv.beans.admin.cache.GroupCache;
 import com.stratelia.webactiv.beans.admin.cache.Space;
 import com.stratelia.webactiv.beans.admin.cache.TreeCache;
 import com.silverpeas.admin.components.ComponentPasteInterface;
+import com.silverpeas.admin.components.Parameter;
+import com.silverpeas.admin.components.Profile;
 import com.silverpeas.admin.spaces.SpaceInstanciator;
+import com.silverpeas.admin.spaces.SpaceTemplate;
 import com.stratelia.webactiv.organization.OrganizationSchemaPool;
 import com.stratelia.webactiv.organization.ScheduledDBReset;
 import com.stratelia.webactiv.organization.UserRow;
@@ -186,7 +189,8 @@ public final class Admin extends Object {
       SilverTrace.info(MODULE_ADMIN, "admin.startServer",
           "root.MSG_GEN_PARAM_VALUE", "Start filling tree cache...");
       List<SpaceInstLight> spaces = m_SpaceInstManager.getAllSpaces(m_DDManager);
-      for (SpaceInstLight space : spaces) {
+      for (SpaceInstLight space :
+          spaces) {
         addSpaceInTreeCache(space, false);
       }
       SilverTrace.info(MODULE_ADMIN, "admin.startServer",
@@ -209,7 +213,9 @@ public final class Admin extends Object {
     Group[] groups = getSynchronizedGroups();
     List<String> synchronizedGroupIds = new ArrayList<String>();
     Group group = null;
-    for (int g = 0; g < groups.length; g++) {
+    for (int g = 0;
+        g < groups.length;
+        g++) {
       group = groups[g];
       if (group.isSynchronized()) {
         synchronizedGroupIds.add(group.getId());
@@ -322,7 +328,9 @@ public final class Admin extends Object {
 
       // Instantiate the components
       ArrayList<ComponentInst> alCompoInst = spaceInst.getAllComponentsInst();
-      for (int nI = 0; nI < alCompoInst.size(); nI++) {
+      for (int nI = 0;
+          nI < alCompoInst.size();
+          nI++) {
         ComponentInst componentInst = alCompoInst.get(nI);
         componentInst.setDomainFatherId(spaceInst.getId());
         addComponentInst(userId, componentInst, false);
@@ -409,33 +417,41 @@ public final class Admin extends Object {
         String[] sSubSpaceIds = getAllSubSpaceIds(sClientSpaceId);
 
         // Delete subspaces
-        for (int i = 0; sSubSpaceIds != null && i < sSubSpaceIds.length; i++) {
+        for (int i = 0;
+            sSubSpaceIds != null && i < sSubSpaceIds.length;
+            i++) {
           deleteSpaceInstById(sUserId, sSubSpaceIds[i], false, true);
         }
 
         // Delete subspaces already in bin
         List<SpaceInstLight> removedSpaces = getRemovedSpaces();
-        for (SpaceInstLight removedSpace : removedSpaces) {
+        for (SpaceInstLight removedSpace :
+            removedSpaces) {
           if (sDriverSpaceId.equals(removedSpace.getFatherId())) {
             deleteSpaceInstById(sUserId, removedSpace.getFullId(), false, true);
           }
         }
 
         // delete the space profiles instance
-        for (int nI = 0; nI < spaceInst.getNumSpaceProfileInst(); nI++) {
+        for (int nI = 0;
+            nI < spaceInst.getNumSpaceProfileInst();
+            nI++) {
           deleteSpaceProfileInst(spaceInst.getSpaceProfileInst(nI).getId(),
               false);
         }
 
         // Delete the components
         ArrayList<ComponentInst> alCompoInst = spaceInst.getAllComponentsInst();
-        for (int nI = 0; nI < alCompoInst.size(); nI++) {
+        for (int nI = 0;
+            nI < alCompoInst.size();
+            nI++) {
           deleteComponentInst(sUserId, alCompoInst.get(nI).getId(), true, false);
         }
 
         // Delete the components already in bin
         List<ComponentInstLight> removedComponents = getRemovedComponents();
-        for (ComponentInstLight removedComponent : removedComponents) {
+        for (ComponentInstLight removedComponent :
+            removedComponents) {
           if (sClientSpaceId.equals(removedComponent.getDomainFatherId())) {
             deleteComponentInst(sUserId, removedComponent.getId(), true, false);
           }
@@ -468,16 +484,22 @@ public final class Admin extends Object {
 
   private void deleteSpaceProfiles(SpaceInst spaceInst) throws AdminException {
     // delete the space profiles
-    for (int nI = 0; nI < spaceInst.getNumSpaceProfileInst(); nI++) {
+    for (int nI = 0;
+        nI < spaceInst.getNumSpaceProfileInst();
+        nI++) {
       deleteSpaceProfileInst(spaceInst.getSpaceProfileInst(nI).getId(), false);
     }
 
     // delete the components profiles
     List<ComponentInst> alCompoInst = spaceInst.getAllComponentsInst();
     ComponentInst component;
-    for (int nI = 0; nI < alCompoInst.size(); nI++) {
+    for (int nI = 0;
+        nI < alCompoInst.size();
+        nI++) {
       component = alCompoInst.get(nI);
-      for (int p = 0; p < component.getNumProfileInst(); p++) {
+      for (int p = 0;
+          p < component.getNumProfileInst();
+          p++) {
         if (!component.getProfileInst(p).isInherited()) {
           deleteProfileInst(component.getProfileInst(p).getId(), false);
         }
@@ -487,7 +509,9 @@ public final class Admin extends Object {
     // delete the subspace profiles
     String[] sSubSpaceIds = spaceInst.getSubSpaceIds();
     SpaceInst subSpace;
-    for (int i = 0; sSubSpaceIds != null && i < sSubSpaceIds.length; i++) {
+    for (int i = 0;
+        sSubSpaceIds != null && i < sSubSpaceIds.length;
+        i++) {
       subSpace = getSpaceInstById(sSubSpaceIds[i]);
       deleteSpaceProfiles(subSpace);
     }
@@ -537,14 +561,18 @@ public final class Admin extends Object {
 
       // Put the client component Id back
       ArrayList<ComponentInst> alCompoInst = spaceInst.getAllComponentsInst();
-      for (int nI = 0; nI < alCompoInst.size(); nI++) {
+      for (int nI = 0;
+          nI < alCompoInst.size();
+          nI++) {
         String sClientComponentId = getClientComponentId((alCompoInst.get(nI)).getId());
         alCompoInst.get(nI).setId(sClientComponentId);
       }
 
       // Put the client sub spaces Id back
       String[] asSubSpaceIds = spaceInst.getSubSpaceIds();
-      for (int nI = 0; asSubSpaceIds != null && nI < asSubSpaceIds.length; nI++) {
+      for (int nI = 0;
+          asSubSpaceIds != null && nI < asSubSpaceIds.length;
+          nI++) {
         asSubSpaceIds[nI] = getClientSpaceId(asSubSpaceIds[nI]);
       }
       spaceInst.setSubSpaceIds(asSubSpaceIds);
@@ -720,7 +748,9 @@ public final class Admin extends Object {
         List<SpaceProfileInst> inheritedProfiles = space.getInheritedProfiles();
 
         SpaceProfileInst profile = null;
-        for (int i = 0; i < inheritedProfiles.size(); i++) {
+        for (int i = 0;
+            i < inheritedProfiles.size();
+            i++) {
           profile = inheritedProfiles.get(i);
           deleteSpaceProfileInst(profile.getId(), false);
         }
@@ -731,7 +761,9 @@ public final class Admin extends Object {
         List<SpaceProfileInst> profiles = space.getProfiles();
 
         SpaceProfileInst profile = null;
-        for (int i = 0; i < profiles.size(); i++) {
+        for (int i = 0;
+            i < profiles.size();
+            i++) {
           profile = profiles.get(i);
           if (profile != null && !"Manager".equalsIgnoreCase(profile.getName())) {
             deleteSpaceProfileInst(profile.getId(), false);
@@ -744,7 +776,9 @@ public final class Admin extends Object {
 
           // profiles = space.getAllSpaceProfilesInst();
           profiles = space.getInheritedProfiles();
-          for (int i = 0; i < profiles.size(); i++) {
+          for (int i = 0;
+              i < profiles.size();
+              i++) {
             profile = profiles.get(i);
             addSpaceProfileInst(profile, null, false);
           }
@@ -894,7 +928,9 @@ public final class Admin extends Object {
 
     try {
       String[] asSpaceNames = new String[asClientSpaceIds.length];
-      for (int nI = 0; nI < asClientSpaceIds.length; nI++) {
+      for (int nI = 0;
+          nI < asClientSpaceIds.length;
+          nI++) {
         SpaceInstLight spaceInst = getSpaceInstLightById(asClientSpaceIds[nI]);
         asSpaceNames[nI] = spaceInst.getName();
       }
@@ -908,10 +944,6 @@ public final class Admin extends Object {
 
   public Map<String, SpaceTemplate> getAllSpaceTemplates() {
     return m_spaceInstanciator.getAllSpaceTemplates();
-  }
-
-  public SpaceTemplateProfile[] getTemplateProfiles(String templateName) {
-    return m_spaceInstanciator.getTemplateProfiles(templateName);
   }
 
   public SpaceInst getSpaceInstFromTemplate(String templateName) {
@@ -930,7 +962,8 @@ public final class Admin extends Object {
 
     Map<String, String> hComponents = Instanciateur.getAllComponentsNames();
 
-    for (Map.Entry<String, String> entry : hComponents.entrySet()) {
+    for (Map.Entry<String, String> entry :
+        hComponents.entrySet()) {
       SilverTrace.debug(MODULE_ADMIN, "Admin.getAllComponentsNames",
           "admin.MSG_INFO_COMPONENT_FOUND", entry.getKey() + ": " + entry.getValue());
     }
@@ -1033,7 +1066,7 @@ public final class Admin extends Object {
   /**
    * Get the parameters for the given component
    */
-  public List<SPParameter> getComponentParameters(String sComponentId) {
+  public List<Parameter> getComponentParameters(String sComponentId) {
     try {
       // Get the component inst corresponding to the given Id
       ComponentInst compoInst = getComponentInst(sComponentId);
@@ -1043,7 +1076,7 @@ public final class Admin extends Object {
       SilverTrace.error(MODULE_ADMIN, "Admin.getComponentParameters",
           "admin.EX_ERR_GET_COMPONENT_PARAMS", "sComponentId: '" + sComponentId
           + "'", e);
-      return new ArrayList<SPParameter>();
+      return new ArrayList<Parameter>();
     }
   }
 
@@ -1285,7 +1318,9 @@ public final class Admin extends Object {
 
       if (!definitive) {
         // delete the profiles instance
-        for (int nI = 0; nI < componentInst.getNumProfileInst(); nI++) {
+        for (int nI = 0;
+            nI < componentInst.getNumProfileInst();
+            nI++) {
           deleteProfileInst(componentInst.getProfileInst(nI).getId(), false);
         }
 
@@ -1304,7 +1339,9 @@ public final class Admin extends Object {
             getClientSpaceId(sFatherClientId), connectionProd);
 
         // delete the profiles instance
-        for (int nI = 0; nI < componentInst.getNumProfileInst(); nI++) {
+        for (int nI = 0;
+            nI < componentInst.getNumProfileInst();
+            nI++) {
           deleteProfileInst(componentInst.getProfileInst(nI).getId(), false);
         }
 
@@ -1470,7 +1507,9 @@ public final class Admin extends Object {
         List<ProfileInst> inheritedProfiles = component.getInheritedProfiles();
 
         ProfileInst profile = null;
-        for (int i = 0; i < inheritedProfiles.size(); i++) {
+        for (int i = 0;
+            i < inheritedProfiles.size();
+            i++) {
           profile = inheritedProfiles.get(i);
           deleteProfileInst(profile.getId(), false);
         }
@@ -1479,7 +1518,9 @@ public final class Admin extends Object {
         List<ProfileInst> profiles = component.getProfiles();
 
         ProfileInst profile = null;
-        for (int i = 0; i < profiles.size(); i++) {
+        for (int i = 0;
+            i < profiles.size();
+            i++) {
           profile = profiles.get(i);
           deleteProfileInst(profile.getId(), false);
         }
@@ -1559,17 +1600,17 @@ public final class Admin extends Object {
    * @param space the object to get profiles
    * @throws AdminException
    */
-  public void setSpaceProfilesToComponent(ComponentInst component,
-      SpaceInst space) throws AdminException {
+  public void setSpaceProfilesToComponent(ComponentInst component, SpaceInst space) throws
+      AdminException {
     WAComponent waComponent = Instanciateur.getWAComponent(component.getName());
-    String[] componentRoles = waComponent.getProfilList();
+    List<Profile> componentRoles = waComponent.getProfiles();
 
     if (space == null) {
       space = getSpaceInstById(component.getDomainFatherId(), false);
     }
 
-    for (int cr = 0; cr < componentRoles.length; cr++) {
-      ProfileInst inheritedProfile = component.getInheritedProfileInst(componentRoles[cr]);
+    for (Profile componentRole : componentRoles) {
+      ProfileInst inheritedProfile = component.getInheritedProfileInst(componentRole.getName());
 
       if (inheritedProfile != null) {
         inheritedProfile.removeAllGroups();
@@ -1578,14 +1619,14 @@ public final class Admin extends Object {
         inheritedProfile = new ProfileInst();
         inheritedProfile.setComponentFatherId(component.getId());
         inheritedProfile.setInherited(true);
-        inheritedProfile.setName(componentRoles[cr]);
+        inheritedProfile.setName(componentRole.getName());
       }
 
-      List<String> spaceRoles = componentRole2SpaceRoles(componentRoles[cr], component.getName());
+      List<String> spaceRoles = componentRole2SpaceRoles(componentRole.getName(),
+          component.getName());
       String spaceRole = null;
       for (int sr = 0; sr < spaceRoles.size(); sr++) {
         spaceRole = spaceRoles.get(sr);
-
         SpaceProfileInst spaceProfile = space.getSpaceProfileInst(spaceRole);
         if (spaceProfile != null) {
           inheritedProfile.addGroups(spaceProfile.getAllGroups());
@@ -1639,24 +1680,6 @@ public final class Admin extends Object {
       // Update the components in tables
       m_ComponentInstManager.moveComponentInst(m_DDManager, sDriverSpaceId,
           sDriverComponentId);
-
-      // Remove links for the old spaceId
-      // String currentSpaceId = getDriverSpaceId(oldSpaceId);
-      /*
-       * SilverTrace.info(MODULE_ADMIN, "admin.moveComponentInst", "root.MSG_GEN_PARAM_VALUE",
-       * "Remove Link space Father= " + currentSpaceId);
-       * m_DDManager.organization.userSet.removeUserSetFromUserSet("I", Integer
-       * .parseInt(sDriverComponentId), "S", Integer.parseInt(getDriverSpaceId(currentSpaceId)));
-       */
-
-      // Add links for the new spaceId
-      /*
-       * currentSpaceId = getDriverSpaceId(spaceId); SilverTrace.info(MODULE_ADMIN,
-       * "admin.moveComponentInst", "root.MSG_GEN_PARAM_VALUE", "Add Link space Father= " +
-       * currentSpaceId); m_DDManager.organization.userSet.addUserSetInUserSet("I", Integer
-       * .parseInt(sDriverComponentId), "S", Integer.parseInt(getDriverSpaceId(currentSpaceId)));
-       */
-
       // Set new space
       componentInst.setDomainFatherId(getDriverSpaceId(spaceId));
 
@@ -1709,7 +1732,9 @@ public final class Admin extends Object {
     int i = 0;
     ComponentInst theComponent = getComponentInst(componentId);
 
-    for (i = 0; i < m_BrothersComponents.length; i++) {
+    for (i = 0;
+        i < m_BrothersComponents.length;
+        i++) {
       if (idComponentBefore.equals(m_BrothersComponents[i].getId())) {
         theComponent.setOrderNum(orderNum);
         updateComponentOrderNum(theComponent.getId(), orderNum);
@@ -1728,15 +1753,12 @@ public final class Admin extends Object {
     }
   }
 
-  // NEWF DLE
   public String getRequestRouter(String sComponentName) {
     WAComponent wac = Instanciateur.getWAComponent(sComponentName);
-
     if (wac == null) {
       return "R" + sComponentName;
-    } else {
-      return wac.getRequestRouter();
     }
+    return wac.getRouter();
   }
 
   // --------------------------------------------------------------------------------------------------------
@@ -1745,13 +1767,18 @@ public final class Admin extends Object {
   /**
    * Get all the profiles name available for the given component
    */
-  public String[] getAllProfilesNames(String sComponentName)
-      throws AdminException {
+  public String[] getAllProfilesNames(String sComponentName) throws AdminException {
     String[] asProfiles = null;
 
     WAComponent wac = Instanciateur.getWAComponent(sComponentName);
     if (wac != null) {
-      asProfiles = wac.getProfilList();
+      List<Profile> profiles = wac.getProfiles();
+      List<String> profileNames = new ArrayList<String>(profiles.size());
+      for (Profile profile :
+          profiles) {
+        profileNames.add(profile.getName());
+      }
+      asProfiles = profileNames.toArray(new String[profileNames.size()]);
     }
 
     if (asProfiles != null) {
@@ -1763,27 +1790,22 @@ public final class Admin extends Object {
 
   /**
    * Get the profile label from its name
+   * @param sComponentName
+   * @param sProfileName
+   * @return
+   * @throws AdminException 
    */
-  public String getProfileLabelfromName(String sComponentName,
-      String sProfileName) throws AdminException {
-    String[] asProfiles = null;
-    String[] asProfilesLabel = null;
+  public String getProfileLabelfromName(String sComponentName, String sProfileName) throws
+      AdminException {
 
     WAComponent wac = Instanciateur.getWAComponent(sComponentName);
     if (wac != null) {
-      asProfiles = wac.getProfilList();
-      asProfilesLabel = wac.getProfilLabelList();
-    }
-
-    if (asProfiles != null && asProfilesLabel != null
-        && asProfiles.length == asProfilesLabel.length) {
+      List<Profile> profiles = wac.getProfiles();
       String sProfileLabel = sProfileName;
-      boolean bFound = false;
-
-      for (int nI = 0; nI < asProfiles.length && !bFound; nI++) {
-        if (asProfiles[nI].equals(sProfileName)) {
-          bFound = true;
-          sProfileLabel = asProfilesLabel[nI];
+      for (Profile profile :
+          profiles) {
+        if (profile.getName().equals(sProfileName)) {
+          return profile.getFr();
         }
       }
       return sProfileLabel;
@@ -2289,7 +2311,9 @@ public final class Admin extends Object {
             // space profile
 
             String profileToCheck = null;
-            for (int p = 0; p < profilesToCheck.size(); p++) {
+            for (int p = 0;
+                p < profilesToCheck.size();
+                p++) {
               profileToCheck = profilesToCheck.get(p);
               SpaceProfileInst spi = space.getSpaceProfileInst(profileToCheck);
               if (spi != null) {
@@ -2318,7 +2342,9 @@ public final class Admin extends Object {
 
     // update profile in subspaces
     String[] subSpaceIds = space.getSubSpaceIds();
-    for (int s = 0; subSpaceIds != null && s < subSpaceIds.length; s++) {
+    for (int s = 0;
+        subSpaceIds != null && s < subSpaceIds.length;
+        s++) {
       SpaceInst subSpace = getSpaceInstById(subSpaceIds[s], false);
 
       if (!subSpace.isInheritanceBlocked()) {
@@ -2364,7 +2390,9 @@ public final class Admin extends Object {
     }
 
     String[] asGroupNames = new String[asGroupIds.length];
-    for (int nI = 0; nI < asGroupIds.length; nI++) {
+    for (int nI = 0;
+        nI < asGroupIds.length;
+        nI++) {
       asGroupNames[nI] = getGroupName(asGroupIds[nI]);
     }
 
@@ -2425,7 +2453,9 @@ public final class Admin extends Object {
     }
 
     Group[] aGroup = new Group[asGroupId.length];
-    for (int nI = 0; nI < asGroupId.length; nI++) {
+    for (int nI = 0;
+        nI < asGroupId.length;
+        nI++) {
       aGroup[nI] = getGroup(asGroupId[nI]);
     }
 
@@ -2869,7 +2899,9 @@ public final class Admin extends Object {
     }
 
     UserDetail[] aUserDetail = new UserDetail[asUserId.length];
-    for (int nI = 0; nI < asUserId.length; nI++) {
+    for (int nI = 0;
+        nI < asUserId.length;
+        nI++) {
       try {
         aUserDetail[nI] = getUserDetail(asUserId[nI]);
       } catch (AdminException e) {
@@ -2920,7 +2952,9 @@ public final class Admin extends Object {
             "login: '" + sLogin + "', domain id: '" + sDomainId + "'", e);
       }
 
-      for (int i = 0; i < theDomains.length && valret == null; i++) {
+      for (int i = 0;
+          i < theDomains.length && valret == null;
+          i++) {
         try {
           valret = m_UserManager.getUserIdByLoginAndDomain(m_DDManager, sLogin,
               theDomains[i].getId());
@@ -3171,7 +3205,9 @@ public final class Admin extends Object {
       String[] asComponentNames, String sSpaceId, Connection connectionProd)
       throws AdminException {
     try {
-      for (int nI = 0; nI < asComponentIds.length; nI++) {
+      for (int nI = 0;
+          nI < asComponentIds.length;
+          nI++) {
         SilverTrace.debug("admin", "Admin.instantiateComponents",
             "root.MSG_GEN_ENTER_METHOD", "spaceid: " + sSpaceId
             + " and component " + asComponentIds[nI]);
@@ -3194,7 +3230,9 @@ public final class Admin extends Object {
   private void unInstantiateComponents(String userId, String[] asComponentIds,
       String[] asComponentNames, String sSpaceId, Connection connectionProd) {
 
-    for (int nI = 0; nI < asComponentIds.length; nI++) {
+    for (int nI = 0;
+        nI < asComponentIds.length;
+        nI++) {
       try {
         SilverTrace.debug("admin", "Admin.instantiateComponents",
             "root.MSG_GEN_ENTER_METHOD", "spaceid: " + sSpaceId
@@ -3245,7 +3283,9 @@ public final class Admin extends Object {
    */
   public String[] getClientSpaceIds(String[] asDriverSpaceIds) throws Exception {
     String[] asClientSpaceIds = new String[asDriverSpaceIds.length];
-    for (int nI = 0; nI < asDriverSpaceIds.length; nI++) {
+    for (int nI = 0;
+        nI < asDriverSpaceIds.length;
+        nI++) {
       asClientSpaceIds[nI] = getClientSpaceId(asDriverSpaceIds[nI]);
     }
     return asClientSpaceIds;
@@ -3270,7 +3310,9 @@ public final class Admin extends Object {
 
     // Remove the component name to get the table client id
     char[] cBuf = sClientComponentId.toCharArray();
-    for (int nI = 0; nI < cBuf.length && sTableClientId.length() == 0; nI++) {
+    for (int nI = 0;
+        nI < cBuf.length && sTableClientId.length() == 0;
+        nI++) {
       if (cBuf[nI] == '0' || cBuf[nI] == '1' || cBuf[nI] == '2'
           || cBuf[nI] == '3' || cBuf[nI] == '4' || cBuf[nI] == '5'
           || cBuf[nI] == '6' || cBuf[nI] == '7' || cBuf[nI] == '8'
@@ -3332,7 +3374,9 @@ public final class Admin extends Object {
       UserDetail[] toRemoveUDs = m_UserManager.getUsersOfDomain(m_DDManager,
           domainId);
       if (toRemoveUDs != null) {
-        for (i = 0; i < toRemoveUDs.length; i++) {
+        for (i = 0;
+            i < toRemoveUDs.length;
+            i++) {
           try {
             deleteUser(toRemoveUDs[i].getId(), false);
           } catch (Exception e) {
@@ -3344,7 +3388,9 @@ public final class Admin extends Object {
       Group[] toRemoveGroups = m_GroupManager.getGroupsOfDomain(m_DDManager,
           domainId);
       if (toRemoveGroups != null) {
-        for (i = 0; i < toRemoveGroups.length; i++) {
+        for (i = 0;
+            i < toRemoveGroups.length;
+            i++) {
           try {
             deleteGroupById(toRemoveGroups[i].getId(), false);
           } catch (Exception e) {
@@ -3600,9 +3646,11 @@ public final class Admin extends Object {
 
     // getting all components availables
     List<String> componentIds = getAllowedComponentIds(sUserId);
-    for (String componentId : componentIds) {
+    for (String componentId :
+        componentIds) {
       List<SpaceInstLight> spaces = TreeCache.getComponentPath(componentId);
-      for (SpaceInstLight space : spaces) {
+      for (SpaceInstLight space :
+          spaces) {
         if (!spaceIds.contains(space.getFullId())) {
           spaceIds.add(space.getFullId());
         }
@@ -3619,7 +3667,9 @@ public final class Admin extends Object {
       // process it and store it in cache
       allGroupsOfUser = new ArrayList<String>();
       String[] directGroupIds = m_GroupManager.getDirectGroupsOfUser(m_DDManager, userId);
-      for (int g = 0; g < directGroupIds.length; g++) {
+      for (int g = 0;
+          g < directGroupIds.length;
+          g++) {
         Group group = m_GroupManager.getGroup(directGroupIds[g]);
         if (group != null) {
           allGroupsOfUser.add(group.getId());
@@ -3661,7 +3711,9 @@ public final class Admin extends Object {
       // getting all root spaces (sorted)
       String[] rootSpaceIds = getAllRootSpaceIds();
       // retain only allowed root spaces
-      for (int s = 0; s < rootSpaceIds.length; s++) {
+      for (int s = 0;
+          s < rootSpaceIds.length;
+          s++) {
         String rootSpaceId = rootSpaceIds[s];
         if (isSpaceContainsOneComponent(componentIds, getDriverSpaceId(rootSpaceId), true)) {
           result.add(rootSpaceId);
@@ -3683,7 +3735,8 @@ public final class Admin extends Object {
       List<String> componentIds = getAllowedComponentIds(sUserId);
       // getting all subspaces
       List<SpaceInstLight> subspaces = TreeCache.getSubSpaces(getDriverSpaceId(spaceId));
-      for (SpaceInstLight subspace : subspaces) {
+      for (SpaceInstLight subspace :
+          subspaces) {
         if (isSpaceContainsOneComponent(componentIds, subspace.getShortId(), true)) {
           result.add(subspace.getShortId());
         }
@@ -3719,7 +3772,9 @@ public final class Admin extends Object {
         new ArrayList<ComponentInstLight>(TreeCache.getComponents(spaceId));
 
     // Is there at least one component available ?
-    for (int c = 0; !find && c < components.size(); c++) {
+    for (int c = 0;
+        !find && c < components.size();
+        c++) {
       find = componentIds.contains(components.get(c).getId());
     }
     if (find) {
@@ -3729,7 +3784,9 @@ public final class Admin extends Object {
         // check in subspaces
         List<SpaceInstLight> subspaces =
             new ArrayList<SpaceInstLight>(TreeCache.getSubSpaces(spaceId));
-        for (int s = 0; !find && s < subspaces.size(); s++) {
+        for (int s = 0;
+            !find && s < subspaces.size();
+            s++) {
           find =
               isSpaceContainsOneComponent(componentIds, subspaces.get(s).getShortId(),
               checkInSubspaces);
@@ -3761,7 +3818,8 @@ public final class Admin extends Object {
 
       // getting all subspaces
       List<SpaceInstLight> subspaces = TreeCache.getSubSpaces(getDriverSpaceId(spaceId));
-      for (SpaceInstLight subspace : subspaces) {
+      for (SpaceInstLight subspace :
+          subspaces) {
         if (isSpaceContainsOneComponent(componentIds, subspace.getShortId(), true)) {
           result.add(subspace);
         }
@@ -3808,7 +3866,8 @@ public final class Admin extends Object {
 
       List<ComponentInstLight> allComponents =
           TreeCache.getComponentsInSpaceAndSubspaces(getDriverSpaceId(spaceId));
-      for (ComponentInstLight component : allComponents) {
+      for (ComponentInstLight component :
+          allComponents) {
         if (allowedComponentIds.contains(component.getId())) {
           allowedComponents.add(component);
         }
@@ -3892,7 +3951,8 @@ public final class Admin extends Object {
     }
     String[] rootSpaceIds = getAllRootSpaceIds(userId);
     List<SpaceInstLight> treeview = new ArrayList<SpaceInstLight>(authorizedIds.size());
-    for (String spaceId : rootSpaceIds) {
+    for (String spaceId :
+        rootSpaceIds) {
       String currentSpaceId = getDriverSpaceId(spaceId);
       if (authorizedIds.contains(currentSpaceId)) {
         treeview.add(TreeCache.getSpaceInstLight(currentSpaceId));
@@ -3905,7 +3965,8 @@ public final class Admin extends Object {
   void addAuthorizedSpaceToTree(List<SpaceInstLight> treeview, Set<String> authorizedIds,
       String spaceId, int level) {
     List<SpaceInstLight> subSpaces = TreeCache.getSubSpaces(spaceId);
-    for (SpaceInstLight space : subSpaces) {
+    for (SpaceInstLight space :
+        subSpaces) {
       String subSpaceId = getDriverSpaceId(space.getFullId());
       if (authorizedIds.contains(subSpaceId)) {
         space.setLevel(level);
@@ -4014,7 +4075,9 @@ public final class Admin extends Object {
 
       // Inherits manageability rights for space children
       String[] childSpaceIds = null;
-      for (int nI = 0; nI < asManageableSpaceIds.length; nI++) {
+      for (int nI = 0;
+          nI < asManageableSpaceIds.length;
+          nI++) {
         // add manageable space id in result
         if (!alManageableSpaceIds.contains(asManageableSpaceIds[nI])) {
           alManageableSpaceIds.add(asManageableSpaceIds[nI]);
@@ -4025,7 +4088,9 @@ public final class Admin extends Object {
             asManageableSpaceIds[nI]);
 
         // add them in result
-        for (int nJ = 0; nJ < childSpaceIds.length; nJ++) {
+        for (int nJ = 0;
+            nJ < childSpaceIds.length;
+            nJ++) {
           if (!alManageableSpaceIds.contains(childSpaceIds[nJ])) {
             alManageableSpaceIds.add(childSpaceIds[nJ]);
           }
@@ -4062,7 +4127,9 @@ public final class Admin extends Object {
 
         // Inherits manageability rights for space children
         String[] childSpaceIds = null;
-        for (int nI = 0; nI < asManageableSpaceIds.length; nI++) {
+        for (int nI = 0;
+            nI < asManageableSpaceIds.length;
+            nI++) {
           // add manageable space id in result
           if (!alManageableSpaceIds.contains(asManageableSpaceIds[nI])) {
             alManageableSpaceIds.add(asManageableSpaceIds[nI]);
@@ -4072,7 +4139,9 @@ public final class Admin extends Object {
           childSpaceIds = m_SpaceInstManager.getAllSubSpaceIds(m_DDManager, asManageableSpaceIds[nI]);
 
           // add them in result
-          for (int nJ = 0; nJ < childSpaceIds.length; nJ++) {
+          for (int nJ = 0;
+              nJ < childSpaceIds.length;
+              nJ++) {
             if (!alManageableSpaceIds.contains(childSpaceIds[nJ])) {
               alManageableSpaceIds.add(childSpaceIds[nJ]);
             }
@@ -4104,7 +4173,9 @@ public final class Admin extends Object {
 
       // retain only root spaces
       List<String> manageableRootSpaceIds = new ArrayList<String>();
-      for (int s = 0; s < asManageableSpaceIds.length; s++) {
+      for (int s = 0;
+          s < asManageableSpaceIds.length;
+          s++) {
         SpaceInstLight space = TreeCache.getSpaceInstLight(asManageableSpaceIds[s]);
         if (space.isRoot()) {
           manageableRootSpaceIds.add(asManageableSpaceIds[s]);
@@ -4135,7 +4206,8 @@ public final class Admin extends Object {
       // retain only sub spaces
       boolean find = false;
       List<String> manageableRootSpaceIds = new ArrayList<String>();
-      for (String manageableSpaceId : asManageableSpaceIds) {
+      for (String manageableSpaceId :
+          asManageableSpaceIds) {
         find = false;
         SpaceInstLight space = TreeCache.getSpaceInstLight(manageableSpaceId);
         while (!space.isRoot() && !find) {
@@ -4189,7 +4261,8 @@ public final class Admin extends Object {
         List<ComponentInstLight> components = getAvailCompoInSpace(sUserId, sClientSpaceId);
 
         List<String> componentIds = new ArrayList<String>();
-        for (ComponentInstLight component : components) {
+        for (ComponentInstLight component :
+            components) {
           componentIds.add(component.getId());
         }
 
@@ -4271,7 +4344,8 @@ public final class Admin extends Object {
 
       List<String> allowedComponentIds = getAllowedComponentIds(sUserId);
       List<String> result = new ArrayList<String>();
-      for (ComponentInstLight component : components) {
+      for (ComponentInstLight component :
+          components) {
         if (allowedComponentIds.contains(component.getId())
             && component.getName().startsWith(componentNameRoot)) {
           result.add(component.getId());
@@ -4313,7 +4387,8 @@ public final class Admin extends Object {
       List<ComponentInstLight> components = getAvailCompoInSpace(sUserId, sClientSpaceId);
 
       List<String> componentIds = new ArrayList<String>();
-      for (ComponentInstLight component : components) {
+      for (ComponentInstLight component :
+          components) {
         componentIds.add(component.getId());
       }
 
@@ -4346,7 +4421,8 @@ public final class Admin extends Object {
     List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
     List<String> allowedComponentIds = getAllowedComponentIds(userId, componentName);
 
-    for (String allowedComponentId : allowedComponentIds) {
+    for (String allowedComponentId :
+        allowedComponentIds) {
       ComponentInstLight componentInst = getComponentInstLight(allowedComponentId);
 
       if (componentInst.getName().equalsIgnoreCase(componentName)) {
@@ -4368,7 +4444,8 @@ public final class Admin extends Object {
       throws AdminException {
     List<SpaceInstLight> spaces = new ArrayList<SpaceInstLight>();
     List<ComponentInstLight> components = getAvailComponentInstLights(userId, componentName);
-    for (ComponentInstLight component : components) {
+    for (ComponentInstLight component :
+        components) {
       List<SpaceInstLight> path = TreeCache.getComponentPath(component.getId());
       if (path != null && !path.isEmpty()) {
         SpaceInstLight root = path.get(0);
@@ -4395,9 +4472,11 @@ public final class Admin extends Object {
     spaceId = getDriverSpaceId(spaceId);
     List<ComponentInstLight> components = getAvailComponentInstLights(userId, componentName);
 
-    for (ComponentInstLight component : components) {
+    for (ComponentInstLight component :
+        components) {
       List<SpaceInstLight> path = TreeCache.getComponentPath(component.getId());
-      for (SpaceInstLight space : path) {
+      for (SpaceInstLight space :
+          path) {
         if (space.getFatherId().equals(spaceId)) {
           if (!spaces.contains(space)) {
             spaces.add(space);
@@ -4418,7 +4497,8 @@ public final class Admin extends Object {
     try {
       List<ComponentInstLight> components = getAvailComponentInstLights(sUserId, sComponentName);
 
-      for (ComponentInstLight componentInst : components) {
+      for (ComponentInstLight componentInst :
+          components) {
 
         // Create new instance of CompoSpace
         CompoSpace compoSpace = new CompoSpace();
@@ -4519,8 +4599,12 @@ public final class Admin extends Object {
       // Build the list of profiles containing the given user
       String[] asProfileIds = getProfileIds(sUserId);
 
-      for (int nI = 0; nI < asProfileIds.length; nI++) {
-        for (int nJ = 0; nJ < componentInst.getNumProfileInst(); nJ++) {
+      for (int nI = 0;
+          nI < asProfileIds.length;
+          nI++) {
+        for (int nJ = 0;
+            nJ < componentInst.getNumProfileInst();
+            nJ++) {
           if (componentInst.getProfileInst(nJ).getId().equals(asProfileIds[nI])) {
             alProfiles.add(componentInst.getProfileInst(nJ).getName());
           }
@@ -4549,7 +4633,9 @@ public final class Admin extends Object {
           getDriverComponentId(sClientComponentId), true,
           getDriverSpaceId(sClientSpaceId));
 
-      for (int nI = 0; nI < componentInst.getNumProfileInst(); nI++) {
+      for (int nI = 0;
+          nI < componentInst.getNumProfileInst();
+          nI++) {
         ProfileInst profile = componentInst.getProfileInst(nI);
         if (profile != null) {
           if (profile.getName().equals(sProfile) || bAllProfiles) {
@@ -4558,13 +4644,16 @@ public final class Admin extends Object {
 
             // add users of groups
             List<String> groupIds = profile.getAllGroups();
-            for (String groupId : groupIds) {
+            for (String groupId :
+                groupIds) {
               List<String> subGroupIds = m_GroupManager.getAllSubGroupIdsRecursively(groupId);
               // add current group
               subGroupIds.add(groupId);
               if (subGroupIds != null && subGroupIds.size() > 0) {
                 UserDetail[] users = m_UserManager.getAllUsersOfGroups(subGroupIds);
-                for (int u = 0; u < users.length; u++) {
+                for (int u = 0;
+                    u < users.length;
+                    u++) {
                   alUserIds.add(users[u].getId());
                 }
               }
@@ -4577,7 +4666,9 @@ public final class Admin extends Object {
 
       // Get the users details
       UserDetail[] userDetails = new UserDetail[alUserIds.size()];
-      for (int nI = 0; nI < userDetails.length; nI++) {
+      for (int nI = 0;
+          nI < userDetails.length;
+          nI++) {
         userDetails[nI] = getUserDetail(alUserIds.get(nI));
       }
 
@@ -4623,7 +4714,9 @@ public final class Admin extends Object {
     }
     upperFilter = sUserLastNameFilter.toUpperCase();
     matchedUsers = new ArrayList<UserDetail>();
-    for (i = 0; i < usersIds.length; i++) {
+    for (i = 0;
+        i < usersIds.length;
+        i++) {
       currentUser = getUserDetail(usersIds[i]);
       if ((currentUser != null)
           && (currentUser.getLastName().toUpperCase().startsWith(upperFilter))) {
@@ -4646,7 +4739,8 @@ public final class Admin extends Object {
 
       // add users in sub groups
       List<String> groupIds = m_GroupManager.getAllSubGroupIdsRecursively(sGroupId);
-      for (String groupId : groupIds) {
+      for (String groupId :
+          groupIds) {
         nb += m_GroupManager.getNBUsersDirectlyInGroup(groupId);
       }
       return nb;
@@ -4707,7 +4801,8 @@ public final class Admin extends Object {
     UserLog[] userLogs = new UserLog[m_hUserLog.size()];
 
     int nI = 0;
-    for (String user : m_hUserLog.keySet()) {
+    for (String user :
+        m_hUserLog.keySet()) {
       userLogs[nI++] = m_hUserLog.get(user);
     }
     return userLogs;
@@ -4760,7 +4855,9 @@ public final class Admin extends Object {
     }
 
     String[] as = new String[al.size()];
-    for (int nI = 0; nI < al.size(); nI++) {
+    for (int nI = 0;
+        nI < al.size();
+        nI++) {
       as[nI] = al.get(nI);
     }
 
@@ -4772,7 +4869,9 @@ public final class Admin extends Object {
       return new ArrayList<String>();
     }
 
-    for (int nI = 0; nI < al.size(); nI++) {
+    for (int nI = 0;
+        nI < al.size();
+        nI++) {
       while (al.lastIndexOf(al.get(nI)) != al.indexOf(al.get(nI))) {
         al.remove(al.lastIndexOf(al.get(nI)));
       }
@@ -4812,7 +4911,9 @@ public final class Admin extends Object {
     ArrayList<ComponentInst> alCompoInst = spaceInst.getAllComponentsInst();
 
     if (alCompoInst != null) {
-      for (int nI = 0; nI < alCompoInst.size(); nI++) {
+      for (int nI = 0;
+          nI < alCompoInst.size();
+          nI++) {
         alCompoIds.add(alCompoInst.get(nI).getId());
       }
     }
@@ -4828,7 +4929,8 @@ public final class Admin extends Object {
         TreeCache.getComponentsInSpaceAndSubspaces(getDriverSpaceId(sSpaceId));
 
     List<String> componentIds = new ArrayList<String>();
-    for (ComponentInstLight component : components) {
+    for (ComponentInstLight component :
+        components) {
       componentIds.add(component.getId());
     }
     return componentIds.toArray(new String[componentIds.size()]);
@@ -4855,7 +4957,9 @@ public final class Admin extends Object {
     // In All silverpeas
     if (inAllSpaces) {
       CompoSpace[] cs = getCompoForUser(sUserId, componentNameRoot);
-      for (int i = 0; i < cs.length; i++) {
+      for (int i = 0;
+          i < cs.length;
+          i++) {
         alCompoIds.add(cs[i].getComponentId());
       }
     } else {
@@ -4887,7 +4991,9 @@ public final class Admin extends Object {
 
       String[] componentIds = getAvailCompoIdsAtRoot(sSpaceId, sUserId);
       if (componentIds != null) {
-        for (int nJ = 0; nJ < componentIds.length; nJ++) {
+        for (int nJ = 0;
+            nJ < componentIds.length;
+            nJ++) {
           ComponentInstLight compo = (ComponentInstLight) getComponentInstLight(componentIds[nJ]);
           if (compo.getName().equals(componentNameRoot)) {
             alCompoIds.add(compo.getId());
@@ -4898,14 +5004,18 @@ public final class Admin extends Object {
 
     // Get components in sub spaces
     String[] asSubSpaceIds = getAllSubSpaceIds(sSpaceId);
-    for (int nI = 0; asSubSpaceIds != null && nI < asSubSpaceIds.length; nI++) {
+    for (int nI = 0;
+        asSubSpaceIds != null && nI < asSubSpaceIds.length;
+        nI++) {
       SilverTrace.info("admin", "Admin.getAllComponentIdsRecur",
           "root.MSG_GEN_PARAM.VALUE", "Sub spaceId=" + asSubSpaceIds[nI]);
       spaceInst = getSpaceInstById(asSubSpaceIds[nI]);
       String[] componentIds = getAvailCompoIds(spaceInst.getId(), sUserId);
 
       if (componentIds != null) {
-        for (int nJ = 0; nJ < componentIds.length; nJ++) {
+        for (int nJ = 0;
+            nJ < componentIds.length;
+            nJ++) {
           ComponentInstLight compo = (ComponentInstLight) getComponentInstLight(componentIds[nJ]);
           if (compo.getName().equals(componentNameRoot)) {
             SilverTrace.info("admin", "Admin.getAllComponentIdsRecur",
@@ -4994,7 +5104,9 @@ public final class Admin extends Object {
           if (domainId == null) {
             // All users by extra information
             Domain[] domains = getAllDomains();
-            for (int d = 0; d < domains.length; d++) {
+            for (int d = 0;
+                d < domains.length;
+                d++) {
               userIds.addAll(getUserIdsBySpecificProperty(domains[d].getId(),
                   propertyName, propertyValue));
             }
@@ -5010,10 +5122,14 @@ public final class Admin extends Object {
 
         // Add users
         List<String> newUsers = new ArrayList<String>();
-        for (int i = 0; userIds != null && i < userIds.size(); i++) {
+        for (int i = 0;
+            userIds != null && i < userIds.size();
+            i++) {
           String userId = userIds.get(i);
           boolean bFound = false;
-          for (int j = 0; j < actualUserIds.length && !bFound; j++) {
+          for (int j = 0;
+              j < actualUserIds.length && !bFound;
+              j++) {
             if (actualUserIds[j].equals(userId)) {
               bFound = true;
             }
@@ -5034,11 +5150,15 @@ public final class Admin extends Object {
 
         // Remove users
         List<String> removedUsers = new ArrayList<String>();
-        for (int i = 0; i < actualUserIds.length; i++) {
+        for (int i = 0;
+            i < actualUserIds.length;
+            i++) {
           String actualUserId = actualUserIds[i];
           boolean bFound = false;
           String userId = null;
-          for (int j = 0; userIds != null && j < userIds.size() && !bFound; j++) {
+          for (int j = 0;
+              userIds != null && j < userIds.size() && !bFound;
+              j++) {
             userId = userIds.get(j);
             if (userId.equals(actualUserId)) {
               bFound = true;
@@ -5108,7 +5228,9 @@ public final class Admin extends Object {
     }
 
     List<String> specificIds = new ArrayList<String>();
-    for (int u = 0; users != null && u < users.length; u++) {
+    for (int u = 0;
+        users != null && u < users.length;
+        u++) {
       specificIds.add(users[u].getSpecificId());
     }
 
@@ -5116,7 +5238,9 @@ public final class Admin extends Object {
     UserRow[] usersInDomain =
         m_DDManager.organization.user.getUsersBySpecificIds(iDomainId, specificIds);
     List<String> userIds = new ArrayList<String>();
-    for (int i = 0; usersInDomain != null && i < usersInDomain.length; i++) {
+    for (int i = 0;
+        usersInDomain != null && i < usersInDomain.length;
+        i++) {
       userIds.add(Integer.toString(usersInDomain[i].id));
     }
 
@@ -5161,7 +5285,9 @@ public final class Admin extends Object {
             // changed since last full or update synchro
             distantUDs = synchroDomain.getAllChangedUsers(fromTimeStamp,
                 toTimeStamp);
-            for (nI = 0; nI < distantUDs.length; nI++) {
+            for (nI = 0;
+                nI < distantUDs.length;
+                nI++) {
               specificId = distantUDs[nI].getSpecificId();
               silverpeasId = "";
               try {
@@ -5211,7 +5337,9 @@ public final class Admin extends Object {
             distantGroups = synchroDomain.getAllChangedGroups(fromTimeStamp,
                 toTimeStamp);
             // Add new users or update existing ones from distant datasource
-            for (nI = 0; nI < distantGroups.length; nI++) {
+            for (nI = 0;
+                nI < distantGroups.length;
+                nI++) {
               specificId = distantGroups[nI].getSpecificId();
               silverpeasId = "";
               try {
@@ -5265,12 +5393,16 @@ public final class Admin extends Object {
 
               boolean bFound = false;
               int nbDeletedUsers = 0;
-              for (nI = 0; nI < silverpeasUDs.length; nI++) {
+              for (nI = 0;
+                  nI < silverpeasUDs.length;
+                  nI++) {
                 bFound = false;
                 specificId = silverpeasUDs[nI].getSpecificId();
 
                 // search for user in distant datasource
-                for (int nJ = 0; nJ < distantUDs.length && !bFound; nJ++) {
+                for (int nJ = 0;
+                    nJ < distantUDs.length && !bFound;
+                    nJ++) {
                   if (distantUDs[nJ].getSpecificId().equals(specificId)) {
                     bFound = true;
                   }
@@ -5327,7 +5459,9 @@ public final class Admin extends Object {
     Vector<String> convertedGroupIds = new Vector<String>();
     String groupId = null;
 
-    for (int i = 0; i < groupSpecificIds.length; i++) {
+    for (int i = 0;
+        i < groupSpecificIds.length;
+        i++) {
       try {
         groupId = m_GroupManager.getGroupIdBySpecificIdAndDomainId(m_DDManager,
             groupSpecificIds[i], sDomainId);
@@ -5363,7 +5497,9 @@ public final class Admin extends Object {
     Vector<String> convertedUserIds = new Vector<String>();
     String userId;
 
-    for (int i = 0; i < userSpecificIds.length; i++) {
+    for (int i = 0;
+        i < userSpecificIds.length;
+        i++) {
       try {
         userId = m_UserManager.getUserIdBySpecificIdAndDomainId(m_DDManager,
             userSpecificIds[i], sDomainId);
@@ -5439,7 +5575,9 @@ public final class Admin extends Object {
     // First, we get the parents of the group
     parentSpecificIds = synchroDomain.getGroupMemberGroupIds(gr.getSpecificId());
     parentId = null;
-    for (i = 0; (i < parentSpecificIds.length) && (parentId == null); i++) {
+    for (i = 0;
+        (i < parentSpecificIds.length) && (parentId == null);
+        i++) {
       try {
         parentId = m_GroupManager.getGroupIdBySpecificIdAndDomainId(
             m_DDManager, parentSpecificIds[i], domainId);
@@ -5505,7 +5643,9 @@ public final class Admin extends Object {
       String existingGroupId;
       Group existingGroup;
 
-      for (i = 0; i < childs.length; i++) {
+      for (i = 0;
+          i < childs.length;
+          i++) {
         existingGroupId = null;
         try {
           existingGroupId =
@@ -5574,7 +5714,9 @@ public final class Admin extends Object {
       incGroupsId = translateGroupIds(theUserDetail.getDomainId(),
           incGroupsSpecificId, recurs);
       oldGroupsId = m_GroupManager.getDirectGroupsOfUser(m_DDManager, userId);
-      for (i = 0; i < oldGroupsId.length; i++) {
+      for (i = 0;
+          i < oldGroupsId.length;
+          i++) {
         if (incGroupsId.contains(oldGroupsId[i])) { // No changes have to be
           // performed to the group ->
           // Remove it
@@ -5592,7 +5734,9 @@ public final class Admin extends Object {
       }
       // Now the remaining groups of the vector are the groups where the user is
       // newly added
-      for (i = 0; i < incGroupsId.size(); i++) {
+      for (i = 0;
+          i < incGroupsId.size();
+          i++) {
         m_GroupManager.addUserInGroup(m_DDManager, userId, incGroupsId.elementAt(i));
         m_Cache.opAddUserInGroup(userId, incGroupsId.elementAt(i));
       }
@@ -5809,7 +5953,9 @@ public final class Admin extends Object {
           + m_bFallbackUserLogins, null);
 
       // Add new users or update existing ones from distant datasource
-      for (int nI = 0; nI < distantUDs.length; nI++) {
+      for (int nI = 0;
+          nI < distantUDs.length;
+          nI++) {
         bFound = false;
         specificId = distantUDs[nI].getSpecificId();
         SilverTrace.info("admin", "admin.synchronizeUsers",
@@ -5817,7 +5963,9 @@ public final class Admin extends Object {
             + specificId);
 
         // search for user in Silverpeas database
-        for (int nJ = 0; nJ < silverpeasUDs.length && !bFound; nJ++) {
+        for (int nJ = 0;
+            nJ < silverpeasUDs.length && !bFound;
+            nJ++) {
           if (silverpeasUDs[nJ].getSpecificId().equals(specificId)
               || (m_bFallbackUserLogins && silverpeasUDs[nJ].getLogin().equals(
               distantUDs[nI].getLogin()))) {
@@ -5898,12 +6046,16 @@ public final class Admin extends Object {
       SynchroReport.info("admin.synchronizeUsers",
           "SUPPRESSION des éventuels utilisateurs obsolètes de la base...",
           null);
-      for (int nI = 0; nI < silverpeasUDs.length; nI++) {
+      for (int nI = 0;
+          nI < silverpeasUDs.length;
+          nI++) {
         bFound = false;
         specificId = silverpeasUDs[nI].getSpecificId();
 
         // search for user in distant datasource
-        for (int nJ = 0; nJ < distantUDs.length && !bFound; nJ++) {
+        for (int nJ = 0;
+            nJ < distantUDs.length && !bFound;
+            nJ++) {
           if (distantUDs[nJ].getSpecificId().equals(specificId)
               || (m_bFallbackUserLogins && silverpeasUDs[nI].getLogin().equals(
               distantUDs[nJ].getLogin()))) {
@@ -6001,13 +6153,17 @@ public final class Admin extends Object {
       UserDetail userLDAP = null;
 
       // Update existing users from distant datasource
-      for (int nI = 0; nI < silverpeasUDs.length; nI++) {
+      for (int nI = 0;
+          nI < silverpeasUDs.length;
+          nI++) {
         bFound = false;
         userSP = silverpeasUDs[nI];
         specificId = userSP.getSpecificId();
 
         // search for user in distant datasource
-        for (int nJ = 0; nJ < distantUDs.length && !bFound; nJ++) {
+        for (int nJ = 0;
+            nJ < distantUDs.length && !bFound;
+            nJ++) {
           userLDAP = distantUDs[nJ];
           if (userLDAP.getSpecificId().equals(specificId)
               || (m_bFallbackUserLogins && userLDAP.getLogin().equals(
@@ -6158,12 +6314,16 @@ public final class Admin extends Object {
           "SUPPRESSION des éventuels groupes obsolètes de la base...", null);
       Group[] distantGroups = (Group[]) allDistantGroups.values().toArray(
           new Group[0]);
-      for (int nI = 0; nI < silverpeasGroups.length; nI++) {
+      for (int nI = 0;
+          nI < silverpeasGroups.length;
+          nI++) {
         bFound = false;
         specificId = silverpeasGroups[nI].getSpecificId();
 
         // search for group in distant datasource
-        for (int nJ = 0; nJ < distantGroups.length && !bFound; nJ++) {
+        for (int nJ = 0;
+            nJ < distantGroups.length && !bFound;
+            nJ++) {
           if (distantGroups[nJ].getSpecificId().equals(specificId)) {
             bFound = true;
           } else if (m_bFallbackGroupNames
@@ -6234,11 +6394,15 @@ public final class Admin extends Object {
     String sResult = "";
     int nI;
 
-    for (nI = 0; nI < testedGroups.length; nI++) {
+    for (nI = 0;
+        nI < testedGroups.length;
+        nI++) {
       allIncluededGroups.put(testedGroups[nI].getSpecificId(), testedGroups[nI]);
     }
     // Add new groups or update existing ones from distant datasource
-    for (nI = 0; nI < testedGroups.length; nI++) {
+    for (nI = 0;
+        nI < testedGroups.length;
+        nI++) {
       bFound = false;
       specificId = testedGroups[nI].getSpecificId();
 
@@ -6246,7 +6410,9 @@ public final class Admin extends Object {
           "root.MSG_GEN_PARAM_VALUE", "%%%%FULLSYNCHRO%%%%>Deal with group : "
           + specificId);
       // search for group in Silverpeas database
-      for (int nJ = 0; nJ < existingGroups.length && !bFound; nJ++) {
+      for (int nJ = 0;
+          nJ < existingGroups.length && !bFound;
+          nJ++) {
         if (existingGroups[nJ].getSpecificId().equals(specificId)) {
           bFound = true;
           testedGroups[nI].setId(existingGroups[nJ].getId());
@@ -6288,7 +6454,9 @@ public final class Admin extends Object {
 
       String[] groupUserIds = testedGroups[nI].getUserIds();
       Vector<String> convertedUserIds = new Vector<String>();
-      for (int nK = 0; nK < groupUserIds.length; nK++) {
+      for (int nK = 0;
+          nK < groupUserIds.length;
+          nK++) {
         if (userIds.get(groupUserIds[nK]) != null) {
           convertedUserIds.add(userIds.get(groupUserIds[nK]));
         }
@@ -6388,7 +6556,9 @@ public final class Admin extends Object {
     ArrayList<Group> cleanSubGroups = new ArrayList<Group>();
     int nI;
 
-    for (nI = 0; nI < subGroups.length; nI++) {
+    for (nI = 0;
+        nI < subGroups.length;
+        nI++) {
       if (allIncluededGroups.get(subGroups[nI].getSpecificId()) == null) {
         cleanSubGroups.add(subGroups[nI]);
       } else {
@@ -6410,7 +6580,8 @@ public final class Admin extends Object {
       if (StringUtil.isDefined(sGroupId)) {
         // search users in group and subgroups
         UserDetail[] users = getAllUsersOfGroup(sGroupId);
-        for (UserDetail user : users) {
+        for (UserDetail user :
+            users) {
           userIds.add(user.getId());
         }
         if (userIds.size() == 0) {
@@ -6418,7 +6589,9 @@ public final class Admin extends Object {
         }
       } else if (profileIds != null && profileIds.length > 0) {
         // search users in profiles
-        for (int p = 0; p < profileIds.length; p++) {
+        for (int p = 0;
+            p < profileIds.length;
+            p++) {
           ProfileInst profile =
               m_ProfileInstManager.getProfileInst(m_DDManager, profileIds[p], null);
 
@@ -6428,7 +6601,8 @@ public final class Admin extends Object {
           // add users indirectly attach to profile (groups attached to profile)
           List<String> groupIds = profile.getAllGroups();
           List<String> allGroupIds = new ArrayList<String>();
-          for (String groupId : groupIds) {
+          for (String groupId :
+              groupIds) {
             allGroupIds.add(groupId);
             allGroupIds.addAll(m_GroupManager.getAllSubGroupIdsRecursively(groupId));
           }
@@ -6464,7 +6638,8 @@ public final class Admin extends Object {
 
     ComponentInst component = getComponentInst(componentId);
     List<ProfileInst> profiles = component.getAllProfilesInst();
-    for (ProfileInst profile : profiles) {
+    for (ProfileInst profile :
+        profiles) {
       userIds.addAll(getUserIdsForComponentProfile(profile));
     }
 
@@ -6480,7 +6655,8 @@ public final class Admin extends Object {
     // add users indirectly attach to profile (groups attached to profile)
     List<String> groupIds = profile.getAllGroups();
     List<String> allGroupIds = new ArrayList<String>();
-    for (String groupId : groupIds) {
+    for (String groupId :
+        groupIds) {
       allGroupIds.add(groupId);
       allGroupIds.addAll(m_GroupManager.getAllSubGroupIdsRecursively(groupId));
     }
@@ -6552,7 +6728,8 @@ public final class Admin extends Object {
 
   public void indexAllUsers() throws AdminException {
     Domain[] domains = getAllDomains();
-    for (Domain domain : domains) {
+    for (Domain domain :
+        domains) {
       try {
         indexUsers(domain.getId());
       } catch (Exception e) {
@@ -6629,7 +6806,9 @@ public final class Admin extends Object {
    */
   private String renameComponentName(String label, ArrayList<ComponentInst> listComponents) {
     String newComponentLabel = label;
-    for (int i = 0; i < listComponents.size(); i++) {
+    for (int i = 0;
+        i < listComponents.size();
+        i++) {
       ComponentInst componentInst = (ComponentInst) listComponents.get(i);
       if (componentInst.getLabel().equals(newComponentLabel)) {
         newComponentLabel = "Copie de " + label;
@@ -6646,7 +6825,9 @@ public final class Admin extends Object {
     if (StringUtil.isDefined(toSpaceId)) {
       // First, check if target space is not a sub space of paste space
       List<SpaceInstLight> path = TreeCache.getSpacePath(toSpaceId);
-      for (int i = 0; i < path.size() && pasteAllowed; i++) {
+      for (int i = 0;
+          i < path.size() && pasteAllowed;
+          i++) {
         pasteAllowed = !spaceId.equalsIgnoreCase(path.get(i).getFullId());
       }
     }
@@ -6670,7 +6851,8 @@ public final class Admin extends Object {
 
       // Rename if spaceName already used in the destination space
       List<SpaceInstLight> subSpaces = new ArrayList<SpaceInstLight>();
-      for (String subSpaceId : newBrotherIds) {
+      for (String subSpaceId :
+          newBrotherIds) {
         subSpaces.add(getSpaceInstLight(getDriverSpaceId(subSpaceId)));
       }
       String name = renameSpace(newSpace.getName(I18NHelper.defaultLanguage), subSpaces);
@@ -6687,13 +6869,15 @@ public final class Admin extends Object {
       newSpaceId = addSpaceInst(userId, newSpace);
 
       // paste components of space
-      for (ComponentInst component : components) {
+      for (ComponentInst component :
+          components) {
         copyAndPasteComponent(component.getId(), newSpaceId, userId);
       }
 
       // paste subspaces
       String[] subSpaceIds = newSpace.getSubSpaceIds();
-      for (String subSpaceId : subSpaceIds) {
+      for (String subSpaceId :
+          subSpaceIds) {
         copyAndPasteSpace(subSpaceId, newSpaceId, userId);
       }
     }
@@ -6702,7 +6886,8 @@ public final class Admin extends Object {
 
   private String renameSpace(String label, List<SpaceInstLight> listSpaces) {
     String newSpaceLabel = label;
-    for (SpaceInstLight space : listSpaces) {
+    for (SpaceInstLight space :
+        listSpaces) {
       if (space.getName().equals(newSpaceLabel)) {
         newSpaceLabel = "Copie de " + label;
         return renameSpace(newSpaceLabel, listSpaces);

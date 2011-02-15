@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2009 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://repository.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<!-- Binding for JAXB and XML space template -->
+<jaxb:bindings xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+               xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+               jaxb:version="2.0">
+  <jaxb:bindings schemaLocation="http://www.silverpeas.org/xsd/space.xsd" node="/xsd:schema">
+    <jaxb:schemaBindings>
+      <jaxb:package name="com.silverpeas.admin.spaces"/>
+    </jaxb:schemaBindings>
+    <jaxb:bindings schemaLocation="http://www.silverpeas.org/xsd/space.xsd"
+                   node="//xsd:complexType[@name='SpaceTemplateType']">
+      <jaxb:class name="SpaceTemplate"/>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="http://www.silverpeas.org/xsd/space.xsd"
+                   node="//xsd:complexType[@name='ComponentType']">
+      <jaxb:class name="SpaceComponent"/>
+      <jaxb:bindings schemaLocation="http://www.silverpeas.org/xsd/space.xsd"
+                     node="//xsd:element[@name='parameter']">
+        <jaxb:property name="parameters"/>
+      </jaxb:bindings>
+    </jaxb:bindings>
+    <jaxb:bindings schemaLocation="http://www.silverpeas.org/xsd/space.xsd"
+                   node="//xsd:complexType[@name='ParameterType']">
+      <jaxb:class name="SpaceComponentParameter"/>
+    </jaxb:bindings>
+  </jaxb:bindings>
+</jaxb:bindings>

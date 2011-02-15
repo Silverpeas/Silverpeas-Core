@@ -34,10 +34,14 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.MissingResourceException;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 
 /**
  * An instanciator of Silverpeas workspaces. A Silverpeas workspace is an area providing specified
@@ -75,19 +79,28 @@ public class SpaceInstanciator extends Object {
     if (list != null) {
       try {
         JAXBContext context = JAXBContext.newInstance("com.silverpeas.admin.spaces");
+        XMLInputFactory factory = XMLInputFactory.newFactory();
         Unmarshaller unmarshaller = context.createUnmarshaller();
-        for (String fileName : list) {
+        for (String fileName :
+            list) {
           if (fileName.toLowerCase().endsWith(".xml")) {
             String spaceName = fileName.substring(0, fileName.length() - 4);
             String fullPath = xmlPackage + File.separator + fileName;
             SilverTrace.info("admin", "SpaceInstanciateur.SpaceInstanciateur",
                 "admin.MSG_INFO_BUILD_WA_COMPONENT_LIST", "space name: '" + spaceName
-                    + "', full path: '" + fullPath + "'");
-            SpaceTemplate template = (SpaceTemplate) unmarshaller.unmarshal(new File(fullPath));
+                + "', full path: '" + fullPath + "'");
+            SpaceTemplate template = (unmarshaller.unmarshal(factory.createXMLStreamReader(
+                new FileInputStream(fullPath)), SpaceTemplate.class)).getValue();
             spaceTemplates.put(spaceName, template);
           }
         }
       } catch (JAXBException ex) {
+        SilverTrace.fatal("admin", "SpaceInstanciator", "admin.MSG_INFO_BUILD_WA_COMPONENT_LIST",
+            ex);
+      }catch (XMLStreamException ex) {
+        SilverTrace.fatal("admin", "SpaceInstanciator", "admin.MSG_INFO_BUILD_WA_COMPONENT_LIST",
+            ex);
+      }catch (FileNotFoundException ex) {
         SilverTrace.fatal("admin", "SpaceInstanciator", "admin.MSG_INFO_BUILD_WA_COMPONENT_LIST",
             ex);
       }
@@ -105,7 +118,6 @@ public class SpaceInstanciator extends Object {
     return Collections.unmodifiableMap(spaceTemplates);
   }
 
-
   /**
    * Gets an instance of a workspace defined by the specified template, identified by its name.
    *
@@ -117,12 +129,12 @@ public class SpaceInstanciator extends Object {
     if (st == null) {
       SilverTrace.info("admin", "SpaceInstanciateur.getSpaceToInstanciate",
           "admin.MSG_INFO_BUILD_WA_COMPONENT_LIST", "template Name : '"
-              + templateName + "' NOT FOUND !!!!!!!!!");
+          + templateName + "' NOT FOUND !!!!!!!!!");
       return null;
     } else {
       SilverTrace.info("admin", "SpaceInstanciateur.getSpaceToInstanciate",
           "admin.MSG_INFO_BUILD_WA_COMPONENT_LIST", "template Name : '"
-              + templateName);
+          + templateName);
       return makeSpaceInst(st);
     }
   }
@@ -130,7 +142,7 @@ public class SpaceInstanciator extends Object {
   /**
    * Method declaration
    *
-   * @param templateName
+   * @param st 
    * @return
    * @see
    */
@@ -138,7 +150,8 @@ public class SpaceInstanciator extends Object {
     SpaceInst space = new SpaceInst();
     space.setName(st.getDefaultName());
     space.setDescription(st.getDescription());
-    for (SpaceComponent component : st.getComponents()) {
+    for (SpaceComponent component :
+        st.getComponents()) {
       WAComponent wacomponent = allComponentsModels.get(component.getType());
       if (wacomponent != null) {
         ComponentInst ci = new ComponentInst();
@@ -146,18 +159,17 @@ public class SpaceInstanciator extends Object {
         ci.setLabel(component.getLabel());
         ci.setDescription(component.getDescription());
         ci.setParameters(wacomponent.getParameters());
-        for(SpaceComponentParameter param : component.getParameters()) {
+        for (SpaceComponentParameter param :
+            component.getParameters()) {
           Parameter parameter = ci.getParameter(param.getName());
           parameter.setValue(param.getValue());
         }
         space.addComponentInst(ci);
       }
     }
-  SilverTrace.info("admin","SpaceTemplate.makeSpaceInst",
-      "root.MSG_GEN_PARAM_VALUE","defaultSpaceName : "+space.getName()
-  +" NbCompo: "+space.getNumComponentInst());
-  return space;
-}
-
-
+    SilverTrace.info("admin", "SpaceTemplate.makeSpaceInst",
+        "root.MSG_GEN_PARAM_VALUE", "defaultSpaceName : " + space.getName()
+        + " NbCompo: " + space.getNumComponentInst());
+    return space;
+  }
 } // class

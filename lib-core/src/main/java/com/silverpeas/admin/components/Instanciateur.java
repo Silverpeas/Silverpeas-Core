@@ -34,10 +34,10 @@ package com.silverpeas.admin.components;
  * @author akhadrou
  * @version
  */
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import javax.xml.stream.XMLStreamException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
@@ -48,6 +48,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -56,6 +57,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.xml.stream.XMLInputFactory;
 
 public class Instanciateur {
 
@@ -71,7 +73,6 @@ public class Instanciateur {
   // Init Function
   static {
     try {
-
       buildWAComponentList();
     } catch (Exception mre) {
       SilverTrace.fatal("admin", "Instanciateur.static",
@@ -129,11 +130,14 @@ public class Instanciateur {
       } catch (IOException e) {
         throw new InstanciationException("Instanciateur.instantiateComponentName",
             InstanciationException.FATAL, e.getMessage(), e);
-			} catch (JAXBException e) {
-          throw new InstanciationException("Instanciateur.instantiateComponentName",
-                  InstanciationException.FATAL, e.getMessage(), e);
-            }
-      
+      } catch (JAXBException e) {
+        throw new InstanciationException("Instanciateur.instantiateComponentName",
+            InstanciationException.FATAL, e.getMessage(), e);
+      } catch (XMLStreamException e) {
+        throw new InstanciationException("Instanciateur.instantiateComponentName",
+            InstanciationException.FATAL, e.getMessage(), e);
+      }
+
     }
     instantiateComponent(waComponent);
   }
@@ -167,11 +171,14 @@ public class Instanciateur {
     } catch (IOException e) {
       throw new InstanciationException("Instanciateur.unInstantiateComponentName",
           InstanciationException.FATAL, e.getMessage(), e);
-    }catch (JAXBException e) {
-        throw new InstanciationException("Instanciateur.unInstantiateComponentName",
-                InstanciationException.FATAL, e.getMessage(), e);
-          }
-    
+    } catch (JAXBException e) {
+      throw new InstanciationException("Instanciateur.unInstantiateComponentName",
+          InstanciationException.FATAL, e.getMessage(), e);
+    } catch (XMLStreamException e) {
+      throw new InstanciationException("Instanciateur.unInstantiateComponentName",
+          InstanciationException.FATAL, e.getMessage(), e);
+    }
+
   }
 
   @SuppressWarnings("unchecked")
@@ -206,7 +213,8 @@ public class Instanciateur {
   public synchronized static Map<String, String> getAllComponentsNames() {
     Map<String, String> hComponents = new HashMap<String, String>();
     Collection<WAComponent> components = WAComponents.values();
-    for (WAComponent component : components) {
+    for (WAComponent component :
+        components) {
       hComponents.put(component.getName(), component.getLabel().getFr());
     }
     return hComponents;
@@ -215,7 +223,8 @@ public class Instanciateur {
   public synchronized static List<WAComponent> getVisibleComponentsForPersonalSpace() {
     List<WAComponent> visibleComponents = new ArrayList<WAComponent>();
     Collection<WAComponent> components = WAComponents.values();
-    for (WAComponent component : components) {
+    for (WAComponent component :
+        components) {
       if (component.isVisibleInPersonalSpace()) {
         visibleComponents.add(component);
       }
@@ -242,6 +251,11 @@ public class Instanciateur {
           "admin.MSG_INSTANCIATEUR_RESOURCES_NOT_FOUND", e);
       throw new InstanciationException("Instanciateur.rebuildWAComponentCache()",
           SilverpeasException.FATAL, "admin.EX_ERR_INSTANTIATE_COMPONENTS", e);
+    } catch (XMLStreamException e) {
+      SilverTrace.fatal("admin", "Instanciateur.rebuildWAComponentCache()",
+          "admin.MSG_INSTANCIATEUR_RESOURCES_NOT_FOUND", e);
+      throw new InstanciationException("Instanciateur.rebuildWAComponentCache()",
+          SilverpeasException.FATAL, "admin.EX_ERR_INSTANTIATE_COMPONENTS", e);
     }
   }
 
@@ -259,27 +273,32 @@ public class Instanciateur {
     return new File(xmlPackage, componentName + ".xml").getCanonicalPath();
   }
 
-  private synchronized static void buildWAComponentList() throws IOException, JAXBException {
+  private synchronized static void buildWAComponentList() throws IOException, JAXBException,
+      XMLStreamException {
     Collection<File> files = getFileList();
     JAXBContext context = JAXBContext.newInstance("com.silverpeas.admin.components");
+    XMLInputFactory factory = XMLInputFactory.newFactory();
     Unmarshaller unmarshaller = context.createUnmarshaller();
-
     for (File xmlFile : files) {
       String componentName = FilenameUtils.getBaseName(xmlFile.getName());
       String fullPath = xmlFile.getCanonicalPath();
       SilverTrace.info("admin", "Instanciateur.buildWAComponentList",
           "admin.MSG_INFO_BUILD_WA_COMPONENT_LIST", "component name: '"
-              + componentName + "', full path: '" + fullPath + "'");
-      WAComponents.put(componentName, (WAComponent) unmarshaller.unmarshal(xmlFile));
+          + componentName + "', full path: '" + fullPath + "'");
+      WAComponents.put(componentName, (unmarshaller.unmarshal(factory.createXMLStreamReader(
+          new FileInputStream(xmlFile)), WAComponent.class)).getValue());
     }
   }
-  
-  private WAComponent loadComponent(String path) throws IOException, JAXBException{
-	  JAXBContext context = JAXBContext.newInstance("com.silverpeas.admin.components");
-	  Unmarshaller unmarshaller = context.createUnmarshaller();
-	  File file = new File(path);
-	  return (WAComponent) unmarshaller.unmarshal(file);
-	  
+
+  private WAComponent loadComponent(String path) throws IOException, JAXBException,
+      XMLStreamException {
+    JAXBContext context = JAXBContext.newInstance("com.silverpeas.admin.components");
+    XMLInputFactory factory = XMLInputFactory.newFactory();
+    Unmarshaller unmarshaller = context.createUnmarshaller();
+    File file = new File(path);
+    return (unmarshaller.unmarshal(factory.createXMLStreamReader(new FileInputStream(file)),
+        WAComponent.class)).getValue();
+
   }
 
   /**

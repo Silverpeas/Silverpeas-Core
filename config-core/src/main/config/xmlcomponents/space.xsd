@@ -48,7 +48,13 @@
       <xs:element name="type" type="xs:string"/>
       <xs:element name="label" type="xs:string"/>
       <xs:element name="description" type="xs:string"/>
-      <xs:element type="ParameterType" name="parameter" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element name="parameters" maxOccurs="unbounded" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element type="ParameterType" name="parameter" maxOccurs="unbounded" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>  
+      </xs:element>
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="ParameterType">

@@ -21,18 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.beans.admin.spaceTemplates;
+package com.silverpeas.admin.spaces;
 
-import com.silverpeas.admin.spaces.SpaceInstanciator;
+import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.util.PathTestUtil;
 import java.io.File;
-import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
