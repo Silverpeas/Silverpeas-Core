@@ -38,9 +38,9 @@ import static com.silverpeas.comment.web.json.JSONCommentMatcher.*;
 /**
  * Tests on the comment getting by the CommentResource web service.
  */
-public class CommentGettingTest  extends BaseCommentResourceTest {
+public class CommentResourceTest  extends BaseCommentResourceTest {
 
-  public CommentGettingTest() {
+  public CommentResourceTest() {
     super();
   }
 
