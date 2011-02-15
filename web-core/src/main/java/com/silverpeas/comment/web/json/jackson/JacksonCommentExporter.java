@@ -25,6 +25,7 @@
 package com.silverpeas.comment.web.json.jackson;
 
 import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.web.CommentEntity;
 import com.silverpeas.comment.web.json.JSONCommentExporter;
 import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.export.ExportException;
@@ -43,13 +44,13 @@ import static com.silverpeas.comment.web.json.JSONCommentFields.*;
 public class JacksonCommentExporter implements JSONCommentExporter {
 
   @Override
-  public void export(ExportDescriptor descriptor, Comment... exportables) throws ExportException {
+  public void export(ExportDescriptor descriptor, CommentEntity... exportables) throws ExportException {
     export(descriptor, Arrays.asList(exportables));
   }
 
   @Override
   public void export(ExportDescriptor descriptor,
-      List<Comment> exportables) throws ExportException {
+      List<CommentEntity> exportables) throws ExportException {
     try {
       Writer output = descriptor.getWriter();
       JsonFactory factory = new JsonFactory();
@@ -57,16 +58,17 @@ public class JacksonCommentExporter implements JSONCommentExporter {
       if (exportables.size() > 1) {
         generator.writeStartArray();
       }
-      for (Comment comment : exportables) {
+      for (CommentEntity comment : exportables) {
         generator.writeStartObject();
-        generator.writeStringField(COMMENT_ID, comment.getCommentPK().getId());
-        generator.writeStringField(COMPONENT_ID, comment.getCommentPK().getInstanceId());
-        generator.writeStringField(RESOURCE_ID, comment.getForeignKey().getId());
-        generator.writeStringField(TEXT, comment.getMessage());
+        generator.writeStringField(COMMENT_URI, comment.getURI().toString());
+        generator.writeStringField(COMMENT_ID, comment.getId());
+        generator.writeStringField(COMPONENT_ID, comment.getComponentId());
+        generator.writeStringField(RESOURCE_ID, comment.getContentId());
+        generator.writeStringField(TEXT, comment.getText());
         generator.writeObjectFieldStart(WRITER);
-        generator.writeStringField(WRITER_ID, comment.getOwnerDetail().getId());
-        generator.writeStringField(WRITER_NAME, comment.getOwnerDetail().getDisplayedName());
-        generator.writeStringField(WRITER_AVATAR, comment.getOwnerDetail().getAvatar());
+        generator.writeStringField(WRITER_ID, comment.getWriter().getId());
+        generator.writeStringField(WRITER_NAME, comment.getWriter().getFullName());
+        generator.writeStringField(WRITER_AVATAR, comment.getWriter().getAvatar());
         generator.writeEndObject();
         generator.writeStringField(CREATION_DATE, comment.getCreationDate());
         generator.writeStringField(MODIFICATION_DATE, comment.getModificationDate());

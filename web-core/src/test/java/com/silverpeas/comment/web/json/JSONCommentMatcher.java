@@ -21,9 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.comment.web;
+package com.silverpeas.comment.web.json;
 
 import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.web.CommentEntity;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import static com.silverpeas.comment.web.json.JSONCommentFields.*;
@@ -42,7 +43,25 @@ public class JSONCommentMatcher extends BaseMatcher<String> {
     return new JSONCommentMatcher(theComments);
   }
 
+  /**
+   * Constructs a new JSON representation matcher with the specified comment entities.
+   * @param theComments the comment entities to check the matching.
+   * @return a matcher.
+   */
+  public static JSONCommentMatcher represents(final CommentEntity... theComments) {
+    Comment[] comments = new Comment[theComments.length];
+    for (int i = 0; i < theComments.length; i++) {
+      comments[i] = theComments[i].toComment();
+
+    }
+    return new JSONCommentMatcher(comments);
+  }
+
   public static Comment[] anArrayOf(final Comment... comments) {
+    return comments;
+  }
+
+  public static CommentEntity[] anArrayOf(final CommentEntity... comments) {
     return comments;
   }
   private final Comment[] comments;

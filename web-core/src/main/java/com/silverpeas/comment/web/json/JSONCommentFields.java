@@ -30,6 +30,10 @@ package com.silverpeas.comment.web.json;
 public interface JSONCommentFields {
 
   /**
+   * The URI of the comment.
+   */
+  static final String COMMENT_URI = "uri";
+  /**
    * The unique identifier of the comment.
    */
   static final String COMMENT_ID = "commentId";
@@ -57,7 +61,7 @@ public interface JSONCommentFields {
   /**
    * The name of the comment writer.
    */
-  static final String WRITER_NAME = "name";
+  static final String WRITER_NAME = "fullName";
   /**
    * The relative URL of the writer avatar.
    */

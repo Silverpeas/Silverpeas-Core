@@ -27,6 +27,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.instance.control.Instanciateur;
 import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
+import javax.inject.Named;
 
 import static org.mockito.Mockito.*;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
@@ -70,7 +71,8 @@ public class ComponentAccessControllerTest {
     when(controller.getComponentParameterValue(componentIdWithoutRigths, "rightsOnTopics")).
         thenReturn("false");
 
-    ComponentAccessController instance = new ComponentAccessController(controller);
+    ComponentAccessController instance = new ComponentAccessController();
+    instance.setComponentAccessController(controller);
     boolean result = instance.isRightOnTopicsEnabled("", componentId);
     assertEquals(false, result);
 
@@ -89,13 +91,13 @@ public class ComponentAccessControllerTest {
     String componentId = "kmelia18";
     String publicComponentId = "kmelia20";
     String forbiddenComponent = "yellowpages154";
-    
+
     String userId = "bart";
-    
+
     OrganizationController controller = mock(OrganizationController.class);
     when(controller.isComponentAvailable(componentId, userId)).thenReturn(Boolean.TRUE);
     when(controller.isComponentAvailable(forbiddenComponent, userId)).thenReturn(Boolean.FALSE);
-    
+
     mockStatic(Instanciateur.class);
     WAComponent kmeliaComponent = new WAComponent("kmelia", "kmelia", "kmelia", "kmelia", true, true,
         null, null, null);
@@ -111,7 +113,8 @@ public class ComponentAccessControllerTest {
     when(controller.getComponentParameterValue(forbiddenComponent, "rightsOnTopics")).
         thenReturn("false");
 
-    ComponentAccessController instance = new ComponentAccessController(controller);
+    ComponentAccessController instance = new ComponentAccessController();
+    instance.setComponentAccessController(controller);
     boolean result = instance.isUserAuthorized(userId, null);
     assertEquals(true, result);
 
@@ -120,8 +123,8 @@ public class ComponentAccessControllerTest {
 
     result = instance.isUserAuthorized(userId, componentId);
     assertEquals(true, result);
-    
-    
+
+
     result = instance.isUserAuthorized(userId, forbiddenComponent);
     assertEquals(false, result);
   }

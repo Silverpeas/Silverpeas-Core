@@ -21,22 +21,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along withWriter this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.comment.web;
 
+import java.net.URI;
+import java.util.List;
 import com.silverpeas.export.Exporter;
-import com.silverpeas.accesscontrol.ComponentAccessController;
+import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.web.json.JSONCommentExporter;
-import com.stratelia.silverpeas.peasCore.SessionInfo;
-import com.stratelia.silverpeas.peasCore.SessionManager;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.silverpeas.web.RESTWebService;
+import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -54,20 +54,14 @@ import static com.silverpeas.export.ExportDescriptor.*;
 @Service
 @Scope("request")
 @Path("comments/{componentId}/{contentId}")
-public class CommentResource {
+public class CommentResource extends RESTWebService {
 
   @Inject
   private CommentService commentService;
-
   @Inject
   private JSONCommentExporter jsonExporter;
-
-  @HeaderParam("X-Silverpeas-SessionKey")
-  private String sessionKey;
-
   @PathParam("componentId")
   private String componentId;
-
   @PathParam("contentId")
   private String contentId;
 
@@ -77,18 +71,20 @@ public class CommentResource {
    * If the user isn't authentified, a 401 HTTP code is returned.
    * If the user isn't authorized to access the comment, a 403 is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
-   * @param commentId the unique identifier of the comment.
+   * @param onCommentId the unique identifier of the comment.
    * @return the JSON representation of the asked comment.
    */
   @GET
   @Path("{commentId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public String getComment(@PathParam("commentId") String commentId) {
-    checkUserPriviledges();
+  public String getComment(@PathParam("commentId") String onCommentId) {
+    checkUserPriviledges(inComponentId());
     StringWriter writer = new StringWriter();
     try {
-      Comment comment = getCommentService().getComment(new CommentPK(commentId, getComponentId()));
-      getJSONExporter().export(withWriter(writer), comment);
+      Comment theComment = commentService().getComment(byPK(onCommentId, inComponentId()));
+      jsonExporter().export(withWriter(writer), asWebEntity(theComment));
+    } catch (CommentRuntimeException ex) {
+      throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
@@ -96,18 +92,41 @@ public class CommentResource {
   }
 
   /**
-   * Gets the key of the user session.
-   * @return the user session key.
+   * Gets the JSON representation of all the comments on refered the resource.
+   * If the user isn't authentified, a 401 HTTP code is returned.
+   * If the user isn't authorized to access the comment, a 403 is returned.
+   * If a problem occurs when processing the request, a 503 HTTP code is returned.
+   * @return the JSON representation of the comments on the refered resource.
    */
-  protected String getUserSessionKey() {
-    return sessionKey;
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  public String getAllComments() {
+    checkUserPriviledges(inComponentId());
+    StringWriter writer = new StringWriter();
+    try {
+      List<Comment> theComments = commentService().getAllCommentsOnPublication(
+          byPK(onContentId(), inComponentId()));
+      jsonExporter().export(withWriter(writer), asWebEntities(theComments));
+    } catch (CommentRuntimeException ex) {
+      throw new WebApplicationException(ex, Status.NOT_FOUND);
+    } catch (Exception ex) {
+      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+    }
+    return writer.toString();
   }
+
+//  @POST
+//  @Produces(MediaType.APPLICATION_JSON)
+//  @Consumes(MediaType.APPLICATION_JSON)
+//  public String createNewComment() {
+//
+//  }
 
   /**
    * Gets the identifier of the Silverpeas instance to which the commented content belongs.
    * @return the Silverpeas component instance identifier.
    */
-  protected String getComponentId() {
+  protected String inComponentId() {
     return componentId;
   }
 
@@ -115,7 +134,7 @@ public class CommentResource {
    * Gets the identifier of the content that is commentable.
    * @return the identifier of the commentable content.
    */
-  protected String getContentId() {
+  protected String onContentId() {
     return contentId;
   }
 
@@ -123,7 +142,7 @@ public class CommentResource {
    * Gets a business service on comments.
    * @return a comment service instance.
    */
-  protected CommentService getCommentService() {
+  protected CommentService commentService() {
     return commentService;
   }
 
@@ -131,28 +150,34 @@ public class CommentResource {
    * Gets an exporter able to export the comments in the JSON format.
    * @return a JSON comment exporter.
    */
-  protected Exporter<Comment> getJSONExporter() {
+  protected Exporter<CommentEntity> jsonExporter() {
     return jsonExporter;
   }
 
-  /**
-   * Checks the user has the correct priviledges to access the underlying referenced resource.
-   * It the check fail, a WebException is thrown withWriter the HTTP status code set according to the
-   * failure.
-   */
-  private void checkUserPriviledges() {
-    SessionManager sessionManager = SessionManager.getInstance();
-    SessionInfo sessionInfo = sessionManager.getUserDataSession(getUserSessionKey());
-    if (sessionInfo == null) {
-      throw new WebApplicationException(Status.UNAUTHORIZED);
-    }
-
-    UserDetail user = sessionInfo.getUserDetail();
-    ComponentAccessController accessController = new ComponentAccessController();
-    if (!accessController.isUserAuthorized(user.getId(), getComponentId())) {
-      throw new WebApplicationException(Status.FORBIDDEN);
-    }
+  protected CommentPK byPK(final String contentId, final String componentId) {
+    return new CommentPK(contentId, componentId);
   }
 
+  /**
+   * Converts the specified list of comments into their corresponding web entities.
+   * @param comments the comments to convert.
+   * @return the list of corresponding comment entities.
+   */
+  protected List<CommentEntity> asWebEntities(List<Comment> comments) {
+    List<CommentEntity> entities = new ArrayList<CommentEntity>();
+    for (Comment aComment : comments) {
+      URI commentURI = getUriInfo().getRequestUriBuilder().path(aComment.getCommentPK().getId()).build();
+      entities.add(CommentEntity.fromComment(aComment).withURI(commentURI));
+    }
+    return entities;
+  }
 
+  /**
+   * Converts the comment into its corresponding web entity.
+   * @param comment the comment to convert.
+   * @return the corresponding comment entity.
+   */
+  protected CommentEntity asWebEntity(final Comment comment) {
+    return CommentEntity.fromComment(comment).withURI(getUriInfo().getRequestUri());
+  }
 }

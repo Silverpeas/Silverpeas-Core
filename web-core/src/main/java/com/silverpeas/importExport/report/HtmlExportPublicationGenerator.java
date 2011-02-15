@@ -23,7 +23,6 @@
  */
 package com.silverpeas.importExport.report;
 
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.PagesContext;
@@ -111,9 +110,9 @@ public class HtmlExportPublicationGenerator {
     xhtmlcontainer.addElement("&#149;&nbsp;");
     a link = new a();
     link.setHref(urlPub);
-    if (StringUtil.isDefined(target)) {     
+    if (StringUtil.isDefined(target)) {
       link.setTarget(target);
-    } 
+    }
     link.addElement(new b(htmlPubName));
     xhtmlcontainer.addElement(link);
     if (StringUtil.isDefined(htmlCreatorName)) {
@@ -121,9 +120,9 @@ public class HtmlExportPublicationGenerator {
       xhtmlcontainer.addElement(htmlCreatorName);
     }
     if (StringUtil.isDefined(dateString)) {
-      xhtmlcontainer.addElement(" (");      
+      xhtmlcontainer.addElement(" (");
       xhtmlcontainer.addElement(dateString);
-      xhtmlcontainer.addElement(")");      
+      xhtmlcontainer.addElement(")");
     }
     xhtmlcontainer.addElement(new br());
     if (StringUtil.isDefined(htmlPubDescription)) {
@@ -149,8 +148,8 @@ public class HtmlExportPublicationGenerator {
     borderTable.setCellPadding(0);
     borderTable.setCellSpacing(1);
     borderTable.setBgColor("#B3BFD1");
-    
-    
+
+
     table contentTable = new table();
     contentTable.setWidth("100%");
     contentTable.setBorder(0);
@@ -163,7 +162,7 @@ public class HtmlExportPublicationGenerator {
     tr = new tr(new td(htmlPubDescription));
     tr.addElement(new td((new div(dateString)).addAttribute("align", "right")));
     contentTable.addElement(tr);
-    borderTable.addElement(new tr(new td (contentTable)));
+    borderTable.addElement(new tr(new td(contentTable)));
     xhtmlcontainer.addElement(borderTable);
     return xhtmlcontainer.toString();
   }
@@ -215,7 +214,7 @@ public class HtmlExportPublicationGenerator {
     return sb.toString();
   }
 
-  public String toHtmlXMLModel() {
+  public String xmlFormToHTML() {
     PublicationTemplateImpl template = null;
     try {
       template = (PublicationTemplateImpl) PublicationTemplateManager.getInstance().
@@ -224,7 +223,6 @@ public class HtmlExportPublicationGenerator {
     } catch (Exception e) {
       return "Error getting publication template !";
     }
-
     try {
       Form formView = template.getViewForm();
       RecordSet recordSet = template.getRecordSet();
@@ -269,7 +267,7 @@ public class HtmlExportPublicationGenerator {
     } else if (wysiwygText != null) {
       sb.append(HtmlExportGenerator.encode(wysiwygText));
     } else if (xmlModelContent != null) {
-      sb.append(toHtmlXMLModel());
+      sb.append(xmlFormToHTML());
     }
 
     sb.append("</td>").append("\n");
@@ -296,7 +294,7 @@ public class HtmlExportPublicationGenerator {
   private String toHtmlAttachments() {
     StringBuilder sb = new StringBuilder();
     if (listAttDetail != null) {
-      for(AttachmentDetail attDetail : listAttDetail) {
+      for (AttachmentDetail attDetail : listAttDetail) {
         sb.append(toHtmlAttachmentInfos(attDetail));
       }
     }
@@ -345,7 +343,7 @@ public class HtmlExportPublicationGenerator {
     String lowerHtml = htmlText.toLowerCase();
     int finPath = 0;
     int debutPath = 0;
-    StringBuffer newHtmlText = new StringBuffer();
+    StringBuilder newHtmlText = new StringBuilder();
     String imageSrc = "";
     if (lowerHtml.indexOf("src=\"", finPath) == -1) {
       // pas d'images dans le fichier
@@ -353,17 +351,13 @@ public class HtmlExportPublicationGenerator {
     } else {
       while ((debutPath = lowerHtml.indexOf("src=\"", finPath)) != -1) {
         debutPath += 5;
-
         newHtmlText.append(htmlText.substring(finPath, debutPath));
-        finPath = lowerHtml.indexOf("\"", debutPath);
+        finPath = lowerHtml.indexOf('\"', debutPath);
         imageSrc = lowerHtml.substring(debutPath, finPath);
-        int d = imageSrc.indexOf("/fileserver/");
-        if (d != -1) {
-          // C'est une image stockée dans Silverpeas : extraction du nom de
-          // l'image
-          d += 12;
-          int f = imageSrc.indexOf("?");
-          imageSrc = imageSrc.substring(d, f);
+        int d = imageSrc.indexOf("/attached_file/");
+        if (d >= 0) {
+          int f = imageSrc.lastIndexOf('/');
+          imageSrc = imageSrc.substring(f + 1);
           newHtmlText.append(imageSrc);
         } else {
           newHtmlText.append(htmlText.substring(debutPath, finPath));
@@ -374,11 +368,11 @@ public class HtmlExportPublicationGenerator {
     return newHtmlText.toString();
   }
 
-  private String replaceFilesPathForExport(String htmlText) {
+  public static String replaceFilesPathForExport(String htmlText) {
     String lowerHtml = htmlText.toLowerCase();
     int finPath = 0;
     int debutPath = 0;
-    StringBuffer newHtmlText = new StringBuffer();
+    StringBuilder newHtmlText = new StringBuilder();
     String imageSrc = "";
     if (lowerHtml.indexOf("href=\"", finPath) == -1) {
       // pas d'images dans le fichier
@@ -388,15 +382,14 @@ public class HtmlExportPublicationGenerator {
         debutPath += 6;
 
         newHtmlText.append(htmlText.substring(finPath, debutPath));
-        finPath = lowerHtml.indexOf("\"", debutPath);
+        finPath = lowerHtml.indexOf('\"', debutPath);
         imageSrc = lowerHtml.substring(debutPath, finPath);
-        int d = imageSrc.indexOf("/fileserver/");
-        if (d != -1) {
-          // C'est une image stockée dans Silverpeas : extraction du nom de
-          // l'image
+        int d = imageSrc.indexOf("/attached_file/");
+        if (d >= 0) {
+          // C'est une image stockée dans Silverpeas : extraction du nom de l'image
           d += 12;
-          int f = imageSrc.indexOf("?");
-          imageSrc = imageSrc.substring(d, f);
+          int f = imageSrc.lastIndexOf('/');
+          imageSrc = imageSrc.substring(f + 1);
           newHtmlText.append(imageSrc);
         } else {
           newHtmlText.append(htmlText.substring(debutPath, finPath));

@@ -47,6 +47,21 @@ public class MailUtilTest {
     assertEquals("silverpeas@silverpeas.com", result);
   }
   
+  /**
+   * Test of getAuthorizedEmail method, of class MailUtil.
+   */
+  @Test
+  public void testGetAuthorizedEmailWithNoDomain() {
+    MailUtil.reloadConfiguration(null);
+    String authorizedEmail = "toto@silverpeas.com";
+    String result = MailUtil.getAuthorizedEmail(authorizedEmail);
+    assertEquals(authorizedEmail, result);
+    MailUtil.reloadConfiguration("");
+    authorizedEmail = "toto@slashdot.com";
+    result = MailUtil.getAuthorizedEmail(authorizedEmail);
+    assertEquals("toto@slashdot.com", result);
+  }
+  
   
   @Test
   public void testGetAuthorizedEmailAddress() throws Exception {

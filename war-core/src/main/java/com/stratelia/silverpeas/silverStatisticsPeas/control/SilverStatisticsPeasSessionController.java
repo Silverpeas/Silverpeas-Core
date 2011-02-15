@@ -617,7 +617,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   }
 
   public void KickSession(String sessionId) {
-    SessionManager.getInstance().removeSession(sessionId);
+    SessionManager.getInstance().closeSession(sessionId);
   }
 
   public UserDetail getTargetUserDetail(String userId) {

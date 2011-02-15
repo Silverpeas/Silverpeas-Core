@@ -26,24 +26,27 @@ package com.silverpeas.accesscontrol;
 import com.silverpeas.util.ComponentHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * Check the access to a component for a user.
  * @author ehugonnet
  */
+@Named
 public class ComponentAccessController implements AccessController<String> {
 
-  private final OrganizationController controller;
+  @Inject
+  private OrganizationController controller;
 
   public ComponentAccessController() {
-    this(new OrganizationController());
   }
 
   /**
    * For tests only.
-   * @param controller
+   * @param controller the controller to set for tests.
    */
-  ComponentAccessController(OrganizationController controller) {
+  protected void setComponentAccessController(final OrganizationController controller) {
     this.controller = controller;
   }
 
