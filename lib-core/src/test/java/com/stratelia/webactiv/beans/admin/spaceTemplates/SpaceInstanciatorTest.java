@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.beans.admin.spaceTemplates;
 
+import com.silverpeas.admin.spaces.SpaceInstanciator;
 import com.silverpeas.util.PathTestUtil;
 import java.io.File;
 import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;

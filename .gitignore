@@ -3,3 +3,4 @@
 *.iml
 target
 .sonar-ide.properties
+/lib-core/.settings/

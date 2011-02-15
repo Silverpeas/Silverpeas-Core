@@ -28,9 +28,9 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import com.silverpeas.admin.components.InstanciationException;
 import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.jcrutil.JcrConstants;
-import com.stratelia.webactiv.beans.admin.instance.control.InstanciationException;
 
 public class ComponentHelper {
 

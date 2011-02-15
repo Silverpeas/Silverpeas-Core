@@ -31,9 +31,9 @@ package com.silverpeas.comment;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
+import com.silverpeas.admin.components.InstanciationException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.instance.control.ComponentsInstanciatorIntf;
-import com.stratelia.webactiv.beans.admin.instance.control.InstanciationException;
+import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.stratelia.webactiv.util.DBUtil;
 
 /**

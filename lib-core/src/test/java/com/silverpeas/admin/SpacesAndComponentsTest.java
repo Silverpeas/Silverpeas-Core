@@ -24,6 +24,7 @@
 
 package com.silverpeas.admin;
 
+import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.components.model.AbstractTestDao;
 import java.util.List;
 
@@ -37,7 +38,6 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
-import com.stratelia.webactiv.beans.admin.instance.control.Instanciateur;
 import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
 
 public class SpacesAndComponentsTest extends AbstractTestDao {

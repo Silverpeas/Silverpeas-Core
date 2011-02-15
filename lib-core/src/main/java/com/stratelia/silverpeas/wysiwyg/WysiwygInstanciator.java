@@ -28,7 +28,7 @@ import java.sql.Connection;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
-import com.stratelia.webactiv.beans.admin.instance.control.InstanciationException;
+import com.silverpeas.admin.components.InstanciationException;
 import com.stratelia.webactiv.util.attachment.AttachmentInstanciator;
 
 public class WysiwygInstanciator extends SQLRequest {
@@ -71,7 +71,7 @@ public class WysiwygInstanciator extends SQLRequest {
    * @param spaceId
    * @param componentId
    * @param userId
-   * @throws InstanciationException
+   * @throws com.silverpeas.admin.components.InstanciationException
    * @see
    */
   public void delete(Connection con, String spaceId, String componentId,

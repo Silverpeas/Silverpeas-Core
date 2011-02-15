@@ -22,9 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//Source file: D:\\Silverpeas\\Cabernet\\Bus\\admin\\JavaLib\\com\\stratelia\\webactiv\\beans\\admin\\instance\\control\\ComponentsInstanciatorIntf.java
-
-package com.stratelia.webactiv.beans.admin.instance.control;
+package com.silverpeas.admin.components;
 
 import java.sql.Connection;
 
@@ -45,7 +43,7 @@ public interface ComponentsInstanciatorIntf {
    * @param spaceId - Identity of the space where the component will be instancied.
    * @param componentId - Identity of the component to instanciate.
    * @param userId - Identity of the user who want the component
-   * @throws com.stratelia.webactiv.beans.admin.instance.control.InstanciationException
+   * @throws InstanciationException
    * @roseuid 3B82286B0236
    */
   public void create(Connection connection, String spaceId, String componentId,
@@ -57,7 +55,7 @@ public interface ComponentsInstanciatorIntf {
    * @param spaceId - Identity of the space where the instanced component will be deleted.
    * @param componentId - Identity of the instanced component
    * @param userId - Identity of the user who have instantiate the component.
-   * @throws com.stratelia.webactiv.beans.admin.instance.control.InstanciationException
+   * @throws InstanciationException
    * @roseuid 3B8228740117
    */
   public void delete(Connection connection, String spaceId, String componentId,

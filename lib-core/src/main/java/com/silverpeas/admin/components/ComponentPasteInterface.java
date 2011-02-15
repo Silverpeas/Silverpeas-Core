@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.beans.admin.instance.control;
+package com.silverpeas.admin.components;
 
 import java.rmi.RemoteException;
 
