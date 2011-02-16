@@ -4981,7 +4981,7 @@ public final class Admin extends Object {
             String dId = rule.substring(rule.indexOf("=") + 1).trim();
 
             // Available only for "domaine mixte"
-            if ("-1".equals(domainId)) {
+            if (domainId == null  || "-1".equals(domainId)) {
               userIds =
                   Arrays.asList(
                   m_DDManager.organization.user.getUserIdsOfDomain(Integer.parseInt(dId)));
