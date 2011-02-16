@@ -108,7 +108,7 @@
         <source>git remote add silverpeas URL_OF_SILVERPEAS_REPOSITORY</source>
         <p>For example:</p>
         <source>git remote add silverpeas git@github.com:Silverpeas/Silverpeas-Core.git</source>
-        <p>To synchronize your local repository with Silverpeas, you have to execute the following command:</p>*
+        <p>To synchronize your local repository with Silverpeas, you have to execute the following command:</p>
         <source>git pull silverpeas master</source>          
       </subsection>
       <subsection name="Creating a development branch">
@@ -120,8 +120,28 @@
         <source>git checkout  BRANCH_NAME</source>
         <p>When all your modifications are commited, it is ime to push them to your remote repository on a branch.</p>
         <source>git push origin BRANCH_NAME</source>
+        <p>Now to associate the local and remote branch you have to execute the following command:</p>
+        <source>git branch --track  origin/BRANCH_NAME</source>
       </subsection>
-      
+      <subsection name="Integrating your changes in Silverpeas">
+        <p>Now that your development is ended, you may want to integrate it into Silverpeas.
+          <br/>
+        To do this we take advantage of 
+          <a href="http://help.github.com/pull-requests/">Github's "Pull Request" feature</a>.
+        </p>
+        <p>On receiving you pull request, the Silverpeas core team will look into it and may give you some remarks.
+          <br/>
+        When your code is accepted it will be merged into Silverpeas master branch and you will be informed of this.
+          <br/>
+        Then you will have to synchronize your repository with Silverpeas's:
+        </p>
+        <source>git checkout master
+git pull silverpeas master
+        </source>
+        <p>Your developmenet branches for the integrated code are now obsolete, so you may want to delete them.</p>
+        <source>git branch -D origin/BRANCH_NAME
+git branch -D BRANCH_NAME</source>
+      </subsection>
     </section>
   </body>
 </document>
