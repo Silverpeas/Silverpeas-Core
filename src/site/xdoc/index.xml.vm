@@ -34,19 +34,17 @@
   </head>
   <body>
     <section name="Try Silverpeas easily">
-      <p><img src="images/logos/logo_izPack.png" alt="izpack"/><br/>We provide an easy way to try Silverpeas using 
-        <a href="http://izpack.org/">Izpack</a> with a pre-configured JBoss Server and an H2 Database.
-        <br/>
-        <b>You have to have a Java 6 JDK installed.</b>
-        <br/>
-        <b>This version is not suitable for production !</b>.
+      <p><img src="images/logos/logo_izPack.png" alt="izpack" style="padding-right:10px;float:left;position:relative;"/><br/>We provide an easy way to try Silverpeas using 
+        <a href="http://izpack.org/">Izpack</a> with a pre-configured JBoss Server and an H2 Database.</p>
+        <p>
+        <b>You have to have a Java 6 JDK installed.</b><b>This version is not suitable for production !</b>.
       </p>
       <ol>
         <li>Download the 
-          <a href="http://www.silverpeas.org/files/Silverpeas-5.4-izpack-installer.jar">installer</a>
+          <a href="http://www.silverpeas.org/files/Silverpeas-${installer_stable_version}-izpack-installer.jar">installer</a>
         </li>
         <li>Run the following command (or double click on the jar file) 
-          <code>java -jar Silverpeas-5.4-installer.jar</code>
+          <code>java -jar Silverpeas-${installer_stable_version}-installer.jar</code>
         </li>
         <li>When all has been installed, go to the 
           <code>bin</code> directory under the installation directory and run the following scripts in that order 

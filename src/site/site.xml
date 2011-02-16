@@ -72,7 +72,7 @@ pageTracker._trackPageview();
       <item name="Source Code" href="source-repository.html" />
     </menu>    
     <menu name="How to contribute" collapse="false" inherit="none">
-      <item name="Contribution" href="contribution.html"/>
+      <item name="Contribution" href="collaboration.html"/>
     </menu>
     <menu ref="reports" />
     <menu name="SilverpeasConfiguration" collapse="true" inherit="none">
