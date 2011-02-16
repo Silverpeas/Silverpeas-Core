@@ -267,6 +267,13 @@
       <rtexprvalue>true</rtexprvalue>
       <type>boolean</type>
     </attribute>
+    <attribute>
+      <description>Allows to display a non clickable breadcrumb</description>
+      <name>clickable</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
   </tag>
   <tag>
     <description>Simple tag to define an element of a Window browsebar. It should be declared and used before a Window.</description>
