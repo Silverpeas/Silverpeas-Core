@@ -189,23 +189,99 @@ sGenSpace = m_OrganizationController.getGeneralSpaceId();
 <%
 out.println(gef.getLookStyleSheet());
 %>
+
+<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/animation.js"></script>
+<script type="text/javascript">
+function notifyAdministrators(context,compoId,users,groups)
+{
+	SP_openWindow('<%=m_sContext%>/RnotificationUser/jsp/Main.jsp?popupMode=Yes&amp;editTargets=No&amp;compoId=&amp;theTargetsUsers=Administrators&amp;theTargetsGroups=', 'notifyUserPopup', '700', '400', 'menubar=no,scrollbars=no,statusbar=no');
+}
+
+function openClipboard()
+{
+	document.clipboardForm.submit();
+}
+  
+function getTool(id, label, url, nb, target) {
+	var l = label;
+	var res;
+	
+	if (url.substring(0,11).toLowerCase() == "javascript:") {
+		res = "<a href=\"#\" onclick=\""+url+"\">"+l+"</a>&nbsp;&nbsp;";
+	}
+  	else {
+  		res = "<a href=\""+"<%=m_sContext%>"+url+"\" target=\""+target+"\">"+l+"</a>&nbsp;&nbsp;";
+	}
+  		
+	return res;
+}
+
+function getTools() {
+	$.getJSON("<%=m_sContext%>/PersonalSpace?Action=GetTools&IEFix="+new Date().getTime(),
+			function(data){
+				try {
+					// get tools
+					var items = "";
+					for (var i = 0; i < data.length; ++i) {
+		                var tool = data[i];
+		                items += getTool(tool.id, tool.label, tool.url, tool.nb, '_self');
+					}
+
+					//display tools
+					$("#contenu_outils").html(items);
+				} catch (e) {
+					//do nothing
+					alert(e);
+				}
+			});
+}
+
+function getComponent(id, label, url, name, description) {
+	return "<a href=\""+"<%=m_sContext%>"+url+"\" target=\"_self\">"+label+"</a>&nbsp;&nbsp;";
+}
+
+function getComponents() {
+	$.getJSON("<%=m_sContext%>/PersonalSpace?Action=GetComponents&IEFix="+new Date().getTime(),
+			function(data){
+				try {
+					// get components
+					var items = "";
+					for (var i = 0; i < data.length; ++i) {
+		                var component = data[i];
+		                items += getComponent(component.id, component.label, component.url, component.name, component.description);
+					}
+
+					//display components
+					$("#contenu_components").html(items);
+				} catch (e) {
+					//do nothing
+					alert(e);
+				}
+			});
+}
+
+$(document).ready(function() {
+	getTools();
+	getComponents();
+});
+</script>
 </head>
 <body>
 <%
-		Window window = gef.getWindow();
+	Window window = gef.getWindow();
 
 	BrowseBar browseBar = window.getBrowseBar();
 	browseBar.setComponentName(message.getString("MyMap"));
 
 	out.println(window.printBefore());
 	Frame frame=gef.getFrame();
- out.println(frame.printBefore());
+	out.println(frame.printBefore());
 
- ResourceLocator lookSettings = gef.getFavoriteLookSettings(); 
- String accessLoginId = lookSettings.getString("guestId");
- boolean isAnonymAccess = currentUser.isAccessGuest() && currentUser.getId().equals(accessLoginId);
- 
- Board board = gef.getBoard();
+	ResourceLocator lookSettings = gef.getFavoriteLookSettings(); 
+	String accessLoginId = lookSettings.getString("guestId");
+	boolean isAnonymAccess = currentUser.isAccessGuest() && currentUser.getId().equals(accessLoginId);
+	 
+	Board board = gef.getBoard();
 %>
 
 <% if (!isAnonymAccess) { %>
@@ -215,11 +291,14 @@ out.println(gef.getLookStyleSheet());
 			<td><img src="icons/accueil/esp_perso.gif" align="middle" alt=""/>&nbsp;&nbsp;<span class="txtnav"><%=message.getString("SpacePersonal")%></span></td>
 		</tr>
 		<tr>
-			<td>&nbsp;&nbsp;<img src="<%=m_sContext%>/util/icons/component/agendaSmall.gif" border="0" width="15" align="top" alt=""/>&nbsp;<a href="<%=m_sContext + URLManager.getURL(URLManager.CMP_AGENDA) + "agenda.jsp"%>" target="MyMain"><%=message.getString("Diary")%></a>
-				&nbsp;&nbsp;<img src="<%=m_sContext%>/util/icons/component/todoSmall.gif" border="0" width="15" align="top" alt=""/>&nbsp;<a href="<%=m_sContext + URLManager.getURL(URLManager.CMP_TODO)+ "todo.jsp"%>" target="MyMain"><%=message.getString("ToDo")%></a>
-				&nbsp;&nbsp;<img src="<%=m_sContext%>/util/icons/component/mailserviceSmall.gif" border="0" width="15" align="top" alt=""/>&nbsp;<a href="<%=m_sContext + URLManager.getURL(URLManager.CMP_SILVERMAIL) + "Main"%>" target="MyMain"><%=message.getString("Mail")%></a>
-				&nbsp;&nbsp;<a href="<%=m_sContext + URLManager.getURL(URLManager.CMP_PDCSUBSCRIPTION) + "subscriptionList.jsp"%>" target="MyMain"><%=message.getString("MyInterestCenters")%></a>
-				&nbsp;&nbsp;<a href="<%=m_sContext + URLManager.getURL(URLManager.CMP_INTERESTCENTERPEAS) + "iCenterList.jsp"%>" target="MyMain"><%=message.getString("FavRequests")%></a></td>
+			<td>
+				<div id="contenu_outils"></div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div id="contenu_components"></div>
+			</td>
 		</tr>
 		</table>
 <%=board.printAfter() %>
@@ -253,5 +332,8 @@ out.println(frame.printMiddle());
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
+<form name="clipboardForm" action="<%=m_sContext+URLManager.getURL(URLManager.CMP_CLIPBOARD)%>Idle.jsp" method="post" target="IdleFrame">
+<input type="hidden" name="message" value="SHOWCLIPBOARD"/>
+</form>
 </body>
 </html>
