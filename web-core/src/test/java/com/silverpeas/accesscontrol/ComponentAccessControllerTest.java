@@ -24,8 +24,9 @@
 package com.silverpeas.accesscontrol;
 
 import com.silverpeas.admin.components.Instanciateur;
+import com.silverpeas.admin.components.Multilang;
+import com.silverpeas.admin.components.WAComponent;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
 
 import static org.mockito.Mockito.*;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
@@ -57,10 +58,22 @@ public class ComponentAccessControllerTest {
     String componentIdWithoutRigths = "kmelia20";
     String componentId = "yellowpages154";
     mockStatic(Instanciateur.class);
-    WAComponent kmeliaComponent = new WAComponent("kmelia", "kmelia", "kmelia", "kmelia", true, true,
-        null, null, null);
-    WAComponent yellowComponent = new WAComponent("yellowpages", "yellowpages", "yellowpages",
-        "yellowpages", true, true, null, null, null);
+    WAComponent kmeliaComponent = new WAComponent();
+    kmeliaComponent.setName("kmelia");
+    Multilang label = new Multilang();
+    label.setEn("kmelia");
+    label.setFr("kmelia");
+    kmeliaComponent.setLabel(label);
+    kmeliaComponent.setVisible(true);
+    kmeliaComponent.setPortlet(true);
+    WAComponent yellowComponent = new WAComponent();
+    yellowComponent.setName("yellowpages");
+    Multilang label2 = new Multilang();
+    label2.setEn("yellowpages");
+    label2.setFr("yellowpages");
+    yellowComponent.setLabel(label2);
+    yellowComponent.setVisible(true);
+    yellowComponent.setPortlet(true);
     when(Instanciateur.getWAComponent("kmelia")).thenReturn(kmeliaComponent);
     when(Instanciateur.getWAComponent("yellowpages")).thenReturn(yellowComponent);
 
@@ -96,10 +109,23 @@ public class ComponentAccessControllerTest {
     when(controller.isComponentAvailable(forbiddenComponent, userId)).thenReturn(Boolean.FALSE);
     
     mockStatic(Instanciateur.class);
-    WAComponent kmeliaComponent = new WAComponent("kmelia", "kmelia", "kmelia", "kmelia", true, true,
-        null, null, null);
-    WAComponent yellowComponent = new WAComponent("yellowpages", "yellowpages", "yellowpages",
-        "yellowpages", true, true, null, null, null);
+    
+    WAComponent kmeliaComponent = new WAComponent();
+    kmeliaComponent.setName("kmelia");
+    Multilang label = new Multilang();
+    label.setEn("kmelia");
+    label.setFr("kmelia");
+    kmeliaComponent.setLabel(label);
+    kmeliaComponent.setVisible(true);
+    kmeliaComponent.setPortlet(true);
+    WAComponent yellowComponent = new WAComponent();
+    yellowComponent.setName("yellowpages");
+    Multilang label2 = new Multilang();
+    label2.setEn("yellowpages");
+    label2.setFr("yellowpages");
+    yellowComponent.setLabel(label2);
+    yellowComponent.setVisible(true);
+    yellowComponent.setPortlet(true);
     when(Instanciateur.getWAComponent("kmelia")).thenReturn(kmeliaComponent);
     when(Instanciateur.getWAComponent("yellowpages")).thenReturn(yellowComponent);
 

@@ -24,6 +24,7 @@
 
 package com.silverpeas.jobOrganizationPeas.control;
 
+import com.silverpeas.admin.components.WAComponent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,6 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 /**
@@ -315,11 +315,11 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
     try {
       WAComponent component = getComponentOfficialNames().get(internalName);
       if (component != null) {
-       return component.getLabel(); 
+       return component.getLabel().getFr(); 
       }
       return internalName;
     } catch (Exception e) {
-      SilverTrace.info("jobOrganizationPeas",
+      SilverTrace.info("jobOrganizationPeas", 
           "JobOrganizationPeasSessionController.getComponentOfficialName",
           "root.MSG_GEN_PARAM_VALUE", "!!!!! ERROR getting official name="
           + internalName, e);

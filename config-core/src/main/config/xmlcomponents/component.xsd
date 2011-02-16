@@ -40,6 +40,7 @@ targetNamespace="http://silverpeas.org/xml/ns/component">
       <xs:element type="xs:string" name="en" />
     </xs:sequence>
   </xs:complexType>
+  
   <xs:complexType name="ParameterType">
     <xs:sequence>
       <xs:element name="name" type="xs:string" />

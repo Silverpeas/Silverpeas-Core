@@ -23,6 +23,8 @@
  */
 package com.silverpeas.jobStartPagePeas.control;
 
+import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.admin.spaces.SpaceTemplate;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +32,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -63,9 +64,6 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
 import com.stratelia.webactiv.beans.admin.SpaceSelection;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
-import com.stratelia.webactiv.beans.admin.spaceTemplates.SpaceTemplate;
-import com.stratelia.webactiv.beans.admin.spaceTemplates.SpaceTemplateProfile;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
@@ -91,7 +89,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   String m_language = "";
   String m_look = null;
   String m_spaceTemplate = "";
-  SpaceTemplateProfile[] m_TemplateProfiles = new SpaceTemplateProfile[0];
   String[][] m_TemplateProfilesGroups = new String[0][0];
   String[][] m_TemplateProfilesUsers = new String[0][0];
   // Order space / component b
@@ -379,9 +376,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     return m_AdminCtrl.getSpaceInstById("WA" + idSpace);
   }
 
-  public SpaceTemplateProfile[] getCurrentSpaceTemplateProfiles() {
-    return m_TemplateProfiles;
-  }
 
   public String[][] getCurrentSpaceTemplateProfilesGroups() {
     return m_TemplateProfilesGroups;
@@ -398,12 +392,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     m_desc = desc;
     m_language = language;
     m_spaceTemplate = spaceTemplate;
-    m_TemplateProfiles = m_AdminCtrl.getTemplateProfiles(m_spaceTemplate);
-    if (m_TemplateProfiles == null) {
-      m_TemplateProfiles = new SpaceTemplateProfile[0];
-    }
-    m_TemplateProfilesGroups = new String[m_TemplateProfiles.length][0];
-    m_TemplateProfilesUsers = new String[m_TemplateProfiles.length][0];
     m_look = look;
     // Only use global variable to set spacePosition
     if (JobStartPagePeasSettings.SPACEDISPLAYPOSITION_AFTER.equalsIgnoreCase(
@@ -497,66 +485,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
           SilverTrace.info("jobStartPagePeas",
               "JobStartPagePeasRequestRouter.addSpaceInst()",
               "root.MSG_GEN_PARAM_VALUE", "Looking for component " + ci.getLabel() + " - " + ci.
-              getName());
-          for (int i = 0; i < m_TemplateProfiles.length; i++) {
-            Vector<String> componentProfiles = m_TemplateProfiles[i].getMappedComponentProfileName(ci.
-                getLabel());
-
-            if (componentProfiles != null) {
-              for (Enumeration<String> e = componentProfiles.elements(); e.hasMoreElements();) {
-                String componentProfile = e.nextElement();
-                if (componentProfile != null && componentProfile.length() > 0) {
-                  WAComponent modeleCompo = m_AdminCtrl.getAllComponents().get(ci.getName());
-                  String[] pl = modeleCompo.getProfilList();
-                  String refProfileLabel = null;
-
-                  SilverTrace.info("jobStartPagePeas",
-                      "JobStartPagePeasRequestRouter.addSpaceInst()",
-                      "root.MSG_GEN_PARAM_VALUE", "Scan Template Profile " + m_TemplateProfiles[i].
-                      getName() + " Profile Founded : " + componentProfile);
-                  for (int j = 0; j < pl.length && refProfileLabel == null; j++) {
-                    if (componentProfile.equalsIgnoreCase(pl[j])) {
-                      refProfileLabel = modeleCompo.getProfilLabelList()[j];
-                    }
-                  }
-
-                  if (refProfileLabel != null) {
-                    ProfileInst profileInst = null;
-                    profileInst = componentProfilesToCreate.get(componentProfile);
-                    if (profileInst == null) {
-                      profileInst = new ProfileInst();
-                      profileInst.setName(componentProfile);
-                      profileInst.setLabel(refProfileLabel);
-                      profileInst.setComponentFatherId(ci.getId());
-                    }
-
-                    // groupes
-                    String[] groups = m_TemplateProfilesGroups[i];
-                    if (groups != null) {
-                      for (int j = 0; j < groups.length; j++) {
-                        if ((groups[j] != null) && (groups[j].length() > 0)) {
-                          profileInst.addGroup(groups[j]);
-                        }
-                      }
-                    }
-                    // users
-                    String[] users = m_TemplateProfilesUsers[i];
-                    if (users != null) {
-                      for (int j = 0; j < users.length; j++) {
-                        if ((users[j] != null) && (users[j].length() > 0)) {
-                          profileInst.addUser(users[j]);
-                        }
-                      }
-                    }
-
-                    // Add the todo list
-                    componentProfilesToCreate.put(componentProfile, profileInst);
-                  }
-                }
-              }
-            }
-          }
-
+              getName());     
           // Add profiles
           Iterator<ProfileInst> profiles = componentProfilesToCreate.values().iterator();
           while (profiles.hasNext()) {
@@ -1033,8 +962,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
       @Override
       public int compare(WAComponent o1, WAComponent o2) {
-        String valcomp1 = o1.getSuite() + o1.getLabel();
-        String valcomp2 = o2.getSuite() + o2.getLabel();
+        String valcomp1 = o1.getSuite() + o1.getLabel().getFr();
+        String valcomp2 = o2.getSuite() + o2.getLabel().getFr();
         return valcomp1.toUpperCase().compareTo(valcomp2.toUpperCase());
       }
     });
@@ -1141,7 +1070,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     // Replace the profiles already selected
     ProfileInst[] asProfileSelected = new ProfileInst[0]; // tableau profils deja selectionnes
     if (m_FatherComponentInst != null) {
-      ArrayList<ProfileInst> alProfileInst = m_FatherComponentInst.getAllProfilesInst();
+      List<ProfileInst> alProfileInst = m_FatherComponentInst.getAllProfilesInst();
       asProfileSelected = new ProfileInst[alProfileInst.size()];
       for (int nI = 0; nI < alProfileInst.size(); nI++) {
         asProfileSelected[nI] = alProfileInst.get(nI);
