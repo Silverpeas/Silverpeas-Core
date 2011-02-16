@@ -33,6 +33,7 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
+import static com.silverpeas.rest.RESTWebService.*;
 
 /**
  * Unit tests on the creation of a comment through the CommentResource web service.
@@ -67,7 +68,7 @@ public class CommentCreationTest extends BaseCommentResourceTest {
   public void postACommentWithADeprecatedSession() {
     WebResource resource = resource();
     ClientResponse response = resource.path(RESOURCE_PATH).
-        header(HEADER_SESSION_KEY, UUID.randomUUID().toString()).
+        header(HTTP_SESSIONKEY, UUID.randomUUID().toString()).
         accept(MediaType.APPLICATION_JSON).
         type(MediaType.APPLICATION_JSON).
         post(ClientResponse.class, theComment);
@@ -82,7 +83,7 @@ public class CommentCreationTest extends BaseCommentResourceTest {
 
     WebResource resource = resource();
     ClientResponse response = resource.path(RESOURCE_PATH).
-        header(HEADER_SESSION_KEY, sessionKey).
+        header(HTTP_SESSIONKEY, sessionKey).
         accept(MediaType.APPLICATION_JSON).
         type(MediaType.APPLICATION_JSON).
         post(ClientResponse.class, theComment);
@@ -95,7 +96,7 @@ public class CommentCreationTest extends BaseCommentResourceTest {
   public void postANewComment() {
     WebResource resource = resource();
     ClientResponse response = resource.path(RESOURCE_PATH).
-        header(HEADER_SESSION_KEY, sessionKey).
+        header(HTTP_SESSIONKEY, sessionKey).
         accept(MediaType.APPLICATION_JSON).
         type(MediaType.APPLICATION_JSON).
         post(ClientResponse.class, theComment);
@@ -114,7 +115,7 @@ public class CommentCreationTest extends BaseCommentResourceTest {
         inComponent(COMPONENT_INSTANCE_ID).andSaveItWithAsText("coucou"));
     WebResource resource = resource();
     ClientResponse response = resource.path(RESOURCE_PATH).
-        header(HEADER_SESSION_KEY, sessionKey).
+        header(HTTP_SESSIONKEY, sessionKey).
         accept(MediaType.APPLICATION_JSON).
         type(MediaType.APPLICATION_JSON).
         post(ClientResponse.class, aComment);
@@ -130,7 +131,7 @@ public class CommentCreationTest extends BaseCommentResourceTest {
     CommentEntity aComment = new CommentEntity();
     WebResource resource = resource();
     ClientResponse response = resource.path(RESOURCE_PATH).
-        header(HEADER_SESSION_KEY, sessionKey).
+        header(HTTP_SESSIONKEY, sessionKey).
         accept(MediaType.APPLICATION_JSON).
         type(MediaType.APPLICATION_JSON).
         post(ClientResponse.class, aComment);

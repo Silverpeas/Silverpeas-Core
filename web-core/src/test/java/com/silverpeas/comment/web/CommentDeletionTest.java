@@ -23,45 +23,51 @@
  */
 package com.silverpeas.comment.web;
 
-import com.sun.jersey.api.client.UniformInterfaceException;
-import java.util.UUID;
+import com.silverpeas.comment.CommentRuntimeException;
+import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.model.CommentPK;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
+import static com.silverpeas.comment.web.CommentEntityMatcher.*;
 import static com.silverpeas.rest.RESTWebService.*;
 
 /**
- * Unit tests on the update of a comment through the CommentResource web service.
+ * Tests on the comment deletion by the CommentResource web service.
  */
-public class CommentUpdateTest extends BaseCommentResourceTest {
+public class CommentDeletionTest extends BaseCommentResourceTest {
 
   private UserDetail user;
   private String sessionKey;
-  private CommentEntity theComment;
+  private Comment theComment;
+
+  public CommentDeletionTest() {
+    super();
+  }
 
   @Before
   public void createAUserAndAComment() {
     user = aUser();
     sessionKey = authenticate(user);
-    theComment = CommentEntity.fromComment(aUser(user).commentTheResource(CONTENT_ID).inComponent(
-        COMPONENT_INSTANCE_ID).
-        andSaveItWithAsText("ceci est un commentaire"));
+    theComment = aUser(user).commentTheResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID).
+        andSaveItWithAsText("ceci est un commentaire");
   }
 
   @Test
-  public void getACommentByANonAuthenticatedUser() {
+  public void deleteACommentByANonAuthenticatedUser() {
     WebResource resource = resource();
     try {
-      resource.path(RESOURCE_PATH).
-        accept(MediaType.APPLICATION_JSON).
-        type(MediaType.APPLICATION_JSON).
-        put(CommentEntity.class, theComment);
-      fail("A non authenticated user shouldn't update the comment");
+      resource.path(RESOURCE_PATH + "/3").accept(MediaType.APPLICATION_JSON).delete();
+      fail("A non authenticated user shouldn't delete the comment");
     } catch (UniformInterfaceException ex) {
       int recievedStatus = ex.getResponse().getStatus();
       int unauthorized = Status.UNAUTHORIZED.getStatusCode();
@@ -70,15 +76,12 @@ public class CommentUpdateTest extends BaseCommentResourceTest {
   }
 
   @Test
-  public void getACommentWithADeprecatedSession() {
+  public void deleteACommentWithADeprecatedSession() {
     WebResource resource = resource();
     try {
-      resource.path(RESOURCE_PATH).
-        header(HTTP_SESSIONKEY, UUID.randomUUID().toString()).
-        accept(MediaType.APPLICATION_JSON).
-        type(MediaType.APPLICATION_JSON).
-        put(CommentEntity.class, theComment);
-      fail("A user shouldn't update the comment through an expired session");
+      resource.path(RESOURCE_PATH + "/3").header(HTTP_SESSIONKEY, UUID.randomUUID().toString()).
+          accept(MediaType.APPLICATION_JSON).delete();
+      fail("A user shouldn't delete the comment through an expired session");
     } catch (UniformInterfaceException ex) {
       int recievedStatus = ex.getResponse().getStatus();
       int unauthorized = Status.UNAUTHORIZED.getStatusCode();
@@ -87,17 +90,16 @@ public class CommentUpdateTest extends BaseCommentResourceTest {
   }
 
   @Test
-  public void getANonAuthorizedComment() {
+  public void deleteANonAuthorizedComment() {
     denieAuthorizationToUsers();
 
     WebResource resource = resource();
     try {
-      resource.path(RESOURCE_PATH).
-        header(HTTP_SESSIONKEY, sessionKey).
-        accept(MediaType.APPLICATION_JSON).
-        type(MediaType.APPLICATION_JSON).
-        put(CommentEntity.class, theComment);
-      fail("A user shouldn't update a non authorized comment");
+      resource.path(RESOURCE_PATH + "/" + theComment.getCommentPK().getId()).
+          header(HTTP_SESSIONKEY, sessionKey).
+          accept(MediaType.APPLICATION_JSON).
+          delete();
+      fail("A user shouldn't delete a non authorized comment");
     } catch (UniformInterfaceException ex) {
       int recievedStatus = ex.getResponse().getStatus();
       int forbidden = Status.FORBIDDEN.getStatusCode();
@@ -106,17 +108,14 @@ public class CommentUpdateTest extends BaseCommentResourceTest {
   }
 
   @Test
-  public void putANewComment() {
-    CommentEntity aComment = CommentEntity.fromComment(aUser(user).commentTheResource(CONTENT_ID).
-        inComponent(COMPONENT_INSTANCE_ID).withAsText("coucou"));
+  public void deleteAnUnexistingComment() {
     WebResource resource = resource();
     try {
-      resource.path(RESOURCE_PATH).
-        header(HTTP_SESSIONKEY, sessionKey).
-        accept(MediaType.APPLICATION_JSON).
-        type(MediaType.APPLICATION_JSON).
-        put(CommentEntity.class, aComment);
-      fail("A user shouldn't update an non existing comment");
+      resource.path(RESOURCE_PATH + "/3").
+          header(HTTP_SESSIONKEY, sessionKey).
+          accept(MediaType.APPLICATION_JSON).
+          delete();
+      fail("A user shouldn't delete an unexisting comment");
     } catch (UniformInterfaceException ex) {
       int recievedStatus = ex.getResponse().getStatus();
       int notFound = Status.NOT_FOUND.getStatusCode();
@@ -124,16 +123,14 @@ public class CommentUpdateTest extends BaseCommentResourceTest {
     }
   }
 
-  @Test
-  public void putAnExistingComment() {
-    theComment.newText("a new text");
+  @Test(expected=CommentRuntimeException.class)
+  public void deleteAnExistingComment(){
     WebResource resource = resource();
-    CommentEntity entity = resource.path(RESOURCE_PATH).
+    resource.path(RESOURCE_PATH + "/" + theComment.getCommentPK().getId()).
         header(HTTP_SESSIONKEY, sessionKey).
         accept(MediaType.APPLICATION_JSON).
-        type(MediaType.APPLICATION_JSON).
-        put(CommentEntity.class, theComment);
-    assertThat(entity, equalTo(theComment));
-    assertThat(entity.getText(), equalTo(theComment.getText()));
+        delete();
+    getCommentService().getComment(theComment.getCommentPK());
   }
+
 }

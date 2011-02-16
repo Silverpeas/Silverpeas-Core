@@ -23,29 +23,39 @@
  */
 package com.silverpeas.comment.web;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.personalization.control.ejb.PersonalizationBm;
+import com.stratelia.webactiv.personalization.control.ejb.PersonalizationBmHome;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.io.Serializable;
+import java.rmi.RemoteException;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import static com.silverpeas.util.StringUtil.*;
 
 /**
- * The comment writer entity is a user that has written a comment and that is exposed in the web as
- * an entity (a web entity). As such, it publishes only some od its attributes.
+ * The entity representing the author of a comment. It is a user that has written a comment and
+ * that is exposed in the web as an entity (a web entity). As such, it publishes only some of its
+ * attributes.
  */
 @XmlRootElement
 public class CommentAuthorEntity implements Serializable {
 
   private static final long serialVersionUID = 1L;
-  @XmlElement(required = true)
+  @XmlElement(defaultValue = "")
   private String fullName;
   @XmlElement(required = true)
   private String id;
-  @XmlElement(defaultValue="")
+  @XmlElement(defaultValue = "")
   private String avatar;
+  @XmlElement(defaultValue = "")
+  private String language = "";
 
   /**
-   * Creates an new comment writer entity from the specified user.
+   * Creates an new comment author entity from the specified user.
    * @param user the user to entitify.
    * @return the comment writer.
    */
@@ -62,7 +72,7 @@ public class CommentAuthorEntity implements Serializable {
   }
 
   /**
-   * Gets the unique identifier of the writer.
+   * Gets the unique identifier of the author.
    * @return the user identifier.
    */
   public String getId() {
@@ -70,11 +80,20 @@ public class CommentAuthorEntity implements Serializable {
   }
 
   /**
-   * Gets the full name of the writer (both the first name and the last name).
+   * Gets the full name of the author (both the first name and the last name).
    * @return the user full name.
    */
   public String getFullName() {
     return fullName;
+  }
+
+  /**
+   * Gets the prefered language of the author.
+   * @return the language code of the author according to the ISO 639-1 standard
+   * (for example fr for french).
+   */
+  public String getLanguage() {
+    return this.language;
   }
 
   @Override
@@ -105,19 +124,19 @@ public class CommentAuthorEntity implements Serializable {
     return hash;
   }
 
-
-
   /**
-   * Gets a user detail from this object.
+   * Gets a user detail from this entity.
    * @return a UserDetail instance.
    */
   public UserDetail toUser() {
     UserDetail user = new UserDetail();
     user.setId(id);
-    int separatorBetweenFirstAndLastName = fullName.indexOf(" ");
-    user.setFirstName(fullName.substring(0,
-        separatorBetweenFirstAndLastName));
-    user.setLastName(fullName.substring(separatorBetweenFirstAndLastName + 1));
+    if (isDefined(fullName)) {
+      int separatorBetweenFirstAndLastName = fullName.indexOf(" ");
+      user.setFirstName(fullName.substring(0,
+          separatorBetweenFirstAndLastName));
+      user.setLastName(fullName.substring(separatorBetweenFirstAndLastName + 1));
+    }
     return user;
   }
 
@@ -125,10 +144,40 @@ public class CommentAuthorEntity implements Serializable {
     this.fullName = userDetail.getDisplayedName();
     this.id = userDetail.getId();
     this.avatar = userDetail.getAvatar();
+    PersonalizationBm prefs = getUserPreferences();
+    if (prefs != null) {
+      try {
+        this.language = prefs.getFavoriteLanguage();
+      } catch (RemoteException ex) {
+        SilverTrace.warn("comment", getClass().getSimpleName(), "root.NO_EX_MESSAGE", ex);
+      }
+    } else {
+      language = "";
+    }
   }
 
   /**
-   * Creates an empty comment writer.
+   * Creates an empty comment author.
    */
-  protected CommentAuthorEntity() {}
+  protected CommentAuthorEntity() {
+  }
+
+  /**
+   * Gets the preference of this author.
+   * @return the preferences of the user or null if its preferences cannot be retrieved.
+   */
+  @XmlTransient
+  public final PersonalizationBm getUserPreferences() {
+    PersonalizationBm persoBm = null;
+    try {
+      PersonalizationBmHome personalizationBmHome = (PersonalizationBmHome) EJBUtilitaire.
+          getEJBObjectRef(JNDINames.PERSONALIZATIONBM_EJBHOME,
+          PersonalizationBmHome.class);
+      persoBm = personalizationBmHome.create();
+      persoBm.setActor(this.id);
+    } catch (Exception e) {
+      persoBm = null;
+    }
+    return persoBm;
+  }
 }

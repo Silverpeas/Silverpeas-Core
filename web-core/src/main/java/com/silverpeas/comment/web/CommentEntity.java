@@ -23,11 +23,15 @@
  */
 package com.silverpeas.comment.web;
 
+import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.calendar.Date;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
+import com.silverpeas.rest.Exposable;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import java.io.Serializable;
 import java.net.URI;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,7 +46,7 @@ import static com.silverpeas.util.StringUtil.*;
  * accessing it.
  */
 @XmlRootElement
-public class CommentEntity implements Serializable {
+public class CommentEntity implements Exposable {
 
   private static final long serialVersionUID = 8023645204584179638L;
   @XmlElement(defaultValue="")
@@ -63,10 +67,10 @@ public class CommentEntity implements Serializable {
   @XmlElement(required=true)
   private CommentAuthorEntity author;
 
-  @XmlElement(required=true)
+  @XmlElement(required=true, defaultValue="")
   private String creationDate;
 
-  @XmlElement(required=true)
+  @XmlElement(required=true, defaultValue="")
   private String modificationDate;
 
   @XmlElement
@@ -109,8 +113,9 @@ public class CommentEntity implements Serializable {
    */
   public Comment toComment() {
     Comment comment = new Comment(new CommentPK(id, componentId), new PublicationPK(resourceId,
-        componentId), Integer.valueOf(author.getId()), author.getFullName(), text, creationDate,
-        modificationDate);
+        componentId), Integer.valueOf(author.getId()), author.getFullName(), text,
+        decodeFromDisplayDate(creationDate, getAuthor().getLanguage()),
+        decodeFromDisplayDate(modificationDate, getAuthor().getLanguage()));
     comment.setOwnerDetail(author.toUser());
     return comment;
   }
@@ -130,6 +135,7 @@ public class CommentEntity implements Serializable {
    * Gets the URI of this comment entity.
    * @return the URI with which this entity can be access through the Web.
    */
+  @Override
   public URI getURI() {
     return uri;
   }
@@ -199,6 +205,8 @@ public class CommentEntity implements Serializable {
     return indexed;
   }
 
+
+
   /**
    * Changes the text of this comment by the specified one.
    * @param aText the new text.
@@ -211,12 +219,12 @@ public class CommentEntity implements Serializable {
 
   private CommentEntity(final Comment comment) {
     this.componentId = comment.getCommentPK().getInstanceId();
-    this.creationDate = comment.getCreationDate();
     this.id = comment.getCommentPK().getId();
-    this.modificationDate = comment.getModificationDate();
     this.resourceId = comment.getForeignKey().getId();
-    this.text = comment.getMessage();
+    this.text = EncodeHelper.javaStringToHtmlParagraphe(comment.getMessage());
     this.author = CommentAuthorEntity.fromUser(comment.getOwnerDetail());
+    this.creationDate = encodeToDisplayDate(comment.getCreationDate(), this.author.getLanguage());
+    this.modificationDate = encodeToDisplayDate(comment.getModificationDate(), this.author.getLanguage());
   }
 
   @Override
@@ -254,4 +262,45 @@ public class CommentEntity implements Serializable {
   }
 
   protected CommentEntity() {}
+
+  /**
+   * Encodes the specified date into a date to display by taking into account the user prefered
+   * language.
+   * If the specified date isn't defined, then a display date of today is returned.
+   * @param date the date to encode.
+   * @param the language to use to encode the display date.
+   * @return the resulting display date.
+   */
+  private static String encodeToDisplayDate(String date, String language) {
+    String displayDate = date;
+    if (isDefined(date)) {
+      try {
+        displayDate = DateUtil.getOutputDate(date, language);
+      } catch (ParseException ex) {
+      }
+    } else {
+      displayDate = DateUtil.getOutputDate(Date.today(), language);
+    }
+    return displayDate;
+  }
+
+  /**
+   * Decodes the specified display date into a date as it is defining in a Comment instance.
+   * If the display date isn't defined, then the today date is returned.
+   * @param displayDate the display date to decode.
+   * @param language the language in which the date is encoded.
+   * @return the resulting decoded date.
+   */
+  private static String decodeFromDisplayDate(String displayDate, String language) {
+    String date = displayDate;
+    if (isDefined(displayDate)) {
+      try {
+        date = DateUtil.date2SQLDate(date, language);
+      } catch (ParseException ex) {
+      }
+    } else {
+      date = DateUtil.date2SQLDate(Date.today());
+    }
+    return date;
+  }
 }

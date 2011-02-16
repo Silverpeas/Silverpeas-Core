@@ -24,6 +24,7 @@
 
 package com.silverpeas.comment.web;
 
+import com.silverpeas.comment.service.CommentService;
 import com.sun.jersey.api.client.Client;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
@@ -54,7 +55,6 @@ import static org.mockito.Mockito.*;
  */
 public abstract class BaseCommentResourceTest extends AbstractSpringAwareJerseyTest {
 
-  protected static final String HEADER_SESSION_KEY = "X-Silverpeas-SessionKey";
   protected static final String COMPONENT_INSTANCE_ID = "kmelia2";
   protected static final String CONTENT_ID = "1";
   protected static final String RESOURCE_PATH = "comments/" + COMPONENT_INSTANCE_ID + "/" + CONTENT_ID;
@@ -67,6 +67,14 @@ public abstract class BaseCommentResourceTest extends AbstractSpringAwareJerseyT
   @Autowired
   private CommentServiceMock commentService;
   private Client webClient;
+
+  /**
+   * Gets the comment service used in tests.
+   * @return the comment service used in tests.
+   */
+  public CommentService getCommentService() {
+    return commentService;
+  }
 
   public BaseCommentResourceTest() {
     super(new WebAppDescriptor.Builder("com.silverpeas.comment.web").

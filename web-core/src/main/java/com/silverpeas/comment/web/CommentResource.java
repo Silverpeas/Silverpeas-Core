@@ -31,8 +31,9 @@ import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.web.RESTWebService;
+import com.silverpeas.rest.RESTWebService;
 import javax.inject.Inject;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -68,13 +69,13 @@ public class CommentResource extends RESTWebService {
    * If the user isn't authorized to access the comment, a 403 is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param onCommentId the unique identifier of the comment.
-   * @return the JSON representation of the asked comment.
+   * @return the response to the HTTP GET request with the JSON representation of the asked comment.
    */
   @GET
   @Path("{commentId}")
   @Produces(MediaType.APPLICATION_JSON)
   public CommentEntity getComment(@PathParam("commentId") String onCommentId) {
-    checkUserPriviledges(inComponentId());
+    checkUserPriviledges();
     try {
       Comment theComment = commentService().getComment(byPK(onCommentId, inComponentId()));
       URI commentURI = getUriInfo().getRequestUri();
@@ -91,12 +92,13 @@ public class CommentResource extends RESTWebService {
    * If the user isn't authentified, a 401 HTTP code is returned.
    * If the user isn't authorized to access the comment, a 403 is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
-   * @return the JSON representation of the comments on the refered resource.
+   * @return the response to the HTTP GET request with the JSON representation of the comments on
+   * the refered resource.
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public CommentEntity[] getAllComments() {
-    checkUserPriviledges(inComponentId());
+    checkUserPriviledges();
     try {
       List<Comment> theComments = commentService().getAllCommentsOnPublication(
           byPK(onContentId(), inComponentId()));
@@ -108,11 +110,22 @@ public class CommentResource extends RESTWebService {
     }
   }
 
+  /**
+   * Creates a new comment from its JSON representation and returns it with its URI identifying it
+   * in Silverpeas.
+   * The unique identifier of the comment isn't taken into account, so if the comment already exist,
+   * it is then cloned with a new identifier (thus with a new URI).
+   * If the user isn't authentified, a 401 HTTP code is returned.
+   * If the user isn't authorized to save the comment, a 403 is returned.
+   * If a problem occurs when processing the request, a 503 HTTP code is returned.
+   * @param commentToSave the comment to save in Silverpeas.
+   * @return the response to the HTTP PÖST request with the JSON representation of the saved comment.
+   */
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   public Response saveNewComment(final CommentEntity commentToSave) {
-    checkUserPriviledges(inComponentId());
+    checkUserPriviledges();
     Comment comment = commentToSave.toComment();
     try {
       if (commentToSave.isIndexed()) {
@@ -120,10 +133,11 @@ public class CommentResource extends RESTWebService {
       } else {
         commentService().createComment(comment);
       }
-      URI commentURI = getUriInfo().getRequestUriBuilder().path(comment.getCommentPK().getId()).
+      Comment savedComment = commentService().getComment(comment.getCommentPK());
+      URI commentURI = getUriInfo().getRequestUriBuilder().path(savedComment.getCommentPK().getId()).
           build();
-      return Response.created(commentURI).entity(asWebEntity(comment, identifiedBy(commentURI))).
-          build();
+      return Response.created(commentURI).
+          entity(asWebEntity(savedComment, identifiedBy(commentURI))).build();
     } catch (CommentRuntimeException ex) {
       throw new WebApplicationException(ex, Status.CONFLICT);
     } catch (Exception ex) {
@@ -131,11 +145,21 @@ public class CommentResource extends RESTWebService {
     }
   }
 
+  /**
+   * Updates the comment from its JSON representation and returns it once updated.
+   * If the comment doesn't exist, a 404 HTTP code is returned.
+   * If the user isn't authentified, a 401 HTTP code is returned.
+   * If the user isn't authorized to save the comment, a 403 is returned.
+   * If a problem occurs when processing the request, a 503 HTTP code is returned.
+   * @param commentToUpdate the comment to update in Silverpeas.
+   * @return the response to the HTTP PUT request with the JSON representation of the updated
+   * comment.
+   */
   @PUT
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   public CommentEntity updateComment(final CommentEntity commentToUpdate) {
-    checkUserPriviledges(inComponentId());
+    checkUserPriviledges();
     Comment comment = commentToUpdate.toComment();
     try {
       if (commentToUpdate.isIndexed()) {
@@ -154,11 +178,32 @@ public class CommentResource extends RESTWebService {
   }
 
   /**
+   * Deletes the specified existing comment.
+   * If the comment doesn't exist, a 404 HTTP code is returned.
+   * If the user isn't authentified, a 401 HTTP code is returned.
+   * If the user isn't authorized to access the comment, a 403 is returned.
+   * If a problem occurs when processing the request, a 503 HTTP code is returned.
+   * @param onCommentId the unique identifier of the comment to delete.
+   */
+  @DELETE
+  @Path("{commentId}")
+  public void deleteComment(@PathParam("commentId") String onCommentId) {
+    checkUserPriviledges();
+    try {
+      commentService().deleteComment(byPK(onCommentId, inComponentId()));
+    } catch (CommentRuntimeException ex) {
+      throw new WebApplicationException(ex, Status.NOT_FOUND);
+    } catch (Exception ex) {
+      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+    }
+  }
+
+  /**
    * Gets the identifier of the Silverpeas instance to which the commented content belongs.
    * @return the Silverpeas component instance identifier.
    */
   protected String inComponentId() {
-    return componentId;
+    return getComponentId();
   }
 
   /**
@@ -177,8 +222,15 @@ public class CommentResource extends RESTWebService {
     return commentService;
   }
 
-  protected CommentPK byPK(final String contentId, final String componentId) {
-    return new CommentPK(contentId, componentId);
+  /**
+   * Gets the primary key of the specified resource.
+   * @param id the unique identifier of the resource.
+   * @param componentId the unique identifier of the component instance to which the resource
+   * belongs.
+   * @return the primary key of the resource.
+   */
+  protected CommentPK byPK(final String id, final String componentId) {
+    return new CommentPK(id, componentId);
   }
 
   /**
@@ -204,12 +256,15 @@ public class CommentResource extends RESTWebService {
    * @return the corresponding comment entity.
    */
   protected CommentEntity asWebEntity(final Comment comment, URI commentURI) {
-    CommentEntity entity = CommentEntity.fromComment(comment).withURI(commentURI);
-    return entity;
-
+    return CommentEntity.fromComment(comment).withURI(commentURI);
   }
 
   protected URI identifiedBy(URI uri) {
     return uri;
+  }
+
+  @Override
+  protected String getComponentId() {
+    return this.componentId;
   }
 }
