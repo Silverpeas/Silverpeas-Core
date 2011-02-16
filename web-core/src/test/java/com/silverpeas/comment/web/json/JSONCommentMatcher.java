@@ -34,13 +34,16 @@ import static com.silverpeas.comment.web.json.JSONCommentFields.*;
  */
 public class JSONCommentMatcher extends BaseMatcher<String> {
 
+  private final CommentEntity[] comments;
+
   /**
    * Constructs a new JSON representation matcher with the specified comments.
    * @param theComments the comments to check the matching.
    * @return a matcher.
    */
   public static JSONCommentMatcher represents(final Comment... theComments) {
-    return new JSONCommentMatcher(theComments);
+    return new JSONCommentMatcher(CommentEntity.fromComments(theComments).toArray(
+        new CommentEntity[theComments.length]));
   }
 
   /**
@@ -49,12 +52,7 @@ public class JSONCommentMatcher extends BaseMatcher<String> {
    * @return a matcher.
    */
   public static JSONCommentMatcher represents(final CommentEntity... theComments) {
-    Comment[] comments = new Comment[theComments.length];
-    for (int i = 0; i < theComments.length; i++) {
-      comments[i] = theComments[i].toComment();
-
-    }
-    return new JSONCommentMatcher(comments);
+    return new JSONCommentMatcher(theComments);
   }
 
   public static Comment[] anArrayOf(final Comment... comments) {
@@ -64,7 +62,6 @@ public class JSONCommentMatcher extends BaseMatcher<String> {
   public static CommentEntity[] anArrayOf(final CommentEntity... comments) {
     return comments;
   }
-  private final Comment[] comments;
 
   @Override
   public boolean matches(Object item) {
@@ -77,16 +74,12 @@ public class JSONCommentMatcher extends BaseMatcher<String> {
       } else {
         match = json.startsWith("{") && json.endsWith("}");
       }
-      for (Comment comment : comments) {
-        match &= json.contains(commentIdOf(comment)) &&
-            json.contains(resourceIdOf(comment)) &&
-            json.contains(componentIdOf(comment)) &&
-            json.contains(textOf(comment)) &&
-            json.contains(creationDateOf(comment)) &&
-            json.contains(modificationDateOf( comment)) &&
-            json.contains(authorIdOf(comment)) &&
-            json.contains(authorAvatarOf(comment)) &&
-            json.contains(authorNameOf(comment));
+      for (CommentEntity comment : comments) {
+        match &= json.contains(commentIdOf(comment)) && json.contains(resourceIdOf(comment)) && json.
+            contains(componentIdOf(comment)) && json.contains(textOf(comment)) && json.contains(creationDateOf(
+            comment)) && json.contains(modificationDateOf(comment)) && json.contains(authorIdOf(
+            comment)) && json.contains(authorAvatarOf(comment)) && json.contains(authorNameOf(
+            comment));
       }
     }
     return match;
@@ -99,7 +92,7 @@ public class JSONCommentMatcher extends BaseMatcher<String> {
       builder.append("[");
     }
     for (int i = 0; i < comments.length; i++) {
-      Comment comment = comments[i];
+      CommentEntity comment = comments[i];
       if (i != 0) {
         builder.append(",");
       }
@@ -116,44 +109,44 @@ public class JSONCommentMatcher extends BaseMatcher<String> {
     description.appendText(builder.toString());
   }
 
-  private JSONCommentMatcher(final Comment... comments) {
+  private JSONCommentMatcher(final CommentEntity... comments) {
     this.comments = comments.clone();
   }
 
-  private static String commentIdOf(Comment theComment) {
-    return "\"" + COMMENT_ID_FIELD + "\":\"" + theComment.getCommentPK().getId() + "\"";
+  private static String commentIdOf(final CommentEntity theComment) {
+    return "\"" + COMMENT_ID_FIELD + "\":\"" + theComment.getId() + "\"";
   }
 
-  private static String componentIdOf(Comment theComment) {
-    return "\"" + COMPONENT_ID_FIELD + "\":\"" + theComment.getCommentPK().getInstanceId() + "\"";
+  private static String componentIdOf(final CommentEntity theComment) {
+    return "\"" + COMPONENT_ID_FIELD + "\":\"" + theComment.getComponentId() + "\"";
   }
 
-  private static String resourceIdOf(Comment theComment) {
-    return "\"" + RESOURCE_ID_FIELD + "\":\"" + theComment.getForeignKey().getId() + "\"";
+  private static String resourceIdOf(final CommentEntity theComment) {
+    return "\"" + RESOURCE_ID_FIELD + "\":\"" + theComment.getResourceId() + "\"";
   }
 
-  private static String textOf(Comment theComment) {
-    return "\"" + TEXT_FIELD + "\":\"" + theComment.getMessage() + "\"";
+  private static String textOf(final CommentEntity theComment) {
+    return "\"" + TEXT_FIELD + "\":\"" + theComment.getText() + "\"";
   }
 
-  private static String authorIdOf(final Comment theComment) {
-    return "\"" + AUTHOR_ID_FIELD + "\":\"" + theComment.getOwnerDetail().getId() + "\"";
+  private static String authorIdOf(final CommentEntity theComment) {
+    return "\"" + AUTHOR_ID_FIELD + "\":\"" + theComment.getAuthor().getId() + "\"";
   }
 
-  private static String authorAvatarOf(final Comment theComment) {
-    return "\"" + AUTHOR_AVATAR_FIELD + "\":\"" + theComment.getOwnerDetail().getAvatar() + "\"";
+  private static String authorAvatarOf(final CommentEntity theComment) {
+    return "\"" + AUTHOR_AVATAR_FIELD + "\":\"" + theComment.getAuthor().getAvatar() + "\"";
   }
 
-  private static String authorNameOf(final Comment theComment) {
-    return "\"" + AUTHOR_NAME_FIELD + "\":\"" + theComment.getOwnerDetail().getDisplayedName()
+  private static String authorNameOf(final CommentEntity theComment) {
+    return "\"" + AUTHOR_NAME_FIELD + "\":\"" + theComment.getAuthor().getFullName()
         + "\"";
   }
 
-  private static String creationDateOf(Comment theComment) {
+  private static String creationDateOf(final CommentEntity theComment) {
     return "\"" + CREATION_DATE_FIELD + "\":\"" + theComment.getCreationDate() + "\"";
   }
 
-  private static String modificationDateOf(Comment theComment) {
+  private static String modificationDateOf(final CommentEntity theComment) {
     return "\"" + MODIFICATION_DATE_FIELD + "\":\"" + theComment.getModificationDate() + "\"";
   }
 }

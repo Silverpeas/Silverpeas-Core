@@ -32,11 +32,13 @@ import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import java.util.Collection;
+import javax.inject.Named;
 
 /**
  * Check the access to a document for a user.
  * @author ehugonnet
  */
+@Named
 public class DocumentAccessController implements AccessController<Document> {
 
   private NodeAccessController accessController;

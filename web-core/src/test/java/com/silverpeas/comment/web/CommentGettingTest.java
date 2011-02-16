@@ -27,6 +27,8 @@ import com.silverpeas.comment.model.Comment;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
@@ -35,6 +37,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static com.silverpeas.comment.web.CommentEntityMatcher.*;
+import static com.silverpeas.rest.RESTWebService.*;
 
 /**
  * Tests on the comment getting by the CommentResource web service.
@@ -74,7 +77,7 @@ public class CommentGettingTest extends BaseCommentResourceTest {
   public void getACommentWithADeprecatedSession() {
     WebResource resource = resource();
     try {
-      resource.path(RESOURCE_PATH + "/3").header(HEADER_SESSION_KEY, UUID.randomUUID().toString()).
+      resource.path(RESOURCE_PATH + "/3").header(HTTP_SESSIONKEY, UUID.randomUUID().toString()).
           accept(MediaType.APPLICATION_JSON).get(String.class);
       fail("A user shouldn't access the comment through an expired session");
     } catch (UniformInterfaceException ex) {
@@ -91,7 +94,7 @@ public class CommentGettingTest extends BaseCommentResourceTest {
     WebResource resource = resource();
     try {
       resource.path(RESOURCE_PATH + "/" + theComment.getCommentPK().getId()).
-          header(HEADER_SESSION_KEY, sessionKey).
+          header(HTTP_SESSIONKEY, sessionKey).
           accept(MediaType.APPLICATION_JSON).
           get(String.class);
       fail("A user shouldn't access a non authorized comment");
@@ -107,7 +110,7 @@ public class CommentGettingTest extends BaseCommentResourceTest {
     WebResource resource = resource();
     try {
       resource.path(RESOURCE_PATH + "/3").
-          header(HEADER_SESSION_KEY, sessionKey).
+          header(HTTP_SESSIONKEY, sessionKey).
           accept(MediaType.APPLICATION_JSON).
           get(String.class);
       fail("A user shouldn't get an unexisting comment");
@@ -122,7 +125,7 @@ public class CommentGettingTest extends BaseCommentResourceTest {
   public void getAComment() {
     WebResource resource = resource();
     CommentEntity entity = resource.path(RESOURCE_PATH + "/" + theComment.getCommentPK().getId()).
-        header(HEADER_SESSION_KEY, sessionKey).
+        header(HTTP_SESSIONKEY, sessionKey).
         accept(MediaType.APPLICATION_JSON).
         get(CommentEntity.class);
     assertNotNull(entity);
@@ -142,11 +145,15 @@ public class CommentGettingTest extends BaseCommentResourceTest {
         andSaveItWithAsText("ceci est un commentaire 3");
 
     CommentEntity[] entities = resource().path(RESOURCE_PATH).
-        header(HEADER_SESSION_KEY, sessionKey).
+        header(HTTP_SESSIONKEY, sessionKey).
         accept(MediaType.APPLICATION_JSON).
         get(CommentEntity[].class);
     assertNotNull(entities);
     assertThat(entities.length, equalTo(4));
+    List<CommentEntity> listOfComments = Arrays.asList(entities);
+    assertTrue(listOfComments.contains(CommentEntity.fromComment(theComment1)));
+    assertTrue(listOfComments.contains(CommentEntity.fromComment(theComment2)));
+    assertTrue(listOfComments.contains(CommentEntity.fromComment(theComment3)));
   }
 
 }

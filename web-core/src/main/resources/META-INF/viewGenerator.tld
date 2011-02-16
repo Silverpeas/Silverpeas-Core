@@ -10,6 +10,37 @@
   <uri>http://www.silverpeas.com/tld/viewGenerator</uri>
 
   <tag>
+    <name>listComments</name>
+    <description>Tag to print out a list of comments on a given resource</description>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.comment.CommentListTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <name>session</name>
+      <description>
+         The identifier of the user session within which the request to comments must be done
+      </description>
+      <required>true</required>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>component</name>
+      <description>
+         The identifier of the Silverpeas component instance to which the commented resource belongs
+      </description>
+      <required>true</required>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <name>resource</name>
+      <description>
+         The identifier of the resource in Silverpeas that is commented out anf for which the
+         comments must be printed.
+      </description>
+      <required>true</required>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
     <description>Tag to print out the URL of a Silverpeas component instance.</description>
     <name>componentUrl</name>
     <tag-class>
@@ -612,7 +643,7 @@
       <rtexprvalue>true</rtexprvalue>
       <type>java.util.List</type>
     </attribute>
-  </tag>  
+  </tag>
   <tag>
     <description>Simple tag to play a video in flowplayer.</description>
     <name>video</name>

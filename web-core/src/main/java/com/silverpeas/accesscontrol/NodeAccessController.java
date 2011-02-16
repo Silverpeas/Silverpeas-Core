@@ -32,13 +32,17 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * Check the access to a node for a user.
  * @author ehugonnet
  */
+@Named
 public class NodeAccessController implements AccessController<NodePK> {
 
+  @Inject
   private final OrganizationController controller;
 
   public NodeAccessController() {

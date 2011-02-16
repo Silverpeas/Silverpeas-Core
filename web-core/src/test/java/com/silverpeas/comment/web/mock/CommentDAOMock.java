@@ -24,6 +24,7 @@
 
 package com.silverpeas.comment.web.mock;
 
+import java.util.Collections;
 import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.comment.dao.CommentDAO;
 import com.silverpeas.comment.model.Comment;
@@ -46,7 +47,7 @@ import static com.silverpeas.util.StringUtil.*;
 @Named("commentDAO")
 public class CommentDAOMock implements CommentDAO {
 
-  private Map<String, Comment> comments = new HashMap<String, Comment>();
+  private Map<String, Comment> comments = Collections.synchronizedMap(new HashMap<String, Comment>());
 
   @Override
   public CommentPK saveComment(Comment cmt) {
@@ -63,7 +64,10 @@ public class CommentDAOMock implements CommentDAO {
 
   @Override
   public void removeComment(CommentPK pk) {
-    comments.remove(pk.getId());
+    if (comments.remove(pk.getId()) == null) {
+      throw new CommentRuntimeException(getClass().getSimpleName(), SilverpeasRuntimeException.ERROR,
+          "No comment with id " + pk.getId());
+    }
   }
 
   @Override
