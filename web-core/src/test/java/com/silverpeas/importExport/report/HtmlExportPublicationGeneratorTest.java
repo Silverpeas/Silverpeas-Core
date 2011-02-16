@@ -78,8 +78,7 @@ public class HtmlExportPublicationGeneratorTest {
     Mockito.when(publicationType.getPublicationDetail()).thenReturn(publication);
     HtmlExportPublicationGenerator instance = new HtmlExportPublicationGenerator(publicationType,
         null, null, "http://www.test.fr");
-    String expResult = "&#149;&nbsp;<a href='http://www.test.fr' target='_blank'><b>"
-        + "Ma publication de test</b></a> - Bart Simpson<br/><i>Publication pour les tests</i><br/><br/>";
+    String expResult = "<li><a href='http://www.test.fr' target='_blank'><b>Ma publication de test</b></a> - Bart Simpson<i>Publication pour les tests</i></li>";
     String result = instance.toHtmlSommairePublication(target);
     assertEquals(expResult, result);
   }
@@ -98,11 +97,7 @@ public class HtmlExportPublicationGeneratorTest {
     Mockito.when(publicationType.getPublicationDetail()).thenReturn(publication);
     HtmlExportPublicationGenerator instance = new HtmlExportPublicationGenerator(publicationType,
         null, null, "http://www.test.fr");
-    String expResult = "<table cellspacing='1' width='100%' border='0' cellpadding='0' "
-        + "bgcolor='#B3BFD1'><tr><td><table cellspacing='0' width='100%' border='0' cellpadding='3' "
-        + "bgcolor='#EFEFEF'><tr><td><strong>Ma publication de test</strong></td>"
-        + "<td><div align='right'>Bart Simpson</div></td></tr><tr><td>Publication pour les "
-        + "tests</td><td><div align='right'></div></td></tr></table></td></tr></table>";
+    String expResult = "<h1>Ma publication de test</h1><div class='creationDetail'>Bart Simpson-</div>";
     String result = instance.toHtmlEnTetePublication();
     assertEquals(expResult, result);
 

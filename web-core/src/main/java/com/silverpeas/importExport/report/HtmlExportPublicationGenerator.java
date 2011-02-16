@@ -49,13 +49,15 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.a;
 import org.apache.ecs.xhtml.b;
-import org.apache.ecs.xhtml.br;
+import org.apache.ecs.xhtml.body;
 import org.apache.ecs.xhtml.div;
+import org.apache.ecs.xhtml.h1;
+import org.apache.ecs.xhtml.head;
+import org.apache.ecs.xhtml.html;
 import org.apache.ecs.xhtml.i;
-import org.apache.ecs.xhtml.strong;
-import org.apache.ecs.xhtml.table;
-import org.apache.ecs.xhtml.td;
-import org.apache.ecs.xhtml.tr;
+import org.apache.ecs.xhtml.li;
+import org.apache.ecs.xhtml.meta;
+import org.apache.ecs.xhtml.p;
 
 /**
  * Classe générant le code html d'une publication exportée
@@ -107,29 +109,27 @@ public class HtmlExportPublicationGenerator {
     String htmlPubDescription = HtmlExportGenerator.encode(publicationDetail.getDescription());
     String htmlCreatorName = HtmlExportGenerator.encode(publicationDetail.getCreatorName());
     String dateString = DateUtil.dateToString(publicationDetail.getCreationDate(), "fr");
-    xhtmlcontainer.addElement("&#149;&nbsp;");
+    li element = new li();
     a link = new a();
     link.setHref(urlPub);
     if (StringUtil.isDefined(target)) {
       link.setTarget(target);
     }
     link.addElement(new b(htmlPubName));
-    xhtmlcontainer.addElement(link);
+    element.addElement(link);
     if (StringUtil.isDefined(htmlCreatorName)) {
-      xhtmlcontainer.addElement(" - ");
-      xhtmlcontainer.addElement(htmlCreatorName);
+      element.addElement(" - ");
+      element.addElement(htmlCreatorName);
     }
     if (StringUtil.isDefined(dateString)) {
-      xhtmlcontainer.addElement(" (");
-      xhtmlcontainer.addElement(dateString);
-      xhtmlcontainer.addElement(")");
+      element.addElement(" (");
+      element.addElement(dateString);
+      element.addElement(")");
     }
-    xhtmlcontainer.addElement(new br());
     if (StringUtil.isDefined(htmlPubDescription)) {
-      xhtmlcontainer.addElement(new i(htmlPubDescription));
-      xhtmlcontainer.addElement(new br());
-      xhtmlcontainer.addElement(new br());
+      element.addElement(new i(htmlPubDescription));
     }
+    xhtmlcontainer.addElement(element);
     return xhtmlcontainer.toString();
   }
 
@@ -138,32 +138,14 @@ public class HtmlExportPublicationGenerator {
    */
   String toHtmlEnTetePublication() {
     String htmlPubName = HtmlExportGenerator.encode(publicationDetail.getName());
-    String htmlPubDescription = HtmlExportGenerator.encode(publicationDetail.getDescription());
     String htmlCreatorName = HtmlExportGenerator.encode(publicationDetail.getCreatorName());
     String dateString = DateUtil.dateToString(publicationDetail.getCreationDate(), "fr");
     ElementContainer xhtmlcontainer = new ElementContainer();
-    table borderTable = new table();
-    borderTable.setWidth("100%");
-    borderTable.setBorder(0);
-    borderTable.setCellPadding(0);
-    borderTable.setCellSpacing(1);
-    borderTable.setBgColor("#B3BFD1");
-
-
-    table contentTable = new table();
-    contentTable.setWidth("100%");
-    contentTable.setBorder(0);
-    contentTable.setCellPadding(3);
-    contentTable.setCellSpacing(0);
-    contentTable.setBgColor("#EFEFEF");
-    tr tr = new tr(new td(new strong(htmlPubName)));
-    tr.addElement(new td((new div(htmlCreatorName)).addAttribute("align", "right")));
-    contentTable.addElement(tr);
-    tr = new tr(new td(htmlPubDescription));
-    tr.addElement(new td((new div(dateString)).addAttribute("align", "right")));
-    contentTable.addElement(tr);
-    borderTable.addElement(new tr(new td(contentTable)));
-    xhtmlcontainer.addElement(borderTable);
+    h1 title = new h1(htmlPubName);
+    xhtmlcontainer.addElement(title);
+    div creationDetail = new div(htmlCreatorName + '-' + dateString);
+    creationDetail.setClass("creationDetail");
+    xhtmlcontainer.addElement(creationDetail);
     return xhtmlcontainer.toString();
   }
 
@@ -243,32 +225,32 @@ public class HtmlExportPublicationGenerator {
    * @return
    */
   public String toHtml() {
+    String htmlPubDescription = HtmlExportGenerator.encode(publicationDetail.getDescription());
     StringBuilder sb = new StringBuilder();
     String htmlPubName = HtmlExportGenerator.encode(publicationDetail.getName());
-
-    // Entête du fichier HTML
-    sb.append("<html>\n").append("<head>\n");
-    sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>");
-    // ajout du style
-    sb.append(HtmlExportGenerator.getHtmlStyle());
-    sb.append("<title>").append(htmlPubName).append("</title>");
-
-    sb.append("</head>\n").append("<body>\n");
-    // Titre de la publication
-    sb.append(toHtmlEnTetePublication());
-    sb.append("<br/>").append("\n");
-    // Contenu de la publication
-    sb.append("<table valign=\"top\" width=\"100%\" border=\"0\" cellpadding=\"5\"");
-    sb.append("cellspacing=\"4\">").append("\n");
-    sb.append("<tr><td>").append("\n");
-
+    html html = new html();
+    meta meta = new meta();
+    meta.setContent("text/html; charset=UTF-8");
+    meta.setHttpEquiv("Content-Type");
+    head head = new head();
+    head.addElement(meta);
+    head.addElement(HtmlExportGenerator.getHtmlStyle());
+    html.addElement(head);
+    body body = new body();
+    body.addElement(toHtmlEnTetePublication());
+    div content = new div();
+    content.setClass("content");
+    content.addElement(new p(htmlPubDescription));
     if (dbModelContent != null) {
-      sb.append(toHtmlInfoModel());
+      content.addElement(toHtmlInfoModel());
     } else if (wysiwygText != null) {
-      sb.append(HtmlExportGenerator.encode(wysiwygText));
+      content.addElement(HtmlExportGenerator.encode(wysiwygText));
     } else if (xmlModelContent != null) {
-      sb.append(xmlFormToHTML());
+      content.addElement(xmlFormToHTML());
     }
+    body.addElement(content);
+    div attachments = new div();
+
 
     sb.append("</td>").append("\n");
     if (listAttDetail != null && !listAttDetail.isEmpty()) {
@@ -294,7 +276,8 @@ public class HtmlExportPublicationGenerator {
   private String toHtmlAttachments() {
     StringBuilder sb = new StringBuilder();
     if (listAttDetail != null) {
-      for (AttachmentDetail attDetail : listAttDetail) {
+      for (AttachmentDetail attDetail :
+          listAttDetail) {
         sb.append(toHtmlAttachmentInfos(attDetail));
       }
     }
@@ -306,29 +289,35 @@ public class HtmlExportPublicationGenerator {
    * @return
    */
   public static String toHtmlAttachmentInfos(AttachmentDetail attDetail) {
+    ElementContainer xhtmlcontainer = new ElementContainer();
     String htmlLogicalName = attDetail.getLogicalName();
     String htmlFormatedFileSize = HtmlExportGenerator.encode(FileRepositoryManager.formatFileSize(attDetail.
         getSize()));
-    StringBuilder sb = new StringBuilder();
 
-    sb.append("&#149;&nbsp;");
-    sb.append("<a href=\"").append(
-        FileServerUtils.replaceAccentChars(htmlLogicalName)).append("\">");
-    sb.append(FileServerUtils.replaceAccentChars(htmlLogicalName)).append("</a>&nbsp;");
-    sb.append(htmlFormatedFileSize).append("<br>\n");
+    li li = new li();
+    a link = new a();
+    link.setHref(FileServerUtils.replaceAccentChars(htmlLogicalName));
+    link.addElement(FileServerUtils.replaceAccentChars(htmlLogicalName));
+    li.addElement(link);
+    li.addElement("&nbsp;");
+    li.addElement(htmlFormatedFileSize);
     if (attDetail.getTitle() != null) {
-      sb.append("<I>").append(attDetail.getTitle()).append("<I>");
+      i i = new i();
+      i.addElement(attDetail.getTitle());
+      li.addElement(i);
       if (attDetail.getInfo() != null) {
-        sb.append(" - ").append("<I>").append(
-            HtmlExportGenerator.encode(attDetail.getInfo())).append("</I>");
+        li.addElement(" - ");
+        i info = new i();
+        info.addElement(HtmlExportGenerator.encode(attDetail.getInfo()));
+        li.addElement(info);
       }
-      sb.append("<br/>\n");
     } else if (attDetail.getInfo() != null) {
-      sb.append("<I>").append(HtmlExportGenerator.encode(attDetail.getInfo())).append("</I>").append(
-          "<BR>\n");
+      i i = new i();
+      i.addElement(HtmlExportGenerator.encode(attDetail.getInfo()));
+      li.addElement(i);
     }
-
-    return sb.toString();
+    xhtmlcontainer.addElement(li);
+    return xhtmlcontainer.toString();
   }
 
   /**
