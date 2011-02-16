@@ -42,26 +42,12 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.board.Board"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 
 <%@ page import="java.util.ArrayList"%>
 
 <%!
-
-//Icons
-String separator;
-String map;
-String feedback;
-String key;
-String help;
-String go;
-String corner;
-
-String[] domains;
-String domain;
-
 MainSessionController m_MainSessionCtrl = null;
 String m_sContext = "";
 OrganizationController m_OrganizationController = null;
@@ -138,11 +124,7 @@ GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("Sessio
 
 String[] m_asPrivateDomainsNames = null;
 String[] m_asPrivateDomainsIds = null;
-String sGenSpace = "";
 SpaceInst spaceInst = null;
-ArrayList alCompoInst = null;
-String[] asCompoNames = null;
-String sPrivateDomain;
 
 m_MainSessionCtrl = (MainSessionController) session.getAttribute("SilverSessionController");
 
@@ -169,17 +151,6 @@ m_sContext = sURI.substring(0,sURI.lastIndexOf(sServletPath));
 m_asPrivateDomainsIds = m_MainSessionCtrl.getUserAvailRootSpaceIds();
 m_asPrivateDomainsNames = m_OrganizationController.getSpaceNames(m_asPrivateDomainsIds);
 
-//Icons
-separator = "icons/trait.gif";
-map = "icons/map.gif";
-feedback = "icons/mail.gif";
-key = "icons/key.gif";
-help = "icons/help.gif";
-go = "icons/go.gif";
-corner = "icons/corner.gif";
-
-sGenSpace = m_OrganizationController.getGeneralSpaceId();
-
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -192,27 +163,22 @@ out.println(gef.getLookStyleSheet());
 
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
-function notifyAdministrators(context,compoId,users,groups)
-{
+function notifyAdministrators(context,compoId,users,groups) {
 	SP_openWindow('<%=m_sContext%>/RnotificationUser/jsp/Main.jsp?popupMode=Yes&amp;editTargets=No&amp;compoId=&amp;theTargetsUsers=Administrators&amp;theTargetsGroups=', 'notifyUserPopup', '700', '400', 'menubar=no,scrollbars=no,statusbar=no');
 }
 
-function openClipboard()
-{
+function openClipboard() {
 	document.clipboardForm.submit();
 }
   
 function getTool(id, label, url, nb, target) {
-	var l = label;
-	var res;
-	
+	var res;	
 	if (url.substring(0,11).toLowerCase() == "javascript:") {
-		res = "<a href=\"#\" onclick=\""+url+"\">"+l+"</a>&nbsp;&nbsp;";
+		res = "<a href=\"#\" onclick=\""+url+"\">"+label+"</a>";
 	}
   	else {
-  		res = "<a href=\""+"<%=m_sContext%>"+url+"\" target=\""+target+"\">"+l+"</a>&nbsp;&nbsp;";
-	}
-  		
+  		res = "<a href=\""+"<%=m_sContext%>"+url+"\" target=\""+target+"\">"+label+"</a>";
+	}	
 	return res;
 }
 
@@ -223,6 +189,9 @@ function getTools() {
 					// get tools
 					var items = "";
 					for (var i = 0; i < data.length; ++i) {
+						if (i != 0) {
+							items += "&nbsp;&nbsp;|&nbsp;&nbsp;";
+						}
 		                var tool = data[i];
 		                items += getTool(tool.id, tool.label, tool.url, tool.nb, '_self');
 					}
@@ -237,7 +206,7 @@ function getTools() {
 }
 
 function getComponent(id, label, url, name, description) {
-	return "<a href=\""+"<%=m_sContext%>"+url+"\" target=\"_self\">"+label+"</a>&nbsp;&nbsp;";
+	return "<a href=\""+"<%=m_sContext%>"+url+"\" target=\"_self\">"+label+"</a>";
 }
 
 function getComponents() {
@@ -247,6 +216,9 @@ function getComponents() {
 					// get components
 					var items = "";
 					for (var i = 0; i < data.length; ++i) {
+						if (i != 0) {
+							items += "&nbsp;&nbsp;|&nbsp;&nbsp;";
+						}
 		                var component = data[i];
 		                items += getComponent(component.id, component.label, component.url, component.name, component.description);
 					}
