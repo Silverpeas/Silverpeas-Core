@@ -77,7 +77,7 @@ public class HtmlExportPublicationGeneratorTest {
     PublicationType publicationType = Mockito.mock(PublicationType.class);
     Mockito.when(publicationType.getPublicationDetail()).thenReturn(publication);
     HtmlExportPublicationGenerator instance = new HtmlExportPublicationGenerator(publicationType,
-        null, null, "http://www.test.fr");
+        null, null, "http://www.test.fr", 0);
     String expResult = "<li><a href='http://www.test.fr' target='_blank'><b>Ma publication de test</b></a> - Bart Simpson<i>Publication pour les tests</i></li>";
     String result = instance.toHtmlSommairePublication(target);
     assertEquals(expResult, result);
@@ -96,7 +96,7 @@ public class HtmlExportPublicationGeneratorTest {
     PublicationType publicationType = Mockito.mock(PublicationType.class);
     Mockito.when(publicationType.getPublicationDetail()).thenReturn(publication);
     HtmlExportPublicationGenerator instance = new HtmlExportPublicationGenerator(publicationType,
-        null, null, "http://www.test.fr");
+        null, null, "http://www.test.fr", 0);
     String expResult = "<h1>Ma publication de test</h1><div class='creationDetail'>Bart Simpson-</div>";
     String result = instance.toHtmlEnTetePublication();
     assertEquals(expResult, result);
