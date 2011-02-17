@@ -57,6 +57,9 @@ public class ComponentAccessController implements AccessController<String> {
    * @return
    */
   public boolean isRightOnTopicsEnabled(String userId, String componentId) {
+    if (controller == null) {
+      controller = new OrganizationController();
+    }
     return isThemeTracker(componentId) && StringUtil.getBooleanValue(controller.
         getComponentParameterValue(componentId, "rightsOnTopics"));
   }
