@@ -28,6 +28,7 @@ import com.silverpeas.form.Form;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.importExport.model.PublicationType;
+import com.silverpeas.node.importexport.NodePositionType;
 import com.silverpeas.publication.importExport.DBModelContentType;
 import com.silverpeas.publication.importExport.XMLModelContentType;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
@@ -56,8 +57,10 @@ import org.apache.ecs.xhtml.head;
 import org.apache.ecs.xhtml.html;
 import org.apache.ecs.xhtml.i;
 import org.apache.ecs.xhtml.li;
+import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.meta;
 import org.apache.ecs.xhtml.p;
+import org.apache.ecs.xhtml.ul;
 
 /**
  * Classe générant le code html d'une publication exportée
@@ -66,25 +69,26 @@ import org.apache.ecs.xhtml.p;
 public class HtmlExportPublicationGenerator {
 
   // Variables
-  private PublicationDetail publicationDetail;
+  private final PublicationDetail publicationDetail;
   private DBModelContentType dbModelContent;
   private XMLModelContentType xmlModelContent;
   private ModelDetail modelDetail;
   private String wysiwygText;
   private List<AttachmentDetail> listAttDetail;
-  private String urlPub;
+  private final String urlPub;
+  private final int nbThemes;
 
   public HtmlExportPublicationGenerator(PublicationType publicationType, ModelDetail modelDetail,
-      String wysiwygText, String urlPub) {
+      String wysiwygText, String urlPub, int nbThemes) {
     this.publicationDetail = publicationType.getPublicationDetail();
     if (publicationType.getPublicationContentType() != null) {
       this.dbModelContent = publicationType.getPublicationContentType().getDBModelContentType();
       this.xmlModelContent = publicationType.getPublicationContentType().getXMLModelContentType();
     }
+    this.nbThemes = nbThemes + 2;
     if (publicationType.getAttachmentsType() != null) {
       this.listAttDetail = publicationType.getAttachmentsType().getListAttachmentDetail();
     }
-
     this.modelDetail = modelDetail;
     this.wysiwygText = wysiwygText;
     this.urlPub = StringEscapeUtils.escapeHtml(urlPub);
@@ -226,15 +230,13 @@ public class HtmlExportPublicationGenerator {
    */
   public String toHtml() {
     String htmlPubDescription = HtmlExportGenerator.encode(publicationDetail.getDescription());
-    StringBuilder sb = new StringBuilder();
-    String htmlPubName = HtmlExportGenerator.encode(publicationDetail.getName());
     html html = new html();
     meta meta = new meta();
     meta.setContent("text/html; charset=UTF-8");
     meta.setHttpEquiv("Content-Type");
     head head = new head();
     head.addElement(meta);
-    head.addElement(HtmlExportGenerator.getHtmlStyle());
+    head.addElement(getHtmlStyle());
     html.addElement(head);
     body body = new body();
     body.addElement(toHtmlEnTetePublication());
@@ -250,38 +252,40 @@ public class HtmlExportPublicationGenerator {
     }
     body.addElement(content);
     div attachments = new div();
-
-
-    sb.append("</td>").append("\n");
+    attachments.setClass("attachments");
     if (listAttDetail != null && !listAttDetail.isEmpty()) {
-      sb.append("<td valign=\"top\" align=\"right\" width=\"20%\">");
-      sb.append("<table  border=\"0\" cellpadding=\"3\" cellspacing=\"1\" bgcolor=\"#B3BFD1\">");
-      sb.append("<tr><td bgcolor=\"#FFFFFF\">");
-      sb.append(toHtmlAttachments());
-      sb.append("</td></tr>");
-      sb.append("</table>");
-      sb.append("</td>");
+      attachments.addElement(toHtmlAttachments());
     }
-    sb.append("</tr>").append("\n");
-    sb.append("</table>").append("\n");
-    sb.append("</body>").append("\n");
-    sb.append("</html>").append("\n");
+    body.addElement(attachments);
+    html.addElement(body);
+    return html.toString();
+  }
 
-    return sb.toString();
+  private String getHtmlStyle() {
+    ElementContainer xhtmlcontainer = new ElementContainer();
+    StringBuilder path = new StringBuilder();
+    for (int i = 0; i < nbThemes; i++) {
+      path.append("../");
+    }
+    path.append("treeview/display.css");
+    xhtmlcontainer.addElement(new link().setType("text/css").setRel("stylesheet").setHref(path.
+        toString()));
+    return xhtmlcontainer.toString();
   }
 
   /**
    * @return
    */
   private String toHtmlAttachments() {
-    StringBuilder sb = new StringBuilder();
+    ul attachments = new ul();
+    attachments.setClass("list");
     if (listAttDetail != null) {
       for (AttachmentDetail attDetail :
           listAttDetail) {
-        sb.append(toHtmlAttachmentInfos(attDetail));
+        attachments.addElement(toHtmlAttachmentInfos(attDetail));
       }
     }
-    return sb.toString();
+    return attachments.toString();
   }
 
   /**

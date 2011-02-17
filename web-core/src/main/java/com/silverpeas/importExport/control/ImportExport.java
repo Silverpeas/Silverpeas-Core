@@ -489,16 +489,17 @@ public class ImportExport {
       silverPeasExch.setPublicationsType(publicationsType);
 
       // Récupération de la liste de id des composants
-      List<String> listComponentId = new ArrayList<String>();
+      Set<String> componentIds = new HashSet<String>();
       List<ClassifyPosition> listClassifyPosition = new ArrayList<ClassifyPosition>();
       List<PublicationType> listPubType = publicationsType.getListPublicationType();
       for (PublicationType pubType : listPubType) {
-        listComponentId.add(pubType.getComponentId());
+        componentIds.add(pubType.getComponentId());
         PdcPositionsType pdcPos = pubType.getPdcPositionsType();
         if (pdcPos != null) {
           listClassifyPosition.addAll(pdcPos.getListClassifyPosition());
         }
       }
+       List<String> listComponentId = new ArrayList <String>(componentIds);
       // Exportation des composants liés aux publications exportées
       silverPeasExch.setComponentsType(adminIE.getComponents(listComponentId));
       // Exportation des Arbres de topics liés aux publications exportées
@@ -535,7 +536,8 @@ public class ImportExport {
 
         // Création des sommaires HTML par Thèmes
         // --------------------------------------
-        HtmlExportGenerator htmlGenerator = new HtmlExportGenerator(exportReport, fileExportDir.getName(),
+        HtmlExportGenerator htmlGenerator = new HtmlExportGenerator(exportReport, fileExportDir.
+            getName(),
             resourceLocator);
 
         Map<String, List<String>> topicIds = prepareTopicsMap(publicationsType);
@@ -620,7 +622,8 @@ public class ImportExport {
   private void createTreeview(String rootId, String thisExportDir, String tempDir,
       NodeTreesType nodeTreesType, HtmlExportGenerator htmlGenerator,
       Map<String, List<String>> topicIds) throws ImportExportException {
-    Writer fileWriter;File fileHTML = new File(tempDir + thisExportDir + File.separator + "index.html");
+    Writer fileWriter;
+    File fileHTML = new File(tempDir + thisExportDir + File.separator + "index.html");
     fileWriter = null;
     try {
       fileHTML.createNewFile();
@@ -647,7 +650,8 @@ public class ImportExport {
       String pubId = Integer.toString(publicationType.getId());
       // pour chaque publication : parcourir ses noeuds
       @SuppressWarnings("unchecked")
-      List<NodePositionType> listNodePositionType = publicationType.getNodePositionsType().getListNodePositionType();
+      List<NodePositionType> listNodePositionType = publicationType.getNodePositionsType().
+          getListNodePositionType();
       for (NodePositionType nodePositionType : listNodePositionType) {
         // pour chaque topic : récupérer l'Id
         String topicId = String.valueOf(nodePositionType.getId());
@@ -885,8 +889,6 @@ public class ImportExport {
         }
       } else {
         // ================ EXPORT ALL PUBLICATIONS OF COMPONENT
-        // ======================
-
         // Publication detail empty
         File emptyFileHTML = new File(tempDir + thisExportDir + File.separator + "empty.html");
         Writer fileWriter = null;
@@ -935,8 +937,10 @@ public class ImportExport {
               pubDetail.getId()), componentId);
           publicationFileNameRelativePath = componentLabel + File.separator + pubDetail.getId()
               + File.separator + "index.html";
+          pub_Typ_Mger.fillPublicationType(gedIE, publicationType);
+          int nbThemes = pub_Typ_Mger.getNbThemes(gedIE, publicationType);
           HtmlExportPublicationGenerator unbalanced = new HtmlExportPublicationGenerator(
-              publicationType, null, null, publicationFileNameRelativePath);
+              publicationType, null, null, publicationFileNameRelativePath, nbThemes);
           exportReport.addHtmlIndex(pubDetail.getId(), unbalanced);
           fileWriter = null;
           try {
@@ -1041,6 +1045,7 @@ public class ImportExport {
 
           // Récupération du PublicationType
           PublicationType publicationType = gedIE.getPublicationCompleteById(pubId, componentId);
+          pub_Typ_Mger.fillPublicationType(gedIE, publicationType);
           publicationType.setCoordinatesPositionsType(new CoordinatesPositionsType());
           List<CoordinatePoint> listCoordinatesPositions = new ArrayList<CoordinatePoint>();
           Collection<Coordinate> coordinates = gedIE.getPublicationCoordinates(pubId, componentId);
@@ -1097,9 +1102,9 @@ public class ImportExport {
 
           publicationFileNameRelativePath = componentLabel + File.separator + pubId
               + File.separator + "index.html";
-
+          int nbThemes = pub_Typ_Mger.getNbThemes(gedIE, publicationType);
           HtmlExportPublicationGenerator s = new HtmlExportPublicationGenerator(publicationType,
-              null, null, publicationFileNameRelativePath);
+              null, null, publicationFileNameRelativePath, nbThemes);
           exportReport.addHtmlIndex(pubId, s);
 
           for (String filePositions : filesPositionsHTMLToFill) {
@@ -1181,6 +1186,8 @@ public class ImportExport {
       }
     }
   }
+
+  
 
   /**
    * Add father of nodeDetail to List

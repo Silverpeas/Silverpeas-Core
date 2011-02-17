@@ -38,16 +38,12 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import java.util.Map;
 import org.apache.ecs.ElementContainer;
-import org.apache.ecs.xhtml.b;
-import org.apache.ecs.xhtml.br;
 import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.head;
 import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.meta;
 import org.apache.ecs.xhtml.script;
-import org.apache.ecs.xhtml.td;
 import org.apache.ecs.xhtml.title;
-import org.apache.ecs.xhtml.tr;
 
 /**
  * @author sdevolder Classe generant le code html du sommaire d une exportation

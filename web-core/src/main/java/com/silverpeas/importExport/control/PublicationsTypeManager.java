@@ -146,15 +146,7 @@ public class PublicationsTypeManager {
             componentId, componentInst.getLabel(), publicationDetail, useNameForFolders);
         exportPublicationPath = exportPath + File.separator + exportPublicationRelativePath;
       } else {
-        publicationType.setNodePositionsType(new NodePositionsType());
-        List<NodePositionType> listNodePos = new ArrayList<NodePositionType>();
-        List<NodePK> listNodePK = gedIE.getAllTopicsOfPublication(pubId, componentId);
-        for (NodePK nodePK : listNodePK) {
-          NodePositionType nodePos = new NodePositionType();
-          nodePos.setId(Integer.parseInt(nodePK.getId()));
-          listNodePos.add(nodePos);
-        }
-        publicationType.getNodePositionsType().setListNodePositionType(listNodePos);
+        fillPublicationType(gedIE, publicationType);
         SilverTrace.debug("importExport", "PublicationTypeManager.processExport",
             "root.MSG_GEN_PARAM_VALUE", "nodePositions added");
 
@@ -193,8 +185,9 @@ public class PublicationsTypeManager {
       exportAttachments(attachmentIE, versioningIE, componentInst, publicationType,
           publicationDetail, exportPublicationRelativePath, exportPublicationPath);
       exportPdc(pdc_impExp, pubId, gedIE, publicationType);
+      int nbThemes = getNbThemes(gedIE, publicationType);
       if (!writePublicationHtml(exportReport, wysiwygText, pubId, publicationType,
-          exportPublicationRelativePath, exportPublicationPath, modelDetail)) {
+          exportPublicationRelativePath, exportPublicationPath, modelDetail, nbThemes)) {
         return null;
       }
       wysiwygText = null;
@@ -230,10 +223,11 @@ public class PublicationsTypeManager {
 
   boolean writePublicationHtml(ExportReport exportReport, String wysiwygText, String pubId,
       PublicationType publicationType, String exportPublicationRelativePath,
-      String exportPublicationPath, ModelDetail modelDetail) {
+      String exportPublicationPath, ModelDetail modelDetail, int nbThemes) {
     String htmlNameIndex = "index.html";
     HtmlExportPublicationGenerator s = new HtmlExportPublicationGenerator(publicationType,
-        modelDetail, wysiwygText, exportPublicationRelativePath + File.separator + htmlNameIndex);
+        modelDetail, wysiwygText, exportPublicationRelativePath + File.separator + htmlNameIndex,
+        nbThemes);
     exportReport.addHtmlIndex(pubId, s);
     File fileHTML = new File(exportPublicationPath + File.separator + htmlNameIndex);
     SilverTrace.debug("importExport", "PublicationTypeManager.processExport",
@@ -452,16 +446,7 @@ public class PublicationsTypeManager {
       // Récupération du PublicationType
       PublicationType publicationType = gedIE.getPublicationCompleteById(pubId, componentId);
       PublicationDetail publicationDetail = publicationType.getPublicationDetail();
-
-      publicationType.setNodePositionsType(new NodePositionsType());
-      List<NodePositionType> listNodePos = new ArrayList<NodePositionType>();
-      List<NodePK> listNodePK = gedIE.getAllTopicsOfPublication(pubId, componentId);
-      for (NodePK nodePK : listNodePK) {
-        NodePositionType nodePos = new NodePositionType();
-        nodePos.setId(Integer.parseInt(nodePK.getId()));
-        listNodePos.add(nodePos);
-      }
-      publicationType.getNodePositionsType().setListNodePositionType(listNodePos);
+      fillPublicationType(gedIE, publicationType);
       String exportPublicationPath = exportPath;
 
       try {
@@ -660,7 +645,8 @@ public class PublicationsTypeManager {
                         if (nodeDetail == null && createCoordinateAllowed) {
                           NodeDetail position = new NodeDetail("toDefine",
                               coordinatePointType.getValue(), "", null, userDetail.getId(), null,
-                              NodePK.ROOT_NODE_ID, String.valueOf(coordinatePointType.getAxisId()), null);
+                              NodePK.ROOT_NODE_ID, String.valueOf(coordinatePointType.getAxisId()),
+                              null);
                           nodeDetail = coordinateIE.addPosition(position, String.valueOf(
                               coordinatePointType.getAxisId()), componentId);
                           SilverTrace.debug("importExport", "PublicationsTypeManager.processImport",
@@ -758,8 +744,8 @@ public class PublicationsTypeManager {
                 }
 
                 // Copy files on disk, set info on each version
-                List<DocumentVersion> copiedFiles = versioningIE.copyFiles(componentId, documents, versioningIE.
-                    getVersioningPath(componentId));
+                List<DocumentVersion> copiedFiles = versioningIE.copyFiles(componentId, documents,
+                    versioningIE.getVersioningPath(componentId));
                 ImportReportManager.addNumberOfFilesProcessed(copiedFiles.size());
                 ImportReportManager.addNumberOfFilesNotImported(nbFiles - copiedFiles.size());
 
@@ -831,5 +817,31 @@ public class PublicationsTypeManager {
 
   private boolean isKmax(String currentComponentId) {
     return currentComponentId.startsWith("kmax");
+  }
+
+  public void fillPublicationType(GEDImportExport gedIE, PublicationType publicationType) throws
+      ImportExportException {
+    publicationType.setNodePositionsType(new NodePositionsType());
+    List<NodePositionType> listNodePos = new ArrayList<NodePositionType>();
+    List<NodePK> listNodePK = gedIE.getAllTopicsOfPublication(String.valueOf(publicationType.getId()),
+        publicationType.getComponentId());
+    for (NodePK nodePK : listNodePK) {
+      NodePositionType nodePos = new NodePositionType();
+      nodePos.setId(Integer.parseInt(nodePK.getId()));
+      listNodePos.add(nodePos);
+    }
+    publicationType.getNodePositionsType().setListNodePositionType(listNodePos);
+  }
+
+  public int getNbThemes(GEDImportExport gedIE, PublicationType publicationType) throws
+      ImportExportException {
+    int nbThemes = 1;
+    if (publicationType.getNodePositionsType().getListNodePositionType() != null
+        && !publicationType.getNodePositionsType().getListNodePositionType().isEmpty()) {
+      NodePK pk = new NodePK(String.valueOf(publicationType.getNodePositionsType().
+          getListNodePositionType().get(0).getId()), publicationType.getComponentId());
+      nbThemes = gedIE.getTopicTree(pk).size();
+    }
+    return nbThemes;
   }
 }
