@@ -2338,7 +2338,7 @@ caption {
 }
 
 #directory .action .invitation {
-	display: none;
+	/*display: none;*/
 }
 
 #directory .NameLink {

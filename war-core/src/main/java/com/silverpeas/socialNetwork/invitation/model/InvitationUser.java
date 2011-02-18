@@ -24,7 +24,7 @@
 package com.silverpeas.socialNetwork.invitation.model;
 
 import com.silverpeas.socialNetwork.invitation.Invitation;
-import com.silverpeas.socialNetwork.user.model.SNContactUser;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 
 /**
  *
@@ -32,14 +32,14 @@ import com.silverpeas.socialNetwork.user.model.SNContactUser;
  */
 public class InvitationUser {
 
-  private SNContactUser contactUser;
+  private UserDetail contactUser;
   private Invitation invitation;
 /**
  *
  * @param invitation
  * @param contactUser
  */
-  public InvitationUser(Invitation invitation, SNContactUser contactUser) {
+  public InvitationUser(Invitation invitation, UserDetail contactUser) {
     this.invitation = invitation;
     this.contactUser = contactUser;
   }
@@ -51,9 +51,9 @@ public class InvitationUser {
     return invitation;
   }
 /**
- * @return SNContactUser
+ * @return UserDetail
  */
-  public SNContactUser getUserDetail() {
+  public UserDetail getUserDetail() {
     return contactUser;
   }
 }

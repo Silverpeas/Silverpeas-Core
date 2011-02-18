@@ -41,8 +41,6 @@
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
-<view:setBundle basename="com.stratelia.webactiv.multilang.generalMultilang" var="GML" />
-<view:setBundle basename="com.silverpeas.directory.multilang.DirectoryBundle" var="DML" />
 
 <%  
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
@@ -56,7 +54,8 @@
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 %>
 
-<html>
+
+<%@page import="com.silverpeas.socialNetwork.myProfil.servlets.MyProfileRoutes"%><html>
 <head>
 <view:looknfeel />
 <script type="text/javascript" src="/silverpeas/util/javaScript/animation.js"></script>
@@ -83,10 +82,10 @@ $(document).ready(function(){
             width: "auto",
             title: "<fmt:message key="profil.actions.changeStatus" />",
             buttons: {
-    			<fmt:message key="GML.cancel" bundle="${GML}"/>: function() {
+    			<fmt:message key="GML.cancel"/>: function() {
 					$(this).dialog( "close" );
 				},
-				"<fmt:message key="GML.ok" bundle="${GML}"/>": function() {
+				"<fmt:message key="GML.ok"/>": function() {
 						var status = $("#newStatus");
 						$( "#myProfileFiche .statut").html(status.val());
 
@@ -108,10 +107,10 @@ $(document).ready(function(){
             width: "auto",
             title: "<fmt:message key="profil.actions.changePhoto" />",
             buttons: {
-    			<fmt:message key="GML.cancel" bundle="${GML}"/>: function() {
+    			<fmt:message key="GML.cancel"/>: function() {
 					$(this).dialog( "close" );
 				},
-				"<fmt:message key="GML.ok" bundle="${GML}"/>": function() {
+				"<fmt:message key="GML.ok"/>": function() {
 					document.photoForm.submit();
 				}
 			}
@@ -161,20 +160,21 @@ $(document).ready(function(){
 
 <div id="publicProfileContenu">
 
-	<fmt:message key="profil.wall" var="wall" />
-	<fmt:message key="profil.infos" var="infos" />
-	<fmt:message key="profil.events" var="events" />
-	<fmt:message key="profil.publications" var="publications" />
-	<fmt:message key="profil.photos"  var="photos"/>
+	<fmt:message key="myProfile.tab.profile" var="profile" />
+	<fmt:message key="myProfile.tab.invitations" var="invitations" />
+	<fmt:message key="myProfile.tab.settings" var="settings" />
 	<view:tabs>
-    	<view:tab label="Mon profil" action="MyInfos" selected="<%=Boolean.toString("MyInfos".equals(view)) %>" />
-    	<view:tab label="Mes préférences" action="MySettings" selected="<%=Boolean.toString("MySettings".equals(view)) %>" />
+    	<view:tab label="${profile}" action="<%=MyProfileRoutes.MyInfos.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MyInfos.toString().equals(view)) %>" />
+    	<view:tab label="${invitations}" action="<%=MyProfileRoutes.MyInvitations.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MyInvitations.toString().equals(view) || MyProfileRoutes.MySentInvitations.toString().equals(view)) %>" />
+    	<view:tab label="${settings}" action="<%=MyProfileRoutes.MySettings.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MySettings.toString().equals(view)) %>" />
 	</view:tabs>
 	
-	<% if ("MyInfos".equals(view)) { %>
+	<% if (MyProfileRoutes.MyInfos.toString().equals(view)) { %>
 		<%@include file="myProfileTabIdentity.jsp" %>
-	<% } else if ("MySettings".equals(view)) { %>
+	<% } else if (MyProfileRoutes.MySettings.toString().equals(view)) { %>
 		<%@include file="myProfileTabSettings.jsp" %>
+	<% } else if (MyProfileRoutes.MyInvitations.toString().equals(view) || MyProfileRoutes.MySentInvitations.toString().equals(view)) { %>
+		<%@include file="myProfileTabInvitations.jsp" %>
 	<% } %>
               
 </div>   

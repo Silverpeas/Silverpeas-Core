@@ -42,6 +42,7 @@
 <%@page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
 <%@page import="java.io.File"%>
 <%@page import="com.stratelia.silverpeas.notificationManager.NotificationParameters"%>
+<%@page import="com.silverpeas.socialNetwork.invitation.servlets.InvitationJSONActions"%>
 
 <fmt:setLocale value="${requestScope.resources.language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
@@ -52,6 +53,7 @@
     List fragments = (List) request.getAttribute("UserFragments");
     Pagination pagination = (Pagination) request.getAttribute("pagination");
 %>
+
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -100,10 +102,33 @@
       	$("#txtMessage").val("");
       }
       
-      function OpenPopupInvitaion(usersId,name){
-        options="directories=no, menubar=no,toolbar=no,scrollbars=yes,resizable=no,alwaysRaised"
-        SP_openWindow('<%=m_context%>/Rinvitation/jsp/invite?Recipient='+usersId, 'strWindowName', '500', '200','directories=no, menubar=no,toolbar=no,scrollbars=yes, resizable=no ,alwaysRaised');
+      function OpenPopupInvitaion(userId,name){
+    	  $("#invitationDialog").dialog("option", "title", name);
+          targetUserId = userId;
+      	  $("#invitationDialog").dialog("open");
       }
+
+      function sendInvitation(userId) {
+          	$.getJSON("<%=m_context%>/InvitationJSON",
+                  	{ 
+          				IEFix: new Date().getTime(),
+          				Action: "<%=InvitationJSONActions.SendInvitation%>",
+          				Message: $("#invitationMessage").val(),
+          				TargetUserId: targetUserId
+                  	},
+          			function(data){
+              			if (data.success) {
+              				closeInvitationDialog();
+              			} else {
+                  			alert(data.error);
+              			}
+          			});
+      }
+
+      function closeInvitationDialog() {
+        	$("#invitationDialog").dialog("close");
+        	$("#invitationMessage").val("");
+        }
 
       function viewIndex(index) {
           $.progressMessage();
@@ -124,7 +149,8 @@
 	                width: 600
 	        };
 	
-	        $("#directoryDialog").dialog(dialogOpts);    //end dialog
+	        $("#directoryDialog").dialog(dialogOpts);
+	        $("#invitationDialog").dialog(dialogOpts);
       });
     </script>
 
@@ -232,12 +258,39 @@
           </table>
         </form>
         </view:board>
+        <fmt:message key="GML.ok" var="ok_label" />
+        <fmt:message key="GML.cancel" var="cancel_label"/>
         <div align="center">
         	<view:buttonPane>
-        		<fmt:message key="GML.ok" var="ok_label" />
-        		<fmt:message key="GML.cancel"  var="cancel_label"/>
         		<view:button label="${ok_label}" action="javascript:sendNotification()" />
         		<view:button label="${cancel_label}" action="javascript:closeDialog()" />
+        	</view:buttonPane>
+        </div>
+	</div>
+	
+	<!-- Dialog to invite a user -->
+	<div id="invitationDialog">
+		<view:board>
+        	<table>
+          <tr>
+            <td class="txtlibform">
+              <fmt:message key="notification.message" /> :
+            </td>
+            <td>
+              <textarea name="invitationMessage" id="invitationMessage" cols="49" rows="4"></textarea>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+	    (<img src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5" alt="mandatoryField" /> : <fmt:message key="GML.requiredField"/>)
+            </td>
+          </tr>
+          </table>
+        </view:board>
+        <div align="center">
+        	<view:buttonPane>
+        		<view:button label="${ok_label}" action="javascript:sendInvitation()" />
+        		<view:button label="${cancel_label}" action="javascript:closeInvitationDialog()" />
         	</view:buttonPane>
         </div>
 	</div>

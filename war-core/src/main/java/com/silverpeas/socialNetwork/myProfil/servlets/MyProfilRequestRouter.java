@@ -23,6 +23,8 @@
  */
 package com.silverpeas.socialNetwork.myProfil.servlets;
 
+import static com.silverpeas.socialNetwork.myProfil.servlets.MyProfileRoutes.*;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -68,7 +70,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
   
   @Override
   public String getSessionControlBeanName() {
-    return "myProfil";
+    return "myProfile";
   }
 
   @Override
@@ -90,6 +92,8 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
 
     MyProfilSessionController myProfilSC = (MyProfilSessionController) componentSC;
     SNFullUser snUserFull = new SNFullUser(myProfilSC.getUserId());
+    
+    MyProfileRoutes route = valueOf(function);
     
     try {
       if (function.equalsIgnoreCase("MyEvents")) {
@@ -117,7 +121,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
           Logger.getLogger(MyProfilRequestRouter.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-      } else if (function.equalsIgnoreCase("Main") || function.equalsIgnoreCase("MyInfos")) {
+      } else if (route == Main || route == MyInfos) {
        
         // Détermination du domaine du user
         boolean domainRW = myProfilSC.isUserDomainRW();
@@ -143,7 +147,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
         updateUserFull(request, myProfilSC);
 
         return getDestination("MyInfos", componentSC, request);
-      } else if (function.equals("MySettings")) {
+      } else if (route == MySettings) {
         
         request.setAttribute("View", function);
         setUserSettingsIntoRequest(request, myProfilSC);
@@ -152,8 +156,20 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("UpdateMySettings")) {
         updateUserSettings(request, myProfilSC);
         
-        return getDestination("MySettings", componentSC, request);
-      }
+        return getDestination(MySettings.toString(), componentSC, request);
+      } else if (route == MyInvitations) {
+        MyInvitationsHelper helper = new MyInvitationsHelper();
+        helper.getAllInvitationsReceived(myProfilSC, request);
+        request.setAttribute("View", function);
+        destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
+      } else if (route == MySentInvitations) {
+        MyInvitationsHelper helper = new MyInvitationsHelper();
+        helper.getAllInvitationsSent(myProfilSC, request);
+        request.setAttribute("View", function);
+        destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
+      } else if (route == CancelSentInvitation) {
+        // do nothing
+      } 
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
