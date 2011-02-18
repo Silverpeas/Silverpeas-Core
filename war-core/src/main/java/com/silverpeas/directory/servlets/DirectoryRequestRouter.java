@@ -87,6 +87,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
         String groupId = request.getParameter("GroupId");
         String spaceId = request.getParameter("SpaceId");
         String domainId = request.getParameter("DomainId");
+        String userId = request.getParameter("UserId");
 
         if (StringUtil.isDefined(groupId)) {
           users = directorySC.getAllUsersByGroup(groupId);
@@ -94,6 +95,8 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
           users = directorySC.getAllUsersBySpace(spaceId);
         } else if (StringUtil.isDefined(domainId)) {
           users = directorySC.getAllUsersByDomain(domainId);
+        } else if (StringUtil.isDefined(userId)) {
+          users = directorySC.getAllContactsOfUser(userId);
         } else {
           users = directorySC.getAllUsers();
         }

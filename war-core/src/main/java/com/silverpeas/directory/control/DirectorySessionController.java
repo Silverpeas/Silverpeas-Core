@@ -23,6 +23,7 @@
  */
 package com.silverpeas.directory.control;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,6 +34,7 @@ import java.util.Set;
 
 import com.silverpeas.directory.DirectoryException;
 import com.silverpeas.directory.model.Member;
+import com.silverpeas.socialNetwork.relationShip.RelationShipService;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
@@ -71,6 +73,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   private String currentView = "tous";
   private Properties stConfig;
+  
+  private RelationShipService relationShipService;
 
   /**
    * Standard Session Controller Constructeur
@@ -91,6 +95,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
         "templatePath"));
     stConfig.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, getSettings().getString(
         "customersTemplatePath"));
+    
+    relationShipService = new RelationShipService();
   }
 
   public int getElementsByPage() {
@@ -242,18 +248,31 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     getAllUsers();// recuperer tous les users
     lastListUsersCalled = new ArrayList<UserDetail>();
     for (UserDetail var : lastAlllistUsersCalled) {
-
       if (var.getDomainId() == null ? domainId == null : var.getDomainId().equals(domainId)) {
         lastListUsersCalled.add(var);
       }
     }
     lastAlllistUsersCalled = lastListUsersCalled;
     return lastAlllistUsersCalled;
-
+  }
+  
+  public List<UserDetail> getAllContactsOfUser(String userId) {
+    setCurrentView("tous");
+    lastAlllistUsersCalled = new ArrayList<UserDetail>();
+    try {
+      List<String> contactsIds = relationShipService.getMyContactsIds(Integer.parseInt(userId));
+      for (String contactId : contactsIds) {
+        lastAlllistUsersCalled.add(getOrganizationController().getUserDetail(contactId));
+      }
+    } catch (SQLException ex) {
+      SilverTrace.error("newsFeedService", "NewsFeedService.getMyContactsIds", "", ex);
+    }
+    lastListUsersCalled = lastAlllistUsersCalled;
+    return lastAlllistUsersCalled;
   }
 
   public UserFull getUserFul(String userId) {
-    return this.getOrganizationController().getUserFull(userId);
+    return getOrganizationController().getUserFull(userId);
   }
 
   /**
@@ -350,13 +369,9 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     String context = URLManager.getApplicationURL();
     sb.append("<a href=\"").append(context).append("/Rprofil/jsp/Main?userId=").append(
         member.getId()).append("\">");
-    String avatarClass = "avatar";
-    if (!member.haveAvatar()) {
-      avatarClass = "defaultAvatar";
-    }
-    sb.append("<img src=\"").append(context).append(member.getProfilPhoto()).append(
+    sb.append("<img src=\"").append(context).append(member.getUserDetail().getAvatar()).append(
         "\" alt=\"viewUser\"");
-    sb.append("class=\"").append(avatarClass).append("\"/></a>");
+    sb.append("class=\"avatar\"/></a>");
     return sb.toString();
   }
 
