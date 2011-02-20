@@ -3,3 +3,15 @@
 *.iml
 target
 .sonar-ide.properties
+
+/lib-core/.settings
+/lib-core/.classpath
+/lib-core/.project
+/config-core/.settings
+/config-core/.project
+/war-core/.settings
+/war-core/.classpath
+/war-core/.project
+/web-core/.settings
+/web-core/.classpath
+/web-core/.project
