@@ -33,11 +33,13 @@ import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import java.util.Collection;
+import javax.inject.Named;
 
 /**
  * Check the access to an attachment for a user.
  * @author ehugonnet
  */
+@Named
 public class AttachmentAccessController implements AccessController<AttachmentDetail> {
 
   private NodeAccessController accessController;

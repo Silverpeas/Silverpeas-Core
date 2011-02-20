@@ -57,7 +57,7 @@ public class CommentEntityMatcher extends BaseMatcher<CommentEntity> {
           comment.getModificationDate().equals(actual.getModificationDate()) &&
           comment.getOwnerDetail().getId().equals(actual.getAuthor().getId());
           if (!actual.getAuthor().getAvatar().isEmpty()) {
-            match &= comment.getOwnerDetail().getAvatar().equals(actual.getAuthor().getAvatar());
+            match &= actual.getAuthor().getAvatar().endsWith(comment.getOwnerDetail().getAvatar());
           }
     }
     return match;

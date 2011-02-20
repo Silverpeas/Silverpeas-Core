@@ -124,6 +124,14 @@ public abstract class RESTWebService {
   }
 
   /**
+   * Gets the HTTP servlet context mapped with this web service.
+   * @return the HTTP servlet context.
+   */
+  protected HttpServletRequest getHttpServletContext() {
+    return httpRequest;
+  }
+
+  /**
    * Gets the detail about the user that has called this web service.
    * If the user isn't already identified by this web service, then an identification is performed
    * before through an authentication operation followed by an authorization validation. If the

@@ -28,11 +28,13 @@ import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import java.rmi.RemoteException;
+import javax.inject.Named;
 
 /**
  * Check the access to a document version for a user.
  * @author ehugonnet
  */
+@Named
 public class DocumentVersionAccessController implements AccessController<DocumentVersion> {
 
   private VersioningUtil versioning;

@@ -164,7 +164,7 @@ Definition des class de style Silverpeas
 }
 
 .couleurFondOperation {
-	
+
 }
 
 /* Couleur de l'interface : Frame */
@@ -1035,7 +1035,7 @@ td.browsebar a:hover {
 }
 
 #recherche #submitRecherche form { /*height: 0px;*/
-	
+
 }
 
 #recherche #submitRecherche a {
@@ -1099,8 +1099,8 @@ td.browsebar a:hover {
 }
 
 .favorite_empty {
-  width: 12px; 
-  height: 12px; 
+  width: 12px;
+  height: 12px;
   z-index:100;
   visibility:visible;
 }
@@ -1362,7 +1362,7 @@ td.browsebar a:hover {
 	width: 5px;
 }
 
-.milieuBoutonV5 {
+button, .milieuBoutonV5 {
 	background-image:
 		url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuBouton.gif);
 	background-repeat: repeat-x;
@@ -1461,19 +1461,19 @@ td.browsebar a:hover {
 }
 
 .milieuFrame {
-	
+
 }
 
 .basGaucheFrame {
-	
+
 }
 
 .basMilieuFrame {
-	
+
 }
 
 .basDroiteFrame {
-	
+
 }
 
 /* Objet board */
@@ -1587,11 +1587,11 @@ td.browsebar a:hover {
 .pageJumper {
 	float: left;
 	padding: 2px;
-} 
+}
 
 .pageJumper .jumper {
 	visibility: hidden;
-}       
+}
 
 /*- [ general ] --------------------------- */
 #portletPages img {
@@ -1852,8 +1852,8 @@ td.browsebar a:hover {
 	color:#000000; */
 	cursor: move;
 	/*height:2em;
-	line-height:2; 
-	padding:0 6px; 
+	line-height:2;
+	padding:0 6px;
 	position:relative;*/
 	float: left;
 	/*height: 2em;*/
@@ -1952,7 +1952,7 @@ td.browsebar a:hover {
 }
 
 /*- [ portlet ] --------------------------- */
-#portletPages div.portlet-header { 
+#portletPages div.portlet-header {
 	float: left;
 	height: 2em;
 	line-height: 2;
@@ -1970,7 +1970,7 @@ td.browsebar a:hover {
 	padding-left: 10px;
 }
 
-#portletPages h2.portlet-title { 
+#portletPages h2.portlet-title {
 	float: left;
 	margin: 0;
 	margin-left: 4px;
@@ -2057,9 +2057,9 @@ td.browsebar a:hover {
 }
 
 /* class used to mark as read the link of results page  */
-.markedkAsRead { 
-	font-size: 11px; 
-	font-weight: bold; 
+.markedkAsRead {
+	font-size: 11px;
+	font-weight: bold;
 	color: #006600;
 	text-decoration: none;
 }
@@ -2068,9 +2068,9 @@ td.browsebar a:hover {
 }
 
 /* class for spelling word */
-.spellWord { 
-	font-size: 11px; 
-	font-weight: bold; 
+.spellWord {
+	font-size: 11px;
+	font-weight: bold;
 	color: #006600;
 }
 
@@ -2326,14 +2326,14 @@ caption {
   color:#333366;
   border-bottom:1px solid #9E9ECF;
   display:block;
-  padding:5px 0 3px 0; 
+  padding:5px 0 3px 0;
   font-size:11px;
 }
 #directory .link:hover, #directory .link:focus {
   color:#000;
   border-bottom:1px solid #000;
   display:block;
-  padding:5px 0 3px 0; 
+  padding:5px 0 3px 0;
   font-size:11px;
 }
 
@@ -2355,7 +2355,7 @@ caption {
   color:#AFAFAF;
 }
 
-#directory #indexAndSearch #index a { 
+#directory #indexAndSearch #index a {
 	border:1px solid #CECECE;
 	padding:2px 4px;
 	margin-right:3px;
@@ -2393,7 +2393,7 @@ caption {
 	width:30%;
 }
 
-#directory #indexAndSearch .gaucheBoutonV5 , #directory #indexAndSearch .droiteBoutonV5{ 
+#directory #indexAndSearch .gaucheBoutonV5 , #directory #indexAndSearch .droiteBoutonV5{
 	display:none;
 }
 
@@ -2427,10 +2427,10 @@ caption {
 
 #directory #users .action {
 	width:132px;
-	height:40px; 
-	position:absolute; 
-	bottom:10px; 
-	right:10px; 
+	height:40px;
+	position:absolute;
+	bottom:10px;
+	right:10px;
 }
 
 #directory #users #pagination {
@@ -2449,8 +2449,8 @@ caption {
   width:100%;
 }
 
-#directory .info ul { 
-	padding:10px 0px 4px 5px; 
+#directory .info ul {
+	padding:10px 0px 4px 5px;
 	float:left;
 	color:#909090; font-size:11px;
 	width:60%;
@@ -2470,7 +2470,7 @@ caption {
 
 #directory .info ul li.infoConnection img{
   position:absolute;
-  top:10px; 
+  top:10px;
   right:10px;
 }
 
@@ -2490,7 +2490,7 @@ caption {
   padding: 2px;
   display: none;
 }
-    
+
 #invitation #content {
   float: left;
   width: 100%;
@@ -2896,7 +2896,7 @@ caption {
 	width:20%;
 	float:left;
 	position:relative;
-	
+
 }
 #myProfile .mail {
   text-decoration: underline;
@@ -2911,7 +2911,7 @@ caption {
 #myProfileFiche  .action .link , #publicProfileFiche  #contactCommun .link, #publicProfileFiche  #allContact .link{
   color:#333366;
   border-bottom:1px solid #9E9ECF;
-  padding:0 0 3px 0; 
+  padding:0 0 3px 0;
   font-size:11px;
   width:132px;
   margin-bottom:8px;
@@ -2921,7 +2921,7 @@ caption {
 #myProfileFiche  #contactCommun .link:hover, #publicProfileFiche  #contactCommun .link:focus {
   color:#000;
   border-bottom:1px solid #000;
-  
+
 }
 #myProfileFiche  #allContact .link, #publicProfileFiche  #contactCommun .link {
 	clear:both;
@@ -2935,7 +2935,7 @@ caption {
   color: blue;
 }
 
-#myProfile #indexAndSearch #index a { 
+#myProfile #indexAndSearch #index a {
 	border:1px solid #CECECE;
 	padding:2px 4px;
 	margin-right:3px;
@@ -2977,17 +2977,17 @@ caption {
   padding:0; margin:0;
 }
 
-#myProfileFiche .infoConnection { font-size:11px; padding:10px 0 15px} 
+#myProfileFiche .infoConnection { font-size:11px; padding:10px 0 15px}
 
 #myProfileFiche .infoConnection img{
   position:absolute;
-  top:10px; 
+  top:10px;
   right:10px;
 }
 #myProfileFiche .info {
-	padding:8px; 
+	padding:8px;
 	height:100%;
-} 
+}
 #myProfileFiche .info .userType {
   color:#333333;
   font-size:12px;
@@ -3006,9 +3006,9 @@ caption {
 	display: none;
 }
 
-#myProfileContenu { 
-	width:78%; 
-	margin-left:15px; 
+#myProfileContenu {
+	width:78%;
+	margin-left:15px;
 	float:left;
 }
 #myProfileContenu  address { font-style:normal;}
@@ -3054,7 +3054,7 @@ caption {
 	width:20%;
 	float:left;
 	position:relative;
-	
+
 }
 #publicProfile .mail {
   text-decoration: underline;
@@ -3068,7 +3068,7 @@ caption {
 #publicProfileFiche  .action .link , #publicProfileFiche  #contactCommun .link, #publicProfileFiche  #allContact .link{
   color:#333366;
   border-bottom:1px solid #9E9ECF;
-  padding:0 0 3px 0; 
+  padding:0 0 3px 0;
   font-size:11px;
   width:132px;
   margin-bottom:8px;
@@ -3078,7 +3078,7 @@ caption {
 #publicProfileFiche  #contactCommun .link:hover, #publicProfileFiche  #contactCommun .link:focus {
   color:#000;
   border-bottom:1px solid #000;
-  
+
 }
 #publicProfileFiche  #allContact .link, #publicProfileFiche  #contactCommun .link {
 	clear:both;
@@ -3092,7 +3092,7 @@ caption {
   color: blue;
 }
 
-#publicProfile #indexAndSearch #index a { 
+#publicProfile #indexAndSearch #index a {
 	border:1px solid #CECECE;
 	padding:2px 4px;
 	margin-right:3px;
@@ -3134,11 +3134,11 @@ caption {
   padding:0; margin:0;
 }
 
-#publicProfileFiche .infoConnection { font-size:11px; padding:10px 0 15px} 
+#publicProfileFiche .infoConnection { font-size:11px; padding:10px 0 15px}
 
 #publicProfileFiche .infoConnection img{
   position:absolute;
-  top:10px; 
+  top:10px;
   right:10px;
 }
 #publicProfileFiche .info {
@@ -3163,9 +3163,9 @@ caption {
 	display: none;
 }
 
-#publicProfileContenu { 
-	width:78%; 
-	margin-left:15px; 
+#publicProfileContenu {
+	width:78%;
+	margin-left:15px;
 	float:left;
 }
 #publicProfileContenu  address { font-style:normal;}
@@ -3181,10 +3181,10 @@ caption {
   	font-size:11px;
   	padding:5px 5px 14px;
 	}
-.sousNavBulle p { margin:0; padding:0;}	
+.sousNavBulle p { margin:0; padding:0;}
 
 
-.sousNavBulle a { 
+.sousNavBulle a {
 	border:1px solid #CECECE;
 	padding:2px 4px;
 	margin-right:3px;
@@ -3320,7 +3320,7 @@ ul#attachmentList li.attachmentListItem .lineMain {
 	}
 .oneComment div div { background-image:none;}
 
-.oneComment div.avatar { 
+.oneComment div.avatar {
 	position:absolute;
 	top:0;
 	left:0;
@@ -3329,7 +3329,7 @@ ul#attachmentList li.attachmentListItem .lineMain {
 	background-color:#FFF;
 	}
 .oneComment div.avatar img {
-	width:50px;}	
+	width:50px;}
 
 .oneComment .action {
 	bottom: 10px;
@@ -3371,7 +3371,7 @@ ul#attachmentList li.attachmentListItem .lineMain {
 }
 
 /*- [Specific export BEGIN ] ---------------- */
-.exportlinks { 
+.exportlinks {
 	width: 165px;
 }
 .exportlinks div {
@@ -3404,7 +3404,7 @@ span.csv {
 	padding: 5px;
 	margin: 10px;
 	text-align: center;
-	border: 2px solid; 
+	border: 2px solid;
 }
 
 .inlineMessage {

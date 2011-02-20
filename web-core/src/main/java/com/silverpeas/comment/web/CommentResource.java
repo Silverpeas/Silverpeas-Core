@@ -23,6 +23,7 @@
  */
 package com.silverpeas.comment.web;
 
+import java.util.Collections;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import java.net.URI;
@@ -32,6 +33,7 @@ import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.rest.RESTWebService;
+import java.util.Comparator;
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -45,6 +47,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import static com.silverpeas.util.StringUtil.*;
 
 /**
  * A REST Web resource representing a given comment.
@@ -126,6 +129,7 @@ public class CommentResource extends RESTWebService {
   @Consumes(MediaType.APPLICATION_JSON)
   public Response saveNewComment(final CommentEntity commentToSave) {
     checkUserPriviledges();
+    checkIsValid(commentToSave);
     Comment comment = commentToSave.toComment();
     try {
       if (commentToSave.isIndexed()) {
@@ -147,10 +151,12 @@ public class CommentResource extends RESTWebService {
 
   /**
    * Updates the comment from its JSON representation and returns it once updated.
+   * If the comment to update doesn't match with the requested one, a 400 HTTP code is returned.
    * If the comment doesn't exist, a 404 HTTP code is returned.
    * If the user isn't authentified, a 401 HTTP code is returned.
    * If the user isn't authorized to save the comment, a 403 is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
+   * @param commentId the unique identifier of the comment to update.
    * @param commentToUpdate the comment to update in Silverpeas.
    * @return the response to the HTTP PUT request with the JSON representation of the updated
    * comment.
@@ -158,8 +164,14 @@ public class CommentResource extends RESTWebService {
   @PUT
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  public CommentEntity updateComment(final CommentEntity commentToUpdate) {
+  @Path("{commentId}")
+  public CommentEntity updateComment(@PathParam("commentId") String commentId,
+      final CommentEntity commentToUpdate) {
     checkUserPriviledges();
+    checkIsValid(commentToUpdate);
+    if (!commentToUpdate.getId().equals(commentId)) {
+      throw new WebApplicationException(Status.BAD_REQUEST);
+    }
     Comment comment = commentToUpdate.toComment();
     try {
       if (commentToUpdate.isIndexed()) {
@@ -256,7 +268,12 @@ public class CommentResource extends RESTWebService {
    * @return the corresponding comment entity.
    */
   protected CommentEntity asWebEntity(final Comment comment, URI commentURI) {
-    return CommentEntity.fromComment(comment).withURI(commentURI);
+    // TODO REMOVE THIS SPECIFIC AVATAR URL SETTING ONCE IN A MORE RECENT APPLICATION SERVER.
+    // PLEASE SEE CommentAuthorEntity constructor TODO.
+    CommentEntity entity = CommentEntity.fromComment(comment).withURI(commentURI);
+    CommentAuthorEntity author = entity.getAuthor();
+    author.setAvatar(getHttpServletContext().getContextPath() + author.getAvatar());
+    return entity;
   }
 
   protected URI identifiedBy(URI uri) {
@@ -266,5 +283,32 @@ public class CommentResource extends RESTWebService {
   @Override
   protected String getComponentId() {
     return this.componentId;
+  }
+
+  /**
+   * Check the specified comment is valid. A comment is valid if the following attributes are
+   * set: componentId, resourceId, text and its author identifier.
+   * @param theComment the comment to validate.
+   */
+  protected void checkIsValid(final CommentEntity theComment) {
+    if (!isDefined(theComment.getComponentId()) || !isDefined(theComment.getResourceId()) ||
+        !isDefined(theComment.getText()) || !isDefined(theComment.getAuthor().getId())) {
+      throw new WebApplicationException(Status.BAD_REQUEST);
+    }
+  }
+
+  /**
+   * Gets a comparator of comments by their identifier, from the lower to the higher one.
+   * @return a comparator of comments.
+   */
+  protected static Comparator<Comment> byId() {
+    return new Comparator<Comment>() {
+
+      @Override
+      public int compare(Comment left, Comment right) {
+        return left.getCommentPK().getId().compareTo(right.getCommentPK().getId());
+      }
+
+    };
   }
 }

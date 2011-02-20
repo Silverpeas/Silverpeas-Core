@@ -72,6 +72,14 @@ public class CommentAuthorEntity implements Serializable {
   }
 
   /**
+   * Sets the URL at which is located the user's avatar.
+   * @param avatarURL the URL of the user's avatar.
+   */
+  public void setAvatar(String avatarURL) {
+    this.avatar = avatarURL;
+  }
+
+  /**
    * Gets the unique identifier of the author.
    * @return the user identifier.
    */
@@ -143,6 +151,13 @@ public class CommentAuthorEntity implements Serializable {
   private CommentAuthorEntity(final UserDetail userDetail) {
     this.fullName = userDetail.getDisplayedName();
     this.id = userDetail.getId();
+//    TODO WITH A MORE RECENT APPLICATION SERVER
+//    WebApplicationContext context = ContextLoaderListener.getCurrentWebApplicationContext();
+//    if (context != null) {
+//      this.avatar = context.getServletContext().getContextPath() + userDetail.getAvatar();
+//    } else {
+//      this.avatar = userDetail.getAvatar();
+//    }
     this.avatar = userDetail.getAvatar();
     PersonalizationBm prefs = getUserPreferences();
     if (prefs != null) {

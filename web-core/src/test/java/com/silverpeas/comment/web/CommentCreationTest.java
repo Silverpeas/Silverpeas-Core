@@ -136,7 +136,7 @@ public class CommentCreationTest extends BaseCommentResourceTest {
         type(MediaType.APPLICATION_JSON).
         post(ClientResponse.class, aComment);
     int recievedStatus = response.getStatus();
-    int failure = Status.INTERNAL_SERVER_ERROR.getStatusCode();
-    assertThat(recievedStatus, is(failure));
+    int badRequest = Status.BAD_REQUEST.getStatusCode();
+    assertThat(recievedStatus, is(badRequest));
   }
 }

@@ -49,30 +49,22 @@ import static com.silverpeas.util.StringUtil.*;
 public class CommentEntity implements Exposable {
 
   private static final long serialVersionUID = 8023645204584179638L;
-  @XmlElement(defaultValue="")
+  @XmlElement(defaultValue = "")
   private URI uri;
-
-  @XmlElement(defaultValue="")
+  @XmlElement(defaultValue = "")
   private String id;
-
-  @XmlElement(required=true)
+  @XmlElement(required = true)
   private String componentId;
-
-  @XmlElement(required=true)
+  @XmlElement(required = true)
   private String resourceId;
-
-  @XmlElement(required=true)
+  @XmlElement(required = true)
   private String text;
-
-  @XmlElement(required=true)
+  @XmlElement(required = true)
   private CommentAuthorEntity author;
-
-  @XmlElement(required=true, defaultValue="")
+  @XmlElement(required = true, defaultValue = "")
   private String creationDate;
-
-  @XmlElement(required=true, defaultValue="")
+  @XmlElement(required = true, defaultValue = "")
   private String modificationDate;
-
   @XmlElement
   private boolean indexed = false;
 
@@ -205,8 +197,6 @@ public class CommentEntity implements Exposable {
     return indexed;
   }
 
-
-
   /**
    * Changes the text of this comment by the specified one.
    * @param aText the new text.
@@ -221,10 +211,11 @@ public class CommentEntity implements Exposable {
     this.componentId = comment.getCommentPK().getInstanceId();
     this.id = comment.getCommentPK().getId();
     this.resourceId = comment.getForeignKey().getId();
-    this.text = EncodeHelper.javaStringToHtmlParagraphe(comment.getMessage());
+    this.text = comment.getMessage(); //EncodeHelper.javaStringToHtmlParagraphe(comment.getMessage());
     this.author = CommentAuthorEntity.fromUser(comment.getOwnerDetail());
     this.creationDate = encodeToDisplayDate(comment.getCreationDate(), this.author.getLanguage());
-    this.modificationDate = encodeToDisplayDate(comment.getModificationDate(), this.author.getLanguage());
+    this.modificationDate = encodeToDisplayDate(comment.getModificationDate(), this.author.
+        getLanguage());
   }
 
   @Override
@@ -239,9 +230,10 @@ public class CommentEntity implements Exposable {
     if (isDefined(id) && isDefined(other.getId())) {
       return id.equals(other.getId());
     } else {
-      return componentId.equals(other.getComponentId()) && resourceId.equals(other.getResourceId()) &&
-          text.equals(other.getText()) && creationDate.equals(other.getCreationDate()) &&
-          modificationDate.equals(other.getModificationDate()) && author.equals(other.getAuthor());
+      return componentId.equals(other.getComponentId()) && resourceId.equals(other.getResourceId())
+          && text.equals(other.getText()) && creationDate.equals(other.getCreationDate())
+          && modificationDate.equals(other.getModificationDate())
+          && author.equals(other.getAuthor());
     }
   }
 
@@ -261,7 +253,8 @@ public class CommentEntity implements Exposable {
     return hash;
   }
 
-  protected CommentEntity() {}
+  protected CommentEntity() {
+  }
 
   /**
    * Encodes the specified date into a date to display by taking into account the user prefered

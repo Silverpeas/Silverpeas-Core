@@ -23,6 +23,8 @@
  */
 package com.silverpeas.comment.web;
 
+import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.model.CommentPK;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import java.util.UUID;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -54,10 +56,10 @@ public class CommentUpdateTest extends BaseCommentResourceTest {
   }
 
   @Test
-  public void getACommentByANonAuthenticatedUser() {
+  public void updateACommentByANonAuthenticatedUser() {
     WebResource resource = resource();
     try {
-      resource.path(RESOURCE_PATH).
+      resource.path(RESOURCE_PATH + "/" + theComment.getId()).
         accept(MediaType.APPLICATION_JSON).
         type(MediaType.APPLICATION_JSON).
         put(CommentEntity.class, theComment);
@@ -70,10 +72,10 @@ public class CommentUpdateTest extends BaseCommentResourceTest {
   }
 
   @Test
-  public void getACommentWithADeprecatedSession() {
+  public void updateACommentWithADeprecatedSession() {
     WebResource resource = resource();
     try {
-      resource.path(RESOURCE_PATH).
+      resource.path(RESOURCE_PATH + "/" + theComment.getId()).
         header(HTTP_SESSIONKEY, UUID.randomUUID().toString()).
         accept(MediaType.APPLICATION_JSON).
         type(MediaType.APPLICATION_JSON).
@@ -87,12 +89,12 @@ public class CommentUpdateTest extends BaseCommentResourceTest {
   }
 
   @Test
-  public void getANonAuthorizedComment() {
+  public void updateANonAuthorizedComment() {
     denieAuthorizationToUsers();
 
     WebResource resource = resource();
     try {
-      resource.path(RESOURCE_PATH).
+      resource.path(RESOURCE_PATH + "/" + theComment.getId()).
         header(HTTP_SESSIONKEY, sessionKey).
         accept(MediaType.APPLICATION_JSON).
         type(MediaType.APPLICATION_JSON).
@@ -106,12 +108,34 @@ public class CommentUpdateTest extends BaseCommentResourceTest {
   }
 
   @Test
-  public void putANewComment() {
+  public void updateAnInvalidComment() {
     CommentEntity aComment = CommentEntity.fromComment(aUser(user).commentTheResource(CONTENT_ID).
-        inComponent(COMPONENT_INSTANCE_ID).withAsText("coucou"));
+        inComponent(COMPONENT_INSTANCE_ID).andSaveItWithAsText("toto"));
     WebResource resource = resource();
     try {
-      resource.path(RESOURCE_PATH).
+      resource.path(RESOURCE_PATH + "/" + aComment.getId()).
+        header(HTTP_SESSIONKEY, sessionKey).
+        accept(MediaType.APPLICATION_JSON).
+        type(MediaType.APPLICATION_JSON).
+        put(CommentEntity.class, theComment);
+      fail("A user shouldn't get an unexisting comment");
+    } catch (UniformInterfaceException ex) {
+      int recievedStatus = ex.getResponse().getStatus();
+      int badRequest = Status.BAD_REQUEST.getStatusCode();
+      assertThat(recievedStatus, is(badRequest));
+    }
+  }
+
+  @Test
+  public void updateANewComment() {
+    Comment newComment = aUser(user).commentTheResource(CONTENT_ID).
+        inComponent(COMPONENT_INSTANCE_ID).withAsText("coucou");
+    newComment.setCommentPK(new CommentPK("3", COMPONENT_INSTANCE_ID));
+    CommentEntity aComment = CommentEntity.fromComment(newComment);
+
+    WebResource resource = resource();
+    try {
+      resource.path(RESOURCE_PATH + "/" + aComment.getId()).
         header(HTTP_SESSIONKEY, sessionKey).
         accept(MediaType.APPLICATION_JSON).
         type(MediaType.APPLICATION_JSON).
@@ -125,10 +149,10 @@ public class CommentUpdateTest extends BaseCommentResourceTest {
   }
 
   @Test
-  public void putAnExistingComment() {
+  public void updateAnExistingComment() {
     theComment.newText("a new text");
     WebResource resource = resource();
-    CommentEntity entity = resource.path(RESOURCE_PATH).
+    CommentEntity entity = resource.path(RESOURCE_PATH + "/" + theComment.getId()).
         header(HTTP_SESSIONKEY, sessionKey).
         accept(MediaType.APPLICATION_JSON).
         type(MediaType.APPLICATION_JSON).

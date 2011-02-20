@@ -60,9 +60,9 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	border-radius: 0px 0px 10px 10px;
 	-moz-border-radius: 0px 0px 10px 10px;
 	-webkit-border-radius: 0px 0px 10px 10px;
-	box-shadow:0 10px 10px 2px #EAEAE8 inset; 
-	-moz-box-shadow:0 10px 10px 2px #EAEAE8 inset; 
-	-webkit-box-shadow:0 10px 10px 2px #EAEAE8 inset; 
+	box-shadow:0 10px 10px 2px #EAEAE8 inset;
+	-moz-box-shadow:0 10px 10px 2px #EAEAE8 inset;
+	-webkit-box-shadow:0 10px 10px 2px #EAEAE8 inset;
 	border-top:0;
 	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
@@ -242,9 +242,9 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	margin-left:0;
 }
 
-.contentSpace .contentSpace { 
+.contentSpace .contentSpace {
 	margin:2px 0 0 10px;
-	
+
 }
 
 .contentSpace .contentSpace .browseSpace {
@@ -261,7 +261,7 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	margin-right:0;
 	padding-left:13px;
 	height:100%;
-	
+
 }
 .spaceLevel1 a.spaceURL{
 	line-height:120%;
@@ -272,14 +272,14 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 #domainsBar #spaceMenuDivId #spaces .spaceLevel1 .spaceURL, #domainsBar #spaceMenuDivId #spaces .spaceLevel1On .spaceURL, #domainsBar #spaceMenuDivId #spacePerso .spaceURL {
 	margin-left:19px;}
 
-.browseSpace { 
+.browseSpace {
 	position:relative;
 	padding:2px 17px 2px 0;
 	}
-	
-#favdiv { 
-	position:absolute; 
-	top:8px; 
+
+#favdiv {
+	position:absolute;
+	top:8px;
 	right:2px;
 }
 
@@ -301,7 +301,7 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 .gaucheBoutonV5, .droiteBoutonV5, .gaucheOngletOn, .droiteOngletOn, .gaucheOngletOff, .droiteOngletOff {
 	display: none;
 }
-.milieuBoutonV5 {
+button, .milieuBoutonV5 {
 	background-image: none;
 	background-color:#C8ED99;
 	border:1px solid #9BD94A;
@@ -321,7 +321,7 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
     right: 156px;
 }
 
-#shortcuts a { 
+#shortcuts a {
 	color: #333333;
     font-weight: bold;
 	display:block;
@@ -338,7 +338,7 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	padding:0;
 	line-height:20px;
 }
-#shortcuts td.activeShortcut {	
+#shortcuts td.activeShortcut {
 	background-image:none;
     border:0;
     padding:0px;
@@ -364,7 +364,7 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	border-radius:10px  0px 0px 10px;
 	-moz-border-radius:10px  0px 0px 10px;
 	-webkit-border-radius:10px  0px 0px 10px;
-	behavior: url("/silverpeas/util/styleSheets/PIE.htc");	
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 	}
 #shortcuts td.droiteShortcuts{
 	border:1px solid #BFBFBF ;
@@ -428,9 +428,9 @@ td.milieuOngletOn {
 #domainsBar { margin:0 0 10px 0;}
 #tabDivId {
 	width:200px;
-} 
+}
 
-#tabDivId #tab0 ,#tabDivId #tab1{ 
+#tabDivId #tab0 ,#tabDivId #tab1{
 	padding:8px 28px 4px;
 	}
 
@@ -474,7 +474,7 @@ td.milieuOngletOn {
 
 #spaceMenuDivId {
 	margin-top:16px;
-	
+
 }
 #preview .publiDesc {
 	font-weight:normal;
@@ -555,8 +555,8 @@ td.milieuOngletOn {
 	font-size:11px;
 	font-weight:100;}
 
-.titreFenetre { 
-	font-size:13px; 
+.titreFenetre {
+	font-size:13px;
 	color:#0C81CF;
 	text-transform:uppercase;
 }
@@ -574,7 +574,7 @@ td.milieuOngletOn {
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
-	box-shadow:5px 5px 10px #cccccc;	
+	box-shadow:5px 5px 10px #cccccc;
 	-moz-box-shadow:5px 5px 10px #cccccc;
 	-webkit-box-shadow:5px 5px 10px #cccccc;
 	background-color:transparent;
@@ -582,20 +582,20 @@ td.milieuOngletOn {
 
 #preview .tableBoard {
 	background-color:#FFF;
-	}  
+	}
 
-	
+
 .arrayPane {
-	box-shadow:5px 5px 10px #cccccc;	
+	box-shadow:5px 5px 10px #cccccc;
 	-moz-box-shadow:5px 5px 10px #cccccc;
 	-webkit-box-shadow:5px 5px 10px #cccccc;
-	
+
 }
 
 
 
 #portletPages h2.portlet-title {
-	color:#0C81CF;	
+	color:#0C81CF;
 	font-size:11px;
 	text-transform:uppercase;
 	padding-top:3px;
@@ -638,7 +638,7 @@ td.milieuOngletOn {
 	border-left: 1px solid #cccccc;
 	border-right: 1px solid #cccccc;
 	border-bottom: 1px solid #cccccc;
-} 
+}
 #searchGroupTitle {
 	background-image: none;
 	background-color: #9BD94A;
@@ -665,7 +665,7 @@ td.milieuOngletOn {
 	font-size: 11px;
 }
 
-#topPage .yuimenu, #kmelia .yuimenu, #attachmentList .yuimenu{ 
+#topPage .yuimenu, #kmelia .yuimenu, #attachmentList .yuimenu{
 	padding:6px 0;
 	background-color:#FFD5AF;
 	border:1px solid #F1790F;
@@ -696,7 +696,7 @@ td.milieuOngletOn {
 
 }
 
-	
+
 .yuimenu a:hover, #portletPages .yuimenu  a:hover{
 	color:#FFF;
 	background-color: #F1790F;
@@ -708,7 +708,7 @@ td.milieuOngletOn {
 /* regroupement des styles mise en couleur*/
 #blog #titresTopics a , #blog #titresArchives a, #blog #titresLiens a , .titreCouleur{
 	color:#0C81CF;
-	
+
 }
 .txtlibform, .textePetitBold {
 	color:#444444;}
@@ -717,7 +717,7 @@ td.milieuOngletOn {
 	color:#DF6900;
 	border-color:#DF6900;
 	}
-.txtnav { 
+.txtnav {
 	font-size:12px;}
-	
+
 
