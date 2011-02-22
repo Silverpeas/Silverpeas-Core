@@ -73,7 +73,7 @@ public class CommentGettingTest extends BaseCommentResourceTest {
     }
   }
 
-  //@Test
+  @Test
   public void getACommentWithADeprecatedSession() {
     WebResource resource = resource();
     try {
@@ -87,7 +87,7 @@ public class CommentGettingTest extends BaseCommentResourceTest {
     }
   }
 
-  //@Test
+  @Test
   public void getANonAuthorizedComment() {
     denieAuthorizationToUsers();
 
@@ -105,7 +105,7 @@ public class CommentGettingTest extends BaseCommentResourceTest {
     }
   }
 
-  //@Test
+  @Test
   public void getAnUnexistingComment() {
     WebResource resource = resource();
     try {
@@ -121,7 +121,7 @@ public class CommentGettingTest extends BaseCommentResourceTest {
     }
   }
 
-  //@Test
+  @Test
   public void getAComment() {
     WebResource resource = resource();
     CommentEntity entity = resource.path(RESOURCE_PATH + "/" + theComment.getCommentPK().getId()).
@@ -132,7 +132,7 @@ public class CommentGettingTest extends BaseCommentResourceTest {
     assertThat(entity, matches(theComment));
   }
 
-  //@Test
+  @Test
   public void getAllComments() {
     Comment theComment1 = aUser(user).commentTheResource(CONTENT_ID).inComponent(
         COMPONENT_INSTANCE_ID).
