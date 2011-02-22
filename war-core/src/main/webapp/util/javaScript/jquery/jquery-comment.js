@@ -222,7 +222,7 @@
   function __printComment( $this, comment, position ) {
     var update = settings.update, deletion = settings.deletion, comments = $this.data('comments'),
       commentBox;
-    if (position === 'top') {
+    if (position === 'top' && comments.comments.length > 0) {
       commentBox = $("<div>").appendTo($("<div id='comment" + comment.id + "'>").addClass("oneComment").insertBefore($('#comment' + comments.comments[0].id)));
     } else {
       commentBox = $("<div>").appendTo($("<div id='comment" + comment.id + "'>").addClass("oneComment").appendTo($("#list-box")));
