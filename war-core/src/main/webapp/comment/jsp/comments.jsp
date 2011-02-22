@@ -23,8 +23,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.StringUtil"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="java.util.List,
          java.io.IOException,
          javax.ejb.CreateException,
@@ -33,97 +37,25 @@
          java.rmi.RemoteException,
          javax.ejb.FinderException,
          com.silverpeas.comment.model.Comment,
-         java.util.Date"%>
+         java.util.Date,
+         com.stratelia.webactiv.beans.admin.ObjectType"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@ include file="checkComment.jsp" %>
 <%@ include file="graphicUtil.jsp.inc"%>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-comment.js"></script>
-<link rel="stylesheet" type="text/css" href="<%=m_context%>/util/styleSheets/jquery/jquery-comment.css" />
 
-<%
-  //initialisation des variables
-  String id = request.getParameter("id");
-  String user_id = request.getParameter("userid");
-  String url = request.getParameter("url");
-  String component_id = request.getParameter("component_id");
-  String profile = request.getParameter("profile");
-  String indexIt = request.getParameter("IndexIt");
 
-  if (indexIt == null || "null".equals(indexIt) || indexIt.length() == 0) {
-    indexIt = "1";
-  }
+<c:set var="resourceId" value="${param.id}"/>
+<c:set var="userId" value="${param.userid}"/>
+<c:set var="componentId" value="${param.component_id}"/>
+<c:set var="profile" value="${param.profile}"/>
+<c:set var="indexation" value="${param.IndexIt}"/>
+<c:url var="url" value="/services/comments/${componentId}/${resourceId}"/>
 
-  boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAccessLevel());
-  boolean adminAllowedToUpdate = resources.getSetting("AdminAllowedToUpdate", true);
-  CommentService commentService = CommentServiceFactory.getFactory().getCommentService();
-  List comments = commentService.getAllCommentsOnPublication(new CommentPK(id, component_id));
+<view:board>
 
-  Board board = gef.getBoard();
-  out.println(board.printBefore());
-  //displayComments(messages, id, component_id, user_id, profile, hLineSrc, modif_icon, delete_icon, adminAllowedToUpdate, language, out);
-  String requiredField = resources.getString("GML.requiredField");
-%>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+</view:board>
 
-<div id="commentaires" class="commentaires">
+<script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
+<view:comments userId="${userId}" componentId="${componentId}" resourceId="${resourceId}" indexed="${indexation}"/>
 
-</div><!-- End commentaires-->
-<%
-  out.println(board.printAfter());
-  ButtonPane buttonPane = gef.getButtonPane();
-%>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript">
-    $('#commentaires').comment({
-      'uri': "<%=m_context%>/services/comments/<%=component_id%>/<%=id%>",
-      'update': {
-        'activated': function( comment ) {
-          if (("admin" === '<%= profile%>' && <%=adminAllowedToUpdate%>) || (comment.author.id === '<%= user_id%>'))
-          return true;
-          else
-            return false;
-        },
-        'icon': '<%=modif_icon%>',
-        'altText': '<%=resources.getString("GML.update")%>'
-      },
-      'deletion': {
-        'activated': function( comment ) {
-          if ((comment.author.id === '<%= user_id%>') || ("admin" === '<%= profile%>'))
-          return true;
-          else
-            return false;
-        },
-        'confirmation': '<%=messages.getString("comment.suppressionConfirmation")%>',
-        'icon': '<%=delete_icon%>',
-        'altText': '<%=resources.getString("GML.delete")%>'
-      },
-      'updateBox': {
-        'title': '<%=messages.getString("comment.comment")%>: '
-      },
-      'editionBox': {
-        'title': '<%=resources.getString("comment.add")%>: ',
-        'ok': '<%= resources.getString("GML.validate")%>',
-        'location': 'before'
-      },
-      'validate': function(text) {
-        if (text == null || text.length == 0) {
-          alert("<%=messages.getString("comment.pleaseFill_single")%>");
-        } else if (!isValidTextArea(text)) {
-          alert("<%=messages.getString("comment.champsTropLong")%>");
-        } else {
-          return true;
-        }
-        return false;
-      },
-      'mandatory': '<%=mandatory_field%>',
-      'mandatoryText': '<%=resources.getString("GML.requiredField")%>'
-    })
-
-  $('#commentaires').comment('edition', function() {
-    return {author: {id: '<%= user_id %>' }, componentId: '<%= component_id %>',
-      resourceId: '<%= id %>'}
-  });
-  $('#commentaires').comment('list');
-
-</script>

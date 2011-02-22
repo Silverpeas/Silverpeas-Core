@@ -23,7 +23,6 @@
  */
 package com.silverpeas.comment.web;
 
-import java.util.Collections;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import java.net.URI;

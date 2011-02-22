@@ -28,28 +28,54 @@ import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.script;
 
 /**
- * A tag for displaying a list of comments.
- * Each comment in the list have two associated operations: remove it and edit it.
+ * A tag that renders both an edition form for adding new comments and a list of available
+ * comments on a given resource.
  */
-public class CommentListTag extends CommentWidget {
+public class CommentTag extends CommentWidget {
 
-  private static final long serialVersionUID = -67747040807286867L;
+  private static final long serialVersionUID = -3052129864405446498L;
+
+  private String indexed;
+
+  /**
+   * Indicates whether new comments should be indexed.
+   * @param indexed a flag indicating the indexation of comments.
+   */
+  public void setIndexed(String indexed) {
+    this.indexed = indexed;
+  }
 
   @Override
   public int doStartTag() throws JspException {
+
     ElementContainer container = initWidget();
-    script script = new script().setType("text/javascript").
-        addElement(getCommentListRenderingScript());
+    script script = new script().setType("text/javascript").addElement(
+        getCommentEditionTag().getCommentEditionScript() + "\n" + getCommentListTag().
+        getCommentListRenderingScript());
     container.addElement(script);
     container.output(pageContext.getOut());
     return SKIP_BODY;
   }
 
   /**
-   * Gets the instructions that renders the list of comments.
-   * @return the rendering instructions.
+   * Gets an instance of CommentEditionTag after having initialized it.
+   * @return an initialized CommentEditionTag instance.
    */
-  protected String getCommentListRenderingScript() {
-    return "$('#" + COMMENT_WIDGET_DIV_ID + "').comment('list');";
+  private CommentEditionTag getCommentEditionTag() {
+    CommentEditionTag edition = new CommentEditionTag();
+    edition.setComponentId(getComponentId());
+    edition.setResourceId(getResourceId());
+    edition.setUserId(getUserId());
+    edition.setIndexed(indexed);
+    return edition;
+  }
+
+  /**
+   * Gets an instance of CommentListTag.
+   * @return a CommentListTag instance.
+   */
+  private CommentListTag getCommentListTag() {
+    CommentListTag list = new CommentListTag();
+    return list;
   }
 }

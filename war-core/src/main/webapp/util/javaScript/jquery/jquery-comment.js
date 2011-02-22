@@ -63,6 +63,11 @@
    *    - ok: the text of the ok button,
    * - validate: a callback function to assert the text of a comment is valid. The function can
    * be display a message to inform in what the comment isn't valid.
+   * - callback: a function that will be called by the plugin at comments listing or at comment
+   * deletion, updating or  adding. The user can then perform additional operations according the
+   * events. It accepts as argument the event for which it was called. The event object has two
+   * attributes: the event type (a value among 'addition', 'update', 'deletion' or 'listing') and
+   * the object on which the event is about (a list of comments).
    * - mandatory: the symbol indicating the text of the comment is mandatory. Can be the path of
    * an icon.
    * - mandatoryText: the text to display to indicate that the presence of the mandatory symbol
@@ -98,6 +103,7 @@
       else
         return false;
     },
+    callback: function( event ) {},
     mandatory: '*',
     mandatoryText: 'mandatory'
   };
@@ -161,6 +167,7 @@
               comments.commentsById[arrayOfComments[x].id] = arrayOfComments[x];
               __printComment( $this, arrayOfComments[x], 'bottom' );
             }
+            settings.callback( { type: 'listing', comments: arrayOfComments } );
         });
       })
     },
@@ -264,8 +271,9 @@
               dataType: "json",
               success: function(data) {
                 comment.text = data.text;
-                $("#comment" + commentId).find('p.text').text(data.text);
+                $("#comment" + commentId).find('pre.text').text(data.text);
                 comments.commentsById[commentId] = data;
+                settings.callback( { type: 'update', comments:  new Array( data ) } );
               }
             });
             $( this ).dialog( "destroy" );
@@ -289,11 +297,13 @@
         url: settings.uri + "/" + commentId,
         type: "DELETE",
         success: function(data) {
+          var comment = $.extend(true, {}, comments.commentsById[commentId]);
           if (comments.comments[0].id === commentId) {
             comments.comments.shift();
           }
           delete comments.commentsById[commentId];
           $("#comment" + commentId).hide();
+          settings.callback( { type: 'deletion', comments:  new Array( comment ) } );
         }
       });
     }
@@ -315,6 +325,7 @@
           comments.comments.unshift(data);
           comments.commentsById[data.id] = data;
           $("#edition-box").find("textarea").val("");
+          settings.callback( { type: 'addition', comments:  new Array( data ) } );
         }
       });
     }

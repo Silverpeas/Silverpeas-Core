@@ -23,33 +23,66 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html.comment;
 
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import javax.servlet.jsp.JspException;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.script;
+import static com.silverpeas.util.StringUtil.*;
 
 /**
- * A tag for displaying a list of comments.
- * Each comment in the list have two associated operations: remove it and edit it.
+ * A tag for displaying an edition form for creating a new comment.
  */
-public class CommentListTag extends CommentWidget {
+public class CommentEditionTag extends CommentWidget {
 
-  private static final long serialVersionUID = -67747040807286867L;
+  private static final long serialVersionUID = 5187369754489893222L;
+
+  private String indexed;
+
+  /**
+   * Is new comments should be indexed?
+   * By default, new comments are indexed.
+   * @return true if the comments should be indexed, false otherwise.
+   */
+  public boolean isCommentsIndexed() {
+    if (!isDefined(indexed)) {
+      return true;
+    } else {
+      return getBooleanValue(indexed);
+    }
+  }
+
+  /**
+   * Indicates whether new comments should be indexed.
+   * @param indexed a flag indicating the indexation of comments.
+   */
+  public void setIndexed(String indexed) {
+    this.indexed = indexed;
+  }
 
   @Override
   public int doStartTag() throws JspException {
     ElementContainer container = initWidget();
     script script = new script().setType("text/javascript").
-        addElement(getCommentListRenderingScript());
+        addElement(getCommentEditionScript());
     container.addElement(script);
     container.output(pageContext.getOut());
     return SKIP_BODY;
   }
 
   /**
-   * Gets the instructions that renders the list of comments.
+   * Gets the instructions for rendering the edition form for adding new comments.
    * @return the rendering instructions.
    */
-  protected String getCommentListRenderingScript() {
-    return "$('#" + COMMENT_WIDGET_DIV_ID + "').comment('list');";
+  protected String getCommentEditionScript() {
+    OrganizationController controller = new OrganizationController();
+    UserDetail user = controller.getUserDetail(getUserId());
+    String edition = "";
+    if (!user.isAccessGuest() && !user.isAnonymous()) {
+      edition = "$('#" + COMMENT_WIDGET_DIV_ID + "').comment('edition', function() {"
+        + "return {author: {id: '" + getUserId() + "' }, componentId: '" + getComponentId() + "',"
+        + "resourceId: '" + getResourceId() + "', indexed: " + isCommentsIndexed() + "} });";
+    }
+    return edition;
   }
 }

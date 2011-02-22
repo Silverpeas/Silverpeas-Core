@@ -23,7 +23,6 @@
  */
 package com.silverpeas.comment.web;
 
-import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.calendar.Date;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;

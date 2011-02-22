@@ -33,6 +33,7 @@ import com.stratelia.webactiv.personalization.control.ejb.PersonalizationBm;
 import com.stratelia.webactiv.personalization.control.ejb.PersonalizationBmHome;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.ResourceLocator;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
@@ -44,6 +45,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import org.apache.commons.codec.binary.Base64;
+import static com.silverpeas.util.StringUtil.*;
 
 /**
  * The class of the Silverpeas REST web services.
@@ -67,6 +69,8 @@ public abstract class RESTWebService {
    * Silverpeas as it offers better scalability.
    */
   public static final String HTTP_AUTHORIZATION = "Authorization";
+  private static final ResourceLocator generalSettings = new ResourceLocator(
+      "com.stratelia.silverpeas.lookAndFeel.generalLook", "");
   @Inject
   @Named("sessionManager")
   private SessionManagement sessionManager;
@@ -248,13 +252,21 @@ public abstract class RESTWebService {
    * in RESTful REST web services for both scalability and REST policy reasons), then take checks
    * this session is valide before processing the request. If the session is valid, then detail about
    * the user is returned, otherwise a WebApplicationException exception is thrown.
+   * As the anonymous user has no opened session, when a request is recieved by this web service and
+   * that request does neither belong to an opened session nor carries autentication information,
+   * it is accepted only if the anonymous access is authorized; in that case, the request is
+   * attached to the anonymous user account.
    * @param sessionKey the user session key.
    * @return the detail about the user requesting this web service.
    */
   private UserDetail validateUserSession(String sessionKey) {
     SessionInfo sessionInfo = getSessionManagement().getSessionInfo(sessionKey);
     if (sessionInfo == null) {
-      throw new WebApplicationException(Status.UNAUTHORIZED);
+      UserDetail anonymous = getAnonymousUserDetail();
+      if (anonymous == null) {
+        throw new WebApplicationException(Status.UNAUTHORIZED);
+      }
+      return anonymous;
     }
     return sessionInfo.getUserDetail();
   }
@@ -296,5 +308,20 @@ public abstract class RESTWebService {
    */
   private SessionManagement getSessionManagement() {
     return sessionManager;
+  }
+
+  /**
+   * Gets the detail on the anonymous user. If no anonymous user is defined for the Silverpeas
+   * system, then null is returned.
+   * @return the anonymous user detail or null if no such user is defined in the system.
+   */
+  private UserDetail getAnonymousUserDetail() {
+    String userId = generalSettings.getString("anonymousId");
+    UserDetail anonymous = null;
+    if (isDefined(userId)) {
+      AdminController adminController = new AdminController(userId);
+      anonymous = adminController.getUserDetail(userId);
+    }
+    return anonymous;
   }
 }

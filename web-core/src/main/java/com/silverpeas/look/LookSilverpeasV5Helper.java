@@ -45,7 +45,6 @@ import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.SilverpeasSettings;
-import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
@@ -569,7 +568,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
   @Override
   public String getDate() {
     if (formatter == null) {
-      formatter = new SimpleDateFormat(resources.getString("DateFormat", "dd/MM/yyyy"), 
+      formatter = new SimpleDateFormat(resources.getString("DateFormat", "dd/MM/yyyy"),
           new Locale(mainSC.getFavoriteLanguage()));
     }
     return formatter.format(new Date());
