@@ -29,21 +29,6 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="java.util.List,
-         java.io.IOException,
-         javax.ejb.CreateException,
-         java.sql.SQLException,
-         javax.naming.NamingException,
-         java.rmi.RemoteException,
-         javax.ejb.FinderException,
-         com.silverpeas.comment.model.Comment,
-         java.util.Date,
-         com.stratelia.webactiv.beans.admin.ObjectType"%>
-<%@page import="java.util.Iterator"%>
-<%@page import="com.silverpeas.util.EncodeHelper"%>
-<%@ include file="checkComment.jsp" %>
-<%@ include file="graphicUtil.jsp.inc"%>
-
 
 <c:set var="resourceId" value="${param.id}"/>
 <c:set var="userId" value="${param.userid}"/>
