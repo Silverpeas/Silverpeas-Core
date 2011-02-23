@@ -83,7 +83,7 @@
         <br clear="all" />
  	</div>
  		
-	<h3><%=nbContacts %> contacts</h3>
+	<h3><%=nbContacts %> <fmt:message key="myProfile.contacts" /></h3>
 	<!-- allContact  -->  
 	<div id="allContact">
   	<% 
@@ -106,7 +106,7 @@
     <% } %>
 	</div><!-- /allContact  -->  
 	
-	<h3><%=nbCommonContacts %> contacts commun</h3>
+	<h3><%=nbCommonContacts %> <fmt:message key="myContactProfile.contacts.common" /></h3>
  	<!-- contactCommun  -->  
  	<div id="contactCommun"> 
   	<% 
@@ -124,7 +124,7 @@
 	      
 	<% if (showAllCommonContactLink) { %>
 		<br clear="all" />
-	    <a href="#" class="link"><fmt:message key="myProfile.contacts.all" /></a>
+	    <a href="<%=m_context %>/Rdirectory/jsp/CommonContacts?UserId=<%=userFull.getId() %>" class="link"><fmt:message key="myProfile.contacts.all" /></a>
 	    <br clear="all" />
 	<% } %>
  	</div><!-- /contactCommun  -->    

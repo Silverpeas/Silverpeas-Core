@@ -33,7 +33,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
@@ -45,6 +44,7 @@ import com.silverpeas.socialNetwork.invitation.Invitation;
 import com.silverpeas.socialNetwork.invitation.InvitationService;
 import com.silverpeas.socialNetwork.invitation.model.InvitationUser;
 import com.silverpeas.socialNetwork.relationShip.RelationShipService;
+import com.silverpeas.ui.UIHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.authentication.AuthenticationException;
 import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
@@ -57,7 +57,6 @@ import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
@@ -75,10 +74,6 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   private Boolean thesaurusStatus = null;
   private Boolean dragAndDropStatus = null;
   private Boolean webdavEditingStatus = null;
-
-  ResourceLocator resources = new ResourceLocator(
-      "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings",
-      "");
 
   public MyProfilSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
@@ -287,19 +282,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   }
 
   public synchronized List<String> getAllLanguages() {
-    List<String> allLanguages = new ArrayList<String>();
-    try {
-      StringTokenizer st = new StringTokenizer(
-          resources.getString("languages"), ",");
-      while (st.hasMoreTokens()) {
-        allLanguages.add(st.nextToken());
-      }
-    } catch (Exception e) {
-      SilverTrace.error("personalizationPeas",
-          "MyProfileSessionController.getAllLanguages()",
-          "personalizationPeas.EX_CANT_GET_FAVORITE_LANGUAGE", e);
-    }
-    return allLanguages;
+    return UIHelper.getLanguages();
   }
 
   /**

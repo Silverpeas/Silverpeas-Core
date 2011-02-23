@@ -13,7 +13,7 @@ $(function() {
 		width: 500,
 		buttons: {
 			"<fmt:message key="GML.cancel" />": function() {
-				$( this ).dialog( "close" );
+				closeInvitationDialog();
 			},
 			"<fmt:message key="GML.ok"/>": function() {
 				var message = $("#invitation-message").val();
@@ -27,6 +27,12 @@ $(function() {
      			function(data){
          			if (data.success) {
          				closeInvitationDialog();
+         				try {
+         					$("#user-"+invitationTargetUserId+" .invitation").hide('slow')
+         				} catch (e) {
+             				//do nothing
+             				//As fragment is externalized, class invitation can be missing 
+         				}
          			} else {
              			alert(data.error);
          			}

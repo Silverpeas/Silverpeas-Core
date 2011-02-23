@@ -486,10 +486,6 @@
     <servlet-class>com.silverpeas.socialNetwork.invitation.servlets.InvitationJSONServlet</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>RelationShipServlet</servlet-name>
-    <servlet-class>com.silverpeas.socialNetwork.relationShip.servlets.RelationShipRequestRouter</servlet-class>
-  </servlet>
-  <servlet>
     <servlet-name>ProfilRequestRouter</servlet-name>
     <servlet-class>com.silverpeas.socialNetwork.profil.servlets.ProfilRequestRouter</servlet-class>
   </servlet>
@@ -871,10 +867,6 @@
   <servlet-mapping>
     <servlet-name>InvitationJSONServlet</servlet-name>
     <url-pattern>/InvitationJSON</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>RelationShipServlet</servlet-name>
-    <url-pattern>/RrelationShip/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>ProfilRequestRouter</servlet-name>

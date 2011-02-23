@@ -24,8 +24,6 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -36,6 +34,7 @@
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination"%>
 <%@page import="java.util.List"%>
+<%@page import="com.silverpeas.directory.model.UserFragmentVO"%>
 
 <fmt:setLocale value="${requestScope.resources.language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
@@ -45,14 +44,15 @@
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
     List fragments = (List) request.getAttribute("UserFragments");
     Pagination pagination = (Pagination) request.getAttribute("pagination");
+    String breadcrumb = (String) request.getAttribute("BreadCrumb");
 %>
 
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
   	<title></title>
     <view:looknfeel />
-    <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript">
       function OpenPopup(userId, name){
     	initNotification(userId, name);
@@ -75,8 +75,8 @@
 
   </head>
   <body id="directory">
+  	<view:browseBar extraInformations="<%=breadcrumb %>"/>
     <view:window>
-    	<view:browseBar extraInformations="Annuaire"/>
       <view:frame>
         <div id="indexAndSearch">
           <div id="search">
@@ -129,10 +129,10 @@
           <ol class="message_list aff_colonnes">
             <%
                 for (int i = 0; i < fragments.size(); i++) {
-                  String fragment = (String) fragments.get(i);
+                  UserFragmentVO fragment = (UserFragmentVO) fragments.get(i);
             %>
-            <li class="intfdcolor">
-                 <%=fragment %>
+            <li class="intfdcolor" id="user-<%=fragment.getUserId() %>">
+                 <%=fragment.getFragment() %>
                  <br clear="all" />
             </li>
             <%

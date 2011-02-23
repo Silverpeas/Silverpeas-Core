@@ -58,11 +58,13 @@ public class InvitationJSONServlet extends HttpServlet {
     HttpSession session = req.getSession(true);
 
     String sessionName = "Silverpeas_" + "myProfile";
-    MyProfilSessionController mpsc =
-        (MyProfilSessionController) session.getAttribute(sessionName);
+    MyProfilSessionController mpsc = (MyProfilSessionController) session.getAttribute(sessionName);
     if (mpsc == null) {
-      MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(MAIN_SESSION_CONTROLLER_ATT);
-      mpsc = new MyProfilSessionController(mainSessionCtrl, null);
+      MainSessionController mainSessionCtrl =
+          (MainSessionController) session.getAttribute(MAIN_SESSION_CONTROLLER_ATT);
+      mpsc =
+          new MyProfilSessionController(mainSessionCtrl, mainSessionCtrl.createComponentContext(
+              null, null));
       session.setAttribute(sessionName, mpsc);
     }
 
@@ -73,25 +75,22 @@ public class InvitationJSONServlet extends HttpServlet {
     Writer writer = res.getWriter();
     JSONObject jsonObject = new JSONObject();
     switch (action) {
-      case SendInvitation:
-      {
+      case SendInvitation: {
         String receiverId = req.getParameter("TargetUserId");
         String message = req.getParameter("Message");
         mpsc.sendInvitation(receiverId, message);
         jsonObject.put("success", true);
         break;
       }
-        
-      case IgnoreInvitation: 
-      {
+
+      case IgnoreInvitation: {
         String id = req.getParameter("Id");
         mpsc.ignoreInvitation(id);
         jsonObject.put("success", true);
         break;
       }
-        
-      case AcceptInvitation:
-      {
+
+      case AcceptInvitation: {
         String id = req.getParameter("Id");
         mpsc.acceptInvitation(id);
         jsonObject.put("success", true);

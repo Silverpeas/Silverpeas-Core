@@ -143,7 +143,7 @@ $(document).ready(function(){
  	</div>
  	
  	<div id="statusDialog">
-		<form name="statusForm" action="" method="post">
+		<form>
 	    	<textarea id="newStatus" cols="49" rows="4"></textarea>
 		</form>
 	</div>
@@ -151,13 +151,13 @@ $(document).ready(function(){
 	<div id="avatarDialog">
 		<form name="photoForm" action="UpdatePhoto" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
 	        <div>
-	          <div class="txtlibform">Image:</div>
+	          <div class="txtlibform">Image :</div>
 	          <div><input type="file" name="WAIMGVAR0" size="60"/></div>
 	        </div>
 	      </form>
 	</div>
 	
-	<h3>Contacts</h3>
+	<h3><%=nbContacts %> <fmt:message key="myProfile.contacts" /></h3>
 	<!-- allContact  -->  
 	<div id="allContact">
   	<% 

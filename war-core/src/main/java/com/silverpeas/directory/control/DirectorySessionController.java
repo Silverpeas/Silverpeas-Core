@@ -34,6 +34,7 @@ import java.util.Set;
 
 import com.silverpeas.directory.DirectoryException;
 import com.silverpeas.directory.model.Member;
+import com.silverpeas.directory.model.UserFragmentVO;
 import com.silverpeas.socialNetwork.relationShip.RelationShipService;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
@@ -50,8 +51,11 @@ import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBm;
@@ -72,6 +76,22 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private int elementsByPage = 10;
 
   private String currentView = "tous";
+  
+  public static final int DIRECTORY_DEFAULT = 0; // all users
+  public static final int DIRECTORY_MINE = 1; // contacts of online user
+  public static final int DIRECTORY_COMMON = 2; // common contacts between online user and another user
+  public static final int DIRECTORY_OTHER = 3; // contact of another user
+  public static final int DIRECTORY_GROUP = 4; // all users of group
+  public static final int DIRECTORY_DOMAIN = 5; // all users of domain
+  public static final int DIRECTORY_SPACE = 6; // all users of space
+  private int currentDirectory = DIRECTORY_DEFAULT;
+  
+  private UserDetail commonUserDetail;
+  private UserDetail otherUserDetail;
+  private Group currentGroup;
+  private Domain currentDomain;
+  private SpaceInstLight currentSpace;
+
   private Properties stConfig;
   
   private RelationShipService relationShipService;
@@ -109,6 +129,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    */
   public List<UserDetail> getAllUsers() {
     setCurrentView("tous");
+    setCurrentDirectory(DIRECTORY_DEFAULT);
     lastAlllistUsersCalled = Arrays.asList(getOrganizationController().getAllUsers());
     lastListUsersCalled = lastAlllistUsersCalled;
     return lastAlllistUsersCalled;
@@ -175,6 +196,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    */
   public List<UserDetail> getAllUsersByGroup(String groupId) {
     setCurrentView("tous");
+    setCurrentDirectory(DIRECTORY_GROUP);
+    currentGroup = getOrganizationController().getGroup(groupId);
     lastAlllistUsersCalled = Arrays.asList(getOrganizationController().getAllUsersOfGroup(groupId));
     lastListUsersCalled = lastAlllistUsersCalled;
     return lastAlllistUsersCalled;
@@ -205,6 +228,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    */
   public List<UserDetail> getAllUsersBySpace(String spaceId) {
     setCurrentView("tous");
+    setCurrentDirectory(DIRECTORY_SPACE);
+    currentSpace = getOrganizationController().getSpaceInstLightById(spaceId);
     List<String> lus = new ArrayList<String>();
     lus = getAllUsersBySpace(lus, spaceId);
     lastAlllistUsersCalled =
@@ -246,6 +271,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    */
   public List<UserDetail> getAllUsersByDomain(String domainId) {
     getAllUsers();// recuperer tous les users
+    setCurrentDirectory(DIRECTORY_DOMAIN);
+    currentDomain = getOrganizationController().getDomain(domainId);
     lastListUsersCalled = new ArrayList<UserDetail>();
     for (UserDetail var : lastAlllistUsersCalled) {
       if (var.getDomainId() == null ? domainId == null : var.getDomainId().equals(domainId)) {
@@ -258,9 +285,34 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   
   public List<UserDetail> getAllContactsOfUser(String userId) {
     setCurrentView("tous");
+    if (getUserId().equals(userId)) {
+      setCurrentDirectory(DIRECTORY_MINE);
+    } else {
+      setCurrentDirectory(DIRECTORY_OTHER);
+      otherUserDetail = getUserDetail(userId);
+    }
     lastAlllistUsersCalled = new ArrayList<UserDetail>();
     try {
       List<String> contactsIds = relationShipService.getMyContactsIds(Integer.parseInt(userId));
+      for (String contactId : contactsIds) {
+        lastAlllistUsersCalled.add(getOrganizationController().getUserDetail(contactId));
+      }
+    } catch (SQLException ex) {
+      SilverTrace.error("newsFeedService", "NewsFeedService.getMyContactsIds", "", ex);
+    }
+    lastListUsersCalled = lastAlllistUsersCalled;
+    return lastAlllistUsersCalled;
+  }
+  
+  public List<UserDetail> getCommonContacts(String userId) {
+    setCurrentView("tous");
+    setCurrentDirectory(DIRECTORY_COMMON);
+    commonUserDetail = getUserDetail(userId);
+    lastAlllistUsersCalled = new ArrayList<UserDetail>();
+    try {
+      List<String> contactsIds =
+          relationShipService.getAllCommonContactsIds(Integer.parseInt(getUserId()), Integer
+              .parseInt(userId));
       for (String contactId : contactsIds) {
         lastAlllistUsersCalled.add(getOrganizationController().getUserDetail(contactId));
       }
@@ -333,9 +385,9 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     return lastListUsersCalled;
   }
 
-  public List<String> getFragments(List<Member> membersToDisplay) {
+  public List<UserFragmentVO> getFragments(List<Member> membersToDisplay) {
     // using StringTemplate to personalize display of members
-    List<String> fragments = new ArrayList<String>();
+    List<UserFragmentVO> fragments = new ArrayList<UserFragmentVO>();
     SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplate(stConfig);
     for (Member member : membersToDisplay) {
       template.setAttribute("user", member);
@@ -358,7 +410,9 @@ public class DirectorySessionController extends AbstractComponentSessionControll
         }
       }
       template.setAttribute("extra", extra);
-      fragments.add(template.applyFileTemplate("user_" + getLanguage()));
+      
+      fragments.add(new UserFragmentVO(member.getId(), template.applyFileTemplate("user_" +
+          getLanguage())));
     }
     return fragments;
 
@@ -384,6 +438,34 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       throw new DirectoryException(this.getClass().getSimpleName(), "root.EX_SEARCH_ENGINE_FAILED",
           e);
     }
+  }
+
+  private void setCurrentDirectory(int currentDirectory) {
+    this.currentDirectory = currentDirectory;
+  }
+
+  public int getCurrentDirectory() {
+    return currentDirectory;
+  }
+
+  public UserDetail getCommonUserDetail() {
+    return commonUserDetail;
+  }
+
+  public UserDetail getOtherUserDetail() {
+    return otherUserDetail;
+  }
+  
+  public Group getCurrentGroup() {
+    return currentGroup;
+  }
+
+  public Domain getCurrentDomain() {
+    return currentDomain;
+  }
+
+  public SpaceInstLight getCurrentSpace() {
+    return currentSpace;
   }
 
 }
