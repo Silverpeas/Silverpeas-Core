@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,11 +21,33 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.socialNetwork.relationShip.servlets;
+package com.silverpeas.directory.model;
 
-/**
- *
- * @author Bensalem Nabil
- */
-public class RelationShipRequestRouter {
+public class UserFragmentVO {
+
+  private String userId;
+  private String fragment;
+
+  public UserFragmentVO(String userId, String fragment) {
+    super();
+    this.userId = userId;
+    this.fragment = fragment;
+  }
+
+  public String getUserId() {
+    return userId;
+  }
+
+  public void setUserId(String userId) {
+    this.userId = userId;
+  }
+
+  public String getFragment() {
+    return fragment;
+  }
+
+  public void setFragment(String fragment) {
+    this.fragment = fragment;
+  }
+
 }
