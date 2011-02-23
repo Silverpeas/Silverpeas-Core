@@ -7,6 +7,7 @@
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
 <%@page import="com.silverpeas.util.StringUtil"%>
+<%@page import="com.silverpeas.socialNetwork.myProfil.servlets.MyProfileRoutes"%>
     
 <%
 ResourceLocator rs = new ResourceLocator("com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
@@ -28,7 +29,6 @@ boolean updateFirstNameIsAllowed 	= rs.getBoolean("updateFirstName", false);
 boolean updateLastNameIsAllowed 	= rs.getBoolean("updateLastName", false);
 boolean updateEmailIsAllowed 		= rs.getBoolean("updateEmail", false);
 boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
-
 %>
 
 <div class="sousNavBulle">
@@ -41,7 +41,7 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
 </div>
 <% } %>
 
-<form name="UserForm" action="updateMyInfos" method="post">
+<form name="UserForm" action="<%=MyProfileRoutes.UpdateMyInfos %>" method="post">
 <table border="0" cellspacing="0" cellpadding="5" width="100%">
     <tr>
         <td class="txtlibform"><%=resource.getString("GML.lastName")%> :</td>

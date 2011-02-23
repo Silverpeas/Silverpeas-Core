@@ -23,7 +23,6 @@
  */
 package com.silverpeas.accesscontrol;
 
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import org.hamcrest.Matchers;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -37,7 +36,6 @@ import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
@@ -59,7 +57,7 @@ public class DocumentAccessControllerTest {
 
   /**
    * Test of isUserAuthorized method, of class DocumentAccessController.
-   * @throws Exception 
+   * @throws Exception
    */
   @Test
   public void UserIsAuthorized() throws Exception {
@@ -89,7 +87,7 @@ public class DocumentAccessControllerTest {
 
   /**
    * Test of isUserAuthorized method, of class DocumentAccessController.
-   * @throws Exception 
+   * @throws Exception
    */
   @Test
   public void UserIsNotAuthorized() throws Exception {

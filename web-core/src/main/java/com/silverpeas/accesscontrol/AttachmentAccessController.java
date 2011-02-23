@@ -33,6 +33,7 @@ import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import java.util.Collection;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 /**
@@ -42,10 +43,10 @@ import javax.inject.Named;
 @Named
 public class AttachmentAccessController implements AccessController<AttachmentDetail> {
 
+  @Inject
   private NodeAccessController accessController;
 
   public AttachmentAccessController() {
-    accessController = new NodeAccessController();
   }
 
   /**
@@ -70,7 +71,7 @@ public class AttachmentAccessController implements AccessController<AttachmentDe
         return false;
       }
       for (NodePK nodePk : nodes) {
-        if (accessController.isUserAuthorized(userId, nodePk)) {
+        if (getNodeAccessController().isUserAuthorized(userId, nodePk)) {
           return true;
         }
       }
@@ -83,5 +84,16 @@ public class AttachmentAccessController implements AccessController<AttachmentDe
     PublicationBmHome pubBmHome = (PublicationBmHome) EJBUtilitaire.getEJBObjectRef(
         JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
     return pubBmHome.create();
+  }
+
+  /**
+   * Gets a controller of access on the nodes of a publication.
+   * @return a NodeAccessController instance.
+   */
+  protected NodeAccessController getNodeAccessController() {
+    if (accessController == null) {
+      accessController = new NodeAccessController();
+    }
+    return accessController;
   }
 }

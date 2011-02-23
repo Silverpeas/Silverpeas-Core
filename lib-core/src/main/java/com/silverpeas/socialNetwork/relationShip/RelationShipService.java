@@ -40,9 +40,9 @@ public class RelationShipService {
     relationShipDao = new RelationShipDao();
   }
 
-  public Connection getConnection() throws UtilException, SQLException {
+  private Connection getConnection(boolean useAutoCommit) throws UtilException, SQLException {
     Connection connection = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    connection.setAutoCommit(false);
+    connection.setAutoCommit(useAutoCommit);
     return connection;
   }
 
@@ -57,7 +57,7 @@ public class RelationShipService {
     Connection connection = null;
     boolean endAction = false;
     try {
-      connection = getConnection();
+      connection = getConnection(false);
       relationShipDao.deleteRelationShip(connection, idUser1, idUser2);
       relationShipDao.deleteRelationShip(connection, idUser2, idUser1);
       connection.commit();
@@ -84,13 +84,12 @@ public class RelationShipService {
     Connection connection = null;
     boolean isInRelationShip = false;
     try {
-      connection = getConnection();
+      connection = getConnection(true);
       isInRelationShip = relationShipDao.isInRelationShip(connection, user1Id, user2Id);
     } catch (Exception ex) {
       SilverTrace.error("com.silverpeas.socialNetwork.relationShip",
           "RelationShipService.isInRelationShip", "",
           ex);
-      DBUtil.rollback(connection);
     } finally {
       DBUtil.close(connection);
     }
@@ -107,13 +106,12 @@ public class RelationShipService {
     Connection connection = null;
     List<RelationShip> listMyRelation = new ArrayList<RelationShip>();
     try {
-      connection = getConnection();
+      connection = getConnection(true);
       listMyRelation = relationShipDao.getAllMyRelationShips(connection, myId);
     } catch (Exception ex) {
       SilverTrace.error("com.silverpeas.socialNetwork.relationShip",
           "RelationShipService.getAllMyRelationShips", "",
           ex);
-      DBUtil.rollback(connection);
     } finally {
       DBUtil.close(connection);
     }
@@ -130,13 +128,12 @@ public class RelationShipService {
     Connection connection = null;
     List<String> myContactsIds = new ArrayList<String>();
     try {
-      connection = getConnection();
+      connection = getConnection(true);
       myContactsIds = relationShipDao.getMyContactsIds(connection, myId);
     } catch (Exception ex) {
       SilverTrace.error("com.silverpeas.socialNetwork.relationShip",
           "RelationShipService.getAllMyRelationShips", "",
           ex);
-      DBUtil.rollback(connection);
     } finally {
       DBUtil.close(connection);
     }
@@ -154,13 +151,12 @@ public class RelationShipService {
     Connection connection = null;
     List<String> myContactsIds = new ArrayList<String>();
     try {
-      connection = getConnection();
+      connection = getConnection(true);
       myContactsIds = relationShipDao.getAllCommonContactsIds(connection, user1Id, user2Id);
     } catch (Exception ex) {
       SilverTrace.error("com.silverpeas.socialNetwork.relationShip",
           "RelationShipService.getAllMyRelationShips", "",
           ex);
-      DBUtil.rollback(connection);
     } finally {
       DBUtil.close(connection);
     }
@@ -182,14 +178,13 @@ public class RelationShipService {
     List<SocialInformationRelationShip> listMyRelation =
         new ArrayList<SocialInformationRelationShip>();
     try {
-      connection = getConnection();
+      connection = getConnection(true);
       listMyRelation = relationShipDao.getAllMyRelationShips(connection, userId, numberOfElement,
           firstIndex);
     } catch (Exception ex) {
       SilverTrace.error("com.silverpeas.socialNetwork.relationShip",
           "RelationShipService.getAllMyRelationShips", "",
           ex);
-      DBUtil.rollback(connection);
     } finally {
       DBUtil.close(connection);
     }
@@ -212,7 +207,7 @@ public class RelationShipService {
     List<SocialInformationRelationShip> listMyRelation =
         new ArrayList<SocialInformationRelationShip>();
     try {
-      connection = getConnection();
+      connection = getConnection(true);
       listMyRelation =
           relationShipDao.getAllRelationShipsOfMyContact(connection, myId, myContactsIds,
               numberOfElement,
@@ -221,7 +216,6 @@ public class RelationShipService {
       SilverTrace.error("com.silverpeas.socialNetwork.relationShip",
           "RelationShipService.getAllRelationShipsOfMyContact", "",
           ex);
-      DBUtil.rollback(connection);
     } finally {
       DBUtil.close(connection);
     }
@@ -229,7 +223,7 @@ public class RelationShipService {
   }
 
   /**
-   * get RelationShip witch is betwwen user1 and user2
+   * get RelationShip witch is between user1 and user2
    * @param user1Id
    * @param user2Id
    * @return RelationShip
@@ -239,13 +233,12 @@ public class RelationShipService {
     Connection connection = null;
     RelationShip relation = null;
     try {
-      connection = getConnection();
+      connection = getConnection(true);
       relation = relationShipDao.getRelationShip(connection, user1Id, user2Id);
     } catch (Exception ex) {
       SilverTrace.error("com.silverpeas.socialNetwork.relationShip",
           "RelationShipService.getRelationShip", "",
           ex);
-      DBUtil.rollback(connection);
     } finally {
       DBUtil.close(connection);
     }

@@ -42,16 +42,8 @@ public class Member {
   private UserDetail userDetail = null;
   private boolean connected = false;
   private String duration;
-  private String profilPhoto;
-  private boolean avatar = false;
-
-  public void setUserDetail(UserDetail userDetail) {
-    this.userDetail = userDetail;
-  }
-
-  public final void refreshStatus() {
-    // return the url of profil Photo
-    profilPhoto = getUserDetail().getAvatar();
+  
+  private void refreshStatus() {
     Collection<SessionInfo> sessionInfos = SessionManager.getInstance().getConnectedUsersList();
     for (SessionInfo varSi : sessionInfos) {
       if (varSi.getUserDetail().equals(userDetail)) {
@@ -82,7 +74,7 @@ public class Member {
     return getUserDetail().getAccessLevel();
   }
 
-  public String geteMail() {
+  public String getMail() {
     return getUserDetail().geteMail();
   }
 
@@ -102,14 +94,6 @@ public class Member {
     return duration;
   }
 
-  /**
-   * return the url of Profil Photo
-   * @return String
-   */
-  public String getProfilPhoto() {
-    return profilPhoto;
-  }
-
   public boolean isRelationOrInvitation(String myId) {
     RelationShipService relation = new RelationShipService();
     InvitationService invitation = new InvitationService();
@@ -120,11 +104,6 @@ public class Member {
       SilverTrace.warn("directory", getClass().getSimpleName(), "root.EX_NO_MESSAGE", e);
     }
     return false;
-
-  }
-
-  public boolean haveAvatar() {
-    return avatar;
   }
 
   public String getStatus() {
@@ -134,7 +113,4 @@ public class Member {
     return userDetail.getStatus();
   }
 
-  public String getMail() {
-    return userDetail.geteMail();
-  }
 }

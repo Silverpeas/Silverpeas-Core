@@ -81,12 +81,12 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
 
     try {
       List<UserDetail> users = new ArrayList<UserDetail>();
-      request.setAttribute("MyId", componentSC.getUserId());
       if (function.equalsIgnoreCase("Main")) {
 
         String groupId = request.getParameter("GroupId");
         String spaceId = request.getParameter("SpaceId");
         String domainId = request.getParameter("DomainId");
+        String userId = request.getParameter("UserId");
 
         if (StringUtil.isDefined(groupId)) {
           users = directorySC.getAllUsersByGroup(groupId);
@@ -94,10 +94,16 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
           users = directorySC.getAllUsersBySpace(spaceId);
         } else if (StringUtil.isDefined(domainId)) {
           users = directorySC.getAllUsersByDomain(domainId);
+        } else if (StringUtil.isDefined(userId)) {
+          users = directorySC.getAllContactsOfUser(userId);
         } else {
           users = directorySC.getAllUsers();
         }
 
+        destination = doPagination(request, users, directorySC);
+      } else if ("CommonContacts".equals(function)) {
+        String userId = request.getParameter("UserId");
+        users = directorySC.getCommonContacts(userId);
         destination = doPagination(request, users, directorySC);
       } else if (function.equalsIgnoreCase("searchByKey")) {
 
@@ -124,32 +130,12 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
         users = directorySC.getLastListOfUsersCallded();
         destination = doPagination(request, users, directorySC);
 
-      } else if (function.equalsIgnoreCase("viewUser")) {
-        destination = "/Rprofil/jsp/Main?userId=" + request.getParameter("UserId");
-
       } else if (function.equalsIgnoreCase("NotificationView")) {
         String userId = request.getParameter("Recipient");
         request.setAttribute("User", new Member(directorySC.getUserDetail(userId)));
         destination = "/directory/jsp/notificationUser.jsp";
 
-      } else if ("ProfilPublic".equalsIgnoreCase(function)) {
-
-        destination = "/directory/jsp/profilPublic.jsp";
-      } else if ("createPhoto".equalsIgnoreCase(function)) {
-        String path = request.getParameter("Photo");
-        request.setAttribute("path", path);
-        destination = "/directory/jsp/createPhoto.jsp";
-      } else if ("validation".equalsIgnoreCase(function)) {
-        try {
-          UserDetail user = directorySC.getUserDetail();
-          request.setAttribute("user", user);
-          destination = "/directory/jsp/" + this.saveAvatar(request, directorySC);
-        } catch (UtilException e) {
-          SilverTrace.error("directory", "DirectoryRequestRouter.validation", "ERROR", e);
-        } catch (IOException e) {
-          SilverTrace.error("directory", "DirectoryRequestRouter.validation", "ERROR", e);
-        }
-      }
+      } 
     } catch (DirectoryException e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
@@ -205,19 +191,43 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
 
     request.setAttribute("pagination", pagination);
     request.setAttribute("View", directorySC.getCurrentView());
+    request.setAttribute("Scope", directorySC.getCurrentDirectory());
+    processBreadCrumb(request, directorySC);
     return "/directory/jsp/directory.jsp";
   }
+  
+  private void processBreadCrumb(HttpServletRequest request, DirectorySessionController directorySC) {
+    int directory = directorySC.getCurrentDirectory();
+    String breadCrumb = directorySC.getString("directory.breadcrumb." + directory);
+    switch (directory) {
+      case DirectorySessionController.DIRECTORY_DEFAULT:
+      case DirectorySessionController.DIRECTORY_MINE:
+        // do nothing
+        break;
 
-  protected String saveAvatar(HttpServletRequest request, DirectorySessionController directorySC)
-      throws IOException, UtilException {
-    List<FileItem> parameters = FileUploadUtil.parseRequest(request);
-    FileItem file = FileUploadUtil.getFile(parameters, "WAIMGVAR0");
-    String avatar = directorySC.getPhoto(file.getName());
-    ImageProfil img = new ImageProfil(avatar, AVATAR_FOLDER);
-    img.saveImage(file.getInputStream());
-    String vignette_url = directorySC.getUserDetail().getAvatar();
-    request.setAttribute("vignette_url", vignette_url);
+      case DirectorySessionController.DIRECTORY_COMMON:
+        breadCrumb += " " + directorySC.getCommonUserDetail().getDisplayedName();
+        break;
 
-    return "test.jsp";
+      case DirectorySessionController.DIRECTORY_OTHER:
+        breadCrumb += " " + directorySC.getOtherUserDetail().getDisplayedName();
+        break;
+
+      case DirectorySessionController.DIRECTORY_GROUP:
+        breadCrumb += " " + directorySC.getCurrentGroup().getName();
+        break;
+
+      case DirectorySessionController.DIRECTORY_DOMAIN:
+        breadCrumb += " " + directorySC.getCurrentDomain().getName();
+        break;
+
+      case DirectorySessionController.DIRECTORY_SPACE:
+        breadCrumb += " " + directorySC.getCurrentSpace().getName(directorySC.getLanguage());
+        break;
+
+      default:
+        break;
+    }
+    request.setAttribute("BreadCrumb", breadCrumb);
   }
 }
