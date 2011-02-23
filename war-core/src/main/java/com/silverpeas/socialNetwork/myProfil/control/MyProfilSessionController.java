@@ -27,12 +27,12 @@ import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
@@ -40,7 +40,12 @@ import javax.naming.NamingException;
 
 import com.silverpeas.jobDomainPeas.JobDomainSettings;
 import com.silverpeas.socialNetwork.SocialNetworkException;
+import com.silverpeas.socialNetwork.invitation.Invitation;
+import com.silverpeas.socialNetwork.invitation.InvitationService;
+import com.silverpeas.socialNetwork.invitation.model.InvitationUser;
 import com.silverpeas.socialNetwork.relationShip.RelationShipService;
+import com.silverpeas.ui.UIHelper;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.authentication.AuthenticationException;
 import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -52,28 +57,23 @@ import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
- *
  * @author Bensalem Nabil
  */
 public class MyProfilSessionController extends AbstractComponentSessionController {
 
   private AdminController m_AdminCtrl = null;
   private RelationShipService relationShipService = new RelationShipService();
+  private InvitationService invitationService = null;
   private long domainActions = -1;
-  
+
   private String favoriteLanguage = null;
   private String favoriteLook = null;
   private Boolean thesaurusStatus = null;
   private Boolean dragAndDropStatus = null;
   private Boolean webdavEditingStatus = null;
-  
-  ResourceLocator resources = new ResourceLocator(
-      "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings",
-      "");
 
   public MyProfilSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
@@ -83,19 +83,19 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
         "com.silverpeas.socialNetwork.settings.socialNetworkIcons",
         "com.silverpeas.socialNetwork.settings.socialNetworkSettings");
     m_AdminCtrl = new AdminController(getUserId());
-    
+
     try {
       thesaurusStatus = getActiveThesaurusByUser();
     } catch (Exception e) {
       thesaurusStatus = false;
     }
+    invitationService = new InvitationService();
   }
 
   /**
-   * get all  RelationShips ids for this user
+   * get all RelationShips ids for this user
    * @return:List<String>
    * @param: int myId
-   *
    */
   public List<String> getContactsIdsForUser(String userId) {
     try {
@@ -106,14 +106,29 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
     }
     return new ArrayList<String>();
   }
-/**
- * get this user with full information
- * @param userId
- * @return UserFull
- */
+
+  public boolean isAContact(String userId) {
+    if (StringUtil.isDefined(userId)) {
+      try {
+        return relationShipService.isInRelationShip(Integer.parseInt(getUserId()), Integer
+            .parseInt(userId));
+      } catch (SQLException e) {
+        SilverTrace.error("MyContactProfilSessionController",
+            "MyContactProfilSessionController.getContactsForUser", "", e);
+      }
+    }
+    return false;
+  }
+
+  /**
+   * get this user with full information
+   * @param userId
+   * @return UserFull
+   */
   public UserFull getUserFul(String userId) {
     return this.getOrganizationController().getUserFull(userId);
   }
+
   /**
    * update the properties of user
    * @param idUser
@@ -153,11 +168,11 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
       throw new SocialNetworkException(
           "MyProfilSessionController.modifyUser()",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "UserId="
-          + idUser);
+              + idUser);
     }
 
   }
-  
+
   public boolean isUserDomainRW() {
     return (getDomainActions() & AbstractDomainDriver.ACTION_CREATE_USER) != 0;
   }
@@ -168,7 +183,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
     }
     return domainActions;
   }
-  
+
   public int getMinLengthPwd() {
     return JobDomainSettings.m_MinLengthPwd;
   }
@@ -176,7 +191,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   public boolean isBlanksAllowedInPwd() {
     return JobDomainSettings.m_BlanksAllowedInPwd;
   }
-  
+
   public void modifyUser(String idUser,
       String userLastName,
       String userFirstName,
@@ -193,8 +208,8 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
     SilverTrace.info("personalizationPeas",
         "PersonalizationPeasSessionController.modifyUser()",
         "root.MSG_GEN_ENTER_METHOD", "UserId=" + idUser + " userLastName="
-        + userLastName + " userFirstName=" + userFirstName + " userEMail="
-        + userEMail + " userAccessLevel=" + userAccessLevel);
+            + userLastName + " userFirstName=" + userFirstName + " userEMail="
+            + userEMail + " userAccessLevel=" + userAccessLevel);
 
     theModifiedUser = m_AdminCtrl.getUserFull(idUser);
 
@@ -236,7 +251,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
       }
     }
   }
-  
+
   private void changePassword(String login,
       String oldPassword,
       String newPassword,
@@ -244,7 +259,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
     LoginPasswordAuthentication auth = new LoginPasswordAuthentication();
     auth.changePassword(login, oldPassword, newPassword, domainId);
   }
-  
+
   /**
    * Method declaration
    * @return
@@ -267,19 +282,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   }
 
   public synchronized List<String> getAllLanguages() {
-    List<String> allLanguages = new ArrayList<String>();
-    try {
-      StringTokenizer st = new StringTokenizer(
-          resources.getString("languages"), ",");
-      while (st.hasMoreTokens()) {
-        allLanguages.add(st.nextToken());
-      }
-    } catch (Exception e) {
-      SilverTrace.error("personalizationPeas",
-          "MyProfileSessionController.getAllLanguages()",
-          "personalizationPeas.EX_CANT_GET_FAVORITE_LANGUAGE", e);
-    }
-    return allLanguages;
+    return UIHelper.getLanguages();
   }
 
   /**
@@ -344,7 +347,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   public String getFavoriteLook() throws PeasCoreException {
     if (favoriteLook == null) {
       try {
-          favoriteLook = getPersonalization().getFavoriteLook();
+        favoriteLook = getPersonalization().getFavoriteLook();
       } catch (NoSuchObjectException nsoe) {
         initPersonalization();
         return getFavoriteLook();
@@ -411,7 +414,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
           SilverpeasException.ERROR, "personalizationPeas.EX_CANT_GET_THESAURUS_STATUS", "", e);
     }
   }
-  
+
   public boolean getThesaurusStatus() {
     return thesaurusStatus;
   }
@@ -501,9 +504,56 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
           "personalizationPeas.EX_CANT_SET_WEBDAV_EDITING_STATUS", e);
     }
   }
-  
+
   public List<SpaceInstLight> getSpaceTreeview() {
     return getOrganizationController().getSpaceTreeview(getUserId());
   }
-  
+
+  /**
+   * return my invitation list sent
+   * @param myId
+   * @return List<InvitationUser>
+   */
+  public List<InvitationUser> getAllMyInvitationsSent() {
+    List<InvitationUser> invitationUsers = new ArrayList<InvitationUser>();
+    List<Invitation> invitations =
+        invitationService.getAllMyInvitationsSent(Integer.parseInt(getUserId()));
+    for (Invitation varI : invitations) {
+      invitationUsers.add(new InvitationUser(varI, getUserDetail(Integer.toString(varI
+          .getReceiverId()))));
+    }
+    return invitationUsers;
+  }
+
+  /**
+   * return my invitation list Received
+   * @param myId
+   * @return List<InvitationUser>
+   */
+  public List<InvitationUser> getAllMyInvitationsReceived() {
+    List<InvitationUser> invitationUsers = new ArrayList<InvitationUser>();
+    List<Invitation> invitations =
+        invitationService.getAllMyInvitationsReceive(Integer.parseInt(getUserId()));
+    for (Invitation varI : invitations) {
+      invitationUsers.add(new InvitationUser(varI, getUserDetail(Integer.toString(varI
+          .getSenderId()))));
+    }
+    return invitationUsers;
+  }
+
+  public void sendInvitation(String receiverId, String message) {
+    Invitation invitation =
+        new Invitation(Integer.parseInt(getUserId()), Integer.parseInt(receiverId), message,
+            new Date());
+    invitationService.invite(invitation);
+  }
+
+  public void ignoreInvitation(String id) {
+    invitationService.ignoreInvitation(Integer.parseInt(id));
+  }
+
+  public void acceptInvitation(String id) {
+    invitationService.accepteInvitation(Integer.parseInt(id));
+  }
+
 }
