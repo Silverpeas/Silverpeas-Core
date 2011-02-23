@@ -28,6 +28,7 @@ import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import java.rmi.RemoteException;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 /**
@@ -38,11 +39,11 @@ import javax.inject.Named;
 public class DocumentVersionAccessController implements AccessController<DocumentVersion> {
 
   private VersioningUtil versioning;
+  @Inject
   private DocumentAccessController accessController;
 
   public DocumentVersionAccessController() {
     versioning = new VersioningUtil();
-    accessController = new DocumentAccessController();
   }
 
   /**
@@ -63,6 +64,17 @@ public class DocumentVersionAccessController implements AccessController<Documen
           "root.NO_EX_MESSAGE", ex);
       return false;
     }
-    return accessController.isUserAuthorized(userId, doc);
+    return getDocumentAccessController().isUserAuthorized(userId, doc);
+  }
+
+  /**
+   * Gets a controller of access on documents.
+   * @return a DocumentAccessController instance.
+   */
+  private DocumentAccessController getDocumentAccessController() {
+    if (accessController == null) {
+      accessController = new DocumentAccessController();
+    }
+    return accessController;
   }
 }
