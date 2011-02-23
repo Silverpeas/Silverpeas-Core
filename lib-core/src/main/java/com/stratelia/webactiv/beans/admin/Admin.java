@@ -1716,13 +1716,13 @@ public final class Admin extends Object {
       // reset treecache list in old and new spaces
       TreeCache.setComponents(getDriverSpaceId(oldSpaceId), m_ComponentInstManager.
           getComponentsInSpace(Integer.parseInt(getDriverSpaceId(oldSpaceId))));
-      TreeCache.setComponents(getDriverSpaceId(spaceId), m_ComponentInstManager.getComponentsInSpace(Integer.
-          parseInt(getDriverSpaceId(spaceId))));
+      TreeCache.setComponents(getDriverSpaceId(spaceId),
+          m_ComponentInstManager.getComponentsInSpace(Integer.parseInt(getDriverSpaceId(spaceId))));
     } catch (Exception e) {
       rollback();
-      throw new AdminException("Admin.moveComponentInst",
-          SilverpeasException.ERROR, "admin.EX_ERR_MOVE_COMPONENT",
-          "spaceId = " + spaceId + " component Id: '" + componentId + " ", e);
+      throw new AdminException("Admin.moveComponentInst", SilverpeasException.ERROR,
+          "admin.EX_ERR_MOVE_COMPONENT", "spaceId = " + spaceId + " component Id: '"
+          + componentId + " ", e);
     }
   }
 
@@ -1795,9 +1795,8 @@ public final class Admin extends Object {
    * @return
    * @throws AdminException 
    */
-  public String getProfileLabelfromName(String sComponentName, String sProfileName) throws
-      AdminException {
-
+  public String getProfileLabelfromName(String sComponentName, String sProfileName, String lang)
+      throws AdminException {
     WAComponent wac = Instanciateur.getWAComponent(sComponentName);
     if (wac != null) {
       List<Profile> profiles = wac.getProfiles();
@@ -1805,7 +1804,7 @@ public final class Admin extends Object {
       for (Profile profile :
           profiles) {
         if (profile.getName().equals(sProfileName)) {
-          return profile.getFr();
+          return profile.getLabel().get(lang);
         }
       }
       return sProfileLabel;
@@ -1816,14 +1815,14 @@ public final class Admin extends Object {
 
   /**
    * Get the profile instance corresponding to the given id
+   * @param sProfileId
+   * @return
+   * @throws AdminException 
    */
   public ProfileInst getProfileInst(String sProfileId) throws AdminException {
     ProfileInst profileInst = m_Cache.getProfileInst(sProfileId);
     if (profileInst == null) {
-      // get profile instance from database
-      profileInst = m_ProfileInstManager.getProfileInst(m_DDManager,
-          sProfileId, null);
-      // store profile instance in cache
+      profileInst = m_ProfileInstManager.getProfileInst(m_DDManager, sProfileId, null);
       m_Cache.putProfileInst(profileInst);
     }
     return profileInst;
@@ -1834,22 +1833,18 @@ public final class Admin extends Object {
     List<ProfileInst> profiles =
         m_ProfiledObjectManager.getProfiles(m_DDManager, Integer.parseInt(objectId), objectType,
         Integer.parseInt(getDriverComponentId(componentId)));
-
     return profiles;
   }
 
   public String[] getProfilesByObjectAndUserId(int objectId, String objectType,
       String componentId, String userId) throws AdminException {
-
     List<String> groups = getAllGroupsOfUser(userId);
-
-    return m_ProfiledObjectManager.getUserProfileNames(objectId, objectType, Integer.parseInt(getDriverComponentId(
-        componentId)),
-        Integer.parseInt(userId), groups);
+    return m_ProfiledObjectManager.getUserProfileNames(objectId, objectType,
+        Integer.parseInt(getDriverComponentId(componentId)), Integer.parseInt(userId), groups);
   }
 
-  public boolean isObjectAvailable(String componentId, int objectId,
-      String objectType, String userId) throws AdminException {
+  public boolean isObjectAvailable(String componentId, int objectId, String objectType,
+      String userId) throws AdminException {
     if (userId == null) {
       return true;
     }
@@ -1976,14 +1971,12 @@ public final class Admin extends Object {
       if (startNewTransaction) {
         rollback();
       }
-      throw new AdminException("Admin.deleteProfileInst",
-          SilverpeasException.ERROR, "admin.EX_ERR_DELETE_PROFILE",
-          "profile Id: '" + sProfileId + "'", e);
+      throw new AdminException("Admin.deleteProfileInst", SilverpeasException.ERROR,
+          "admin.EX_ERR_DELETE_PROFILE", "profile Id: '" + sProfileId + "'", e);
     }
   }
 
-  public String updateProfileInst(ProfileInst profileInstNew)
-      throws AdminException {
+  public String updateProfileInst(ProfileInst profileInstNew) throws AdminException {
     return updateProfileInst(profileInstNew, null, true);
   }
 
@@ -2915,7 +2908,7 @@ public final class Admin extends Object {
     return aUserDetail;
   }
 
-  public Hashtable<String, String> getUsersLanguage(List<String> userIds) throws AdminException {
+  public Map<String, String> getUsersLanguage(List<String> userIds) throws AdminException {
     Connection con = null;
     try {
       con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
@@ -2923,7 +2916,7 @@ public final class Admin extends Object {
       throw new AdminException("Admin.getUsersLanguage",
           SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
     }
-    Hashtable<String, String> usersLanguage = null;
+    Map<String, String> usersLanguage = null;
     try {
       usersLanguage = PersonalizationDAO.getUsersLanguage(con, userIds);
     } catch (SQLException se) {
@@ -2937,13 +2930,16 @@ public final class Admin extends Object {
 
   /**
    * Get the user Id corresponding to Domain/Login
+   * @param sLogin
+   * @param sDomainId
+   * @return
+   * @throws AdminException 
    */
-  public String getUserIdByLoginAndDomain(String sLogin, String sDomainId)
-      throws AdminException {
+  public String getUserIdByLoginAndDomain(String sLogin, String sDomainId) throws AdminException {
     Domain[] theDomains = null;
     String valret = null;
 
-    if (sDomainId == null || sDomainId.length() == 0) {
+    if (!StringUtil.isDefined(sDomainId)) {
       try {
         theDomains = m_DDManager.getAllDomains();
       } catch (Exception e) {
@@ -2951,28 +2947,21 @@ public final class Admin extends Object {
             SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_BY_LOGIN_DOMAIN",
             "login: '" + sLogin + "', domain id: '" + sDomainId + "'", e);
       }
-
-      for (int i = 0;
-          i < theDomains.length && valret == null;
-          i++) {
+      for (int i = 0; i < theDomains.length && valret == null; i++) {
         try {
-          valret = m_UserManager.getUserIdByLoginAndDomain(m_DDManager, sLogin,
-              theDomains[i].getId());
+          valret = m_UserManager.getUserIdByLoginAndDomain(m_DDManager, sLogin, theDomains[i].getId());
         } catch (Exception e) {
-          throw new AdminException("Admin.getUserIdByLoginAndDomain",
-              SilverpeasException.ERROR,
+          throw new AdminException("Admin.getUserIdByLoginAndDomain", SilverpeasException.ERROR,
               "admin.EX_ERR_GET_USER_BY_LOGIN_DOMAIN", "login: '" + sLogin
               + "', domain id: '" + sDomainId + "'", e);
         }
       }
       if (valret == null) {
-        throw new AdminException("Admin.getUserIdByLoginAndDomain",
-            SilverpeasException.ERROR, "admin.EX_ERR_USER_NOT_FOUND",
-            "login: '" + sLogin + "', in all domains");
+        throw new AdminException("Admin.getUserIdByLoginAndDomain", SilverpeasException.ERROR, 
+            "admin.EX_ERR_USER_NOT_FOUND", "login: '" + sLogin + "', in all domains");
       }
     } else {
-      valret = m_UserManager.getUserIdByLoginAndDomain(m_DDManager, sLogin,
-          sDomainId);
+      valret = m_UserManager.getUserIdByLoginAndDomain(m_DDManager, sLogin, sDomainId);
     }
     return valret;
   }
@@ -2983,7 +2972,7 @@ public final class Admin extends Object {
    * @throws Exception
    */
   public String getUserIdByAuthenticationKey(String authenticationKey) throws Exception {
-    Hashtable<String, String> userParameters = m_DDManager.authenticate(authenticationKey);
+    Map<String, String> userParameters = m_DDManager.authenticate(authenticationKey);
     String login = userParameters.get("login");
     String domainId = userParameters.get("domainId");
     return m_UserManager.getUserIdByLoginAndDomain(m_DDManager, login, domainId);
@@ -2991,6 +2980,9 @@ public final class Admin extends Object {
 
   /**
    * Get the user corresponding to the given user Id (only infos in cache table)
+   * @param sUserId
+   * @return
+   * @throws AdminException 
    */
   public UserFull getUserFull(String sUserId) throws AdminException {
     return m_UserManager.getUserFull(m_DDManager, sUserId);
@@ -6733,8 +6725,8 @@ public final class Admin extends Object {
       try {
         indexUsers(domain.getId());
       } catch (Exception e) {
-        SilverTrace.error("admin", "Admin.indexAllUsers", "admin.CANT_INDEX_USERS", "domainId = " + domain.
-            getId(), e);
+        SilverTrace.error("admin", "Admin.indexAllUsers", "admin.CANT_INDEX_USERS",
+            "domainId = " + domain.getId(), e);
       }
     }
   }

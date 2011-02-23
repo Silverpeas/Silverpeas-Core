@@ -61,10 +61,8 @@ public class ProfileInst extends Object implements Serializable, Cloneable {
     m_alUsers = new ArrayList<String>();
   }
 
-  @SuppressWarnings("unchecked")
   public Object clone() {
     ProfileInst pi = new ProfileInst();
-    //pi.m_sId = m_sId;
     pi.m_sName = m_sName;
     pi.m_sLabel = m_sLabel;
     pi.m_sDescription = m_sDescription;
@@ -73,7 +71,7 @@ public class ProfileInst extends Object implements Serializable, Cloneable {
     pi.objectId = objectId;
     pi.objectType = objectType;
     pi.m_alGroups = (ArrayList<String>) m_alGroups.clone();
-    pi.m_alUsers = (ArrayList<String>) m_alUsers.clone();
+    pi.m_alUsers = (ArrayList<String>)m_alUsers.clone();
     return pi;
   }
 

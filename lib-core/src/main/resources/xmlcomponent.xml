@@ -44,5 +44,8 @@
     <jaxb:bindings  schemaLocation="http://www.silverpeas.org/xsd/component.xsd" node="//xsd:complexType[@name='ParameterOptionType']">
       <jaxb:class name="Option"/>
     </jaxb:bindings>
+    <jaxb:bindings  schemaLocation="http://www.silverpeas.org/xsd/component.xsd" node="//xsd:complexType[@name='MessageType']">
+      <jaxb:class name="Message"/>
+    </jaxb:bindings>
   </jaxb:bindings>
 </jaxb:bindings>

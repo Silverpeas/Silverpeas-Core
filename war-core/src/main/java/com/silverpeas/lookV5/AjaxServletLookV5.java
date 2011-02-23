@@ -63,7 +63,8 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserFavoriteSpaceManager;
 import com.silverpeas.admin.components.Instanciateur;
-import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
+import com.silverpeas.admin.components.WAComponent;
+
 import com.stratelia.webactiv.organization.DAOFactory;
 import com.stratelia.webactiv.organization.UserFavoriteSpaceDAO;
 import com.stratelia.webactiv.organization.UserFavoriteSpaceVO;
@@ -548,7 +549,7 @@ public class AjaxServletLookV5 extends HttpServlet {
           kind = component.getName();
           WAComponent descriptor = Instanciateur.getWAComponent(component.getName());
           if (descriptor != null
-              && "RprocessManager".equalsIgnoreCase(descriptor.getRequestRouter())) {
+              && "RprocessManager".equalsIgnoreCase(descriptor.getRouter())) {
             kind = "processManager";
           }
 

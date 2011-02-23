@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.publicationTemplate;
 
 import java.io.File;
@@ -63,23 +62,17 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
  * It is a singleton.
  */
 public class PublicationTemplateManager {
-  
+
   private static final PublicationTemplateManager instance = new PublicationTemplateManager();
-  
   // PublicationTemplates instances associated to silverpeas components. Theses templates should
   // already exist and be loaded.
   // map externalId -> PublicationTemplate
-  private final Map<String, PublicationTemplate> externalTemplates =
-      new HashMap<String, PublicationTemplate>();
-
+  private final Map<String, PublicationTemplate> externalTemplates = new HashMap<String, PublicationTemplate>();
   // All of the PublicationTemplates loaded in silverpeas and identified by their XML file.
   // map templateFileName -> PublicationTemplate to avoid multiple marshalling
-  private final Map<String, PublicationTemplateImpl> templates =
-      new HashMap<String, PublicationTemplateImpl>();
-
+  private final Map<String, PublicationTemplateImpl> templates = new HashMap<String, PublicationTemplateImpl>();
   public static String mappingPublicationTemplateFilePath = null;
   public static String mappingRecordTemplateFilePath = null;
-
   public static String templateDir = null;
   public static String defaultTemplateDir = null;
 
@@ -90,7 +83,7 @@ public class PublicationTemplateManager {
         new ResourceLocator("com.silverpeas.publicationTemplate.settings.mapping", "");
 
     templateDir = templateSettings.getString("templateDir");
-    defaultTemplateDir = System.getenv("SILVERPEAS_HOME")+"/data/templateRepository/";
+    defaultTemplateDir = System.getenv("SILVERPEAS_HOME") + "/data/templateRepository/";
 
     String mappingDir = mappingSettings.getString("mappingDir");
     String mappingPublicationTemplateFileName = mappingSettings.getString("templateFilesMapping");
@@ -99,11 +92,10 @@ public class PublicationTemplateManager {
     mappingPublicationTemplateFilePath = makePath(mappingDir, mappingPublicationTemplateFileName);
     mappingRecordTemplateFilePath = makePath(mappingDir, mappingRecordTemplateFileName);
   }
-  
+
   private PublicationTemplateManager() {
-    
   }
-  
+
   /**
    * Gets the single instance of this manager.
    * @return the single instance of PublicationTemplateManager.
@@ -111,7 +103,7 @@ public class PublicationTemplateManager {
   public static PublicationTemplateManager getInstance() {
     return instance;
   }
-  
+
   public static String makePath(String dirName, String fileName) {
     if (!StringUtil.isDefined(dirName)) {
       return fileName;
@@ -120,25 +112,22 @@ public class PublicationTemplateManager {
       return dirName;
     }
 
-    if (dirName.charAt(dirName.length() - 1) == '/'
-        || dirName.charAt(dirName.length() - 1) == '\\') {
+    if (dirName.charAt(dirName.length() - 1) == '/' || dirName.charAt(dirName.length() - 1) == '\\') {
       return dirName.replace('\\', '/') + fileName.replace('\\', '/');
     }
     return dirName.replace('\\', '/') + "/" + fileName.replace('\\', '/');
   }
 
-  public GenericRecordSet addDynamicPublicationTemplate(String externalId,
-      String templateFileName) throws PublicationTemplateException {
+  public GenericRecordSet addDynamicPublicationTemplate(String externalId, String templateFileName)
+      throws PublicationTemplateException {
+    String fileName = templateFileName;
     try {
-      if (!templateFileName.endsWith(".xml")) {
-        templateFileName += ".xml";
+      if (!fileName.endsWith(".xml")) {
+        fileName += ".xml";
       }
-
-      PublicationTemplate thePubTemplate = loadPublicationTemplate(templateFileName);
-
+      PublicationTemplate thePubTemplate = loadPublicationTemplate(fileName);
       RecordTemplate recordTemplate = thePubTemplate.getRecordTemplate();
-
-      return getGenericRecordSetManager().createRecordSet(externalId, recordTemplate, templateFileName);
+      return getGenericRecordSetManager().createRecordSet(externalId, recordTemplate, fileName);
     } catch (FormException e) {
       throw new PublicationTemplateException(
           "PublicationTemplateManager.addDynamicPublicationTemplate", "form.EXP_INSERT_FAILED",
@@ -146,15 +135,19 @@ public class PublicationTemplateManager {
     }
   }
 
-   public PublicationTemplate getPublicationTemplate(String externalId)
+  public PublicationTemplate getPublicationTemplate(String externalId)
       throws PublicationTemplateException {
     return getPublicationTemplate(externalId, null);
   }
 
   /**
    * Returns the PublicationTemplate having the given externalId.
+   * @param externalId
+   * @param templateFileName 
+   * @return
+   * @throws PublicationTemplateException  
    */
-   public PublicationTemplate getPublicationTemplate(String externalId,
+  public PublicationTemplate getPublicationTemplate(String externalId,
       String templateFileName) throws PublicationTemplateException {
     String currentTemplateFileName = templateFileName;
     PublicationTemplate thePubTemplate = externalTemplates.get(externalId);
@@ -180,12 +173,11 @@ public class PublicationTemplateManager {
 
   /**
    * Removes the PublicationTemplate having the given externalId.
+   * @param externalId 
+   * @throws PublicationTemplateException 
    */
-   public void removePublicationTemplate(String externalId)
-      throws PublicationTemplateException {
+  public void removePublicationTemplate(String externalId) throws PublicationTemplateException {
     try {
-      // externalTemplates.remove(externalId);
-
       getGenericRecordSetManager().removeRecordSet(externalId);
     } catch (FormException e) {
       throw new PublicationTemplateException(
@@ -198,21 +190,19 @@ public class PublicationTemplateManager {
    * load a publicationTemplate definition from xml file to java objects
    * @param xmlFileName the xml file name that contains publication template definition
    * @return a PublicationTemplate object
+   * @throws PublicationTemplateException  
    */
-   public PublicationTemplate loadPublicationTemplate(String xmlFileName)
-      throws PublicationTemplateException {
+  public PublicationTemplate loadPublicationTemplate(String xmlFileName) throws
+      PublicationTemplateException {
     SilverTrace.info("form", "PublicationTemplateManager.loadPublicationTemplate",
         "root.MSG_GEN_ENTER_METHOD", "xmlFileName=" + xmlFileName);
     try {
-      PublicationTemplateImpl publicationTemplate =
-          (PublicationTemplateImpl) templates.get(xmlFileName);
+      PublicationTemplateImpl publicationTemplate = templates.get(xmlFileName);
       if (publicationTemplate != null) {
         return publicationTemplate.basicClone();
       }
-
-      // Format these url
       String xmlFilePath = makePath(templateDir, xmlFileName);
-      
+
       File xmlFile = new File(xmlFilePath);
       if (xmlFile == null || !xmlFile.exists()) {
         //file does not exist in directory, try to locate it in default one
@@ -226,9 +216,8 @@ public class PublicationTemplateManager {
       Unmarshaller unmar = new Unmarshaller(mapping);
 
       // Unmarshall the process model
-      publicationTemplate =
-          (PublicationTemplateImpl) unmar.unmarshal(new InputSource(
-              new FileInputStream(xmlFile)));
+      publicationTemplate = (PublicationTemplateImpl) unmar.unmarshal(new InputSource(
+          new FileInputStream(xmlFile)));
       publicationTemplate.setFileName(xmlFileName);
 
       templates.put(xmlFileName, publicationTemplate);
@@ -240,25 +229,26 @@ public class PublicationTemplateManager {
           me);
     } catch (MarshalException me) {
       throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
-          "form.EX_ERR_CASTOR_UNMARSHALL_PUBLICATION_TEMPLATE", "Publication Template FileName : " +
-              xmlFileName, me);
+          "form.EX_ERR_CASTOR_UNMARSHALL_PUBLICATION_TEMPLATE", "Publication Template FileName : "
+          + xmlFileName, me);
     } catch (ValidationException ve) {
       throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
           "form.EX_ERR_CASTOR_INVALID_XML_PUBLICATION_TEMPLATE",
           "Publication Template FileName : " + xmlFileName, ve);
     } catch (IOException ioe) {
       throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
-          "form.EX_ERR_CASTOR_LOAD_PUBLICATION_TEMPLATE", "Publication Template FileName : " +
-              xmlFileName, ioe);
+          "form.EX_ERR_CASTOR_LOAD_PUBLICATION_TEMPLATE", "Publication Template FileName : "
+          + xmlFileName, ioe);
     }
   }
 
   /**
    * save a publicationTemplate definition from java objects to xml file
    * @param template the PublicationTemplate to save
+   * @throws PublicationTemplateException  
    */
-   public void savePublicationTemplate(PublicationTemplate template)
-      throws PublicationTemplateException {
+  public void savePublicationTemplate(PublicationTemplate template) throws
+      PublicationTemplateException {
     SilverTrace.info("form", "PublicationTemplateManager.savePublicationTemplate",
         "root.MSG_GEN_ENTER_METHOD", "template = " + template.getFileName());
 
@@ -293,16 +283,16 @@ public class PublicationTemplateManager {
           me);
     } catch (MarshalException me) {
       throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
-          "form.EX_ERR_CASTOR_UNMARSHALL_PUBLICATION_TEMPLATE", "Publication Template FileName : " +
-              xmlFileName, me);
+          "form.EX_ERR_CASTOR_UNMARSHALL_PUBLICATION_TEMPLATE", "Publication Template FileName : "
+          + xmlFileName, me);
     } catch (ValidationException ve) {
       throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
           "form.EX_ERR_CASTOR_INVALID_XML_PUBLICATION_TEMPLATE",
           "Publication Template FileName : " + xmlFileName, ve);
     } catch (IOException ioe) {
       throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
-          "form.EX_ERR_CASTOR_LOAD_PUBLICATION_TEMPLATE", "Publication Template FileName : " +
-              xmlFileName, ioe);
+          "form.EX_ERR_CASTOR_LOAD_PUBLICATION_TEMPLATE", "Publication Template FileName : "
+          + xmlFileName, ioe);
     } finally {
       if (writer != null) {
         try {
@@ -314,7 +304,7 @@ public class PublicationTemplateManager {
     }
   }
 
-  public  List<PublicationTemplate> getPublicationTemplates(boolean onlyVisibles)
+  public List<PublicationTemplate> getPublicationTemplates(boolean onlyVisibles)
       throws PublicationTemplateException {
     List<PublicationTemplate> publicationTemplates = new ArrayList<PublicationTemplate>();
     Collection<File> templateNames;
@@ -331,7 +321,7 @@ public class PublicationTemplateManager {
         if ("xml".equalsIgnoreCase(extension)) {
           PublicationTemplate template =
               loadPublicationTemplate(fileName.substring(fileName.lastIndexOf(File.separator) + 1,
-                  fileName.length()));
+              fileName.length()));
           if (onlyVisibles) {
             if (template.isVisible()) {
               publicationTemplates.add(template);
@@ -349,12 +339,12 @@ public class PublicationTemplateManager {
     return publicationTemplates;
   }
 
-  public  List<PublicationTemplate> getPublicationTemplates()
+  public List<PublicationTemplate> getPublicationTemplates()
       throws PublicationTemplateException {
     return getPublicationTemplates(true);
   }
 
-  public  List<PublicationTemplate> getSearchablePublicationTemplates()
+  public List<PublicationTemplate> getSearchablePublicationTemplates()
       throws PublicationTemplateException {
     List<PublicationTemplate> searchableTemplates = new ArrayList<PublicationTemplate>();
 
@@ -378,7 +368,7 @@ public class PublicationTemplateManager {
     return searchableTemplates;
   }
 
-  public  void removePublicationTemplateFromCaches(String fileName) {
+  public void removePublicationTemplateFromCaches(String fileName) {
     SilverTrace.info("form", "PublicationTemplateManager.removePublicationTemplateFromCaches",
         "root.MSG_GEN_ENTER_METHOD", "fileName = " + fileName);
     List<String> externalIdsToRemove = new ArrayList<String>();
@@ -396,7 +386,7 @@ public class PublicationTemplateManager {
 
     getGenericRecordSetManager().removeTemplateFromCache(fileName);
   }
-  
+
   /**
    * Gets an instance of a GenericRecordSet objects manager.
    * @return a GenericRecordSetManager instance.

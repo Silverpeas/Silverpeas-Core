@@ -29,27 +29,27 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>kmelia</name>
   <label>
-    <fr>Gestion documentaire I</fr>
-    <en>Theme Tracker</en>
+    <message lang="fr">Gestion documentaire I</message>
+    <message lang="en">Theme Tracker</message>
   </label>
   <description>
-    <fr>Permet de fédérer et structurer la documentation par répertoires thématiques
+    <message lang="fr">Permet de fédérer et structurer la documentation par répertoires thématiques
       arborescents. De nombreuses fonctions associées peuvent être activées : forumlaire d'entête
       XML et méta-données associées, gestion de fichiers joints de formats Office, PDF, html,
       gestion de
       version des fichiers joints, gestion d'un workflow multi-étapes de validation / approbation,
       indexation manuelle sur le Plan de Classement Silverpeas, contrôle de lecture,
       gestion de commentaires, abonnement à un dossier ou un fichier, alerte de publication.
-    </fr>
-    <en>This component organizes documentation in hierarchical themes. You have many options : XML
+    </message>
+    <message lang="en">This component organizes documentation in hierarchical themes. You have many options : XML
       form for metadata, attachments versioned or not, workflows with many steps for validation / acceptation,
       classification on the classification scheme, readers list, comments, subscription to a theme ,
       a publication or a file.
-    </en>
+    </message>
   </description>
   <suite>
-    <fr>01 Gestion Documentaire</fr>
-    <en>01 Document Management</en>
+    <message lang="fr">01 Gestion Documentaire</message>
+    <message lang="en">01 Document Management</message>
   </suite>
   <visible>true</visible>
   <visibleInPersonalSpace>true</visibleInPersonalSpace>
@@ -57,28 +57,52 @@
   <instanceClassName>com.stratelia.webactiv.kmelia.KmeliaInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
-      <fr>Gestionnaire</fr>
-      <en>Administrator</en>
+      <label>
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </label>
+      <help>
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </help>
     </profile>
     <profile name="publisher">
-      <fr>Publieur</fr>
-      <en>Publisher</en>
+      <label>
+        <message lang="fr">Publieur</message>
+        <message lang="en">Publisher</message>
+      </label>
+      <help>
+        <message lang="fr">Publieur</message>
+        <message lang="en">Publisher</message>
+      </help>
     </profile>
     <profile name="writer">
-      <fr>Rédacteur</fr>
-      <en>Writer</en>
+      <label>
+        <message lang="fr">Rédacteur</message>
+        <message lang="en">Writer</message>
+      </label>
+      <help>
+        <message lang="fr">Rédacteur</message>
+        <message lang="en">Writer</message>
+      </help>
     </profile>
     <profile name="user">
-      <fr>Lecteur</fr>
-      <en>Reader</en>
+      <label>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </label>
+      <help>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </help>
     </profile>
   </profiles>
   <parameters>
     <parameter>
       <name>nbPubliOnRoot</name>
       <label>
-        <fr>Nb dernières publi</fr>
-        <en>Number of last publications</en>
+        <message lang="fr">Nb dernières publi</message>
+        <message lang="en">Number of last publications</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>      
@@ -87,22 +111,22 @@
       <size>5</size>
       <updatable>always</updatable>
       <help>
-        <fr>Permet de définir le nombre de dernières publications affichées sur la
+        <message lang="fr">Permet de définir le nombre de dernières publications affichées sur la
           page d'accueil du composant. La création de publication à la racine est impossible.
           Si la valeur saisie est égale à 0, la publication à la racine est alors possible mais
           les dernières publications ne sont pas affichées sur la page d'accueil.
-        </fr>
-        <en>Defines the number of publications displayed on the home page of the component.If not set to 0 
+        </message>
+        <message lang="en">Defines the number of publications displayed on the home page of the component.If not set to 0 
         you can't create publications in the root directory. When set to 0 you can create
         publications on the root directory but the last publications are no longer displayed on the home page. 
-        </en>
+        </message>
       </help>
     </parameter>
     <parameter>
       <name>nbPubliPerPage</name>
       <label>
-        <fr>Nb Publi / Page</fr>
-        <en>Number of publications per page.</en>
+        <message lang="fr">Nb Publi / Page</message>
+        <message lang="en">Number of publications per page.</message>
       </label>      
       <order>2</order>
       <mandatory>false</mandatory>
@@ -111,15 +135,15 @@
       <size>5</size>
       <updatable>always</updatable>
       <help>
-        <fr>Permet de définir le nombre de publications affichées par page.</fr>
-        <en>Defines the number of publications displyed on a page.</en>
+        <message lang="fr">Permet de définir le nombre de publications affichées par page.</message>
+        <message lang="en">Defines the number of publications displyed on a page.</message>
       </help>
     </parameter>
     <parameter>
       <name>isTree</name>
       <label>
-        <fr>Gestion arborescente</fr>
-        <en>Tree view</en>
+        <message lang="fr">Gestion arborescente</message>
+        <message lang="en">Tree view</message>
       </label>
       <order>3</order>
       <mandatory>true</mandatory>
@@ -127,15 +151,15 @@
       <type>checkbox</type>
       <updatable>creation</updatable>
       <help>
-        <fr>Active l'organisation arborescente de thèmes. Une publication peut êtreplacée dans plusieurs thèmes.</fr>
-        <en>Activates the tree organization of themes. A publication can be in various themes at the same time.</en>
+        <message lang="fr">Active l'organisation arborescente de thèmes. Une publication peut êtreplacée dans plusieurs thèmes.</message>
+        <message lang="en">Activates the tree organization of themes. A publication can be in various themes at the same time.</message>
       </help>
     </parameter>
     <parameter>
       <name>usePdc</name>
       <label>
-        <fr>Classification PDC</fr>
-        <en>Classification Scheme</en>
+        <message lang="fr">Classification PDC</message>
+        <message lang="en">Classification Scheme</message>
       </label>
       <order>4</order>
       <mandatory>true</mandatory>
@@ -143,15 +167,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Les publications créées au sein de cette instance pourront être classées sur le Plan de Classement</fr>
-        <en>Publications would be classified on PDC</en>
+        <message lang="fr">Les publications créées au sein de cette instance pourront être classées sur le Plan de Classement</message>
+        <message lang="en">Publications would be classified on PDC</message>
       </help>
     </parameter>
     <parameter>
       <name>tabContent</name>
       <label>
-        <fr>Contenu</fr>
-        <en>Content</en>
+        <message lang="fr">Contenu</message>
+        <message lang="en">Content</message>
       </label>
       <order>5</order>
       <mandatory>true</mandatory>
@@ -159,15 +183,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Pour pouvoir ajouter un contenu aux publication</fr>
-        <en>Add some content to a publication</en>
+        <message lang="fr">Pour pouvoir ajouter un contenu aux publication</message>
+        <message lang="en">Add some content to a publication</message>
       </help>
     </parameter>
     <parameter>
       <name>tabAttachments</name>
       <label>
-        <fr>Fichiers Joints</fr>
-        <en>Attachments</en>
+        <message lang="fr">Fichiers Joints</message>
+        <message lang="en">Attachments</message>
       </label>
       <order>6</order>
       <mandatory>true</mandatory>
@@ -175,15 +199,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Pour pouvoir joindre des fichiers à une publication</fr>
-        <en>Add attachments to a publication</en>
+        <message lang="fr">Pour pouvoir joindre des fichiers à une publication</message>
+        <message lang="en">Add attachments to a publication</message>
       </help>
     </parameter>
     <parameter>
       <name>tabSeeAlso</name>
       <label>
-        <fr>Voir Aussi</fr>
-        <en>See also</en>
+        <message lang="fr">Voir Aussi</message>
+        <message lang="en">See also</message>
       </label>
       <order>7</order>
       <mandatory>true</mandatory>
@@ -191,15 +215,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Pour indiquer d'autres publicatins en rapport avec la publication courante.</fr>
-        <en>Indicates publications you might want to see after looking at the current publication.</en>
+        <message lang="fr">Pour indiquer d'autres publicatins en rapport avec la publication courante.</message>
+        <message lang="en">Indicates publications you might want to see after looking at the current publication.</message>
       </help>
     </parameter>    
     <parameter>
       <name>tabAccessPaths</name>
       <label>
-        <fr>Emplacements Multiples</fr>
-        <en>Multiple locations</en>
+        <message lang="fr">Emplacements Multiples</message>
+        <message lang="en">Multiple locations</message>
       </label>
       <order>8</order>
       <mandatory>true</mandatory>
@@ -207,16 +231,16 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Pour mettre une même publication à plusieurs endroits dans la hiérachie de ce composant ou d'autres.</fr>
-        <en>Indicates that publications can be in many places in the component's hierarchy or in other components.</en>
+        <message lang="fr">Pour mettre une même publication à plusieurs endroits dans la hiérachie de ce composant ou d'autres.</message>
+        <message lang="en">Indicates that publications can be in many places in the component's hierarchy or in other components.</message>
       </help>
       <personalSpaceValue>no</personalSpaceValue>
     </parameter>
     <parameter>
       <name>tabReadersList</name>
       <label>
-        <fr>Contrôles de Lecture</fr>
-        <en>Readers list</en>
+        <message lang="fr">Contrôles de Lecture</message>
+        <message lang="en">Readers list</message>
       </label>
       <order>9</order>
       <mandatory>true</mandatory>
@@ -224,16 +248,16 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Affiche la liste des personnes ayant lu une publication</fr>
-        <en>Display the list of people having read a publication</en>
+        <message lang="fr">Affiche la liste des personnes ayant lu une publication</message>
+        <message lang="en">Display the list of people having read a publication</message>
       </help>
       <personalSpaceValue>no</personalSpaceValue>
     </parameter>
     <parameter>
       <name>tabComments</name>
       <label>
-        <fr>Commentaires</fr>
-        <en>Comments</en>
+        <message lang="fr">Commentaires</message>
+        <message lang="en">Comments</message>
       </label>
       <order>10</order>
       <mandatory>true</mandatory>
@@ -241,15 +265,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Pour commenter une publication</fr>
-        <en>To comment a publication</en>
+        <message lang="fr">Pour commenter une publication</message>
+        <message lang="en">To comment a publication</message>
       </help>
     </parameter>
     <parameter>
       <name>versionControl</name>
       <label>
-        <fr>Pièces jointes versionnées</fr>
-        <en>Versioned attachments</en>
+        <message lang="fr">Pièces jointes versionnées</message>
+        <message lang="en">Versioned attachments</message>
       </label>
       <order>11</order>
       <mandatory>true</mandatory>
@@ -257,15 +281,15 @@
       <type>checkbox</type>
       <updatable>creation</updatable>
       <help>
-        <fr>Permet de gérer les versions des fichiers joints. Ce paramêtre n'est modifiable qu'à la création de l'instance.</fr>
-        <en>Attachments are versioned. This parameter isdefined on the creation of the component and can't be updated.</en>
+        <message lang="fr">Permet de gérer les versions des fichiers joints. Ce paramêtre n'est modifiable qu'à la création de l'instance.</message>
+        <message lang="en">Attachments are versioned. This parameter isdefined on the creation of the component and can't be updated.</message>
       </help>
     </parameter>
     <parameter>
       <name>versionUseFileRights</name>
       <label>
-        <fr>Droits sur les fichiers</fr>
-        <en>Rights on versioned attachments</en>
+        <message lang="fr">Droits sur les fichiers</message>
+        <message lang="en">Rights on versioned attachments</message>
       </label>
       <order>12</order>
       <mandatory>true</mandatory>
@@ -273,29 +297,29 @@
       <options>
         <option>
           <name>
-            <fr>Rédacteurs et Lecteurs</fr>
-            <en>Writers and Readers</en>
+            <message lang="fr">Rédacteurs et Lecteurs</message>
+            <message lang="en">Writers and Readers</message>
           </name>
           <value>0</value>
         </option>
         <option>
           <name>
-            <fr>Rédacteurs</fr>
-            <en>Writers</en>
+            <message lang="fr">Rédacteurs</message>
+            <message lang="en">Writers</message>
           </name>
           <value>1</value>
         </option>
         <option>
           <name>
-            <fr>Lecteurs</fr>
-            <en>Readers</en>
+            <message lang="fr">Lecteurs</message>
+            <message lang="en">Readers</message>
           </name>
           <value>2</value>
         </option>
         <option>
           <name>
-            <fr>Droits hérités</fr>
-            <en>Inherited rights</en>
+            <message lang="fr">Droits hérités</message>
+            <message lang="en">Inherited rights</message>
           </name>
           <value>3</value>
         </option>
@@ -303,19 +327,19 @@
       <type>select</type>
       <updatable>creation</updatable>
       <help>
-        <fr>Droits sur les fichiers versionnés: Rédacteurs et Lecteurs,
+        <message lang="fr">Droits sur les fichiers versionnés: Rédacteurs et Lecteurs,
           Rédacteurs seulement, Lecteurs seulement ou droits hérités du composant.
-        </fr>
-        <en>Access rights on the files with versions : Writers and readers,
+        </message>
+        <message lang="en">Access rights on the files with versions : Writers and readers,
           Writers only, Readers only or rights inherited from the component.
-        </en>
+        </message>
       </help>      
     </parameter>
     <parameter>
       <name>draft</name>
       <label>
-        <fr>Mode brouillon</fr>
-        <en>Draf</en>
+        <message lang="fr">Mode brouillon</message>
+        <message lang="en">Draf</message>
       </label>
       <order>13</order>
       <mandatory>true</mandatory>
@@ -323,17 +347,17 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Le mode brouillon permet de travailler sur une publication sans que personne d'autre
+        <message lang="fr">Le mode brouillon permet de travailler sur une publication sans que personne d'autre
           puisse la voir.
-        </fr>
-        <en>A publication in draft mode is visible only to the author, so he can work on it.</en>
+        </message>
+        <message lang="en">A publication in draft mode is visible only to the author, so he can work on it.</message>
       </help>
     </parameter>
     <parameter>
       <name>webContent</name>
       <label>
-        <fr>Orienté contenu Web</fr>
-        <en>Content for web</en>
+        <message lang="fr">Orienté contenu Web</message>
+        <message lang="en">Content for web</message>
       </label>
       <order>14</order>
       <mandatory>true</mandatory>
@@ -341,15 +365,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Permet d'activer les fonctions liées à la gestion de contenu web (wysiwyg associé au thème, visibilité des thèmes).</fr>
-        <en>Activate functionalities for managing web content (wysiwyg for themes, and themes visibility).</en>
+        <message lang="fr">Permet d'activer les fonctions liées à la gestion de contenu web (wysiwyg associé au thème, visibilité des thèmes).</message>
+        <message lang="en">Activate functionalities for managing web content (wysiwyg for themes, and themes visibility).</message>
       </help>
     </parameter>
     <parameter>
       <name>delegatedTopicManagement</name>
       <label>
-        <fr>Gestion déléguée des thèmes</fr>
-        <en>Theme management delegation</en>
+        <message lang="fr">Gestion déléguée des thèmes</message>
+        <message lang="en">Theme management delegation</message>
       </label>
       <order>16</order>
       <mandatory>true</mandatory>
@@ -357,15 +381,15 @@
       <type>checkbox</type>
       <updatable>never</updatable>
       <help>
-        <fr>La gestion des thèmes est déléguée aux publieurs et rédacteurs.</fr>
-        <en>Publishers and writers can manage the themes.</en>
+        <message lang="fr">La gestion des thèmes est déléguée aux publieurs et rédacteurs.</message>
+        <message lang="en">Publishers and writers can manage the themes.</message>
       </help>
     </parameter>
     <parameter>
       <name>useAuthor</name>
       <label>
-        <fr>Champ Auteur</fr>
-        <en>Author field</en>
+        <message lang="fr">Champ Auteur</message>
+        <message lang="en">Author field</message>
       </label>
       <order>17</order>
       <mandatory>true</mandatory>
@@ -373,15 +397,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Les documents créés au sein de cette instance pourront comporter un champ supplémentaire 'Auteur'.</fr>
-        <en>Publication have a field to enter the name of the author.</en>
+        <message lang="fr">Les documents créés au sein de cette instance pourront comporter un champ supplémentaire 'Auteur'.</message>
+        <message lang="en">Publication have a field to enter the name of the author.</message>
       </help>
     </parameter>
     <parameter>
       <name>openSingleAttachment</name>
       <label>
-        <fr>Ouverture directe fichier joint</fr>
-        <en>Directly open attachments</en>
+        <message lang="fr">Ouverture directe fichier joint</message>
+        <message lang="en">Directly open attachments</message>
       </label>
       <order>18</order>
       <mandatory>true</mandatory>
@@ -389,15 +413,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Si une publication contient un seul fichier joint alors l'ouverture de la publication déclenche automatiquement l'ouverture du fichier joint.</fr>
-        <en>Opening a publication with only one attachment will open this attachment automatically.</en>
+        <message lang="fr">Si une publication contient un seul fichier joint alors l'ouverture de la publication déclenche automatiquement l'ouverture du fichier joint.</message>
+        <message lang="en">Opening a publication with only one attachment will open this attachment automatically.</message>
       </help>
     </parameter>
     <parameter>
       <name>importFiles</name>
       <label>
-        <fr>Importation de document(s)</fr>
-        <en>Importing document(s)</en>
+        <message lang="fr">Importation de document(s)</message>
+        <message lang="en">Importing document(s)</message>
       </label>
       <order>19</order>
       <mandatory>true</mandatory>
@@ -405,29 +429,29 @@
       <options>
         <option>
           <name>
-            <fr>Non</fr>
-            <en>No</en>
+            <message lang="fr">Non</message>
+            <message lang="en">No</message>
           </name>
           <value>0</value>
         </option>
         <option>
           <name>
-            <fr>Import unitaire</fr>
-            <en>Unit import</en>
+            <message lang="fr">Import unitaire</message>
+            <message lang="en">Unit import</message>
           </name>
           <value>1</value>
         </option>
         <option>
           <name>
-            <fr>Import massif</fr>
-            <en>Massive import</en>
+            <message lang="fr">Import massif</message>
+            <message lang="en">Massive import</message>
           </name>
           <value>2</value>
         </option>
         <option>
           <name>
-            <fr>Tous</fr>
-            <en>All</en>
+            <message lang="fr">Tous</message>
+            <message lang="en">All</message>
           </name>
           <value>3</value>
         </option>
@@ -435,15 +459,15 @@
       <type>select</type>
       <updatable>always</updatable>
       <help>
-        <fr>Valeurs possibles:Non, Import unitaire, Import massif, Importunitaire et massif.</fr>
-        <en>Available values : No, Unit import, Massive import, Unit and massive import.</en>
+        <message lang="fr">Valeurs possibles:Non, Import unitaire, Import massif, Importunitaire et massif.</message>
+        <message lang="en">Available values : No, Unit import, Massive import, Unit and massive import.</message>
       </help>
     </parameter>
     <parameter>
       <name>targetValidation</name>
       <label>
-        <fr>Validation de publication</fr>
-        <en>Publication validation</en>
+        <message lang="fr">Validation de publication</message>
+        <message lang="en">Publication validation</message>
       </label>
       <order>20</order>
       <mandatory>true</mandatory>
@@ -451,29 +475,29 @@
       <options>
         <option>
           <name>
-            <fr>Classique</fr>
-            <en>Classical</en>
+            <message lang="fr">Classique</message>
+            <message lang="en">Classical</message>
           </name>
           <value>0</value>
         </option>
         <option>
           <name>
-            <fr>Ciblée (un seul valideur)</fr>
-            <en>Targeted (only one validator)</en>
+            <message lang="fr">Ciblée (un seul valideur)</message>
+            <message lang="en">Targeted (only one validator)</message>
           </name>
           <value>1</value>
         </option>
         <option>
           <name>
-            <fr>Ciblée (plusieurs valideurs)</fr>
-            <en>Targeted (various validators)</en>
+            <message lang="fr">Ciblée (plusieurs valideurs)</message>
+            <message lang="en">Targeted (various validators)</message>
           </name>
           <value>2</value>
         </option>
         <option>
           <name>
-            <fr>Collégiale</fr>
-            <en>Collegiate</en>
+            <message lang="fr">Collégiale</message>
+            <message lang="en">Collegiate</message>
           </name>
           <value>3</value>
         </option>
@@ -481,24 +505,24 @@
       <type>select</type>
       <updatable>always</updatable>      
       <help>
-        <fr>Classique : un valideur doit valider la publication, Ciblée (un seul
+        <message lang="fr">Classique : un valideur doit valider la publication, Ciblée (un seul
           valideur) : Le rédacteur choisit le valideur devant valider la publication. Ceci permet
           d'éviter le phénomène de spam auprès des publieurs, Ciblée (plusieurs valideurs) : Le
           rédacteur choisit les valideurs, Collégiale : Tous les valideurs doivent valider la
           publication.
-        </fr>
-        <en>Classical : once validator must validate publication, Targeted (only one
+        </message>
+        <message lang="en">Classical : once validator must validate publication, Targeted (only one
           validator) : Writer choose one validator. This avoid spam behaviour., Targeted (various 
           validators) : Writer choose many validators, Collegiate : All validators must validate
           publication
-        </en>
+        </message>
       </help>      
     </parameter>
     <parameter>
       <name>exportComponent</name>
       <label>
-        <fr>Exportation du composant</fr>
-        <en>Export component</en>
+        <message lang="fr">Exportation du composant</message>
+        <message lang="en">Export component</message>
       </label>
       <order>21</order>
       <mandatory>true</mandatory>
@@ -506,29 +530,29 @@
       <options>
         <option>
           <name>
-            <fr>Non</fr>
-            <en>No</en>
+            <message lang="fr">Non</message>
+            <message lang="en">No</message>
           </name>
           <value>no</value>
         </option>
         <option>
           <name>
-            <fr>Au format ZIP</fr>
-            <en>In a zip file</en>
+            <message lang="fr">Au format ZIP</message>
+            <message lang="en">In a zip file</message>
           </name>
           <value>yes</value>
         </option>
         <option>
           <name>
-            <fr>Des fichiers PDF</fr>
-            <en>In pdf files</en>
+            <message lang="fr">Des fichiers PDF</message>
+            <message lang="en">In pdf files</message>
           </name>
           <value>pdf</value>
         </option>
         <option>
           <name>
-            <fr>Tous</fr>
-            <en>All</en>
+            <message lang="fr">Tous</message>
+            <message lang="en">All</message>
           </name>
           <value>both</value>
         </option>
@@ -536,15 +560,15 @@
       <type>select</type>
       <updatable>always</updatable>
       <help>
-        <fr>Cette fonction permet d'exporter toutes les publications visibles du composant.</fr>
-        <en>This function allow the user to export all the visible publications in the component.</en>
+        <message lang="fr">Cette fonction permet d'exporter toutes les publications visibles du composant.</message>
+        <message lang="en">This function allow the user to export all the visible publications in the component.</message>
       </help>     
     </parameter>
     <parameter>
       <name>massiveDragAndDrop</name>
       <label>
-        <fr>Glisser / Déposer</fr>
-        <en>Drag And Drop</en>
+        <message lang="fr">Glisser / Déposer</message>
+        <message lang="en">Drag And Drop</message>
       </label>
       <order>22</order>
       <mandatory>true</mandatory>
@@ -552,15 +576,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Cette fonction permet de créer des thèmes et des publications par glisser/déposer dans une zone de l'écran.</fr>
-        <en>This function allow to the manager to create topics and publications using drag and drop.</en>
+        <message lang="fr">Cette fonction permet de créer des thèmes et des publications par glisser/déposer dans une zone de l'écran.</message>
+        <message lang="en">This function allow to the manager to create topics and publications using drag and drop.</message>
       </help>
     </parameter>
     <parameter>
       <name>coWriting</name>
       <label>
-        <fr>Co Rédaction</fr>
-        <en>Co-writing</en>
+        <message lang="fr">Co Rédaction</message>
+        <message lang="en">Co-writing</message>
       </label>
       <order>23</order>
       <mandatory>true</mandatory>
@@ -568,18 +592,18 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Cette fonction permet à un rédacteur de pouvoir modifier n'importe quelle
+        <message lang="fr">Cette fonction permet à un rédacteur de pouvoir modifier n'importe quelle
           publication.
-        </fr>
-        <en>This function makes it possible to a writer to modify any publications.
-        </en>
+        </message>
+        <message lang="en">This function makes it possible to a writer to modify any publications.
+        </message>
       </help>
     </parameter>
     <parameter>
       <name>publicationAlwaysVisible</name>
       <label>
-        <fr>Publication toujours visible</fr>
-        <en>Publication always visible</en>
+        <message lang="fr">Publication toujours visible</message>
+        <message lang="en">Publication always visible</message>
       </label>
       <order>24</order>
       <mandatory>true</mandatory>
@@ -587,15 +611,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>La dernière version validée d'une publication est toujours visible même lorsqu'elle est en attente de validation.</fr>
-        <en>The latest valid version of a publication is always visible even if it is waiting approval.</en>
+        <message lang="fr">La dernière version validée d'une publication est toujours visible même lorsqu'elle est en attente de validation.</message>
+        <message lang="en">The latest valid version of a publication is always visible even if it is waiting approval.</message>
       </help>
     </parameter>
     <parameter>
       <name>wizardEnabled</name>
       <label>
-        <fr>Assistant de publication</fr>
-        <en>Wizard for creating a publication</en>
+        <message lang="fr">Assistant de publication</message>
+        <message lang="en">Wizard for creating a publication</message>
       </label>
       <order>25</order>
       <mandatory>true</mandatory>
@@ -603,15 +627,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Dédié aux utilisateurs débutants, cet assistant permet de créer une publication pas à pas.</fr>
-        <en>For beginners only. This wizard allows the user to create a publication step by step.</en>
+        <message lang="fr">Dédié aux utilisateurs débutants, cet assistant permet de créer une publication pas à pas.</message>
+        <message lang="en">For beginners only. This wizard allows the user to create a publication step by step.</message>
       </help>
     </parameter>
     <parameter>
       <name>displayNB</name>
       <label>
-        <fr>Affichage nombre de publications</fr>
-        <en>Display the number of publications</en>
+        <message lang="fr">Affichage nombre de publications</message>
+        <message lang="en">Display the number of publications</message>
       </label>
       <order>27</order>
       <mandatory>true</mandatory>
@@ -619,15 +643,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Affiche le nombre de publications par thème.</fr>
-        <en>Display the number of publications per theme.</en>
+        <message lang="fr">Affiche le nombre de publications par thème.</message>
+        <message lang="en">Display the number of publications per theme.</message>
       </help>
     </parameter>
     <parameter>
       <name>rightsOnTopics</name>
       <label>
-        <fr>Droits sur les thèmes</fr>
-        <en>Rigths on themes</en>
+        <message lang="fr">Droits sur les thèmes</message>
+        <message lang="en">Rigths on themes</message>
       </label>
       <order>28</order>
       <mandatory>true</mandatory>
@@ -635,15 +659,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Permet de définir des droits d'accès au niveau des thèmes.</fr>
-        <en>Allow to define rights on themes.</en>
+        <message lang="fr">Permet de définir des droits d'accès au niveau des thèmes.</message>
+        <message lang="en">Allow to define rights on themes.</message>
       </help>
     </parameter>
     <parameter>
       <name>nbDayForReservation</name>
       <label>
-        <fr>Gestion des retards</fr>
-        <en>Backlog management</en>
+        <message lang="fr">Gestion des retards</message>
+        <message lang="en">Backlog management</message>
       </label>
       <order>29</order>
       <mandatory>false</mandatory>
@@ -652,19 +676,19 @@
       <size>5</size>
       <updatable>always</updatable>
       <help>
-        <fr>Cette option permet de choisir un délais de réservation des fichiers joints et d'en gérer les retards.
+        <message lang="fr">Cette option permet de choisir un délais de réservation des fichiers joints et d'en gérer les retards.
         Ce délais est exprimé en jours et ne tiens pas compte des samedis et dimanches.
-        </fr>
-        <en>This option defines a maximum duration for booking a file and managing the backlog.
+        </message>
+        <message lang="en">This option defines a maximum duration for booking a file and managing the backlog.
         This duration is expressed in days, and week-ends are not taken into account.
-        </en>
+        </message>
       </help>
     </parameter>
     <parameter>
       <name>codification</name>
       <label>
-        <fr>Codification unique</fr>
-        <en>Unique code</en>
+        <message lang="fr">Codification unique</message>
+        <message lang="en">Unique code</message>
       </label>
       <order>30</order>
       <mandatory>true</mandatory>
@@ -672,15 +696,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Cette option permet d'afficher sur l'entête l'identifiant unique de chaque publication.</fr>
-        <en>This feature displays the unique id of each publication in the header tab.</en>
+        <message lang="fr">Cette option permet d'afficher sur l'entête l'identifiant unique de chaque publication.</message>
+        <message lang="en">This feature displays the unique id of each publication in the header tab.</message>
       </help>
     </parameter>
     <parameter>
       <name>suppressionOnlyForAdmin</name>
       <label>
-        <fr>Suppression restreinte</fr>
-        <en>Restricted suppression</en>
+        <message lang="fr">Suppression restreinte</message>
+        <message lang="en">Restricted suppression</message>
       </label>
       <order>31</order>
       <mandatory>true</mandatory>
@@ -688,15 +712,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Seuls les gestionnaires du composant peuvent supprimer une publication et d'accéder à la corbeille de publications.</fr>
-        <en>Only administrators of this component are be able to remove publications and to access to publications bin.</en>
+        <message lang="fr">Seuls les gestionnaires du composant peuvent supprimer une publication et d'accéder à la corbeille de publications.</message>
+        <message lang="en">Only administrators of this component are be able to remove publications and to access to publications bin.</message>
       </help>
     </parameter>
     <parameter>
       <name>updateChain</name>
       <label>
-        <fr>Modifications en chaine</fr>
-        <en>Modifications in a row</en>
+        <message lang="fr">Modifications en chaine</message>
+        <message lang="en">Modifications in a row</message>
       </label>
       <order>32</order>
       <mandatory>true</mandatory>
@@ -704,15 +728,15 @@
       <type>checkbox</type>
       <updatable>never</updatable>
       <help>
-        <fr>Possibilité d'effectuer des modifications enchainées sur certains thèmes (possédant un descripteur).</fr>
-        <en>Provides the possibility of making successive modifications on certains topics (having a descriptor).</en>
+        <message lang="fr">Possibilité d'effectuer des modifications enchainées sur certains thèmes (possédant un descripteur).</message>
+        <message lang="en">Provides the possibility of making successive modifications on certains topics (having a descriptor).</message>
       </help>
     </parameter>
     <parameter>
       <name>XmlFormForFiles</name>
       <label>
-        <fr>Formulaire XML pour fichiers</fr>
-        <en>XML form for metadata on attachments</en>
+        <message lang="fr">Formulaire XML pour fichiers</message>
+        <message lang="en">XML form for metadata on attachments</message>
       </label>
       <order>33</order>
       <mandatory>false</mandatory>
@@ -720,15 +744,15 @@
       <type>xmltemplates</type>
       <updatable>always</updatable>
       <help>
-        <fr>Ce paramètre permet d'activer la saisie d'informations complémentaires pour chaque fichier joint. Ces informations sont saisies au travers d'un formulaire XML.</fr>
-        <en>This feature allows to enter additional informations on each file. XML template is used to enter this data.</en>
+        <message lang="fr">Ce paramètre permet d'activer la saisie d'informations complémentaires pour chaque fichier joint. Ces informations sont saisies au travers d'un formulaire XML.</message>
+        <message lang="en">This feature allows to enter additional informations on each file. XML template is used to enter this data.</message>
       </help>
     </parameter>
     <parameter>
       <name>notifications</name>
       <label>
-        <fr>Notifications</fr>
-        <en>Notifictions</en>
+        <message lang="fr">Notifications</message>
+        <message lang="en">Notifictions</message>
       </label>
       <order>34</order>
       <mandatory>true</mandatory>
@@ -736,16 +760,16 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Permet de désactiver l'opération "Notifier" sur les publications.</fr>
-        <en>Avoid "Notify" operation on publications.</en>
+        <message lang="fr">Permet de désactiver l'opération "Notifier" sur les publications.</message>
+        <message lang="en">Avoid "Notify" operation on publications.</message>
       </help>
       <personalSpaceValue>no</personalSpaceValue>
     </parameter>
     <parameter>
       <name>privateSearch</name>
       <label>
-        <fr>Exclu de la recherche générale</fr>
-        <en>Excluded from the main search engine</en>
+        <message lang="fr">Exclu de la recherche générale</message>
+        <message lang="en">Excluded from the main search engine</message>
       </label>
       <order>35</order>
       <mandatory>true</mandatory>
@@ -753,21 +777,21 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>
+        <message lang="fr">
           Si ce paramètre est activé, les informations indexées ne seront pas
           retrouvables par le moteur de recherche général.
-        </fr>
-        <en>
+        </message>
+        <message lang="en">
           If this parameter is enabled, indexed informations won't be findable by the
           global search engine.
-        </en>
+        </message>
       </help>
     </parameter>
     <parameter>
       <name>wysiwygOnTopics</name>
       <label>
-        <fr>Description riche</fr>
-        <en>Rich description</en>
+        <message lang="fr">Description riche</message>
+        <message lang="en">Rich description</message>
       </label>
       <order>36</order>
       <mandatory>true</mandatory>
@@ -775,15 +799,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Ce paramètre permet de saisir une description Wysiwyg sur un thème qui sera affichée dans le thème.</fr>
-        <en>This feature allows to make a rich description of a theme.</en>
+        <message lang="fr">Ce paramètre permet de saisir une description Wysiwyg sur un thème qui sera affichée dans le thème.</message>
+        <message lang="en">This feature allows to make a rich description of a theme.</message>
       </help>
     </parameter>
     <parameter>
       <name>useFileSharing</name>
       <label>
-        <fr>Fichiers partageables</fr>
-        <en>Share attachments</en>
+        <message lang="fr">Fichiers partageables</message>
+        <message lang="en">Share attachments</message>
       </label>
       <order>37</order>
       <mandatory>true</mandatory>
@@ -791,16 +815,16 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Ce paramètre permet d'activer le partage de fichiers à des tiers non utilisateurs du portail.</fr>
-        <en>This feature allows to activate file sharing with persons who have no access to the portal.</en>
+        <message lang="fr">Ce paramètre permet d'activer le partage de fichiers à des tiers non utilisateurs du portail.</message>
+        <message lang="en">This feature allows to activate file sharing with persons who have no access to the portal.</message>
       </help>
       <personalSpaceValue>yes</personalSpaceValue>
     </parameter>
     <parameter>
       <name>attachmentsInPubList</name>
       <label>
-        <fr>Fichiers joints listés</fr>
-        <en>List attachments</en>
+        <message lang="fr">Fichiers joints listés</message>
+        <message lang="en">List attachments</message>
       </label>
       <order>38</order>
       <mandatory>true</mandatory>
@@ -808,15 +832,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Ce paramètre permet d'afficher directement dans la liste des publications les fichiers joints à chaque publication.</fr>
-        <en>This feature allows to display the attached files to each publications directly in the publications list.</en>
+        <message lang="fr">Ce paramètre permet d'afficher directement dans la liste des publications les fichiers joints à chaque publication.</message>
+        <message lang="en">This feature allows to display the attached files to each publications directly in the publications list.</message>
       </help>
     </parameter>
     <parameter>
       <name>publicFiles</name>
       <label>
-        <fr>Fichiers réutilisables</fr>
-        <en>Re-usable files.</en>
+        <message lang="fr">Fichiers réutilisables</message>
+        <message lang="en">Re-usable files.</message>
       </label>
       <order>39</order>
       <mandatory>false</mandatory>
@@ -824,23 +848,23 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>
+        <message lang="fr">
           Ce paramètre permet de définir ce composant comme une banque de fichiers.
           Les pièces jointes d'une banque peuvent être insérées dans le corps d'une publication
           grâce à l'éditeur Wysiwyg.
-        </fr>
-        <en>
+        </message>
+        <message lang="en">
           This feature allows indicating this component as a file storage. The
           attachment of a file storage can be inserted into the body of a publication with the help
           of Wysiwyg editor.
-        </en>
+        </message>
       </help>
     </parameter>
     <parameter>
       <name>axisIdGlossary</name>
       <label>
-        <fr>Lexique</fr>
-        <en>Glossary</en>
+        <message lang="fr">Lexique</message>
+        <message lang="en">Glossary</message>
       </label>
       <order>40</order>
       <mandatory>false</mandatory>
@@ -849,21 +873,21 @@
       <size>5</size>
       <updatable>always</updatable>
       <help>
-        <fr>
+        <message lang="fr">
           Ce paramètre permet de définir l'identifiant de l'axe du PDC qui sera
           utilisé comme lexique dans le theme tracker courant.
-        </fr>
-        <en>
+        </message>
+        <message lang="en">
           This feature allows to indicate the identifier of classification scheme axis's used as
           glossary for the current Theme tracker.
-        </en>
+        </message>
       </help>
     </parameter>
     <parameter>
       <name>searchOnTopics</name>
       <label>
-        <fr>Recherche sur thèmes</fr>
-        <en>Search on themes</en>
+        <message lang="fr">Recherche sur thèmes</message>
+        <message lang="en">Search on themes</message>
       </label>
       <order>41</order>
       <mandatory>true</mandatory>
@@ -871,15 +895,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Ce paramètre permet d'afficher une zone de recherche pour chaque thème.</fr>
-        <en>This feature allows to display a search box in each theme.</en>
+        <message lang="fr">Ce paramètre permet d'afficher une zone de recherche pour chaque thème.</message>
+        <message lang="en">This feature allows to display a search box in each theme.</message>
       </help>
     </parameter>
     <parameter>
       <name>thumbnailMandatory</name>
       <label>
-        <fr>Vignette obligatoire</fr>
-        <en>Mandatory thumbnail</en>
+        <message lang="fr">Vignette obligatoire</message>
+        <message lang="en">Mandatory thumbnail</message>
       </label>
       <order>42</order>
       <mandatory>true</mandatory>
@@ -887,15 +911,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Permet de rendre obligatoire l'ajout d'une vignette à chaque publication.</fr>
-        <en>Lets make it mandatory to add a thumbnail to each publication.</en>
+        <message lang="fr">Permet de rendre obligatoire l'ajout d'une vignette à chaque publication.</message>
+        <message lang="en">Lets make it mandatory to add a thumbnail to each publication.</message>
       </help>
     </parameter>
     <parameter>
       <name>thumbnailWidthSize</name>
       <label>
-        <fr>Largeur de la vignette</fr>
-        <en>Thumbnail's width</en>
+        <message lang="fr">Largeur de la vignette</message>
+        <message lang="en">Thumbnail's width</message>
       </label>
       <order>43</order>
       <mandatory>false</mandatory>
@@ -904,15 +928,15 @@
       <size>5</size>
       <updatable>always</updatable>
       <help>
-        <fr>Ce paramètre permet de définir la largeur de la vignette à afficher.</fr>
-        <en>This feature allows to define width of the displayed thumbnail.</en>
+        <message lang="fr">Ce paramètre permet de définir la largeur de la vignette à afficher.</message>
+        <message lang="en">This feature allows to define width of the displayed thumbnail.</message>
       </help>
     </parameter>
     <parameter>
       <name>thumbnailHeightSize</name>
       <label>
-        <fr>Hauteur de la vignette</fr>
-        <en>Thumbnail's height</en>
+        <message lang="fr">Hauteur de la vignette</message>
+        <message lang="en">Thumbnail's height</message>
       </label>
       <order>44</order>
       <mandatory>false</mandatory>
@@ -921,8 +945,8 @@
       <size>5</size>
       <updatable>always</updatable>
       <help>
-        <fr>Ce paramètre permet de définir la hauteur de la vignette à afficher.</fr>
-        <en>This feature allows to define height of the displayed thumbnail.</en>
+        <message lang="fr">Ce paramètre permet de définir la hauteur de la vignette à afficher.</message>
+        <message lang="en">This feature allows to define height of the displayed thumbnail.</message>
       </help>
     </parameter>
   </parameters>

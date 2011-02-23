@@ -23,7 +23,6 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Date;
@@ -76,8 +75,8 @@ public class ComponentInstManager {
       componentInst.addProfileInst(profile);
     }
 
-    List<Parameter> parameters = componentInstToCopy.getSPParameters();
-    componentInst.setSPParameters(parameters);
+    List<Parameter> parameters = componentInstToCopy.getParameters();
+    componentInst.setParameters(parameters);
 
     componentInst.setLanguage(componentInstToCopy.getLanguage());
 
@@ -163,12 +162,13 @@ public class ComponentInstManager {
    * Get component instance with the given id
    * @param ddManager
    * @param sComponentId
-   * @param sFatherId
+   * @param spaceId
    * @return
    * @throws AdminException 
    */
   public ComponentInst getComponentInst(DomainDriverManager ddManager, String sComponentId,
-      String sFatherId) throws AdminException {
+      String spaceId) throws AdminException {
+    String sFatherId = spaceId;
     if (sFatherId == null) {
       try {
         ddManager.getOrganizationSchema();
@@ -321,7 +321,7 @@ public class ComponentInstManager {
         // Get the parameters if any
         List<Parameter> parameters = ddManager.organization.instanceData.getAllParametersInComponent(idAsInt(
             sComponentId));
-        componentInst.setSPParameters(parameters);
+        componentInst.setParameters(parameters);
 
         // Get the profiles
         String[] asProfileIds = ddManager.organization.userRole.getAllUserRoleIdsOfInstance(idAsInt(componentInst.

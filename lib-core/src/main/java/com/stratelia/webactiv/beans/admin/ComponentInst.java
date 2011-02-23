@@ -285,23 +285,16 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
     return m_alProfileInst.get(nIndex);
   }
 
-  public void setSPParameters(List<Parameter> parameters) {
-    this.parameters = parameters;
-  }
 
-  public List<Parameter> getSPParameters() {
+  public List<Parameter> getParameters() {
     if (parameters == null) {
       parameters = new ArrayList<Parameter>();
     }
     return parameters;
   }
 
-  public List<Parameter> getParameters() {
-    return parameters;
-  }
-
   public void setParameters(List<Parameter> parameters) {
-    setParameters(parameters);
+    this.parameters = parameters;
   }
 
   public Parameter getParameter(String parameterName) {

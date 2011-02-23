@@ -24,6 +24,8 @@
 
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
+import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.util.i18n.I18NHelper;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -32,7 +34,6 @@ import java.util.Collection;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
-import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
@@ -79,14 +80,12 @@ public class SilverStatisticsPeasDAOVolumeServices {
     Admin admin = new Admin();
     Map<String, WAComponent> components = admin.getAllComponents();
     String label = null;
-
     while (rs.next()) {
-      WAComponent compo = (WAComponent) components.get(rs.getString(1));
+      WAComponent compo = components.get(rs.getString(1));
       if (compo != null) {
-        label = (compo.getLabel().indexOf("-") == -1) ? compo.getLabel()
-            : compo.getLabel().substring(compo.getLabel().indexOf("-") + 1);
+        String value = compo.getLabel().get(I18NHelper.defaultLanguage);
+        label = (value.indexOf("-") == -1) ? value : value.substring(value.indexOf("-") + 1);
         dates.add(label);
-
         count = rs.getLong(2);
         counts.add(Long.toString(count));
       }
@@ -156,5 +155,8 @@ public class SilverStatisticsPeasDAOVolumeServices {
             "root.EX_CONNECTION_CLOSE_FAILED", "", e);
       }
     }
+  }
+
+  private SilverStatisticsPeasDAOVolumeServices() {
   }
 }

@@ -41,6 +41,7 @@ import javax.naming.NamingException;
 import com.silverpeas.jobDomainPeas.JobDomainSettings;
 import com.silverpeas.socialNetwork.SocialNetworkException;
 import com.silverpeas.socialNetwork.relationShip.RelationShipService;
+import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.silverpeas.authentication.AuthenticationException;
 import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -266,20 +267,8 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
     return this.favoriteLanguage;
   }
 
-  public synchronized List<String> getAllLanguages() {
-    List<String> allLanguages = new ArrayList<String>();
-    try {
-      StringTokenizer st = new StringTokenizer(
-          resources.getString("languages"), ",");
-      while (st.hasMoreTokens()) {
-        allLanguages.add(st.nextToken());
-      }
-    } catch (Exception e) {
-      SilverTrace.error("personalizationPeas",
-          "MyProfileSessionController.getAllLanguages()",
-          "personalizationPeas.EX_CANT_GET_FAVORITE_LANGUAGE", e);
-    }
-    return allLanguages;
+  public  List<String> getAllLanguages() {
+   return DisplayI18NHelper.getLanguages();
   }
 
   /**

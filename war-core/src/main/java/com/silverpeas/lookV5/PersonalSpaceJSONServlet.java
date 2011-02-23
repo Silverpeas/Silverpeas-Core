@@ -24,6 +24,7 @@
 
 package com.silverpeas.lookV5;
 
+import com.silverpeas.admin.components.WAComponent;
 import java.io.IOException;
 import java.io.Writer;
 import java.rmi.RemoteException;
@@ -55,12 +56,11 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.PersonalSpaceController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
+
 import com.stratelia.webactiv.util.ResourceLocator;
 
 public class PersonalSpaceJSONServlet extends HttpServlet {
-
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 8565616592829678418L;
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException,

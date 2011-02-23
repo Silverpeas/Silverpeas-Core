@@ -24,9 +24,9 @@
 package com.silverpeas.accesscontrol;
 
 import com.silverpeas.admin.components.Instanciateur;
-import com.silverpeas.admin.components.Multilang;
 import com.silverpeas.admin.components.WAComponent;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
+import java.util.HashMap;
 
 import static org.mockito.Mockito.*;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
@@ -60,17 +60,17 @@ public class ComponentAccessControllerTest {
     mockStatic(Instanciateur.class);
     WAComponent kmeliaComponent = new WAComponent();
     kmeliaComponent.setName("kmelia");
-    Multilang label = new Multilang();
-    label.setEn("kmelia");
-    label.setFr("kmelia");
+    HashMap<String, String> label = new HashMap<String, String>();
+    label.put("en", "kmelia");
+    label.put("fr", "kmelia");
     kmeliaComponent.setLabel(label);
     kmeliaComponent.setVisible(true);
     kmeliaComponent.setPortlet(true);
     WAComponent yellowComponent = new WAComponent();
     yellowComponent.setName("yellowpages");
-    Multilang label2 = new Multilang();
-    label2.setEn("yellowpages");
-    label2.setFr("yellowpages");
+    HashMap<String, String> label2 = new HashMap<String, String>();
+    label2.put("en", "yellowpages");
+    label2.put("fr", "yellowpages");
     yellowComponent.setLabel(label2);
     yellowComponent.setVisible(true);
     yellowComponent.setPortlet(true);
@@ -95,34 +95,35 @@ public class ComponentAccessControllerTest {
 
   /**
    * Test of isUserAuthorized method, of class ComponentAccessController.
+   * @throws Exception 
    */
   @Test
   public void testIsUserAuthorized() throws Exception {
     String componentId = "kmelia18";
     String publicComponentId = "kmelia20";
     String forbiddenComponent = "yellowpages154";
-    
+
     String userId = "bart";
-    
+
     OrganizationController controller = mock(OrganizationController.class);
     when(controller.isComponentAvailable(componentId, userId)).thenReturn(Boolean.TRUE);
     when(controller.isComponentAvailable(forbiddenComponent, userId)).thenReturn(Boolean.FALSE);
-    
+
     mockStatic(Instanciateur.class);
-    
+
     WAComponent kmeliaComponent = new WAComponent();
     kmeliaComponent.setName("kmelia");
-    Multilang label = new Multilang();
-    label.setEn("kmelia");
-    label.setFr("kmelia");
+    HashMap<String, String> label = new HashMap<String, String>();
+    label.put("en", "kmelia");
+    label.put("fr", "kmelia");
     kmeliaComponent.setLabel(label);
     kmeliaComponent.setVisible(true);
     kmeliaComponent.setPortlet(true);
     WAComponent yellowComponent = new WAComponent();
     yellowComponent.setName("yellowpages");
-    Multilang label2 = new Multilang();
-    label2.setEn("yellowpages");
-    label2.setFr("yellowpages");
+    HashMap<String, String> label2 = new HashMap<String, String>();
+    label2.put("en", "yellowpages");
+    label2.put("fr", "yellowpages");
     yellowComponent.setLabel(label2);
     yellowComponent.setVisible(true);
     yellowComponent.setPortlet(true);
@@ -145,8 +146,8 @@ public class ComponentAccessControllerTest {
 
     result = instance.isUserAuthorized(userId, componentId);
     assertEquals(true, result);
-    
-    
+
+
     result = instance.isUserAuthorized(userId, forbiddenComponent);
     assertEquals(false, result);
   }

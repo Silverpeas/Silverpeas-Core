@@ -586,8 +586,8 @@ public class OrganizationController extends AdminReference implements java.io.Se
     }
   }
 
-  public Hashtable<String, String> getUsersLanguage(List<String> userIds) {
-    Hashtable<String, String> usersLanguage = null;
+  public Map<String, String> getUsersLanguage(List<String> userIds) {
+    Map<String, String> usersLanguage = null;
     try {
       usersLanguage = m_Admin.getUsersLanguage(userIds);
     } catch (Exception e) {

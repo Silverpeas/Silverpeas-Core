@@ -28,45 +28,63 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>almanach</name>
   <label>
-    <fr>Almanach</fr>
-    <en>Almanach</en>
+    <message lang="fr">Almanach</message>
+    <message lang="en">Almanach</message>
   </label>
   <description>
-    <fr>Permet de créer et de visualiser les différents agendas d'événements définis dans les
+    <message lang="fr">Permet de créer et de visualiser les différents agendas d'événements définis dans les
       espaces et sous-espaces collaboratifs. A chaque événement peuvent être associés des fichiers
       joints. La visualisation s'effectue sur plusieurs échelles de temps.
-    </fr>
-    <en>Enable to create and aggregate agendas from collaborative spaces or subspaces. Events can
+    </message>
+    <message lang="en">Enable to create and aggregate agendas from collaborative spaces or subspaces. Events can
       have attachments. You can viw events using different time scales.
-    </en>
+    </message>
   </description>
   <suite>
-    <fr>02 Gestion Collaborative</fr>
-    <en>02 Collaborative Management</en>
+    <message lang="fr">02 Gestion Collaborative</message>
+    <message lang="en">02 Collaborative Management</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <instanceClassName>com.stratelia.webactiv.almanach.AlmanachInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
-      <fr>Gestionnaire</fr>
-      <en>Administrator</en>
+      <label>
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </label>
+      <help>
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </help>
     </profile>
     <profile name="publisher">
-      <fr>Publieur</fr>
-      <en>Publisher</en>
+      <label>
+        <message lang="fr">Publieur</message>
+        <message lang="en">Publisher</message>
+      </label>
+      <help>
+        <message lang="fr">Publieur</message>
+        <message lang="en">Publisher</message>
+      </help>
     </profile>
     <profile name="user">
-      <fr>Lecteur</fr>
-      <en>Reader</en>
+      <label>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message> 
+      </label>
+      <help>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </help>
     </profile>
   </profiles>
   <parameters>
     <parameter>
       <name>usePdc</name>
       <label>
-        <fr>Classification PDC</fr>
-        <en>Classification Scheme</en>
+        <message lang="fr">Classification PDC</message>
+        <message lang="en">Classification Scheme</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
@@ -74,17 +92,17 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Les événements saisis au sein de cette instance pourront être classés sur le Plan de
+        <message lang="fr">Les événements saisis au sein de cette instance pourront être classés sur le Plan de
           Classement
-        </fr>
-        <en>The events will be classified on the classification scheme.</en>
+        </message>
+        <message lang="en">The events will be classified on the classification scheme.</message>
       </help>
     </parameter>
     <parameter>
       <name>useAgregation</name>
       <label>
-        <fr>Agrégation d'Almanachs</fr>
-        <en>Almanach Aggregation</en>
+        <message lang="fr">Agrégation d'Almanachs</message>
+        <message lang="en">Almanach Aggregation</message>
       </label>
       <order>2</order>
       <mandatory>true</mandatory>
@@ -92,19 +110,19 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Cet Almanach pourra contenir des évènements d'Almanachs appartenant à des sous-espaces
+        <message lang="fr">Cet Almanach pourra contenir des évènements d'Almanachs appartenant à des sous-espaces
           de l'espace de cet Almanach.
-        </fr>
-        <en>This almanach can aggregate events from other almanachs in subspaces of the space
+        </message>
+        <message lang="en">This almanach can aggregate events from other almanachs in subspaces of the space
           containing this almanach.
-        </en>
+        </message>
       </help>
     </parameter>
     <parameter>
       <name>weekendNotVisible</name>
       <label>
-        <fr>Masquer les week-ends</fr>
-        <en>Hide week-ends</en>
+        <message lang="fr">Masquer les week-ends</message>
+        <message lang="en">Hide week-ends</message>
       </label>
       <order>3</order>
       <mandatory>true</mandatory>
@@ -112,15 +130,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Permet d'alléger l'interface et d'optimiser l'affichage du reste de la semaine</fr>
-        <en>Hide week-ends, thus lightening the GUI.</en>
+        <message lang="fr">Permet d'alléger l'interface et d'optimiser l'affichage du reste de la semaine</message>
+        <message lang="en">Hide week-ends, thus lightening the GUI.</message>
       </help>
     </parameter>
     <parameter>
       <name>rss</name>
       <label>
-        <fr>Flux RSS</fr>
-        <en>RSS</en>
+        <message lang="fr">Flux RSS</message>
+        <message lang="en">RSS</message>
       </label>
       <order>4</order>
       <mandatory>false</mandatory>
@@ -128,15 +146,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Permet de générer un flux RSS des événements de cet Almanach.</fr>
-        <en>Produce a RSS stream for the events of this almanach.</en>
+        <message lang="fr">Permet de générer un flux RSS des événements de cet Almanach.</message>
+        <message lang="en">Produce a RSS stream for the events of this almanach.</message>
       </help>
     </parameter>
     <parameter>
       <name>directAccess</name>
       <label>
-        <fr>Accès transversal</fr>
-        <en>Aggregation type</en>
+        <message lang="fr">Accès transversal</message>
+        <message lang="en">Aggregation type</message>
       </label>
       <order>5</order>
       <mandatory>false</mandatory>
@@ -144,29 +162,29 @@
       <options>
         <option>
           <name>
-            <fr>Tous</fr>
-            <en>All</en>
+            <message lang="fr">Tous</message>
+            <message lang="en">All</message>
           </name>
           <value>0</value>
         </option>
         <option>
           <name>
-            <fr>Ceux de l'espace</fr>
-            <en>Those from the same space</en>
+            <message lang="fr">Ceux de l'espace</message>
+            <message lang="en">Those from the same space</message>
           </name>
           <value>1</value>
         </option>
         <option>
           <name>
-            <fr>Ceux de l'espace et sous espaces</fr>
-            <en>Those from the same space and its subspaces.</en>
+            <message lang="fr">Ceux de l'espace et sous espaces</message>
+            <message lang="en">Those from the same space and its subspaces.</message>
           </name>
           <value>2</value>
         </option>
         <option>
           <name>
-            <fr>Aucun</fr>
-            <en>None</en>
+            <message lang="fr">Aucun</message>
+            <message lang="en">None</message>
           </name>
           <value>3</value>
         </option>
@@ -174,10 +192,10 @@
       <type>select</type>
       <updatable>always</updatable>
       <help>
-        <fr>Permet de choisir quelles autres instances du composant Almanach sont accessibles depuis
+        <message lang="fr">Permet de choisir quelles autres instances du composant Almanach sont accessibles depuis
           la liste déroulante.
-        </fr>
-        <en>Choose which almanachs can be aggregated into this almanach.</en>
+        </message>
+        <message lang="en">Choose which almanachs can be aggregated into this almanach.</message>
       </help>
     </parameter>
   </parameters>

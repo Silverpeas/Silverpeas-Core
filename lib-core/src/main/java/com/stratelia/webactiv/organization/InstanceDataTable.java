@@ -23,15 +23,16 @@
  */
 package com.stratelia.webactiv.organization;
 
-import com.silverpeas.admin.components.Multilang;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
 import com.silverpeas.admin.components.Parameter;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * A InstanceData object manages component parameters
@@ -70,7 +71,7 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
     idr.id = getNextId();
     idr.componentId = componentId;
     idr.name = parameter.getName();
-    idr.label = parameter.getLabel().getFr();
+    idr.label = parameter.getLabel().get(I18NHelper.defaultLanguage);
     idr.value = parameter.getValue();
 
     insertRow(INSERT_INSTANCEDATA, idr);
@@ -109,9 +110,8 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
       Parameter param = new Parameter();
       param.setName(row.name);
       param.setValue(row.value);
-      Multilang multilang = new Multilang();
-      multilang.setEn(row.label);
-      multilang.setFr(row.label);
+      HashMap<String, String> multilang = new HashMap<String, String>();
+      multilang.put(I18NHelper.defaultLanguage, row.label);
       param.setLabel(multilang);
       params.add(param);
     }

@@ -657,7 +657,11 @@ public class AdminController extends AdminReference implements java.io.Serializa
     }
   }
 
-  /** Delete the Profile Instance corresponding to the given Profile id */
+  /**
+   * Delete the Profile Instance corresponding to the given Profile id.
+   * @param sProfileId
+   * @return 
+   */
   public String deleteProfileInst(String sProfileId) {
     return deleteProfileInst(sProfileId, null);
   }
@@ -696,17 +700,16 @@ public class AdminController extends AdminReference implements java.io.Serializa
   /**
    * Get the profile label from its name
    */
-  public String getProfileLabelfromName(String sComponentName,
-      String sProfileName) {
+  public String getProfileLabelfromName(String sComponentName, String sProfileName, String lang) {
     SilverTrace.info("admin", "AdminController.getProfileLabelfromName",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      return m_Admin.getProfileLabelfromName(sComponentName, sProfileName);
+      return m_Admin.getProfileLabelfromName(sComponentName, sProfileName, lang);
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getProfileLabelfromName",
           "admin.MSG_ERR_GET_PROFILE_LABEL_FROM_NAME", "component name: "
           + sComponentName + ", profile name: " + sProfileName, e);
-      return new String("");
+      return "";
     }
   }
 

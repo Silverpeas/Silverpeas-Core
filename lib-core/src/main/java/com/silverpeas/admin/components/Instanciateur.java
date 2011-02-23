@@ -21,12 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * instanciateur.java
- *
- * Created on 13 juillet 2000, 09:33
- */
 package com.silverpeas.admin.components;
 
 /**
@@ -34,6 +28,7 @@ package com.silverpeas.admin.components;
  * @author akhadrou
  * @version
  */
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -57,6 +52,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLInputFactory;
 
 public class Instanciateur {
@@ -213,9 +209,8 @@ public class Instanciateur {
   public synchronized static Map<String, String> getAllComponentsNames() {
     Map<String, String> hComponents = new HashMap<String, String>();
     Collection<WAComponent> components = WAComponents.values();
-    for (WAComponent component :
-        components) {
-      hComponents.put(component.getName(), component.getLabel().getFr());
+    for (WAComponent component : components) {
+      hComponents.put(component.getName(), component.getLabel().get(I18NHelper.defaultLanguage));
     }
     return hComponents;
   }
@@ -223,8 +218,7 @@ public class Instanciateur {
   public synchronized static List<WAComponent> getVisibleComponentsForPersonalSpace() {
     List<WAComponent> visibleComponents = new ArrayList<WAComponent>();
     Collection<WAComponent> components = WAComponents.values();
-    for (WAComponent component :
-        components) {
+    for (WAComponent component : components) {
       if (component.isVisibleInPersonalSpace()) {
         visibleComponents.add(component);
       }
@@ -290,7 +284,7 @@ public class Instanciateur {
     }
   }
 
-  private WAComponent loadComponent(String path) throws IOException, JAXBException,
+  WAComponent loadComponent(String path) throws IOException, JAXBException,
       XMLStreamException {
     JAXBContext context = JAXBContext.newInstance("com.silverpeas.admin.components");
     XMLInputFactory factory = XMLInputFactory.newFactory();
@@ -299,6 +293,13 @@ public class Instanciateur {
     return (unmarshaller.unmarshal(factory.createXMLStreamReader(new FileInputStream(file)),
         WAComponent.class)).getValue();
 
+  }
+
+  public static void saveComponent(WAComponent waComponent, String fileName) throws JAXBException {
+    JAXBContext context = JAXBContext.newInstance("com.silverpeas.admin.components");
+    Marshaller marshaller = context.createMarshaller();
+    File file = new File(getXMLPackage() + File.separatorChar + fileName);
+    marshaller.marshal(waComponent, file);
   }
 
   /**

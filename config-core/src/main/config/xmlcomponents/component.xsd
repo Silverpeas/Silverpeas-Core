@@ -29,16 +29,28 @@ targetNamespace="http://silverpeas.org/xml/ns/component">
   </xs:element>
   <xs:complexType name="ProfileType" >    
     <xs:complexContent>     
-      <xs:extension base="multilang" >
+      <xs:extension base="ProfileDescription" >
         <xs:attribute type="xs:string" name="name"/>
       </xs:extension>
     </xs:complexContent>    
   </xs:complexType> 
   <xs:complexType name="multilang">
     <xs:sequence>
-      <xs:element type="xs:string" name="fr" />
-      <xs:element type="xs:string" name="en" />
+      <xs:element type="MessageType" name="message" maxOccurs="unbounded" minOccurs="0" />
     </xs:sequence>
+  </xs:complexType>  
+  <xs:complexType name="ProfileDescription">
+    <xs:sequence>
+      <xs:element name="label" type="multilang" />
+      <xs:element name="help" type="multilang" />
+    </xs:sequence>
+  </xs:complexType>  
+  <xs:complexType name="MessageType">
+    <xs:simpleContent>   
+      <xs:extension base="xs:string" >
+        <xs:attribute type="xs:string" name="lang"/>
+      </xs:extension>
+    </xs:simpleContent>
   </xs:complexType>
   
   <xs:complexType name="ParameterType">
@@ -54,7 +66,7 @@ targetNamespace="http://silverpeas.org/xml/ns/component">
             <xs:element type="ParameterOptionType" name="option" maxOccurs="unbounded" minOccurs="0"/>
           </xs:sequence>
         </xs:complexType>  
-       </xs:element>
+      </xs:element>
       <xs:element name="type">
         <xs:simpleType>
           <xs:restriction base="xs:string">
@@ -73,6 +85,7 @@ targetNamespace="http://silverpeas.org/xml/ns/component">
             <xs:enumeration value="always"/>
             <xs:enumeration value="creation"/>
             <xs:enumeration value="never" />
+            <xs:enumeration value="hidden" />
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
@@ -112,5 +125,5 @@ targetNamespace="http://silverpeas.org/xml/ns/component">
         </xs:complexType>
       </xs:element>
     </xs:sequence>
-            </xs:complexType>
+  </xs:complexType>
 </xs:schema>

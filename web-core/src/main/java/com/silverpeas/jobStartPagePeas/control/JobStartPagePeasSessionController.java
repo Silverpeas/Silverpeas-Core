@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -43,6 +42,7 @@ import com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings;
 import com.silverpeas.jobStartPagePeas.NavBarManager;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.clipboard.ClipboardSelection;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -376,7 +376,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     return m_AdminCtrl.getSpaceInstById("WA" + idSpace);
   }
 
-
   public String[][] getCurrentSpaceTemplateProfilesGroups() {
     return m_TemplateProfilesGroups;
   }
@@ -485,7 +484,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
           SilverTrace.info("jobStartPagePeas",
               "JobStartPagePeasRequestRouter.addSpaceInst()",
               "root.MSG_GEN_PARAM_VALUE", "Looking for component " + ci.getLabel() + " - " + ci.
-              getName());     
+              getName());
           // Add profiles
           Iterator<ProfileInst> profiles = componentProfilesToCreate.values().iterator();
           while (profiles.hasNext()) {
@@ -962,8 +961,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
       @Override
       public int compare(WAComponent o1, WAComponent o2) {
-        String valcomp1 = o1.getSuite() + o1.getLabel().getFr();
-        String valcomp2 = o2.getSuite() + o2.getLabel().getFr();
+        String valcomp1 = o1.getSuite() + o1.getLabel().get(I18NHelper.defaultLanguage);
+        String valcomp2 = o2.getSuite() + o2.getLabel().get(I18NHelper.defaultLanguage);
         return valcomp1.toUpperCase().compareTo(valcomp2.toUpperCase());
       }
     });
@@ -1087,20 +1086,19 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       profile = m_FatherComponentInst.getProfileInst(asAvailProfileNames[nI]);
       if (profile != null) {
         bFound = true;
-        profile.setLabel(m_AdminCtrl.getProfileLabelfromName(sComponentName,
-            asAvailProfileNames[nI]));
+        profile.setLabel(m_AdminCtrl.getProfileLabelfromName(sComponentName, asAvailProfileNames[nI],
+            getLanguage()));
         alShowProfile.add(profile);
       }
 
       if (!bFound) {
         profile = new ProfileInst();
         profile.setName(asAvailProfileNames[nI]);
-        profile.setLabel(m_AdminCtrl.getProfileLabelfromName(sComponentName,
-            asAvailProfileNames[nI]));
+        profile.setLabel(m_AdminCtrl.getProfileLabelfromName(sComponentName, asAvailProfileNames[nI],
+            getLanguage()));
         alShowProfile.add(profile);
       }
     }
-
     return alShowProfile;
 
   }
@@ -1224,8 +1222,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     setGroupsAndUsers(profileInst, sel.getSelectedSets(), sel.getSelectedElements());
 
     SilverTrace.spy("jobStartPagePeas",
-        "JobStartPagePeasSC.createInstanceProfile", "unknown", profileInst.getComponentFatherId(), profileInst.
-        getName(), getUserId(),
+        "JobStartPagePeasSC.createInstanceProfile", "unknown", profileInst.getComponentFatherId(),
+        profileInst.getName(), getUserId(),
         SilverTrace.SPY_ACTION_CREATE);
 
     // Add the profile
