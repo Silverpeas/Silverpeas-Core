@@ -23,6 +23,13 @@
  */
 package com.silverpeas.socialNetwork.myProfil.servlets;
 
+import static com.silverpeas.socialNetwork.myProfil.servlets.MyProfileRoutes.Main;
+import static com.silverpeas.socialNetwork.myProfil.servlets.MyProfileRoutes.MyInfos;
+import static com.silverpeas.socialNetwork.myProfil.servlets.MyProfileRoutes.MyInvitations;
+import static com.silverpeas.socialNetwork.myProfil.servlets.MyProfileRoutes.MySentInvitations;
+import static com.silverpeas.socialNetwork.myProfil.servlets.MyProfileRoutes.MySettings;
+import static com.silverpeas.socialNetwork.myProfil.servlets.MyProfileRoutes.valueOf;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -39,7 +46,6 @@ import org.apache.commons.fileupload.FileItem;
 import com.silverpeas.directory.servlets.ImageProfil;
 import com.silverpeas.socialNetwork.model.SocialInformationType;
 import com.silverpeas.socialNetwork.myProfil.control.MyProfilSessionController;
-import com.silverpeas.socialNetwork.user.model.SNContactUser;
 import com.silverpeas.socialNetwork.user.model.SNFullUser;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
@@ -68,7 +74,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
   
   @Override
   public String getSessionControlBeanName() {
-    return "myProfil";
+    return "myProfile";
   }
 
   @Override
@@ -91,34 +97,13 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
     MyProfilSessionController myProfilSC = (MyProfilSessionController) componentSC;
     SNFullUser snUserFull = new SNFullUser(myProfilSC.getUserId());
     
+    String userId = (String) request.getAttribute("UserId");
+    boolean isAContact = myProfilSC.isAContact(userId);
+    
+    MyProfileRoutes route = valueOf(function);
+    
     try {
-      if (function.equalsIgnoreCase("MyEvents")) {
-        try {
-          request.setAttribute("type", SocialInformationType.EVENT);
-        } catch (Exception ex) {
-          Logger.getLogger(MyProfilRequestRouter.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        destination = "/socialNetwork/jsp/myProfil/myProfilTemplate.jsp";
-      } else if (function.equalsIgnoreCase("ALL")) {
-        request.setAttribute("type", SocialInformationType.ALL);
-        destination = "/socialNetwork/jsp/myProfil/myProfilTemplate.jsp";
-      } else if (function.equalsIgnoreCase("MyPhotos")) {
-        request.setAttribute("type", SocialInformationType.PHOTO);
-        destination = "/socialNetwork/jsp/myProfil/myProfilTemplate.jsp";
-      } else if (function.equalsIgnoreCase("MyPubs")) {
-        request.setAttribute("type", SocialInformationType.PUBLICATION);
-        destination = "/socialNetwork/jsp/myProfil/myProfilTemplate.jsp";
-      } else if (function.equalsIgnoreCase("validateChangePhoto")) {
-        try {
-          saveAvatar(request, snUserFull.getUserFull().getAvatarFileName());
-
-          return getDestination("MyInfos", componentSC, request);
-        } catch (Exception ex) {
-          Logger.getLogger(MyProfilRequestRouter.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-      } else if (function.equalsIgnoreCase("Main") || function.equalsIgnoreCase("MyInfos")) {
-       
+      if (route == Main || route == MyInfos) {
         // Détermination du domaine du user
         boolean domainRW = myProfilSC.isUserDomainRW();
         if (domainRW) {
@@ -138,31 +123,60 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
         request.setAttribute("View", "MyInfos");
         
         destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
-      } else if (function.equalsIgnoreCase("UpdateMyInfos")) {
+      } else if (route == MyProfileRoutes.UpdatePhoto) {
+        saveAvatar(request, snUserFull.getUserFull().getAvatarFileName());
+
+        return getDestination(MyInfos.toString(), componentSC, request);
+      } else if (route == MyProfileRoutes.UpdateMyInfos) {
         
         updateUserFull(request, myProfilSC);
 
-        return getDestination("MyInfos", componentSC, request);
-      } else if (function.equals("MySettings")) {
+        return getDestination(MyInfos.toString(), componentSC, request);
+      } else if (route == MySettings) {
         
         request.setAttribute("View", function);
         setUserSettingsIntoRequest(request, myProfilSC);
         
         destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
-      } else if (function.equals("UpdateMySettings")) {
+      } else if (route == MyProfileRoutes.UpdateMySettings) {
         updateUserSettings(request, myProfilSC);
         
-        return getDestination("MySettings", componentSC, request);
-      }
+        return getDestination(MySettings.toString(), componentSC, request);
+      } else if (route == MyInvitations) {
+        MyInvitationsHelper helper = new MyInvitationsHelper();
+        helper.getAllInvitationsReceived(myProfilSC, request);
+        request.setAttribute("View", function);
+        destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
+      } else if (route == MySentInvitations) {
+        MyInvitationsHelper helper = new MyInvitationsHelper();
+        helper.getAllInvitationsSent(myProfilSC, request);
+        request.setAttribute("View", function);
+        destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
+      } else if (function.equalsIgnoreCase("MyEvents")) {
+        try {
+          request.setAttribute("type", SocialInformationType.EVENT);
+        } catch (Exception ex) {
+          Logger.getLogger(MyProfilRequestRouter.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        destination = "/socialNetwork/jsp/myProfil/myProfilTemplate.jsp";
+      } else if (function.equalsIgnoreCase("ALL")) {
+        request.setAttribute("type", SocialInformationType.ALL);
+        destination = "/socialNetwork/jsp/myProfil/myProfilTemplate.jsp";
+      } else if (function.equalsIgnoreCase("MyPhotos")) {
+        request.setAttribute("type", SocialInformationType.PHOTO);
+        destination = "/socialNetwork/jsp/myProfil/myProfilTemplate.jsp";
+      } else if (function.equalsIgnoreCase("MyPubs")) {
+        request.setAttribute("type", SocialInformationType.PUBLICATION);
+        destination = "/socialNetwork/jsp/myProfil/myProfilTemplate.jsp";
+      } 
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
     }
-    request.setAttribute("snUserFull", snUserFull);
     request.setAttribute("UserFull", snUserFull.getUserFull());
     List<String> contactIds = myProfilSC.getContactsIdsForUser(myProfilSC.getUserId());
-    request.setAttribute("contacts", chooseContactsToDisplay(contactIds, myProfilSC));
-    request.setAttribute("contactsNumber",contactIds.size());
+    request.setAttribute("Contacts", getContactsToDisplay(contactIds, myProfilSC));
+    request.setAttribute("ContactsNumber", contactIds.size());
     return destination;
   }
 /**
@@ -182,30 +196,30 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
     return nameAvatar;
   }
   /**
-   * methode to choose (x) contacts for display it in the page profil
+   * method to choose (x) contacts for display it in the page profil
    * x is the number of contacts 
    * the methode use Random rule
    * @param contactIds
    * @return List<SNContactUser>
    */
-  private List<SNContactUser> chooseContactsToDisplay(List<String> contactIds, MyProfilSessionController sc) {
+  private List<UserDetail> getContactsToDisplay(List<String> contactIds, MyProfilSessionController sc) {
     int numberOfContactsTodisplay;
-    List<SNContactUser> contacts = new ArrayList<SNContactUser>();
+    List<UserDetail> contacts = new ArrayList<UserDetail>();
     try {
-      numberOfContactsTodisplay = Integer.parseInt(sc.getSettings().getString(
-          "numberOfContactsTodisplay"));
+      numberOfContactsTodisplay =
+          Integer.parseInt(sc.getSettings().getString("numberOfContactsTodisplay"));
     } catch (NumberFormatException ex) {
       numberOfContactsTodisplay = NUMBER_CONTACTS_TO_DISPLAY;
     }
-    if ( contactIds.size()<= numberOfContactsTodisplay) {
-      for (int i = 0; i < contactIds.size(); i++) {
-        contacts.add(new SNContactUser(contactIds.get(i)));
+    if (contactIds.size()<= numberOfContactsTodisplay) {
+      for (String userId : contactIds) {
+        contacts.add(sc.getUserDetail(userId));
       }
     } else {
       Random random = new Random();
-       int indexContactsChoosed = (random.nextInt(contactIds.size()) );
+      int indexContactsChoosed = random.nextInt(contactIds.size());
       for (int i = 0; i < numberOfContactsTodisplay; i++) {
-        contacts.add(new SNContactUser(contactIds.get((indexContactsChoosed+i)%numberOfContactsTodisplay)));
+        contacts.add(sc.getUserDetail(contactIds.get((indexContactsChoosed+i)%numberOfContactsTodisplay)));
       }
     }
 
