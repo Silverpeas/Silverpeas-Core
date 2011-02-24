@@ -482,12 +482,8 @@
     <servlet-class>com.silverpeas.directory.servlets.ImageDisplay</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>InvitationServlet</servlet-name>
-    <servlet-class>com.silverpeas.socialNetwork.invitation.servlets.InvitationRequestRouter</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>RelationShipServlet</servlet-name>
-    <servlet-class>com.silverpeas.socialNetwork.relationShip.servlets.RelationShipRequestRouter</servlet-class>
+    <servlet-name>InvitationJSONServlet</servlet-name>
+    <servlet-class>com.silverpeas.socialNetwork.invitation.servlets.InvitationJSONServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>ProfilRequestRouter</servlet-name>
@@ -869,12 +865,8 @@
     <url-pattern>/display/avatar/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>InvitationServlet</servlet-name>
-    <url-pattern>/Rinvitation/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>RelationShipServlet</servlet-name>
-    <url-pattern>/RrelationShip/*</url-pattern>
+    <servlet-name>InvitationJSONServlet</servlet-name>
+    <url-pattern>/InvitationJSON</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>ProfilRequestRouter</servlet-name>
@@ -890,7 +882,7 @@
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>MyContactProfilRequestRouter</servlet-name>
-    <url-pattern>/RmyContactProfil/*</url-pattern>
+    <url-pattern>/RContactProfile/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>MyContactJSONServlet</servlet-name>

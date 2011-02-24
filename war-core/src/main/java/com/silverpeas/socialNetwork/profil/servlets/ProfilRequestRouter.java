@@ -43,7 +43,6 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 public class ProfilRequestRouter extends ComponentRequestRouter {
 
   private static final long serialVersionUID = 1L;
-  private ProfilSessionController myProfilSC;
 
   @Override
   public String getSessionControlBeanName() {
@@ -61,25 +60,23 @@ public class ProfilRequestRouter extends ComponentRequestRouter {
       HttpServletRequest request) {
     String destination = "#";
 
-    myProfilSC = (ProfilSessionController) componentSC;
+    ProfilSessionController profileSC = (ProfilSessionController) componentSC;
     String userId = request.getParameter("userId");
     String m_context = request.getScheme() + "://" + request.getServerName() + ":" + request.
         getServerPort() + request.getContextPath();
 
    if (function.equalsIgnoreCase("Main")) {
-
-      if (myProfilSC.getUserId().equals(userId)) {//go to my Profile
-
+      if (profileSC.getUserId().equals(userId)) {
+        //go to my Profile
         destination = m_context + "/RMyProfil/jsp/MyInfos";
-
-      } else if (isInMyContact(userId)) {// this is  in my contacts
-
-        destination = m_context + "/RmyContactProfil/jsp/MyInfos?userId=" + userId;
-
-      } else {// this is not in my contacts
-        request.setAttribute("userFull", myProfilSC.getUserFul(userId));
-        request.setAttribute("Member", new Member(myProfilSC.getUserDetail(userId)));
-        request.setAttribute("Settings", myProfilSC.getSettings());
+      } else if (isInMyContact(userId, profileSC)) {
+        // this is one of my contacts
+        destination = m_context + "/RContactProfile/jsp/Infos?userId=" + userId;
+      } else {
+        // this is not one of my contacts
+        request.setAttribute("userFull", profileSC.getUserFul(userId));
+        request.setAttribute("Member", new Member(profileSC.getUserDetail(userId)));
+        request.setAttribute("Settings", profileSC.getSettings());
         destination = "/socialNetwork/jsp/profil/profilPublic.jsp";
       }
     }
@@ -92,9 +89,9 @@ public class ProfilRequestRouter extends ComponentRequestRouter {
    * @return  boolean
    */
 
-  public boolean isInMyContact(String userId) {
+  public boolean isInMyContact(String userId, ProfilSessionController profileSC) {
     try {
-      return myProfilSC.isInMyContact(userId);
+      return profileSC.isInMyContact(userId);
     } catch (SocialNetworkException ex) {
       Logger.getLogger(ProfilRequestRouter.class.getName()).log(Level.SEVERE, null, ex);
     }

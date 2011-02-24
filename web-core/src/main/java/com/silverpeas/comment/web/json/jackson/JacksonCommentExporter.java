@@ -24,7 +24,6 @@
 
 package com.silverpeas.comment.web.json.jackson;
 
-import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.web.CommentEntity;
 import com.silverpeas.comment.web.json.JSONCommentExporter;
 import com.silverpeas.export.ExportDescriptor;
@@ -35,6 +34,7 @@ import java.util.List;
 import javax.inject.Named;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.map.ObjectMapper;
 import static com.silverpeas.comment.web.json.JSONCommentFields.*;
 
 /**
@@ -42,6 +42,8 @@ import static com.silverpeas.comment.web.json.JSONCommentFields.*;
  */
 @Named("jsonCommentExporter")
 public class JacksonCommentExporter implements JSONCommentExporter {
+
+  private ObjectMapper mapper = new ObjectMapper();
 
   @Override
   public void export(ExportDescriptor descriptor, CommentEntity... exportables) throws ExportException {
@@ -53,31 +55,36 @@ public class JacksonCommentExporter implements JSONCommentExporter {
       List<CommentEntity> exportables) throws ExportException {
     try {
       Writer output = descriptor.getWriter();
-      JsonFactory factory = new JsonFactory();
-      JsonGenerator generator = factory.createJsonGenerator(output);
-      if (exportables.size() > 1) {
-        generator.writeStartArray();
+      if (exportables.size() == 1) {
+        mapper.writeValue(output, exportables.get(0));
+      } else {
+        mapper.writeValue(output, exportables);
       }
-      for (CommentEntity comment : exportables) {
-        generator.writeStartObject();
-        generator.writeStringField(COMMENT_URI, comment.getURI().toString());
-        generator.writeStringField(COMMENT_ID, comment.getId());
-        generator.writeStringField(COMPONENT_ID, comment.getComponentId());
-        generator.writeStringField(RESOURCE_ID, comment.getContentId());
-        generator.writeStringField(TEXT, comment.getText());
-        generator.writeObjectFieldStart(WRITER);
-        generator.writeStringField(WRITER_ID, comment.getWriter().getId());
-        generator.writeStringField(WRITER_NAME, comment.getWriter().getFullName());
-        generator.writeStringField(WRITER_AVATAR, comment.getWriter().getAvatar());
-        generator.writeEndObject();
-        generator.writeStringField(CREATION_DATE, comment.getCreationDate());
-        generator.writeStringField(MODIFICATION_DATE, comment.getModificationDate());
-        generator.writeEndObject();
-      }
-      if (exportables.size() > 1) {
-        generator.writeEndArray();
-      }
-      generator.close();
+//      JsonFactory factory = new JsonFactory();
+//      JsonGenerator generator = factory.createJsonGenerator(output);
+//      if (exportables.size() > 1) {
+//        generator.writeStartArray();
+//      }
+//      for (CommentEntity comment : exportables) {
+//        generator.writeStartObject();
+//        generator.writeStringField(COMMENT_URI_FIELD, comment.getURI().toString());
+//        generator.writeStringField(COMMENT_ID_FIELD, comment.getId());
+//        generator.writeStringField(COMPONENT_ID_FIELD, comment.getComponentId());
+//        generator.writeStringField(RESOURCE_ID_FIELD, comment.getResourceId());
+//        generator.writeStringField(TEXT_FIELD, comment.getText());
+//        generator.writeObjectFieldStart(AUTHOR_FIELD);
+//        generator.writeStringField(AUTHOR_ID_FIELD, comment.getWriter().getId());
+//        generator.writeStringField(AUTHOR_NAME_FIELD, comment.getWriter().getFullName());
+//        generator.writeStringField(AUTHOR_AVATAR_FIELD, comment.getWriter().getAvatar());
+//        generator.writeEndObject();
+//        generator.writeStringField(CREATION_DATE_FIELD, comment.getCreationDate());
+//        generator.writeStringField(MODIFICATION_DATE_FIELD, comment.getModificationDate());
+//        generator.writeEndObject();
+//      }
+//      if (exportables.size() > 1) {
+//        generator.writeEndArray();
+//      }
+//      generator.close();
     } catch (Exception ex) {
       throw new ExportException(ex.getMessage(), ex);
     }

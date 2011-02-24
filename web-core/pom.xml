@@ -185,6 +185,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-json</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>com.sun.jersey.contribs</groupId>
       <artifactId>jersey-spring</artifactId>
       <scope>provided</scope>
@@ -210,7 +215,6 @@
       <artifactId>jersey-test-support</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 
   <build>

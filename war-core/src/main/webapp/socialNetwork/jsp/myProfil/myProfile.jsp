@@ -38,11 +38,10 @@
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.*"%>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.*"%>
 <%@page import="com.silverpeas.directory.model.Member"%>
+<%@page import="com.silverpeas.socialNetwork.myProfil.servlets.MyProfileRoutes"%>
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
-<view:setBundle basename="com.stratelia.webactiv.multilang.generalMultilang" var="GML" />
-<view:setBundle basename="com.silverpeas.directory.multilang.DirectoryBundle" var="DML" />
 
 <%  
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
@@ -52,10 +51,15 @@
     ResourceLocator multilangG = new ResourceLocator("com.stratelia.webactiv.multilang.generalMultilang", language);
     UserFull userFull = (UserFull) request.getAttribute("UserFull");
     String view = (String) request.getAttribute("View");
+    
+    List contacts = (List) request.getAttribute("Contacts");
+    int nbContacts = ((Integer) request.getAttribute("ContactsNumber")).intValue();
+    boolean showAllContactLink = !contacts.isEmpty();
 
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 %>
 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <view:looknfeel />
@@ -64,10 +68,6 @@
 <script type="text/javascript">
 function editStatus() {
 	$("#statusDialog").dialog("open");
-}
-
-function updateStatus() {
-	
 }
 
 function updateAvatar() {
@@ -80,13 +80,13 @@ $(document).ready(function(){
             modal: true,
             autoOpen: false,
             height: "auto",
-            width: "auto",
+            width: 300,
             title: "<fmt:message key="profil.actions.changeStatus" />",
             buttons: {
-    			<fmt:message key="GML.cancel" bundle="${GML}"/>: function() {
+    			<fmt:message key="GML.cancel"/>: function() {
 					$(this).dialog( "close" );
 				},
-				"<fmt:message key="GML.ok" bundle="${GML}"/>": function() {
+				"<fmt:message key="GML.ok"/>": function() {
 						var status = $("#newStatus");
 						$( "#myProfileFiche .statut").html(status.val());
 
@@ -105,13 +105,13 @@ $(document).ready(function(){
             modal: true,
             autoOpen: false,
             height: "auto",
-            width: "auto",
+            width: 500,
             title: "<fmt:message key="profil.actions.changePhoto" />",
             buttons: {
-    			<fmt:message key="GML.cancel" bundle="${GML}"/>: function() {
+    			<fmt:message key="GML.cancel"/>: function() {
 					$(this).dialog( "close" );
 				},
-				"<fmt:message key="GML.ok" bundle="${GML}"/>": function() {
+				"<fmt:message key="GML.ok"/>": function() {
 					document.photoForm.submit();
 				}
 			}
@@ -143,38 +143,64 @@ $(document).ready(function(){
  	</div>
  	
  	<div id="statusDialog">
-		<form name="statusForm" action="" method="post">
+		<form>
 	    	<textarea id="newStatus" cols="49" rows="4"></textarea>
 		</form>
 	</div>
 
 	<div id="avatarDialog">
-		<form name="photoForm" action="validateChangePhoto" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
+		<form name="photoForm" action="UpdatePhoto" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
 	        <div>
-	          <div class="txtlibform">Image:</div>
+	          <div class="txtlibform">Image :</div>
 	          <div><input type="file" name="WAIMGVAR0" size="60"/></div>
 	        </div>
 	      </form>
 	</div>
+	
+	<h3><%=nbContacts %> <fmt:message key="myProfile.contacts" /></h3>
+	<!-- allContact  -->  
+	<div id="allContact">
+  	<% 
+  		for (int i=0; i<contacts.size(); i++) {
+  		  UserDetail contact = (UserDetail) contacts.get(i);
+  	%>
+		<!-- unContact  -->  
+     	<div class="unContact">
+        	<div class="profilPhotoContact">
+        		<a href="<%=m_context %>/Rprofil/jsp/Main?userId=<%=contact.getId() %>"><img class="avatar" alt="viewUser" src="<%=m_context+contact.getAvatar() %>" /></a>
+        	</div>
+	        <a href="<%=m_context %>/Rprofil/jsp/Main?userId=<%=contact.getId() %>" class="contactName"><%=contact.getDisplayedName() %></a>
+	   	</div> <!-- /unContact  -->
+  	<% } %>
+    
+    <% if (showAllContactLink) { %>
+	     <br clear="all" />
+	     <a href="<%=m_context %>/Rdirectory/jsp/Main?UserId=<%=userFull.getId() %>" class="link"><fmt:message key="myProfile.contacts.all" /></a>
+	     <br clear="all" />  
+    <% } %>
+	</div><!-- /allContact  -->  
       
-</div>      
+</div>
+
+
 
 <div id="publicProfileContenu">
 
-	<fmt:message key="profil.wall" var="wall" />
-	<fmt:message key="profil.infos" var="infos" />
-	<fmt:message key="profil.events" var="events" />
-	<fmt:message key="profil.publications" var="publications" />
-	<fmt:message key="profil.photos"  var="photos"/>
+	<fmt:message key="myProfile.tab.profile" var="profile" />
+	<fmt:message key="myProfile.tab.invitations" var="invitations" />
+	<fmt:message key="myProfile.tab.settings" var="settings" />
 	<view:tabs>
-    	<view:tab label="Mon profil" action="MyInfos" selected="<%=Boolean.toString("MyInfos".equals(view)) %>" />
-    	<view:tab label="Mes préférences" action="MySettings" selected="<%=Boolean.toString("MySettings".equals(view)) %>" />
+    	<view:tab label="${profile}" action="<%=MyProfileRoutes.MyInfos.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MyInfos.toString().equals(view)) %>" />
+    	<view:tab label="${invitations}" action="<%=MyProfileRoutes.MyInvitations.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MyInvitations.toString().equals(view) || MyProfileRoutes.MySentInvitations.toString().equals(view)) %>" />
+    	<view:tab label="${settings}" action="<%=MyProfileRoutes.MySettings.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MySettings.toString().equals(view)) %>" />
 	</view:tabs>
 	
-	<% if ("MyInfos".equals(view)) { %>
+	<% if (MyProfileRoutes.MyInfos.toString().equals(view)) { %>
 		<%@include file="myProfileTabIdentity.jsp" %>
-	<% } else if ("MySettings".equals(view)) { %>
+	<% } else if (MyProfileRoutes.MySettings.toString().equals(view)) { %>
 		<%@include file="myProfileTabSettings.jsp" %>
+	<% } else if (MyProfileRoutes.MyInvitations.toString().equals(view) || MyProfileRoutes.MySentInvitations.toString().equals(view)) { %>
+		<%@include file="myProfileTabInvitations.jsp" %>
 	<% } %>
               
 </div>   

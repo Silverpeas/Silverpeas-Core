@@ -103,30 +103,30 @@ public class JacksonCommentImporter implements JSONCommentImporter {
     while (parser.nextToken() != JsonToken.END_OBJECT) {
 
       String fieldName = parser.getCurrentName();
-      if (COMMENT_ID.equals(fieldName)) {
+      if (COMMENT_ID_FIELD.equals(fieldName)) {
         id = parser.getText();
-      } else if (COMMENT_URI.equals(fieldName)) {
+      } else if (COMMENT_URI_FIELD.equals(fieldName)) {
         uri = parser.getText();
-      } else if (COMPONENT_ID.equals(fieldName)) {
+      } else if (COMPONENT_ID_FIELD.equals(fieldName)) {
         componentId = parser.getText();
-      } else if (RESOURCE_ID.equals(fieldName)) {
+      } else if (RESOURCE_ID_FIELD.equals(fieldName)) {
         resourceId = parser.getText();
-      } else if (CREATION_DATE.equals(fieldName)) {
+      } else if (CREATION_DATE_FIELD.equals(fieldName)) {
         creationDate = parser.getText();
-      } else if (MODIFICATION_DATE.equals(fieldName)) {
+      } else if (MODIFICATION_DATE_FIELD.equals(fieldName)) {
         modificationDate = parser.getText();
-      } else if (TEXT.equals(fieldName)) {
+      } else if (TEXT_FIELD.equals(fieldName)) {
         text = parser.getText();
-      } else if (WRITER.equals(fieldName)) {
+      } else if (AUTHOR_FIELD.equals(fieldName)) {
         if (parser.nextToken() != JsonToken.START_OBJECT) {
           throw new ImportException(ERROR_FIELD_MSG + parser.getCurrentName() + ". Expected: " + JsonToken.START_OBJECT.
               name());
         }
         while (parser.nextToken() != JsonToken.END_OBJECT) {
           fieldName = parser.getCurrentName();
-          if (WRITER_ID.equals(fieldName)) {
+          if (AUTHOR_ID_FIELD.equals(fieldName)) {
             user.setId(parser.getText());
-          } else if (!WRITER_AVATAR.equals(fieldName) && !WRITER_NAME.equals(fieldName)) {
+          } else if (!AUTHOR_AVATAR_FIELD.equals(fieldName) && !AUTHOR_NAME_FIELD.equals(fieldName)) {
             throw new ImportException(ERROR_FIELD_MSG + fieldName);
           }
         }
@@ -138,6 +138,7 @@ public class JacksonCommentImporter implements JSONCommentImporter {
         componentId), Integer.valueOf(user.getId()), "", text, creationDate, modificationDate);
     comment.setOwnerDetail(user);
 
-    return CommentEntity.fromComment(comment).withURI(new URI(uri));
+    CommentEntity entity = CommentEntity.fromComment(comment).withURI(new URI(uri));
+    return entity;
   }
 }
