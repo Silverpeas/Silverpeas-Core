@@ -3664,6 +3664,8 @@ span.csv {
 	margin: 10px;
 	text-align: center;
 	border: 2px solid;
+	float: left;
+	width: 95%;
 }
 
 .inlineMessage {
