@@ -1362,7 +1362,7 @@ td.browsebar a:hover {
 	width: 5px;
 }
 
-button, .milieuBoutonV5 {
+.milieuBoutonV5 {
 	background-image:
 		url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuBouton.gif);
 	background-repeat: repeat-x;
@@ -3567,19 +3567,19 @@ ul#attachmentList li.attachmentListItem .lineMain {
 	color:#CECECE;
 
 }
-.oneComment {
+.commentaires .oneComment {
 	width:525px;
 	position:relative;
 	clear:both;
 	background:transparent url(../icons/commentBottom.png) bottom left no-repeat;
 	margin-bottom:10px;
 }
-.oneComment div {
+.commentaires .oneComment div {
 	background:transparent url(../icons/commentTop.png) left top no-repeat;
 	}
-.oneComment div div { background-image:none;}
+.commentaires .oneComment div div { background-image:none;}
 
-.oneComment div.avatar {
+.commentaires .oneComment div.avatar {
 	position:absolute;
 	top:0;
 	left:0;
@@ -3587,39 +3587,81 @@ ul#attachmentList li.attachmentListItem .lineMain {
 	padding:1px;
 	background-color:#FFF;
 	}
-.oneComment div.avatar img {
+.commentaires .oneComment div.avatar img {
 	width:50px;}
 
-.oneComment .action {
+.commentaires .oneComment .action {
 	bottom: 10px;
     position: absolute;
     right: 9px;
 }
-.oneComment .action img {
+.commentaires .oneComment .action img {
 	width:13px;
+	height: 13px;
 }
 
-.oneComment p.author {
+.commentaires .oneComment p.author {
 	color: #333333;
     font-size: 12px;
     padding: 6px 64px;
 	margin:0;
 	}
-.oneComment .date {
+.commentaires .oneComment .date {
 	color:#999;
 	font-size:11px;
 }
 
-.oneComment p.message {
+.commentaires .oneComment .text {
 	font-size: 11px;
     line-height: 16px;
     padding:27px 12px 23px 23px;
     text-align: justify;
     text-indent: 41px;
 	margin:0;
-	}
+}
 
+.commentaires #list-box {
+  padding: 1em;
+}
 
+.commentaires #list-box .action {
+  cursor: pointer;
+}
+
+.commentaires #update-box {
+}
+
+.commentaires #edition-box {
+}
+
+.commentaires #edition-box .title {
+  font-size: 8pt;
+  font-weight: bold;
+  color: #111111;
+  padding-right: 50px;
+  vertical-align: top;
+  text-align: left;
+}
+
+#comments-update-box .text, 
+.commentaires #edition-box .text {
+  width: 95%;
+  height: 6em;
+}
+
+.commentaires .buttons {
+  text-align: center;
+}
+
+.commentaires button {
+  margin: 5px;
+  cursor: pointer;
+}
+
+.mandatoryField img {
+  width: 5px;
+  height: 5px;
+}
 
 
 /*- [ comment END ] ------------------------- */
@@ -3664,6 +3706,8 @@ span.csv {
 	margin: 10px;
 	text-align: center;
 	border: 2px solid;
+	float: left;
+	width: 95%;
 }
 
 .inlineMessage {
@@ -3685,4 +3729,11 @@ table.pdcPositionsField {
 	border-spacing: 0;
     padding: 0;
     width: 100%;
+}
+
+button {
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuBouton.gif);
+	background-repeat: repeat-x;
+	color: #FFFFFF;
 }

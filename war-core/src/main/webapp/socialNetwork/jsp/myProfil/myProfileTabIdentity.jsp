@@ -36,7 +36,7 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
 </div>
 
 <% if (StringUtil.isDefined(message)) { %>
-<div class="inline_message_ok">
+<div class="inlineMessage-ok">
 	<%=message %>
 </div>
 <% } %>

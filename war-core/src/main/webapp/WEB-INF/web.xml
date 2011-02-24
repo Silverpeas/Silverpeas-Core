@@ -122,6 +122,15 @@
   <servlet>
     <servlet-name>REST Container</servlet-name>
     <servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
+    <description>
+      I'm a servlet aimed to dispatch the incoming HTTP requests to the REST web services that are
+      published through the IoC Spring container.
+	</description>
+    <init-param>
+    	<description>Is the Jackson JSON stack be used?</description>
+        <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
+        <param-value>true</param-value>
+	</init-param>
   </servlet>
   <servlet>
     <servlet-name>AuthenticationServlet</servlet-name>

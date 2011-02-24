@@ -151,14 +151,14 @@
     list : function() {
       return this.each(function() {
         var $this = $(this), comments = $this.data('comments');
-        var updateBox = $("<div id='update-box'>").attr("style","display: none;").appendTo($this);
+        var updateBox = $("<div id='comments-update-box'>").attr("style","display: none;").appendTo($this);
         var textBox = $("<div>").addClass("mandatoryField").appendTo(updateBox);
         $("<textarea>").addClass("text").appendTo(textBox);
         $("<span>").html("&nbsp;").appendTo(textBox);
         $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory).appendTo(textBox);
         var legende = $("<div>").addClass("legende").appendTo(textBox);
         $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory).appendTo(legende);
-        $("<span>").html(":&nbsp;" + settings.mandatoryText).appendTo(legende);
+        $("<span>").html("&nbsp;:&nbsp;" + settings.mandatoryText).appendTo(legende);
 
         $("<div id='list-box'>").appendTo($this);
         $.getJSON(settings.uri, function( arrayOfComments ) {
@@ -192,11 +192,11 @@
         $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory).appendTo(editionBox);
         legende.appendTo(editionBox);
         $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory).appendTo(legende);
-        $("<span>").html(":&nbsp;" + settings.mandatoryText).appendTo(legende);
+        $("<span>").html("&nbsp;:&nbsp;" + settings.mandatoryText).appendTo(legende);
         $("<button>").addClass("button").text(edition['ok']).
         click(function() {
           __addComment( $this, commentCreation );
-        }).appendTo($("<div>").addClass("center").appendTo(editionBox));
+        }).appendTo($("<div>").addClass("buttons").appendTo(editionBox));
       })
     }
   };
@@ -230,7 +230,7 @@
     var actionsPane = $("<div>").addClass("action").appendTo(commentBox);
     $("<img>").attr("src", comment.author.avatar).appendTo($("<div>").addClass("avatar").appendTo(commentBox));
     $("<span>").addClass("date").text(" - " + comment.creationDate).appendTo($("<p>").addClass("author").text(comment.author.fullName).appendTo(commentBox));
-    $("<pre>").addClass("text").text(comment.text).appendTo(commentBox);
+    $("<pre>").addClass("text").append(comment.text.replace(/\n/g, '<br/>')).appendTo(commentBox);
 
     if (update['activated']( comment )) {
       $("<img>").attr("src", update.icon).attr("alt", update.altText).click(function() {
@@ -251,14 +251,14 @@
    */
   function __updateComment( $this, commentId ) {
     var comments = $this.data('comments'), comment = comments.commentsById[commentId];
-    $("#update-box").find("textarea").val(comment.text);
-    $("#update-box").dialog({
+    $("#comments-update-box").find("textarea").val(comment.text);
+    $("#comments-update-box").dialog({
       width: 640,
       modal: true,
       title: settings.updateBox.title,
       buttons: {
-        'Valider': function() {
-          var text = $("#update-box").find("textarea").val();
+        Valider: function() {
+          var text = $("#comments-update-box").find("textarea").val();
           if (settings.validate(text)) {
 
             var commentToSend = comment;
@@ -266,12 +266,12 @@
             $.ajax({
               url: settings.uri + "/" + commentId,
               type: "PUT",
-              data: JSON.stringify(comment),
+              data: $.toJSON(comment),
               contentType: "application/json",
               dataType: "json",
               success: function(data) {
                 comment.text = data.text;
-                $("#comment" + commentId).find('pre.text').text(data.text);
+                $("#comment" + commentId).find('pre.text').text('').append(data.text.replace(/\n/g, '<br/>'));
                 comments.commentsById[commentId] = data;
                 settings.callback( { type: 'update', comments:  new Array( data ) } );
               }
@@ -279,10 +279,13 @@
             $( this ).dialog( "destroy" );
           }
         },
-      'Annuler': function() {
+        Annuler: function() {
           $( this ).dialog( "destroy" );
         }
-      }
+      },
+      close: function() {
+		$( this ).dialog( "destroy" );
+	  }
     })
   }
 
@@ -302,7 +305,7 @@
             comments.comments.shift();
           }
           delete comments.commentsById[commentId];
-          $("#comment" + commentId).hide();
+          $("#comment" + commentId).hide('slow');
           settings.callback( { type: 'deletion', comments:  new Array( comment ) } );
         }
       });
@@ -317,7 +320,7 @@
       $.ajax({
         url: settings.uri,
         type: "POST",
-        data: JSON.stringify(comment),
+        data: $.toJSON(comment),
         contentType: "application/json",
         dataType: "json",
         success: function(data) {

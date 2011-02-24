@@ -23,20 +23,24 @@
  */
 package com.silverpeas.comment.web;
 
-import com.silverpeas.calendar.Date;
-import com.silverpeas.comment.model.Comment;
-import com.silverpeas.comment.model.CommentPK;
-import com.silverpeas.rest.Exposable;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import static com.silverpeas.util.StringUtil.isDefined;
+
 import java.net.URI;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import static com.silverpeas.util.StringUtil.*;
+
+import com.silverpeas.calendar.Date;
+import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.model.CommentPK;
+import com.silverpeas.rest.Exposable;
+import com.silverpeas.util.EncodeHelper;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /**
  * The comment entity is a comment object that is exposed in the web as an entity (web entity).
@@ -210,7 +214,7 @@ public class CommentEntity implements Exposable {
     this.componentId = comment.getCommentPK().getInstanceId();
     this.id = comment.getCommentPK().getId();
     this.resourceId = comment.getForeignKey().getId();
-    this.text = comment.getMessage(); //EncodeHelper.javaStringToHtmlParagraphe(comment.getMessage());
+    this.text = comment.getMessage();
     this.author = CommentAuthorEntity.fromUser(comment.getOwnerDetail());
     this.creationDate = encodeToDisplayDate(comment.getCreationDate(), this.author.getLanguage());
     this.modificationDate = encodeToDisplayDate(comment.getModificationDate(), this.author.
