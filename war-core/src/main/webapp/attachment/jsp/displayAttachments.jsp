@@ -410,7 +410,7 @@
         		alert("<%=attResources.getString("attachment.dialog.checkout.nok")%>");
           		window.location.href=window.location.href;
         	}
-        });
+        }, 'text');
       }
     }
 
@@ -534,7 +534,7 @@
           }
         }
         closeMessage();
-      });
+      }, 'text');
     }
 
     function reloadIncludingPage()
@@ -612,7 +612,7 @@
         {
           alert("Une erreur s'est produite !");
         }
-      });
+      }, 'text');
     }
 
     function uploadCompleted(s)
