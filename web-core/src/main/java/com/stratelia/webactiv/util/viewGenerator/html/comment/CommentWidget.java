@@ -223,7 +223,8 @@ public abstract class CommentWidget extends TagSupport {
         + " || (comment.author.id === '" + getUserId() + "')) return true; else return false;},"
         + "confirmation: '" + settings.getString("comment.suppressionConfirmation") + "',"
         + "icon: '" + getDeletionIconURL() + "',altText: '" + settings.getString("GML.delete")
-        + "'}, updateBox: { title: '" + settings.getString("comment.comment")
+        + "'}, updateBox: { title: '" + settings.getString("comment.comment") + "', ok: '"
+        + settings.getString("GML.validate") + "', cancel: '" + settings.getString("GML.cancel")
         + "'}, editionBox: { title: '" + settings.getString("comment.add") + "', ok: '"
         + settings.getString("GML.validate")
         + "'}, validate: function(text) { if (text == null || text.length == 0) { " + "alert('"

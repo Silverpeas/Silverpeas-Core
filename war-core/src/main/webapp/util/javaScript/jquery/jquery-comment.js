@@ -34,6 +34,7 @@
  * - creationDate: the date at which the comment was created,
  * - modificationDate: the date at which the comment was lastly updated,
  * - text: the text of the comment,
+ * - indexed: a flag indicating whether the comment is indexed or should be indexed,
  * - author: the user that has written the comment with at least the following attributes:
  *    - id: the unique identifier of the user in the server from which the comment has been fetched,
  *    - fullName: the full name (first and last names) of the user,
@@ -56,6 +57,8 @@
    * - updateBox: the modal box in which the text of a given comment can be updated. It has the
    * following attributes:
    *    - title: the title of the modal box,
+   *    - ok: the text of the ok button,
+   *    - cancel: the text of the cancel button,
    * - editionBox: the box in which a new comment can be edited. It is not a dialog box, but a
    * an area dedicated to edit a text and it can be placed after or before the list of comments.
    * It has the following attributes:
@@ -91,7 +94,9 @@
       altText: 'delete'
     },
     updateBox: {
-      title: 'The comment:'
+      title: 'The comment:',
+      ok: 'Update',
+      cancel: 'Cancel'
     },
     editionBox: {
       title: 'New comment:',
@@ -120,7 +125,7 @@
     init : function( options ) {
 
       if ( options ) {
-        $.extend( settings, options );
+        $.extend( true, settings, options );
       }
 
       return this.each(function() {
@@ -151,16 +156,27 @@
     list : function() {
       return this.each(function() {
         var $this = $(this), comments = $this.data('comments');
-        var updateBox = $("<div id='comments-update-box'>").attr("style","display: none;").appendTo($this);
-        var textBox = $("<div>").addClass("mandatoryField").appendTo(updateBox);
-        $("<textarea>").addClass("text").appendTo(textBox);
-        $("<span>").html("&nbsp;").appendTo(textBox);
-        $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory).appendTo(textBox);
-        var legende = $("<div>").addClass("legende").appendTo(textBox);
-        $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory).appendTo(legende);
-        $("<span>").html("&nbsp;:&nbsp;" + settings.mandatoryText).appendTo(legende);
+//        var updateBox = $("<div id='comments-update-box'>").attr("style","display: none;").appendTo($this);
+//        var textBox = $("<div>").addClass("mandatoryField").appendTo(updateBox);
+//        $("<textarea>").addClass("text").appendTo(textBox);
+//        $("<span>").html("&nbsp;").appendTo(textBox);
+//        $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory).appendTo(textBox);
+//        var legende = $("<div>").addClass("legende").appendTo(textBox);
+//        $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory).appendTo(legende);
+//        $("<span>").html("&nbsp;:&nbsp;" + settings.mandatoryText).appendTo(legende);
+//
+//        $("<div id='list-box'>").appendTo($this);
+        $this.append(
+          $("<div id='comments-update-box'>").attr("style","display: none;").append(
+            $("<div>").addClass("mandatoryField").append(
+              $("<textarea>").addClass("text")).append(
+              $("<span>").html("&nbsp;")).append(
+              $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory)).append(
+              $("<div>").addClass("legende").append(
+                $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory)).append(
+                $("<span>").html(":&nbsp;" + settings.mandatoryText))))).append(
+          $("<div id='list-box'>"));
 
-        $("<div id='list-box'>").appendTo($this);
         $.getJSON(settings.uri, function( arrayOfComments ) {
           comments.comments = arrayOfComments;
             for (var x = 0; x < arrayOfComments.length; x++) {
@@ -184,19 +200,32 @@
     edition : function( commentCreation ) {
       return this.each(function() {
         var $this = $(this), edition = settings.editionBox;
-        var editionBox = $("<div id='edition-box'>").addClass("mandatoryField").appendTo($this);
-        var legende = $("<div>").addClass("legende");
-        $("<p>").addClass("title").text(edition['title']).appendTo(editionBox);
-        $("<textarea>").addClass("text").appendTo(editionBox);
-         $("<span>").html("&nbsp;").appendTo(editionBox);
-        $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory).appendTo(editionBox);
-        legende.appendTo(editionBox);
-        $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory).appendTo(legende);
-        $("<span>").html("&nbsp;:&nbsp;" + settings.mandatoryText).appendTo(legende);
-        $("<button>").addClass("button").text(edition['ok']).
-        click(function() {
-          __addComment( $this, commentCreation );
-        }).appendTo($("<div>").addClass("buttons").appendTo(editionBox));
+//        var editionBox = $("<div id='edition-box'>").addClass("mandatoryField").appendTo($this);
+//        var legende = $("<div>").addClass("legende");
+//        $("<p>").addClass("title").text(edition['title']).appendTo(editionBox);
+//        $("<textarea>").addClass("text").appendTo(editionBox);
+//         $("<span>").html("&nbsp;").appendTo(editionBox);
+//        $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory).appendTo(editionBox);
+//        legende.appendTo(editionBox);
+//        $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory).appendTo(legende);
+//        $("<span>").html("&nbsp;:&nbsp;" + settings.mandatoryText).appendTo(legende);
+//        $("<button>").addClass("button").text(edition['ok']).
+//        click(function() {
+//          __addComment( $this, commentCreation );
+//        }).appendTo($("<div>").addClass("buttons").appendTo(editionBox));
+//      })
+        $this.append(
+          $("<div id='edition-box'>").addClass("mandatoryField").append(
+            $("<p>").addClass("title").text(edition.title)).append(
+            $("<textarea>").addClass("text")).append(
+            $("<span>").html("&nbsp;")).append(
+            $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory)).append(
+            $("<div>").addClass("legende").append(
+              $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory)).append(
+              $("<span>").html("&nbsp;:&nbsp;" + settings.mandatoryText))).append(
+            $("<div>").addClass("buttons").append(
+              $("<button>").addClass("button").text(edition.ok).click(function() {
+                __addComment( $this, commentCreation );}))));
       })
     }
   };
@@ -221,17 +250,30 @@
    */
   function __printComment( $this, comment, position ) {
     var update = settings.update, deletion = settings.deletion, comments = $this.data('comments'),
-      commentBox;
-    if (position === 'top' && comments.comments.length > 0) {
-      commentBox = $("<div>").appendTo($("<div id='comment" + comment.id + "'>").addClass("oneComment").insertBefore($('#comment' + comments.comments[0].id)));
-    } else {
-      commentBox = $("<div>").appendTo($("<div id='comment" + comment.id + "'>").addClass("oneComment").appendTo($("#list-box")));
-    }
-    var actionsPane = $("<div>").addClass("action").appendTo(commentBox);
-    $("<img>").attr("src", comment.author.avatar).appendTo($("<div>").addClass("avatar").appendTo(commentBox));
-    $("<span>").addClass("date").text(" - " + comment.creationDate).appendTo($("<p>").addClass("author").text(comment.author.fullName).appendTo(commentBox));
-    $("<pre>").addClass("text").append(comment.text.replace(/\n/g, '<br/>')).appendTo(commentBox);
+      commentBox, actionsPane = $("<div>").addClass("action"),
+    commentDescription = $("<div id='comment" + comment.id + "'>").addClass("oneComment");
+//    if (position === 'top' && comments.comments.length > 0) {
+//      commentBox = $("<div>").appendTo($("<div id='comment" + comment.id + "'>").addClass("oneComment").insertBefore($('#comment' + comments.comments[0].id)));
+//    } else {
+//      commentBox = $("<div>").appendTo($("<div id='comment" + comment.id + "'>").addClass("oneComment").appendTo($("#list-box")));
+//    }
+//    var actionsPane = $("<div>").addClass("action").appendTo(commentBox);
+//    $("<img>").attr("src", comment.author.avatar).appendTo($("<div>").addClass("avatar").appendTo(commentBox));
+//    $("<span>").addClass("date").text(" - " + comment.creationDate).appendTo($("<p>").addClass("author").text(comment.author.fullName).appendTo(commentBox));
+//    $("<pre>").addClass("text").append(comment.text.replace(/\n/g, '<br/>')).appendTo(commentBox);
 
+    if (position === 'top' && comments.comments.length > 0) {
+      commentBox = commentDescription.insertBefore($('#comment' + comments.comments[0].id));
+    } else {
+      commentBox = commentDescription.appendTo($("#list-box"));
+    }
+    commentBox.append($("<div>").append(
+      actionsPane).append(
+      $("<div>").addClass("avatar").append(
+        $("<img>").attr("src", comment.author.avatar))).append(
+      $("<p>").addClass("author").text(comment.author.fullName).append(
+        $("<span>").addClass("date").text(" - " + comment.creationDate))).append(
+      $("<pre>").addClass("text").append(comment.text.replace(/\n/g, '<br/>'))));
     if (update['activated']( comment )) {
       $("<img>").attr("src", update.icon).attr("alt", update.altText).click(function() {
         __updateComment($this, comment.id)
@@ -250,14 +292,16 @@
    * The remote web service is invoked to persist the update.
    */
   function __updateComment( $this, commentId ) {
-    var comments = $this.data('comments'), comment = comments.commentsById[commentId];
+    var comments = $this.data('comments'), comment = comments.commentsById[commentId],
+      updateBox = settings.updateBox;
     $("#comments-update-box").find("textarea").val(comment.text);
     $("#comments-update-box").dialog({
       width: 640,
       modal: true,
-      title: settings.updateBox.title,
-      buttons: {
-        Valider: function() {
+      title: updateBox.title,
+      buttons: [{
+          text: updateBox.ok,
+          click: function() {
           var text = $("#comments-update-box").find("textarea").val();
           if (settings.validate(text)) {
 
@@ -278,13 +322,12 @@
             });
             $( this ).dialog( "destroy" );
           }
-        },
-        Annuler: function() {
-          $( this ).dialog( "destroy" );
         }
-      },
-      close: function() {
-		$( this ).dialog( "destroy" );
+      }, {
+        text: updateBox.cancel,
+        click: function() { $( this ).dialog( "destroy" ); }
+      }],
+      close: function() { $( this ).dialog( "destroy" );
 	  }
     })
   }
