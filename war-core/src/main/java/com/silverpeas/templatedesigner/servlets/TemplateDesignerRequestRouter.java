@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.templatedesigner.servlets;
 
 import java.util.Enumeration;
@@ -83,71 +82,55 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
+  public String getDestination(String function, ComponentSessionController componentSC,
+      HttpServletRequest request) {
     String destination = "";
     String root = "/templateDesigner/jsp/";
-    TemplateDesignerSessionController templateDesignerSC =
-        (TemplateDesignerSessionController) componentSC;
-    SilverTrace.info("templateDesigner",
-        "TemplateDesignerRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId()
-        + " Function=" + function);
-
+    TemplateDesignerSessionController templateDesignerSC = (TemplateDesignerSessionController) componentSC;
+    SilverTrace.info("templateDesigner", "TemplateDesignerRequestRouter.getDestination()",
+        "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId() + " Function=" + function);
     try {
       if (function.startsWith("Main")) {
         List<PublicationTemplate> templates = templateDesignerSC.getTemplates();
-
         request.setAttribute("Templates", templates);
-
         destination = root + "welcome.jsp";
       } else if (function.equals("ViewTemplate")) {
         String fileName = request.getParameter("Template");
-
         PublicationTemplate template = null;
-        if (!isDefined(fileName))
+        if (!isDefined(fileName)) {
           template = templateDesignerSC.reloadCurrentTemplate();
-        else
+        } else {
           template = templateDesignerSC.setTemplate(fileName);
-
+        }
         Form formUpdate = template.getUpdateForm();
         DataRecord data = template.getRecordSet().getEmptyRecord();
-
         request.setAttribute("Form", formUpdate);
         request.setAttribute("Data", data);
-
-        PagesContext context = new PagesContext("myForm", "2",
-            templateDesignerSC.getLanguage(), false, "useless",
-            templateDesignerSC.getUserId());
+        PagesContext context = new PagesContext("myForm", "2", templateDesignerSC.getLanguage(),
+            false, "useless", templateDesignerSC.getUserId());
         context.setBorderPrinted(false);
         request.setAttribute("context", context);
-
         destination = root + "template.jsp";
       } else if (function.equals("NewTemplate")) {
         destination = root + "templateHeader.jsp";
       } else if (function.equals("EditTemplate")) {
         String fileName = request.getParameter("FileName");
-
-        PublicationTemplate template = null;
-        if (isDefined(fileName))
+        PublicationTemplate template;
+        if (isDefined(fileName)) {
           template = templateDesignerSC.setTemplate(fileName);
-        else
+        } else {
           template = templateDesignerSC.getCurrentTemplate();
-
+        }
         request.setAttribute("Template", template);
 
         destination = root + "templateHeader.jsp";
       } else if (function.equals("AddTemplate")) {
         PublicationTemplate template = request2Template(request);
-
         templateDesignerSC.createTemplate(template);
-
         destination = getDestination("ViewFields", componentSC, request);
       } else if (function.equals("UpdateTemplate")) {
         PublicationTemplate template = request2Template(request);
-
         templateDesignerSC.updateTemplate((PublicationTemplateImpl) template);
-
         destination = getDestination("Main", componentSC, request);
       } else if (function.equals("ViewFields")) {
         request.setAttribute("Fields", templateDesignerSC.getFields());
@@ -206,9 +189,7 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
         templateDesignerSC.moveField(fieldName, direction);
 
         destination = getDestination("ViewFields", componentSC, request);
-      }
-
-      else if (function.equals("SaveTemplate")) {
+      } else if (function.equals("SaveTemplate")) {
         templateDesignerSC.saveTemplate();
 
         destination = getDestination("ViewTemplate", componentSC, request);
@@ -227,44 +208,45 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
   }
 
   private String getDestinationFromDisplayer(String displayer) {
-    if (displayer.equals("wysiwyg"))
+    if (displayer.equals("wysiwyg")) {
       return "fieldWysiwyg.jsp";
-    else if (displayer.equals("textarea"))
+    }  if (displayer.equals("textarea")) {
       return "fieldTextarea.jsp";
-    else if (displayer.equals("listbox"))
+    }  if (displayer.equals("listbox")) {
       return "fieldMultivalues.jsp";
-    else if (displayer.equals("checkbox"))
+    }  if (displayer.equals("checkbox")) {
       return "fieldMultivalues.jsp";
-    else if (displayer.equals("radio"))
+    } if (displayer.equals("radio")) {
       return "fieldMultivalues.jsp";
-    else if (displayer.equals("url"))
+    } if (displayer.equals("url")) {
       return "fieldURL.jsp";
-    else if (displayer.equals("date"))
+    } if (displayer.equals("date")) {
       return "fieldDate.jsp";
-    else if (displayer.equals("file"))
+    } if (displayer.equals("file")) {
       return "fieldFile.jsp";
-    else if (displayer.equals("image"))
+    } if (displayer.equals("image")) {
       return "fieldImage.jsp";
-    else if (displayer.equals("video"))
+    } if (displayer.equals("video")) {
       return "fieldVideo.jsp";
-    else if (displayer.equals("user"))
+    } if (displayer.equals("user")) {
       return "fieldUser.jsp";
-    else if (displayer.equals("multipleUser"))
+    } if (displayer.equals("multipleUser")) {
       return "fieldMultipleUser.jsp";
-    else if (displayer.equals("ldap"))
+    } if (displayer.equals("ldap")) {
       return "fieldLdap.jsp";
-    else if (displayer.equals("accessPath"))
+    } if (displayer.equals("accessPath")) {
       return "fieldAccessPath.jsp";
-    else if (displayer.equals("jdbc"))
+    } if (displayer.equals("jdbc")) {
       return "fieldJdbc.jsp";
-    else if (displayer.equals("pdc"))
+    } if (displayer.equals("pdc")) {
       return "fieldPdc.jsp";
-    else if (displayer.equals("group"))
+    } if (displayer.equals("group")) {
       return "fieldGroup.jsp";
-    else if (displayer.equals("sequence"))
+    } if (displayer.equals("sequence")) {
       return "fieldSequence.jsp";
-    else
+    } else {
       return "fieldText.jsp";
+    }
   }
 
   private PublicationTemplate request2Template(HttpServletRequest request) {
@@ -272,8 +254,7 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
     String description = request.getParameter("Description");
     boolean visible = "true".equalsIgnoreCase(request.getParameter("Visible"));
     String thumbnail = request.getParameter("Thumbnail");
-    boolean searchable = "true".equalsIgnoreCase(request
-        .getParameter("Searchable"));
+    boolean searchable = "true".equalsIgnoreCase(request.getParameter("Searchable"));
 
     PublicationTemplateImpl template = new PublicationTemplateImpl();
     template.setName(name);
@@ -281,10 +262,11 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
     template.setThumbnail(thumbnail);
     template.setVisible(visible);
 
-    if (searchable)
+    if (searchable) {
       template.setSearchFileName("dummy");
-    else
+    } else {
       template.setSearchFileName(null);
+    }
 
     return template;
   }
@@ -293,37 +275,34 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
       throws FormException {
     String displayer = request.getParameter("Displayer");
     String fieldName = request.getParameter("FieldName");
-    boolean mandatory = "true".equalsIgnoreCase(request
-        .getParameter("Mandatory"));
-    boolean readOnly = "true"
-        .equalsIgnoreCase(request.getParameter("ReadOnly"));
+    boolean mandatory = "true".equalsIgnoreCase(request.getParameter("Mandatory"));
+    boolean readOnly = "true".equalsIgnoreCase(request.getParameter("ReadOnly"));
     boolean hidden = "true".equalsIgnoreCase(request.getParameter("Hidden"));
-    boolean disabled = "true"
-        .equalsIgnoreCase(request.getParameter("Disabled"));
-    boolean searchable = "true".equalsIgnoreCase(request
-        .getParameter("Searchable"));
+    boolean disabled = "true".equalsIgnoreCase(request.getParameter("Disabled"));
+    boolean searchable = "true".equalsIgnoreCase(request.getParameter("Searchable"));
 
     String fieldType = "text";
-    if (displayer.equals("user"))
+    if (displayer.equals("user")) {
       fieldType = "user";
-    else if (displayer.equals("multipleUser"))
+    } else if (displayer.equals("multipleUser")) {
       fieldType = "multipleUser";
-    else if (displayer.equals("date"))
+    } else if (displayer.equals("date")) {
       fieldType = "date";
-    else if (displayer.equals("image") || displayer.equals("file") || displayer.equals("video"))
+    } else if (displayer.equals("image") || displayer.equals("file") || displayer.equals("video")) {
       fieldType = "file";
-    else if (displayer.equals("ldap"))
+    } else if (displayer.equals("ldap")) {
       fieldType = "ldap";
-    else if (displayer.equals("accessPath"))
+    } else if (displayer.equals("accessPath")) {
       fieldType = "accessPath";
-    else if (displayer.equals("jdbc"))
+    } else if (displayer.equals("jdbc")) {
       fieldType = "jdbc";
-    else if (displayer.equals("pdc"))
+    } else if (displayer.equals("pdc")) {
       fieldType = "pdc";
-    else if (displayer.equals("group"))
+    } else if (displayer.equals("group")) {
       fieldType = "group";
-    else if (displayer.equals("sequence"))
+    } else if (displayer.equals("sequence")) {
       fieldType = "sequence";
+    }
 
     GenericFieldTemplate field = new GenericFieldTemplate();
     field.setDisplayerName(displayer);
@@ -335,37 +314,31 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
     field.setTypeName(fieldType);
     field.setSearchable(searchable);
 
+    @SuppressWarnings("unchecked")
     Enumeration<String> paramNames = request.getParameterNames();
     while (paramNames.hasMoreElements()) {
       String paramName = paramNames.nextElement();
       if (paramName.startsWith("Param_")) {
         String xmlParameterName = paramName.substring(6);
         String xmlParameterValue = request.getParameter(paramName);
-
         if (isDefined(xmlParameterValue)) {
           Parameter parameter = new Parameter(xmlParameterName, "dummy");
-          parameter.getParameterValuesObj().add(
-              new ParameterValue("fr", xmlParameterValue));
-
+          parameter.getParameterValuesObj().add(new ParameterValue("fr", xmlParameterValue));
           field.getParametersObj().add(parameter);
         }
       } else if (paramName.startsWith("Label_")) {
         String lang = paramName.substring(6);
         String sLabel = request.getParameter(paramName);
-
         if (isDefined(sLabel)) {
           Label label = new Label(sLabel, lang);
           field.getLabelsObj().add(label);
         }
       }
     }
-
     return field;
   }
 
   private static boolean isDefined(String parameter) {
-    return (parameter != null && parameter.length() > 0 && !parameter
-        .equals("null"));
+    return (parameter != null && parameter.length() > 0 && !parameter.equals("null"));
   }
-
 }
