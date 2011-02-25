@@ -258,6 +258,9 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
       out.println("oFCKeditor.Config[\"CustomConfigurationsPath\"] = \"" + configFile + "\";");
       out.println("oFCKeditor.ToolbarSet = 'XMLForm';");
       out.println("oFCKeditor.Config[\"ToolbarStartExpanded\"] = false;");
+      out.println("oFCKeditor.Config[\"ImageBrowserURL\"] = '" + Util.getPath() +
+          "/wysiwyg/jsp/uploadFile.jsp?ComponentId=" + pageContext.getComponentId() + "&ObjectId=" +
+          pageContext.getObjectId() + "&Context=" + fieldName + "';");
       out.println("oFCKeditor.ReplaceTextarea();");
 
       // field name used to generate a javascript function name
