@@ -39,7 +39,6 @@ import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.TagSupport;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.div;
-import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.script;
 import static com.silverpeas.util.StringUtil.*;
 
@@ -97,11 +96,8 @@ public abstract class CommentWidget extends TagSupport {
         addElement(setUpJQueryCommentPlugin());
     script commentJqueryScript = new script().setType("text/javascript").
         setSrc(URLManager.getApplicationURL() + "/util/javaScript/jquery/jquery-comment.js");
-    link link = new link().setRel("stylesheet").setType("text/css").
-        setHref(context + "/util/styleSheets/jquery/jquery-comment.css");
 
-    xhtmlcontainer.addElement(link).
-        addElement(checkForm).
+    xhtmlcontainer.addElement(checkForm).
         addElement(commentJqueryScript).
         addElement(comments).
         addElement(initCommentPlugin);
@@ -228,7 +224,7 @@ public abstract class CommentWidget extends TagSupport {
         + "confirmation: '" + settings.getString("comment.suppressionConfirmation") + "',"
         + "icon: '" + getDeletionIconURL() + "',altText: '" + settings.getString("GML.delete")
         + "'}, updateBox: { title: '" + settings.getString("comment.comment")
-        + " :'}, editionBox: { title: '" + settings.getString("comment.add") + ": ', ok: '"
+        + "'}, editionBox: { title: '" + settings.getString("comment.add") + "', ok: '"
         + settings.getString("GML.validate")
         + "'}, validate: function(text) { if (text == null || text.length == 0) { " + "alert('"
         + settings.getString("comment.pleaseFill_single") + "');"

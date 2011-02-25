@@ -301,7 +301,7 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 .gaucheBoutonV5, .droiteBoutonV5, .gaucheOngletOn, .droiteOngletOn, .gaucheOngletOff, .droiteOngletOff {
 	display: none;
 }
-button, .milieuBoutonV5 {
+.milieuBoutonV5 {
 	background-image: none;
 	background-color:#C8ED99;
 	border:1px solid #9BD94A;
@@ -720,4 +720,18 @@ td.milieuOngletOn {
 .txtnav {
 	font-size:12px;}
 
-
+button {
+	background-image: none;
+	background-color:#C8ED99;
+	border:1px solid #9BD94A;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	box-shadow:5px 5px 10px #cccccc;
+	-moz-box-shadow:5px 5px 10px #cccccc;
+	-webkit-box-shadow:5px 5px 10px #cccccc;
+	padding-left: 10px;
+	padding-right: 10px;
+	color: #444444;
+	font-size: 11px;
+}
