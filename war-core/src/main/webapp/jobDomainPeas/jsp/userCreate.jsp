@@ -100,7 +100,7 @@ function SubmitWithVerif()
 						{
 							alert("Création impossible...\nUn utilisateur de même nom, même prénom et même email existe déjà !");
 						}
-					});
+					}, 'text');
 		<% } else { %>
         	document.userForm.submit();
         <% } %>

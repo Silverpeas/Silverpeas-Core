@@ -265,7 +265,7 @@
                 }
               }
               closeMessage();
-            });
+            }, 'text');
           }
 
           $(document).ready(function(){
