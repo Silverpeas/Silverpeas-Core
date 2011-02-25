@@ -24,7 +24,10 @@
 
 package com.silverpeas.form.dummy;
 
-import com.silverpeas.form.*;
+import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.FormException;
+import com.silverpeas.form.RecordSet;
+import com.silverpeas.form.RecordTemplate;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 
 /**
@@ -42,6 +45,7 @@ public class DummyRecordSet implements RecordSet {
 
   /**
    * Returns the RecordTemplate shared by all the DataRecord of this RecordSet.
+   * @return 
    */
   @Override
   public RecordTemplate getRecordTemplate() {
@@ -50,6 +54,8 @@ public class DummyRecordSet implements RecordSet {
 
   /**
    * Returns an empty DataRecord built on the RecordTemplate.
+   * @return
+   * @throws FormException 
    */
   @Override
   public DataRecord getEmptyRecord() throws FormException {
@@ -58,6 +64,9 @@ public class DummyRecordSet implements RecordSet {
 
   /**
    * This dummy record set always return a dummy record.
+   * @param recordId
+   * @return
+   * @throws FormException 
    */
   @Override
   public DataRecord getRecord(String recordId) throws FormException {
@@ -72,18 +81,24 @@ public class DummyRecordSet implements RecordSet {
 
   /**
    * This dummy record set simply do nothing.
+   * @param record
+   * @throws FormException 
    */
   public void insert(DataRecord record) throws FormException {
   }
 
   /**
    * This dummy record set simply do nothing.
+   * @param record
+   * @throws FormException 
    */
   public void update(DataRecord record) throws FormException {
   }
 
   /**
    * This dummy record set simply do nothing.
+   * @param record
+   * @throws FormException 
    */
   @Override
   public void save(DataRecord record) throws FormException {
@@ -91,6 +106,8 @@ public class DummyRecordSet implements RecordSet {
 
   /**
    * This dummy record set simply do nothing.
+   * @param record
+   * @throws FormException 
    */
   @Override
   public void delete(DataRecord record) throws FormException {

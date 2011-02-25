@@ -46,6 +46,7 @@ public class ButtonPaneTag extends TagSupport {
     } catch (final IOException e) {
       throw new JspException("ButtonPane Tag", e);
     }
+    pageContext.removeAttribute(BUTTON_PANE_ATT);
     return EVAL_PAGE;
   }
 

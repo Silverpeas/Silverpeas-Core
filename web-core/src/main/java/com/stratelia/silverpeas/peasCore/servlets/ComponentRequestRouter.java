@@ -56,6 +56,7 @@ public abstract class ComponentRequestRouter extends HttpServlet {
   /**
    * This method has to be implemented in the component request Router class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
+   * @return the name of the session controller.
    */
   public abstract String getSessionControlBeanName();
 
@@ -200,8 +201,9 @@ public abstract class ComponentRequestRouter extends HttpServlet {
     // see ClipboardRequestRouter
     // Except for notifications
     if (!("POPUP".equals(getSessionControlBeanName()) && function
-        .startsWith("ReadMessage")))
+        .startsWith("ReadMessage"))) {
       updateSessionManagement(session, destination);
+    }
 
     request.setAttribute(getSessionControlBeanName(), component);
 
@@ -245,13 +247,15 @@ public abstract class ComponentRequestRouter extends HttpServlet {
             request.getRequestURI());
         RequestDispatcher requestDispatcher = getServletConfig()
             .getServletContext().getRequestDispatcher(destination);
-        if (requestDispatcher != null)
+        if (requestDispatcher != null) {
           requestDispatcher.forward(request, response);
-        else
+        }
+        else {
           SilverTrace.info("peasCore",
               "ComponentRequestRouter.redirectService",
               "peasCore.EX_REDIRECT_SERVICE_FAILED", "Destination '"
               + destination + "' not found !");
+        }
       }
     } catch (Exception e) {
       try {
@@ -320,12 +324,14 @@ public abstract class ComponentRequestRouter extends HttpServlet {
     // instanciate a new CSC
     ComponentSessionController component = createComponentSessionController(
         mainSessionCtrl, componentContext);
-    if (componentId == null)
+    if (componentId == null) {
       session.setAttribute("Silverpeas_" + getSessionControlBeanName(),
           component);
-    else
+    }
+    else {
       session.setAttribute("Silverpeas_" + getSessionControlBeanName() + "_"
           + componentId, component);
+    }
     SilverTrace.info("peasCore",
         "ComponentRequestRouter.setComponentSessionController",
         "peasCore.MSG_SESSION_CONTROLLER_INSTANCIATED", "spaceId=" + spaceId

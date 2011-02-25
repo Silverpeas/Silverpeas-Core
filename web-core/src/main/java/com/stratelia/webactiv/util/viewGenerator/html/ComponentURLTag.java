@@ -49,7 +49,7 @@ public class ComponentURLTag extends TagSupport {
       url += URLManager.getURL(null, componentId);
     }
     try {
-      pageContext.getOut().println(url);
+      pageContext.getOut().print(url);
     } catch (IOException e) {
       throw new JspException("Silverpeas Resource URL Tag", e);
     }
