@@ -148,7 +148,7 @@ else {
 %>
 
 	<% if (isAnonymousAccess) { %>
-		<div class="inlineMessage"><%=resource.getString("webConnections.parametersWillNotBeStored")%></div>
+		<div class="inlineMessage"><%=resource.getString("webConnections.parametersWillNotBeStored")%></div><br clear="all"/>
 	<% } %>
 
 <%
