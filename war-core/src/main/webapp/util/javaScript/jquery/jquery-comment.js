@@ -156,16 +156,6 @@
     list : function() {
       return this.each(function() {
         var $this = $(this), comments = $this.data('comments');
-//        var updateBox = $("<div id='comments-update-box'>").attr("style","display: none;").appendTo($this);
-//        var textBox = $("<div>").addClass("mandatoryField").appendTo(updateBox);
-//        $("<textarea>").addClass("text").appendTo(textBox);
-//        $("<span>").html("&nbsp;").appendTo(textBox);
-//        $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory).appendTo(textBox);
-//        var legende = $("<div>").addClass("legende").appendTo(textBox);
-//        $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory).appendTo(legende);
-//        $("<span>").html("&nbsp;:&nbsp;" + settings.mandatoryText).appendTo(legende);
-//
-//        $("<div id='list-box'>").appendTo($this);
         $this.append(
           $("<div id='comments-update-box'>").attr("style","display: none;").append(
             $("<div>").addClass("mandatoryField").append(
@@ -200,20 +190,6 @@
     edition : function( commentCreation ) {
       return this.each(function() {
         var $this = $(this), edition = settings.editionBox;
-//        var editionBox = $("<div id='edition-box'>").addClass("mandatoryField").appendTo($this);
-//        var legende = $("<div>").addClass("legende");
-//        $("<p>").addClass("title").text(edition['title']).appendTo(editionBox);
-//        $("<textarea>").addClass("text").appendTo(editionBox);
-//         $("<span>").html("&nbsp;").appendTo(editionBox);
-//        $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory).appendTo(editionBox);
-//        legende.appendTo(editionBox);
-//        $("<img>").attr("src", settings.mandatory).attr("alt", settings.mandatory).appendTo(legende);
-//        $("<span>").html("&nbsp;:&nbsp;" + settings.mandatoryText).appendTo(legende);
-//        $("<button>").addClass("button").text(edition['ok']).
-//        click(function() {
-//          __addComment( $this, commentCreation );
-//        }).appendTo($("<div>").addClass("buttons").appendTo(editionBox));
-//      })
         $this.append(
           $("<div id='edition-box'>").addClass("mandatoryField").append(
             $("<p>").addClass("title").text(edition.title)).append(
@@ -252,15 +228,6 @@
     var update = settings.update, deletion = settings.deletion, comments = $this.data('comments'),
       commentBox, actionsPane = $("<div>").addClass("action"),
     commentDescription = $("<div id='comment" + comment.id + "'>").addClass("oneComment");
-//    if (position === 'top' && comments.comments.length > 0) {
-//      commentBox = $("<div>").appendTo($("<div id='comment" + comment.id + "'>").addClass("oneComment").insertBefore($('#comment' + comments.comments[0].id)));
-//    } else {
-//      commentBox = $("<div>").appendTo($("<div id='comment" + comment.id + "'>").addClass("oneComment").appendTo($("#list-box")));
-//    }
-//    var actionsPane = $("<div>").addClass("action").appendTo(commentBox);
-//    $("<img>").attr("src", comment.author.avatar).appendTo($("<div>").addClass("avatar").appendTo(commentBox));
-//    $("<span>").addClass("date").text(" - " + comment.creationDate).appendTo($("<p>").addClass("author").text(comment.author.fullName).appendTo(commentBox));
-//    $("<pre>").addClass("text").append(comment.text.replace(/\n/g, '<br/>')).appendTo(commentBox);
 
     if (position === 'top' && comments.comments.length > 0) {
       commentBox = commentDescription.insertBefore($('#comment' + comments.comments[0].id));
