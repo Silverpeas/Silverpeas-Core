@@ -28,7 +28,6 @@ import com.silverpeas.form.Form;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.importExport.model.PublicationType;
-import com.silverpeas.node.importexport.NodePositionType;
 import com.silverpeas.publication.importExport.DBModelContentType;
 import com.silverpeas.publication.importExport.XMLModelContentType;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
@@ -51,6 +50,7 @@ import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.a;
 import org.apache.ecs.xhtml.b;
 import org.apache.ecs.xhtml.body;
+import org.apache.ecs.xhtml.br;
 import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.h1;
 import org.apache.ecs.xhtml.head;
@@ -131,6 +131,7 @@ public class HtmlExportPublicationGenerator {
       element.addElement(")");
     }
     if (StringUtil.isDefined(htmlPubDescription)) {
+      element.addElement(new br());
       element.addElement(new i(htmlPubDescription));
     }
     xhtmlcontainer.addElement(element);
@@ -147,7 +148,12 @@ public class HtmlExportPublicationGenerator {
     ElementContainer xhtmlcontainer = new ElementContainer();
     h1 title = new h1(htmlPubName);
     xhtmlcontainer.addElement(title);
-    div creationDetail = new div(htmlCreatorName + '-' + dateString);
+    div creationDetail;
+    if (StringUtil.isDefined(dateString)) {
+      creationDetail = new div(htmlCreatorName + " - " + dateString);
+    } else {
+      creationDetail = new div(htmlCreatorName);
+    }
     creationDetail.setClass("creationDetail");
     xhtmlcontainer.addElement(creationDetail);
     return xhtmlcontainer.toString();
@@ -158,7 +164,6 @@ public class HtmlExportPublicationGenerator {
    */
   private String toHtmlInfoModel() {
     StringBuilder sb = new StringBuilder();
-    // TODO: faire passer ce parametre depuis le controleur?
     String toParse = modelDetail.getHtmlDisplayer();
 
     List<String> textList = dbModelContent.getListTextParts();
@@ -192,8 +197,6 @@ public class HtmlExportPublicationGenerator {
         }
         toParse = toParse.substring(11);
       }
-
-      // et on recommence
       posit = toParse.indexOf("%WA");
     }
     sb.append(toParse);
@@ -242,21 +245,23 @@ public class HtmlExportPublicationGenerator {
     body.addElement(toHtmlEnTetePublication());
     div content = new div();
     content.setClass("content");
-    content.addElement(new p(htmlPubDescription));
+    p description = new p();
+    description.addElement(htmlPubDescription);
+    content.addElement(description);
     if (dbModelContent != null) {
       content.addElement(toHtmlInfoModel());
     } else if (wysiwygText != null) {
-      content.addElement(HtmlExportGenerator.encode(wysiwygText));
+      content.addElement(wysiwygText);
     } else if (xmlModelContent != null) {
       content.addElement(xmlFormToHTML());
     }
     body.addElement(content);
-    div attachments = new div();
-    attachments.setClass("attachments");
     if (listAttDetail != null && !listAttDetail.isEmpty()) {
+      div attachments = new div();
+      attachments.setClass("attachments");
       attachments.addElement(toHtmlAttachments());
+      body.addElement(attachments);
     }
-    body.addElement(attachments);
     html.addElement(body);
     return html.toString();
   }
@@ -279,9 +284,8 @@ public class HtmlExportPublicationGenerator {
   private String toHtmlAttachments() {
     ul attachments = new ul();
     attachments.setClass("list");
-    if (listAttDetail != null) {
-      for (AttachmentDetail attDetail :
-          listAttDetail) {
+    if (listAttDetail != null && !listAttDetail.isEmpty()) {
+      for (AttachmentDetail attDetail : listAttDetail) {
         attachments.addElement(toHtmlAttachmentInfos(attDetail));
       }
     }
@@ -303,13 +307,14 @@ public class HtmlExportPublicationGenerator {
     link.setHref(FileServerUtils.replaceAccentChars(htmlLogicalName));
     link.addElement(FileServerUtils.replaceAccentChars(htmlLogicalName));
     li.addElement(link);
-    li.addElement("&nbsp;");
+    li.addElement(new br());
     li.addElement(htmlFormatedFileSize);
     if (attDetail.getTitle() != null) {
       i i = new i();
+      i.addElement(" ");
       i.addElement(attDetail.getTitle());
       li.addElement(i);
-      if (attDetail.getInfo() != null) {
+      if (StringUtil.isDefined( attDetail.getInfo())) {
         li.addElement(" - ");
         i info = new i();
         info.addElement(HtmlExportGenerator.encode(attDetail.getInfo()));
@@ -317,6 +322,7 @@ public class HtmlExportPublicationGenerator {
       }
     } else if (attDetail.getInfo() != null) {
       i i = new i();
+      li.addElement(" - ");
       i.addElement(HtmlExportGenerator.encode(attDetail.getInfo()));
       li.addElement(i);
     }
