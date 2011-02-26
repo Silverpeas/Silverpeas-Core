@@ -570,7 +570,7 @@ function checkout(id, webdav, edit, download)
 			{
 				alert(data);
 			}
-		});
+		}, 'text');
 	}
 }
 
@@ -656,7 +656,7 @@ function deleteAttachment(attachmentId)
 					{
 						alert(data);
 					}
-				});
+				}, 'text');
 	}
 }
 
@@ -731,7 +731,7 @@ function sortAttachments(orderedList)
 				{
 					alert(data);
 				}
-			});
+			}, 'text');
 }
 
 function uploadCompleted(s)

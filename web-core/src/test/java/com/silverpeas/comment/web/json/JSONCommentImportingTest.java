@@ -21,13 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along withReader this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.comment.web;
+package com.silverpeas.comment.web.json;
 
 import java.util.List;
 import com.silverpeas.comment.model.CommentPK;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.silverpeas.comment.model.Comment;
-import com.silverpeas.comment.web.json.JSONCommentImporter;
+import com.silverpeas.comment.web.CommentEntity;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.io.IOException;
 import java.io.StringReader;
@@ -45,14 +45,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static com.silverpeas.comment.web.json.JSONCommentFields.*;
-import static com.silverpeas.comment.web.CommentMatcher.*;
+import static com.silverpeas.comment.web.CommentEntityMatcher.*;
 import static com.silverpeas.export.ImportDescriptor.*;
 
 /**
  * Unit tests on the importing from JSON of comment instances.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("/spring-comment.xml")
+@ContextConfiguration("/spring-comment-webservice.xml")
 public class JSONCommentImportingTest {
 
   private static final String commentId = "2";
@@ -78,7 +78,7 @@ public class JSONCommentImportingTest {
     String theCommentInJson = aJSONRepresentationOf(aComment);
     System.out.println("JSON:\n" + theCommentInJson);
     StringReader reader = new StringReader(theCommentInJson);
-    List<Comment> comments = jsonImporter.importFrom(withReader(reader));
+    List<CommentEntity> comments = jsonImporter.importFrom(withReader(reader));
     assertThat(comments, hasSize(1));
     assertThat(comments.get(0), matches(aComment));
   }
@@ -91,7 +91,7 @@ public class JSONCommentImportingTest {
     String theCommentInJson = aJSONRepresentationOf(aComment1, aComment2, aComment3);
     System.out.println("JSON:\n" + theCommentInJson);
     StringReader reader = new StringReader(theCommentInJson);
-    List<Comment> comments = jsonImporter.importFrom(withReader(reader));
+    List<CommentEntity> comments = jsonImporter.importFrom(withReader(reader));
     assertThat(comments, hasSize(3));
     assertThat(comments.get(0), matches(aComment1));
     assertThat(comments.get(1), matches(aComment2));
@@ -123,16 +123,18 @@ public class JSONCommentImportingTest {
       Map<String, String> user = new HashMap<String, String>();
 
       UserDetail userDetail = aComment.getOwnerDetail();
-      user.put(WRITER_ID, userDetail.getId());
-      user.put(WRITER_NAME, userDetail.getDisplayedName());
+      user.put(AUTHOR_ID_FIELD, userDetail.getId());
+      user.put(AUTHOR_NAME_FIELD, userDetail.getDisplayedName());
 
-      comment.put(WRITER, user);
-      comment.put(COMMENT_ID, aComment.getCommentPK().getId());
-      comment.put(COMPONENT_ID, aComment.getCommentPK().getInstanceId());
-      comment.put(RESOURCE_ID, aComment.getForeignKey().getId());
-      comment.put(TEXT, aComment.getMessage());
-      comment.put(CREATION_DATE, aComment.getCreationDate());
-      comment.put(MODIFICATION_DATE, aComment.getModificationDate());
+      comment.put(COMMENT_URI_FIELD, "http://localhost/silverpeas/comments/" +
+          aComment.getCommentPK().getId());
+      comment.put(AUTHOR_FIELD, user);
+      comment.put(COMMENT_ID_FIELD, aComment.getCommentPK().getId());
+      comment.put(COMPONENT_ID_FIELD, aComment.getCommentPK().getInstanceId());
+      comment.put(RESOURCE_ID_FIELD, aComment.getForeignKey().getId());
+      comment.put(TEXT_FIELD, aComment.getMessage());
+      comment.put(CREATION_DATE_FIELD, aComment.getCreationDate());
+      comment.put(MODIFICATION_DATE_FIELD, aComment.getModificationDate());
 
       arrayOfComments.add(comment);
     }

@@ -24,8 +24,6 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -35,13 +33,8 @@
 <%@page import="com.silverpeas.util.StringUtil"%>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination"%>
-<%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.*"%>
-<%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.*"%>
-<%@page import="com.silverpeas.directory.model.Member"%>
 <%@page import="java.util.List"%>
-<%@page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
-<%@page import="java.io.File"%>
-<%@page import="com.stratelia.silverpeas.notificationManager.NotificationParameters"%>
+<%@page import="com.silverpeas.directory.model.UserFragmentVO"%>
 
 <fmt:setLocale value="${requestScope.resources.language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
@@ -51,58 +44,22 @@
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
     List fragments = (List) request.getAttribute("UserFragments");
     Pagination pagination = (Pagination) request.getAttribute("pagination");
+    String breadcrumb = (String) request.getAttribute("BreadCrumb");
 %>
 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
   	<title></title>
     <view:looknfeel />
-    <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-    <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript">
-      var targetUserId = -1;
       function OpenPopup(userId, name){
-        $("#directoryDialog").dialog("option", "title", name);
-        targetUserId = userId;
-    	$("#directoryDialog").dialog("open");
-      }
-
-      function sendNotification(userId) {
-          var title = stripInitialWhitespace($("#txtTitle").val());
-          var errorMsg = "";
-          if (isWhitespace(title)) {
-              errorMsg = "<fmt:message key="GML.thefield" />"+ " <fmt:message key="notification.object" />"+ " <fmt:message key="GML.isRequired" />";
-          }
-          if (errorMsg == "") {
-          	$.getJSON("<%=m_context%>/DirectoryJSON",
-                  	{ 
-          				IEFix: new Date().getTime(),
-          				Action: "SendMessage",
-          				Title: $("#txtTitle").val(),
-          				Message: $("#txtMessage").val(),
-          				TargetUserId: targetUserId
-                  	},
-          			function(data){
-              			if (data.success) {
-                  			closeDialog();
-              			} else {
-                  			alert(data.error);
-              			}
-          			});
-          } else {
-            window.alert(errorMsg);
-          }
-      }
-
-      function closeDialog() {
-      	$("#directoryDialog").dialog("close");
-      	$("#txtTitle").val("");
-      	$("#txtMessage").val("");
+    	initNotification(userId, name);
       }
       
-      function OpenPopupInvitaion(usersId,name){
-        options="directories=no, menubar=no,toolbar=no,scrollbars=yes,resizable=no,alwaysRaised"
-        SP_openWindow('<%=m_context%>/Rinvitation/jsp/invite?Recipient='+usersId, 'strWindowName', '500', '200','directories=no, menubar=no,toolbar=no,scrollbars=yes, resizable=no ,alwaysRaised');
+      function OpenPopupInvitaion(userId,name){
+		initInvitation(userId,name);
       }
 
       function viewIndex(index) {
@@ -114,24 +71,12 @@
     	  $.progressMessage();
     	  document.search.submit();
       }
-
-      $(document).ready(function(){
-
-	        var dialogOpts = {
-	                modal: true,
-	                autoOpen: false,
-	                height: 250,
-	                width: 600
-	        };
-	
-	        $("#directoryDialog").dialog(dialogOpts);    //end dialog
-      });
     </script>
 
   </head>
   <body id="directory">
+  	<view:browseBar extraInformations="<%=breadcrumb %>"/>
     <view:window>
-    	<view:browseBar extraInformations="Annuaire"/>
       <view:frame>
         <div id="indexAndSearch">
           <div id="search">
@@ -184,10 +129,10 @@
           <ol class="message_list aff_colonnes">
             <%
                 for (int i = 0; i < fragments.size(); i++) {
-                  String fragment = (String) fragments.get(i);
+                  UserFragmentVO fragment = (UserFragmentVO) fragments.get(i);
             %>
-            <li class="intfdcolor">
-                 <%=fragment %>
+            <li class="intfdcolor" id="user-<%=fragment.getUserId() %>">
+                 <%=fragment.getFragment() %>
                  <br clear="all" />
             </li>
             <%
@@ -201,46 +146,10 @@
       </view:frame>
 
     </view:window>
-    
-    <!-- Dialog to notify a user -->
-	<div id="directoryDialog">
-		<view:board>
-        <form name="notificationSenderForm" action="SendMessage" method="post">
-        	<table>
-          <tr>
-            <td class="txtlibform">
-              <fmt:message key="notification.object" /> :
-            </td>
-            <td>
-              <input type="text" name="txtTitle" id="txtTitle" maxlength="<%=NotificationParameters.MAX_SIZE_TITLE%>" size="50" value=""/>
-              <img src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5" alt="mandatoryField" />
-            </td>
-          </tr>
-          <tr>
-            <td class="txtlibform">
-              <fmt:message key="notification.message" /> :
-            </td>
-            <td>
-              <textarea name="txtMessage" id="txtMessage" cols="49" rows="4"></textarea>
-            </td>
-          </tr>
-          <tr>
-            <td colspan="2">
-	    (<img src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5" alt="mandatoryField" /> : <fmt:message key="GML.requiredField"/>)
-            </td>
-          </tr>
-          </table>
-        </form>
-        </view:board>
-        <div align="center">
-        	<view:buttonPane>
-        		<fmt:message key="GML.ok" var="ok_label" />
-        		<fmt:message key="GML.cancel"  var="cancel_label"/>
-        		<view:button label="${ok_label}" action="javascript:sendNotification()" />
-        		<view:button label="${cancel_label}" action="javascript:closeDialog()" />
-        	</view:buttonPane>
-        </div>
-	</div>
+
+	<%@include file="../../socialNetwork/jsp/notificationDialog.jsp" %>
+	<%@include file="../../socialNetwork/jsp/invitationDialog.jsp" %>
+	
 	<view:progressMessage/>
   </body>
 </html>

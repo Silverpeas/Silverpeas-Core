@@ -82,7 +82,8 @@ public class ComponentAccessControllerTest {
     when(controller.getComponentParameterValue(componentIdWithoutRigths, "rightsOnTopics")).
         thenReturn("false");
 
-    ComponentAccessController instance = new ComponentAccessController(controller);
+    ComponentAccessController instance = new ComponentAccessController();
+    instance.setComponentAccessController(controller);
     boolean result = instance.isRightOnTopicsEnabled("", componentId);
     assertEquals(false, result);
 
@@ -137,7 +138,8 @@ public class ComponentAccessControllerTest {
     when(controller.getComponentParameterValue(forbiddenComponent, "rightsOnTopics")).
         thenReturn("false");
 
-    ComponentAccessController instance = new ComponentAccessController(controller);
+    ComponentAccessController instance = new ComponentAccessController();
+    instance.setComponentAccessController(controller);
     boolean result = instance.isUserAuthorized(userId, null);
     assertEquals(true, result);
 

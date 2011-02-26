@@ -82,7 +82,7 @@
      </PortletWindow>
      <PortletWindow lang="JAVA" name="silverpeas.MyBookmarksPortlet" portletName="silverpeas.MyBookmarksPortlet" remote="false">
           <Properties>
-               <String name="title" value="Mes liens préférés"/>
+               <String name="title" value="Mes liens favoris"/>
                <String name="visible" value="true"/>
                <String name="width" value="thin"/>
                <String name="entityIDPrefix" value="silverpeas|MyBookmarksPortlet"/>

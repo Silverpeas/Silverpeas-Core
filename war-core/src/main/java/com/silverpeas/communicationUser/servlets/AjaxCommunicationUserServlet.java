@@ -46,13 +46,11 @@ import com.silverpeas.util.EncodeHelper;
 import com.stratelia.webactiv.util.DateUtil;
 
 public class AjaxCommunicationUserServlet extends HttpServlet {
+  private static final long serialVersionUID = 5706201637719833762L;
 
-  public void doGet(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
-    doPost(req, res);
-  }
 
-  public void doPost(HttpServletRequest req, HttpServletResponse res)
+  @Override
+  public void service(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     HttpSession session = req.getSession(true);
 
@@ -65,32 +63,27 @@ public class AjaxCommunicationUserServlet extends HttpServlet {
       String userId = req.getParameter("UserIdDest");
       String userId1, userId2;
 
-      Collection listCurrentDiscussion = commUserSC.getListCurrentDiscussion();
-      Iterator it = listCurrentDiscussion.iterator();
+      Collection<File> listCurrentDiscussion = commUserSC.getListCurrentDiscussion();
+      Iterator<File> it = listCurrentDiscussion.iterator();
       File fileDiscussion = null;
       String fileName;
       boolean trouve = false;
       while (it.hasNext() && !trouve) {
-        fileDiscussion = (File) it.next();
+        fileDiscussion = it.next();
         fileName = fileDiscussion.getName(); // userId1.userId2.txt
-        userId1 = fileName.substring(0, fileName.indexOf("."));
-        userId2 = fileName.substring(fileName.indexOf(".") + 1, fileName
-            .lastIndexOf("."));
-        if ((userId.equals(userId1) && currentUserId.equals(userId2))
-            || (userId.equals(userId2) && currentUserId.equals(userId1))) {
-          trouve = true;
-        }
+        userId1 = fileName.substring(0, fileName.indexOf('.'));
+        userId2 = fileName.substring(fileName.indexOf('.') + 1, fileName.lastIndexOf('.'));
+        trouve = ((userId.equals(userId1) && currentUserId.equals(userId2))
+            || (userId.equals(userId2) && currentUserId.equals(userId1)));
       }
 
       if (!trouve) {
         throw new IOException("Fichier de discussion non trouvé !!");
       }
-
       // Post
       if ("Post".equals(action)) {
         String message = req.getParameter("Msg");
         message = URLDecoder.decode(message, "ISO-8859-1");
-
         // on client side, javascript function espace do not escape + character.
         // It is manually encoded.
         // So, on server side, it must be decoded manually too !
@@ -117,16 +110,14 @@ public class AjaxCommunicationUserServlet extends HttpServlet {
         writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         writer.write("<ajax-response>");
         writer.write("<response type=\"element\" id=\"message\">");
-        writer
-            .write("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">");
+        writer.write("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">");
 
         /* lecture du contenu du fichier */
         FileReader file_read = new FileReader(fileDiscussion);
         BufferedReader flux_in = new BufferedReader(file_read);
         String ligne = null;
         userId1 = "<" + commUserSC.getUserDetail().getDisplayedName() + ">"; // <currentUser>
-        userId2 = "<" + commUserSC.getUserDetail(userId).getDisplayedName()
-            + ">"; // <User dest>
+        userId2 = "<" + commUserSC.getUserDetail(userId).getDisplayedName()+ ">"; // <User dest>
         String color = "#009900";
 
         while ((ligne = flux_in.readLine()) != null) {
@@ -146,7 +137,6 @@ public class AjaxCommunicationUserServlet extends HttpServlet {
         writer.write("</response>");
         writer.write("</ajax-response>");
       }
-
       // Clear
       else if ("Clear".equals(action)) {
         try {
@@ -154,16 +144,13 @@ public class AjaxCommunicationUserServlet extends HttpServlet {
         } catch (CommunicationUserException e) {
           throw new IOException(e.getMessage());
         }
-
         res.setContentType("text/xml");
         res.setHeader("charset", "UTF-8");
-
         Writer writer = res.getWriter();
         writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         writer.write("<ajax-response>");
         writer.write("<response type=\"element\" id=\"message\">");
-        writer
-            .write("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">");
+        writer.write("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">");
         writer.write("</table>");
         writer.write("</response>");
         writer.write("</ajax-response>");

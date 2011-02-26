@@ -24,8 +24,10 @@
 
 package com.silverpeas.form.dummy;
 
-import com.silverpeas.form.*;
-import com.silverpeas.form.fieldType.*;
+import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.Field;
+import com.silverpeas.form.fieldType.TextFieldImpl;
+
 
 /**
  * A dummy DataRecord .
@@ -41,6 +43,7 @@ public class DummyDataRecord implements DataRecord {
 
   /**
    * Returns the data record id.
+   * @return 
    */
   @Override
   public String getId() {
@@ -49,6 +52,7 @@ public class DummyDataRecord implements DataRecord {
 
   /**
    * Gives an id to the data record.
+   * @param externalId 
    */
   @Override
   public void setId(String externalId) {
@@ -56,6 +60,7 @@ public class DummyDataRecord implements DataRecord {
 
   /**
    * Return true if this record has not been inserted in a RecordSet.
+   * @return 
    */
   @Override
   public boolean isNew() {
@@ -64,6 +69,8 @@ public class DummyDataRecord implements DataRecord {
 
   /**
    * Returns the named field.
+   * @param fieldName
+   * @return  
    */
   @Override
   public Field getField(String fieldName) {
@@ -72,6 +79,8 @@ public class DummyDataRecord implements DataRecord {
 
   /**
    * Returns the field at the index position in the record.
+   * @param fieldIndex
+   * @return  
    */
   @Override
   public Field getField(int fieldIndex) {

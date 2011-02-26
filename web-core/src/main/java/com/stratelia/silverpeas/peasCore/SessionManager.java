@@ -46,6 +46,7 @@ import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager
 
 import com.stratelia.silverpeas.silvertrace.SilverLog;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
@@ -71,7 +72,7 @@ import javax.servlet.http.HttpSession;
  * @author Marc Guillemin
  */
 public class SessionManager
-    implements SchedulerEventListener {
+    implements SchedulerEventListener, SessionManagement {
   // Global constants
 
   public static final SimpleDateFormat NOTIFY_DATE_FORMAT = new SimpleDateFormat(
@@ -233,7 +234,7 @@ public class SessionManager
    * @param session the session to store
    * @param request
    * @param controller
-   * @see removeSession
+   * @see closeSession
    */
   public synchronized void addSession(HttpSession session,
       HttpServletRequest request,
@@ -262,10 +263,11 @@ public class SessionManager
    * @see LogoutServlet
    */
   public void removeSession(HttpSession session) {
-    removeSession(session.getId());
+    closeSession(session.getId());
   }
 
-  public synchronized void removeSession(String sessionId) {
+  @Override
+  public synchronized void closeSession(String sessionId) {
     SessionInfo si = userDataSessions.get(sessionId);
     if (si != null) {
       removeSession(si);
@@ -308,7 +310,8 @@ public class SessionManager
     }
   }
 
-  public synchronized SessionInfo getUserDataSession(String sessionId) {
+  @Override
+  public synchronized SessionInfo getSessionInfo(String sessionId) {
     return userDataSessions.get(sessionId);
   }
 
@@ -367,6 +370,7 @@ public class SessionManager
    * @author dlesimple
    * @return Collection of SessionInfo
    */
+  @Override
   public Collection<SessionInfo> getDistinctConnectedUsersList() {
     Map<String, SessionInfo> distinctConnectedUsersList = new HashMap<String, SessionInfo>();
     Collection<SessionInfo> sessionsInfos = getConnectedUsersList();
@@ -386,6 +390,7 @@ public class SessionManager
    * @author dlesimple
    * @return nb of connected users
    */
+  @Override
   public int getNbConnectedUsersList() {
     return getDistinctConnectedUsersList().size();
   }
@@ -404,7 +409,8 @@ public class SessionManager
 
       Collection<SessionInfo> allSI = userDataSessions.values();
       for (SessionInfo si : allSI) {
-        long userSessionTimeoutMillis = (si.getUserDetail().isAccessAdmin()) ? adminSessionTimeout
+        UserDetail userDetail = si.getUserDetail();
+        long userSessionTimeoutMillis = (userDetail.isAccessAdmin()) ? adminSessionTimeout
             : userSessionTimeout;
         // Has the session expired (timeout)
         if (currentTime - si.getLastAccessDate() >= userSessionTimeoutMillis) {
@@ -413,7 +419,7 @@ public class SessionManager
           if ((duration < maxRefreshInterval)
               && !userNotificationSessions.contains(si.getSessionId())) {
             try {
-              notifyEndOfSession(si.getUserDetail().getId(), currentTime
+              notifyEndOfSession(userDetail.getId(), currentTime
                   + scheduledSessionManagementTimeStamp, si.getSessionId());
             } catch (NotificationManagerException ex) {
               SilverTrace.error("peasCore",
@@ -528,7 +534,7 @@ public class SessionManager
    * @return the job for managing the session.
    */
   private Job manageSession() {
-    return new Job(SESSION_MANAGER_JOB_NAME)  {
+    return new Job(SESSION_MANAGER_JOB_NAME) {
 
       @Override
       public void execute(JobExecutionContext context) throws Exception {
@@ -541,19 +547,29 @@ public class SessionManager
   @Override
   public void triggerFired(SchedulerEvent anEvent) throws Exception {
     SilverTrace.debug("peasCore", "SessionManager.handleSchedulerEvent",
-            "The job '" + anEvent.getJobExecutionContext().getJobName() + "' is starting");
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' is starting");
   }
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
     SilverTrace.debug("peasCore", "SessionManager.handleSchedulerEvent",
-            "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
   }
 
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
     SilverTrace.error("peasCore", "SessionManager.handleSchedulerEvent",
-            "The job '" + anEvent.getJobExecutionContext().getJobName()
-            + "' was not successfull");
+        "The job '" + anEvent.getJobExecutionContext().getJobName()
+        + "' was not successfull");
+  }
+
+  /**
+   * This operation is not implemented. Call the addSession method instead.
+   * @param sessionInfo information about the session to open.
+   * @return the session key.
+   */
+  @Override
+  public String openSession(SessionInfo sessionInfo) {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 }

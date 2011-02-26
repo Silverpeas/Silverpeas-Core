@@ -21,14 +21,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along withWriter this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.comment.web;
+package com.silverpeas.comment.web.json;
 
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
-import com.silverpeas.comment.web.json.JSONCommentExporter;
+import com.silverpeas.comment.web.CommentEntity;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import java.io.StringWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
 import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,14 +38,14 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.junit.Assert.*;
-import static com.silverpeas.comment.web.JSONCommentMatcher.*;
+import static com.silverpeas.comment.web.json.JSONCommentMatcher.*;
 import static com.silverpeas.export.ExportDescriptor.*;
 
 /**
  * Unit tests on the exporting in JSON of comment instances.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("/spring-comment.xml")
+@ContextConfiguration("/spring-comment-webservice.xml")
 public class JSONCommentExportingTest {
 
   private static final String commentId = "2";
@@ -65,17 +67,18 @@ public class JSONCommentExportingTest {
 
   @Test
   public void exportACommentInJSON() throws Exception {
-    Comment aComment = aCommentOf(aUserWithId(userId));
+    CommentEntity aComment = aCommentOf(aUserWithId(userId));
     StringWriter writer = new StringWriter();
     jsonExporter.export(withWriter(writer), aComment);
+    System.out.println(writer.toString());
     assertThat(writer.toString(), represents(aComment));
   }
 
   @Test
   public void exportSeveralCommentsInJSON() throws Exception {
-    Comment aComment1 = aCommentOf(aUserWithId(userId));
-    Comment aComment2 = aCommentOf(aUserWithId(userId + "1"));
-    Comment aComment3 = aCommentOf(aUserWithId(userId));
+    CommentEntity aComment1 = aCommentOf(aUserWithId(userId));
+    CommentEntity aComment2 = aCommentOf(aUserWithId(userId + "1"));
+    CommentEntity aComment3 = aCommentOf(aUserWithId(userId));
 
     StringWriter writer = new StringWriter();
     jsonExporter.export(withWriter(writer), aComment1, aComment2, aComment3);
@@ -91,13 +94,15 @@ public class JSONCommentExportingTest {
     return writer;
   }
 
-  private Comment aCommentOf(UserDetail user) {
+  private CommentEntity aCommentOf(UserDetail user) throws URISyntaxException {
     String offset = String.valueOf(counter++);
     Comment aComment = new Comment(new CommentPK(commentId + offset, componentId),
         new PublicationPK(publicationId, componentId), Integer.valueOf(user.getId()),
-        user.getDisplayedName(), "Ceci est un commentaire " + offset, "11/12/2002", "11/12/2002");
+        user.getDisplayedName(), "Ceci est un commentaire " + offset, "2002/11/12", "2002/11/12");
     aComment.setOwnerDetail(user);
-    return aComment;
+    CommentEntity entity = CommentEntity.fromComment(aComment).
+        withURI(new URI("http://localhost/silverpeas/services/comments/" + commentId));
+    return entity;
   }
 }
 

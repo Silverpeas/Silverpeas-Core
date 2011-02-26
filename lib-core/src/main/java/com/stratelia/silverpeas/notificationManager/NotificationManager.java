@@ -1485,17 +1485,12 @@ public class NotificationManager
       String aUserId,
       NotifSchema schema)
       throws UtilException {
-    NotificationData[] nds = null;
-    NotifAddressRow[] nars = null;
-    NotifChannelRow[] ncrs = null;
-    StringBuffer theMessage = new StringBuffer(100);
-    Map<String, Object> theExtraParams = new HashMap<String, Object>();
-
-    nars = getAllNotifAddressRow(params, Integer.parseInt(aUserId), schema);
-    nds = new NotificationData[nars.length];
-    ncrs = new NotifChannelRow[nars.length];
+    NotifAddressRow[] nars = getAllNotifAddressRow(params, Integer.parseInt(aUserId), schema);
+    NotificationData[] nds = new NotificationData[nars.length];
+    NotifChannelRow[] ncrs = new NotifChannelRow[nars.length];
     for (int i = 0; i < nars.length; i++) {
-      theMessage = new StringBuffer(100);
+      StringBuffer theMessage = new StringBuffer(100);
+      Map<String, Object> theExtraParams = new HashMap<String, Object>();
       ncrs[i] = schema.notifChannel.getNotifChannel(nars[i].getNotifChannelId());
       // set the channel
       nds[i] = new NotificationData();

@@ -41,6 +41,7 @@
   <ctx:annotation-config/>
   <ctx:component-scan base-package="com.silverpeas.scheduler"/>
   <ctx:component-scan base-package="com.silverpeas.calendar"/>
+  <ctx:component-scan base-package="com.silverpeas.accesscontrol"/>
 
   <!-- The Bean Validator (JSR-303) bootstrapping through Spring. The Hibernate implementation is used -->
   <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
@@ -53,6 +54,12 @@
   <!-- The user authenticator -->
   <bean id="authenticator"
         class="com.stratelia.silverpeas.authentication.LoginPasswordAuthentication" />
+
+  <!-- The session manager -->
+  <bean id="sessionManager"
+        class="com.stratelia.silverpeas.peasCore.SessionManager"
+        factory-method="getInstance"
+        depends-on="schedulerFactory" />
 
   <!-- The controller of the organization and domain management for the Silverpeas administration module -->
   <bean id="organizationController"

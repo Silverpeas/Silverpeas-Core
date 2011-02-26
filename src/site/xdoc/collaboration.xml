@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2009 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Collaborating to Silverpeas</title>
+    <author>Emmanuel Hugonnet</author>
+    <author>Miguel Moquillon</author>
+  </properties>
+  <head>
+    <title>Collaborating to Silverpeas</title>
+  </head>
+  <body>
+    <section name="Git">
+      <subsection name="What is git?">
+        <p>
+          <img src="images/logos/logo_git.png" alt="git logo" style="height:30px;padding-right:10px;float:left;position:relative;" />
+          <a href="http://git-scm.com/">Git</a> is a Distributed Version Control System (DVCS).
+      The main difference with VCS is its distributed form, which means that
+      there is not a single repository centralizing all the code history.
+          <br/>All the code history is in each repository, which
+      means that you have all the history in your local repository as well as in the others.
+        </p>
+        <p>
+      Git works like the following figure:
+        </p>
+        <ul>
+          <li>you add new or modified files and remove deleted files to your staging repository.</li>
+          <li>when all your changes make sense you commit them to your local repository.</li>
+          <li>now, you can share your modifications whith the rest of the world by pushing them to a remote repository.</li>
+          <li>to get others' modifications pull or fetch them from a remote repository.</li>
+        </ul>
+        <p>
+          <a href="images/git_everthing_is_local.png">
+            <img src="images/git_everthing_is_local.png" alt="git workflow" style="height:404px;padding-left:100px;" />
+          </a>
+        </p>
+        <p>For more information how to use Git, please visit the
+          <a href="http://gitref.org/">Git Reference</a> web site.
+        </p>
+      </subsection>
+      <subsection name="Why Git?">
+        <p>Silverpeas is a free and libre project that values meritocracy.
+          <em>In code we believe!</em>
+          <br/>
+      As we switched to the Git distributed source control system, we heavily blured the distinction between official project developers and external contributors.
+      This makes it easier for you to:
+        </p>
+        <ul>
+          <li>prepare changes, and for us to eventually merge them</li>
+          <li>maintain your own private modifications of Silverpeas</li>
+          <li>later split your own modifications and submit them back to us.</li>
+        </ul>
+      </subsection>
+      <subsection name="Github">
+        <p>
+          <img src="images/logos/logo_github.jpg" alt="github logo" style="height:40px;padding-right:10px;float:left;position:relative;" />
+          Silverpeas's code is hosted on public Git repositories on GitHub, so that everybody can participate and contribute to the Silverpeas project.
+          <br/>
+          The Github features enhance the capabilities of a collaborative and distributed work.
+        </p>
+      </subsection>
+    </section>
+    <section name="How to contribute">
+      <subsection name="Forking Silverpeas">
+        <p>
+          First, you have to
+          <a href="http://help.github.com/">create your account on Github</a>, then fork the
+          <a href="http://github.com/Silverpeas">Silverpeas repositories</a> you are interested in.
+        </p>
+        <p>Once the fork completed, clone it:</p>
+        <source>git clone URL_OF_THE_FORK</source>
+        <p>Your fork is then referenced by your git configuration with the name <code>origin</code></p>
+        <p>
+          In order to keep your fork up-to-date, you will have to pull modifications from the Silverpeas repository. Thus, you
+          have to add a remote repository to your git configuration linking your local repository to the Silverpeas one. The
+          recommended name (used afterwards in he documentation) is
+          <code>silverpeas</code>.
+          <br/>
+          To add a remote repository to your local, execute the following command:
+        </p>
+        <source>git remote add silverpeas URL_OF_SILVERPEAS_REPOSITORY</source>
+        <p>For example:</p>
+        <source>git remote add silverpeas git@github.com:Silverpeas/Silverpeas-Core.git</source>
+        <p>To synchronize your local repository with Silverpeas, you have to execute the following command:</p>
+        <source>git pull silverpeas master</source>
+        <p>Or to be less confusing by unexpected merge conflicts, you can divide the synchronization in two steps:</p>
+        <source>git fetch silverpeas
+git merge silverpeas/master</source>
+      </subsection>
+      <subsection name="Creating a development branch">
+        <p>Now that you have your own repository, let's create a branch to develop some code in it.
+        The branch name should reflect the development feature or bug you are working on. It exists
+        two main ways to handle the local and remote branchs with Gits.
+        </p>
+        <p>The first approach is to create the branch in local, then pushes it to the fork and sets the local branch to track the remote one:</p>
+        <source>git branch BRANCH_NAME
+git push origin BRANCH_NAME
+git branch --set-upstream BRANCH_NAME origin/BRANCH_NAME</source>
+        <p>The second approach is to create the branch in your fork, then creates from it a local branch that will also track it:</p>
+        <source>git push origin origin:refs/heads/BRANCH_NAME
+git branch --track BRANCH_NAME origin/BRANCH_NAME</source>
+        <p>Now you can switch your working directory to the branch you have created (id est checkout the branch):</p>
+        <source>git checkout  BRANCH_NAME</source>
+        <p>When all your modifications are commited, it is time to push them to your remote branch.</p>
+        <source>git push</source>
+      </subsection>
+      <subsection name="Integrating your changes in Silverpeas">
+        <p>Now that your development is ended, you may want to integrate it into Silverpeas.
+          <br/>
+        To do this we take advantage of
+          <a href="http://help.github.com/pull-requests/">Github's "Pull Request" feature</a>.
+        </p>
+        <p>On receiving your pull request, the Silverpeas core team will look into it and may give you some remarks.
+          <br/>
+        When your code is accepted it will be merged into Silverpeas master branch and you will be informed of this.
+          <br/>
+        Then you will have to synchronize your repository with Silverpeas's:
+        </p>
+        <source>git checkout master
+git pull silverpeas master
+        </source>
+        <p>Your development branches for the integrated code are now obsolete, so you may want to delete them.</p>
+        <source>git branch -D origin/BRANCH_NAME
+git branch -D BRANCH_NAME</source>
+      </subsection>
+    </section>
+  </body>
+</document>

@@ -25,12 +25,15 @@ package com.silverpeas.comment.web.json.jackson;
 
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
+import com.silverpeas.comment.web.CommentEntity;
 import com.silverpeas.comment.web.json.JSONCommentImporter;
 import com.silverpeas.export.ImportDescriptor;
 import com.silverpeas.export.ImportException;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Named;
@@ -49,9 +52,9 @@ public class JacksonCommentImporter implements JSONCommentImporter {
   private static final String ERROR_START_TOKEN_MSG = "Unexpected start token in the JSON stream: ";
 
   @Override
-  public List<Comment> importFrom(ImportDescriptor descriptor) throws ImportException {
+  public List<CommentEntity> importFrom(ImportDescriptor descriptor) throws ImportException {
     try {
-      List<Comment> comments = new ArrayList<Comment>();
+      List<CommentEntity> comments = new ArrayList<CommentEntity>();
 
       JsonFactory jsonFactory = new JsonFactory();
       JsonParser parser = jsonFactory.createJsonParser(descriptor.getReader());
@@ -87,39 +90,43 @@ public class JacksonCommentImporter implements JSONCommentImporter {
     return token;
   }
 
-  private Comment parseACommentWith(JsonParser parser) throws IOException, ImportException {
+  private CommentEntity parseACommentWith(JsonParser parser) throws IOException, ImportException,
+      URISyntaxException {
     String text = "";
     String id = "";
     String resourceId = "";
     String creationDate = "";
     String modificationDate = "";
     String componentId = "";
+    String uri = "";
     UserDetail user = new UserDetail();
     while (parser.nextToken() != JsonToken.END_OBJECT) {
 
       String fieldName = parser.getCurrentName();
-      if (COMMENT_ID.equals(fieldName)) {
+      if (COMMENT_ID_FIELD.equals(fieldName)) {
         id = parser.getText();
-      } else if (COMPONENT_ID.equals(fieldName)) {
+      } else if (COMMENT_URI_FIELD.equals(fieldName)) {
+        uri = parser.getText();
+      } else if (COMPONENT_ID_FIELD.equals(fieldName)) {
         componentId = parser.getText();
-      } else if (RESOURCE_ID.equals(fieldName)) {
+      } else if (RESOURCE_ID_FIELD.equals(fieldName)) {
         resourceId = parser.getText();
-      } else if (CREATION_DATE.equals(fieldName)) {
+      } else if (CREATION_DATE_FIELD.equals(fieldName)) {
         creationDate = parser.getText();
-      } else if (MODIFICATION_DATE.equals(fieldName)) {
+      } else if (MODIFICATION_DATE_FIELD.equals(fieldName)) {
         modificationDate = parser.getText();
-      } else if (TEXT.equals(fieldName)) {
+      } else if (TEXT_FIELD.equals(fieldName)) {
         text = parser.getText();
-      } else if (WRITER.equals(fieldName)) {
+      } else if (AUTHOR_FIELD.equals(fieldName)) {
         if (parser.nextToken() != JsonToken.START_OBJECT) {
-          throw new ImportException(ERROR_FIELD_MSG + parser.getCurrentName() +
-              ". Expected: " + JsonToken.START_OBJECT.name());
+          throw new ImportException(ERROR_FIELD_MSG + parser.getCurrentName() + ". Expected: " + JsonToken.START_OBJECT.
+              name());
         }
         while (parser.nextToken() != JsonToken.END_OBJECT) {
           fieldName = parser.getCurrentName();
-          if (WRITER_ID.equals(fieldName)) {
+          if (AUTHOR_ID_FIELD.equals(fieldName)) {
             user.setId(parser.getText());
-          } else if (!WRITER_AVATAR.equals(fieldName) && !WRITER_NAME.equals(fieldName)) {
+          } else if (!AUTHOR_AVATAR_FIELD.equals(fieldName) && !AUTHOR_NAME_FIELD.equals(fieldName)) {
             throw new ImportException(ERROR_FIELD_MSG + fieldName);
           }
         }
@@ -129,7 +136,9 @@ public class JacksonCommentImporter implements JSONCommentImporter {
     }
     Comment comment = new Comment(new CommentPK(id, componentId), new PublicationPK(resourceId,
         componentId), Integer.valueOf(user.getId()), "", text, creationDate, modificationDate);
+    comment.setOwnerDetail(user);
 
-    return comment;
+    CommentEntity entity = CommentEntity.fromComment(comment).withURI(new URI(uri));
+    return entity;
   }
 }

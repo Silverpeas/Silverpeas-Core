@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util;
 
 import java.util.Hashtable;
@@ -51,9 +50,9 @@ public class EJBUtilitaire {
    * @param classObj the class file name of the object
    * @since 1.0
    */
-  public static java.lang.Object getEJBObjectRef(String name, Class<?> classObj)
-      throws UtilException {
-    java.lang.Object objRef = homeFetcher.get(name);
+  @SuppressWarnings("unchecked")
+  public static <T> T getEJBObjectRef(String name, Class<T> classObj) throws UtilException {
+    T objRef = (T) homeFetcher.get(name);
     if (objRef == null) {
       Context ic = null;
       ResourceLocator resources = null;
@@ -76,8 +75,8 @@ public class EJBUtilitaire {
         throw ue;
       }
       try {
-        objRef = ic.lookup(name);
-        objRef = PortableRemoteObject.narrow(objRef, classObj);
+        Object ref = ic.lookup(name);
+        objRef = (T) PortableRemoteObject.narrow(ref, classObj);
         String withHomeFetcher = resources.getString("withHomeFetcher");
         if (withHomeFetcher == null) {
           homeFetcher.put(name, objRef);
@@ -85,15 +84,11 @@ public class EJBUtilitaire {
           homeFetcher.put(name, objRef);
         }
       } catch (Exception e) {
-        UtilException ue = new UtilException(
-            "EJBUtilitaire.getEJBObjectRef",
-            new MultilangMessage("util.MSG_EJB_REF_NOT_FOUND", name).toString(),
-            e);
-        // ue.setPossibleReason("util.REASON_EJB_REF_NOT_FOUND");
+        UtilException ue = new UtilException("EJBUtilitaire.getEJBObjectRef", new MultilangMessage(
+            "util.MSG_EJB_REF_NOT_FOUND", name).toString(),e);
         throw ue;
       }
     }
     return objRef;
   }
-
 }

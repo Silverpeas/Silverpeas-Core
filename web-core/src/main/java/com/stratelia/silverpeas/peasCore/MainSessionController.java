@@ -249,9 +249,6 @@ public class MainSessionController extends AdminReference implements Clipboard {
   /** Return the personalization EJB */
   public synchronized PersonalizationBm getPersonalization() {
     PersonalizationBm persoBm = null;
-      // SilverTrace.info("peasCore",
-      // "MainSessionController.getPersonalization()",
-      // "root.MSG_GEN_ENTER_METHOD");
     try {
       PersonalizationBmHome personalizationBmHome = (PersonalizationBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PERSONALIZATIONBM_EJBHOME,
           PersonalizationBmHome.class);
@@ -265,9 +262,6 @@ public class MainSessionController extends AdminReference implements Clipboard {
           "MainSessionController.getPersonalization()",
           SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
-    // SilverTrace.info("peasCore",
-    // "MainSessionController.getPersonalization()",
-    // "root.MSG_GEN_EXIT_METHOD");
     return persoBm;
   }
 
@@ -280,8 +274,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
         userLanguage = getPersonalization().getFavoriteLanguage();
       } catch (NoSuchObjectException nsoe) {
         initPersonalization();
-        SilverTrace.warn("peasCore",
-            "MainSessionController.getFavoriteLanguage()",
+        SilverTrace.warn("peasCore", "MainSessionController.getFavoriteLanguage()",
             "root.EX_CANT_GET_REMOTE_OBJECT", nsoe);
         userLanguage = getFavoriteLanguage();
       } catch (RemoteException e) {

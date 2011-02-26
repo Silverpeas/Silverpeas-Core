@@ -180,6 +180,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
     jsonObject.put("description", component.getDescription());
     jsonObject.put("label", getComponentLabel(component.getName(), helper));
     jsonObject.put("id", component.getId());
+    jsonObject.put("url", URLManager.getURL(component.getName(), "useless", component.getName()+component.getId()) + "Main");
 
     return jsonObject;
   }
@@ -287,6 +288,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
                 "Main");
         jsonArray.put(tool);
       }
+      // mes tickets
       if (helper.getSettings("fileSharingVisible", true)) {
         FileSharingInterface fileSharing = new FileSharingInterfaceImpl();
         try {
@@ -321,13 +323,13 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
       if (helper.getSettings("customVisible", true)) {
         JSONObject tool =
             getToolAsJSONObject("personalize", message.getString("Personalization"), URLManager
-                .getURL(URLManager.CMP_PERSONALIZATION) +
-                "Main.jsp");
+                .getURL(URLManager.CMP_MYPROFILE) +
+                "MyInfos");
         jsonArray.put(tool);
       }
       if (helper.getSettings("mailVisible", true)) {
         JSONObject tool =
-            getToolAsJSONObject("notifAdmins", message.getString("Feedback"),
+            getToolAsJSONObject("notifAdmins", message.getString("Feedback"), 
                 "javascript:notifyAdministrators()");
         jsonArray.put(tool);
       }
