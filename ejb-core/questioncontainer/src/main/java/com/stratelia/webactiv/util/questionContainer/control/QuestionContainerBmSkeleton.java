@@ -25,9 +25,9 @@
 package com.stratelia.webactiv.util.questionContainer.control;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import com.stratelia.webactiv.util.question.model.Question;
@@ -96,8 +96,7 @@ public interface QuestionContainerBmSkeleton {
    * @throws RemoteException
    * @see
    */
-  public Collection<QuestionContainerHeader> getQuestionContainerHeaders(
-      ArrayList<QuestionContainerPK> pks)
+  public Collection<QuestionContainerHeader> getQuestionContainerHeaders(List<QuestionContainerPK> pks)
       throws RemoteException;
 
   /**
