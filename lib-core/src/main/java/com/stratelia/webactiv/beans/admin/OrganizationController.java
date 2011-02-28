@@ -695,6 +695,21 @@ public class OrganizationController extends AdminReference implements java.io.Se
       return new UserDetail[0];
     }
   }
+  
+  /**
+   * Get path to Group
+   */
+  public List<String> getPathToGroup(String groupId) {
+    SilverTrace.info("admin", "OrganizationController.getPathToGroup",
+        "root.MSG_GEN_ENTER_METHOD", "groupId = " + groupId);
+    try {
+      return m_Admin.getPathToGroup(groupId);
+    } catch (Exception e) {
+      SilverTrace.error("admin", "OrganizationController.getPathToGroup",
+          "admin.EX_ERR_GET_ALL_GROUPS", e);
+      return new ArrayList<String>();
+    }
+  }
 
   /**
    * Convert String Id to int Id

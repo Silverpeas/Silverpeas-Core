@@ -628,6 +628,11 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       } else {
         destination = "/jobStartPagePeas/jsp/welcome.jsp";
       }
+    } else if (function.equals("OpenComponent")) {
+    	jobStartPageSC.init();
+    	
+    	destination = getDestination("GoToComponent", jobStartPageSC, request);
+      	
     }
 
     return destination;

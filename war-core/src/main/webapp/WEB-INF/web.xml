@@ -220,6 +220,14 @@
     <servlet-class>com.silverpeas.jobDomainPeas.servlets.JobDomainPeasAjaxServlet</servlet-class>
   </servlet>
   <servlet>
+    <servlet-name>JobDomainPeasGroupPathServlet</servlet-name>
+    <servlet-class>com.silverpeas.jobDomainPeas.servlets.JobDomainPeasGroupPathServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>JobDomainPeasComponentPathServlet</servlet-name>
+    <servlet-class>com.silverpeas.jobDomainPeas.servlets.JobDomainPeasComponentPathServlet</servlet-class>
+  </servlet>
+  <servlet>
     <servlet-name>JobManagerPeasRequestRouter</servlet-name>
     <servlet-class>com.silverpeas.jobManagerPeas.servlets.JobManagerPeasRequestRouter</servlet-class>
   </servlet>
@@ -633,6 +641,14 @@
     <servlet-name>JobDomainPeasAjaxServlet</servlet-name>
     <url-pattern>/JobDomainPeasAJAXServlet/*</url-pattern>
   </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>JobDomainPeasGroupPathServlet</servlet-name>
+    <url-pattern>/JobDomainPeasGroupPathServlet/*</url-pattern>
+  </servlet-mapping>  
+  <servlet-mapping>
+    <servlet-name>JobDomainPeasComponentPathServlet</servlet-name>
+    <url-pattern>/JobDomainPeasComponentPathServlet/*</url-pattern>
+  </servlet-mapping>   
   <servlet-mapping>
     <servlet-name>JobManagerPeasRequestRouter</servlet-name>
     <url-pattern>/RjobManagerPeas/*</url-pattern>

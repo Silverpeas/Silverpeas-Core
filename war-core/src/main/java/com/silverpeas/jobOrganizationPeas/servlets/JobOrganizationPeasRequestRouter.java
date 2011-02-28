@@ -43,6 +43,11 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 public class JobOrganizationPeasRequestRouter extends ComponentRequestRouter {
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = -3952939609496239407L;
+
+/**
    * Method declaration
    * @param mainSessionCtrl
    * @param componentContext
@@ -95,13 +100,17 @@ public class JobOrganizationPeasRequestRouter extends ComponentRequestRouter {
       // 2) Prepare the pages
       // --------------------
       if (destination.endsWith("jopUserView.jsp")) {
-        request.setAttribute("infos", jobOrganizationSC.getCurrentInfos());
-        request
-            .setAttribute("groups", jobOrganizationSC.getCurrentUserGroups());
+    	  if(jobOrganizationSC.getCurrentUserId() != null) { //l'utilisateur a sélectionné un user
+    		  request.setAttribute("userid", jobOrganizationSC.getCurrentUserId());
+    		  request.setAttribute("user", jobOrganizationSC.getCurrentUser());
+    		  request.setAttribute("groups", jobOrganizationSC.getCurrentUserGroups());
+    	  } else if(jobOrganizationSC.getCurrentGroupId() != null) {//l'utilisateur a sélectionné un group
+    		  request.setAttribute("group", jobOrganizationSC.getCurrentGroup());
+    		  request.setAttribute("adminController", jobOrganizationSC.getAdminController());
+    	  }
+        /*request.setAttribute("infos", jobOrganizationSC.getCurrentInfos());*/
         request.setAttribute("spaces", jobOrganizationSC.getCurrentSpaces());
-        request
-            .setAttribute("profiles", jobOrganizationSC.getCurrentProfiles());
-        request.setAttribute("userid", jobOrganizationSC.getCurrentUserId());
+        request.setAttribute("profiles", jobOrganizationSC.getCurrentProfiles());
       }
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);

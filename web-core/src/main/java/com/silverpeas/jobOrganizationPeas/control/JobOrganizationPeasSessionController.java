@@ -25,6 +25,7 @@
 package com.silverpeas.jobOrganizationPeas.control;
 
 import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Map;
 
@@ -53,10 +54,11 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
   private String currentUserId = null;
   private String currentGroupId = null;
   private AdminController myAdminController = null;
-  private String[][] currentInfos = null;
+  private UserFull currentUser = null;
+  private Group currentGroup = null;
   private String[][] currentGroups = null;
   private String[] currentSpaces = null;
-  private List currentProfiles = null;
+  private List<String[]> currentProfiles = null;
   private Map<String, WAComponent> componentOfficialNames = null;
 
   /**
@@ -80,12 +82,13 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
 
   private void resetCurrentArrays() {
     currentGroups = null;
-    currentInfos = null;
+    currentUser = null;
+    currentGroup = null;
     currentSpaces = null;
     currentProfiles = null;
   }
 
-  private AdminController getAdminController() {
+  public AdminController getAdminController() {
     if (myAdminController == null)
       myAdminController = new AdminController(getUserId());
     return myAdminController;
@@ -155,119 +158,49 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
           "root.MSG_GEN_PARAM_VALUE", "Groups=" + currentGroups);
     return currentGroups;
   }
-
+  
   /**
-   * @return an array of (name, value). name can be either a string or a resource key starting by
-   * 'GML.' or 'JOP.'
+   * @return UserFull
    */
-  public String[][] getCurrentUserInfos() {
-    if (currentInfos == null) {
-      UserFull userInfos = null;
-      if (getCurrentUserId() == null)
-        return null;
-      userInfos = getAdminController().getUserFull(getCurrentUserId());
-      if (userInfos != null) {
-        String[] specificKeys = userInfos.getPropertiesNames();
-        int nbStdInfos = 4;
-        int nbInfos = nbStdInfos + specificKeys.length;
-        currentInfos = new String[nbInfos][2];
-        currentInfos[0][0] = "GML.lastName";
-        currentInfos[0][1] = userInfos.getFirstName();
-        currentInfos[1][0] = "GML.surname";
-        currentInfos[1][1] = userInfos.getLastName();
-        currentInfos[2][0] = "GML.eMail";
-        currentInfos[2][1] = userInfos.geteMail();
-        currentInfos[3][0] = "GML.login";
-        currentInfos[3][1] = userInfos.getLogin();
-        String currentKey = null;
-        String currentValue = null;
-        for (int iSL = nbStdInfos; iSL < currentInfos.length; iSL++) {
-          currentKey = specificKeys[iSL - nbStdInfos];
-          // On affiche pas le mot de passe !
-          if (!currentKey.equals("password")) {
-            // Label
-            currentInfos[iSL][0] = userInfos.getSpecificLabel(getLanguage(),
-                currentKey);
-            // Valeur
-            currentValue = userInfos.getValue(currentKey);
-            if (currentKey.equals("passwordValid"))
-              if (currentValue.equals("true"))
-                currentValue = "GML.yes";
-              else
-                currentValue = "GML.no";
-            currentInfos[iSL][1] = currentValue;
-          }
-        }
-      }
-    }
-    if (currentInfos == null)
-      SilverTrace.info("jobOrganizationPeas",
-          "JobOrganizationPeasSessionController.getCurrentUserInfo",
-          "root.MSG_GEN_PARAM_VALUE", "User NULL !");
-    else
-      SilverTrace.info("jobOrganizationPeas",
-          "JobOrganizationPeasSessionController.getCurrentUserInfo",
-          "root.MSG_GEN_PARAM_VALUE", "User=" + currentInfos);
-    return currentInfos;
+  public UserFull getCurrentUser() {
+	  if(currentUser == null) {
+	      if (getCurrentUserId() == null) {
+	        return null;
+	      }
+	      currentUser = getAdminController().getUserFull(getCurrentUserId());
+	  }
+	  if (currentUser == null) {
+	      SilverTrace.info("jobOrganizationPeas",
+	          "JobOrganizationPeasSessionController.getCurrentUser",
+	          "root.MSG_GEN_PARAM_VALUE", "User NULL !");
+	  } else {
+	      SilverTrace.info("jobOrganizationPeas",
+	          "JobOrganizationPeasSessionController.getCurrentUser",
+	          "root.MSG_GEN_PARAM_VALUE", "User=" + getCurrentUserId());
+	  }
+	  return currentUser;
   }
-
+  
   /**
-   * @return an array of (name, value). name can be either a string or a resource key starting by
-   * 'GML.' or 'JOP.'
+   * @return Group
    */
-  public String[][] getCurrentGroupInfos() {
-    if (currentInfos == null) {
-      Group groupInfos = null;
-      if (getCurrentGroupId() == null)
-        return null;
-      groupInfos = getAdminController().getGroupById(getCurrentGroupId());
-      currentInfos = new String[4][2];
-      currentInfos[0][0] = "GML.name";
-      currentInfos[0][1] = groupInfos.getName();
-      currentInfos[1][0] = "GML.users";
-      currentInfos[1][1] = String.valueOf(groupInfos.getUserIds().length);
-      currentInfos[2][0] = "GML.description";
-      currentInfos[2][1] = groupInfos.getDescription();
-      currentInfos[3][0] = "JOP.parentGroup";
-      String parentId = groupInfos.getSuperGroupId();
-      if (parentId == null || parentId.equals(""))
-        currentInfos[3][1] = "-";
-      else
-        currentInfos[3][1] = getAdminController().getGroupName(
-            groupInfos.getSuperGroupId());
-    }
-    if (currentInfos == null)
-      SilverTrace.info("jobOrganizationPeas",
-          "JobOrganizationPeasSessionController.getCurrentGroupInfo",
-          "root.MSG_GEN_PARAM_VALUE", "Infos NULL !");
-    else
-      SilverTrace.info("jobOrganizationPeas",
-          "JobOrganizationPeasSessionController.getCurrentGroupInfo",
-          "root.MSG_GEN_PARAM_VALUE", "infos=" + currentInfos);
-    return currentInfos;
-  }
-
-  /**
-   * @return an array of (name, value). name can be either a string or a resource key starting by
-   * 'GML.' or 'JOP.'
-   */
-  public String[][] getCurrentInfos() {
-    if (getCurrentGroupId() != null) {
-      SilverTrace.debug("jobOrganizationPeas",
-          "JobOrganizationPeasSessionController.getCurrentInfos",
-          "root.EX_NO_MESSAGE", "Returns groupInfos");
-      return getCurrentGroupInfos();
-    }
-    if (getCurrentUserId() != null) {
-      SilverTrace.debug("jobOrganizationPeas",
-          "JobOrganizationPeasSessionController.getCurrentInfos",
-          "root.EX_NO_MESSAGE", "Returns userInfos");
-      return getCurrentUserInfos();
-    }
-    SilverTrace.debug("jobOrganizationPeas",
-        "JobOrganizationPeasSessionController.getCurrentInfos",
-        "root.EX_NO_MESSAGE", "Returns no infos");
-    return null;
+  public Group getCurrentGroup() {
+	  if(currentGroup == null) {
+	      if (getCurrentGroupId() == null) {
+	        return null;
+	      }
+	      currentGroup = getAdminController().getGroupById(getCurrentGroupId());
+	  }
+	  if (currentGroup == null) {
+	      SilverTrace.info("jobOrganizationPeas",
+	          "JobOrganizationPeasSessionController.getCurrentGroup",
+	          "root.MSG_GEN_PARAM_VALUE", "Group NULL !");
+	  } else {
+	      SilverTrace.info("jobOrganizationPeas",
+	          "JobOrganizationPeasSessionController.getCurrentGroup",
+	          "root.MSG_GEN_PARAM_VALUE", "Group=" + getCurrentGroupId());
+	  }
+	  return currentGroup;
   }
 
   /**
@@ -328,11 +261,11 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
   }
 
   /**
-   * @return list of (array[space name, component label, component name, profile name])
+   * @return list of (array[space name, component id, component label, component name, profile name])
    */
-  public List getCurrentProfiles() {
+  public List<String[]> getCurrentProfiles() {
     if (currentProfiles == null) {
-      List distinctProfiles = new ArrayList();
+      List<String> distinctProfiles = new ArrayList<String>();
       String[] profileIds = null;
       if (getCurrentGroupId() != null)
         profileIds = getAdminController().getProfileIdsOfGroup(
@@ -341,11 +274,10 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
         profileIds = getAdminController().getProfileIds(getCurrentUserId());
       if (profileIds == null)
         return null;
-      currentProfiles = new ArrayList();
+      currentProfiles = new ArrayList<String[]>();
       ProfileInst currentProfile = null;
       ComponentInst currentComponent = null;
-      // String[] spaceIds=new String[profileIds.length];
-      List spaceIds = new ArrayList();
+      List<String> spaceIds = new ArrayList<String>();
       String[] profile2Display = null;
       for (int iProfile = 0; iProfile < profileIds.length; iProfile++) {
         currentProfile = getAdminController().getProfileInst(
@@ -355,15 +287,18 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
         if (currentComponent.getStatus() == null) {
           String dProfile = currentComponent.getId() + currentProfile.getName();
           if (!distinctProfiles.contains(dProfile)) {
-            profile2Display = new String[4];
-            profile2Display[1] = currentComponent.getLabel();
-            profile2Display[2] = getComponentOfficialName(currentComponent
+            profile2Display = new String[6];
+            profile2Display[1] = currentComponent.getId();
+            profile2Display[2] = currentComponent.getName();
+            profile2Display[3] = currentComponent.getLabel();
+            profile2Display[4] = getComponentOfficialName(currentComponent
                 .getName());
-            profile2Display[3] = currentProfile.getLabel();
-            if (!StringUtil.isDefined(profile2Display[3]))
-              profile2Display[3] = getAdminController()
+            profile2Display[5] = currentProfile.getLabel();
+            if (!StringUtil.isDefined(profile2Display[5])) {
+              profile2Display[5] = getAdminController()
                   .getProfileLabelfromName(currentComponent.getName(),
                   currentProfile.getName());
+            }
             currentProfiles.add(profile2Display);
 
             spaceIds.add(currentComponent.getDomainFatherId());
