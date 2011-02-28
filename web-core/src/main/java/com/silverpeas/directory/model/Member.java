@@ -42,13 +42,13 @@ public class Member {
   private UserDetail userDetail = null;
   private boolean connected = false;
   private String duration;
-  
+
   private void refreshStatus() {
     Collection<SessionInfo> sessionInfos = SessionManager.getInstance().getConnectedUsersList();
     for (SessionInfo varSi : sessionInfos) {
       if (varSi.getUserDetail().equals(userDetail)) {
 
-        this.duration = DateUtil.formatDuration(new java.util.Date().getTime() - varSi.getStartDate());
+        this.duration = DateUtil.formatDuration(new java.util.Date().getTime() - varSi.getOpeningTimestamp());
         this.connected = true;
         return;
       }

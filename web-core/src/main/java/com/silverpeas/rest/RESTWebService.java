@@ -24,8 +24,8 @@
 package com.silverpeas.rest;
 
 import com.silverpeas.accesscontrol.AccessController;
-import com.stratelia.silverpeas.peasCore.SessionInfo;
-import com.stratelia.silverpeas.peasCore.SessionManagement;
+import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagement;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
@@ -162,8 +162,8 @@ public abstract class RESTWebService {
   protected PersonalizationBm getUserPreferences() {
     if (persoBm == null) {
       try {
-        PersonalizationBmHome personalizationBmHome = (PersonalizationBmHome) EJBUtilitaire.
-            getEJBObjectRef(JNDINames.PERSONALIZATIONBM_EJBHOME,
+        PersonalizationBmHome personalizationBmHome = EJBUtilitaire.getEJBObjectRef(
+            JNDINames.PERSONALIZATIONBM_EJBHOME,
             PersonalizationBmHome.class);
         persoBm = personalizationBmHome.create();
         persoBm.setActor(getUserDetail().getId());

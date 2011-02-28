@@ -22,26 +22,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.comment.web.mock;
+package com.silverpeas.session;
 
-import com.silverpeas.accesscontrol.AccessController;
-import javax.inject.Named;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 
 /**
- * A mock of an user access controller for testing purpose.
+ * It gathers information about an opened session of a user.
  */
-@Named("componentAccessController")
-public class AccessControllerMock implements AccessController<String> {
+public class SessionInfo {
 
-  private boolean authorization = true;
+  private String sessionId;
+  private UserDetail userDetail;
+  private long openingTimestamp;
+  private long lastAccessTimestamp;
 
-  public void setAuthorization(boolean isUsersAuthorized) {
-    authorization = isUsersAuthorized;
+  /**
+   * Constructs a new instance about a given opened user session.
+   * @param sessionId the identifier of the opened session.
+   * @param user the user for which a session was opened.
+   */
+  public SessionInfo(final String sessionId, final UserDetail user) {
+    this.sessionId = sessionId;
+    this.userDetail = user;
+    this.openingTimestamp = this.lastAccessTimestamp = System.currentTimeMillis();
   }
 
-  @Override
-  public boolean isUserAuthorized(String userId, String object) {
-    return authorization;
+  public long getLastAccessTimestamp() {
+    return lastAccessTimestamp;
   }
 
+  public long getOpeningTimestamp() {
+    return openingTimestamp;
+  }
+
+  public String getSessionId() {
+    return sessionId;
+  }
+
+  public UserDetail getUserDetail() {
+    return userDetail;
+  }
+
+  public void updateLastAccess() {
+    this.lastAccessTimestamp = System.currentTimeMillis();
+  }
 }

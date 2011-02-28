@@ -23,6 +23,7 @@
  */
 package com.stratelia.silverpeas.peasCore;
 
+import com.silverpeas.session.SessionManagement;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.scheduler.JobExecutionContext;
 import java.text.ParseException;
@@ -289,7 +290,7 @@ public class SessionManager
       SilverLog.logConnexion("logout", si.getUserHostIP(), si.getLog());
       // Notify statistics
       Date now = new java.util.Date();
-      long duration = now.getTime() - si.getStartDate();
+      long duration = now.getTime() - si.getOpeningTimestamp();
       myStatisticsManager.addStatConnection(si.getUserDetail().getId(), now, 1, duration);
 
       // Delete in wait server messages corresponding to the session to
@@ -371,8 +372,9 @@ public class SessionManager
    * @return Collection of SessionInfo
    */
   @Override
-  public Collection<SessionInfo> getDistinctConnectedUsersList() {
-    Map<String, SessionInfo> distinctConnectedUsersList = new HashMap<String, SessionInfo>();
+  public Collection<com.silverpeas.session.SessionInfo> getDistinctConnectedUsersList() {
+    Map<String, com.silverpeas.session.SessionInfo> distinctConnectedUsersList =
+        new HashMap<String, com.silverpeas.session.SessionInfo>();
     Collection<SessionInfo> sessionsInfos = getConnectedUsersList();
     for (SessionInfo si : sessionsInfos) {
       String userLogin = si.getUserDetail().getLogin();
@@ -413,7 +415,7 @@ public class SessionManager
         long userSessionTimeoutMillis = (userDetail.isAccessAdmin()) ? adminSessionTimeout
             : userSessionTimeout;
         // Has the session expired (timeout)
-        if (currentTime - si.getLastAccessDate() >= userSessionTimeoutMillis) {
+        if (currentTime - si.getLastAccessTimestamp() >= userSessionTimeoutMillis) {
           long duration = currentTime - si.getIsAliveDate();
           // Has the user been notified (only for living client)
           if ((duration < maxRefreshInterval)
@@ -569,7 +571,7 @@ public class SessionManager
    * @return the session key.
    */
   @Override
-  public String openSession(SessionInfo sessionInfo) {
+  public String openSession(com.silverpeas.session.SessionInfo sessionInfo) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 }

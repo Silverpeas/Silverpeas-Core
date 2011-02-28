@@ -33,7 +33,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
 <%@ page import="com.silverpeas.communicationUser.control.CommunicationUserSessionController"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.*"%>
+<%@ page import="com.stratelia.silverpeas.peasCore.SessionInfo"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
 
 <%@ page import="java.util.*"%>
@@ -56,7 +56,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.board.Board"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
- 
+
 <%
 	CommunicationUserSessionController communicationScc = (CommunicationUserSessionController) request.getAttribute("communicationUser");
 	ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(communicationScc.getLanguage());

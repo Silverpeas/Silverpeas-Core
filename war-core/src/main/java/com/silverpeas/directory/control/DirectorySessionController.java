@@ -46,7 +46,7 @@ import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.SessionInfo;
+import com.silverpeas.session.SessionInfo;
 import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -72,11 +72,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   private List<UserDetail> lastAlllistUsersCalled;
   private List<UserDetail> lastListUsersCalled; // cache for pagination
-
   private int elementsByPage = 10;
-
   private String currentView = "tous";
-  
   public static final int DIRECTORY_DEFAULT = 0; // all users
   public static final int DIRECTORY_MINE = 1; // contacts of online user
   public static final int DIRECTORY_COMMON = 2; // common contacts between online user and another user
@@ -85,15 +82,12 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   public static final int DIRECTORY_DOMAIN = 5; // all users of domain
   public static final int DIRECTORY_SPACE = 6; // all users of space
   private int currentDirectory = DIRECTORY_DEFAULT;
-  
   private UserDetail commonUserDetail;
   private UserDetail otherUserDetail;
   private Group currentGroup;
   private Domain currentDomain;
   private SpaceInstLight currentSpace;
-
   private Properties stConfig;
-  
   private RelationShipService relationShipService;
 
   /**
@@ -115,7 +109,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
         "templatePath"));
     stConfig.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, getSettings().getString(
         "customersTemplatePath"));
-    
+
     relationShipService = new RelationShipService();
   }
 
@@ -233,8 +227,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     List<String> lus = new ArrayList<String>();
     lus = getAllUsersBySpace(lus, spaceId);
     lastAlllistUsersCalled =
-        Arrays.asList(getOrganizationController().getUserDetails(lus.toArray(new String[lus.
-            size()])));
+        Arrays.asList(
+        getOrganizationController().getUserDetails(lus.toArray(new String[lus.size()])));
     lastListUsersCalled = lastAlllistUsersCalled;
     return lastAlllistUsersCalled;
 
@@ -282,7 +276,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     lastAlllistUsersCalled = lastListUsersCalled;
     return lastAlllistUsersCalled;
   }
-  
+
   public List<UserDetail> getAllContactsOfUser(String userId) {
     setCurrentView("tous");
     if (getUserId().equals(userId)) {
@@ -303,7 +297,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     lastListUsersCalled = lastAlllistUsersCalled;
     return lastAlllistUsersCalled;
   }
-  
+
   public List<UserDetail> getCommonContacts(String userId) {
     setCurrentView("tous");
     setCurrentDirectory(DIRECTORY_COMMON);
@@ -311,8 +305,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     lastAlllistUsersCalled = new ArrayList<UserDetail>();
     try {
       List<String> contactsIds =
-          relationShipService.getAllCommonContactsIds(Integer.parseInt(getUserId()), Integer
-              .parseInt(userId));
+          relationShipService.getAllCommonContactsIds(Integer.parseInt(getUserId()), Integer.
+          parseInt(userId));
       for (String contactId : contactsIds) {
         lastAlllistUsersCalled.add(getOrganizationController().getUserDetail(contactId));
       }
@@ -348,7 +342,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     SilverTrace.debug("notificationUser",
         "NotificationUsersessionController.sendMessage()",
         "root.MSG_GEN_PARAM_VALUE", "  AVANT CONTROLE priorityId="
-            + priorityId);
+        + priorityId);
     NotificationMetaData notifMetaData = new NotificationMetaData(
         priorityId, txtTitle, txtMessage);
     notifMetaData.setSender(getUserId());
@@ -410,9 +404,9 @@ public class DirectorySessionController extends AbstractComponentSessionControll
         }
       }
       template.setAttribute("extra", extra);
-      
-      fragments.add(new UserFragmentVO(member.getId(), template.applyFileTemplate("user_" +
-          getLanguage())));
+
+      fragments.add(new UserFragmentVO(member.getId(), template.applyFileTemplate("user_"
+          + getLanguage())));
     }
     return fragments;
 
@@ -420,10 +414,10 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   private String getAvatarFragment(Member member) {
     StringBuilder sb = new StringBuilder();
-    String context = URLManager.getApplicationURL();
-    sb.append("<a href=\"").append(context).append("/Rprofil/jsp/Main?userId=").append(
+    String webcontext = URLManager.getApplicationURL();
+    sb.append("<a href=\"").append(webcontext).append("/Rprofil/jsp/Main?userId=").append(
         member.getId()).append("\">");
-    sb.append("<img src=\"").append(context).append(member.getUserDetail().getAvatar()).append(
+    sb.append("<img src=\"").append(webcontext).append(member.getUserDetail().getAvatar()).append(
         "\" alt=\"viewUser\"");
     sb.append("class=\"avatar\"/></a>");
     return sb.toString();
@@ -431,8 +425,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   private SearchEngineBm getSearchEngineBm() throws DirectoryException {
     try {
-      SearchEngineBmHome home = (SearchEngineBmHome) EJBUtilitaire.getEJBObjectRef(
-              JNDINames.SEARCHBM_EJBHOME, SearchEngineBmHome.class);
+      SearchEngineBmHome home = EJBUtilitaire.getEJBObjectRef(
+          JNDINames.SEARCHBM_EJBHOME, SearchEngineBmHome.class);
       return home.create();
     } catch (Exception e) {
       throw new DirectoryException(this.getClass().getSimpleName(), "root.EX_SEARCH_ENGINE_FAILED",
@@ -455,7 +449,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   public UserDetail getOtherUserDetail() {
     return otherUserDetail;
   }
-  
+
   public Group getCurrentGroup() {
     return currentGroup;
   }
@@ -467,5 +461,4 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   public SpaceInstLight getCurrentSpace() {
     return currentSpace;
   }
-
 }

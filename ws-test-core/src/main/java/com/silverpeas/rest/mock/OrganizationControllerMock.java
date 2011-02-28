@@ -22,24 +22,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.comment.web.mock;
+package com.silverpeas.rest.mock;
 
-import com.silverpeas.comment.service.CommentService;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import javax.inject.Inject;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import java.util.HashMap;
+import java.util.Map;
 import javax.inject.Named;
 
 /**
- * A mock of the CommentService class.
+ * A mock the OrganizationController objects for testing purpose.
  */
-@Named("commentService")
-public class CommentServiceMock extends CommentService {
+@Named("organizationController")
+public class OrganizationControllerMock extends OrganizationController {
+  private static final long serialVersionUID = -3271734262141821655L;
 
-  @Inject
-  private OrganizationController organizationController;
+  private Map<String, UserDetail> users = new HashMap<String, UserDetail>();
 
   @Override
-  protected OrganizationController getOrganizationController() {
-    return organizationController;
+  public UserDetail getUserDetail(String sUserId) {
+    return users.get(sUserId);
+  }
+
+  /**
+   * Adds a new user for tests.
+   * @param userDetail the detail about the user to add for tests.
+   */
+  public void addUserDetail(final UserDetail userDetail) {
+    users.put(userDetail.getId(), userDetail);
+  }
+
+  /**
+   * Clears all of the data used in tests.
+   */
+  public void clearAll() {
+    users.clear();
   }
 }
