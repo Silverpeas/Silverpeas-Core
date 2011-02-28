@@ -23,7 +23,6 @@
  */
 package com.stratelia.silverpeas.peasCore;
 
-import com.silverpeas.admin.components.Parameter;
 import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -34,12 +33,17 @@ import java.util.List;
 
 import javax.ejb.RemoveException;
 
+import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.genericPanel.GenericPanel;
+import com.stratelia.silverpeas.pdc.control.PdcBm;
+import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
+import com.stratelia.silverpeas.pdc.control.PdcSettings;
+import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
@@ -59,16 +63,17 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /*
-This object is used by all the components jsp that have access to the session.
-It is initialized given a login and a password which is authenticated.
-It provides functions to get information about the logged user (which is unique).
-It is also used to update the current environnement of the user (current domain, current component).
+ This object is used by all the components jsp that have access to the session.
+ It is initialized given a login and a password which is authenticated.
+ It provides functions to get information about the logged user (which is unique).
+ It is also used to update the current environnement of the user (current domain, current component).
  */
 public class MainSessionController extends AdminReference implements Clipboard {
 
   public static final String MAIN_SESSION_CONTROLLER_ATT = "SilverSessionController";
   ClipboardBm m_ClipboardBm = null;
   PersonalizationBm m_PersonalizationBm = null;
+  PdcBm pdcBm = null;
   Object m_ComponentSOFactory = null;
   private String m_sSessionId = null;
   private String m_sUserId = null;
@@ -151,7 +156,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
       // Get the user language
       userLanguage = getPersonalization().getFavoriteLanguage();
     } catch (Exception e) {
-      throw new PeasCoreException( "MainSessionController.MainSessionController",
+      throw new PeasCoreException("MainSessionController.MainSessionController",
           SilverpeasException.ERROR, "peasCore.EX_CANT_GET_USER_PROFILE", "sKey=" + sKey, e);
     }
   }
@@ -250,8 +255,10 @@ public class MainSessionController extends AdminReference implements Clipboard {
   public synchronized PersonalizationBm getPersonalization() {
     PersonalizationBm persoBm = null;
     try {
-      PersonalizationBmHome personalizationBmHome = (PersonalizationBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PERSONALIZATIONBM_EJBHOME,
-          PersonalizationBmHome.class);
+      PersonalizationBmHome personalizationBmHome =
+          (PersonalizationBmHome) EJBUtilitaire.getEJBObjectRef(
+              JNDINames.PERSONALIZATIONBM_EJBHOME,
+              PersonalizationBmHome.class);
       persoBm = personalizationBmHome.create();
       persoBm.setActor(getUserId());
     } catch (Exception e) {
@@ -491,8 +498,31 @@ public class MainSessionController extends AdminReference implements Clipboard {
 
   public boolean isBackOfficeVisible() {
     return (getCurrentUserDetail().isBackOfficeVisible()
-        || getUserManageableSpaceIds().length > 0 || getUserManageableGroupIds().
-        size() > 0);
+        || getUserManageableSpaceIds().length > 0 || !getUserManageableGroupIds().isEmpty() || isPDCBackOfficeVisible());
+  }
+
+  public boolean isPDCBackOfficeVisible() {
+    if (!PdcSettings.delegationEnabled) {
+      return false;
+    }
+
+    try {
+      // First, check if user is directly manager of a part of PDC
+      return getPdcBm().isUserManager(m_sUserId);
+    } catch (PdcException e) {
+      SilverTrace.error("peasCore", "MainSessionController.isPDCBackOfficeVisible",
+          "admin.MSG_ERR_GET_PDC_VISIBILITY", e);
+    }
+
+    return false;
+  }
+
+  private PdcBm getPdcBm() {
+    if (pdcBm == null) {
+      pdcBm = new PdcBmImpl();
+    }
+
+    return pdcBm;
   }
 
   public List<String> getUserManageableGroupIds() {
@@ -543,7 +573,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
       SilverTrace.error("peasCore",
           "MainSessionController.createComponentContext",
           "peasCore.EX_CANT_CREATE_COMPONENT_CONTEXT", "sSpaceId=" + sSpaceId
-          + " | sComponent=" + sComponent, e);
+              + " | sComponent=" + sComponent, e);
     }
     return newInfos;
   }
