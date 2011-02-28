@@ -299,7 +299,7 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
 
   public Parameter getParameter(String parameterName) {
     for(Parameter parameter : parameters) {
-      if(parameter.getName().equals(parameterName)){
+      if(parameter.getName().equalsIgnoreCase(parameterName)){
         return parameter;
       }
     }

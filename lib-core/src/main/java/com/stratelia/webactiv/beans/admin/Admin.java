@@ -1697,7 +1697,7 @@ public final class Admin {
 
   public String getRequestRouter(String sComponentName) {
     WAComponent wac = Instanciateur.getWAComponent(sComponentName);
-    if (wac == null) {
+    if (wac == null || !StringUtil.isDefined(wac.getRouter())) {
       return "R" + sComponentName;
     }
     return wac.getRouter();
