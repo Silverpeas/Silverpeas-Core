@@ -158,6 +158,10 @@ public class PublicationsTypeManager {
             publicationDetail, useNameForFolders);
         exportPublicationPath = exportPath + File.separator + exportPublicationRelativePath;
       }
+      //To avoid problems with Winzip
+      if(exportPublicationPath != null && exportPublicationPath.length() > 250) {
+        return null;
+      }
 
       // Copie des fichiers de contenu s'il en existe
       PublicationContentType pubContent = publicationType.getPublicationContentType();

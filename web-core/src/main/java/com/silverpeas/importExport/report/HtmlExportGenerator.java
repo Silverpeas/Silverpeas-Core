@@ -420,7 +420,7 @@ public class HtmlExportGenerator {
     sb.append("</td>\n");
     sb.append("</tr>\n");
     sb.append("</table>\n");
-    String axisName = "";
+    String axisName  ;
     int axisNb = 0;
     sb.append(
         "<table border=0 width=\"100%\" valign=center cellspacing=\"0\" cellpadding=\"2\" class=\"intfdcolor\">\n");
