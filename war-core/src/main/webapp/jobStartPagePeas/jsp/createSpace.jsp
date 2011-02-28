@@ -153,7 +153,7 @@ out.println(board.printBefore());
                             {
                                 String theKey = (String)it.next();
                                 SpaceTemplate st = (SpaceTemplate)m_SpaceTemplates.get(theKey);
-                                out.println("<OPTION value=\"" + theKey + "\">" + st.getTemplateName() + "</OPTION>");
+                                out.println("<OPTION value=\"" + theKey + "\">" + st.getDefaultName() + "</OPTION>");
                             }
                         %>
                     </SELECT>
