@@ -24,12 +24,12 @@
 
 package com.stratelia.webactiv.util.question.model;
 
+import com.stratelia.webactiv.util.answer.model.Answer;
+import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
-
-import com.stratelia.webactiv.util.answer.model.Answer;
-import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
 
 public class Question implements Serializable {
   private static final long serialVersionUID = 3495698479955515991L;
@@ -53,6 +53,7 @@ public class Question implements Serializable {
 
   /**
    * Question constructor
+   *
    * @param pk
    * @param fatherId
    * @param label
@@ -165,9 +166,8 @@ public class Question implements Serializable {
   public void setAnswers(Collection<Answer> answers) {
     int nbMaxPoints = 0;
     int nbMinPoints = 0;
-    Iterator<Answer> it2 = answers.iterator();
-    while (it2.hasNext()) {
-      Answer answer = it2.next();
+    for (Answer answer1 : answers) {
+      Answer answer = answer1;
       if (answer.isSolution()) {
         nbMaxPoints += answer.getNbPoints();
       } else {
@@ -292,9 +292,8 @@ public class Question implements Serializable {
 
   public float getAverageScore() {
     float averageScore = 0;
-    Iterator<Answer> iterator = answers.iterator();
-    while (iterator.hasNext()) {
-      Answer answerDetail = iterator.next();
+    for (Answer answer : answers) {
+      Answer answerDetail = answer;
       averageScore += answerDetail.getNbVoters() * answerDetail.getNbPoints();
     }
     return averageScore;
@@ -316,11 +315,15 @@ public class Question implements Serializable {
     return this.questionResults;
   }
 
+  public boolean isOpenStyle() {
+    return "open".equals(getStyle());
+  }
+
   @Override
   public String toString() {
     StringBuilder result = new StringBuilder("Question {\n");
-    result.append("  getPK() = " + getPK() + "\n");
-    result.append("  getLabel() = " + getLabel() + "\n");
+    result.append("  getPK() = ").append(getPK()).append("\n");
+    result.append("  getLabel() = ").append(getLabel()).append("\n");
     result.append("}");
     return result.toString();
   }

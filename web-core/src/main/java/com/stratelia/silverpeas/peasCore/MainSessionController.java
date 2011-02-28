@@ -23,6 +23,7 @@
  */
 package com.stratelia.silverpeas.peasCore;
 
+import com.silverpeas.admin.components.Parameter;
 import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -48,7 +49,6 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.instance.control.SPParameter;
 import com.stratelia.webactiv.clipboard.control.ejb.Clipboard;
 import com.stratelia.webactiv.clipboard.control.ejb.ClipboardBm;
 import com.stratelia.webactiv.clipboard.control.ejb.ClipboardBmHome;
@@ -423,7 +423,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
   }
 
   /** Return the parameters for the given component */
-  public List<SPParameter> getComponentParameters(String sComponentId) {
+  public List<Parameter> getComponentParameters(String sComponentId) {
     return m_Admin.getComponentParameters(sComponentId);
   }
 

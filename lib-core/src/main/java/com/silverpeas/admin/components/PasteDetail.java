@@ -22,55 +22,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.beans.admin.instance.control;
+package com.silverpeas.admin.components;
 
-import java.io.Serializable;
+public class PasteDetail {
+  String fromComponentId;
+  String toComponentId;
+  String userId;
 
-/**
- * Class storing profile information for WAComponent
- */
-public class SPProfile implements Serializable {
-
-  private static final long serialVersionUID = 1L;
-  private String m_strName;
-  private String m_strLabel;
-
-  /**
-   * Constructs and initialises the object
-   * @param strName name
-   * @param strLabel label
-   */
-  public SPProfile(String strName, String strLabel) {
-    m_strName = strName;
-    m_strLabel = strLabel;
+  public PasteDetail(String fromComponentId, String toComponentId, String userId) {
+    setFromComponentId(fromComponentId);
+    setToComponentId(toComponentId);
+    setUserId(userId);
   }
 
-  /**
-   * @return the name
-   */
-  public String getName() {
-    return m_strName;
+  public String getFromComponentId() {
+    return fromComponentId;
   }
 
-  /**
-   * @param strName the name to set
-   */
-  public void setName(String strName) {
-    m_strName = strName;
+  public void setFromComponentId(String fromComponentId) {
+    this.fromComponentId = fromComponentId;
   }
 
-  /**
-   * @return the label
-   */
-  public String getLabel() {
-    return m_strLabel;
+  public String getToComponentId() {
+    return toComponentId;
   }
 
-  /**
-   * @param strLabel the label to set
-   */
-  public void setLabel(String strLabel) {
-    m_strLabel = strLabel;
+  public void setToComponentId(String toComponentId) {
+    this.toComponentId = toComponentId;
+  }
+
+  public String getUserId() {
+    return userId;
+  }
+
+  public void setUserId(String userId) {
+    this.userId = userId;
   }
 
 }

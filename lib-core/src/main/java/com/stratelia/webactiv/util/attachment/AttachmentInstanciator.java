@@ -29,8 +29,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.silverpeas.admin.components.InstanciationException;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
-import com.stratelia.webactiv.beans.admin.instance.control.InstanciationException;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
@@ -141,7 +141,7 @@ public class AttachmentInstanciator extends SQLRequest {
    * @param spaceId
    * @param componentId
    * @param userId
-   * @throws InstanciationException
+   * @throws com.silverpeas.admin.components.InstanciationException
    * @see
    */
   public void delete(Connection con, String spaceId, String componentId,

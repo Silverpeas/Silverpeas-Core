@@ -35,9 +35,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.silverpeas.admin.components.InstanciationException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
-import com.stratelia.webactiv.beans.admin.instance.control.InstanciationException;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class NodeInstanciator extends SQLRequest {

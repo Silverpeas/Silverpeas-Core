@@ -25,19 +25,19 @@
 package com.silverpeas.ui;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 
 import com.stratelia.webactiv.util.ResourceLocator;
 
-public class UIHelper {
+public class DisplayI18NHelper {
 
-  private static List<String> languages = new ArrayList<String>();
-  private static String defaultLanguage;
+  private static final List<String> languages = new ArrayList<String>();
+  private static final String defaultLanguage;
 
   static {
-    ResourceLocator rs =
-        new ResourceLocator(
+    ResourceLocator rs = new ResourceLocator(
             "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
     
     defaultLanguage = rs.getString("DefaultLanguage");
@@ -61,7 +61,10 @@ public class UIHelper {
    * @return a List of String (ie : 'fr', 'en' or another two-letters code)
    */
   public static List<String> getLanguages() {
-    return languages;
+    return Collections.unmodifiableList(languages);
+  }
+
+  private DisplayI18NHelper() {
   }
 
 }

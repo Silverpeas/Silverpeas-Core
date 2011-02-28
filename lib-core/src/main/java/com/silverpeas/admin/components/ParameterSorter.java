@@ -21,13 +21,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.silverpeas.admin.components;
 
-package com.stratelia.webactiv.beans.admin.instance.control;
+import java.util.Comparator;
 
-import java.rmi.RemoteException;
+/**
+ *
+ * @author ehugonnet
+ */
+public class ParameterSorter implements Comparator<Parameter> {
 
-public interface ComponentPasteInterface {
-
-  void paste(PasteDetail pasteDetail) throws RemoteException;
-
+  @Override
+  public int compare(Parameter param1, Parameter param2) {
+    int result = param1.getOrder() - param2.getOrder();
+    if(result  == 0) {
+      result =  param1.getName().compareTo(param2.getName());
+    }
+    return result;
+  }
 }

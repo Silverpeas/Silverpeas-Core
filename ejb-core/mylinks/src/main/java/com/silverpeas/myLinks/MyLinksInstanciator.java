@@ -28,9 +28,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
+import com.silverpeas.admin.components.InstanciationException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.instance.control.ComponentsInstanciatorIntf;
-import com.stratelia.webactiv.beans.admin.instance.control.InstanciationException;
 import com.stratelia.webactiv.util.DBUtil;
 
 public class MyLinksInstanciator implements ComponentsInstanciatorIntf {

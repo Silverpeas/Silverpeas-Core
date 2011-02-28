@@ -28,7 +28,7 @@
  * @version 
  */
 
-package com.stratelia.webactiv.beans.admin.instance.control;
+package com.silverpeas.admin.components;
 
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 

@@ -65,7 +65,7 @@ import com.silverpeas.workflow.api.model.Forms;
 import com.silverpeas.workflow.api.model.ProcessModel;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
-import com.stratelia.webactiv.beans.admin.instance.control.ComponentsInstanciatorIntf;
+import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;

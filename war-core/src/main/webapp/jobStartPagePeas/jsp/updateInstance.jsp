@@ -29,19 +29,9 @@
 
 <%!
 
-final String PARAM_TYPE_CHECKBOX		= "checkbox";
-final String PARAM_UPDATE_NEVER			= "never";
-final String PARAM_UPDATE_ALWAYS		= "always";
-final String PARAM_UPDATE_ONCREATION	= "oncreationonly";
-final String PARAM_TYPE_SELECT			= "select";
-final String PARAM_TYPE_RADIO			= "radio";
-
-void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWriter out) throws java.io.IOException
+void displayParameter(Parameter parameter, ResourcesWrapper resource, JspWriter out) throws java.io.IOException
 {
-	String help = parameter.getHelp(resource.getLanguage());
-	boolean isCheckbox = PARAM_TYPE_CHECKBOX.equals(parameter.getType());
-	boolean isSelect = PARAM_TYPE_SELECT.equals(parameter.getType()) || SPParameter.TYPE_XMLTEMPLATES.equals(parameter.getType());
-	boolean isRadio	 = PARAM_TYPE_RADIO.equals(parameter.getType());
+	String help = (String) parameter.getHelp().get(resource.getLanguage());
 
 	if (help != null) {
 		//help = Encode.javaStringToJsString(help);
@@ -53,38 +43,37 @@ void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWrite
 	
 	}
 	out.println("<td class=\"intfdcolor4\" nowrap valign=\"center\" align=left>");
-	out.println("<span class=\"txtlibform\">"+parameter.getLabel()+" : </span>");
+	out.println("<span class=\"txtlibform\">"+parameter.getLabel().get(resource.getLanguage())+" : </span>");
 	out.println("</td>");
 	out.println("<td class=\"intfdcolor4\" align=left valign=\"top\">");
 
 	String disabled = "disabled";
-	String sTemp = parameter.getUpdatable().toLowerCase();
-	if ((PARAM_UPDATE_ALWAYS.equals(sTemp)) || ("".equals(sTemp)))
-		disabled = "";
+	if (parameter.isAlwaysUpdatable()) {
+        disabled = "";
+    }
 			   
-	if (isCheckbox) {
+	if (parameter.isCheckbox()) {
 		String checked = "";
-		if (parameter.getValue() != null && parameter.getValue().toLowerCase().equals("yes")) {
+		if (StringUtil.getBooleanValue(parameter.getValue())) {
 			checked = "checked";
 		}
 		out.println("<input type=\"checkbox\" name=\""+parameter.getName()+"\" value=\""+parameter.getValue()+"\" "+checked+" "+disabled+">");
 	}
-	else if (isSelect)
+	else if (parameter.isSelect() || parameter.isXmlTemplate())
 	{
-		ArrayList options = parameter.getOptions();
+		List options = parameter.getOptions();
 		if (options != null)
 		{
 			out.println("<select name=\""+parameter.getName()+"\">");
 			if (!parameter.isMandatory()) {
-			  // add "blank" option
 			  out.println("<option value=\"\"></option>");
 			}
 			String selected = "";
 			for (int i=0; i<options.size(); i++)
 			{
-				ArrayList option = (ArrayList) options.get(i);
-				String name = (String) option.get(0);
-				String value = (String) option.get(1);
+				Option option = (Option) options.get(i);
+				String name = ((String) option.getName().get(resource.getLanguage()));
+				String value = option.getValue();
 				selected = "";
 				if (parameter.getValue() != null && parameter.getValue().toLowerCase().equals(value.toLowerCase())) {
 					selected = "selected=\"selected\"";
@@ -94,16 +83,16 @@ void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWrite
 			out.println("</select>");
 		}
 	}
-	else if (isRadio)
+	else if (parameter.isRadio())
 	{
-		ArrayList radios = parameter.getOptions();
+		List radios = parameter.getOptions();
 		if (radios != null)
 		{
 			for (int i=0; i<radios.size(); i++)
 			{
-	      		ArrayList radio = (ArrayList) radios.get(i);
-				String name = (String) radio.get(0);
-				String value = (String) radio.get(1);
+	      		Option radio = (Option) radios.get(i);
+				String name = ((String) radio.getName().get(resource.getLanguage()));
+				String value = (String) radio.getValue();
 				String checked = "";
 				if (parameter.getValue() != null && parameter.getValue().toLowerCase().equals(value) || i==0)
 					checked = " checked";
@@ -121,10 +110,10 @@ void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWrite
 		boolean mandatory = parameter.isMandatory();;
 
 		String sSize = "60";
-		if (parameter.getSize() != null && parameter.getSize().length() > 0)
-			sSize = parameter.getSize();
+		if (parameter.getSize() != null && parameter.getSize().intValue() > 0)
+			sSize = parameter.getSize().toString();
 
-		out.println("<input type=\"text\" name=\""+parameter.getName()+"\" size=\""+sSize+"\" maxlength=\"399\" value=\""+Encode.javaStringToHtmlString(parameter.getValue())+"\" "+disabled+">");
+		out.println("<input type=\"text\" name=\""+parameter.getName()+"\" size=\""+sSize+"\" maxlength=\"399\" value=\""+EncodeHelper.javaStringToHtmlString(parameter.getValue())+"\" "+disabled+">");
 
 		if (mandatory) 
 			out.println("&nbsp;<img src=\""+resource.getIcon("mandatoryField")+"\" width=\"5\" height=\"5\" border=\"0\">");
@@ -144,7 +133,7 @@ boolean 		isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEna
 
 String m_ComponentIcon = iconsPath+"/util/icons/component/"+compoInst.getName()+"Small.gif";
 
-SPParameter parameter = null;
+Parameter parameter = null;
 
 browseBar.setComponentId(compoInst.getId());
 browseBar.setExtraInformation(resource.getString("GML.modify"));
@@ -172,9 +161,8 @@ function B_VALIDER_ONCLICK() {
 		<%
 		for(int nI=0; parameters != null && nI < parameters.size(); nI++)
 		{ 
-			parameter = (SPParameter) parameters.get(nI);
-			boolean isCheckbox = PARAM_TYPE_CHECKBOX.equals(parameter.getType());
-			if (isCheckbox) {
+			parameter = (Parameter) parameters.get(nI);
+			if (parameter.isCheckbox()) {
 			%>
 		    	if (document.infoInstance.<%=parameter.getName()%>.checked)
 		        	document.infoInstance.<%=parameter.getName()%>.value = "yes";
@@ -215,9 +203,8 @@ function isCorrectForm() {
 	<%
 	for(int nI=0; parameters != null && nI < parameters.size(); nI++)
 	{ 
-		parameter = (SPParameter) parameters.get(nI);
-		boolean isRadio = PARAM_TYPE_RADIO.equals(parameter.getType());
-		if (parameter.isMandatory() && !isRadio) 
+		parameter = (Parameter) parameters.get(nI);
+		if (parameter.isMandatory() && !parameter.isRadio()) 
 		{
 		%>
 			var paramValue = stripInitialWhitespace(document.infoInstance.<%=parameter.getName()%>.value);
@@ -280,8 +267,8 @@ Iterator codes = compoInst.getTranslations().keySet().iterator();
 while (codes.hasNext())
 {
 	lang = (String) codes.next();
-	out.println("var name_"+lang+" = \""+Encode.javaStringToJsString(compoInst.getLabel(lang))+"\";\n");
-	out.println("var desc_"+lang+" = \""+Encode.javaStringToJsString(compoInst.getDescription(lang))+"\";\n");
+	out.println("var name_"+lang+" = \""+EncodeHelper.javaStringToJsString(compoInst.getLabel(lang))+"\";\n");
+	out.println("var desc_"+lang+" = \""+EncodeHelper.javaStringToJsString(compoInst.getDescription(lang))+"\";\n");
 }
 %>
 
@@ -314,11 +301,11 @@ out.println(board.printBefore());
 	<%=I18NHelper.getFormLine(resource, compoInst, translation)%>
 	<tr> 
 		<td class="txtlibform"><%=resource.getString("GML.name")%> :</td>
-		<td><input type="text" name="NameObject" id="compoName" size="60" maxlength="60" value="<%=Encode.javaStringToHtmlString(compoInst.getLabel())%>">&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"></td>
+		<td><input type="text" name="NameObject" id="compoName" size="60" maxlength="60" value="<%=EncodeHelper.javaStringToHtmlString(compoInst.getLabel())%>">&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"></td>
 	</tr>
 	<tr>
 		<td class="txtlibform" valign="top"><%=resource.getString("GML.description")%> :</td>
-		<td><textarea name="Description" id="compoDesc" wrap="VIRTUAL" rows="4" cols="59"><%=Encode.javaStringToHtmlString(compoInst.getDescription())%></textarea></td>
+		<td><textarea name="Description" id="compoDesc" wrap="VIRTUAL" rows="4" cols="59"><%=EncodeHelper.javaStringToHtmlString(compoInst.getDescription())%></textarea></td>
 	</tr>
 	<% if (isInHeritanceEnable) { %>
 	<tr>
@@ -353,7 +340,7 @@ out.println(board.printBefore());
 		out.println("<table border=0 width=\"100%\">");
 		for(int nI=0; parameters != null && nI < parameters.size(); nI++)
 		{
-			parameter = (SPParameter) parameters.get(nI);
+			parameter = (Parameter) parameters.get(nI);
 			if (nI%2 == 0)
 				out.println("<tr valign=\"middle\">");
 
@@ -374,7 +361,7 @@ out.println(board.printBefore());
 	} else {
 		for(int nI=0; parameters != null && nI < parameters.size(); nI++)
 		{
-			parameter = (SPParameter) parameters.get(nI);
+			parameter = (Parameter) parameters.get(nI);
 			out.println("<tr valign=\"middle\">");
 			displayParameter(parameter, resource, out);
 			out.println("</tr>");
@@ -383,7 +370,7 @@ out.println(board.printBefore());
 	
 	for(int nI=0; hiddenParameters != null && nI < hiddenParameters.size(); nI++)
 	{
-		parameter = (SPParameter) hiddenParameters.get(nI);
+		parameter = (Parameter) hiddenParameters.get(nI);
 		
 		out.println("<input type=\"hidden\" name=\""+parameter.getName()+"\" value=\""+parameter.getValue()+"\"/>\n");
 	}
@@ -396,8 +383,8 @@ out.println(board.printBefore());
 	out.println(board.printAfter());
 
 	ButtonPane buttonPane = gef.getButtonPane();
-	buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false));
-	buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false));
+	buttonPane.addButton( gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false));
+	buttonPane.addButton( gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false));
 	out.println("<BR><center>"+buttonPane.print()+"</center>");	
 	out.println(frame.printAfter());
     out.println(window.printAfter());

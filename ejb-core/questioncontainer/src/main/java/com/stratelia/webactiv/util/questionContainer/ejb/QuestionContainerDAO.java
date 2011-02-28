@@ -156,8 +156,7 @@ public class QuestionContainerDAO {
   }
 
   public static Collection<QuestionContainerHeader> getQuestionContainers(Connection con,
-      ArrayList<QuestionContainerPK> pks)
-      throws SQLException {
+      List<QuestionContainerPK> pks) throws SQLException {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.getQuestionContainers()",
         "root.MSG_GEN_ENTER_METHOD", "pks = " + pks.toString());
@@ -168,7 +167,7 @@ public class QuestionContainerDAO {
     List<QuestionContainerHeader> list = new ArrayList<QuestionContainerHeader>();
     StringBuffer whereClause = new StringBuffer();
 
-    if (pks != null && pks.size() > 0) {
+    if (pks != null && !pks.isEmpty()) {
       Iterator<QuestionContainerPK> it = pks.iterator();
       QuestionContainerPK pk = null;
 

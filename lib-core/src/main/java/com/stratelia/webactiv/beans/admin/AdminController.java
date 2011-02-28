@@ -25,28 +25,27 @@
 /*
  * @author Norbert CHAIX
  * @version 1.0
- date 14/09/2000
+date 14/09/2000
  */
 package com.stratelia.webactiv.beans.admin;
 
+import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.admin.spaces.SpaceTemplate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
-import com.stratelia.webactiv.beans.admin.spaceTemplates.SpaceTemplate;
-import com.stratelia.webactiv.beans.admin.spaceTemplates.SpaceTemplateProfile;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /*
- This objet is used by all the admin jsp such as SpaceManagement, UserManagement, etc...
- It provides access functions to query and modify the domains as well as the company organization
- It should be used only by a client that has the administrator rights
+This objet is used by all the admin jsp such as SpaceManagement, UserManagement, etc...
+It provides access functions to query and modify the domains as well as the company organization
+It should be used only by a client that has the administrator rights
  */
-
 public class AdminController extends AdminReference implements java.io.Serializable {
 
   private static final long serialVersionUID = -1605341557688427460L;
@@ -57,7 +56,6 @@ public class AdminController extends AdminReference implements java.io.Serializa
   }
 
   // Start the processes
-
   public void startServer() throws Exception {
     m_Admin.startServer();
   }
@@ -65,7 +63,6 @@ public class AdminController extends AdminReference implements java.io.Serializa
   // ----------------------------------------------
   // Space Instances related functions
   // ----------------------------------------------
-
   public String getGeneralSpaceId() {
     SilverTrace.info("admin", "AdminController.getGeneralSpaceId",
         "root.MSG_GEN_ENTER_METHOD");
@@ -208,8 +205,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
       if (user.getAccessLevel().equals("A") || sUserId.equals("0")) {
         return m_Admin.getClientSpaceIds(m_Admin.getAllSpaceIds());
       } else {
-        return m_Admin.getClientSpaceIds(m_Admin
-            .getUserManageableSpaceIds(sUserId));
+        return m_Admin.getClientSpaceIds(m_Admin.getUserManageableSpaceIds(sUserId));
       }
     } catch (Exception e) {
       SilverTrace.error("admin",
@@ -226,8 +222,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     try {
       return m_Admin.addSpaceInst(m_UserId, spaceInst);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.addSpaceInst",
-          "admin.MSG_ERR_ADD_SPACE", e);
+      SilverTrace.error("admin", "AdminController.addSpaceInst", "admin.MSG_ERR_ADD_SPACE", e);
       return "";
     }
   }
@@ -239,8 +234,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
     try {
       return m_Admin.deleteSpaceInstById(m_UserId, sSpaceInstId, definitive);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.deleteSpaceInstById",
-          "admin.MSG_ERR_DELETE_SPACE", e);
+      SilverTrace.error("admin", "AdminController.deleteSpaceInstById", "admin.MSG_ERR_DELETE_SPACE", e);
       return "";
     }
   }
@@ -249,13 +243,11 @@ public class AdminController extends AdminReference implements java.io.Serializa
    * Update the space Instance corresponding to the given space name wuth the given SpaceInst
    */
   public String updateSpaceInst(SpaceInst spaceInstNew) {
-    SilverTrace.info("admin", "AdminController.updateSpaceInst",
-        "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("admin", "AdminController.updateSpaceInst", "root.MSG_GEN_ENTER_METHOD");
     try {
       return m_Admin.updateSpaceInst(spaceInstNew);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.updateSpaceInst",
-          "admin.MSG_ERR_UPDATE_SPACE", e);
+      SilverTrace.error("admin", "AdminController.updateSpaceInst", "admin.MSG_ERR_UPDATE_SPACE", e);
       return "";
     }
   }
@@ -264,23 +256,18 @@ public class AdminController extends AdminReference implements java.io.Serializa
     return m_Admin.getAllSpaceTemplates();
   }
 
-  public SpaceTemplateProfile[] getTemplateProfiles(String templateName) {
-    return m_Admin.getTemplateProfiles(templateName);
-  }
-
   public SpaceInst getSpaceInstFromTemplate(String templateName) {
     return m_Admin.getSpaceInstFromTemplate(templateName);
   }
 
   /** Return all the spaces Id available in webactiv */
   public String[] getAllRootSpaceIds() {
-    SilverTrace.info("admin", "AdminController.getAllSpaceIds",
-        "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("admin", "AdminController.getAllSpaceIds", "root.MSG_GEN_ENTER_METHOD");
     try {
       return m_Admin.getAllRootSpaceIds();
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getAllSpaceIds",
-          "admin.MSG_ERR_GET_ALL_SPACE_IDS", e);
+      SilverTrace.error("admin", "AdminController.getAllSpaceIds", "admin.MSG_ERR_GET_ALL_SPACE_IDS",
+          e);
       return new String[0];
     }
   }
@@ -369,7 +356,6 @@ public class AdminController extends AdminReference implements java.io.Serializa
   // ----------------------------------------------
   // Component Instances related functions
   // ----------------------------------------------
-
   /** Return all the components names available in webactiv */
   public Map<String, String> getAllComponentsNames() {
     SilverTrace.info("admin", "AdminController.getAllComponentsNames",
@@ -475,7 +461,6 @@ public class AdminController extends AdminReference implements java.io.Serializa
   }
 
   // NEWF DLE
-
   /**
    * Return the component ids available for the cuurent user Id in the given space id
    */
@@ -502,7 +487,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
       return false;
     }
   }
-  
+
   /**
    * Indcates if a user can access the specified space.
    * @param userId the user id.
@@ -576,7 +561,6 @@ public class AdminController extends AdminReference implements java.io.Serializa
   // ----------------------------------------------
   // Profile Instances related functions
   // ----------------------------------------------
-
   /** Return all the profiles names available for the given profile */
   public String[] getAllProfilesNames(String sComponentName) {
     SilverTrace.info("admin", "AdminController.getAllProfilesNames",
@@ -673,7 +657,11 @@ public class AdminController extends AdminReference implements java.io.Serializa
     }
   }
 
-  /** Delete the Profile Instance corresponding to the given Profile id */
+  /**
+   * Delete the Profile Instance corresponding to the given Profile id.
+   * @param sProfileId
+   * @return 
+   */
   public String deleteProfileInst(String sProfileId) {
     return deleteProfileInst(sProfileId, null);
   }
@@ -712,24 +700,22 @@ public class AdminController extends AdminReference implements java.io.Serializa
   /**
    * Get the profile label from its name
    */
-  public String getProfileLabelfromName(String sComponentName,
-      String sProfileName) {
+  public String getProfileLabelfromName(String sComponentName, String sProfileName, String lang) {
     SilverTrace.info("admin", "AdminController.getProfileLabelfromName",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      return m_Admin.getProfileLabelfromName(sComponentName, sProfileName);
+      return m_Admin.getProfileLabelfromName(sComponentName, sProfileName, lang);
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getProfileLabelfromName",
           "admin.MSG_ERR_GET_PROFILE_LABEL_FROM_NAME", "component name: "
           + sComponentName + ", profile name: " + sProfileName, e);
-      return new String("");
+      return "";
     }
   }
 
   // ----------------------------------------------
   // User Profile related functions
   // ----------------------------------------------
-
   // JCC 10/04/2002 ajout de getProfileIds
   /**
    * All the profiles to which the user belongs
@@ -750,7 +736,6 @@ public class AdminController extends AdminReference implements java.io.Serializa
   // ----------------------------------------------
   // Group Profile related functions
   // ----------------------------------------------
-
   // JCC 10/04/2002 ajout de getProfileIdsOfGroup
   /**
    * All the profiles to which the group belongs
@@ -771,7 +756,6 @@ public class AdminController extends AdminReference implements java.io.Serializa
   // ----------------------------------------------
   // User related functions
   // ----------------------------------------------
-
   public String[] getDirectGroupsIdsOfUser(String userId) {
     SilverTrace.info("admin", "AdminController.getDirectGroupsIdsOfUser",
         "root.MSG_GEN_ENTER_METHOD");
@@ -1031,7 +1015,6 @@ public class AdminController extends AdminReference implements java.io.Serializa
   // ----------------------------------------------
   // Groups related functions
   // ----------------------------------------------
-
   /** Return all the groups ids available in webactiv */
   public String[] getAllGroupsIds() {
     SilverTrace.info("admin", "AdminController.getAllGroupsIds",
@@ -1188,7 +1171,6 @@ public class AdminController extends AdminReference implements java.io.Serializa
   // ----------------------------------------------
   // General Admin ID related functions
   // ----------------------------------------------
-
   /** Return the general admin id */
   public String getDAPIGeneralAdminId() {
     SilverTrace.info("admin", "AdminController.getDAPIGeneralAdminId",
@@ -1205,7 +1187,6 @@ public class AdminController extends AdminReference implements java.io.Serializa
   // ----------------------------------------------
   // Admin User Detail related functions
   // ----------------------------------------------
-
   /** Return the admin user detail corresponding to the given id */
   public UserDetail getUserDetail(String sId) {
     SilverTrace.info("admin", "AdminController.getUserDetail",
@@ -1266,8 +1247,9 @@ public class AdminController extends AdminReference implements java.io.Serializa
     try {
       if (asUserIds != null) {
         return m_Admin.getUserDetails(asUserIds);
-      } else
+      } else {
         return new UserDetail[0];
+      }
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.getUserDetails",
           "admin.EX_ERR_GET_USER_DETAILS", e);
@@ -1357,7 +1339,7 @@ public class AdminController extends AdminReference implements java.io.Serializa
       m_Admin.indexUsers(domainId);
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.indexUsers",
-          "admin.CANT_INDEX_USERS", "domainId = "+domainId, e);
+          "admin.CANT_INDEX_USERS", "domainId = " + domainId, e);
     }
   }
 
@@ -1373,7 +1355,6 @@ public class AdminController extends AdminReference implements java.io.Serializa
   // ----------------------------------------------
   // Admin Group Detail related functions
   // ----------------------------------------------
-
   /** Return all the groups Id available in webactiv */
   public String[] getAllGroupIds() {
     SilverTrace.info("admin", "AdminController.getAllGroupIds",
@@ -1502,7 +1483,6 @@ public class AdminController extends AdminReference implements java.io.Serializa
   // //////////////////////////////////////////////////////////
   // Synchronization tools
   // //////////////////////////////////////////////////////////
-
   /**
    * Synchronize users and groups between cache and domain's datastore
    * @param domainId Id of domain to synchronize
@@ -1660,12 +1640,12 @@ public class AdminController extends AdminReference implements java.io.Serializa
   public void reloadAdminCache() {
     m_Admin.reloadCache();
   }
-  
+
   public String copyAndPasteComponent(String componentId, String spaceId, String userId)
       throws AdminException {
     return m_Admin.copyAndPasteComponent(componentId, spaceId, userId);
   }
-  
+
   public String copyAndPasteSpace(String spaceId, String toSpaceId, String userId)
       throws AdminException {
     return m_Admin.copyAndPasteSpace(spaceId, toSpaceId, userId);

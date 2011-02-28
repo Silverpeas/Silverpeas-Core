@@ -28,9 +28,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.silverpeas.admin.components.Parameter;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.instance.control.SPParameter;
-import com.stratelia.webactiv.beans.admin.instance.control.SPParameters;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * A InstanceData object manages component parameters
@@ -59,7 +61,7 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
   /**
    * Inserts in the database a new instanceData row.
    */
-  public void createInstanceData(int componentId, SPParameter parameter) throws
+  public void createInstanceData(int componentId, Parameter parameter) throws
       AdminPersistenceException, SQLException {
     SilverTrace.info("admin", "InstanceDataTable.createInstanceData",
         "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId
@@ -69,7 +71,7 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
     idr.id = getNextId();
     idr.componentId = componentId;
     idr.name = parameter.getName();
-    idr.label = parameter.getLabel();
+    idr.label = parameter.getLabel().get(I18NHelper.defaultLanguage);
     idr.value = parameter.getValue();
 
     insertRow(INSERT_INSTANCEDATA, idr);
@@ -99,14 +101,20 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
   /**
    * Returns all the parameters of the given component (List of SPParameter)
    */
-  public SPParameters getAllParametersInComponent(int componentId) throws AdminPersistenceException {
+  public List<Parameter> getAllParametersInComponent(int componentId) throws
+      AdminPersistenceException {
     List<InstanceDataRow> rows = getRows(SELECT_ALL_COMPONENT_PARAMETERS, componentId);
-    SPParameters params = new SPParameters();
-    for (InstanceDataRow row : rows) {
-      SPParameter param = new SPParameter(row.name, row.value, row.label);
-      params.addParameter(param);
+    List<Parameter> params = new ArrayList<Parameter>();
+    for (InstanceDataRow row :
+        rows) {
+      Parameter param = new Parameter();
+      param.setName(row.name);
+      param.setValue(row.value);
+      HashMap<String, String> multilang = new HashMap<String, String>();
+      multilang.put(I18NHelper.defaultLanguage, row.label);
+      param.setLabel(multilang);
+      params.add(param);
     }
-
     return params;
   }
   static final private String SELECT_ALL_COMPONENT_PARAMETERS = "select "
@@ -116,8 +124,8 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
   /**
    * Updates a instance data row.
    */
-  public void updateInstanceData(int componentId, SPParameter parameter)
-      throws AdminPersistenceException, SQLException {
+  public void updateInstanceData(int componentId, Parameter parameter) throws
+      AdminPersistenceException, SQLException {
     InstanceDataRow idr = new InstanceDataRow();
 
     idr.componentId = componentId;

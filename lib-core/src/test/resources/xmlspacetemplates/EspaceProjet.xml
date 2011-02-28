@@ -1,69 +1,65 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<SpaceTemplate>
-    <templateName>Espace projet</templateName>
-    <defaultName>Projet XXX</defaultName>
-    <description>Description du projet</description>
-    <readOnly>no</readOnly>
-	<!-- Profiles matching must be done One to One : i.e. not two template profiles linked to the same component profile and not two component profiles linked the same template profile -->
-    <Profiles>
-	    <Profile name="Gestionnaire">Gestionnaire</Profile>
-	    <Profile name="Redacteur">Rédacteur</Profile>
-	    <Profile name="Lecteur">Lecteur</Profile>
-    </Profiles>
-    <Components>
-        <Component>
-            <ComponentName>kmelia</ComponentName>
-			<!-- Components labels MUST BE UNIQUE in the same space template -->
-            <ComponentLabel>Documentation</ComponentLabel>
-            <ComponentDescription>Ensemble des documents liés au projet</ComponentDescription>
-			<ComponentMatchingProfiles>
-				<ComponentMatchingProfile name="Gestionnaire">admin</ComponentMatchingProfile>
-				<ComponentMatchingProfile name="Redacteur">publisher</ComponentMatchingProfile>
-				<ComponentMatchingProfile name="Lecteur">user</ComponentMatchingProfile>
-			</ComponentMatchingProfiles>
-		    <ComponentParameters>
-		        <ComponentParameter name="nbPubliOnRoot">9</ComponentParameter>
-		        <ComponentParameter name="usePdc">yes</ComponentParameter>
-		    </ComponentParameters>
-        </Component>
-        <Component>
-            <ComponentName>bookmark</ComponentName>
-            <ComponentLabel>Sites de référence</ComponentLabel>
-            <ComponentDescription>Annuaire de sites web</ComponentDescription>
-			<ComponentMatchingProfiles>
-				<ComponentMatchingProfile name="Gestionnaire">Admin</ComponentMatchingProfile>
-				<ComponentMatchingProfile name="Redacteur">Publisher</ComponentMatchingProfile>
-				<ComponentMatchingProfile name="Lecteur">Reader</ComponentMatchingProfile>
-			</ComponentMatchingProfiles>
-        </Component>
-        <Component>
-            <ComponentName>toolbox</ComponentName>
-            <ComponentLabel>Téléchargement</ComponentLabel>
-            <ComponentDescription>Boite de téléchargement et échange de fichiers</ComponentDescription>
-			<ComponentMatchingProfiles>
-				<ComponentMatchingProfile name="Gestionnaire">admin</ComponentMatchingProfile>
-				<ComponentMatchingProfile name="Redacteur">publisher</ComponentMatchingProfile>
-				<ComponentMatchingProfile name="Lecteur">user</ComponentMatchingProfile>
-			</ComponentMatchingProfiles>
-        </Component>
-        <Component>
-            <ComponentName>forums</ComponentName>
-            <ComponentLabel>Forum</ComponentLabel>
-            <ComponentDescription>Discussions diverses autour du projet</ComponentDescription>
-			<ComponentMatchingProfiles>
-				<ComponentMatchingProfile name="Gestionnaire">admin</ComponentMatchingProfile>
-				<ComponentMatchingProfile name="Lecteur">user</ComponentMatchingProfile>
-			</ComponentMatchingProfiles>
-        </Component>
-        <Component>
-            <ComponentName>yellowpages</ComponentName>
-            <ComponentLabel>Contacts</ComponentLabel>
-            <ComponentDescription>Liste des intervenants</ComponentDescription>
-			<ComponentMatchingProfiles>
-				<ComponentMatchingProfile name="Gestionnaire">admin</ComponentMatchingProfile>
-				<ComponentMatchingProfile name="Redacteur">publisher</ComponentMatchingProfile>
-				<ComponentMatchingProfile name="Lecteur">user</ComponentMatchingProfile>
-			</ComponentMatchingProfiles>
-        </Component>
-    </Components>
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+
+    Copyright (C) 2000 - 2009 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have recieved a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<SpaceTemplate xmlns="http://silverpeas.org/xml/ns/space"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="http://silverpeas.org/xml/ns/space http://www.silverpeas.org/xsd/space.xsd">
+  <template>Espace projet</template>
+  <defaultName>Projet XXX</defaultName>
+  <description>Description du projet</description>
+  <readonly>false</readonly>
+  <components>
+    <component>
+      <type>kmelia</type>
+      <label>Documentation</label>
+      <description>Ensemble des documents liÃ©s au projet</description>			
+      <parameters>
+        <parameter name="nbPubliOnRoot">9</parameter>
+        <parameter name="usePdc">yes</parameter>
+      </parameters>
+    </component>
+    <component>
+      <type>bookmark</type>
+      <label>Sites de rÃ©fÃ©rence</label>
+      <description>Annuaire de sites web</description>   
+    </component>
+    <component>
+      <type>toolbox</type>
+      <label>TÃ©lÃ©chargement</label>
+      <description>Boite de tÃ©lÃ©chargement et Ã©change de fichiers</description>   
+    </component>
+    <component>
+      <type>forums</type>
+      <label>Forum</label>
+      <description>Discussions diverses autour du projet</description>    
+    </component>
+    <component>
+      <type>yellowpages</type>
+      <label>Contacts</label>
+      <description>Liste des intervenants</description>    
+    </component>
+  </components>
 </SpaceTemplate>
