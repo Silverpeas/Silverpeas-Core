@@ -176,9 +176,7 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 
 
 #menutoggle {
-	position:absolute;
-	top:0;
-	right:0;
+	display:table;
 	background-color: #f1790f;
 	padding:0 20px  0 30px;
 	text-align:right;
@@ -201,9 +199,14 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	font-size:12px;
 }
 #browseBar {
-	margin:3px 0 0 3px;
+	margin:3px 0 0;
 	padding-top:8px;
 }
+
+#browseBar #breadCrumb {
+	margin-left:3px;
+	}
+
 #browseBar #i18n {
     margin-right: 10px;
 }
