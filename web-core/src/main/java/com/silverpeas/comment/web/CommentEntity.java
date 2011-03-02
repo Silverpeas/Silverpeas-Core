@@ -21,15 +21,26 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.comment.web;
 
-import com.silverpeas.comment.model.Comment;
-import java.io.Serializable;
+import static com.silverpeas.util.StringUtil.isDefined;
+
 import java.net.URI;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import com.silverpeas.calendar.Date;
+import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.model.CommentPK;
+import com.silverpeas.rest.Exposable;
+import com.silverpeas.util.EncodeHelper;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /**
  * The comment entity is a comment object that is exposed in the web as an entity (web entity).
@@ -37,10 +48,28 @@ import java.util.List;
  * It represents a comment in Silverpeas plus some additional information such as the URI for
  * accessing it.
  */
-public class CommentEntity implements Serializable {
-  private static final long serialVersionUID = 1L;
-  private final Comment comment;
-  private URI uri = null;
+@XmlRootElement
+public class CommentEntity implements Exposable {
+
+  private static final long serialVersionUID = 8023645204584179638L;
+  @XmlElement(defaultValue = "")
+  private URI uri;
+  @XmlElement(defaultValue = "")
+  private String id;
+  @XmlElement(required = true)
+  private String componentId;
+  @XmlElement(required = true)
+  private String resourceId;
+  @XmlElement(required = true)
+  private String text;
+  @XmlElement(required = true)
+  private CommentAuthorEntity author;
+  @XmlElement(required = true, defaultValue = "")
+  private String creationDate;
+  @XmlElement(required = true, defaultValue = "")
+  private String modificationDate;
+  @XmlElement
+  private boolean indexed = false;
 
   /**
    * Creates a new comment entity from the specified comment.
@@ -56,7 +85,7 @@ public class CommentEntity implements Serializable {
    * @param comments the comments to entitify.
    * @return a list of entities representing each of then one of the specified comments.
    */
-  public static List<CommentEntity> fromComments(final Comment ... comments) {
+  public static List<CommentEntity> fromComments(final Comment... comments) {
     return fromComments(Arrays.asList(comments));
   }
 
@@ -78,14 +107,19 @@ public class CommentEntity implements Serializable {
    * @return a comment instance.
    */
   public Comment toComment() {
-    return this.comment;
+    Comment comment = new Comment(new CommentPK(id, componentId), new PublicationPK(resourceId,
+        componentId), Integer.valueOf(author.getId()), author.getFullName(), text,
+        decodeFromDisplayDate(creationDate, getAuthor().getLanguage()),
+        decodeFromDisplayDate(modificationDate, getAuthor().getLanguage()));
+    comment.setOwnerDetail(author.toUser());
+    return comment;
   }
 
   /**
    * Sets a URI to this entity.
    * With this URI, it can then be accessed through the Web.
    * @param uri the web entity URI.
-   * @return the entity itself.
+   * @return itself.
    */
   public CommentEntity withURI(final URI uri) {
     this.uri = uri;
@@ -96,6 +130,7 @@ public class CommentEntity implements Serializable {
    * Gets the URI of this comment entity.
    * @return the URI with which this entity can be access through the Web.
    */
+  @Override
   public URI getURI() {
     return uri;
   }
@@ -105,7 +140,7 @@ public class CommentEntity implements Serializable {
    * @return the comment identifier.
    */
   public String getId() {
-    return comment.getCommentPK().getId();
+    return id;
   }
 
   /**
@@ -113,23 +148,23 @@ public class CommentEntity implements Serializable {
    * @return the silverpeas component instance identifier.
    */
   public String getComponentId() {
-    return comment.getCommentPK().getInstanceId();
+    return componentId;
   }
 
   /**
-   * Gets the identifier of the content that is commented by this.
-   * @return the content identifier.
+   * Gets the identifier of the resource that is commented by this.
+   * @return the commented resource identifier.
    */
-  public String getContentId() {
-    return comment.getForeignKey().getId();
+  public String getResourceId() {
+    return resourceId;
   }
 
   /**
    * Gets the user that has written this comment.
-   * @return the comment writer.
+   * @return the author of the comment.
    */
-  public CommentWriterEntity getWriter() {
-    return CommentWriterEntity.fromUser(comment.getOwnerDetail());
+  public CommentAuthorEntity getAuthor() {
+    return author;
   }
 
   /**
@@ -137,7 +172,7 @@ public class CommentEntity implements Serializable {
    * @return the text of the comment.
    */
   public String getText() {
-    return comment.getMessage();
+    return text;
   }
 
   /**
@@ -145,7 +180,7 @@ public class CommentEntity implements Serializable {
    * @return the creation date of the comment.
    */
   public String getCreationDate() {
-    return comment.getCreationDate();
+    return creationDate;
   }
 
   /**
@@ -153,10 +188,115 @@ public class CommentEntity implements Serializable {
    * @return the modification date of the comment.
    */
   public String getModificationDate() {
-    return comment.getModificationDate();
+    return modificationDate;
+  }
+
+  /**
+   * Is this comment indexed?
+   * By default, the comment isn't indexed by the system.
+   * @return true if the comment is indexed, false otherwise.
+   */
+  public boolean isIndexed() {
+    return indexed;
+  }
+
+  /**
+   * Changes the text of this comment by the specified one.
+   * @param aText the new text.
+   * @return itself.
+   */
+  public CommentEntity newText(final String aText) {
+    this.text = aText;
+    return this;
   }
 
   private CommentEntity(final Comment comment) {
-    this.comment = comment;
+    this.componentId = comment.getCommentPK().getInstanceId();
+    this.id = comment.getCommentPK().getId();
+    this.resourceId = comment.getForeignKey().getId();
+    this.text = comment.getMessage();
+    this.author = CommentAuthorEntity.fromUser(comment.getOwnerDetail());
+    this.creationDate = encodeToDisplayDate(comment.getCreationDate(), this.author.getLanguage());
+    this.modificationDate = encodeToDisplayDate(comment.getModificationDate(), this.author.
+        getLanguage());
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final CommentEntity other = (CommentEntity) obj;
+    if (isDefined(id) && isDefined(other.getId())) {
+      return id.equals(other.getId());
+    } else {
+      return componentId.equals(other.getComponentId()) && resourceId.equals(other.getResourceId())
+          && text.equals(other.getText()) && creationDate.equals(other.getCreationDate())
+          && modificationDate.equals(other.getModificationDate())
+          && author.equals(other.getAuthor());
+    }
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    if (isDefined(id)) {
+      hash = 17 * hash + this.id.hashCode();
+    } else {
+      hash = 17 * hash + (this.componentId != null ? this.componentId.hashCode() : 0);
+      hash = 17 * hash + (this.resourceId != null ? this.resourceId.hashCode() : 0);
+      hash = 17 * hash + (this.text != null ? this.text.hashCode() : 0);
+      hash = 17 * hash + (this.creationDate != null ? this.creationDate.hashCode() : 0);
+      hash = 17 * hash + (this.modificationDate != null ? this.modificationDate.hashCode() : 0);
+      hash = 17 * hash + (this.author != null ? this.author.hashCode() : 0);
+    }
+    return hash;
+  }
+
+  protected CommentEntity() {
+  }
+
+  /**
+   * Encodes the specified date into a date to display by taking into account the user prefered
+   * language.
+   * If the specified date isn't defined, then a display date of today is returned.
+   * @param date the date to encode.
+   * @param the language to use to encode the display date.
+   * @return the resulting display date.
+   */
+  private static String encodeToDisplayDate(String date, String language) {
+    String displayDate = date;
+    if (isDefined(date)) {
+      try {
+        displayDate = DateUtil.getOutputDate(date, language);
+      } catch (ParseException ex) {
+      }
+    } else {
+      displayDate = DateUtil.getOutputDate(Date.today(), language);
+    }
+    return displayDate;
+  }
+
+  /**
+   * Decodes the specified display date into a date as it is defining in a Comment instance.
+   * If the display date isn't defined, then the today date is returned.
+   * @param displayDate the display date to decode.
+   * @param language the language in which the date is encoded.
+   * @return the resulting decoded date.
+   */
+  private static String decodeFromDisplayDate(String displayDate, String language) {
+    String date = displayDate;
+    if (isDefined(displayDate)) {
+      try {
+        date = DateUtil.date2SQLDate(date, language);
+      } catch (ParseException ex) {
+      }
+    } else {
+      date = DateUtil.date2SQLDate(Date.today());
+    }
+    return date;
   }
 }

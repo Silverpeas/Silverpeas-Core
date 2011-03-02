@@ -38,17 +38,12 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import java.util.Map;
 import org.apache.ecs.ElementContainer;
-import org.apache.ecs.xhtml.b;
-import org.apache.ecs.xhtml.br;
+import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.head;
 import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.meta;
 import org.apache.ecs.xhtml.script;
-import org.apache.ecs.xhtml.style;
-import org.apache.ecs.xhtml.table;
-import org.apache.ecs.xhtml.td;
 import org.apache.ecs.xhtml.title;
-import org.apache.ecs.xhtml.tr;
 
 /**
  * @author sdevolder Classe generant le code html du sommaire d une exportation
@@ -100,14 +95,8 @@ public class HtmlExportGenerator {
 
   public static String getHtmlStyle() {
     ElementContainer xhtmlcontainer = new ElementContainer();
-    style css = new style();
-    css.addElement("\n<!--\nbody,td,th {font-family: Verdana, Arial, Helvetica, sans-serif; "
-        + "font-size: 10px; color: #000000;}\nbody {margin-left: 5px; margin-top: 5px; "
-        + "margin-right: 5px; margin-bottom: 5px;}\nA { font-family: Verdana,Arial, sans-serif; "
-        + "font-size: 10px; text-decoration: none; color: #000000}\nA:hover {color: #666699;}\n"
-        + "// -->\n");
-    css.setType("text/css");
-    xhtmlcontainer.addElement(css);
+    xhtmlcontainer.addElement(new link().setType("text/css").setRel("stylesheet").setHref(
+          "treeview/display.css"));
     return xhtmlcontainer.toString();
   }
 
@@ -116,16 +105,10 @@ public class HtmlExportGenerator {
    * @return
    */
   String writeEnTeteSommaire(String text) {
-    ElementContainer xhtmlcontainer = new ElementContainer();
-    table entete = new table();
-    entete.setBorder(0);
-    entete.setWidth("100%");
-    entete.setAlign("center");
-    entete.setBgColor("#B3BFD1");
-    td cell = new td(new b(encode(text)));
-    cell.setAlign("center");
-    cell.addElement(new br());
-    entete.addElement(new tr(cell));
+    ElementContainer xhtmlcontainer = new ElementContainer();    
+    div entete = new div();
+    entete.setClass("numberOfDocument");
+    entete.addElement(encode(text));
     xhtmlcontainer.addElement(entete);
     return xhtmlcontainer.toString();
   }
@@ -183,7 +166,6 @@ public class HtmlExportGenerator {
 
     sb.append(getBeginningOfPage(htmlFileExportDir, false));
     sb.append("<body>\n");
-
     // ajout des publications dans le fichier HTML
     Map<String, HtmlExportPublicationGenerator> map = exportReport.getMapIndexHtmlPaths();
     if (map != null) {
@@ -230,10 +212,7 @@ public class HtmlExportGenerator {
     sb.append(getBeginningOfPage(resourceLocator.getString("importExport.index") + " "
         + htmlFileExportDir, true));
     sb.append("<body>\n");
-    sb.append("<table>\n");
-    sb.append("<tr>\n");
-    sb.append("<td nowrap>\n");
-
+    sb.append("<div id=\"treeview\">\n");
     // Le fameux treeview
     // creation du treeview avec la liste des topics
     sb.append("<script language=\"JavaScript\" type=\"text/javascript\">\n");
@@ -268,13 +247,11 @@ public class HtmlExportGenerator {
     sb.append("treeview.control.ondblclick = function ( ) { window.status = \"control\" ; }\n");
 
     sb.append("</script>\n");
-    sb.append("</td>");
-    sb.append("<td>");
+    sb.append("</div>");
+    sb.append("<div id=\"frameContent\">");
     sb.append(
-        "<iframe name=\"publis\" width=\"600\" height=\"600\" frameborder=\"0\" scrolling=\"auto\"/>");
-    sb.append("</td>");
-    sb.append("</tr>\n");
-    sb.append("</table>\n");
+        "<iframe name=\"publis\" width=\"100%\" height=\"100%\" frameborder=\"0\" scrolling=\"auto\"/>");
+    sb.append("</div>\n");
     sb.append(getEndOfPage());
     return sb.toString();
   }

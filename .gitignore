@@ -3,3 +3,6 @@
 *.iml
 target
 .sonar-ide.properties
+.settings/
+.classpath
+.project

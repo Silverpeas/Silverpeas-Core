@@ -33,8 +33,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import com.silverpeas.admin.components.WAComponent;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -586,8 +586,8 @@ public class OrganizationController extends AdminReference implements java.io.Se
     }
   }
 
-  public Hashtable<String, String> getUsersLanguage(List<String> userIds) {
-    Hashtable<String, String> usersLanguage = null;
+  public Map<String, String> getUsersLanguage(List<String> userIds) {
+    Map<String, String> usersLanguage = null;
     try {
       usersLanguage = m_Admin.getUsersLanguage(userIds);
     } catch (Exception e) {
@@ -990,17 +990,15 @@ public class OrganizationController extends AdminReference implements java.io.Se
       ComponentInst componentInst = getComponentInst(componentId);
 
       List<ProfileInst> profiles = componentInst.getAllProfilesInst();
-      ProfileInst profileInst = null;
       List<String> profileIds = new ArrayList<String>();
-      for (int p = 0; p < profiles.size(); p++) {
-        profileInst = profiles.get(p);
+      for (ProfileInst profileInst : profiles) {
         if (profileNames.contains(profileInst.getName())) {
           profileIds.add(profileInst.getId());
           SilverTrace.info("admin",
               "OrganizationController.getUsersIdsByRoleNames",
               "root.MSG_GEN_PARAM_VALUE", "profileName = "
-              + profileInst.getName() + ", profileId = "
-              + profileInst.getId());
+                  + profileInst.getName() + ", profileId = "
+                  + profileInst.getId());
         }
       }
 
@@ -1080,12 +1078,11 @@ public class OrganizationController extends AdminReference implements java.io.Se
   /**
    * Get all domains
    */
-  public Domain[] getAllDomains() throws AdminException {
+  public Domain[] getAllDomains() {
     try {
       return m_Admin.getAllDomains();
     } catch (Exception e) {
-      SilverTrace.error("admin", "OrganizationController.getAllDomain",
-          "admin.EX_ERR_GET_DOMAIN", e);
+      SilverTrace.error("admin", "OrganizationController.getAllDomain", "admin.EX_ERR_GET_DOMAIN", e);
       e.printStackTrace();
       return null;
     }
@@ -1116,12 +1113,10 @@ public class OrganizationController extends AdminReference implements java.io.Se
     try {
       ArrayList<String> listRes = new ArrayList<String>();
       String[] tabGroupIds = m_Admin.getDirectGroupsIdsOfUser(userId);
-      String groupId;
-      for (int i = 0; i < tabGroupIds.length; i++) {
-        groupId = tabGroupIds[i];
+      for (String groupId : tabGroupIds) {
         listRes = recursiveMajListGroupId(groupId, listRes);
       }
-      return (String[]) listRes.toArray(new String[listRes.size()]);
+      return listRes.toArray(new String[listRes.size()]);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllGroupIdsOfUser",
           "admin.MSG_ERR_GET_ALL_GROUPS", e);

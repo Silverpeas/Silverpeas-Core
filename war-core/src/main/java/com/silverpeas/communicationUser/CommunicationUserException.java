@@ -21,41 +21,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.communicationUser;
 
-import com.stratelia.webactiv.util.exception.*;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class CommunicationUserException extends SilverpeasException {
-  /**
-   * -------------------------------------------------------------------------- constructors
-   * constructors
-   */
-  public CommunicationUserException(String callingClass, int errorLevel,
-      String message) {
+
+  private static final long serialVersionUID = -3118099133468187702L;
+
+  public CommunicationUserException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }
 
-  public CommunicationUserException(String callingClass, int errorLevel,
-      String message, String extraParams) {
+  public CommunicationUserException(String callingClass, int errorLevel, String message,
+      String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
-  public CommunicationUserException(String callingClass, int errorLevel,
-      String message, Exception nested) {
+  public CommunicationUserException(String callingClass, int errorLevel, String message,
+      Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
-  public CommunicationUserException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
+  public CommunicationUserException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 
-  /**
-   * -------------------------------------------------------------------------- getModule getModule
-   */
+  @Override
   public String getModule() {
     return "communicationUser";
   }
-
 }

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2009 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<document>
+  <properties>
+    <author>Emmanuel Hugonnet</author>
+    <title>Introduction</title>
+  </properties>
+  <head>
+  </head>
+  <body>
+    <section name="Try Silverpeas easily">
+      <p><img src="images/logos/logo_izPack.png" alt="izpack" style="padding-right:10px;float:left;position:relative;"/><br/>We provide an easy way to try Silverpeas using 
+        <a href="http://izpack.org/">Izpack</a> with a pre-configured JBoss Server and an H2 Database.</p>
+        <p>
+        <b>You have to have a Java 6 JDK installed.</b><b>This version is not suitable for production !</b>.
+      </p>
+      <ol>
+        <li>Download the 
+          <a href="http://www.silverpeas.org/files/Silverpeas-${installer_stable_version}-installer.jar">installer</a>
+        </li>
+        <li>Run the following command (or double click on the jar file) 
+          <code>java -jar Silverpeas-${installer_stable_version}-installer.jar</code>
+        </li>
+        <li>When all has been installed, go to the 
+          <code>bin</code> directory under the installation directory and run the following scripts in that order 
+          <ol>
+            <li>start_db.bat (thus starting the database).</li>
+            <li>silverpeas_start_jboss.cmd (to start Silverpeas)</li>
+          </ol>
+        </li>
+        <li>Now you can open a browser to 
+          <a href="http://localhost:8000/silverpeas">http://localhost:8000/silverpeas</a> an login using the account 
+          <i>SilverAdmin/SilverAdmin</i>
+        </li>
+      </ol>
+    </section> 
+    <section name="Architecture">
+      <p>Silverpeas functions in the Java J2EE environment. The WCM layer is used to publish public contents on the web and to build an Xnet platform, or Web 2.0 website.
+        <br/>
+        <img src="images/schemaMailing_mid_uk.jpg" />
+      </p>
+      <p>The Services Oriented Architecture is made up of:</p>
+      <ul>
+        <li>Silverpeas Core</li>
+        <li>Specific services</li>
+      </ul>
+      <subsection name="Silverpeas Core">
+        <p>It is an applicative bus for :</p>
+        <ul>
+          <li>authentification</li>
+          <li>rights management</li>
+          <li>a search engine</li>
+          <li>a workflow engine</li>
+          <li>notifications</li>
+          <li>subscriptions</li>
+          <li>versioning</li>
+        </ul>
+      </subsection>
+      <subsection name="Specific Services for different professional sectors">
+        <p>
+          Silverpeas is used to classify the contents on themes, independant of the spaces and folders in which they are stored and to for subscribing to themes.
+        </p>
+        <ul>
+          <li>simplified WYSIWYG interface for editing</li>
+          <li>a access to the portal via the Web browser</li>
+          <li> personalised tools for the workspacel</li>
+          <li>multilingual interfaces and glossairies (fr/en)</li>
+        </ul>
+      </subsection>
+    </section>
+    <section name="Operating Systems">
+      <p>Silverpeas operates under</p>
+      <ul>
+        <li>Windows</li>
+        <li>Mac</li>
+        <li>Linux,</li>
+        <li>with a relational database (SQL ANSI), and a Java EE application serveur.</li>
+      </ul>
+    </section>   
+  </body>
+</document>

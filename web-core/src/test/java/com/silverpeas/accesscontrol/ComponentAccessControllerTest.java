@@ -23,11 +23,10 @@
  */
 package com.silverpeas.accesscontrol;
 
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.silverpeas.admin.components.Instanciateur;
+import com.silverpeas.admin.components.WAComponent;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.instance.control.Instanciateur;
-import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
-import javax.inject.Named;
+import java.util.HashMap;
 
 import static org.mockito.Mockito.*;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
@@ -59,10 +58,22 @@ public class ComponentAccessControllerTest {
     String componentIdWithoutRigths = "kmelia20";
     String componentId = "yellowpages154";
     mockStatic(Instanciateur.class);
-    WAComponent kmeliaComponent = new WAComponent("kmelia", "kmelia", "kmelia", "kmelia", true, true,
-        null, null, null);
-    WAComponent yellowComponent = new WAComponent("yellowpages", "yellowpages", "yellowpages",
-        "yellowpages", true, true, null, null, null);
+    WAComponent kmeliaComponent = new WAComponent();
+    kmeliaComponent.setName("kmelia");
+    HashMap<String, String> label = new HashMap<String, String>();
+    label.put("en", "kmelia");
+    label.put("fr", "kmelia");
+    kmeliaComponent.setLabel(label);
+    kmeliaComponent.setVisible(true);
+    kmeliaComponent.setPortlet(true);
+    WAComponent yellowComponent = new WAComponent();
+    yellowComponent.setName("yellowpages");
+    HashMap<String, String> label2 = new HashMap<String, String>();
+    label2.put("en", "yellowpages");
+    label2.put("fr", "yellowpages");
+    yellowComponent.setLabel(label2);
+    yellowComponent.setVisible(true);
+    yellowComponent.setPortlet(true);
     when(Instanciateur.getWAComponent("kmelia")).thenReturn(kmeliaComponent);
     when(Instanciateur.getWAComponent("yellowpages")).thenReturn(yellowComponent);
 
@@ -85,6 +96,7 @@ public class ComponentAccessControllerTest {
 
   /**
    * Test of isUserAuthorized method, of class ComponentAccessController.
+   * @throws Exception 
    */
   @Test
   public void testIsUserAuthorized() throws Exception {
@@ -99,10 +111,23 @@ public class ComponentAccessControllerTest {
     when(controller.isComponentAvailable(forbiddenComponent, userId)).thenReturn(Boolean.FALSE);
 
     mockStatic(Instanciateur.class);
-    WAComponent kmeliaComponent = new WAComponent("kmelia", "kmelia", "kmelia", "kmelia", true, true,
-        null, null, null);
-    WAComponent yellowComponent = new WAComponent("yellowpages", "yellowpages", "yellowpages",
-        "yellowpages", true, true, null, null, null);
+
+    WAComponent kmeliaComponent = new WAComponent();
+    kmeliaComponent.setName("kmelia");
+    HashMap<String, String> label = new HashMap<String, String>();
+    label.put("en", "kmelia");
+    label.put("fr", "kmelia");
+    kmeliaComponent.setLabel(label);
+    kmeliaComponent.setVisible(true);
+    kmeliaComponent.setPortlet(true);
+    WAComponent yellowComponent = new WAComponent();
+    yellowComponent.setName("yellowpages");
+    HashMap<String, String> label2 = new HashMap<String, String>();
+    label2.put("en", "yellowpages");
+    label2.put("fr", "yellowpages");
+    yellowComponent.setLabel(label2);
+    yellowComponent.setVisible(true);
+    yellowComponent.setPortlet(true);
     when(Instanciateur.getWAComponent("kmelia")).thenReturn(kmeliaComponent);
     when(Instanciateur.getWAComponent("yellowpages")).thenReturn(yellowComponent);
 

@@ -10,6 +10,7 @@
 <%@page import="java.util.List"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
+<%@page import="com.silverpeas.socialNetwork.myProfil.servlets.MyProfileRoutes"%>
     
 <%
 ResourceLocator rs = new ResourceLocator("com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
@@ -45,12 +46,13 @@ if (isWebdavEnabled) {
 %>
 
 <% if (StringUtil.isDefined(message)) { %>
+
 <div class="inline_message_ok">
 	<%=message %>
 </div>
 <% } %>
 
-<form name="UserForm" action="UpdateMySettings" method="post">
+<form name="UserForm" action="<%=MyProfileRoutes.UpdateMySettings %>" method="post">
 <table border="0" cellspacing="0" cellpadding="5" width="100%">
 	<!-- Language -->
     <tr>

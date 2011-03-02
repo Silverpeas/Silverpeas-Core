@@ -61,6 +61,7 @@
       String checkOutStatus = request.getParameter("CheckOutStatus");
       String contentLanguage = request.getParameter("Language");
       String xmlForm = request.getParameter("XMLFormName");
+      boolean simpleReload = StringUtil.getBooleanValue(request.getParameter("SimpleReload"));
 
       session.setAttribute("Silverpeas_Attachment_ObjectId", id);
       session.setAttribute("Silverpeas_Attachment_ComponentId", componentId);
@@ -183,7 +184,11 @@
 
           function reloadPage()
 		  {
-			location.href="<%=m_Context%><%=url%>";
+    		<% if (simpleReload) { %>
+    		  location.reload();
+    		<% } else { %>
+    		  location.href="<%=m_Context%><%=url%>";
+    		<% } %>
 		  }
 
           function SelectFile( fileUrl )
@@ -265,7 +270,7 @@
                 }
               }
               closeMessage();
-            });
+            }, 'text');
           }
 
           $(document).ready(function(){

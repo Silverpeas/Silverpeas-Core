@@ -60,7 +60,6 @@ public class CommentServiceMock extends CommentService {
   }
 
 
-
   @Override
   protected OrganizationController getOrganizationController() {
     return new MyOrganizationController();

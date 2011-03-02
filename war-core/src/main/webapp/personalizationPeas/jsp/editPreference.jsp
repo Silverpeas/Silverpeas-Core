@@ -28,14 +28,13 @@
 <%@ include file="checkPersonalization.jsp" %>
 
 <%
-  String action ;
-  String id ;
+
   String componentId = "";
   String notificationId = "";
-  id = request.getParameter("id") ;
-  action = (String) request.getParameter("Action");
+  String id = request.getParameter("id") ;
+  String action = request.getParameter("Action");
 
-  if ((id == null) || (id.equalsIgnoreCase("-1"))) {
+  if ((id == null) || ("-1".equalsIgnoreCase(id))) {
     id = "" ;
   }
 
@@ -139,8 +138,8 @@
 	out.println(board.printAfter());
 	
     ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=validate();", false));
-    buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:window.close();", false));
+    buttonPane.addButton( gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=validate();", false));
+    buttonPane.addButton( gef.getFormButton(resource.getString("GML.cancel"), "javascript:window.close();", false));
     out.println("<BR><center>"+buttonPane.print()+"</center>");
 %>
 </CENTER>

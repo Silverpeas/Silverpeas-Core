@@ -29,12 +29,12 @@ import java.sql.Connection;
 
 import javax.ejb.CreateException;
 
+import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
+import com.silverpeas.admin.components.InstanciationException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
 import com.stratelia.silverpeas.versioning.ejb.VersioningBmHome;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
-import com.stratelia.webactiv.beans.admin.instance.control.ComponentsInstanciatorIntf;
-import com.stratelia.webactiv.beans.admin.instance.control.InstanciationException;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.JNDINames;

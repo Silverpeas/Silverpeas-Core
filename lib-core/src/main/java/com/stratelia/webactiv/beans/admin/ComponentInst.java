@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
+import com.silverpeas.admin.components.Parameter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,8 +31,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.silverpeas.util.i18n.AbstractI18NBean;
-import com.stratelia.webactiv.beans.admin.instance.control.SPParameter;
-import com.stratelia.webactiv.beans.admin.instance.control.SPParameters;
 
 public class ComponentInst extends AbstractI18NBean implements Serializable, Cloneable,
     Comparable<ComponentInst> {
@@ -57,8 +56,8 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
   private boolean isPublic = false;
   private boolean isHidden = false;
   private boolean isInheritanceBlocked = false;
-  private ArrayList<ProfileInst> m_alProfileInst;
-  private SPParameters parameters = null;
+  private List<ProfileInst> m_alProfileInst;
+  private List<Parameter> parameters = null;
 
   /** Creates new ComponentInst */
   public ComponentInst() {
@@ -100,7 +99,7 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
         ci.m_alProfileInst.add((ProfileInst) it.next().clone());
       }
     }
-    ci.parameters = (SPParameters) this.parameters.clone();
+    ci.parameters = new ArrayList<Parameter>(this.parameters);
     return ci;
   }
 
@@ -230,7 +229,7 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
     }
   }
 
-  public ArrayList<ProfileInst> getAllProfilesInst() {
+  public List<ProfileInst> getAllProfilesInst() {
     return m_alProfileInst;
   }
 
@@ -286,31 +285,33 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
     return m_alProfileInst.get(nIndex);
   }
 
-  public void setSPParameters(SPParameters parameters) {
-    this.parameters = parameters;
-  }
 
-  public SPParameters getSPParameters() {
+  public List<Parameter> getParameters() {
     if (parameters == null) {
-      parameters = new SPParameters();
+      parameters = new ArrayList<Parameter>();
     }
     return parameters;
   }
 
-  public List<SPParameter> getParameters() {
-    return parameters.getParameters();
+  public void setParameters(List<Parameter> parameters) {
+    this.parameters = parameters;
   }
 
-  public void setParameters(List<SPParameter> parameters) {
-    getSPParameters().setParameters(parameters);
-  }
-
-  public SPParameter getParameter(String parameterName) {
-    return parameters.getParameter(parameterName);
+  public Parameter getParameter(String parameterName) {
+    for(Parameter parameter : parameters) {
+      if(parameter.getName().equalsIgnoreCase(parameterName)){
+        return parameter;
+      }
+    }
+    return null;
   }
 
   public String getParameterValue(String parameterName) {
-    return parameters.getParameterValue(parameterName);
+    Parameter param = getParameter(parameterName);
+    if(param != null) {
+      return param.getValue();
+    }
+    return null;
   }
 
   public String getLabel(String language) {

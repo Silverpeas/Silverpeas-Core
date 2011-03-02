@@ -24,6 +24,8 @@
 
 package com.silverpeas.admin;
 
+import com.silverpeas.admin.components.Instanciateur;
+import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.components.model.AbstractTestDao;
 import java.util.List;
 
@@ -37,8 +39,6 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
-import com.stratelia.webactiv.beans.admin.instance.control.Instanciateur;
-import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
 
 public class SpacesAndComponentsTest extends AbstractTestDao {
 
@@ -132,16 +132,6 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
   }
 
   @Test
-  public void testAddComponent() {
-    /*
-     * AdminController ac = getAdminController(); ComponentInst component = new ComponentInst();
-     * component.setCreatorUserId("1"); component.setDomainFatherId("WA2");
-     * component.setLabel("Mon nouveau composant"); component.setName("kmelia"); String id =
-     * ac.addComponentInst(component); assertEquals("kmelia2", id);
-     */
-  }
-
-  @Test
   public void testUpdateComponent() {
     AdminController ac = getAdminController();
 
@@ -182,12 +172,6 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
 
     // test inheritance
     assertEquals(true, ac.isComponentAvailable("almanach2", "1"));
-
-    // test if subspace is available
-    /*
-     * String[] subSpaceIds = ac.getAllSubSpaceIds("WA1", "1"); assertEquals(1, subSpaceIds.length);
-     */
-
     // remove user from space profile
     profile = ac.getSpaceProfileInst(profileId);
     profile.removeAllUsers();

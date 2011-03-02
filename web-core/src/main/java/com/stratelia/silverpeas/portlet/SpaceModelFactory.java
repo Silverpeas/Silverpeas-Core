@@ -32,9 +32,9 @@ package com.stratelia.silverpeas.portlet;
  * @author       Eric BURGEL
  * @version 1.0
  */
+import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.util.StringUtil;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -50,7 +50,6 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import java.util.List;

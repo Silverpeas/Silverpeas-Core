@@ -49,6 +49,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController"%>
 <%@ page import="com.stratelia.silverpeas.wysiwyg.*"%>
+<%@page import="com.silverpeas.util.StringUtil"%>
 
 <%@ include file="checkScc.jsp" %>
 <%!
@@ -72,16 +73,28 @@ String EncodeURL(String javastring) {
   }
 %>
 <%
-  String spaceId = (String) session.getAttribute("WYSIWYG_SpaceId");
-  String spaceName = (String) session.getAttribute("WYSIWYG_SpaceName");
-  String componentId = (String) session.getAttribute("WYSIWYG_ComponentId");
-  String componentName = (String) session.getAttribute("WYSIWYG_ComponentName");
-  String browseInformation = (String) session.getAttribute("WYSIWYG_BrowseInfo");
-  String objectId = (String) session.getAttribute("WYSIWYG_ObjectId");
-  String language = (String) session.getAttribute("WYSIWYG_Language");
-  String path = (String) session.getAttribute("WYSIWYG_Path");
-  String url = EncodeURL("/wysiwyg/jsp/uploadFile.jsp");
-  ResourceLocator message = new ResourceLocator("com.stratelia.silverpeas.wysiwyg.multilang.wysiwygBundle", language);
+String spaceId = (String) session.getAttribute("WYSIWYG_SpaceId");
+String spaceName = (String) session.getAttribute("WYSIWYG_SpaceName");
+String componentId = (String) session.getAttribute("WYSIWYG_ComponentId");
+String componentName = (String) session.getAttribute("WYSIWYG_ComponentName");
+String browseInformation = (String) session.getAttribute("WYSIWYG_BrowseInfo");
+String objectId = (String) session.getAttribute("WYSIWYG_ObjectId");
+String language = (String) session.getAttribute("WYSIWYG_Language");
+String path = (String) session.getAttribute("WYSIWYG_Path");
+String url = EncodeURL("/wysiwyg/jsp/uploadFile.jsp");
+
+String imagesContext = WysiwygController.getImagesFileName(objectId);
+
+if (StringUtil.isDefined(request.getParameter("ComponentId"))) {
+  //case of utilization by a xml template
+  componentId = request.getParameter("ComponentId");
+  objectId = request.getParameter("ObjectId");
+  String context = request.getParameter("Context");
+  imagesContext = WysiwygController.getImagesFileName(context);
+  url += EncodeURL("?ComponentId="+componentId+"&ObjectId="+objectId+"&Context="+context);
+}
+ 
+ResourceLocator message = new ResourceLocator("com.stratelia.silverpeas.wysiwyg.multilang.wysiwygBundle", language);
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
@@ -109,6 +122,7 @@ function returnHtmlEditor() {
   browseBar.setDomainName(spaceName);
   browseBar.setComponentName(componentName);
   browseBar.setPath(browseInformation);
+  browseBar.setClickable(false);
 
   out.println(window.printBefore());
 
@@ -118,11 +132,11 @@ function returnHtmlEditor() {
 	buttonPane.addButton(button);
 	out.println(frame.printBefore());
 	out.flush();
-	String imagesContext = WysiwygController.getImagesFileName(objectId);
-	if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES))
+	if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES)) {
 		getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/uploadWebsiteFile.jsp?Path="+path+"&Language="+language).include(request, response);
-	else
-		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttFiles.jsp?Id="+objectId+"&SpaceId="+spaceId+"&ComponentId="+componentId+"&Context="+imagesContext+"&Url="+url+"&OriginWysiwyg=true").include(request, response);
+	} else {
+		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttFiles.jsp?Id="+objectId+"&SpaceId="+spaceId+"&ComponentId="+componentId+"&Context="+imagesContext+"&Url="+url+"&OriginWysiwyg=true&SimpleReload=true").include(request, response);
+	}
   out.println(frame.printMiddle());
   out.println(frame.printAfter());
   out.println("<center><br/>"+buttonPane.print()+"</center>");

@@ -21,15 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.jobOrganizationPeas.control;
 
 import java.util.ArrayList;
-
+import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.util.StringUtil;
 import java.util.List;
 import java.util.Map;
-
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -41,8 +39,8 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 /**
@@ -51,6 +49,7 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
  */
 public class JobOrganizationPeasSessionController extends AbstractComponentSessionController {
   // View Group or User
+
   private String currentUserId = null;
   private String currentGroupId = null;
   private AdminController myAdminController = null;
@@ -59,7 +58,7 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
   private String[][] currentGroups = null;
   private String[] currentSpaces = null;
   private List<String[]> currentProfiles = null;
-  private Map<String, WAComponent> componentOfficialNames = null;
+  private Map<String, WAComponent> componentOfficialNames = getAdminController().getAllComponents();
 
   /**
    * Standard Session Controller Constructeur
@@ -79,7 +78,6 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
 
   // ####################
   // View User or Group
-
   private void resetCurrentArrays() {
     currentGroups = null;
     currentUser = null;
@@ -89,14 +87,16 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
   }
 
   public AdminController getAdminController() {
-    if (myAdminController == null)
+    if (myAdminController == null) {
       myAdminController = new AdminController(getUserId());
+    }
     return myAdminController;
   }
 
   public void setCurrentUserId(String userId) {
-    if (currentUserId != null && !currentUserId.equals(userId))
+    if (currentUserId != null && !currentUserId.equals(userId)) {
       resetCurrentUser();
+    }
     currentUserId = userId;
     resetCurrentGroup();
   }
@@ -107,8 +107,9 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
   }
 
   public void setCurrentGroupId(String groupId) {
-    if (currentGroupId != null && !currentGroupId.equals(groupId))
+    if (currentGroupId != null && !currentGroupId.equals(groupId)) {
       resetCurrentGroup();
+    }
     currentGroupId = groupId;
     resetCurrentUser();
   }
@@ -131,31 +132,33 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
    */
   public String[][] getCurrentUserGroups() {
     if (currentGroups == null) {
-      if (getCurrentUserId() == null)
+      if (getCurrentUserId() == null) {
         return null;
+      }
       String[] groupIds = getAdminController().getDirectGroupsIdsOfUser(
           getCurrentUserId());
-      if (groupIds == null || groupIds.length == 0)
+      if (groupIds == null || groupIds.length == 0) {
         return null;
+      }
       currentGroups = new String[groupIds.length][4];
       Group currentGroup = null;
       for (int iGrp = 0; iGrp < groupIds.length; iGrp++) {
         currentGroup = getOrganizationController().getGroup(groupIds[iGrp]);
         currentGroups[iGrp][0] = currentGroup.getId();
         currentGroups[iGrp][1] = currentGroup.getName();
-        currentGroups[iGrp][2] = String
-            .valueOf(currentGroup.getUserIds().length);
+        currentGroups[iGrp][2] = String.valueOf(currentGroup.getUserIds().length);
         currentGroups[iGrp][3] = currentGroup.getDescription();
       }
     }
-    if (currentGroups == null)
+    if (currentGroups == null) {
       SilverTrace.info("jobOrganizationPeas",
           "JobOrganizationPeasSessionController.getCurrentUserInfo",
           "root.MSG_GEN_PARAM_VALUE", "Groups NULL !");
-    else
+    } else {
       SilverTrace.info("jobOrganizationPeas",
           "JobOrganizationPeasSessionController.getCurrentUserInfo",
           "root.MSG_GEN_PARAM_VALUE", "Groups=" + currentGroups);
+    }
     return currentGroups;
   }
   
@@ -180,7 +183,7 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
 	  }
 	  return currentUser;
   }
-  
+
   /**
    * @return Group
    */
@@ -209,14 +212,17 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
   public String[] getCurrentSpaces() {
     if (currentSpaces == null) {
       String[] spaceIds = null;
-      if (getCurrentGroupId() != null)
+      if (getCurrentGroupId() != null) {
         spaceIds = getAdminController().getGroupManageableSpaceIds(
             getCurrentGroupId());
-      if (getCurrentUserId() != null)
+      }
+      if (getCurrentUserId() != null) {
         spaceIds = getAdminController().getUserManageableSpaceIds(
             getCurrentUserId());
-      if (spaceIds == null)
+      }
+      if (spaceIds == null) {
         return null;
+      }
       String[] spaceIdsBIS = new String[spaceIds.length];
       for (int j = 0; j < spaceIds.length; j++) {
         if ((spaceIds[j] != null) && (spaceIds[j].startsWith("WA"))) {
@@ -230,15 +236,63 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
     return currentSpaces;
   }
 
+
   /**
-   * @return a map of the official (business) names of the installed components indexed by the
-   * internal names
+   * 
+   * @return list of (array[space name, component id, component label, component name, profile name])
    */
-  private Map<String, WAComponent> getComponentOfficialNames() {
-    if (componentOfficialNames == null) {
-      componentOfficialNames = getAdminController().getAllComponents();
+  public List<String[]> getCurrentProfiles() {
+    if (currentProfiles == null) {
+      List<String> distinctProfiles = new ArrayList<String>();
+      String[] profileIds = null;
+      if (getCurrentGroupId() != null) {
+        profileIds = getAdminController().getProfileIdsOfGroup(
+            getCurrentGroupId());
+      }
+      if (getCurrentUserId() != null) {
+        profileIds = getAdminController().getProfileIds(getCurrentUserId());
+      }
+      if (profileIds == null) {
+        return null;
+      }  
+      currentProfiles = new ArrayList<String[]>();
+      ProfileInst currentProfile = null;
+      ComponentInst currentComponent = null;
+      List<String> spaceIds = new ArrayList<String>();
+      for (int iProfile = 0; iProfile < profileIds.length; iProfile++) {
+        currentProfile = getAdminController().getProfileInst(profileIds[iProfile]);
+        currentComponent = getAdminController().getComponentInst(
+            currentProfile.getComponentFatherId());
+        String spaceId = currentComponent.getDomainFatherId();
+        SpaceInstLight spaceInst = getAdminController().getSpaceInstLight(spaceId);
+        if (currentComponent.getStatus() == null && ! spaceInst.isPersonalSpace()) {//on n'affiche pas les composants de l'espace personnel
+          String dProfile = currentComponent.getId() + currentProfile.getName();
+          if (!distinctProfiles.contains(dProfile)) {
+        	  String[] profile2Display = new String[6];
+        	  profile2Display[1] = currentComponent.getId();
+        	  profile2Display[2] = currentComponent.getName();
+        	  profile2Display[3] = currentComponent.getLabel();
+        	  profile2Display[4] = getComponentOfficialName(currentComponent.getName());
+        	  profile2Display[5] = currentProfile.getLabel();
+        	  if (!StringUtil.isDefined(profile2Display[5])) {
+        		  profile2Display[5] = getAdminController()
+				      .getProfileLabelfromName(currentComponent.getName(),
+				      currentProfile.getName(), getLanguage());
+        	  }
+        	  currentProfiles.add(profile2Display);
+        	  spaceIds.add(spaceId);
+        	  distinctProfiles.add(dProfile);
+          }
+        }
+      }
+      String[] spaceNames = getAdminController().getSpaceNames(spaceIds.toArray(new String[spaceIds.
+          size()]));
+      for (int iProfile = 0; iProfile < currentProfiles.size(); iProfile++) {
+        String[] profile2Display = currentProfiles.get(iProfile);
+        profile2Display[0] = spaceNames[iProfile];
+      }
     }
-    return componentOfficialNames;
+    return currentProfiles;
   }
 
   /**
@@ -246,9 +300,9 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
    */
   private String getComponentOfficialName(String internalName) {
     try {
-      WAComponent component = getComponentOfficialNames().get(internalName);
+      WAComponent component = componentOfficialNames.get(internalName);
       if (component != null) {
-       return component.getLabel(); 
+        return component.getLabel().get(getLanguage());
       }
       return internalName;
     } catch (Exception e) {
@@ -260,73 +314,12 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
     }
   }
 
-  /**
-   * @return list of (array[space name, component id, component label, component name, profile name])
-   */
-  public List<String[]> getCurrentProfiles() {
-    if (currentProfiles == null) {
-      List<String> distinctProfiles = new ArrayList<String>();
-      String[] profileIds = null;
-      if (getCurrentGroupId() != null)
-        profileIds = getAdminController().getProfileIdsOfGroup(
-            getCurrentGroupId());
-      if (getCurrentUserId() != null)
-        profileIds = getAdminController().getProfileIds(getCurrentUserId());
-      if (profileIds == null)
-        return null;
-      currentProfiles = new ArrayList<String[]>();
-      ProfileInst currentProfile = null;
-      ComponentInst currentComponent = null;
-      List<String> spaceIds = new ArrayList<String>();
-      String[] profile2Display = null;
-      for (int iProfile = 0; iProfile < profileIds.length; iProfile++) {
-        currentProfile = getAdminController().getProfileInst(
-            profileIds[iProfile]);
-        currentComponent = getAdminController().getComponentInst(
-            currentProfile.getComponentFatherId());
-        if (currentComponent.getStatus() == null) {
-          String dProfile = currentComponent.getId() + currentProfile.getName();
-          if (!distinctProfiles.contains(dProfile)) {
-            profile2Display = new String[6];
-            profile2Display[1] = currentComponent.getId();
-            profile2Display[2] = currentComponent.getName();
-            profile2Display[3] = currentComponent.getLabel();
-            profile2Display[4] = getComponentOfficialName(currentComponent
-                .getName());
-            profile2Display[5] = currentProfile.getLabel();
-            if (!StringUtil.isDefined(profile2Display[5])) {
-              profile2Display[5] = getAdminController()
-                  .getProfileLabelfromName(currentComponent.getName(),
-                  currentProfile.getName());
-            }
-            currentProfiles.add(profile2Display);
-
-            spaceIds.add(currentComponent.getDomainFatherId());
-
-            distinctProfiles.add(dProfile);
-          }
-        }
-
-      }
-      String[] spaceNames = getAdminController().getSpaceNames(
-          (String[]) spaceIds.toArray(new String[spaceIds.size()]));
-      for (int iProfile = 0; iProfile < currentProfiles.size(); iProfile++) {
-        profile2Display = (String[]) currentProfiles.get(iProfile);
-        profile2Display[0] = spaceNames[iProfile];
-      }
-    }
-    return currentProfiles;
-  }
-
-  // ####################
-  // UserPanel
-
   /*
    * Retour du initialisation userPanel un user ou (exclusif) un groupe
    */
   public String initSelectionPeas() {
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator()
-        .getString("ApplicationURL");
+    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
+        "ApplicationURL");
     String hostSpaceName = getString("JOP.pseudoSpace");
     String cancelUrl = m_context
         + Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);

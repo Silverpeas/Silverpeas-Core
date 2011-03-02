@@ -26,9 +26,9 @@ package com.silverpeas.external.filesharing;
 
 import java.sql.Connection;
 
+import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.instance.control.ComponentsInstanciatorIntf;
-import com.stratelia.webactiv.beans.admin.instance.control.InstanciationException;
+import com.silverpeas.admin.components.InstanciationException;
 
 public class FileSharingInstanciator implements ComponentsInstanciatorIntf {
 

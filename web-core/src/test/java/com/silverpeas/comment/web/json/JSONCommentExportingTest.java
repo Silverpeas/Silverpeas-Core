@@ -70,6 +70,7 @@ public class JSONCommentExportingTest {
     CommentEntity aComment = aCommentOf(aUserWithId(userId));
     StringWriter writer = new StringWriter();
     jsonExporter.export(withWriter(writer), aComment);
+    System.out.println(writer.toString());
     assertThat(writer.toString(), represents(aComment));
   }
 
@@ -97,10 +98,11 @@ public class JSONCommentExportingTest {
     String offset = String.valueOf(counter++);
     Comment aComment = new Comment(new CommentPK(commentId + offset, componentId),
         new PublicationPK(publicationId, componentId), Integer.valueOf(user.getId()),
-        user.getDisplayedName(), "Ceci est un commentaire " + offset, "11/12/2002", "11/12/2002");
+        user.getDisplayedName(), "Ceci est un commentaire " + offset, "2002/11/12", "2002/11/12");
     aComment.setOwnerDetail(user);
-    return CommentEntity.fromComment(aComment).
+    CommentEntity entity = CommentEntity.fromComment(aComment).
         withURI(new URI("http://localhost/silverpeas/services/comments/" + commentId));
+    return entity;
   }
 }
 

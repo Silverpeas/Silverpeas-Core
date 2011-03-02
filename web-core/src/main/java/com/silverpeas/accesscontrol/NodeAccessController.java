@@ -32,17 +32,20 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * Check the access to a node for a user.
  * @author ehugonnet
  */
+@Named
 public class NodeAccessController implements AccessController<NodePK> {
 
-  private final OrganizationController controller;
+  @Inject
+  private OrganizationController controller;
 
   public NodeAccessController() {
-    this(new OrganizationController());
   }
 
   /**
@@ -67,8 +70,8 @@ public class NodeAccessController implements AccessController<NodePK> {
       if (!node.haveRights()) {
         return true;
       }
-      return controller.isObjectAvailable(node.getRightsDependsOn(), ObjectType.NODE, nodePK.
-          getInstanceId(), userId);
+      return getOrganizationController().isObjectAvailable(node.getRightsDependsOn(),
+          ObjectType.NODE, nodePK.getInstanceId(), userId);
     }
     return false;
   }
@@ -77,5 +80,16 @@ public class NodeAccessController implements AccessController<NodePK> {
     NodeBmHome nodeBmHome = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME,
         NodeBmHome.class);
     return nodeBmHome.create();
+  }
+
+  /**
+   * Gets the organization controller used for performing its task.
+   * @return an organization controller instance.
+   */
+  private OrganizationController getOrganizationController() {
+    if (controller == null) {
+      controller = new OrganizationController();
+    }
+    return controller;
   }
 }

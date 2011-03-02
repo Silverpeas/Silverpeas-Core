@@ -76,12 +76,16 @@ function SubmitWithVerif()
     <% } %>
      
     <% if (userObject.isPasswordAvailable()) { %>
-     	var passwordfld = stripInitialWhitespace(document.userForm.userPassword.value);
-     	if (<%=! blanksAllowedInPwd.booleanValue()%> && passwordfld.indexOf(" ") != -1) 
-     		errorMsg += "- <%=resource.getString("JDP.missingFieldStart")+resource.getString("GML.password")+resource.getString("JDP.noSpaces")%>\n";
-		
-        if(passwordfld.length < <%=minLengthPwd.intValue()%>) 
-         	errorMsg += "- <%=resource.getString("JDP.missingFieldStart")+resource.getString("GML.password")+resource.getString("JDP.minLength")+" "+minLengthPwd.toString()+" "+resource.getString("JDP.caracteres")%>\n";
+    	if ($('#userPasswordValid:checked').val() == 'true') {	       
+	     	var passwordfld = stripInitialWhitespace(document.userForm.userPassword.value);
+	     	if (<%=! blanksAllowedInPwd.booleanValue()%> && passwordfld.indexOf(" ") != -1) { 
+	     		errorMsg += "- <%=resource.getString("JDP.missingFieldStart")+resource.getString("GML.password")+resource.getString("JDP.noSpaces")%>\n";
+	     	}
+			
+	        if(passwordfld.length < <%=minLengthPwd.intValue()%>) { 
+	         	errorMsg += "- <%=resource.getString("JDP.missingFieldStart")+resource.getString("GML.password")+resource.getString("JDP.minLength")+" "+minLengthPwd.toString()+" "+resource.getString("JDP.caracteres")%>\n";
+	        }
+    	}
      <% } %>
     
     if (errorMsg == "")
@@ -100,7 +104,7 @@ function SubmitWithVerif()
 						{
 							alert("Création impossible...\nUn utilisateur de même nom, même prénom et même email existe déjà !");
 						}
-					});
+					}, 'text');
 		<% } else { %>
         	document.userForm.submit();
         <% } %>
@@ -199,7 +203,7 @@ out.println(board.printBefore());
             <tr>			
                 <td class="txtlibform"><%=resource.getString("JDP.silverPassword") %> :</td>
                 <td>
-                    <input type="checkbox" name="userPasswordValid" value="true" <% if (userObject.isPasswordValid()) out.print("checked"); %> onclick="javascript:selectUnselect()"/>&nbsp;<%=resource.getString("GML.yes") %><br/>
+                    <input type="checkbox" name="userPasswordValid" id="userPasswordValid" value="true" <% if (userObject.isPasswordValid()) out.print("checked"); %> onclick="javascript:selectUnselect()"/>&nbsp;<%=resource.getString("GML.yes") %><br/>
                 </td>
             </tr>
             <tr>			

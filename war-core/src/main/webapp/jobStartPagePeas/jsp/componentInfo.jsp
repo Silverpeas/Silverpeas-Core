@@ -33,15 +33,10 @@
 
 <%!
 
-final String PARAM_TYPE_CHECKBOX 	= "checkbox";
-final String PARAM_TYPE_SELECT		= "select";
-final String PARAM_TYPE_RADIO		= "radio";
-
-void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWriter out) throws java.io.IOException
+void displayParameter(Parameter parameter, ResourcesWrapper resource, JspWriter out) throws java.io.IOException
 {
-	String help = parameter.getHelp(resource.getLanguage());
+	String help = (String) parameter.getHelp().get(resource.getLanguage());
 	if (help != null) {
-		//help = Encode.javaStringToJsString(help);
 		out.println("<td align=\"left\">");
 		out.print("<img src=\""+resource.getIcon("JSPP.instanceHelpInfo")+"\" title=\""+help+"\" class=\"parameterInfo\"/>");
 		out.println("</td>");
@@ -50,49 +45,49 @@ void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWrite
 	}
 
 	out.println("<td class=\"textePetitBold\" nowrap valign=\"center\">");
-	out.println(parameter.getLabel()+" : ");
+	out.println(parameter.getLabel().get(resource.getLanguage()) +" : ");
 	out.println("</td>");
 	out.println("<td align=\"left\" valign=\"top\">");
 	
 	// Value
-	boolean isCheckbox = PARAM_TYPE_CHECKBOX.equals(parameter.getType());
-	boolean isSelect = PARAM_TYPE_SELECT.equals(parameter.getType()) || SPParameter.TYPE_XMLTEMPLATES.equals(parameter.getType());
-	boolean isRadio = PARAM_TYPE_RADIO.equals(parameter.getType());
-	if (isCheckbox) {
+	boolean isSelect = parameter.isSelect() || parameter.isXmlTemplate();
+	if (parameter.isCheckbox()) {
 		String checked = "";
-		if (parameter.getValue() != null && parameter.getValue().toLowerCase().equals("yes"))
+		if (StringUtil.getBooleanValue(parameter.getValue())){
 			checked = "checked";
+        }
 		out.println("<input type=\"checkbox\" name=\""+parameter.getName()+"\" value=\""+parameter.getValue()+"\" "+checked+" disabled/>");
 	}
 	else if (isSelect)
 	{
-		ArrayList options = parameter.getOptions();
+		List options = parameter.getOptions();
 		if (options != null)
 		{
 			for (int i=0; i<options.size(); i++)
 			{
-				ArrayList option = (ArrayList) options.get(i);
-				String name = (String) option.get(0);
-				String value = (String) option.get(1);
+				Option option = (Option) options.get(i);
+				String name = (String) option.getName().get(resource.getLanguage()) ;
+				String value = option.getValue();
 				if (parameter.getValue() != null && parameter.getValue().toLowerCase().equals(value.toLowerCase())) {
 				  	out.println(name);
 				}
 			}		
 		}
 	}
-	else if (isRadio)
+	else if (parameter.isRadio())
 	{
-		ArrayList radios = parameter.getOptions();
+		List radios = parameter.getOptions();
 		if (radios != null)
 		{
 	      for (int i=0; i<radios.size(); i++)
 	      {
-	      		ArrayList radio = (ArrayList) radios.get(i);
-				String name = (String) radio.get(0);
-				String value = (String) radio.get(1);
+	      		Option radio = (Option) radios.get(i);
+				String name = (String) radio.getName().get(resource.getLanguage()) ;
+				String value = radio.getValue();
 				String checked = "";
-				if (parameter.getValue() != null && parameter.getValue().toLowerCase().equals(value) || i==0)
+				if (parameter.getValue() != null && parameter.getValue().toLowerCase().equals(value) || i==0) {
 					checked = "checked";
+                }
 				out.println("<input type=\"radio\" name=\""+parameter.getName()+"\" value=\""+value+"\" "+checked+" disabled/>");
 				out.println(name+"&nbsp;");
 			}		
@@ -109,7 +104,7 @@ void displayParameter(SPParameter parameter, ResourcesWrapper resource, JspWrite
 ComponentInst 	compoInst 			= (ComponentInst) request.getAttribute("ComponentInst");
 String 			m_JobPeas 			= (String) request.getAttribute("JobPeas");
 List 			parameters 			= (List) request.getAttribute("Parameters");
-ArrayList 		m_Profiles 			= (ArrayList) request.getAttribute("Profiles");
+List 		    m_Profiles 			= (List) request.getAttribute("Profiles");
 boolean 		isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnable")).booleanValue();
 
 String m_ComponentIcon = iconsPath+"/util/icons/component/"+compoInst.getName()+"Small.gif";
@@ -161,8 +156,8 @@ var currentLanguage = "<%=compoInst.getLanguage()%>";
 	while (codes.hasNext())
 	{
 		lang = (String) codes.next();
-		out.println("var name_"+lang+" = \""+Encode.javaStringToJsString(compoInst.getLabel(lang))+"\";\n");
-		out.println("var desc_"+lang+" = \""+Encode.javaStringToJsString(compoInst.getDescription(lang))+"\";\n");
+		out.println("var name_"+lang+" = \""+EncodeHelper.javaStringToJsString(compoInst.getLabel(lang))+"\";\n");
+		out.println("var desc_"+lang+" = \""+EncodeHelper.javaStringToJsString(compoInst.getDescription(lang))+"\";\n");
 	}
 %>
 
@@ -185,7 +180,7 @@ function openPopup(action, larg, haut)
 }
 
 function deleteInstance() {	
-    if (window.confirm("<%=resource.getString("JSPP.MessageSuppressionInstanceBegin")+" "+Encode.javaStringToJsString(compoInst.getLabel())+" "+resource.getString("JSPP.MessageSuppressionInstanceEnd")%>")) { 
+    if (window.confirm("<%=resource.getString("JSPP.MessageSuppressionInstanceBegin")+" "+EncodeHelper.javaStringToJsString(compoInst.getLabel())+" "+resource.getString("JSPP.MessageSuppressionInstanceEnd")%>")) { 
     	location.href = "DeleteInstance?ComponentNum=<%=compoInst.getId()%>";
 	}
 }
@@ -224,7 +219,7 @@ out.println(board.printBefore());
 	<% if (StringUtil.isDefined(compoInst.getDescription(resource.getLanguage()))) { %>
 		<tr>
 			<td class="textePetitBold" nowrap="nowrap" valign="top"><%=resource.getString("GML.description") %> :</td>
-			<td align="left" valign="top" width="100%" id="compoDesc"><%=Encode.javaStringToHtmlParagraphe(compoInst.getDescription(resource.getLanguage()))%></td>
+			<td align="left" valign="top" width="100%" id="compoDesc"><%=EncodeHelper.javaStringToHtmlParagraphe(compoInst.getDescription(resource.getLanguage()))%></td>
 		</tr>
 	<% } %>
 	<% if (compoInst.getCreateDate() != null) { %>
@@ -274,14 +269,14 @@ out.println(board.printBefore());
 	if (parameters.size() >= 5)
 		on2Columns = true;
 	
-	SPParameter parameter = null;
+	Parameter parameter = null;
 	if (on2Columns)
 	{
 		out.println("<td>");
 		out.println("<table border=\"0\" width=\"100%\">");
 		for(int nI=0; parameters != null && nI < parameters.size(); nI++)
 		{
-			parameter = (SPParameter) parameters.get(nI);
+			parameter = (Parameter) parameters.get(nI);
 			if (nI%2 == 0)
 				out.println("<tr>");
 
@@ -302,7 +297,7 @@ out.println(board.printBefore());
 	} else {
 		for(int nI=0; parameters != null && nI < parameters.size(); nI++)
 		{
-			parameter = (SPParameter) parameters.get(nI);
+			parameter = (Parameter) parameters.get(nI);
 
 			out.println("<tr>");
 			displayParameter(parameter, resource, out);

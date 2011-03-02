@@ -71,7 +71,7 @@ function openGroup(groupId) {
 
 var componentWindow = window;
 function openComponent(componentId) {
-	url = '<%=m_context%>/RjobStartPagePeas/jsp/componentOpen?ComponentId='+componentId;
+	url = '<%=m_context%>/RjobStartPagePeas/jsp/OpenComponent?ComponentId='+componentId;
     windowName = "componentWindow";
 	larg = "800";
 	haut = "800";
@@ -151,17 +151,34 @@ out.println(board.printBefore());
 		<%=Encode.javaStringToHtmlString(userInfos.getLogin())%>
 		      </td>
 		</tr>
+		
+		<!--mot de passe-->
+		<tr>
+			<td class='textePetitBold'>
+		<%=Encode.javaStringToHtmlString(resource.getString("JOP.silverPassword"))%>
+		 :
+		 </td>
+		<td align='left' valign='baseline'>
+			<%
+               if (userInfos.isPasswordAvailable() && userInfos.isPasswordValid()) {
+                 out.print(Encode.javaStringToHtmlString(resource.getString("GML.yes")));
+			  }
+               else {
+				out.print(Encode.javaStringToHtmlString(resource.getString("GML.no")));
+			  }
+            %>
+		</td>
+	</tr>
 		     
 <%
 		String[] specificKeys = userInfos.getPropertiesNames();
 		int nbStdInfos = 4;
 		int nbInfos = nbStdInfos + specificKeys.length;
 		String currentKey = null;
-		String currentValue = null;
 		for (int iSL = nbStdInfos; iSL < nbInfos; iSL++) {
 			currentKey = specificKeys[iSL - nbStdInfos];
 			// On n'affiche pas le mot de passe !
-			if (!currentKey.equals("password")) {
+			if (!currentKey.startsWith("password")) {
 %>
 				<!--Specific Info-->
 				<tr>
@@ -172,23 +189,8 @@ out.println(board.printBefore());
 				      </td>
 				      <td align=left valign='baseline'>
 <%				      
-				currentValue = userInfos.getValue(currentKey);
-				if (currentKey.equals("passwordValid")) {
-					
-					if(StringUtil.getBooleanValue(currentValue)) {
-%>					
-						<%=Encode.javaStringToHtmlString(resource.getString("GML.yes"))%>
-<%					
-					} else {
-%>					
-						<%=Encode.javaStringToHtmlString(resource.getString("GML.no"))%>
-<%					
-					} 
-				} else {
-%>					
-					<%=Encode.javaStringToHtmlString(currentValue)%>
-<%					
-				}
+				out.print(Encode.javaStringToHtmlString(userInfos.getValue(currentKey)));
+			
 %>				
 				      </td>
 				</tr>
@@ -283,7 +285,7 @@ out.println(board.printAfter());
     for(int i=0; i<groups.length; i++){
       //création des ligne de l'arrayPane
       ArrayLine arrayLine = arrayPane.addArrayLine();
-      arrayLine.addArrayCellText("<a href=\"#\" onclick=\"openGroup('"+groups[i][0]+"')\" rel=\"/silverpeas/JobDomainPeasGroupServlet?GroupId="+groups[i][0]+"\">"+groups[i][1]+"</a>");
+      arrayLine.addArrayCellText("<a href=\"#\" onclick=\"openGroup('"+groups[i][0]+"')\" rel=\"/silverpeas/JobDomainPeasGroupPathServlet?GroupId="+groups[i][0]+"\">"+groups[i][1]+"</a>");
       arrayLine.addArrayCellText(groups[i][2]);
       arrayLine.addArrayCellText(groups[i][3]);
     }
@@ -337,9 +339,9 @@ out.println(board.printAfter());
     	//création des ligne de l'arrayPane
       	ArrayLine arrayLine = arrayPane.addArrayLine();
       	arrayLine.addArrayCellText(profile[0]);
-      	arrayLine.addArrayCellText("<a href=\"#\" onclick=\"openComponent('"+profile[2]+profile[1]+"')\" rel=\"/silverpeas/JobDomainPeasComponentServlet?ComponentId="+profile[1]+"\">"+profile[2]+"</a>");
-      	arrayLine.addArrayCellText(profile[3]);
+      	arrayLine.addArrayCellText("<a href=\"#\" onclick=\"openComponent('"+profile[2]+profile[1]+"')\" rel=\"/silverpeas/JobDomainPeasComponentPathServlet?ComponentId="+profile[1]+"\">"+profile[3]+"</a>");
       	arrayLine.addArrayCellText(profile[4]);
+      	arrayLine.addArrayCellText(profile[5]);
     }
     if (arrayPane.getColumnToSort() == 0)
       arrayPane.setColumnToSort(1);

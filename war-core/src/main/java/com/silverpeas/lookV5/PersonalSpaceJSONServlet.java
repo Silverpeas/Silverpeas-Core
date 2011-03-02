@@ -24,6 +24,7 @@
 
 package com.silverpeas.lookV5;
 
+import com.silverpeas.admin.components.WAComponent;
 import java.io.IOException;
 import java.io.Writer;
 import java.rmi.RemoteException;
@@ -55,12 +56,11 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.PersonalSpaceController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
+
 import com.stratelia.webactiv.util.ResourceLocator;
 
 public class PersonalSpaceJSONServlet extends HttpServlet {
-
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 8565616592829678418L;
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException,
@@ -180,6 +180,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
     jsonObject.put("description", component.getDescription());
     jsonObject.put("label", getComponentLabel(component.getName(), helper));
     jsonObject.put("id", component.getId());
+    jsonObject.put("url", URLManager.getURL(component.getName(), "useless", component.getName()+component.getId()) + "Main");
 
     return jsonObject;
   }
@@ -287,6 +288,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
                 "Main");
         jsonArray.put(tool);
       }
+      // mes tickets
       if (helper.getSettings("fileSharingVisible", true)) {
         FileSharingInterface fileSharing = new FileSharingInterfaceImpl();
         try {
@@ -321,13 +323,13 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
       if (helper.getSettings("customVisible", true)) {
         JSONObject tool =
             getToolAsJSONObject("personalize", message.getString("Personalization"), URLManager
-                .getURL(URLManager.CMP_PERSONALIZATION) +
-                "Main.jsp");
+                .getURL(URLManager.CMP_MYPROFILE) +
+                "MyInfos");
         jsonArray.put(tool);
       }
       if (helper.getSettings("mailVisible", true)) {
         JSONObject tool =
-            getToolAsJSONObject("notifAdmins", message.getString("Feedback"),
+            getToolAsJSONObject("notifAdmins", message.getString("Feedback"), 
                 "javascript:notifyAdministrators()");
         jsonArray.put(tool);
       }

@@ -55,19 +55,14 @@ public class HtmlExportGeneratorTest {
    */
   @Test
   public void testGetHtmlStyle() {
-    String expResult = "<style type='text/css'>\n<!--\nbody,td,th {font-family: Verdana, Arial, "
-        + "Helvetica, sans-serif; font-size: 10px; color: #000000;}\nbody {margin-left: 5px; "
-        + "margin-top: 5px; margin-right: 5px; margin-bottom: 5px;}\nA { font-family: Verdana,Arial, "
-        + "sans-serif; font-size: 10px; text-decoration: none; color: #000000}\n"
-        + "A:hover {color: #666699;}\n// -->\n</style>";
+    String expResult = "<link href='treeview/display.css' type='text/css' rel='stylesheet'/>";
     String result = HtmlExportGenerator.getHtmlStyle();
     assertThat(expResult, is(result));
   }
 
   @Test
   public void testWriteEnTeteSommaire() {
-    String expResult = "<table align='center' width='100%' border='0' bgcolor='#B3BFD1'><tr>"
-        + "<td align='center'><b>c'est cet &eacute;t&eacute;</b><br/></td></tr></table>";
+    String expResult = "<div class='numberOfDocument'>c'est cet &eacute;t&eacute;</div>";
     HtmlExportGenerator instance = new HtmlExportGenerator(null, null);
     String result = instance.writeEnTeteSommaire("c'est cet été");
     assertThat(expResult, is(result));

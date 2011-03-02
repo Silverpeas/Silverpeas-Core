@@ -28,16 +28,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.silverpeas.admin.components.Parameter;
+import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdminReference;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
-import com.stratelia.webactiv.beans.admin.instance.control.Instanciateur;
-import com.stratelia.webactiv.beans.admin.instance.control.SPParameter;
-import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
+import com.silverpeas.admin.components.Instanciateur;
+
 
 public class PersonalSpaceController extends AdminReference {
 
@@ -61,12 +56,12 @@ public class PersonalSpaceController extends AdminReference {
     component.setName(componentName);
 
     WAComponent baseComponent = Instanciateur.getWAComponent(componentName);
-    List<SPParameter> parameters = baseComponent.getParameters();
+    List<Parameter> parameters = baseComponent.getParameters();
 
     // set specific parameter values for personal space context
-    for (SPParameter parameter : parameters) {
-      if (StringUtil.isDefined(parameter.getValueForPersonalSpace())) {
-        parameter.setValue(parameter.getValueForPersonalSpace());
+    for (Parameter parameter : parameters) {
+      if (StringUtil.isDefined(parameter.getPersonalSpaceValue())) {
+        parameter.setValue(parameter.getPersonalSpaceValue());
       }
     }
     component.setParameters(parameters);

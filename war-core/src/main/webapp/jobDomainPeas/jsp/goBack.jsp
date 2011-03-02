@@ -37,7 +37,13 @@ function viewDomainBar()
 
         if ((URLForContent != null) && (URLForContent.length() > 0))
         {
-            out.println("parent.domainBar.location = \"" + URLForContent + "\"");
+	%>
+			try {
+				parent.domainBar.location = '<%=URLForContent%>';
+			} catch (err) {
+				location.href = 'domainContent';
+			}
+	<%
         }
     %>
 }

@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.silverpeas.jobOrganizationPeas.servlets;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,11 +38,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * @author Thierry Leroi
  */
 public class JobOrganizationPeasRequestRouter extends ComponentRequestRouter {
-
-  /**
-	 * 
-	 */
-	private static final long serialVersionUID = -3952939609496239407L;
+  private static final long serialVersionUID = -3952939609496239407L;
 
 /**
    * Method declaration
@@ -54,6 +47,7 @@ public class JobOrganizationPeasRequestRouter extends ComponentRequestRouter {
    * @return
    * @see
    */
+  @Override
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new JobOrganizationPeasSessionController(mainSessionCtrl,
@@ -64,6 +58,7 @@ public class JobOrganizationPeasRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
+  @Override
   public String getSessionControlBeanName() {
     return "jobOrganizationPeas";
   }
@@ -76,6 +71,7 @@ public class JobOrganizationPeasRequestRouter extends ComponentRequestRouter {
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
+  @Override
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
     String destination = "";
@@ -87,8 +83,6 @@ public class JobOrganizationPeasRequestRouter extends ComponentRequestRouter {
         + " Function=" + function);
 
     try {
-      // 1) Performs the action
-      // ----------------------
       if (function.startsWith("ViewUserOrGroup")) {
         // get user panel data
         jobOrganizationSC.retourSelectionPeas();
@@ -96,9 +90,6 @@ public class JobOrganizationPeasRequestRouter extends ComponentRequestRouter {
       } else {
         destination = jobOrganizationSC.initSelectionPeas();
       }
-
-      // 2) Prepare the pages
-      // --------------------
       if (destination.endsWith("jopUserView.jsp")) {
     	  if(jobOrganizationSC.getCurrentUserId() != null) { //l'utilisateur a sélectionné un user
     		  request.setAttribute("userid", jobOrganizationSC.getCurrentUserId());
@@ -108,7 +99,6 @@ public class JobOrganizationPeasRequestRouter extends ComponentRequestRouter {
     		  request.setAttribute("group", jobOrganizationSC.getCurrentGroup());
     		  request.setAttribute("adminController", jobOrganizationSC.getAdminController());
     	  }
-        /*request.setAttribute("infos", jobOrganizationSC.getCurrentInfos());*/
         request.setAttribute("spaces", jobOrganizationSC.getCurrentSpaces());
         request.setAttribute("profiles", jobOrganizationSC.getCurrentProfiles());
       }

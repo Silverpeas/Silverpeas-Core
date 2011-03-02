@@ -24,10 +24,11 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.socialNetwork.status.StatusService;
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.ResourceLocator;
+import static com.silverpeas.util.StringUtil.*;
 
 import java.io.File;
 import java.io.Serializable;
@@ -44,6 +45,8 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   public static final String DOMAIN_ACCESS = "D";
   private static final String AVATAR_PROPERTY = GeneralPropertiesManager.getString("avatar.property", "login");
   private static final String AVATAR_EXTENSION = GeneralPropertiesManager.getString("avatar.extension", "jpg");
+  private static final ResourceLocator generalSettings = new ResourceLocator(
+      "com.stratelia.silverpeas.lookAndFeel.generalLook", "");
   private static final long serialVersionUID = -109886153681824159L;
   private String m_sId = null;
   private String m_sSpecificId = null;
@@ -274,6 +277,15 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     return KM_ACCESS.equalsIgnoreCase(m_sAccessLevel);
   }
 
+  /**
+   * Is the user is the anonymous one?
+   * @return true if he's the anonymous user.
+   */
+  public boolean isAnonymous() {
+    String anonymousId = generalSettings.getString("anonymousId");
+    return getId().equals(anonymousId);
+  }
+
   public String getDisplayedName() {
     String valret = "";
 
@@ -290,14 +302,14 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   public boolean equals(Object other) {
     if (other instanceof UserDetail) {
       UserDetail cmpUser = (UserDetail)other;
-      return StringUtil.areStringEquals(m_sId, cmpUser.getId())
-        && StringUtil.areStringEquals(m_sSpecificId, cmpUser.getSpecificId())
-        && StringUtil.areStringEquals(m_sDomainId, cmpUser.getDomainId())
-        && StringUtil.areStringEquals(m_sLogin, cmpUser.getLogin())
-        && StringUtil.areStringEquals(m_sFirstName, cmpUser.getFirstName())
-        && StringUtil.areStringEquals(m_sLastName, cmpUser.getLastName())
-        && StringUtil.areStringEquals(m_seMail, cmpUser.geteMail())
-        && StringUtil.areStringEquals(m_sAccessLevel, cmpUser.getAccessLevel());
+      return areStringEquals(m_sId, cmpUser.getId())
+        && areStringEquals(m_sSpecificId, cmpUser.getSpecificId())
+        && areStringEquals(m_sDomainId, cmpUser.getDomainId())
+        && areStringEquals(m_sLogin, cmpUser.getLogin())
+        && areStringEquals(m_sFirstName, cmpUser.getFirstName())
+        && areStringEquals(m_sLastName, cmpUser.getLastName())
+        && areStringEquals(m_seMail, cmpUser.geteMail())
+        && areStringEquals(m_sAccessLevel, cmpUser.getAccessLevel());
     }
     return false;
   }
@@ -355,7 +367,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     }
     return "/directory/jsp/icons/avatar.png";
   }
-  
+
   public String getAvatarFileName() {
     String propertyValue = getLogin();
     try {
@@ -365,10 +377,10 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     }
     return propertyValue + "." + AVATAR_EXTENSION;
   }
-  
+
   public String getStatus() {
     String status = new StatusService().getLastStatusService(Integer.parseInt(getId())).getDescription();
-    if (StringUtil.isDefined(status)) {
+    if (isDefined(status)) {
       return status;
     }
     return "";

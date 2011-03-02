@@ -26,8 +26,8 @@ package com.silverpeas.admin;
 
 import java.sql.Connection;
 
-import com.stratelia.webactiv.beans.admin.instance.control.ComponentsInstanciatorIntf;
-import com.stratelia.webactiv.beans.admin.instance.control.InstanciationException;
+import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
+import com.silverpeas.admin.components.InstanciationException;
 
 public class FakeComponentInstanciator implements ComponentsInstanciatorIntf {
 

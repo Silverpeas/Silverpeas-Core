@@ -23,9 +23,10 @@
  */
 package com.silverpeas.util;
 
-import com.stratelia.webactiv.beans.admin.instance.control.Instanciateur;
-import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
 import java.util.Set;
+
+import com.silverpeas.admin.components.Instanciateur;
+import com.silverpeas.admin.components.WAComponent;
 
 /**
  *

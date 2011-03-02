@@ -48,13 +48,13 @@ import javax.servlet.http.HttpSession;
  */
 public class DirectoryServlet extends HttpServlet {
 
+  private static final long serialVersionUID = 1L;
   private static int ELEMENTS_PER_PAGE = 2;
   private String m_context;
   private ResourceLocator multilangG;
   private ResourceLocator multilang;
   private DirectoryService directorySC = new DirectoryService();
   private Pagination pagination;
-  private static final String SERVLETNAME="/RdirectoryServlet/jsp";
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -66,12 +66,10 @@ public class DirectoryServlet extends HttpServlet {
         "SilverSessionController");
     String userId = m_MainSessionCtrl.getUserId();
     directorySC.setUserId(userId);
-    multilang = new ResourceLocator("com.silverpeas.directory.multilang.DirectoryBundle", request.
-        getLocale());
-    multilangG = new ResourceLocator("com.stratelia.webactiv.multilang.generalMultilang", request.
-        getLocale());
-    ResourceLocator settings = new ResourceLocator(
-        "com.silverpeas.directory.settings.DirectorySettings", request.getLocale());
+    multilang = new ResourceLocator("com.silverpeas.directory.multilang.DirectoryBundle", "");
+    multilangG = new ResourceLocator("com.stratelia.webactiv.multilang.generalMultilang", "");
+    ResourceLocator settings =
+        new ResourceLocator("com.silverpeas.directory.settings.DirectorySettings", "");
     try {
       ELEMENTS_PER_PAGE = Integer.parseInt(settings.getString("ELEMENTS_PER_PAGE"));
 
@@ -167,7 +165,7 @@ public class DirectoryServlet extends HttpServlet {
 //     **************div=profilPhoto**********************
       html += "<div id=\"profilPhoto\">" + "\n";
       html += "<a href=\"createPhoto\"><img" + "\n";
-      html += "src=\"" + m_context + member.getProfilPhoto() + "\"" + "\n";
+      html += "src=\"" + m_context + member.getUserDetail().getAvatar() + "\"" + "\n";
       html += "alt=\"viewUser\" class=\"avatar\" /> </a>" + "\n";
       html += "</div>" + "\n";
 //     **************div=info**********************
@@ -180,7 +178,7 @@ public class DirectoryServlet extends HttpServlet {
       html += "<li>" + "\n";
       html += "<a  class=\"userMail\"class=\"link\" href=\"#\" class=\"link\" onclick=\"OpenPopup(" + member.
           getId() + ",'" + member.getLastName() + " " + member.getFirstName() + "')\">" + member.
-          geteMail() + "" + "\n";
+          getMail() + "" + "\n";
       html += "</a>" + "\n";
       html += "</li>" + "\n";
       html += "<li>" + "\n";

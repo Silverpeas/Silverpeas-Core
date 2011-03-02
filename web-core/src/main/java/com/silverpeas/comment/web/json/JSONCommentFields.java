@@ -32,46 +32,46 @@ public interface JSONCommentFields {
   /**
    * The URI of the comment.
    */
-  static final String COMMENT_URI = "uri";
+  static final String COMMENT_URI_FIELD = "uri";
   /**
    * The unique identifier of the comment.
    */
-  static final String COMMENT_ID = "commentId";
+  static final String COMMENT_ID_FIELD = "id";
   /**
    * The unique identifier of the commented Silverpeas ressource (publication, image, ...)
    */
-  static final String RESOURCE_ID = "resourceId";
+  static final String RESOURCE_ID_FIELD = "resourceId";
   /**
    * The unique identifier of the Silverpeas component instance the commented resource, and thus
    * the comment, belongs to.
    */
-  static final String COMPONENT_ID = "componentId";
+  static final String COMPONENT_ID_FIELD = "componentId";
   /**
    * The text of the comment.
    */
-  static final String TEXT = "text";
+  static final String TEXT_FIELD = "text";
   /**
    * The user that wrote the comment.
    */
-  static final String WRITER = "writer";
+  static final String AUTHOR_FIELD = "author";
   /**
    * The unique identifier of the comment writer.
    */
-  static final String WRITER_ID = "id";
+  static final String AUTHOR_ID_FIELD = "id";
   /**
    * The name of the comment writer.
    */
-  static final String WRITER_NAME = "fullName";
+  static final String AUTHOR_NAME_FIELD = "fullName";
   /**
    * The relative URL of the writer avatar.
    */
-  static final String WRITER_AVATAR = "avatar";
+  static final String AUTHOR_AVATAR_FIELD = "avatar";
   /**
    * The date at which the comment was created.
    */
-  static final String CREATION_DATE = "creationDate";
+  static final String CREATION_DATE_FIELD = "creationDate";
   /**
    * The date at which the comment was modified.
    */
-  static final String MODIFICATION_DATE = "modificationDate";
+  static final String MODIFICATION_DATE_FIELD = "modificationDate";
 }

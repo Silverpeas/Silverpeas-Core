@@ -24,8 +24,6 @@
 package com.silverpeas.util;
 
 import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.lang.StringEscapeUtils;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;

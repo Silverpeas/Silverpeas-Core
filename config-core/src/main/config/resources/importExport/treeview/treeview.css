@@ -241,3 +241,18 @@ li {
 	}	
 
 /*============================================*/
+
+html, body {
+	height:100%
+	}
+#treeview { 
+	width:300px; 
+	float:left;
+	}
+#frameContent { 
+	margin:0 0 0 310px;
+	width:65%;
+	height:100%;
+	}
+html > body #frameContent{
+	width:auto;}

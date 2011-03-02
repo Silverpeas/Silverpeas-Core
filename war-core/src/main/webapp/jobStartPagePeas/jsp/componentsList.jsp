@@ -85,9 +85,10 @@ out.println(board.printBefore());
 		{
             if (m_ListComponents[nI].isVisible())
             {
-                if ((!currentSuite.equalsIgnoreCase(m_ListComponents[nI].getSuite())) && (m_ListComponents[nI].getSuite() != null))
+                String suiteLabel = (String) m_ListComponents[nI].getSuite().get(resource.getLanguage());
+                if (!currentSuite.equalsIgnoreCase(suiteLabel) && (m_ListComponents[nI].getSuite() != null))
                 {
-                    currentSuite = m_ListComponents[nI].getSuite();
+                    currentSuite = suiteLabel;
                     %>
 		<TR>
 			<TD colspan="2" align="center" class="txttitrecol">&nbsp;</TD>
@@ -114,10 +115,10 @@ out.println(board.printBefore());
 		%>
 		<TR>
 			<TD align="center" width="30">
-				<a href="CreateInstance?ComponentNum=<%=nI%>" title="<%=m_ListComponents[nI].getDescription()%>"><img src="<%=iconsPath%>/util/icons/component/<%=m_ListComponents[nI].getName()%>Small.gif" class="component-icon" alt=""/></a>
+				<a href="CreateInstance?ComponentNum=<%=nI%>" title="<%=m_ListComponents[nI].getDescription().get(resource.getLanguage())%>"><img src="<%=iconsPath%>/util/icons/component/<%=m_ListComponents[nI].getName()%>Small.gif" class="component-icon" alt=""/></a>
 			</TD>
 			<TD align="left">
-				<a href="CreateInstance?ComponentNum=<%=nI%>" title="<%=m_ListComponents[nI].getDescription()%>"><%=m_ListComponents[nI].getLabel()%></a>
+				<a href="CreateInstance?ComponentNum=<%=nI%>" title="<%=m_ListComponents[nI].getDescription().get(resource.getLanguage())%>"><%=m_ListComponents[nI].getLabel().get(resource.getLanguage())%></a>
 			</TD>
 		</TR>
 		<%

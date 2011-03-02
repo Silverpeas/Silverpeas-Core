@@ -42,26 +42,12 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.board.Board"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 
 <%@ page import="java.util.ArrayList"%>
 
 <%!
-
-//Icons
-String separator;
-String map;
-String feedback;
-String key;
-String help;
-String go;
-String corner;
-
-String[] domains;
-String domain;
-
 MainSessionController m_MainSessionCtrl = null;
 String m_sContext = "";
 OrganizationController m_OrganizationController = null;
@@ -138,11 +124,7 @@ GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("Sessio
 
 String[] m_asPrivateDomainsNames = null;
 String[] m_asPrivateDomainsIds = null;
-String sGenSpace = "";
 SpaceInst spaceInst = null;
-ArrayList alCompoInst = null;
-String[] asCompoNames = null;
-String sPrivateDomain;
 
 m_MainSessionCtrl = (MainSessionController) session.getAttribute("SilverSessionController");
 
@@ -169,17 +151,6 @@ m_sContext = sURI.substring(0,sURI.lastIndexOf(sServletPath));
 m_asPrivateDomainsIds = m_MainSessionCtrl.getUserAvailRootSpaceIds();
 m_asPrivateDomainsNames = m_OrganizationController.getSpaceNames(m_asPrivateDomainsIds);
 
-//Icons
-separator = "icons/trait.gif";
-map = "icons/map.gif";
-feedback = "icons/mail.gif";
-key = "icons/key.gif";
-help = "icons/help.gif";
-go = "icons/go.gif";
-corner = "icons/corner.gif";
-
-sGenSpace = m_OrganizationController.getGeneralSpaceId();
-
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -189,23 +160,100 @@ sGenSpace = m_OrganizationController.getGeneralSpaceId();
 <%
 out.println(gef.getLookStyleSheet());
 %>
+
+<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/animation.js"></script>
+<script type="text/javascript">
+function notifyAdministrators(context,compoId,users,groups) {
+	SP_openWindow('<%=m_sContext%>/RnotificationUser/jsp/Main.jsp?popupMode=Yes&amp;editTargets=No&amp;compoId=&amp;theTargetsUsers=Administrators&amp;theTargetsGroups=', 'notifyUserPopup', '700', '400', 'menubar=no,scrollbars=no,statusbar=no');
+}
+
+function openClipboard() {
+	document.clipboardForm.submit();
+}
+  
+function getTool(id, label, url, nb, target) {
+	var res;	
+	if (url.substring(0,11).toLowerCase() == "javascript:") {
+		res = "<a href=\"#\" onclick=\""+url+"\">"+label+"</a>";
+	}
+  	else {
+  		res = "<a href=\""+"<%=m_sContext%>"+url+"\" target=\""+target+"\">"+label+"</a>";
+	}	
+	return res;
+}
+
+function getTools() {
+	$.getJSON("<%=m_sContext%>/PersonalSpace?Action=GetTools&IEFix="+new Date().getTime(),
+			function(data){
+				try {
+					// get tools
+					var items = "";
+					for (var i = 0; i < data.length; ++i) {
+						if (i != 0) {
+							items += "&nbsp;&nbsp;|&nbsp;&nbsp;";
+						}
+		                var tool = data[i];
+		                items += getTool(tool.id, tool.label, tool.url, tool.nb, '_self');
+					}
+
+					//display tools
+					$("#contenu_outils").html(items);
+				} catch (e) {
+					//do nothing
+					alert(e);
+				}
+			});
+}
+
+function getComponent(id, label, url, name, description) {
+	return "<a href=\""+"<%=m_sContext%>"+url+"\" target=\"_self\">"+label+"</a>";
+}
+
+function getComponents() {
+	$.getJSON("<%=m_sContext%>/PersonalSpace?Action=GetComponents&IEFix="+new Date().getTime(),
+			function(data){
+				try {
+					// get components
+					var items = "";
+					for (var i = 0; i < data.length; ++i) {
+						if (i != 0) {
+							items += "&nbsp;&nbsp;|&nbsp;&nbsp;";
+						}
+		                var component = data[i];
+		                items += getComponent(component.id, component.label, component.url, component.name, component.description);
+					}
+
+					//display components
+					$("#contenu_components").html(items);
+				} catch (e) {
+					//do nothing
+					alert(e);
+				}
+			});
+}
+
+$(document).ready(function() {
+	getTools();
+	getComponents();
+});
+</script>
 </head>
 <body>
 <%
-		Window window = gef.getWindow();
+	Window window = gef.getWindow();
 
 	BrowseBar browseBar = window.getBrowseBar();
 	browseBar.setComponentName(message.getString("MyMap"));
 
 	out.println(window.printBefore());
 	Frame frame=gef.getFrame();
- out.println(frame.printBefore());
+	out.println(frame.printBefore());
 
- ResourceLocator lookSettings = gef.getFavoriteLookSettings(); 
- String accessLoginId = lookSettings.getString("guestId");
- boolean isAnonymAccess = currentUser.isAccessGuest() && currentUser.getId().equals(accessLoginId);
- 
- Board board = gef.getBoard();
+	ResourceLocator lookSettings = gef.getFavoriteLookSettings(); 
+	String accessLoginId = lookSettings.getString("guestId");
+	boolean isAnonymAccess = currentUser.isAccessGuest() && currentUser.getId().equals(accessLoginId);
+	 
+	Board board = gef.getBoard();
 %>
 
 <% if (!isAnonymAccess) { %>
@@ -215,11 +263,14 @@ out.println(gef.getLookStyleSheet());
 			<td><img src="icons/accueil/esp_perso.gif" align="middle" alt=""/>&nbsp;&nbsp;<span class="txtnav"><%=message.getString("SpacePersonal")%></span></td>
 		</tr>
 		<tr>
-			<td>&nbsp;&nbsp;<img src="<%=m_sContext%>/util/icons/component/agendaSmall.gif" border="0" width="15" align="top" alt=""/>&nbsp;<a href="<%=m_sContext + URLManager.getURL(URLManager.CMP_AGENDA) + "agenda.jsp"%>" target="MyMain"><%=message.getString("Diary")%></a>
-				&nbsp;&nbsp;<img src="<%=m_sContext%>/util/icons/component/todoSmall.gif" border="0" width="15" align="top" alt=""/>&nbsp;<a href="<%=m_sContext + URLManager.getURL(URLManager.CMP_TODO)+ "todo.jsp"%>" target="MyMain"><%=message.getString("ToDo")%></a>
-				&nbsp;&nbsp;<img src="<%=m_sContext%>/util/icons/component/mailserviceSmall.gif" border="0" width="15" align="top" alt=""/>&nbsp;<a href="<%=m_sContext + URLManager.getURL(URLManager.CMP_SILVERMAIL) + "Main"%>" target="MyMain"><%=message.getString("Mail")%></a>
-				&nbsp;&nbsp;<a href="<%=m_sContext + URLManager.getURL(URLManager.CMP_PDCSUBSCRIPTION) + "subscriptionList.jsp"%>" target="MyMain"><%=message.getString("MyInterestCenters")%></a>
-				&nbsp;&nbsp;<a href="<%=m_sContext + URLManager.getURL(URLManager.CMP_INTERESTCENTERPEAS) + "iCenterList.jsp"%>" target="MyMain"><%=message.getString("FavRequests")%></a></td>
+			<td>
+				<div id="contenu_outils"></div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div id="contenu_components"></div>
+			</td>
 		</tr>
 		</table>
 <%=board.printAfter() %>
@@ -253,5 +304,8 @@ out.println(frame.printMiddle());
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
+<form name="clipboardForm" action="<%=m_sContext+URLManager.getURL(URLManager.CMP_CLIPBOARD)%>Idle.jsp" method="post" target="IdleFrame">
+<input type="hidden" name="message" value="SHOWCLIPBOARD"/>
+</form>
 </body>
 </html>

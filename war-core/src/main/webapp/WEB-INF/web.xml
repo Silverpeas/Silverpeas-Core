@@ -122,6 +122,15 @@
   <servlet>
     <servlet-name>REST Container</servlet-name>
     <servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
+    <description>
+      I'm a servlet aimed to dispatch the incoming HTTP requests to the REST web services that are
+      published through the IoC Spring container.
+	</description>
+    <init-param>
+    	<description>Is the Jackson JSON stack be used?</description>
+        <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
+        <param-value>true</param-value>
+	</init-param>
   </servlet>
   <servlet>
     <servlet-name>AuthenticationServlet</servlet-name>
@@ -490,12 +499,8 @@
     <servlet-class>com.silverpeas.directory.servlets.ImageDisplay</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>InvitationServlet</servlet-name>
-    <servlet-class>com.silverpeas.socialNetwork.invitation.servlets.InvitationRequestRouter</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>RelationShipServlet</servlet-name>
-    <servlet-class>com.silverpeas.socialNetwork.relationShip.servlets.RelationShipRequestRouter</servlet-class>
+    <servlet-name>InvitationJSONServlet</servlet-name>
+    <servlet-class>com.silverpeas.socialNetwork.invitation.servlets.InvitationJSONServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>ProfilRequestRouter</servlet-name>
@@ -885,12 +890,8 @@
     <url-pattern>/display/avatar/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>InvitationServlet</servlet-name>
-    <url-pattern>/Rinvitation/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>RelationShipServlet</servlet-name>
-    <url-pattern>/RrelationShip/*</url-pattern>
+    <servlet-name>InvitationJSONServlet</servlet-name>
+    <url-pattern>/InvitationJSON</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>ProfilRequestRouter</servlet-name>
@@ -906,7 +907,7 @@
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>MyContactProfilRequestRouter</servlet-name>
-    <url-pattern>/RmyContactProfil/*</url-pattern>
+    <url-pattern>/RContactProfile/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>MyContactJSONServlet</servlet-name>

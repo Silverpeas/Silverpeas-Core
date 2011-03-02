@@ -23,25 +23,24 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
+import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.i18n.Translation;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.dao.ComponentDAO;
-import com.stratelia.webactiv.beans.admin.instance.control.SPParameter;
-import com.stratelia.webactiv.beans.admin.instance.control.SPParameters;
 import com.stratelia.webactiv.organization.ComponentInstanceI18NRow;
 import com.stratelia.webactiv.organization.ComponentInstanceRow;
 import com.stratelia.webactiv.organization.SpaceRow;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 
 public class ComponentInstManager {
 
@@ -76,8 +75,8 @@ public class ComponentInstManager {
       componentInst.addProfileInst(profile);
     }
 
-    SPParameters parameters = componentInstToCopy.getSPParameters();
-    componentInst.setSPParameters(parameters);
+    List<Parameter> parameters = componentInstToCopy.getParameters();
+    componentInst.setParameters(parameters);
 
     componentInst.setLanguage(componentInstToCopy.getLanguage());
 
@@ -112,12 +111,12 @@ public class ComponentInstManager {
       String sComponentNodeId = idAsString(newInstance.id);
 
       // Add the parameters if necessary
-      List<SPParameter> parameters = componentInst.getParameters();
+      List<Parameter> parameters = componentInst.getParameters();
 
       SilverTrace.info("admin", "ComponentInstManager.createComponentInst",
           "root.MSG_GEN_PARAM_VALUE", "nb parameters = " + parameters.size());
 
-      for (SPParameter parameter : parameters) {
+      for (Parameter parameter : parameters) {
         ddManager.organization.instanceData.createInstanceData(
             idAsInt(sComponentNodeId), parameter);
       }
@@ -163,12 +162,13 @@ public class ComponentInstManager {
    * Get component instance with the given id
    * @param ddManager
    * @param sComponentId
-   * @param sFatherId
+   * @param spaceId
    * @return
    * @throws AdminException 
    */
   public ComponentInst getComponentInst(DomainDriverManager ddManager, String sComponentId,
-      String sFatherId) throws AdminException {
+      String spaceId) throws AdminException {
+    String sFatherId = spaceId;
     if (sFatherId == null) {
       try {
         ddManager.getOrganizationSchema();
@@ -319,9 +319,9 @@ public class ComponentInstManager {
         componentInst.setStatus(instance.status);
 
         // Get the parameters if any
-        SPParameters parameters = ddManager.organization.instanceData.getAllParametersInComponent(idAsInt(
+        List<Parameter> parameters = ddManager.organization.instanceData.getAllParametersInComponent(idAsInt(
             sComponentId));
-        componentInst.setSPParameters(parameters);
+        componentInst.setParameters(parameters);
 
         // Get the profiles
         String[] asProfileIds = ddManager.organization.userRole.getAllUserRoleIdsOfInstance(idAsInt(componentInst.
@@ -436,7 +436,7 @@ public class ComponentInstManager {
 
     try {
       // Compute the Old component profile list
-      ArrayList<ProfileInst> alProfileInst = componentInst.getAllProfilesInst();
+      List<ProfileInst> alProfileInst = componentInst.getAllProfilesInst();
       for (int nI = 0; nI < alProfileInst.size(); nI++) {
         alOldCompoProfile.add(alProfileInst.get(nI).getName());
       }
@@ -493,7 +493,7 @@ public class ComponentInstManager {
   public String updateComponentInst(DomainDriverManager ddManager,
       ComponentInst compoInstNew) throws AdminException {
     try {
-      List<SPParameter> parameters = compoInstNew.getParameters();
+      List<Parameter> parameters = compoInstNew.getParameters();
       for (int nI = 0; nI < parameters.size(); nI++) {
         ddManager.organization.instanceData.updateInstanceData(
             idAsInt(compoInstNew.getId()), parameters.get(nI));

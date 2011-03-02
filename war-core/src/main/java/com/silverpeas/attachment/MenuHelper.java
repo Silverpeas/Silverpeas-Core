@@ -70,56 +70,61 @@ public class MenuHelper {
     builder.append(
         "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkoutAndDownload(").
         append(attachmentId).append(',').append(webDavOK).append(")\">").append(
-        resources.getString("attachment.checkOutAndDownload")).append("</a></li>").append(
-        NEW_LINE);
+        resources.getString("attachment.checkOutAndDownload")).append("</a></li>").append(NEW_LINE);
     builder.append(
         "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkoutAndEdit(").
         append(attachmentId).append(")\">").
         append(resources.getString("attachment.checkOutAndEditOnline")).append("</a></li>");
-    builder.append("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkin(").
+    builder.append(
+        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkin(").
         append(attachmentId).append(",").append(attachment.isOpenOfficeCompatible()).
         append(", false)\">").append(resources.getString("checkIn")).append("</a></li>");
     builder.append("</ul>");
     builder.append("<ul>");
-    builder.append("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:updateAttachment('").
-        append(attachmentId).append("')\">").append(resources.getString("GML.modify")).append("</a></li>");
+    builder.append(
+        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:updateAttachment('").
+        append(attachmentId).append("')\">").append(resources.getString("GML.modify")).append(
+        "</a></li>");
     if (useXMLForm) {
-      builder.append("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:EditXmlForm('"
-          + attachmentId
-          + "','"
-          + language
-          + "')\">"
-          + resources.getString("attachment.xmlForm.Edit") + "</a></li>");
-    }
-    builder.append("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:deleteAttachment(").
-        append(attachmentId).append(")\">").append(resources.getString("GML.delete")).append("</a></li>");
-    builder.append("</ul>");
-      builder.append("<ul>");
       builder.append(
-          "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:ShareAttachment('").
-          append(attachmentId).append("')\">").append(resources.getString("attachment.share")).
-          append("</a></li>");
-      builder.append("</ul>");
-      builder.append("<ul>");
-      builder.append("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:notifyAttachment('"
-          + attachmentId + "')\">" + resources.getString("GML.notify") + "</a></li>");
-      builder.append("</ul>");
+          "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:EditXmlForm('");
+      builder.append(attachmentId).append("','").append(language).append("')\">");
+      builder.append(resources.getString("attachment.xmlForm.Edit")).append("</a></li>");
+    }
+    builder.append(
+        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:deleteAttachment(").
+        append(attachmentId).append(")\">").append(resources.getString("GML.delete")).append(
+        "</a></li>");
+    builder.append("</ul>");
+    builder.append("<ul>");
+    builder.append(
+        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:ShareAttachment('").
+        append(attachmentId).append("')\">").append(resources.getString("attachment.share")).
+        append("</a></li>");
+    builder.append("</ul>");
+    builder.append("<ul>");
+    builder.append(
+        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:notifyAttachment('");
+    builder.append(attachmentId).append("')\">").append(resources.getString("GML.notify"));
+    builder.append("</a></li>");
+    builder.append("</ul>");
     builder.append("</div>");
     builder.append("</div>");
 
     builder.append("<script type=\"text/javascript\">");
 
     builder.append("var oMenu").append(attachmentId).append(";");
-    builder.append("var webDav" + attachmentId + " = \""
-        + URLEncoder.encode(httpServerBase + attachment.getWebdavUrl(language), "UTF-8")
-        + "\";");
+    builder.append("var webDav").append(attachmentId).append(" = \"");
+    builder.append(URLEncoder.encode(httpServerBase + attachment.getWebdavUrl(language), "UTF-8")).
+        append("\";");
     builder.append("YAHOO.util.Event.onContentReady(\"basicmenu").append(attachmentId).append(
         "\", function () {");
+    builder.append("oMenu").append(attachmentId);
+    builder.append(" = new YAHOO.widget.ContextMenu(\"basicmenu").append(attachmentId);
+    builder.append("\", { trigger: \"img_").append(attachmentId);
     builder.append(
-        "oMenu" + attachmentId + " = new YAHOO.widget.ContextMenu(\"basicmenu" + attachmentId
-        + "\", { trigger: \"img_" + attachmentId
-        + "\", hidedelay: 100, effect: {effect: YAHOO.widget.ContainerEffect.FADE, duration: 0.30}});");
-    builder.append("oMenu" + attachmentId + ".render();");
+        "\", hidedelay: 100, effect: {effect: YAHOO.widget.ContainerEffect.FADE, duration: 0.30}});");
+    builder.append("oMenu").append(attachmentId).append(".render();");
     if (attachment.isReadOnly()) {
       builder.append(configureCheckout(attachmentId, true));
       builder.append(configureCheckoutAndDownload(attachmentId, !isWorker(userId, attachment)));
@@ -128,7 +133,7 @@ public class MenuHelper {
       builder.append(configureCheckin(attachmentId,
           !isWorker(userId, attachment) && !isAdmin(userId)));
       builder.append(configureUpdate(attachmentId, !isWorker(userId, attachment)));
-      builder.append(configureDelete(attachmentId, useXMLForm, true));      
+      builder.append(configureDelete(attachmentId, useXMLForm, true));
       if (!userId.equals(attachment.getWorkerId())) {
         // disable xmlForm
         if (useXMLForm) {
@@ -138,14 +143,14 @@ public class MenuHelper {
     } else {
       builder.append(configureCheckin(attachmentId, true));
       builder.append(configureCheckoutAndEdit(attachmentId, !useWebDAV || !attachment.
-          isOpenOfficeCompatible()));     
+          isOpenOfficeCompatible()));
     }
     builder.append(configureFileSharing(attachmentId, !useFileSharing));
     builder.append(configureNotify(attachmentId, !showMenuNotif));
-    builder.append("YAHOO.util.Event.addListener(\"basicmenu" + attachmentId + "\", \"mouseover\", oMenu"
-        + attachmentId + ".show);");
-    builder.append("YAHOO.util.Event.addListener(\"basicmenu" + attachmentId + "\", \"mouseout\", oMenu"
-        + attachmentId + ".hide);");
+    builder.append("YAHOO.util.Event.addListener(\"basicmenu").append(attachmentId);
+    builder.append("\", \"mouseover\", oMenu").append(attachmentId).append(".show);");
+    builder.append("YAHOO.util.Event.addListener(\"basicmenu").append(attachmentId);
+    builder.append("\", \"mouseout\", oMenu").append(attachmentId).append(".hide);");
     builder.append("});");
     builder.append("</script>");
     out.print(builder.toString());
@@ -177,16 +182,19 @@ public class MenuHelper {
     }
     return String.format(template, attachmentId, "1, 1", disable);
   }
-  
-   public static String configureXmlForm(String attachmentId, boolean disable) {
+
+  public static String configureXmlForm(String attachmentId, boolean disable) {
     return String.format(template, attachmentId, "1, 1", disable);
   }
-   
-   public static String configureFileSharing(String attachmentId, boolean disable) {
+
+  public static String configureFileSharing(String attachmentId, boolean disable) {
     return String.format(template, attachmentId, "0, 2", disable);
   }
 
   public static String configureNotify(String attachmentId, boolean disable) {
     return String.format(template, attachmentId, "0, 3", disable);
+  }
+
+  private MenuHelper() {
   }
 }

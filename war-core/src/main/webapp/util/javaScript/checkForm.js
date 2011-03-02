@@ -30,10 +30,10 @@ function isEmpty(s) {
 	return ((s == null) || (s.length == 0))
 }
 
-// Returns true if string s is empty or 
+// Returns true if string s is empty or
 // whitespace characters only.
 function isWhitespace (s) {
-	
+
 	var i;
 
     // Is s empty?
@@ -42,7 +42,7 @@ function isWhitespace (s) {
     // Search through string's characters one by one
     // until we find a non-whitespace character.
     // When we do, return false; if we don't, return true.
-    for (i = 0; i < s.length; i++) {   
+    for (i = 0; i < s.length; i++) {
         // Check that current character isn't whitespace.
         var c = s.charAt(i);
         if (whitespace.indexOf(c) == -1) return false;
@@ -54,13 +54,13 @@ function isWhitespace (s) {
 
 // Removes all characters which appear in string bag from string s.
 function stripCharsInBag (s, bag) {
-	
+
 	var i;
     var returnString = "";
 
     // Search through string's characters one by one.
     // If character is not in bag, append to returnString.
-    for (i = 0; i < s.length; i++) {   
+    for (i = 0; i < s.length; i++) {
         // Check that current character isn't whitespace.
         var c = s.charAt(i);
         if (bag.indexOf(c) == -1) returnString += c;
@@ -71,7 +71,7 @@ function stripCharsInBag (s, bag) {
 
 
 
-// Removes all characters which do NOT appear in string bag 
+// Removes all characters which do NOT appear in string bag
 // from string s.
 function stripCharsNotInBag (s, bag) {
 	var i;
@@ -81,7 +81,7 @@ function stripCharsNotInBag (s, bag) {
     // If character is in bag, append to returnString.
 
     for (i = 0; i < s.length; i++)
-    {   
+    {
         // Check that current character isn't whitespace.
         var c = s.charAt(i);
         if (bag.indexOf(c) != -1) returnString += c;
@@ -108,7 +108,7 @@ function stripWhitespace (s) {
 // The below function *should* be unnecessary.  In general,
 // avoid using it.  Use the standard method indexOf instead.
 //
-// However, because of an apparent bug in indexOf on 
+// However, because of an apparent bug in indexOf on
 // Navigator 2.0.2, the below loop does not work as the
 // body of stripInitialWhitespace:
 //
@@ -138,7 +138,7 @@ function stripInitialWhitespace (s) {
 	var i = 0;
     while ((i < s.length) && charInString (s.charAt(i), whitespace))
        i++;
-    
+
     return s.substring (i, s.length);
 }
 
@@ -159,6 +159,9 @@ function isValidTextField(input) {
 function isValidTextArea(input) {
 	var textAreaLength = 2000;
 	var s = input.value;
+    if (s == null) {
+      s = input;
+    }
 //	input.select();
 	return (s.length <= textAreaLength);
 }
@@ -190,35 +193,35 @@ function warnEmpty (theField, s)
 function checkString (theField, s)
 {   // Next line is needed on NN3 to avoid "undefined is not a number" error
     // in equality comparison below.
-    if (isWhitespace(theField.value)) 
+    if (isWhitespace(theField.value))
        return warnEmpty (theField, s);
     else return true;
 }
 
 //return true if the field is numeric
-function isNumericField(field) 
-{ 
-    validChars = "0123456789.,"; 
-    for( var i=0; i<field.length; i++ ) 
+function isNumericField(field)
+{
+    validChars = "0123456789.,";
+    for( var i=0; i<field.length; i++ )
 		if (validChars.indexOf(field.charAt(i)) == -1)
 			return false;
-	return true; 
+	return true;
 }
 
-function formatNumericField(field) 
-{ 
+function formatNumericField(field)
+{
   	var regExp = /,/gi;
 	return field.replace(regExp,'.');
 }
 
 //return true if the field is an integer
-function isInteger(field) 
-{ 
-    validChars = "0123456789"; 
-    for( var i=0; i<field.length; i++ ) 
+function isInteger(field)
+{
+    validChars = "0123456789";
+    for( var i=0; i<field.length; i++ )
 	if (validChars.indexOf(field.charAt(i)) == -1)
 		return false;
-    return true; 
+    return true;
 }
 
 function checkHour(hour)

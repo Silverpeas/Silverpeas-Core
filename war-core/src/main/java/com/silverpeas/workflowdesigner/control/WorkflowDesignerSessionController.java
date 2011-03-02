@@ -33,6 +33,12 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
+import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
+import com.silverpeas.admin.components.Instanciateur;
+import com.silverpeas.admin.components.InstanciationException;
+import com.silverpeas.admin.components.Profile;
+import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.util.i18n.I18NHelper;
 import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.workflow.api.ProcessModelManager;
@@ -68,16 +74,10 @@ import com.silverpeas.workflowdesigner.model.WorkflowDesignerException;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.beans.admin.instance.control.ComponentsInstanciatorIntf;
-import com.stratelia.webactiv.beans.admin.instance.control.Instanciateur;
-import com.stratelia.webactiv.beans.admin.instance.control.InstanciationException;
-import com.stratelia.webactiv.beans.admin.instance.control.SPParameter;
-import com.stratelia.webactiv.beans.admin.instance.control.SPParameters;
-import com.stratelia.webactiv.beans.admin.instance.control.SPProfile;
-import com.stratelia.webactiv.beans.admin.instance.control.WAComponent;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.util.Set;
+import javax.xml.bind.JAXBException;
 
 public class WorkflowDesignerSessionController extends AbstractComponentSessionController {
 
@@ -123,8 +123,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
    */
   public WorkflowDesignerSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-    super(mainSessionCtrl,
-        componentContext,
+    super(mainSessionCtrl, componentContext,
         "com.silverpeas.workflowdesigner.multilang.workflowDesignerBundle",
         "com.silverpeas.workflowdesigner.settings.workflowDesignerIcons",
         "com.silverpeas.workflowdesigner.settings.workflowDesigner");
@@ -140,8 +139,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       return Workflow.getProcessModelManager().listProcessModels();
     } catch (WorkflowException e) {
       throw new WorkflowDesignerException("WorkflowDesignerSessionController.getPorcesModels",
-          SilverpeasException.ERROR, "workflowDesigner.EX_GETTING_RPOCES_MODELS_FAILED",
-          e);
+          SilverpeasException.ERROR, "workflowDesigner.EX_GETTING_RPOCES_MODELS_FAILED", e);
     }
   }
 
@@ -650,7 +648,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     }
 
     try {
-      m_processModel.getParticipantsEx().removeParticipant(strParticipantName);     
+      m_processModel.getParticipantsEx().removeParticipant(strParticipantName);
       m_processModel.setParticipants(null);
     } catch (WorkflowException e) {
       throw new WorkflowDesignerException("WorkflowDesignerSessionController.removeParticipant",
@@ -1821,8 +1819,8 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     //
     if (m_processModel.getDataFolder() != null) {
       Iterator<Item> iterItem = m_processModel.getDataFolder().iterateItem();
-      while (iterItem.hasNext()) {        
-      Item item =  iterItem.next();
+      while (iterItem.hasNext()) {
+        Item item = iterItem.next();
         map.put(item.getDescriptions(), "dataFolder item: '" + item.getName()
             + "' : description");
         map.put(item.getLabels(), "dataFolder item: '" + item.getName() + "' : label");
@@ -1832,7 +1830,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     // Forms
     //
     if (m_processModel.getForms() != null) {
-      Iterator<Form> iterForm = m_processModel.getForms().iterateForm(), iterInput;    
+      Iterator<Form> iterForm = m_processModel.getForms().iterateForm(), iterInput;
       while (iterForm.hasNext()) {
         Form form = iterForm.next();
         String strFormId;
@@ -2876,56 +2874,64 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
   public void generateComponentDescriptor(String strLabel,
       String strDescription, String strRole, String strLanguage)
       throws WorkflowDesignerException {
-    List listSPProfile = new ArrayList();
+    List<Profile> listSPProfile = new ArrayList<Profile>();
     WAComponent waComponent;
     Role role;
-    SPParameters spParameters = new SPParameters();
-    SPParameter spParameter = new SPParameter(
-        ComponentsInstanciatorIntf.PROCESS_XML_FILE_NAME, getSettings().getString(
-        "componentDescriptor.parameterLabel"),
-        m_strProcessModelFileName.replaceAll("\\\\", "/"), true, null, null,
-        null, null, null, null);
-
+    List<com.silverpeas.admin.components.Parameter> spParameters = new ArrayList<com.silverpeas.admin.components.Parameter>();
+    com.silverpeas.admin.components.Parameter spParameter = new com.silverpeas.admin.components.Parameter();
+    spParameter.setName(ComponentsInstanciatorIntf.PROCESS_XML_FILE_NAME);
+    spParameter.getLabel().put(I18NHelper.defaultLanguage, getSettings().getString(
+        "componentDescriptor.parameterLabel"));
+    spParameter.setValue(m_strProcessModelFileName.replaceAll("\\\\", "/"));
+    spParameter.setMandatory(true);
     // Create the list of roles, to be placed as profiles in the component
     // descriptor
     //
     if (m_processModel.getRolesEx() != null) {
-      Iterator iterRole = m_processModel.getRolesEx().iterateRole();
+      Iterator<Role> iterRole = m_processModel.getRolesEx().iterateRole();
 
       // 'supervisor' must be present in the list
-      //
       if (m_processModel.getRolesEx().getRole("supervisor") == null) {
-        listSPProfile.add(new SPProfile("supervisor", getSettings().getString(
-            "componentDescriptor.supervisor")));
+        Profile profile = new Profile();
+        profile.setName("supervisor");
+        profile.getLabel().put(I18NHelper.defaultLanguage, getSettings().getString(
+            "componentDescriptor.supervisor"));
+        listSPProfile.add(profile);
       }
 
       while (iterRole.hasNext()) {
-        role = (Role) iterRole.next();
-        listSPProfile.add(new SPProfile(role.getName(), role.getLabel(strRole,
-            strLanguage)));
+        role = iterRole.next();
+        Profile profile = new Profile();
+        profile.setName(role.getName());
+        profile.getLabel().put(strLanguage, role.getLabel(strRole, strLanguage));
+        listSPProfile.add(profile);
       }
     } else {
-      listSPProfile.add(new SPProfile("supervisor", getSettings().getString(
-          "componentDescriptor.supervisor")));
+      Profile profile = new Profile();
+      profile.setName("supervisor");
+      profile.getLabel().put(I18NHelper.defaultLanguage, getSettings().getString(
+          "componentDescriptor.supervisor"));
+      listSPProfile.add(profile);
     }
 
-    waComponent = new WAComponent(m_processModel.getName(), strLabel,
-        strDescription, getSettings().getString("componentDescriptor.suite"),
-        true, false, getSettings().getString(
-        "componentDescriptor.managerInstanciator"), new String[0],
-        listSPProfile);
-    waComponent.setRequestRouter(getSettings().getString(
-        "componentDescriptor.managerRequestRouter"));
-    spParameters.addParameter(spParameter);
-    waComponent.setSPParameters(spParameters);
+    waComponent = new WAComponent();
+    waComponent.setName(m_processModel.getName());
+    waComponent.getLabel().put(I18NHelper.defaultLanguage, strLabel);
+    waComponent.getDescription().put(I18NHelper.defaultLanguage, getSettings().getString(
+        "componentDescriptor.suite"));
+    waComponent.setVisible(true);
+    waComponent.setPortlet(false);
+    waComponent.setInstanceClassName(getSettings().getString(
+        "componentDescriptor.managerInstanciator"));
+    waComponent.setProfiles(listSPProfile);
+    waComponent.setRouter(getSettings().getString("componentDescriptor.managerRequestRouter"));
+    spParameters.add(spParameter);
+    waComponent.setParameters(spParameters);
 
     try {
-      waComponent.writeToXml();
-
-      // Save the descriptor name
-      //
+      Instanciateur.saveComponent(waComponent, waComponent.getName() + ".xml");
       m_strReferencedInComponent = m_processModel.getName();
-    } catch (InstanciationException e) {
+    } catch (JAXBException e) {
       throw new WorkflowDesignerException(
           "WorkflowDesignerSessionController.generateComponentDescriptor()",
           SilverpeasException.FATAL,
@@ -2953,16 +2959,16 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       for (Map.Entry<String, WAComponent> componentEntry : enumWAComponent) {
         String strComponentName = componentEntry.getKey();
         WAComponent waComponent = componentEntry.getValue();
-        if (waComponent.getSPParameters() != null) {
-          SPParameter spParameter = waComponent.getSPParameters().getParameter(
-              ComponentsInstanciatorIntf.PROCESS_XML_FILE_NAME);
-          if (spParameter != null && strProcessModelFileName.equals(spParameter.getValue())) {
-            return strComponentName;
+        if (waComponent.getParameters() != null) {
+          for (com.silverpeas.admin.components.Parameter spParameter : waComponent.getParameters()) {
+            if (ComponentsInstanciatorIntf.PROCESS_XML_FILE_NAME.equals(spParameter.getName())
+                && strProcessModelFileName.equals(spParameter.getValue())) {
+              return strComponentName;
+            }
           }
         }
       }
     }
-
     return null;
   }
 
@@ -2970,8 +2976,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
    * Clear the Component Descriptor cache and load it again
    * @throws WorkflowDesignerException when something goes wrong
    */
-  private void rebuildComponentDescriptorCache()
-      throws WorkflowDesignerException {
+  private void rebuildComponentDescriptorCache() throws WorkflowDesignerException {
     try {
       Instanciateur.rebuildWAComponentCache();
     } catch (InstanciationException e) {
@@ -2987,8 +2992,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
    * @param model process model file
    * @throws WorkflowDesignerException , WorkflowException
    */
-  public void uploadProcessModel(FileItem model)
-      throws WorkflowDesignerException, WorkflowException {
+  public void uploadProcessModel(FileItem model) throws WorkflowDesignerException, WorkflowException {
     String name = model.getName();
     if (name != null) {
       name = name.substring(name.lastIndexOf(File.separator) + 1, name.length());
