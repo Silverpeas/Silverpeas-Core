@@ -23,9 +23,11 @@
  */
 package com.silverpeas.socialNetwork.provider;
 
+import java.util.List;
+
+import com.silverpeas.calendar.Date;
 import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import java.util.List;
 
 public interface SocialEventsInterface {
 
@@ -38,7 +40,7 @@ public interface SocialEventsInterface {
    * @param offset
    * @throws SilverpeasException
    */
-  public List getSocialInformationsList(String userId, String classification, int limit, int offset)
+  public List<SocialInformation> getSocialInformationsList(String userId, String classification, Date begin, Date end)
       throws SilverpeasException;
 
   /**
@@ -50,9 +52,8 @@ public interface SocialEventsInterface {
    * @param firstIndex
    * @throws SilverpeasException
    */
-  public List getSocialInformationsListOfMyContacts(String myId, List<String> myContactsIds,
-      int numberOfElement, int firstIndex) throws
-      SilverpeasException;
+  public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId, List<String> myContactsIds,
+      Date begin, Date end) throws SilverpeasException;
 
   /**
    * get the Last Events of my contacts according to number of Item and the first Index
@@ -63,9 +64,8 @@ public interface SocialEventsInterface {
    * @param firstIndex
    * @throws SilverpeasException
    */
-  public List getLastSocialInformationsListOfMyContacts(String myId, List<String> myContactsIds,
-      int numberOfElement, int firstIndex) throws
-      SilverpeasException;
+  public List<SocialInformation> getLastSocialInformationsListOfMyContacts(String myId, List<String> myContactsIds,
+      Date begin, Date end) throws SilverpeasException;
 
   /**
    * get the my last Events according to number of Item and the first Index
@@ -75,7 +75,6 @@ public interface SocialEventsInterface {
    * @param firstIndex
    * @throws SilverpeasException
    */
-  public List getMyLastSocialInformationsList(String myId, int numberOfElement, int firstIndex)
-      throws
-      SilverpeasException;
+  public List<SocialInformation> getMyLastSocialInformationsList(String myId, Date begin, Date end)
+      throws SilverpeasException;
 }

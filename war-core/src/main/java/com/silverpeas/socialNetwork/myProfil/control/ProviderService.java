@@ -23,13 +23,15 @@
  */
 package com.silverpeas.socialNetwork.myProfil.control;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.silverpeas.calendar.Date;
 import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.silverpeas.socialNetwork.model.SocialInformationType;
-import java.util.List;
 import com.silverpeas.socialNetwork.provider.ProviderSwitchInterface;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import java.util.ArrayList;
 
 /**
  *
@@ -53,17 +55,16 @@ public class ProviderService {
    * @param firstIndex
    */
 
-  public List getSocialInformationsList(SocialInformationType socialInformationType, String userId,
-      String classification, int nbElements, int firstIndex) {
-    List<SocialInformation> list=new ArrayList<SocialInformation>();
+  public List<SocialInformation> getSocialInformationsList(SocialInformationType socialInformationType, String userId,
+      String classification, Date begin, Date end) {
     try {
       return switchInterface.getSocialInformationsList(socialInformationType, userId, classification,
-          nbElements, firstIndex);
+          begin, end);
     } catch (Exception ex) {
       SilverTrace.info("socialNetwork", "ProviderService.getSocialInformationsList",
         "root.MSG_GEN_ENTER_METHOD" +ex);
     }
-    return list;
+    return new ArrayList<SocialInformation>();
   }
 
   /**
@@ -77,17 +78,16 @@ public class ProviderService {
    * @param firstIndex
    */
 
-  public List getSocialInformationsListOfMyContact(SocialInformationType socialInformationType, String myId,
-      List<String> myContactIds, int nbElements, int firstIndex) {
-    List<SocialInformation> list=new ArrayList<SocialInformation>();
+  public List<SocialInformation> getSocialInformationsListOfMyContact(SocialInformationType socialInformationType, String myId,
+      List<String> myContactIds, Date begin, Date end) {
     try {
-      list= switchInterface.getSocialInformationsListOfMyContacts(socialInformationType, myId,
-          myContactIds, nbElements, firstIndex);
+      return switchInterface.getSocialInformationsListOfMyContacts(socialInformationType, myId,
+          myContactIds, begin, end);
     } catch (Exception ex) {
       SilverTrace.info("socialNetwork", "ProviderService.getSocialInformationsListOfMyContact",
         "root.MSG_GEN_ENTER_METHOD" +ex);
     }
-    return list;
+    return new ArrayList<SocialInformation>();
   }
 
 }

@@ -96,14 +96,11 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
 
     MyProfilSessionController myProfilSC = (MyProfilSessionController) componentSC;
     SNFullUser snUserFull = new SNFullUser(myProfilSC.getUserId());
-    
-    String userId = (String) request.getAttribute("UserId");
-    boolean isAContact = myProfilSC.isAContact(userId);
-    
+       
     MyProfileRoutes route = valueOf(function);
     
     try {
-      if (route == Main || route == MyInfos) {
+      if (route == MyInfos) {
         // Détermination du domaine du user
         boolean domainRW = myProfilSC.isUserDomainRW();
         if (domainRW) {
@@ -151,6 +148,12 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
         MyInvitationsHelper helper = new MyInvitationsHelper();
         helper.getAllInvitationsSent(myProfilSC, request);
         request.setAttribute("View", function);
+        destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
+      } else if (route == MyProfileRoutes.MyWall) {
+        request.setAttribute("View", function);
+        destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
+      } else if (route == Main || route == MyProfileRoutes.MyFeed) {
+        request.setAttribute("View", MyProfileRoutes.MyFeed.toString());
         destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
       } else if (function.equalsIgnoreCase("MyEvents")) {
         try {

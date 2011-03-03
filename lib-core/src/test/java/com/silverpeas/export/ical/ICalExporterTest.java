@@ -39,6 +39,8 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.UUID;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -62,8 +64,7 @@ import static com.silverpeas.calendar.TimeUnit.*;
 @ContextConfiguration(locations = "/spring-export.xml")
 public class ICalExporterTest {
 
-  private static final String ICS_PATH = PathTestUtil.TARGET_DIR
-      + "test-classes" + File.separatorChar + "myexport.ics";
+  private String icsPath;
   private Exporter<CalendarEvent> exporter;
   private ExportDescriptor descriptor;
 
@@ -72,17 +73,18 @@ public class ICalExporterTest {
 
   @Before
   public void setUp() throws IOException {
+    icsPath = PathTestUtil.TARGET_DIR
+        + "test-classes" + File.separatorChar + "myexport-" + UUID.randomUUID().toString() + ".ics";
     ExporterFactory factory = ExporterFactory.getFactory();
     exporter = factory.getICalExporter();
     assertNotNull(exporter);
-
-    assertThat(new File(ICS_PATH).exists(), is(false));
-    descriptor = ExportDescriptor.withWriter(new FileWriter(ICS_PATH));
+    assertThat(new File(icsPath).exists(), is(false));
+    descriptor = ExportDescriptor.withWriter(new FileWriter(icsPath));
   }
 
   @After
-  public void tearDown() {
-    FileUtils.deleteQuietly(new File(ICS_PATH));
+  public void tearDown() throws IOException {
+    FileUtils.deleteQuietly(new File(icsPath));
   }
 
   @Test
@@ -110,7 +112,7 @@ public class ICalExporterTest {
     CalendarEvent event = generateEventWithTitle("toto", onDay(false));
     exporter.export(descriptor, event);
 
-    File icsFile = new File(ICS_PATH);
+    File icsFile = new File(icsPath);
     assertThat(icsFile.exists(), is(true));
     String content = FileUtils.readFileToString(icsFile);
     assertThat(content, describes(event));
@@ -125,7 +127,7 @@ public class ICalExporterTest {
     CalendarEvent event = generateEventWithTitle("toto", onDay(true));
     exporter.export(descriptor, event);
 
-    File icsFile = new File(ICS_PATH);
+    File icsFile = new File(icsPath);
     assertThat(icsFile.exists(), is(true));
     String content = FileUtils.readFileToString(icsFile);
     assertThat(content, describes(event));
@@ -142,7 +144,7 @@ public class ICalExporterTest {
     CalendarEvent event3 = generateEventWithTitle("toto3", onDay(false));
     exporter.export(descriptor, event1, event2, event3);
 
-    File icsFile = new File(ICS_PATH);
+    File icsFile = new File(icsPath);
     assertThat(icsFile.exists(), is(true));
     String content = FileUtils.readFileToString(icsFile);
     for (CalendarEvent event : Arrays.asList(event1, event2, event3)) {
@@ -160,37 +162,39 @@ public class ICalExporterTest {
       Exception {
     CalendarEvent event = generateRecurringEventWithTitle("recurring", onDay(false));
     exporter.export(descriptor, event);
-    File icsFile = new File(ICS_PATH);
+    File icsFile = new File(icsPath);
     assertThat(icsFile.exists(), is(true));
     String content = FileUtils.readFileToString(icsFile);
     assertThat(content, describes(event));
   }
 
   /**
-   * Export one event recurring on some days of week in iCal format into a specified file.
-   * The recurring information of the event should be indicated in the iCal file.
+   * Export one event recurring on some days of week in iCal format into a specified file. The
+   * recurring information of the event should be indicated in the iCal file.
    * @throws Exception if the export fails.
    */
   @Test
-  public void exportOneRecurringEventOnSomeDaysOfWeekGenerateAnICalFileWithInfoOnThatEventAndItsRecurrence() throws
+  public void exportOneRecurringEventOnSomeDaysOfWeekGenerateAnICalFileWithInfoOnThatEventAndItsRecurrence()
+      throws
       Exception {
     CalendarEventRecurrence recurrence = every(MONTH).
         on(nthOccurrence(2, MONDAY), nthOccurrence(1, THURSDAY));
     CalendarEvent event = generateEventWithTitle("recurring", true).recur(recurrence);
     exporter.export(descriptor, event);
-    File icsFile = new File(ICS_PATH);
+    File icsFile = new File(icsPath);
     assertThat(icsFile.exists(), is(true));
     String content = FileUtils.readFileToString(icsFile);
     assertThat(content, describes(event));
   }
 
   /**
-   * Export one recurring event withWriter a recurring end date in iCal format into a specified file.
-   * The recurring information of the event should be indicated in the iCal file.
+   * Export one recurring event withWriter a recurring end date in iCal format into a specified
+   * file. The recurring information of the event should be indicated in the iCal file.
    * @throws Exception if the export fails.
    */
   @Test
-  public void exportOneEventWithARecurringEndDateGenerateAnICalFileWithInfoOnThatEventAndItsRecurrence() throws
+  public void exportOneEventWithARecurringEndDateGenerateAnICalFileWithInfoOnThatEventAndItsRecurrence()
+      throws
       Exception {
     CalendarEvent event = generateRecurringEventWithTitle("recurring", onDay(false));
     Calendar endDate = Calendar.getInstance();
@@ -198,19 +202,20 @@ public class ICalExporterTest {
     event.getRecurrence().upTo(new Date(endDate.getTime()));
     exporter.export(descriptor, event);
 
-    File icsFile = new File(ICS_PATH);
+    File icsFile = new File(icsPath);
     assertThat(icsFile.exists(), is(true));
     String content = FileUtils.readFileToString(icsFile);
     assertThat(content, describes(event));
   }
 
   /**
-   * Export one recurring event withWriter a recurring end date in iCal format into a specified file.
-   * The recurring information of the event should be indicated in the iCal file.
+   * Export one recurring event withWriter a recurring end date in iCal format into a specified
+   * file. The recurring information of the event should be indicated in the iCal file.
    * @throws Exception if the export fails.
    */
   @Test
-  public void exportOneEventWithARecurringEndDateTimeGenerateAnICalFileWithInfoOnThatEventAndItsRecurrence() throws
+  public void exportOneEventWithARecurringEndDateTimeGenerateAnICalFileWithInfoOnThatEventAndItsRecurrence()
+      throws
       Exception {
     CalendarEvent event = generateRecurringEventWithTitle("recurring", onDay(false));
     Calendar endDate = Calendar.getInstance();
@@ -218,7 +223,7 @@ public class ICalExporterTest {
     event.getRecurrence().upTo(new DateTime(endDate.getTime()));
     exporter.export(descriptor, event);
 
-    File icsFile = new File(ICS_PATH);
+    File icsFile = new File(icsPath);
     assertThat(icsFile.exists(), is(true));
     String content = FileUtils.readFileToString(icsFile);
     assertThat(content, describes(event));

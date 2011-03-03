@@ -186,10 +186,14 @@ $(document).ready(function(){
 
 <div id="publicProfileContenu">
 
+	<fmt:message key="myProfile.tab.feed" var="feed" />
+	<fmt:message key="myProfile.tab.wall" var="wall" />
 	<fmt:message key="myProfile.tab.profile" var="profile" />
 	<fmt:message key="myProfile.tab.invitations" var="invitations" />
 	<fmt:message key="myProfile.tab.settings" var="settings" />
 	<view:tabs>
+		<view:tab label="${feed}" action="<%=MyProfileRoutes.MyFeed.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MyFeed.toString().equals(view)) %>" />
+		<view:tab label="${wall}" action="<%=MyProfileRoutes.MyWall.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MyWall.toString().equals(view)) %>" />
     	<view:tab label="${profile}" action="<%=MyProfileRoutes.MyInfos.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MyInfos.toString().equals(view)) %>" />
     	<view:tab label="${invitations}" action="<%=MyProfileRoutes.MyInvitations.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MyInvitations.toString().equals(view) || MyProfileRoutes.MySentInvitations.toString().equals(view)) %>" />
     	<view:tab label="${settings}" action="<%=MyProfileRoutes.MySettings.toString() %>" selected="<%=Boolean.toString(MyProfileRoutes.MySettings.toString().equals(view)) %>" />
@@ -201,6 +205,8 @@ $(document).ready(function(){
 		<%@include file="myProfileTabSettings.jsp" %>
 	<% } else if (MyProfileRoutes.MyInvitations.toString().equals(view) || MyProfileRoutes.MySentInvitations.toString().equals(view)) { %>
 		<%@include file="myProfileTabInvitations.jsp" %>
+	<% } else if (MyProfileRoutes.MyWall.toString().equals(view) || MyProfileRoutes.MyFeed.toString().equals(view)) { %>
+		<%@include file="myProfileTabWall.jsp" %>
 	<% } %>
               
 </div>   

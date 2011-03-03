@@ -23,13 +23,16 @@
  */
 package com.silverpeas.socialNetwork.relationShip;
 
-import com.silverpeas.components.model.AbstractTestDao;
 import java.util.Calendar;
-
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+
 import org.dbunit.database.IDatabaseConnection;
+
+import com.silverpeas.components.model.AbstractTestDao;
+import com.silverpeas.socialNetwork.model.SocialInformation;
+import com.stratelia.webactiv.util.DateUtil;
 
 /**
  *
@@ -152,9 +155,12 @@ public class TestRelationShipDao extends AbstractTestDao {
       assertEquals("Should have 2 relationships in db", 2, relationShips.size());
       assertEquals("First should be 1 et 2", expectedRelationShip1, relationShips.get(0));
       assertEquals("Second should be 1 et 3", expectedRelationShip2, relationShips.get(1));
-      List<SocialInformationRelationShip> listSIR = dao.getAllMyRelationShips(connexion.
-          getConnection(), myId + "",
-          4, 0);
+      
+      Date begin = DateUtil.parse("2010/12/31");
+      Date end = DateUtil.parse("2010/01/01");
+      
+      List<SocialInformation> listSIR = dao.getAllMyRelationShips(connexion.
+          getConnection(), myId + "", begin, end);
       assertNotNull("Relationships should exist", listSIR);
     } finally {
       closeConnection(connexion);

@@ -57,21 +57,21 @@ public interface CalendarBmBusinessSkeleton {
    * includes all kinds of events
    */
   public List<JournalHeader> getNextEventsForUser(String day, String userId,
-      String classification, int limit, int offset) throws RemoteException;
+      String classification, Date begin, Date end) throws RemoteException;
 
   /**
    * get Next Social Events for a given list of my Contacts returns the next events (SocialInformationEvent). This
    * includes all kinds of events
    */
   public List<SocialInformationEvent> getNextEventsForMyContacts(String day, String myId,
-      List<String> myContactsIds, int numberOfElement, int firstIndex) throws RemoteException;
+      List<String> myContactsIds, Date begin, Date end) throws RemoteException;
 
   /**
    * get Last Social Events for a given list of my Contacts returns the next events (SocialInformationEvent). This
    * includes all kinds of events
    */
   public List<SocialInformationEvent> getLastEventsForMyContacts(String day, String myId,
-      List<String> myContactsIds, int numberOfElement, int firstIndex) throws RemoteException;
+      List<String> myContactsIds, Date begin, Date end) throws RemoteException;
 
   /**
    * get the my last Events  of information and number of Item and the first Index
@@ -80,7 +80,7 @@ public interface CalendarBmBusinessSkeleton {
    * @param :String day,String myId , int numberOfElement, int firstIndex
    */
   public List<SocialInformationEvent> getMyLastEvents(String day, String myId,
-       int numberOfElement, int firstIndex) throws RemoteException;
+      Date begin, Date end) throws RemoteException;
 
   /**
    * getPeriodSchedulablesForUser() for a particular user returns all the events scheduled during a

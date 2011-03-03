@@ -23,14 +23,17 @@
  */
 package com.silverpeas.socialNetwork.relationShip;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.UtilException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class RelationShipService {
 
@@ -172,15 +175,12 @@ public class RelationShipService {
    * @return List<SocialInformationRelationShip>
    * @throws SQLException
    */
-  public List<SocialInformationRelationShip> getAllMyRelationShips(String userId,
-      int numberOfElement, int firstIndex) throws SQLException {
+  public List<SocialInformation> getAllMyRelationShips(String userId,
+      Date begin, Date end) throws SQLException {
     Connection connection = null;
-    List<SocialInformationRelationShip> listMyRelation =
-        new ArrayList<SocialInformationRelationShip>();
     try {
       connection = getConnection(true);
-      listMyRelation = relationShipDao.getAllMyRelationShips(connection, userId, numberOfElement,
-          firstIndex);
+      return relationShipDao.getAllMyRelationShips(connection, userId, begin, end);
     } catch (Exception ex) {
       SilverTrace.error("com.silverpeas.socialNetwork.relationShip",
           "RelationShipService.getAllMyRelationShips", "",
@@ -188,7 +188,7 @@ public class RelationShipService {
     } finally {
       DBUtil.close(connection);
     }
-    return listMyRelation;
+    return new ArrayList<SocialInformation>();
   }
 
   /**
@@ -201,17 +201,13 @@ public class RelationShipService {
    * @return List<SocialInformationRelationShip>
    * @throws SQLException
    */
-  public List<SocialInformationRelationShip> getAllRelationShipsOfMyContact(String myId,
-      List<String> myContactsIds, int numberOfElement, int firstIndex) throws SQLException {
+  public List<SocialInformation> getAllRelationShipsOfMyContact(String myId,
+      List<String> myContactsIds, Date begin, Date end) throws SQLException {
     Connection connection = null;
-    List<SocialInformationRelationShip> listMyRelation =
-        new ArrayList<SocialInformationRelationShip>();
     try {
       connection = getConnection(true);
-      listMyRelation =
-          relationShipDao.getAllRelationShipsOfMyContact(connection, myId, myContactsIds,
-              numberOfElement,
-              firstIndex);
+      return relationShipDao.getAllRelationShipsOfMyContact(connection, myId, myContactsIds, begin,
+          end);
     } catch (Exception ex) {
       SilverTrace.error("com.silverpeas.socialNetwork.relationShip",
           "RelationShipService.getAllRelationShipsOfMyContact", "",
@@ -219,7 +215,7 @@ public class RelationShipService {
     } finally {
       DBUtil.close(connection);
     }
-    return listMyRelation;
+    return new ArrayList<SocialInformation>();
   }
 
   /**

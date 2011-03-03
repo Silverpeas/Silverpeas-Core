@@ -3301,27 +3301,28 @@ caption {
 	width:25px;
 	}
 
-#newsFeedProfil .txt .detail.statut {
-	background-image:url(pictos/newsFeed_statut.gif);
+#newsFeedProfil .txt .decoration-status {
+	background-image:url(../icons/newsFeed_statut.gif);
 	padding-left:20px;
 	}
 	
-#newsFeedProfil .txt .detail.publication {
-	background-image:url(pictos/newsFeed_publication.gif);
+#newsFeedProfil .txt .decoration-publication {
+	background-image:url(../icons/newsFeed_publication.gif);
 	padding-left:20px;
 	}
 	
-#newsFeedProfil .txt .detail.event {
-	background-image:url(pictos/newsFeed_event.gif);
+#newsFeedProfil .txt .decoration-event,
+#newsFeedProfil .txt .decoration-lastevent {
+	background-image:url(../icons/newsFeed_event.gif);
 	padding-left:20px;
 	}
 
-#newsFeedProfil .txt .detail.picture {
-	background-image:url(pictos/newsFeed_picture.gif);
+#newsFeedProfil .txt .decoration-photo {
+	background-image:url(../icons/newsFeed_picture.gif);
 	padding-left:20px;
 	}
 	
-#newsFeedProfil	 .name { 
+#newsFeedProfil .name { 
 	color:#26334A;
 	}
 	
@@ -3332,8 +3333,33 @@ html > body #newsFeedProfil	.a_new {
 	min-height:50px;
 	height:auto;
 	}
+
+.newsFeed .linkMore {
+	background-image: none;
+}
+
+.newsFeed .linkMore span {
+    background: transparent url("../icons/arrow/arrowDown.gif") no-repeat scroll right center;
+	padding-right: 30px;
+}
 	
-	
+.newsFeed .inprogress {
+    background-color: #EAEAEA; 
+    border-bottom: 1px solid #CCCCCC;
+    border-top: 1px solid #CCCCCC;
+    clear: both;
+    color: #4C4C4C;
+    display: block;
+    font-size: 11px;
+    line-height: 30px;
+}
+
+.newsFeed .inprogress span {
+	background: #EAEAEA url("../icons/inProgress-horizontal.gif") no-repeat scroll right center;
+	padding-right: 30px;
+	margin: 0px 15px; 
+}
+
 /* Invitation  et contact*/
 #ReceiveInvitation, #SendInvitation , #contactProfil{
 	float:left;
@@ -3477,7 +3503,7 @@ hr.sep  {
 	
 /* class actuellement utilisée dans l'annuaire expert à généraliser */
 .linkMore {
-    background: url("../icons/open.gif") no-repeat scroll right center #EFF9E3;
+    background: url("../icons/arrow/arrowDown.gif") no-repeat scroll right center #EFF9E3;
     border-bottom: 1px solid #CCCCCC;
     border-top: 1px solid #CCCCCC;
     clear: both;

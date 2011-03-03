@@ -25,15 +25,14 @@ package com.silverpeas.socialNetwork.status;
 
 import java.util.List;
 
+import com.silverpeas.calendar.Date;
+import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.silverpeas.socialNetwork.provider.SocialStatusInterface;
 
 public class SocialStatus implements SocialStatusInterface {
 
-  static private StatusService statusService;
-
   private StatusService getStatusService() {
-    statusService = new StatusService();
-    return statusService;
+    return new StatusService();
   }
 
   /**
@@ -45,14 +44,9 @@ public class SocialStatus implements SocialStatusInterface {
    * @return List
    */
   @Override
-  public List getSocialInformationsList(String userid, int nbElement, int firstIndex) {
+  public List<SocialInformation> getSocialInformationsList(String userid, Date begin, Date end) {
 
-    List<SocialInformationStatus> list_status =
-        this.getStatusService().getAllStatusService(Integer.
-            parseInt(userid),
-            nbElement, firstIndex);
-
-    return list_status;
+    return getStatusService().getAllStatusService(Integer.parseInt(userid), begin, end);
   }
 /**
  * Get list of   socialInformationStatus of my contacts
@@ -63,12 +57,9 @@ public class SocialStatus implements SocialStatusInterface {
  * @return List
  */
   @Override
-  public List<SocialInformationStatus> getSocialInformationsListOfMyContacts(
-      List<String> myContactsIds,
-      int numberOfElement, int firstIndex) {
+  public List<SocialInformation> getSocialInformationsListOfMyContacts(
+      List<String> myContactsIds, Date begin, Date end) {
 
-    List<SocialInformationStatus> list_status = this.getStatusService().
-        getSocialInformationsListOfMyContacts(myContactsIds,
-        numberOfElement, firstIndex); return list_status;
+    return getStatusService().getSocialInformationsListOfMyContacts(myContactsIds, begin, end);
   }
 }

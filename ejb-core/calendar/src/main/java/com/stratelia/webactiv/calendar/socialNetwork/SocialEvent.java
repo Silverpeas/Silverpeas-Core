@@ -23,30 +23,22 @@
  */
 package com.stratelia.webactiv.calendar.socialNetwork;
 
-import com.silverpeas.socialNetwork.model.SocialInformation;
-import com.silverpeas.socialNetwork.provider.SocialEventsInterface;
-
-import com.stratelia.webactiv.calendar.control.CalendarBm;
-
-import com.stratelia.webactiv.calendar.control.CalendarBmHome;
-import com.stratelia.webactiv.calendar.control.CalendarException;
-
-import com.stratelia.webactiv.calendar.model.JournalDAO;
-import com.stratelia.webactiv.calendar.model.JournalHeader;
-import com.stratelia.webactiv.calendar.model.Schedulable;
-
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.exception.UtilException;
-import java.lang.String;
-
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import com.silverpeas.calendar.Date;
+import com.silverpeas.socialNetwork.provider.SocialEventsInterface;
+import com.stratelia.webactiv.calendar.control.CalendarBm;
+import com.stratelia.webactiv.calendar.control.CalendarBmHome;
+import com.stratelia.webactiv.calendar.control.CalendarException;
+import com.stratelia.webactiv.calendar.model.JournalHeader;
+import com.stratelia.webactiv.calendar.model.Schedulable;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
  *
@@ -55,7 +47,6 @@ import java.util.List;
 public class SocialEvent implements SocialEventsInterface {
 
   static private CalendarBm calendarBm = null;
-  private JournalDAO dao = new JournalDAO();
 
   /**
    * getEJB
@@ -86,14 +77,14 @@ public class SocialEvent implements SocialEventsInterface {
    * @throws UtilException
    */
   @Override
-  public List getSocialInformationsList(String userId, String classification, int limit, int offset)
+  public List getSocialInformationsList(String userId, String classification, Date begin, Date end)
       throws CalendarException, UtilException {
     List<JournalHeader> list = null;
     List listEvent = new ArrayList();
     Calendar calendar = Calendar.getInstance();
     try {
       list = getEJB().getNextEventsForUser(DateUtil.date2SQLDate(calendar.getTime()), userId,
-          classification, limit, offset);
+          classification, begin, end);
     } catch (Exception ex) {
       throw new CalendarException("SocialEvent.getSocialInformationsList()",
           SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", ex);
@@ -117,19 +108,15 @@ public class SocialEvent implements SocialEventsInterface {
    */
   @Override
   public List getSocialInformationsListOfMyContacts(String myId,
-      List<String> myContactsIds, int numberOfElement, int firstIndex) throws SilverpeasException {
-    List<SocialInformationEvent> list = null;
+      List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
     Calendar calendar = Calendar.getInstance();
     String day = DateUtil.date2SQLDate(calendar.getTime());
     try {
-      list = getEJB().getNextEventsForMyContacts(day, myId, myContactsIds, numberOfElement,
-          firstIndex);
+      return getEJB().getNextEventsForMyContacts(day, myId, myContactsIds, begin, end);
     } catch (Exception ex) {
       throw new CalendarException("SocialEvent.getSocialInformationsList()",
           SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", ex);
     }
-System.out.println("listEvent size="+list.size());
-    return list;
   }
 
   /**
@@ -143,19 +130,15 @@ System.out.println("listEvent size="+list.size());
    */
   @Override
   public List getLastSocialInformationsListOfMyContacts(String myId,
-      List<String> myContactsIds, int numberOfElement, int firstIndex) throws SilverpeasException {
-    List<SocialInformationEvent> list = null;
+      List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
     Calendar calendar = Calendar.getInstance();
     String day = DateUtil.date2SQLDate(calendar.getTime());
     try {
-      list = getEJB().getLastEventsForMyContacts(day, myId, myContactsIds, numberOfElement,
-          firstIndex);
+      return getEJB().getLastEventsForMyContacts(day, myId, myContactsIds, begin, end);
     } catch (Exception ex) {
       throw new CalendarException("SocialEvent.getSocialInformationsList()",
           SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", ex);
     }
-
-    return list;
   }
 
   /**
@@ -167,19 +150,15 @@ System.out.println("listEvent size="+list.size());
    * @throws SilverpeasException
    */
   @Override
-  public List getMyLastSocialInformationsList(String myId, int numberOfElement, int firstIndex)
+  public List getMyLastSocialInformationsList(String myId, Date begin, Date end)
       throws SilverpeasException {
-   List<SocialInformationEvent> list = null;
     Calendar calendar = Calendar.getInstance();
     String day = DateUtil.date2SQLDate(calendar.getTime());
     try {
-      list = getEJB().getMyLastEvents(day, myId, numberOfElement,
-          firstIndex);
+      return getEJB().getMyLastEvents(day, myId, begin, end);
     } catch (Exception ex) {
       throw new CalendarException("SocialEvent.getSocialInformationsList()",
           SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", ex);
     }
-
-    return list;
   }
 }

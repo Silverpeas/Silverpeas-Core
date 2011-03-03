@@ -28,23 +28,27 @@
  */
 package com.stratelia.webactiv.util.publication.ejb;
 
-import java.util.Iterator;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import java.util.Collection;
-import com.silverpeas.components.model.AbstractTestDao;
-import com.silverpeas.jcrutil.RandomGenerator;
-import com.stratelia.webactiv.publication.socialNetwork.SocialInformationPublication;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import com.stratelia.webactiv.util.publication.model.PublicationWithStatus;
 import java.io.File;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+
 import javax.naming.Context;
+
+import com.silverpeas.components.model.AbstractTestDao;
+import com.silverpeas.jcrutil.RandomGenerator;
+import com.silverpeas.socialNetwork.model.SocialInformation;
+import com.stratelia.webactiv.publication.socialNetwork.SocialInformationPublication;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.util.publication.model.PublicationWithStatus;
 
 /**
  *
@@ -991,66 +995,58 @@ public class PublicationDAOTest extends AbstractTestDao {
     String user100 = "100";//who created  pub1
 
     String user200 = "200";//who updated pub1 and pub2
-    int pub1Id = 100;
+    String pub1Id = "100";
 
-    PublicationDetail detail1 = PublicationDAO.getPublication(con, pub1Id);
-
+    PublicationDetail detail1 = PublicationDAO.loadRow(con, new PublicationPK(pub1Id));
 
 //who created  pub1
     SocialInformationPublication sp1 = new SocialInformationPublication(new PublicationWithStatus(
         (detail1), false));
     assertNotNull("SocialInformationPublication1 must be not null", sp1);
-    List<SocialInformationPublication> list100 = new ArrayList<SocialInformationPublication>();
+    List<SocialInformation> list100 = new ArrayList<SocialInformation>();
     list100.add(sp1);
-    List<SocialInformationPublication> list100DOA = PublicationDAO.getAllPublicationsIDbyUserid(con,
-        user100,
-        0, 5);
-    assertEquals("Must be equal", list100.get(0), list100DOA.get(0));
-    list100DOA = PublicationDAO.getAllPublicationsIDbyUserid_MMSQL(con, user100,
-        0, 5);
+    
+    Date begin = DateUtil.parse("2008/11/01");
+    Date end = DateUtil.parse("2008/11/30");
+    
+    List<SocialInformation> list100DOA = PublicationDAO.getAllPublicationsIDbyUserid(con,
+        user100, begin, end);
     assertEquals("Must be equal", list100.get(0), list100DOA.get(0));
 
 //who created pub2
     String user101 = "101";//who created pub2
-    int pub2Id = 101;
-    PublicationDetail detail2 = PublicationDAO.getPublication(con, pub2Id);
+    String pub2Id = "101";
+    PublicationDetail detail2 = PublicationDAO.loadRow(con, new PublicationPK(pub2Id));
     SocialInformationPublication sp2 = new SocialInformationPublication(new PublicationWithStatus(
         (detail2), false));
-
     assertNotNull("SocialInformationPublication2 must be not null", sp2);
-    List<SocialInformationPublication> list101 = new ArrayList<SocialInformationPublication>();
+    
+    List<SocialInformation> list101 = new ArrayList<SocialInformation>();
     list101.add(sp2);
-    List<SocialInformationPublication> list101DOA = PublicationDAO.getAllPublicationsIDbyUserid(con,
-        user101,
-        0, 5);
+    List<SocialInformation> list101DOA = PublicationDAO.getAllPublicationsIDbyUserid(con,
+        user101, begin, end);
     assertTrue("Must be equal", list101.get(0).equals(list101DOA.get(0)));
 
 //who updated pub1 and pub2
+    begin = DateUtil.parse("2009/11/01");
+    end = DateUtil.parse("2009/11/30");
     SocialInformationPublication sp1User200 = new SocialInformationPublication(new PublicationWithStatus(
         (detail1), true));
     assertNotNull("SocialInformationPublication2 must be not null", sp1User200);
     SocialInformationPublication sp2User200 = new SocialInformationPublication(new PublicationWithStatus(
         (detail2), true));
     assertNotNull("SocialInformationPublication2 must be not null", sp2User200);
-    List<SocialInformationPublication> list200 = new ArrayList<SocialInformationPublication>();
-    list200.add(sp1User200);
+    List<SocialInformation> list200 = new ArrayList<SocialInformation>();
     list200.add(sp2User200);
-    List<SocialInformationPublication> list200DOA = PublicationDAO.getAllPublicationsIDbyUserid(con,
-        user200,
-        0, 5);
+    list200.add(sp1User200);
+    List<SocialInformation> list200DOA = PublicationDAO.getAllPublicationsIDbyUserid(con,
+        user200, begin, end);
     assertEquals("Must be equal", list200.get(0), list200DOA.get(0));
     assertEquals("Must be equal", list200.get(1), list200DOA.get(1));
-    // test first element
-    list200DOA = PublicationDAO.getAllPublicationsIDbyUserid(con, user200,
-        1, 5);
-    assertEquals("Must be equal", list200.get(1), list200DOA.get(0));
-    list200DOA = PublicationDAO.getAllPublicationsIDbyUserid_MMSQL(con, user200,
-        1, 5);
-    assertEquals("Must be equal", list200.get(1), list200DOA.get(0));
 
     // test nbr of elements
     list200DOA = PublicationDAO.getAllPublicationsIDbyUserid(con, user200,
-        0, 1);
+        begin, end);
     assertEquals("Must be equal", list200.get(0), list200DOA.get(0));
     List<String> options = new ArrayList<String>();
     options.add("kmelia200");
@@ -1058,9 +1054,9 @@ public class PublicationDAOTest extends AbstractTestDao {
     myContactsIds.add(user100);
     myContactsIds.add(user200);
     list200DOA = PublicationDAO.getSocialInformationsListOfMyContacts(con, myContactsIds,
-        options, 4, 0);
+        options, begin, end);
     assertNotNull("SocialInformationPublication of my contact must be not null", list200DOA);
     assertTrue(
-        "SocialInformationPublication of my contact must be not empty", list200DOA.size() > 0);
+        "SocialInformationPublication of my contact must be not empty", !list200DOA.isEmpty());
   }
 }

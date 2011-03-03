@@ -28,6 +28,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.silverpeas.calendar.Date;
+import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
@@ -38,7 +40,7 @@ public class StatusService {
   private StatusDao statusDao;
 
   public StatusService() {
-    this.statusDao = new StatusDao();
+    statusDao = new StatusDao();
   }
 /**
  * get Connection
@@ -47,9 +49,7 @@ public class StatusService {
  * @throws SQLException
  */
   private Connection getConnection() throws UtilException, SQLException {
-    Connection connection = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    connection.setAutoCommit(false);
-    return connection;
+    return DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
   }
 /**
  * Change my Staus
@@ -61,15 +61,13 @@ public class StatusService {
     int id = -1;
     try {
       connection = getConnection();
-      id = this.statusDao.changeStatus(connection, status);
-      connection.commit();
+      id = statusDao.changeStatus(connection, status);
       if (id >= 0) {
         return status.getDescription();
       }
     } catch (Exception ex) {
       SilverTrace.error("Silverpeas.Bus.SocialNetwork.Status", "StatusService.changeStatus", "",
           ex);
-      DBUtil.rollback(connection);
     } finally {
       DBUtil.close(connection);
     }
@@ -85,12 +83,10 @@ public class StatusService {
     boolean delete_status = false;
     try {
       connection = getConnection();
-      delete_status = this.statusDao.deleteStatus(connection, id);
-      connection.commit();
+      delete_status = statusDao.deleteStatus(connection, id);
     } catch (Exception ex) {
       SilverTrace.error("Silverpeas.Bus.SocialNetwork.Status", "StatusService.deleteStatus", "",
           ex);
-      DBUtil.rollback(connection);
     } finally {
       DBUtil.close(connection);
     }
@@ -106,12 +102,10 @@ public class StatusService {
     Status status = new Status();
     try {
       connection = getConnection();
-      status = this.statusDao.getStatus(connection, id);
-      connection.commit();
+      status = statusDao.getStatus(connection, id);
     } catch (Exception ex) {
       SilverTrace.error("Silverpeas.Bus.SocialNetwork.Status", "StatusService.getStatus", "",
           ex);
-      DBUtil.rollback(connection);
     } finally {
       DBUtil.close(connection);
     }
@@ -127,12 +121,10 @@ public class StatusService {
     Status status = new Status();
     try {
       connection = getConnection();
-      status = this.statusDao.getLastStatus(connection, userid);
-      connection.commit();
+      status = statusDao.getLastStatus(connection, userid);
     } catch (Exception ex) {
       SilverTrace.error("Silverpeas.Bus.SocialNetwork.Status", "StatusService.getLastStatus", "",
           ex);
-      DBUtil.rollback(connection);
     } finally {
       DBUtil.close(connection);
     }
@@ -149,12 +141,10 @@ public class StatusService {
     boolean update_status = false;
     try {
       connection = getConnection();
-      update_status = this.statusDao.UpdateStatus(connection, status);
-      connection.commit();
+      update_status = statusDao.UpdateStatus(connection, status);
     } catch (Exception ex) {
       SilverTrace.error("Silverpeas.Bus.SocialNetwork.Status", "StatusService.UpdateStatus", "",
           ex);
-      DBUtil.rollback(connection);
     } finally {
       DBUtil.close(connection);
     }
@@ -168,23 +158,19 @@ public class StatusService {
  * @param firstIndex
  * @return List<SocialInformationStatus>
  */
-  public List<SocialInformationStatus> getAllStatusService(int userId, int nbElement, int firstIndex) {
+  public List<SocialInformation> getAllStatusService(int userId, Date begin, Date end) {
     Connection connection = null;
-    List<SocialInformationStatus> status_list = new ArrayList<SocialInformationStatus>();
-
     try {
       connection = getConnection();
-      status_list = this.statusDao.getAllStatus(connection, userId, nbElement, firstIndex);
-      connection.commit();
+      return statusDao.getAllStatus(connection, userId, begin, end);
     } catch (Exception ex) {
       SilverTrace.error("Silverpeas.Bus.SocialNetwork.Status",
           "StatusService.getAllStatus", "",
           ex);
-      DBUtil.rollback(connection);
     } finally {
       DBUtil.close(connection);
     }
-    return status_list;
+    return new ArrayList<SocialInformation>();
   }
 /**
  * when data base is PostgreSQL get SocialInformation of my conatct
@@ -194,25 +180,18 @@ public class StatusService {
  * @param firstIndex
  * @return List<SocialInformationStatus>
  */
-  List<SocialInformationStatus> getSocialInformationsListOfMyContacts(List<String> myContactsIds,
-      int numberOfElement, int firstIndex) {
+  List<SocialInformation> getSocialInformationsListOfMyContacts(List<String> myContactsIds,
+      Date begin, Date end) {
     Connection connection = null;
-    List<SocialInformationStatus> status_list = new ArrayList<SocialInformationStatus>();
-
     try {
       connection = getConnection();
-      status_list =
-          this.statusDao.getSocialInformationsListOfMyContacts(connection, myContactsIds,
-              numberOfElement, firstIndex);
-      connection.commit();
+      return statusDao.getSocialInformationsListOfMyContacts(connection, myContactsIds, begin, end);
     } catch (Exception ex) {
-      SilverTrace.error("Silverpeas.Bus.SocialNetwork.Status",
-          "StatusService.getAllStatus", "",
+      SilverTrace.error("Silverpeas.Bus.SocialNetwork.Status", "StatusService.getAllStatus", "",
           ex);
-      DBUtil.rollback(connection);
     } finally {
       DBUtil.close(connection);
     }
-    return status_list;
+    return new ArrayList<SocialInformation>();
   }
 }

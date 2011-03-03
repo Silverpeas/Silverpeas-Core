@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
 
@@ -48,7 +49,7 @@ public class StatusDao {
       "UPDATE sb_sn_status  SET  description = ? WHERE id = ? ";
 
   /**
-   *  Change my Status
+   * Change my Status
    * @param connection
    * @param status
    * @return int
@@ -73,13 +74,14 @@ public class StatusDao {
     }
     return id;
   }
-/**
- * delete my status
- * @param connection
- * @param id
- * @return boolean
- * @throws SQLException
- */
+
+  /**
+   * delete my status
+   * @param connection
+   * @param id
+   * @return boolean
+   * @throws SQLException
+   */
   public boolean deleteStatus(Connection connection, int id) throws SQLException {
     PreparedStatement pstmt = null;
     boolean endAction = false;
@@ -93,13 +95,14 @@ public class StatusDao {
     }
     return endAction;
   }
-/**
- * get Status for user
- * @param connection
- * @param id
- * @return Status
- * @throws SQLException
- */
+
+  /**
+   * get Status for user
+   * @param connection
+   * @param id
+   * @return Status
+   * @throws SQLException
+   */
   public Status getStatus(Connection connection, int id) throws SQLException {
     Status status = null;
     ResultSet rs = null;
@@ -123,13 +126,14 @@ public class StatusDao {
     }
     return status;
   }
-/**
- * get last status for user
- * @param connection
- * @param userid
- * @return Status
- * @throws SQLException
- */
+
+  /**
+   * get last status for user
+   * @param connection
+   * @param userid
+   * @return Status
+   * @throws SQLException
+   */
   public Status getLastStatus(Connection connection, int userid) throws SQLException {
     Status status = new Status();
     ResultSet rs = null;
@@ -151,13 +155,14 @@ public class StatusDao {
     }
     return status;
   }
-/**
- * UpdateStatus
- * @param connection
- * @param status
- * @return boolean
- * @throws SQLException
- */
+
+  /**
+   * UpdateStatus
+   * @param connection
+   * @param status
+   * @return boolean
+   * @throws SQLException
+   */
   public boolean UpdateStatus(Connection connection, Status status) throws SQLException {
     PreparedStatement pstmt = null;
     boolean endAction = false;
@@ -173,125 +178,100 @@ public class StatusDao {
     }
     return endAction;
   }
-/**
- * when data base is PostgreSQL get all my SocialInformation
- * according to number of Item and the first Index
- * @param connection
- * @param userId
- * @param nbElement
- * @param firstIndex
- * @return List<SocialInformationStatus>
- * @throws SQLException
- */
-  public static List<SocialInformationStatus> getAllStatus_PostgreSQL(Connection connection,
-      int userId, int nbElement, int firstIndex) throws
-      SQLException {
+
+  /**
+   * get all my SocialInformation according to the type of data bes (PostgreSQL,Oracle,MMS)
+   * @throws SQLException
+   * @param connection
+   * @param userId
+   * @param nbElement
+   * @param firstIndex
+   * @return List<SocialInformationStatus>
+   * @throws SQLException
+   */
+  public List<SocialInformation> getAllStatus(Connection connection, int userId, Date begin,
+      Date end) throws SQLException {
     PreparedStatement pstmt = null;
     ResultSet rs = null;
-    List<SocialInformationStatus> status_list = new ArrayList<SocialInformationStatus>();
     try {
       String query =
-          "SELECT id,userid, creationdate, description FROM sb_sn_status  WHERE userid = ? ORDER BY creationdate DESC limit ? offset ?";
+          "SELECT id,userid, creationdate, description FROM sb_sn_status WHERE userid = ? " +
+              "and creationdate >= ? and creationdate <= ? ORDER BY creationdate DESC";
       pstmt = connection.prepareStatement(query);
       pstmt.setInt(1, userId);
-      pstmt.setInt(2, nbElement);
-      pstmt.setInt(3, firstIndex);
+      pstmt.setTimestamp(2, new Timestamp(begin.getTime()));
+      pstmt.setTimestamp(3, new Timestamp(end.getTime()));
       rs = pstmt.executeQuery();
 
-      while (rs.next()) {
-        Status status = new Status();
-        status.setId(rs.getInt(1));
-        status.setUserId(rs.getInt(2));
-        status.setCreationDate(new Date(rs.getTimestamp(3).getTime()));
-        status.setDescription(rs.getString(4));
-        status_list.add(new SocialInformationStatus(status));
-      }
+      return getSocialInformationsList(rs);
     } finally {
       DBUtil.close(rs, pstmt);
     }
-    return status_list;
   }
-/**
- * get all my SocialInformation
- * according to the type of data bes (PostgreSQL,Oracle,MMS)
- *
- * @throws SQLException
- * @param connection
- * @param userId
- * @param nbElement
- * @param firstIndex
- * @return List<SocialInformationStatus>
- * @throws SQLException
- */
-  public List<SocialInformationStatus> getAllStatus(Connection connection, int userId,
-      int nbElement,
-      int firstIndex) throws SQLException {
-    String DatabaseProductName = connection.getMetaData().getDatabaseProductName().toUpperCase();
-    if (DatabaseProductName.contains("PostgreSQL".toUpperCase())) {
-      return getAllStatus_PostgreSQL(connection, userId, nbElement, firstIndex);
-    }
-    return null;
 
-  }
-/**
- *  when data base is PostgreSQL get SocialInformation of my conatct
- * according to number of Item and the first Index
- * @param connection
- * @param myContactsIds
- * @param numberOfElement
- * @param firstIndex
- * @return List<SocialInformationStatus>
- * @throws SQLException
- */
-  List<SocialInformationStatus> getSocialInformationsListOfMyContacts(Connection connection,
-      List<String> myContactsIds, int numberOfElement, int firstIndex) throws SQLException {
+  /**
+   * when data base is PostgreSQL get SocialInformation of my conatct according to number of Item
+   * and the first Index
+   * @param connection
+   * @param myContactsIds
+   * @param numberOfElement
+   * @param firstIndex
+   * @return List<SocialInformationStatus>
+   * @throws SQLException
+   */
+  List<SocialInformation> getSocialInformationsListOfMyContacts(Connection connection,
+      List<String> myContactsIds, Date begin, Date end) throws SQLException {
     PreparedStatement pstmt = null;
     ResultSet rs = null;
-    List<SocialInformationStatus> status_list = new ArrayList<SocialInformationStatus>();
     try {
       String query =
-          "SELECT id,userid, creationdate, description FROM sb_sn_status  WHERE userid in (" +
-              listToSqlString(myContactsIds) + ") ORDER BY creationdate DESC limit ? offset ?";
+          "SELECT id,userid, creationdate, description FROM sb_sn_status WHERE userid in (" +
+              toSqlString(myContactsIds) + ") " +
+              "AND creationdate >= ? AND creationdate <= ? " +
+              "ORDER BY creationdate DESC";
 
       pstmt = connection.prepareStatement(query);
-      pstmt.setInt(1, numberOfElement);
-      pstmt.setInt(2, firstIndex);
+      pstmt.setTimestamp(1, new Timestamp(begin.getTime()));
+      pstmt.setTimestamp(2, new Timestamp(end.getTime()));
       rs = pstmt.executeQuery();
 
-      while (rs.next()) {
-        Status status = new Status();
-        status.setId(rs.getInt(1));
-        status.setUserId(rs.getInt(2));
-        status.setCreationDate(new Date(rs.getTimestamp(3).getTime()));
-        status.setDescription(rs.getString(4));
-        status_list.add(new SocialInformationStatus(status));
-      }
+      return getSocialInformationsList(rs);
     } finally {
       DBUtil.close(rs, pstmt);
+    }
+  }
+
+  private List<SocialInformation> getSocialInformationsList(ResultSet rs) throws SQLException {
+    List<SocialInformation> status_list = new ArrayList<SocialInformation>();
+    while (rs.next()) {
+      Status status = new Status();
+      status.setId(rs.getInt(1));
+      status.setUserId(rs.getInt(2));
+      status.setCreationDate(new Date(rs.getTimestamp(3).getTime()));
+      status.setDescription(rs.getString(4));
+      status_list.add(new SocialInformationStatus(status));
     }
     return status_list;
   }
 
   /**
- * convert list of contact ids to string for using in the query SQL
- * @param list
- * @return String
- */
-
-  private static String listToSqlString(List<String> list) {
-    String result = "";
-    if (list == null || list.size() == 0) {
+   * convert list of contact ids to string for using in the query SQL
+   * @param list
+   * @return String
+   */
+  private static String toSqlString(List<String> list) {
+    StringBuilder result = new StringBuilder(100);
+    if (list == null || list.isEmpty()) {
       return "''";
     }
-    int size = list.size();
     int i = 0;
     for (String var : list) {
-      i++;
-      result += "'" + var + "'";
-      if (i != size) {
-        result += ",";
+      if (i != 0) {
+        result.append(",");
       }
+      result.append("'").append(var).append("'");
+      i++;
     }
-    return result;
+    return result.toString();
   }
 }

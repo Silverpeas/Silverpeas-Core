@@ -23,51 +23,46 @@
  */
 package com.silverpeas.socialNetwork.newsFeed.servlets;
 
-import com.silverpeas.socialNetwork.model.SocialInformation;
-import com.silverpeas.socialNetwork.myProfil.control.SocialNetworkService;
-
-import java.io.*;
-
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import org.json.JSONObject;
-import com.silverpeas.socialNetwork.model.SocialInformationType;
-import com.silverpeas.socialNetwork.newsFeed.control.NewsFeedService;
-import com.silverpeas.socialNetwork.user.model.SNContactUser;
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.StringUtil;
-
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-
-
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.ResourceLocator;
-
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
-
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.json.JSONArray;
+import org.json.JSONObject;
+
+import com.silverpeas.socialNetwork.model.SocialInformation;
+import com.silverpeas.socialNetwork.model.SocialInformationType;
+import com.silverpeas.socialNetwork.myProfil.control.SocialNetworkService;
+import com.silverpeas.socialNetwork.newsFeed.control.NewsFeedService;
+import com.silverpeas.socialNetwork.relationShip.RelationShipService;
+import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 public class NewsFeedJSONServlet extends HttpServlet {
 
-  private static final int DEFAULT_OFFSET = 0;
-  private static final int DEFAULT_ELEMENT_PER_PAGE = 3;
-  private String mContext = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-      "ApplicationURL");
-  private String iconURL = mContext + "/socialNetwork/jsp/icons/";
-  private SocialInformationType type;
+  private static final long serialVersionUID = -7056446975706739300L;
   private SocialNetworkService socialNetworkService = new SocialNetworkService();
   private NewsFeedService newsFeedService = new NewsFeedService();
-  private ResourceLocator multilang;
-  private ResourceLocator settings;
-  private Locale locale;
 
   /**
    * servlet method for returning JSON format
@@ -79,102 +74,175 @@ public class NewsFeedJSONServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
-    locale = request.getLocale();
     HttpSession session = request.getSession();
     MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(
         "SilverSessionController");
-    String userId = m_MainSessionCtrl.getUserId();
-    //initialze myId for newsFeedService
-    newsFeedService.setMyId(Integer.parseInt(userId));
-    //initialze myId for socialNetworkService
+
+    String view = request.getParameter("View"); // Wall || Feed
+    if (!StringUtil.isDefined(view)) {
+      view = "Wall";
+    }
+
+    ResourceLocator multilang =
+        new ResourceLocator("com.silverpeas.socialNetwork.multilang.socialNetworkBundle",
+            m_MainSessionCtrl.getFavoriteLanguage());
+
+    ResourceLocator settings =
+        new ResourceLocator("com.silverpeas.socialNetwork.multilang.socialNetworkBundle", "");
+    int maxNbTries = settings.getInteger("newsFeed.maxNbTries", 10);
+    int minNbDataBeforeNewTry = settings.getInteger("newsFeed.minNbDataBeforeNewTry", 15);
+
+    if (StringUtil.getBooleanValue(request.getParameter("Init"))) {
+      session.setAttribute("Silverpeas_NewsFeed_LastDate", new Date());
+    }
+
+    Map<Date, List<SocialInformation>> map = new LinkedHashMap<Date, List<SocialInformation>>();
+
+    try {
+      // recover the type
+      SocialInformationType type = SocialInformationType.valueOf(request.getParameter("type"));
+
+      String userId = m_MainSessionCtrl.getUserId();
+      String anotherUserId = request.getParameter("userId");
+      if (StringUtil.isDefined(anotherUserId) && !anotherUserId.equals(userId)) {
+        view = "MyContactWall"; // forcing to display wall, ensuring to not display feed
+        RelationShipService rss = new RelationShipService();
+        if (!rss.isInRelationShip(Integer.parseInt(m_MainSessionCtrl.getUserId()), Integer
+            .parseInt(anotherUserId))) {
+          // Current user and target user are not in a relation
+          return;
+        }
+      }
+
+      com.silverpeas.calendar.Date[] period = getPeriod(session, settings);
+      com.silverpeas.calendar.Date begin = period[0];
+      com.silverpeas.calendar.Date end = period[1];
+
+      map = getInformations(view, userId, type, anotherUserId, begin, end);
+
+      int nbTries = 0;
+      while (getNumberOfInformations(map) < minNbDataBeforeNewTry && nbTries < maxNbTries) {
+        period = getPeriod(session, settings);
+
+        map.putAll(getInformations(view, userId, type, anotherUserId, period[0], period[1]));
+        nbTries++;
+      }
+
+    } catch (Exception ex) {
+      Logger.getLogger(NewsFeedJSONServlet.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    response.setCharacterEncoding("UTF-8");
+    response.setContentType("application/json");
+    PrintWriter out = response.getWriter();
+    out.println(toJsonS(map, m_MainSessionCtrl.getOrganizationController(), multilang));
+  }
+
+  private com.silverpeas.calendar.Date[] getPeriod(HttpSession session, ResourceLocator settings) {
+    int periodLength = settings.getInteger("newsFeed.period", 15);
+
+    Date lastDate = (Date) session.getAttribute("Silverpeas_NewsFeed_LastDate");
+
+    // process endDate
+    com.silverpeas.calendar.Date begin = new com.silverpeas.calendar.Date(lastDate);
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(lastDate);
+    calendar.add(Calendar.DAY_OF_MONTH, 0 - periodLength);
+    com.silverpeas.calendar.Date end = new com.silverpeas.calendar.Date(calendar.getTime());
+
+    // prepare next startDate
+    calendar.add(Calendar.DAY_OF_MONTH, -1);
+    session.setAttribute("Silverpeas_NewsFeed_LastDate", calendar.getTime());
+
+    com.silverpeas.calendar.Date[] dates = new com.silverpeas.calendar.Date[2];
+    dates[0] = begin;
+    dates[1] = end;
+
+    return dates;
+  }
+
+  private Map<Date, List<SocialInformation>> getInformations(String view, String userId,
+      SocialInformationType type, String anotherUserId, Date begin, Date end) {
+    Map<Date, List<SocialInformation>> map = new LinkedHashMap<Date, List<SocialInformation>>();
+
+    // initialize myId for socialNetworkService
     socialNetworkService.setMyId(userId);
 
-    //initialze myContactsIds
-    List<String> myContactsIds = newsFeedService.getMyContactsIds();
-    myContactsIds.add(0, userId);// add my self to the list
-    socialNetworkService.setMyContactsIds(myContactsIds);
-    multilang = new ResourceLocator(
-        "com.silverpeas.socialNetwork.multilang.socialNetworkBundle", locale);
-    settings = new ResourceLocator(
-        "com.silverpeas.socialNetwork.settings.socialNetworkSettings", locale);
+    if ("MyFeed".equals(view)) {
+      // get all data from me and my contacts
+      newsFeedService.setMyId(Integer.parseInt(userId));
+      List<String> myContactsIds = newsFeedService.getMyContactsIds();
+      myContactsIds.add(0, userId);// add my self to the list
+      socialNetworkService.setMyContactsIds(myContactsIds);
+      map = socialNetworkService.getSocialInformationOfMyContacts(type, begin, end);
+    } else if ("MyContactWall".equals(view)) {
+      // get all data from my contact
+      newsFeedService.setMyId(Integer.parseInt(userId));
+      // initialize myContactsIds
+      List<String> myContactsIds = new ArrayList<String>();
+      myContactsIds.add(0, anotherUserId);// add my self to the list
+      socialNetworkService.setMyContactsIds(myContactsIds);
+      map = socialNetworkService.getSocialInformationOfMyContacts(type, begin, end);
+    } else {
+      // get all data from me
+      map = socialNetworkService.getSocialInformation(type, begin, end);
+    }
+    return map;
+  }
 
-      Map<Date, List<SocialInformation>> map = new LinkedHashMap<Date, List<SocialInformation>>();
-
-
-      try {
-        //recover the type
-        type = SocialInformationType.valueOf(request.getParameter("type"));
-
-        //recover the first Element
-        int offset = DEFAULT_OFFSET;
-        if (StringUtil.isInteger(request.getParameter("offset"))) {
-          offset = Integer.parseInt(request.getParameter("offset"));
-        }
-        //recover the numbre elements per page
-        int limit = DEFAULT_ELEMENT_PER_PAGE;
-        if (StringUtil.isInteger(settings.getString("profil.elements_per_page"))) {
-          limit = Integer.parseInt(
-              settings.getString("profil.elements_per_page"));
-        }
-
-        map = socialNetworkService.getSocialInformationOfMyContacts(type, limit, offset);
-
-      } catch (Exception ex) {
-        Logger.getLogger(NewsFeedJSONServlet.class.getName()).log(Level.SEVERE, null, ex);
-      }
-      response.setCharacterEncoding("UTF-8");
-      PrintWriter out = response.getWriter();
-      out.println(toJsonS(map));
-
-   
-
+  private int getNumberOfInformations(Map<Date, List<SocialInformation>> map) {
+    int nb = 0;
+    for (Date date : map.keySet()) {
+      nb += map.get(date).size();
+    }
+    return nb;
   }
 
   /**
    * convert the SocialInormation to JSONObject
-   * @param event
+   * @param information
    * @return JSONObject
    */
-  private JSONObject toJson(SocialInformation event) {
-    SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm", locale);
+  private JSONObject toJson(SocialInformation information, OrganizationController oc,
+      ResourceLocator multilang) {
+    SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm");
 
     JSONObject valueObj = new JSONObject();
-    SNContactUser contactUser1 = new SNContactUser(event.getAuthor());
-    if (event.getType().equals(SocialInformationType.RELATIONSHIP.toString())) {
-
-      SNContactUser contactUser2 = new SNContactUser(event.getTitle());
-      valueObj.put("type", event.getType());
-      valueObj.put("author", sNContactUserToJSON(contactUser1));
-      valueObj.put("title", sNContactUserToJSON(contactUser2));
-      valueObj.put("hour", formatTime.format(event.getDate()));
-      valueObj.put("url", mContext + event.getUrl());
-      valueObj.put("icon", mContext + contactUser2.getProfilPhoto());
+    UserDetail contactUser1 = oc.getUserDetail(information.getAuthor());
+    if (information.getType().equals(SocialInformationType.RELATIONSHIP.toString())) {
+      UserDetail contactUser2 = oc.getUserDetail(information.getTitle());
+      valueObj.put("type", information.getType());
+      valueObj.put("author", userDetailToJSON(contactUser1));
+      valueObj.put("title", userDetailToJSON(contactUser2));
+      valueObj.put("hour", formatTime.format(information.getDate()));
+      valueObj.put("url", URLManager.getApplicationURL() + information.getUrl());
+      valueObj.put("icon", URLManager.getApplicationURL() + contactUser2.getAvatar());
+      valueObj.put("label", multilang.getStringWithParam("newsFeed.relationShip.label", contactUser2.getDisplayedName()));
       return valueObj;
-    } else if (event.getType().endsWith(SocialInformationType.EVENT.toString())) {
-      return eventSocialToJSON(event, contactUser1);
+    } else if (information.getType().endsWith(SocialInformationType.EVENT.toString())) {
+      return eventSocialToJSON(information, contactUser1, multilang);
     }
-    valueObj.put("type", event.getType());
-    valueObj.put("author", sNContactUserToJSON(contactUser1));
-    
-      valueObj.put("description", EncodeHelper.javaStringToHtmlParagraphe(event.getDescription()+""));
-    
-    if (event.getType().equals(SocialInformationType.STATUS.toString())) {
-      SNContactUser contactUser = new SNContactUser(event.getTitle());
-      valueObj.put("title", contactUser.getDisplayedName());
+    valueObj.put("type", information.getType());
+    valueObj.put("author", userDetailToJSON(contactUser1));
+
+    valueObj.put("description", EncodeHelper.javaStringToHtmlParagraphe(information
+        .getDescription()));
+
+    if (information.getType().equals(SocialInformationType.STATUS.toString())) {
+      valueObj.put("title", multilang.getString("newsFeed.status.suffix"));
     } else {
-      valueObj.put("title", event.getTitle());
+      valueObj.put("title", information.getTitle());
     }
-    //if time not identified display string empty
-    if ("00:00".equalsIgnoreCase(formatTime.format(event.getDate()))) {
+    // if time not identified display string empty
+    if ("00:00".equalsIgnoreCase(formatTime.format(information.getDate()))) {
       valueObj.put("hour", "");
     } else {
-      valueObj.put("hour", formatTime.format(event.getDate()));
+      valueObj.put("hour", formatTime.format(information.getDate()));
     }
-    valueObj.put("url", mContext + event.getUrl());
+    valueObj.put("url", URLManager.getApplicationURL() + information.getUrl());
     valueObj.put("icon",
-        getIconUrl(SocialInformationType.valueOf(event.getType())) + event.getIcon());
-    valueObj.put("label", multilang.getString("newsFeed." + event.getType().toLowerCase() + ".apdated." + event.
-        isUpdeted()));
+        getIconUrl(SocialInformationType.valueOf(information.getType())) + information.getIcon());
+    valueObj.put("label", multilang.getString("newsFeed." + information.getType().toLowerCase() +
+        ".updated." + information.isUpdeted()));
 
     return valueObj;
   }
@@ -184,8 +252,10 @@ public class NewsFeedJSONServlet extends HttpServlet {
    * @param Map<Date, List<SocialInformation>> map
    * @return JSONArray
    */
-  private JSONArray toJsonS(Map<Date, List<SocialInformation>> map) {
-    SimpleDateFormat formatDate = new SimpleDateFormat("EEEE, dd MMMM yyyy", locale);
+  private JSONArray toJsonS(Map<Date, List<SocialInformation>> map, OrganizationController oc,
+      ResourceLocator multilang) {
+    SimpleDateFormat formatDate =
+        new SimpleDateFormat("EEEE dd MMMM yyyy", new Locale(multilang.getLanguage()));
     JSONArray result = new JSONArray();
     for (Map.Entry<Date, List<SocialInformation>> entry : map.entrySet()) {
       JSONArray jsonArrayDateWithValues = new JSONArray();
@@ -194,10 +264,9 @@ public class NewsFeedJSONServlet extends HttpServlet {
       JSONArray jsonArray = new JSONArray();
       JSONObject jsonObject = new JSONObject();
       jsonObject.put("day", formatDate.format(key));
-      List<SocialInformation> events = entry.getValue();
-      for (SocialInformation event : events) {
-        System.out.println("tset"+event.getDescription());
-        jsonArray.put(toJson(event));
+      List<SocialInformation> informations = entry.getValue();
+      for (SocialInformation si : informations) {
+        jsonArray.put(toJson(si, oc, multilang));
       }
       jsonArrayDateWithValues.put(jsonObject);
       jsonArrayDateWithValues.put(jsonArray);
@@ -211,13 +280,15 @@ public class NewsFeedJSONServlet extends HttpServlet {
    * @param event
    * @return JSONObject
    */
-  private JSONObject eventSocialToJSON(SocialInformation event, SNContactUser contactUser) {
-    SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm", locale);
+  private JSONObject eventSocialToJSON(SocialInformation event, UserDetail contactUser,
+      ResourceLocator multilang) {
+    SimpleDateFormat formatTime =
+        new SimpleDateFormat("HH:mm", new Locale(multilang.getLanguage()));
     JSONObject valueObj = new JSONObject();
     valueObj.put("type", event.getType());
-    valueObj.put("author", sNContactUserToJSON(contactUser));
+    valueObj.put("author", userDetailToJSON(contactUser));
     valueObj.put("hour", formatTime.format(event.getDate()));
-    valueObj.put("url", mContext + event.getUrl());
+    valueObj.put("url", URLManager.getApplicationURL() + event.getUrl());
     valueObj.put("icon",
         getIconUrl(SocialInformationType.valueOf(event.getType())) + event.getIcon());
     if (!event.isUpdeted() && event.getIcon().startsWith(event.getType() + "_private")) {
@@ -227,6 +298,8 @@ public class NewsFeedJSONServlet extends HttpServlet {
       valueObj.put("title", event.getTitle());
       valueObj.put("description", event.getDescription());
     }
+    valueObj.put("label", multilang.getString("newsFeed." + event.getType().toLowerCase() +
+        ".label"));
 
     return valueObj;
   }
@@ -236,11 +309,11 @@ public class NewsFeedJSONServlet extends HttpServlet {
    * @param Map<Date, List<SocialInformation>> map
    * @return JSONArray
    */
-  private JSONObject sNContactUserToJSON(SNContactUser user) {
+  private JSONObject userDetailToJSON(UserDetail user) {
     JSONObject userJSON = new JSONObject();
-    userJSON.put("id", user.getUserId());
+    userJSON.put("id", user.getId());
     userJSON.put("displayedName", user.getDisplayedName());
-    userJSON.put("profilPhoto", mContext + user.getProfilPhoto());
+    userJSON.put("profilPhoto", URLManager.getApplicationURL() + user.getAvatar());
     return userJSON;
   }
 
@@ -250,12 +323,11 @@ public class NewsFeedJSONServlet extends HttpServlet {
    * @return String
    */
   private String getIconUrl(SocialInformationType type) {
-    String url = iconURL;
+    String url = URLManager.getApplicationURL() + "/socialNetwork/jsp/icons/";
     if (type.equals(SocialInformationType.PHOTO)) {
-      url = mContext;
+      url = URLManager.getApplicationURL();
     }
     return url;
   }
 
-  
 }
