@@ -92,7 +92,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
   "updatable",
   "help",
   "personalSpaceValue"})
-public class Parameter {
+public class Parameter implements Cloneable {
 
   @XmlElement(required = true)
   protected String name;

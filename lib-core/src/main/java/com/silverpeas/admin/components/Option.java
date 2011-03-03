@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
   "name",
   "value"
 })
-public class Option {
+public class Option implements Cloneable {
 
   @XmlElement(required = true)
   @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
