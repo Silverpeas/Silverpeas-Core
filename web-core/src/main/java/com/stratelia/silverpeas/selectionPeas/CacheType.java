@@ -24,33 +24,36 @@
 
 package com.stratelia.silverpeas.selectionPeas;
 
-import com.stratelia.silverpeas.selection.SelectionExtraParams;
-import com.stratelia.webactiv.util.ResourceLocator;
+import com.silverpeas.util.StringUtil;
 
-public class BrowseJdbcPanel extends BrowsePanelProvider {
+public enum CacheType {
+  CM_SET(0), CM_ELEMENT(1), CM_NBTOT(2);
 
-  public BrowseJdbcPanel(String language, ResourceLocator rs, CacheManager cm,
-      SelectionExtraParams sep) {
-    super(language, rs, cm, CacheType.CM_ELEMENT);
-    init(sep.getParameter("tableName"));
+  private final int value;
+
+  private CacheType(int i) {
+    this.value = i;
   }
 
-  private void init(String pageName) {
-    this.pageName = pageName;
-    setSelectMiniFilter(cacheManager.getSelectMiniFilter(m_what));
-    refresh(null);
+
+  public int getValue() {
+    return this.value;
   }
 
-  public void setNewParentSet(String newSetId) {
-    // TODO Auto-generated method stub
-  }
 
-  public void refresh(String[] filters) {
-    int lineCount = cacheManager.getLineCount(CacheType.CM_ELEMENT);
-    ids = new String[lineCount];
-    for (int i = 0; i < lineCount; i++) {
-      ids[i] = String.valueOf(i);
+  public static CacheType extractValue(String string) {
+    if (StringUtil.isInteger(string)) {
+      int stringValue = Integer.parseInt(string);
+      switch (stringValue) {
+        case 0:
+          return CM_SET;
+        case 1:
+          return CM_ELEMENT;
+        case 2:
+          return CM_NBTOT;
+      }
     }
+    return valueOf(string);
   }
 
 }

@@ -34,26 +34,25 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 abstract public class BrowsePanelProvider extends PanelProvider {
 
-  protected CacheManager m_Cm = null;
-  protected ResourceLocator m_Message = null;
-  protected OrganizationController m_oc = new OrganizationController();
-  protected String m_ParentGroupId = "";
-  protected String m_ParentGroupName = "";
-  protected int m_what;
+  protected CacheManager cacheManager = null;
+  protected ResourceLocator resource = null;
+  protected OrganizationController organizationCOntroller = new OrganizationController();
+  protected String parentGroupId = "";
+  protected String parentGroupName = "";
+  protected CacheType m_what;
 
-  public BrowsePanelProvider(String language, ResourceLocator rs,
-      CacheManager cm, int what) {
+  public BrowsePanelProvider(String language, ResourceLocator rs, CacheManager cm, CacheType what) {
     // Set the language
-    m_Language = language;
-    m_Message = GeneralPropertiesManager.getGeneralMultilang(m_Language);
-    m_rs = rs;
+    this.language = language;
+    resource = GeneralPropertiesManager.getGeneralMultilang(this.language);
+    resourceLocator = rs;
 
     // Set the cache manager
-    m_Cm = cm;
+    cacheManager = cm;
     m_what = what;
 
     // Set column headers
-    m_ColumnsHeader = m_Cm.getColumnsNames(m_what);
+    columnHeaders = cacheManager.getColumnsNames(m_what);
   }
 
   abstract public void setNewParentSet(String newSetId);
@@ -64,30 +63,30 @@ abstract public class BrowsePanelProvider extends PanelProvider {
   }
 
   public PanelLine getElementInfos(String id) {
-    return m_Cm.getInfos(m_what, id);
+    return cacheManager.getInfos(m_what, id);
   }
 
   // OVERWRITE THIS FUNCTION : The cache is already managed by CacheManager
   public void setSelectedElements(Set<String> elements) {
     for (String element : elements) {
-      m_Cm.setSelected(m_what, element, true);
+      cacheManager.setSelected(m_what, element, true);
     }
   }
 
   public void unsetSelectedElements(Set<String> elements) {
     for (String element : elements) {
-      m_Cm.setSelected(m_what, element, false);
+      cacheManager.setSelected(m_what, element, false);
     }
   }
 
   // OVERWRITE THIS FUNCTION : The cache is already managed by CacheManager
   public void setSelectedElement(String id, boolean isSelected) {
-    m_Cm.setSelected(m_what, id, isSelected);
+    cacheManager.setSelected(m_what, id, isSelected);
   }
 
   // OVERWRITE THIS FUNCTION : The cache is already managed by CacheManager
   public String[] getSelectedElements() {
-    return m_Cm.getSelectedIds(m_what);
+    return cacheManager.getSelectedIds(m_what);
   }
 
   // OVERWRITE THIS FUNCTION : The cache is already managed by CacheManager
@@ -95,7 +94,7 @@ abstract public class BrowsePanelProvider extends PanelProvider {
     // Select case for all
     if (filterIndex == 999) {
       PanelMiniFilterSelect theFilter = (PanelMiniFilterSelect) getSelectMiniFilter();
-      m_Cm.setSelected(m_what, m_Ids, theFilter.isSelectAllFunction());
+      cacheManager.setSelected(m_what, ids, theFilter.isSelectAllFunction());
       theFilter.setSelectAllFunction(!theFilter.isSelectAllFunction());
     }
   }
@@ -103,15 +102,15 @@ abstract public class BrowsePanelProvider extends PanelProvider {
   public String[] getColumnsHeader() {
     String[] valret;
 
-    if ((m_MiniFilters == null) || (m_MiniFilters.length <= 0)) {
-      return m_ColumnsHeader;
+    if ((miniFilters == null) || (miniFilters.length <= 0)) {
+      return columnHeaders;
     }
-    valret = new String[m_ColumnsHeader.length];
-    for (int i = 0; i < m_ColumnsHeader.length; i++) {
-      if ((m_MiniFilters.length > i) && (m_MiniFilters[i] != null)) {
-        valret[i] = m_ColumnsHeader[i] + m_MiniFilters[i].getHTMLDisplay();
+    valret = new String[columnHeaders.length];
+    for (int i = 0; i < columnHeaders.length; i++) {
+      if ((miniFilters.length > i) && (miniFilters[i] != null)) {
+        valret[i] = columnHeaders[i] + miniFilters[i].getHTMLDisplay();
       } else {
-        valret[i] = m_ColumnsHeader[i];
+        valret[i] = columnHeaders[i];
       }
     }
     return valret;
@@ -119,6 +118,6 @@ abstract public class BrowsePanelProvider extends PanelProvider {
 
   // OVERWRITE THIS FUNCTION : The cache is already managed by CacheManager
   public int getSelectedNumber() {
-    return m_Cm.getSelectedNumber(m_what);
+    return cacheManager.getSelectedNumber(m_what);
   }
 }

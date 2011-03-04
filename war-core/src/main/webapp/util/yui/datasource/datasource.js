@@ -67,7 +67,7 @@ util.DataSourceBase = function(oLiveData, oConfigs) {
     /////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Fired when a request is made to the local cache.
+     * Fired when a request is made to the localResourceLocator cache.
      *
      * @event cacheRequestEvent
      * @param oArgs.request {Object} The request object.
@@ -77,7 +77,7 @@ util.DataSourceBase = function(oLiveData, oConfigs) {
     this.createEvent("cacheRequestEvent");
 
     /**
-     * Fired when data is retrieved from the local cache.
+     * Fired when data is retrieved from the localResourceLocator cache.
      *
      * @event cacheResponseEvent
      * @param oArgs.request {Object} The request object.
@@ -144,7 +144,7 @@ util.DataSourceBase = function(oLiveData, oConfigs) {
     this.createEvent("dataErrorEvent");
 
     /**
-     * Fired when the local cache is flushed.
+     * Fired when the localResourceLocator cache is flushed.
      *
      * @event cacheFlushEvent
      */
@@ -256,7 +256,7 @@ TYPE_HTMLTABLE : 6,
 TYPE_SCRIPTNODE : 7,
 
 /**
- * Type is local.
+ * Type is localResourceLocator.
  *
  * @property TYPE_LOCAL
  * @type Number
@@ -542,7 +542,7 @@ _aIntervals : null,
 /////////////////////////////////////////////////////////////////////////////
 
 /**
- * Max size of the local cache.  Set to 0 to turn off caching.  Caching is
+ * Max size of the localResourceLocator cache.  Set to 0 to turn off caching.  Caching is
  * useful to reduce the number of server connections.  Recommended only for data
  * sources that return comprehensive results for queries or when stale data is
  * not an issue.
@@ -669,11 +669,11 @@ getCachedResponse : function(oRequest, oCallback, oCaller) {
 
     // If cache is enabled...
     if(this.maxCacheEntries > 0) {        
-        // Initialize local cache
+        // Initialize localResourceLocator cache
         if(!aCache) {
             this._aCache = [];
         }
-        // Look in local cache
+        // Look in localResourceLocator cache
         else {
             var nCacheLength = aCache.length;
             if(nCacheLength > 0) {
@@ -2505,7 +2505,7 @@ util.DataSource = function(oLiveData, oConfigs) {
         lang.augmentObject(util.DataSource, util.FunctionDataSource);
         return new util.FunctionDataSource(oLiveData, oConfigs);
     }
-    else { // ultimate default is local
+    else { // ultimate default is localResourceLocator
         lang.augmentObject(util.DataSource, util.LocalDataSource);
         return new util.LocalDataSource(oLiveData, oConfigs);
     }

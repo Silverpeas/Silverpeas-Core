@@ -1585,7 +1585,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   }
 
   /**
-   * Synchronize local agenda with URLIcalendar
+   * Synchronize localResourceLocator agenda with URLIcalendar
    * @param urlICalendar
    * @param loginIcalendar
    * @param pwdIcalendar
@@ -1605,7 +1605,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   }
 
   /**
-   * Synchronize local agenda with URLIcalendar
+   * Synchronize localResourceLocator agenda with URLIcalendar
    * @param urlICalendar
    * @return ReturnCode
    * @throws Exception

@@ -2836,7 +2836,7 @@ jQuery.extend({
 			onreadystatechange();
 
 		function success(){
-			// If a local callback was specified, fire it and pass it the data
+			// If a localResourceLocator callback was specified, fire it and pass it the data
 			if ( s.success )
 				s.success( data, status );
 
@@ -2864,7 +2864,7 @@ jQuery.extend({
 	},
 
 	handleError: function( s, xhr, status, e ) {
-		// If a local callback was specified, fire it
+		// If a localResourceLocator callback was specified, fire it
 		if ( s.error ) s.error( xhr, status, e );
 
 		// Fire the global callback

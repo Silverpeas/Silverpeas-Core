@@ -103,7 +103,7 @@ public class ImportIcalManager {
         "root.MSG_GEN_ENTER_METHOD");
     String returnCode = AgendaSessionController.IMPORT_FAILED;
     try {
-      // Read local calendar file
+      // Read localResourceLocator calendar file
       FileInputStream fileInput = new FileInputStream(file);
       String charsetUsed = agendaSessionController.getSettings().getString(
           "defaultCharset");

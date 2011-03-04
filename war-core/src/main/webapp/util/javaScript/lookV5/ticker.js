@@ -55,7 +55,7 @@ return httprequest
 // -------------------------------------------------------------------
 
 function ajax_ticker(xmlfile, divId, divClass, delay, fadeornot){
-this.xmlfile=xmlfile //Variable pointing to the local ticker xml file (txt)
+this.xmlfile=xmlfile //Variable pointing to the localResourceLocator ticker xml file (txt)
 this.tickerid=divId //ID of ticker div to display information
 this.delay=delay //Delay between msg change, in miliseconds.
 this.mouseoverBol=0 //Boolean to indicate whether mouse is currently over ticker (and pause it if it is)

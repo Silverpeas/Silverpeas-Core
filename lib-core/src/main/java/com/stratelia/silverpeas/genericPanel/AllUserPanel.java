@@ -55,32 +55,32 @@ public class AllUserPanel extends PanelProvider {
     String[] filters = new String[2];
 
     // Set the language
-    m_Language = language;
+    this.language = language;
 
     ResourceLocator message = GeneralPropertiesManager
-        .getGeneralMultilang(m_Language);
+        .getGeneralMultilang(this.language);
 
     // Set the resource locator for columns header
-    m_rs = new ResourceLocator(
+    resourceLocator = new ResourceLocator(
         "com.stratelia.silverpeas.genericPanel.multilang.genericPanelBundle",
-        m_Language);
+        this.language);
 
     // Set the Page name
-    m_PageName = title;
-    m_PageSubTitle = m_rs.getString("genericPanel.usersList");
+    pageName = title;
+    pageSubTitle = resourceLocator.getString("genericPanel.usersList");
 
     // Set column headers
-    m_ColumnsHeader = new String[3];
-    m_ColumnsHeader[COL_LASTNAME] = message.getString("GML.lastName");
-    m_ColumnsHeader[COL_FIRSTNAME] = message.getString("GML.firstName");
-    m_ColumnsHeader[COL_EMAIL] = message.getString("GML.email");
+    columnHeaders = new String[3];
+    columnHeaders[COL_LASTNAME] = message.getString("GML.lastName");
+    columnHeaders[COL_FIRSTNAME] = message.getString("GML.firstName");
+    columnHeaders[COL_EMAIL] = message.getString("GML.email");
 
     // Build search tokens
-    m_SearchTokens = new PanelSearchToken[2];
+    searchTokens = new PanelSearchToken[2];
 
-    m_SearchTokens[FILTER_LASTNAME] = new PanelSearchEdit(0, message
+    searchTokens[FILTER_LASTNAME] = new PanelSearchEdit(0, message
         .getString("GML.lastName"), "");
-    m_SearchTokens[FILTER_FIRSTNAME] = new PanelSearchEdit(1, message
+    searchTokens[FILTER_FIRSTNAME] = new PanelSearchEdit(1, message
         .getString("GML.firstName"), "");
 
     // Set filters and get Ids
@@ -109,16 +109,16 @@ public class AllUserPanel extends PanelProvider {
 
     result = m_oc.searchUsers(modelUser, true);
     m_AllUserDetail.clear();
-    m_Ids = new String[result.length];
+    ids = new String[result.length];
     for (int i = 0; i < result.length; i++) {
-      m_Ids[i] = result[i].getId();
-      m_AllUserDetail.put(m_Ids[i], result[i]);
+      ids[i] = result[i].getId();
+      m_AllUserDetail.put(ids[i], result[i]);
     }
 
     // Set search tokens values
-    ((PanelSearchEdit) m_SearchTokens[FILTER_FIRSTNAME]).m_Text =
+    ((PanelSearchEdit) searchTokens[FILTER_FIRSTNAME]).m_Text =
         getSureString(filters[FILTER_FIRSTNAME]);
-    ((PanelSearchEdit) m_SearchTokens[FILTER_LASTNAME]).m_Text =
+    ((PanelSearchEdit) searchTokens[FILTER_LASTNAME]).m_Text =
         getSureString(filters[FILTER_LASTNAME]);
     verifIndexes();
   }

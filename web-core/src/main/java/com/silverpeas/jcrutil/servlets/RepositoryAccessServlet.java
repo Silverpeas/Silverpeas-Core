@@ -260,7 +260,7 @@ public class RepositoryAccessServlet extends HttpServlet {
 
       // first try to create the registry, which will fail if another
       // application is already running on the configured host/port
-      // or if the rmiHost is not local
+      // or if the rmiHost is not localResourceLocator
       try {
         // find the server socket factory: use the default if the
         // rmiHost is not configured
@@ -362,7 +362,7 @@ public class RepositoryAccessServlet extends HttpServlet {
    * <code>hostAddress</code>. Implementations may overwrite this method to provide factory
    * instances, which provide more elaborate server socket creation, such as SSL server sockets.
    * @param hostAddress The <code>InetAddress</code> instance representing the the interface on the
-   * local host to which the server sockets are bound.
+   * localResourceLocator host to which the server sockets are bound.
    * @return A new instance of a simple <code>RMIServerSocketFactory</code> creating
    * <code>java.net.ServerSocket</code> instances bound to the <code>rmiHost</code>.
    */

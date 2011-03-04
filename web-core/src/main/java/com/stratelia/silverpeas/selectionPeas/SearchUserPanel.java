@@ -22,8 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.silverpeas.selectionPeas;
 
@@ -41,17 +39,17 @@ public class SearchUserPanel extends BrowsePanelProvider {
 
   public SearchUserPanel(String language, ResourceLocator rs, CacheManager cm,
       SelectionUsersGroups sug) {
-    super(language, rs, cm, CacheManager.CM_ELEMENT);
+    super(language, rs, cm, CacheType.CM_ELEMENT);
     initAll(sug);
   }
 
   public void initAll(SelectionUsersGroups sug) {
     String[] filters = new String[2];
 
-    setSelectMiniFilter(m_Cm.getSelectMiniFilter(m_what));
+    setSelectMiniFilter(cacheManager.getSelectMiniFilter(m_what));
 
     // Set the number displayed to a new value
-    m_NbDisplayed = SelectionPeasSettings.m_ElementBySearchPage;
+    nbDisplayed = SelectionPeasSettings.elementBySearchPage;
 
     // Set the Selection's extra parameters
     if (sug == null) {
@@ -61,29 +59,29 @@ public class SearchUserPanel extends BrowsePanelProvider {
     }
 
     // Set the Page name
-    m_PageName = m_rs.getString("selectionPeas.usersList");
-    m_PageSubTitle = m_rs.getString("selectionPeas.searchUser");
+    pageName = resourceLocator.getString("selectionPeas.usersList");
+    pageSubTitle = resourceLocator.getString("selectionPeas.searchUser");
 
     // Build search tokens
-    m_SearchTokens = new PanelSearchToken[2];
+    searchTokens = new PanelSearchToken[2];
 
-    m_SearchTokens[FILTER_LASTNAME] = new PanelSearchEdit(0, m_Message
+    searchTokens[FILTER_LASTNAME] = new PanelSearchEdit(0, resource
         .getString("GML.lastName"), "");
-    m_SearchTokens[FILTER_FIRSTNAME] = new PanelSearchEdit(1, m_Message
+    searchTokens[FILTER_FIRSTNAME] = new PanelSearchEdit(1, resource
         .getString("GML.firstName"), "");
 
     // Set filters and get Ids
     filters[FILTER_FIRSTNAME] = "";
     filters[FILTER_LASTNAME] = "";
-    if (SelectionPeasSettings.m_DisplayAllSearchByDefault) {
+    if (SelectionPeasSettings.displayAllSearchByDefault) {
       refresh(filters);
     } else {
-      m_Ids = new String[0];
+      ids = new String[0];
     }
   }
 
   public void setNewParentSet(String newSetId) {
-    m_ParentGroupId = newSetId;
+    parentGroupId = newSetId;
     // refresh(null);
   }
 
@@ -105,13 +103,13 @@ public class SearchUserPanel extends BrowsePanelProvider {
     }
     modelUser.setDomainId(m_SelectionExtraParams.getDomainId());
 
-    m_Ids = m_oc.searchUsersIds(m_ParentGroupId, m_SelectionExtraParams
+    ids = organizationCOntroller.searchUsersIds(parentGroupId, m_SelectionExtraParams
         .getComponentId(), m_SelectionExtraParams.getProfileIds(), modelUser);
 
     // Set search tokens values
-    ((PanelSearchEdit) m_SearchTokens[FILTER_FIRSTNAME]).m_Text =
+    ((PanelSearchEdit) searchTokens[FILTER_FIRSTNAME]).m_Text =
         getSureString(filters[FILTER_FIRSTNAME]);
-    ((PanelSearchEdit) m_SearchTokens[FILTER_LASTNAME]).m_Text =
+    ((PanelSearchEdit) searchTokens[FILTER_LASTNAME]).m_Text =
         getSureString(filters[FILTER_LASTNAME]);
     verifIndexes();
   }
