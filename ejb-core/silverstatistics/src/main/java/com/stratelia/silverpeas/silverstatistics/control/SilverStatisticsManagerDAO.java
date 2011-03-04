@@ -26,6 +26,15 @@
 
 package com.stratelia.silverpeas.silverstatistics.control;
 
+import com.google.common.base.Joiner;
+import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
+import com.stratelia.silverpeas.silverstatistics.model.StatisticsRuntimeException;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,16 +44,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
-
-import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
-import com.stratelia.silverpeas.silverstatistics.model.StatisticsRuntimeException;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import java.util.List;
 
 /**
  * This is the DAO Object for purge, agregat on the month
+ *
  * @author sleroux
  */
 public class SilverStatisticsManagerDAO {
@@ -53,6 +57,7 @@ public class SilverStatisticsManagerDAO {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param StatsType
    * @param valueKeys
@@ -61,22 +66,16 @@ public class SilverStatisticsManagerDAO {
    * @see
    */
   private static void insertDataStatsCumul(Connection con, String StatsType,
-      ArrayList valueKeys, StatisticsConfig conf) throws SQLException {
+      List<String> valueKeys, StatisticsConfig conf) throws SQLException, IOException {
     StringBuffer insertStatementBuf = new StringBuffer("INSERT INTO "
         + conf.getTableName(StatsType) + "Cumul" + "(");
     String insertStatement;
     PreparedStatement prepStmt = null;
     int i = 0;
 
-    Collection theKeys = conf.getAllKeys(StatsType);
-    Iterator iteratorKeys = theKeys.iterator();
-
-    while (iteratorKeys.hasNext()) {
-      insertStatementBuf.append((String) (iteratorKeys.next()));
-      if (iteratorKeys.hasNext()) {
-        insertStatementBuf.append(",");
-      }
-    }
+    Collection<String> theKeys = conf.getAllKeys(StatsType);
+    Joiner joiner = Joiner.on(",");
+    joiner.appendTo(insertStatementBuf, theKeys);
     insertStatementBuf.append(") ");
 
     insertStatementBuf.append("VALUES(?");
@@ -87,23 +86,19 @@ public class SilverStatisticsManagerDAO {
     insertStatement = insertStatementBuf.toString();
 
     try {
-      String currentKey = null;
-      String currentType = null;
 
       SilverTrace.info("silverstatistics",
           "SilverStatisticsManagerDAO.insertDataStatsCumul",
           "root.MSG_GEN_PARAM_VALUE", "insertStatement=" + insertStatement);
       prepStmt = con.prepareStatement(insertStatement);
-      iteratorKeys = theKeys.iterator();
-      while (iteratorKeys.hasNext()) {
+      for (String currentKey : theKeys) {
         i++;
-        currentKey = (String) iteratorKeys.next();
-        currentType = conf.getKeyType(StatsType, currentKey);
+        String currentType = conf.getKeyType(StatsType, currentKey);
         if (currentType.equals("DECIMAL")) {
-          long tmpLong = 0;
+          long tmpLong  ;
 
           try {
-            String tmpString = (String) valueKeys.get(i - 1);
+            String tmpString = valueKeys.get(i - 1);
 
             if (tmpString.equals("") || tmpString == null) {
               if (!conf.isCumulKey(StatsType, currentKey)) {
@@ -112,7 +107,7 @@ public class SilverStatisticsManagerDAO {
                 prepStmt.setLong(i, 0);
               }
             } else {
-              tmpLong = new Long(tmpString).longValue();
+              tmpLong = new Long(tmpString);
               prepStmt.setLong(i, tmpLong);
             }
           } catch (NumberFormatException e) {
@@ -120,10 +115,10 @@ public class SilverStatisticsManagerDAO {
           }
         }
         if (currentType.equals("INTEGER")) {
-          int tmpInt = 0;
+          int tmpInt  ;
 
           try {
-            String tmpString = (String) valueKeys.get(i - 1);
+            String tmpString = valueKeys.get(i - 1);
 
             if (tmpString.equals("") || tmpString == null) {
               if (!conf.isCumulKey(StatsType, currentKey)) {
@@ -132,7 +127,7 @@ public class SilverStatisticsManagerDAO {
                 prepStmt.setInt(i, 0);
               }
             } else {
-              tmpInt = new Integer(tmpString).intValue();
+              tmpInt = new Integer(tmpString);
               prepStmt.setInt(i, tmpInt);
             }
           } catch (NumberFormatException e) {
@@ -141,18 +136,18 @@ public class SilverStatisticsManagerDAO {
         }
         if (currentType.equals("VARCHAR")) {
           if (currentKey.equals("dateStat")) {
-            String dateFirstDayOfMonth = ((String) valueKeys.get(i - 1))
+            String dateFirstDayOfMonth = valueKeys.get(i - 1)
                 .substring(0, 8);
 
             dateFirstDayOfMonth = dateFirstDayOfMonth + "01";
             prepStmt.setString(i, dateFirstDayOfMonth);
           } else {
-            String tmpString = (String) valueKeys.get(i - 1);
+            String tmpString = valueKeys.get(i - 1);
 
             if (tmpString.equals("") || tmpString == null) {
               prepStmt.setNull(i, java.sql.Types.VARCHAR);
             } else {
-              prepStmt.setString(i, (String) valueKeys.get(i - 1));
+              prepStmt.setString(i, valueKeys.get(i - 1));
             }
           }
         }
@@ -165,35 +160,37 @@ public class SilverStatisticsManagerDAO {
 
   /**
    * Method declaration
+   *
+   *
    * @param con
-   * @param StatsType
+   * @param statsType
    * @param valueKeys
    * @param conf
    * @throws SQLException
    * @see
    */
-  public static void putDataStatsCumul(Connection con, String StatsType,
-      ArrayList valueKeys, StatisticsConfig conf) throws SQLException {
+  public static void putDataStatsCumul(Connection con, String statsType,
+      List<String> valueKeys, StatisticsConfig conf) throws SQLException, IOException {
     StringBuffer selectStatementBuf = new StringBuffer("SELECT ");
     StringBuffer updateStatementBuf = new StringBuffer("UPDATE ");
-    String tableName = conf.getTableName(StatsType);
+    String tableName = conf.getTableName(statsType);
     String selectStatement;
     String updateStatement;
     String keyNameCurrent;
     String currentType;
-    Statement stmt = null;
+    Statement stmt  ;
     ResultSet rs = null;
     boolean rowExist = false;
     boolean firstKeyInWhere = true;
     int k = 0;
-    int countCumulKey = 0;
-    int intToAdd = 0;
+    int countCumulKey  ;
+    int intToAdd  ;
     PreparedStatement pstmt = null;
 
-    updateStatementBuf.append(tableName + "Cumul");
+    updateStatementBuf.append(tableName).append("Cumul");
     updateStatementBuf.append(" SET ");
 
-    Collection theKeys = conf.getAllKeys(StatsType);
+    Collection<String> theKeys = conf.getAllKeys(statsType);
     Iterator iteratorKeys = theKeys.iterator();
 
     while (iteratorKeys.hasNext()) {
@@ -202,7 +199,7 @@ public class SilverStatisticsManagerDAO {
       if (iteratorKeys.hasNext()) {
         selectStatementBuf.append(",");
       }
-      if (conf.isCumulKey(StatsType, keyNameCurrent)) {
+      if (conf.isCumulKey(statsType, keyNameCurrent)) {
         updateStatementBuf.append(keyNameCurrent);
         updateStatementBuf.append("=? ,");
       }
@@ -210,56 +207,56 @@ public class SilverStatisticsManagerDAO {
 
     updateStatementBuf.deleteCharAt(updateStatementBuf.length() - 1);
 
-    selectStatementBuf.append(" FROM " + tableName + "Cumul" + " WHERE ");
+    selectStatementBuf.append(" FROM ").append(tableName).append("Cumul" + " WHERE ");
     updateStatementBuf.append(" WHERE ");
 
     iteratorKeys = theKeys.iterator();
     while (iteratorKeys.hasNext()) {
       keyNameCurrent = (String) iteratorKeys.next();
-      if (!conf.isCumulKey(StatsType, keyNameCurrent)) {
+      if (!conf.isCumulKey(statsType, keyNameCurrent)) {
         if (!firstKeyInWhere) {
           selectStatementBuf.append(" AND ");
           updateStatementBuf.append(" AND ");
         }
         selectStatementBuf.append(keyNameCurrent);
         updateStatementBuf.append(keyNameCurrent);
-        currentType = conf.getKeyType(StatsType, keyNameCurrent);
+        currentType = conf.getKeyType(statsType, keyNameCurrent);
         if (currentType.equals("DECIMAL")) {
-          if (((String) valueKeys.get(k)).equals("")
+          if (valueKeys.get(k).equals("")
               || valueKeys.get(k) == null) {
             selectStatementBuf.append("=" + "NULL");
             updateStatementBuf.append("=" + "NULL");
           } else {
-            selectStatementBuf.append("=" + (String) valueKeys.get(k));
-            updateStatementBuf.append("=" + (String) valueKeys.get(k));
+            selectStatementBuf.append("=").append(valueKeys.get(k));
+            updateStatementBuf.append("=").append(valueKeys.get(k));
           }
         }
         if (currentType.equals("INTEGER")) {
-          if (((String) valueKeys.get(k)).equals("")
+          if (valueKeys.get(k).equals("")
               || valueKeys.get(k) == null) {
             selectStatementBuf.append("=" + "NULL");
             updateStatementBuf.append("=" + "NULL");
           } else {
-            selectStatementBuf.append("=" + (String) valueKeys.get(k));
-            updateStatementBuf.append("=" + (String) valueKeys.get(k));
+            selectStatementBuf.append("=").append(valueKeys.get(k));
+            updateStatementBuf.append("=").append(valueKeys.get(k));
           }
         }
         if (currentType.equals("VARCHAR")) {
           if (keyNameCurrent.equals("dateStat")) {
-            String dateFirstDayOfMonth = ((String) valueKeys.get(k)).substring(
+            String dateFirstDayOfMonth = valueKeys.get(k).substring(
                 0, 8);
 
             dateFirstDayOfMonth = dateFirstDayOfMonth + "01";
-            selectStatementBuf.append("='" + dateFirstDayOfMonth + "'");
-            updateStatementBuf.append("='" + dateFirstDayOfMonth + "'");
+            selectStatementBuf.append("='").append(dateFirstDayOfMonth).append("'");
+            updateStatementBuf.append("='").append(dateFirstDayOfMonth).append("'");
           } else {
-            if (((String) valueKeys.get(k)).equals("")
+            if (valueKeys.get(k).equals("")
                 || valueKeys.get(k) == null) {
               selectStatementBuf.append("=" + "NULL");
               updateStatementBuf.append("=" + "NULL");
             } else {
-              selectStatementBuf.append("='" + (String) valueKeys.get(k) + "'");
-              updateStatementBuf.append("='" + (String) valueKeys.get(k) + "'");
+              selectStatementBuf.append("='").append(valueKeys.get(k)).append("'");
+              updateStatementBuf.append("='").append(valueKeys.get(k)).append("'");
             }
           }
         }
@@ -291,34 +288,34 @@ public class SilverStatisticsManagerDAO {
         while (iteratorKeys.hasNext()) {
           keyNameCurrent = (String) iteratorKeys.next();
 
-          if (conf.isCumulKey(StatsType, keyNameCurrent)) {
+          if (conf.isCumulKey(statsType, keyNameCurrent)) {
             countCumulKey++;
-            currentType = conf.getKeyType(StatsType, keyNameCurrent);
+            currentType = conf.getKeyType(statsType, keyNameCurrent);
             if (currentType.equals("INTEGER")) {
-              intToAdd = new Integer((String) valueKeys.get(conf.indexOfKey(
-                  StatsType, keyNameCurrent))).intValue();
-              if ((conf.getModeCumul(StatsType))
+              intToAdd = Integer.valueOf(valueKeys.get(conf.indexOfKey(
+                  statsType, keyNameCurrent)));
+              if ((conf.getModeCumul(statsType))
                   .equals(StatisticsConfig.MODEADD)) {
                 pstmt.setInt(countCumulKey, rs.getInt(keyNameCurrent)
                     + intToAdd);
               }
-              if ((conf.getModeCumul(StatsType))
+              if ((conf.getModeCumul(statsType))
                   .equals(StatisticsConfig.MODEREPLACE)) {
                 pstmt.setInt(countCumulKey, intToAdd);
               }
             }
             if (currentType.equals("DECIMAL")) {
-              Long myLong = new Long((String) valueKeys.get(conf.indexOfKey(
-                  StatsType, keyNameCurrent)));
+              Long myLong = Long.valueOf(valueKeys.get(conf.indexOfKey(
+                  statsType, keyNameCurrent)));
 
-              if ((conf.getModeCumul(StatsType))
+              if ((conf.getModeCumul(statsType))
                   .equals(StatisticsConfig.MODEADD)) {
                 pstmt.setLong(countCumulKey,
-                    (rs.getLong(keyNameCurrent) + myLong.longValue()));
+                    (rs.getLong(keyNameCurrent) + myLong));
               }
-              if ((conf.getModeCumul(StatsType))
+              if ((conf.getModeCumul(statsType))
                   .equals(StatisticsConfig.MODEREPLACE)) {
-                pstmt.setLong(countCumulKey, myLong.longValue());
+                pstmt.setLong(countCumulKey, myLong);
               }
             }
           }
@@ -336,13 +333,14 @@ public class SilverStatisticsManagerDAO {
       DBUtil.close(pstmt);
 
       if (!rowExist) {
-        insertDataStatsCumul(con, StatsType, valueKeys, conf);
+        insertDataStatsCumul(con, statsType, valueKeys, conf);
       }
     }
   }
 
   /**
    * Method declaration
+   *
    * @param con
    * @param StatsType
    * @param conf
@@ -350,13 +348,13 @@ public class SilverStatisticsManagerDAO {
    * @see
    */
   public static void makeStatCumul(Connection con, String StatsType,
-      StatisticsConfig conf) throws SQLException {
+      StatisticsConfig conf) throws SQLException, IOException {
     StringBuffer selectStatementBuf = new StringBuffer("SELECT * FROM "
         + conf.getTableName(StatsType));
     String selectStatement;
     String keyNameCurrent;
     String currentType;
-    Statement stmt = null;
+    Statement stmt  ;
     ResultSet rs = null;
 
     selectStatement = selectStatementBuf.toString();
@@ -368,7 +366,7 @@ public class SilverStatisticsManagerDAO {
     try {
       rs = stmt.executeQuery(selectStatement);
       Collection theKeys = conf.getAllKeys(StatsType);
-      Iterator iteratorKeys = null;
+      Iterator iteratorKeys  ;
       String addToValueKeys = "";
 
       while (rs.next()) {
@@ -384,7 +382,7 @@ public class SilverStatisticsManagerDAO {
             if (rs.wasNull()) {
               addToValueKeys = "";
             } else {
-              addToValueKeys = (new Integer(tmpInt)).toString();
+              addToValueKeys = String.valueOf(tmpInt);
             }
 
           }
@@ -394,7 +392,7 @@ public class SilverStatisticsManagerDAO {
             if (rs.wasNull()) {
               addToValueKeys = "";
             } else {
-              addToValueKeys = (new Long(tmplong)).toString();
+              addToValueKeys = String.valueOf(tmplong);
             }
           }
           if (currentType.equals("VARCHAR")) {
@@ -408,8 +406,11 @@ public class SilverStatisticsManagerDAO {
         putDataStatsCumul(con, StatsType, valueKeys, conf);
       }
     } catch (SQLException e) {
-      SilverTrace.error("silverstatistics",
-          "SilverStatisticsManagerDAO.makeStatCumul",
+      SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatCumul",
+          "silverstatistics.MSG_ALIMENTATION_BD", e);
+      throw e;
+    }catch (IOException e) {
+      SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatCumul",
           "silverstatistics.MSG_ALIMENTATION_BD", e);
       throw e;
     } finally {
@@ -419,20 +420,20 @@ public class SilverStatisticsManagerDAO {
 
   /**
    * Method declaration
+   *
    * @param con
-   * @param StatsType
+   * @param statsType
    * @param conf
    * @throws SQLException
    * @see
    */
-  private static void deleteTablesOfTheDay(Connection con, String StatsType,
+  private static void deleteTablesOfTheDay(Connection con, String statsType,
       StatisticsConfig conf) throws SQLException {
-    String deleteStatement = "delete from " + conf.getTableName(StatsType);
+    String deleteStatement = "delete from " + conf.getTableName(statsType);
     PreparedStatement prepStmt = null;
 
     try {
-      SilverTrace.info("silverstatistics",
-          "SilverStatisticsManagerDAO.deleteTablesOfTheDay",
+      SilverTrace.info("silverstatistics",  "SilverStatisticsManagerDAO.deleteTablesOfTheDay",
           "root.MSG_GEN_PARAM_VALUE", "deleteStatement=" + deleteStatement);
       prepStmt = con.prepareStatement(deleteStatement);
       prepStmt.executeUpdate();
@@ -443,6 +444,7 @@ public class SilverStatisticsManagerDAO {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param StatsType
    * @param conf
@@ -453,7 +455,7 @@ public class SilverStatisticsManagerDAO {
       StatisticsConfig conf) throws SQLException {
     StringBuffer deleteStatementBuf = new StringBuffer("delete from "
         + conf.getTableName(StatsType) + "Cumul where dateStat<");
-    String deleteStatement = null;
+    String deleteStatement  ;
     PreparedStatement prepStmt = null;
 
     // compute the last date to delete from
@@ -463,8 +465,7 @@ public class SilverStatisticsManagerDAO {
         dateOfTheDay.get(Calendar.MONTH) + 1));
 
     deleteStatement = deleteStatementBuf.toString();
-    SilverTrace.info("silverstatistics",
-        "SilverStatisticsManagerDAO.purgeTablesCumul",
+    SilverTrace.info("silverstatistics","SilverStatisticsManagerDAO.purgeTablesCumul",
         "root.MSG_GEN_PARAM_VALUE", "deleteStatement=" + deleteStatement);
 
     try {
@@ -482,66 +483,56 @@ public class SilverStatisticsManagerDAO {
       month = "0" + month;
     }
 
-    dateStringBuf.append("'" + ((new Integer(sYear)).toString()));
-    dateStringBuf.append("-" + month);
+    dateStringBuf.append("'").append((new Integer(sYear)).toString());
+    dateStringBuf.append("-").append(month);
     dateStringBuf.append("-01" + "'");
     return dateStringBuf.toString();
   }
 
   /**
    * Method declaration
+   *
    * @param conf
    * @throws SQLException
    * @see
    */
   public static void makeStatAllCumul(StatisticsConfig conf) {
     Connection con = getConnection();
-
-    if ((conf != null) && (con != null) && (conf.isValidConfigFile())) {
-      String currentType = "";
-      Collection allTypes = conf.getAllTypes();
-      Iterator iteratorType = allTypes.iterator();
-
-      while (iteratorType.hasNext()) {
-        currentType = (String) iteratorType.next();
-
+    if (conf != null && con != null && conf.isValidConfigFile()) {
+      for (String currentType : conf.getAllTypes()) {
         try {
           purgeTablesCumul(con, currentType, conf);
         } catch (SQLException e) {
-          SilverTrace.error("silverstatistics",
-              "SilverStatisticsManagerDAO.makeStatAllCumul",
+          SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatAllCumul",
               "silverstatistics.MSG_PURGE_BD", e);
         }
-
         try {
           makeStatCumul(con, currentType, conf);
         } catch (SQLException e) {
-          SilverTrace.error("silverstatistics",
-              "SilverStatisticsManagerDAO.makeStatAllCumul",
+          SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatAllCumul",
               "silverstatistics.MSG_CUMUL_BD", e);
-        } finally {
+        } catch (IOException e) {
+          SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatAllCumul",
+              "silverstatistics.MSG_CUMUL_BD", e);
+        }finally {
           try {
             deleteTablesOfTheDay(con, currentType, conf);
           } catch (SQLException e) {
-            SilverTrace.error("silverstatistics",
-                "SilverStatisticsManagerDAO.makeStatAllCumul",
+            SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatAllCumul",
                 "silverstatistics.MSG_PURGE_BD", e);
           }
         }
       }
     } else {
       if (con == null) {
-        SilverTrace.error("silverstatistics",
-            "SilverStatisticsManagerDAO.makeStatAllCumul",
+        SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatAllCumul",
             "silverstatistics.MSG_CONNECTION_BD");
       }
       if (conf == null) {
-        SilverTrace.error("silverstatistics",
-            "SilverStatisticsManagerDAO.makeStatAllCumul",
+        SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatAllCumul",
             "silverstatistics.MSG_NO_CONFIG_FILE");
-      } else if (conf.isValidConfigFile() == false) {
-        SilverTrace.error("silverstatistics",
-            "SilverStatisticsManagerDAO.makeStatAllCumul",
+      } else if (!conf.isValidConfigFile()) {
+        SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatAllCumul",
             "silverstatistics.MSG_CONFIG_FILE");
       }
     }
@@ -550,24 +541,22 @@ public class SilverStatisticsManagerDAO {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
   private static Connection getConnection() {
     try {
-      Connection con = DBUtil.makeConnection(DB_NAME);
-
-      return con;
+      return DBUtil.makeConnection(DB_NAME);
     } catch (Exception e) {
-      throw new StatisticsRuntimeException(
-          "SilverStatisticsManagerDAO.getConnection()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED",
-          "DbName=" + DB_NAME, e);
+      throw new StatisticsRuntimeException("SilverStatisticsManagerDAO.getConnection()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", "DbName=" + DB_NAME, e);
     }
   }
 
   /**
    * Method declaration
+   *
    * @param con
    * @see
    */
@@ -576,8 +565,7 @@ public class SilverStatisticsManagerDAO {
       try {
         con.close();
       } catch (Exception e) {
-        SilverTrace.error("silverstatistics",
-            "SilverStatisticsPeasDAOConnexion.freeConnection()",
+        SilverTrace.error("silverstatistics", "SilverStatisticsPeasDAOConnexion.freeConnection()",
             "root.EX_CONNECTION_CLOSE_FAILED", "", e);
       }
     }

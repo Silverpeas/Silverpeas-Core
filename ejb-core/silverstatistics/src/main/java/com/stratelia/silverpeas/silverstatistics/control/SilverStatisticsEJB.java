@@ -22,11 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.silverpeas.silverstatistics.control;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -78,9 +76,12 @@ public class SilverStatisticsEJB implements SessionBean {
     if (myStatsConfig.isGoodDatas(typeOfStats, dataArray)) {
       try {
         myCon = getConnection();
-        SilverStatisticsDAO.putDataStats(myCon, typeOfStats, dataArray,
-            myStatsConfig);
+        SilverStatisticsDAO.putDataStats(myCon, typeOfStats, dataArray, myStatsConfig);
       } catch (SQLException e) {
+        SilverTrace.error("silverstatistics", "SilverStatisticsEJB.putStats",
+            "silverstatistics.MSG_ALIMENTATION_BD", "typeOfStats = "
+            + typeOfStats + ", dataArray = " + dataArray, e);
+      } catch (IOException e) {
         SilverTrace.error("silverstatistics", "SilverStatisticsEJB.putStats",
             "silverstatistics.MSG_ALIMENTATION_BD", "typeOfStats = "
             + typeOfStats + ", dataArray = " + dataArray, e);
@@ -114,9 +115,7 @@ public class SilverStatisticsEJB implements SessionBean {
    */
   private Connection getConnection() {
     try {
-      Connection con = DBUtil.makeConnection(dbName);
-
-      return con;
+      return DBUtil.makeConnection(dbName);
     } catch (Exception e) {
       throw new StatisticsRuntimeException("StatisticsEJB.getConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);

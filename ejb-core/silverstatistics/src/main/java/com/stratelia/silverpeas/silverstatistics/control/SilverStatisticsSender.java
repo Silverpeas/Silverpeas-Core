@@ -94,24 +94,16 @@ public final class SilverStatisticsSender {
   public SilverStatisticsSender() throws Exception {
     try {
       Context ctx = getInitialContext();
-
       QueueConnectionFactory factory = (QueueConnectionFactory) ctx
           .lookup(JNDINames.SILVERSTATISTICS_JMS_FACTORY);
 
       queueConnection = factory.createQueueConnection();
-
       // Create a non-transacted JMS Session
-      queueSession = queueConnection.createQueueSession(false,
-          Session.AUTO_ACKNOWLEDGE);
-
+      queueSession = queueConnection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
       queue = (Queue) ctx.lookup(JNDINames.SILVERSTATISTICS_JMS_QUEUE);
-
       queueSender = queueSession.createSender(queue);
-
       msg = queueSession.createTextMessage();
-
       queueConnection.start();
-
     } catch (Exception e) {
       throw e;
     }

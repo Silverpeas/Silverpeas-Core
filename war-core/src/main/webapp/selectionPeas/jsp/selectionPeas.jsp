@@ -346,8 +346,8 @@ out.println(gef.getLookStyleSheet());
   <input type="hidden" name="SpecificOperation" value=""/>
   <input type="hidden" name="setId" value=""/>
   <input type="hidden" name="elementId" value=""/>
-  <input type="hidden" name="setNB" value="<%=SelectionPeasSettings.m_SetByBrowsePage%>"/>
-  <input type="hidden" name="elementNB" value="<%=SelectionPeasSettings.m_ElementByBrowsePage%>"/>
+  <input type="hidden" name="setNB" value="<%=SelectionPeasSettings.setByBrowsePage%>"/>
+  <input type="hidden" name="elementNB" value="<%=SelectionPeasSettings.elementByBrowsePage%>"/>
   <input type="hidden" name="<%=ArrayPane.INDEX_PARAMETER_NAME%>" value=""/>
   <input type="hidden" name="<%=ArrayPane.TARGET_PARAMETER_NAME%>" value=""/>
   <input type="hidden" name="<%=ArrayPane.ACTION_PARAMETER_NAME%>" value=""/>
@@ -389,7 +389,7 @@ out.println(gef.getLookStyleSheet());
 		  // Affiche un tableau
           arrayPane = gef.getArrayPane("sets", componentURL+"BrowseOperation", request,session);
 		  // Affiche le nombre de ligne total du tableau dans la m�me page
-		  arrayPane.setVisibleLineNumber(SelectionPeasSettings.m_SetByBrowsePage);
+		  arrayPane.setVisibleLineNumber(SelectionPeasSettings.setByBrowsePage);
 		  arrayPane.setTitle(setText);
 		  arrayPane.setPaginationJavaScriptCallback("changeSetsPage");
           
@@ -456,7 +456,7 @@ out.println(gef.getLookStyleSheet());
 		  // Affiche un tableau
           arrayPane = gef.getArrayPane("elements", componentURL+"BrowseOperation", request, session);
 		  // Affiche le nombre de ligne total du tableau dans la m�me page
-		  arrayPane.setVisibleLineNumber(SelectionPeasSettings.m_ElementByBrowsePage);
+		  arrayPane.setVisibleLineNumber(SelectionPeasSettings.elementByBrowsePage);
 		  arrayPane.setTitle(elementText);
 		  arrayPane.setPaginationJavaScriptCallback("changeElementsPage");
           

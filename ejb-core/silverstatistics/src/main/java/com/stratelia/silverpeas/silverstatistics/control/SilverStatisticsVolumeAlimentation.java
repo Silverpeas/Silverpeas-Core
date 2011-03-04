@@ -22,15 +22,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.silverpeas.silverstatistics.control;
 
 import com.silverpeas.util.FileUtil;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.MissingResourceException;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -46,10 +44,9 @@ import java.util.ResourceBundle;
  * @author sleroux
  */
 public class SilverStatisticsVolumeAlimentation {
-  static ResourceBundle resources = null;
+  private static ResourceBundle resources = null;
 
   static {
-    if (resources == null) {
       try {
         resources = FileUtil.loadBundle(
             "com.stratelia.silverpeas.silverstatistics.SilverStatistics", Locale.getDefault());
@@ -58,7 +55,6 @@ public class SilverStatisticsVolumeAlimentation {
             "SilverStatisticsVolumeAlimentation",
             "root.EX_CLASS_NOT_INITIALIZED", ex);
       }
-    }
   }
 
   /**
@@ -67,29 +63,24 @@ public class SilverStatisticsVolumeAlimentation {
    */
   public static void makeVolumeAlimentationForAllComponents() {
     java.util.Date now = new java.util.Date();
-
-    ArrayList listAllSpacesId = null;
-
     // get all spaces
-    listAllSpacesId = getAllSpacesAndAllSubSpacesId();
-    String currentSpaceId = null;
-    String currentComponentsId = null;
+    List<String> listAllSpacesId = getAllSpacesAndAllSubSpacesId();
+    String currentSpaceId  ;
+    String currentComponentsId  ;
 
-    if ((listAllSpacesId != null) && (!listAllSpacesId.isEmpty())) {
-      Iterator iteratorAllSpacesId = listAllSpacesId.iterator();
+    if (listAllSpacesId != null && !listAllSpacesId.isEmpty()) {
 
-      while (iteratorAllSpacesId.hasNext()) {
-        ArrayList listAllComponentsInst = null;
+      for (String aListAllSpacesId : listAllSpacesId) {
+        ArrayList listAllComponentsInst;
 
         // get all components from a space
-        currentSpaceId = (String) iteratorAllSpacesId.next();
+        currentSpaceId = aListAllSpacesId;
         listAllComponentsInst = getAllComponentsInst(currentSpaceId);
-        Iterator iteratorAllComponentsInst = listAllComponentsInst.iterator();
 
-        while (iteratorAllComponentsInst.hasNext()) {
-          Collection collectionUserIdCountVolume = null;
+        for (Object aListAllComponentsInst : listAllComponentsInst) {
+          Collection collectionUserIdCountVolume;
 
-          ComponentInst ci = (ComponentInst) iteratorAllComponentsInst.next();
+          ComponentInst ci = (ComponentInst) aListAllComponentsInst;
 
           currentComponentsId = ci.getId();
 
@@ -98,29 +89,19 @@ public class SilverStatisticsVolumeAlimentation {
               currentSpaceId, ci);
 
           if (collectionUserIdCountVolume != null) {
-            Iterator iteratorUserIdCountVolume = collectionUserIdCountVolume
-                .iterator();
 
-            while (iteratorUserIdCountVolume.hasNext()) {
+            for (Object aCollectionUserIdCountVolume : collectionUserIdCountVolume) {
               UserIdCountVolumeCouple currentUserIdCountVolume =
-                  (UserIdCountVolumeCouple) iteratorUserIdCountVolume
-                  .next();
-
-              /*
-               * System.out.println("\n addStatVolume = "+" userId= "+
-               * currentUserIdCountVolume.getUserId()+" countVolume=  "+
-               * currentUserIdCountVolume.getCountVolume()+" name= "+ ci.getName()+" spaceId= "+
-               * currentSpaceId+" compoId= "+currentComponentsId);
-               */
+                  (UserIdCountVolumeCouple) aCollectionUserIdCountVolume;
               SilverTrace
                   .debug(
-                  "silverstatistics",
-                  "SilverStatisticsVolumeAlimentation.makeVolumeAlimentationForAllComponents",
-                  "userId= " + currentUserIdCountVolume.getUserId()
-                  + " countVolume=  "
-                  + currentUserIdCountVolume.getCountVolume()
-                  + " name= " + ci.getName() + " spaceId= "
-                  + currentSpaceId + " compoId= " + currentComponentsId);
+                      "silverstatistics",
+                      "SilverStatisticsVolumeAlimentation.makeVolumeAlimentationForAllComponents",
+                      "userId= " + currentUserIdCountVolume.getUserId()
+                          + " countVolume=  "
+                          + currentUserIdCountVolume.getCountVolume()
+                          + " name= " + ci.getName() + " spaceId= "
+                          + currentSpaceId + " compoId= " + currentComponentsId);
 
               // notify statistics
               SilverStatisticsManager.getInstance().addStatVolume(
@@ -140,8 +121,8 @@ public class SilverStatisticsVolumeAlimentation {
    * @return
    * @see
    */
-  private static ArrayList getAllSpacesAndAllSubSpacesId() {
-    ArrayList resultList = new ArrayList();
+  private static List<String> getAllSpacesAndAllSubSpacesId() {
+    List<String> resultList = new ArrayList<String>();
     AdminController myAdminController = new AdminController("");
     String[] spaceIds = null;
 
@@ -154,8 +135,8 @@ public class SilverStatisticsVolumeAlimentation {
     }
 
     if (spaceIds != null) {
-      for (int i = 0; i < spaceIds.length; i++) {
-        resultList.add(spaceIds[i]);
+      for (String spaceId : spaceIds) {
+        resultList.add(spaceId);
       }
     }
     return resultList;
@@ -183,7 +164,7 @@ public class SilverStatisticsVolumeAlimentation {
    */
   private static Collection getCollectionUserIdCountVolume(String spaceId,
       ComponentInst ci) {
-    ComponentStatisticsInterface myCompo = null;
+    ComponentStatisticsInterface myCompo  ;
     Collection c = null;
 
     try {
@@ -225,7 +206,7 @@ public class SilverStatisticsVolumeAlimentation {
   }
 
   private static String getComponentStatisticsClassName(String componentName) {
-    String componentStatisticsClassName = null;
+    String componentStatisticsClassName  ;
 
     try {
       componentStatisticsClassName = resources.getString(componentName);
@@ -252,20 +233,19 @@ public class SilverStatisticsVolumeAlimentation {
 
     ArrayList myArrayList = new ArrayList();
 
-    Iterator iter1 = in.iterator();
     // parcours collection initiale
-    while (iter1.hasNext()) {
+    for (Object anIn : in) {
       // lecture d'un userId
       // s'il n'existe pas dans la collection finale alors on l'ajoute
       // sinon on modifie le countVolume et on passe au suivant
 
-      UserIdCountVolumeCouple eltIn = (UserIdCountVolumeCouple) iter1.next();
+      UserIdCountVolumeCouple eltIn = (UserIdCountVolumeCouple) anIn;
       UserIdCountVolumeCouple eltOut = getCouple(myArrayList, eltIn);
 
       SilverTrace.debug("silverstatistics",
           "SilverStatisticsVolumeAlimentation.agregateUser)",
           "eltIn.getUserId() = " + eltIn.getUserId()
-          + "eltIn.getCountVolume() = " + eltIn.getCountVolume());
+              + "eltIn.getCountVolume() = " + eltIn.getCountVolume());
 
       if (eltOut == null) {
         myArrayList.add(eltIn);
@@ -276,7 +256,7 @@ public class SilverStatisticsVolumeAlimentation {
         SilverTrace.debug("silverstatistics",
             "SilverStatisticsVolumeAlimentation.agregateUser)",
             "eltOut.getUserId() = " + eltOut.getUserId()
-            + "eltOut.getCountVolume() = " + eltOut.getCountVolume());
+                + "eltOut.getCountVolume() = " + eltOut.getCountVolume());
       }
 
     }
@@ -286,9 +266,8 @@ public class SilverStatisticsVolumeAlimentation {
 
   private static UserIdCountVolumeCouple getCouple(Collection in,
       UserIdCountVolumeCouple eltIn) {
-    Iterator iter2 = in.iterator();
-    while (iter2.hasNext()) {
-      UserIdCountVolumeCouple elt = (UserIdCountVolumeCouple) iter2.next();
+    for (Object anIn : in) {
+      UserIdCountVolumeCouple elt = (UserIdCountVolumeCouple) anIn;
       if (elt.getUserId().equals(eltIn.getUserId())) {
         return elt;
       }

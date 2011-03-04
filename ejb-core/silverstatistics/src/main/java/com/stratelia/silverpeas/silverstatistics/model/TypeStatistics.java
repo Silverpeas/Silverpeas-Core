@@ -21,19 +21,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.silverpeas.silverstatistics.model;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * Class declaration
+ *
  * @author SLR
  */
 
@@ -42,20 +40,20 @@ public class TypeStatistics {
   private String name;
   private String tableName;
   private int purgeInMonth;
-  private ArrayList allKeysName;
-  private ArrayList allKeysValue;
-  private ArrayList cumulKeysName;
+  private List<String> allKeysName;
+  private List<String> allKeysValue;
+  private List<String> cumulKeysName;
   private boolean isRun;
   private boolean isAsynchron;
   private String modeCumul;
 
-  public static String MODEADD = new String("Add");
-  public static String MODEREPLACE = new String("Replace");
+  public static String MODEADD = "Add";
+  public static String MODEREPLACE = "Replace";
 
   TypeStatistics() {
-    allKeysName = new ArrayList();
-    allKeysValue = new ArrayList();
-    cumulKeysName = new ArrayList();
+    allKeysName = new ArrayList<String>();
+    allKeysValue = new ArrayList<String>();
+    cumulKeysName = new ArrayList<String>();
     name = "";
     tableName = "";
     purgeInMonth = 3; // use 3 as default
@@ -70,14 +68,16 @@ public class TypeStatistics {
 
   public void setName(String name)
       throws SilverStatisticsTypeStatisticsException {
-    if (name == null)
+    if (name == null) {
       throw new SilverStatisticsTypeStatisticsException("TypeStatistics",
           SilverpeasException.FATAL, "silverstatistics.MSG_NAME_STATS_NULL",
           name);
-    if (name.equals(""))
+    }
+    if (name.equals("")) {
       throw new SilverStatisticsTypeStatisticsException("TypeStatistics",
           SilverpeasException.FATAL, "silverstatistics.MSG_NAME_STATS_EMPTY",
           name);
+    }
     this.name = name;
   }
 
@@ -85,15 +85,7 @@ public class TypeStatistics {
     return modeCumul;
   }
 
-  public void setModeCumul(String mode)
-      throws SilverStatisticsTypeStatisticsException {
-    // if (mode == null) throw new
-    // SilverStatisticsTypeStatisticsException("TypeStatistics",
-    // SilverpeasException.FATAL, "silverstatistics.MSG_NAME_STATS_NULL", name);
-    // if (mode.equals("")) throw new
-    // SilverStatisticsTypeStatisticsException("TypeStatistics",
-    // SilverpeasException.FATAL, "silverstatistics.MSG_NAME_STATS_EMPTY",
-    // name);
+  public void setModeCumul(String mode) throws SilverStatisticsTypeStatisticsException {
     modeCumul = mode;
   }
 
@@ -117,12 +109,11 @@ public class TypeStatistics {
     return purgeInMonth;
   }
 
-  public void setPurge(int purgeInMonth)
-      throws SilverStatisticsTypeStatisticsException {
-    if (purgeInMonth <= 0)
+  public void setPurge(int purgeInMonth) throws SilverStatisticsTypeStatisticsException {
+    if (purgeInMonth <= 0) {
       throw new SilverStatisticsTypeStatisticsException("TypeStatistics",
-          SilverpeasException.ERROR, "silverstatistics.MSG_PURGE_BAD_VALUE",
-          name);
+          SilverpeasException.ERROR, "silverstatistics.MSG_PURGE_BAD_VALUE", name);
+    }
     this.purgeInMonth = purgeInMonth;
   }
 
@@ -130,67 +121,67 @@ public class TypeStatistics {
     return tableName;
   }
 
-  public void setTableName(String name)
-      throws SilverStatisticsTypeStatisticsException {
-    if (name == null)
-      throw new SilverStatisticsTypeStatisticsException("TypeStatistics",
-          SilverpeasException.FATAL,
+  public void setTableName(String name) throws SilverStatisticsTypeStatisticsException {
+    if (name == null) {
+      throw new SilverStatisticsTypeStatisticsException("TypeStatistics", SilverpeasException.FATAL,
           "silverstatistics.MSG_TABLE_NAME_STATS_NULL", name);
-    if (name.equals(""))
-      throw new SilverStatisticsTypeStatisticsException("TypeStatistics",
-          SilverpeasException.FATAL,
+    }
+    if (name.equals("")) {
+      throw new SilverStatisticsTypeStatisticsException("TypeStatistics", SilverpeasException.FATAL,
           "silverstatistics.MSG_TABLE_NAME_STATS_EMPTY", name);
+    }
     this.tableName = name;
   }
 
-  public Collection getAllKeys() {
+  public Collection<String> getAllKeys() {
     return allKeysName;
   }
 
-  public void setAllKeys(Collection allTags) {
+  public void setAllKeys(Collection<String> allTags) {
     this.allKeysName.addAll(allTags);
   }
 
   public void addKey(String keyName, String keyType)
       throws SilverStatisticsTypeStatisticsException {
-    if (keyName == null)
+    if (keyName == null) {
       throw new SilverStatisticsTypeStatisticsException("TypeStatistics",
-          SilverpeasException.FATAL,
-          "silverstatistics.MSG_KEY_NAME_STATS_NULL", name);
-    if (keyName.equals(""))
+          SilverpeasException.FATAL, "silverstatistics.MSG_KEY_NAME_STATS_NULL", name);
+    }
+    if (keyName.equals("")) {
       throw new SilverStatisticsTypeStatisticsException("TypeStatistics",
-          SilverpeasException.FATAL,
-          "silverstatistics.MSG_KEY_NAME_STATS_EMPTY", name);
-    if (keyType == null)
+          SilverpeasException.FATAL, "silverstatistics.MSG_KEY_NAME_STATS_EMPTY", name);
+    }
+    if (keyType == null) {
       throw new SilverStatisticsTypeStatisticsException("TypeStatistics",
-          SilverpeasException.FATAL,
-          "silverstatistics.MSG_TYPE_NAME_STATS_NULL", name);
-    if (keyType.equals(""))
+          SilverpeasException.FATAL, "silverstatistics.MSG_TYPE_NAME_STATS_NULL", name);
+    }
+    if (keyType.equals("")) {
       throw new SilverStatisticsTypeStatisticsException("TypeStatistics",
-          SilverpeasException.FATAL,
-          "silverstatistics.MSG_TYPE_NAME_STATS_EMPTY", name);
-    if (!isAGoodType(keyType))
+          SilverpeasException.FATAL, "silverstatistics.MSG_TYPE_NAME_STATS_EMPTY", name);
+    }
+    if (!isAGoodType(keyType)) {
       throw new SilverStatisticsTypeStatisticsException("TypeStatistics",
-          SilverpeasException.FATAL,
-          "silverstatistics.MSG_TYPE_NAME_STATS_NOT_EXISTS", name, keyType);
+          SilverpeasException.FATAL, "silverstatistics.MSG_TYPE_NAME_STATS_NOT_EXISTS", name,
+          keyType);
+    }
     allKeysName.add(keyName);
     allKeysValue.add(keyType);
   }
 
   public void addCumulKey(String keyName)
       throws SilverStatisticsTypeStatisticsException {
-    if (keyName == null)
-      throw new SilverStatisticsTypeStatisticsException("TypeStatistics",
-          SilverpeasException.FATAL,
+    if (keyName == null) {
+      throw new SilverStatisticsTypeStatisticsException("TypeStatistics", SilverpeasException.FATAL,
           "silverstatistics.MSG_CUMULKEY_NAME_STATS_NULL", name);
-    if (keyName.equals(""))
-      throw new SilverStatisticsTypeStatisticsException("TypeStatistics",
-          SilverpeasException.FATAL,
+    }
+    if (keyName.equals("")) {
+      throw new SilverStatisticsTypeStatisticsException("TypeStatistics", SilverpeasException.FATAL,
           "silverstatistics.MSG_CUMULKEY_NAME_STATS_EMPTY", name);
-    if (!hasACumulType(keyName))
-      throw new SilverStatisticsTypeStatisticsException("TypeStatistics",
-          SilverpeasException.FATAL,
+    }
+    if (!hasACumulType(keyName)) {
+      throw new SilverStatisticsTypeStatisticsException("TypeStatistics", SilverpeasException.FATAL,
           "silverstatistics.MSG_CUMULKEY_TYPE_STATS_BAD_VALUE", name, keyName);
+    }
     cumulKeysName.add(keyName);
   }
 
@@ -207,23 +198,26 @@ public class TypeStatistics {
   }
 
   public boolean isAGoodType(String typeName) {
-    if (typeName.equals("INTEGER"))
+    if (typeName.equals("INTEGER")) {
       return true;
-    if (typeName.equals("DECIMAL"))
+    }
+    if (typeName.equals("DECIMAL")) {
       return true;
-    if (typeName.equals("VARCHAR"))
+    }
+    if (typeName.equals("VARCHAR")) {
       return true;
+    }
 
     return false;
   }
 
   public boolean hasACumulType(String cumulKeyName) {
-    if (((String) (allKeysValue.get(allKeysName.indexOf(cumulKeyName))))
-        .equals("INTEGER"))
+    if ("INTEGER".equals(allKeysValue.get(allKeysName.indexOf(cumulKeyName)))) {
       return true;
-    if (((String) (allKeysValue.get(allKeysName.indexOf(cumulKeyName))))
-        .equals("DECIMAL"))
+    }
+    if ("DECIMAL".equals(allKeysValue.get(allKeysName.indexOf(cumulKeyName)))) {
       return true;
+    }
 
     return false;
   }
@@ -231,16 +225,17 @@ public class TypeStatistics {
   public boolean hasGoodCumulKey() {
     boolean valueReturn = true;
 
-    if (cumulKeysName.size() > 0)
+    if (cumulKeysName.size() > 0) {
       valueReturn = true;
-    else
+    } else {
       valueReturn = false;
+    }
 
     return valueReturn;
   }
 
   public String getKeyType(String keyName) {
-    return (String) (allKeysValue.get(allKeysName.indexOf(keyName)));
+    return allKeysValue.get(allKeysName.indexOf(keyName));
   }
 
   public int numberOfKeys() {

@@ -21,15 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
-
 package com.stratelia.silverpeas.selectionPeas.control;
 
-import java.util.ArrayList;
-import java.util.Set;
-
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.genericPanel.GenericPanel;
 import com.stratelia.silverpeas.genericPanel.PanelLine;
 import com.stratelia.silverpeas.genericPanel.PanelOperation;
@@ -44,34 +38,40 @@ import com.stratelia.silverpeas.selectionPeas.BrowsePanelProvider;
 import com.stratelia.silverpeas.selectionPeas.CacheManager;
 import com.stratelia.silverpeas.selectionPeas.CacheManagerJdbcConnector;
 import com.stratelia.silverpeas.selectionPeas.CacheManagerUsersGroups;
+import com.stratelia.silverpeas.selectionPeas.CacheType;
 import com.stratelia.silverpeas.selectionPeas.SelectionPeasSettings;
 import com.stratelia.silverpeas.selectionPeas.jdbc.JdbcConnectorSetting;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Class declaration
+ *
  * @author
  */
 public class SelectionPeasSessionController extends AbstractComponentSessionController {
-  protected Selection m_Selection = null;
-  protected GenericPanel m_SearchSetPanel = null;
-  protected GenericPanel m_SearchElementPanel = null;
-  protected String m_Context = "";
-  protected CacheManager m_Cm = null;
-  protected ArrayList<PanelLine> m_SetPath = new ArrayList<PanelLine>();
 
-  protected BrowsePanelProvider[] m_NavBrowse = new BrowsePanelProvider[CacheManager.CM_NBTOT];
-  protected PanelProvider[] m_NavCart = new PanelProvider[CacheManager.CM_NBTOT];
-
-  protected String m_SelectionType = "";
-
-  // protected boolean m_fromUserPanel = false;
+  protected Selection selection = null;
+  protected GenericPanel searchSetPanel = null;
+  protected GenericPanel searchElementPanel = null;
+  protected CacheManager cacheManager = null;
+  protected List<PanelLine> panelLineList = new ArrayList<PanelLine>();
+  protected Map<CacheType, BrowsePanelProvider> m_NavBrowse = new HashMap<CacheType, BrowsePanelProvider>(
+      CacheType.CM_NBTOT.getValue());
+  protected Map<CacheType, PanelProvider> m_NavCart = new HashMap<CacheType, PanelProvider>(
+      CacheType.CM_NBTOT.getValue());
+  protected String selectionType = "";
 
   /**
-   * Standard Session Controller Constructeur
-   * @param mainSessionCtrl The user's profile
+   * Standard Session Controller Constructor
+   *
+   * @param mainSessionCtrl  The user's profile
    * @param componentContext The component's profile
    * @see
    */
@@ -81,106 +81,92 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
         "com.stratelia.silverpeas.selectionPeas.multilang.selectionPeasBundle",
         "com.stratelia.silverpeas.selectionPeas.settings.selectionPeasIcons");
     setComponentRootName(URLManager.CMP_SELECTIONPEAS);
-    m_Context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-        "ApplicationURL");
   }
 
   public String getSelectionType() {
-    return m_SelectionType;
+    return selectionType;
   }
 
   public void initSC(String selectionType) {
     SilverTrace.info("selectionPeas", "SelectionPeasSessionController.initSC",
         "root.MSG_GEN_PARAM_VALUE", "SelectionType=" + selectionType);
-    m_SearchSetPanel = null;
-    m_SearchElementPanel = null;
-    m_Selection = getSelection();
-    m_NavBrowse[CacheManager.CM_SET] = null;
-    m_NavBrowse[CacheManager.CM_ELEMENT] = null;
-    m_SetPath.clear();
-    m_SelectionType = selectionType;
+    searchSetPanel = null;
+    searchElementPanel = null;
+    selection = getSelection();
+    m_NavBrowse.remove(CacheType.CM_SET);
+    m_NavBrowse.remove(CacheType.CM_ELEMENT);
+    panelLineList.clear();
+    this.selectionType = selectionType;
 
-    if (Selection.TYPE_USERS_GROUPS.equals(m_SelectionType)) {
-      m_Cm = new CacheManagerUsersGroups(getLanguage(), getMultilang(),
-          getIcon(), m_Selection, getUserDetail());
-    } else if (Selection.TYPE_JDBC_CONNECTOR.equals(m_SelectionType)) {
-      m_Selection.setMultiSelect(false);
-      m_Selection.setPopupMode(true);
-      m_Selection.setHostComponentName(new PairObject(
-          "Sélection d'un élément", null));
-      m_Selection.setHostPath(null);
-      m_Selection.setElementSelectable(false);
-      m_Cm = new CacheManagerJdbcConnector(getLanguage(), getMultilang(),
-          getIcon(), m_Selection);
+    if (Selection.TYPE_USERS_GROUPS.equals(this.selectionType)) {
+      cacheManager = new CacheManagerUsersGroups(getLanguage(), getMultilang(),
+          getIcon(), selection, getUserDetail());
+    } else if (Selection.TYPE_JDBC_CONNECTOR.equals(this.selectionType)) {
+      selection.setMultiSelect(false);
+      selection.setPopupMode(true);
+      selection.setHostComponentName(new PairObject("Sélection d'un élément", null));
+      selection.setHostPath(null);
+      selection.setElementSelectable(false);
+      cacheManager = new CacheManagerJdbcConnector(getLanguage(), getMultilang(), getIcon(),
+          selection);
     }
     // Preset Ids
-    m_Cm.setSelected(CacheManager.CM_ELEMENT,
-        m_Selection.getSelectedElements(), true);
-    m_Cm.setSelected(CacheManager.CM_SET, m_Selection.getSelectedSets(), true);
+    cacheManager.setSelected(CacheType.CM_ELEMENT, selection.getSelectedElements(), true);
+    cacheManager.setSelected(CacheType.CM_SET, selection.getSelectedSets(), true);
   }
 
-  public void updateJdbcParameters(JdbcConnectorSetting jdbcSetting,
-      String tableName, String columnsNames, String formIndex,
-      String fieldsNames) {
+  public void updateJdbcParameters(JdbcConnectorSetting jdbcSetting, String tableName,
+      String columnsNames, String formIndex, String fieldsNames) {
     SelectionJdbcParams selectionJdbcParams = new SelectionJdbcParams(
-        jdbcSetting.getDriverClassName(), jdbcSetting.getUrl(), jdbcSetting
-        .getLogin(), jdbcSetting.getPassword(), tableName, columnsNames,
-        formIndex, fieldsNames);
-    m_Selection.setExtraParams(selectionJdbcParams);
+        jdbcSetting.getDriverClassName(), jdbcSetting.getUrl(), jdbcSetting.getLogin(),
+        jdbcSetting.getPassword(), tableName, columnsNames, formIndex, fieldsNames);
+    selection.setExtraParams(selectionJdbcParams);
   }
-
-  // -------------------------------------------------------------------------------------------------------------------
-  // ------------------------------------------- Navigation Functions
-  // ----------------------------------------------
-  // -------------------------------------------------------------------------------------------------------------------
 
   public boolean isMultiSelect() {
-    return m_Selection.isMultiSelect();
+    return selection.isMultiSelect();
   }
 
   public String getZoomToSetURL() {
-    return m_Context + getComponentUrl() + "ZoomToSetInfos";
+    return URLManager.getApplicationURL() + getComponentUrl() + "ZoomToSetInfos";
   }
 
   public String getZoomToElementURL() {
-    return m_Context + getComponentUrl() + "ZoomToElementInfos";
+    return URLManager.getApplicationURL() + getComponentUrl() + "ZoomToElementInfos";
   }
 
   public String getStartingFunction() {
     String theStartingPage;
-
-    if (!(Selection.FIRST_PAGE_DEFAULT
-        .equalsIgnoreCase(SelectionPeasSettings.m_FirstPage))) {
-      theStartingPage = SelectionPeasSettings.m_FirstPage;
+    if (!(Selection.FIRST_PAGE_DEFAULT.equalsIgnoreCase(SelectionPeasSettings.firstPage))) {
+      theStartingPage = SelectionPeasSettings.firstPage;
     } else {
-      if (Selection.FIRST_PAGE_DEFAULT.equalsIgnoreCase(m_Selection
-          .getFirstPage())) {
-        theStartingPage = SelectionPeasSettings.m_DefaultPage;
+      if (Selection.FIRST_PAGE_DEFAULT.equalsIgnoreCase(selection.getFirstPage())) {
+        theStartingPage = SelectionPeasSettings.defaultPage;
       } else {
-        theStartingPage = m_Selection.getFirstPage();
+        theStartingPage = selection.getFirstPage();
       }
     }
     if (Selection.FIRST_PAGE_SEARCH_ELEMENT.equalsIgnoreCase(theStartingPage)
-        && (!m_Selection.isElementSelectable())) {
-      if (m_Selection.isSetSelectable()) {
+        && (!selection.isElementSelectable())) {
+      if (selection.isSetSelectable()) {
         theStartingPage = Selection.FIRST_PAGE_SEARCH_SET;
       } else {
         theStartingPage = Selection.FIRST_PAGE_BROWSE;
       }
     }
     if (Selection.FIRST_PAGE_SEARCH_SET.equalsIgnoreCase(theStartingPage)
-        && (!m_Selection.isSetSelectable())) {
-      if (m_Selection.isElementSelectable()) {
+        && (!selection.isSetSelectable())) {
+      if (selection.isElementSelectable()) {
         theStartingPage = Selection.FIRST_PAGE_SEARCH_ELEMENT;
       } else {
         theStartingPage = Selection.FIRST_PAGE_BROWSE;
       }
     }
     if (Selection.FIRST_PAGE_CART.equalsIgnoreCase(theStartingPage)
-        && (!m_Selection.isMultiSelect())) {
-      if (m_Selection.isSetSelectable()) {
+        && (!selection.isMultiSelect())) {
+      if (selection.isSetSelectable()) {
         theStartingPage = Selection.FIRST_PAGE_SEARCH_SET;
-      } else if (m_Selection.isElementSelectable()) {
+      } else if (selection.isElementSelectable()) {
         theStartingPage = Selection.FIRST_PAGE_SEARCH_ELEMENT;
       } else {
         theStartingPage = Selection.FIRST_PAGE_BROWSE;
@@ -190,30 +176,29 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
   }
 
   public String getSearchSet() {
-    if (m_SearchSetPanel == null) {
-      m_SearchSetPanel = new GenericPanel();
-      m_SearchSetPanel.setCancelURL(m_Context + getComponentUrl() + "Cancel");
-      m_SearchSetPanel.setGoBackURL(m_Context + getComponentUrl()
+    if (searchSetPanel == null) {
+      searchSetPanel = new GenericPanel();
+      searchSetPanel.setCancelURL(URLManager.getApplicationURL() + getComponentUrl() + "Cancel");
+      searchSetPanel.setGoBackURL(URLManager.getApplicationURL() + getComponentUrl()
           + "ReturnSearchSet");
-      m_SearchSetPanel.setZoomToItemURL(getZoomToSetURL());
-      m_SearchSetPanel.setPopupMode(false);
-      m_SearchSetPanel.setMultiSelect(m_Selection.isMultiSelect());
-      m_SearchSetPanel.setSelectable(m_Selection.isSetSelectable());
-      m_SearchSetPanel.setZoomToItemInPopup(true);
-      m_SearchSetPanel.setPanelOperations(getOperations("DisplaySearchSet"));
-      m_SearchSetPanel.setPanelProvider(m_Cm.getSearchPanelProvider(
-          CacheManager.CM_SET, m_Cm, m_Selection.getExtraParams()));
-      m_SearchSetPanel.setHostSpaceName(m_Selection.getHostSpaceName());
-      if (m_Selection.isPopupMode()) {
+      searchSetPanel.setZoomToItemURL(getZoomToSetURL());
+      searchSetPanel.setPopupMode(false);
+      searchSetPanel.setMultiSelect(selection.isMultiSelect());
+      searchSetPanel.setSelectable(selection.isSetSelectable());
+      searchSetPanel.setZoomToItemInPopup(true);
+      searchSetPanel.setPanelOperations(getOperations("DisplaySearchSet"));
+      searchSetPanel.setPanelProvider(cacheManager.getSearchPanelProvider(CacheType.CM_SET,
+          selection.getExtraParams()));
+      searchSetPanel.setHostSpaceName(selection.getHostSpaceName());
+      if (selection.isPopupMode()) {
         PairObject po = null;
-        PairObject[] apo = null;
         PairObject[] emptyapo = null;
 
-        if (m_Selection.getHostComponentName() != null) {
-          po = new PairObject(m_Selection.getHostComponentName().getFirst(), "");
+        if (selection.getHostComponentName() != null) {
+          po = new PairObject(selection.getHostComponentName().getFirst(), "");
         }
-        m_SearchSetPanel.setHostComponentName(po);
-        apo = m_Selection.getHostPath();
+        searchSetPanel.setHostComponentName(po);
+        PairObject[] apo = selection.getHostPath();
         if (apo != null) {
           emptyapo = new PairObject[apo.length];
           for (int i = 0; i < apo.length; i++) {
@@ -224,13 +209,12 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
             }
           }
         }
-        m_SearchSetPanel.setHostPath(emptyapo);
+        searchSetPanel.setHostPath(emptyapo);
       } else {
-        m_SearchSetPanel.setHostComponentName(m_Selection
-            .getHostComponentName());
-        m_SearchSetPanel.setHostPath(m_Selection.getHostPath());
+        searchSetPanel.setHostComponentName(selection.getHostComponentName());
+        searchSetPanel.setHostPath(selection.getHostPath());
       }
-      setGenericPanel("SearchSet", m_SearchSetPanel);
+      setGenericPanel("SearchSet", searchSetPanel);
     }
     return GenericPanel.getGenericPanelURL("SearchSet");
   }
@@ -240,38 +224,36 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
     String theOperation = gp.getSelectedOperation();
     if (GenericPanel.OPERATION_VALIDATE.equals(theOperation)) {
       return "Validate";
-    } else {
-      return theOperation;
     }
+    return theOperation;
   }
 
   public String getSearchElement() {
-    if (m_SearchElementPanel == null) {
-      m_SearchElementPanel = new GenericPanel();
-      m_SearchElementPanel.setCancelURL(m_Context + getComponentUrl()
+    if (searchElementPanel == null) {
+      searchElementPanel = new GenericPanel();
+      searchElementPanel.setCancelURL(URLManager.getApplicationURL() + getComponentUrl()
           + "Cancel");
-      m_SearchElementPanel.setGoBackURL(m_Context + getComponentUrl()
+      searchElementPanel.setGoBackURL(URLManager.getApplicationURL() + getComponentUrl()
           + "ReturnSearchElement");
-      m_SearchElementPanel.setZoomToItemURL(getZoomToElementURL());
-      m_SearchElementPanel.setPopupMode(false);
-      m_SearchElementPanel.setMultiSelect(m_Selection.isMultiSelect());
-      m_SearchElementPanel.setSelectable(m_Selection.isElementSelectable());
-      m_SearchElementPanel.setZoomToItemInPopup(true);
-      m_SearchElementPanel
+      searchElementPanel.setZoomToItemURL(getZoomToElementURL());
+      searchElementPanel.setPopupMode(false);
+      searchElementPanel.setMultiSelect(selection.isMultiSelect());
+      searchElementPanel.setSelectable(selection.isElementSelectable());
+      searchElementPanel.setZoomToItemInPopup(true);
+      searchElementPanel
           .setPanelOperations(getOperations("DisplaySearchElement"));
-      m_SearchElementPanel.setPanelProvider(m_Cm.getSearchPanelProvider(
-          CacheManager.CM_ELEMENT, m_Cm, m_Selection.getExtraParams()));
-      m_SearchElementPanel.setHostSpaceName(m_Selection.getHostSpaceName());
-      if (m_Selection.isPopupMode()) {
+      searchElementPanel.setPanelProvider(cacheManager.getSearchPanelProvider(
+          CacheType.CM_ELEMENT, selection.getExtraParams()));
+      searchElementPanel.setHostSpaceName(selection.getHostSpaceName());
+      if (selection.isPopupMode()) {
         PairObject po = null;
-        PairObject[] apo = null;
         PairObject[] emptyapo = null;
 
-        if (m_Selection.getHostComponentName() != null) {
-          po = new PairObject(m_Selection.getHostComponentName().getFirst(), "");
+        if (selection.getHostComponentName() != null) {
+          po = new PairObject(selection.getHostComponentName().getFirst(), "");
         }
-        m_SearchElementPanel.setHostComponentName(po);
-        apo = m_Selection.getHostPath();
+        searchElementPanel.setHostComponentName(po);
+        PairObject[] apo = selection.getHostPath();
         if (apo != null) {
           emptyapo = new PairObject[apo.length];
           for (int i = 0; i < apo.length; i++) {
@@ -282,13 +264,12 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
             }
           }
         }
-        m_SearchElementPanel.setHostPath(emptyapo);
+        searchElementPanel.setHostPath(emptyapo);
       } else {
-        m_SearchElementPanel.setHostComponentName(m_Selection
-            .getHostComponentName());
-        m_SearchElementPanel.setHostPath(m_Selection.getHostPath());
+        searchElementPanel.setHostComponentName(selection.getHostComponentName());
+        searchElementPanel.setHostPath(selection.getHostPath());
       }
-      setGenericPanel("SearchElement", m_SearchElementPanel);
+      setGenericPanel("SearchElement", searchElementPanel);
     }
     return GenericPanel.getGenericPanelURL("SearchElement");
   }
@@ -298,259 +279,232 @@ public class SelectionPeasSessionController extends AbstractComponentSessionCont
     String theOperation = gp.getSelectedOperation();
     if (GenericPanel.OPERATION_VALIDATE.equals(theOperation)) {
       return "Validate";
-    } else {
-      return theOperation;
     }
+    return theOperation;
   }
 
   public String getGoBackURL() {
-    return getSureString(m_Selection.getGoBackURL());
+    return getSureString(selection.getGoBackURL());
   }
 
   public String getCancelURL() {
-    return getSureString(m_Selection.getCancelURL());
+    return getSureString(selection.getCancelURL());
   }
 
   public boolean isPopup() {
-    return m_Selection.isPopupMode();
+    return selection.isPopupMode();
   }
 
   public boolean isSetSelectable() {
-    return m_Selection.isSetSelectable();
+    return selection.isSetSelectable();
   }
 
   public boolean isElementSelectable() {
-    return m_Selection.isElementSelectable();
+    return selection.isElementSelectable();
   }
 
   public PairObject getHostComponentName() {
-    return m_Selection.getHostComponentName();
+    return selection.getHostComponentName();
   }
 
   public String getHostSpaceName() {
-    return m_Selection.getHostSpaceName();
+    return selection.getHostSpaceName();
   }
 
   public PairObject[] getHostPath() {
-    return m_Selection.getHostPath();
+    return selection.getHostPath();
   }
 
   public PanelLine[] getSetPath() {
-    return m_SetPath.toArray(new PanelLine[0]);
+    return panelLineList.toArray(new PanelLine[panelLineList.size()]);
   }
 
-  public String[][] getInfos(int what, String theId) {
-    return m_Cm.getContentInfos(what, theId);
+  public String[][] getInfos(CacheType what, String theId) {
+    return cacheManager.getContentInfos(what, theId);
   }
 
-  public String getContentText(int what) {
-    return m_Cm.getContentText(what);
+  public String getContentText(CacheType what) {
+    return cacheManager.getContentText(what);
   }
 
-  public String[] getContentColumns(int what) {
-    return m_Cm.getContentColumnsNames(what);
+  public String[] getContentColumns(CacheType what) {
+    return cacheManager.getContentColumnsNames(what);
   }
 
-  public String[][] getContent(int what, String theId) {
-    return m_Cm.getContentLines(what, theId);
+  public String[][] getContent(CacheType what, String theId) {
+    return cacheManager.getContentLines(what, theId);
   }
 
   public PanelOperation[] getOperations(String currentFunction) {
-    ArrayList<PanelOperation> poList = new ArrayList<PanelOperation>();
+    List<PanelOperation> panelOperationList = new ArrayList<PanelOperation>();
 
-    poList.add(m_Cm.getPanelOperation("DisplayBrowse"));
-    if (m_Selection.isElementSelectable()) {
-      poList.add(m_Cm.getPanelOperation("DisplaySearchElement"));
+    panelOperationList.add(cacheManager.getPanelOperation("DisplayBrowse"));
+    if (selection.isElementSelectable()) {
+      panelOperationList.add(cacheManager.getPanelOperation("DisplaySearchElement"));
     }
-    if (m_Selection.isSetSelectable()) {
-      poList.add(m_Cm.getPanelOperation("DisplaySearchSet"));
+    if (selection.isSetSelectable()) {
+      panelOperationList.add(cacheManager.getPanelOperation("DisplaySearchSet"));
     }
-    if (m_Selection.isMultiSelect()) {
-      poList.add(new PanelOperation(getString("selectionPeas.helpCart"),
-          m_Context + getIcon().getString("selectionPeas.showPanier"),
+    if (selection.isMultiSelect()) {
+      panelOperationList.add(new PanelOperation(getString("selectionPeas.helpCart"),
+          URLManager.getApplicationURL() + getIcon().getString("selectionPeas.showPanier"),
           "DisplayCart"));
     }
     if ("DisplayCart".equals(currentFunction)) {
-      poList.add(new PanelOperation("", "", ""));
-      poList.add(new PanelOperation(getString("selectionPeas.removeFromCart"),
-          m_Context + getIcon().getString("selectionPeas.selectDelete"),
+      panelOperationList.add(new PanelOperation("", "", ""));
+      panelOperationList.add(new PanelOperation(getString("selectionPeas.removeFromCart"),
+          URLManager.getApplicationURL() + getIcon().getString("selectionPeas.selectDelete"),
           "RemoveSelectedFromCart",
           getString("selectionPeas.confirmRemoveFromCart")));
-      poList
-          .add(new PanelOperation(getString("selectionPeas.removeAllFromCart"),
-          m_Context + getIcon().getString("selectionPeas.allDelete"),
+      panelOperationList.add(new PanelOperation(getString("selectionPeas.removeAllFromCart"),
+          URLManager.getApplicationURL() + getIcon().getString("selectionPeas.allDelete"),
           "RemoveAllFromCart",
           getString("selectionPeas.confirmRemoveFromCart")));
     }
-    return (PanelOperation[]) poList.toArray(new PanelOperation[0]);
+    return panelOperationList.toArray(new PanelOperation[panelOperationList.size()]);
   }
 
   public void validate() {
-    /*
-     * if (m_fromUserPanel) { setSelectionToUserPanel(); } else {
-     */m_Selection.setSelectedSets(m_Cm.getSelectedIds(CacheManager.CM_SET));
-    m_Selection.setSelectedElements(m_Cm
-        .getSelectedIds(CacheManager.CM_ELEMENT));
-    // }
+    selection.setSelectedSets(cacheManager.getSelectedIds(CacheType.CM_SET));
+    selection.setSelectedElements(cacheManager.getSelectedIds(CacheType.CM_ELEMENT));
   }
 
   protected String getSureString(String s) {
     if (s == null) {
       return "";
-    } else {
-      return s;
     }
+    return s;
   }
 
-  // -------------------------------------------------------------------------------------------------------------------
-  // ------------------------------------------- Browse Functions
-  // ----------------------------------------------
-  // -------------------------------------------------------------------------------------------------------------------
-
   public void initBrowse() {
-    if (m_NavBrowse[CacheManager.CM_SET] == null) {
-      m_NavBrowse[CacheManager.CM_SET] = m_Cm.getBrowsePanelProvider(
-          CacheManager.CM_SET, m_Cm, m_Selection.getExtraParams());
+    if (!m_NavBrowse.containsKey(CacheType.CM_SET)) {
+      m_NavBrowse.put(CacheType.CM_SET, cacheManager.getBrowsePanelProvider(
+          CacheType.CM_SET, selection.getExtraParams()));
     }
-    if (m_NavBrowse[CacheManager.CM_ELEMENT] == null) {
-      m_NavBrowse[CacheManager.CM_ELEMENT] = m_Cm.getBrowsePanelProvider(
-          CacheManager.CM_ELEMENT, m_Cm, m_Selection.getExtraParams());
+    if (!m_NavBrowse.containsKey(CacheType.CM_ELEMENT)) {
+      m_NavBrowse.put(CacheType.CM_ELEMENT, cacheManager.getBrowsePanelProvider(
+          CacheType.CM_ELEMENT, selection.getExtraParams()));
     }
   }
 
   public String getSelectedNumber() {
-    return Integer.toString(m_NavBrowse[CacheManager.CM_SET]
-        .getSelectedNumber()
-        + m_NavBrowse[CacheManager.CM_ELEMENT].getSelectedNumber());
+    return Integer.toString(m_NavBrowse.get(CacheType.CM_SET).getSelectedNumber()
+        + m_NavBrowse.get(CacheType.CM_ELEMENT).getSelectedNumber());
   }
 
-  public String getText(int what) {
-    return m_NavBrowse[what].getPageName();
+  public String getText(CacheType what) {
+    return m_NavBrowse.get(what).getPageName();
   }
 
-  public boolean[] getNavigation(int what) {
-    boolean[] valret = new boolean[2];
-    valret[0] = (!m_NavBrowse[what].isFirstPage());
-    valret[1] = (!m_NavBrowse[what].isLastPage());
-    return valret;
+  public boolean[] getNavigation(CacheType what) {
+    return new boolean[]{!m_NavBrowse.get(what).isFirstPage(), !m_NavBrowse.get(what).isLastPage()};
   }
 
-  public void setSelected(int what, Set<String> selectedSets, Set<String> unselectedSets) {
-    m_NavBrowse[what].setSelectedElements(selectedSets);
-    m_NavBrowse[what].unsetSelectedElements(unselectedSets);
+  public void setSelected(CacheType what, Set<String> selectedSets, Set<String> unselectedSets) {
+    m_NavBrowse.get(what).setSelectedElements(selectedSets);
+    m_NavBrowse.get(what).unsetSelectedElements(unselectedSets);
   }
 
-  public void setOneSelected(int what, String selected) {
-    m_Cm.unselectAll();
-    m_Cm.setSelected(what, selected, true);
+  public void setOneSelected(CacheType what, String selected) {
+    cacheManager.unselectAll();
+    cacheManager.setSelected(what, selected, true);
   }
 
-  public String[] getColumnsHeader(int what) {
-    return m_NavBrowse[what].getColumnsHeader();
+  public String[] getColumnsHeader(CacheType what) {
+    return m_NavBrowse.get(what).getColumnsHeader();
   }
 
-  public PanelLine[] getPage(int what) {
-    return m_NavBrowse[what].getPage();
+  public PanelLine[] getPage(CacheType what) {
+    return m_NavBrowse.get(what).getPage();
   }
 
-  public String getMiniFilterString(int what) {
-    return m_NavBrowse[what].getSelectMiniFilter().getHTMLDisplay();
+  public String getMiniFilterString(CacheType what) {
+    return m_NavBrowse.get(what).getSelectMiniFilter().getHTMLDisplay();
   }
 
   public void setMiniFilter(String theValue, String theFilter) {
-    m_NavBrowse[Integer.parseInt(theFilter.substring(1, 2))].setMiniFilter(
-        Integer.parseInt(theFilter.substring(3)), theValue);
+    CacheType what = CacheType.extractValue(theFilter.substring(1, 2));
+    m_NavBrowse.get(what).setMiniFilter(Integer.parseInt(theFilter.substring(3)), theValue);
   }
 
   public void setParentSet(String parentSetId) {
     int parc = 0;
 
-    m_NavBrowse[CacheManager.CM_SET].setNewParentSet(parentSetId);
-    m_NavBrowse[CacheManager.CM_ELEMENT].setNewParentSet(parentSetId);
-    if ((parentSetId == null) || (parentSetId.length() <= 0)
-        || (parentSetId.equals("-1"))) {
-      m_SetPath.clear();
+    m_NavBrowse.get(CacheType.CM_SET).setNewParentSet(parentSetId);
+    m_NavBrowse.get(CacheType.CM_ELEMENT).setNewParentSet(parentSetId);
+    if (!StringUtil.isDefined(parentSetId) || "-1".equals(parentSetId)) {
+      panelLineList.clear();
     } else {
-      while ((parc < m_SetPath.size())
-          && (!parentSetId.equals(((PanelLine) m_SetPath.get(parc)).m_Id))) {
+      while ((parc < panelLineList.size())
+          && (!parentSetId.equals(panelLineList.get(parc).m_Id))) {
         parc++;
       }
-      if (parc < m_SetPath.size()) {
+      if (parc < panelLineList.size()) {
         parc++;
-        while (parc < m_SetPath.size()) { // Group found -> go back to it
-          m_SetPath.remove(parc);
+        while (parc < panelLineList.size()) { // Group found -> go back to it
+          panelLineList.remove(parc);
         }
       } else {
-        m_SetPath.add(m_Cm.getInfos(CacheManager.CM_SET, parentSetId));
+        panelLineList.add(cacheManager.getInfos(CacheType.CM_SET, parentSetId));
       }
     }
   }
 
-  // -------------------------------------------------------------------------------------------------------------------
-  // ------------------------------------------- CART Functions
-  // ----------------------------------------------
-  // -------------------------------------------------------------------------------------------------------------------
-
   public void initCart() {
-    m_NavCart[CacheManager.CM_SET] = m_Cm.getCartPanelProvider(
-        CacheManager.CM_SET, m_Cm, m_Selection.getExtraParams());
-    m_NavCart[CacheManager.CM_ELEMENT] = m_Cm.getCartPanelProvider(
-        CacheManager.CM_ELEMENT, m_Cm, m_Selection.getExtraParams());
+    m_NavCart.put(CacheType.CM_SET, cacheManager.getCartPanelProvider(
+        CacheType.CM_SET, selection.getExtraParams()));
+    m_NavCart.put(CacheType.CM_ELEMENT, cacheManager.getCartPanelProvider(
+        CacheType.CM_ELEMENT, selection.getExtraParams()));
   }
 
   public String getCartSelectedNumber() {
-    return Integer.toString(m_NavCart[CacheManager.CM_SET].getSelectedNumber()
-        + m_NavCart[CacheManager.CM_ELEMENT].getSelectedNumber());
+    return Integer.toString(m_NavCart.get(CacheType.CM_SET).getSelectedNumber()
+        + m_NavCart.get(CacheType.CM_ELEMENT).getSelectedNumber());
   }
 
-  public String getCartText(int what) {
-    return m_NavCart[what].getPageName();
+  public String getCartText(CacheType what) {
+    return m_NavCart.get(what).getPageName();
   }
 
-  public String[] getCartColumnsHeader(int what) {
-    return m_NavCart[what].getColumnsHeader();
+  public String[] getCartColumnsHeader(CacheType what) {
+    return m_NavCart.get(what).getColumnsHeader();
   }
 
-  public boolean[] getCartNavigation(int what) {
-    boolean[] valret = new boolean[2];
-    valret[0] = (!m_NavCart[what].isFirstPage());
-    valret[1] = (!m_NavCart[what].isLastPage());
-    return valret;
+  public boolean[] getCartNavigation(CacheType what) {
+    return new boolean[]{!m_NavCart.get(what).isFirstPage(), !m_NavCart.get(what).isLastPage()};
   }
 
-  public void setCartSelected(int what, Set<String> selectedSets, Set<String> unselectedSets) {
-    m_NavCart[what].setSelectedElements(selectedSets);
-    m_NavCart[what].unsetSelectedElements(unselectedSets);
+  public void setCartSelected(CacheType what, Set<String> selectedSets,
+      Set<String> unselectedSets) {
+    m_NavCart.get(what).setSelectedElements(selectedSets);
+    m_NavCart.get(what).unsetSelectedElements(unselectedSets);
   }
 
-  public PanelLine[] getCartPage(int what) {
-    return m_NavCart[what].getPage();
+  public PanelLine[] getCartPage(CacheType what) {
+    return m_NavCart.get(what).getPage();
   }
 
-  public String getCartMiniFilterString(int what) {
-    return m_NavCart[what].getSelectMiniFilter().getHTMLDisplay();
+  public String getCartMiniFilterString(CacheType what) {
+    return m_NavCart.get(what).getSelectMiniFilter().getHTMLDisplay();
   }
 
   public void setCartMiniFilter(String theValue, String theFilter) {
-    m_NavCart[Integer.parseInt(theFilter.substring(1, 2))].setMiniFilter(
-        Integer.parseInt(theFilter.substring(3)), theValue);
+    CacheType what = CacheType.extractValue(theFilter.substring(1, 2));
+    m_NavCart.get(what).setMiniFilter(Integer.parseInt(theFilter.substring(3)), theValue);
   }
 
   public void removeAllFromCart() {
-    m_Cm.unselectAll();
+    cacheManager.unselectAll();
   }
 
   public void removeSelectedFromCart() {
-    String[] sel;
-    int i;
-
-    sel = m_NavCart[CacheManager.CM_SET].getSelectedElements();
-    for (i = 0; i < sel.length; i++) {
-      m_Cm.setSelected(CacheManager.CM_SET, sel[i], false);
+    String[] sel = m_NavCart.get(CacheType.CM_SET).getSelectedElements();
+    for (int i = 0; i < sel.length; i++) {
+      cacheManager.setSelected(CacheType.CM_SET, sel[i], false);
     }
-    sel = m_NavCart[CacheManager.CM_ELEMENT].getSelectedElements();
-    for (i = 0; i < sel.length; i++) {
-      m_Cm.setSelected(CacheManager.CM_ELEMENT, sel[i], false);
+    sel = m_NavCart.get(CacheType.CM_ELEMENT).getSelectedElements();
+    for (int i = 0; i < sel.length; i++) {
+      cacheManager.setSelected(CacheType.CM_ELEMENT, sel[i], false);
     }
   }
 

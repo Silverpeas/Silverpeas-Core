@@ -8,7 +8,7 @@ version: 2.8.0r4
 
     /**
     * Config is a utility used within an Object to allow the implementer to
-    * maintain a list of local configuration properties and listen for changes 
+    * maintain a list of localResourceLocator configuration properties and listen for changes
     * to those properties dynamically using CustomEvent. The initial values are 
     * also maintained so that the configuration can be reset at any given point 
     * to its initial state.
@@ -68,7 +68,7 @@ version: 2.8.0r4
         queueInProgress: false,
         
         /**
-        * Maintains the local collection of configuration property objects and 
+        * Maintains the localResourceLocator collection of configuration property objects and
         * their specified values
         * @property config
         * @private
@@ -77,7 +77,7 @@ version: 2.8.0r4
         config: null,
         
         /**
-        * Maintains the local collection of configuration property objects as 
+        * Maintains the localResourceLocator collection of configuration property objects as
         * they were initially applied.
         * This object is used when resetting a property.
         * @property initialConfig
@@ -87,7 +87,7 @@ version: 2.8.0r4
         initialConfig: null,
         
         /**
-        * Maintains the local, normalized CustomEvent queue
+        * Maintains the localResourceLocator, normalized CustomEvent queue
         * @property eventQueue
         * @private
         * @type Object
@@ -102,7 +102,7 @@ version: 2.8.0r4
         configChangedEvent: null,
     
         /**
-        * Initializes the configuration Object and all of its local members.
+        * Initializes the configuration Object and all of its localResourceLocator members.
         * @method init
         * @param {Object} owner The owner Object to which this Config 
         * Object belongs

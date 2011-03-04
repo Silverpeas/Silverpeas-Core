@@ -464,7 +464,7 @@ $.Autocompleter.Cache = function(options) {
 		var stMatchSets = {},
 			nullData = 0;
 
-		// no url was specified, we need to adjust the cache length to make sure it fits the local data store
+		// no url was specified, we need to adjust the cache length to make sure it fits the localResourceLocator data store
 		if( !options.url ) options.cacheLength = 1;
 		
 		// track all options for minChars = 0
@@ -526,7 +526,7 @@ $.Autocompleter.Cache = function(options) {
 			if (!options.cacheLength || !length)
 				return null;
 			/* 
-			 * if dealing w/local data and matchContains than we must make sure
+			 * if dealing w/localResourceLocator data and matchContains than we must make sure
 			 * to loop through all the data collections looking for matches
 			 */
 			if( !options.url && options.matchContains ){

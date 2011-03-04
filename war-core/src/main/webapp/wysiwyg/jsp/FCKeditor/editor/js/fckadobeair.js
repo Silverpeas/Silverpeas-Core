@@ -60,7 +60,7 @@ if ( FCKBrowserInfo.IsAIR )
 				eval( script ) ;
 
 				// Point the FCKeditorAPI property of the parent window to the
-				// local reference.
+				// localResourceLocator reference.
 				parentWindow.FCKeditorAPI = window.FCKeditorAPI ;
 			},
 

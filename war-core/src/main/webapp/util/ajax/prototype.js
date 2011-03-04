@@ -2844,8 +2844,8 @@ Object.extend(Selector, {
     laterSibling: '/following-sibling::*',
     tagName:      function(m) {
       if (m[1] == '*') return '';
-      return "[local-name()='" + m[1].toLowerCase() +
-             "' or local-name()='" + m[1].toUpperCase() + "']";
+      return "[localResourceLocator-name()='" + m[1].toLowerCase() +
+             "' or localResourceLocator-name()='" + m[1].toUpperCase() + "']";
     },
     className:    "[contains(concat(' ', @class, ' '), ' #{1} ')]",
     id:           "[@id='#{1}']",

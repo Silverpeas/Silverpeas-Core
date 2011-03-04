@@ -28,20 +28,22 @@
 package com.stratelia.silverpeas.silverstatistics.model;
 
 import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.MissingResourceException;
-import java.util.StringTokenizer;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.util.Locale;
+import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.StringTokenizer;
 
 /**
  * Class declaration
+ *
  * @author SLR
  */
 
@@ -61,26 +63,28 @@ public class StatisticsConfig {
   public static String MODEADD = TypeStatistics.MODEADD;
   public static String MODEREPLACE = TypeStatistics.MODEREPLACE;
 
-  private HashMap allStatisticsConfig;
+  private Map<String, TypeStatistics> allStatisticsConfig;
 
   private boolean initGood;
 
   /**
    * Constructor declaration
+   *
    * @see
    */
   public StatisticsConfig() {
-    allStatisticsConfig = new HashMap();
+    allStatisticsConfig = new HashMap<String, TypeStatistics>();
   }
 
   /**
    * Method declaration
+   *
    * @return
    * @throws SilverStatisticsConfigException
+   *
    * @see
    */
   public int init() throws SilverStatisticsConfigException {
-    String TokenSeparator;
     String configTypeName = "";
 
     try {
@@ -88,102 +92,73 @@ public class StatisticsConfig {
       ResourceBundle resource = FileUtil.loadBundle(
           "com.stratelia.silverpeas.silverstatistics.SilverStatistics", Locale.getDefault());
 
-      TokenSeparator = resource.getString(STATSSEPARATOR);
+      String tokenSeparator = resource.getString(STATSSEPARATOR);
 
       StringTokenizer stTypeStats = new StringTokenizer(resource
-          .getString(STATSFAMILYTYPE), TokenSeparator);
+          .getString(STATSFAMILYTYPE), tokenSeparator);
 
       while (stTypeStats.hasMoreTokens()) {
         TypeStatistics currentType = new TypeStatistics();
 
         currentType.setName(stTypeStats.nextToken());
         configTypeName = currentType.getName();
-        currentType.setTableName(resource.getString(STATSTABLENAME
-            + currentType.getName()));
+        currentType.setTableName(resource.getString(STATSTABLENAME + currentType.getName()));
 
         try {
-          currentType.setIsRun(Boolean.valueOf(
-              resource.getString(STATSRUN + currentType.getName())).booleanValue());
+          currentType.setIsRun(
+              StringUtil.getBooleanValue(resource.getString(STATSRUN + currentType.getName())));
         } catch (MissingResourceException e) {
           SilverTrace.info("silverstatistics", "StatisticsConfig.init",
               "setIsRun", e);
-          // throw new SilverStatisticsConfigException("StatisticsConfig",
-          // SilverpeasException.ERROR, "silverstatistics.MSG_KEY_RUN_MISSING",
-          // configTypeName, e);
         }
 
         try {
-          currentType.setPurge(Integer.parseInt(resource.getString(STATSPURGE
-              + currentType.getName())));
+          currentType.setPurge(
+              Integer.parseInt(resource.getString(STATSPURGE + currentType.getName())));
         } catch (SilverStatisticsTypeStatisticsException e) {
-          SilverTrace.info("silverstatistics", "StatisticsConfig.init",
-              "setPurge", e);
-          // throw new SilverStatisticsConfigException("StatisticsConfig",
-          // SilverpeasException.ERROR, "silverstatistics.MSG_PURGE_BAD_VALUE",
-          // configTypeName, e);
+          SilverTrace.info("silverstatistics", "StatisticsConfig.init", "setPurge", e);
         } catch (MissingResourceException e) {
-          SilverTrace.info("silverstatistics", "StatisticsConfig.init",
-              "setPurge", e);
-          // throw new SilverStatisticsConfigException("StatisticsConfig",
-          // SilverpeasException.ERROR,
-          // "silverstatistics.MSG_KEY_RUN_MISSING",configTypeName, e);
+          SilverTrace.info("silverstatistics", "StatisticsConfig.init", "setPurge", e);
         }
 
         try {
-          currentType.setIsAsynchron(Boolean.valueOf(
-              resource.getString(STATSASYNCHRON + currentType.getName()))
-              .booleanValue());
+          currentType.setIsAsynchron(StringUtil.getBooleanValue(
+              resource.getString(STATSASYNCHRON + currentType.getName())));
         } catch (MissingResourceException e) {
-          SilverTrace.info("silverstatistics", "StatisticsConfig.init",
-              "setIsAsynchron", e);
-          // throw new SilverStatisticsConfigException("StatisticsConfig",
-          // SilverpeasException.ERROR,
-          // "silverstatistics.MSG_KEY_PURGE_MISSING", configTypeName, e);
+          SilverTrace.info("silverstatistics", "StatisticsConfig.init", "setIsAsynchron", e);
         }
 
         try {
           currentType.setModeCumul(resource.getString(STATSMODECUMUL
               + currentType.getName()));
         } catch (SilverStatisticsTypeStatisticsException e) {
-          SilverTrace.info("silverstatistics", "StatisticsConfig.init",
-              "setModeCumul", e);
-          // throw new SilverStatisticsConfigException("StatisticsConfig",
-          // SilverpeasException.ERROR, "silverstatistics.MSG_PURGE_BAD_VALUE",
-          // configTypeName, e);
+          SilverTrace.info("silverstatistics", "StatisticsConfig.init", "setModeCumul", e);
         } catch (MissingResourceException e) {
-          SilverTrace.info("silverstatistics", "StatisticsConfig.init",
-              "setModeCumul", e);
-          // throw new SilverStatisticsConfigException("StatisticsConfig",
-          // SilverpeasException.ERROR,
-          // "silverstatistics.MSG_KEY_PURGE_MISSING", configTypeName, e);
+          SilverTrace.info("silverstatistics", "StatisticsConfig.init", "setModeCumul", e);
         }
 
         StringTokenizer stKeyName = new StringTokenizer(resource
-            .getString(STATSKEYNAME + currentType.getName()), TokenSeparator);
+            .getString(STATSKEYNAME + currentType.getName()), tokenSeparator);
         StringTokenizer stKeyType = new StringTokenizer(resource
-            .getString(STATSKEYTYPE + currentType.getName()), TokenSeparator);
+            .getString(STATSKEYTYPE + currentType.getName()), tokenSeparator);
         StringTokenizer stKeyCumul = new StringTokenizer(resource
-            .getString(STATSKEYSCUMUL + currentType.getName()), TokenSeparator);
+            .getString(STATSKEYSCUMUL + currentType.getName()), tokenSeparator);
 
         while (stKeyName.hasMoreTokens()) {
           currentType.addKey(stKeyName.nextToken(), stKeyType.nextToken());
         }
-
         while (stKeyCumul.hasMoreTokens()) {
           currentType.addCumulKey(stKeyCumul.nextToken());
         }
-
         allStatisticsConfig.put(currentType.getName(), currentType);
       }
     } catch (SilverStatisticsTypeStatisticsException e) {
       initGood = false;
-      throw new SilverStatisticsConfigException("StatisticsConfig",
-          SilverpeasException.FATAL, "silverstatistics.MSG_CONFIG_FILE",
-          configTypeName, e);
+      throw new SilverStatisticsConfigException("StatisticsConfig", SilverpeasException.FATAL,
+          "silverstatistics.MSG_CONFIG_FILE", configTypeName, e);
     } catch (MissingResourceException e) {
       initGood = false;
-      throw new SilverStatisticsConfigException("StatisticsConfig",
-          SilverpeasException.FATAL,
+      throw new SilverStatisticsConfigException("StatisticsConfig", SilverpeasException.FATAL,
           "silverstatistics.MSG_CONFIG_FILE_KEY_MISSING", configTypeName, e);
     }
 
@@ -192,61 +167,62 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
+   *
    * @param typeOfStats
    * @return
    * @see
    */
   public Collection getAllKeys(String typeOfStats) {
-    return ((TypeStatistics) (allStatisticsConfig.get(typeOfStats)))
-        .getAllKeys();
+    return allStatisticsConfig.get(typeOfStats).getAllKeys();
   }
 
   /**
    * Method declaration
+   *
    * @param typeOfStats
    * @param keyName
    * @return
    * @see
    */
   public String getKeyType(String typeOfStats, String keyName) {
-    return ((TypeStatistics) allStatisticsConfig.get(typeOfStats))
-        .getKeyType(keyName);
+    return allStatisticsConfig.get(typeOfStats).getKeyType(keyName);
   }
 
   /**
    * Method declaration
+   *
    * @param typeOfStats
    * @return
    * @see
    */
   public String getTableName(String typeOfStats) {
-    return ((TypeStatistics) allStatisticsConfig.get(typeOfStats))
-        .getTableName();
+    return allStatisticsConfig.get(typeOfStats).getTableName();
   }
 
   /**
    * Method declaration
+   *
    * @param typeOfStats
    * @return
    * @see
    */
   public String getModeCumul(String typeOfStats) {
-    return ((TypeStatistics) allStatisticsConfig.get(typeOfStats))
-        .getModeCumul();
+    return allStatisticsConfig.get(typeOfStats).getModeCumul();
   }
 
   /**
    * Method declaration
+   *
    * @param typeOfStats
    * @return
    * @see
    */
   public boolean isRun(String typeOfStats) {
-    return ((TypeStatistics) allStatisticsConfig.get(typeOfStats)).isRun();
+    return allStatisticsConfig.get(typeOfStats).isRun();
   }
 
   public boolean isAsynchron(String typeOfStats) {
-    return ((TypeStatistics) allStatisticsConfig.get(typeOfStats))
+    return allStatisticsConfig.get(typeOfStats)
         .isAsynchron();
   }
 
@@ -256,6 +232,7 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
+   *
    * @param idFamilyStats
    * @return
    * @see
@@ -266,114 +243,97 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
+   *
    * @param idFamilyStats
    * @return
    * @see
    */
   public int getNumberOfKeys(String idFamilyStats) {
-    return ((TypeStatistics) allStatisticsConfig.get(idFamilyStats))
-        .numberOfKeys();
+    return allStatisticsConfig.get(idFamilyStats).numberOfKeys();
   }
 
   /**
    * Method declaration
+   *
    * @param typeOfStats
    * @param keyName
    * @return
    * @see
    */
   public boolean isCumulKey(String typeOfStats, String keyName) {
-    return ((TypeStatistics) allStatisticsConfig.get(typeOfStats))
-        .isCumulKey(keyName);
+    return allStatisticsConfig.get(typeOfStats).isCumulKey(keyName);
   }
 
   /**
    * Method declaration
+   *
    * @param StatsType
    * @param keyName
    * @return
    * @see
    */
   public int indexOfKey(String StatsType, String keyName) {
-    return ((TypeStatistics) allStatisticsConfig.get(StatsType))
-        .indexOfKey(keyName);
+    return allStatisticsConfig.get(StatsType).indexOfKey(keyName);
   }
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
-  public Collection getAllTypes() {
+  public Collection<String> getAllTypes() {
     return allStatisticsConfig.keySet();
   }
 
   /**
    * Method declaration
+   *
    * @param typeOfStats
    * @return
    * @see
    */
   public int getPurge(String typeOfStats) {
-    return ((TypeStatistics) allStatisticsConfig.get(typeOfStats)).getPurge();
+    return allStatisticsConfig.get(typeOfStats).getPurge();
   }
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
   public boolean isValidConfigFile() {
     boolean valueReturn = true;
-
-    Iterator iteratorTYPE = (allStatisticsConfig.keySet()).iterator();
-
-    while (iteratorTYPE.hasNext()) {
-      String typeCurrent = (String) iteratorTYPE.next();
-
+    for (String typeCurrent : allStatisticsConfig.keySet()) {
       if (!initGood) {
         valueReturn = false;
       }
       if (!this.isExist(typeCurrent)) {
         valueReturn = false;
       }
-      if (!((TypeStatistics) allStatisticsConfig.get(typeCurrent))
-          .hasGoodCumulKey()) {
+      if (!allStatisticsConfig.get(typeCurrent).hasGoodCumulKey()) {
         valueReturn = false;
       }
-      if (!((TypeStatistics) allStatisticsConfig.get(typeCurrent))
-          .isDateStatKeyExist()) {
+      if (!allStatisticsConfig.get(typeCurrent).isDateStatKeyExist()) {
         valueReturn = false;
       }
     }
-
     return valueReturn;
   }
 
   /**
    * Method declaration
+   *
    * @param typeOfStats
    * @param dataArray
    * @return
    * @see
    */
   public boolean isGoodDatas(String typeOfStats, ArrayList dataArray) {
-    boolean valueReturn = false;
-
-    if (initGood) {
-      if (this.isExist(typeOfStats)) {
-        if (((TypeStatistics) allStatisticsConfig.get(typeOfStats))
-            .hasGoodCumulKey()) {
-          if (((TypeStatistics) allStatisticsConfig.get(typeOfStats))
-              .isDateStatKeyExist()) {
-            if (dataArray.size() == this.getNumberOfKeys(typeOfStats)) {
-              valueReturn = true;
-            }
-          }
-        }
-      }
-    }
-    return valueReturn;
+    return initGood && this.isExist(typeOfStats) && allStatisticsConfig.get(
+        typeOfStats).hasGoodCumulKey() && allStatisticsConfig.get(
+        typeOfStats).isDateStatKeyExist() && dataArray.size() == this.getNumberOfKeys(typeOfStats);
   }
 
 }

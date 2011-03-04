@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.silverpeas.selectionPeas;
 
 import com.silverpeas.util.StringUtil;
@@ -36,64 +33,62 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 public class BrowseGroupPanel extends BrowsePanelProvider {
-  SelectionUsersGroups m_SelectionExtraParams = null;
+  SelectionUsersGroups extraParams = null;
 
   public BrowseGroupPanel(String language, ResourceLocator rs, CacheManager cm,
       SelectionUsersGroups sug) {
-    super(language, rs, cm, CacheManager.CM_SET);
+    super(language, rs, cm, CacheType.CM_SET);
     initAll(sug);
   }
 
   public void setNewParentSet(String newSetId) {
-    m_ParentGroupId = newSetId;
-    if ((m_ParentGroupId == null) || (m_ParentGroupId.length() <= 0)) {
-      m_ParentGroupName = "";
+    parentGroupId = newSetId;
+    if ((parentGroupId == null) || (parentGroupId.length() <= 0)) {
+      parentGroupName = "";
     } else {
-      PanelLine pl = m_Cm.getLineFromId(CacheManager.CM_SET, m_ParentGroupId);
-      m_ParentGroupName = pl.m_Values[0];
+      PanelLine pl = cacheManager.getLineFromId(CacheType.CM_SET, parentGroupId);
+      parentGroupName = pl.m_Values[0];
     }
     refresh(null);
   }
 
   public void initAll(SelectionUsersGroups sug) {
-    m_MiniFilters = m_Cm.getPanelMiniFilters(m_what);
-    setSelectMiniFilter(m_Cm.getSelectMiniFilter(m_what));
+    miniFilters = cacheManager.getPanelMiniFilters(m_what);
+    setSelectMiniFilter(cacheManager.getSelectMiniFilter(m_what));
 
     // Set the number displayed to a new value
-    m_NbDisplayed = SelectionPeasSettings.m_SetByBrowsePage;
+    nbDisplayed = SelectionPeasSettings.setByBrowsePage;
 
     // Set the Selection's extra parameters
     if (sug == null) {
-      m_SelectionExtraParams = new SelectionUsersGroups();
+      extraParams = new SelectionUsersGroups();
     } else {
-      m_SelectionExtraParams = sug;
+      extraParams = sug;
     }
 
     // Set the Page name
-    m_PageName = m_rs.getString("selectionPeas.groupsAll");
-    m_PageSubTitle = m_rs.getString("selectionPeas.searchGroup");
+    pageName = resourceLocator.getString("selectionPeas.groupsAll");
+    pageSubTitle = resourceLocator.getString("selectionPeas.searchGroup");
 
     // Build search tokens
-    m_SearchTokens = new PanelSearchToken[1];
+    searchTokens = new PanelSearchToken[1];
 
     // Set filters and get Ids
     refresh(null);
   }
 
   public String getPageName() {
-    if ((m_ParentGroupId == null) || (m_ParentGroupId.length() <= 0)) {
-      return m_PageName;
-    } else {
-      return m_rs.getString("selectionPeas.groupsOfGroup") + m_ParentGroupName
-          + " ";
+    if ((parentGroupId == null) || (parentGroupId.length() <= 0)) {
+      return pageName;
     }
+    return resourceLocator.getString("selectionPeas.groupsOfGroup") + parentGroupName + " ";
   }
 
   public void setMiniFilter(int filterIndex, String filterValue) {
     super.setMiniFilter(filterIndex, filterValue);
     // Only one filter : 0 : lastName
     if (filterIndex == 0) {
-      ((PanelMiniFilterEdit) m_MiniFilters[0]).m_Text = filterValue;
+      ((PanelMiniFilterEdit) miniFilters[0]).m_Text = filterValue;
       refresh(null);
     }
   }
@@ -101,28 +96,26 @@ public class BrowseGroupPanel extends BrowsePanelProvider {
   public void refresh(String[] filters) {
     Group modelGroup = new Group();
 
-    if ((((PanelMiniFilterEdit) m_MiniFilters[0]).m_Text != null)
-        && (((PanelMiniFilterEdit) m_MiniFilters[0]).m_Text.length() > 0)) {
-      modelGroup.setName(((PanelMiniFilterEdit) m_MiniFilters[0]).m_Text + "%");
+    if ((((PanelMiniFilterEdit) miniFilters[0]).m_Text != null)
+        && (((PanelMiniFilterEdit) miniFilters[0]).m_Text.length() > 0)) {
+      modelGroup.setName(((PanelMiniFilterEdit) miniFilters[0]).m_Text + "%");
     }
-    modelGroup.setDomainId(m_SelectionExtraParams.getDomainId());
-    modelGroup.setSuperGroupId(m_ParentGroupId);
+    modelGroup.setDomainId(extraParams.getDomainId());
+    modelGroup.setSuperGroupId(parentGroupId);
 
-    if (StringUtil.isDefined(m_ParentGroupId)) {
-      m_Ids = m_oc.searchGroupsIds(false, null, null, modelGroup);
+    if (StringUtil.isDefined(parentGroupId)) {
+      ids = organizationCOntroller.searchGroupsIds(false, null, null, modelGroup);
     } else {
       boolean getOnlyRootGroups = true; // By default, display only root groups
-      if (StringUtil.isDefined(m_SelectionExtraParams.getComponentId())) {
+      if (StringUtil.isDefined(extraParams.getComponentId())) {
         // in case of use in a component (to send notifications by example)
         // display all groups (whatever the level).
         // This permit to select a subgroup.
         getOnlyRootGroups = false;
       }
-      m_Ids = m_oc
-          .searchGroupsIds(getOnlyRootGroups, m_SelectionExtraParams.getComponentId(),
-              m_SelectionExtraParams.getProfileIds(), modelGroup);
+      ids = organizationCOntroller.searchGroupsIds(getOnlyRootGroups, extraParams.getComponentId(),
+              extraParams.getProfileIds(), modelGroup);
     }
-
     verifIndexes();
   }
 }
