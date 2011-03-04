@@ -22,8 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.silverpeas.selectionPeas;
 
@@ -34,6 +32,7 @@ import com.stratelia.silverpeas.genericPanel.PanelMiniFilterSelect;
 import com.stratelia.silverpeas.genericPanel.PanelMiniFilterToken;
 import com.stratelia.silverpeas.genericPanel.PanelOperation;
 import com.stratelia.silverpeas.genericPanel.PanelProvider;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionExtraParams;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
@@ -55,13 +54,13 @@ public class CacheManagerUsersGroups extends CacheManager {
   protected static final int COL_GROUP_NBUSERS = 2;
 
   protected OrganizationController m_oc = new OrganizationController();
-  protected AdminController m_ac = new AdminController(null);
-  protected UserDetail m_ud = null;
+  protected AdminController adminController = new AdminController(null);
+  protected UserDetail userDetail = null;
 
   public CacheManagerUsersGroups(String language, ResourceLocator local,
       ResourceLocator icon, Selection selection, UserDetail ud) {
     super(language, local, icon, selection);
-    m_ud = ud;
+    userDetail = ud;
   }
 
   protected String getSetParentName(String id) {
@@ -72,196 +71,198 @@ public class CacheManagerUsersGroups extends CacheManager {
 
       if (theSuperGroup != null) {
         return theSuperGroup.getName();
-      } else {
-        return "";
       }
-    } else {
       return "";
     }
+    return "";
   }
 
-  public String[][] getContentLines(int what, String id) {
-    String[][] valret = new String[0][0];
-    if (what == CM_ELEMENT) {
-      if (SelectionPeasSettings.m_DisplayUsersGroups) {
-        AdminController ac = new AdminController(id);
-        String[] groupIds = ac.getDirectGroupsIdsOfUser(id);
-        String[] columns = getColumnsNames(CM_SET);
+  public String[][] getContentLines(CacheType what, String id) {
+    String[][] result = new String[0][0];
+    switch (what) {
+      case CM_ELEMENT: {
+        if (SelectionPeasSettings.displayUsersGroups) {
+          AdminController ac = new AdminController(id);
+          String[] groupIds = ac.getDirectGroupsIdsOfUser(id);
+          String[] columns = getColumnsNames(CacheType.CM_SET);
 
-        if (groupIds != null && groupIds.length > 0) {
-          valret = new String[groupIds.length][columns.length];
-          PanelLine pl;
-          for (int iGrp = 0; iGrp < groupIds.length; iGrp++) {
-            pl = getLineFromId(CM_SET, groupIds[iGrp]);
-            for (int i = 0; i < columns.length; i++) {
-              valret[iGrp][i] = pl.m_Values[i];
+          if (groupIds != null && groupIds.length > 0) {
+            result = new String[groupIds.length][columns.length];
+            PanelLine pl;
+            for (int iGrp = 0; iGrp < groupIds.length; iGrp++) {
+              pl = getLineFromId(CacheType.CM_SET, groupIds[iGrp]);
+              for (int i = 0; i < columns.length; i++) {
+                result[iGrp][i] = pl.m_Values[i];
+              }
             }
           }
         }
       }
-    } else if (what == CM_SET) {
-      if (SelectionPeasSettings.m_DisplayGroupsUsers) {
-        Group theGroup = m_oc.getGroup(id);
-        String[] userIds = null;
-        String[] columns = getColumnsNames(CM_ELEMENT);
-
-        if (theGroup != null) {
-          userIds = theGroup.getUserIds();
-        }
-        if (userIds != null && userIds.length > 0) {
-          valret = new String[userIds.length][columns.length];
-          PanelLine pl;
-          for (int iUsr = 0; iUsr < userIds.length; iUsr++) {
-            pl = getLineFromId(CM_ELEMENT, userIds[iUsr]);
-            for (int i = 0; i < columns.length; i++) {
-              valret[iUsr][i] = pl.m_Values[i];
+      return result;
+      case CM_SET: {
+        if (SelectionPeasSettings.displayGroupsUsers) {
+          Group theGroup = m_oc.getGroup(id);
+          String[] userIds = null;
+          String[] columns = getColumnsNames(CacheType.CM_ELEMENT);
+          if (theGroup != null) {
+            userIds = theGroup.getUserIds();
+          }
+          if (userIds != null && userIds.length > 0) {
+            result = new String[userIds.length][columns.length];
+            PanelLine pl;
+            for (int iUsr = 0; iUsr < userIds.length; iUsr++) {
+              pl = getLineFromId(CacheType.CM_ELEMENT, userIds[iUsr]);
+              for (int i = 0; i < columns.length; i++) {
+                result[iUsr][i] = pl.m_Values[i];
+              }
             }
           }
         }
       }
+      return result;
     }
-    return valret;
+    return result;
   }
 
-  public String[] getContentColumnsNames(int what) {
-    if (what == CM_ELEMENT) {
-      return getColumnsNames(CM_SET);
-    } else if (what == CM_SET) {
-      return getColumnsNames(CM_ELEMENT);
-    } else {
-      return new String[0];
+  public String[] getContentColumnsNames(CacheType what) {
+    switch (what) {
+      case CM_ELEMENT:
+        return getColumnsNames(CacheType.CM_SET);
+      case CM_SET:
+        return getColumnsNames(CacheType.CM_ELEMENT);
+      default:
+        return new String[0];
     }
   }
 
-  public String[][] getContentInfos(int what, String id) {
-    PanelLine pl;
-    String[] names;
+  public String[][] getContentInfos(CacheType what, String id) {
     String[][] valret;
 
-    if (what == CM_ELEMENT) {
-      pl = getInfos(CM_ELEMENT, id);
-      names = getColumnsNames(CM_ELEMENT);
+    if (what == CacheType.CM_ELEMENT) {
+      PanelLine pl = getInfos(CacheType.CM_ELEMENT, id);
+      String[] names = getColumnsNames(CacheType.CM_ELEMENT);
       valret = new String[names.length][2];
       for (int i = 0; (i < names.length) && (i < pl.m_Values.length); i++) {
         valret[i][0] = names[i];
         valret[i][1] = pl.m_Values[i];
       }
     } else {
-      pl = getInfos(CM_SET, id);
-      names = getColumnsNames(CM_SET);
+      PanelLine pl = getInfos(CacheType.CM_SET, id);
+      String[] names = getColumnsNames(CacheType.CM_SET);
       valret = new String[names.length + 1][2];
       for (int i = 0; (i < names.length) && (i < pl.m_Values.length); i++) {
         valret[i][0] = names[i];
         valret[i][1] = pl.m_Values[i];
       }
-      valret[names.length][0] = m_Local.getString("selectionPeas.groupParent");
+      valret[names.length][0] = localResourceLocator.getString("selectionPeas.groupParent");
       valret[names.length][1] = getSetParentName(id);
     }
     return valret;
   }
 
-  public String getContentText(int what) {
-    if (what == CM_SET) {
-      return m_Local.getString("selectionPeas.directUsersOfGroup");
-    } else if (what == CM_ELEMENT) {
-      return m_Local.getString("selectionPeas.groupsOfUser");
-    } else {
-      return "";
+  public String getContentText(CacheType what) {
+    if (what == CacheType.CM_SET) {
+      return localResourceLocator.getString("selectionPeas.directUsersOfGroup");
     }
+    if (what == CacheType.CM_ELEMENT) {
+      return localResourceLocator.getString("selectionPeas.groupsOfUser");
+    }
+    return "";
   }
 
-  public String[] getColumnsNames(int what) {
-    if (what == CM_SET) {
+  public String[] getColumnsNames(CacheType what) {
+    if (what == CacheType.CM_SET) {
       String[] columnsHeader;
-      if (SelectionPeasSettings.m_DisplayNbUsersByGroup) {
-        if (SelectionPeasSettings.m_DisplayDomains) {
+      if (SelectionPeasSettings.displayNbUsersByGroup) {
+        if (SelectionPeasSettings.displayDomains) {
           columnsHeader = new String[4];
-          columnsHeader[COL_GROUP_NAME] = m_Global.getString("GML.nom");
-          columnsHeader[COL_GROUP_DESCRIPTION] = m_Global
+          columnsHeader[COL_GROUP_NAME] = globalResourceLocator.getString("GML.nom");
+          columnsHeader[COL_GROUP_DESCRIPTION] = globalResourceLocator
               .getString("GML.description");
-          columnsHeader[COL_GROUP_NBUSERS] = m_Global.getString("GML.users");
-          columnsHeader[COL_GROUP_NBUSERS + 1] = m_Local
+          columnsHeader[COL_GROUP_NBUSERS] = globalResourceLocator.getString("GML.users");
+          columnsHeader[COL_GROUP_NBUSERS + 1] = localResourceLocator
               .getString("selectionPeas.domain");
         } else {
           columnsHeader = new String[3];
-          columnsHeader[COL_GROUP_NAME] = m_Global.getString("GML.nom");
-          columnsHeader[COL_GROUP_DESCRIPTION] = m_Global
+          columnsHeader[COL_GROUP_NAME] = globalResourceLocator.getString("GML.nom");
+          columnsHeader[COL_GROUP_DESCRIPTION] = globalResourceLocator
               .getString("GML.description");
-          columnsHeader[COL_GROUP_NBUSERS] = m_Global.getString("GML.users");
+          columnsHeader[COL_GROUP_NBUSERS] = globalResourceLocator.getString("GML.users");
         }
       } else {
-        if (SelectionPeasSettings.m_DisplayDomains) {
+        if (SelectionPeasSettings.displayDomains) {
           columnsHeader = new String[3];
-          columnsHeader[COL_GROUP_NAME] = m_Global.getString("GML.nom");
-          columnsHeader[COL_GROUP_DESCRIPTION] = m_Global
+          columnsHeader[COL_GROUP_NAME] = globalResourceLocator.getString("GML.nom");
+          columnsHeader[COL_GROUP_DESCRIPTION] = globalResourceLocator
               .getString("GML.description");
-          columnsHeader[COL_GROUP_DESCRIPTION + 1] = m_Local
+          columnsHeader[COL_GROUP_DESCRIPTION + 1] = localResourceLocator
               .getString("selectionPeas.domain");
         } else {
           columnsHeader = new String[2];
-          columnsHeader[COL_GROUP_NAME] = m_Global.getString("GML.nom");
-          columnsHeader[COL_GROUP_DESCRIPTION] = m_Global
+          columnsHeader[COL_GROUP_NAME] = globalResourceLocator.getString("GML.nom");
+          columnsHeader[COL_GROUP_DESCRIPTION] = globalResourceLocator
               .getString("GML.description");
         }
       }
 
       return columnsHeader;
-    } else if (what == CM_ELEMENT) {
-      String[] columnsHeader = null;
-      if (SelectionPeasSettings.m_DisplayDomains) {
+    } else if (what == CacheType.CM_ELEMENT) {
+      String[] columnsHeader;
+      if (SelectionPeasSettings.displayDomains) {
         columnsHeader = new String[4];
-        columnsHeader[COL_USER_LASTNAME] = m_Global.getString("GML.lastName");
-        columnsHeader[COL_USER_FIRSTNAME] = m_Global.getString("GML.firstName");
-        columnsHeader[COL_USER_EMAIL] = m_Global.getString("GML.eMail");
-        columnsHeader[COL_USER_DOMAIN] = m_Local
-            .getString("selectionPeas.domain");
+        columnsHeader[COL_USER_LASTNAME] = globalResourceLocator.getString("GML.lastName");
+        columnsHeader[COL_USER_FIRSTNAME] = globalResourceLocator.getString("GML.firstName");
+        columnsHeader[COL_USER_EMAIL] = globalResourceLocator.getString("GML.eMail");
+        columnsHeader[COL_USER_DOMAIN] = localResourceLocator.getString("selectionPeas.domain");
       } else {
         columnsHeader = new String[3];
-        columnsHeader[COL_USER_LASTNAME] = m_Global.getString("GML.lastName");
-        columnsHeader[COL_USER_FIRSTNAME] = m_Global.getString("GML.firstName");
-        columnsHeader[COL_USER_EMAIL] = m_Global.getString("GML.eMail");
+        columnsHeader[COL_USER_LASTNAME] = globalResourceLocator.getString("GML.lastName");
+        columnsHeader[COL_USER_FIRSTNAME] = globalResourceLocator.getString("GML.firstName");
+        columnsHeader[COL_USER_EMAIL] = globalResourceLocator.getString("GML.eMail");
       }
       return columnsHeader;
-    } else {
-      return new String[0];
     }
+    return new String[0];
   }
 
-  public PanelMiniFilterSelect getSelectMiniFilter(int what) {
-    if (what == CM_SET) {
-      return new PanelMiniFilterSelect(999, Integer.toString(what), "set",
-          m_Context + m_Icon.getString("selectionPeas.selectAll"), m_Context
-          + m_Icon.getString("selectionPeas.unSelectAll"), m_Local
-          .getString("selectionPeas.selectAll"), m_Local
-          .getString("selectionPeas.unSelectAll"), m_Local
-          .getString("selectionPeas.selectAll"), m_Local
+  public PanelMiniFilterSelect getSelectMiniFilter(CacheType what) {
+    if (what == CacheType.CM_SET) {
+      return new PanelMiniFilterSelect(999, Integer.toString(what.getValue()), "set",
+          URLManager.getApplicationURL() + iconResourceLocator.getString("selectionPeas.selectAll"),
+          URLManager.getApplicationURL() + iconResourceLocator.getString(
+              "selectionPeas.unSelectAll"), localResourceLocator.getString(
+          "selectionPeas.selectAll"), localResourceLocator.getString("selectionPeas.unSelectAll"),
+          localResourceLocator.getString("selectionPeas.selectAll"), localResourceLocator
           .getString("selectionPeas.unSelectAll"));
-    } else if (what == CM_ELEMENT) {
-      return new PanelMiniFilterSelect(999, Integer.toString(what), "element",
-          m_Context + m_Icon.getString("selectionPeas.selectAll"), m_Context
-          + m_Icon.getString("selectionPeas.unSelectAll"), m_Local
-          .getString("selectionPeas.selectAll"), m_Local
-          .getString("selectionPeas.unSelectAll"), m_Local
-          .getString("selectionPeas.selectAll"), m_Local
+    } else if (what == CacheType.CM_ELEMENT) {
+      return new PanelMiniFilterSelect(999, Integer.toString(what.getValue()), "element",
+          URLManager.getApplicationURL() + iconResourceLocator.getString("selectionPeas.selectAll"),
+          URLManager.getApplicationURL()
+              + iconResourceLocator.getString("selectionPeas.unSelectAll"), localResourceLocator
+          .getString("selectionPeas.selectAll"), localResourceLocator
+          .getString("selectionPeas.unSelectAll"), localResourceLocator
+          .getString("selectionPeas.selectAll"), localResourceLocator
           .getString("selectionPeas.unSelectAll"));
     } else {
       return null;
     }
   }
 
-  public PanelMiniFilterToken[] getPanelMiniFilters(int what) {
-    if (what == CM_SET) {
+  public PanelMiniFilterToken[] getPanelMiniFilters(CacheType what) {
+    if (what == CacheType.CM_SET) {
       PanelMiniFilterToken[] theArray = new PanelMiniFilterToken[1];
-      theArray[0] = new PanelMiniFilterEdit(0, Integer.toString(what), "",
-          m_Context + m_Icon.getString("selectionPeas.filter"), m_Local
-          .getString("selectionPeas.filter"), m_Local
+      theArray[0] = new PanelMiniFilterEdit(0, Integer.toString(what.getValue()), "",
+          URLManager.getApplicationURL() + iconResourceLocator.getString("selectionPeas.filter"),
+          localResourceLocator
+              .getString("selectionPeas.filter"), localResourceLocator
           .getString("selectionPeas.filter"));
       return theArray;
-    } else if (what == CM_ELEMENT) {
+    } else if (what == CacheType.CM_ELEMENT) {
       PanelMiniFilterToken[] theArray = new PanelMiniFilterToken[1];
-      theArray[0] = new PanelMiniFilterEdit(0, Integer.toString(what), "",
-          m_Context + m_Icon.getString("selectionPeas.filter"), m_Local
-          .getString("selectionPeas.filter"), m_Local
+      theArray[0] = new PanelMiniFilterEdit(0, Integer.toString(what.getValue()), "",
+          URLManager.getApplicationURL() + iconResourceLocator.getString("selectionPeas.filter"),
+          localResourceLocator
+              .getString("selectionPeas.filter"), localResourceLocator
           .getString("selectionPeas.filter"));
       return theArray;
     } else {
@@ -269,16 +270,16 @@ public class CacheManagerUsersGroups extends CacheManager {
     }
   }
 
-  protected PanelLine getLineFromId(int what, String id) {
+  protected PanelLine getLineFromId(CacheType what, String id) {
     String[] theValues;
-    if (what == CM_SET) {
+    if (what == CacheType.CM_SET) {
       Group theGroup = m_oc.getGroup(id);
 
       SilverTrace.info("selectionPeas",
           "CacheManagerUsersGroups.getSetLineFromId()",
           "root.GEN_MSG_PARAM_VALUE", "id=" + id);
-      if (SelectionPeasSettings.m_DisplayNbUsersByGroup) {
-        if (SelectionPeasSettings.m_DisplayDomains) {
+      if (SelectionPeasSettings.displayNbUsersByGroup) {
+        if (SelectionPeasSettings.displayDomains) {
           theValues = new String[4];
           theValues[COL_GROUP_NAME] = EncodeHelper
               .javaStringToHtmlString(theGroup.getName());
@@ -287,8 +288,8 @@ public class CacheManagerUsersGroups extends CacheManager {
           theValues[COL_GROUP_NBUSERS] = Integer.toString(m_oc
               .getAllSubUsersNumber(theGroup.getId()));
           theValues[COL_GROUP_NBUSERS + 1] = EncodeHelper
-              .javaStringToHtmlString(m_ac.getDomain(theGroup.getDomainId())
-              .getName());
+              .javaStringToHtmlString(adminController.getDomain(theGroup.getDomainId())
+                  .getName());
         } else {
           theValues = new String[3];
           theValues[COL_GROUP_NAME] = EncodeHelper
@@ -299,15 +300,15 @@ public class CacheManagerUsersGroups extends CacheManager {
               .getAllSubUsersNumber(theGroup.getId()));
         }
       } else {
-        if (SelectionPeasSettings.m_DisplayDomains) {
+        if (SelectionPeasSettings.displayDomains) {
           theValues = new String[3];
           theValues[COL_GROUP_NAME] = EncodeHelper
               .javaStringToHtmlString(theGroup.getName());
           theValues[COL_GROUP_DESCRIPTION] = EncodeHelper
               .javaStringToHtmlString(theGroup.getDescription());
           theValues[COL_GROUP_DESCRIPTION + 1] = EncodeHelper
-              .javaStringToHtmlString(m_ac.getDomain(theGroup.getDomainId())
-              .getName());
+              .javaStringToHtmlString(adminController.getDomain(theGroup.getDomainId())
+                  .getName());
         } else {
           theValues = new String[2];
           theValues[COL_GROUP_NAME] = EncodeHelper
@@ -317,13 +318,13 @@ public class CacheManagerUsersGroups extends CacheManager {
         }
       }
       return new PanelLine(theGroup.getId(), theValues, false);
-    } else if (what == CM_ELEMENT) {
+    } else if (what == CacheType.CM_ELEMENT) {
       UserDetail theUser = m_oc.getUserDetail(id);
 
       SilverTrace.info("selectionPeas",
           "CacheManagerUsersGroups.getElementLineFromId()",
           "root.GEN_MSG_PARAM_VALUE", "id=" + id);
-      if (SelectionPeasSettings.m_DisplayDomains) {
+      if (SelectionPeasSettings.displayDomains) {
         theValues = new String[4];
         theValues[COL_USER_LASTNAME] = EncodeHelper
             .javaStringToHtmlString(theUser.getLastName());
@@ -331,7 +332,7 @@ public class CacheManagerUsersGroups extends CacheManager {
             .javaStringToHtmlString(theUser.getFirstName());
         theValues[COL_USER_EMAIL] = EncodeHelper.javaStringToHtmlString(theUser
             .geteMail());
-        theValues[COL_USER_DOMAIN] = EncodeHelper.javaStringToHtmlString(m_ac
+        theValues[COL_USER_DOMAIN] = EncodeHelper.javaStringToHtmlString(adminController
             .getDomain(theUser.getDomainId()).getName());
       } else {
         theValues = new String[3];
@@ -348,60 +349,56 @@ public class CacheManagerUsersGroups extends CacheManager {
     }
   }
 
-  public int getLineCount(int what) {
+  public int getLineCount(CacheType what) {
     return 0;
   }
 
-  public BrowsePanelProvider getSearchPanelProvider(int what, CacheManager cm,
-      SelectionExtraParams sep) {
-    if (what == CM_SET) {
-      return new SearchGroupPanel(m_Language, m_Local, cm,
-          getSureExtraParams(sep));
-    } else if (what == CM_ELEMENT) {
-      return new SearchUserPanel(m_Language, m_Local, cm,
-          getSureExtraParams(sep));
-    } else {
-      return null;
+  public BrowsePanelProvider getSearchPanelProvider(CacheType what, SelectionExtraParams sep) {
+    switch (what) {
+      case CM_SET:
+        return new SearchGroupPanel(language, localResourceLocator, this, getSureExtraParams(sep));
+      case CM_ELEMENT:
+        return new SearchUserPanel(language, localResourceLocator, this, getSureExtraParams(sep));
+      default:
+        return null;
     }
   }
 
-  public BrowsePanelProvider getBrowsePanelProvider(int what, CacheManager cm,
-      SelectionExtraParams sep) {
-    if (what == CM_SET) {
-      return new BrowseGroupPanel(m_Language, m_Local, cm,
-          getSureExtraParams(sep));
-    } else if (what == CM_ELEMENT) {
-      return new BrowseUserPanel(m_Language, m_Local, cm,
-          getSureExtraParams(sep));
-    } else {
-      return null;
+  public BrowsePanelProvider getBrowsePanelProvider(CacheType what, SelectionExtraParams sep) {
+    switch (what) {
+      case CM_SET:
+        return new BrowseGroupPanel(language, localResourceLocator, this, getSureExtraParams(sep));
+      case CM_ELEMENT:
+        return new BrowseUserPanel(language, localResourceLocator, this, getSureExtraParams(sep));
+      default:
+        return null;
     }
   }
 
-  public PanelProvider getCartPanelProvider(int what, CacheManager cm,
-      SelectionExtraParams sep) {
-    if (what == CM_SET) {
-      return new CartGroupPanel(m_Language, m_Local, cm,
-          getSureExtraParams(sep));
-    } else if (what == CM_ELEMENT) {
-      return new CartUserPanel(m_Language, m_Local, cm, getSureExtraParams(sep));
-    } else {
-      return null;
+  public PanelProvider getCartPanelProvider(CacheType what, SelectionExtraParams sep) {
+    switch (what) {
+      case CM_SET:
+        return new CartGroupPanel(language, localResourceLocator, this, getSureExtraParams(sep));
+      case CM_ELEMENT:
+        return new CartUserPanel(language, localResourceLocator, this, getSureExtraParams(sep));
+      default:
+        return null;
     }
   }
 
   public PanelOperation getPanelOperation(String operation) {
     if ("DisplayBrowse".equals(operation)) {
-      return new PanelOperation(m_Local.getString("selectionPeas.helpBrowse"),
-          m_Context + m_Icon.getString("selectionPeas.browseArb"), operation);
+      return new PanelOperation(localResourceLocator.getString("selectionPeas.helpBrowse"),
+          URLManager.getApplicationURL() + iconResourceLocator.getString("selectionPeas.browseArb"),
+          operation);
     } else if ("DisplaySearchElement".equals(operation)) {
-      return new PanelOperation(m_Local
-          .getString("selectionPeas.helpSearchElement"), m_Context
-          + m_Icon.getString("selectionPeas.userSearc"), operation);
+      return new PanelOperation(localResourceLocator.getString("selectionPeas.helpSearchElement"),
+          URLManager.getApplicationURL() + iconResourceLocator.getString("selectionPeas.userSearc"),
+          operation);
     } else if ("DisplaySearchSet".equals(operation)) {
-      return new PanelOperation(m_Local
-          .getString("selectionPeas.helpSearchSet"), m_Context
-          + m_Icon.getString("selectionPeas.groupSearc"), operation);
+      return new PanelOperation(localResourceLocator.getString("selectionPeas.helpSearchSet"),
+          URLManager.getApplicationURL() + iconResourceLocator.getString(
+              "selectionPeas.groupSearc"), operation);
     } else {
       return null;
     }
@@ -409,12 +406,13 @@ public class CacheManagerUsersGroups extends CacheManager {
 
   protected SelectionUsersGroups getSureExtraParams(SelectionExtraParams sep) {
     SelectionUsersGroups valret = (SelectionUsersGroups) sep;
-    if (valret == null)
+    if (valret == null) {
       valret = new SelectionUsersGroups();
+    }
     // If domain restricted -> add it (if not yet added)
-    if (m_ud.isDomainAdminRestricted()
+    if (userDetail.isDomainAdminRestricted()
         && ((valret.getDomainId() == null) || (valret.getDomainId().length() <= 0))) {
-      valret.setDomainId(m_ud.getDomainId());
+      valret.setDomainId(userDetail.getDomainId());
     }
     return valret;
   }

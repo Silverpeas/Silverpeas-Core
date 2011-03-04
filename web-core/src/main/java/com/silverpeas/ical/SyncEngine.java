@@ -51,7 +51,7 @@ public final class SyncEngine {
 
   /**
    * Import a remote calendar
-   * @param localCalendar local calendar file
+   * @param localCalendar localResourceLocator calendar file
    * @param remoteCalendar Google Calendar's private ICAL URL
    * ("https://www.google.com/calendar/ical/.../basic.ics"), or the RSS/ATOM feed's URL (= feed
    * converter mode)

@@ -24,9 +24,10 @@
 
 package com.silverpeas.socialNetwork.provider;
 
-import com.silverpeas.socialNetwork.model.SocialInformation;
 import java.util.List;
 
+import com.silverpeas.calendar.Date;
+import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public interface SocialStatusInterface {
@@ -39,7 +40,7 @@ public interface SocialStatusInterface {
    * @return
    * @throws SilverpeasException
    */
-  public List getSocialInformationsList(String userId, int numberOfElement, int firstIndex) throws
+  public List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end) throws
       SilverpeasException;
 
   /**
@@ -52,6 +53,5 @@ public interface SocialStatusInterface {
    * @return
    * @throws SilverpeasException
    */
-  public List getSocialInformationsListOfMyContacts(List<String> myContactsIds,
-      int numberOfElement, int firstIndex);
+  public List<SocialInformation> getSocialInformationsListOfMyContacts(List<String> myContactsIds, Date begin, Date end);
 }

@@ -26,12 +26,9 @@ package com.silverpeas.socialNetwork.myContactProfil.servlets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.silverpeas.socialNetwork.model.SocialInformationType;
 import com.silverpeas.socialNetwork.myContactProfil.control.MyContactProfilSessionController;
 import com.silverpeas.socialNetwork.user.model.SNFullUser;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -41,13 +38,11 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
 /**
- *
  * @author azzedine
  */
 public class MyContactProfilRequestRouter extends ComponentRequestRouter {
 
   private static final long serialVersionUID = 1L;
-  private MyContactProfilSessionController myContactProfillSC;
   private final int NUMBER_CONTACTS_TO_DISPLAY = 3;
 
   /**
@@ -58,12 +53,13 @@ public class MyContactProfilRequestRouter extends ComponentRequestRouter {
   public String getSessionControlBeanName() {
     return "myContactProfil";
   }
-/**
- * create ComponentSession Controller
- * @param mainSessionCtrl
- * @param componentContext
- * @return ComponentSessionController
- */
+
+  /**
+   * create ComponentSession Controller
+   * @param mainSessionCtrl
+   * @param componentContext
+   * @return ComponentSessionController
+   */
   @Override
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
@@ -81,70 +77,48 @@ public class MyContactProfilRequestRouter extends ComponentRequestRouter {
   public String getDestination(String function, ComponentSessionController componentSC,
       HttpServletRequest request) {
     String destination = "#";
-    myContactProfillSC = (MyContactProfilSessionController) componentSC;
+    MyContactProfilSessionController sc = (MyContactProfilSessionController) componentSC;
     String userId = request.getParameter("userId");
-    SNFullUser snUserFull = new SNFullUser(userId);
     if (function.equalsIgnoreCase("Infos")) {
-
-      request.setAttribute("UserFull", myContactProfillSC.getUserFull(userId));
       request.setAttribute("View", function);
-      
       destination = "/socialNetwork/jsp/myContactProfil/myContactProfile.jsp";
-
-    } else if (function.equalsIgnoreCase("MyEvents")) {
-      try {
-        request.setAttribute("type", SocialInformationType.EVENT);
-      } catch (Exception ex) {
-        Logger.getLogger(MyContactProfilRequestRouter.class.getName()).log(Level.SEVERE, null, ex);
-      }
-      destination = "/socialNetwork/jsp/myContactProfil/profilTemplate.jsp";
-    } else if (function.equalsIgnoreCase("ALL") || function.equalsIgnoreCase("Main")) {
-      request.setAttribute("type", SocialInformationType.ALL);
-      destination = "/socialNetwork/jsp/myContactProfil/profilTemplate.jsp";
-    } else if (function.equalsIgnoreCase("MyPhotos")) {
-      request.setAttribute("type", SocialInformationType.PHOTO);
-      destination = "/socialNetwork/jsp/myContactProfil/profilTemplate.jsp";
-    } else if (function.equalsIgnoreCase("MyPubs")) {
-      request.setAttribute("type", SocialInformationType.PUBLICATION);
-      destination = "/socialNetwork/jsp/myContactProfil/profilTemplate.jsp";
+    } else if ("Main".equalsIgnoreCase(function)) {
+      request.setAttribute("View", "Wall");
+      destination = "/socialNetwork/jsp/myContactProfil/myContactProfile.jsp";
     }
 
-    request.setAttribute("snUserFull", snUserFull);
-    List<String> contactIds = myContactProfillSC.getContactsIdsForUser(userId);
-    request.setAttribute("Contacts", chooseContactsToDisplay(contactIds));
+    request.setAttribute("UserFull", sc.getUserFull(userId));
+    request.setAttribute("snUserFull", new SNFullUser(userId));
+    List<String> contactIds = sc.getContactsIdsForUser(userId);
+    request.setAttribute("Contacts", chooseContactsToDisplay(contactIds, sc));
     request.setAttribute("ContactsNumber", contactIds.size());
-    contactIds = myContactProfillSC.getCommonContactsIdsForUser(userId);
-    request.setAttribute("CommonContacts", chooseContactsToDisplay(contactIds));
+    contactIds = sc.getCommonContactsIdsForUser(userId);
+    request.setAttribute("CommonContacts", chooseContactsToDisplay(contactIds, sc));
     request.setAttribute("CommonContactsNumber", contactIds.size());
     return destination;
   }
 
   /**
-   * methode to choose (x) contacts for display it in the page profil
-   * x is the number of contacts
+   * methode to choose (x) contacts for display it in the page profil x is the number of contacts
    * the methode use Random rule
    * @param contactIds
    * @return List<SNContactUser>
    */
-  private List<UserDetail> chooseContactsToDisplay(List<String> contactIds) {
-    int numberOfContactsTodisplay;
+  private List<UserDetail> chooseContactsToDisplay(List<String> contactIds,
+      MyContactProfilSessionController sc) {
     List<UserDetail> contacts = new ArrayList<UserDetail>();
-    try {
-      numberOfContactsTodisplay = Integer.parseInt(myContactProfillSC.getSettings().getString(
-          "numberOfContactsTodisplay"));
-    } catch (NumberFormatException ex) {
-      numberOfContactsTodisplay = NUMBER_CONTACTS_TO_DISPLAY;
-    }
+    int numberOfContactsTodisplay =
+        sc.getSettings().getInteger("numberOfContactsTodisplay", NUMBER_CONTACTS_TO_DISPLAY);
     if (contactIds.size() <= numberOfContactsTodisplay) {
       for (String contactId : contactIds) {
-        contacts.add(myContactProfillSC.getUserDetail(contactId));
+        contacts.add(sc.getUserDetail(contactId));
       }
     } else {
       Random random = new Random();
       int indexContactsChoosed = (random.nextInt(contactIds.size()));
       for (int i = 0; i < numberOfContactsTodisplay; i++) {
         String contactId = contactIds.get((indexContactsChoosed + i) % numberOfContactsTodisplay);
-        contacts.add(myContactProfillSC.getUserDetail(contactId));
+        contacts.add(sc.getUserDetail(contactId));
       }
     }
 

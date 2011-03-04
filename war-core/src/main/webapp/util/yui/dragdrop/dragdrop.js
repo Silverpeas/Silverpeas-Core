@@ -2121,7 +2121,7 @@ YAHOO.util.DragDrop.prototype = {
 
         this.events = {};
 
-        // create a local reference to the drag and drop manager
+        // create a localResourceLocator reference to the drag and drop manager
         this.DDM = YAHOO.util.DDM;
 
         // initialize the groups object

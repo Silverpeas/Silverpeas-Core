@@ -23,37 +23,37 @@
  */
 package com.stratelia.silverpeas.silverstatistics.control;
 
-import com.silverpeas.util.FileUtil;
 import com.silverpeas.scheduler.Job;
 import com.silverpeas.scheduler.JobExecutionContext;
 import com.silverpeas.scheduler.Scheduler;
-import java.io.File;
-import java.rmi.RemoteException;
-import java.util.Date;
-import java.util.MissingResourceException;
-
-import javax.ejb.EJBException;
-
 import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerException;
 import com.silverpeas.scheduler.SchedulerFactory;
 import com.silverpeas.scheduler.trigger.JobTrigger;
+import com.silverpeas.util.FileUtil;
 import com.stratelia.silverpeas.silverstatistics.model.SilverStatisticsConfigException;
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
+
+import javax.ejb.EJBException;
+import java.io.File;
 import java.lang.reflect.Method;
+import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 /**
  * SilverStatisticsManager is the tool used in silverpeas to compute statistics for connexions,
  * files size and components access. This is a singleton class.
+ *
  * @author Marc Guillemin
  */
 public class SilverStatisticsManager
@@ -93,8 +93,7 @@ public class SilverStatisticsManager
       try {
         statsConfig.init();
         if (!statsConfig.isValidConfigFile()) {
-          SilverTrace.error("silverstatistics",
-              "SilverStatisticsManager.initSilverStatistics",
+          SilverTrace.error("silverstatistics", "SilverStatisticsManager.initSilverStatistics",
               "silverstatistics.MSG_CONFIG_FILE");
         }
       } catch (SilverStatisticsConfigException e) {
@@ -142,17 +141,18 @@ public class SilverStatisticsManager
   /**
    * Sets up the scheduling of the specified statistics computation at given moments in time as
    * specified by the Unix-like cron expression.
+   *
    * @param aCronString the cron expression.
-   * @param jobName the name of the computation to schedule.
+   * @param jobName     the name of the computation to schedule.
    * @param methodeName the name of the method that performs the computation.
    * @throws SchedulerException if the computation scheduling failed.
-   * @throws ParseException if the cron expression is malformed.
+   * @throws ParseException     if the cron expression is malformed.
    */
   public void initSchedulerStatistics(String aCronString,
       String jobName,
       String methodeName) throws SchedulerException, ParseException {
     SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
-      Scheduler scheduler = schedulerFactory.getScheduler();
+    Scheduler scheduler = schedulerFactory.getScheduler();
     scheduler.unscheduleJob(jobName);
     SilverTrace.info("silverstatistics", "SilverStatisticsManager.initSchedulerStatistics",
         "root.MSG_GEN_PARAM_VALUE", "jobName=" + jobName + ", aCronString=" + aCronString);
@@ -163,6 +163,7 @@ public class SilverStatisticsManager
 
   /**
    * Method declaration
+   *
    * @param currentDate
    * @see
    */
@@ -180,6 +181,7 @@ public class SilverStatisticsManager
 
   /**
    * Method declaration
+   *
    * @param currentDate
    * @see
    */
@@ -189,10 +191,9 @@ public class SilverStatisticsManager
       // Calculer récursivement la taille des fichiers
       // Ajouter la taille du répertoire en base
 
-      for (int i = 0; i < directoryToScan.size(); i++) {
+      for (String aDirectoryToScan : directoryToScan) {
         // Notify statistics
-        addStatSize(currentDate, (String) directoryToScan.get(i),
-            directorySize((String) directoryToScan.get(i)));
+        addStatSize(currentDate, aDirectoryToScan, directorySize(aDirectoryToScan));
       }
     } catch (Exception ex) {
       SilverTrace.error("silverstatistics",
@@ -202,6 +203,7 @@ public class SilverStatisticsManager
 
   /**
    * Method declaration
+   *
    * @param currentDate
    * @see
    */
@@ -218,45 +220,33 @@ public class SilverStatisticsManager
 
   /**
    * Method declaration
+   *
    * @param resources
    * @see
    */
   private void initDirectoryToScan(java.util.ResourceBundle resource) {
-
-    int i;
-    String directoryPath;
-    File dir;
-
     try {
       // read the directories
       // --------------------------
-      i = 0;
-      directoryPath = resource.getString("SilverPeasDataPath"
-          + Integer.toString(i));
+      int i = 0;
+      String directoryPath = resource.getString("SilverPeasDataPath" + Integer.toString(i));
       // for each directory
       while (directoryPath != null) {
-
         // Test existence
-        dir = new File(directoryPath);
+        File dir = new File(directoryPath);
         if (!dir.isDirectory()) {
-          throw new Exception("silverstatistics initDirectoryToScan"
-              + directoryPath);
+          throw new Exception("silverstatistics initDirectoryToScan" + directoryPath);
         }
-
         directoryToScan.add(directoryPath);
         i++;
-
         try {
-          directoryPath = resource.getString("SilverPeasDataPath"
-              + Integer.toString(i));
+          directoryPath = resource.getString("SilverPeasDataPath" + Integer.toString(i));
         } catch (MissingResourceException ex) {
           directoryPath = null;
         }
       }
-
     } catch (Exception e) {
-      SilverTrace.error("silverstatistics",
-          "SilverStatisticsManager.initDirectoryToScan()",
+      SilverTrace.error("silverstatistics", "SilverStatisticsManager.initDirectoryToScan()",
           "silvertrace.ERR_INIT_APPENDER_FROM_PROP", e);
     }
   }
@@ -267,8 +257,10 @@ public class SilverStatisticsManager
    * myString=value.substring(i, value.length()); i++; Integer.parseInt(myString); ok = true; }
    * catch (NumberFormatException e) { ok = false; } } return myString; }
    */
+
   /**
    * Method declaration
+   *
    * @param userId
    * @param volume
    * @param dateAccess
@@ -277,21 +269,16 @@ public class SilverStatisticsManager
    * @param componentId
    * @see
    */
-  public void addStatVolume(String userId,
-      int volume,
-      Date dateAccess,
-      String peasType,
-      String spaceId,
-      String componentId) {
+  public void addStatVolume(String userId, int volume, Date dateAccess, String peasType,
+      String spaceId, String componentId) {
     // should feed Volume (see SilverStatistics.properties)
     if (statsConfig.isRun("Volume")) {
       SilverTrace.debug("silverstatistics", "SilverStatistics.addStatVolume",
           " peasType=" + peasType + " spaceId=" + spaceId + " componentId="
-          + componentId);
+              + componentId);
       // creation du stringbuffer correspondant au type Volume du
       // silverstatistics.properties
       StringBuilder stat = new StringBuilder();
-
       stat.append(SilverStatisticsConstants.DATE_FORMAT.format(dateAccess));
       stat.append(SilverStatisticsConstants.SEPARATOR);
       stat.append(userId); // userId
@@ -302,7 +289,7 @@ public class SilverStatisticsManager
       stat.append(SilverStatisticsConstants.SEPARATOR);
       stat.append(componentId);
       stat.append(SilverStatisticsConstants.SEPARATOR);
-      stat.append((new Integer(volume)).toString()); // countVolume
+      stat.append((String.valueOf(volume))); // countVolume
 
       // asynchrone : utilisation d'une queue avec jms
       if (isAsynchronStats("Volume")) {
@@ -333,7 +320,7 @@ public class SilverStatisticsManager
         } catch (RemoteException ex) {
           SilverTrace.error("silverstatistics",
               "SilverStatisticsManager.addStatVolume", "impossible de trouver "
-              + JNDINames.SILVERSTATISTICS_EJBHOME, ex);
+                  + JNDINames.SILVERSTATISTICS_EJBHOME, ex);
         }
       }
     }
@@ -341,6 +328,7 @@ public class SilverStatisticsManager
 
   /**
    * Method declaration
+   *
    * @param userId
    * @param dateAccess
    * @param peasType
@@ -357,7 +345,7 @@ public class SilverStatisticsManager
     if (statsConfig.isRun("Access")) {
       SilverTrace.debug("silverstatistics", "SilverStatistics.addStatAccess",
           " peasType=" + peasType + " spaceId=" + spaceId + " componentId="
-          + componentId);
+              + componentId);
       // creation du stringbuffer correspondant au type Acces du
       // silverstatistics.properties
       StringBuilder stat = new StringBuilder();
@@ -403,7 +391,7 @@ public class SilverStatisticsManager
         } catch (RemoteException ex) {
           SilverTrace.error("silverstatistics",
               "SilverStatisticsManager.addStatAccess", "impossible de trouver "
-              + JNDINames.SILVERSTATISTICS_EJBHOME, ex);
+                  + JNDINames.SILVERSTATISTICS_EJBHOME, ex);
         }
       }
     }
@@ -411,6 +399,7 @@ public class SilverStatisticsManager
 
   /**
    * Method declaration
+   *
    * @param userId
    * @param dateConnection
    * @param count
@@ -425,7 +414,7 @@ public class SilverStatisticsManager
     if (statsConfig.isRun("Connexion")) {
       SilverTrace.debug("silverstatistics",
           "SilverStatistics.addStatConnection", " userId=" + userId + " count="
-          + count);
+              + count);
       // creation du stringbuffer correspondant au type Acces du
       // silverstatistics.properties
 
@@ -478,6 +467,7 @@ public class SilverStatisticsManager
 
   /**
    * Method declaration
+   *
    * @param date
    * @param dirName
    * @param dirSize
@@ -529,7 +519,7 @@ public class SilverStatisticsManager
         } catch (RemoteException ex) {
           SilverTrace.error("silverstatistics",
               "SilverStatisticsManager.addStatSize", "impossible de trouver "
-              + JNDINames.SILVERSTATISTICS_EJBHOME, ex);
+                  + JNDINames.SILVERSTATISTICS_EJBHOME, ex);
         }
       }
     }
@@ -566,10 +556,9 @@ public class SilverStatisticsManager
   private SilverStatistics getSilverStatistics() {
     if (silverStatistics == null) {
       try {
-        SilverStatisticsHome silverStatisticsHome = (SilverStatisticsHome) EJBUtilitaire.
+        SilverStatisticsHome silverStatisticsHome = EJBUtilitaire.
             getEJBObjectRef(JNDINames.SILVERSTATISTICS_EJBHOME,
-            SilverStatisticsHome.class);
-
+                SilverStatisticsHome.class);
         silverStatistics = silverStatisticsHome.create();
       } catch (Exception e) {
         throw new EJBException(e.getMessage());
@@ -580,25 +569,25 @@ public class SilverStatisticsManager
 
   /**
    * Method declaration
+   *
    * @param directoryName
    * @return
    * @see
    */
   private long directorySize(String directoryName) {
-    SilverTrace.debug("silverstatistics",
-        "SilverStatisticsManager.directorySize", "directoryName="
-        + directoryName);
+    SilverTrace.debug("silverstatistics", "SilverStatisticsManager.directorySize",
+        "directoryName=" + directoryName);
     File file = new File(directoryName);
 
-    if ((file != null) && (file.isDirectory())) {
+    if (file.exists() && file.isDirectory()) {
       return returnSize(file);
-    } else {
-      return -1;
     }
+    return -1;
   }
 
   /**
    * Method declaration
+   *
    * @param file
    * @return
    * @see
@@ -614,11 +603,11 @@ public class SilverStatisticsManager
 
       long fileslength = 0;
 
-      for (int i = 0; i < fDirContent.length; i++) {
-        if (fDirContent[i].isFile()) {
-          fileslength = fileslength + fDirContent[i].length();
+      for (File aFDirContent : fDirContent) {
+        if (aFDirContent.isFile()) {
+          fileslength = fileslength + aFDirContent.length();
         } else {
-          fileslength = fileslength + returnSize(fDirContent[i]);
+          fileslength = fileslength + returnSize(aFDirContent);
         }
       }
       return fileslength;
@@ -627,17 +616,18 @@ public class SilverStatisticsManager
 
   /**
    * Creates a job with the specified name and with the specified operation to execute.
-   * @param jobName the job name.
+   *
+   * @param jobName      the job name.
    * @param jobOperation the job operation.
    * @return a job wrapping the operation to schedule at given moments in time.
    * @throws SchedulerException if an error occurs while creating the job to schedule (for example,
-   * the operation doesn't exist).
+   *                            the operation doesn't exist).
    */
   private Job createJobWith(final String jobName,
       final String jobOperation) throws SchedulerException {
     try {
       final Method operation = myInstance.getClass().getMethod(jobOperation, Date.class);
-      Job aJob = new Job(jobName)     {
+      return new Job(jobName) {
 
         @Override
         public void execute(JobExecutionContext context) throws Exception {
@@ -645,7 +635,6 @@ public class SilverStatisticsManager
           operation.invoke(myInstance, date);
         }
       };
-      return aJob;
     } catch (Exception ex) {
       SilverTrace.error("silverstatistics", "SilverStatisticsManager.createJobWith",
           ex.getMessage(), ex);
@@ -657,20 +646,20 @@ public class SilverStatisticsManager
   public void triggerFired(SchedulerEvent anEvent) throws Exception {
     SilverTrace.debug("silverstatistics",
         "SilverStatisticsManager.handleSchedulerEvent", "The job '"
-        + anEvent.getJobExecutionContext().getJobName() + "' is starting");
+            + anEvent.getJobExecutionContext().getJobName() + "' is starting");
   }
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
     SilverTrace.debug("silverstatistics",
         "SilverStatisticsManager.handleSchedulerEvent", "The job '"
-        + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
+            + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
   }
 
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
     SilverTrace.error("silverstatistics",
         "SilverStatisticsManager.handleSchedulerEvent", "The job '"
-        + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
+            + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
   }
 }

@@ -26,24 +26,23 @@ package com.stratelia.webactiv.util.publication.control;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Hashtable;
+import java.util.Date;
 import java.util.List;
 
+import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.silverpeas.util.ForeignPK;
-import com.stratelia.webactiv.publication.socialNetwork.SocialInformationPublication;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.NodeTree;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelPK;
 import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
+import com.stratelia.webactiv.util.publication.model.NodeTree;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
-import java.util.Date;
 
 /**
  * Interface declaration
@@ -485,20 +484,8 @@ public interface PublicationBmBusinessSkeleton {
    */
   public void addLinks(PublicationPK pubPK, List<ForeignPK> links) throws RemoteException;
 
-  /**
-   *
-   **/
-  public List<SocialInformationPublication> getAllPublicationsWithStatusbyUserid(String userId,
-    int firstIndex, int nbElement) throws RemoteException;
-
-  /**
-   * gets the available component for a given users list
-   * @param:Array usersId,int firstIndex
-   * @return a list of ComponentName
-   *
-   */
-  public List<String> getAvailableComponents(String myId, List<String> myContactsId) throws
-    RemoteException;
+  public List<SocialInformation> getAllPublicationsWithStatusbyUserid(String userId,
+      Date begin, Date end) throws RemoteException;
 
   /**
    * get list of socialInformation of my contacts according to options and number of Item and the first Index
@@ -508,9 +495,9 @@ public interface PublicationBmBusinessSkeleton {
    * @param :List<String> options list of Available Components name
    * @param int numberOfElement, int firstIndex
    */
-  public List<SocialInformationPublication> getSocialInformationsListOfMyContacts(
-    List<String> myContactsIds, List<String> options, int numberOfElement,
-    int firstIndex) throws RemoteException;
+  public List<SocialInformation> getSocialInformationsListOfMyContacts(
+      List<String> myContactsIds, List<String> options, Date begin, Date end)
+      throws RemoteException;
 
   public Collection<PublicationDetail> getPublicationsToDraftOut(boolean useClone)
     throws RemoteException;

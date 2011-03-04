@@ -71,7 +71,7 @@ public class ProfilRequestRouter extends ComponentRequestRouter {
         destination = m_context + "/RMyProfil/jsp/MyInfos";
       } else if (isInMyContact(userId, profileSC)) {
         // this is one of my contacts
-        destination = m_context + "/RContactProfile/jsp/Infos?userId=" + userId;
+        destination = m_context + "/RContactProfile/jsp/Main?userId=" + userId;
       } else {
         // this is not one of my contacts
         request.setAttribute("userFull", profileSC.getUserFul(userId));

@@ -1650,7 +1650,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
       String unique_id = request.getParameter("uniqueId");
       List<Axis> allAxis = new ArrayList<Axis>();
       if (component_id != null && !"".equals(component_id)) {
-        // we are in the local search (local to a component instance)
+        // we are in the localResourceLocator search (localResourceLocator to a component instance)
         // only axis used by this instance must be shown
         allAxis.addAll(pdcSC.getUsedAxisByAComponentInstance(component_id));
       } else {

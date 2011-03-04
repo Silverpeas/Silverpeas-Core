@@ -21,40 +21,39 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.socialNetwork.provider;
 
-import com.silverpeas.calendar.Date;
-import com.silverpeas.socialNetwork.model.SocialInformation;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import java.util.List;
+package com.stratelia.silverpeas.selectionPeas;
 
-/**
- * @author Bensalrm Nabil
- */
-public interface SocialGalleryInterface {
-  /**
-   * get list of socialInformation according to number of Item and the first Index
-   * @param userId
-   * @param numberOfElement
-   * @param firstIndex
-   * @return
-   * @throws SilverpeasException
-   */
+import com.silverpeas.util.StringUtil;
 
-  public List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end) throws
-      SilverpeasException;
+public enum CacheType {
+  CM_SET(0), CM_ELEMENT(1), CM_NBTOT(2);
 
-  /**
-   * get list of socialInformation of my contacts according to ids of my contacts , number of Item
-   * and the first Index
-   * @param myId
-   * @param myContactsIds
-   * @param numberOfElement
-   * @param firstIndex
-   * @return
-   * @throws SilverpeasException
-   */
+  private final int value;
 
-  public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId, List<String> myContactsIds,
-      Date begin, Date end) throws SilverpeasException;
+  private CacheType(int i) {
+    this.value = i;
+  }
+
+
+  public int getValue() {
+    return this.value;
+  }
+
+
+  public static CacheType extractValue(String string) {
+    if (StringUtil.isInteger(string)) {
+      int stringValue = Integer.parseInt(string);
+      switch (stringValue) {
+        case 0:
+          return CM_SET;
+        case 1:
+          return CM_ELEMENT;
+        case 2:
+          return CM_NBTOT;
+      }
+    }
+    return valueOf(string);
+  }
+
 }

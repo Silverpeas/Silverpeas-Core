@@ -22,8 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.silverpeas.selectionPeas;
 
@@ -40,22 +38,22 @@ public class SearchGroupPanel extends BrowsePanelProvider {
 
   public SearchGroupPanel(String language, ResourceLocator rs, CacheManager cm,
       SelectionUsersGroups sug) {
-    super(language, rs, cm, CacheManager.CM_SET);
+    super(language, rs, cm, CacheType.CM_SET);
     initAll(sug);
   }
 
   public void setNewParentSet(String newSetId) {
-    m_ParentGroupId = newSetId;
+    parentGroupId = newSetId;
     // refresh(null);
   }
 
   public void initAll(SelectionUsersGroups sug) {
     String[] filters = new String[1];
 
-    setSelectMiniFilter(m_Cm.getSelectMiniFilter(CacheManager.CM_ELEMENT));
+    setSelectMiniFilter(cacheManager.getSelectMiniFilter(CacheType.CM_ELEMENT));
 
     // Set the number displayed to a new value
-    m_NbDisplayed = SelectionPeasSettings.m_SetBySearchPage;
+    nbDisplayed = SelectionPeasSettings.setBySearchPage;
 
     // Set the Selection's extra parameters
     if (sug == null) {
@@ -65,21 +63,21 @@ public class SearchGroupPanel extends BrowsePanelProvider {
     }
 
     // Set the Page name
-    m_PageName = m_rs.getString("selectionPeas.groupsList");
-    m_PageSubTitle = m_rs.getString("selectionPeas.searchGroup");
+    pageName = resourceLocator.getString("selectionPeas.groupsList");
+    pageSubTitle = resourceLocator.getString("selectionPeas.searchGroup");
 
     // Build search tokens
-    m_SearchTokens = new PanelSearchToken[1];
+    searchTokens = new PanelSearchToken[1];
 
-    m_SearchTokens[FILTER_NAME] = new PanelSearchEdit(0, m_Message
+    searchTokens[FILTER_NAME] = new PanelSearchEdit(0, resource
         .getString("GML.name"), "");
 
     // Set filters and get Ids
     filters[FILTER_NAME] = "";
-    if (SelectionPeasSettings.m_DisplayAllSearchByDefault) {
+    if (SelectionPeasSettings.displayAllSearchByDefault) {
       refresh(filters);
     } else {
-      m_Ids = new String[0];
+      ids = new String[0];
     }
   }
 
@@ -92,13 +90,13 @@ public class SearchGroupPanel extends BrowsePanelProvider {
       modelGroup.setName("");
     }
     modelGroup.setDomainId(m_SelectionExtraParams.getDomainId());
-    modelGroup.setSuperGroupId(m_ParentGroupId);
-    m_Ids = m_oc.searchGroupsIds(false,
+    modelGroup.setSuperGroupId(parentGroupId);
+    ids = organizationCOntroller.searchGroupsIds(false,
         m_SelectionExtraParams.getComponentId(), m_SelectionExtraParams
         .getProfileIds(), modelGroup);
 
     // Set search tokens values
-    ((PanelSearchEdit) m_SearchTokens[FILTER_NAME]).m_Text = getSureString(filters[FILTER_NAME]);
+    ((PanelSearchEdit) searchTokens[FILTER_NAME]).m_Text = getSureString(filters[FILTER_NAME]);
     verifIndexes();
   }
 }

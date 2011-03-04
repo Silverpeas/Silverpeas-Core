@@ -63,14 +63,14 @@ public class DefaultCCPPProfile implements Profile {
   }
 
   /**
-   * Retrieves the component with the specified local type (relative to the vocabulary) contained
+   * Retrieves the component with the specified localResourceLocator type (relative to the vocabulary) contained
    * within this profile. The object returned by this method, if not <code>null</code>, is an
    * element of the <code>Set</code> returned by <code>getComponents()</code>. The following
    * expression will return <code>true</code>:
    * <code>localtype.equals(getComponent(localtype).getDescription().getLocalType())</code> .
-   * @param localtype the local type of the component to retrieve as returned by
+   * @param localtype the localResourceLocator type of the component to retrieve as returned by
    * <code>Component.getDescription().getLocalType()</code>
-   * @return the component with the specified local type, or <code>null</code> if no such component
+   * @return the component with the specified localResourceLocator type, or <code>null</code> if no such component
    * exists within this profile
    */
   public Component getComponent(String localtype) {

@@ -24,8 +24,6 @@
 //TODO : reporter dans CVS (done)
 package com.stratelia.webactiv.calendar.model;
 
-import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.calendar.socialNetwork.SocialInformationEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -33,14 +31,17 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.calendar.control.CalendarException;
+import com.stratelia.webactiv.calendar.socialNetwork.SocialInformationEvent;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
-import java.util.List;
 
 public class JournalDAO {
 
@@ -48,7 +49,7 @@ public class JournalDAO {
       "id, name, delegatorId, description, priority, classification, startDay, startHour, endDay, endHour, externalId";
   private static final String JOURNALCOLUMNNAMES =
       "CalendarJournal.id, CalendarJournal.name, CalendarJournal.delegatorId, CalendarJournal.description, CalendarJournal.priority, "
-      + " CalendarJournal.classification, CalendarJournal.startDay, CalendarJournal.startHour, CalendarJournal.endDay, CalendarJournal.endHour, CalendarJournal.externalId";
+          + " CalendarJournal.classification, CalendarJournal.startDay, CalendarJournal.startHour, CalendarJournal.endDay, CalendarJournal.endHour, CalendarJournal.externalId";
   private static final String INSERT_JOURNAL = "INSERT INTO CalendarJournal ("
       + COLUMNNAMES + ") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
   private static final String UPDATE_JOURNAL = "UPDATE CalendarJournal SET name = ?, "
@@ -212,8 +213,10 @@ public class JournalDAO {
             append("') ");
       }
 
-      selectStatement.append(" and ((startDay ").append(comparator).append(" '").append(day).append(
-          "') or (startDay <= '").append(day).append("' and endDay >= '").append(day).append("')) ");
+      selectStatement.append(" and ((startDay ").append(comparator).append(" '").append(day)
+          .append(
+              "') or (startDay <= '").append(day).append("' and endDay >= '").append(day).append(
+              "')) ");
     }
 
     selectStatement.append(" order by 7 , 8 "); // Modif PHiL -> Interbase
@@ -251,8 +254,8 @@ public class JournalDAO {
   }
 
   /**
-   * get next JournalHeader for this user accordint to
-   * the type of data base used(PostgreSQL,Oracle,MMS)
+   * get next JournalHeader for this user accordint to the type of data base
+   * used(PostgreSQL,Oracle,MMS)
    * @param con
    * @param day
    * @param userId
@@ -264,19 +267,46 @@ public class JournalDAO {
    * @throws java.text.ParseException
    */
   public List<JournalHeader> getNextEventsForUser(Connection con,
-      String day, String userId, String classification, int limit, int offset)
+      String day, String userId, String classification, Date begin, Date end)
       throws SQLException, java.text.ParseException {
 
-    String databaseProductName = con.getMetaData().getDatabaseProductName().toUpperCase();
-    if (databaseProductName.toUpperCase().contains("POSTGRESQL")) {
-      return getNextCalendarJournalForUser_PostgreSQL(con, day, userId, classification, limit,
-          offset);
-    } else if (databaseProductName.toUpperCase().contains("ORACLE")) {
-      return getNextCalendarJournalForUser_Oracle(con, day, userId, classification, limit,
-          offset);
+    String selectNextEvents =
+        "select distinct " + JournalDAO.JOURNALCOLUMNNAMES + " from CalendarJournal "
+            + " where  delegatorId = ? and endDay >= ? ";
+    int classificationIndex = 2;
+    int limitIndex = 3;
+    if (StringUtil.isDefined(classification)) {
+      selectNextEvents += " and classification = ? ";
+      classificationIndex++;
+      limitIndex++;
     }
-    return getNextCalendarJournalForUser_MMS(con, day, userId, classification, limit,
-        offset);
+    selectNextEvents += " and CalendarJournal.startDay >= ? and CalendarJournal.startDay <= ?";
+    selectNextEvents += " order by CalendarJournal.startDay, CalendarJournal.startHour ";
+
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+
+    List<JournalHeader> list = null;
+    try {
+      prepStmt = con.prepareStatement(selectNextEvents);
+      prepStmt.setString(1, userId);
+      prepStmt.setString(2, day);
+      if (classificationIndex == 3)// Classification param not null
+      {
+        prepStmt.setString(classificationIndex, classification);
+      }
+      prepStmt.setString(limitIndex, DateUtil.date2SQLDate(begin));
+      prepStmt.setString(limitIndex + 1, DateUtil.date2SQLDate(end));
+      rs = prepStmt.executeQuery();
+      list = new ArrayList<JournalHeader>();
+      while (rs.next()) {
+        JournalHeader journal = getJournalHeaderFromResultSet(rs);
+        list.add(journal);
+      }
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+    return list;
   }
 
   public Collection<SchedulableCount> countMonthJournalsForUser(Connection con,
@@ -284,7 +314,8 @@ public class JournalDAO {
       throws SQLException {
     StringBuilder selectStatement = new StringBuilder(200);
     String theDay = "";
-    selectStatement.append(
+    selectStatement
+        .append(
         "select count(distinct CalendarJournal.id), ? from CalendarJournal, CalendarJournalAttendee ");
     if (categoryId != null) {
       selectStatement.append(", CalendarJournalCategory ");
@@ -408,8 +439,9 @@ public class JournalDAO {
           "' and endDay <= '").append(end).append("')");
       selectStatement.append(" or ('").append(begin).append(
           "' >= startDay and '").append(begin).append("' <= endDay) ");
-      selectStatement.append(" or ('").append(end).append("' >= startDay and '").append(end).append(
-          "' <= endDay) ) ");
+      selectStatement.append(" or ('").append(end).append("' >= startDay and '").append(end)
+          .append(
+              "' <= endDay) ) ");
     }
     selectStatement.append(" order by 7 , 8 ");
     PreparedStatement prepStmt = null;
@@ -472,7 +504,7 @@ public class JournalDAO {
         throw new CalendarException(
             "JournalDAO.Connection con, String journalId",
             SilverpeasException.ERROR, "calendar.EX_RS_EMPTY", "journalId="
-            + journalId);
+                + journalId);
       }
       return journal;
     } finally {
@@ -572,180 +604,8 @@ public class JournalDAO {
   }
 
   /**
-   * get next JournalHeader for this user when data base is PostgreSQL
-   * @param con
-   * @param day
-   * @param userId
-   * @param limit
-   * @param offset
-   * @return List<JournalHeader>
-   * @throws SQLException
-   * @throws java.text.ParseException
-   */
-  private List<JournalHeader> getNextCalendarJournalForUser_PostgreSQL(Connection con,
-      String day, String userId, String classification, int limit, int offset) throws SQLException,
-      java.text.ParseException {
-    String selectNextEvents = "select distinct " + JournalDAO.JOURNALCOLUMNNAMES + " from CalendarJournal "
-        + " where  delegatorId = ? and endDay >= ? ";
-    int classificationIndex = 2;
-    int limitIndex = 3;
-    if (StringUtil.isDefined(classification)) {
-      selectNextEvents += " and classification = ? ";
-      classificationIndex++;
-      limitIndex++;
-    }
-    selectNextEvents += " order by CalendarJournal.startDay, CalendarJournal.startHour ";
-
-    if (limit > 0) {
-      selectNextEvents += "  limit  ?  offset  ? ";
-    }
-
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-
-    List<JournalHeader> list = null;
-    try {
-      prepStmt = con.prepareStatement(selectNextEvents);
-      prepStmt.setString(1, userId);
-      prepStmt.setString(2, day);
-      if (classificationIndex == 3)//Classification param not null
-      {
-        prepStmt.setString(classificationIndex, classification);
-      }
-      if (limit > 0)//limit para >0 do the search with limit the result
-      {
-        prepStmt.setInt(limitIndex, limit);
-        prepStmt.setInt(limitIndex + 1, offset);
-      }
-      rs = prepStmt.executeQuery();
-      list = new ArrayList<JournalHeader>();
-      while (rs.next()) {
-        JournalHeader journal = getJournalHeaderFromResultSet(rs);
-        list.add(journal);
-      }
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
-    return list;
-  }
-
-  /**
-   * get next JournalHeader for this user when data base is Oracle
-   * @param con
-   * @param day
-   * @param userId
-   * @param limit
-   * @param offset
-   * @return List<JournalHeader>
-   * @throws SQLException
-   * @throws java.text.ParseException
-   */
-  private List<JournalHeader> getNextCalendarJournalForUser_Oracle(Connection con,
-      String day, String userId, String classification, int limit, int offset) throws SQLException,
-      java.text.ParseException {
-    String selectNextEventsOracle = " select * from (ROWNUM num , table_oracle.* from (";
-    String selectNextEvents = " select distinct " + JournalDAO.JOURNALCOLUMNNAMES + " from CalendarJournal "
-        + " where  delegatorId = ? and endDay >= ? ";
-    int classificationIndex = 2, limitIndex = 3;
-    if (StringUtil.isDefined(classification)) {
-      selectNextEvents += " and classification = ? ";
-      classificationIndex++;
-      limitIndex++;
-    }
-    selectNextEvents += " order by CalendarJournal.startDay, CalendarJournal.startHour ";
-
-    selectNextEventsOracle += " " + selectNextEvents;
-    if (limit > 0) {
-      selectNextEventsOracle += "  ) table_oracle) where num between ? and ? ";
-    }
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-
-    List<JournalHeader> list = null;
-    try {
-      prepStmt = con.prepareStatement(selectNextEventsOracle);
-      prepStmt.setString(1, userId);
-      prepStmt.setString(2, day);
-      if (classificationIndex == 3)//Classification para not null
-      {
-        prepStmt.setString(classificationIndex, classification);
-      }
-      if (limit > 0)//limit para >0 do the search with limit the result
-      {
-        prepStmt.setInt(limitIndex, limit);
-        prepStmt.setInt(limitIndex + 1, offset + 1);//firstIndex=offset+1;
-      }
-
-      rs = prepStmt.executeQuery();
-
-      list = new ArrayList<JournalHeader>();
-
-      while (rs.next()) {
-        JournalHeader journal = getJournalHeaderFromResultSet(rs);
-        list.add(journal);
-      }
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
-    return list;
-  }
-
-  /**
-   * get next JournalHeader for this user when data base is MMS
-   * @param con
-   * @param day
-   * @param userId
-   * @param classification
-   * @param limit
-   * @param offset
-   * @return List<JournalHeader>
-   * @throws SQLException
-   * @throws java.text.ParseException
-   */
-  private List<JournalHeader> getNextCalendarJournalForUser_MMS(Connection con,
-      String day, String userId, String classification, int limit, int offset) throws SQLException,
-      java.text.ParseException {
-    String SelectNextEvents = "select distinct " + JournalDAO.JOURNALCOLUMNNAMES + " from CalendarJournal "
-        + " where  delegatorId = ? and endDay >= ? ";
-    int classificationIndex = 2;
-    if (StringUtil.isDefined(classification)) {
-      SelectNextEvents += " and classification = ? ";
-      classificationIndex++;
-    }
-    SelectNextEvents += " order by CalendarJournal.startDay, CalendarJournal.startHour ";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    List<JournalHeader> list = null;
-    try {
-      prepStmt = con.prepareStatement(SelectNextEvents);
-      prepStmt.setString(1, userId);
-      prepStmt.setString(2, day);
-      if (classificationIndex == 3)//Classification para not null
-      {
-        prepStmt.setString(classificationIndex, classification);
-      }
-      rs = prepStmt.executeQuery();
-
-      list = new ArrayList<JournalHeader>();
-      int index = 0;
-      while (rs.next()) {
-        // limit the searche
-        if (index >= offset && index < limit + offset) {
-          JournalHeader journal = getJournalHeaderFromResultSet(rs);
-          list.add(journal);
-        }
-        index++;
-      }
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
-    return list;
-  }
-
-  /**
-   * get Next Social Events for a given list of my Contacts accordint to
-   * the type of data base used(PostgreSQL,Oracle,MMS) .
-   * This includes all kinds of events
+   * get Next Social Events for a given list of my Contacts accordint to the type of data base
+   * used(PostgreSQL,Oracle,MMS) . This includes all kinds of events
    * @param con
    * @param day
    * @param myId
@@ -757,180 +617,54 @@ public class JournalDAO {
    * @throws ParseException
    */
   public List<SocialInformationEvent> getNextEventsForMyContacts(Connection con, String day,
-      String myId,
-      List<String> myContactsIds, int numberOfElement, int firstIndex) throws SQLException,
+      String myId, List<String> myContactsIds, Date begin, Date end) throws SQLException,
       ParseException {
-    String databaseProductName = con.getMetaData().getDatabaseProductName().toUpperCase();
-    if (databaseProductName.contains("POSTGRESQL")) {
-      return getNextEventsForMyContacts_PostgreSQL(con, day, myId, myContactsIds, numberOfElement,
-          firstIndex);
-    } else if (databaseProductName.toUpperCase().contains("ORACLE")) {
-      return getNextEventsForMyContacts_Oracle(con, day, myId, myContactsIds, numberOfElement,
-          firstIndex);
+    String selectNextEvents =
+        "select distinct " + JournalDAO.JOURNALCOLUMNNAMES + " from CalendarJournal "
+            + " where endDay >= ? and delegatorId in(" + toSqlString(myContactsIds) + ") "
+            + " and startDay >= ? and startDay <= ? "
+            + " order by startDay ASC, startHour ASC";
+
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    List<SocialInformationEvent> list = null;
+    try {
+      prepStmt = con.prepareStatement(selectNextEvents);
+      prepStmt.setString(1, day);
+      prepStmt.setString(2, DateUtil.date2SQLDate(begin));
+      prepStmt.setString(3, DateUtil.date2SQLDate(end));
+
+      rs = prepStmt.executeQuery();
+      list = new ArrayList<SocialInformationEvent>();
+      while (rs.next()) {
+        JournalHeader journal = getJournalHeaderFromResultSet(rs);
+        list.add(new SocialInformationEvent(journal, journal.getId().equals(myId)));
+      }
+    } finally {
+      DBUtil.close(rs, prepStmt);
     }
-    return getNextEventsForMyContacts_MSS(con, day, myId, myContactsIds, numberOfElement, firstIndex);
+    return list;
   }
 
-  private static String listToSqlString(List<String> list) {
-    String result = "";
+  private static String toSqlString(List<String> list) {
+    StringBuilder result = new StringBuilder(100);
     if (list == null || list.isEmpty()) {
       return "''";
     }
-    int size = list.size();
     int i = 0;
     for (String var : list) {
+      if (i != 0) {
+        result.append(",");
+      }
+      result.append("'").append(var).append("'");
       i++;
-      result += "'" + var + "'";
-      if (i != size) {
-        result += ",";
-      }
     }
-    return result;
+    return result.toString();
   }
 
   /**
-   * get Next Social Events for a given list of my Contacts when data base is PostgreSQL. This
-   * includes all kinds of events
-   * @param con
-   * @param day
-   * @param myId
-   * @param myContactsIds
-   * @param numberOfElement
-   * @param firstIndex
-   * @return List<SocialInformationEvent>
-   * @throws SQLException
-   * @throws java.text.ParseException
-   */
-  private List<SocialInformationEvent> getNextEventsForMyContacts_PostgreSQL(Connection con,
-      String day, String myId, List<String> myContactsIds, int numberOfElement, int firstIndex)
-      throws
-      SQLException,
-      java.text.ParseException {
-    String selectNextEvents = "select distinct " + JournalDAO.JOURNALCOLUMNNAMES + " from CalendarJournal "
-        + " where endDay >= ? and delegatorId in(" + listToSqlString(myContactsIds) + ") order by CalendarJournal.startDay, CalendarJournal.startHour ";
-    System.out.println("selectNextEvents=" + selectNextEvents);
-    if (numberOfElement > 0) {
-      selectNextEvents += "  limit  ?  offset  ?";
-    }
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    List<SocialInformationEvent> list = null;
-    try {
-      prepStmt = con.prepareStatement(selectNextEvents);
-      prepStmt.setString(1, day);
-      if (numberOfElement > 0) {
-        prepStmt.setInt(2, numberOfElement);
-        prepStmt.setInt(3, firstIndex);
-      }
-
-      rs = prepStmt.executeQuery();
-      list = new ArrayList<SocialInformationEvent>();
-      while (rs.next()) {
-        JournalHeader journal = getJournalHeaderFromResultSet(rs);
-        list.add(new SocialInformationEvent(journal, journal.getId().equals(myId)));
-      }
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
-    return list;
-  }
-
-  /**
-   * get Next Social Events for a given list of my Contacts when data base is oracle. This
-   * includes all kinds of events
-   * @param con
-   * @param day
-   * @param myId
-   * @param myContactsIds
-   * @param numberOfElement
-   * @param firstIndex
-   * @return List<SocialInformationEvent>
-   * @throws SQLException
-   * @throws java.text.ParseException
-   */
-  private List<SocialInformationEvent> getNextEventsForMyContacts_Oracle(Connection con,
-      String day, String myId, List<String> myContactsIds, int numberOfElement, int firstIndex)
-      throws
-      SQLException,
-      java.text.ParseException {
-
-    String selectNextEvents = "select * from (ROWNUM num , table_oracle.* from (select distinct "
-        + JournalDAO.JOURNALCOLUMNNAMES + " from CalendarJournal "
-        + " where endDay >= ? and delegatorId in(" + listToSqlString(myContactsIds) + ") order by CalendarJournal.startDay, CalendarJournal.startHour  ) table_oracle) ";
-
-    if (numberOfElement > 0) {
-      selectNextEvents += " where num between ? and ? ";
-    }
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    List<SocialInformationEvent> list = null;
-    try {
-      prepStmt = con.prepareStatement(selectNextEvents);
-      prepStmt.setString(1, day);
-      if (numberOfElement > 0) {
-        prepStmt.setInt(2, numberOfElement);
-        prepStmt.setInt(3, firstIndex);
-      }
-      rs = prepStmt.executeQuery();
-      list = new ArrayList<SocialInformationEvent>();
-      while (rs.next()) {
-        JournalHeader journal = getJournalHeaderFromResultSet(rs);
-        list.add(new SocialInformationEvent(journal, journal.getId().equals(myId)));
-      }
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
-    return list;
-  }
-
-  /**
-   * get Next Social Events for a given list of my Contacts when data base is MMS. This
-   * includes all kinds of events
-   * @param con
-   * @param day
-   * @param myId
-   * @param myContactsIds
-   * @param numberOfElement
-   * @param firstIndex
-   * @return List<SocialInformationEvent>
-   * @throws SQLException
-   * @throws java.text.ParseException
-   */
-  public List<SocialInformationEvent> getNextEventsForMyContacts_MSS(Connection con,
-      String day, String myId, List<String> myContactsIds, int numberOfElement, int firstIndex)
-      throws
-      SQLException,
-      java.text.ParseException {
-
-    String selectNextEvents = "select distinct " + JournalDAO.JOURNALCOLUMNNAMES + " from CalendarJournal "
-        + " where endDay >= ? and delegatorId in(" + listToSqlString(myContactsIds) + ") order by CalendarJournal.startDay, CalendarJournal.startHour ";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    List<SocialInformationEvent> list = null;
-    try {
-      prepStmt = con.prepareStatement(selectNextEvents);
-      prepStmt.setString(1, day);
-      rs = prepStmt.executeQuery();
-      list = new ArrayList<SocialInformationEvent>();
-      int index = 0;
-      while (rs.next()) {
-        // limit the searche
-        if ((index >= firstIndex && index < numberOfElement + firstIndex) || numberOfElement <= 0) {
-          JournalHeader journal = getJournalHeaderFromResultSet(rs);
-          list.add(new SocialInformationEvent(journal, journal.getId().equals(myId)));
-        }
-        index++;
-      }
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
-    return list;
-  }
-
-  /**
-   * get Last Social Events for a given list of my Contacts accordint to
-   * the type of data base used(PostgreSQL,Oracle,MMS) .
-   * This includes all kinds of events
+   * get Last Social Events for a given list of my Contacts accordint to the type of data base
+   * used(PostgreSQL,Oracle,MMS) . This includes all kinds of events
    * @param con
    * @param day
    * @param myId
@@ -942,53 +676,22 @@ public class JournalDAO {
    * @throws ParseException
    */
   public List<SocialInformationEvent> getLastEventsForMyContacts(Connection con, String day,
-      String myId,
-      List<String> myContactsIds, int numberOfElement, int firstIndex) throws SQLException,
+      String myId, List<String> myContactsIds, Date begin, Date end) throws SQLException,
       ParseException {
-    String databaseProductName = con.getMetaData().getDatabaseProductName().toUpperCase();
-    if (databaseProductName.contains("POSTGRESQL")) {
-      return getLastEventsForMyContacts_PostgreSQL(con, day, myId, myContactsIds, numberOfElement,
-          firstIndex);
-    } else if (databaseProductName.toUpperCase().contains("ORACLE")) {
-      return getLastEventsForMyContacts_Oracle(con, day, myId, myContactsIds, numberOfElement,
-          firstIndex);
-    }
-    return getLastEventsForMyContacts_MSS(con, day, myId, myContactsIds, numberOfElement, firstIndex);
-  }
-
-  /**
-   * get Last Social Events for a given list of my Contacts when data base is PostgreSQL. This
-   * includes all kinds of events
-   * @param con
-   * @param day
-   * @param myId
-   * @param myContactsIds
-   * @param numberOfElement
-   * @param firstIndex
-   * @return List<SocialInformationEvent>
-   * @throws SQLException
-   * @throws java.text.ParseException
-   */
-  private List<SocialInformationEvent> getLastEventsForMyContacts_PostgreSQL(Connection con,
-      String day, String myId, List<String> myContactsIds, int numberOfElement, int firstIndex)
-      throws
-      SQLException,
-      java.text.ParseException {
-    String selectNextEvents = "select distinct " + JournalDAO.JOURNALCOLUMNNAMES + " from CalendarJournal "
-        + " where endDay < ? and delegatorId in(" + listToSqlString(myContactsIds) + ") order by CalendarJournal.startDay desc, CalendarJournal.startHour desc ";
-    if (numberOfElement > 0) {
-      selectNextEvents += "  limit  ?  offset  ?";
-    }
+    String selectNextEvents =
+        "select distinct " + JournalDAO.JOURNALCOLUMNNAMES + " from CalendarJournal "
+            + " where endDay < ? and delegatorId in(" + toSqlString(myContactsIds) + ") "
+            + " and startDay >= ? and startDay <= ? "
+            + " order by startDay desc, startHour desc";
+    
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     List<SocialInformationEvent> list = null;
     try {
       prepStmt = con.prepareStatement(selectNextEvents);
       prepStmt.setString(1, day);
-      if (numberOfElement > 0) {
-        prepStmt.setInt(2, numberOfElement);
-        prepStmt.setInt(3, firstIndex);
-      }
+      prepStmt.setString(2, DateUtil.date2SQLDate(begin));
+      prepStmt.setString(3, DateUtil.date2SQLDate(end));
 
       rs = prepStmt.executeQuery();
       list = new ArrayList<SocialInformationEvent>();
@@ -1003,101 +706,8 @@ public class JournalDAO {
   }
 
   /**
-   * get Last Social Events for a given list of my Contacts when data base is Oracle. This
+   * get my Last Social Events accordint to the type of data base used(PostgreSQL,Oracle,MMS) . This
    * includes all kinds of events
-   * @param con
-   * @param day
-   * @param myId
-   * @param myContactsIds
-   * @param numberOfElement
-   * @param firstIndex
-   * @return List<SocialInformationEvent>
-   * @throws SQLException
-   * @throws java.text.ParseException
-   */
-  private List<SocialInformationEvent> getLastEventsForMyContacts_Oracle(Connection con,
-      String day, String myId, List<String> myContactsIds, int numberOfElement, int firstIndex)
-      throws
-      SQLException,
-      java.text.ParseException {
-
-    String selectNextEvents = "select * from (ROWNUM num , table_oracle.* from (select distinct "
-        + JournalDAO.JOURNALCOLUMNNAMES + " from CalendarJournal "
-        + " where endDay < ? and delegatorId in(" + listToSqlString(myContactsIds) + ") order by CalendarJournal.startDay desc , CalendarJournal.startHour desc  ) table_oracle) ";
-
-    if (numberOfElement > 0) {
-      selectNextEvents += " where num between ? and ? ";
-    }
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    List<SocialInformationEvent> list = null;
-    try {
-      prepStmt = con.prepareStatement(selectNextEvents);
-      prepStmt.setString(1, day);
-      if (numberOfElement > 0) {
-        prepStmt.setInt(2, numberOfElement);
-        prepStmt.setInt(3, firstIndex);
-      }
-      rs = prepStmt.executeQuery();
-      list = new ArrayList<SocialInformationEvent>();
-      while (rs.next()) {
-        JournalHeader journal = getJournalHeaderFromResultSet(rs);
-        list.add(new SocialInformationEvent(journal, journal.getId().equals(myId)));
-      }
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
-    return list;
-  }
-
-  /**
-   * get Last Social Events for a given list of my Contacts when data base is MMS. This
-   * includes all kinds of events
-   * @param con
-   * @param day
-   * @param myId
-   * @param myContactsIds
-   * @param numberOfElement
-   * @param firstIndex
-   * @return List<SocialInformationEvent>
-   * @throws SQLException
-   * @throws java.text.ParseException
-   */
-  public List<SocialInformationEvent> getLastEventsForMyContacts_MSS(Connection con,
-      String day, String myId, List<String> myContactsIds, int numberOfElement, int firstIndex)
-      throws
-      SQLException,
-      java.text.ParseException {
-
-    String selectNextEvents = "select distinct " + JournalDAO.JOURNALCOLUMNNAMES + " from CalendarJournal "
-        + " where endDay < ? and delegatorId in(" + listToSqlString(myContactsIds) + ") order by CalendarJournal.startDay desc, CalendarJournal.startHour desc ";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    List<SocialInformationEvent> list = null;
-    try {
-      prepStmt = con.prepareStatement(selectNextEvents);
-      prepStmt.setString(1, day);
-      rs = prepStmt.executeQuery();
-      list = new ArrayList<SocialInformationEvent>();
-      int index = 0;
-      while (rs.next()) {
-        // limit the searche
-        if ((index >= firstIndex && index < numberOfElement + firstIndex) || numberOfElement <= 0) {
-          JournalHeader journal = getJournalHeaderFromResultSet(rs);
-          list.add(new SocialInformationEvent(journal, journal.getId().equals(myId)));
-        }
-        index++;
-      }
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
-    return list;
-  }
-
-  /**
-   * get my Last Social Events accordint to
-   * the type of data base used(PostgreSQL,Oracle,MMS) .
-   * This includes all kinds of events
    * @param con
    * @param day
    * @param myId
@@ -1108,39 +718,14 @@ public class JournalDAO {
    * @throws ParseException
    */
   public List<SocialInformationEvent> getMyLastEvents(Connection con, String day, String myId,
-      int numberOfElement, int firstIndex) throws SQLException,
+      Date begin, Date end) throws SQLException,
       ParseException {
-    String databaseProductName = con.getMetaData().getDatabaseProductName().toUpperCase();
-    if (databaseProductName.contains("POSTGRESQL")) {
-      return getMyLastEvents_PostgreSQL(con, day, myId, numberOfElement,
-          firstIndex);
-    } else if (databaseProductName.toUpperCase().contains("ORACLE")) {
-      return getMyLastEvents_Oracle(con, day, myId, numberOfElement, firstIndex);
-    }
-    return getMyLastEvents_MSS(con, day, myId, numberOfElement, firstIndex);
-  }
+    String selectNextEvents =
+        "select distinct " + JournalDAO.JOURNALCOLUMNNAMES +
+            " from CalendarJournal " + " where endDay < ? and delegatorId = ? " +
+            " and startDay >= ? and startDay <= ? " +
+            " order by startDay desc, startHour desc ";
 
-  /**
-   * get Last Social Events for a given list of my Contacts when data base is PostgreSQL. This
-   * includes all kinds of events
-   * @param con
-   * @param day
-   * @param myId
-   * @param numberOfElement
-   * @param firstIndex
-   * @return List<SocialInformationEvent>
-   * @throws SQLException
-   * @throws java.text.ParseException
-   */
-  private List<SocialInformationEvent> getMyLastEvents_PostgreSQL(Connection con,
-      String day, String myId, int numberOfElement, int firstIndex) throws
-      SQLException,
-      java.text.ParseException {
-    String selectNextEvents = "select distinct " + JournalDAO.JOURNALCOLUMNNAMES + " from CalendarJournal "
-        + " where endDay < ? and delegatorId = ? order by CalendarJournal.startDay desc, CalendarJournal.startHour desc ";
-    if (numberOfElement > 0) {
-      selectNextEvents += "  limit  ?  offset  ?";
-    }
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     List<SocialInformationEvent> list = null;
@@ -1148,10 +733,8 @@ public class JournalDAO {
       prepStmt = con.prepareStatement(selectNextEvents);
       prepStmt.setString(1, day);
       prepStmt.setString(2, myId);
-      if (numberOfElement > 0) {
-        prepStmt.setInt(3, numberOfElement);
-        prepStmt.setInt(4, firstIndex);
-      }
+      prepStmt.setString(3, DateUtil.date2SQLDate(begin));
+      prepStmt.setString(4, DateUtil.date2SQLDate(end));
 
       rs = prepStmt.executeQuery();
       list = new ArrayList<SocialInformationEvent>();
@@ -1166,8 +749,7 @@ public class JournalDAO {
   }
 
   /**
-   * get my Last Social Events  when data base is Oracle. This
-   * includes all kinds of events
+   * get my Last Social Events when data base is MMS. This includes all kinds of events
    * @param con
    * @param day
    * @param myId
@@ -1177,18 +759,16 @@ public class JournalDAO {
    * @throws SQLException
    * @throws java.text.ParseException
    */
-  private List<SocialInformationEvent> getMyLastEvents_Oracle(Connection con,
-      String day, String myId, int numberOfElement, int firstIndex) throws
-      SQLException,
-      java.text.ParseException {
+  public List<SocialInformationEvent> getMyLastEvents_MSS(Connection con,
+      String day, String myId, Date begin, Date end) throws
+      SQLException, java.text.ParseException {
 
-    String selectNextEvents = "select * from (ROWNUM num , table_oracle.* from (select distinct "
-        + JournalDAO.JOURNALCOLUMNNAMES + " from CalendarJournal "
-        + " where endDay < ? and delegatorId = ? order by CalendarJournal.startDay desc , CalendarJournal.startHour desc  ) table_oracle) ";
-
-    if (numberOfElement > 0) {
-      selectNextEvents += " where num between ? and ? ";
-    }
+    String selectNextEvents =
+        "select distinct " + JournalDAO.JOURNALCOLUMNNAMES +
+            " from CalendarJournal " +
+            " where endDay < ? and delegatorId = ? " +
+            " and startDay >= ? and startDay <= ? " +
+            " order by CalendarJournal.startDay desc, CalendarJournal.startHour desc";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     List<SocialInformationEvent> list = null;
@@ -1196,58 +776,13 @@ public class JournalDAO {
       prepStmt = con.prepareStatement(selectNextEvents);
       prepStmt.setString(1, day);
       prepStmt.setString(2, myId);
-      if (numberOfElement > 0) {
-        prepStmt.setInt(3, numberOfElement);
-        prepStmt.setInt(4, firstIndex);
-      }
+      prepStmt.setString(3, DateUtil.date2SQLDate(begin));
+      prepStmt.setString(4, DateUtil.date2SQLDate(end));
       rs = prepStmt.executeQuery();
       list = new ArrayList<SocialInformationEvent>();
       while (rs.next()) {
         JournalHeader journal = getJournalHeaderFromResultSet(rs);
         list.add(new SocialInformationEvent(journal));
-      }
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
-    return list;
-  }
-
-  /**
-   *  get my Last Social Events  when data base is MMS.
-   * This includes all kinds of events
-   * @param con
-   * @param day
-   * @param myId
-   * @param numberOfElement
-   * @param firstIndex
-   * @return
-   * @throws SQLException
-   * @throws java.text.ParseException
-   */
-  public  List<SocialInformationEvent> getMyLastEvents_MSS(Connection con,
-      String day, String myId, int numberOfElement, int firstIndex) throws
-      SQLException,
-      java.text.ParseException {
-
-    String selectNextEvents = "select distinct " + JournalDAO.JOURNALCOLUMNNAMES + " from CalendarJournal "
-        + " where endDay < ? and delegatorId = ? order by CalendarJournal.startDay desc, CalendarJournal.startHour desc ";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    List<SocialInformationEvent> list = null;
-    try {
-      prepStmt = con.prepareStatement(selectNextEvents);
-      prepStmt.setString(1, day);
-      prepStmt.setString(2, myId);
-      rs = prepStmt.executeQuery();
-      list = new ArrayList<SocialInformationEvent>();
-      int index = 0;
-      while (rs.next()) {
-        // limit the searche
-        if ((index >= firstIndex && index < numberOfElement + firstIndex) || numberOfElement <= 0) {
-          JournalHeader journal = getJournalHeaderFromResultSet(rs);
-          list.add(new SocialInformationEvent(journal));
-        }
-        index++;
       }
     } finally {
       DBUtil.close(rs, prepStmt);

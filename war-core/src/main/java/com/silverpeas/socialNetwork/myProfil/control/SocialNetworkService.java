@@ -23,16 +23,19 @@
  */
 package com.silverpeas.socialNetwork.myProfil.control;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.silverpeas.socialNetwork.model.SocialInformationType;
 import com.silverpeas.socialNetwork.status.Status;
 import com.silverpeas.socialNetwork.status.StatusService;
 import com.silverpeas.util.StringUtil;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import com.stratelia.webactiv.util.DateUtil;
 
 /**
  *
@@ -41,19 +44,9 @@ import java.util.Map;
 public class SocialNetworkService {
 
   private String myId;
-  private final int FACTEUR = 3;//si paginationIndex est un miltiple de BONUS get plus from la base de donnés
-  private List<SocialInformation> socialInformationsFull = new ArrayList<SocialInformation>();
-  private int socialTypeInformationNumbre = 0;
   private List<String> myContactsIds;
-  private int elementPerPage;
 
   public SocialNetworkService() {
-    socialTypeInformationNumbre = 0;
-    for (SocialInformationType type : SocialInformationType.values()) {
-      if (type.ALL != type && type.EVENT != type) {
-        socialTypeInformationNumbre++;
-      }
-    }
   }
 
   /**
@@ -63,16 +56,38 @@ public class SocialNetworkService {
    * @param:SocialInformationType socialInformationType, String userId,String classification, int limit  ,int offset
    */
   public Map<Date, List<SocialInformation>> getSocialInformation(SocialInformationType type,
-      int limit, int paginationIndex) {
-
-
-    int firstIndex = paginationIndex * limit;
-    if ((paginationIndex % FACTEUR) == 0) {
-      //si paginationIndex est un miltiple de BONUS: fais la demande de plus de la base de donnés
-      fillInTemporaryStorage(type, myId, limit, firstIndex);
+      Date begin, Date end) {
+    
+    com.silverpeas.calendar.Date dBegin = new com.silverpeas.calendar.Date(begin);
+    com.silverpeas.calendar.Date dEnd = new com.silverpeas.calendar.Date(end);
+    
+    List<SocialInformation> socialInformationsFull = new ProviderService().getSocialInformationsList(type, myId,
+        null, dEnd, dBegin);
+    
+    if (SocialInformationType.ALL.equals(type)) {
+      Collections.sort(socialInformationsFull);
     }
-    //recupirer la list a partir TemporaryStorage au lieu la base de donnée
-    return getFromTemporaryStorage(type, limit, firstIndex);
+    
+    return processResults(socialInformationsFull);
+  }
+  
+  private Map<Date, List<SocialInformation>> processResults(List<SocialInformation> socialInformationsFull) {
+    String date = null;
+    LinkedHashMap<Date, List<SocialInformation>> hashtable =
+        new LinkedHashMap<Date, List<SocialInformation>>();
+    List<SocialInformation> lsi = new ArrayList<SocialInformation>();
+
+    for (SocialInformation information : socialInformationsFull) {
+      if (DateUtil.formatDate(information.getDate()).equals(date)) {
+        lsi.add(information);
+      } else {
+        date = DateUtil.formatDate(information.getDate());
+        lsi = new ArrayList<SocialInformation>();
+        lsi.add(information);
+        hashtable.put(information.getDate(), lsi);
+      }
+    }
+    return hashtable;
   }
 
   /**
@@ -82,15 +97,19 @@ public class SocialNetworkService {
    * @param:SocialInformationType socialInformationType, String userId,String classification, int limit  ,int offset
    */
   public Map<Date, List<SocialInformation>> getSocialInformationOfMyContacts(
-      SocialInformationType type,
-      int limit, int paginationIndex) {
-    int firstIndex = paginationIndex * limit;
-    if ((paginationIndex % FACTEUR) == 0) {
-      //si paginationIndex est un miltiple de BONUS: fais la demande de plus de la base de donnés
-      fillInTemporaryStorageOfMyContacts(type, limit, firstIndex);
+      SocialInformationType type, Date begin, Date end) {
+    
+    com.silverpeas.calendar.Date dBegin = new com.silverpeas.calendar.Date(begin);
+    com.silverpeas.calendar.Date dEnd = new com.silverpeas.calendar.Date(end);
+    
+    List<SocialInformation> socialInformationsFull = new ProviderService().getSocialInformationsListOfMyContact(type, myId,
+        myContactsIds, dEnd, dBegin);
+    
+    if (SocialInformationType.ALL.equals(type)) {
+      Collections.sort(socialInformationsFull);
     }
-    //recupirer la list a partir TemporaryStorage au lieu la base de donnée
-    return getFromTemporaryStorage(type, limit, firstIndex);
+    
+    return processResults(socialInformationsFull);
   }
 
   /**
@@ -131,76 +150,6 @@ public class SocialNetworkService {
     }
     return " ";
   }
-  /**
-   * the TemporaryStorage pour eviter le vas et viens a la base de donneés et aussi
-   *  eviter de obtenir toutes la resulta  de la base de donnés qui sera une opération couteuse
-   *  FACTEUR: c'est un facteur d'optimisation
-   * @param type
-   * @param userId
-   * @param limit
-   * @param firstIndex
-   */
-
-  private void fillInTemporaryStorage(SocialInformationType type, String userId,
-      int limit, int firstIndex) {
-    socialInformationsFull = new ProviderService().getSocialInformationsList(type, userId,
-        null, limit * FACTEUR, firstIndex * FACTEUR);
-    if (SocialInformationType.ALL.equals(type)) {
-      Collections.sort(socialInformationsFull);
-    }
-  }
-
-  /**
-   * the TemporaryStorage pour eviter le vas et viens a la base de donneés et aussi
-   *  eviter de obtenir toutes la resulta  de la base de donnés qui sera une opération couteuse
-   *  FACTEUR: c'est un facteur d'optimisation
-   * @param type
-   * @param limit
-   * @param firstIndex
-   */
-  private void fillInTemporaryStorageOfMyContacts(SocialInformationType type,
-      int limit, int firstIndex) {
-    socialInformationsFull = new ProviderService().getSocialInformationsListOfMyContact(type, myId,
-        myContactsIds, limit * FACTEUR, firstIndex * FACTEUR);
-    if (SocialInformationType.ALL.equals(type)) {
-      Collections.sort(socialInformationsFull);
-    }
-  }
-  /**
-   * recupirer la resulta à partir de  TemporaryStorage et pas la base de donnes
-   * @param type
-   * @param limit
-   * @param firstIndex
-   * @return Map<Date, List<SocialInformation>>
-   */
-
-  private Map<Date, List<SocialInformation>> getFromTemporaryStorage(SocialInformationType type,
-      int limit, int firstIndex) {
-    Map<Date, List<SocialInformation>> map = null;
-
-    if (SocialInformationType.ALL.equals(type)) {// if type equal ALL
-      List<SocialInformation> listToDispaly = new ArrayList<SocialInformation>();
-      int lastIndex = Math.min(
-          firstIndex * socialTypeInformationNumbre + limit * socialTypeInformationNumbre, socialInformationsFull.
-          size());
-      if (firstIndex * socialTypeInformationNumbre <= lastIndex)//there always more Item of socialnetwork in database or in the socialInformationsFull List
-      {
-        listToDispaly = socialInformationsFull.subList(firstIndex * socialTypeInformationNumbre,
-            lastIndex);
-      }
-      map = new socialNetworkUtil().toLinkedHashMapWhenTypeIsALL(listToDispaly, limit, firstIndex);
-
-    } else {// if type not equal ALL
-      List<SocialInformation> listToDispaly = new ArrayList<SocialInformation>();
-      int lastIndex = Math.min(firstIndex + limit, socialInformationsFull.size());
-      if (firstIndex <= lastIndex)//there always more Item of socialnetwork in database or in the socialInformationsFull List (TemporaryStorage)
-      {
-        listToDispaly = socialInformationsFull.subList(firstIndex, lastIndex);
-      }
-      map = new socialNetworkUtil().toLinkedHashMap(listToDispaly);
-    }
-    return map;
-  }
 
   /**
    *
@@ -218,14 +167,4 @@ public class SocialNetworkService {
     this.myContactsIds = myContactsIds;
   }
 
-  /**
-   *
-   * @param elementPerPage
-   */
-  public void setElementPerPage(int elementPerPage) {
-    this.elementPerPage = elementPerPage;
-  }
 }
-
-
-

@@ -23,18 +23,28 @@
  */
 package com.silverpeas.socialNetwork.provider;
 
-import com.silverpeas.socialNetwork.model.SocialInformationType;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
 import org.junit.After;
-import static org.junit.Assert.*;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+
+import com.silverpeas.socialNetwork.model.SocialInformation;
+import com.silverpeas.socialNetwork.model.SocialInformationType;
+import com.silverpeas.socialNetwork.status.SocialInformationStatus;
+import com.silverpeas.socialNetwork.status.Status;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  *
@@ -65,19 +75,22 @@ public class TestProviderSwitch {
   // The methods must be annotated with annotation @Test. For example:
   //
   @Test
-  @SuppressWarnings("empty-statement")
   public void testGetSocialInformationsList() throws SilverpeasException {
-    List<String> listEvent = new ArrayList<String>();
+    List<SocialInformation> listEvent = new ArrayList<SocialInformation>();
+    Status status = new Status(0, new Date(), "description");
     for (int i = 0; i < 4; i++) {
-      listEvent.add("Event" + i);
+      SocialInformationStatus event = new SocialInformationStatus(status);
+      listEvent.add(event);
     }
-    List<String> listPub = new ArrayList<String>();
+    List<SocialInformation> listPub = new ArrayList<SocialInformation>();
     for (int i = 0; i < 3; i++) {
-      listPub.add("Pub" + i);
+      SocialInformationStatus publi = new SocialInformationStatus(status);
+      listPub.add(publi);
     }
-    List<String> listPhoto = new ArrayList<String>();
+    List<SocialInformation> listPhoto = new ArrayList<SocialInformation>();
     for (int i = 0; i < 2; i++) {
-      listPhoto.add("Pub" + i);
+      SocialInformationStatus image = new SocialInformationStatus(status);
+      listPhoto.add(image);
     }
     SocialEventsInterface eventsInterface = mock(SocialEventsInterface.class);
     SocialGalleryInterface galleryInterface = mock(SocialGalleryInterface.class);
@@ -91,32 +104,42 @@ public class TestProviderSwitch {
     switch1.setSocialPublicationsInterface(publicationsInterface);
     switch1.setSocialStatusInterface(statusInterface);
     switch1.setSocialRelationShipsInterface(socialRelationShipsInterface);
-    when(switch1.getSocialEventsInterface().getSocialInformationsList(null, null, 0, 0)).thenReturn(
+    
+    com.silverpeas.calendar.Date begin = null;
+    com.silverpeas.calendar.Date end = null;
+    try {
+      begin = new com.silverpeas.calendar.Date(DateUtil.parse("2011/02/28"));
+      end = new com.silverpeas.calendar.Date(DateUtil.parse("2011/02/01"));
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+    
+    when(switch1.getSocialEventsInterface().getSocialInformationsList(null, null, begin, end)).thenReturn(
         listEvent);
-    when(switch1.getSocialGalleryInterface().getSocialInformationsList(null, 0, 0)).thenReturn(
+    when(switch1.getSocialGalleryInterface().getSocialInformationsList(null, begin, end)).thenReturn(
         listPhoto);
-    when(switch1.getSocialPublicationsInterface().getSocialInformationsList(null, 0, 0)).thenReturn(
+    when(switch1.getSocialPublicationsInterface().getSocialInformationsList(null, begin, end)).thenReturn(
         listPub);
-    when(switch1.getSocialStatusInterface().getSocialInformationsList(null, 0, 0)).thenReturn(
+    when(switch1.getSocialStatusInterface().getSocialInformationsList(null, begin, end)).thenReturn(
         null);
-    when(switch1.getSocialRelationShipsInterface().getSocialInformationsList(null, 0, 0)).thenReturn(
+    when(switch1.getSocialRelationShipsInterface().getSocialInformationsList(null, begin, end)).thenReturn(
         null);
 
-    List list = switch1.getSocialInformationsList(SocialInformationType.EVENT, null,
-        null, 0, 0);
+    List<SocialInformation> list = switch1.getSocialInformationsList(SocialInformationType.EVENT, null,
+        null, begin, end);
     assertEquals("must be equal 4", list.size(), 4);
     list = switch1.getSocialInformationsList(SocialInformationType.PUBLICATION, null,
-        null, 0, 0);
+        null, begin, end);
     assertEquals("must be equal 3", list.size(), 3);
     list = switch1.getSocialInformationsList(SocialInformationType.PHOTO, null,
-        null, 0, 0);
+        null, begin, end);
     assertNotNull("must be not null", list);
-    list = (List) switch1.getSocialInformationsList(SocialInformationType.ALL, null,
-        null, 0, 0);
+    list = switch1.getSocialInformationsList(SocialInformationType.ALL, null,
+        null, begin, end);
     assertEquals("must be equal 3", list.size(), 5);
-    when(switch1.getSocialGalleryInterface().getSocialInformationsList(null, 0, 0)).thenReturn(null);
-    list = (List) switch1.getSocialInformationsList(SocialInformationType.ALL, null,
-        null, 0, 0);
+    when(switch1.getSocialGalleryInterface().getSocialInformationsList(null, begin, end)).thenReturn(null);
+    list = switch1.getSocialInformationsList(SocialInformationType.ALL, null,
+        null, begin, end);
     assertEquals("must be equal 3", list.size(), 3);
   }
 }

@@ -511,14 +511,6 @@
     <servlet-class>com.silverpeas.socialNetwork.myContactProfil.servlets.MyContactProfilRequestRouter</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>MyContactJSONServlet</servlet-name>
-    <servlet-class>com.silverpeas.socialNetwork.myContactProfil.servlets.ContactJSONServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>NewsFeedRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.socialNetwork.newsFeed.servlets.NewsFeedRequestRouter</servlet-class>
-  </servlet>
-  <servlet>
     <servlet-name>NewsFeedJSONServlet</servlet-name>
     <servlet-class>com.silverpeas.socialNetwork.newsFeed.servlets.NewsFeedJSONServlet</servlet-class>
   </servlet>
@@ -892,14 +884,6 @@
   <servlet-mapping>
     <servlet-name>MyContactProfilRequestRouter</servlet-name>
     <url-pattern>/RContactProfile/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>MyContactJSONServlet</servlet-name>
-    <url-pattern>/RmyContactJSON/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>NewsFeedRequestRouter</servlet-name>
-    <url-pattern>/RnewsFeed/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>NewsFeedJSONServlet</servlet-name>

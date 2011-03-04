@@ -134,14 +134,18 @@
 <div id="publicProfileContenu">
 
 	<fmt:message key="myContactProfile.tab.profile" var="profile" />
-	<fmt:message key="myProfile.tab.invitations" var="invitations" />
-	<fmt:message key="myProfile.tab.settings" var="settings" />
+	<fmt:message key="myContactProfile.tab.wall" var="wall" />
 	<view:tabs>
-    	<view:tab label="${profile}" action="Infos" selected="<%=Boolean.toString("Infos".equals(view)) %>" />
+    	<view:tab label="${wall}" action="<%="Main?userId="+userFull.getId()%>" selected="<%=Boolean.toString("Wall".equals(view)) %>" />
+    	<view:tab label="${profile}" action="<%="Infos?userId="+userFull.getId()%>" selected="<%=Boolean.toString("Infos".equals(view)) %>" />
 	</view:tabs>
 	
 	<% if ("Infos".equals(view)) { %>
 		<%@include file="myContactProfileTabIdentity.jsp" %>
+	<% } else if ("Wall".equals(view)) {
+	  	view = MyProfileRoutes.MyWall.toString();
+	%>
+		<%@include file="../myProfil/myProfileTabWall.jsp" %>
 	<% } %>
               
 </div>

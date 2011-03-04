@@ -158,7 +158,7 @@ YAHOO.widget.AutoComplete = function(elInput,elContainer,oDataSource,oConfigs) {
             return;
         }
 
-        // Default applyLocalFilter setting is to enable for local sources
+        // Default applyLocalFilter setting is to enable for localResourceLocator sources
         if(this.dataSource.dataType === YAHOO.util.DataSourceBase.TYPE_LOCAL) {
             this.applyLocalFilter = true;
         }
@@ -242,17 +242,17 @@ YAHOO.widget.AutoComplete = function(elInput,elContainer,oDataSource,oConfigs) {
 YAHOO.widget.AutoComplete.prototype.dataSource = null;
 
 /**
- * By default, results from local DataSources will pass through the filterResults
+ * By default, results from localResourceLocator DataSources will pass through the filterResults
  * method to apply a client-side matching algorithm. 
  * 
  * @property applyLocalFilter
  * @type Boolean
- * @default true for local arrays and json, otherwise false
+ * @default true for localResourceLocator arrays and json, otherwise false
  */
 YAHOO.widget.AutoComplete.prototype.applyLocalFilter = null;
 
 /**
- * When applyLocalFilter is true, the local filtering algorthim can have case sensitivity
+ * When applyLocalFilter is true, the localResourceLocator filtering algorthim can have case sensitivity
  * enabled. 
  * 
  * @property queryMatchCase
@@ -716,7 +716,7 @@ YAHOO.widget.AutoComplete.prototype.generateRequest = function(sQuery) {
     var dataType = this.dataSource.dataType;
     
     // Transform query string in to a request for remote data
-    // By default, local data doesn't need a transformation, just passes along the query as is.
+    // By default, localResourceLocator data doesn't need a transformation, just passes along the query as is.
     if(dataType === YAHOO.util.DataSourceBase.TYPE_XHR) {
         // By default, XHR GET requests look like "{scriptURI}?{scriptQueryParam}={sQuery}&{scriptQueryAppend}"
         if(!this.dataSource.connMethodPost) {

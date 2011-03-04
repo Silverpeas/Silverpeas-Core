@@ -30,6 +30,7 @@ import com.stratelia.silverpeas.genericPanel.PanelMiniFilterSelect;
 import com.stratelia.silverpeas.genericPanel.PanelMiniFilterToken;
 import com.stratelia.silverpeas.genericPanel.PanelOperation;
 import com.stratelia.silverpeas.genericPanel.PanelProvider;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionExtraParams;
 import com.stratelia.silverpeas.selection.SelectionJdbcParams;
@@ -39,7 +40,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 public class CacheManagerJdbcConnector extends CacheManager {
 
-  Selection selection;
   JdbcConnectorDAO jdbcConnectorDAO;
 
   public CacheManagerJdbcConnector(String language, ResourceLocator local,
@@ -50,123 +50,128 @@ public class CacheManagerJdbcConnector extends CacheManager {
 
   public JdbcConnectorDAO getJdbcConnectorDAO() {
     if (jdbcConnectorDAO == null) {
-      SelectionJdbcParams jdbcParams = (SelectionJdbcParams) selection
-          .getExtraParams();
+      SelectionJdbcParams jdbcParams = (SelectionJdbcParams) selection.getExtraParams();
       jdbcConnectorDAO = new JdbcConnectorDAO(jdbcParams);
     }
     return jdbcConnectorDAO;
   }
 
-  public BrowsePanelProvider getBrowsePanelProvider(int what, CacheManager cm,
-      SelectionExtraParams sep) {
-    return new BrowseJdbcPanel(m_Language, m_Local, cm, sep);
+  public BrowsePanelProvider getBrowsePanelProvider(CacheType what, SelectionExtraParams sep) {
+    return new BrowseJdbcPanel(language, localResourceLocator, this, sep);
   }
 
-  public PanelProvider getCartPanelProvider(int what, CacheManager cm,
-      SelectionExtraParams sep) {
+  public PanelProvider getCartPanelProvider(CacheType what,  SelectionExtraParams sep) {
     return null;
   }
 
-  public String[] getColumnsNames(int what) {
+  public String[] getColumnsNames(CacheType what) {
     return getJdbcConnectorDAO().getColumnsNames();
   }
 
-  public String[] getContentColumnsNames(int what) {
-    if (what == CM_ELEMENT) {
-      return getColumnsNames(CM_SET);
-    } else if (what == CM_SET) {
-      return getColumnsNames(CM_ELEMENT);
-    } else {
-      return new String[0];
+  public String[] getContentColumnsNames(CacheType what) {
+    switch (what) {
+      case CM_ELEMENT:
+        return getColumnsNames(CacheType.CM_SET);
+      case CM_SET:
+        return getColumnsNames(CacheType.CM_ELEMENT);
+      default:
+        return new String[0];
     }
   }
 
-  public String[][] getContentInfos(int what, String id) {
-    String[][] result = { { "ci11", "ci12", "ci13", "ci14" },
-        { "ci21", "ci22", "ci23", "ci24" } };
-    return result;
+  public String[][] getContentInfos(CacheType what, String id) {
+    return new String[][]{{"ci11", "ci12", "ci13", "ci14"}, {"ci21", "ci22", "ci23", "ci24"}};
   }
 
-  public String[][] getContentLines(int what, String id) {
-    String[][] result = { { "cl11", "cl12", "cl13", "cl14" },
-        { "cl21", "cl22", "cl23", "cl24" } };
-    return result;
+  public String[][] getContentLines(CacheType what, String id) {
+    return new String[][]{{"cl11", "cl12", "cl13", "cl14"}, {"cl21", "cl22", "cl23", "cl24"}};
   }
 
-  public String getContentText(int what) {
+  public String getContentText(CacheType what) {
     return "content text";
   }
 
-  protected PanelLine getLineFromId(int what, String id) {
+  protected PanelLine getLineFromId(CacheType what, String id) {
     String[] line = getJdbcConnectorDAO().getLine(id);
     return new PanelLine(id, line, false);
   }
 
-  public int getLineCount(int what) {
+  public int getLineCount(CacheType what) {
     return getJdbcConnectorDAO().getLineCount();
   }
 
-  public PanelMiniFilterToken[] getPanelMiniFilters(int what) {
-    if (what == CM_SET) {
-      PanelMiniFilterToken[] theArray = new PanelMiniFilterToken[1];
-      theArray[0] = new PanelMiniFilterEdit(0, Integer.toString(what), "",
-          m_Context + m_Icon.getString("selectionPeas.filter"), m_Local
-          .getString("selectionPeas.filter"), m_Local
-          .getString("selectionPeas.filter"));
-      return theArray;
-    } else if (what == CM_ELEMENT) {
-      PanelMiniFilterToken[] theArray = new PanelMiniFilterToken[1];
-      theArray[0] = new PanelMiniFilterEdit(0, Integer.toString(what), "",
-          m_Context + m_Icon.getString("selectionPeas.filter"), m_Local
-          .getString("selectionPeas.filter"), m_Local
-          .getString("selectionPeas.filter"));
-      return theArray;
-    } else {
-      return new PanelMiniFilterToken[0];
+  public PanelMiniFilterToken[] getPanelMiniFilters(CacheType what) {
+    switch (what) {
+      case CM_SET: {
+        PanelMiniFilterToken[] theArray = new PanelMiniFilterToken[1];
+        theArray[0] = new PanelMiniFilterEdit(0, Integer.toString(what.getValue()), "",
+            URLManager.getApplicationURL() + iconResourceLocator.getString("selectionPeas.filter"),
+            localResourceLocator.getString("selectionPeas.filter"), localResourceLocator
+            .getString("selectionPeas.filter"));
+        return theArray;
+      }
+      case CM_ELEMENT: {
+        PanelMiniFilterToken[] theArray = new PanelMiniFilterToken[1];
+        theArray[0] = new PanelMiniFilterEdit(0, Integer.toString(what.getValue()), "",
+            URLManager.getApplicationURL() + iconResourceLocator.getString("selectionPeas.filter"),
+            localResourceLocator.getString("selectionPeas.filter"), localResourceLocator
+            .getString("selectionPeas.filter"));
+        return theArray;
+      }
+      default:
+        return new PanelMiniFilterToken[0];
     }
+
   }
 
   public PanelOperation getPanelOperation(String operation) {
     if ("DisplayBrowse".equals(operation)) {
-      return new PanelOperation(m_Local.getString("selectionPeas.helpBrowse"),
-          m_Context + m_Icon.getString("selectionPeas.browseArb"), operation);
+      return new PanelOperation(localResourceLocator.getString("selectionPeas.helpBrowse"),
+          URLManager.getApplicationURL() + iconResourceLocator.getString("selectionPeas.browseArb"),
+          operation);
     } else if ("DisplaySearchElement".equals(operation)) {
-      return new PanelOperation(m_Local
-          .getString("selectionPeas.helpSearchElement"), m_Context
-          + m_Icon.getString("selectionPeas.userSearc"), operation);
+      return new PanelOperation(localResourceLocator
+          .getString("selectionPeas.helpSearchElement"), URLManager.getApplicationURL()
+          + iconResourceLocator.getString("selectionPeas.userSearc"), operation);
     } else if ("DisplaySearchSet".equals(operation)) {
-      return new PanelOperation(m_Local
-          .getString("selectionPeas.helpSearchSet"), m_Context
-          + m_Icon.getString("selectionPeas.groupSearc"), operation);
+      return new PanelOperation(localResourceLocator
+          .getString("selectionPeas.helpSearchSet"), URLManager.getApplicationURL()
+          + iconResourceLocator.getString("selectionPeas.groupSearc"), operation);
     } else {
       return null;
     }
   }
 
-  public BrowsePanelProvider getSearchPanelProvider(int what, CacheManager cm,
-      SelectionExtraParams sep) {
+  public BrowsePanelProvider getSearchPanelProvider(CacheType what, SelectionExtraParams sep) {
     return null;
   }
 
-  public PanelMiniFilterSelect getSelectMiniFilter(int what) {
-    if (what == CM_SET) {
-      return new PanelMiniFilterSelect(999, Integer.toString(what), "set",
-          m_Context + m_Icon.getString("selectionPeas.selectAll"), m_Context
-          + m_Icon.getString("selectionPeas.unSelectAll"), m_Local
-          .getString("selectionPeas.selectAll"), m_Local
-          .getString("selectionPeas.unSelectAll"), m_Local
-          .getString("selectionPeas.selectAll"), m_Local
-          .getString("selectionPeas.unSelectAll"));
-    } else if (what == CM_ELEMENT) {
-      return new PanelMiniFilterSelect(999, Integer.toString(what), "element",
-          m_Context + m_Icon.getString("selectionPeas.selectAll"), m_Context
-          + m_Icon.getString("selectionPeas.unSelectAll"), m_Local
-          .getString("selectionPeas.selectAll"), m_Local
-          .getString("selectionPeas.unSelectAll"), m_Local
-          .getString("selectionPeas.selectAll"), m_Local
-          .getString("selectionPeas.unSelectAll"));
-    } else {
-      return null;
+  public PanelMiniFilterSelect getSelectMiniFilter(CacheType what) {
+    switch (what) {
+      case CM_SET: {
+        return new PanelMiniFilterSelect(999, Integer.toString(what.getValue()), "set",
+            URLManager.getApplicationURL() + iconResourceLocator.getString(
+                "selectionPeas.selectAll"),
+            URLManager.getApplicationURL()
+                + iconResourceLocator.getString("selectionPeas.unSelectAll"), localResourceLocator
+            .getString("selectionPeas.selectAll"), localResourceLocator
+            .getString("selectionPeas.unSelectAll"), localResourceLocator
+            .getString("selectionPeas.selectAll"), localResourceLocator
+            .getString("selectionPeas.unSelectAll"));
+      }
+      case CM_ELEMENT: {
+        return new PanelMiniFilterSelect(999, Integer.toString(what.getValue()), "element",
+            URLManager.getApplicationURL() + iconResourceLocator.getString(
+                "selectionPeas.selectAll"),
+            URLManager.getApplicationURL()
+                + iconResourceLocator.getString("selectionPeas.unSelectAll"), localResourceLocator
+            .getString("selectionPeas.selectAll"), localResourceLocator
+            .getString("selectionPeas.unSelectAll"), localResourceLocator
+            .getString("selectionPeas.selectAll"), localResourceLocator
+            .getString("selectionPeas.unSelectAll"));
+      }
+      default:
+        return null;
     }
   }
 
@@ -179,7 +184,6 @@ public class CacheManagerJdbcConnector extends CacheManager {
   }
 
   public void setJdbcParams(SelectionJdbcParams jdbcParams) {
-    // this.jdbcParams = jdbcParams;
   }
 
 }

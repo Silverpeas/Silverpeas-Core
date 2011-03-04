@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.silverpeas.silverstatistics.control;
 
 import java.rmi.RemoteException;
@@ -42,32 +39,6 @@ import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-
-/*
- * CVS Informations
- *
- * $Id: SilverStatisticsMessageDriven.java,v 1.2 2004/11/05 14:48:04 neysseri Exp $
- *
- * $Log: SilverStatisticsMessageDriven.java,v $
- * Revision 1.2  2004/11/05 14:48:04  neysseri
- * Nettoyage sources
- *
- * Revision 1.1.1.1  2002/08/06 14:47:53  nchaix
- * no message
- *
- * Revision 1.2  2002/05/16 10:08:12  mguillem
- * merge branch V2001_Statistics01
- *
- * Revision 1.1.2.4  2002/05/13 14:51:49  mguillem
- * asynchrone alimentation
- *
- * Revision 1.1.2.3  2002/05/07 15:14:32  mguillem
- * add trace for asynchrone alimentation pb
- *
- * Revision 1.1.2.2  2002/05/02 13:29:53  mguillem
- * ajout trace pour mode asynchrone
- *
- */
 
 /**
  * Class declaration
@@ -119,7 +90,6 @@ public class SilverStatisticsMessageDriven implements MessageDrivenBean, Message
   /**
    * Method declaration
    * @param m
-   * @see ejbjar.xml for transaction management
    */
   public void onMessage(Message m) {
 

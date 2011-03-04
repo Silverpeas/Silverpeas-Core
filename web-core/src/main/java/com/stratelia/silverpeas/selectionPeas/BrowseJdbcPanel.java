@@ -31,13 +31,13 @@ public class BrowseJdbcPanel extends BrowsePanelProvider {
 
   public BrowseJdbcPanel(String language, ResourceLocator rs, CacheManager cm,
       SelectionExtraParams sep) {
-    super(language, rs, cm, CacheManager.CM_ELEMENT);
+    super(language, rs, cm, CacheType.CM_ELEMENT);
     init(sep.getParameter("tableName"));
   }
 
   private void init(String pageName) {
-    m_PageName = pageName;
-    setSelectMiniFilter(m_Cm.getSelectMiniFilter(m_what));
+    this.pageName = pageName;
+    setSelectMiniFilter(cacheManager.getSelectMiniFilter(m_what));
     refresh(null);
   }
 
@@ -46,10 +46,10 @@ public class BrowseJdbcPanel extends BrowsePanelProvider {
   }
 
   public void refresh(String[] filters) {
-    int lineCount = m_Cm.getLineCount(CacheManager.CM_ELEMENT);
-    m_Ids = new String[lineCount];
+    int lineCount = cacheManager.getLineCount(CacheType.CM_ELEMENT);
+    ids = new String[lineCount];
     for (int i = 0; i < lineCount; i++) {
-      m_Ids[i] = String.valueOf(i);
+      ids[i] = String.valueOf(i);
     }
   }
 

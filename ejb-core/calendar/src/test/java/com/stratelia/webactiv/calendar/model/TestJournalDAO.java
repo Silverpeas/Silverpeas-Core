@@ -5,12 +5,14 @@
 package com.stratelia.webactiv.calendar.model;
 
 import com.stratelia.webactiv.calendar.socialNetwork.SocialInformationEvent;
+import com.stratelia.webactiv.util.DateUtil;
 import com.silverpeas.components.model.AbstractTestDao;
 
 
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.dbunit.database.IDatabaseConnection;
 
@@ -65,25 +67,32 @@ public class TestJournalDAO extends AbstractTestDao {
     List<JournalHeader> list = null;
     try {
       connexion = getConnection();
-      list = dao.getNextEventsForUser(connexion.getConnection(), "2011/07/07", "1", null, 0, 0);
+      
+      Date end = DateUtil.parse("2011/07/31");
+      Date begin = DateUtil.parse("2011/07/01");
+      
+      list = dao.getNextEventsForUser(connexion.getConnection(), "2011/07/07", "1", null, begin, end);
 
       assertNotNull("Event should exist", list);
-      assertEquals("Should have 2 Events in db", 3, list.size());
+      assertEquals("Should have 3 Events in db", 3, list.size());
       assertEquals("First should be ", s1.getName(), list.get(0).getName());
       assertEquals("First should be ", s2.getName(), list.get(2).getName());
       assertEquals("First should be ", s3.getName(), list.get(1).getName());
+      
+      begin = DateUtil.parse("2011/07/09");
       list = null;
-      list = dao.getNextEventsForUser(connexion.getConnection(), "2011/07/07", "1", null, 2, 1);
+      list = dao.getNextEventsForUser(connexion.getConnection(), "2011/07/07", "1", null, begin, end);
       assertNotNull("Event should exist", list);
       assertEquals("Should have 2 Events in db", 2, list.size());
       // Order by day and time  event 3et 3 have the same day but the hour of event3 befor Event2
       assertEquals("First should be ", s2.getName(), list.get(1).getName());
       assertEquals("First should be ", s3.getName(), list.get(0).getName());
       SocialInformationEvent event1 = new SocialInformationEvent(list.get(0));
-      SocialInformationEvent event2 = new SocialInformationEvent(list.get(1));
       assertEquals("First should be ", s3.getName(), event1.getTitle());
+      
       list = null;
-      list = dao.getNextEventsForUser(connexion.getConnection(), "2011/07/07", "1", null, 2, 3);
+      begin = DateUtil.parse("2011/07/10");
+      list = dao.getNextEventsForUser(connexion.getConnection(), "2011/07/07", "1", null, begin, end);
       assertEquals("Should have 0 Events in db", 0, list.size());
 
     } finally {
@@ -128,28 +137,23 @@ public class TestJournalDAO extends AbstractTestDao {
       connexion = getConnection();
       List<String> myContactIds = new ArrayList<String>();
       myContactIds.add("1");
+      
+      Date end = DateUtil.parse("2011/07/31");
+      Date begin = DateUtil.parse("2011/07/01");
+      
       list = dao.getNextEventsForMyContacts(connexion.getConnection(), "2011/07/07", "2",
-          myContactIds, 0, 0);
+          myContactIds, begin, end);
 
       assertNotNull("Event should exist", list);
-      assertEquals("Should have 2 Events in db", 3, list.size());
+      assertEquals("Should have 3 Events in db", 3, list.size());
       assertEquals("First should be ", s1.getName(), list.get(0).getTitle());
-      assertEquals("First should be ", s2.getName(), list.get(2).getTitle());
-      assertEquals("First should be ", s3.getName(), list.get(1).getTitle());
+      assertEquals("Second should be ", s2.getName(), list.get(2).getTitle());
+      assertEquals("Third should be ", s3.getName(), list.get(1).getTitle());
 
-
-      list = dao.getNextEventsForMyContacts_MSS(connexion.getConnection(), "2011/07/07", "2",
-          myContactIds, 0, 0);
-      assertNotNull("Event should exist", list);
-      assertEquals("Should have 2 Events in db", 3, list.size());
-      assertEquals("First should be ", s1.getName(), list.get(0).getTitle());
-      assertEquals("First should be ", s2.getName(), list.get(2).getTitle());
-      assertEquals("First should be ", s3.getName(), list.get(1).getTitle());
-
-
+      begin = DateUtil.parse("2011/07/09");
       list = null;
       list = dao.getNextEventsForMyContacts(connexion.getConnection(), "2011/07/07", "2",
-          myContactIds, 2, 1);
+          myContactIds, begin, end);
       assertNotNull("Event should exist", list);
       assertEquals("Should have 2 Events in db", 2, list.size());
       // Order by day and time  event 3et 3 have the same day but the hour of event3 befor Event2
@@ -157,8 +161,9 @@ public class TestJournalDAO extends AbstractTestDao {
       assertEquals("First should be ", s3.getName(), list.get(0).getTitle());
 
       list = null;
+      begin = DateUtil.parse("2011/07/10");
       list = dao.getNextEventsForMyContacts(connexion.getConnection(), "2011/07/07", "2",
-          myContactIds, 2, 3);
+          myContactIds, begin, end);
       assertEquals("Should have 0 Events in db", 0, list.size());
 
     } finally {
@@ -203,37 +208,34 @@ public class TestJournalDAO extends AbstractTestDao {
       connexion = getConnection();
       List<String> myContactIds = new ArrayList<String>();
       myContactIds.add("1");
+      
+      Date end = DateUtil.parse("2011/07/31");
+      Date begin = DateUtil.parse("2011/07/01");
+      
       list = dao.getLastEventsForMyContacts(connexion.getConnection(), "2012/07/07", "2",
-          myContactIds, 0, 0);
+          myContactIds, begin, end);
 //order S3,S2,S1
       assertNotNull("Event should exist", list);
-      assertEquals("Should have 2 Events in db", 3, list.size());
-      assertEquals("First should be ", s1.getName(), list.get(2).getTitle());
-      assertEquals("First should be ", s2.getName(), list.get(0).getTitle());
-      assertEquals("First should be ", s3.getName(), list.get(1).getTitle());
-
-
-      list = dao.getLastEventsForMyContacts_MSS(connexion.getConnection(), "2012/07/07", "2",
-          myContactIds, 0, 0);
-      assertNotNull("Event should exist", list);
-      assertEquals("Should have 2 Events in db", 3, list.size());
+      assertEquals("Should have 3 Events in db", 3, list.size());
       assertEquals("First should be ", s1.getName(), list.get(2).getTitle());
       assertEquals("First should be ", s2.getName(), list.get(0).getTitle());
       assertEquals("First should be ", s3.getName(), list.get(1).getTitle());
 
 //test limit
       list = null;
+      begin = DateUtil.parse("2011/07/09");
       list = dao.getLastEventsForMyContacts(connexion.getConnection(), "2012/07/07", "2",
-          myContactIds, 2, 1);
+          myContactIds, begin, end);
       assertNotNull("Event should exist", list);
       assertEquals("Should have 2 Events in db", 2, list.size());
       // Order by day and time  event 3et 3 have the same day but the hour of event3 befor Event2
-      assertEquals("First should be ", s3.getName(), list.get(0).getTitle());
-      assertEquals("First should be ", s1.getName(), list.get(1).getTitle());
+      assertEquals("First should be ", s2.getName(), list.get(0).getTitle());
+      assertEquals("Second should be ", s3.getName(), list.get(1).getTitle());
 
       list = null;
+      begin = DateUtil.parse("2011/07/10");
       list = dao.getLastEventsForMyContacts(connexion.getConnection(), "2012/07/07", "2",
-          myContactIds, 2, 3);
+          myContactIds, begin, end);
       assertEquals("Should have 0 Events in db", 0, list.size());
 
     } finally {
@@ -276,33 +278,29 @@ public class TestJournalDAO extends AbstractTestDao {
     List<SocialInformationEvent> list = null;
     try {
       connexion = getConnection();
-      list = dao.getMyLastEvents(connexion.getConnection(), "2012/07/07", "1", 0, 0);
+      Date end = DateUtil.parse("2011/07/31");
+      Date begin = DateUtil.parse("2011/07/01");
+      list = dao.getMyLastEvents(connexion.getConnection(), "2012/07/07", "1", begin, end);
 //order S3,S2,S1
       assertNotNull("Event should exist", list);
-      assertEquals("Should have 2 Events in db", 3, list.size());
+      assertEquals("Should have 3 events in db", 3, list.size());
       assertEquals("First should be ", s1.getName(), list.get(2).getTitle());
-      assertEquals("First should be ", s2.getName(), list.get(0).getTitle());
-      assertEquals("First should be ", s3.getName(), list.get(1).getTitle());
-
-
-      list = dao.getMyLastEvents_MSS(connexion.getConnection(), "2012/07/07", "1", 0, 0);
-      assertNotNull("Event should exist", list);
-      assertEquals("Should have 2 Events in db", 3, list.size());
-      assertEquals("First should be ", s1.getName(), list.get(2).getTitle());
-      assertEquals("First should be ", s2.getName(), list.get(0).getTitle());
-      assertEquals("First should be ", s3.getName(), list.get(1).getTitle());
+      assertEquals("Second should be ", s2.getName(), list.get(0).getTitle());
+      assertEquals("Third should be ", s3.getName(), list.get(1).getTitle());
 
 //test limit
       list = null;
-      list = dao.getMyLastEvents(connexion.getConnection(), "2012/07/07", "1", 2, 1);
+      begin = DateUtil.parse("2011/07/09");
+      list = dao.getMyLastEvents(connexion.getConnection(), "2012/07/07", "1", begin, end);
       assertNotNull("Event should exist", list);
       assertEquals("Should have 2 Events in db", 2, list.size());
       // Order by day and time  event 3et 3 have the same day but the hour of event3 befor Event2
-      assertEquals("First should be ", s3.getName(), list.get(0).getTitle());
-      assertEquals("First should be ", s1.getName(), list.get(1).getTitle());
+      assertEquals("First should be ", s2.getName(), list.get(0).getTitle());
+      assertEquals("First should be ", s3.getName(), list.get(1).getTitle());
 
       list = null;
-      list = dao.getMyLastEvents(connexion.getConnection(), "2012/07/07", "1", 2, 3);
+      begin = DateUtil.parse("2011/07/10");
+      list = dao.getMyLastEvents(connexion.getConnection(), "2012/07/07", "1", begin, end);
       assertEquals("Should have 0 Events in db", 0, list.size());
 
     } finally {

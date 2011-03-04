@@ -23,15 +23,14 @@
  */
 package com.silverpeas.socialNetwork.relationShip;
 
+import java.sql.SQLException;
+import java.util.List;
+
+import com.silverpeas.calendar.Date;
 import com.silverpeas.socialNetwork.SocialNetworkException;
+import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.silverpeas.socialNetwork.provider.SocialRelationShipsInterface;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import java.lang.String;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Bensalem Nabil
@@ -48,17 +47,14 @@ public class SocialRelationShips implements SocialRelationShipsInterface {
    * @throws SilverpeasException
    */
   @Override
-  public List getSocialInformationsList(String userId, int numberOfElement, int firstIndex) throws
-      SilverpeasException {
-    List<SocialInformationRelationShip> list = new ArrayList<SocialInformationRelationShip>();
+  public List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end)
+      throws SilverpeasException {
     try {
-      list = new RelationShipService().getAllMyRelationShips(userId, numberOfElement, firstIndex);
+      return new RelationShipService().getAllMyRelationShips(userId, begin, end);
     } catch (SQLException ex) {
       throw new SocialNetworkException("SocialEvent.getSocialInformationsList()",
           SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", ex);
     }
-
-    return list;
   }
 
   /**
@@ -72,17 +68,14 @@ public class SocialRelationShips implements SocialRelationShipsInterface {
    * @throws SilverpeasException
    */
   @Override
-  public List getSocialInformationsListOfMyContacts(String myId,
-      List<String> myContactsIds, int numberOfElement, int firstIndex) throws SilverpeasException {
-    List<SocialInformationRelationShip> list = new ArrayList<SocialInformationRelationShip>();
+  public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
+      List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
     try {
-      list = new RelationShipService().getAllRelationShipsOfMyContact(myId, myContactsIds,
-          numberOfElement, firstIndex);
+      return new RelationShipService().getAllRelationShipsOfMyContact(myId, myContactsIds, begin,
+          end);
     } catch (SQLException ex) {
       throw new SocialNetworkException("SocialEvent.getSocialInformationsList()",
           SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", ex);
     }
-
-    return list;
   }
 }

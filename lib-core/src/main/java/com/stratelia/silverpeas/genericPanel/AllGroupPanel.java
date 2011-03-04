@@ -52,28 +52,28 @@ public class AllGroupPanel extends PanelProvider {
     String[] filters = new String[1];
 
     // Set the language
-    m_Language = language;
+    this.language = language;
 
     ResourceLocator message = GeneralPropertiesManager
-        .getGeneralMultilang(m_Language);
+        .getGeneralMultilang(this.language);
 
     // Set the resource locator for columns header
-    m_rs = new ResourceLocator(
+    resourceLocator = new ResourceLocator(
         "com.stratelia.silverpeas.genericPanel.multilang.genericPanelBundle",
-        m_Language);
+        this.language);
 
     // Set the Page name
-    m_PageName = title;
-    m_PageSubTitle = m_rs.getString("genericPanel.usersList");
+    pageName = title;
+    pageSubTitle = resourceLocator.getString("genericPanel.usersList");
 
     // Set column headers
-    m_ColumnsHeader = new String[1];
-    m_ColumnsHeader[COL_NAME] = message.getString("GML.name");
+    columnHeaders = new String[1];
+    columnHeaders[COL_NAME] = message.getString("GML.name");
 
     // Build search tokens
-    m_SearchTokens = new PanelSearchToken[1];
+    searchTokens = new PanelSearchToken[1];
 
-    m_SearchTokens[FILTER_NAME] = new PanelSearchEdit(0, message
+    searchTokens[FILTER_NAME] = new PanelSearchEdit(0, message
         .getString("GML.name"), "");
 
     // Set filters and get Ids
@@ -93,14 +93,14 @@ public class AllGroupPanel extends PanelProvider {
 
     result = m_oc.searchGroups(modelGroup, true);
     m_AllGroup.clear();
-    m_Ids = new String[result.length];
+    ids = new String[result.length];
     for (int i = 0; i < result.length; i++) {
-      m_Ids[i] = result[i].getId();
-      m_AllGroup.put(m_Ids[i], result[i]);
+      ids[i] = result[i].getId();
+      m_AllGroup.put(ids[i], result[i]);
     }
 
     // Set search tokens values
-    ((PanelSearchEdit) m_SearchTokens[FILTER_NAME]).m_Text = getSureString(filters[FILTER_NAME]);
+    ((PanelSearchEdit) searchTokens[FILTER_NAME]).m_Text = getSureString(filters[FILTER_NAME]);
     verifIndexes();
   }
 

@@ -23,10 +23,12 @@
  */
 package com.silverpeas.socialNetwork.provider;
 
+import java.util.List;
+
+import com.silverpeas.calendar.Date;
+import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.silverpeas.socialNetwork.model.SocialInformationType;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import java.lang.reflect.Array;
-import java.util.List;
 
 /**
  * @author Bensalem Nabil
@@ -43,8 +45,8 @@ public interface ProviderSwitchInterface {
    * @return List<SocialInformation>
    * @exception SilverpeasException
    */
-  public List getSocialInformationsList(SocialInformationType socialInformationType, String userId,
-      String classification, int limit, int offset) throws SilverpeasException;
+  public List<SocialInformation> getSocialInformationsList(SocialInformationType socialInformationType, String userId,
+      String classification, Date begin, Date end) throws SilverpeasException;
 
   /**
    * get the List of social Informations of my contatcs according to the social information type and
@@ -57,9 +59,8 @@ public interface ProviderSwitchInterface {
    * @return List<SocialInformation>
    * @exception SilverpeasException
    */
-  public List getSocialInformationsListOfMyContacts(SocialInformationType socialInformationType,
-      String myId, List<String> myContactsIds,
-      int limit, int offset) throws SilverpeasException;
+  public List<SocialInformation> getSocialInformationsListOfMyContacts(SocialInformationType socialInformationType,
+      String myId, List<String> myContactsIds, Date begin, Date end) throws SilverpeasException;
 
   /**
    * return the SocialEvent providor (by using Inversion of Control Containers )

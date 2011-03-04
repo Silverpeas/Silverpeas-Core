@@ -23,15 +23,6 @@
  */
 package com.stratelia.silverpeas.selectionPeas.servlets;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.StringTokenizer;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
@@ -39,15 +30,23 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionExtraParams;
-import com.stratelia.silverpeas.selectionPeas.CacheManager;
+import com.stratelia.silverpeas.selectionPeas.CacheType;
 import com.stratelia.silverpeas.selectionPeas.control.SelectionPeasSessionController;
 import com.stratelia.silverpeas.selectionPeas.jdbc.JdbcConnectorSetting;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.exception.SilverpeasTrappedException;
+
+import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 /**
  * Class declaration
+ *
  * @author
  */
 public class SelectionPeasRequestRouter extends ComponentRequestRouter {
@@ -56,6 +55,7 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
+   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
@@ -70,7 +70,8 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
-   * @return 
+   *
+   * @return
    */
   @Override
   public String getSessionControlBeanName() {
@@ -80,15 +81,15 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   * @param function The entering request function (ex : "Main.jsp")
+   *
+   * @param function    The entering request function (ex : "Main.jsp")
    * @param componentSC The component Session Control, build and initialised.
-   * @return The complete destination URL for a forward (ex :
-   * "/almanach/jsp/almanach.jsp?flag=user")
+   * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getDestination(String function, ComponentSessionController componentSC,
       HttpServletRequest request) {
-    String destination = "";
+    String destination;
     SelectionPeasSessionController selectionPeasSC = (SelectionPeasSessionController) componentSC;
     SilverTrace.info("selectionPeas", "getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "Function=" + function);
@@ -136,8 +137,9 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
               request.setAttribute("user", user);
             }
           } else {
-            UserDetail[] users = selectionPeasSC.getOrganizationController().getUserDetails(selectionPeasSC.
-                getSelection().getSelectedElements());
+            UserDetail[] users = selectionPeasSC.getOrganizationController().getUserDetails(
+                selectionPeasSC.
+                    getSelection().getSelectedElements());
             if (users != null && users.length > 0) {
               request.setAttribute("users", users);
             }
@@ -149,25 +151,25 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
         destination = "goBack.jsp";
       } else if (function.equals("ZoomToElementInfos")) {
         String elementId = request.getParameter("elementId");
-        request.setAttribute("infos", selectionPeasSC.getInfos(
-            CacheManager.CM_ELEMENT, elementId));
-        request.setAttribute("contentText", selectionPeasSC.getContentText(CacheManager.CM_ELEMENT));
+        request.setAttribute("infos", selectionPeasSC.getInfos(CacheType.CM_ELEMENT, elementId));
+        request.setAttribute("contentText",
+            selectionPeasSC.getContentText(CacheType.CM_ELEMENT));
         request.setAttribute("contentColumns", selectionPeasSC.getContentColumns(
-            CacheManager.CM_ELEMENT));
+            CacheType.CM_ELEMENT));
         request.setAttribute("content", selectionPeasSC.getContent(
-            CacheManager.CM_ELEMENT, elementId));
+            CacheType.CM_ELEMENT, elementId));
         request.setAttribute("action", "ZoomToElementInfos?elementId="
             + elementId);
         destination = "elementView.jsp";
       } else if (function.equals("ZoomToSetInfos")) {
         String setId = request.getParameter("elementId");
         request.setAttribute("infos", selectionPeasSC.getInfos(
-            CacheManager.CM_SET, setId));
-        request.setAttribute("contentText", selectionPeasSC.getContentText(CacheManager.CM_SET));
+            CacheType.CM_SET, setId));
+        request.setAttribute("contentText", selectionPeasSC.getContentText(CacheType.CM_SET));
         request.setAttribute("contentColumns",
-            selectionPeasSC.getContentColumns(CacheManager.CM_SET));
+            selectionPeasSC.getContentColumns(CacheType.CM_SET));
         request.setAttribute("content", selectionPeasSC.getContent(
-            CacheManager.CM_SET, setId));
+            CacheType.CM_SET, setId));
         request.setAttribute("action", "ZoomToSetInfos?elementId=" + setId);
         destination = "elementView.jsp";
       } else if (function.equals("BrowseOperation")) {
@@ -181,21 +183,21 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
       }
 
       if (!destination.startsWith("/")) {
-        request.setAttribute("isSetSelectable", Boolean.valueOf(selectionPeasSC.isSetSelectable()));
-        request.setAttribute("isElementSelectable", Boolean.valueOf(selectionPeasSC.
-            isElementSelectable()));
-        request.setAttribute("isMultiSelect", Boolean.valueOf(selectionPeasSC.isMultiSelect()));
+        request.setAttribute("isSetSelectable", selectionPeasSC.isSetSelectable());
+        request.setAttribute("isElementSelectable", selectionPeasSC.
+            isElementSelectable());
+        request.setAttribute("isMultiSelect", selectionPeasSC.isMultiSelect());
         request.setAttribute("HostSpaceName", selectionPeasSC.getHostSpaceName());
         request.setAttribute("HostComponentName", selectionPeasSC.getHostComponentName());
         request.setAttribute("HostPath", selectionPeasSC.getHostPath());
-        request.setAttribute("ToPopup", Boolean.valueOf(selectionPeasSC.isPopup()));
+        request.setAttribute("ToPopup", selectionPeasSC.isPopup());
 
         // Prepare the parameters
         if (destination.equals("selectionPeas.jsp")) {
           request.setAttribute("setsColumnsHeader", selectionPeasSC.getColumnsHeader(
-              CacheManager.CM_SET));
+              CacheType.CM_SET));
           request.setAttribute("elementsColumnsHeader", selectionPeasSC.getColumnsHeader(
-              CacheManager.CM_ELEMENT));
+              CacheType.CM_ELEMENT));
 
           if (Selection.TYPE_USERS_GROUPS.equals(selectionPeasSC.getSelectionType())) {
             request.setAttribute("operationsToDisplay", selectionPeasSC.getOperations(
@@ -210,52 +212,53 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
             SelectionExtraParams selectionParams = selectionPeasSC.getSelection().getExtraParams();
             request.setAttribute("referenceColumnsNames", selectionParams.getParameter(
                 "columnsNames"));
-            request.setAttribute("originFormIndex", new Integer(selectionParams.getParameter(
+            request.setAttribute("originFormIndex", Integer.valueOf(selectionParams.getParameter(
                 "formIndex")));
             request.setAttribute("originFieldsNames", selectionParams.getParameter("fieldsNames"));
           } else {
             request.setAttribute("isDisplaySets", Boolean.TRUE);
             request.setAttribute("isZoomToSetValid", Boolean.TRUE);
             request.setAttribute("isZoomToElementValid", Boolean.FALSE);
-            request.setAttribute("originFormIndex", new Integer(0));
+            request.setAttribute("originFormIndex", 0);
             request.setAttribute("originFieldName", "");
           }
 
           request.setAttribute("setMiniFilterSelect", selectionPeasSC.getMiniFilterString(
-              CacheManager.CM_SET));
+              CacheType.CM_SET));
           request.setAttribute("elementMiniFilterSelect", selectionPeasSC.getMiniFilterString(
-              CacheManager.CM_ELEMENT));
-          request.setAttribute("setText", selectionPeasSC.getText(CacheManager.CM_SET));
-          request.setAttribute("elementText", selectionPeasSC.getText(CacheManager.CM_ELEMENT));
+              CacheType.CM_ELEMENT));
+          request.setAttribute("setText", selectionPeasSC.getText(CacheType.CM_SET));
+          request.setAttribute("elementText", selectionPeasSC.getText(CacheType.CM_ELEMENT));
           request.setAttribute("pageSetNavigation", selectionPeasSC.getNavigation(
-              CacheManager.CM_SET));
+              CacheType.CM_SET));
           request.setAttribute("pageElementNavigation", selectionPeasSC.getNavigation(
-              CacheManager.CM_ELEMENT));
-          request.setAttribute("setsToDisplay", selectionPeasSC.getPage(CacheManager.CM_SET));
-          request.setAttribute("elementsToDisplay", selectionPeasSC.getPage(CacheManager.CM_ELEMENT));
+              CacheType.CM_ELEMENT));
+          request.setAttribute("setsToDisplay", selectionPeasSC.getPage(CacheType.CM_SET));
+          request.setAttribute("elementsToDisplay",
+              selectionPeasSC.getPage(CacheType.CM_ELEMENT));
 
           request.setAttribute("selectedNumber", selectionPeasSC.getSelectedNumber());
           request.setAttribute("SetPath", selectionPeasSC.getSetPath());
         } else if (destination.equals("selectionCart.jsp")) {
           request.setAttribute("setsColumnsHeader", selectionPeasSC.getCartColumnsHeader(
-              CacheManager.CM_SET));
+              CacheType.CM_SET));
           request.setAttribute("elementsColumnsHeader", selectionPeasSC.getCartColumnsHeader(
-              CacheManager.CM_ELEMENT));
+              CacheType.CM_ELEMENT));
 
           request.setAttribute("operationsToDisplay", selectionPeasSC.getOperations("DisplayCart"));
           request.setAttribute("setMiniFilterSelect", selectionPeasSC.getCartMiniFilterString(
-              CacheManager.CM_SET));
+              CacheType.CM_SET));
           request.setAttribute("elementMiniFilterSelect", selectionPeasSC.getCartMiniFilterString(
-              CacheManager.CM_ELEMENT));
-          request.setAttribute("setText", selectionPeasSC.getCartText(CacheManager.CM_SET));
-          request.setAttribute("elementText", selectionPeasSC.getCartText(CacheManager.CM_ELEMENT));
+              CacheType.CM_ELEMENT));
+          request.setAttribute("setText", selectionPeasSC.getCartText(CacheType.CM_SET));
+          request.setAttribute("elementText", selectionPeasSC.getCartText(CacheType.CM_ELEMENT));
           request.setAttribute("pageSetNavigation", selectionPeasSC.getCartNavigation(
-              CacheManager.CM_SET));
+              CacheType.CM_SET));
           request.setAttribute("pageElementNavigation", selectionPeasSC.getCartNavigation(
-              CacheManager.CM_ELEMENT));
-          request.setAttribute("setsToDisplay", selectionPeasSC.getCartPage(CacheManager.CM_SET));
+              CacheType.CM_ELEMENT));
+          request.setAttribute("setsToDisplay", selectionPeasSC.getCartPage(CacheType.CM_SET));
           request.setAttribute("elementsToDisplay", selectionPeasSC.getCartPage(
-              CacheManager.CM_ELEMENT));
+              CacheType.CM_ELEMENT));
           request.setAttribute("isZoomToSetValid", Boolean.FALSE);
           request.setAttribute("isZoomToElementValid", Boolean.FALSE);
         }
@@ -264,11 +267,7 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
       }
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
-      if (e instanceof SilverpeasTrappedException) {
-        destination = "/admin/jsp/errorpageTrapped.jsp";
-      } else {
-        destination = "/admin/jsp/errorpageMain.jsp";
-      }
+      destination = "/admin/jsp/errorpageMain.jsp";
     }
 
     SilverTrace.info("selectionPeas", "getDestination()",
@@ -276,93 +275,80 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
     return destination;
   }
 
-  protected String doCartOperation(String op,
-      SelectionPeasSessionController selectionPeasSC, HttpServletRequest request) {
-    String destination = "";
-
-    selectionPeasSC.setCartSelected(CacheManager.CM_SET, getValues(request.getParameter(
+  protected String doCartOperation(String op, SelectionPeasSessionController selectionPeasSC,
+      HttpServletRequest request) {
+    selectionPeasSC.setCartSelected(CacheType.CM_SET, getValues(request.getParameter(
         "SelectedSets")), getValues(request.getParameter("NonSelectedSets")));
-
-    selectionPeasSC.setCartSelected(CacheManager.CM_ELEMENT,
-        getValues(request.getParameter("SelectedElements")), getValues(request.getParameter(
-        "NonSelectedElements")));
-
-    SilverTrace.info("selectionPeas", "doCartOperation()",
-        "root.MSG_GEN_PARAM_VALUE", "Operation=" + op);
+    selectionPeasSC.setCartSelected(CacheType.CM_ELEMENT,getValues(request.getParameter(
+        "SelectedElements")), getValues(request.getParameter("NonSelectedElements")));
+    SilverTrace.info("selectionPeas", "doCartOperation()", "root.MSG_GEN_PARAM_VALUE",
+        "Operation=" + op);
     if ("GENERICPANELChangePage".equals(op)) {
-      destination = "selectionCart.jsp";
-    } else if ((op != null) && (op.startsWith("GENERICPANELMINIFILTER"))) {
+      return "selectionCart.jsp";
+    }
+    if (op != null && op.startsWith("GENERICPANELMINIFILTER")) {
       selectionPeasSC.setCartMiniFilter(request.getParameter("miniFilter"
           + op.substring("GENERICPANELMINIFILTER".length())), op.substring("GENERICPANELMINIFILTER".
           length()));
-      destination = "selectionCart.jsp";
-    } else if ("RemoveSelectedFromCart".equals(op)) {
-      selectionPeasSC.removeSelectedFromCart();
-      destination = getDestination("DisplayCart", selectionPeasSC, request);
-    } else if ("RemoveAllFromCart".equals(op)) {
-      selectionPeasSC.removeAllFromCart();
-      destination = getDestination("DisplayCart", selectionPeasSC, request);
-    } else if ((op != null) && (op.length() > 0)) { // Operation
-      destination = getDestination(op, selectionPeasSC, request);
-    } else // Go...
-    {
-      destination = getDestination("Validate", selectionPeasSC, request);
+      return "selectionCart.jsp";
     }
-    return destination;
+    if ("RemoveSelectedFromCart".equals(op)) {
+      selectionPeasSC.removeSelectedFromCart();
+      return getDestination("Validate", selectionPeasSC, request);
+    }
+    if ("RemoveAllFromCart".equals(op)) {
+      selectionPeasSC.removeAllFromCart();
+      return getDestination("Validate", selectionPeasSC, request);
+    }
+    if (StringUtil.isDefined(op)) {
+      return getDestination(op, selectionPeasSC, request);
+    }
+    return getDestination("Validate", selectionPeasSC, request);
   }
 
-  protected String doBrowseOperation(String op,
-      SelectionPeasSessionController selectionPeasSC, HttpServletRequest request) {
-    String destination = "";
-
+  protected String doBrowseOperation(String op, SelectionPeasSessionController selectionPeasSC,
+      HttpServletRequest request) {
     if (selectionPeasSC.isMultiSelect()) {
-      selectionPeasSC.setSelected(CacheManager.CM_SET, getValues(
-          request.getParameter("SelectedSets")), getValues(request.getParameter("NonSelectedSets")));
-
-      selectionPeasSC.setSelected(CacheManager.CM_ELEMENT,
-          getValues(request.getParameter("SelectedElements")), getValues(request.getParameter(
-          "NonSelectedElements")));
+      selectionPeasSC.setSelected(CacheType.CM_SET, getValues(request.getParameter("SelectedSets")),
+          getValues(request.getParameter("NonSelectedSets")));
+      selectionPeasSC.setSelected(CacheType.CM_ELEMENT, getValues(request.getParameter(
+          "SelectedElements")), getValues(request.getParameter("NonSelectedElements")));
     }
-
-    SilverTrace.info("selectionPeas", "doBrowseOperation()",
-        "root.MSG_GEN_PARAM_VALUE", "Operation=" + op);
+    SilverTrace.info("selectionPeas", "doBrowseOperation()", "root.MSG_GEN_PARAM_VALUE",
+        "Operation=" + op);
 
     if ("GENERICPANELChangePage".equals(op)) {
-      destination = "selectionPeas.jsp";
-    } else if ("GENERICPANELZOOMTOSET".equals(op)) {
+      return "selectionPeas.jsp";
+    }
+    if ("GENERICPANELZOOMTOSET".equals(op)) {
       selectionPeasSC.setParentSet(request.getParameter("setId"));
       selectionPeasSC.setMiniFilter("", "_0_0"); // reset filter
-      destination = "selectionPeas.jsp";
-    } else if ((op != null) && (op.startsWith("GENERICPANELMINIFILTER"))) {
-      selectionPeasSC.setMiniFilter(request.getParameter("miniFilter"
-          + op.substring("GENERICPANELMINIFILTER".length())), op.substring("GENERICPANELMINIFILTER".
-          length()));
-      destination = "selectionPeas.jsp";
-    } else if ((op != null) && (op.length() > 0)) { // Operation
-      destination = getDestination(op, selectionPeasSC, request);
-    } else // Go...
-    {
-      String setId = request.getParameter("setId");
-      String elementId = request.getParameter("elementId");
-
-      if (StringUtil.isDefined(setId) && !"undefined".equals(setId)) {
-        selectionPeasSC.setOneSelected(CacheManager.CM_SET, setId);
-      }
-      if (StringUtil.isDefined(elementId) && !"undefined".equals(elementId)) {
-        selectionPeasSC.setOneSelected(CacheManager.CM_ELEMENT, elementId);
-      }
-
-      SilverTrace.info("selectionPeas", "doBrowseOperation()",
-          "root.MSG_GEN_PARAM_VALUE", "htmlFormName = "
-          + selectionPeasSC.getSelection().getHtmlFormName());
-      if (selectionPeasSC.getSelection().getHtmlFormName() != null) {
-        destination = getDestination("ValidateAndSetOpener", selectionPeasSC,
-            request);
-      } else {
-        destination = getDestination("Validate", selectionPeasSC, request);
-      }
+      return "selectionPeas.jsp";
     }
-    return destination;
+    if ((op != null) && (op.startsWith("GENERICPANELMINIFILTER"))) {
+      selectionPeasSC.setMiniFilter(request.getParameter("miniFilter" + op.substring(
+          "GENERICPANELMINIFILTER".length())), op.substring("GENERICPANELMINIFILTER".length()));
+      return "selectionPeas.jsp";
+    }
+    if (StringUtil.isDefined(op)) { // Operation
+      return getDestination(op, selectionPeasSC, request);
+    }
+    String setId = request.getParameter("setId");
+    String elementId = request.getParameter("elementId");
+
+    if (StringUtil.isDefined(setId) && !"undefined".equals(setId)) {
+      selectionPeasSC.setOneSelected(CacheType.CM_SET, setId);
+    }
+    if (StringUtil.isDefined(elementId) && !"undefined".equals(elementId)) {
+      selectionPeasSC.setOneSelected(CacheType.CM_ELEMENT, elementId);
+    }
+
+    SilverTrace.info("selectionPeas", "doBrowseOperation()", "root.MSG_GEN_PARAM_VALUE",
+        "htmlFormName = " + selectionPeasSC.getSelection().getHtmlFormName());
+    if (selectionPeasSC.getSelection().getHtmlFormName() != null) {
+      return getDestination("ValidateAndSetOpener", selectionPeasSC, request);
+    }
+    return getDestination("Validate", selectionPeasSC, request);
   }
 
   protected String[] getFilters(HttpServletRequest request) {
@@ -374,7 +360,7 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
       i++;
       theValue = request.getParameter("filter" + Integer.toString(i));
     }
-    return filters.toArray(new String[0]);
+    return filters.toArray(new String[filters.size()]);
   }
 
   protected Set<String> getValues(String param) {
@@ -417,8 +403,7 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
     }
 
     ComponentSessionController componentSessionController = (ComponentSessionController) request.
-        getSession(true).getAttribute(
-        "Silverpeas_" + beanName + "_" + componentId);
+        getSession(true).getAttribute("Silverpeas_" + beanName + "_" + componentId);
     Method m = componentSessionController.getClass().getMethod(method, null);
     JdbcConnectorSetting jdbcSetting = (JdbcConnectorSetting) m.invoke(componentSessionController,
         null);

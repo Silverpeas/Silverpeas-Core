@@ -30,7 +30,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -47,6 +46,7 @@ import com.silverpeas.notation.model.Notation;
 import com.silverpeas.notation.model.NotationPK;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.silverpeas.tagcloud.ejb.TagCloudBm;
 import com.silverpeas.tagcloud.ejb.TagCloudBmHome;
 import com.silverpeas.tagcloud.model.TagCloud;
@@ -61,7 +61,6 @@ import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.publication.socialNetwork.SocialInformationPublication;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -1999,15 +1998,13 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
    * @param int numberOfElement, int firstIndex
    */
   @Override
-  public List<SocialInformationPublication> getAllPublicationsWithStatusbyUserid(String userId,
-      int firstIndex, int nbElement) throws RemoteException {
+  public List<SocialInformation> getAllPublicationsWithStatusbyUserid(String userId,
+      Date begin, Date end) throws RemoteException {
     Connection con = null;
-    List<SocialInformationPublication> publications = new ArrayList<SocialInformationPublication>();
+    List<SocialInformation> publications = new ArrayList<SocialInformation>();
     try {
       con = getConnection();
-      publications = PublicationDAO.getAllPublicationsIDbyUserid(con, userId, firstIndex, nbElement);
-
-
+      publications = PublicationDAO.getAllPublicationsIDbyUserid(con, userId, begin, end);
     } catch (SQLException e) {
       throw new PublicationRuntimeException(
           "PublicationBmEJB.getAllPublicationsWithStatusbyUserid",
@@ -2020,32 +2017,6 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   /**
-   * gets the available component for a given users list
-   * @param myId
-   * @param myContactsId
-   * @return List<String>
-   */
-  @Override
-  public List<String> getAvailableComponents(String myId, List<String> myContactsId) {
-    List<String> listAvailableComponents = null;
-    Connection con = null;
-    try {
-
-      con = getConnection();
-      listAvailableComponents = PublicationDAO.getAvailableComponents(con, myId, myContactsId);
-    } catch (SQLException ex) {
-      throw new PublicationRuntimeException(
-          "PublicationBmEJB.getAvailableComponents",
-          SilverpeasRuntimeException.ERROR,
-          "publication.GETTING_PUBLICATION_HEADER_FAILED", "myId = " + myId + " myContactsId= " + myContactsId.
-          toString(), ex);
-    } finally {
-      freeConnection(con);
-    }
-    return listAvailableComponents;
-  }
-
-  /**
    * get list of SocialInformationPublication of my contacts
    * according to options and number of Item and the first Index
    * @return: List <SocialInformation>
@@ -2055,28 +2026,23 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
    * @param int numberOfElement, int firstIndex
    */
   @Override
-  public List<SocialInformationPublication> getSocialInformationsListOfMyContacts(
-      List<String> myContactsIds,
-      List<String> options, int numberOfElement, int firstIndex) throws RemoteException {
+  public List<SocialInformation> getSocialInformationsListOfMyContacts(
+      List<String> myContactsIds, List<String> options, Date begin, Date end)
+      throws RemoteException {
     Connection con = null;
-    List<SocialInformationPublication> publications = new ArrayList<SocialInformationPublication>();
     try {
       con = getConnection();
-      publications = PublicationDAO.getSocialInformationsListOfMyContacts(con, myContactsIds,
-          options, numberOfElement, firstIndex);
-
-
+      return PublicationDAO.getSocialInformationsListOfMyContacts(con, myContactsIds, options,
+          begin, end);
     } catch (SQLException e) {
       throw new PublicationRuntimeException(
-          "PublicationBmEJB.getAllPublicationsWithStatusbyUserid",
+          "PublicationBmEJB.getSocialInformationsListOfMyContacts",
           SilverpeasRuntimeException.ERROR,
           "publication.GETTING_PUBLICATION_HEADER_FAILED",
-          " myContactsIds=" + myContactsIds.toString() + " options=" + options.toString() + " numberOfElement= " + numberOfElement + " firstIndex=" + firstIndex,
-          e);
+          " myContactsIds=" + myContactsIds.toString() + " options=" + options.toString(), e);
     } finally {
       freeConnection(con);
     }
-    return publications;
   }
 
   public Collection<PublicationDetail> getPublicationsToDraftOut(boolean useClone) {

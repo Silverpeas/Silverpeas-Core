@@ -58,7 +58,6 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import javax.ws.rs.HEAD;
 
 /**
  * @author Bensalem Nabil

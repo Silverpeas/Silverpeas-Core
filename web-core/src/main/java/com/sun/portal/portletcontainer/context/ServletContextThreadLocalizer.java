@@ -45,7 +45,7 @@ public class ServletContextThreadLocalizer {
     ServletContext sc = (ServletContext) servletContextThreadLocal.get();
     if (sc == null) {
       throw new Error(
-          "ServletContextThreadLocalizer.get(): no thread local set for this thread");
+          "ServletContextThreadLocalizer.get(): no thread localResourceLocator set for this thread");
     }
 
     return sc;

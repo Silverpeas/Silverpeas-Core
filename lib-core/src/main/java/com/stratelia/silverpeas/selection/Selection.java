@@ -22,11 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.silverpeas.selection;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.util.PairObject;
 
 public class Selection {
@@ -40,52 +38,52 @@ public class Selection {
   final public static String FIRST_PAGE_SEARCH_SET = "DisplaySearchSet";
   final public static String FIRST_PAGE_BROWSE = "DisplayBrowse";
 
-  protected String m_goBackURL;
-  protected String m_cancelURL;
+  protected String goBackURL;
+  protected String cancelURL;
 
   protected String htmlFormName;
   protected String htmlFormElementName;
   protected String htmlFormElementId;
 
-  protected String m_firstPage;
+  protected String firstPage;
 
-  protected String[] m_selectedSets;
-  protected String[] m_selectedElements;
+  protected String[] selectedSets;
+  protected String[] selectedElements;
 
-  protected boolean m_popupMode;
-  protected boolean m_multiSelect;
-  protected boolean m_setSelectable;
-  protected boolean m_elementSelectable;
+  protected boolean popupMode;
+  protected boolean multiSelect;
+  protected boolean setSelectable;
+  protected boolean elementSelectable;
 
-  protected String m_hostSpaceName;
-  protected PairObject m_hostComponentName;
-  protected PairObject[] m_hostPath;
+  protected String hostSpaceName;
+  protected PairObject hostComponentName;
+  protected PairObject[] hostPath;
 
-  protected SelectionExtraParams m_extraParams;
+  protected SelectionExtraParams extraParams;
 
   public Selection() {
     resetAll();
   }
 
   public void resetAll() {
-    m_goBackURL = "";
-    m_cancelURL = "";
+    goBackURL = "";
+    cancelURL = "";
 
-    m_firstPage = FIRST_PAGE_DEFAULT;
+    firstPage = FIRST_PAGE_DEFAULT;
 
-    m_selectedSets = new String[0];
-    m_selectedElements = new String[0];
+    selectedSets = new String[0];
+    selectedElements = new String[0];
 
-    m_popupMode = false;
-    m_multiSelect = true;
-    m_setSelectable = true;
-    m_elementSelectable = true;
+    popupMode = false;
+    multiSelect = true;
+    setSelectable = true;
+    elementSelectable = true;
 
-    m_hostSpaceName = "";
-    m_hostComponentName = new PairObject("", "");
-    m_hostPath = new PairObject[0];
+    hostSpaceName = "";
+    hostComponentName = new PairObject("", "");
+    hostPath = new PairObject[0];
 
-    m_extraParams = null;
+    extraParams = null;
   }
 
   static public String getSelectionURL(String selectionType) {
@@ -94,152 +92,145 @@ public class Selection {
 
   public void setHostSpaceName(String hostSpaceName) {
     if (hostSpaceName != null) {
-      m_hostSpaceName = hostSpaceName;
+      this.hostSpaceName = hostSpaceName;
     } else {
-      m_hostSpaceName = "";
+      this.hostSpaceName = "";
     }
   }
 
   public String getHostSpaceName() {
-    return m_hostSpaceName;
+    return hostSpaceName;
   }
 
   public void setHostComponentName(PairObject hostComponentName) {
     if (hostComponentName != null) {
-      m_hostComponentName = hostComponentName;
+      this.hostComponentName = hostComponentName;
     } else {
-      m_hostComponentName = new PairObject("", "");
+      this.hostComponentName = new PairObject("", "");
     }
   }
 
   public PairObject getHostComponentName() {
-    return m_hostComponentName;
+    return hostComponentName;
   }
 
   public void setHostPath(PairObject[] hostPath) {
     if (hostPath != null) {
-      m_hostPath = hostPath;
+      this.hostPath = hostPath;
     } else {
-      m_hostPath = new PairObject[0];
+      this.hostPath = new PairObject[0];
     }
   }
 
   public PairObject[] getHostPath() {
-    return m_hostPath;
+    return hostPath;
   }
 
   public String getCancelURL() {
-    return m_cancelURL;
+    return cancelURL;
   }
 
   public void setCancelURL(String cancelURL) {
     if (cancelURL != null) {
-      m_cancelURL = cancelURL;
+      this.cancelURL = cancelURL;
     } else {
-      m_cancelURL = "";
+      this.cancelURL = "";
     }
   }
 
   public String getGoBackURL() {
-    return m_goBackURL;
+    return goBackURL;
   }
 
   public void setGoBackURL(String goBackURL) {
-    m_goBackURL = goBackURL;
+    this.goBackURL = goBackURL;
   }
 
   public String getFirstPage() {
-    return m_firstPage;
+    return firstPage;
   }
 
   public void setFirstPage(String firstPage) {
-    m_firstPage = firstPage;
+    this.firstPage = firstPage;
   }
 
   public boolean isPopupMode() {
-    return m_popupMode;
+    return popupMode;
   }
 
   public void setPopupMode(boolean popupMode) {
-    m_popupMode = popupMode;
+    this.popupMode = popupMode;
   }
 
   public boolean isMultiSelect() {
-    return m_multiSelect;
+    return multiSelect;
   }
 
   public void setMultiSelect(boolean multiSelect) {
-    m_multiSelect = multiSelect;
+    this.multiSelect = multiSelect;
   }
 
   public boolean isSetSelectable() {
-    return m_setSelectable;
+    return setSelectable;
   }
 
   public void setSetSelectable(boolean setSelectable) {
-    m_setSelectable = setSelectable;
+    this.setSelectable = setSelectable;
   }
 
   public boolean isElementSelectable() {
-    return m_elementSelectable;
+    return elementSelectable;
   }
 
   public void setElementSelectable(boolean elementSelectable) {
-    m_elementSelectable = elementSelectable;
+    this.elementSelectable = elementSelectable;
   }
 
   public String[] getSelectedElements() {
-    return m_selectedElements;
+    return selectedElements;
   }
 
   public void setSelectedElements(String[] selectedElements) {
     if (selectedElements != null) {
-      m_selectedElements = selectedElements;
+      this.selectedElements = selectedElements;
     } else {
-      m_selectedElements = new String[0];
+      this.selectedElements = new String[0];
     }
   }
 
   public String getFirstSelectedElement() {
-    String[] elmts = m_selectedElements;
-    String valret = null;
-
-    if ((elmts != null) && (elmts.length > 0) && (elmts[0] != null)
-        && (elmts[0] != null) && (elmts[0].length() > 0)) {
-      valret = elmts[0];
+    if (selectedElements != null && selectedElements.length > 0 && StringUtil.isDefined(
+        selectedElements[0])) {
+      return selectedElements[0];
     }
-    return valret;
+    return null;
   }
 
   public String[] getSelectedSets() {
-    return m_selectedSets;
+    return selectedSets;
   }
 
   public void setSelectedSets(String[] selectedSets) {
     if (selectedSets != null) {
-      m_selectedSets = selectedSets;
+      this.selectedSets = selectedSets;
     } else {
-      m_selectedSets = new String[0];
+      this.selectedSets = new String[0];
     }
   }
 
   public String getFirstSelectedSet() {
-    String[] sets = m_selectedSets;
-    String valret = null;
-
-    if ((sets != null) && (sets.length > 0) && (sets[0] != null)
-        && (sets[0] != null) && (sets[0].length() > 0)) {
-      valret = sets[0];
+    if (selectedSets != null && selectedSets.length > 0 && StringUtil.isDefined(selectedSets[0])) {
+     return selectedSets [0];
     }
-    return valret;
+    return null;
   }
 
   public SelectionExtraParams getExtraParams() {
-    return m_extraParams;
+    return extraParams;
   }
 
   public void setExtraParams(SelectionExtraParams extraParams) {
-    m_extraParams = extraParams;
+    this.extraParams = extraParams;
   }
 
   public String getHtmlFormElementId() {
