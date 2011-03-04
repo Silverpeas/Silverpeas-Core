@@ -110,7 +110,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer {
     if (template.isMandatory() && PagesContext.useMandatory()) {
       out.println("   if (isWhitespace(stripInitialWhitespace(field.value))) {");
       out.println("		var " + fieldName + "Value = document.getElementById('" + fieldName +
-          FileField.PARAM_NAME_SUFFIX + "').value;");
+          FileField.PARAM_ID_SUFFIX + "').value;");
       out.println("   	if (" + fieldName + "Value=='' || " + fieldName +
           "Value.substring(0,7)==\"remove_\") {");
       out.println("      	errorMsg+=\"  - '" +
