@@ -25,6 +25,8 @@
 package com.silverpeas.jobDomainPeas.servlets;
 
 import java.util.ArrayList;
+
+
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -55,6 +57,7 @@ import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.DomainDriverManager;
 import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
@@ -98,7 +101,8 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public String getDestination(String function,
+  @SuppressWarnings("unchecked")
+public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
     String destination = "";
     JobDomainPeasSessionController jobDomainSC = (JobDomainPeasSessionController) componentSC;
@@ -297,7 +301,7 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
         // Browse functions
         // ----------------
         if (function.startsWith("groupContent")) {
-          String groupId = request.getParameter("Idgroup");
+          String groupId = (String) request.getParameter("Idgroup");
           if (StringUtil.isDefined(groupId)) {
             jobDomainSC.goIntoGroup(groupId);
           }
@@ -343,7 +347,6 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
           bHaveToRefreshDomain = jobDomainSC.importGroup(EncodeHelper
               .htmlStringToJavaString(request.getParameter("groupName")));
         } else if (function.equals("groupManagersView")) {
-          // String id = request.getParameter("Id");
           List<List> groupManagers = jobDomainSC.getGroupManagers();
 
           request.setAttribute("Users", groupManagers.get(0).iterator());
@@ -372,7 +375,34 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
         } else if (function.equals("groupManagersCancel")) {
           request.setAttribute("urlToReload", "groupManagersView");
           destination = "closeWindow.jsp";
-        }
+        } else if (function.equals("groupOpen")) {
+    	  String groupId = request.getParameter("groupId");
+      	
+    	  OrganizationController orgaController = jobDomainSC.getOrganizationController();
+    	  Group group = orgaController.getGroup(groupId);
+    	  String domainId = group.getDomainId();
+    	  if(domainId == null) {
+    		  domainId = "-1";
+    	  }
+  	  
+    	  //not refresh the domain
+    	  jobDomainSC.setRefreshDomain(false);
+    	  
+    	  //domaine
+    	  jobDomainSC.setTargetDomain(domainId);
+    	  jobDomainSC.returnIntoGroup(null);
+                
+    	  //groupe(s) père(s)
+    	  List<String> groupList = orgaController.getPathToGroup(groupId);
+    	  for (String elementGroupId : groupList) {
+    		  jobDomainSC.goIntoGroup(elementGroupId);
+    	  }
+    	  
+    	  //groupe
+    	  jobDomainSC.goIntoGroup(groupId);
+    	  
+    	  destination = "groupContent.jsp";
+      }
 
         if (destination.length() <= 0) {
           if (bHaveToRefreshDomain) {
@@ -383,12 +413,14 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
             destination = getDestination("domainContent", componentSC, request);
           }
         }
+     // DOMAIN Actions --------------------------------------------
       } else if (function.startsWith("domain")) {
         jobDomainSC.setTargetUser(null);
 
         if (function.startsWith("domainNavigation")) {
           jobDomainSC.setTargetDomain(request.getParameter("Iddomain"));
           jobDomainSC.returnIntoGroup(null);
+          jobDomainSC.setRefreshDomain(true);
 
           destination = "domainNavigation.jsp";
         } else {
@@ -827,7 +859,8 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
     jobDomainSC.setListSelectedUsers(memSelected);
   }
 
-  private HashMap<String, String> getExtraPropertyValues(HttpServletRequest request) {
+  @SuppressWarnings("unchecked")
+private HashMap<String, String> getExtraPropertyValues(HttpServletRequest request) {
     // process extra properties
     HashMap<String, String> properties = new HashMap<String, String>();
     Enumeration<String> parameters = request.getParameterNames();

@@ -30,5 +30,6 @@ $.fn.qtip.styles.silverpeas = { // Last part is the name of the style
 		   },
 		   padding: 10,
 		   tip: true,
-		   name: 'green' // Inherit the rest of the attributes from the preset green style
+		   name: 'green', // Inherit the rest of the attributes from the preset green style
+		   width: {min: 200}
 		}

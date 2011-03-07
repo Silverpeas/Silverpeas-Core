@@ -103,6 +103,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   private ArrayList<String> listSelectedUsers = new ArrayList<String>();
   // pagination de la liste des résultats
   private int indexOfFirstItemToDisplay = 0;
+  boolean refreshDomain = true;
 
   /**
    * Standard Session Controller Constructeur
@@ -148,6 +149,10 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     }
 
     return accessGranted;
+  }
+  
+  public void setRefreshDomain(boolean refreshDomain) {
+	  this.refreshDomain = refreshDomain;
   }
 
   /*
@@ -1227,11 +1232,10 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     Group gr = m_AdminCtrl.getGroupById(groupId);
 
     if (GroupNavigationStock.isGroupValid(gr)) {
-      if (!StringUtil.isDefined(gr.getSuperGroupId()) || ("-1".equals(gr.getSuperGroupId()))) {
+      if (this.refreshDomain && (!StringUtil.isDefined(gr.getSuperGroupId()) || "-1".equals(gr.getSuperGroupId()))) {
         return true;
-      } else {
-        return false;
       }
+      return false;
     }
     return false;
   }
