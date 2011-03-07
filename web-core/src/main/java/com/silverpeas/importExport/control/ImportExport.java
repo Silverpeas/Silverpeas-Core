@@ -25,41 +25,6 @@ package com.silverpeas.importExport.control;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Closeables;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.StringTokenizer;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-
-import org.exolab.castor.mapping.Mapping;
-import org.exolab.castor.mapping.MappingException;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
-import org.xml.sax.XMLReader;
-
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.BadPdfFormatException;
@@ -89,6 +54,7 @@ import com.silverpeas.node.importexport.NodeTreesType;
 import com.silverpeas.pdc.importExport.PdcImportExport;
 import com.silverpeas.pdc.importExport.PdcPositionsType;
 import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
@@ -110,11 +76,45 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import org.exolab.castor.mapping.Mapping;
+import org.exolab.castor.mapping.MappingException;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
+import org.xml.sax.XMLReader;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 /**
  * Classe devant être instanciée au niveau controleur pour utiliser le moteur d'import export.
+ *
  * @author sDevolder.
  */
 public class ImportExport {
@@ -132,11 +132,12 @@ public class ImportExport {
 
   /**
    * Méthode créant le fichier xml corespondant à l'arbre des objets.
+   *
    * @param silverPeasExchangeType - arbre des objets à mapper sur le fichier xml
-   * @param xmlToExportPath - chemin et nom du fichier xml à créer
+   * @param xmlToExportPath        - chemin et nom du fichier xml à créer
    * @throws ImportExportException
    */
-  public void upLoadSilverpeasExchange(SilverPeasExchangeType silverPeasExchangeType,
+  void upLoadSilverpeasExchange(SilverPeasExchangeType silverPeasExchangeType,
       String xmlToExportPath) throws ImportExportException {
 
     Writer writer = null;
@@ -189,11 +190,12 @@ public class ImportExport {
 
   /**
    * Méthode retournant l'arbre des objets mappés sur le fichier xml passé en paramètre.
+   *
    * @param xmlFileName le fichier xml interprêté par Castor
    * @return Un objet SilverPeasExchangeType contenant le mapping d'un fichier XML Castor
    * @throws ImportExportException
    */
-  public SilverPeasExchangeType loadSilverpeasExchange(String xmlFileName)
+  SilverPeasExchangeType loadSilverpeasExchange(String xmlFileName)
       throws ImportExportException {
 
     SilverTrace.debug("importExport", "ImportExportSessionController.loadSilverpeasExchange",
@@ -261,7 +263,8 @@ public class ImportExport {
         SilverTrace.debug("importExport", "ImportExportSessionController.loadSilverpeasExchange",
             "root.MSG_GEN_PARAM_VALUE",
             (new StringBuilder(
-            "Trying again using schema specification located at ")).append(altXsdSystemId).toString());
+                "Trying again using schema specification located at ")).append(
+                altXsdSystemId).toString());
 
         // Try again to load, parse and validate the XML import file,
         // using the new schema specification
@@ -298,43 +301,44 @@ public class ImportExport {
     } catch (MappingException me) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
           "importExport.EX_LOADING_XML_MAPPING_FAILED", "XML Filename " + xmlFileName + ": "
-          + me.getLocalizedMessage(), me);
+              + me.getLocalizedMessage(), me);
     } catch (MarshalException me) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
           "importExport.EX_UNMARSHALLING_FAILED", "XML Filename " + xmlFileName + ": "
-          + me.getLocalizedMessage(), me);
+              + me.getLocalizedMessage(), me);
     } catch (ValidationException ve) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
           "importExport.EX_PARSING_FAILED", "XML Filename " + xmlFileName + ": "
-          + ve.getLocalizedMessage(), ve);
+              + ve.getLocalizedMessage(), ve);
     } catch (IOException ioe) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
           "importExport.EX_LOADING_XML_MAPPING_FAILED", "XML Filename " + xmlFileName + ": "
-          + ioe.getLocalizedMessage(), ioe);
+              + ioe.getLocalizedMessage(), ioe);
     } catch (ParserConfigurationException ex) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
           "importExport.EX_PARSING_FAILED", "XML Filename " + xmlFileName + ": "
-          + ex.getLocalizedMessage(), ex);
+              + ex.getLocalizedMessage(), ex);
     } catch (SAXNotRecognizedException snre) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
           "importExport.EX_PARSING_FAILED", "XML Filename " + xmlFileName + ": "
-          + snre.getLocalizedMessage(), snre);
+              + snre.getLocalizedMessage(), snre);
     } catch (SAXNotSupportedException snse) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
           "importExport.EX_PARSING_FAILED", "XML Filename " + xmlFileName + ": "
-          + snse.getLocalizedMessage(), snse);
+              + snse.getLocalizedMessage(), snse);
     } catch (SAXException se) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
           "importExport.EX_PARSING_FAILED", "XML Filename " + xmlFileName + ": "
-          + se.getLocalizedMessage(), se);
+              + se.getLocalizedMessage(), se);
     }
   }
 
   /**
    * Cherche et retourne un nom de ressource extrait du chemin d'un URI donné.
+   *
    * @param uri l'URI dans lequel on cherche le nom de ressource.
    * @return le nom de ressource dans la chaîne uri ou chaîne vide (jamais null) sir uri est
-   * <caode>null</code> ou vide ou s'il n'y a pas de ressource indiquée par uri.
+   *         <caode>null</code> ou vide ou s'il n'y a pas de ressource indiquée par uri.
    */
   private String extractUriNameIndex(String uri) {
 
@@ -370,7 +374,8 @@ public class ImportExport {
   /**
    * Méthode faisant appel au moteur d'importExport de silver peas, des publications définie dans le
    * fichier xml passé en paramètre sont générées grace à l'outil castor.
-   * @param userDetail - information sur l'utilisateur utilisant le moteur importExport
+   *
+   * @param userDetail  - information sur l'utilisateur utilisant le moteur importExport
    * @param xmlFileName - fichier xml définissant les import et/ou export à effectuer
    * @return un rapport détaillé sur l'execution de l'import/export
    * @throws ImportExportException
@@ -378,11 +383,11 @@ public class ImportExport {
   public ImportReport processImport(UserDetail userDetail, String xmlFileName)
       throws ImportExportException {
 
-    SilverPeasExchangeType silverExType = null;
+    SilverPeasExchangeType silverExType;
     ImportReportManager.init();
 
     // Cas du nom de fichier null ou vide
-    if ((xmlFileName == null) || (xmlFileName.length() == 0)) {
+    if (!StringUtil.isDefined(xmlFileName)) {
       UnitReport unitReport = new UnitReport("No XML file specified");
       unitReport.setError(UnitReport.ERROR_ERROR);
       unitReport.setStatus(UnitReport.STATUS_PUBLICATION_NOT_CREATED);
@@ -414,7 +419,8 @@ public class ImportExport {
     if (silverExType.getRepositoriesType() != null) {
       // Traitement de l'élément <repositories>
       RepositoriesTypeManager typeMgr = new RepositoriesTypeManager();
-      typeMgr.processImport(userDetail, silverExType.getRepositoriesType(), silverExType.isPOIUsed());
+      typeMgr.processImport(userDetail, silverExType.getRepositoriesType(),
+          silverExType.isPOIUsed());
     }
     ImportReportManager.setEndDate(new Date());
     return ImportReportManager.getImportReport();
@@ -499,7 +505,7 @@ public class ImportExport {
           listClassifyPosition.addAll(pdcPos.getListClassifyPosition());
         }
       }
-       List<String> listComponentId = new ArrayList <String>(componentIds);
+      List<String> listComponentId = new ArrayList<String>(componentIds);
       // Exportation des composants liés aux publications exportées
       silverPeasExch.setComponentsType(adminIE.getComponents(listComponentId));
       // Exportation des Arbres de topics liés aux publications exportées
@@ -512,87 +518,19 @@ public class ImportExport {
 
       if (rootId == null) {
         // dans le cas de l'export depuis le moteur de recherche, créer l'index "a plat"
-        // Création du sommaire HTML
-        File fileHTML = new File(tempDir + thisExportDir + File.separator + "index.html");
-
-        HtmlExportGenerator h = new HtmlExportGenerator(exportReport, fileExportDir.getName());
-        Writer fileWriter = null;
-        try {
-          fileHTML.createNewFile();
-          fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML.getPath()),
-              Charsets.UTF_8);
-          fileWriter.write(h.toHTML());
-        } catch (IOException ex) {
-          throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
-        } finally {
-          try {
-            fileWriter.close();
-          } catch (Exception ex) {
-          }
-        }
-        // Fin création du sommaire HTML
+        createSummary(exportReport, thisExportDir, tempDir, fileExportDir);
       } else {
         // dans le cas de l'export d'un composant ou d'un thème, créer l'index en treeview
-
-        // Création des sommaires HTML par Thèmes
-        // --------------------------------------
         HtmlExportGenerator htmlGenerator = new HtmlExportGenerator(exportReport, fileExportDir.
-            getName(),
-            resourceLocator);
-
+            getName(), resourceLocator);
         Map<String, List<String>> topicIds = prepareTopicsMap(publicationsType);
-
-        // parcours de la liste des topics et création du fichier
         Set<String> keys = topicIds.keySet();
         for (String topicId : keys) {
-          // créer le fichier
           createTopicHtmlFile(thisExportDir, tempDir, htmlGenerator, topicIds, topicId);
         }
-        // création d'un fichier sommaire vide pour les topics vides
-        File fileTopicHTML = new File(tempDir + thisExportDir + File.separator
-            + "indexTopicEmpty.html");
-        Writer fileWriter = null;
-        try {
-          fileTopicHTML.createNewFile();
-          fileWriter = new OutputStreamWriter(new FileOutputStream(fileTopicHTML.getPath()),
-              Charsets.UTF_8);
-          fileWriter.write(htmlGenerator.toHTML(fileTopicHTML.getName()));
-        } catch (IOException ex) {
-          throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
-        } finally {
-          try {
-            fileWriter.close();
-          } catch (Exception ex) {
-          }
-        }
-        // FIN : création des sommaires HTML par Thèmes
-
-        // création du fichier index contenant l'arborescence des thèmes
-        // -------------------------------------------------------------
+        createEmptySummary(thisExportDir, tempDir, htmlGenerator);
         createTreeview(rootId, thisExportDir, tempDir, nodeTreesType, htmlGenerator, topicIds);
-        // FIN : création du fichier index contenant l'arborescence
-
-        // Création du répertoire pour le treeview
-        // ---------------------------------------
-        try {
-          // créer le répertoire pour le zip
-          FileFolderManager.createFolder(tempDir + thisExportDir + File.separator + "treeview");
-          // le remplir avec le contenu du répertoire "treeview" sur disque
-          String chemin = (settings.getString("mappingDir"));
-          if (chemin.startsWith("file:")) {
-            chemin = chemin.substring(8);
-          }
-          chemin = chemin + "treeview";
-          Collection<File> files = FileFolderManager.getAllFile(chemin);
-          for (File file : files) {
-            File newFile = new File(tempDir + thisExportDir + File.separator + "treeview"
-                + File.separator + file.getName());
-            FileRepositoryManager.copyFile(file.getPath(), newFile.getPath());
-          }
-        } catch (Exception e) {
-          throw new ImportExportException("ImportExport", "importExport.EX_CANT_CREATE_FOLDER", e);
-        }
-        // FIN : création du répertoire pour le treeview
+        createExportDirectory(thisExportDir, tempDir);
       }
       // Création du fichier XML de mapping
       upLoadSilverpeasExchange(silverPeasExch, fileExportDir.getPath() + File.separator
@@ -619,6 +557,62 @@ public class ImportExport {
     return exportReport;
   }
 
+  private void createSummary(ExportReport exportReport, String thisExportDir, String tempDir,
+      File fileExportDir) throws ImportExportException {
+    File fileHTML = new File(tempDir + thisExportDir + File.separator + "index.html");
+    HtmlExportGenerator h = new HtmlExportGenerator(exportReport, fileExportDir.getName());
+    Writer fileWriter = null;
+    try {
+      fileHTML.createNewFile();
+      fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML.getPath()),
+          Charsets.UTF_8);
+      fileWriter.write(h.toHTML());
+    } catch (IOException ex) {
+      throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
+    } finally {
+      Closeables.closeQuietly(fileWriter);
+    }
+  }
+
+  private void createEmptySummary(String thisExportDir, String tempDir,
+      HtmlExportGenerator htmlGenerator) throws ImportExportException {
+    File fileTopicHTML = new File(tempDir + thisExportDir + File.separator
+        + "indexTopicEmpty.html");
+    Writer fileWriter = null;
+    try {
+      fileTopicHTML.createNewFile();
+      fileWriter = new OutputStreamWriter(new FileOutputStream(fileTopicHTML.getPath()),
+          Charsets.UTF_8);
+      fileWriter.write(htmlGenerator.toHTML(fileTopicHTML.getName()));
+    } catch (IOException ex) {
+      throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
+    } finally {
+      Closeables.closeQuietly(fileWriter);
+    }
+  }
+
+  private void createExportDirectory(String thisExportDir, String tempDir)
+      throws ImportExportException {
+    try {
+      // créer le répertoire pour le zip
+      FileFolderManager.createFolder(tempDir + thisExportDir + File.separator + "treeview");
+      // le remplir avec le contenu du répertoire "treeview" sur disque
+      String chemin = (settings.getString("mappingDir"));
+      if (chemin.startsWith("file:")) {
+        chemin = chemin.substring(8);
+      }
+      chemin = chemin + "treeview";
+      Collection<File> files = FileFolderManager.getAllFile(chemin);
+      for (File file : files) {
+        File newFile = new File(tempDir + thisExportDir + File.separator + "treeview"
+            + File.separator + file.getName());
+        FileRepositoryManager.copyFile(file.getPath(), newFile.getPath());
+      }
+    } catch (Exception e) {
+      throw new ImportExportException("ImportExport", "importExport.EX_CANT_CREATE_FOLDER", e);
+    }
+  }
+
   private void createTreeview(String rootId, String thisExportDir, String tempDir,
       NodeTreesType nodeTreesType, HtmlExportGenerator htmlGenerator,
       Map<String, List<String>> topicIds) throws ImportExportException {
@@ -630,14 +624,12 @@ public class ImportExport {
       fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML.getPath()),
           Charsets.UTF_8);
       Set<String> topics = topicIds.keySet();
-      fileWriter.write(htmlGenerator.indexToHTML(fileHTML.getName(), topics, nodeTreesType, rootId));
+      fileWriter.write(
+          htmlGenerator.indexToHTML(fileHTML.getName(), topics, nodeTreesType, rootId));
     } catch (IOException ex) {
       throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
     } finally {
-      try {
-        fileWriter.close();
-      } catch (Exception ex) {
-      }
+      Closeables.closeQuietly(fileWriter);
     }
   }
 
@@ -681,23 +673,18 @@ public class ImportExport {
     } catch (IOException ex) {
       throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
     } finally {
-      try {
-        fileWriter.close();
-      } catch (Exception ex) {
-      }
+      Closeables.closeQuietly(fileWriter);
     }
   }
 
   /**
    * @param userDetail
-   * @param language
    * @param listItemsToExport
-   * @param rootId
    * @return
    * @throws ImportExportException
    */
-  public ExportPDFReport processExportPDF(UserDetail userDetail, String language,
-      List listItemsToExport, String rootId) throws ImportExportException {
+  public ExportPDFReport processExportPDF(UserDetail userDetail, List listItemsToExport)
+      throws ImportExportException {
     ExportPDFReport report = new ExportPDFReport();
     report.setDateDebut(new Date());
 
@@ -718,10 +705,10 @@ public class ImportExport {
     File pdfFileName = new File(tempDir + fileExportName + ".pdf");
     try {
       // création des répertoires avec le nom des thèmes et des publications
-      List pdfList = pubTypeManager.processPDFExport(report, userDetail, listItemsToExport,
-          fileExportDir.getPath(), true);
+      List<AttachmentDetail> pdfList = pubTypeManager.processPDFExport(report, userDetail,
+          listItemsToExport, fileExportDir.getPath(), true);
 
-      AttachmentDetail attDetail;
+
       try {
         int pageOffset = 0;
         List master = new ArrayList();
@@ -730,8 +717,7 @@ public class ImportExport {
 
         if (!pdfList.isEmpty()) {
           for (int nbFiles = 0; nbFiles < pdfList.size(); nbFiles++) {
-            attDetail = (AttachmentDetail) pdfList.get(nbFiles);
-
+            AttachmentDetail attDetail = pdfList.get(nbFiles);
             PdfReader reader = new PdfReader(fileExportDir.getPath() + File.separator
                 + attDetail.getLogicalName());
             reader.consolidateNamedDestinations();
@@ -795,6 +781,7 @@ public class ImportExport {
 
   /**
    * Export Kmax Publications
+   *
    * @param userDetail
    * @param language
    * @param listItemsToExport
@@ -815,7 +802,7 @@ public class ImportExport {
     SilverPeasExchangeType silverPeasExch = new SilverPeasExchangeType();
     ExportReport exportReport = new ExportReport();
     CoordinateImportExport coordinateImportExport = new CoordinateImportExport();
-    GEDImportExport gedIE = null;
+    GEDImportExport gedIE;
     OrganizationController orgController = new OrganizationController();
 
     try {
@@ -859,7 +846,8 @@ public class ImportExport {
       }
 
       // Exportation des composants liés aux publications exportées
-      silverPeasExch.setComponentsType(adminIE.getComponents(new ArrayList<String>(listComponentId)));
+      silverPeasExch.setComponentsType(
+          adminIE.getComponents(new ArrayList<String>(listComponentId)));
 
       // ================ EXPORT SELECTED PUBLICATIONS ======================
 
@@ -882,10 +870,7 @@ public class ImportExport {
         } catch (IOException ex) {
           throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
         } finally {
-          try {
-            fileWriter.close();
-          } catch (Exception ex) {
-          }
+          Closeables.closeQuietly(fileWriter);
         }
       } else {
         // ================ EXPORT ALL PUBLICATIONS OF COMPONENT
@@ -899,10 +884,7 @@ public class ImportExport {
         } catch (IOException ex) {
           throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
         } finally {
-          try {
-            fileWriter.close();
-          } catch (Exception ex) {
-          }
+          Closeables.closeQuietly(fileWriter);
         }
 
         // Create unbalanced file html index
@@ -922,10 +904,7 @@ public class ImportExport {
         } catch (IOException ex) {
           throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
         } finally {
-          try {
-            fileWriter.close();
-          } catch (Exception ex) {
-          }
+          Closeables.closeQuietly(fileWriter);
         }
         String publicationFileNameRelativePath = null;
         // Fill unbalanced file html index
@@ -950,10 +929,7 @@ public class ImportExport {
           } catch (IOException ex) {
             throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
           } finally {
-            try {
-              fileWriter.close();
-            } catch (Exception ex) {
-            }
+            Closeables.closeQuietly(fileWriter);
           }
         }
 
@@ -970,10 +946,7 @@ public class ImportExport {
         } catch (IOException ex) {
           throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
         } finally {
-          try {
-            fileWriter.close();
-          } catch (Exception ex) {
-          }
+          Closeables.closeQuietly(fileWriter);
         }
 
         // Create HTML summary
@@ -1008,9 +981,8 @@ public class ImportExport {
         List<String> indexFilesPositions = new ArrayList<String>();
         // Process all filename combinations
         for (int i = 1; i <= nodesIds.size(); i++) {
-          int tuple = i;
           indexFilesPositions = coordinateImportExport.coupleIds(indexFilesPositions, nodesIds, 0,
-              0, tuple, null, nbAxis);
+              0, i, null, nbAxis);
         }
         // Create positions index files
         for (String positionNameId : indexFilesPositions) {
@@ -1041,7 +1013,7 @@ public class ImportExport {
           String pubId = attValue.getName();
           componentId = attValue.getValue();
           gedIE = ImportExportFactory.createGEDImportExport(userDetail, componentId);
-          String positionFileNameHTML = "index";
+          String positionFileNameHTML;
 
           // Récupération du PublicationType
           PublicationType publicationType = gedIE.getPublicationCompleteById(pubId, componentId);
@@ -1084,11 +1056,9 @@ public class ImportExport {
             }
 
             List<String> otherPositionsFilesNameHTML = new ArrayList<String>();
-            int tuple = nbAxis;
             otherPositionsFilesNameHTML = coordinateImportExport.coupleIds(
-                otherPositionsFilesNameHTML, nodeIds, 0, 0, tuple, null, nbAxis);
-            for (int cpt = 0; cpt < otherPositionsFilesNameHTML.size(); cpt++) {
-              String otherPositionFileNameHTML = otherPositionsFilesNameHTML.get(cpt);
+                otherPositionsFilesNameHTML, nodeIds, 0, 0, nbAxis, null, nbAxis);
+            for (String otherPositionFileNameHTML : otherPositionsFilesNameHTML) {
               if (!filesPositionsHTMLToFill.contains(otherPositionFileNameHTML)) {
                 filesPositionsHTMLToFill.add(otherPositionFileNameHTML);
               }
@@ -1149,11 +1119,12 @@ public class ImportExport {
 
   /**
    * Méthode générant le nom de l'export nommé: "exportAAAA-MM-JJ-hh'H'mm'm'ss's'_userId"
+   *
    * @param userDetail - UserDetail de l'utilisateur
-   * @param name : nom du fichier final
+   * @param name       : nom du fichier final
    * @return - la chaine représentant le nom généré du répertoire d'exportation
    */
-  public String generateExportDirName(UserDetail userDetail, String name) {
+  String generateExportDirName(UserDetail userDetail, String name) {
     StringBuilder sb = new StringBuilder(name);
     Date date = new Date();
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH'H'mm'm'ss's'");
@@ -1187,10 +1158,10 @@ public class ImportExport {
     }
   }
 
-  
 
   /**
    * Add father of nodeDetail to List
+   *
    * @param nodesIds
    * @param nodeDetail
    * @param cie
