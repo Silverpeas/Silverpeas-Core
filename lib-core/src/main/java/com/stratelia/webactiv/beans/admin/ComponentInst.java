@@ -311,7 +311,7 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
     if(param != null) {
       return param.getValue();
     }
-    return null;
+    return "";
   }
 
   public String getLabel(String language) {
