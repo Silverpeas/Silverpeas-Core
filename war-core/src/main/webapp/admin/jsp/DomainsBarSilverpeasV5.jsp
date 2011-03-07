@@ -123,7 +123,7 @@ out.println(gef.getLookStyleSheet());
 
     function notifyAdministrators(context,compoId,users,groups)
   {
-      SP_openWindow('<%=m_sContext%>/RnotificationUser/jsp/Main.jsp?popupMode=Yes&amp;editTargets=No&amp;compoId=&amp;theTargetsUsers=Administrators&amp;theTargetsGroups=', 'notifyUserPopup', '700', '400', 'menubar=no,scrollbars=no,statusbar=no');
+      SP_openWindow('<%=m_sContext%>/RnotificationUser/jsp/Main?popupMode=Yes&editTargets=No&theTargetsUsers=Administrators', 'notifyUserPopup', '700', '400', 'menubar=no,scrollbars=no,statusbar=no');
   }
 
     function openClipboard()
