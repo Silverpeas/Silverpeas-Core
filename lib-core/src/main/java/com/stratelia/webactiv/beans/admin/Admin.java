@@ -3815,8 +3815,7 @@ public final class Admin {
     }
     String[] rootSpaceIds = getAllRootSpaceIds(userId);
     List<SpaceInstLight> treeview = new ArrayList<SpaceInstLight>(authorizedIds.size());
-    for (String spaceId :
-        rootSpaceIds) {
+    for (String spaceId : rootSpaceIds) {
       String currentSpaceId = getDriverSpaceId(spaceId);
       if (authorizedIds.contains(currentSpaceId)) {
         treeview.add(TreeCache.getSpaceInstLight(currentSpaceId));
@@ -3828,9 +3827,10 @@ public final class Admin {
 
   void addAuthorizedSpaceToTree(List<SpaceInstLight> treeview, Set<String> authorizedIds,
       String spaceId, int level) {
+    SilverTrace.debug("admin", "Admin.addAuthorizedSpaceToTree", "root.MSG_GEN_ENTER_METHOD",
+        "size of treeview = " + treeview.size());
     List<SpaceInstLight> subSpaces = TreeCache.getSubSpaces(spaceId);
-    for (SpaceInstLight space :
-        subSpaces) {
+    for (SpaceInstLight space : subSpaces) {
       String subSpaceId = getDriverSpaceId(space.getFullId());
       if (authorizedIds.contains(subSpaceId)) {
         space.setLevel(level);
@@ -3840,12 +3840,22 @@ public final class Admin {
     }
   }
 
+  /**
+   * @param spaces list of authorized spaces built by this method
+   * @param componentsId list of components' id (base to get authorized spaces) 
+   * @param space a space candidate to be in authorized spaces list
+   */
   void addAuthorizedSpace(Set<String> spaces, Set<String> componentsId, SpaceInstLight space) {
-    if (space != null && !SpaceInst.STATUS_REMOVED.equals(space.getStatus())) {
+    SilverTrace.debug("admin", "Admin.addAuthorizedSpace", "root.MSG_GEN_ENTER_METHOD",
+        "#componentIds = " + componentsId.size());
+    if (space != null && !SpaceInst.STATUS_REMOVED.equals(space.getStatus()) &&
+        !spaces.contains(space.getShortId())) {
+      SilverTrace.debug("admin", "Admin.addAuthorizedSpace", "root.MSG_GEN_PARAM_VALUE",
+          "space = " + space.getFullId());
       String spaceId = getDriverSpaceId(space.getFullId());
       spaces.add(spaceId);
-      componentsId.removeAll(TreeCache.getComponents(spaceId));
-      if (StringUtil.isDefined(space.getFatherId())) {
+      componentsId.removeAll(TreeCache.getComponentIds(spaceId));
+      if (!space.isRoot()) {
         String fatherId = getDriverSpaceId(space.getFatherId());
         if (!spaces.contains(fatherId)) {
           SpaceInstLight parent = TreeCache.getSpaceInstLight(fatherId);
@@ -3856,6 +3866,8 @@ public final class Admin {
   }
 
   void filterSpaceFromComponents(Set<String> spaces, Set<String> componentsId, String componentId) {
+    SilverTrace.debug("admin", "Admin.filterSpaceFromComponents", "root.MSG_GEN_ENTER_METHOD",
+        "#componentIds = " + componentsId.size() + ", componentId = " + componentId);
     SpaceInstLight space = TreeCache.getSpaceContainingComponent(componentId);
     addAuthorizedSpace(spaces, componentsId, space);
     if (!componentsId.isEmpty()) {
@@ -3900,8 +3912,7 @@ public final class Admin {
    */
   public SpaceInstLight getSpaceInstLightById(String sClientSpaceId) throws AdminException {
     try {
-      SpaceInstLight spaceInst = getSpaceInstLight(getDriverSpaceId(sClientSpaceId));
-      return spaceInst;
+      return getSpaceInstLight(getDriverSpaceId(sClientSpaceId));
     } catch (Exception e) {
       throw new AdminException("Admin.getSpaceInstLightById",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE", " space Id : '"
@@ -4205,8 +4216,7 @@ public final class Admin {
 
       List<String> allowedComponentIds = getAllowedComponentIds(sUserId);
       List<String> result = new ArrayList<String>();
-      for (ComponentInstLight component :
-          components) {
+      for (ComponentInstLight component : components) {
         if (allowedComponentIds.contains(component.getId())
             && component.getName().startsWith(componentNameRoot)) {
           result.add(component.getId());

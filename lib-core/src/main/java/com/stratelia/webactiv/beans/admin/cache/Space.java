@@ -49,6 +49,14 @@ public class Space {
   public List<ComponentInstLight> getComponents() {
     return new ArrayList<ComponentInstLight>(components.values());
   }
+  
+  public List<String> getComponentIds() {
+    List<String> ids = new ArrayList<String>(components.size());
+    for (ComponentInstLight component : components.values()) {
+      ids.add(component.getId());
+    }
+    return ids;
+  }
 
   public void setComponents(List<ComponentInstLight> components) {
     for(ComponentInstLight component : components) {

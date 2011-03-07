@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import java.util.concurrent.ConcurrentHashMap;
@@ -72,11 +73,27 @@ public class TreeCache {
   }
 
   public static List<ComponentInstLight> getComponents(String spaceId) {
+    SilverTrace.debug("admin", "TreeCache.getComponents()", "root.MSG_GEN_ENTER_METHOD",
+        "spaceId = " + spaceId);
     Space space = getSpace(spaceId);
     if (space != null) {
       return space.getComponents();
     }
+    SilverTrace.debug("admin", "TreeCache.getComponents()", "root.MSG_GEN_EXIT_METHOD",
+        "spaceId = " + spaceId);
     return new ArrayList<ComponentInstLight>();
+  }
+  
+  public static List<String> getComponentIds(String spaceId) {
+    SilverTrace.debug("admin", "TreeCache.getComponentIds()", "root.MSG_GEN_ENTER_METHOD",
+        "spaceId = " + spaceId);
+    Space space = getSpace(spaceId);
+    if (space != null) {
+      return space.getComponentIds();
+    }
+    SilverTrace.debug("admin", "TreeCache.getComponentIds()", "root.MSG_GEN_EXIT_METHOD",
+        "spaceId = " + spaceId);
+    return new ArrayList<String>();
   }
 
   public static List<SpaceInstLight> getSubSpaces(String spaceId) {
