@@ -180,6 +180,7 @@
           <plugin>
             <groupId>com.kalistick.client.connector</groupId>
             <artifactId>kalistick-maven-plugin</artifactId>
+            <version>3.1.0</version>
             <configuration>
               <configFile>${project.basedir}/src/config/agent_cockpit/kalistick-new.xml</configFile>
               <version>${project.version}-${build.timestamp}</version>
