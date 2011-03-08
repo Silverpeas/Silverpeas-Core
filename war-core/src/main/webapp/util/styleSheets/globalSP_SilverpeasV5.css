@@ -2277,6 +2277,12 @@ caption {
 	padding: 5px;
 }
 
+.help-modal-message .ui-widget-header {
+	background: none;
+	background-color:#F1790F;
+	border:1px solid #F1790F;
+}
+
 /*- [ directory BEGIN ] --------------------------- */
 
 #directory .message_list {
