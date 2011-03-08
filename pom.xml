@@ -42,7 +42,7 @@
     wikis,
     images gallery and its own Enterprise Content Management tool.
   </description>
-  
+
   <scm>
     <connection>scm:git:git@github.com:Silverpeas/Silverpeas-Core.git</connection>
     <developerConnection>scm:git:git@github.com:Silverpeas/Silverpeas-Core.git</developerConnection>
@@ -63,6 +63,20 @@
       </snapshots>
     </repository>
   </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>kalistick</id>
+      <name>Kalistick Maven 2.x Repository</name>
+      <url>http://maven.kalistick.com/content/groups/public</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>Silverpeas</id>
+      <name>Silverpeas Maven 3.x Repository</name>
+      <url>http://www.silverpeas.org/nexus/content/groups/silverpeas</url>
+    </pluginRepository>
+  </pluginRepositories>
+
 
   <groupId>com.silverpeas</groupId>
   <artifactId>core</artifactId>
@@ -114,7 +128,7 @@
           </execution>
         </executions>
       </plugin>
-      
+
       <plugin>
         <artifactId>maven-site-plugin</artifactId>
         <version>3.0-beta-3</version>
@@ -123,7 +137,7 @@
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-project-info-reports-plugin</artifactId>
-              <version>2.3.1</version>  
+              <version>2.3.1</version>
               <reportSets>
                 <reportSet>
                   <reports>
@@ -135,7 +149,7 @@
                     <report>index</report>
                     <report>issue-tracking</report>
                     <report>modules</report>
-                    <report>project-team</report>    
+                    <report>project-team</report>
                     <report>license</report>
                     <report>scm</report>
                   </reports>
@@ -152,9 +166,9 @@
               <version>2.7</version>
             </plugin>
           </reportPlugins>
-        </configuration> 
+        </configuration>
       </plugin>
-      
+
     </plugins>
   </build>
 
@@ -165,8 +179,7 @@
         <plugins>
           <plugin>
             <groupId>com.kalistick.client.connector</groupId>
-            <artifactId>kalistick</artifactId>
-            <version>3.0.2-SNAPSHOT</version>
+            <artifactId>kalistick-maven-plugin</artifactId>
             <configuration>
               <configFile>${project.basedir}/src/config/agent_cockpit/kalistick-new.xml</configFile>
               <version>${project.version}-${build.timestamp}</version>
