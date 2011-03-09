@@ -25,15 +25,14 @@
 package com.stratelia.webactiv.personalization.control.ejb;
 
 import java.rmi.RemoteException;
-import java.util.*;
 
 public interface PersonalizationBmBusinessSkeleton {
 
   public void setActor(String userId) throws RemoteException;
 
-  public void setLanguages(Vector<String> languages) throws RemoteException;
+  public void setLanguages(String languages) throws RemoteException;
 
-  public Vector<String> getLanguages() throws RemoteException;
+  public String getLanguages() throws RemoteException;
 
   public String getFavoriteLanguage() throws RemoteException;
 

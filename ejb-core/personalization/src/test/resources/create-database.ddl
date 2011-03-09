@@ -9,19 +9,20 @@ ALTER TABLE UniqueId  ADD
 		tableName
 	);
 
-CREATE TABLE sb_comment_comment 
-	(
-	commentId int not null, 
-	commentOwnerId int not null,
-	commentCreationDate char (10) not null,
-	commentModificationDate char (10),
-	commentComment varchar (2000) not null,
-	foreignId int not null,
-	instanceId varchar (50) not null
-	);
 
-ALTER TABLE sb_comment_comment  ADD 
-	 CONSTRAINT PK_Comment_Comment PRIMARY KEY 
+CREATE TABLE Personalization (
+	id varchar(100) NOT NULL ,
+	languages varchar(100) NULL,
+	look varchar(50) NULL,
+	personalWSpace varchar(50) NULL,
+	thesaurusStatus int NOT NULL,
+	dragAndDropStatus int DEFAULT 1,
+	onlineEditingStatus int DEFAULT 1,
+    webdavEditingStatus int DEFAULT 0
+);
+
+ALTER TABLE Personalization  ADD 
+	CONSTRAINT PK_Personalization PRIMARY KEY   
 	(
-		commentid
+		id
 	);

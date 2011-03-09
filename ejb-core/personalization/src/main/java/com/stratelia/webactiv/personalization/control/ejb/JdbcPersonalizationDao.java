@@ -21,12 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.webactiv.personalization.control.ejb;
 
+import com.silverpeas.personalization.dao.PersonalizationDao;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.personalization.model.PersonalizeDetail;
@@ -36,64 +33,21 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Vector;
 
 /**
  * Class declaration
  * @author
  */
-public class JdbcPersonalizationDao {
+public class JdbcPersonalizationDao implements PersonalizationDao {
 
-  public static final String PERSONALCOLUMNNAMES =
-      "id, languages, look, personalWSpace, thesaurusStatus, dragAndDropStatus, onlineEditingStatus, webdavEditingStatus";
-  public static final String PERSONALTABLENAME = "Personalization";
-
-  /**
-   * Method declaration
-   * @param str
-   * @return
-   * @see
-   */
-  private static Vector<String> String2Vector(String str) {
-    int begin = 0;
-    int end = 0;
-    String element;
-    Vector<String> vector = new Vector<String>();
-
-    end = str.indexOf(',', begin);
-    while (end != -1) {
-      element = str.substring(begin, end);
-      vector.add(element);
-      begin = end + 1;
-      end = str.indexOf(',', begin);
-    }
-    return vector;
-  }
-
-  /**
-   * Method declaration
-   * @param vector
-   * @return
-   * @see
-   */
-  private static String Vector2String(Vector<String> vector) {
-    String elements = "";
-    int nbElements = vector.size();
-
-    for (String aVector : vector) {
-      elements += aVector + ", ";
-    }
-    return elements;
-  }
-
-  /**
+    /**
    * Method declaration
    * @param rs
    * @return
    * @throws SQLException
    * @see
    */
-  private static PersonalizeDetail getPersonalizeDetailFromResultSet(
+  private PersonalizeDetail getPersonalizeDetailFromResultSet(
       ResultSet rs) throws SQLException {
     SilverTrace.info("personalization",
         "JdbcPersonalizationDao.getPersonalizeDetailFromResultSet()",
@@ -125,7 +79,7 @@ public class JdbcPersonalizationDao {
         + new Boolean(dragDropStatus).toString()
         + ", onlineEditingStatus = "
         + new Boolean(onlineEditingStatus).toString());
-    PersonalizeDetail result = new PersonalizeDetail(String2Vector(languages),
+    PersonalizeDetail result = new PersonalizeDetail(languages,
         look, personalWS, thesaurusStatus, dragDropStatus, onlineEditingStatus,
         webdavEditingStatus);
     return result;
@@ -139,7 +93,8 @@ public class JdbcPersonalizationDao {
    * @throws SQLException
    * @see
    */
-  public static PersonalizeDetail getPersonalizeDetail(Connection con,
+  @Override
+  public PersonalizeDetail getPersonalizeDetail(Connection con,
       String userId) throws SQLException {
     SilverTrace.info("personalization",
         "JdbcPersonalizationDao.getPersonalizeDetail()",
@@ -172,13 +127,14 @@ public class JdbcPersonalizationDao {
    * Method declaration
    * @param con
    * @param userId
-   * @param languages
+   * @param language
    * @throws SQLException
    * @see
    */
-  public static void setLanguages(Connection con, String userId,
-      Vector<String> languages) throws SQLException {
-    SilverTrace.info("personalization", "JdbcPersonalizationDao.setLanguages()",
+  @Override
+  public void setLanguage(Connection con, String userId,
+      String language) throws SQLException {
+    SilverTrace.info("personalization", "JdbcPersonalizationDao.setLanguage()",
         "root.MSG_GEN_ENTER_METHOD", "userId =" + userId);
     String updateStatement = "update " + PERSONALTABLENAME
         + " set languages = ? " + " where id = ? ";
@@ -186,7 +142,7 @@ public class JdbcPersonalizationDao {
 
     try {
       prepStmt = con.prepareStatement(updateStatement);
-      prepStmt.setString(1, Vector2String(languages));
+      prepStmt.setString(1, language);
       prepStmt.setString(2, userId);
       prepStmt.executeUpdate();
     } finally {
@@ -196,7 +152,8 @@ public class JdbcPersonalizationDao {
     }
   }
 
-  public static void setPersonalWorkSpace(Connection con, String userId,
+  @Override
+  public void setPersonalWorkSpace(Connection con, String userId,
       String spaceId) throws SQLException {
     String updateStatement = "update " + PERSONALTABLENAME
         + " set personalWSpace = ? where id = ? ";
@@ -225,7 +182,8 @@ public class JdbcPersonalizationDao {
    * @throws SQLException
    * @see
    */
-  public static void setFavoriteLook(Connection con, String userId, String look)
+  @Override
+  public void setFavoriteLook(Connection con, String userId, String look)
       throws SQLException {
     SilverTrace.info("personalization", "JdbcPersonalizationDao.setLook()",
         "root.MSG_GEN_ENTER_METHOD", "userId =" + userId);
@@ -253,7 +211,8 @@ public class JdbcPersonalizationDao {
    * @throws SQLException
    * @see
    */
-  public static void setThesaurusStatus(Connection con, String userId,
+  @Override
+  public void setThesaurusStatus(Connection con, String userId,
       boolean thesaurusStatus) throws SQLException {
     SilverTrace.info("personalization",
         "JdbcPersonalizationDao.setThesaurusStatus()", "root.MSG_GEN_ENTER_METHOD",
@@ -279,11 +238,12 @@ public class JdbcPersonalizationDao {
    * Method declaration
    * @param con
    * @param userId
-   * @param thesaurusStatus
+   * @param dragAndDropStatus
    * @throws SQLException
    * @see
    */
-  public static void setDragAndDropStatus(Connection con, String userId,
+  @Override
+  public  void setDragAndDropStatus(Connection con, String userId,
       boolean dragAndDropStatus) throws SQLException {
     SilverTrace.info("personalization",
         "JdbcPersonalizationDao.setDragAndDropStatus()",
@@ -313,7 +273,8 @@ public class JdbcPersonalizationDao {
    * @throws SQLException
    * @see
    */
-  public static void setOnlineEditingStatus(Connection con, String userId,
+  @Override
+  public void setOnlineEditingStatus(Connection con, String userId,
       boolean onlineEditingStatus) throws SQLException {
     SilverTrace.info("personalization",
         "JdbcPersonalizationDao.setOnlineEditingStatus()",
@@ -343,7 +304,8 @@ public class JdbcPersonalizationDao {
    * @throws SQLException
    * @see
    */
-  public static void setWebdavEditingStatus(Connection con, String userId,
+  @Override
+  public void setWebdavEditingStatus(Connection con, String userId,
       boolean webdavEditingStatus) throws SQLException {
     SilverTrace.info("personalization",
         "JdbcPersonalizationDao.setWebdavEditingStatus()",
@@ -369,14 +331,15 @@ public class JdbcPersonalizationDao {
    * Method declaration
    * @param con
    * @param userId
-   * @param languages
+   * @param language
    * @param look
    * @param thesaurusStatus
    * @throws SQLException
    * @see
    */
-  public static void insertPersonalizeDetail(Connection con, String userId,
-      Vector<String> languages, String look, String defaultPersonalWSId,
+  @Override
+  public void insertPersonalizeDetail(Connection con, String userId,
+      String language, String look, String defaultPersonalWSId,
       boolean thesaurusStatus, boolean dragAndDropStatus,
       boolean onlineEditingStatus, boolean webdavEditingStatus)
       throws SQLException {
@@ -394,7 +357,7 @@ public class JdbcPersonalizationDao {
     try {
       prepStmt = con.prepareStatement(updateStatement);
       prepStmt.setString(1, userId);
-      prepStmt.setString(2, Vector2String(languages));
+      prepStmt.setString(2, language);
       prepStmt.setString(3, look);
       prepStmt.setString(4, defaultPersonalWSId);
       prepStmt.setInt(5, thesaurus);

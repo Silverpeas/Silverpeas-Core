@@ -24,25 +24,34 @@
 
 package com.stratelia.webactiv.personalization.control.ejb;
 
-import java.util.*;
-import javax.ejb.*;
-import javax.naming.NamingException;
-import java.sql.*;
-import java.rmi.RemoteException;
-import com.stratelia.webactiv.util.*;
-
-import com.stratelia.webactiv.util.exception.*;
-import com.stratelia.silverpeas.silvertrace.*;
-
+import com.silverpeas.personalization.dao.PersonalizationDao;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.personalization.model.PersonalizeDetail;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+
+import javax.ejb.CreateException;
+import javax.ejb.SessionBean;
+import javax.naming.NamingException;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import static com.silverpeas.ui.DisplayI18NHelper.getDefaultLanguage;
 
 /**
  * Class declaration
+ *
  * @author
  */
 public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, SessionBean {
 
   private static final long serialVersionUID = 6776141343859788723L;
+
+  private static final PersonalizationDao dao = new JdbcPersonalizationDao();
   private String currentUserId;
   private String defaultLanguage = null;
   private String defaultLook = "Initial";
@@ -54,6 +63,7 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
 
   /**
    * Constructor declaration
+   *
    * @see
    */
   public PersonalizationBmEJB() {
@@ -61,6 +71,7 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
 
   /**
    * Method declaration
+   *
    * @param user
    * @throws RemoteException
    * @see
@@ -71,6 +82,7 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -99,23 +111,10 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
     }
   }
 
-  private String getDefaultLanguage() {
-    if (settings == null)
-      settings = new ResourceLocator(
-          "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings",
-          "");
-
-    if (settings != null && defaultLanguage == null)
-      defaultLanguage = settings.getString("DefaultLanguage", "fr");
-
-    if (defaultLanguage == null)
-      defaultLanguage = "fr";
-
-    return defaultLanguage;
-  }
 
   /**
    * Method declaration
+   *
    * @return
    * @throws CreateException
    * @throws NamingException
@@ -130,7 +129,7 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
     PersonalizeDetail personalizeDetail = null;
 
     try {
-      personalizeDetail = PersonalizationDAO.getPersonalizeDetail(con,
+      personalizeDetail = dao.getPersonalizeDetail(con,
           this.currentUserId);
     } catch (Exception e) {
       throw new PersonalizationRuntimeException(
@@ -144,29 +143,30 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
       SilverTrace.info("personalization",
           "PersonalizationBmEJB.getPersonalizeDetail()",
           "root.MSG_GEN_PARAM_VALUE", "thesaurusStatus = "
-          + personalizeDetail.getThesaurusStatus());
+              + personalizeDetail.getThesaurusStatus());
     }
     return personalizeDetail;
   }
 
   /**
    * Method declaration
+   *
    * @param languages
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
    * @see
    */
-  public void setLanguages(Vector<String> languages) throws RemoteException {
-    SilverTrace.info("personalization", "PersonalizationBmEJB.setLanguages()",
+  public void setLanguages(String languages) throws RemoteException {
+    SilverTrace.info("personalization", "PersonalizationBmEJB.setLanguage()",
         "root.MSG_GEN_ENTER_METHOD");
     Connection con = getConnection();
 
     try {
-      PersonalizationDAO.setLanguages(con, this.currentUserId, languages);
+      dao.setLanguage(con, this.currentUserId, languages);
     } catch (Exception e) {
       throw new PersonalizationRuntimeException(
-          "PersonalizationBmEJB.setLanguages()",
+          "PersonalizationBmEJB.setLanguage()",
           SilverpeasRuntimeException.ERROR,
           "personalization.EX_CANT_SET_LANGUAGE", e);
     } finally {
@@ -176,37 +176,37 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
 
   /**
    * Method declaration
+   *
    * @return
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
    * @see
    */
-  public Vector<String> getLanguages() throws RemoteException {
-    SilverTrace.info("personalization", "PersonalizationBmEJB.getLanguages()",
+  public String getLanguages() throws RemoteException {
+    SilverTrace.info("personalization", "PersonalizationBmEJB.getLanguage()",
         "root.MSG_GEN_ENTER_METHOD");
     Connection con = getConnection();
-    Vector<String> languages = null;
+    String languages = null;
 
     try {
       PersonalizeDetail personalizeDetail = getPersonalizeDetail();
 
       if (personalizeDetail != null) {
-        languages = personalizeDetail.getLanguages();
+        languages = personalizeDetail.getLanguage();
       } else {
         // the user has not defined favorite language
-        languages = new Vector<String>();
-        languages.add(getDefaultLanguage());
+        languages = getDefaultLanguage();
 
         // insert a new record in database
-        PersonalizationDAO.insertPersonalizeDetail(con, this.currentUserId,
+        dao.insertPersonalizeDetail(con, this.currentUserId,
             languages, this.defaultLook, defaultPersonalWSId,
             this.defaultThesaurusStatus, this.defaultDragDropStatus,
             this.defaultOnlineEditingStatus, getDefaultWebDAVEditingStatus());
       }
     } catch (Exception e) {
       throw new PersonalizationRuntimeException(
-          "PersonalizationBmEJB.getLanguages()",
+          "PersonalizationBmEJB.getLanguage()",
           SilverpeasRuntimeException.ERROR,
           "personalization.EX_CANT_GET_LANGUAGE", e);
     } finally {
@@ -231,6 +231,7 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
 
   /**
    * Method declaration
+   *
    * @return
    * @throws CreateException
    * @throws NamingException
@@ -241,26 +242,25 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
     SilverTrace.info("personalization",
         "PersonalizationBmEJB.getFavoriteLanguage()",
         "root.MSG_GEN_ENTER_METHOD");
-    Vector<String> languages = getLanguages();
+    String languages = getLanguages();
     String favoriteLanguage = getDefaultLanguage();
 
-    if (languages != null) {
-      if (!languages.isEmpty()) {
-        favoriteLanguage = languages.firstElement();
-      }
+    if (StringUtil.isDefined(languages)) {
+      favoriteLanguage = languages;
     }
     return favoriteLanguage;
   }
 
   /**
    * Method declaration
+   *
    * @return
    * @throws CreateException
    * @throws NamingException
    * @throws SQLException
    * @see
    */
-  public String getFavoriteLook() throws RemoteException {
+  public String getFavoriteLook()  {
     SilverTrace.info("personalization",
         "PersonalizationBmEJB.getFavoriteLook()", "root.MSG_GEN_ENTER_METHOD");
     String favoriteLook = defaultLook;
@@ -287,6 +287,7 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
 
   /**
    * Method declaration
+   *
    * @param look
    * @throws CreateException
    * @throws NamingException
@@ -301,7 +302,7 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
 
     try {
       PersonalizeDetail personalizeDetail = getPersonalizeDetail();
-      PersonalizationDAO.setFavoriteLook(con, this.currentUserId, look);
+      dao.setFavoriteLook(con, this.currentUserId, look);
       personalizeDetail.setLook(look);
     } catch (Exception e) {
       throw new PersonalizationRuntimeException(
@@ -316,7 +317,7 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
   public void setPersonalWorkSpace(String spaceId) throws RemoteException {
     Connection con = getConnection();
     try {
-      PersonalizationDAO.setPersonalWorkSpace(con, this.currentUserId, spaceId);
+      dao.setPersonalWorkSpace(con, this.currentUserId, spaceId);
     } catch (Exception e) {
       throw new PersonalizationRuntimeException(
           "PersonalizationBmEJB.setPersonalWorkSpace()",
@@ -351,6 +352,7 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
 
   /**
    * Method declaration
+   *
    * @return
    * @throws CreateException
    * @throws NamingException
@@ -366,8 +368,9 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
 
     try {
       PersonalizeDetail personalizeDetail = getPersonalizeDetail();
-      if (personalizeDetail != null)
+      if (personalizeDetail != null) {
         thesaurusStatus = personalizeDetail.getThesaurusStatus();
+      }
     } catch (Exception e) {
       throw new PersonalizationRuntimeException(
           "PersonalizationBmEJB.getThesaurusStatus()",
@@ -384,6 +387,7 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
 
   /**
    * Method declaration
+   *
    * @param thesaurusStatus
    * @throws CreateException
    * @throws NamingException
@@ -398,14 +402,14 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
     Connection con = getConnection();
 
     try {
-      PersonalizationDAO.setThesaurusStatus(con, this.currentUserId,
+      dao.setThesaurusStatus(con, this.currentUserId,
           thesaurusStatus);
     } catch (Exception e) {
       throw new PersonalizationRuntimeException(
           "PersonalizationBmEJB.setThesaurusStatus()",
           SilverpeasRuntimeException.ERROR,
           "personalization.EX_CANT_SET_THESAURUS_STATUS", "thesaurusStatus="
-          + thesaurusStatus, e);
+              + thesaurusStatus, e);
     } finally {
       freeConnection(con);
     }
@@ -413,6 +417,7 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
 
   /**
    * Method declaration
+   *
    * @return
    * @throws CreateException
    * @throws NamingException
@@ -428,8 +433,9 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
 
     try {
       PersonalizeDetail personalizeDetail = getPersonalizeDetail();
-      if (personalizeDetail != null)
+      if (personalizeDetail != null) {
         dragAndDropStatus = personalizeDetail.getDragAndDropStatus();
+      }
     } catch (Exception e) {
       throw new PersonalizationRuntimeException(
           "PersonalizationBmEJB.getDragAndDropStatus()",
@@ -446,6 +452,7 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
 
   /**
    * Method declaration
+   *
    * @param dragAndDropStatus
    * @throws CreateException
    * @throws NamingException
@@ -460,14 +467,14 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
     Connection con = getConnection();
 
     try {
-      PersonalizationDAO.setDragAndDropStatus(con, this.currentUserId,
+      dao.setDragAndDropStatus(con, this.currentUserId,
           dragAndDropStatus);
     } catch (Exception e) {
       throw new PersonalizationRuntimeException(
           "PersonalizationBmEJB.setDragAndDropStatus()",
           SilverpeasRuntimeException.ERROR,
           "personalization.EX_CANT_SET_DRAGDROP_STATUS", "dragAndDropStatus="
-          + dragAndDropStatus, e);
+              + dragAndDropStatus, e);
     } finally {
       freeConnection(con);
     }
@@ -475,6 +482,7 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
 
   /**
    * Method declaration
+   *
    * @return
    * @throws CreateException
    * @throws NamingException
@@ -490,8 +498,9 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
 
     try {
       PersonalizeDetail personalizeDetail = getPersonalizeDetail();
-      if (personalizeDetail != null)
+      if (personalizeDetail != null) {
         onlineEditingStatus = personalizeDetail.getOnlineEditingStatus();
+      }
     } catch (Exception e) {
       throw new PersonalizationRuntimeException(
           "PersonalizationBmEJB.getOnlineEditingStatus()",
@@ -503,12 +512,13 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
     SilverTrace.info("personalization",
         "PersonalizationBmEJB.getOnlineEditingStatus()",
         "root.MSG_GEN_PARAM_VALUE", "onlineEditingStatus = "
-        + onlineEditingStatus);
+            + onlineEditingStatus);
     return onlineEditingStatus;
   }
 
   /**
    * Method declaration
+   *
    * @param onlineEditingStatus
    * @throws CreateException
    * @throws NamingException
@@ -520,11 +530,11 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
     SilverTrace.info("personalization",
         "PersonalizationBmEJB.setOnlineEditingStatus()",
         "root.MSG_GEN_PARAM_VALUE", "onlineEditingStatus = "
-        + onlineEditingStatus);
+            + onlineEditingStatus);
     Connection con = getConnection();
 
     try {
-      PersonalizationDAO.setOnlineEditingStatus(con, this.currentUserId,
+      dao.setOnlineEditingStatus(con, this.currentUserId,
           onlineEditingStatus);
     } catch (Exception e) {
       throw new PersonalizationRuntimeException(
@@ -539,6 +549,7 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
 
   /**
    * Method declaration
+   *
    * @return
    * @throws CreateException
    * @throws NamingException
@@ -554,8 +565,9 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
 
     try {
       PersonalizeDetail personalizeDetail = getPersonalizeDetail();
-      if (personalizeDetail != null)
+      if (personalizeDetail != null) {
         webdavEditingStatus = personalizeDetail.isWebdavEditingStatus();
+      }
     } catch (Exception e) {
       throw new PersonalizationRuntimeException(
           "PersonalizationBmEJB.getWebdavEditingStatus()",
@@ -567,12 +579,13 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
     SilverTrace.info("personalization",
         "PersonalizationBmEJB.getWebdavEditingStatus()",
         "root.MSG_GEN_PARAM_VALUE", "webdavEditingStatus = "
-        + webdavEditingStatus);
+            + webdavEditingStatus);
     return webdavEditingStatus;
   }
 
   /**
    * Method declaration
+   *
    * @param webdavEditingStatus
    * @throws RemoteException
    * @see
@@ -582,11 +595,11 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
     SilverTrace.info("personalization",
         "PersonalizationBmEJB.setWebdavEditingStatus()",
         "root.MSG_GEN_PARAM_VALUE", "webdavEditingStatus = "
-        + webdavEditingStatus);
+            + webdavEditingStatus);
     Connection con = getConnection();
 
     try {
-      PersonalizationDAO.setWebdavEditingStatus(con, this.currentUserId,
+      dao.setWebdavEditingStatus(con, this.currentUserId,
           webdavEditingStatus);
     } catch (Exception e) {
       throw new PersonalizationRuntimeException(
@@ -609,6 +622,7 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
 
   /**
    * Method declaration
+   *
    * @throws java.rmi.RemoteException
    * @throws javax.ejb.EJBException
    * @see
@@ -621,6 +635,7 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
 
   /**
    * Method declaration
+   *
    * @throws java.rmi.RemoteException
    * @throws javax.ejb.EJBException
    * @see
@@ -633,6 +648,7 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
 
   /**
    * Method declaration
+   *
    * @throws java.rmi.RemoteException
    * @throws javax.ejb.EJBException
    * @see
@@ -647,7 +663,7 @@ public class PersonalizationBmEJB implements PersonalizationBmBusinessSkeleton, 
       throws javax.ejb.EJBException, java.rmi.RemoteException {
     SilverTrace
         .debug("personalization", "PersonalizationBmEJB.setSessionContext()",
-        "root.MSG_GEN_ENTER_METHOD");
+            "root.MSG_GEN_ENTER_METHOD");
   }
 
 }

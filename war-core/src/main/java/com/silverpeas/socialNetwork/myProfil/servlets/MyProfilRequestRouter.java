@@ -305,11 +305,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
   
   private void updateUserSettings(HttpServletRequest request, MyProfilSessionController sc)
       throws PeasCoreException {
-
-    List<String> languages = new ArrayList<String>();
-    languages.add(request.getParameter("SelectedLanguage"));
-    sc.setLanguages(languages);
-
+    sc.setLanguage(request.getParameter("SelectedLanguage"));
     sc.setFavoriteLook(request.getParameter("SelectedLook"));
     sc.setThesaurusStatus(Boolean.valueOf(request.getParameter("opt_thesaurusStatus")));
     sc.setDragAndDropStatus(Boolean.valueOf(request.getParameter("opt_dragDropStatus")));

@@ -23,8 +23,41 @@
  */
 package com.silverpeas.personalization.dao;
 
+import com.stratelia.webactiv.personalization.model.PersonalizeDetail;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+
 public interface PersonalizationDao {
   String PERSONALCOLUMNNAMES =
       "id, languages, look, personalWSpace, thesaurusStatus, dragAndDropStatus, onlineEditingStatus, webdavEditingStatus";
   String PERSONALTABLENAME = "Personalization";
+
+  public PersonalizeDetail getPersonalizeDetail(Connection con, String userId) throws SQLException;
+
+  public void setLanguage(Connection con, String userId, String language)
+      throws SQLException;
+
+  public void setPersonalWorkSpace(Connection con, String userId, String spaceId)
+      throws SQLException;
+
+  public void setFavoriteLook(Connection con, String userId, String look) throws SQLException;
+
+  public void setThesaurusStatus(Connection con, String userId, boolean thesaurusStatus)
+      throws SQLException;
+
+  public void setDragAndDropStatus(Connection con, String userId, boolean dragAndDropStatus)
+      throws SQLException;
+
+  public void setOnlineEditingStatus(Connection con, String userId, boolean onlineEditingStatus)
+      throws SQLException;
+
+  public void setWebdavEditingStatus(Connection con, String userId, boolean webdavEditingStatus)
+      throws SQLException;
+
+   public void insertPersonalizeDetail(Connection con, String userId,
+      String language, String look, String defaultPersonalWSId,
+      boolean thesaurusStatus, boolean dragAndDropStatus,
+      boolean onlineEditingStatus, boolean webdavEditingStatus)
+      throws SQLException;
 }

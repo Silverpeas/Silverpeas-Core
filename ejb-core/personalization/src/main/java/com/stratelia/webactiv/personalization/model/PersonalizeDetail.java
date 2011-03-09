@@ -24,12 +24,10 @@
 
 package com.stratelia.webactiv.personalization.model;
 
-import java.util.Vector;
-
 public class PersonalizeDetail implements java.io.Serializable {
 
   private static final long serialVersionUID = 9192830552642027995L;
-  private Vector<String> languages = null;
+  private String language = null;
   private String look = null;
   private String collaborativeWorkSpaceId;
   private boolean thesaurusStatus;
@@ -37,11 +35,11 @@ public class PersonalizeDetail implements java.io.Serializable {
   private boolean onlineEditingStatus;
   private boolean webdavEditingStatus;
 
-  public PersonalizeDetail(Vector<String> languages, String look,
+  public PersonalizeDetail(String language, String look,
       String collaborativeWorkSpaceId, boolean thesaurusStatus,
       boolean dragDropStatus, boolean onlineEditingStatus,
       boolean webdavEditingStatus) {
-    this.languages = languages;
+    this.language = language;
     this.look = look;
     this.collaborativeWorkSpaceId = collaborativeWorkSpaceId;
     this.thesaurusStatus = thesaurusStatus;
@@ -50,12 +48,12 @@ public class PersonalizeDetail implements java.io.Serializable {
     this.webdavEditingStatus = webdavEditingStatus;
   }
 
-  public void setLanguages(Vector<String> languages) {
-    this.languages = languages;
+  public void setLanguage(String language) {
+    this.language = language;
   }
 
-  public Vector<String> getLanguages() {
-    return this.languages;
+  public String getLanguage() {
+    return this.language;
   }
 
   public String getLook() {
@@ -112,5 +110,67 @@ public class PersonalizeDetail implements java.io.Serializable {
 
   public void setWebdavEditingStatus(boolean webdavEditingStatus) {
     this.webdavEditingStatus = webdavEditingStatus;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    PersonalizeDetail that = (PersonalizeDetail) o;
+
+    if (dragDropStatus != that.dragDropStatus) {
+      return false;
+    }
+    if (onlineEditingStatus != that.onlineEditingStatus) {
+      return false;
+    }
+    if (thesaurusStatus != that.thesaurusStatus) {
+      return false;
+    }
+    if (webdavEditingStatus != that.webdavEditingStatus) {
+      return false;
+    }
+    if (collaborativeWorkSpaceId != null ? !collaborativeWorkSpaceId.equals(
+        that.collaborativeWorkSpaceId) : that.collaborativeWorkSpaceId != null) {
+      return false;
+    }
+    if (language != null ? !language.equals(that.language) : that.language != null) {
+      return false;
+    }
+    if (look != null ? !look.equals(that.look) : that.look != null) {
+      return false;
+    }
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = language != null ? language.hashCode() : 0;
+    result = 31 * result + (look != null ? look.hashCode() : 0);
+    result = 31 * result + (collaborativeWorkSpaceId != null ? collaborativeWorkSpaceId.hashCode() : 0);
+    result = 31 * result + (thesaurusStatus ? 1 : 0);
+    result = 31 * result + (dragDropStatus ? 1 : 0);
+    result = 31 * result + (onlineEditingStatus ? 1 : 0);
+    result = 31 * result + (webdavEditingStatus ? 1 : 0);
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    return "PersonalizeDetail{" +
+        "language=" + language +
+        ", look='" + look + '\'' +
+        ", collaborativeWorkSpaceId='" + collaborativeWorkSpaceId + '\'' +
+        ", thesaurusStatus=" + thesaurusStatus +
+        ", dragDropStatus=" + dragDropStatus +
+        ", onlineEditingStatus=" + onlineEditingStatus +
+        ", webdavEditingStatus=" + webdavEditingStatus +
+        '}';
   }
 }

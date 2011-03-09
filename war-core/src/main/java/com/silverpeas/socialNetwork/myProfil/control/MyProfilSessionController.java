@@ -33,7 +33,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.ejb.CreateException;
 import javax.naming.NamingException;
@@ -267,26 +266,26 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   /**
    * Method declaration
-   * @param languages
+   * @param language
    * @throws CreateException
    * @throws NamingException
    * @throws RemoteException
    * @throws SQLException
    * @see
    */
-  public void setLanguages(List<String> languages) throws PeasCoreException {
+  public void setLanguage(String language) throws PeasCoreException {
     try {
-      getPersonalization().setLanguages(new Vector<String>(languages));
-      favoriteLanguage = languages.get(0);
+      getPersonalization().setLanguages(language);
+      favoriteLanguage = language;
 
       // Change language in MainSessionController
       setLanguageToMainSessionController(favoriteLanguage);
     } catch (NoSuchObjectException nsoe) {
       initPersonalization();
-      setLanguages(languages);
+      setLanguage(language);
     } catch (Exception e) {
       throw new PeasCoreException(
-          "MyProfileSessionController.setLanguages()",
+          "MyProfileSessionController.setLanguage()",
           SilverpeasException.ERROR,
           "personalizationPeas.EX_CANT_SET_LANGUAGE", e);
     }
@@ -297,14 +296,14 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
    * @return
    * @throws PeasCoreException 
    */
-  public List<String> getLanguages() throws PeasCoreException {
+  public String getLanguages() throws PeasCoreException {
     try {
       return getPersonalization().getLanguages();
     } catch (NoSuchObjectException nsoe) {
       initPersonalization();
       return getLanguages();
     } catch (Exception e) {
-      throw new PeasCoreException("MyProfileSessionController.getLanguages()",
+      throw new PeasCoreException("MyProfileSessionController.getLanguage()",
           SilverpeasException.ERROR, "personalizationPeas.EX_CANT_GET_LANGUAGE", e);
     }
   }
