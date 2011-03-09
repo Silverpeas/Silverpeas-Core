@@ -6421,10 +6421,16 @@ public final class Admin {
     List<String> userIds = new ArrayList<String>();
 
     ComponentInst component = getComponentInst(componentId);
-    List<ProfileInst> profiles = component.getAllProfilesInst();
-    for (ProfileInst profile :
-        profiles) {
-      userIds.addAll(getUserIdsForComponentProfile(profile));
+    if (component != null) {
+      if (component.isPublic()) {
+        // component is public, all users are allowed to access it
+        return Arrays.asList(getAllUsersIds());
+      } else {
+        List<ProfileInst> profiles = component.getAllProfilesInst();
+        for (ProfileInst profile : profiles) {
+          userIds.addAll(getUserIdsForComponentProfile(profile));
+        }
+      }
     }
 
     return userIds;
@@ -6452,6 +6458,13 @@ public final class Admin {
   public String[] searchGroupsIds(boolean isRootGroup, String componentId,
       String[] profileId, Group modelGroup) throws AdminException {
     try {
+      ComponentInst component = getComponentInst(componentId);
+      if (component != null) {
+        if (component.isPublic()) {
+          // component is public, all groups are allowed to access it
+          componentId = null;
+        }
+      }
       return groupManager.searchGroupsIds(domainDriverManager, isRootGroup,
           getDriverComponentId(componentId), profileId, modelGroup);
     } catch (Exception e) {
