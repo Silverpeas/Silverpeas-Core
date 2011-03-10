@@ -23,7 +23,6 @@
  */
 package com.silverpeas.personalization.dao;
 
-import java.util.Vector;
 import com.silverpeas.components.model.AbstractJndiCase;
 import com.silverpeas.components.model.SilverpeasJndiCase;
 import com.stratelia.webactiv.personalization.control.ejb.JdbcPersonalizationDao;

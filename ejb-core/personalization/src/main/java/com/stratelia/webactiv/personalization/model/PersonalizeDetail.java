@@ -21,19 +21,45 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.personalization.model;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "personalization")
 public class PersonalizeDetail implements java.io.Serializable {
 
   private static final long serialVersionUID = 9192830552642027995L;
+  @Id
+  private String id;
+  @Column(name = "languages")
   private String language = null;
   private String look = null;
+  @Column(name = "personalwspace")
   private String collaborativeWorkSpaceId;
+  @Column(name = "thesaurusstatus", columnDefinition = "INTEGER")
   private boolean thesaurusStatus;
+  @Column(name = "draganddropstatus", columnDefinition = "INTEGER")
   private boolean dragDropStatus;
+  @Column(name = "onlineeditingstatus", columnDefinition = "INTEGER")
   private boolean onlineEditingStatus;
+  @Column(name = "webdaveditingstatus", columnDefinition = "INTEGER")
   private boolean webdavEditingStatus;
+
+  public PersonalizeDetail() {
+  }
+
+  public PersonalizeDetail(String userId, String language, String look,
+      String collaborativeWorkSpaceId, boolean thesaurusStatus,
+      boolean dragDropStatus, boolean onlineEditingStatus,
+      boolean webdavEditingStatus) {
+    this(language, look, collaborativeWorkSpaceId, thesaurusStatus, dragDropStatus,
+        onlineEditingStatus, webdavEditingStatus);
+    this.id = userId;
+  }
 
   public PersonalizeDetail(String language, String look,
       String collaborativeWorkSpaceId, boolean thesaurusStatus,
@@ -113,64 +139,53 @@ public class PersonalizeDetail implements java.io.Serializable {
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
+  public boolean equals(Object obj) {
+    if (obj == null) {
       return false;
     }
-
-    PersonalizeDetail that = (PersonalizeDetail) o;
-
-    if (dragDropStatus != that.dragDropStatus) {
+    if (getClass() != obj.getClass()) {
       return false;
     }
-    if (onlineEditingStatus != that.onlineEditingStatus) {
+    final PersonalizeDetail other = (PersonalizeDetail) obj;
+    if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
       return false;
     }
-    if (thesaurusStatus != that.thesaurusStatus) {
+    if ((this.language == null) ? (other.language != null) : !this.language.equals(other.language)) {
       return false;
     }
-    if (webdavEditingStatus != that.webdavEditingStatus) {
+    if ((this.look == null) ? (other.look != null) : !this.look.equals(other.look)) {
       return false;
     }
-    if (collaborativeWorkSpaceId != null ? !collaborativeWorkSpaceId.equals(
-        that.collaborativeWorkSpaceId) : that.collaborativeWorkSpaceId != null) {
+    if ((this.collaborativeWorkSpaceId == null) ? (other.collaborativeWorkSpaceId != null) : !this.collaborativeWorkSpaceId.
+        equals(other.collaborativeWorkSpaceId)) {
       return false;
     }
-    if (language != null ? !language.equals(that.language) : that.language != null) {
+    if (this.thesaurusStatus != other.thesaurusStatus) {
       return false;
     }
-    if (look != null ? !look.equals(that.look) : that.look != null) {
+    if (this.dragDropStatus != other.dragDropStatus) {
       return false;
     }
-
+    if (this.onlineEditingStatus != other.onlineEditingStatus) {
+      return false;
+    }
+    if (this.webdavEditingStatus != other.webdavEditingStatus) {
+      return false;
+    }
     return true;
   }
 
   @Override
   public int hashCode() {
-    int result = language != null ? language.hashCode() : 0;
-    result = 31 * result + (look != null ? look.hashCode() : 0);
-    result = 31 * result + (collaborativeWorkSpaceId != null ? collaborativeWorkSpaceId.hashCode() : 0);
-    result = 31 * result + (thesaurusStatus ? 1 : 0);
-    result = 31 * result + (dragDropStatus ? 1 : 0);
-    result = 31 * result + (onlineEditingStatus ? 1 : 0);
-    result = 31 * result + (webdavEditingStatus ? 1 : 0);
-    return result;
+    int hash = 3;
+    return hash;
   }
 
   @Override
   public String toString() {
-    return "PersonalizeDetail{" +
-        "language=" + language +
-        ", look='" + look + '\'' +
-        ", collaborativeWorkSpaceId='" + collaborativeWorkSpaceId + '\'' +
-        ", thesaurusStatus=" + thesaurusStatus +
-        ", dragDropStatus=" + dragDropStatus +
-        ", onlineEditingStatus=" + onlineEditingStatus +
-        ", webdavEditingStatus=" + webdavEditingStatus +
-        '}';
+    return "PersonalizeDetail{" + "id=" + id + ", language=" + language + ", look=" 
+        + look + ", collaborativeWorkSpaceId=" + collaborativeWorkSpaceId + ", thesaurusStatus=" 
+        + thesaurusStatus + ", dragDropStatus=" + dragDropStatus + ", onlineEditingStatus=" 
+        + onlineEditingStatus + ", webdavEditingStatus=" + webdavEditingStatus + '}';
   }
 }

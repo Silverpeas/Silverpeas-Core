@@ -75,10 +75,10 @@ public class JdbcPersonalizationDao implements PersonalizationDao {
     SilverTrace.info("personalization",
         "JdbcPersonalizationDao.getPersonalizeDetailFromResultSet()",
         "root.MSG_GEN_PARAM_VALUE", "thesaurusStatus = "
-        + new Boolean(thesaurusStatus).toString() + ", dragDropStatus = "
-        + new Boolean(dragDropStatus).toString()
+        + Boolean.toString(thesaurusStatus) + ", dragDropStatus = "
+        + Boolean.toString(dragDropStatus)
         + ", onlineEditingStatus = "
-        + new Boolean(onlineEditingStatus).toString());
+        + Boolean.toString(onlineEditingStatus));
     PersonalizeDetail result = new PersonalizeDetail(languages,
         look, personalWS, thesaurusStatus, dragDropStatus, onlineEditingStatus,
         webdavEditingStatus);

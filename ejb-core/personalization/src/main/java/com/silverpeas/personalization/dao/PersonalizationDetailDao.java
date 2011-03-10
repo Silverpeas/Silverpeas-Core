@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,14 +22,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.personalization.control.ejb;
+package com.silverpeas.personalization.dao;
 
-import javax.ejb.EJBHome;
-import javax.ejb.CreateException;
-import java.rmi.RemoteException;
+import com.stratelia.webactiv.personalization.model.PersonalizeDetail;
+import org.synyx.hades.dao.GenericDao;
 
-public interface PersonalizationBmHome extends EJBHome {
 
-  PersonalizationBm create() throws RemoteException, CreateException;
-
+public interface PersonalizationDetailDao extends GenericDao<PersonalizeDetail, String> {
 }

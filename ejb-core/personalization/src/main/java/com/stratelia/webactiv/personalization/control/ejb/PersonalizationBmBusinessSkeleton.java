@@ -24,44 +24,36 @@
 
 package com.stratelia.webactiv.personalization.control.ejb;
 
-import java.rmi.RemoteException;
-
 public interface PersonalizationBmBusinessSkeleton {
 
-  public void setActor(String userId) throws RemoteException;
+  public void setLanguages(String userId, String languages) ;
 
-  public void setLanguages(String languages) throws RemoteException;
+  public String getLanguages(String userId) ;
 
-  public String getLanguages() throws RemoteException;
+  public String getFavoriteLanguage(String userId) ;
 
-  public String getFavoriteLanguage() throws RemoteException;
+  public String getFavoriteLook(String userId) ;
 
-  public String getFavoriteLook() throws RemoteException;
+  public void setFavoriteLook(String userId, String look) ;
 
-  public void setFavoriteLook(String look) throws RemoteException;
+  public void setPersonalWorkSpace(String userId, String spaceId) ;
 
-  public void setPersonalWorkSpace(String spaceId) throws RemoteException;
+  public String getPersonalWorkSpace(String userId) ;
 
-  public String getPersonalWorkSpace() throws RemoteException;
+  public void setThesaurusStatus(String userId, boolean thesaurusStatus);
 
-  public void setThesaurusStatus(boolean thesaurusStatus)
-      throws RemoteException;
+  public boolean getThesaurusStatus(String userId) ;
 
-  public boolean getThesaurusStatus() throws RemoteException;
+  public void setDragAndDropStatus(String userId, boolean dragAndDropStatus);
 
-  public void setDragAndDropStatus(boolean dragAndDropStatus)
-      throws RemoteException;
+  public boolean getDragAndDropStatus(String userId) ;
 
-  public boolean getDragAndDropStatus() throws RemoteException;
+  public void setOnlineEditingStatus(String userId, boolean onlineEditingStatus);
 
-  public void setOnlineEditingStatus(boolean onlineEditingStatus)
-      throws RemoteException;
+  public boolean getOnlineEditingStatus(String userId) ;
 
-  public boolean getOnlineEditingStatus() throws RemoteException;
+  public void setWebdavEditingStatus(String userId, boolean webdavEditingStatus);
 
-  public void setWebdavEditingStatus(boolean webdavEditingStatus)
-      throws RemoteException;
-
-  public boolean getWebdavEditingStatus() throws RemoteException;
+  public boolean getWebdavEditingStatus(String userId) ;
 
 }
