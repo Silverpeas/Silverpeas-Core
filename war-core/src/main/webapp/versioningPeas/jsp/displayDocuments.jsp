@@ -322,7 +322,7 @@ ResourcesWrapper resources, String httpServerBase, VersioningSessionController v
         {
         	document = (Document) iterator.next();
         	versioningSC.setEditingDocumentWithDefaultLists(document);
-        	if (versioningSC.hasAccess(document, versioningSC.getUserId()))
+        	if (fromAlias || versioningSC.hasAccess(document, versioningSC.getUserId()))
 	        {
         		if ("user".equals(profile))
         	  	{

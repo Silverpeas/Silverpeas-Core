@@ -1793,7 +1793,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     String cryptMethod = SilverpeasSettings.readString(templateDomainSql,
         "database.SQLPasswordEncryption", Authentication.ENC_TYPE_MD5);
     boolean allowPasswordChange = SilverpeasSettings.readBoolean(
-        templateDomainSql, "allowPasswordChange", false);
+        templateDomainSql, "allowPasswordChange", true);
 
     BufferedReader readerTemplateDomainSQL = null;
     try {
