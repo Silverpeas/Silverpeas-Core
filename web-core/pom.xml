@@ -68,7 +68,7 @@
     </dependency>
     <dependency>
       <groupId>com.sun.portal.portletcontainer</groupId>
-      <artifactId>java-portlet-container</artifactId>
+      <artifactId>portlet-container</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>

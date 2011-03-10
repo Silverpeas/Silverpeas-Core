@@ -136,7 +136,7 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <artifactId>java-portlet-container</artifactId>
+      <artifactId>portlet-container</artifactId>
       <groupId>com.sun.portal.portletcontainer</groupId>
       <scope>provided</scope>
     </dependency>

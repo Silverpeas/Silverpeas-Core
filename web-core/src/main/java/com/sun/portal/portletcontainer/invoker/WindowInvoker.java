@@ -1024,7 +1024,7 @@ public abstract class WindowInvoker implements WindowInvokerConstants {
    */
   public ResourceBundle getResourceBundle(String base) {
     Locale locale = null;
-    locale = getPortletWindowContext().getLocale();
+    locale = new Locale(getPortletWindowContext().getLocaleString());
     return FileUtil.loadBundle(base, locale);
   }
 
