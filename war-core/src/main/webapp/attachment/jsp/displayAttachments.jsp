@@ -162,13 +162,20 @@
             out.println("<tr id=\"attachment" + attachmentDetail.getPK().getId() + "\">");
           } else if ("right".equals(attachmentPosition)) {
             out.println(
-                "<li id=\"attachment_" + attachmentDetail.getPK().getId() + "\" class=\"attachmentListItem\">");
+                "<li id=\"attachment_" + attachmentDetail.getPK().getId() + "\" class=\"attachmentListItem\" "+iconStyle+">");
           }
+          
+          if (contextualMenuEnabled) {
+            com.silverpeas.attachment.MenuHelper.displayActions(attachmentDetail, useXMLForm,
+                useFileSharing, webdavEditingEnable, userId, contentLanguage, attResources,
+                httpServerBase, showMenuNotif, useContextualMenu, out);
+          }
+          
           out.print("<span class=\"lineMain\">");
           if (showIcon) {
             out.println(
                 "<img id=\"img_" + attachmentDetail.getPK().getId() + "\" src=\"" + attachmentDetail.
-                getAttachmentIcon(contentLanguage) + "\" width=\"20\" " + iconStyle + ">");
+                getAttachmentIcon(contentLanguage) + "\" class=\"icon\"/>");
           }
 
           url = m_Context +  attachmentDetail.getAttachmentURL(contentLanguage);
@@ -176,41 +183,21 @@
             url = attachmentDetail.getAliasURL(contentLanguage);
           }
 
-          out.println(
-              "<a id=\"url" + attachmentDetail.getPK().getId() + "\" href=\"" + url + "\" target=\"_blank\">" + title + "</a>");
+          out.println("<a id=\"url" + attachmentDetail.getPK().getId() + "\" href=\"" + url + "\" target=\"_blank\">" + title + "</a>");
+			
+          if (contextualMenuEnabled && !useContextualMenu) {
+          	out.println("<img id=\"edit_"+attachmentDetail.getPK().getId()+"\" src=\""+m_Context + "/util/icons/arrow/open.gif\" class=\"moreActions\"/>");
+          }
 
+          out.print("</span>");
+          out.println("<span class=\"lineSize\">");
           if (displayUniversalLinks) {
-            String link = URLManager.getSimpleURL(URLManager.URL_FILE, attachmentDetail.getPK().
-                getId());
+            String link = URLManager.getSimpleURL(URLManager.URL_FILE, attachmentDetail.getPK().getId());
             String linkIcon = m_Context + "/util/icons/link.gif";
             out.print(
                 " <a href=\"" + link + "\"><img src=\"" + linkIcon + "\" border=\"0\" alt=\"" + attResources.
                 getString("CopyLink") + "\" title=\"" + attResources.getString("CopyLink") + "\"></a>");
           }
-          out.print("</span>");
-
-          if (contextualMenuEnabled) {
-            com.silverpeas.attachment.MenuHelper.displayActions(attachmentDetail, useXMLForm,
-                useFileSharing, webdavEditingEnable, userId, contentLanguage, attResources,
-                httpServerBase, showMenuNotif, out);
-			
-            out.println("<br/>");
-            if (attachmentDetail.isReadOnly()) {
-              out.println("<div id=\"worker" + attachmentDetail.getPK().getId() + "\" style=\"visibility:visible\">" + attResources.
-                  getString("readOnly") + " " + m_MainSessionCtrl.getOrganizationController().
-                  getUserDetail(attachmentDetail.getWorkerId()).getDisplayedName() + " " + attResources.
-                  getString("at") + " " + attResources.getOutputDate(attachmentDetail.
-                  getReservationDate()) + "</div>");
-            } else {
-              out.println(
-                  "<div id=\"worker" + attachmentDetail.getPK().getId() + "\" style=\"visibility:hidden\"></div>");
-            }
-          } else {
-            out.println("<br/>");
-          }
-          
-
-          out.println("<span class=\"lineSize\">");
           if (showFileSize) {
             out.print(attachmentDetail.getAttachmentFileSize(contentLanguage));
           }
@@ -223,10 +210,14 @@
           out.println(" - " + attResources.getOutputDate(attachmentDetail.getCreationDate()));
           out.println("</span>");
           if (StringUtil.isDefined(attachmentDetail.getTitle(contentLanguage)) && showTitle) {
-            out.println("<br/>" + attachmentDetail.getLogicalName(contentLanguage));
+            out.println("<span class=\"fileName\">");
+            out.println(attachmentDetail.getLogicalName(contentLanguage));
+            out.print("</span>");
           }
           if (StringUtil.isDefined(info) && showInfo) {
-            out.println("<br/><i>" + EncodeHelper.javaStringToHtmlParagraphe(info) + "</i>");
+            out.println("<span class=\"description\">");
+            out.println(EncodeHelper.javaStringToHtmlParagraphe(info));
+            out.print("</span>");
           }
 
           if (StringUtil.isDefined(attachmentDetail.getXmlForm(contentLanguage))) {
@@ -235,6 +226,19 @@
 %>
 <br/><a rel="<%=xmlURL%>" href="#" title="<%=title%>"><%=attResources.getString("attachment.xmlForm.View")%></a>
 <%
+          }
+          
+          if (contextualMenuEnabled) {
+           	if (attachmentDetail.isReadOnly()) {
+              out.println("<div class=\"workerInfo\" id=\"worker" + attachmentDetail.getPK().getId() + "\" style=\"visibility:visible\">" + attResources.
+                  getString("readOnly") + " " + m_MainSessionCtrl.getOrganizationController().
+                  getUserDetail(attachmentDetail.getWorkerId()).getDisplayedName() + " " + attResources.
+                  getString("at") + " " + attResources.getOutputDate(attachmentDetail.
+                  getReservationDate()) + "</div>");
+            } else {
+              out.println(
+                  "<div class=\"workerInfo\" class=\"\" id=\"worker" + attachmentDetail.getPK().getId() + "\" style=\"visibility:hidden\"></div>");
+            }
           }
 
           if (attachmentDetail.isSpinfireDocument(contentLanguage) && spinfireViewerEnable) {
@@ -376,6 +380,8 @@
 
   <% if (contextualMenuEnabled) {%>
 
+  	var pageMustBeReloadingAfterSorting = false;
+  
     function checkout(id, webdav, edit, download)
     {
       if (id > 0) {
@@ -411,7 +417,9 @@
           		window.location.href=window.location.href;
         	}
         }, 'text');
+        pageMustBeReloadingAfterSorting = true;
       }
+      //alert("checkout END");
     }
 
     function checkoutAndDownload(id, webdav)
@@ -425,7 +433,9 @@
     }
 
     function checkin(id,webdav,forceRelease)
-    {
+    {	
+    	//alert("checkin BEGIN");
+        //alert("checkin :"+id+", "+webdav+", "+forceRelease);
       if (id > 0) {
         var webdavUpdate = 'false';
         if (webdav)
@@ -452,12 +462,14 @@
               menuCheckin(id);
             }
           }
-        }, "html");
+        }, "text");
+        pageMustBeReloadingAfterSorting = true;
       }
     }
 
     function menuCheckin(id)
     {
+    	//alert("menuCheckin :"+id);
       var oMenu = eval("oMenu"+id);
       oMenu.getItem(3).cfg.setProperty("disabled", true);
       oMenu.getItem(0).cfg.setProperty("disabled", false);
@@ -535,6 +547,7 @@
         }
         closeMessage();
       }, 'text');
+      pageMustBeReloadingAfterSorting = true;
     }
 
     function reloadIncludingPage()
@@ -575,7 +588,7 @@
     }  
 
     $(document).ready(function(){
-      $("#attachmentList").sortable({opacity: 0.4, axis: 'y', cursor: 'hand', handle: 'img'});
+      $("#attachmentList").sortable({opacity: 0.4, axis: 'y', cursor: 'move', placeholder: 'ui-state-highlight', forcePlaceholderSize: true});
 
       $("#attachmentModalDialog").dialog({
     	  autoOpen: false,
@@ -613,6 +626,10 @@
           alert("Une erreur s'est produite !");
         }
       }, 'text');
+      if (pageMustBeReloadingAfterSorting) {
+	      //force page reloading to reinit menus
+	      reloadIncludingPage();
+      }
     }
 
     function uploadCompleted(s)

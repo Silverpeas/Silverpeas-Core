@@ -53,7 +53,8 @@ public class MenuHelper {
 
   public static void displayActions(AttachmentDetail attachment, boolean useXMLForm,
       boolean useFileSharing, boolean useWebDAV, String userId, String language,
-      ResourcesWrapper resources, String httpServerBase, boolean showMenuNotif, JspWriter out)
+      ResourcesWrapper resources, String httpServerBase, boolean showMenuNotif,
+      boolean useContextualMenu, JspWriter out)
       throws IOException {
 
     String attachmentId = attachment.getPK().getId();
@@ -112,19 +113,26 @@ public class MenuHelper {
     builder.append("</div>");
 
     builder.append("<script type=\"text/javascript\">");
+    
+    String oMenuId = "oMenu"+attachmentId; 
 
-    builder.append("var oMenu").append(attachmentId).append(";");
+    builder.append("var ").append(oMenuId).append(";");
     builder.append("var webDav").append(attachmentId).append(" = \"");
     builder.append(URLEncoder.encode(httpServerBase + attachment.getWebdavUrl(language), "UTF-8")).
         append("\";");
     builder.append("YAHOO.util.Event.onContentReady(\"basicmenu").append(attachmentId).append(
         "\", function () {");
-    builder.append("oMenu").append(attachmentId);
-    builder.append(" = new YAHOO.widget.ContextMenu(\"basicmenu").append(attachmentId);
-    builder.append("\", { trigger: \"img_").append(attachmentId);
-    builder.append(
-        "\", hidedelay: 100, effect: {effect: YAHOO.widget.ContainerEffect.FADE, duration: 0.30}});");
-    builder.append("oMenu").append(attachmentId).append(".render();");
+    if (useContextualMenu) {
+      builder.append(oMenuId).append(" = new YAHOO.widget.ContextMenu(\"basicmenu").append(attachmentId).append("\"");
+      builder.append(", { trigger: \"img_").append(attachmentId).append("\", ");
+    } else {
+      builder.append(oMenuId).append(" = new YAHOO.widget.Menu(\"basicmenu").append(attachmentId).append("\"");;
+      builder.append(", {");
+      //builder.append("context:[\"edit_"+attachmentId+"\", \"tr\", \"bl\"], ");
+    }
+    builder.append("hidedelay: 100, ");
+    builder.append("effect: {effect: YAHOO.widget.ContainerEffect.FADE, duration: 0.30}});");
+    builder.append(oMenuId).append(".render();");
     if (attachment.isReadOnly()) {
       builder.append(configureCheckout(attachmentId, true));
       builder.append(configureCheckoutAndDownload(attachmentId, !isWorker(userId, attachment)));
@@ -151,6 +159,20 @@ public class MenuHelper {
     builder.append("\", \"mouseover\", oMenu").append(attachmentId).append(".show);");
     builder.append("YAHOO.util.Event.addListener(\"basicmenu").append(attachmentId);
     builder.append("\", \"mouseout\", oMenu").append(attachmentId).append(".hide);");
+    
+    if (!useContextualMenu) {
+      /*builder.append("YAHOO.util.Event.addListener(\"edit_").append(attachmentId);
+      builder.append("\", \"click\", oMenu").append(attachmentId).append(".show, null, oMenu").append(attachmentId).append(");");*/
+      
+      builder.append("YAHOO.util.Event.on(\"edit_").append(attachmentId);
+      builder.append("\", \"click\", function (event) {");
+      builder.append("var xy = YAHOO.util.Event.getXY(event);");
+      builder.append(oMenuId).append(".cfg.setProperty(\"x\", xy[0]);");
+      builder.append(oMenuId).append(".cfg.setProperty(\"y\", xy[1]+10);");
+      builder.append(oMenuId).append(".show();");
+      builder.append("  })");
+    }
+
     builder.append("});");
     builder.append("</script>");
     out.print(builder.toString());
