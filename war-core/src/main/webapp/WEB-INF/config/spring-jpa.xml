@@ -15,10 +15,29 @@
 	http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
 	http://schemas.synyx.org/hades http://schemas.synyx.org/hades/hades.xsd">
 
-  <bean name="personalizationService"
-        class="com.silverpeas.personalization.service.DefaultPersonalizationService"/>
+  <context:annotation-config/>
 
-  <bean name="personalizationServiceFactory"
-        class="com.silverpeas.personalization.service.PersonalizationServiceFactory" factory-method="getFactory"/>
+  <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
 
+  <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>
+
+  <hades:dao-config base-package="com.silverpeas" transaction-manager-ref="jpaTransactionManager"/>
+
+  <tx:annotation-driven transaction-manager="jpaTransactionManager"/>
+
+  <bean id="jpaTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+    <property name="entityManagerFactory" ref="entityManagerFactory"/>
+  </bean>
+
+  <bean id="entityManagerFactory"
+        class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+    <property name="dataSource" ref="dataSource"/>
+    <property name="persistenceUnitName" value="personalization-pu"/>
+    <property name="jpaVendorAdapter">
+      <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+        <property name="showSql" value="false"/>
+        <property name="generateDdl" value="true"/>
+      </bean>
+    </property>
+  </bean>
 </beans>

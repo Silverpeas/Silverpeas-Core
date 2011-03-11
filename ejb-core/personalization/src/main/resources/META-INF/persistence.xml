@@ -3,15 +3,10 @@
   <persistence-unit name="personalization-pu" transaction-type="RESOURCE_LOCAL">
     <provider>org.hibernate.ejb.HibernatePersistence</provider>
     <class>com.silverpeas.personalization.UserPreferences</class>
-    <shared-cache-mode>NONE</shared-cache-mode>
+    <shared-cache-mode>UNSPECIFIED</shared-cache-mode>
     <properties>
-      <!--<property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:personalization;DB_CLOSE_DELAY=-1"/>
-      <property name="javax.persistence.jdbc.password" value=""/>
-      <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
-      <property name="javax.persistence.jdbc.user" value="SA"/>-->
       <property name="hibernate.cache.provider_class" value="org.hibernate.cache.NoCacheProvider"/>
-      <property name="hibernate.hbm2ddl.auto" value="create"/>
-      <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+      <property name="hibernate.hbm2ddl.auto" value="validate"/>
     </properties>
   </persistence-unit>
 </persistence>
