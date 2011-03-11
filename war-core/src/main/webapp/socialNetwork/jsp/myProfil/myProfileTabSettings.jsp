@@ -1,174 +1,132 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-    
-<%@page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
-<%@page import="com.silverpeas.util.EncodeHelper"%>
-<%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
-<%@page import="com.silverpeas.util.StringUtil"%>
-<%@page import="java.util.List"%>
-<%@page import="java.util.Iterator"%>
-<%@page import="com.stratelia.webactiv.beans.admin.SpaceInstLight"%>
-<%@page import="com.silverpeas.socialNetwork.myProfil.servlets.MyProfileRoutes"%>
-    
+<%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@page import="com.silverpeas.socialNetwork.myProfil.servlets.MyProfileRoutes" %>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
+<%@page import="com.stratelia.webactiv.beans.admin.SpaceInstLight" %>
+<%@page import="java.util.List" %>
+
+<fmt:setLocale value="${sessionScope[sessionController].language}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<c:set var="preferences" value="${request.preferences}"/>
 <%
-ResourceLocator rs = new ResourceLocator("com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
-ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");
-ResourceLocator general = new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
-
-boolean isThesaurusEnabled	= ((Boolean) request.getAttribute("thesaurusStatus")).booleanValue();
-boolean isDragDropEnabled	= ((Boolean) request.getAttribute("dragDropStatus")).booleanValue();
-boolean isWebdavEnabled 	= ((Boolean) request.getAttribute("webdavEditingStatus")).booleanValue();
-String 	selectedLanguage	= (String) request.getAttribute("selectedLanguage");
-String 	selectedLook		= (String) request.getAttribute("selectedLook");
-String 	favoriteSpace		= (String) request.getAttribute("FavoriteSpace");
-List	spaceTreeview		= (List) request.getAttribute("SpaceTreeview");
-List 	allLanguages		= (List) request.getAttribute("AllLanguages");
-
-String message = null;
-
-List availableLooks		= gef.getAvailableLooks();
-
-String checkedThesaurus_activate 		= "";
-String checkedDragDrop_activate 		= "";
-String checkedWebdavEditing_activate    = "";
-if (isThesaurusEnabled) {
-	checkedThesaurus_activate = "checked=\"checked\"";
-}
-if (isDragDropEnabled) {
-	checkedDragDrop_activate = "checked=\"checked\"";
-}
-if (isWebdavEnabled) {
-  checkedWebdavEditing_activate = "checked=\"checked\"";
-}
+  List availableLooks = gef.getAvailableLooks();
+  pageContext.setAttribute("availableLooks", availableLooks);
+  List spaceTreeview = (List) request.getAttribute("SpaceTreeview");
 
 %>
-
-<% if (StringUtil.isDefined(message)) { %>
-
-<div class="inline_message_ok">
-	<%=message %>
-</div>
-<% } %>
-
 <form name="UserForm" action="<%=MyProfileRoutes.UpdateMySettings %>" method="post">
-<table border="0" cellspacing="0" cellpadding="5" width="100%">
-	<!-- Language -->
+  <table border="0" cellspacing="0" cellpadding="5" width="100%">
+    <!-- Language -->
     <tr>
-        <td class="txtlibform"><%=resource.getString("myProfile.settings.FavoriteLanguage")%> :</td>
-        <td>
-	        <select name="SelectedLanguage" size="1">
-				<%
-				if (allLanguages != null) {
-					String selected = "";
-		  			Iterator it = allLanguages.iterator();
-		  			while (it.hasNext()) {
-		  				String langue = (String) it.next();
-		  				selected = "";
-		  				if (selectedLanguage.equals(langue)) {
-		  					selected = "selected=\"selected\"";
-		  				}
-		  				%>
-		  				<option value="<%=langue%>" <%=selected%>><%=resource.getString("myProfile.settings.language_" + langue)%></option>
-		  				<%
-			  		}
-		  		}
-				%>
-		</select>
-       </td>
+      <td class="txtlibform"><fmt:message key="myProfile.preferences.FavoriteLanguage"/> :</td>
+      <td>
+        <select name="SelectedLanguage" size="1">
+          <c:forEach items="${request.AllLanguages}" var="language">
+            <c:choose>
+              <c:when test="${request.preferences.language eq language}">
+                <option value="<c:out value="${language}"/>" selected="selected"><fmt:message
+                    key="myProfile.preferences.language_+ ${language}"/></option>
+              </c:when>
+              <c:otherwise>
+                <option value="<c:out value="${language}"/>"><fmt:message
+                    key="myProfile.preferences.language_+ ${language}"/></option>
+              </c:otherwise>
+            </c:choose>
+          </c:forEach>
+        </select>
+      </td>
     </tr>
-	<!-- Look -->
-	<% if (availableLooks.size() > 1) { %>
-	<tr>
-        <td class="txtlibform"><%=resource.getString("myProfile.settings.FavoriteLook")%> :</td>
-        <td><select name="SelectedLook" size="1">
-            <% for (int i = 0; i < availableLooks.size(); i++) {
-                String lookName = (String) availableLooks.get(i);
-                if (selectedLook.equals(lookName)) {
-                  out.println("<option value=\""+lookName+"\" selected=\"selected\">"+lookName+"</option>");
-                } else {
-                  out.println("<option value=\""+lookName+"\">"+lookName+"</option>");
-                }
-            } %>
-            </select>
-        </td>
-    </tr>
-    <% } else { %>
-    	<input type="hidden" name="SelectedLook" value="<%=selectedLook%>"/>
-    <% } %>
-	<!-- defaultWorkSpace -->
+    <c:choose>
+      <!-- Look -->
+      <c:when test="{not empty availableLooks}">
+        <tr>
+          <td class="txtlibform"><fmt:message key="myProfile.preferences.FavoriteLook"/> :</td>
+          <td><select name="SelectedLook" size="1">
+            <c:forEach items="${availableLooks}" var="look">
+              <c:choose>
+                <c:when test="${request.preferences.language eq look}">
+                  <option value="<c:out value="${look}"/>" selected="selected"><c:out
+                      value="${look}"/></option>
+                </c:when>
+                <c:otherwise>
+                  <option value="<c:out value="${look}"/>"><c:out value="${look}"/></option>
+                </c:otherwise>
+              </c:choose>
+            </c:forEach>
+          </select>
+          </td>
+        </tr>
+      </c:when>
+      <c:otherwise>
+        <input type="hidden" name="SelectedLook" value="<c:out value="${preferences.look}" />"/>
+      </c:otherwise>
+    </c:choose>
+    <!-- defaultWorkSpace -->
     <tr>
-        <td class="txtlibform"><%=resource.getString("myProfile.settings.DefaultWorkSpace")%> :</td>
-        <td>
-        	<select name="SelectedWorkSpace" size="1">
-                <%
-                	if (favoriteSpace == null || favoriteSpace.equals("null")) {
-						out.println("<option value=\"null\" selected=\"selected\">"+resource.getString("UndefinedFavoriteSpace")+"</option>");
-                	}
-
-                	SpaceInstLight 	sil 		= null;
-                	String			indent		= null;
-                	String			selected	= null;
-                	for(int t = 0; t < spaceTreeview.size(); t++) {
-                		sil = (SpaceInstLight) spaceTreeview.get(t);
-
-                		//gestion de l'indentation
-                		indent = "";
-                		for (int l=0; l<sil.getLevel(); l++) {
-                			indent += "&nbsp;&nbsp;";
-                		}
-
-                		selected = "";
-                		if (sil.getFullId().equals(favoriteSpace)) {
-                			selected = "selected=\"selected\"";
-                		}
-
-                		out.println("<option value=\""+sil.getFullId()+"\" "+selected+">"+indent+sil.getName()+"</option>");
-                	}
-                %>
-            </select>
-        </td>
+      <td class="txtlibform"><fmt:message key="myProfile.preferences.DefaultWorkSpace"/> :</td>
+      <td>
+        <select name="SelectedWorkSpace" size="1">
+          <c:if
+              test="${empty preferences.personalWorkSpaceId || 'null' eq  preferences.personalWorkSpaceId}">
+            <option value="null" selected="selected"><fmt:message
+                key="UndefinedFavoriteSpace"/></option>
+          </c:if>
+          <c:set var="indentation" value=''/>
+          <c:forEach items="${request.SpaceTreeview}" var="space">
+            <c:forEach begin="0" end="${space.level}">
+              <c:set var="indentation">"&nbsp;&nbsp;"<c:out value="${idndentation}"/></c:set>
+            </c:forEach>
+            <option value="<c:out value="${space.fullId}"/>" <c:if
+                test="${space.fullid eq preferences.personalWorkSpaceId}">selected="selected"</c:if>>
+              <c:out value="${indentation}"/> <c:out value="${space.name}"/></option>
+          </c:forEach>
+        </select>
+      </td>
     </tr>
-	<!-- ThesaurusState -->
+    <!-- ThesaurusState -->
     <tr>
-        <td class="txtlibform"><%=resource.getString("myProfile.settings.Thesaurus")%> :</td>
-        <td>
-			<input name="opt_thesaurusStatus" type="checkbox" value="true" <%=checkedThesaurus_activate%>/>
-        </td>
+      <td class="txtlibform"><fmt:message key="myProfile.preferences.Thesaurus"/> :</td>
+      <td>
+        <input name="opt_thesaurusStatus" type="checkbox"
+               value="true" <c:if test="${preferences.}"<%=checkedThesaurus_activate%>/>
+      </td>
     </tr>
     <!-- Drag&Drop -->
     <tr>
-        <td class="txtlibform"><%=resource.getString("myProfile.settings.DragDrop")%> :</td>
-        <td>
-			<input name="opt_dragDropStatus" type="checkbox" value="true" <%=checkedDragDrop_activate%>/>
-        </td>
+      <td class="txtlibform"><fmt:message key="myProfile.preferences.DragDrop"/> :</td>
+      <td>
+        <input name="opt_dragDropStatus" type="checkbox"
+               value="true" <%=checkedDragDrop_activate%>/>
+      </td>
     </tr>
     <!-- Webdav Editing -->
     <tr>
-        <td class="txtlibform"><%=resource.getString("myProfile.settings.WebdavEditing")%> :</td>
-        <td>
-            <input name="opt_webdavEditingStatus" type="checkbox" value="true" <%=checkedWebdavEditing_activate%>/>
-        </td>
-    </tr>    
-</table>
+      <td class="txtlibform"><fmt:message key="myProfile.preferences.WebdavEditing"/> :</td>
+      <td>
+        <input name="opt_webdavEditingStatus" type="checkbox"
+               value="true" <%=checkedWebdavEditing_activate%>/>
+      </td>
+    </tr>
+  </table>
 </form>
- <%
-		ButtonPane buttonPane = gef.getButtonPane();
-		Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=submitForm();", false);
-		buttonPane.addButton(validateButton);
-		Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=history.back();", false);
-		buttonPane.addButton(cancelButton);
-		out.println("<br/><center>"+buttonPane.print()+"</center>");
-%>
+<fmt:message key="GML.validate" var="validate"/>
+<fmt:message key="GML.cancel" var="cancel"/>
+<view:buttonPane>
+  <view:button action="javascript:onClick=submitForm();" label="${validate}" disabled="false"/>
+  <view:button action="javascript:onClick=history.back();" label="${cancel}" disabled="false"/>
+</view:buttonPane>
 
 <script type="text/javascript">
-	function submitForm() {
-		var currentLook = '<%=selectedLook%>';
-		if (document.UserForm.SelectedLook.value != currentLook) {
-			alert("<%=resource.getString("myProfile.settings.ChangeLookAlert")%>");
-		}
-	
-		document.UserForm.submit();
-	}
+  function submitForm() {
+    var currentLook = '<caption:out balue="${preferences.look}"/>';
+    if (document.UserForm.SelectedLook.value != currentLook) {
+      alert("<fmt:message key="myProfile.preferences.ChangeLookAlert"/>");
+    }
+
+    document.UserForm.submit();
+  }
 </script>

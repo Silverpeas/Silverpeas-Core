@@ -94,7 +94,6 @@ import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.beans.admin.CompoSpace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBm;
@@ -334,7 +333,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           buildComponentListWhereToSearch(null, null);
         }
 
-        for (int i = 0; i < componentList.size(); i++) {
+        for (int i = 0;
+            i < componentList.size();
+            i++) {
           query.addComponent(componentList.get(i));
         }
 
@@ -464,7 +465,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       List<String> blackList = getFacetBlackList();
 
       // Loop or each result
-      for (GlobalSilverResult result : results) {
+      for (GlobalSilverResult result :
+          results) {
         String authorName = result.getCreatorName();
         String authorId = result.getUserId();
         AuthorVO curAuthor = new AuthorVO(authorName, authorId);
@@ -545,7 +547,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
     if (results != null && getSelectedSilverContents() != null) {
       GlobalSilverResult result = null;
-      for (int i = 0; i < results.size(); i++) {
+      for (int i = 0;
+          i < results.size();
+          i++) {
         result = results.get(i);
         if (getSelectedSilverContents().contains(result)) {
           result.setSelected(true);
@@ -592,7 +596,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     List<GlobalSilverResult> results = getGlobalSR();
     StatisticBm statisticBm = getStatisticBm();
     ForeignPK pk = new ForeignPK("unknown");
-    for (GlobalSilverResult result : results) {
+    for (GlobalSilverResult result :
+        results) {
       if (isPopularityCompliant(result)) {
         pk.setComponentName(result.getInstanceId());
         pk.setId(result.getId());
@@ -657,7 +662,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
     List<String> blackList = getFacetBlackList();
 
-    for (GlobalSilverResult gsResult : listGSR) {
+    for (GlobalSilverResult gsResult :
+        listGSR) {
       if (!blackList.contains(gsResult.getType())) {
         if (filterAuthor && gsResult.getUserId().equals(authorFilter)
             && filterComponent && gsResult.getInstanceId().equals(componentFilter)) {
@@ -711,7 +717,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
     GlobalSilverResult result = null;
     MatchingIndexEntry indexEntry = null;
-    for (int r = 0; r < results.size(); r++) {
+    for (int r = 0;
+        r < results.size();
+        r++) {
       result = results.get(r);
       result.setResultId(r);
       indexEntry = result.getIndexEntry();
@@ -744,8 +752,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           underLink = getUrl(m_sContext, indexEntry);
           int iStart = underLink.indexOf("Attachment");
           int iEnd = underLink.indexOf('&', iStart);
-          underLink = underLink.substring(0, iStart) + "Publication" + underLink.substring(iEnd, underLink.
-              length());
+          underLink = underLink.substring(0, iStart) + "Publication" + underLink.substring(iEnd,
+              underLink.length());
           StringBuilder titleLinkBuilder = new StringBuilder(256);
           titleLinkBuilder.append("javascript:").append(markAsReadJS).append(" window.open('").
               append(EncodeHelper.javaStringToJsString(downloadLink)).append("');jumpToComponent('").
@@ -773,8 +781,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         underLink = getUrl(m_sContext, indexEntry);
         int iStart = underLink.indexOf("Versioning");
         int iEnd = underLink.indexOf('&', iStart);
-        underLink = underLink.substring(0, iStart) + "Publication" + underLink.substring(iEnd, underLink.
-            length());
+        underLink = underLink.substring(0, iStart) + "Publication" + underLink.substring(iEnd,
+            underLink.length());
         titleLink = buildTitleLink(markAsReadJS, downloadLink, componentId, underLink, true);
       } else if (resultType.equals("LinkedFile")) {
         // open the linked file inside a popup window
@@ -900,7 +908,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
     String componentId = null;
     MatchingIndexEntry result = null;
-    for (int i = 0; i < matchingIndexEntries.size(); i++) {
+    for (int i = 0;
+        i < matchingIndexEntries.size();
+        i++) {
       result = matchingIndexEntries.get(i);
 
       // reinitialisation
@@ -1060,7 +1070,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     GlobalSilverContent gsc = null;
     GlobalSilverResult gsr = null;
     // String encodedURL = null;
-    for (int i = 0; i < globalSilverContents.size(); i++) {
+    for (int i = 0;
+        i < globalSilverContents.size();
+        i++) {
       gsc = globalSilverContents.get(i);
       gsr = new GlobalSilverResult(gsc);
       // encodedURL = URLEncoder.encode(gsc.getURL(), "UTF-8");
@@ -1172,7 +1184,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         "PdcSearchSessionController.setCurrentComponentIds()",
         "root.MSG_GEN_ENTER_METHOD", "# componentId = " + componentList.size());
     String componentId = null;
-    for (int i = 0; componentList != null && i < componentList.size(); i++) {
+    for (int i = 0;
+        componentList != null && i < componentList.size();
+        i++) {
       componentId = componentList.get(i);
       SilverTrace.debug("pdcPeas",
           "PdcSearchSessionController.setCurrentComponentIds()",
@@ -1186,7 +1200,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         "PdcSearchSessionController.getCurrentComponentIds()",
         "root.MSG_GEN_ENTER_METHOD");
     String componentId = null;
-    for (int i = 0; componentList != null && i < componentList.size(); i++) {
+    for (int i = 0;
+        componentList != null && i < componentList.size();
+        i++) {
       componentId = componentList.get(i);
       SilverTrace.info("pdcPeas",
           "PdcSearchSessionController.getCurrentComponentIds()",
@@ -1243,7 +1259,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private List<SearchAxis> transformAxisHeadersIntoSearchAxis(List<AxisHeader> axis) {
     ArrayList<SearchAxis> transformedAxis = new ArrayList<SearchAxis>();
     try {
-      for (int i = 0; i < axis.size(); i++) {
+      for (int i = 0;
+          i < axis.size();
+          i++) {
         AxisHeader ah = axis.get(i);
         SearchAxis sa = new SearchAxis(Integer.parseInt(ah.getPK().getId()), 0);
         // sa.setAxisName(ah.getName());
@@ -1288,7 +1306,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   private List<Value> setNBNumbersToOne(List<Value> values) {
-    for (int i = 0; i < values.size(); i++) {
+    for (int i = 0;
+        i < values.size();
+        i++) {
       Value value = values.get(i);
       value.setNbObjects(1);
     }
@@ -1410,7 +1430,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     SilverTrace.info("pdcPeas", "PdcSearchSessionController.getInstanceIdsFromComponentName",
         "root.MSG_GEN_PARAM_VALUE", "compoIds = " + compoIds.toString());
     List<String> instanceIds = new ArrayList<String>();
-    for (CompoSpace component : compoIds) {
+    for (CompoSpace component :
+        compoIds) {
       instanceIds.add(component.getComponentId());
     }
     return instanceIds;
@@ -1427,19 +1448,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private static String[] KEYWORDS = null;
   private boolean isThesaurusEnableByUser = false;
 
-  private synchronized boolean getActiveThesaurusByUser() throws PdcException, RemoteException {
-    try {
-      return getPersonalization().getThesaurusStatus();
-    } catch (NoSuchObjectException nsoe) {
-      initPersonalization();
-      return getPersonalization().getThesaurusStatus();
-    } catch (Exception e) {
-      throw new PdcException("PdcSearchSessionController.getActiveThesaurus()",
-          SilverpeasException.ERROR, "pdcPeas.EX_CANT_GET_ACTIVE_THESAURUS", "", e);
-    }
+  private boolean getActiveThesaurusByUser() throws PdcException {
+    return getPersonalization().isThesaurusEnabled();
   }
 
-  public boolean getActiveThesaurus() throws PdcException, RemoteException {
+  public boolean getActiveThesaurus() throws PdcException {
     return this.isThesaurusEnableByUser;
   }
 
@@ -1493,7 +1506,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
               synonymsString.append("(\"").append(word).append("\"");
               Collection<String> wordSynonyms = getSynonym(word);
-              for (String synonym : wordSynonyms) {
+              for (String synonym :
+                  wordSynonyms) {
                 synonymsString.append(" OR " + "\"").append(synonym).append("\"");
               }
               synonymsString.append(")");
@@ -1545,7 +1559,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   private boolean isKeyword(String mot) {
     String[] keyWords = getStopWords();
-    for (int i = 0; i < keyWords.length; i++) {
+    for (int i = 0;
+        i < keyWords.length;
+        i++) {
       if (mot.toLowerCase().equals(keyWords[i].toLowerCase())) {
         return true;
       }
@@ -1643,7 +1659,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
     List<Value> axises = new ArrayList<Value>();
 
-    for (int i = 0; i < allAxis.size(); i++) {
+    for (int i = 0;
+        i < allAxis.size();
+        i++) {
       AxisHeader sa = allAxis.get(i);
       String rootId = String.valueOf(sa.getRootId());
       List<Value> daughters = getPdcBm().getFilteredAxisValues(rootId, filter);
@@ -1660,7 +1678,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     String axisId = null;
     List<AxisHeader> allAxis = new ArrayList<AxisHeader>();
     // get all AxisHeader corresponding to usedAxis for this instance
-    for (int i = 0; i < usedAxisList.size(); i++) {
+    for (int i = 0;
+        i < usedAxisList.size();
+        i++) {
       usedAxis = usedAxisList.get(i);
       axisId = new Integer(usedAxis.getAxisId()).toString();
       axisHeader = getAxisHeader(axisId);
@@ -1674,7 +1694,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     List<String> usedTreeIds = new ArrayList<String>();
     AxisHeader axisHeader = null;
     String treeId = null;
-    for (int i = 0; i < usedAxisHeaders.size(); i++) {
+    for (int i = 0;
+        i < usedAxisHeaders.size();
+        i++) {
       axisHeader = usedAxisHeaders.get(i);
       if (axisHeader != null) {
         treeId = Integer.toString(axisHeader.getRootId());
@@ -1698,7 +1720,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     List<UsedAxis> usedAxisList = getPdcBm().getUsedAxisByInstanceId(instanceId);
     List<Axis> axisList = new ArrayList<Axis>();
     UsedAxis usedAxis = null;
-    for (int i = 0; i < usedAxisList.size(); i++) {
+    for (int i = 0;
+        i < usedAxisList.size();
+        i++) {
       usedAxis = usedAxisList.get(i);
       axisList.add(getAxisDetail(new Integer(usedAxis.getAxisId()).toString()));
     }
@@ -1746,7 +1770,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       InterestCenter ic = (new InterestCenterUtil()).getICByID(id);
       getSearchContext().clearCriterias();
       List<SearchCriteria> criterias = ic.getPdcContext();
-      for (SearchCriteria criteria : criterias) {
+      for (SearchCriteria criteria :
+          criterias) {
         searchContext.addCriteria(criteria);
       }
       return ic;
@@ -1812,7 +1837,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       // Il n'y a pas de restriction sur un espace particulier
       String[] allowedComponentIds = getUserAvailComponentIds();
       List<String> excludedComponentIds = getComponentsExcludedFromGlobalSearch();
-      for (int i = 0; i < allowedComponentIds.length; i++) {
+      for (int i = 0;
+          i < allowedComponentIds.length;
+          i++) {
         if (isSearchable(allowedComponentIds[i], excludedComponentIds)) {
           componentList.add(allowedComponentIds[i]);
         }
@@ -1822,7 +1849,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         // Restriction sur un espace. La recherche doit avoir lieu
         String[] asAvailCompoForCurUser = getOrganizationController().getAvailCompoIds(space,
             getUserId());
-        for (int nI = 0; nI < asAvailCompoForCurUser.length; nI++) {
+        for (int nI = 0;
+            nI < asAvailCompoForCurUser.length;
+            nI++) {
           if (isSearchable(asAvailCompoForCurUser[nI])) {
             componentList.add(asAvailCompoForCurUser[nI]);
           }
@@ -1838,7 +1867,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
     // exclude all components of all excluded spaces
     List<String> spaces = getItemsExcludedFromGlobalSearch("SpacesExcludedFromGlobalSearch");
-    for (String space : spaces) {
+    for (String space :
+        spaces) {
       String[] availableComponentIds =
           getOrganizationController().getAvailCompoIds(space, getUserId());
       excluded.addAll(Arrays.asList(availableComponentIds));
@@ -1880,7 +1910,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     if (space == null) {
       String[] allowedComponentIds = getUserAvailComponentIds();
       // Il n'y a pas de restriction sur un espace particulier
-      for (int i = 0; i < allowedComponentIds.length; i++) {
+      for (int i = 0;
+          i < allowedComponentIds.length;
+          i++) {
         if (isSearchable(allowedComponentIds[i])) {
           componentList.add(allowedComponentIds[i]);
         }
@@ -1890,13 +1922,16 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         // Restriction sur un espace. La recherche doit avoir lieu
         String[] asAvailCompoForCurUser = getOrganizationController().getAvailCompoIds(space,
             getUserId());
-        for (int nI = 0; nI < asAvailCompoForCurUser.length; nI++) {
+        for (int nI = 0;
+            nI < asAvailCompoForCurUser.length;
+            nI++) {
           if (isSearchable(asAvailCompoForCurUser[nI])) {
             componentList.add(asAvailCompoForCurUser[nI]);
           }
         }
       } else {
-        for (String component : components) {
+        for (String component :
+            components) {
           componentList.add(component);
         }
       }
@@ -1941,7 +1976,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     if (space != null) {
       String[] asAvailCompoForCurUser = getOrganizationController().getAvailCompoIds(space,
           getUserId());
-      for (int nI = 0; nI < asAvailCompoForCurUser.length; nI++) {
+      for (int nI = 0;
+          nI < asAvailCompoForCurUser.length;
+          nI++) {
         ComponentInstLight componentInst = getOrganizationController().getComponentInstLight(
             asAvailCompoForCurUser[nI]);
 
@@ -2100,10 +2137,14 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     boolean validSequence = true;
     String serial = "643957685";
     try {
-      for (int i = 0; i < 9 && validSequence; i++) {
+      for (int i = 0;
+          i < 9 && validSequence;
+          i++) {
         String groupe = code.substring(i * 3, i * 3 + 3);
         int total = 0;
-        for (int j = 0; j < groupe.length(); j++) {
+        for (int j = 0;
+            j < groupe.length();
+            j++) {
           String valeur = groupe.substring(j, j + 1);
           total += new Integer(valeur).intValue();
         }
@@ -2207,7 +2248,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           "pdcPeas.EX_CAN_SEARCH_QUERY", e);
     }
 
-    for (int i = 0; i < matchingIndexEntries.length; i++) {
+    for (int i = 0;
+        i < matchingIndexEntries.length;
+        i++) {
       result = matchingIndexEntries[i];
 
       // reinitialisation

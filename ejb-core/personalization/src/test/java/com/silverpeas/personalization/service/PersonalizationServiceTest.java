@@ -2,39 +2,53 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.stratelia.webactiv.personalization.control.ejb;
+package com.silverpeas.personalization.service;
 
 import javax.sql.DataSource;
+
+import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.dao.PersonalizationDetailDaoTest;
 
+import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
+import org.junit.Before;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import java.io.IOException;
+import java.sql.SQLException;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.*;
 
 /**
  *
  * @author ehugonnet
  */
-public class PersonalizationBmBusinessSkeletonTest {
+public class PersonalizationServiceTest {
 
-  private static PersonalizationBmBusinessSkeleton service;
+  private static PersonalizationService service;
+  private static DataSource ds;
 
-  public PersonalizationBmBusinessSkeletonTest() {
+  public PersonalizationServiceTest() {
   }
 
   @BeforeClass
   public static void setUpClass() throws Exception {
     ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
         "spring-personalization.xml");
-    service = (PersonalizationBmBusinessSkeleton) context.getBean("personalizationService");
-    DataSource ds = (DataSource) context.getBean("dataSource");
+    service = (PersonalizationService) context.getBean("personalizationService");
+    ds = (DataSource) context.getBean("dataSource");
+    cleanDatabase();
+  }
+
+  protected static void cleanDatabase() throws IOException, SQLException, DatabaseUnitException {
     ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
         PersonalizationDetailDaoTest.class.getClassLoader().getResourceAsStream(
         "com/silverpeas/personalization/dao/personalization-dataset.xml")));
@@ -42,6 +56,13 @@ public class PersonalizationBmBusinessSkeletonTest {
     IDatabaseConnection connection = new DatabaseConnection(ds.getConnection());
     DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
   }
+
+
+  @Before
+  public void setUp() throws Exception {
+    cleanDatabase();
+  }
+
 
   @Test
   public void testGetDragAndDropStatus() {
@@ -79,19 +100,19 @@ public class PersonalizationBmBusinessSkeletonTest {
 
   @Test
   public void testGetLanguages() {
-    assertThat(service.getLanguages("1000"), is("fr"));
-    assertThat(service.getLanguages("1010"), is("en"));
-    assertThat(service.getLanguages("5000"), is("fr"));
+    assertThat(service.getFavoriteLanguage("1000"), is("fr"));
+    assertThat(service.getFavoriteLanguage("1010"), is("en"));
+    assertThat(service.getFavoriteLanguage("5000"), is("fr"));
   }
 
   @Test
   public void testSetLanguages() {
-    assertThat(service.getLanguages("1000"), is("fr"));
-    service.setLanguages("1000", "en");
-    assertThat(service.getLanguages("1000"), is("en"));
-    assertThat(service.getLanguages("1030"), is("fr"));
-    service.setLanguages("1030", "de");
-    assertThat(service.getLanguages("1030"), is("de"));
+    assertThat(service.getFavoriteLanguage("1000"), is("fr"));
+    service.setFavoriteLanguage("1000", "en");
+    assertThat(service.getFavoriteLanguage("1000"), is("en"));
+    assertThat(service.getFavoriteLanguage("1030"), is("fr"));
+    service.setFavoriteLanguage("1030", "de");
+    assertThat(service.getFavoriteLanguage("1030"), is("de"));
   }
 
   @Test
@@ -163,23 +184,32 @@ public class PersonalizationBmBusinessSkeletonTest {
     service.setWebdavEditingStatus("1030", false);
     assertThat(service.getWebdavEditingStatus("1030"), is(false));
   }
-  /*
-  
-  
+
   @Test
-  public void testWebdavEditingStatus() throws Exception {
-  IDatabaseConnection dbConnection = baseTest.getConnection();
-  Connection con = dbConnection.getConnection();
-  DBUtil.getInstance(con);
-  String userId = "1040";
-  dao.insertPersonalizeDetail(con, userId, "fr", "Test", "WA500", false, false,
-  false, false);
-  PersonalizeDetail expectedDetail = new PersonalizeDetail("fr", "Test", "WA500", false, false,
-  false, true);
-  dao.setWebdavEditingStatus(con, userId, true);
-  PersonalizeDetail detail = dao.getPersonalizeDetail(con, userId);
-  assertThat(detail, notNullValue());
-  assertThat(detail, is(expectedDetail));
-  baseTest.getDatabaseTester().closeConnection(dbConnection);
-  }*/
+  public void testGetUserSettings() throws Exception {
+    String userId = "1000";
+    UserPreferences expectedDetail = new UserPreferences(userId, "fr", "Initial", "", false,
+        true, true, true);
+    UserPreferences detail = service.getUserSettings(userId);
+    assertThat(detail, notNullValue());
+    assertThat(detail, is(expectedDetail));
+
+    userId = "1010";
+    detail = service.getUserSettings(userId);
+    assertThat(detail, notNullValue());
+    expectedDetail = new UserPreferences(userId, "en", "Silverpeas", "WA47", false, true, false,
+        true);
+    assertThat(detail, is(expectedDetail));
+  }
+
+  @Test
+  public void testInsertPersonalizeDetail() throws Exception {
+    String userId = "1020";
+    UserPreferences expectedDetail = new UserPreferences(userId, "fr", "Test", "WA500", false,
+        false, false, false);
+    service.saveUserSettings(expectedDetail);
+    UserPreferences detail = service.getUserSettings(userId);
+    assertThat(detail, notNullValue());
+    assertThat(detail, is(expectedDetail));
+  }
 }

@@ -35,23 +35,6 @@
     <property name="entityManagerFactory" ref="entityManagerFactory"/>
   </bean>
 
-  <bean id="dataSource" name="dataSource"
-        class="org.springframework.jdbc.datasource.SingleConnectionDataSource">
-    <constructor-arg value="${jdbc.url}"/>
-    <constructor-arg value="${jdbc.username}"/>
-    <constructor-arg value="${jdbc.password}"/>
-    <constructor-arg value="true"/>
-  </bean>
-
-  <bean id="propertyConfigurer"
-        class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-    <property name="locations">
-      <list>
-        <value>classpath:jdbc-spring.properties</value>
-      </list>
-    </property>
-  </bean>
-
   <bean id="entityManagerFactory"
         class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
     <property name="dataSource" ref="dataSource"/>

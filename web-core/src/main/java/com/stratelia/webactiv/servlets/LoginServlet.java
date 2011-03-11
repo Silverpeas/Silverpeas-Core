@@ -132,7 +132,7 @@ public class LoginServlet extends HttpServlet {
       controller.initServerProps(serverName, port);
 
       // Retrieve personal workspace
-      String personalWs = controller.getPersonalization().getPersonalWorkSpace();
+      String personalWs = controller.getPersonalization().getPersonalWorkSpaceId();
       SilverTrace.debug("peasCore", "LoginServlet.service", "user personal workspace=" + personalWs);
 
       // Put a graphicElementFactory in the session

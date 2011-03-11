@@ -23,10 +23,10 @@
  */
 package com.silverpeas.personalization.dao;
 
+import com.silverpeas.personalization.UserPreferences;
 import org.dbunit.operation.DatabaseOperation;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
-import com.stratelia.webactiv.personalization.model.PersonalizeDetail;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -67,26 +67,26 @@ public class PersonalizationDetailDaoTest {
   @Test
   public void testGetPersonalizedDetail() throws Exception {
     String userId = "1000";
-    PersonalizeDetail expectedDetail = new PersonalizeDetail(userId, "fr", "Initial", "", false,
+    UserPreferences expectedDetail = new UserPreferences(userId, "fr", "Initial", "", false,
         true, true, true);
-    PersonalizeDetail detail = dao.readByPrimaryKey(userId);
+    UserPreferences detail = dao.readByPrimaryKey(userId);
     assertThat(detail, notNullValue());
     assertThat(detail, is(expectedDetail));
 
     userId = "1010";
     detail = dao.readByPrimaryKey(userId);
     assertThat(detail, notNullValue());
-    expectedDetail = new PersonalizeDetail(userId, "en", "Silverpeas", "WA47", false, true, false,
+    expectedDetail = new UserPreferences(userId, "en", "Silverpeas", "WA47", false, true, false,
         true);
     assertThat(detail, is(expectedDetail));
   }
 
   @Test
   public void testInsertPersonalizeDetail() throws Exception {
-    PersonalizeDetail expectedDetail = new PersonalizeDetail("1020", "fr", "Test", "WA500", false,
+    UserPreferences expectedDetail = new UserPreferences("1020", "fr", "Test", "WA500", false,
         false, false, false);
     dao.save(expectedDetail);
-    PersonalizeDetail detail = dao.readByPrimaryKey("1020");
+    UserPreferences detail = dao.readByPrimaryKey("1020");
     assertThat(detail, notNullValue());
     assertThat(detail, is(expectedDetail));
   }

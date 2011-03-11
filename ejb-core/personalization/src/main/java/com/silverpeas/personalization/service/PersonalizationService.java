@@ -22,38 +22,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.personalization.control.ejb;
+package com.silverpeas.personalization.service;
 
-public interface PersonalizationBmBusinessSkeleton {
+import com.silverpeas.personalization.UserPreferences;
 
-  public void setLanguages(String userId, String languages) ;
+public interface PersonalizationService {
 
-  public String getLanguages(String userId) ;
+  public static final String DEFAULT_LOOK = "Initial";
 
-  public String getFavoriteLanguage(String userId) ;
+  public void setFavoriteLanguage(String userId, String languages);
 
-  public String getFavoriteLook(String userId) ;
+  public String getFavoriteLanguage(String userId);
 
-  public void setFavoriteLook(String userId, String look) ;
+  public String getFavoriteLook(String userId);
 
-  public void setPersonalWorkSpace(String userId, String spaceId) ;
+  public void setFavoriteLook(String userId, String look);
 
-  public String getPersonalWorkSpace(String userId) ;
+  public void setPersonalWorkSpace(String userId, String spaceId);
+
+  public String getPersonalWorkSpace(String userId);
 
   public void setThesaurusStatus(String userId, boolean thesaurusStatus);
 
-  public boolean getThesaurusStatus(String userId) ;
+  public boolean getThesaurusStatus(String userId);
 
   public void setDragAndDropStatus(String userId, boolean dragAndDropStatus);
 
-  public boolean getDragAndDropStatus(String userId) ;
+  public boolean getDragAndDropStatus(String userId);
 
   public void setOnlineEditingStatus(String userId, boolean onlineEditingStatus);
 
-  public boolean getOnlineEditingStatus(String userId) ;
+  public boolean getOnlineEditingStatus(String userId);
 
   public void setWebdavEditingStatus(String userId, boolean webdavEditingStatus);
 
-  public boolean getWebdavEditingStatus(String userId) ;
+  public boolean getWebdavEditingStatus(String userId);
+
+  public void saveUserSettings(UserPreferences userPreferences);
+
+  public UserPreferences getUserSettings(String userId);
 
 }

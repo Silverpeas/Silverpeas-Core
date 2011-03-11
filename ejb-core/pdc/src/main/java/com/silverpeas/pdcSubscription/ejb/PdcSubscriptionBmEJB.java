@@ -28,18 +28,9 @@
  */
 package com.silverpeas.pdcSubscription.ejb;
 
-import java.net.URLEncoder;
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.ejb.CreateException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-
 import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
+import com.silverpeas.personalization.service.PersonalizationServiceFactory;
 import com.stratelia.silverpeas.classifyEngine.Criteria;
 import com.stratelia.silverpeas.classifyEngine.Value;
 import com.stratelia.silverpeas.contentManager.ContentInterface;
@@ -54,12 +45,18 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.stratelia.webactiv.personalization.control.ejb.PersonalizationBm;
-import com.stratelia.webactiv.personalization.control.ejb.PersonalizationBmHome;
 import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
+
+import javax.ejb.CreateException;
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
+import java.net.URLEncoder;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
 
 //import com.stratelia.silverpeas.peasCore.URLManager;
 
@@ -97,7 +94,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
   /**
    * Remote interface method
    */
-  public PDCSubscription getPDCSubsriptionById(int id) throws RemoteException {
+  public PDCSubscription getPDCSubsriptionById(int id) {
     Connection conn = null;
     PDCSubscription result = null;
 
@@ -127,8 +124,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
   /**
    * Remote interface method
    */
-  public int createPDCSubscription(PDCSubscription subscription)
-      throws RemoteException {
+  public int createPDCSubscription(PDCSubscription subscription) {
     Connection conn = null;
     int result = -1;
 
@@ -155,7 +151,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
     SilverTrace.info("PdcSubscription",
         "PdcSubscriptionBmEJB.updatePDCSubscription()",
         "root.MSG_GEN_ENTER_METHOD", "subscription = "
-        + subscription.toString());
+            + subscription.toString());
     Connection conn = null;
 
     try {
@@ -212,7 +208,8 @@ public class PdcSubscriptionBmEJB implements SessionBean {
   /**
    * Remote inteface method Implements PDCSubscription check for axis deletion. It deletes all
    * references to this axis from PDCSubscription module DB
-   * @param axisId the axis to be checked
+   *
+   * @param axisId   the axis to be checked
    * @param axisName the name of the axis
    */
   public void checkAxisOnDelete(int axisId, String axisName)
@@ -256,10 +253,11 @@ public class PdcSubscriptionBmEJB implements SessionBean {
   /**
    * Implements PDCSubscription check for value deletion. It deletes all references to the path
    * containing this value from PDCSubscription module DB
-   * @param axisId the axis to be checked
+   *
+   * @param axisId   the axis to be checked
    * @param axisName the name of the axis
-   * @param oldPath old path that would be removed soon
-   * @param newPath new path. That will be places instead of old for this axis
+   * @param oldPath  old path that would be removed soon
+   * @param newPath  new path. That will be places instead of old for this axis
    * @param pathInfo should contains PdcBm.getFullPath data structure
    */
   public void checkValueOnDelete(int axisId, String axisName, List oldPath,
@@ -313,8 +311,9 @@ public class PdcSubscriptionBmEJB implements SessionBean {
   /**
    * This method check is any subscription that match criterias provided and sends notification if
    * succeed
+   *
    * @param classifyValues Linst of ClassifyValues to be checked
-   * @param componentId component where classify event occures
+   * @param componentId    component where classify event occures
    * @param silverObjectid object that was classified
    */
   public void checkSubscriptions(List classifyValues, String componentId,
@@ -322,8 +321,8 @@ public class PdcSubscriptionBmEJB implements SessionBean {
     SilverTrace.info("PdcSubscription",
         "PdcSubscriptionBmEJB.checkSubscriptions()",
         "root.MSG_GEN_ENTER_METHOD", "classifyValues = " + classifyValues
-        + ", componentId = " + componentId + ", silverObjectid = "
-        + silverObjectid);
+            + ", componentId = " + componentId + ", silverObjectid = "
+            + silverObjectid);
 
     Connection conn = null;
     SilverContentInterface silverContent = null;
@@ -377,8 +376,9 @@ public class PdcSubscriptionBmEJB implements SessionBean {
 
   /**
    * get the silverContent object according to the given silverObjectid
-   * @param componentId - the component where is classified the silverContent
-   * @param silverObjectid - the unique identifier of the silverContent
+   *
+   * @param componentId            - the component where is classified the silverContent
+   * @param silverObjectid         - the unique identifier of the silverContent
    * @param organizationController - the OrganizationController
    * @return SilverContentInterface the object which has been classified
    */
@@ -404,15 +404,17 @@ public class PdcSubscriptionBmEJB implements SessionBean {
           PdcSubscriptionRuntimeException.ERROR,
           "PdcSubscription.EX_CHECK_SUBSCR_FALIED", e);
     }
-    if (silverContents != null && silverContents.size() != 0)
+    if (silverContents != null && silverContents.size() != 0) {
       silverContent = (SilverContentInterface) silverContents.get(0);
+    }
 
     return silverContent;
   }
 
   /**
    * get the names of space and instance where the object have been classified
-   * @param componentId - the component where is classified the silverContent
+   *
+   * @param componentId            - the component where is classified the silverContent
    * @param organizationController - the OrganizationController
    * @return ArrayList 1 - spaceName 2 - instanceName 3 - spaceId
    */
@@ -448,11 +450,11 @@ public class PdcSubscriptionBmEJB implements SessionBean {
   }
 
   /**
-   * @return true if subscription should be removed
    * @param subscription PDCSubscription to check
-   * @param axisId id of the axis value of which should be removed
-   * @param oldPath list of original axis paths (before deletion)
-   * @param newPath list new axis path to be places instead of old path
+   * @param axisId       id of the axis value of which should be removed
+   * @param oldPath      list of original axis paths (before deletion)
+   * @param newPath      list new axis path to be places instead of old path
+   * @return true if subscription should be removed
    */
   protected boolean checkSubscriptionRemove(PDCSubscription subscription,
       int axisId, List oldPath, List newPath) {
@@ -492,10 +494,9 @@ public class PdcSubscriptionBmEJB implements SessionBean {
   }
 
   /**
-   * Checks if values provided presented in provided path. <br>
-   * Ex1: path /2/3/4/5/ value: /5/ result:true <br>
-   * Ex2: path /2/3/4/5/ value: /3/ result true <br>
-   * Ex2: path /2/3/4/5/ value: /8/ result false
+   * Checks if values provided presented in provided path. <br> Ex1: path /2/3/4/5/ value: /5/
+   * result:true <br> Ex2: path /2/3/4/5/ value: /3/ result true <br> Ex2: path /2/3/4/5/ value: /8/
+   * result false
    */
   protected boolean checkValueInPath(String value, List pathList) {
     for (int i = 0; i < pathList.size(); i++) {
@@ -515,11 +516,11 @@ public class PdcSubscriptionBmEJB implements SessionBean {
     SilverTrace.info("PdcSubscription",
         "PdcSubscriptionBmEJB.isCorrespondingSubscription()",
         "root.MSG_GEN_ENTER_METHOD", "subscription = "
-        + subscription.toString() + ", classifyValues = "
-        + classifyValues.toString());
+            + subscription.toString() + ", classifyValues = "
+            + classifyValues.toString());
     List searchCriterias = subscription.getPdcContext();
 
-    if (searchCriterias == null || classifyValues == null  || searchCriterias.isEmpty() || 
+    if (searchCriterias == null || classifyValues == null || searchCriterias.isEmpty() ||
         classifyValues.isEmpty() || searchCriterias.size() > classifyValues.size()) {
       return false;
     }
@@ -645,6 +646,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
 
   /**
    * Utility method
+   *
    * @return Connection to use in all ejb db operations
    */
   protected Connection openConnection() {
@@ -683,10 +685,10 @@ public class PdcSubscriptionBmEJB implements SessionBean {
     SilverTrace.info("PdcSubscription",
         "PdcSubscriptionBmEJB.sendNotification()", "root.MSG_GEN_ENTER_METHOD",
         "userID = " + userID + ", fromUserID = " + fromUserID
-        + ", subscription = " + subscription + ", componentId = "
-        + component + ", workSpaceId = " + workSpace
-        + ", notificationMessageKey = " + notificationMessageKey
-        + ", documentUrl = " + documentUrl);
+            + ", subscription = " + subscription + ", componentId = "
+            + component + ", workSpaceId = " + workSpace
+            + ", notificationMessageKey = " + notificationMessageKey
+            + ", documentUrl = " + documentUrl);
 
     final String language = getDefaultUserLanguage(userID);
     final ResourceLocator resources = new ResourceLocator(
@@ -719,21 +721,8 @@ public class PdcSubscriptionBmEJB implements SessionBean {
    * @return user preferred language by userid provided
    */
   protected String getDefaultUserLanguage(int userID) {
-    String lang = "fr";
-    try {
-      PersonalizationBmHome personalizationBmHome = (PersonalizationBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.PERSONALIZATIONBM_EJBHOME,
-          PersonalizationBmHome.class);
-      PersonalizationBm personalizationBm = personalizationBmHome.create();
-      personalizationBm.setActor(String.valueOf(userID));
-      lang = personalizationBm.getFavoriteLanguage();
-    } catch (Exception e) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionBmEJB.getDefaultUserLanguage()",
-          PdcSubscriptionRuntimeException.ERROR,
-          "root.EX_CANT_GET_PREFERRED_USER_LANG", e);
-    }
-    return lang;
+    return PersonalizationServiceFactory.getFactory().getPersonalizationService().getFavoriteLanguage(
+        String.valueOf(userID));
   }
 
   /**

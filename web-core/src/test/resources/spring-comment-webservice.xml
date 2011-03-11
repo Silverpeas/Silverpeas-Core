@@ -35,6 +35,6 @@
 
   <ctx:annotation-config/>
   <ctx:component-scan base-package="com.silverpeas.comment.web"/>
-
+  <import resource="spring-personalization.xml" />
 </beans>
 

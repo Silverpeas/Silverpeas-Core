@@ -23,22 +23,21 @@
  */
 package com.silverpeas.comment.web;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.personalization.control.ejb.PersonalizationBm;
-import com.stratelia.webactiv.personalization.control.ejb.PersonalizationBmHome;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
+import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.personalization.service.PersonalizationServiceFactory;
+import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import java.io.Serializable;
-import java.rmi.RemoteException;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import static com.silverpeas.util.StringUtil.*;
+import java.io.Serializable;
+
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
- * The entity representing the author of a comment. It is a user that has written a comment and
- * that is exposed in the web as an entity (a web entity). As such, it publishes only some of its
+ * The entity representing the author of a comment. It is a user that has written a comment and that
+ * is exposed in the web as an entity (a web entity). As such, it publishes only some of its
  * attributes.
  */
 @XmlRootElement
@@ -56,6 +55,7 @@ public class CommentAuthorEntity implements Serializable {
 
   /**
    * Creates an new comment author entity from the specified user.
+   *
    * @param user the user to entitify.
    * @return the comment writer.
    */
@@ -65,6 +65,7 @@ public class CommentAuthorEntity implements Serializable {
 
   /**
    * Gets the relative path of the user avatar.
+   *
    * @return the relative path of the URI refering the user avatar.
    */
   public String getAvatar() {
@@ -73,6 +74,7 @@ public class CommentAuthorEntity implements Serializable {
 
   /**
    * Sets the URL at which is located the user's avatar.
+   *
    * @param avatarURL the URL of the user's avatar.
    */
   public void setAvatar(String avatarURL) {
@@ -81,6 +83,7 @@ public class CommentAuthorEntity implements Serializable {
 
   /**
    * Gets the unique identifier of the author.
+   *
    * @return the user identifier.
    */
   public String getId() {
@@ -89,6 +92,7 @@ public class CommentAuthorEntity implements Serializable {
 
   /**
    * Gets the full name of the author (both the first name and the last name).
+   *
    * @return the user full name.
    */
   public String getFullName() {
@@ -97,8 +101,9 @@ public class CommentAuthorEntity implements Serializable {
 
   /**
    * Gets the prefered language of the author.
-   * @return the language code of the author according to the ISO 639-1 standard
-   * (for example fr for french).
+   *
+   * @return the language code of the author according to the ISO 639-1 standard (for example fr for
+   *         french).
    */
   public String getLanguage() {
     return this.language;
@@ -134,6 +139,7 @@ public class CommentAuthorEntity implements Serializable {
 
   /**
    * Gets a user detail from this entity.
+   *
    * @return a UserDetail instance.
    */
   public UserDetail toUser() {
@@ -141,8 +147,7 @@ public class CommentAuthorEntity implements Serializable {
     user.setId(id);
     if (isDefined(fullName)) {
       int separatorBetweenFirstAndLastName = fullName.indexOf(" ");
-      user.setFirstName(fullName.substring(0,
-          separatorBetweenFirstAndLastName));
+      user.setFirstName(fullName.substring(0, separatorBetweenFirstAndLastName));
       user.setLastName(fullName.substring(separatorBetweenFirstAndLastName + 1));
     }
     return user;
@@ -159,15 +164,11 @@ public class CommentAuthorEntity implements Serializable {
 //      this.avatar = userDetail.getAvatar();
 //    }
     this.avatar = userDetail.getAvatar();
-    PersonalizationBm prefs = getUserPreferences();
+    UserPreferences prefs = getUserPreferences();
     if (prefs != null) {
-      try {
-        this.language = prefs.getFavoriteLanguage();
-      } catch (RemoteException ex) {
-        SilverTrace.warn("comment", getClass().getSimpleName(), "root.NO_EX_MESSAGE", ex);
-      }
+      this.language = prefs.getLanguage();
     } else {
-      language = "";
+      this.language = DisplayI18NHelper.getDefaultLanguage();
     }
   }
 
@@ -179,20 +180,12 @@ public class CommentAuthorEntity implements Serializable {
 
   /**
    * Gets the preference of this author.
+   *
    * @return the preferences of the user or null if its preferences cannot be retrieved.
    */
   @XmlTransient
-  public final PersonalizationBm getUserPreferences() {
-    PersonalizationBm persoBm = null;
-    try {
-      PersonalizationBmHome personalizationBmHome = (PersonalizationBmHome) EJBUtilitaire.
-          getEJBObjectRef(JNDINames.PERSONALIZATIONBM_EJBHOME,
-          PersonalizationBmHome.class);
-      persoBm = personalizationBmHome.create();
-      persoBm.setActor(this.id);
-    } catch (Exception e) {
-      persoBm = null;
-    }
-    return persoBm;
+  public final UserPreferences getUserPreferences() {
+    return PersonalizationServiceFactory.getFactory().getPersonalizationService().getUserSettings(
+        this.id);
   }
 }

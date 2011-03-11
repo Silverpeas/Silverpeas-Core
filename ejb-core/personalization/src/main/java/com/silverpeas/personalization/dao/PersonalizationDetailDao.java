@@ -24,9 +24,9 @@
 
 package com.silverpeas.personalization.dao;
 
-import com.stratelia.webactiv.personalization.model.PersonalizeDetail;
+import com.silverpeas.personalization.UserPreferences;
 import org.synyx.hades.dao.GenericDao;
 
 
-public interface PersonalizationDetailDao extends GenericDao<PersonalizeDetail, String> {
+public interface PersonalizationDetailDao extends GenericDao<UserPreferences, String> {
 }

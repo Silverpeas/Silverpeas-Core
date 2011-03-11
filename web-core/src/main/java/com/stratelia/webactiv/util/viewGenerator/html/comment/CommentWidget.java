@@ -23,24 +23,23 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html.comment;
 
+import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.personalization.service.PersonalizationServiceFactory;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.personalization.control.ejb.PersonalizationBm;
-import com.stratelia.webactiv.personalization.control.ejb.PersonalizationBmHome;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
-import java.rmi.RemoteException;
-import java.util.Arrays;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.tagext.TagSupport;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.script;
-import static com.silverpeas.util.StringUtil.*;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.TagSupport;
+import java.util.Arrays;
+
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * It defines the base class of a widget for the rendering and handling of comments in Silverpeas.
@@ -63,6 +62,7 @@ public abstract class CommentWidget extends TagSupport {
 
   /**
    * Gets a javascript function to call when an event occurs on a comment or on a list of comments.
+   *
    * @return the callback to invoke.
    */
   public String getCallback() {
@@ -70,7 +70,9 @@ public abstract class CommentWidget extends TagSupport {
   }
 
   /**
-   * Sets the javascript function to call when an event occurs on a comment or on a list of comments.
+   * Sets the javascript function to call when an event occurs on a comment or on a list of
+   * comments.
+   *
    * @param callback the callback to invoke.
    */
   public void setCallback(String callback) {
@@ -81,6 +83,7 @@ public abstract class CommentWidget extends TagSupport {
    * Sets up the widget with all required information. It initializes the JQuery comment plugin with
    * and it parameterizes from Silverpeas settings and from the resource for which the comments
    * should be rendered.
+   *
    * @return a container of rendering elements.
    * @throws JspException if an error occurs while initializing the JQuery comment plugin.
    */
@@ -107,6 +110,7 @@ public abstract class CommentWidget extends TagSupport {
   /**
    * Gets the unique identifier of the user that requested the page in which will be rendered the
    * widget.
+   *
    * @return the unique identifier of the user.
    */
   public String getUserId() {
@@ -116,6 +120,7 @@ public abstract class CommentWidget extends TagSupport {
   /**
    * Sets the unique identifier of the user that requested the page in which will be rendered the
    * widget.
+   *
    * @param userId the user identifier.
    */
   public void setUserId(String userId) {
@@ -125,6 +130,7 @@ public abstract class CommentWidget extends TagSupport {
   /**
    * Sets the unique identifier of the Silverpeas component instance to which the commented resource
    * belongs.
+   *
    * @param componentId the unique identifier of the instance of a Silverpeas component.
    */
   public void setComponentId(String componentId) {
@@ -133,6 +139,7 @@ public abstract class CommentWidget extends TagSupport {
 
   /**
    * Sets the unique identifier of the resource that is commented out.
+   *
    * @param resourceId the unique identifier of the commented resource.
    */
   public void setResourceId(String resourceId) {
@@ -141,6 +148,7 @@ public abstract class CommentWidget extends TagSupport {
 
   /**
    * Gets the identifier of the Silverpeas component instance to which the resource belongs.
+   *
    * @return the component identifier.
    */
   public String getComponentId() {
@@ -149,38 +157,28 @@ public abstract class CommentWidget extends TagSupport {
 
   /**
    * Gets the unique identifier of the resource in Silverpeas.
+   *
    * @return the resource identifier.
    */
   public String getResourceId() {
     return resourceId;
   }
 
-  private PersonalizationBm getUserPreferences() throws JspTagException {
-    try {
-      PersonalizationBmHome personalizationBmHome = (PersonalizationBmHome) EJBUtilitaire.
-          getEJBObjectRef(JNDINames.PERSONALIZATIONBM_EJBHOME,
-          PersonalizationBmHome.class);
-      PersonalizationBm persoBm = personalizationBmHome.create();
-      persoBm.setActor(getUserId());
-      return persoBm;
-    } catch (Exception e) {
-      throw new JspTagException(e);
-    }
+  private UserPreferences getUserPreferences() throws JspTagException {
+    return PersonalizationServiceFactory.getFactory().getPersonalizationService().getUserSettings(
+        getUserId());
   }
 
   private ResourcesWrapper getSettings() throws JspTagException {
-    try {
-      String language = getUserPreferences().getFavoriteLanguage();
-      ResourceLocator messages = new ResourceLocator(
-          "com.stratelia.webactiv.util.comment.multilang.comment", language);
-      ResourcesWrapper resources = new ResourcesWrapper(messages,
-          new ResourceLocator("com.stratelia.webactiv.util.comment.icons", ""),
-          new ResourceLocator("com.stratelia.webactiv.util.comment.Comment", ""), language);
+    String language = getUserPreferences().getLanguage();
+    ResourceLocator messages = new ResourceLocator(
+        "com.stratelia.webactiv.util.comment.multilang.comment", language);
+    ResourcesWrapper resources = new ResourcesWrapper(messages,
+        new ResourceLocator("com.stratelia.webactiv.util.comment.icons", ""),
+        new ResourceLocator("com.stratelia.webactiv.util.comment.Comment", ""), language);
 
-      return resources;
-    } catch (RemoteException ex) {
-      throw new JspTagException(ex);
-    }
+    return resources;
+
   }
 
   private String getUpdateIconURL() {
@@ -197,9 +195,9 @@ public abstract class CommentWidget extends TagSupport {
 
   /**
    * This method generates the Javascript instructions to retrieve in AJAX the comments on the given
-   * resource and to display them.
-   * The generated code is built upon the JQuery toolkit, so that it is required to be included
-   * within the the XHTML header section.
+   * resource and to display them. The generated code is built upon the JQuery toolkit, so that it
+   * is required to be included within the the XHTML header section.
+   *
    * @return the javascript code to handle a list of comments on a given resource.
    */
   private String setUpJQueryCommentPlugin() throws JspTagException {

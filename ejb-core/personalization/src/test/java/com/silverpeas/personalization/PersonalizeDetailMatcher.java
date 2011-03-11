@@ -23,33 +23,32 @@
  */
 package com.silverpeas.personalization;
 
-import com.stratelia.webactiv.personalization.model.PersonalizeDetail;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 
-public class PersonalizeDetailMatcher extends BaseMatcher<PersonalizeDetail> {
+public class PersonalizeDetailMatcher extends BaseMatcher<UserPreferences> {
 
-  private PersonalizeDetail detail;
+  private UserPreferences detail;
 
   /**
    * Creates a new matcher with the specified personalization detail.
    * @param detail the personalization detail to match.
    * @return a personalization detail matcher.
    */
-  public static PersonalizeDetailMatcher matches(final PersonalizeDetail detail) {
+  public static PersonalizeDetailMatcher matches(final UserPreferences detail) {
     return new PersonalizeDetailMatcher(detail);
   }
   
   
-  private PersonalizeDetailMatcher(PersonalizeDetail detail) {
+  private PersonalizeDetailMatcher(UserPreferences detail) {
     this.detail = detail;
   }
 
   @Override
   public boolean matches(Object item) {
     boolean match = false;
-    if (item instanceof PersonalizeDetail) {
-      PersonalizeDetail actual = (PersonalizeDetail) item;
+    if (item instanceof UserPreferences) {
+      UserPreferences actual = (UserPreferences) item;
       match = detail.equals(actual);
     }
     return match;

@@ -270,7 +270,7 @@ public class ScheduledReservedFile
     notifMetaData.addLanguage("en", subject_en, body_en);
 
     SilverTrace.info("versioning", "ScheduledReservedfile.createMessage()",
-        "root.MSG_GEN_PARAM_VALUE", " notifMetaData.getLanguages() = "
+        "root.MSG_GEN_PARAM_VALUE", " notifMetaData.getFavoriteLanguage() = "
         + notifMetaData.getLanguages());
 
     notifMetaData.addUserRecipient(Integer.toString(doc.getOwnerId()));

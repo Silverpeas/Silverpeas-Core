@@ -21,7 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.personalization.model;
+package com.silverpeas.personalization;
+
+import com.silverpeas.personalization.service.PersonalizationService;
+import com.silverpeas.util.StringUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,48 +33,48 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "personalization")
-public class PersonalizeDetail implements java.io.Serializable {
+public class UserPreferences implements java.io.Serializable {
 
   private static final long serialVersionUID = 9192830552642027995L;
   @Id
   private String id;
   @Column(name = "languages")
   private String language = null;
+  @Column(name = "look")
   private String look = null;
   @Column(name = "personalwspace")
   private String collaborativeWorkSpaceId;
   @Column(name = "thesaurusstatus", columnDefinition = "INTEGER")
-  private boolean thesaurusStatus;
+  private int thesaurusStatus;
   @Column(name = "draganddropstatus", columnDefinition = "INTEGER")
-  private boolean dragDropStatus;
+  private int dragAndDropStatus;
   @Column(name = "onlineeditingstatus", columnDefinition = "INTEGER")
-  private boolean onlineEditingStatus;
+  private int onlineEditionStatus;
   @Column(name = "webdaveditingstatus", columnDefinition = "INTEGER")
-  private boolean webdavEditingStatus;
+  private int webdavEditionStatus;
 
-  public PersonalizeDetail() {
+  public UserPreferences() {
   }
 
-  public PersonalizeDetail(String userId, String language, String look,
-      String collaborativeWorkSpaceId, boolean thesaurusStatus,
-      boolean dragDropStatus, boolean onlineEditingStatus,
-      boolean webdavEditingStatus) {
-    this(language, look, collaborativeWorkSpaceId, thesaurusStatus, dragDropStatus,
-        onlineEditingStatus, webdavEditingStatus);
+  public UserPreferences(String userId, String language, String look,
+      String collaborativeWorkSpaceId, boolean thesaurusEnabled,
+      boolean dragAndDropEnabled, boolean onlineEditionEnabled,
+      boolean webdavEditionEnabled) {
+    this(language, look, collaborativeWorkSpaceId, thesaurusEnabled, dragAndDropEnabled,
+        onlineEditionEnabled, webdavEditionEnabled);
     this.id = userId;
   }
 
-  public PersonalizeDetail(String language, String look,
-      String collaborativeWorkSpaceId, boolean thesaurusStatus,
-      boolean dragDropStatus, boolean onlineEditingStatus,
-      boolean webdavEditingStatus) {
+  public UserPreferences(String language, String look, String collaborativeWorkSpaceId,
+      boolean thesaurusEnabled, boolean dragAndDropEnabled, boolean onlineEditionEnabled,
+      boolean webdavEditionEnabled) {
     this.language = language;
     this.look = look;
     this.collaborativeWorkSpaceId = collaborativeWorkSpaceId;
-    this.thesaurusStatus = thesaurusStatus;
-    this.dragDropStatus = dragDropStatus;
-    this.onlineEditingStatus = onlineEditingStatus;
-    this.webdavEditingStatus = webdavEditingStatus;
+    this.thesaurusStatus = thesaurusEnabled ? 1 : 0;
+    this.dragAndDropStatus = dragAndDropEnabled ? 1 : 0;
+    this.onlineEditionStatus = onlineEditionEnabled ? 1 : 0;
+    this.webdavEditionStatus = webdavEditionEnabled ? 1 : 0;
   }
 
   public void setLanguage(String language) {
@@ -87,6 +90,9 @@ public class PersonalizeDetail implements java.io.Serializable {
   }
 
   public void setLook(String look) {
+    if (!StringUtil.isDefined(look)) {
+      this.look = PersonalizationService.DEFAULT_LOOK;
+    }
     this.look = look;
   }
 
@@ -106,36 +112,48 @@ public class PersonalizeDetail implements java.io.Serializable {
     this.collaborativeWorkSpaceId = collaborativeWorkSpaceId;
   }
 
-  public boolean getThesaurusStatus() {
-    return thesaurusStatus;
+  public boolean isThesaurusEnabled() {
+    if (1 == thesaurusStatus) {
+      return true;
+    }
+    return false;
   }
 
-  public void setThesaurusStatus(boolean thesaurusStatus) {
-    this.thesaurusStatus = thesaurusStatus;
+  public void enableThesaurus(boolean thesaurusEnabled) {
+    this.thesaurusStatus = thesaurusEnabled ? 1 : 0;
   }
 
-  public boolean getDragAndDropStatus() {
-    return dragDropStatus;
+  public boolean isDragAndDropEnabled() {
+    if (1 == dragAndDropStatus) {
+      return true;
+    }
+    return false;
   }
 
-  public void setDragAndDropStatus(boolean dragDropStatus) {
-    this.dragDropStatus = dragDropStatus;
+  public void enableDragAndDrop(boolean dragAndDropEnabled) {
+    this.dragAndDropStatus = dragAndDropEnabled ? 1 : 0;
   }
 
-  public boolean getOnlineEditingStatus() {
-    return onlineEditingStatus;
+  public boolean isOnlineEditionEnalbled() {
+    if (1 == onlineEditionStatus) {
+      return true;
+    }
+    return false;
   }
 
-  public void setOnlineEditingStatus(boolean onlineEditingStatus) {
-    this.onlineEditingStatus = onlineEditingStatus;
+  public void enableOnlineEdition(boolean onlineEditionEnabled) {
+    this.onlineEditionStatus = onlineEditionEnabled ? 1 : 0;
   }
 
-  public boolean isWebdavEditingStatus() {
-    return webdavEditingStatus;
+  public boolean isWebdavEditionEnabled() {
+     if (1 == webdavEditionStatus) {
+      return true;
+    }
+    return false;
   }
 
-  public void setWebdavEditingStatus(boolean webdavEditingStatus) {
-    this.webdavEditingStatus = webdavEditingStatus;
+  public void enableWebdavEdition(boolean webdavEditionEnabled) {
+    this.webdavEditionStatus = webdavEditionEnabled ? 1 : 0;
   }
 
   @Override
@@ -146,7 +164,7 @@ public class PersonalizeDetail implements java.io.Serializable {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    final PersonalizeDetail other = (PersonalizeDetail) obj;
+    final UserPreferences other = (UserPreferences) obj;
     if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
       return false;
     }
@@ -163,13 +181,13 @@ public class PersonalizeDetail implements java.io.Serializable {
     if (this.thesaurusStatus != other.thesaurusStatus) {
       return false;
     }
-    if (this.dragDropStatus != other.dragDropStatus) {
+    if (this.dragAndDropStatus != other.dragAndDropStatus) {
       return false;
     }
-    if (this.onlineEditingStatus != other.onlineEditingStatus) {
+    if (this.onlineEditionStatus != other.onlineEditionStatus) {
       return false;
     }
-    if (this.webdavEditingStatus != other.webdavEditingStatus) {
+    if (this.webdavEditionStatus != other.webdavEditionStatus) {
       return false;
     }
     return true;
@@ -183,9 +201,9 @@ public class PersonalizeDetail implements java.io.Serializable {
 
   @Override
   public String toString() {
-    return "PersonalizeDetail{" + "id=" + id + ", language=" + language + ", look=" 
-        + look + ", collaborativeWorkSpaceId=" + collaborativeWorkSpaceId + ", thesaurusStatus=" 
-        + thesaurusStatus + ", dragDropStatus=" + dragDropStatus + ", onlineEditingStatus=" 
-        + onlineEditingStatus + ", webdavEditingStatus=" + webdavEditingStatus + '}';
+    return "UserSettings{" + "id=" + id + ", language=" + language + ", look="
+        + look + ", collaborativeWorkSpaceId=" + collaborativeWorkSpaceId + ", thesaurusStatus="
+        + isThesaurusEnabled() + ", dragDropStatus=" + isDragAndDropEnabled() + ", onlineEditingStatus="
+        + isOnlineEditionEnalbled() + ", webdavEditingStatus=" + isWebdavEditionEnabled() + '}';
   }
 }

@@ -23,7 +23,7 @@
  */
 package com.silverpeas.personalization.dao;
 
-import com.stratelia.webactiv.personalization.model.PersonalizeDetail;
+import com.silverpeas.personalization.UserPreferences;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -33,7 +33,7 @@ public interface PersonalizationDao {
       "id, languages, look, personalWSpace, thesaurusStatus, dragAndDropStatus, onlineEditingStatus, webdavEditingStatus";
   String PERSONALTABLENAME = "Personalization";
 
-  public PersonalizeDetail getPersonalizeDetail(Connection con, String userId) throws SQLException;
+  public UserPreferences getPersonalizeDetail(Connection con, String userId) throws SQLException;
 
   public void setLanguage(Connection con, String userId, String language)
       throws SQLException;

@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util;
 
 import java.sql.Connection;
@@ -43,6 +42,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 public abstract class Schema {
+
   private boolean isLocalConnection = true;
   private boolean haveToTestConnections = true;
   private boolean managed = false;
@@ -63,8 +63,7 @@ public abstract class Schema {
     createConnection();
     ResourceLocator resources = new ResourceLocator(
         "com.stratelia.webactiv.beans.admin.admin", "");
-    String m_sHaveToTestConnections = resources
-        .getString("HaveToTestConnections");
+    String m_sHaveToTestConnections = resources.getString("HaveToTestConnections");
     if ((m_sHaveToTestConnections != null)
         && (m_sHaveToTestConnections.equalsIgnoreCase("false"))) {
       haveToTestConnections = false;
@@ -77,33 +76,22 @@ public abstract class Schema {
     try {
       Context ctx = new InitialContext();
       DataSource src = (DataSource) ctx.lookup(getJNDIName());
-      connection = src.getConnection();
-      if (!connection.getAutoCommit()) {
+      this.connection = src.getConnection();
+      if (!this.connection.getAutoCommit()) {
         managed = true;
       } else {
         managed = false;
-        connection.setAutoCommit(false);
+        this.connection.setAutoCommit(false);
       }
       isLocalConnection = true;
       SilverTrace.info("util", "Schema.createConnection()",
           "root.MSG_GEN_PARAM_VALUE", "Connection Created !");
     } catch (NamingException e) {
-      // throw new UtilException("Schema.Schema", SilverpeasException.ERROR,
-      // "root.EX_DATASOURCE_NOT_FOUND", e);
-      // the JNDI name have not been found in the current context
-      // The caller is not takes place in any context (web application nor ejb
-      // container)
-      // So lookup operation cannot find JNDI properties !
-      // This is absolutly normal according to the j2ee specification
-      // Unfortunately, only BES takes care about this spec. This exception
-      // doesn't appear with orion or BEA !
-
       try {
         // Get the initial Context
         Context ctx = new InitialContext();
         // Look up the datasource directly without JNDI access
-        DataSource dataSource = (DataSource) ctx
-            .lookup(JNDINames.DIRECT_DATASOURCE);
+        DataSource dataSource = (DataSource) ctx.lookup(JNDINames.DIRECT_DATASOURCE);
         // Create a connection object
         this.connection = dataSource.getConnection();
         this.managed = false;
@@ -126,7 +114,7 @@ public abstract class Schema {
     SilverTrace.info("util", "Schema.commit()", "root.MSG_GEN_ENTER_METHOD");
     if (!isManaged()) {
       try {
-        connection.commit();
+        this.connection.commit();
       } catch (SQLException e) {
         throw new UtilException("Schema.commit", SilverpeasException.ERROR,
             "root.EX_ERR_COMMIT", e);
@@ -138,7 +126,7 @@ public abstract class Schema {
     SilverTrace.info("util", "Schema.rollback()", "root.MSG_GEN_ENTER_METHOD");
     if (!isManaged()) {
       try {
-        connection.rollback();
+        this.connection.rollback();
       } catch (SQLException e) {
         throw new UtilException("Schema.rollback", SilverpeasException.ERROR,
             "root.EX_ERR_ROLLBACK", e);
@@ -173,18 +161,17 @@ public abstract class Schema {
     Statement st = null;
 
     try {
-      if (connection == null || connection.isClosed())
+      if (this.connection == null || this.connection.isClosed()) {
         return false;
-      else {
-        if (haveToTestConnections) {
-          SilverTrace.info("util", "Schema.isOk()",
-              "root.MSG_GEN_ENTER_METHOD", "Connection Test");
-          st = connection.createStatement();
-          st.close();
-          st = null;
-        }
-        return true;
       }
+      if (haveToTestConnections) {
+        SilverTrace.info("util", "Schema.isOk()",
+            "root.MSG_GEN_ENTER_METHOD", "Connection Test");
+        st = connection.createStatement();
+        st.close();
+        st = null;
+      }
+      return true;
     } catch (SQLException e) {
       SilverTrace.info("util", "Schema.isOk()", "root.MSG_GEN_ENTER_METHOD",
           "Connection Test Problem !!!", e);

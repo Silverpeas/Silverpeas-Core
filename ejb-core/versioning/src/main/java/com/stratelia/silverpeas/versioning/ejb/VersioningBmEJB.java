@@ -23,21 +23,7 @@
  */
 package com.stratelia.silverpeas.versioning.ejb;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-
-import javax.ejb.CreateException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-
+import com.silverpeas.personalization.service.PersonalizationServiceFactory;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
@@ -54,10 +40,7 @@ import com.stratelia.silverpeas.versioning.model.Worker;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.stratelia.webactiv.personalization.control.ejb.PersonalizationBm;
-import com.stratelia.webactiv.personalization.control.ejb.PersonalizationBmHome;
 import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -66,6 +49,20 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
+
+import javax.ejb.CreateException;
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 public class VersioningBmEJB implements SessionBean {
 
@@ -179,11 +176,11 @@ public class VersioningBmEJB implements SessionBean {
       // calendar.add(Calendar.DATE, nbDay);
       SilverTrace.debug("versioning", "updateDates",
           "root.MSG_GEN_PARAM_VALUE", "calendar.getTime() AVANT = "
-          + calendar.getTime());
+              + calendar.getTime());
       addDays(calendar, nbDay);
       SilverTrace.debug("versioning", "updateDates",
           "root.MSG_GEN_PARAM_VALUE", "calendar.getTime() APRES = "
-          + calendar.getTime());
+              + calendar.getTime());
       doc.setExpiryDate(calendar.getTime());
     }
 
@@ -198,7 +195,7 @@ public class VersioningBmEJB implements SessionBean {
         int result = (nbDay * delayReservedFile) / 100;
         SilverTrace.debug("versioning", "updateDates",
             "root.MSG_GEN_PARAM_VALUE", "delayReservedFile = "
-            + delayReservedFile);
+                + delayReservedFile);
         SilverTrace.debug("versioning", "updateDates",
             "root.MSG_GEN_PARAM_VALUE", "result = " + result);
         if (result > 2) {
@@ -249,7 +246,7 @@ public class VersioningBmEJB implements SessionBean {
 
       SilverTrace.debug("versioning", "checkDocumentIn", "root.MSG_GEN_PARAM_VALUE",
           "doc.getTypeWorkList() = " + doc.getTypeWorkList() + " / doc.getTypeWorkList() = "
-          + doc.getTypeWorkList());
+              + doc.getTypeWorkList());
 
       if (doc.getTypeWorkList() == 1) {
         checkDocumentInNonOrdered(con, doc);
@@ -436,10 +433,10 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * From Ejb remote interface. Containing business logic for adding new version
-   * 
+   *
    * @param doc
    * @param newVersion
-   * @return 
+   * @return
    */
   public DocumentVersion addDocumentVersion(Document doc, DocumentVersion newVersion) {
     newVersion.setDocumentPK(doc.getPk());
@@ -458,11 +455,13 @@ public class VersioningBmEJB implements SessionBean {
   /**
    * Adding new <code>DocumentVersion</code> in a case of Non-ordered and Non-validated document
    * type
+   *
    * @param doc
    * @param newVersion
-   * @return 
+   * @return
    */
-  public DocumentVersion addNonOrderedNonValidatedVersion(Document doc, DocumentVersion newVersion) {
+  public DocumentVersion addNonOrderedNonValidatedVersion(Document doc,
+      DocumentVersion newVersion) {
     if (newVersion.getType() == DocumentVersion.TYPE_PUBLIC_VERSION) {
       newVersion.setMinorNumber(0);
       newVersion.setMajorNumber(newVersion.getMajorNumber() + 1);
@@ -492,9 +491,10 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * Adding new <code>DocumentVersion</code> in a case of Non-ordered and Validated document type.
+   *
    * @param doc
    * @param newVersion
-   * @return 
+   * @return
    */
   public DocumentVersion addNonOrderedValidatedVersion(Document doc, DocumentVersion newVersion) {
     boolean validate = false;
@@ -656,7 +656,7 @@ public class VersioningBmEJB implements SessionBean {
         try {
           String message =
               (newVersion.getStatus() == DocumentVersion.STATUS_VALIDATION_REQUIRED)
-              ? "notification.pleaseValidate": "notification.processWork";
+                  ? "notification.pleaseValidate" : "notification.processWork";
           sendNotification(nextUserID, message, docUrl, currWorker.getId(), doc);
         } catch (NotificationManagerException e) {
           SilverTrace.error("versioning", "VersioningBmEJB.sendNotification",
@@ -693,9 +693,9 @@ public class VersioningBmEJB implements SessionBean {
   }
 
   /**
-   * @param workList <code>ArrayList</code> of WorkList
+   * @param workList          <code>ArrayList</code> of WorkList
    * @param skipThisValidator should the next worker be a validator or we interested only in writes
-   * @param currentUserNum number of currently working user
+   * @param currentUserNum    number of currently working user
    * @return nextWorker to work with document. Null if the end of document reached
    * @throws ArrayIndexOutOfBoundsException in a case of incorrect currentUserNum index provided
    */
@@ -720,7 +720,7 @@ public class VersioningBmEJB implements SessionBean {
   }
 
   /**
-   * @param workList vector of WorkList
+   * @param workList       vector of WorkList
    * @param currentUserNum number of currently working user
    * @param skipThisWorker should the next worker be a validator or we interested only in writes
    * @return prevWorker to work with document. Null if it was the first user of document
@@ -818,9 +818,9 @@ public class VersioningBmEJB implements SessionBean {
   }
 
   /**
-   * @param currDoc affected document
-   * @param validatorID validator user Id
-   * @param comment associated comment
+   * @param currDoc        affected document
+   * @param validatorID    validator user Id
+   * @param comment        associated comment
    * @param validationDate a date when validation process occured.
    */
   public void validateDocument(Document currDoc, int validatorID,
@@ -855,13 +855,14 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * Process validation in a case of Approval, Ordered list
+   *
    * @param doc
    * @param validatorID
    * @param comment
    * @param validationDate
-   * @param conn 
+   * @param conn
    */
-  protected void validateApprovalOrdered(Document doc, int validatorID, String comment, 
+  protected void validateApprovalOrdered(Document doc, int validatorID, String comment,
       Date validationDate, Connection conn) {
 
     if (!isCurrentOrderedValidator(doc, validatorID)) {
@@ -933,6 +934,7 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * Perform work on creating validated version from version provided
+   *
    * @param docVersion version to be validated
    */
   protected DocumentVersion validateDocumentVersion(DocumentVersion docVersion,
@@ -1019,7 +1021,7 @@ public class VersioningBmEJB implements SessionBean {
   }
 
   /**
-   * @param doc document to be checked
+   * @param doc    document to be checked
    * @param userID to be checked to be the current document validator
    * @return true if userID provided can validate current version of document
    */
@@ -1045,8 +1047,8 @@ public class VersioningBmEJB implements SessionBean {
   }
 
   /**
-   * @param doc document to be checked
-   * @param userID to be checket to be the current document validator
+   * @param doc            document to be checked
+   * @param userID         to be checket to be the current document validator
    * @param currentVersion of the document to be checked
    * @return true if userID provided can validate current version of document
    */
@@ -1076,7 +1078,7 @@ public class VersioningBmEJB implements SessionBean {
   }
 
   /**
-   * @param doc document to be checked to be checkedout
+   * @param doc    document to be checked to be checkedout
    * @param userID to be checked to be checjedout user of document
    * @return true if document provided has been checked out by provided userID
    */
@@ -1098,9 +1100,9 @@ public class VersioningBmEJB implements SessionBean {
   }
 
   /**
-   * @param currDoc affected document
-   * @param validatorID validator user Id
-   * @param comment associated comment
+   * @param currDoc        affected document
+   * @param validatorID    validator user Id
+   * @param comment        associated comment
    * @param validationDate a date when validation process occured.
    */
   public void refuseDocument(Document currDoc, int validatorID, String comment,
@@ -1228,6 +1230,7 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * Perform work on creating validated version from version provided
+   *
    * @param docVersion version to be validated
    */
   protected DocumentVersion refuseDocumentVersion(DocumentVersion docVersion,
@@ -1355,7 +1358,8 @@ public class VersioningBmEJB implements SessionBean {
 
     NotificationSender notifSender = new NotificationSender(doc.getPk().getComponentName());
     NotificationMetaData notifMetaData = new NotificationMetaData(
-        NotificationParameters.NORMAL, resources.getString("notification.title"), message.toString());
+        NotificationParameters.NORMAL, resources.getString("notification.title"),
+        message.toString());
 
     int adminId = getFirstAdministrator(orgCtr, userID);
 
@@ -1365,7 +1369,8 @@ public class VersioningBmEJB implements SessionBean {
 
     if ((documentUrl != null)
         && (documentUrl.length() > URLManager.getApplicationURL().length())) {
-      notifMetaData.setLink(documentUrl.substring(URLManager.getApplicationURL().length())); // Remove the application element
+      notifMetaData.setLink(documentUrl.substring(
+          URLManager.getApplicationURL().length())); // Remove the application element
     }
     notifSender.notifyUser(notifMetaData);
   }
@@ -1385,6 +1390,7 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * Utility method
+   *
    * @return an URL for provided document
    */
   protected String getDocumentUrl(Document doc) {
@@ -1398,28 +1404,17 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * Utility method
+   *
    * @return language by provided user id
    */
   protected String getDefaultUserLanguage(int userID) {
-    String lang = "fr";
-    try {
-      PersonalizationBmHome personalizationBmHome = (PersonalizationBmHome) EJBUtilitaire.
-          getEJBObjectRef(JNDINames.PERSONALIZATIONBM_EJBHOME,
-          PersonalizationBmHome.class);
-      PersonalizationBm personalizationBm = personalizationBmHome.create();
-      personalizationBm.setActor(String.valueOf(userID));
-      lang = personalizationBm.getFavoriteLanguage();
-    } catch (Exception e) {
-      throw new VersioningRuntimeException(
-          "VersioningBmEJB.getDefaultUserLanguage()",
-          VersioningRuntimeException.ERROR,
-          "root.EX_CANT_GET_PREFERRED_USER_LANG", e);
-    }
-    return lang;
+    return PersonalizationServiceFactory.getFactory().getPersonalizationService().getFavoriteLanguage(
+        String.valueOf(userID));
   }
 
   /**
    * Get the last version
+   *
    * @param documentPK
    * @return DocumentVersion
    */
@@ -1442,6 +1437,7 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * Get a document version
+   *
    * @param documentVersionPK
    * @return DocumentVersion
    */
@@ -1463,6 +1459,7 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * Utility method
+   *
    * @return Connection to use in all ejb db operations
    */
   protected Connection openConnection() {
@@ -1493,10 +1490,11 @@ public class VersioningBmEJB implements SessionBean {
   private void deleteIndex(Document document) {
     SilverTrace.info("versioning", "VersioningBmEJB.deleteIndex()",
         "root.MSG_GEN_ENTER_METHOD", "documentPK = "
-        + document.getPk().toString());
+            + document.getPk().toString());
 
-    IndexEntryPK indexEntry = new IndexEntryPK(document.getPk().getComponentName(), "Versioning" + document.
-        getPk().getId(), document.getForeignKey().getId());
+    IndexEntryPK indexEntry = new IndexEntryPK(document.getPk().getComponentName(),
+        "Versioning" + document.
+            getPk().getId(), document.getForeignKey().getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 
