@@ -116,23 +116,6 @@ public class PersonalizationServiceTest {
   }
 
   @Test
-  public void testGetOnlineEditingStatus() {
-    assertThat(service.getOnlineEditingStatus("1000"), is(true));
-    assertThat(service.getOnlineEditingStatus("1010"), is(false));
-    assertThat(service.getOnlineEditingStatus("5000"), is(false));
-  }
-
-  @Test
-  public void testSetOnlineEditingStatus() {
-    assertThat(service.getOnlineEditingStatus("1000"), is(true));
-    service.setOnlineEditingStatus("1000", false);
-    assertThat(service.getOnlineEditingStatus("1000"), is(false));
-    assertThat(service.getOnlineEditingStatus("1030"), is(false));
-    service.setOnlineEditingStatus("1030", true);
-    assertThat(service.getOnlineEditingStatus("1030"), is(true));
-  }
-
-  @Test
   public void testGetPersonalWorkSpace() {
     assertThat(service.getPersonalWorkSpace("1000"), is(""));
     assertThat(service.getPersonalWorkSpace("1010"), is("WA47"));
@@ -189,7 +172,7 @@ public class PersonalizationServiceTest {
   public void testGetUserSettings() throws Exception {
     String userId = "1000";
     UserPreferences expectedDetail = new UserPreferences(userId, "fr", "Initial", "", false,
-        true, true, true);
+        true, true);
     UserPreferences detail = service.getUserSettings(userId);
     assertThat(detail, notNullValue());
     assertThat(detail, is(expectedDetail));
@@ -197,8 +180,7 @@ public class PersonalizationServiceTest {
     userId = "1010";
     detail = service.getUserSettings(userId);
     assertThat(detail, notNullValue());
-    expectedDetail = new UserPreferences(userId, "en", "Silverpeas", "WA47", false, true, false,
-        true);
+    expectedDetail = new UserPreferences(userId, "en", "Silverpeas", "WA47", false, true, true);
     assertThat(detail, is(expectedDetail));
   }
 
@@ -206,7 +188,7 @@ public class PersonalizationServiceTest {
   public void testInsertPersonalizeDetail() throws Exception {
     String userId = "1020";
     UserPreferences expectedDetail = new UserPreferences(userId, "fr", "Test", "WA500", false,
-        false, false, false);
+        false, false);
     service.saveUserSettings(expectedDetail);
     UserPreferences detail = service.getUserSettings(userId);
     assertThat(detail, notNullValue());

@@ -68,7 +68,7 @@ public class PersonalizationDetailDaoTest {
   public void testGetPersonalizedDetail() throws Exception {
     String userId = "1000";
     UserPreferences expectedDetail = new UserPreferences(userId, "fr", "Initial", "", false,
-        true, true, true);
+        true, true);
     UserPreferences detail = dao.readByPrimaryKey(userId);
     assertThat(detail, notNullValue());
     assertThat(detail, is(expectedDetail));
@@ -76,15 +76,14 @@ public class PersonalizationDetailDaoTest {
     userId = "1010";
     detail = dao.readByPrimaryKey(userId);
     assertThat(detail, notNullValue());
-    expectedDetail = new UserPreferences(userId, "en", "Silverpeas", "WA47", false, true, false,
-        true);
+    expectedDetail = new UserPreferences(userId, "en", "Silverpeas", "WA47", false, true, true);
     assertThat(detail, is(expectedDetail));
   }
 
   @Test
   public void testInsertPersonalizeDetail() throws Exception {
     UserPreferences expectedDetail = new UserPreferences("1020", "fr", "Test", "WA500", false,
-        false, false, false);
+        false, false);
     dao.save(expectedDetail);
     UserPreferences detail = dao.readByPrimaryKey("1020");
     assertThat(detail, notNullValue());

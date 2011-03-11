@@ -6,15 +6,12 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<%@page import="java.util.List" %>
-
 <fmt:setLocale value="${sessionScope[sessionController].language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <c:set var="preferences" value="${requestScope['preferences']}"/>
 <!--
 <%
-  List availableLooks = gef.getAvailableLooks();
-  pageContext.setAttribute("availableLooks", availableLooks);
+  pageContext.setAttribute("availableLooks", gef.getAvailableLooks());
 %>-->
 <form name="UserForm" action="<%=MyProfileRoutes.UpdateMySettings %>" method="post">
   <table border="0" cellspacing="0" cellpadding="5" width="100%">
@@ -24,9 +21,9 @@
         <select name="SelectedLanguage" size="1">
           <c:forEach items="${requestScope['AllLanguages']}" var="language">
             <c:choose>
-              <c:when test="${request.preferences.language eq language}">
+              <c:when test="${preferences.language eq language}">
                 <option value="<c:out value="${language}"/>" selected="selected"><fmt:message
-                    key="myProfile.settings.language_+ ${language}"/></option>
+                    key="myProfile.settings.language_${language}"/></option>
               </c:when>
               <c:otherwise>
                 <option value="<c:out value="${language}"/>"><fmt:message
@@ -65,10 +62,7 @@
       <td class="txtlibform"><fmt:message key="${'myProfile.settings.DefaultWorkSpace'}"/> :</td>
       <td>
         <select name="SelectedWorkSpace" size="1">
-          <c:if
-              test="${empty preferences.personalWorkSpaceId || 'null' eq  preferences.personalWorkSpaceId}">
-            <option value="null" selected="selected"><fmt:message
-                key="UndefinedFavoriteSpace"/></option>
+          <option value="" <c:if test="${empty preferences.personalWorkSpaceId || 'null' eq  preferences.personalWorkSpaceId}">selected="selected"></option>
           </c:if>
           <c:forEach items="${requestScope['SpaceTreeview']}" var="space">
             <c:set var="indentation" value=''/>

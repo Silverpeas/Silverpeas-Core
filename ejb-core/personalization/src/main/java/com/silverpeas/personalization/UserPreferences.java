@@ -48,8 +48,6 @@ public class UserPreferences implements java.io.Serializable {
   private int thesaurusStatus;
   @Column(name = "draganddropstatus", columnDefinition = "INTEGER")
   private int dragAndDropStatus;
-  @Column(name = "onlineeditingstatus", columnDefinition = "INTEGER")
-  private int onlineEditionStatus;
   @Column(name = "webdaveditingstatus", columnDefinition = "INTEGER")
   private int webdavEditionStatus;
 
@@ -58,22 +56,19 @@ public class UserPreferences implements java.io.Serializable {
 
   public UserPreferences(String userId, String language, String look,
       String collaborativeWorkSpaceId, boolean thesaurusEnabled,
-      boolean dragAndDropEnabled, boolean onlineEditionEnabled,
-      boolean webdavEditionEnabled) {
+      boolean dragAndDropEnabled, boolean webdavEditionEnabled) {
     this(language, look, collaborativeWorkSpaceId, thesaurusEnabled, dragAndDropEnabled,
-        onlineEditionEnabled, webdavEditionEnabled);
+        webdavEditionEnabled);
     this.id = userId;
   }
 
   public UserPreferences(String language, String look, String collaborativeWorkSpaceId,
-      boolean thesaurusEnabled, boolean dragAndDropEnabled, boolean onlineEditionEnabled,
-      boolean webdavEditionEnabled) {
+      boolean thesaurusEnabled, boolean dragAndDropEnabled,boolean webdavEditionEnabled) {
     this.language = language;
     this.look = look;
     this.collaborativeWorkSpaceId = collaborativeWorkSpaceId;
     this.thesaurusStatus = thesaurusEnabled ? 1 : 0;
     this.dragAndDropStatus = dragAndDropEnabled ? 1 : 0;
-    this.onlineEditionStatus = onlineEditionEnabled ? 1 : 0;
     this.webdavEditionStatus = webdavEditionEnabled ? 1 : 0;
   }
 
@@ -134,17 +129,6 @@ public class UserPreferences implements java.io.Serializable {
     this.dragAndDropStatus = dragAndDropEnabled ? 1 : 0;
   }
 
-  public boolean isOnlineEditionEnalbled() {
-    if (1 == onlineEditionStatus) {
-      return true;
-    }
-    return false;
-  }
-
-  public void enableOnlineEdition(boolean onlineEditionEnabled) {
-    this.onlineEditionStatus = onlineEditionEnabled ? 1 : 0;
-  }
-
   public boolean isWebdavEditionEnabled() {
      if (1 == webdavEditionStatus) {
       return true;
@@ -184,9 +168,6 @@ public class UserPreferences implements java.io.Serializable {
     if (this.dragAndDropStatus != other.dragAndDropStatus) {
       return false;
     }
-    if (this.onlineEditionStatus != other.onlineEditionStatus) {
-      return false;
-    }
     if (this.webdavEditionStatus != other.webdavEditionStatus) {
       return false;
     }
@@ -203,7 +184,7 @@ public class UserPreferences implements java.io.Serializable {
   public String toString() {
     return "UserSettings{" + "id=" + id + ", language=" + language + ", look="
         + look + ", collaborativeWorkSpaceId=" + collaborativeWorkSpaceId + ", thesaurusStatus="
-        + isThesaurusEnabled() + ", dragDropStatus=" + isDragAndDropEnabled() + ", onlineEditingStatus="
-        + isOnlineEditionEnalbled() + ", webdavEditingStatus=" + isWebdavEditionEnabled() + '}';
+        + isThesaurusEnabled() + ", dragDropStatus=" + isDragAndDropEnabled() +
+        ", webdavEditingStatus=" + isWebdavEditionEnabled() + '}';
   }
 }

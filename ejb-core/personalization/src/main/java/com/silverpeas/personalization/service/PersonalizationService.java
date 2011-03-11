@@ -50,10 +50,6 @@ public interface PersonalizationService {
 
   public boolean getDragAndDropStatus(String userId);
 
-  public void setOnlineEditingStatus(String userId, boolean onlineEditingStatus);
-
-  public boolean getOnlineEditingStatus(String userId);
-
   public void setWebdavEditingStatus(String userId, boolean webdavEditingStatus);
 
   public boolean getWebdavEditingStatus(String userId);

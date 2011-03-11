@@ -277,6 +277,7 @@ public class MainSessionController extends AdminReference implements Clipboard {
   public void setFavoriteLanguage(String newLanguage) {
     userLanguage = newLanguage;
   }
+
   /**
    * Return the user's favorite space
    */
@@ -285,15 +286,13 @@ public class MainSessionController extends AdminReference implements Clipboard {
       userSpace = userPreferences.getPersonalWorkSpaceId();
       boolean allowed = false;
       String[] availableSpaces = getUserAvailSpaceIds();
-      if (userSpace != null) {
-        if (!userSpace.equals("null")) {
-          // check if this space always exist and if the user have the right to access to it
-          for (String availableSpaceId : availableSpaces) {
-            if (userSpace.equals(availableSpaceId)) {
-              // the user is allowed to access to this space
-              allowed = true;
-              break;
-            }
+      if (StringUtil.isDefined(userSpace)) {
+        // check if this space always exist and if the user have the right to access to it
+        for (String availableSpaceId : availableSpaces) {
+          if (userSpace.equals(availableSpaceId)) {
+            // the user is allowed to access to this space
+            allowed = true;
+            break;
           }
         }
       }
@@ -315,8 +314,12 @@ public class MainSessionController extends AdminReference implements Clipboard {
     return userPreferences.getLook();
   }
 
+  /**
+   * @return
+   * @deprecated use isWebDAVEditingEnabled instead.
+   */
   public boolean isOnlineEditingEnabled() {
-    return userPreferences.isOnlineEditionEnalbled();
+    return userPreferences.isWebdavEditionEnabled();
   }
 
   public boolean isWebDAVEditingEnabled() {

@@ -82,8 +82,7 @@ public class DefaultPersonalizationService implements PersonalizationService {
       return user.getLanguage();
     }
     user = new UserPreferences(userId, DisplayI18NHelper.getDefaultLanguage(), DEFAULT_LOOK, "",
-        false,
-        false, false, getDefaultWebDAVEditingStatus());
+        false, false,  getDefaultWebDAVEditingStatus());
     dao.saveAndFlush(user);
     return user.getLanguage();
   }
@@ -172,26 +171,6 @@ public class DefaultPersonalizationService implements PersonalizationService {
 
   @Override
   @Transactional(readOnly = true)
-  public boolean getOnlineEditingStatus(String userId) {
-    UserPreferences userPreferences = dao.readByPrimaryKey(userId);
-    if (userPreferences != null) {
-      return userPreferences.isOnlineEditionEnalbled();
-    }
-    return false;
-  }
-
-  @Override
-  public void setOnlineEditingStatus(String userId, boolean onlineEditingStatus) {
-    UserPreferences user = dao.readByPrimaryKey(userId);
-    if (user == null) {
-      user = getDefaultUserSettings(userId);
-    }
-    user.enableOnlineEdition(onlineEditingStatus);
-    dao.saveAndFlush(user);
-  }
-
-  @Override
-  @Transactional(readOnly = true)
   public boolean getWebdavEditingStatus(String userId) {
     UserPreferences userPreferences = dao.readByPrimaryKey(userId);
     if (userPreferences != null) {
@@ -235,7 +214,6 @@ public class DefaultPersonalizationService implements PersonalizationService {
 
   private UserPreferences getDefaultUserSettings(String userId) {
     return new UserPreferences(userId, DisplayI18NHelper.getDefaultLanguage(), DEFAULT_LOOK, "",
-        false,
         false, false, getDefaultWebDAVEditingStatus());
   }
 }
