@@ -3534,7 +3534,7 @@ a.yuimenuitemlabel-disabled:hover {
 }
 
 ul#attachmentList.ui-sortable {
-	cursor:default;
+	/*cursor:default;*/
 }
 
 ul#attachmentList {
@@ -3548,13 +3548,90 @@ ul#attachmentList li.attachmentListItem {
     padding:10px;
 }
 
-ul#attachmentList li.attachmentListItem .lineSize {
-	white-space: nowrap;
+ul#attachmentList li.ui-state-highlight {
+	border: 1px dashed #BFBFBF;
+	border-width: 1px;
+	padding:10px;
+	background-image: none;
+	background-color: #EAEAEA;
 }
 
+ul#attachmentList li.attachmentListItem .lineSize,
 ul#attachmentList li.attachmentListItem .lineMain {
     white-space: nowrap;
+    display: block;
+    position: relative;
+    padding: 1px 24px 2px 24px;
 }
+
+ul#attachmentList li.attachmentListItem .lineSize img {
+	position: absolute;
+    top: 4px;
+    left: 0px;
+}
+
+ul#attachmentList li.attachmentListItem .lineMain .icon {
+	position: absolute;
+    top: 0px;
+    left: 0px;
+	width: 16px;
+	height: 16px;
+}
+
+ul#attachmentList li.attachmentListItem .moreActions {
+    cursor: pointer;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    opacity: 0.65;
+}
+
+ul#attachmentList li.attachmentListItem .moreActions:HOVER {
+    opacity: 1;
+}
+
+ul#attachmentList li.attachmentListItem .workerInfo {
+    margin-left: 24px;
+    padding-left: 5px;
+    margin-top: 2px;
+    border-left: 3px solid #F79992;
+    color: #CE6F6F;
+}
+
+ul#attachmentList li.attachmentListItem .fileName {
+    margin-left: 24px;
+    padding-left: 5px;
+    border-left: 3px solid #EAEAEA;
+    display: block;
+    color: #666;
+}
+
+ul#attachmentList li.attachmentListItem .description {
+    margin-left: 24px;
+    padding-left: 5px;
+    margin-top: 2px;
+    border-left: 3px solid #EAEAEA;
+    display: block;
+    color: #666;
+}
+
+ul#attachmentList li.attachmentListItem .lineMain .version-number {
+	color: #666;
+}
+
+ul#attachmentList li.attachmentListItem .linkAllVersions {
+    margin-left: 22px;
+    padding-left: 0px;
+    margin-top: 2px;
+    border-left: 0px solid #EAEAEA;
+    display: block;
+    color: #666;
+}
+
+ul#attachmentList li.attachmentListItem .linkAllVersions a {
+    color: #666;
+}
+ 
 /*- [ attachments END ] ------------------------- */
 
 #admin-component .componentIcon {

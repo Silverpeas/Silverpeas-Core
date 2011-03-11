@@ -230,5 +230,7 @@
       String userPanelDeleteIcon = m_context + "/util/icons/userPanelPeas_to_del.gif";
 
       ResourceLocator attMessages = new ResourceLocator("com.stratelia.silverpeas.versioningPeas.multilang.versioning", m_MainSessionCtrl.getFavoriteLanguage());
-      ResourcesWrapper attResources = new ResourcesWrapper(attMessages, null, null, m_MainSessionCtrl.getFavoriteLanguage());
+      ResourcesWrapper attResources = new ResourcesWrapper(attMessages, null, attachmentSettings, m_MainSessionCtrl.getFavoriteLanguage());
+      
+      boolean useContextualMenu = attResources.getSetting("ui.useContextualMenu", false);
 %>
