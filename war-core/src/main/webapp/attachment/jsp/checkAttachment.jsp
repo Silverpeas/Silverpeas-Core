@@ -119,15 +119,17 @@ private boolean isFileSharingEnable(MainSessionController msc, String componentI
 	String					userId				= m_MainSessionCtrl.getUserId();
 	String 					language 			= m_MainSessionCtrl.getFavoriteLanguage();
 	ResourceLocator 		messages 			= new ResourceLocator("com.stratelia.webactiv.util.attachment.multilang.attachment", language);
+	ResourceLocator 		attSettings 		= new ResourceLocator("com.stratelia.webactiv.util.attachment.Attachment", "");
 
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 	
 	String m_Context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 	
-	ResourcesWrapper attResources = new ResourcesWrapper(messages, null, null, language);
+	ResourcesWrapper attResources = new ResourcesWrapper(messages, null, attSettings, language);
+	
+	boolean useContextualMenu = attResources.getSetting("ui.useContextualMenu", false);
 	
 	// Pixels
 	String noColorPix       = m_Context + "/util/icons/colorPix/1px.gif";
-	String ArrayPnoColorPix = m_Context + "/util/icons/colorPix/15px.gif";
-	ResourceLocator attSettings = new ResourceLocator("com.stratelia.webactiv.util.attachment.Attachment", "");
+	String ArrayPnoColorPix = m_Context + "/util/icons/colorPix/15px.gif";	
 %>

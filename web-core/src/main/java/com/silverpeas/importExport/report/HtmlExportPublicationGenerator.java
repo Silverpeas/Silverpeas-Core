@@ -204,7 +204,7 @@ public class HtmlExportPublicationGenerator {
   }
 
   public String xmlFormToHTML() {
-    PublicationTemplateImpl template = null;
+    PublicationTemplateImpl template  ;
     try {
       template = (PublicationTemplateImpl) PublicationTemplateManager.getInstance().
           getPublicationTemplate(publicationDetail.getPK().getInstanceId()
@@ -341,9 +341,9 @@ public class HtmlExportPublicationGenerator {
 
     String lowerHtml = htmlText.toLowerCase();
     int finPath = 0;
-    int debutPath = 0;
+    int debutPath  ;
     StringBuilder newHtmlText = new StringBuilder();
-    String imageSrc = "";
+    String imageSrc  ;
     if (lowerHtml.indexOf("src=\"", finPath) == -1) {
       // pas d'images dans le fichier
       return htmlText;
@@ -370,9 +370,9 @@ public class HtmlExportPublicationGenerator {
   public static String replaceFilesPathForExport(String htmlText) {
     String lowerHtml = htmlText.toLowerCase();
     int finPath = 0;
-    int debutPath = 0;
+    int debutPath  ;
     StringBuilder newHtmlText = new StringBuilder();
-    String imageSrc = "";
+    String imageSrc  ;
     if (lowerHtml.indexOf("href=\"", finPath) == -1) {
       // pas d'images dans le fichier
       return htmlText;

@@ -57,7 +57,7 @@ public class ComponentReport {
   }
 
   /**
-   * @param Report
+   * @param report
    */
   public void addUnitReport(UnitReport report) {
     listUnitReports.add(report);

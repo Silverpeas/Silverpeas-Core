@@ -130,10 +130,10 @@
         <j2se href="http://java.sun.com/products/autodl/j2se" version="1.6+" />
         <jar href="OpenOfficeLauncher.jar" download="eager"/>
         <jar href="xercesImpl-2.6.2.jar" download="eager"/>
-        <jar href="commons-codec-1.3.jar" download="eager"/>
-        <jar href="commons-httpclient-3.0.1.jar" download="eager"/>
-        <jar href="jackrabbit-jcr-commons-1.6.0.jar" download="eager"/>
-        <jar href="jackrabbit-webdav-1.6.0.jar" download="eager"/>
+        <jar href="commons-codec-1.4.jar" download="eager"/>
+        <jar href="commons-httpclient-3.1.jar" download="eager"/>
+        <jar href="jackrabbit-jcr-commons-1.6.4.jar" download="eager"/>
+        <jar href="jackrabbit-webdav-1.6.4.jar" download="eager"/>
         <jar href="jcl-over-slf4j-1.5.6.jar" download="eager"/>
         <jar href="slf4j-log4j12-1.5.6.jar" download="eager"/>
         <jar href="slf4j-api-1.5.6.jar" download="eager"/>

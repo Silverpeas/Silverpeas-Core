@@ -122,9 +122,8 @@ public class ImportExportRequestRouter extends ComponentRequestRouter {
             (List<WAAttributeValuePair>) request.getAttribute("selectedResultsWa");
         String rootId = (String) request.getAttribute("RootId");
 
-        if (itemPKs != null && itemPKs.size() > 0) {
-          ExportPDFReport report =
-              importExportSC.processExportPDF(importExportSC.getLanguage(), itemPKs, rootId);
+        if (itemPKs != null && !itemPKs.isEmpty()) {
+          ExportPDFReport report = importExportSC.processExportPDF(itemPKs);
 
           if (report != null) {
             request.setAttribute("ExportPDFReport", report);

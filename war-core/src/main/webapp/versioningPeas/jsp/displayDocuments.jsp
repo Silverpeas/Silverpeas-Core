@@ -94,7 +94,7 @@ boolean isDocumentCheckoutable(Document document, String flag, int user_Id, bool
 }
 
 void displayActions(Document document, DocumentVersion version, String profile, boolean useXMLForm, boolean useFileSharing, boolean useWebDAV, int userId, 
-ResourcesWrapper resources, String httpServerBase, VersioningSessionController versioningSC, boolean showMenuNotif, JspWriter out) throws IOException
+ResourcesWrapper resources, String httpServerBase, VersioningSessionController versioningSC, boolean showMenuNotif, boolean useContextualMenu, JspWriter out) throws IOException
 {
 	String documentId = document.getPk().getId();
 	String webDavOK = "false";
@@ -138,43 +138,49 @@ ResourcesWrapper resources, String httpServerBase, VersioningSessionController v
 		builder.append("</div>");
 
 		builder.append("<script type=\"text/javascript\">");
+		
+		String oMenuId = "oMenu"+documentId; 
 
-			builder.append("var oMenu"+documentId+";");
+			builder.append("var ").append(oMenuId).append(";");
 			builder.append("var webDav"+documentId+" = \""+URLEncoder.encode(httpServerBase+version.getWebdavUrl(), "UTF-8")+"\";");
 			builder.append("YAHOO.util.Event.onContentReady(\"basicmenu"+documentId+"\", function () {");
-				builder.append("oMenu"+documentId+" = new YAHOO.widget.ContextMenu(\"basicmenu"+documentId+"\", { trigger: \"img_"+documentId+"\", hidedelay: 100, effect: { effect: YAHOO.widget.ContainerEffect.FADE, duration: 0.30}});");
-				builder.append("oMenu"+documentId+".render();");
+				if (useContextualMenu) {
+					builder.append(oMenuId).append(" = new YAHOO.widget.ContextMenu(\"basicmenu"+documentId+"\", { trigger: \"img_"+documentId+"\", hidedelay: 100, effect: { effect: YAHOO.widget.ContainerEffect.FADE, duration: 0.30}});");
+				} else {
+				  	builder.append(oMenuId).append(" = new YAHOO.widget.Menu(\"basicmenu"+documentId+"\", { hidedelay: 100, effect: { effect: YAHOO.widget.ContainerEffect.FADE, duration: 0.30}});");
+				}
+				builder.append(oMenuId).append(".render();");
 				boolean is_user_writer = versioningSC.isWriter(document, userId);
 
-				builder.append("oMenu"+documentId+".getItem(5).cfg.setProperty(\"disabled\", true);"); //validate
-		  		builder.append("oMenu"+documentId+".getItem(6).cfg.setProperty(\"disabled\", true);"); //refuse
+				builder.append(oMenuId).append(".getItem(5).cfg.setProperty(\"disabled\", true);"); //validate
+		  		builder.append(oMenuId).append(".getItem(6).cfg.setProperty(\"disabled\", true);"); //refuse
 				if (document.getStatus()==Document.STATUS_CHECKOUTED)
 				{
 				  	//locked
 				  	if (useFileSharing)
 					{
-						builder.append("oMenu"+documentId+".getItem(0, 2).cfg.setProperty(\"disabled\", true);"); //share
+						builder.append(oMenuId).append(".getItem(0, 2).cfg.setProperty(\"disabled\", true);"); //share
 					}
-					builder.append("oMenu"+documentId+".getItem(0).cfg.setProperty(\"disabled\", true);"); //checkout
-					builder.append("oMenu"+documentId+".getItem(1).cfg.setProperty(\"disabled\", true);"); //checkout and download
+					builder.append(oMenuId).append(".getItem(0).cfg.setProperty(\"disabled\", true);"); //checkout
+					builder.append(oMenuId).append(".getItem(1).cfg.setProperty(\"disabled\", true);"); //checkout and download
 
 					if (document.getOwnerId() != userId && "admin".equals(profile))
 					{
-					  	builder.append("oMenu"+documentId+".getItem(2).cfg.setProperty(\"disabled\", true);"); //edit online
-						builder.append("oMenu"+documentId+".getItem(3).cfg.setProperty(\"disabled\", true);"); //add version
+					  	builder.append(oMenuId).append(".getItem(2).cfg.setProperty(\"disabled\", true);"); //edit online
+						builder.append(oMenuId).append(".getItem(3).cfg.setProperty(\"disabled\", true);"); //add version
 					}
 
 					if (!isDocumentCheckinable(document, version, profile, userId, is_user_writer))
 					{
-						builder.append("oMenu"+documentId+".getItem(4).cfg.setProperty(\"disabled\", true);"); //checkin
+						builder.append(oMenuId).append(".getItem(4).cfg.setProperty(\"disabled\", true);"); //checkin
 					}
 
 					if (document.getTypeWorkList() == 1)
 					{
 					  	if (isValidator(document.getWorkList(), userId) && version.getStatus() == DocumentVersion.STATUS_VALIDATION_REQUIRED)
             			{
-					  	  	builder.append("oMenu"+documentId+".getItem(5).cfg.setProperty(\"disabled\", false);"); //validate
-					  		builder.append("oMenu"+documentId+".getItem(6).cfg.setProperty(\"disabled\", false);"); //refuse
+					  	  	builder.append(oMenuId).append(".getItem(5).cfg.setProperty(\"disabled\", false);"); //validate
+					  		builder.append(oMenuId).append(".getItem(6).cfg.setProperty(\"disabled\", false);"); //refuse
             			}
 					}
 					else if (document.getTypeWorkList() == 2)
@@ -182,30 +188,42 @@ ResourcesWrapper resources, String httpServerBase, VersioningSessionController v
 					  	Worker user = (Worker)document.getWorkList().get(document.getCurrentWorkListOrder());
 					  	if (userId == user.getUserId() && user.isApproval())
             			{
-					  	  	builder.append("oMenu"+documentId+".getItem(5).cfg.setProperty(\"disabled\", false);"); //validate
-					  		builder.append("oMenu"+documentId+".getItem(6).cfg.setProperty(\"disabled\", false);"); //refuse
+					  	  	builder.append(oMenuId).append(".getItem(5).cfg.setProperty(\"disabled\", false);"); //validate
+					  		builder.append(oMenuId).append(".getItem(6).cfg.setProperty(\"disabled\", false);"); //refuse
             			}
 					}
 				}
 				else
 				{
 				    //libre
-				  	builder.append("oMenu"+documentId+".getItem(4).cfg.setProperty(\"disabled\", true);"); //checkin
+				  	builder.append(oMenuId).append(".getItem(4).cfg.setProperty(\"disabled\", true);"); //checkin
 
 				  	if (!isDocumentCheckoutable(document, profile, userId, is_user_writer))
 				  	{
-				  	  	builder.append("oMenu"+documentId+".getItem(0).cfg.setProperty(\"disabled\", true);"); //checkout
-						builder.append("oMenu"+documentId+".getItem(1).cfg.setProperty(\"disabled\", true);"); //checkout and download
-						builder.append("oMenu"+documentId+".getItem(3).cfg.setProperty(\"disabled\", true);"); //edit online
-						builder.append("oMenu"+documentId+".getItem(4).cfg.setProperty(\"disabled\", true);"); //new version
+				  	  	builder.append(oMenuId).append(".getItem(0).cfg.setProperty(\"disabled\", true);"); //checkout
+						builder.append(oMenuId).append(".getItem(1).cfg.setProperty(\"disabled\", true);"); //checkout and download
+						builder.append(oMenuId).append(".getItem(3).cfg.setProperty(\"disabled\", true);"); //edit online
+						builder.append(oMenuId).append(".getItem(4).cfg.setProperty(\"disabled\", true);"); //new version
 				  	}
 				}
 
-				if (!useWebDAV || !version.isOpenOfficeCompatibleDocument())
-					builder.append("oMenu"+documentId+".getItem(2).cfg.setProperty(\"disabled\", true);"); //edit online
+				if (!useWebDAV || !version.isOpenOfficeCompatibleDocument()) {
+					builder.append(oMenuId).append(".getItem(2).cfg.setProperty(\"disabled\", true);"); //edit online
+				}
 
-				builder.append("YAHOO.util.Event.addListener(\"basicmenu"+documentId+"\", \"mouseover\", oMenu"+documentId+".show);");
-				builder.append("YAHOO.util.Event.addListener(\"basicmenu"+documentId+"\", \"mouseout\", oMenu"+documentId+".hide);");
+				builder.append("YAHOO.util.Event.addListener(\"basicmenu"+documentId+"\", \"mouseover\", ").append(oMenuId).append(".show);");
+				builder.append("YAHOO.util.Event.addListener(\"basicmenu"+documentId+"\", \"mouseout\", ").append(oMenuId).append(".hide);");
+				
+				if (!useContextualMenu) {
+					builder.append("YAHOO.util.Event.on(\"edit_").append(documentId);
+				    builder.append("\", \"click\", function (event) {");
+				    builder.append("var xy = YAHOO.util.Event.getXY(event);");
+				    builder.append(oMenuId).append(".cfg.setProperty(\"x\", xy[0]);");
+				    builder.append(oMenuId).append(".cfg.setProperty(\"y\", xy[1]+10);");
+				    builder.append(oMenuId).append(".show();");
+				    builder.append("  })");
+		    	}
+				
 			builder.append("});");
 
 		builder.append("</script>");
@@ -304,7 +322,7 @@ ResourcesWrapper resources, String httpServerBase, VersioningSessionController v
         {
         	document = (Document) iterator.next();
         	versioningSC.setEditingDocumentWithDefaultLists(document);
-        	if (versioningSC.hasAccess(document, versioningSC.getUserId()))
+        	if (fromAlias || versioningSC.hasAccess(document, versioningSC.getUserId()))
 	        {
         		if ("user".equals(profile))
         	  	{
@@ -321,55 +339,37 @@ ResourcesWrapper resources, String httpServerBase, VersioningSessionController v
 							documentVersionUrl = FileServerUtils.getAliasURL(componentId, document_version.getLogicalName(), document.getPk().getId(), document_version.getPk().getId());
 	             		}
 	             	%>
-					<li id="attachment_<%=document.getPk().getId()%>" class="attachmentListItem">
-								 <span class="lineMain">
-	                             <img id="img_<%=document.getPk().getId() %>" alt="" src="<%=versioning_util.getDocumentVersionIconPath(document_version.getPhysicalName())%>" width="20" <%=iconStyle%>/>&nbsp;
-				                 <A id="url<%=document.getPk().getId() %>" href="<%=documentVersionUrl%>" target="_blank"><%=document.getName()%></A>
-				                 &nbsp;(<span id="version_<%=document.getPk().getId() %>">v<%=document_version.getMajorNumber()%>.<%=document_version.getMinorNumber()%></span>)
+					<li id="attachment_<%=document.getPk().getId()%>" class="attachmentListItem" <%=iconStyle%>>
+						<% if (contextualMenuEnabled) {
+								displayActions(document, versioning_util.getLastVersion(document.getPk()), profile, false, useFileSharing, webdavEditingEnable, Integer.parseInt(versioningSC.getUserId()), attResources, httpServerBase, versioningSC, showMenuNotif, useContextualMenu, out);
+						   }
+						%>
+								<span class="lineMain">
+	                             <img id="img_<%=document.getPk().getId() %>" alt="" src="<%=versioning_util.getDocumentVersionIconPath(document_version.getPhysicalName())%>" class="icon"/>
+				                 <a id="url<%=document.getPk().getId() %>" href="<%=documentVersionUrl%>" target="_blank"><%=document.getName()%></a>
+				                 &nbsp;<span class="version-number" id="version_<%=document.getPk().getId() %>">v<%=document_version.getMajorNumber()%>.<%=document_version.getMinorNumber()%></span>
+				                 <% if (contextualMenuEnabled && !useContextualMenu) { %>
+          							<img id="edit_<%=document.getPk().getId() %>" src="<%=m_context %>/util/icons/arrow/open.gif" class="moreActions"/>
+          						 <% } %>
+								</span>
+								
+								<span class="lineSize">
+									<a href="<%=URLManager.getSimpleURL(URLManager.URL_DOCUMENT, document.getPk().getId())%>" target="_blank"><img src="<%=m_context%>/util/icons/link.gif" border="0" valign="absmiddle" alt="<%=attResources.getString("versioning.CopyLink") %>" title="<%=attResources.getString("versioning.CopyLink") %>"></a>
+								<% if (showFileSize && showDownloadEstimation) { %>								  
+									<%= FileRepositoryManager.formatFileSize(document_version.getSize()) %> / <%= versioning_util.getDownloadEstimation(document_version.getSize()) %>
+								<% } else if (showFileSize) { %>
+									<%= FileRepositoryManager.formatFileSize(document_version.getSize()) %>
+								<% } else if (showDownloadEstimation) { %>
+									<%= versioning_util.getDownloadEstimation(document_version.getSize()) %>
+								<% } %>
+								 - <%= resources.getOutputDate(document_version.getCreationDate())%>
+								</span>
+								
+								<% if (StringUtil.isDefined(document.getDescription()) && showInfo) { %>
+									<span class="description"><%= EncodeHelper.javaStringToHtmlParagraphe(document.getDescription()) %></span>
+								<% } %>
 
-								 <a href="<%=URLManager.getSimpleURL(URLManager.URL_DOCUMENT, document.getPk().getId())%>"><img src="<%=m_context%>/util/icons/link.gif" border="0" valign="absmiddle" alt="<%=attResources.getString("versioning.CopyLink") %>" title="<%=attResources.getString("versioning.CopyLink") %>" target="_blank"></a>
-
-								<%
-							 	if (contextualMenuEnabled)
-							    {
-									displayActions(document, versioning_util.getLastVersion(document.getPk()), profile, false, useFileSharing, webdavEditingEnable, Integer.parseInt(versioningSC.getUserId()), attResources, httpServerBase, versioningSC, showMenuNotif, out);
-								    out.println("<br/>");
-								    if (document.getStatus() == Document.STATUS_CHECKOUTED)
-								    {
-								    	out.println("<div id=\"worker"+document.getPk().getId()+"\" style=\"visibility:visible\">"+attResources.getString("lockedBy")+" "+m_MainSessionCtrl.getOrganizationController().getUserDetail(Integer.toString(document.getOwnerId())).getDisplayedName()+" "+attResources.getString("at")+" "+resources.getOutputDate(document.getLastCheckOutDate())+"</div>");
-								    }
-								    else
-								    {
-								    	out.println("<div id=\"worker"+document.getPk().getId()+"\" style=\"visibility:hidden\"></div>");
-								    }
-							    }
-							    else
-							    {
-							    	out.println("<br/>");
-							    }
-								out.print("</span>");
-
-								out.println("<span class=\"lineSize\">");
-								if (showFileSize && showDownloadEstimation)
-								{
-									out.println(FileRepositoryManager.formatFileSize(document_version.getSize()));
-									out.println(" / " + versioning_util.getDownloadEstimation(document_version.getSize()));
-								}
-								else
-								{
-									if (showFileSize)
-										out.println(FileRepositoryManager.formatFileSize(document_version.getSize()));
-									if (showDownloadEstimation)
-										out.println(versioning_util.getDownloadEstimation(document_version.getSize()));
-								}
-								out.println(" - " + resources.getOutputDate(document_version.getCreationDate()));
-								out.println("</span>");
-								if (StringUtil.isDefined(document.getDescription()) && showInfo)
-									out.println("<br/><i>"+EncodeHelper.javaStringToHtmlParagraphe(document.getDescription())+"</i>");
-
-								if (document_version.isSpinfireDocument() && spinfireViewerEnable)
-							    {
-									    %>
+								<% if (document_version.isSpinfireDocument() && spinfireViewerEnable) { %>
                                         <div id="switchView" name="switchView" style="display: none">
                                           <a href="#" onClick="changeView3d(<%=document_version.getPk().getId()%>)"><img name="iconeView" valign="bottom" border="0" src="/util/icons/masque3D.gif"></a>
                                         </div>
@@ -398,19 +398,26 @@ ResourcesWrapper resources, String httpServerBase, VersioningSessionController v
 									<br/><a rel="<%=xmlURL%>" href="#" title="<%=document.getName()%>"><%=attMessages.getString("versioning.xmlForm.View")%></a>
 									<%
 								}
-								boolean displayAllVersionsLink = false;
-								if ("user".equals(profile) && document_version.getMajorNumber() > 1)
-								{
-									displayAllVersionsLink = true;
-								}
-								else if (!profile.equals("user") && versioning_util.getDocumentVersions(document.getPk()).size()>1)
-								{
-								  	displayAllVersionsLink = true;
-								}
 								%>
-								<% if (displayAllVersionsLink && !hideAllVersionsLink) { %>
-									<div class="linkAllVersions">>> <a href="javaScript:viewPublicVersions('<%=document.getPk().getId()%>')"><%=attMessages.getString("allVersions")%></a><div/>
+								<% 
+									boolean displayAllVersionsLink = false;
+									if ("user".equals(profile) && document_version.getMajorNumber() > 1) {
+										displayAllVersionsLink = true;
+									} else if (!profile.equals("user") && versioning_util.getDocumentVersions(document.getPk()).size()>1) {
+									  	displayAllVersionsLink = true;
+									}
+									if (displayAllVersionsLink && !hideAllVersionsLink) { %>
+									<span class="linkAllVersions"><img alt="<%=attMessages.getString("allVersions")%>" src="<%=m_context %>/util/icons/bullet_add_1.gif"> <a href="javaScript:viewPublicVersions('<%=document.getPk().getId()%>')"><%=attMessages.getString("allVersions")%></a></span>
 								<% } %>
+								<%
+								if (contextualMenuEnabled) {
+									if (document.getStatus() == Document.STATUS_CHECKOUTED) {
+								    	out.println("<div class=\"workerInfo\" id=\"worker"+document.getPk().getId()+"\" style=\"visibility:visible\">"+attResources.getString("lockedBy")+" "+m_MainSessionCtrl.getOrganizationController().getUserDetail(Integer.toString(document.getOwnerId())).getDisplayedName()+" "+attResources.getString("at")+" "+resources.getOutputDate(document.getLastCheckOutDate())+"</div>");
+								    } else {
+								    	out.println("<div class=\"workerInfo\" id=\"worker"+document.getPk().getId()+"\" style=\"visibility:hidden\"></div>");
+								    }
+							    }
+								 %>
 							</li>
 			<%
 				        }
@@ -532,7 +539,7 @@ $(document).ready(function()
 });
 
 <% if (contextualMenuEnabled) { %>
-
+var pageMustBeReloadingAfterSorting = false;
 function checkout(id, webdav, edit, download)
 {
 	if (id > 0) {
@@ -571,6 +578,7 @@ function checkout(id, webdav, edit, download)
 				alert(data);
 			}
 		}, 'text');
+		pageMustBeReloadingAfterSorting = true;
 	}
 }
 
@@ -604,6 +612,7 @@ function checkin(id, force) {
   {
     SP_openWindow('<%=m_context%>/RVersioningPeas/jsp/AddNewOnlineVersion?Id='+id+'&ComponentId=<%=componentId%>&documentId='+id+'&force_release='+force+'&Callback=newVersionAdded', "test", "600", "400","scrollbars=1, resizable, alwaysRaised");
   }
+  pageMustBeReloadingAfterSorting = true;
 }
 
 function newVersionAdded(documentId, majorNumber, minorNumber) {
@@ -657,6 +666,7 @@ function deleteAttachment(attachmentId)
 						alert(data);
 					}
 				}, 'text');
+		pageMustBeReloadingAfterSorting = true;
 	}
 }
 
@@ -695,7 +705,7 @@ function displayWarning()
 }
 
 $(document).ready(function(){
-	$("#attachmentList").sortable({opacity: 0.4, axis: 'y', cursor: 'hand', handle: 'img'});
+	$("#attachmentList").sortable({opacity: 0.4, axis: 'y', cursor: 'move', placeholder: 'ui-state-highlight', forcePlaceholderSize: true});
 
 	$("#attachmentModalDialog").dialog({
   	  autoOpen: false,
@@ -732,6 +742,11 @@ function sortAttachments(orderedList)
 					alert(data);
 				}
 			}, 'text');
+
+	if (pageMustBeReloadingAfterSorting) {
+		//force page reloading to reinit menus
+		reloadIncludingPage();
+    }
 }
 
 function uploadCompleted(s)

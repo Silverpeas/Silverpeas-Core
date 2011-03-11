@@ -24,8 +24,6 @@
 
 package com.silverpeas.importExportPeas.control;
 
-import java.util.List;
-
 import com.silverpeas.importExport.control.ImportExport;
 import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.importExport.report.ExportPDFReport;
@@ -37,6 +35,8 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
+
+import java.util.List;
 
 /**
  * @author neysseri
@@ -66,10 +66,12 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
   /**
    * @param language
    * @param itemsToExport a List of WAAttributeValuePair contains ids of elements to export
-   * (objectId and instanceId)
+   *                      (objectId and instanceId)
    * @param rootId
    * @throws ImportExportException
-   */  public void processExport(String language, List<WAAttributeValuePair> itemsToExport, String rootId)
+   */
+  public void processExport(String language, List<WAAttributeValuePair> itemsToExport,
+      String rootId)
       throws ImportExportException {
     SilverTrace.info("importExportPeas", "ImportExportSessionController.processExport()",
         "root.MSG_GEN_ENTER_METHOD");
@@ -115,31 +117,25 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
   /**
    * Export Pdf attachements of selected publications to a unique PDF. Useful for a single print or
    * download.
-   * @param language : language
    * @param itemsToExport : List<WAAttributeValuePair> contains ids of elements to export (objectId
-   * and instanceId)
-   * @param rootId :
+   *                      and instanceId)
    * @return
    * @throws ImportExportException
    */
-  public ExportPDFReport processExportPDF(String language,
-      List<WAAttributeValuePair> itemsToExport,
-      String rootId) throws ImportExportException {
+  public ExportPDFReport processExportPDF(List<WAAttributeValuePair> itemsToExport)
+      throws ImportExportException {
     ImportExport importExport = new ImportExport();
 
-    ExportPDFReport report = importExport.processExportPDF(getUserDetail(),
-        language, itemsToExport, rootId);
-
-    return report;
+    return importExport.processExportPDF(getUserDetail(), itemsToExport);
   }
 
   /**
-   * @param language 
+   * @param language
    * @param itemsToExport a List of WAAttributeValuePair contains ids of elements to export
-   * (objectId and instanceId)
-   * @param combination 
+   *                      (objectId and instanceId)
+   * @param combination
    * @param timeCriteria
-   * @return 
+   * @return
    * @throws ImportExportException
    */
   public ExportReport processExportKmax(String language, List<WAAttributeValuePair> itemsToExport,
