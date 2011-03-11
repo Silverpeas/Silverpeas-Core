@@ -6,34 +6,31 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<%@page import="com.stratelia.webactiv.beans.admin.SpaceInstLight" %>
 <%@page import="java.util.List" %>
 
 <fmt:setLocale value="${sessionScope[sessionController].language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
-<c:set var="preferences" value="${request.preferences}"/>
+<c:set var="preferences" value="${requestScope['preferences']}"/>
+<!--
 <%
   List availableLooks = gef.getAvailableLooks();
   pageContext.setAttribute("availableLooks", availableLooks);
-  List spaceTreeview = (List) request.getAttribute("SpaceTreeview");
-
-%>
+%>-->
 <form name="UserForm" action="<%=MyProfileRoutes.UpdateMySettings %>" method="post">
   <table border="0" cellspacing="0" cellpadding="5" width="100%">
-    <!-- Language -->
     <tr>
-      <td class="txtlibform"><fmt:message key="myProfile.preferences.FavoriteLanguage"/> :</td>
+      <td class="txtlibform"><fmt:message key="${'myProfile.settings.FavoriteLanguage'}"/> :</td>
       <td>
         <select name="SelectedLanguage" size="1">
-          <c:forEach items="${request.AllLanguages}" var="language">
+          <c:forEach items="${requestScope['AllLanguages']}" var="language">
             <c:choose>
               <c:when test="${request.preferences.language eq language}">
                 <option value="<c:out value="${language}"/>" selected="selected"><fmt:message
-                    key="myProfile.preferences.language_+ ${language}"/></option>
+                    key="myProfile.settings.language_+ ${language}"/></option>
               </c:when>
               <c:otherwise>
                 <option value="<c:out value="${language}"/>"><fmt:message
-                    key="myProfile.preferences.language_+ ${language}"/></option>
+                    key="myProfile.settings.language_${language}"/></option>
               </c:otherwise>
             </c:choose>
           </c:forEach>
@@ -41,10 +38,9 @@
       </td>
     </tr>
     <c:choose>
-      <!-- Look -->
       <c:when test="{not empty availableLooks}">
         <tr>
-          <td class="txtlibform"><fmt:message key="myProfile.preferences.FavoriteLook"/> :</td>
+          <td class="txtlibform"><fmt:message key="${'myProfile.settings.FavoriteLook'}"/> :</td>
           <td><select name="SelectedLook" size="1">
             <c:forEach items="${availableLooks}" var="look">
               <c:choose>
@@ -65,9 +61,8 @@
         <input type="hidden" name="SelectedLook" value="<c:out value="${preferences.look}" />"/>
       </c:otherwise>
     </c:choose>
-    <!-- defaultWorkSpace -->
     <tr>
-      <td class="txtlibform"><fmt:message key="myProfile.preferences.DefaultWorkSpace"/> :</td>
+      <td class="txtlibform"><fmt:message key="${'myProfile.settings.DefaultWorkSpace'}"/> :</td>
       <td>
         <select name="SelectedWorkSpace" size="1">
           <c:if
@@ -75,56 +70,60 @@
             <option value="null" selected="selected"><fmt:message
                 key="UndefinedFavoriteSpace"/></option>
           </c:if>
-          <c:set var="indentation" value=''/>
-          <c:forEach items="${request.SpaceTreeview}" var="space">
+          <c:forEach items="${requestScope['SpaceTreeview']}" var="space">
+            <c:set var="indentation" value=''/>
             <c:forEach begin="0" end="${space.level}">
-              <c:set var="indentation">"&nbsp;&nbsp;"<c:out value="${idndentation}"/></c:set>
+              <c:set var="indentation">&nbsp;&nbsp;<c:out value="${indentation}" escapeXml="false"/></c:set>
             </c:forEach>
-            <option value="<c:out value="${space.fullId}"/>" <c:if
-                test="${space.fullid eq preferences.personalWorkSpaceId}">selected="selected"</c:if>>
-              <c:out value="${indentation}"/> <c:out value="${space.name}"/></option>
+            <option value="<c:out value="${space.fullId}"/>"
+                    <c:if
+                        test="${space.fullId eq preferences.personalWorkSpaceId}">selected="selected"</c:if> >
+              <c:out value="${indentation}" escapeXml="false"/><c:out
+                value="${space.name}"/></option>
           </c:forEach>
         </select>
       </td>
     </tr>
-    <!-- ThesaurusState -->
     <tr>
-      <td class="txtlibform"><fmt:message key="myProfile.preferences.Thesaurus"/> :</td>
+      <td class="txtlibform"><fmt:message key="${'myProfile.settings.Thesaurus'}"/> :</td>
       <td>
         <input name="opt_thesaurusStatus" type="checkbox"
-               value="true" <c:if test="${preferences.}"<%=checkedThesaurus_activate%>/>
+               value="true"
+               <c:if test="${preferences.thesaurusEnabled}">checked="checked"</c:if>  />
       </td>
     </tr>
-    <!-- Drag&Drop -->
     <tr>
-      <td class="txtlibform"><fmt:message key="myProfile.preferences.DragDrop"/> :</td>
+      <td class="txtlibform"><fmt:message key="${'myProfile.settings.DragDrop'}"/> :</td>
       <td>
         <input name="opt_dragDropStatus" type="checkbox"
-               value="true" <%=checkedDragDrop_activate%>/>
+               value="true"
+               <c:if test="${preferences.dragAndDropEnabled}">checked="checked"</c:if> />
       </td>
     </tr>
-    <!-- Webdav Editing -->
     <tr>
-      <td class="txtlibform"><fmt:message key="myProfile.preferences.WebdavEditing"/> :</td>
+      <td class="txtlibform"><fmt:message key="${'myProfile.settings.WebdavEditing'}"/> :</td>
       <td>
         <input name="opt_webdavEditingStatus" type="checkbox"
-               value="true" <%=checkedWebdavEditing_activate%>/>
+               value="true"
+               <c:if test="${preferences.webdavEditionEnabled}">checked="checked"</c:if> />
       </td>
     </tr>
   </table>
+  <br/>
+  <fmt:message key="GML.validate" var="validate"/>
+  <fmt:message key="GML.cancel" var="cancel"/>
+  <center>
+    <view:buttonPane>
+      <view:button action="javascript:onClick=submitForm();" label="${validate}" disabled="false"/>
+      <view:button action="javascript:onClick=history.back();" label="${cancel}" disabled="false"/>
+    </view:buttonPane>
+  </center>
 </form>
-<fmt:message key="GML.validate" var="validate"/>
-<fmt:message key="GML.cancel" var="cancel"/>
-<view:buttonPane>
-  <view:button action="javascript:onClick=submitForm();" label="${validate}" disabled="false"/>
-  <view:button action="javascript:onClick=history.back();" label="${cancel}" disabled="false"/>
-</view:buttonPane>
-
 <script type="text/javascript">
   function submitForm() {
     var currentLook = '<caption:out balue="${preferences.look}"/>';
     if (document.UserForm.SelectedLook.value != currentLook) {
-      alert("<fmt:message key="myProfile.preferences.ChangeLookAlert"/>");
+      alert("<fmt:message key="${'myProfile.settings.ChangeLookAlert'}"/>");
     }
 
     document.UserForm.submit();

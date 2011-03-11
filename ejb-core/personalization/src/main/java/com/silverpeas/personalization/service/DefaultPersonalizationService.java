@@ -81,7 +81,8 @@ public class DefaultPersonalizationService implements PersonalizationService {
     if (user != null) {
       return user.getLanguage();
     }
-    user = new UserPreferences(userId, DisplayI18NHelper.getDefaultLanguage(), DEFAULT_LOOK, "", false,
+    user = new UserPreferences(userId, DisplayI18NHelper.getDefaultLanguage(), DEFAULT_LOOK, "",
+        false,
         false, false, getDefaultWebDAVEditingStatus());
     dao.saveAndFlush(user);
     return user.getLanguage();
@@ -222,7 +223,7 @@ public class DefaultPersonalizationService implements PersonalizationService {
   private void printTrace(Throwable t) {
     if (t instanceof java.sql.BatchUpdateException) {
       ((java.sql.BatchUpdateException) t).getNextException().printStackTrace();
-    }else {
+    } else {
       printTrace(t.getCause());
     }
   }
@@ -233,7 +234,8 @@ public class DefaultPersonalizationService implements PersonalizationService {
   }
 
   private UserPreferences getDefaultUserSettings(String userId) {
-    return new UserPreferences(userId, DisplayI18NHelper.getDefaultLanguage(), DEFAULT_LOOK, "", false,
+    return new UserPreferences(userId, DisplayI18NHelper.getDefaultLanguage(), DEFAULT_LOOK, "",
+        false,
         false, false, getDefaultWebDAVEditingStatus());
   }
 }
