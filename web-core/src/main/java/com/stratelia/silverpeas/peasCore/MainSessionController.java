@@ -33,7 +33,6 @@ import java.util.List;
 
 import javax.ejb.RemoveException;
 
-import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.silverpeas.alertUser.AlertUser;
@@ -159,15 +158,8 @@ public class MainSessionController extends AdminReference implements Clipboard {
       // Get the user language
       userLanguage = getPersonalization().getFavoriteLanguage();
     } catch (Exception e) {
-<<<<<<< HEAD
-      throw new PeasCoreException(
-          "MainSessionController.MainSessionController",
-          SilverpeasException.ERROR, "peasCore.EX_CANT_GET_USER_PROFILE",
-          "sKey=" + sKey, e);
-=======
       throw new PeasCoreException("MainSessionController.MainSessionController",
           SilverpeasException.ERROR, "peasCore.EX_CANT_GET_USER_PROFILE", "sKey=" + sKey, e);
->>>>>>> d98278e... fixing bug #1674
     }
   }
 

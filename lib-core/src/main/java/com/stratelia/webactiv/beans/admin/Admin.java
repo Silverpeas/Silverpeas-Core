@@ -6522,7 +6522,7 @@ public final class Admin extends Object {
           componentId = null;
         }
       }
-      return groupManager.searchGroupsIds(domainDriverManager, isRootGroup,
+      return m_GroupManager.searchGroupsIds(m_DDManager, isRootGroup,
           getDriverComponentId(componentId), profileId, modelGroup);
     } catch (Exception e) {
       throw new AdminException("Admin.searchGroupsIds",
