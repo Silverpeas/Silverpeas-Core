@@ -22,10 +22,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.comment.web.mock;
+package com.silverpeas.rest.mock;
 
-import com.stratelia.silverpeas.peasCore.SessionInfo;
-import com.stratelia.silverpeas.peasCore.SessionManagement;
+import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagement;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;

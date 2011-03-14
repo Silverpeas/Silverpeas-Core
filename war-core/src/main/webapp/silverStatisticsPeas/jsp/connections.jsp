@@ -130,7 +130,7 @@ function DoIdle()
 
 				arrayLine.addArrayCellText(item.getLog());
 
-				long duration = currentTime - item.getStartDate();
+				long duration = currentTime - item.getOpeningTimestamp();
 				cellText = arrayLine.addArrayCellText(item.formatDuration(duration));
 				cellText.setCompareOn(new Long(duration));
 

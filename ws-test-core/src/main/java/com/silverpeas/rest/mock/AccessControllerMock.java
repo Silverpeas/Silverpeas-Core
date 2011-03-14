@@ -22,24 +22,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.comment.web.mock;
+package com.silverpeas.rest.mock;
 
-import com.silverpeas.comment.service.CommentService;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import javax.inject.Inject;
+import com.silverpeas.accesscontrol.AccessController;
 import javax.inject.Named;
 
 /**
- * A mock of the CommentService class.
+ * A mock of an user access controller for testing purpose.
  */
-@Named("commentService")
-public class CommentServiceMock extends CommentService {
+@Named("componentAccessController")
+public class AccessControllerMock implements AccessController<String> {
 
-  @Inject
-  private OrganizationController organizationController;
+  private boolean authorization = true;
+
+  public void setAuthorization(boolean isUsersAuthorized) {
+    authorization = isUsersAuthorized;
+  }
 
   @Override
-  protected OrganizationController getOrganizationController() {
-    return organizationController;
+  public boolean isUserAuthorized(String userId, String object) {
+    return authorization;
   }
+
 }

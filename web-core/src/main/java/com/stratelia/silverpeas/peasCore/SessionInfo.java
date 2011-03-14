@@ -25,7 +25,6 @@
 package com.stratelia.silverpeas.peasCore;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Enumeration;
 
 import javax.servlet.http.HttpSession;
@@ -33,43 +32,19 @@ import javax.servlet.http.HttpSession;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
-public class SessionInfo extends Object {
+public class SessionInfo extends com.silverpeas.session.SessionInfo {
   private static final long millisPerHour = (long) 60 * (long) 60 * (long) 1000;
   private static final long millisPerMinute = (long) 60 * (long) 1000;
 
   private HttpSession m_Session = null;
-
-  private String m_SessionId = "";
   private String m_IP = null;
-  private UserDetail m_User = null;
-  private long m_DateBegin = 0;
-
-  private long m_DateLastAccess = 0;
   private long m_DateIsAlive = 0;
-
-  public SessionInfo() {
-  }
-
-  /**
-   * Updates the last access by the user of its session.
-   */
-  protected void updateLastAccess() {
-    m_DateLastAccess = System.currentTimeMillis();
-  }
 
   /**
    * Updates the isalive status of the session.
    */
   protected void updateIsAlive() {
     m_DateIsAlive = System.currentTimeMillis();
-  }
-
-  /**
-   * Gets the date at which the session has started.
-   * @return the the session start date.
-   */
-  public long getStartDate() {
-    return m_DateBegin;
   }
 
   /**
@@ -81,14 +56,6 @@ public class SessionInfo extends Object {
   }
 
   /**
-   * Gets the last date at which the user has used its opened session.
-   * @return the session last access date.
-   */
-  public long getLastAccessDate() {
-    return m_DateLastAccess;
-  }
-
-  /**
    * Gets the IP address of the host from which the user is connected and is accessing Silverpeas.
    * @return the session client host address IP.
    */
@@ -97,35 +64,16 @@ public class SessionInfo extends Object {
   }
 
   /**
-   * Gets the unique identifier of the session refered by this session information.
-   * @return the session unique identifier.
-   */
-  public String getSessionId() {
-    return m_SessionId;
-  }
-
-  /**
-   * Gets the detail about the connected user.
-   * @return the user detail concerned by the session.
-   */
-  public UserDetail getUserDetail() {
-    return m_User;
-  }
-
-
-
-  /**
    * Prevent the class from being instantiate (private)
    * @param session the HTTP session to wrap.
    * @param IP the remote user host address IP.
    * @param ud the detail about the connected user.
    */
   public SessionInfo(HttpSession session, String IP, UserDetail ud) {
+    super(session.getId(), ud);
     m_Session = session;
-    m_SessionId = session.getId();
     m_IP = IP;
-    m_User = ud;
-    m_DateIsAlive = m_DateLastAccess = m_DateBegin = new Date().getTime();
+    m_DateIsAlive = System.currentTimeMillis();
   }
 
   @SuppressWarnings("unchecked")
@@ -201,7 +149,7 @@ public class SessionInfo extends Object {
   }
 
   public String getLog() {
-    return m_User.getLogin() + " (" + m_User.getDomainId() + ")";
+    return getUserDetail().getLogin() + " (" + getUserDetail().getDomainId() + ")";
   }
 
   /**
