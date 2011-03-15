@@ -24,7 +24,6 @@
 
 package com.silverpeas.rest;
 
-import org.springframework.stereotype.Service;
 import com.silverpeas.rest.mock.OrganizationControllerMock;
 import com.silverpeas.session.SessionInfo;
 import java.util.UUID;
