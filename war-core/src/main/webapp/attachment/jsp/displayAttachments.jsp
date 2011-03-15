@@ -112,11 +112,9 @@
       session.setAttribute("Silverpeas_Attachment_Profile", profile);
 
       boolean indexIt = StringUtil.getBooleanValue(sIndexIt);
-      session.setAttribute("Silverpeas_Attachment_IndexIt", new Boolean(indexIt));
+      session.setAttribute("Silverpeas_Attachment_IndexIt", Boolean.valueOf(indexIt));
 
       //Example: http://myserver
-      String httpServerBase = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-          "httpServerBase", m_sAbsolute);
 
       AttachmentPK foreignKey = new AttachmentPK(id, componentId);
 
@@ -168,7 +166,7 @@
           if (contextualMenuEnabled) {
             com.silverpeas.attachment.MenuHelper.displayActions(attachmentDetail, useXMLForm,
                 useFileSharing, webdavEditingEnable, userId, contentLanguage, attResources,
-                httpServerBase, showMenuNotif, useContextualMenu, out);
+                URLManager.getServerURL(request), showMenuNotif, useContextualMenu, out);
           }
           
           out.print("<span class=\"lineMain\">");
@@ -296,7 +294,7 @@
       String maximumFileSize = uploadSettings.getString("MaximumFileSize", "10000000");
 %>
 <tr><td class="dragNdrop">
-    <a href="javascript:showHideDragDrop('<%=httpServerBase + m_Context%>/DragAndDrop/drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&PubId=<%=id%>&IndexIt=<%=indexIt%>&Context=<%=context%>','<%=httpServerBase + m_Context%>/upload/explanationShort_<%=language%>.html','<%=attResources.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_Context%>','<%=attResources.getString("GML.DragNDropExpand")%>','<%=attResources.getString("GML.DragNDropCollapse")%>')" id="dNdActionLabel">Déposer rapidement un fichier...</a>
+    <a href="javascript:showHideDragDrop('<%=URLManager.getFullApplicationURL(request)%>/DragAndDrop/drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&PubId=<%=id%>&IndexIt=<%=indexIt%>&Context=<%=context%>','<%=URLManager.getFullApplicationURL(request)%>/upload/explanationShort_<%=language%>.html','<%=attResources.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_Context%>','<%=attResources.getString("GML.DragNDropExpand")%>','<%=attResources.getString("GML.DragNDropCollapse")%>')" id="dNdActionLabel">Déposer rapidement un fichier...</a>
     <div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding: 0px" align="top"></div>
   </td>
 </tr>
@@ -406,7 +404,7 @@
           		$('#worker'+id).css({'visibility':'visible'});
 
           		if (edit) {
-					var url = "<%=httpServerBase + m_Context%>/attachment/jsp/launch.jsp?documentUrl="+eval("webDav"+id);
+					var url = "<%=URLManager.getFullApplicationURL(request)%>/attachment/jsp/launch.jsp?documentUrl="+eval("webDav"+id);
     				window.open(url,'_self');
     			} else if (download) {
     				var url = $('#url'+id).attr('href');
