@@ -223,7 +223,6 @@
     <dependency>
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.mockrunner</groupId>
