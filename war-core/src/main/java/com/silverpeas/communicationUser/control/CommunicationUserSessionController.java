@@ -33,11 +33,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import com.silverpeas.session.SessionInfo;
+
 import com.silverpeas.communicationUser.CommunicationUserException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
-import com.stratelia.silverpeas.peasCore.*;
+import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.SessionManager;
+import com.stratelia.silverpeas.peasCore.URLManager;
 
 import com.stratelia.silverpeas.selection.*;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -143,7 +149,7 @@ public class CommunicationUserSessionController extends AbstractComponentSession
 
   /**
    * @param discussion
-   * @return  
+   * @return
    */
   public Collection<File> getListCurrentDiscussion() {
     return this.m_listCurrentDiscussion;

@@ -43,7 +43,7 @@ public class SNFullUser {
     for (SessionInfo varSi : sessionInfos) {
       if (varSi.getUserDetail().getId().equals(userId)) {
 
-        this.duration = DateUtil.formatDuration(new java.util.Date().getTime() - varSi.getStartDate());
+        this.duration = DateUtil.formatDuration(new java.util.Date().getTime() - varSi.getOpeningTimestamp());
         this.connected = true;
         return;
       }

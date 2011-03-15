@@ -46,7 +46,6 @@
       <artifactId>spring-modules-jcr</artifactId>
       <groupId>org.springmodules</groupId>
       <type>jar</type>
-      <version>0.8a</version>
       <exclusions>
         <exclusion>
           <artifactId>spring</artifactId>

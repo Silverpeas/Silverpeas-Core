@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.peasCore;
+package com.silverpeas.session;
 
 import java.util.Collection;
 

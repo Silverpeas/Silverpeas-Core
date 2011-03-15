@@ -34,6 +34,7 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
   <ctx:annotation-config/>
+  <ctx:component-scan base-package="com.silverpeas.rest"/>
   <ctx:component-scan base-package="com.silverpeas.comment.web"/>
   <import resource="spring-personalization.xml" />
 </beans>
