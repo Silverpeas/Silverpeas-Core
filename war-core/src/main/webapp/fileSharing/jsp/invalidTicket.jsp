@@ -39,15 +39,10 @@
 td { font-family: "Verdana", "Arial", sans-serif; font-size: 10px}
 </style>
 </head>
-
 <c:set var="attachment" value="${requestScope.attAttachment}" />
-
 <body>
-<br/>
-<center>
-<table>
-	<tr><td><fmt:message key="fileSharing.expiredTicket" /></td></tr>
-</table>
-</center>
+<fieldset style="align:center;">
+   <fmt:message key="fileSharing.expiredTicket" />
+</fieldset>
 </body>
 </html>
