@@ -28,7 +28,6 @@
 <%@ include file="check.jsp" %>
 
 <% 
-	// r�cup�ration des param�tres :
 	TicketDetail 	ticket		= (TicketDetail) request.getAttribute("Ticket");
 	
 	String 		keyFile			= "";
@@ -212,7 +211,7 @@ function isDateOK(input)
 		<% if (action.equals("UpdateTicket")) 
   		{ %>	
 			<td class="txtlibform"><%=resource.getString("fileSharing.keyFile")%> :</td>
-			<td><a href="<%=ticket.getUrl()%>"><%=keyFile%></a></td>
+			<td><a href="<%=ticket.getUrl(request)%>"><%=keyFile%></a></td>
 		<%} %>
 	</tr>
 	<input type="hidden" name="ComponentId" value="<%=componentId%>">

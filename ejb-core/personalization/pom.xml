@@ -44,4 +44,5 @@
       <filter>src/test/filters/filters.properties</filter>
     </filters>  
   </build>
+
 </project>

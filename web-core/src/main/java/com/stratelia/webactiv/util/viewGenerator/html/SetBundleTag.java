@@ -35,6 +35,7 @@ import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.taglibs.standard.tag.common.core.Util;
 
 public class SetBundleTag extends TagSupport {
@@ -67,7 +68,8 @@ public class SetBundleTag extends TagSupport {
       locale = Locale.getDefault();
     }
     if (StringUtil.isDefined(basename)) {
-      bundle = FileUtil.loadBundle(basename, locale);
+      ResourceLocator locator= new ResourceLocator(basename, locale.getLanguage());
+      bundle = locator.getResourceBundle();
     }
     LocalizationContext locCtxt = new LocalizationContext(bundle);
     if (var != null) {

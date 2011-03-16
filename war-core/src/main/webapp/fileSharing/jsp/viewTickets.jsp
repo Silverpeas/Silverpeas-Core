@@ -100,7 +100,7 @@ function deleteTicket(keyFile)
 					String fileId = Integer.toString(ticket.getFileId());
 					String lien = "/File/"+ fileId;
 					// ajouter le context devant le lien si n�c�ssaire
-					if (lien.indexOf("://") == -1) {
+					if (lien.indexOf("://") < 0) {
 						lien = m_context + lien;
 					}
 						
@@ -111,7 +111,7 @@ function deleteTicket(keyFile)
 	
 					IconPane iconPane = gef.getIconPane();
 		         	Icon keyIcon = iconPane.addIcon();
-		          	keyIcon.setProperties(resource.getIcon("fileSharing.ticket"), resource.getString("fileSharing.ticket") , ticket.getUrl());
+		          	keyIcon.setProperties(resource.getIcon("fileSharing.ticket"), resource.getString("fileSharing.ticket") , ticket.getUrl(request));
 					line.addArrayCellText(keyIcon.print());
 				
 					String valideDate = resource.getOutputDate(ticket.getEndDate());

@@ -37,6 +37,7 @@ import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import javax.servlet.http.HttpServletRequest;
 
 public class TicketDetail implements Serializable {
 
@@ -181,8 +182,8 @@ public class TicketDetail implements Serializable {
     this.downloads = downloads;
   }
 
-  public String getUrl() {
-    return URLManager.getApplicationURL() + "/Ticket?Key=" + getKeyFile();
+  public String getUrl(HttpServletRequest request) {
+    return URLManager.getFullApplicationURL(request) + "/Ticket?Key=" + getKeyFile();
   }
 
   public boolean isValid() {

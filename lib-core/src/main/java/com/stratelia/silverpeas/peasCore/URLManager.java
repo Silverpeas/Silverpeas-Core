@@ -24,15 +24,18 @@
 package com.stratelia.silverpeas.peasCore;
 
 import com.silverpeas.util.ComponentHelper;
-import java.util.Properties;
-
-import static com.silverpeas.util.StringUtil.*;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Properties;
+
+import static com.silverpeas.util.StringUtil.isDefined;
+
 /**
  * Class declaration
+ *
  * @author t.leroi
  */
 public class URLManager {
@@ -111,8 +114,8 @@ public class URLManager {
 
   /**
    * @param sComponentName - the componentName (ie kmelia, bookmark...)
-   * @param sSpace - the space id
-   * @param sComponentId - the componentId (ie kmelia12, bookmark578...)
+   * @param sSpace         - the space id
+   * @param sComponentId   - the componentId (ie kmelia12, bookmark578...)
    * @return an String like '/RcomponentName/componentId/'
    */
   public static String getURL(String sComponentName, String sSpace,
@@ -144,7 +147,8 @@ public class URLManager {
 
   /**
    * Retourne l'URL pour les nouveaux composants lors de la recherche globale
-   * @param spaceId - l'id de l'espace (WA151)
+   *
+   * @param spaceId     - l'id de l'espace (WA151)
    * @param componentId - l'id de l'instance de composant (trucsAstuces1042)
    * @return la nouvelle URL
    */
@@ -155,7 +159,8 @@ public class URLManager {
 
   /**
    * Construit une chaine que l'on concatène à la fin de la nouvelle URL
-   * @param spaceId - l'id de l'espace (WA151)
+   *
+   * @param spaceId     - l'id de l'espace (WA151)
    * @param componentId - l'id de l'instance de composant (trucsAstuces1042)
    * @return la chaine de caractères à concaténer
    */
@@ -167,9 +172,10 @@ public class URLManager {
 
   /**
    * Construit l'URL standard afin d'acceder à un composant
-   * @param componentName - le nom du jobPeas
-   * @param sSpace - l'id de l'espace (WA151)
-   * @param sComponentId - l'id de l'instance de composant (trucsAstuces1042)
+   *
+   * @param componentName  - le nom du jobPeas
+   * @param sSpace         - l'id de l'espace (WA151)
+   * @param sComponentId   - l'id de l'instance de composant (trucsAstuces1042)
    * @param isGlobalSearch - boolean (vrai si nous sommes en recherche Globale)
    */
   private static String buildStandardURL(String componentName,
@@ -206,7 +212,9 @@ public class URLManager {
   }
 
   /**
-   * returns the application url
+   * Returns  The Application web context.
+   *
+   * @return The Application web context.
    */
   public static String getApplicationURL() {
     if (applicationURL == null) {
@@ -218,9 +226,26 @@ public class URLManager {
     return applicationURL;
   }
 
+
+  public static String getFullApplicationURL(HttpServletRequest request) {
+    return getServerURL(request) + getApplicationURL();
+  }
+
+
+  public static String getServerURL(HttpServletRequest request) {
+    String absoluteUrl = "";
+    if(request != null) {
+      absoluteUrl = request.getScheme() + "://" + request.getServerName() + ':' + request.
+        getServerPort();
+    }
+    ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
+    return generalSettings.getString("httpServerBase", absoluteUrl);
+  }
+
   public static String getHttpMode() {
     return httpMode;
   }
+
   private static String applicationURL = null;
 
   /**

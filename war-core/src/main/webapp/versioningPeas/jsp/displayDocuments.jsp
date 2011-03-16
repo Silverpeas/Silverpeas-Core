@@ -488,11 +488,11 @@ function showDnD()
 	<%
 	ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", "");
 	String maximumFileSize 		= uploadSettings.getString("MaximumFileSize", "10000000");
-	String baseURL = httpServerBase+m_context+"/VersioningDragAndDrop/jsp/Drop?UserId="+versioningSC.getUserId()+"&ComponentId="+componentId+"&Id="+id+"&IndexIt="+indexIt;
+	String baseURL = URLManager.getFullApplicationURL(request)+"/VersioningDragAndDrop/jsp/Drop?UserId="+versioningSC.getUserId()+"&ComponentId="+componentId+"&Id="+id+"&IndexIt="+indexIt;
 	String publicURL 	= baseURL+"&Type="+DocumentVersion.TYPE_PUBLIC_VERSION;
 	String workURL 		= baseURL+"&Type="+DocumentVersion.TYPE_DEFAULT_VERSION;
 	%>
-	showHideDragDrop('<%=publicURL%>','<%=httpServerBase + m_context%>/upload/VersioningPublic_<%=language%>.html','<%=workURL%>','<%=httpServerBase + m_context%>/upload/VersioningWork_<%=language%>.html','<%=resources.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_context%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
+	showHideDragDrop('<%=publicURL%>','<%=URLManager.getFullApplicationURL(request)%>/upload/VersioningPublic_<%=language%>.html','<%=workURL%>','<%=URLManager.getFullApplicationURL(request)%>/upload/VersioningWork_<%=language%>.html','<%=resources.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_context%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
 }
 // Create the tooltips only on document load
 $(document).ready(function()
@@ -561,7 +561,7 @@ function checkout(id, webdav, edit, download)
 				$('#worker'+id).css({'visibility':'visible'});
 
 				if (edit) {
-					var url = "<%=httpServerBase+m_context%>/attachment/jsp/launch.jsp?documentUrl="+eval("webDav"+id);
+					var url = "<%=URLManager.getFullApplicationURL(request)%>/attachment/jsp/launch.jsp?documentUrl="+eval("webDav"+id);
     				window.open(url,'_self');
     			} else if (download) {
     				var url = $('#url'+id).attr('href');
@@ -635,7 +635,7 @@ function menuCheckin(id)
 
 function addVersion(id, webdav) {
 	checkout(id, webdav);
-	var url = "<%=httpServerBase+m_context%>/RVersioningPeas/jsp/AddNewVersion?documentId="+id+"&Id=<%=id%>&ComponentId=<%=componentId%>&Context=<%=context%>&IndexIt=<%=indexIt%>&ReturnURL=<%=URLEncoder.encode(m_context+callbackURL)%>";
+	var url = "<%=URLManager.getFullApplicationURL(request)%>/RVersioningPeas/jsp/AddNewVersion?documentId="+id+"&Id=<%=id%>&ComponentId=<%=componentId%>&Context=<%=context%>&IndexIt=<%=indexIt%>&ReturnURL=<%=URLEncoder.encode(m_context+callbackURL, "UTF-8")%>";
 	SP_openWindow(url, "test", "700", "400","scrollbars=1, resizable, alwaysRaised");
 }
 
