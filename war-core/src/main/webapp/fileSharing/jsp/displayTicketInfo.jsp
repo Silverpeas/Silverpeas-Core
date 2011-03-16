@@ -49,7 +49,6 @@ td { font-family: "Verdana", "Arial", sans-serif; font-size: 10px}
 
 <body>
 <br/>
-<center>
 <c:if test="${attachment!=null}">
 <table>
 	<tr><td><fmt:message key="fileSharing.nameFile" /> :</td><td><c:out value="${attachment.logicalName}"/></td></tr>
@@ -64,6 +63,5 @@ td { font-family: "Verdana", "Arial", sans-serif; font-size: 10px}
 	<tr><td><fmt:message key="fileSharing.downloadLink" /> :</td><td><a href="<c:url value="/LinkFile/Key/${requestScope.Key}/${documentVersion.logicalName}" />" ><fmt:message key="fileSharing.downloadLink" /></a></td></tr>
 </table>
 </c:if>
-</center>
 </body>
 </html>
