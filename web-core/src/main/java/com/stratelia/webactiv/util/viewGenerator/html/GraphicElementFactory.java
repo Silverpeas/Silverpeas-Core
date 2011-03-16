@@ -952,9 +952,7 @@ public class GraphicElementFactory extends Object {
     // Retrieve user personal look settings
     String userLookStyle = null;
     try {
-      userLookStyle = mainSessionController.getPersonalization().getFavoriteLook();
-    } catch (RemoteException e) {
-      userLookStyle = defaultLookName;
+      userLookStyle = mainSessionController.getPersonalization().getLook();
     } catch (Exception t) {
       SilverTrace.error("viewgenerator", "GEF", "problem to retrieve user look", t);
       userLookStyle = defaultLookName;

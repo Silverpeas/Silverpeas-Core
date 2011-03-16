@@ -24,7 +24,6 @@
 
 package com.stratelia.silverpeas.pdcPeas.control;
 
-import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -195,19 +194,8 @@ public class PdcClassifySessionController extends AbstractComponentSessionContro
     }
   }
 
-  public synchronized boolean getActiveThesaurus() throws PdcException,
-      RemoteException {
-    try {
-      return getPersonalization().getThesaurusStatus();
-    } catch (NoSuchObjectException nsoe) {
-      initPersonalization();
-      return getPersonalization().getThesaurusStatus();
-    } catch (Exception e) {
-      throw new PdcException(
-          "PdcClassifySessionController.getActiveThesaurus()",
-          SilverpeasException.ERROR, "pdcPeas.EX_CANT_GET_ACTIVE_THESAURUS",
-          "", e);
-    }
+  public synchronized boolean getActiveThesaurus() throws PdcException {
+      return getPersonalization().isThesaurusEnabled();
   }
 
   public void initializeJargon() throws PdcException {

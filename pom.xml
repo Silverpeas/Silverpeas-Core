@@ -212,6 +212,7 @@
     <module>test-core</module>
     <module>lib-core</module>
     <module>it-test-core</module>
+    <module>ws-test-core</module>
     <module>ejb-core</module>
     <module>web-core</module>
     <module>war-core</module>

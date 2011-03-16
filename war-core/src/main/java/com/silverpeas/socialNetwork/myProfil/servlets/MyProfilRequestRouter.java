@@ -44,9 +44,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.directory.servlets.ImageProfil;
+import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.socialNetwork.model.SocialInformationType;
 import com.silverpeas.socialNetwork.myProfil.control.MyProfilSessionController;
 import com.silverpeas.socialNetwork.user.model.SNFullUser;
+import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
@@ -61,6 +63,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.UtilException;
+import java.util.Map;
 
 /**
  *
@@ -259,7 +262,8 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
           : currentUser.getLoginAnswer());
 
       // process extra properties
-      HashMap<String, String> properties = new HashMap<String, String>();
+      Map<String, String> properties = new HashMap<String, String>();
+      @SuppressWarnings("unchecked")
       Enumeration<String> parameters = request.getParameterNames();
       String parameterName = null;
       String property = null;
@@ -293,33 +297,26 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
   
   private void setUserSettingsIntoRequest(HttpServletRequest request, MyProfilSessionController sc)
       throws PeasCoreException {
-    request.setAttribute("selectedLanguage", sc.getFavoriteLanguage());
-    request.setAttribute("thesaurusStatus", sc.getThesaurusStatus());
-    request.setAttribute("dragDropStatus", sc.getDragAndDropStatus());
-    request.setAttribute("webdavEditingStatus", sc.getWebdavEditingStatus());
-    request.setAttribute("FavoriteSpace", sc.getFavoriteSpace());
-    request.setAttribute("selectedLook", sc.getFavoriteLook());
+    request.setAttribute("preferences", sc.getPreferences());
     request.setAttribute("SpaceTreeview", sc.getSpaceTreeview());
-    request.setAttribute("AllLanguages", sc.getAllLanguages());
+    request.setAttribute("AllLanguages", DisplayI18NHelper.getLanguages());
   }
   
   private void updateUserSettings(HttpServletRequest request, MyProfilSessionController sc)
       throws PeasCoreException {
-
-    List<String> languages = new ArrayList<String>();
-    languages.add(request.getParameter("SelectedLanguage"));
-    sc.setLanguages(languages);
-
-    sc.setFavoriteLook(request.getParameter("SelectedLook"));
-    sc.setThesaurusStatus(Boolean.valueOf(request.getParameter("opt_thesaurusStatus")));
-    sc.setDragAndDropStatus(Boolean.valueOf(request.getParameter("opt_dragDropStatus")));
-    sc.setWebdavEditingStatus(Boolean.valueOf(request.getParameter("opt_webdavEditingStatus")));
+    UserPreferences preferences = sc.getPreferences();
+    preferences.setLanguage(request.getParameter("SelectedLanguage"));
+    preferences.setLook(request.getParameter("SelectedLook"));
+    preferences.enableThesaurus(Boolean.valueOf(request.getParameter("opt_thesaurusStatus")));
+    preferences.enableDragAndDrop(Boolean.valueOf(request.getParameter("opt_dragDropStatus")));
+    preferences.enableWebdavEdition(Boolean.valueOf(request.getParameter("opt_webdavEditingStatus")));
 
     String selectedWorkSpace = request.getParameter("SelectedWorkSpace");
     if (!StringUtil.isDefined(selectedWorkSpace)) {
-      sc.setPersonalWorkSpace(null);
+      preferences.setPersonalWorkSpaceId("");
     } else {
-      sc.setPersonalWorkSpace(selectedWorkSpace);
+      preferences.setPersonalWorkSpaceId(selectedWorkSpace);
     }
+    sc.savePreferences(preferences);
   }
 }

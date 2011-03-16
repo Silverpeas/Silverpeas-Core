@@ -29,13 +29,14 @@
 
 package com.stratelia.silverpeas.peasCore;
 
+import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.util.clipboard.ClipboardSelection;
-import java.util.List;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.personalization.control.ejb.PersonalizationBm;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.ResourceLocator;
+
 import java.util.Collection;
+import java.util.List;
 
 /**
  * The interface for all component session controllers.
@@ -89,7 +90,7 @@ public interface ComponentSessionController {
   /** Return the higher user's role (admin, publisher or user) */
   public String getUserRoleLevel();
 
-  public PersonalizationBm getPersonalization();
+  public UserPreferences getPersonalization();
 
   public ResourceLocator getMultilang();
 

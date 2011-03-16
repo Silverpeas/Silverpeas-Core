@@ -49,7 +49,7 @@
 
       boolean webdavEditingEnable = m_MainSessionCtrl.getPersonalization().getWebdavEditingStatus()
               && settings.getBoolean("OnlineEditingEnable", false);
-      boolean dragAndDropEnable = m_MainSessionCtrl.getPersonalization().getDragAndDropStatus()
+      boolean dragAndDropEnable = m_MainSessionCtrl.getPersonalization().isDragAndDropEnabled()
               && settings.getBoolean("DragAndDropEnable", false);
 
       //initialisation des variables

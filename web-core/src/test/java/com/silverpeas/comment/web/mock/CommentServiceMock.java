@@ -24,14 +24,8 @@
 
 package com.silverpeas.comment.web.mock;
 
-import com.silverpeas.comment.dao.CommentDAO;
-import com.silverpeas.comment.model.Comment;
-import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.service.CommentService;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import java.util.HashMap;
-import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -42,37 +36,10 @@ import javax.inject.Named;
 public class CommentServiceMock extends CommentService {
 
   @Inject
-  private CommentDAO commentDAO;
-
-  private Map<String, UserDetail> users = new HashMap<String, UserDetail>();
-
-  public void addUserForComments(final UserDetail user) {
-    this.users.put(user.getId(), user);
-  }
-
-  @Override
-  public void createComment(Comment cmt) {
-    if (cmt.getOwnerDetail() != null) {
-      addUserForComments(cmt.getOwnerDetail());
-    }
-    CommentPK pk = commentDAO.saveComment(cmt);
-    cmt.setCommentPK(pk);
-  }
-
+  private OrganizationController organizationController;
 
   @Override
   protected OrganizationController getOrganizationController() {
-    return new MyOrganizationController();
-  }
-
-  private class MyOrganizationController extends OrganizationController {
-    private static final long serialVersionUID = 1L;
-
-    @Override
-    public UserDetail getUserDetail(String sUserId) {
-      return users.get(sUserId);
-    }
-
-
+    return organizationController;
   }
 }

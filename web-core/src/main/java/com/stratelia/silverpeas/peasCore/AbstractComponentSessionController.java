@@ -24,6 +24,7 @@
 package com.stratelia.silverpeas.peasCore;
 
 import com.silverpeas.admin.components.Parameter;
+import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
@@ -33,8 +34,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-
-import com.stratelia.webactiv.personalization.control.ejb.PersonalizationBm;
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -459,28 +458,24 @@ public class AbstractComponentSessionController implements ComponentSessionContr
     String[] profiles = getUserRoles();
     String flag = SilverpeasRole.user.toString();
 
-    for (int i = 0;
-        i < profiles.length;
-        i++) {
+    for (String profile : profiles) {
       // if admin, return it, we won't find a better profile
-      if (SilverpeasRole.admin == SilverpeasRole.valueOf(profiles[i])) {
-        return profiles[i];
+      if (SilverpeasRole.admin.isInRole(profile)) {
+        return profile;
       }
-      if (SilverpeasRole.publisher == SilverpeasRole.valueOf(profiles[i])) {
-        flag = profiles[i];
+      if (SilverpeasRole.publisher.isInRole(profile)) {
+        flag = profile;
       }
     }
     return flag;
   }
 
   @Override
-  public synchronized PersonalizationBm getPersonalization() {
+  public synchronized UserPreferences getPersonalization() {
     return controller.getPersonalization();
   }
 
-  public void initPersonalization() {
-    controller.initPersonalization();
-  }
+
 
   public String getUserAccessLevel() {
     return controller.getUserAccessLevel();

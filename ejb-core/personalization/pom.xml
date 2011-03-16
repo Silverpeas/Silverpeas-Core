@@ -9,6 +9,39 @@
 	
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>personalization</artifactId>
-  <packaging>ejb</packaging>
-  <name>EJB Personalization</name>
+  <packaging>jar</packaging>
+  <name>Personalization Service</name>
+  
+  <dependencies>
+    <dependency>
+      <groupId>org.hibernate.javax.persistence</groupId>
+      <artifactId>hibernate-jpa-2.0-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.synyx.hades</groupId>
+      <artifactId>org.synyx.hades</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-entitymanager</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>test-core</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  
+  <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+    <filters>
+      <filter>src/test/filters/filters.properties</filter>
+    </filters>  
+  </build>
 </project>
