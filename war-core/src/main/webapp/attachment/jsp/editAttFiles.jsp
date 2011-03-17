@@ -45,9 +45,7 @@
       ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", "");
       String maximumFileSize = uploadSettings.getString("MaximumFileSize", "10000000");
 
-      String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute);
-
-      boolean webdavEditingEnable = m_MainSessionCtrl.getPersonalization().getWebdavEditingStatus()
+      boolean webdavEditingEnable = m_MainSessionCtrl.getPersonalization().isWebdavEditionEnabled()
               && settings.getBoolean("OnlineEditingEnable", false);
       boolean dragAndDropEnable = m_MainSessionCtrl.getPersonalization().isDragAndDropEnabled()
               && settings.getBoolean("DragAndDropEnable", false);
@@ -159,7 +157,7 @@
   <% if (StringUtil.isDefined(xmlForm)) {%>
       function EditXmlForm(id, lang)
       {
-        SP_openWindow("<%=m_Context%>/RformTemplate/jsp/Edit?ObjectId="+id+"&ObjectLanguage="+lang+"&ComponentId=<%=componentId%>&IndexIt=<%=indexIt%>&ObjectType=Attachment&XMLFormName=<%=URLEncoder.encode(xmlForm)%>&Url=<%=URLEncoder.encode(url)%>", "test", "600", "400","scrollbars=yes, resizable, alwaysRaised");
+        SP_openWindow("<%=m_Context%>/RformTemplate/jsp/Edit?ObjectId="+id+"&ObjectLanguage="+lang+"&ComponentId=<%=componentId%>&IndexIt=<%=indexIt%>&ObjectType=Attachment&XMLFormName=<%=URLEncoder.encode(xmlForm, "UTF-8")%>&Url=<%=URLEncoder.encode(url, "UTF-8")%>", "test", "600", "400","scrollbars=yes, resizable, alwaysRaised");
       }
   <% }%>
 
@@ -171,7 +169,7 @@
                 winHeight = "240";
               }
   %>
-            var url = "<%=m_Context%>/attachment/jsp/toUpdateFile.jsp?IdAttachment="+id+"&Id=<%=id%>&ComponentId=<%=componentId%>&Context=<%=context%>&IndexIt=<%=indexIt%>&Url=<%=URLEncoder.encode(url)%>";
+            var url = "<%=m_Context%>/attachment/jsp/toUpdateFile.jsp?IdAttachment="+id+"&Id=<%=id%>&ComponentId=<%=componentId%>&Context=<%=context%>&IndexIt=<%=indexIt%>&Url=<%=URLEncoder.encode(url, "UTF-8")%>";
             if (dNdVisible)
               url += "&DNDVisible=true";
             SP_openWindow(url, "test", "600", "<%=winHeight%>","scrollbars=no, resizable, alwaysRaised");
@@ -299,7 +297,7 @@
     <% if (dragAndDropEnable) {%>
     <tr>
       <td align="right">
-        <a href="javascript:showHideDragDrop('<%=httpServerBase + m_Context%>/DragAndDrop/drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&PubId=<%=id%>&IndexIt=<%=indexIt%>&Context=<%=context%>','<%=httpServerBase + m_Context%>/upload/explanation_<%=language%>.html','<%=attResources.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_Context%>','<%=attResources.getString("GML.DragNDropExpand")%>','<%=attResources.getString("GML.DragNDropCollapse")%>')" id="dNdActionLabel"><%=attResources.getString("GML.DragNDropExpand")%></a>
+        <a href="javascript:showHideDragDrop('<%=URLManager.getFullApplicationURL(request)%>/DragAndDrop/drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&PubId=<%=id%>&IndexIt=<%=indexIt%>&Context=<%=context%>','<%=URLManager.getFullApplicationURL(request)%>/upload/explanation_<%=language%>.html','<%=attResources.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_Context%>','<%=attResources.getString("GML.DragNDropExpand")%>','<%=attResources.getString("GML.DragNDropCollapse")%>')" id="dNdActionLabel"><%=attResources.getString("GML.DragNDropExpand")%></a>
         <div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding: 0px" align="top"></div>
       </td>
     </tr>
@@ -359,8 +357,8 @@
                                     && attachmentDetail.isOpenOfficeCompatible(contentLanguage)
                                     && webdavEditingEnable
                                     && (userId.equals(attachmentDetail.getWorkerId()) || profile.equals("admin"))) {
-                              String ooUrl = httpServerBase;
-                              pageContext.setAttribute("httpServerBase", httpServerBase + m_Context);
+                              String ooUrl = URLManager.getServerURL(request);
+                              pageContext.setAttribute("httpServerBase", URLManager.getFullApplicationURL(request));
                               pageContext.setAttribute("ooo_url", ooUrl
                                       + attachmentDetail.getWebdavUrl(contentLanguage));
                 %>

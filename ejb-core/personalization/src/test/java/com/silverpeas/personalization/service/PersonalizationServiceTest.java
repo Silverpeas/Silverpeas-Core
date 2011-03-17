@@ -182,6 +182,12 @@ public class PersonalizationServiceTest {
     assertThat(detail, notNullValue());
     expectedDetail = new UserPreferences(userId, "en", "Silverpeas", "WA47", false, true, true);
     assertThat(detail, is(expectedDetail));
+
+    userId = "5000";
+    detail = service.getUserSettings(userId);
+    assertThat(detail, notNullValue());
+    expectedDetail = new UserPreferences(userId, "fr", "Initial", "", false, false, true);
+    assertThat(detail, is(expectedDetail));
   }
 
   @Test

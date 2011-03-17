@@ -23,57 +23,43 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ include file="check.jsp" %>
-
-<% 
-	// r�cup�ration des param�tres :
-	String	 	url		= (String) request.getAttribute("Url");
-
-	String sURI = request.getRequestURI();
-	String sRequestURL = HttpUtils.getRequestURL(request).toString();
-	String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
-	
-	// d�claration des boutons
-    Button exitButton = (Button) gef.getFormButton(resource.getString("GML.ok"), "javascript:window.close()", false);
-	
-%>
-
+<fmt:setLocale value="${requestScope.resources.language}"/>
+<view:setBundle basename="com.silverpeas.external.filesharing.multilang.fileSharingBundle"/>
+<view:setBundle basename="com.silverpeas.external.filesharing.settings.fileSharingIcons"
+                var="icons"/>
 <html>
 <head>
-
-<%
-	out.println(gef.getLookStyleSheet());
-%>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>		
-<script language="javascript">
-</script>
-		
+  <view:looknfeel/>
+  <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+  <script language="javascript">
+  </script>
 </head>
 <body>
-<%
-	browseBar.setComponentName(resource.getString("fileSharing.tickets") + " > " + resource.getString("fileSharing.confirmTicket"));
-		
-	Board board	= gef.getBoard();
-	
-	out.println(window.printBefore());
-    out.println(frame.printBefore());
-    out.println(board.printBefore());
-%>
-<table CELLPADDING=5 WIDTH="100%">
-	<tr>
-		<td class="txtlibform" nowrap><%=resource.getString("fileSharing.url")%></td>
-		<td><a href="<%=m_sAbsolute+url%>" target="_blank"><%=m_sAbsolute+url%></a></td>
-	</tr>
-</table>
-<% 
-	out.println(board.printAfter());
-	ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton(exitButton);
-	out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
- 	out.println(frame.printAfter());
-	out.println(window.printAfter());
-%>
+<c:set var="browseBar"><fmt:message key="fileSharing.tickets"/> > <fmt:message
+    key="fileSharing.confirmTicket"/></c:set>
+<fmt:message key="GML.ok" var="exitButtonMsg"/>
+<view:browseBar extraInformations="${browseBar}"/>
+<view:window> <view:frame>
+
+  <view:board>
+    <table CELLPADDING=5 WIDTH="100%">
+      <tr>
+        <td class="txtlibform" nowrap><%=resource.getString("fileSharing.url")%>
+        </td>
+        <td><a href="<c:url value="${requestScope.Url}" />" target="_blank"><c:url
+            value="${requestScope.Url}"/></a></td>
+      </tr>
+    </table>
+  </view:board>
+  <view:buttonPane>
+    <view:button label="${exitButtonMsg}" action="javascript:window.close();"/>
+  </view:buttonPane>
+</view:frame>
+</view:window>
 </body>
 </html>

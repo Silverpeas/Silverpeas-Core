@@ -131,7 +131,7 @@ public class FileSharingRequestRouter extends ComponentRequestRouter {
         String keyFile = fileSharingSC.createTicket(ticket);
         // mettre à jour l'objet ticket
         ticket.setKeyFile(keyFile);
-        request.setAttribute("Url", ticket.getUrl());
+        request.setAttribute("Url", ticket.getUrl(request));
 
         destination = rootDest + "confirmTicket.jsp";
       } else if (function.equals("EditTicket")) {
