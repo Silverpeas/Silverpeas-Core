@@ -620,10 +620,8 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
         theLogicalName, thePhysicalName, theType, theContext);
     if (thePhysicalName != null) {
       String extension = FileRepositoryManager.getFileExtension(thePhysicalName);
-      if ("exe".equalsIgnoreCase(extension)
-          || "pdf".equalsIgnoreCase(extension)) {
-        valret += "&logicalName="
-            + FileServerUtils.replaceSpecialChars(theLogicalName);
+      if ("exe".equalsIgnoreCase(extension) || "pdf".equalsIgnoreCase(extension)) {
+        valret += "&logicalName="  + FileServerUtils.replaceSpecialChars(theLogicalName);
       }
     }
     return valret;
