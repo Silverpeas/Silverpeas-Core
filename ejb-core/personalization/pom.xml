@@ -6,12 +6,12 @@
     <artifactId>ejb-core</artifactId>
     <version>5.6-SNAPSHOT</version>
   </parent>
-	
+
   <groupId>com.silverpeas.core.ejb-core</groupId>
   <artifactId>personalization</artifactId>
   <packaging>jar</packaging>
   <name>Personalization Service</name>
-  
+
   <dependencies>
     <dependency>
       <groupId>org.hibernate.javax.persistence</groupId>
@@ -26,13 +26,17 @@
       <artifactId>hibernate-entitymanager</artifactId>
     </dependency>
     <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.silverpeas.core</groupId>
       <artifactId>test-core</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
-  
+
   <build>
     <testResources>
       <testResource>
@@ -42,6 +46,6 @@
     </testResources>
     <filters>
       <filter>src/test/filters/filters.properties</filter>
-    </filters>  
+    </filters>
   </build>
 </project>
