@@ -82,7 +82,7 @@ public class DefaultPersonalizationService implements PersonalizationService {
       return user.getLanguage();
     }
     user = new UserPreferences(userId, DisplayI18NHelper.getDefaultLanguage(), DEFAULT_LOOK, "",
-        false, false,  getDefaultWebDAVEditingStatus());
+        false, false, getDefaultWebDAVEditingStatus());
     dao.saveAndFlush(user);
     return user.getLanguage();
   }
@@ -209,7 +209,11 @@ public class DefaultPersonalizationService implements PersonalizationService {
 
   @Override
   public UserPreferences getUserSettings(String userId) {
-    return dao.readByPrimaryKey(userId);
+    UserPreferences preferences = dao.readByPrimaryKey(userId);
+    if (preferences == null) {
+      preferences = getDefaultUserSettings(userId);
+    }
+    return preferences;
   }
 
   private UserPreferences getDefaultUserSettings(String userId) {
