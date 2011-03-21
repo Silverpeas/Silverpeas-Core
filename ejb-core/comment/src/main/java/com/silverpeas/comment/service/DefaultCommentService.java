@@ -53,15 +53,15 @@ import javax.inject.Named;
  * injection.
  */
 @Named("commentService")
-public class CommentService {
+public class DefaultCommentService implements CommentService {
 
   @Inject
   private CommentDAO commentDAO;
 
   /**
-   * Constructs a new CommentService instance.
+   * Constructs a new DefaultCommentService instance.
    */
-  protected CommentService() {
+  protected DefaultCommentService() {
   }
 
   /**
@@ -80,6 +80,7 @@ public class CommentService {
    * the component instance name, and the new comment.
    * @param cmt the comment to save.
    */
+  @Override
   public void createComment(final Comment cmt) {
     CommentPK newPK = getCommentDAO().saveComment(cmt);
     cmt.setCommentPK(newPK);
@@ -98,6 +99,7 @@ public class CommentService {
    * the component instance name, and the new comment.
    * @param cmt the comment to save.
    */
+  @Override
   public void createAndIndexComment(final Comment cmt) {
     createComment(cmt);
     createIndex(cmt);
@@ -112,6 +114,7 @@ public class CommentService {
    * @param pk the unique identifier of the comment to remove from the business layer (the primary
    * key).
    */
+  @Override
   public void deleteComment(final CommentPK pk) {
     Comment comment = getComment(pk);
     deleteComment(comment);
@@ -126,6 +129,7 @@ public class CommentService {
    * CommentRuntimeException is thrown.
    * @param pk the identifier of the publication the comments are on.
    */
+  @Override
   public void deleteAllCommentsOnPublication(final WAPrimaryKey pk) {
     List<Comment> comments = getCommentDAO().getAllCommentsByForeignKey(new ForeignPK(pk));
     for (Comment comment : comments) {
@@ -141,6 +145,7 @@ public class CommentService {
    * component instance name, and the deleted comment.
    * @param comment the comment to remove.
    */
+  @Override
   public void deleteComment(final Comment comment) {
     deleteIndex(comment);
     getCommentDAO().removeComment(comment.getCommentPK());
@@ -160,6 +165,7 @@ public class CommentService {
    * @param fromPK the identifier of the source publication.
    * @param toPK the identifier of the destination publication.
    */
+  @Override
   public void moveComments(final WAPrimaryKey fromPK, final WAPrimaryKey toPK) {
     unindexAllCommentsOnPublication(fromPK);
     getCommentDAO().moveComments(new ForeignPK(fromPK), new ForeignPK(toPK));
@@ -174,6 +180,7 @@ public class CommentService {
    * @param fromPK the identifier of the source publication.
    * @param toPK the identifier of the destination publication.
    */
+  @Override
   public void moveAndReindexComments(final WAPrimaryKey fromPK, final WAPrimaryKey toPK) {
     moveComments(fromPK, toPK);
     indexAllCommentsOnPublication(toPK);
@@ -184,6 +191,7 @@ public class CommentService {
    * unique identifier and the update information are carried by the given Comment instance.
    * @param cmt the updated comment.
    */
+  @Override
   public void updateComment(final Comment cmt) {
     getCommentDAO().updateComment(cmt);
   }
@@ -194,6 +202,7 @@ public class CommentService {
    * the given Comment instance.
    * @param cmt the comment to update and to index.
    */
+  @Override
   public void updateAndIndexComment(final Comment cmt) {
     updateComment(cmt);
     createIndex(cmt);
@@ -205,6 +214,7 @@ public class CommentService {
    * @param pk the identifier of the comment in the business layer.
    * @return the comment.
    */
+  @Override
   public Comment getComment(final CommentPK pk) {
     Comment newComment = null;
     newComment = getCommentDAO().getComment(pk);
@@ -219,6 +229,7 @@ public class CommentService {
    * @return a list of the comments on the given publication. The list is empty if the publication
    * isn't commented.
    */
+  @Override
   public List<Comment> getAllCommentsOnPublication(final WAPrimaryKey pk) {
     List<Comment> vComments = getCommentDAO().getAllCommentsByForeignKey(new ForeignPK(pk));
     for (Comment comment : vComments) {
@@ -235,6 +246,7 @@ public class CommentService {
    * @return an ordered list of information about the most commented publication. The list is sorted
    * by their comments count in a descendent order.
    */
+  @Override
   public List<CommentedPublicationInfo> getMostCommentedPublicationsInfo(
       final List<WAPrimaryKey> pks) {
     return getCommentDAO().getMostCommentedPublications(pks);
@@ -246,6 +258,7 @@ public class CommentService {
    * @return an ordered list of information about the most commented publication. The list is sorted
    * by their comments count in a descendent order.
    */
+  @Override
   public List<CommentedPublicationInfo> getAllMostCommentedPublicationsInfo() {
     return getCommentDAO().getAllMostCommentedPublications();
   }
@@ -255,6 +268,7 @@ public class CommentService {
    * @param pk the identifier of the publication.
    * @return the number of comments on the publication.
    */
+  @Override
   public int getCommentsCountOnPublication(final WAPrimaryKey pk) {
     return getCommentDAO().getCommentsCountByForeignKey(new ForeignPK(pk));
   }
@@ -264,6 +278,7 @@ public class CommentService {
    * publication exists with the specified identifier, then a CommentRuntimeException is thrown.
    * @param pk the identifier of the publication.
    */
+  @Override
   public void indexAllCommentsOnPublication(final WAPrimaryKey pk) {
     List<Comment> vComments = getCommentDAO().getAllCommentsByForeignKey(new ForeignPK(pk));
     for (Comment comment : vComments) {
@@ -277,6 +292,7 @@ public class CommentService {
    * CommentRuntimeException is thrown.
    * @param pk the identifier of the publication.
    */
+  @Override
   public void unindexAllCommentsOnPublication(final WAPrimaryKey pk) {
     List<Comment> vComments = getCommentDAO().getAllCommentsByForeignKey(new ForeignPK(pk));
     for (Comment comment : vComments) {

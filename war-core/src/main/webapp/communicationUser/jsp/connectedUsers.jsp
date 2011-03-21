@@ -23,123 +23,120 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%@ include file="checkCommunicationUser.jsp" %>
+<%@ page import="com.silverpeas.personalization.UserPreferences" %>
+<%@ page import="com.silverpeas.personalization.service.PersonalizationServiceFactory" %>
 
 <%
-	ArrayLine arrayLine = null;
-	Iterator   iter = null;
-	Collection cResultData = (Collection) request.getAttribute("ConnectedUsersList");
-	OrganizationController orgaController = new OrganizationController();
+  ArrayLine arrayLine = null;
+  Iterator iter = null;
+  Collection cResultData = (Collection) request.getAttribute("ConnectedUsersList");
+  OrganizationController orgaController = new OrganizationController();
 %>
 
 <HTML>
 <HEAD>
-<TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
-<!--[ JAVASCRIPT ]-->
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+  <TITLE><%=resources.getString("GML.popupTitle")%>
+  </TITLE>
+  <%
+    out.println(gef.getLookStyleSheet());
+  %>
+  <!--[ JAVASCRIPT ]-->
+  <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 
-<SCRIPT LANGUAGE="JAVASCRIPT">
-<!--
-	// This function open a silverpeas window
-	function openSPWindow(fonction,windowName){
-		SP_openWindow(fonction, windowName, '500', '250','scrollbars=yes, resizable, alwaysRaised');
-	}
+  <SCRIPT LANGUAGE="JAVASCRIPT">
+    <!--
+    // This function open a silverpeas window
+    function openSPWindow(fonction, windowName) {
+      SP_openWindow(fonction, windowName, '500', '250', 'scrollbars=yes, resizable, alwaysRaised');
+    }
 
-  function ConfirmAndSend(targetURL,textToDisplay)
-  {
-      if (window.confirm(textToDisplay))
-      {
-          window.location.href = targetURL;
+    function ConfirmAndSend(targetURL, textToDisplay) {
+      if (window.confirm(textToDisplay)) {
+        window.location.href = targetURL;
       }
-  }
+    }
 
-//--------------------------------------------------------------------------------------DoIdle
-ID = window.setTimeout("DoIdle();", <%=settings.getString("refreshList")%>*1000);
-function DoIdle()
-{ self.location.href = "Main"; }
+    //--------------------------------------------------------------------------------------DoIdle
+    ID = window.setTimeout("DoIdle();", <%=settings.getString("refreshList")%> * 1000
+    )
+    ;
+    function DoIdle() {
+      self.location.href = "Main";
+    }
 
+    function manageWindow(page, nom, largeur, hauteur, options) {
+      var top = (screen.height - hauteur) / 2;
+      var left = (screen.width - largeur) / 2;
+      window.open(page, nom,
+          "top=" + top + ",left=" + left + ",width=" + largeur + ",height=" + hauteur + "," + options);
+    }
 
-//CBO : ADD
-function manageWindow(page,nom,largeur,hauteur,options)
-{
-	var top=(screen.height-hauteur)/2;
-	var left=(screen.width-largeur)/2;
-	window.open(page,nom,"top="+top+",left="+left+",width="+largeur+",height="+hauteur+","+options);
-}
+    function enterPopup(userId) {
+      manageWindow('OpenDiscussion?userId=' + userId, 'popupDiscussion' + userId, '650', '400',
+          'menubar=no,scrollbars=no,statusbar=no');
+    }
 
-function enterPopup(userId)
-{
-	manageWindow('OpenDiscussion?userId='+userId,'popupDiscussion'+userId,'650', '400', 'menubar=no,scrollbars=no,statusbar=no');
-}
-//CBO : FIN ADD
-
-//-->
-</SCRIPT>
+    //-->
+  </SCRIPT>
 
 </HEAD>
 <BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5>
 <%
-    out.println(window.printBefore());
-    out.println(frame.printBefore());
+  out.println(window.printBefore());
+  out.println(frame.printBefore());
 %>
 <CENTER>
-<%
+  <%
 
-	String icoMonitor = m_context + "/util/icons/monitor.gif";
-	String icoNotify = m_context + "/util/icons/talk2user.gif";
+    String icoMonitor = m_context + "/util/icons/monitor.gif";
+    String icoNotify = m_context + "/util/icons/talk2user.gif";
 
-	ArrayPane arrayPane = gef.getArrayPane("List", "", request,session);
-	ArrayColumn arrayColumn1 = arrayPane.addArrayColumn("");
-	arrayColumn1.setSortable(false);
-	arrayPane.addArrayColumn(resources.getString("user"));
-    if (settings.getBoolean("displayColumnLanguage",false))
-    {
-		arrayColumn1 = arrayPane.addArrayColumn(resources.getString("language"));
-		arrayColumn1.setSortable(true);
+    ArrayPane arrayPane = gef.getArrayPane("List", "", request, session);
+    ArrayColumn arrayColumn1 = arrayPane.addArrayColumn("");
+    arrayColumn1.setSortable(false);
+    arrayPane.addArrayColumn(resources.getString("user"));
+    if (settings.getBoolean("displayColumnLanguage", false)) {
+      arrayColumn1 = arrayPane.addArrayColumn(resources.getString("language"));
+      arrayColumn1.setSortable(true);
     }
-	arrayColumn1 = arrayPane.addArrayColumn("");
+    arrayColumn1 = arrayPane.addArrayColumn("");
     ArrayCellText cellText;
 
-    if (cResultData != null)
-    {
-		long currentTime = new Date().getTime();
-		iter = cResultData.iterator();
-		while (iter.hasNext())
-		{
-			SessionInfo item = (SessionInfo) iter.next();
-			if (!item.getUserDetail().getId().equals(communicationScc.getUserId()))
-			{
-				List userList = new ArrayList();
-				userList.add(item.getUserDetail().getId());
-				Hashtable usersLanguages = orgaController.getUsersLanguage(userList);
+    if (cResultData != null) {
+      long currentTime = System.currentTimeMillis();
+      iter = cResultData.iterator();
+      while (iter.hasNext()) {
+        SessionInfo item = (SessionInfo) iter.next();
+        if (!item.getUserDetail().getId().equals(communicationScc.getUserId())) {
+          List userList = new ArrayList();
+          userList.add(item.getUserDetail().getId());
+          UserPreferences preferences = PersonalizationServiceFactory.getFactory().getPersonalizationService().getUserSettings(
+              item.getUserDetail().getId());
 
-				arrayLine = arrayPane.addArrayLine();
-				arrayLine.addArrayCellText("<div align=right><img src=\""+icoMonitor+"\" border=0></div>");
-				arrayLine.addArrayCellText(item.getUserDetail().getDisplayedName());
-				if (settings.getBoolean("displayColumnLanguage",false))
-					arrayLine.addArrayCellText(usersLanguages.get(item.getUserDetail().getId()).toString());
+          arrayLine = arrayPane.addArrayLine();
+          arrayLine.addArrayCellText(
+              "<div align=right><img src=\"" + icoMonitor + "\" border=0></div>");
+          arrayLine.addArrayCellText(item.getUserDetail().getDisplayedName());
+          if (settings.getBoolean("displayColumnLanguage", false)) {
+            arrayLine.addArrayCellText(preferences.getLanguage());
+          }
 
-				//CBO : UPDATE
-				//arrayLine.addArrayCellText("<div align=left><a href=#><img alt=\"" + resources.getString("notifyUser") + "\" src=\""+icoNotify+"\" border=0 onclick=\"javascript:openSPWindow('NotifyUser?theUserId=" + item.m_User.getId() + "','DisplayNotifySession')\"></A></div>");
-				arrayLine.addArrayCellText("<div align=left><a href=#><img alt=\"" + resources.getString("notifyUser") + "\" src=\""+icoNotify+"\" border=0 onclick=\"javascript:enterPopup('" + item.getUserDetail().getId() + "')\"></A></div>");
-			}
-		}
-		out.println(arrayPane.print());
+          arrayLine.addArrayCellText("<div align=left><a href=#><img alt=\"" + resources.getString(
+              "notifyUser") + "\" src=\"" + icoNotify + "\" border=0 onclick=\"javascript:enterPopup('" + item.getUserDetail().getId() + "')\"></A></div>");
+        }
+      }
+      out.println(arrayPane.print());
     }
-    out.println(resources.getString("refreshedTime") + "&nbsp;" + settings.getString("refreshList")+ "&nbsp;" + resources.getString("seconds") + "<BR>");
-%>
+    out.println(resources.getString("refreshedTime") + "&nbsp;" + settings.getString(
+        "refreshList") + "&nbsp;" + resources.getString("seconds") + "<BR>");
+  %>
 </CENTER>
 <%
-out.println(frame.printAfter());
-out.println(window.printAfter());
+  out.println(frame.printAfter());
+  out.println(window.printAfter());
 %>
-<!-- CBO : REMOVE -->
-<!--<form name="userConnected" action="Main" method="post"></form>-->
-
 </BODY>
 </HTML>

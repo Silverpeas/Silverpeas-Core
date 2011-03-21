@@ -62,8 +62,7 @@
       <td class="txtlibform"><fmt:message key="${'myProfile.settings.DefaultWorkSpace'}"/> :</td>
       <td>
         <select name="SelectedWorkSpace" size="1">
-          <option value="" <c:if test="${empty preferences.personalWorkSpaceId || 'null' eq  preferences.personalWorkSpaceId}">selected="selected"></option>
-          </c:if>
+          <option value="" <c:if test="${empty preferences.personalWorkSpaceId || 'null' eq  preferences.personalWorkSpaceId}">selected="selected" </c:if>></option>         
           <c:forEach items="${requestScope['SpaceTreeview']}" var="space">
             <c:set var="indentation" value=''/>
             <c:forEach begin="0" end="${space.level}">

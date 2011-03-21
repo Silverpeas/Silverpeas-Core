@@ -2768,25 +2768,6 @@ public final class Admin {
     return aUserDetail;
   }
 
-  public Map<String, String> getUsersLanguage(List<String> userIds) throws AdminException {
-    Connection con;
-    try {
-      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
-    } catch (UtilException e) {
-      throw new AdminException("Admin.getUsersLanguage",
-          SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
-    }
-    Map<String, String> usersLanguage = null;
-    try {
-      usersLanguage = PersonalizationDAO.getUsersLanguage(con, userIds);
-    } catch (SQLException se) {
-      throw new AdminException("Admin.getUsersLanguage",
-          SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", se);
-    } finally {
-      closeConnection(con);
-    }
-    return usersLanguage;
-  }
 
   /**
    * Get the user Id corresponding to Domain/Login

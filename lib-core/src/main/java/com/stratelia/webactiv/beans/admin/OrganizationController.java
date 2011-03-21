@@ -586,17 +586,6 @@ public class OrganizationController extends AdminReference implements java.io.Se
     }
   }
 
-  public Map<String, String> getUsersLanguage(List<String> userIds) {
-    Map<String, String> usersLanguage = null;
-    try {
-      usersLanguage = m_Admin.getUsersLanguage(userIds);
-    } catch (Exception e) {
-      SilverTrace.error("admin", "OrganizationController.getUsersLanguage",
-          "admin.MSG_ERR_GET_LANGUAGES", e);
-    }
-    return usersLanguage;
-  }
-
   /**
    * Return all administrators ids
    */
