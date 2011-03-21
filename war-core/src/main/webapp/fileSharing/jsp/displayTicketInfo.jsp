@@ -49,6 +49,8 @@ td { font-family: "Verdana", "Arial", sans-serif; font-size: 10px}
 
 <body>
 <br/>
+
+<c:out value="Look: ${requestScope.wallpaper}"/>
 <c:if test="${attachment!=null}">
 <table>
 	<tr><td><fmt:message key="fileSharing.nameFile" /> :</td><td><c:out value="${attachment.logicalName}"/></td></tr>

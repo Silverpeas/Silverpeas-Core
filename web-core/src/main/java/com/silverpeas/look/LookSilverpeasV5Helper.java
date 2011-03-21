@@ -23,12 +23,10 @@
  */
 package com.silverpeas.look;
 
-import java.io.File;
 import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -38,7 +36,6 @@ import javax.ejb.EJBException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SessionManager;
@@ -50,8 +47,6 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -345,10 +340,12 @@ public class LookSilverpeasV5Helper implements LookHelper {
    */
   @Override
   public String getWallPaper(String spaceId) {
-    if (StringUtil.isDefined(spaceId) && StringUtil.isDefined(getSpaceWallPaper(spaceId))) {
-      return "1";
+    String hasWallpaper = "0";
+    if (StringUtil.isDefined(spaceId) && SilverpeasLook.getSilverpeasLook().hasSpaceWallpaper(
+        spaceId)) {
+      hasWallpaper = "1";
     }
-    return "0";
+    return hasWallpaper;
   }
 
   /*
@@ -503,51 +500,15 @@ public class LookSilverpeasV5Helper implements LookHelper {
    */
   @Override
   public String getSpaceWallPaper() {
-    if (!StringUtil.isDefined(getSpaceId())) {
-      return null;
-    }
-
-    if (!StringUtil.isDefined(getSubSpaceId())) {
-      return getSpaceWallPaper(getSpaceId());
-    } else {
-      // get wallpaper of current subspace or first super space
-      List<SpaceInst> spaces = getOrganizationController().getSpacePath(getSubSpaceId());
-      Collections.reverse(spaces);
-
-      String wallpaper = null;
-      for (int i = 0; wallpaper == null && i < spaces.size(); i++) {
-        SpaceInst space = spaces.get(i);
-        wallpaper = getSpaceWallPaper(space.getId());
+    String wallpaperURL = null;
+    String theSpaceId = getSpaceId();
+    if (StringUtil.isDefined(theSpaceId)) {
+      if (StringUtil.isDefined(getSubSpaceId())) {
+        theSpaceId = getSubSpaceId();
       }
-      return wallpaper;
+      wallpaperURL = SilverpeasLook.getSilverpeasLook().getWallpaperOfSpace(theSpaceId);
     }
-  }
-
-  private String getSpaceWallPaper(String id) {
-    if (id.startsWith(SPACE_KEY_PREFIX)) {
-      id = id.substring(2);
-    }
-    String path =
-        FileRepositoryManager.getAbsolutePath("Space" + id, new String[]{"look"});
-
-    String filePath = getWallPaper(path, id, "jpg");
-    if (!StringUtil.isDefined(filePath)) {
-      filePath = getWallPaper(path, id, "gif");
-      if (!StringUtil.isDefined(filePath)) {
-        filePath = getWallPaper(path, id, "png");
-      }
-    }
-    return filePath;
-  }
-
-  private String getWallPaper(String path, String spaceId, String extension) {
-    String image = "wallPaper." + extension;
-    File file = new File(path + image);
-    if (file.isFile()) {
-      return FileServerUtils.getOnlineURL("Space" + spaceId, file.getName(), file.getName(), FileUtil.
-          getMimeType(image), "look");
-    }
-    return null;
+    return wallpaperURL;
   }
 
   public String getComponentURL(String key, String function) {

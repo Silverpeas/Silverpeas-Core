@@ -25,12 +25,10 @@
 package com.silverpeas.comment.web;
 
 import com.silverpeas.comment.service.CommentService;
-import com.sun.jersey.api.client.Client;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import com.sun.jersey.api.client.WebResource;
 import java.util.Date;
 import com.silverpeas.comment.web.mock.CommentServiceMock;
 import com.silverpeas.rest.RESTWebServiceTest;
