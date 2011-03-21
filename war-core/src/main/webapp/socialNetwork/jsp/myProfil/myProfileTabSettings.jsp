@@ -35,7 +35,10 @@
       </td>
     </tr>
     <c:choose>
-      <c:when test="{not empty availableLooks}">
+      <c:when test="{availableLooks empty}">
+        <input type="hidden" name="SelectedLook" value="<c:out value="${preferences.look}" />"/>
+      </c:when>
+      <c:otherwise>
         <tr>
           <td class="txtlibform"><fmt:message key="${'myProfile.settings.FavoriteLook'}"/> :</td>
           <td><select name="SelectedLook" size="1">
@@ -53,24 +56,21 @@
           </select>
           </td>
         </tr>
-      </c:when>
-      <c:otherwise>
-        <input type="hidden" name="SelectedLook" value="<c:out value="${preferences.look}" />"/>
       </c:otherwise>
     </c:choose>
     <tr>
       <td class="txtlibform"><fmt:message key="${'myProfile.settings.DefaultWorkSpace'}"/> :</td>
       <td>
         <select name="SelectedWorkSpace" size="1">
-          <option value="" <c:if test="${empty preferences.personalWorkSpaceId || 'null' eq  preferences.personalWorkSpaceId}">selected="selected" </c:if>></option>         
+          <option value="" <c:if
+              test="${empty preferences.personalWorkSpaceId || 'null' eq  preferences.personalWorkSpaceId}">selected="selected" </c:if>></option>
           <c:forEach items="${requestScope['SpaceTreeview']}" var="space">
             <c:set var="indentation" value=''/>
             <c:forEach begin="0" end="${space.level}">
               <c:set var="indentation">&nbsp;&nbsp;<c:out value="${indentation}" escapeXml="false"/></c:set>
             </c:forEach>
             <option value="<c:out value="${space.fullId}"/>"
-                    <c:if
-                        test="${space.fullId eq preferences.personalWorkSpaceId}">selected="selected"</c:if> >
+                    <c:if test="${space.fullId eq preferences.personalWorkSpaceId}">selected="selected"</c:if> >
               <c:out value="${indentation}" escapeXml="false"/><c:out
                 value="${space.name}"/></option>
           </c:forEach>
