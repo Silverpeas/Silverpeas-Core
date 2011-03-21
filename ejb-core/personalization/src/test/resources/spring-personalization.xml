@@ -2,17 +2,19 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:hades="http://schemas.synyx.org/hades"
        xsi:schemaLocation="
 	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+	http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
 	http://schemas.synyx.org/hades http://schemas.synyx.org/hades/hades.xsd">
 
   <context:annotation-config/>
   
-   <context:component-scan base-package="com.silverpeas.personalization"/>
+  <context:component-scan base-package="com.silverpeas.personalization"/>
 
   <bean name="personalizationService"
         class="com.silverpeas.personalization.service.DefaultPersonalizationService"/>
@@ -28,22 +30,9 @@
     <property name="entityManagerFactory" ref="entityManagerFactory"/>
   </bean>
 
-  <bean id="dataSource" name="dataSource"
-        class="org.springframework.jdbc.datasource.SingleConnectionDataSource">
-    <constructor-arg value="${jdbc.url}"/>
-    <constructor-arg value="${jdbc.username}"/>
-    <constructor-arg value="${jdbc.password}"/>
-    <constructor-arg value="true"/>
-  </bean>
-
-  <bean id="propertyConfigurer"
-        class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-    <property name="locations">
-      <list>
-        <value>classpath:jdbc-spring.properties</value>
-      </list>
-    </property>
-  </bean>
+  <jdbc:embedded-database id="dataSource" type="H2">
+    <jdbc:script location="classpath:/com/silverpeas/personalization/dao/create-database.sql" />
+  </jdbc:embedded-database>
 
   <bean id="entityManagerFactory"
         class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">

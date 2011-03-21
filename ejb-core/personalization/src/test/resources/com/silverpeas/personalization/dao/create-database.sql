@@ -1,15 +1,3 @@
-CREATE TABLE UniqueId (
-	maxId int NOT NULL ,
-	tableName varchar(100) NOT NULL
-);
-
-ALTER TABLE UniqueId  ADD 
-	CONSTRAINT PK_UniqueId PRIMARY KEY   
-	(
-		tableName
-	);
-
-
 CREATE TABLE Personalization (
 	id varchar(100) NOT NULL ,
 	languages varchar(100) NULL,

@@ -35,6 +35,7 @@ import java.io.IOException;
 import javax.sql.DataSource;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
+import org.junit.AfterClass;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -46,22 +47,27 @@ import static org.hamcrest.Matchers.*;
 public class PersonalizationDetailDaoTest {
 
   private static PersonalizationDetailDao dao;
-
+  private static ClassPathXmlApplicationContext context;
+  
   public PersonalizationDetailDaoTest() {
   }
 
   @BeforeClass
   public static void generalSetUp() throws IOException, NamingException, Exception {
-    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
-        "spring-personalization.xml");
+    context = new ClassPathXmlApplicationContext("spring-personalization.xml");
     dao = (PersonalizationDetailDao) context.getBean("personalizationDetailDao");
     DataSource ds = (DataSource) context.getBean("dataSource");
     ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
-        PersonalizationDetailDaoTest.class.getClassLoader().getResourceAsStream(
-        "com/silverpeas/personalization/dao/personalization-dataset.xml")));
+    PersonalizationDetailDaoTest.class.getClassLoader().getResourceAsStream(
+    "com/silverpeas/personalization/dao/personalization-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
     IDatabaseConnection connection = new DatabaseConnection(ds.getConnection());
-    DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
+    DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet); 
+  }
+  
+   @AfterClass
+  public static void tearDownClass() throws Exception {
+    context.close();
   }
 
   @Test
@@ -89,6 +95,4 @@ public class PersonalizationDetailDaoTest {
     assertThat(detail, notNullValue());
     assertThat(detail, is(expectedDetail));
   }
-  
-  
 }
