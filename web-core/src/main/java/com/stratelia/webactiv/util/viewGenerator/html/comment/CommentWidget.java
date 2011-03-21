@@ -23,8 +23,8 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html.comment;
 
+import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.personalization.service.PersonalizationServiceFactory;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
@@ -165,8 +165,7 @@ public abstract class CommentWidget extends TagSupport {
   }
 
   private UserPreferences getUserPreferences() throws JspTagException {
-    return PersonalizationServiceFactory.getFactory().getPersonalizationService().getUserSettings(
-        getUserId());
+    return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(getUserId());
   }
 
   private ResourcesWrapper getSettings() throws JspTagException {

@@ -24,9 +24,9 @@
 
 package com.stratelia.webactiv.agenda.servlets;
 
+import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.peasUtil.RssServlet;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.personalization.service.PersonalizationServiceFactory;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.agenda.control.AgendaAccess;
 import com.stratelia.webactiv.agenda.control.AgendaException;
@@ -65,11 +65,11 @@ public class AgendaRssServlet extends RssServlet {
   }
 
   public String getChannelTitle(String userId) {
-    UserPreferences preferences = PersonalizationServiceFactory.getFactory().getPersonalizationService().getUserSettings(userId);
+    UserPreferences preferences = SilverpeasServiceProvider.getPersonalizationService().getUserSettings(userId);
     OrganizationController orga = new OrganizationController();
     UserDetail user = orga.getUserDetail(userId);
-    ResourceLocator message = new ResourceLocator(
-        "com.stratelia.webactiv.agenda.multilang.agenda", preferences.getLanguage());
+    ResourceLocator message = new ResourceLocator("com.stratelia.webactiv.agenda.multilang.agenda",
+        preferences.getLanguage());
     return message.getStringWithParam("agenda.userAgenda", user.getLastName());
   }
 

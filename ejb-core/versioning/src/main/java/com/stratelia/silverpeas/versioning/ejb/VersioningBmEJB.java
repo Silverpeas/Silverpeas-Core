@@ -23,7 +23,7 @@
  */
 package com.stratelia.silverpeas.versioning.ejb;
 
-import com.silverpeas.personalization.service.PersonalizationServiceFactory;
+import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
@@ -1408,7 +1408,7 @@ public class VersioningBmEJB implements SessionBean {
    * @return language by provided user id
    */
   protected String getDefaultUserLanguage(int userID) {
-    return PersonalizationServiceFactory.getFactory().getPersonalizationService().getFavoriteLanguage(
+    return SilverpeasServiceProvider.getPersonalizationService().getFavoriteLanguage(
         String.valueOf(userID));
   }
 

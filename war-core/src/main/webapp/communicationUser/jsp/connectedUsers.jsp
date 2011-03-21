@@ -27,7 +27,7 @@
 
 <%@ include file="checkCommunicationUser.jsp" %>
 <%@ page import="com.silverpeas.personalization.UserPreferences" %>
-<%@ page import="com.silverpeas.personalization.service.PersonalizationServiceFactory" %>
+<%@ page import="com.silverpeas.SilverpeasServiceProvider" %>
 
 <%
   ArrayLine arrayLine = null;
@@ -113,7 +113,7 @@
         if (!item.getUserDetail().getId().equals(communicationScc.getUserId())) {
           List userList = new ArrayList();
           userList.add(item.getUserDetail().getId());
-          UserPreferences preferences = PersonalizationServiceFactory.getFactory().getPersonalizationService().getUserSettings(
+          UserPreferences preferences = SilverpeasServiceProvider.getPersonalizationService().getUserSettings(
               item.getUserDetail().getId());
 
           arrayLine = arrayPane.addArrayLine();

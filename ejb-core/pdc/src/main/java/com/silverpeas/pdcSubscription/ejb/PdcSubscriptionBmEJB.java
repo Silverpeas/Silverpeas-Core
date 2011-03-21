@@ -28,9 +28,9 @@
  */
 package com.silverpeas.pdcSubscription.ejb;
 
+import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
-import com.silverpeas.personalization.service.PersonalizationServiceFactory;
 import com.stratelia.silverpeas.classifyEngine.Criteria;
 import com.stratelia.silverpeas.classifyEngine.Value;
 import com.stratelia.silverpeas.contentManager.ContentInterface;
@@ -721,7 +721,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
    * @return user preferred language by userid provided
    */
   protected String getDefaultUserLanguage(int userID) {
-    return PersonalizationServiceFactory.getFactory().getPersonalizationService().getFavoriteLanguage(
+    return SilverpeasServiceProvider.getPersonalizationService().getFavoriteLanguage(
         String.valueOf(userID));
   }
 
