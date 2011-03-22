@@ -23,11 +23,6 @@
  */
 package com.silverpeas.external.filesharing.servlets;
 
-import com.stratelia.webactiv.util.FileServerUtils;
-import com.silverpeas.util.FileUtil;
-import java.io.File;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import java.util.Collections;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -42,14 +37,10 @@ import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
-import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import java.util.List;
-import static com.silverpeas.util.StringUtil.*;
 import static com.silverpeas.external.filesharing.servlets.FileSharingConstants.*;
 
 public class GetInfoFromKeyServlet extends HttpServlet {
@@ -78,7 +69,7 @@ public class GetInfoFromKeyServlet extends HttpServlet {
         request.setAttribute(ATT_DOCUMENT, document);
         request.setAttribute(ATT_DOCUMENTVERSION, version);
       }
-      request.setAttribute(ATT_WALLPAPER, getSpaceWallPaper(ticket));
+      request.setAttribute(ATT_WALLPAPER, getWallpaperFor(ticket));
       request.setAttribute(ATT_KEYFILE, keyFile);
       getServletContext().getRequestDispatcher("/fileSharing/jsp/displayTicketInfo.jsp").forward(
           request, response);
@@ -91,59 +82,11 @@ public class GetInfoFromKeyServlet extends HttpServlet {
    * that have a specific wallpapers.
    * @return the URL of the wallpaper.
    */
-  private String getWallpaper(final TicketDetail ticket) {
+  private String getWallpaperFor(final TicketDetail ticket) {
     OrganizationController organizationController = new OrganizationController();
     ComponentInstLight component = organizationController.getComponentInstLight(ticket.
         getComponentId());
-    return SilverpeasLook.getSilverpeasLook().getWallpaperOfSpace(component.getDomainFatherId());
-  }
-
-  public String getSpaceWallPaper(final TicketDetail ticket) {
-    OrganizationController organizationController = new OrganizationController();
-    ComponentInstLight component = organizationController.getComponentInstLight(ticket.
-        getComponentId());
-    String spaceId = component.getDomainFatherId();
-    if (!isDefined(spaceId)) {
-      return null;
-    }
-    //return SilverpeasLook.getSilverpeasLook().getWallpaperOfSpace(getSpaceId());
-
-      // get wallpaper of current subspace or first super space
-      List<SpaceInst> spaces = organizationController.getSpacePath(spaceId);
-      Collections.reverse(spaces);
-
-      String wallpaper = null;
-      for (int i = 0; wallpaper == null && i < spaces.size(); i++) {
-        SpaceInst space = spaces.get(i);
-        wallpaper = getSpaceWallPaper(space.getId());
-      }
-      return wallpaper;
-  }
-
-  private String getSpaceWallPaper(String id) {
-    if (id.startsWith(Admin.SPACE_KEY_PREFIX)) {
-      id = id.substring(2);
-    }
-    String path =
-        FileRepositoryManager.getAbsolutePath("Space" + id, new String[]{"look"});
-
-    String filePath = getWallPaper(path, id, "jpg");
-    if (!isDefined(filePath)) {
-      filePath = getWallPaper(path, id, "gif");
-      if (!isDefined(filePath)) {
-        filePath = getWallPaper(path, id, "png");
-      }
-    }
-    return filePath;
-  }
-
-  private String getWallPaper(String path, String spaceId, String extension) {
-    String image = "wallPaper." + extension;
-    File file = new File(path + image);
-    if (file.isFile()) {
-      return FileServerUtils.getOnlineURL("Space" + spaceId, file.getName(), file.getName(), FileUtil.
-          getMimeType(image), "look");
-    }
-    return null;
+    return SilverpeasLook.getSilverpeasLook().getWallpaperOfSpaceOrDefaultOne(component.
+        getDomainFatherId());
   }
 }
