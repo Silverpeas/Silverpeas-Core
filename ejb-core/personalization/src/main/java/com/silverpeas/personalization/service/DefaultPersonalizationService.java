@@ -191,12 +191,7 @@ public class DefaultPersonalizationService implements PersonalizationService {
 
   @Override
   public void saveUserSettings(UserPreferences userPreferences) {
-    try {
-      dao.saveAndFlush(userPreferences);
-    } catch (Throwable t) {
-      t.printStackTrace();
-      printTrace(t);
-    }
+    dao.saveAndFlush(userPreferences);
   }
 
   private void printTrace(Throwable t) {

@@ -23,17 +23,9 @@
  */
 package com.silverpeas.socialNetwork.myProfil.control;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-
+import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.jobDomainPeas.JobDomainSettings;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.personalization.service.PersonalizationServiceFactory;
 import com.silverpeas.socialNetwork.SocialNetworkException;
 import com.silverpeas.socialNetwork.invitation.Invitation;
 import com.silverpeas.socialNetwork.invitation.InvitationService;
@@ -52,7 +44,14 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Bensalem Nabil
@@ -230,8 +229,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   }
 
   public void savePreferences(UserPreferences preferences) {
-    PersonalizationServiceFactory.getFactory().getPersonalizationService().saveUserSettings(
-        preferences);
+    SilverpeasServiceProvider.getPersonalizationService().saveUserSettings(preferences);
   }
 
   public List<String> getAllLanguages() {

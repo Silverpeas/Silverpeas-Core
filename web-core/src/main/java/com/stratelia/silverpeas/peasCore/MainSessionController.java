@@ -23,9 +23,9 @@
  */
 package com.stratelia.silverpeas.peasCore;
 
+import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.personalization.service.PersonalizationServiceFactory;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.silverpeas.alertUser.AlertUser;
@@ -157,13 +157,12 @@ public class MainSessionController extends AdminReference implements Clipboard {
   public MainSessionController(String authenticationKey, String sessionId) throws Exception {
     SilverTrace.info("peasCore",
         "MainSessionController.constructor()", "root.MSG_GEN_PARAM_VALUE",
-        "authenticationKey = " + authenticationKey + " sessionId=" + sessionId)
-    ;
+        "authenticationKey = " + authenticationKey + " sessionId=" + sessionId);
     try {
       // Authenticate the user
       this.userId = m_Admin.authenticate(authenticationKey, sessionId, isAppInMaintenance());
       this.sessionId = sessionId;
-      this.userPreferences = PersonalizationServiceFactory.getFactory().getPersonalizationService()
+      this.userPreferences = SilverpeasServiceProvider.getPersonalizationService()
           .getUserSettings(userId);
 
       // Get the user language

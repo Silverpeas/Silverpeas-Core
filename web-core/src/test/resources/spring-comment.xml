@@ -37,8 +37,8 @@
   <ctx:component-scan base-package="com.silverpeas.comment.service"/>
   <ctx:component-scan base-package="com.silverpeas.comment.dao"/>
 
-  <!-- the CommentService factory from which Silverpeas components access the comment service.
-       It delegate to the Spring container the management of the life-cycle of the CommentService objects. -->
+  <!-- the DefaultCommentService factory from which Silverpeas components access the comment service.
+       It delegate to the Spring container the management of the life-cycle of the DefaultCommentService objects. -->
   <bean id="commentServiceFactory" class="com.silverpeas.comment.service.CommentServiceFactory"
         factory-method="getFactory"/>
 

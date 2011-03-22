@@ -23,8 +23,8 @@
  */
 package com.silverpeas.comment.web;
 
+import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.personalization.service.PersonalizationServiceFactory;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
@@ -185,7 +185,6 @@ public class CommentAuthorEntity implements Serializable {
    */
   @XmlTransient
   public final UserPreferences getUserPreferences() {
-    return PersonalizationServiceFactory.getFactory().getPersonalizationService().getUserSettings(
-        this.id);
+    return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(this.id);
   }
 }

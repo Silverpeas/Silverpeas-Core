@@ -21,40 +21,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.personalization.service;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+package com.silverpeas.comment.web.mock;
 
+import com.silverpeas.comment.service.DefaultCommentService;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import javax.inject.Inject;
+import javax.inject.Named;
 
-public class PersonalizationServiceFactory {
-  private static final PersonalizationServiceFactory instance = new PersonalizationServiceFactory();
+/**
+ * A mock of the DefaultCommentService class.
+ */
+@Named("commentService")
+public class DefaultCommentServiceMock extends DefaultCommentService {
 
   @Inject
-  private PersonalizationService personalizationService;
+  private OrganizationController organizationController;
 
-  /**
-   * Gets an instance of this CommentServiceFactory class.
-   * @return a CommentServiceFactory instance.
-   */
-  public static PersonalizationServiceFactory getFactory() {
-    return instance;
-  }
-
-  /**
-   * Gets a CommentService instance.
-   * @return a CommentService instance.
-   */
-  public PersonalizationService getPersonalizationService() {
-    if (personalizationService == null) {
-      SilverTrace.warn("personalization", getClass().getSimpleName() + ".getPersonalizationService()",
-          "EX_NO_MESSAGES", "IoC container not bootstrapped or no PersonalizationService bean found! "
-              + "Creates explicitly the bean");
-      personalizationService = new DefaultPersonalizationService();
-    }
-    return personalizationService;
-  }
-
-  private PersonalizationServiceFactory() {
+  @Override
+  protected OrganizationController getOrganizationController() {
+    return organizationController;
   }
 }

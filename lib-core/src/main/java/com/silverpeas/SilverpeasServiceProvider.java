@@ -21,25 +21,33 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package com.silverpeas.comment.web.mock;
+package com.silverpeas;
 
 import com.silverpeas.comment.service.CommentService;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import javax.inject.Inject;
-import javax.inject.Named;
+import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.personalization.service.PersonalizationService;
+import com.silverpeas.personalization.service.PersonalizationServiceFactory;
+import com.silverpeas.scheduler.Scheduler;
+import com.silverpeas.scheduler.SchedulerFactory;
 
 /**
- * A mock of the CommentService class.
+ * Provides services to be used in Silverpeas
+ * @author ehugonnet
  */
-@Named("commentService")
-public class CommentServiceMock extends CommentService {
+public class SilverpeasServiceProvider {
 
-  @Inject
-  private OrganizationController organizationController;
+  public static Scheduler getScheduler() {
+    return SchedulerFactory.getFactory().getScheduler();
+  }
 
-  @Override
-  protected OrganizationController getOrganizationController() {
-    return organizationController;
+  public static PersonalizationService getPersonalizationService() {
+    return PersonalizationServiceFactory.getFactory().getPersonalizationService();
+  }
+
+  public static CommentService geCommentService() {
+    return CommentServiceFactory.getFactory().getCommentService();
+  }
+
+  private SilverpeasServiceProvider() {
   }
 }

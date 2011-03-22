@@ -38,7 +38,7 @@ import static org.mockito.Mockito.*;
  * This a wrapper of the comment service in order to mock some of the inner methods like, for
  * example, the access to the data source.
  */
-public class MyCommentService extends CommentService {
+public class MyDefaultCommentService extends DefaultCommentService {
 
   private CommentDAO mockedDAO = null;
   private OrganizationController mockedController = null;
@@ -46,7 +46,7 @@ public class MyCommentService extends CommentService {
   /**
    * Constructs a new comment service and mocks some of the underlying resource.
    */
-  public MyCommentService() {
+  public MyDefaultCommentService() {
     super();
       Comment aComment = CommentBuilder.getBuilder().buildWith("Toto", "Vu à la télé");
       List<Comment> comments = new ArrayList<Comment>();

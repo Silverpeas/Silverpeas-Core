@@ -24,15 +24,9 @@
 
 package com.stratelia.webactiv.agenda.servlets;
 
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-
+import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.peasUtil.RssServlet;
+import com.silverpeas.personalization.UserPreferences;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.agenda.control.AgendaAccess;
 import com.stratelia.webactiv.agenda.control.AgendaException;
@@ -41,6 +35,12 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.calendar.model.JournalHeader;
 import com.stratelia.webactiv.util.ResourceLocator;
+
+import java.rmi.RemoteException;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class AgendaRssServlet extends RssServlet {
 
@@ -65,13 +65,11 @@ public class AgendaRssServlet extends RssServlet {
   }
 
   public String getChannelTitle(String userId) {
+    UserPreferences preferences = SilverpeasServiceProvider.getPersonalizationService().getUserSettings(userId);
     OrganizationController orga = new OrganizationController();
     UserDetail user = orga.getUserDetail(userId);
-    List<String> userIds = new ArrayList<String>();
-    userIds.add(userId);
-    String lang = orga.getUsersLanguage(userIds).get(userId);
-    ResourceLocator message = new ResourceLocator(
-        "com.stratelia.webactiv.agenda.multilang.agenda", lang);
+    ResourceLocator message = new ResourceLocator("com.stratelia.webactiv.agenda.multilang.agenda",
+        preferences.getLanguage());
     return message.getStringWithParam("agenda.userAgenda", user.getLastName());
   }
 
@@ -81,12 +79,8 @@ public class AgendaRssServlet extends RssServlet {
    */
   public Collection<JournalHeader> getListElements(String userIdAgenda, int nbReturned)
       throws RemoteException {
-    // récupération de la liste des 10 prochains événements de l'Agenda du
-    // user
-    // passé en paramètre
     try {
-      return AgendaAccess.getJournalHeadersForUserAfterDate(userIdAgenda,
-          new Date(), nbReturned);
+      return AgendaAccess.getJournalHeadersForUserAfterDate(userIdAgenda, new Date(), nbReturned);
     } catch (AgendaException e) {
       throw new RemoteException("AgendaRssServlet.getListElements()", e);
     }

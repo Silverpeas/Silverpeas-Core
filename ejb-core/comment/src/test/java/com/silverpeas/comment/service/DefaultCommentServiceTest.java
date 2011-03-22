@@ -33,11 +33,11 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Unit tests on the CommentService behaviour.
+ * Unit tests on the DefaultCommentService behaviour.
  */
-public class CommentServiceTest {
+public class DefaultCommentServiceTest {
 
-  public CommentServiceTest() {
+  public DefaultCommentServiceTest() {
   }
 
   @BeforeClass
@@ -127,11 +127,11 @@ public class CommentServiceTest {
   }
 
   /**
-   * Gets a CommentService instance with which tests has to be performed.
-   * @return a CommentService object to test.
+   * Gets a DefaultCommentService instance with which tests has to be performed.
+   * @return a DefaultCommentService object to test.
    */
   protected CommentService getCommentService() {
-    return new MyCommentService();
+    return new MyDefaultCommentService();
   }
 
   /**

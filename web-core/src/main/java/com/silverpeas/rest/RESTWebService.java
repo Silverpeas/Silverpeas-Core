@@ -23,9 +23,9 @@
  */
 package com.silverpeas.rest;
 
+import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.personalization.service.PersonalizationServiceFactory;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.stratelia.webactiv.beans.admin.AdminController;
@@ -164,7 +164,7 @@ public abstract class RESTWebService {
    * @return the user preference or null if its preferences can be retrieved.
    */
   protected UserPreferences getUserPreferences() {
-    return PersonalizationServiceFactory.getFactory().getPersonalizationService().getUserSettings(
+    return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(
         getUserDetail().getId());
   }
 
