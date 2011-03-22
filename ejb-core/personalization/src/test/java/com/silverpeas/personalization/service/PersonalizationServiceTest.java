@@ -22,9 +22,9 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import org.junit.AfterClass;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.*;
 
 /**
@@ -35,17 +35,23 @@ public class PersonalizationServiceTest {
 
   private static PersonalizationService service;
   private static DataSource ds;
+  private static ClassPathXmlApplicationContext context;
 
   public PersonalizationServiceTest() {
   }
 
   @BeforeClass
   public static void setUpClass() throws Exception {
-    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
+    context = new ClassPathXmlApplicationContext(
         "spring-personalization.xml");
     service = (PersonalizationService) context.getBean("personalizationService");
     ds = (DataSource) context.getBean("dataSource");
     cleanDatabase();
+  }
+  
+  @AfterClass
+  public static void tearDownClass() throws Exception {
+    context.close();
   }
 
   protected static void cleanDatabase() throws IOException, SQLException, DatabaseUnitException {
@@ -57,12 +63,10 @@ public class PersonalizationServiceTest {
     DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
   }
 
-
   @Before
   public void setUp() throws Exception {
     cleanDatabase();
   }
-
 
   @Test
   public void testGetDragAndDropStatus() {
@@ -131,8 +135,7 @@ public class PersonalizationServiceTest {
     service.setPersonalWorkSpace("1030", "WA34");
     assertThat(service.getPersonalWorkSpace("1030"), is("WA34"));
   }
-  
-  
+
   @Test
   public void testGetThesaurusStatus() {
     assertThat(service.getThesaurusStatus("1000"), is(false));
@@ -149,8 +152,7 @@ public class PersonalizationServiceTest {
     service.setThesaurusStatus("1030", true);
     assertThat(service.getThesaurusStatus("1030"), is(true));
   }
-  
-  
+
   @Test
   public void testGetWebdavEditingStatus() {
     assertThat(service.getWebdavEditingStatus("1000"), is(true));

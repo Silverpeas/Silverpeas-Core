@@ -21,28 +21,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package com.silverpeas.comment.service;
+package com.silverpeas.personalization.service;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
 import javax.inject.Inject;
 
-/**
- * A factory of CommentService objects. Its aim is to manage the life-cycle of such objects and
- * so to encapsulates from the CommentService client the adopted policy about that life-cycle.
- */
-public class CommentServiceFactory {
-
-  private static final CommentServiceFactory instance = new CommentServiceFactory();
+public class PersonalizationServiceFactory {
+  private static final PersonalizationServiceFactory instance = new PersonalizationServiceFactory();
 
   @Inject
-  private CommentService commentService;
+  private PersonalizationService personalizationService;
 
   /**
    * Gets an instance of this CommentServiceFactory class.
    * @return a CommentServiceFactory instance.
    */
-  public static CommentServiceFactory getFactory() {
+  public static PersonalizationServiceFactory getFactory() {
     return instance;
   }
 
@@ -50,16 +45,15 @@ public class CommentServiceFactory {
    * Gets a CommentService instance.
    * @return a CommentService instance.
    */
-  public CommentService getCommentService() {
-    if (commentService == null) {
-      SilverTrace.warn("comment", getClass().getSimpleName() + ".getCommentService()",
-          "EX_NO_MESSAGES", "IoC container not bootstrapped or no CommentService bean found! "
-          + "Creates explicitly the bean");
-      commentService = new CommentService();
+  public PersonalizationService getPersonalizationService() {
+    if (personalizationService == null) {
+      SilverTrace.warn("personalization", getClass().getSimpleName() + ".getPersonalizationService()",
+          "EX_NO_MESSAGES", "IoC container not bootstrapped or no PersonalizationService bean found! "
+              + "Creates explicitly the bean");
     }
-    return commentService;
+    return personalizationService;
   }
 
-  private CommentServiceFactory() {
+  private PersonalizationServiceFactory() {
   }
 }

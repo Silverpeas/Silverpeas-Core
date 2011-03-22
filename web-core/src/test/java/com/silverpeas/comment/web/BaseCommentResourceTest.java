@@ -25,14 +25,14 @@
 package com.silverpeas.comment.web;
 
 import com.silverpeas.comment.service.CommentService;
-import com.sun.jersey.api.client.Client;
+import com.silverpeas.comment.web.mock.DefaultCommentServiceMock;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import com.sun.jersey.api.client.WebResource;
+
 import java.util.Date;
-import com.silverpeas.comment.web.mock.CommentServiceMock;
+
 import com.silverpeas.rest.RESTWebServiceTest;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +48,7 @@ public abstract class BaseCommentResourceTest extends RESTWebServiceTest {
   protected static final String RESOURCE_PATH = "comments/" + COMPONENT_INSTANCE_ID + "/" + CONTENT_ID;
 
   @Autowired
-  private CommentServiceMock commentService;
+  private DefaultCommentServiceMock commentService;
 
   /**
    * Gets the comment service used in tests.

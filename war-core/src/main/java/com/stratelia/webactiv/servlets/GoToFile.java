@@ -23,15 +23,20 @@
  */
 package com.stratelia.webactiv.servlets;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.silverpeas.peasUtil.GoTo;
 import com.silverpeas.util.security.ComponentSecurity;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.ClientBrowserUtil;
+import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 public class GoToFile extends GoTo {
 
@@ -49,7 +54,7 @@ public class GoToFile extends GoTo {
     String componentId = attachment.getInstanceId();
     String foreignId = attachment.getForeignKey().getId();
 
-    if ( isUserLogin(req) && isUserAllowed(req, componentId)) {
+    if (isUserLogin(req) && isUserAllowed(req, componentId)) {
       // L'utilisateur a-t-il le droit de consulter le fichier/la publication
       boolean isAccessAuthorized = true;
       if (componentId.startsWith("kmelia")) {
@@ -66,11 +71,32 @@ public class GoToFile extends GoTo {
         }
       }
       if (isAccessAuthorized) {
-        return req.getScheme() + "://" + req.getServerName() + ':' + req.getServerPort()
-            + '/' + req.getContextPath() + attachment.getAttachmentURL();
+        res.setCharacterEncoding("UTF-8");
+        res.setContentType("text/html; charset=utf-8");
+        String fileName = ClientBrowserUtil.rfc2047EncodeFilename(req, attachment.getLogicalName());
+        res.setHeader("Content-Disposition", "inline; filename=\"" + fileName + "\"");
+        return URLManager.getFullApplicationURL(req) + encodeFilename(attachment.getAttachmentURL());
       }
     }
     return "ComponentId=" + componentId + "&AttachmentId=" + objectId + "&Mapping=File&ForeignId="
         + foreignId;
+  }
+
+  private String encodeFilename(String url) {
+    if (url.indexOf('/') >= 0) {
+      int end = url.lastIndexOf('/');
+      if (end < url.length()) {
+        String subUrl = url.substring(0, end + 1);
+        String fileName;
+        try {
+          fileName = URLEncoder.encode(url.substring(end + 1), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+          fileName = url.substring(end + 1);
+        }
+        return subUrl + fileName;
+      }
+
+    }
+    return url;
   }
 }

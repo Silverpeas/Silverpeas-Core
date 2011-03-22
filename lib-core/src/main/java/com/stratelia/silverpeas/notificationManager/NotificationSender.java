@@ -27,6 +27,7 @@ package com.stratelia.silverpeas.notificationManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -34,6 +35,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.model.SendedNotificationInterface;
@@ -123,8 +125,10 @@ public class NotificationSender implements java.io.Serializable {
       usersSet.addAll(Arrays.asList(m_Manager.getUsersFromGroup(groupId)));
     }
     Set<String> languages = metaData.getLanguages();
-    Map<String, String> usersLanguage =
-        orgaController.getUsersLanguage(new ArrayList<String>(usersSet));
+    Map<String, String> usersLanguage = new HashMap<String, String>(usersSet.size());
+    for(String userId : usersSet) {
+      usersLanguage.put(userId, SilverpeasServiceProvider.getPersonalizationService().getUserSettings(userId).getLanguage());
+    }
 
     NotificationParameters params = null;
     List<String> userIds = null;

@@ -46,7 +46,7 @@
   <scm>
     <connection>scm:git:git@github.com:Silverpeas/Silverpeas-Core.git</connection>
     <developerConnection>scm:git:git@github.com:Silverpeas/Silverpeas-Core.git</developerConnection>
-    <url>http://gitub.com/Silverpeas/Silverpeas-Core.git</url>
+    <url>http://github.com/Silverpeas/Silverpeas-Core.git</url>
   </scm>
 
   <repositories>
