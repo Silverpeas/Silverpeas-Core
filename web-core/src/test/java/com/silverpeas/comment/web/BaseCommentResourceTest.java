@@ -30,9 +30,7 @@ import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-
 import java.util.Date;
-
 import com.silverpeas.rest.RESTWebServiceTest;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;

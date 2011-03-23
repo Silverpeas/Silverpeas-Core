@@ -120,6 +120,7 @@ public class LoginServlet extends HttpServlet {
 
       // Put the main session controller in the session
       session.setAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT, controller);
+      session.removeAttribute("Silverpeas_LookHelper");
       // Add pwd for Hyperlink
       session.setAttribute("Silverpeas_pwdForHyperlink", sPassword);
 

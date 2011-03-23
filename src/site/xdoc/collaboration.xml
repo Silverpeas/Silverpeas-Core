@@ -142,13 +142,14 @@ git branch --track BRANCH_NAME origin/BRANCH_NAME</source>
           <br/>
         When your code is accepted it will be merged into Silverpeas master branch and you will be informed of this.
           <br/>
-        Then you will have to synchronize your repository with Silverpeas's:
+        Don't forget to synchronize both your repository and your fork with Silverpeas's in order to be up to date. We'll be pleased that you do it before any pull requests.
         </p>
         <source>git checkout master
 git pull silverpeas master
+git push
         </source>
         <p>Your development branches for the integrated code are now obsolete, so you may want to delete them.</p>
-        <source>git branch -D origin/BRANCH_NAME
+        <source>git push origin :BRANCH_NAME
 git branch -D BRANCH_NAME</source>
       </subsection>
     </section>
