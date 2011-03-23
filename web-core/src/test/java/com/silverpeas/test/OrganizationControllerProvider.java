@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2000 - 2009 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
@@ -9,9 +9,9 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,15 +22,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.external.filesharing.servlets;
+package com.silverpeas.test;
 
-public interface FileSharingConstants {
-  public static final String PARAM_KEYFILE = "Key";
-  public static final String PARAM_LANGUAGE = "Language";
-  public static final String ATT_ATTACHMENT = "attAttachment";
-  public static final String ATT_TICKET = "attTicket";
-  public static final String ATT_KEYFILE = "Key";
-  public static final String ATT_DOCUMENT = "attDocument";
-  public static final String ATT_DOCUMENTVERSION = "attDocumentVersion";
-  public static final String ATT_WALLPAPER = "wallpaper";
+import javax.inject.Named;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import static org.mockito.Mockito.*;
+
+/**
+ * A provider of organization controller objects for testing purpose.
+ * The objects are mocked and their mocked behaviour can be extended.
+ * This class is for IoC container.
+ */
+@Named("organizationControllerProvider")
+public class OrganizationControllerProvider {
+
+  public OrganizationController getOrganizationController() {
+    OrganizationController organizationController = mock(OrganizationController.class);
+    return organizationController;
+  }
 }

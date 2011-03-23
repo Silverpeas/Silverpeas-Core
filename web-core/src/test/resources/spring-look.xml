@@ -25,11 +25,6 @@
 
 -->
 
-<!--
- This Spring context configuration file sets up all of the core components required for bootstrapping
- the Silverpeas application. Theses components then can be then refered and used by others
- Silverpeas components.
--->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:p="http://www.springframework.org/schema/p"
@@ -39,43 +34,14 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
   <ctx:annotation-config/>
-  <ctx:component-scan base-package="com.silverpeas.scheduler"/>
-  <ctx:component-scan base-package="com.silverpeas.calendar"/>
-  <ctx:component-scan base-package="com.silverpeas.accesscontrol"/>
+  <ctx:component-scan base-package="com.silverpeas.test"/>
   <ctx:component-scan base-package="com.silverpeas.look"/>
-  <ctx:component-scan base-package="com.silverpeas.personalization"/>
-
-  <!-- The Bean Validator (JSR-303) bootstrapping through Spring. The Hibernate implementation is used -->
-  <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
-
-  <!-- Silverpeas context initializer. It depends upon some others components to do its job.
-       Let's Spring to initialize the Silverpeas application context ;-) -->
-  <bean class="com.stratelia.silverpeas.silverpeasinitialize.SilverpeasInitializer"
-        init-method="startInitialize" depends-on="schedulerFactory"/>
-
-  <!-- The user authenticator -->
-  <bean id="authenticator"
-        class="com.stratelia.silverpeas.authentication.LoginPasswordAuthentication" />
-
-  <!-- The session manager -->
-  <bean id="sessionManager"
-        class="com.stratelia.silverpeas.peasCore.SessionManager"
-        factory-method="getInstance"
-        depends-on="schedulerFactory" />
 
   <!-- The controller of the organization and domain management for the Silverpeas administration module -->
   <bean id="organizationController"
         class="com.stratelia.webactiv.beans.admin.OrganizationController"
-        depends-on="schedulerFactory" />
-
-  <!-- The administration module -->
-  <bean id="adminController" class="com.stratelia.webactiv.beans.admin.Admin"
-        depends-on="schedulerFactory"/>
-
-  <!-- the scheduler factory from which Silverpeas components access the scheduler. It bootstraps
-       the actual scheduling backend -->
-  <bean id="schedulerFactory" class="com.silverpeas.scheduler.SchedulerFactory"
-        factory-method="getFactory"/>
+        factory-bean="organizationControllerProvider"
+        factory-method="getOrganizationController" />
 
   <!-- the Silverpeas look context gathering all of the look aspects -->
   <bean id="silverpeasLook" class="com.silverpeas.look.SilverpeasLook"
