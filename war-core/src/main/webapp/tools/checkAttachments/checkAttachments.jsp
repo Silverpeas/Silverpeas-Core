@@ -43,7 +43,7 @@
 <%@page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
 <%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%
-MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute("SilverSessionController");
+MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 
 if (m_MainSessionCtrl == null || !"A".equals(m_MainSessionCtrl.getUserAccessLevel())) {
     // No session controller in the request -> security exception
@@ -127,7 +127,7 @@ if (m_MainSessionCtrl == null || !"A".equals(m_MainSessionCtrl.getUserAccessLeve
 
 		<form action="checkAttachments.jsp" method="get" name="toolForm">
 			<b>Langue : </b><input type="text" name="language" value="<%=language%>" maxlength="2" size="5">
-			<b>Résultats par page :</b> <input type="text" name="nbItemsPerPage" value="<%=nbItemsPerPage%>" maxlength="3" size="5">
+			<b>Rï¿½sultats par page :</b> <input type="text" name="nbItemsPerPage" value="<%=nbItemsPerPage%>" maxlength="3" size="5">
 		<input type="hidden" name="toLaunch" value="true"><b>Type de fichiers</b>
 		:&nbsp; <select name="attachmentType">
 			<option value="dummy" selected></option>
@@ -144,7 +144,7 @@ if (m_MainSessionCtrl == null || !"A".equals(m_MainSessionCtrl.getUserAccessLeve
 			<option value="wysiwyg"
 				<%if (attachmentType.equals("wysiwyg"))
 		          out.println("selected");%>>Wysiwyg
-			de Thème et Publications</option>
+			de Thï¿½me et Publications</option>
 			<option value="XMLFormImages"
 				<%if (attachmentType.equals("XMLFormImages"))
 		          out.println("selected");%>>Images
@@ -156,12 +156,12 @@ if (m_MainSessionCtrl == null || !"A".equals(m_MainSessionCtrl.getUserAccessLeve
 		<center>- Liste des fichiers lus dans la table <b>sb_attachment_attachment</b> -</center>
 
 		<display:table export="true" name="listAttachments" id="row" pagesize="<%=nbItemsPerPage%>" defaultsort="2" defaultorder="ascending">
-			<display:setProperty name="paging.banner.one_item_found">1 {0} trouvé.</display:setProperty>
-			<display:setProperty name="paging.banner.all_items_found"><b>{0} {1}</b> trouvés.</display:setProperty>
-			<display:setProperty name="paging.banner.some_items_found"><b>{0} {1}</b> trouvés, Affichés: <b>{2} à {3}</b>.</display:setProperty>
-			<display:setProperty name="paging.banner.full"><span class="pagelinks">[<a href="{1}">Premier</a> / <a href="{2}">Précédent</a>] {0} [<a href="{3}">Suivant</a> / <a href="{4}">Dernier</a>]</span></display:setProperty>
-			<display:setProperty name="paging.banner.first"><span class="pagelinks">[Premier/Précédent] {0} [<a href="{3}">Suivant</a> / <a href="{4}">Dernier</a>]</span></display:setProperty>
-			<display:setProperty name="paging.banner.last"><span class="pagelinks">[<a href="{1}">Premier</a> / <a href="{2}">Précédent</a>] {0} [Suivant / Dernier]</span></display:setProperty>
+			<display:setProperty name="paging.banner.one_item_found">1 {0} trouvï¿½.</display:setProperty>
+			<display:setProperty name="paging.banner.all_items_found"><b>{0} {1}</b> trouvï¿½s.</display:setProperty>
+			<display:setProperty name="paging.banner.some_items_found"><b>{0} {1}</b> trouvï¿½s, Affichï¿½s: <b>{2} ï¿½ {3}</b>.</display:setProperty>
+			<display:setProperty name="paging.banner.full"><span class="pagelinks">[<a href="{1}">Premier</a> / <a href="{2}">Prï¿½cï¿½dent</a>] {0} [<a href="{3}">Suivant</a> / <a href="{4}">Dernier</a>]</span></display:setProperty>
+			<display:setProperty name="paging.banner.first"><span class="pagelinks">[Premier/Prï¿½cï¿½dent] {0} [<a href="{3}">Suivant</a> / <a href="{4}">Dernier</a>]</span></display:setProperty>
+			<display:setProperty name="paging.banner.last"><span class="pagelinks">[<a href="{1}">Premier</a> / <a href="{2}">Prï¿½cï¿½dent</a>] {0} [Suivant / Dernier]</span></display:setProperty>
 
 			<display:setProperty name="paging.banner.item_name">fichier</display:setProperty>
 			<display:setProperty name="paging.banner.items_name">fichiers</display:setProperty>
@@ -187,12 +187,12 @@ if (m_MainSessionCtrl == null || !"A".equals(m_MainSessionCtrl.getUserAccessLeve
 	<% } else { %>
 		<center>- Liste des fichiers lus sur le serveur, n'ayant pas de correspondance dans la table <b>sb_attachment_attachment</b> -</center>
 		<display:table export="true" name="listOrphans" pagesize="<%=nbItemsPerPage%>" defaultsort="2" defaultorder="ascending">
-			<display:setProperty name="paging.banner.one_item_found">1 {0} trouvé.</display:setProperty>
-			<display:setProperty name="paging.banner.all_items_found"><b>{0} {1}</b> trouvés.</display:setProperty>
-			<display:setProperty name="paging.banner.some_items_found"><b>{0} {1}</b> trouvés, Affichés: <b>{2} à {3}</b>.</display:setProperty>
-			<display:setProperty name="paging.banner.full"><span class="pagelinks">[<a href="{1}">Premier</a> / <a href="{2}">Précédent</a>] {0} [<a href="{3}">Suivant</a> / <a href="{4}">Dernier</a>]</span></display:setProperty>
-			<display:setProperty name="paging.banner.first"><span class="pagelinks">[Premier/Précédent] {0} [<a href="{3}">Suivant</a> / <a href="{4}">Dernier</a>]</span></display:setProperty>
-			<display:setProperty name="paging.banner.last"><span class="pagelinks">[<a href="{1}">Premier</a> / <a href="{2}">Précédent</a>] {0} [Suivant / Dernier]</span></display:setProperty>
+			<display:setProperty name="paging.banner.one_item_found">1 {0} trouvï¿½.</display:setProperty>
+			<display:setProperty name="paging.banner.all_items_found"><b>{0} {1}</b> trouvï¿½s.</display:setProperty>
+			<display:setProperty name="paging.banner.some_items_found"><b>{0} {1}</b> trouvï¿½s, Affichï¿½s: <b>{2} ï¿½ {3}</b>.</display:setProperty>
+			<display:setProperty name="paging.banner.full"><span class="pagelinks">[<a href="{1}">Premier</a> / <a href="{2}">Prï¿½cï¿½dent</a>] {0} [<a href="{3}">Suivant</a> / <a href="{4}">Dernier</a>]</span></display:setProperty>
+			<display:setProperty name="paging.banner.first"><span class="pagelinks">[Premier/Prï¿½cï¿½dent] {0} [<a href="{3}">Suivant</a> / <a href="{4}">Dernier</a>]</span></display:setProperty>
+			<display:setProperty name="paging.banner.last"><span class="pagelinks">[<a href="{1}">Premier</a> / <a href="{2}">Prï¿½cï¿½dent</a>] {0} [Suivant / Dernier]</span></display:setProperty>
 
 			<display:setProperty name="paging.banner.item_name">fichier</display:setProperty>
 			<display:setProperty name="paging.banner.items_name">fichiers</display:setProperty>

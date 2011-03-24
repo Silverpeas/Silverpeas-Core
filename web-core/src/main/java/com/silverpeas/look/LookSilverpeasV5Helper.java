@@ -86,7 +86,6 @@ public class LookSilverpeasV5Helper implements LookHelper {
   // Attribute used to manage user favorite space look
   private String displayUserFavoriteSpace = null;
   private boolean enableUFSContainsState = false;
-  private static final String DEFAULT_USERMENU_DISPLAY_MODE = "DISABLE";
 
   /*
    * (non-Javadoc)

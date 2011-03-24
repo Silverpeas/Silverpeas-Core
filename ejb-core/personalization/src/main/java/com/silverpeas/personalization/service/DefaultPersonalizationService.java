@@ -23,6 +23,7 @@
  */
 package com.silverpeas.personalization.service;
 
+import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.dao.PersonalizationDetailDao;
 import com.silverpeas.ui.DisplayI18NHelper;
@@ -49,6 +50,10 @@ public class DefaultPersonalizationService implements PersonalizationService {
 
   private boolean getDefaultWebDAVEditingStatus() {
     return settings.getBoolean("DefaultWebDAVEditingStatus", true);
+  }
+
+  private UserMenuDisplay getDefaultMenuDisplay() {
+    return UserMenuDisplay.valueOf(settings.getString("DefaultMenuDisplay", DEFAULT_USERMENU_DISPLAY_MODE.name()));
   }
 
   /**

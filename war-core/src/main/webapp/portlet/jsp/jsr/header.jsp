@@ -51,7 +51,7 @@
 <view:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle" />
 
 <%
-MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute("SilverSessionController");
+MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 if (m_MainSessionCtrl == null)
 {	
   String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");

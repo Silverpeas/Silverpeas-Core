@@ -25,7 +25,9 @@ package com.stratelia.silverpeas.peasCore;
 
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.admin.components.Parameter;
+import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.silverpeas.alertUser.AlertUser;

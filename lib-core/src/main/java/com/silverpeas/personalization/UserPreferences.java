@@ -50,26 +50,30 @@ public class UserPreferences implements java.io.Serializable {
   private int dragAndDropStatus;
   @Column(name = "webdaveditingstatus", columnDefinition = "INTEGER")
   private int webdavEditionStatus;
+  @Column(name = "menuDisplay")
+  private String menuDisplay = UserMenuDisplay.DISABLE.name();
 
   public UserPreferences() {
   }
 
   public UserPreferences(String userId, String language, String look,
       String collaborativeWorkSpaceId, boolean thesaurusEnabled,
-      boolean dragAndDropEnabled, boolean webdavEditionEnabled) {
+      boolean dragAndDropEnabled, boolean webdavEditionEnabled, UserMenuDisplay display) {
     this(language, look, collaborativeWorkSpaceId, thesaurusEnabled, dragAndDropEnabled,
-        webdavEditionEnabled);
+        webdavEditionEnabled, display);
     this.id = userId;
   }
 
   public UserPreferences(String language, String look, String collaborativeWorkSpaceId,
-      boolean thesaurusEnabled, boolean dragAndDropEnabled,boolean webdavEditionEnabled) {
+      boolean thesaurusEnabled, boolean dragAndDropEnabled, boolean webdavEditionEnabled,
+      UserMenuDisplay display) {
     this.language = language;
     this.look = look;
     this.collaborativeWorkSpaceId = collaborativeWorkSpaceId;
     this.thesaurusStatus = thesaurusEnabled ? 1 : 0;
     this.dragAndDropStatus = dragAndDropEnabled ? 1 : 0;
     this.webdavEditionStatus = webdavEditionEnabled ? 1 : 0;
+    this.menuDisplay = display.name();
   }
 
   public void setLanguage(String language) {
@@ -130,7 +134,7 @@ public class UserPreferences implements java.io.Serializable {
   }
 
   public boolean isWebdavEditionEnabled() {
-     if (1 == webdavEditionStatus) {
+    if (1 == webdavEditionStatus) {
       return true;
     }
     return false;
@@ -138,6 +142,18 @@ public class UserPreferences implements java.io.Serializable {
 
   public void enableWebdavEdition(boolean webdavEditionEnabled) {
     this.webdavEditionStatus = webdavEditionEnabled ? 1 : 0;
+  }
+
+
+  public UserMenuDisplay getDisplay() {
+    if (!StringUtil.isDefined(menuDisplay)) {
+         this.menuDisplay = UserMenuDisplay.DISABLE.name();
+    }
+    return UserMenuDisplay.valueOf(menuDisplay);
+  }
+
+  public void setDisplay(UserMenuDisplay display) {
+    this.menuDisplay = display.name();
   }
 
   @Override
@@ -152,7 +168,8 @@ public class UserPreferences implements java.io.Serializable {
     if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
       return false;
     }
-    if ((this.language == null) ? (other.language != null) : !this.language.equals(other.language)) {
+    if ((this.language == null) ? (other.language != null) : !this.language.equals(
+        other.language)) {
       return false;
     }
     if ((this.look == null) ? (other.look != null) : !this.look.equals(other.look)) {

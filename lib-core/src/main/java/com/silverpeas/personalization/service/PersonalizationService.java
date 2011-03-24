@@ -24,11 +24,14 @@
 
 package com.silverpeas.personalization.service;
 
+import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
 
 public interface PersonalizationService {
 
   public static final String DEFAULT_LOOK = "Initial";
+
+  public static final UserMenuDisplay DEFAULT_USERMENU_DISPLAY_MODE = UserMenuDisplay.DISABLE;
 
   public void setFavoriteLanguage(String userId, String languages);
 
