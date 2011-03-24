@@ -298,18 +298,18 @@ out.println(gef.getLookStyleSheet());
         </table>
     </div>
     <div id="spaceMenuDivId">
-      <c:if test="${!fn:contains(curHelper.displayUserFavoriteSpace, 'DISABLE')}">
+      <c:if test="${!fn:contains(curHelper.displayUserMenu, 'DISABLE')}">
         <fmt:message key="lookSilverpeasV5.favoriteSpace.tabBookmarks" var="tabBookmarksLabel" />
         <fmt:message key="lookSilverpeasV5.favoriteSpace.tabAll" var="tabAllLabel" />
         <div id="tabDivId" class="tabSpace">
           <form name="spaceDisplayModeForm" action="#" method="get" >
-            <input type="hidden" name="userMenuDisplayMode" id="userMenuDisplayModeId" value="<c:out value="${curHelper.displayUserFavoriteSpace}"></c:out>" />
+            <input type="hidden" name="userMenuDisplayMode" id="userMenuDisplayModeId" value="<c:out value="${curHelper.displayUserMenu}"></c:out>" />
             <input type="hidden" name="enableAllUFSpaceStates" id="enableAllUFSpaceStatesId" value="<c:out value="${curHelper.enableUFSContainsState}"></c:out>" />
             <input type="hidden" name="loadingMessage" id="loadingMessageId" value="<fmt:message key="lookSilverpeasV5.loadingSpaces" />" />
             <input type="hidden" name="noFavoriteSpaceMsg" id="noFavoriteSpaceMsgId" value="<fmt:message key="lookSilverpeasV5.noFavoriteSpace" />" />
           </form>
 
-          <c:if test="${fn:contains(curHelper.displayUserFavoriteSpace, 'BOOKMARKS')}">
+          <c:if test="${fn:contains(curHelper.displayUserMenu, 'BOOKMARKS')}">
             <!--  <p>contains BOOKMARKS</p> -->
             <div id="tabsBookMarkSelectedDivId">
              <view:tabs>
@@ -324,7 +324,7 @@ out.println(gef.getLookStyleSheet());
               </view:tabs>
             </div>
           </c:if>
-          <c:if test="${fn:contains(curHelper.displayUserFavoriteSpace, 'ALL')}">
+          <c:if test="${fn:contains(curHelper.displayUserMenu, 'ALL')}">
             <!-- <p>contains ALL</p>  -->
             <div id="tabsBookMarkSelectedDivId" style="display:none">
              <view:tabs>

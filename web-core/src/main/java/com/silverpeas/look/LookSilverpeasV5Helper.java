@@ -206,12 +206,10 @@ public class LookSilverpeasV5Helper implements LookHelper {
     this.orga = mainSessionController.getOrganizationController();
     this.userId = mainSessionController.getUserId();
     this.resources = resources;
-    this.defaultMessages = new ResourceLocator(
-        "com.silverpeas.lookSilverpeasV5.multilang.lookBundle",
+    this.defaultMessages = new ResourceLocator("com.silverpeas.lookSilverpeasV5.multilang.lookBundle",
         mainSessionController.getFavoriteLanguage());
     if (StringUtil.isDefined(resources.getString("MessageBundle"))) {
-      this.messages =
-          new ResourceLocator(resources.getString("MessageBundle"), mainSessionController.
+      this.messages = new ResourceLocator(resources.getString("MessageBundle"), mainSessionController.
               getFavoriteLanguage());
     }
     initProperties();
@@ -223,8 +221,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
     displayPDCInNav = resources.getBoolean("displayPDCInNav", false);
     displayPDCFrame = resources.getBoolean("displayPDCFrame", false);
     shouldDisplayContextualPDC = resources.getBoolean("displayContextualPDC", true);
-    shouldDisplaySpaceIcons = resources.getBoolean("shouldDisplaySpaceIcons", true);
-    shouldDisplayConnectedUsers = resources.getBoolean("shouldDisplayConnectedUsers", true);
+    shouldDisplaySpaceIcons = resources.getBoolean("displaySpaceIcons", true);
+    shouldDisplayConnectedUsers = resources.getBoolean("displayConnectedUsers", true);
     displayUserMenu = UserMenuDisplay.valueOf(resources.getString("displayUserFavoriteSpace",
         PersonalizationService.DEFAULT_MENU_DISPLAY_MODE.name()).toUpperCase());
     enableUFSContainsState = resources.getBoolean("enableUFSContainsState", false);

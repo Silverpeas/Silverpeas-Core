@@ -35,7 +35,7 @@
       </td>
     </tr>
     <c:choose>
-      <c:when test="{availableLooks empty}">
+      <c:when test="${empty availableLooks}">
         <input type="hidden" name="SelectedLook" value="<c:out value="${preferences.look}" />"/>
       </c:when>
       <c:otherwise>
@@ -77,6 +77,18 @@
         </select>
       </td>
     </tr>
+    <c:if test="${true == requestScope['MenuDisplay']}" >
+      <tr>
+      <td class="txtlibform"><fmt:message key="${'myProfile.settings.menuDisplay'}"/> :</td>
+      <td>
+        <select name="MenuDisplay" size="1">
+        <c:forEach items="${requestScope['MenuDisplayOptions']}" var="menuOption">
+         <option value="<c:out value="${menuOption}"/>" <c:if test="${menuOption eq preferences.display}">selected="selected" </c:if>><c:out value="myProfile.settings.${menuOption}" /></option>
+        </c:forEach>
+        </select>
+      </td>
+    </tr>
+    </c:if>
     <tr>
       <td class="txtlibform"><fmt:message key="${'myProfile.settings.Thesaurus'}"/> :</td>
       <td>

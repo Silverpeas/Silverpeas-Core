@@ -23,27 +23,9 @@
  */
 package com.silverpeas.socialNetwork.myProfil.servlets;
 
-import static com.silverpeas.socialNetwork.myProfil.servlets.MyProfileRoutes.Main;
-import static com.silverpeas.socialNetwork.myProfil.servlets.MyProfileRoutes.MyInfos;
-import static com.silverpeas.socialNetwork.myProfil.servlets.MyProfileRoutes.MyInvitations;
-import static com.silverpeas.socialNetwork.myProfil.servlets.MyProfileRoutes.MySentInvitations;
-import static com.silverpeas.socialNetwork.myProfil.servlets.MyProfileRoutes.MySettings;
-import static com.silverpeas.socialNetwork.myProfil.servlets.MyProfileRoutes.valueOf;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-
 import com.silverpeas.directory.servlets.ImageProfil;
+import com.silverpeas.look.LookHelper;
+import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.socialNetwork.model.SocialInformationType;
 import com.silverpeas.socialNetwork.myProfil.control.MyProfilSessionController;
@@ -63,18 +45,30 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.UtilException;
+import org.apache.commons.fileupload.FileItem;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static com.silverpeas.socialNetwork.myProfil.servlets.MyProfileRoutes.*;
 
 /**
- *
  * @author azzedine
  */
 public class MyProfilRequestRouter extends ComponentRequestRouter {
-  
+
   private static final String AVATAR_FOLDER = "avatar";
   private static final long serialVersionUID = -9194682447286602180L;
   private final int NUMBER_CONTACTS_TO_DISPLAY = 3;
-  
+
   @Override
   public String getSessionControlBeanName() {
     return "myProfile";
@@ -85,13 +79,13 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new MyProfilSessionController(mainSessionCtrl, componentContext);
   }
-/**
- *
- * @param function
- * @param componentSC
- * @param request
- * @return String
- */
+
+  /**
+   * @param function
+   * @param componentSC
+   * @param request
+   * @return String
+   */
   @Override
   public String getDestination(String function, ComponentSessionController componentSC,
       HttpServletRequest request) {
@@ -99,9 +93,9 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
 
     MyProfilSessionController myProfilSC = (MyProfilSessionController) componentSC;
     SNFullUser snUserFull = new SNFullUser(myProfilSC.getUserId());
-       
+
     MyProfileRoutes route = valueOf(function);
-    
+
     try {
       if (route == MyInfos) {
         // Détermination du domaine du user
@@ -121,26 +115,26 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
         request.setAttribute("minLengthPwd", myProfilSC.getMinLengthPwd());
         request.setAttribute("blanksAllowedInPwd", myProfilSC.isBlanksAllowedInPwd());
         request.setAttribute("View", "MyInfos");
-        
+
         destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
       } else if (route == MyProfileRoutes.UpdatePhoto) {
         saveAvatar(request, snUserFull.getUserFull().getAvatarFileName());
 
         return getDestination(MyInfos.toString(), componentSC, request);
       } else if (route == MyProfileRoutes.UpdateMyInfos) {
-        
+
         updateUserFull(request, myProfilSC);
 
         return getDestination(MyInfos.toString(), componentSC, request);
       } else if (route == MySettings) {
-        
+
         request.setAttribute("View", function);
         setUserSettingsIntoRequest(request, myProfilSC);
-        
+
         destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
       } else if (route == MyProfileRoutes.UpdateMySettings) {
         updateUserSettings(request, myProfilSC);
-        
+
         return getDestination(MySettings.toString(), componentSC, request);
       } else if (route == MyInvitations) {
         MyInvitationsHelper helper = new MyInvitationsHelper();
@@ -174,7 +168,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
       } else if (function.equalsIgnoreCase("MyPubs")) {
         request.setAttribute("type", SocialInformationType.PUBLICATION);
         destination = "/socialNetwork/jsp/myProfil/myProfilTemplate.jsp";
-      } 
+      }
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
@@ -185,14 +179,16 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
     request.setAttribute("ContactsNumber", contactIds.size());
     return destination;
   }
-/**
- * method to change profile Photo
- * @param request
- * @param nameAvatar
- * @return String
- * @throws IOException
- * @throws UtilException
- */
+
+  /**
+   * method to change profile Photo
+   *
+   * @param request
+   * @param nameAvatar
+   * @return String
+   * @throws IOException
+   * @throws UtilException
+   */
   protected String saveAvatar(HttpServletRequest request, String nameAvatar)
       throws IOException, UtilException {
     List<FileItem> parameters = FileUploadUtil.parseRequest(request);
@@ -201,14 +197,16 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
     img.saveImage(file.getInputStream());
     return nameAvatar;
   }
+
   /**
-   * method to choose (x) contacts for display it in the page profil
-   * x is the number of contacts 
-   * the methode use Random rule
+   * method to choose (x) contacts for display it in the page profil x is the number of contacts the
+   * methode use Random rule
+   *
    * @param contactIds
    * @return List<SNContactUser>
    */
-  private List<UserDetail> getContactsToDisplay(List<String> contactIds, MyProfilSessionController sc) {
+  private List<UserDetail> getContactsToDisplay(List<String> contactIds,
+      MyProfilSessionController sc) {
     int numberOfContactsTodisplay;
     List<UserDetail> contacts = new ArrayList<UserDetail>();
     try {
@@ -217,7 +215,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
     } catch (NumberFormatException ex) {
       numberOfContactsTodisplay = NUMBER_CONTACTS_TO_DISPLAY;
     }
-    if (contactIds.size()<= numberOfContactsTodisplay) {
+    if (contactIds.size() <= numberOfContactsTodisplay) {
       for (String userId : contactIds) {
         contacts.add(sc.getUserDetail(userId));
       }
@@ -225,15 +223,17 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
       Random random = new Random();
       int indexContactsChoosed = random.nextInt(contactIds.size());
       for (int i = 0; i < numberOfContactsTodisplay; i++) {
-        contacts.add(sc.getUserDetail(contactIds.get((indexContactsChoosed+i)%numberOfContactsTodisplay)));
+        contacts.add(sc.getUserDetail(
+            contactIds.get((indexContactsChoosed + i) % numberOfContactsTodisplay)));
       }
     }
 
     return contacts;
   }
-  
+
   private void updateUserFull(HttpServletRequest request, MyProfilSessionController sc) {
-    ResourceLocator rl = new ResourceLocator("com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
+    ResourceLocator rl = new ResourceLocator(
+        "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
     UserDetail currentUser = sc.getUserDetail();
     // Update informations only if updateMode is allowed for each field
     try {
@@ -244,13 +244,13 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
           .getParameter("userFirstName") : currentUser.getFirstName();
       String userLastName = updateLastNameIsAllowed ? request
           .getParameter("userLastName") : currentUser.getLastName();
-      String userEmail = updateEmailIsAllowed ? request
-          .getParameter("userEMail") : currentUser.geteMail();
+      String userEmail = updateEmailIsAllowed ? request.getParameter(
+          "userEMail") : currentUser.geteMail();
       SilverTrace.info(getSessionControlBeanName(),
           "PersoPeasRequestRouter.getDestination()",
           "root.MSG_GEN_PARAM_VALUE", "userFirstName=" + userFirstName
-          + " - userLastName=" + userLastName + " userEmail="
-          + userEmail);
+              + " - userLastName=" + userLastName + " userEmail="
+              + userEmail);
 
       String userLoginQuestion = request.getParameter("userLoginQuestion");
       userLoginQuestion = (userLoginQuestion != null
@@ -294,15 +294,25 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
       request.setAttribute("Message", sc.getString("myProfile.Error_unknown"));
     }
   }
-  
+
   private void setUserSettingsIntoRequest(HttpServletRequest request, MyProfilSessionController sc)
       throws PeasCoreException {
     request.setAttribute("preferences", sc.getPreferences());
     request.setAttribute("SpaceTreeview", sc.getSpaceTreeview());
     request.setAttribute("AllLanguages", DisplayI18NHelper.getLanguages());
-
+    LookHelper lookHelper = getLookHelper(request);
+    if (lookHelper != null) {
+      request.setAttribute("MenuDisplay", lookHelper.isMenuPersonalisationEnabled());
+      List<String> userMenuDisplayOptions = new ArrayList<String>();
+      for (UserMenuDisplay display : UserMenuDisplay.values()) {
+        userMenuDisplayOptions.add(display.name());
+      }
+      request.setAttribute("MenuDisplayOptions", userMenuDisplayOptions);
+    } else {
+      request.setAttribute("MenuDisplay", false);
+    }
   }
-  
+
   private void updateUserSettings(HttpServletRequest request, MyProfilSessionController sc)
       throws PeasCoreException {
     UserPreferences preferences = sc.getPreferences();
@@ -310,8 +320,13 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
     preferences.setLook(request.getParameter("SelectedLook"));
     preferences.enableThesaurus(Boolean.valueOf(request.getParameter("opt_thesaurusStatus")));
     preferences.enableDragAndDrop(Boolean.valueOf(request.getParameter("opt_dragDropStatus")));
-    preferences.enableWebdavEdition(Boolean.valueOf(request.getParameter("opt_webdavEditingStatus")));
-
+    preferences.enableWebdavEdition(
+        Boolean.valueOf(request.getParameter("opt_webdavEditingStatus")));
+    LookHelper lookHelper = getLookHelper(request);
+    if (lookHelper != null && lookHelper.isMenuPersonalisationEnabled() && StringUtil.isDefined(
+        request.getParameter("MenuDisplay"))) {
+      preferences.setDisplay(UserMenuDisplay.valueOf(request.getParameter("MenuDisplay")));
+    }
     String selectedWorkSpace = request.getParameter("SelectedWorkSpace");
     if (!StringUtil.isDefined(selectedWorkSpace)) {
       preferences.setPersonalWorkSpaceId("");
@@ -319,5 +334,9 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
       preferences.setPersonalWorkSpaceId(selectedWorkSpace);
     }
     sc.savePreferences(preferences);
+  }
+
+  private LookHelper getLookHelper(HttpServletRequest request) {
+    return (LookHelper) request.getSession().getAttribute(LookHelper.SESSION_ATT);
   }
 }
