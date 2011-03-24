@@ -10,8 +10,8 @@ CREATE TABLE Personalization (
 	personalWSpace varchar(50) NULL,
 	thesaurusStatus int NOT NULL,
 	dragAndDropStatus int default 1 NOT NULL,
-	onlineEditingStatus int default 1 NOT NULL,
-	webdavEditingStatus int default 0 NOT NULL 
+	webdavEditingStatus int default 0 NOT NULL,
+	menuDisplay varchar(50) DEFAULT 'DISABLE'
 );
 
 

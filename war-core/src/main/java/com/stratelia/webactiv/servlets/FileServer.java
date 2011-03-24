@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -63,6 +64,7 @@ import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 
 /**
  * Class declaration
+ *
  * @author
  */
 public class FileServer extends HttpServlet {
@@ -70,14 +72,13 @@ public class FileServer extends HttpServlet {
   private static final long serialVersionUID = 6377810839728682983L;
 
   /**
-   * 
    * @param spaceId
    * @param componentId
    * @param logicalName
    * @param physicalName
    * @param mimeType
    * @param subDirectory
-   * @return 
+   * @return
    * @deprecated Use com.stratelia.webactiv.util.FileServerUtils instead.
    */
   public static String getUrl(String spaceId, String componentId,
@@ -88,11 +89,10 @@ public class FileServer extends HttpServlet {
   }
 
   /**
-   * 
    * @param logicalName
    * @param physicalName
    * @param mimeType
-   * @return 
+   * @return
    * @deprecated Use com.stratelia.webactiv.util.FileServerUtils instead.
    */
   public static String getUrl(String logicalName, String physicalName,
@@ -101,13 +101,12 @@ public class FileServer extends HttpServlet {
   }
 
   /**
-   * 
    * @param spaceId
    * @param componentId
    * @param name
    * @param mimeType
    * @param subDirectory
-   * @return 
+   * @return
    * @deprecated Use com.stratelia.webactiv.util.FileServerUtils instead.
    */
   public static String getUrl(String spaceId, String componentId, String name,
@@ -117,7 +116,6 @@ public class FileServer extends HttpServlet {
   }
 
   /**
-   * 
    * @param spaceId
    * @param componentId
    * @param userId
@@ -128,7 +126,7 @@ public class FileServer extends HttpServlet {
    * @param pubId
    * @param nodeId
    * @param subDirectory
-   * @return 
+   * @return
    * @deprecated Use com.stratelia.webactiv.util.FileServerUtils instead.
    */
   public static String getUrl(String spaceId, String componentId,
@@ -139,9 +137,8 @@ public class FileServer extends HttpServlet {
   }
 
   /**
-   * 
    * @param logicalName
-   * @return 
+   * @return
    * @deprecated Use com.stratelia.webactiv.util.FileServerUtils instead.
    */
   public static String getUrlToTempDir(String logicalName) {
@@ -165,6 +162,7 @@ public class FileServer extends HttpServlet {
 
   /**
    * Method declaration
+   *
    * @param req
    * @param res
    * @throws IOException
@@ -200,8 +198,9 @@ public class FileServer extends HttpServlet {
       if (attachment != null) {
         mimeType = attachment.getType(language);
         sourceFile = attachment.getPhysicalName(language);
-        directory = FileRepositoryManager.getRelativePath(FileRepositoryManager.getAttachmentContext(attachment.
-            getContext()));
+        directory = FileRepositoryManager.getRelativePath(
+            FileRepositoryManager.getAttachmentContext(attachment.
+                getContext()));
         fileSize = attachment.getSize(language);
       }
     }
@@ -229,16 +228,14 @@ public class FileServer extends HttpServlet {
 
     HttpSession session = req.getSession(true);
     MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(
-        "SilverSessionController");
+        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     if ((mainSessionCtrl == null)
         || (!isUserAllowed(mainSessionCtrl, componentId))) {
       SilverTrace.warn("peasUtil", "FileServer.doPost", "root.MSG_GEN_SESSION_TIMEOUT",
-          "NewSessionId=" + session.getId()
-          + GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL")
-          + GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout"));
-      res.sendRedirect(GeneralPropertiesManager.getGeneralResourceLocator().getString(
-          "ApplicationURL") + GeneralPropertiesManager.getGeneralResourceLocator().getString(
-          "sessionTimeout"));
+          "NewSessionId=" + session.getId() + URLManager.getApplicationURL()
+              + GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout"));
+      res.sendRedirect(URLManager.getApplicationURL() +
+          GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout"));
     }
     if (typeUpload != null) {
       filePath = sourceFile;
@@ -250,7 +247,7 @@ public class FileServer extends HttpServlet {
         }
       } else {
         // the file to download is not in a temporary directory
-        filePath = FileRepositoryManager.getAbsolutePath(componentId) + directory + File.separator 
+        filePath = FileRepositoryManager.getAbsolutePath(componentId) + directory + File.separator
             + sourceFile;
       }
     }
@@ -261,8 +258,8 @@ public class FileServer extends HttpServlet {
       tempFile = File.createTempFile("zipfile", ".zip", new File(tempDirectory));
       SilverTrace.debug("peasUtil", "FileServer.doPost()",
           "root.MSG_GEN_PARAM_VALUE", " filePath =" + filePath
-          + " tempFile.getCanonicalPath()=" + tempFile.getCanonicalPath()
-          + " fileName=" + fileName);
+              + " tempFile.getCanonicalPath()=" + tempFile.getCanonicalPath()
+              + " fileName=" + fileName);
       zipFile(filePath, tempFile.getCanonicalPath(), fileName);
       filePath = tempFile.getCanonicalPath();
     }
@@ -302,7 +299,7 @@ public class FileServer extends HttpServlet {
       } catch (Exception e) {
         SilverTrace.warn("peasUtil", "FileServer.doPost",
             "peasUtil.CANNOT_WRITE_STATISTICS", "pubPK = " + pubPK
-            + " and nodeId = " + nodeId, e);
+                + " and nodeId = " + nodeId, e);
       }
     }
   }
@@ -315,7 +312,8 @@ public class FileServer extends HttpServlet {
     if (componentId == null) { // Personal space
       isAllowed = true;
     } else {
-      if ("yes".equalsIgnoreCase(controller.getComponentParameterValue(componentId, "publicFiles"))) {
+      if ("yes".equalsIgnoreCase(
+          controller.getComponentParameterValue(componentId, "publicFiles"))) {
         // Case of file contained in a component used as a file storage
         isAllowed = true;
       } else {
@@ -329,6 +327,7 @@ public class FileServer extends HttpServlet {
 
   /**
    * Methode declaration
+   *
    * @param filePath
    * @param zipFilePath
    * @zip a given file
@@ -378,12 +377,14 @@ public class FileServer extends HttpServlet {
   }
 
   // End Add By Mohammed Hguig
+
   /**
    * This method writes the result of the preview action.
-   * @param res - The HttpServletResponse where the html code is write
+   *
+   * @param res          - The HttpServletResponse where the html code is write
    * @param htmlFilePath - the canonical path of the html document generated by the parser tools. if
-   * this String is null that an exception had been catched the html document generated is empty !!
-   * also, we display a warning html page
+   *                     this String is null that an exception had been catched the html document
+   *                     generated is empty !! also, we display a warning html page
    */
   private void displayHtmlCode(HttpServletResponse res, String htmlFilePath)
       throws IOException {

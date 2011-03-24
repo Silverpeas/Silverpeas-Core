@@ -300,6 +300,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
     request.setAttribute("preferences", sc.getPreferences());
     request.setAttribute("SpaceTreeview", sc.getSpaceTreeview());
     request.setAttribute("AllLanguages", DisplayI18NHelper.getLanguages());
+
   }
   
   private void updateUserSettings(HttpServletRequest request, MyProfilSessionController sc)

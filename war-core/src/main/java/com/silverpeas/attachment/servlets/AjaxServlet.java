@@ -92,7 +92,7 @@ public class AjaxServlet extends HttpServlet {
 
   private String getUserId(HttpServletRequest req) {
     MainSessionController msc =
-        (MainSessionController) req.getSession().getAttribute("SilverSessionController");
+        (MainSessionController) req.getSession().getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     return msc.getCurrentUserDetail().getId();
   }
 
@@ -219,6 +219,6 @@ public class AjaxServlet extends HttpServlet {
   }
 
   private MainSessionController getMainSessionController(HttpServletRequest request) {
-    return (MainSessionController) request.getSession().getAttribute("SilverSessionController");
+    return (MainSessionController) request.getSession().getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
   }
 }

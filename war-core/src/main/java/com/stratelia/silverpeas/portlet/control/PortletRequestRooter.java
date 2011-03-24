@@ -123,11 +123,8 @@ public class PortletRequestRooter extends HttpServlet {
       HttpSession session = request.getSession();
 
       msc = (MainSessionController) session
-          .getAttribute("SilverSessionController");
-      // String function = request.getParameter("function") ;
-      String function = request.getPathInfo().substring(1); // ,
-      // request.getPathInfo().length()-4)
-      // ;
+          .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+      String function = request.getPathInfo().substring(1);
       String spaceId = request.getParameter("spaceId");
       // Requested portlet state : min, max or empty (empty means normal)
       String portletState = request.getParameter("portletState");

@@ -76,7 +76,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
       throws ServletException, IOException {
     HttpSession session = request.getSession();
     MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(
-        "SilverSessionController");
+        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 
     String view = request.getParameter("View"); // Wall || Feed
     if (!StringUtil.isDefined(view)) {

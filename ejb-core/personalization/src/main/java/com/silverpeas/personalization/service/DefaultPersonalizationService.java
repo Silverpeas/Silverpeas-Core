@@ -45,7 +45,7 @@ public class DefaultPersonalizationService implements PersonalizationService {
   @Inject
   private PersonalizationDetailDao dao;
   private static final long serialVersionUID = 6776141343859788723L;
-  private ResourceLocator settings = new ResourceLocator(
+  private final ResourceLocator settings = new ResourceLocator(
       "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
 
   private boolean getDefaultWebDAVEditingStatus() {
@@ -53,158 +53,13 @@ public class DefaultPersonalizationService implements PersonalizationService {
   }
 
   private UserMenuDisplay getDefaultMenuDisplay() {
-    return UserMenuDisplay.valueOf(settings.getString("DefaultMenuDisplay", DEFAULT_USERMENU_DISPLAY_MODE.name()));
-  }
-
-  /**
-   * Update the favorite language of the user.
-   *
-   * @param userId
-   * @param language
-   */
-  @Override
-  public void setFavoriteLanguage(String userId, String language) {
-    UserPreferences user = dao.readByPrimaryKey(userId);
-    if (user == null) {
-      user = getDefaultUserSettings(userId);
-    }
-    user.setLanguage(language);
-    dao.saveAndFlush(user);
-  }
-
-  /**
-   * Method declaration
-   *
-   * @param userId
-   * @return
-   * @see
-   */
-  @Override
-  @Transactional(readOnly = true)
-  public String getFavoriteLanguage(String userId) {
-    UserPreferences user = dao.readByPrimaryKey(userId);
-    if (user != null) {
-      return user.getLanguage();
-    }
-    user = new UserPreferences(userId, DisplayI18NHelper.getDefaultLanguage(), DEFAULT_LOOK, "",
-        false, false, getDefaultWebDAVEditingStatus());
-    dao.saveAndFlush(user);
-    return user.getLanguage();
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public String getFavoriteLook(String userId) {
-    String favoriteLook = DEFAULT_LOOK;
-    UserPreferences userPreferences = dao.readByPrimaryKey(userId);
-    if (userPreferences != null && userPreferences.getLook() != null) {
-      favoriteLook = userPreferences.getLook();
-    }
-    return favoriteLook;
-  }
-
-  @Override
-  public void setFavoriteLook(String userId, String look) {
-    UserPreferences user = dao.readByPrimaryKey(userId);
-    if (user == null) {
-      user = getDefaultUserSettings(userId);
-    }
-    user.setLook(look);
-    dao.saveAndFlush(user);
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public String getPersonalWorkSpace(String userId) {
-    UserPreferences userPreferences = dao.readByPrimaryKey(userId);
-    if (userPreferences != null) {
-      return userPreferences.getCollaborativeWorkSpaceId();
-    }
-    return "";
-  }
-
-  @Override
-  public void setPersonalWorkSpace(String userId, String spaceId) {
-    UserPreferences user = dao.readByPrimaryKey(userId);
-    if (user == null) {
-      user = getDefaultUserSettings(userId);
-    }
-    user.setCollaborativeWorkSpaceId(spaceId);
-    dao.saveAndFlush(user);
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public boolean getThesaurusStatus(String userId) {
-    UserPreferences userPreferences = dao.readByPrimaryKey(userId);
-    if (userPreferences != null) {
-      return userPreferences.isThesaurusEnabled();
-    }
-    return false;
-  }
-
-  @Override
-  public void setThesaurusStatus(String userId, boolean thesaurusStatus) {
-    UserPreferences user = dao.readByPrimaryKey(userId);
-    if (user == null) {
-      user = getDefaultUserSettings(userId);
-    }
-    user.enableThesaurus(thesaurusStatus);
-    dao.saveAndFlush(user);
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public boolean getDragAndDropStatus(String userId) {
-    UserPreferences userPreferences = dao.readByPrimaryKey(userId);
-    if (userPreferences != null) {
-      return userPreferences.isDragAndDropEnabled();
-    }
-    return false;
-  }
-
-  @Override
-  public void setDragAndDropStatus(String userId, boolean dragAndDropStatus) {
-    UserPreferences user = dao.readByPrimaryKey(userId);
-    if (user == null) {
-      user = getDefaultUserSettings(userId);
-    }
-    user.enableDragAndDrop(dragAndDropStatus);
-
-    dao.saveAndFlush(user);
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public boolean getWebdavEditingStatus(String userId) {
-    UserPreferences userPreferences = dao.readByPrimaryKey(userId);
-    if (userPreferences != null) {
-      return userPreferences.isWebdavEditionEnabled();
-    }
-    return getDefaultWebDAVEditingStatus();
-  }
-
-  @Override
-  public void setWebdavEditingStatus(String userId, boolean webdavEditingStatus) {
-    UserPreferences user = dao.readByPrimaryKey(userId);
-    if (user == null) {
-      user = getDefaultUserSettings(userId);
-    }
-    user.enableWebdavEdition(webdavEditingStatus);
-    dao.saveAndFlush(user);
+    return UserMenuDisplay.valueOf(settings.getString("DefaultMenuDisplay",
+        DEFAULT_MENU_DISPLAY_MODE.name()));
   }
 
   @Override
   public void saveUserSettings(UserPreferences userPreferences) {
     dao.saveAndFlush(userPreferences);
-  }
-
-  private void printTrace(Throwable t) {
-    if (t instanceof java.sql.BatchUpdateException) {
-      ((java.sql.BatchUpdateException) t).getNextException().printStackTrace();
-    } else {
-      printTrace(t.getCause());
-    }
   }
 
   @Override
@@ -218,6 +73,6 @@ public class DefaultPersonalizationService implements PersonalizationService {
 
   private UserPreferences getDefaultUserSettings(String userId) {
     return new UserPreferences(userId, DisplayI18NHelper.getDefaultLanguage(), DEFAULT_LOOK, "",
-        false, false, getDefaultWebDAVEditingStatus());
+        false, false, getDefaultWebDAVEditingStatus(), getDefaultMenuDisplay());
   }
 }

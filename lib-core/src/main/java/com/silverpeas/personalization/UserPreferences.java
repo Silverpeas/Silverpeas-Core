@@ -188,13 +188,23 @@ public class UserPreferences implements java.io.Serializable {
     if (this.webdavEditionStatus != other.webdavEditionStatus) {
       return false;
     }
+     if (this.getDisplay() != other.getDisplay()) {
+      return false;
+    }
     return true;
   }
 
   @Override
   public int hashCode() {
-    int hash = 3;
-    return hash;
+    int result = id != null ? id.hashCode() : 0;
+    result = 31 * result + (language != null ? language.hashCode() : 0);
+    result = 31 * result + (look != null ? look.hashCode() : 0);
+    result = 31 * result + (collaborativeWorkSpaceId != null ? collaborativeWorkSpaceId.hashCode() : 0);
+    result = 31 * result + thesaurusStatus;
+    result = 31 * result + dragAndDropStatus;
+    result = 31 * result + webdavEditionStatus;
+    result = 31 * result + (menuDisplay != null ? menuDisplay.hashCode() : 0);
+    return result;
   }
 
   @Override
@@ -202,6 +212,6 @@ public class UserPreferences implements java.io.Serializable {
     return "UserSettings{" + "id=" + id + ", language=" + language + ", look="
         + look + ", collaborativeWorkSpaceId=" + collaborativeWorkSpaceId + ", thesaurusStatus="
         + isThesaurusEnabled() + ", dragDropStatus=" + isDragAndDropEnabled() +
-        ", webdavEditingStatus=" + isWebdavEditionEnabled() + '}';
+        ", webdavEditingStatus=" + isWebdavEditionEnabled() + ", display=" + getDisplay() +'}';
   }
 }
