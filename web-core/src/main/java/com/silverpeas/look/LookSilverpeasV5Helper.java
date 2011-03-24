@@ -46,6 +46,7 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -63,7 +64,6 @@ public class LookSilverpeasV5Helper implements LookHelper {
   private ResourceLocator defaultMessages = null;
   private MainSessionController mainSC = null;
   private String userId = null;
-  private String guestId = null;
   private boolean displayPDCInNav = false;
   private boolean displayPDCFrame = false;
   private boolean displayContextualPDC = true;
@@ -213,7 +213,6 @@ public class LookSilverpeasV5Helper implements LookHelper {
   }
 
   private void initProperties() {
-    this.guestId = resources.getString("guestId");
     displayPDCInNav = resources.getBoolean("displayPDCInNav", false);
     displayPDCFrame = resources.getBoolean("displayPDCFrame", false);
     displayContextualPDC = resources.getBoolean("displayContextualPDC", true);
@@ -261,15 +260,6 @@ public class LookSilverpeasV5Helper implements LookHelper {
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.look.LookHelper#getAnonymousUserId()
-   */
-  @Override
-  public String getAnonymousUserId() {
-    return guestId;
-  }
-
-  /*
-   * (non-Javadoc)
    * @see com.silverpeas.look.LookHelper#getLanguage()
    */
   @Override
@@ -283,8 +273,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
    */
   @Override
   public boolean isAnonymousUser() {
-    if (StringUtil.isDefined(userId) && StringUtil.isDefined(guestId)) {
-      return userId.equals(guestId);
+    if (StringUtil.isDefined(userId)) {
+      return UserDetail.isAnonymous(userId);
     }
     return false;
   }
@@ -368,7 +358,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
    */
   @Override
   public boolean isAnonymousAccess() {
-    return (StringUtil.isDefined(guestId) && guestId.equals(userId));
+    return isAnonymousUser();
   }
 
   /*

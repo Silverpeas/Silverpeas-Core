@@ -37,6 +37,10 @@ import org.apache.commons.beanutils.BeanUtils;
 
 public class UserDetail implements Serializable, Comparable<UserDetail> {
 
+  /**
+   * Property valued with the identifier of the anonymous user.
+   */
+  private static final String ANONYMOUS_ID_PROPERTY = "anonymousId";
   public static final String ADMIN_ACCESS = "A";
   public static final String USER_ACCESS = "U";
   public static final String REMOVED_ACCESS = "R";
@@ -282,8 +286,17 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * @return true if he's the anonymous user.
    */
   public boolean isAnonymous() {
-    String anonymousId = generalSettings.getString("anonymousId");
-    return getId().equals(anonymousId);
+    return isAnonymous(getId());
+  }
+
+  /**
+   * Is the specified user is the anonymous one?
+   * @param userId the identifier of a user. Shouldn't be null.
+   * @return true if the specified user is the anonymous one, otherwise return false.
+   */
+  public static boolean isAnonymous(String userId) {
+    String anonymousId = generalSettings.getString(ANONYMOUS_ID_PROPERTY);
+    return userId.trim().equals(anonymousId);
   }
 
   public String getDisplayedName() {

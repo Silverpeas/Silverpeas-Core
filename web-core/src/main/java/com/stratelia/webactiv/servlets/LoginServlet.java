@@ -32,6 +32,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
@@ -47,18 +48,11 @@ public class LoginServlet extends HttpServlet {
 
   private static final long serialVersionUID = 8524810441906567361L;
   private static final int HTTP_DEFAULT_PORT = 80;
-  private final String anonymousUserId;
 
   public LoginServlet() {
     super();
     ResourceLocator settings = new ResourceLocator(
         "com.stratelia.silverpeas.lookAndFeel.generalLook", "");
-    String id = settings.getString("anonymousId");
-    if (!isDefined(id)) {
-      anonymousUserId = "";
-    } else {
-      anonymousUserId = id;
-    }
   }
 
   @Override
@@ -114,7 +108,7 @@ public class LoginServlet extends HttpServlet {
     if ((controller != null) && (!controller.getCurrentUserDetail().isAccessRemoved())) {
       // Init session management and session object !!! This method reset the
       // Session Object
-      if (!controller.getUserId().equals(getAnonymousUserId())) {
+      if (!UserDetail.isAnonymous(controller.getUserId())) {
         SessionManager.getInstance().addSession(session, request, controller);
       }
 
@@ -192,9 +186,5 @@ public class LoginServlet extends HttpServlet {
       SilverTrace.warn("peasCore", "LoginServlet.alertUserAboutPwdExpiration",
           "peasCore.EX_CANT_SEND_PASSWORD_EXPIRATION_ALERT", "userId = " + userId, e);
     }
-  }
-
-  private String getAnonymousUserId() {
-    return anonymousUserId;
   }
 }
