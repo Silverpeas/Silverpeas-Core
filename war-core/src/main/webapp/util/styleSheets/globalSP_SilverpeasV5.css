@@ -3846,3 +3846,87 @@ button {
 	background-repeat: repeat-x;
 	color: #FFFFFF;
 }
+
+/** Css pour présentation pdc dans formsOnline **/
+.pdc_position {
+	display:block;
+	background-color:#e9e9e9;
+	border-bottom:1px solid #c6cdbf;
+	height:20px; 
+	line-height:20px;
+	padding:0 10px;
+	position:relative
+}
+
+.pdc_position img {
+	height:12px;
+}
+
+.pdc_position .edit,
+.pdc_position .delete {
+	position:absolute;
+	right:10px;
+	top:4px;
+}
+
+.pdc_position .edit {
+	right:30px;
+}
+
+.list_pdc_position {
+	list-style-type:none;
+	padding:0;
+	margin:0 0 10px 0;
+}
+
+.list_pdc_position ul {
+	list-style-type:none;
+	padding:0;
+	margin:0 0 0 1px;
+	color:#4d4d4d;
+	border-bottom:1px solid #e9e9e9;
+}
+
+.list_pdc_position ul li {
+	background:transparent url(../icons/list-puce-green.gif) 20px 8px no-repeat;
+	text-indent:32px;
+	line-height:14px;
+	padding:2px 0;
+}	
+
+.add_position {
+	background:url(../icons/pdcPeasSmall-12x12.gif) 4px 3px no-repeat;
+	padding:1px 8px 0 22px;
+	margin:0;
+	cursor:pointer;
+	background-color:#ece9d8;
+	border:1px solid #999999;
+	height:17px;
+	line-height:18px;
+	display:inline-block;
+}
+.add_position:hover {
+	color:#000;
+}
+
+html:not([lang*=""]) .add_position {
+	-moz-border-radius:4px;
+    border:1px solid #003c74;
+	background-color:#F2F2ED;
+}
+html:not([lang*=""]) .add_position:hover {
+	-moz-box-shadow:0 -1px 2px 1px #FFD37F inset;
+	color:#000;
+}
+	
+@media screen and (-webkit-min-device-pixel-ratio:0) { 
+	.add_position{
+		-webkit-border-radius:4px;
+		border:1px solid #003C74;
+		background-color:#F2F2ED;
+	}
+	.add_position:hover{
+		-webkit-box-shadow:0 -1px 2px 1px #FFD37F inset;
+		color:#000;
+	}	
+}
