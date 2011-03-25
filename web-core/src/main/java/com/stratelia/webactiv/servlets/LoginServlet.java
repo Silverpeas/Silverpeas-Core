@@ -51,16 +51,18 @@ public class LoginServlet extends HttpServlet {
 
   public LoginServlet() {
     super();
-    ResourceLocator settings = new ResourceLocator(
-        "com.stratelia.silverpeas.lookAndFeel.generalLook", "");
   }
 
   @Override
   public void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
     MainSessionController controller = null;
 
-    // Get the session
+    // Get a new session
     HttpSession session = request.getSession(true);
+    if (!session.isNew()) {
+      closeSession(session);
+      session = request.getSession(true);
+    }
     StringBuilder absoluteUrl = new StringBuilder(256);
     if (request.isSecure() && !GeneralPropertiesManager.getBoolean("server.ssl", false)) {
       absoluteUrl.append("http");
@@ -108,13 +110,12 @@ public class LoginServlet extends HttpServlet {
     if ((controller != null) && (!controller.getCurrentUserDetail().isAccessRemoved())) {
       // Init session management and session object !!! This method reset the
       // Session Object
-      if (!UserDetail.isAnonymous(controller.getUserId())) {
+      if (!UserDetail.isAnonymousUser(controller.getUserId())) {
         SessionManager.getInstance().addSession(session, request, controller);
       }
 
       // Put the main session controller in the session
       session.setAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT, controller);
-      session.removeAttribute("Silverpeas_LookHelper");
       // Add pwd for Hyperlink
       session.setAttribute("Silverpeas_pwdForHyperlink", sPassword);
 
@@ -185,6 +186,22 @@ public class LoginServlet extends HttpServlet {
     } catch (NotificationManagerException e) {
       SilverTrace.warn("peasCore", "LoginServlet.alertUserAboutPwdExpiration",
           "peasCore.EX_CANT_SEND_PASSWORD_EXPIRATION_ALERT", "userId = " + userId, e);
+    }
+  }
+
+  /**
+   * Closes any previous existing session for the current user.
+   * A previous session can exist with the anonymous accesses.
+   * @param session the previous HTTP session to close.
+   */
+  private void closeSession(final HttpSession session) {
+    MainSessionController controller =
+        (MainSessionController) session.getAttribute(
+        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+    if (controller != null && controller.getCurrentUserDetail().isAnonymous()) {
+      session.invalidate();
+    } else {
+      SessionManager.getInstance().closeSession(session.getId());
     }
   }
 }

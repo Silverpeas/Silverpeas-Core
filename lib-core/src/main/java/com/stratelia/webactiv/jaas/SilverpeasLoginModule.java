@@ -143,8 +143,9 @@ public class SilverpeasLoginModule implements LoginModule {
               principals.add(principal);
             }
           }
+
           if (principals.isEmpty()
-              && UserDetail.isAnonymous(sc.getUserID())) {
+              && UserDetail.isAnonymousUser(sc.getUserID())) {
             principals.add(new AnonymousPrincipal());
           }
           authenticated = true;

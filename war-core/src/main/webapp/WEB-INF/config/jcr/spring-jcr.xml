@@ -72,7 +72,7 @@
 
 
   <!--  Attachment -->
-  <bean id="jcrAttachmentDao" class="com.stratelia.webacctiv.util.attachment.model.jcr.impl.JcrAttachmentDaoImpl" />
+  <bean id="jcrAttachmentDao" class="com.stratelia.webactiv.util.attachment.model.jcr.impl.JcrAttachmentDaoImpl" />
 
   <bean id="jcrAttachmentManager" class="com.stratelia.webactiv.util.attachment.model.jcr.impl.JcrAttachmentServiceImpl">
     <property name="jcrAttachmentDao" ref="jcrAttachmentDao" />

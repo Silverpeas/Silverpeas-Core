@@ -274,7 +274,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
   @Override
   public boolean isAnonymousUser() {
     if (StringUtil.isDefined(userId)) {
-      return UserDetail.isAnonymous(userId);
+      return UserDetail.isAnonymousUser(userId);
     }
     return false;
   }
