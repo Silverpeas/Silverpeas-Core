@@ -88,7 +88,7 @@ public class PersonalizationServiceTest {
     detail = service.getUserSettings(userId);
     assertThat(detail, notNullValue());
     expectedDetail = new UserPreferences(userId, "fr", "Initial", "", false, false, true,
-        UserMenuDisplay.DISABLE);
+        UserMenuDisplay.DEFAULT);
     assertThat(detail, is(expectedDetail));
   }
 

@@ -31,7 +31,7 @@ public interface PersonalizationService {
 
   public final String DEFAULT_LOOK = "Initial";
 
-  public final UserMenuDisplay DEFAULT_MENU_DISPLAY_MODE = UserMenuDisplay.DISABLE;
+  public final UserMenuDisplay DEFAULT_MENU_DISPLAY_MODE = UserMenuDisplay.DEFAULT;
 
   public void saveUserSettings(UserPreferences userPreferences);
 

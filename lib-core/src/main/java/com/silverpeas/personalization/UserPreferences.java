@@ -51,7 +51,7 @@ public class UserPreferences implements java.io.Serializable {
   @Column(name = "webdaveditingstatus", columnDefinition = "INTEGER")
   private int webdavEditionStatus;
   @Column(name = "menuDisplay")
-  private String menuDisplay = UserMenuDisplay.DISABLE.name();
+  private String menuDisplay = UserMenuDisplay.DEFAULT.name();
 
   public UserPreferences() {
   }

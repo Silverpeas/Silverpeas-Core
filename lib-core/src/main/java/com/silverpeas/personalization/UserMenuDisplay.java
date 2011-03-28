@@ -31,6 +31,11 @@ public enum UserMenuDisplay {
    * ALL : display both tabs bookmarks and the full menu and the default is the full menu tab.
    * BOOKMARKS : display both tabs bookmarks and the full menu and the default is the bookmarks menu tab.
    * DISABLE : no bookmarks menu tab is displayed.
+   * DEFAULT : use the look display.
    */
-  DISABLE, BOOKMARKS, ALL;
+  DEFAULT, DISABLE, BOOKMARKS, ALL;
+  
+  public boolean isNotDefault() {
+    return this != DEFAULT;
+  }
 }
