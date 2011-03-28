@@ -95,7 +95,7 @@ public class GraphicElementFactory {
   private String componentId = null;
   private MainSessionController mainSessionController = null;
   private String spaceId = null;
-  private final String defaultLookName = "Initial";
+  public static final String defaultLookName = "Initial";
   private static final String JQUERY_JS = "jquery-1.5.min.js";
   private static final String JQUERYUI_JS = "jquery-ui-1.8.10.custom.min.js";
   private static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.8.10.custom.css";

@@ -142,7 +142,7 @@ public class SchedulerTest {
     assertEquals(JOB_NAME, job.getName());
     assertEquals(eventHandler, job.getSchedulerEventListener());
     assertEquals(trigger, job.getTrigger());
-    await().atMost(1, MINUTES).until(jobIsFired());
+    await().atMost(62, SECONDS).until(jobIsFired());
     assertTrue(eventHandler.isJobSucceeded());
   }
 

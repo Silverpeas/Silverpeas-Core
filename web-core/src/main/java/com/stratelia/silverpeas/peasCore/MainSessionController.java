@@ -144,6 +144,13 @@ public class MainSessionController extends AdminReference implements Clipboard {
     return spaceId;
   }
 
+  /**
+   * Default constructor just for tests.
+   */
+  protected MainSessionController() {
+    userPreferences = null;
+  }
+
   /** Creates new MainSessionController */
   /** Return an exception if the user is not authenticate */
   /**

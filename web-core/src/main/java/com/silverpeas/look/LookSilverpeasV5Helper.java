@@ -25,7 +25,6 @@ package com.silverpeas.look;
 
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.service.PersonalizationService;
-import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SessionManager;
@@ -37,25 +36,21 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import java.io.UnsupportedEncodingException;
 
 import javax.ejb.EJBException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -356,10 +351,12 @@ public class LookSilverpeasV5Helper implements LookHelper {
    */
   @Override
   public String getWallPaper(String spaceId) {
-    if (StringUtil.isDefined(spaceId) && StringUtil.isDefined(getSpaceWallPaper(spaceId))) {
-      return "1";
+    String hasWallpaper = "0";
+    if (StringUtil.isDefined(spaceId) && SilverpeasLook.getSilverpeasLook().hasSpaceWallpaper(
+        spaceId)) {
+      hasWallpaper = "1";
     }
-    return "0";
+    return hasWallpaper;
   }
 
   /*
@@ -514,53 +511,15 @@ public class LookSilverpeasV5Helper implements LookHelper {
    */
   @Override
   public String getSpaceWallPaper() {
-    if (!StringUtil.isDefined(getSpaceId())) {
-      return null;
-    }
-
-    if (!StringUtil.isDefined(getSubSpaceId())) {
-      return getSpaceWallPaper(getSpaceId());
-    } else {
-      // get wallpaper of current subspace or first super space
-      List<SpaceInst> spaces = getOrganizationController().getSpacePath(getSubSpaceId());
-      Collections.reverse(spaces);
-
-      String wallpaper = null;
-      for (int i = 0;
-          wallpaper == null && i < spaces.size();
-          i++) {
-        SpaceInst space = spaces.get(i);
-        wallpaper = getSpaceWallPaper(space.getId());
+    String wallpaperURL = null;
+    String theSpaceId = getSpaceId();
+    if (StringUtil.isDefined(theSpaceId)) {
+      if (StringUtil.isDefined(getSubSpaceId())) {
+        theSpaceId = getSubSpaceId();
       }
-      return wallpaper;
+      wallpaperURL = SilverpeasLook.getSilverpeasLook().getWallpaperOfSpace(theSpaceId);
     }
-  }
-
-  private String getSpaceWallPaper(String id) {
-    if (id.startsWith(SPACE_KEY_PREFIX)) {
-      id = id.substring(2);
-    }
-    String path =
-        FileRepositoryManager.getAbsolutePath("Space" + id, new String[]{"look"});
-
-    String filePath = getWallPaper(path, id, "jpg");
-    if (!StringUtil.isDefined(filePath)) {
-      filePath = getWallPaper(path, id, "gif");
-      if (!StringUtil.isDefined(filePath)) {
-        filePath = getWallPaper(path, id, "png");
-      }
-    }
-    return filePath;
-  }
-
-  private String getWallPaper(String path, String spaceId, String extension) {
-    String image = "wallPaper." + extension;
-    File file = new File(path + image);
-    if (file.isFile()) {
-      return FileServerUtils.getOnlineURL("Space" + spaceId, file.getName(), file.getName(),
-          FileUtil.getMimeType(image), "look");
-    }
-    return null;
+    return wallpaperURL;
   }
 
   public String getComponentURL(String key, String function) {
@@ -633,9 +592,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     }
     List<PublicationDetail> filteredPublis = new ArrayList<PublicationDetail>();
     PublicationDetail publi;
-    for (int i = 0;
-        publis != null && i < publis.size();
-        i++) {
+    for (int i = 0; publis != null && i < publis.size(); i++) {
       publi = publis.get(i);
       if (PublicationDetail.VALID.equalsIgnoreCase(publi.getStatus())) {
         filteredPublis.add(publi);
@@ -647,8 +604,9 @@ public class LookSilverpeasV5Helper implements LookHelper {
   public PublicationBm getPublicationBm() {
     if (publicationBm == null) {
       try {
-        publicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBmHome.class).create();
+        publicationBm =
+            ((PublicationBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+                PublicationBmHome.class)).create();
       } catch (Exception e) {
         throw new EJBException(e);
       }
@@ -658,27 +616,29 @@ public class LookSilverpeasV5Helper implements LookHelper {
 
   public String getSpaceHomePage(String spaceId, HttpServletRequest request)
       throws UnsupportedEncodingException {
-    SpaceInst space = getOrganizationController().getSpaceInstById(spaceId);
+    SpaceInst spaceStruct = getOrganizationController().getSpaceInstById(spaceId);
     // Page d'accueil de l'espace = Composant
-    if (space != null && (space.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST)
-        && StringUtil.isDefined(space.getFirstPageExtraParam())) {
-      if (getOrganizationController().isComponentAvailable(space.getFirstPageExtraParam(),
-          getUserId())) {
-        return URLManager.getSimpleURL(URLManager.URL_COMPONENT, space.getFirstPageExtraParam());
+    if (spaceStruct != null
+        && (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST)
+        && spaceStruct.getFirstPageExtraParam() != null
+        && spaceStruct.getFirstPageExtraParam().length() > 0) {
+      if (getOrganizationController().isComponentAvailable(
+          spaceStruct.getFirstPageExtraParam(), getUserId())) {
+        return URLManager.getSimpleURL(URLManager.URL_COMPONENT,
+            spaceStruct.getFirstPageExtraParam());
       }
     }
 
     // Page d'accueil de l'espace = URL
-    if (space != null
-        && (space.getFirstPageType() == SpaceInst.FP_TYPE_HTML_PAGE)
-        && (space.getFirstPageExtraParam() != null)
-        && (space.getFirstPageExtraParam().length() > 0)) {
-      String destination = space.getFirstPageExtraParam();
+    if (spaceStruct != null
+        && (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_HTML_PAGE)
+        && (spaceStruct.getFirstPageExtraParam() != null)
+        && (spaceStruct.getFirstPageExtraParam().length() > 0)) {
+      String destination = spaceStruct.getFirstPageExtraParam();
       destination = getParsedDestination(destination, "%ST_USER_LOGIN%",
           getMainSessionController().getCurrentUserDetail().getLogin());
       destination = getParsedDestination(destination, "%ST_USER_FULLNAME%",
-          URLEncoder.encode(getMainSessionController().getCurrentUserDetail().getDisplayedName(),
-          "UTF-8"));
+          URLEncoder.encode(getMainSessionController().getCurrentUserDetail().getDisplayedName()));
       destination = getParsedDestination(destination, "%ST_USER_ID%",
           URLEncoder.encode(getMainSessionController().getUserId(), "UTF-8"));
       destination = getParsedDestination(destination, "%ST_SESSION_ID%",
@@ -699,7 +659,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     if (nLoginIndex != -1) {
       // Replace the keyword with the actual value
       String sParsed = sDestination.substring(0, nLoginIndex);
-      sParsed += sValue;
+      sParsed = sParsed + sValue;
       if (sDestination.length() > nLoginIndex + sKeyword.length()) {
         sParsed += sDestination.substring(nLoginIndex + sKeyword.length(), sDestination.length());
       }
@@ -717,8 +677,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
   }
 
   /**
-   * 
-   * @param displayUserMenu 
+   * @param displayUserMenu
    */
   @Override
   public void setDisplayUserMenu(UserMenuDisplay displayUserMenu) {
@@ -742,9 +701,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
    */
   public List<Shortcut> getShortcuts(String id, int nb) {
     List<Shortcut> shortcuts = new ArrayList<Shortcut>();
-    for (int i = 1;
-        i <= nb;
-        i++) {
+    for (int i = 1; i <= nb; i++) {
       String prefix = "Shortcut." + id + "." + i;
       String url = getSettings(prefix + ".Url", "toBeDefined");
       String target = getSettings(prefix + ".Target", "toBeDefined");
