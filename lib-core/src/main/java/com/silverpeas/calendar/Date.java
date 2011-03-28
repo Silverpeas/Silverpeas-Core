@@ -32,7 +32,7 @@ import static java.util.Calendar.*;
  * A date on a day of a month and in year.
  * The time isn't represented here. Please refers to DateTime to models also the time.
  */
-public class Date extends java.util.Date implements Datable<Date> {
+public class Date extends java.util.Date implements Datable<Date>, Cloneable {
 
   private static final long serialVersionUID = 7970735205076340522L;
   private TimeZone timeZone = TimeZone.getDefault();
