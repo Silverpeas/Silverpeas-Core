@@ -36,6 +36,7 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 
 <%@ page import="com.stratelia.silverpeas.authentication.*"%>
+<%@ page import="com.silverpeas.look.LookHelper" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -49,10 +50,10 @@
 <view:setBundle basename="com.silverpeas.lookSilverpeasV5.multilang.lookBundle"/>
 
 <%
-String          m_sContext      =  GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String          m_sContext      = URLManager.getApplicationURL();
 
-GraphicElementFactory   gef         = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-LookSilverpeasV5Helper  helper        = (LookSilverpeasV5Helper) session.getAttribute("Silverpeas_LookHelper");
+GraphicElementFactory   gef         = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+LookHelper  helper        = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
 
 String spaceId    = request.getParameter("privateDomain");
 String componentId  = request.getParameter("component_id");
@@ -224,7 +225,6 @@ out.println(gef.getLookStyleSheet());
 
     function getFooterPage()
     {
-        //return getContext()+"/RpdcSearch/jsp/ChangeSearchTypeToExpert?mode=clear&amp;SearchPage=/admin/jsp/pdcSearchSilverpeasV5.jsp&";
     	return getContext()+"/RpdcSearch/jsp/ChangeSearchTypeToExpert?SearchPage=/admin/jsp/pdcSearchSilverpeasV5.jsp&";
     }
 
@@ -233,7 +233,6 @@ out.println(gef.getLookStyleSheet());
      */
     function reloadSpacesBarFrame(tabId) {
        top.bottomFrame.location.href="<%=m_sContext%>/admin/jsp/frameBottomSilverpeasV5.jsp?UserMenuDisplayMode=" + tabId;
-       //top.SpacesBar.location.href="<%=m_sContext%>/admin/jsp/DomainsBarSilverpeasV5.jsp";
     }
 
     function getPersonalSpaceLabels()
@@ -298,19 +297,18 @@ out.println(gef.getLookStyleSheet());
         </table>
     </div>
     <div id="spaceMenuDivId">
-      <c:if test="${!fn:contains(curHelper.displayUserMenu, 'DISABLE')}">
+      <c:if test="${curHelper.menuPersonalisationEnabled}">
         <fmt:message key="lookSilverpeasV5.favoriteSpace.tabBookmarks" var="tabBookmarksLabel" />
         <fmt:message key="lookSilverpeasV5.favoriteSpace.tabAll" var="tabAllLabel" />
         <div id="tabDivId" class="tabSpace">
           <form name="spaceDisplayModeForm" action="#" method="get" >
             <input type="hidden" name="userMenuDisplayMode" id="userMenuDisplayModeId" value="<c:out value="${curHelper.displayUserMenu}"></c:out>" />
-            <input type="hidden" name="enableAllUFSpaceStates" id="enableAllUFSpaceStatesId" value="<c:out value="${curHelper.enableUFSContainsState}"></c:out>" />
+            <input type="hidden" name="enableAllUFSpaceStates" id="enableAllUFSpaceStatesId" value="<c:out value="${v.enableUFSContainsState}"></c:out>" />
             <input type="hidden" name="loadingMessage" id="loadingMessageId" value="<fmt:message key="lookSilverpeasV5.loadingSpaces" />" />
             <input type="hidden" name="noFavoriteSpaceMsg" id="noFavoriteSpaceMsgId" value="<fmt:message key="lookSilverpeasV5.noFavoriteSpace" />" />
           </form>
 
-          <c:if test="${fn:contains(curHelper.displayUserMenu, 'BOOKMARKS')}">
-            <!--  <p>contains BOOKMARKS</p> -->
+          <c:if test="${curHelper.displayUserMenu == 'BOOKMARKS'}">
             <div id="tabsBookMarkSelectedDivId">
              <view:tabs>
                <view:tab label="${tabBookmarksLabel}" action="javascript:openTab('BOOKMARKS');" selected="true"></view:tab>
@@ -324,8 +322,7 @@ out.println(gef.getLookStyleSheet());
               </view:tabs>
             </div>
           </c:if>
-          <c:if test="${fn:contains(curHelper.displayUserMenu, 'ALL')}">
-            <!-- <p>contains ALL</p>  -->
+          <c:if test="${curHelper.displayUserMenu == 'ALL'}">
             <div id="tabsBookMarkSelectedDivId" style="display:none">
              <view:tabs>
                <view:tab label="${tabBookmarksLabel}" action="javascript:openTab('BOOKMARKS');" selected="true"></view:tab>

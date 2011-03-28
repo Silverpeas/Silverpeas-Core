@@ -45,6 +45,7 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import java.io.UnsupportedEncodingException;
 
 import javax.ejb.EJBException;
 import javax.servlet.http.HttpServletRequest;
@@ -206,11 +207,12 @@ public class LookSilverpeasV5Helper implements LookHelper {
     this.orga = mainSessionController.getOrganizationController();
     this.userId = mainSessionController.getUserId();
     this.resources = resources;
-    this.defaultMessages = new ResourceLocator("com.silverpeas.lookSilverpeasV5.multilang.lookBundle",
+    this.defaultMessages = new ResourceLocator(
+        "com.silverpeas.lookSilverpeasV5.multilang.lookBundle",
         mainSessionController.getFavoriteLanguage());
     if (StringUtil.isDefined(resources.getString("MessageBundle"))) {
-      this.messages = new ResourceLocator(resources.getString("MessageBundle"), mainSessionController.
-              getFavoriteLanguage());
+      this.messages = new ResourceLocator(resources.getString("MessageBundle"),
+          mainSessionController.getFavoriteLanguage());
     }
     initProperties();
     getTopItems();
@@ -225,13 +227,17 @@ public class LookSilverpeasV5Helper implements LookHelper {
     shouldDisplayConnectedUsers = resources.getBoolean("displayConnectedUsers", true);
     displayUserMenu = UserMenuDisplay.valueOf(resources.getString("displayUserFavoriteSpace",
         PersonalizationService.DEFAULT_MENU_DISPLAY_MODE.name()).toUpperCase());
+    if (isMenuPersonalisationEnabled() && mainSC.getPersonalization().getDisplay().isNotDefault()) {
+      this.displayUserMenu = this.mainSC.getPersonalization().getDisplay();
+    }
     enableUFSContainsState = resources.getBoolean("enableUFSContainsState", false);
   }
 
+  @Override
   public boolean isMenuPersonalisationEnabled() {
-    return UserMenuDisplay.DISABLE != UserMenuDisplay.valueOf(
-        resources.getString("displayUserFavoriteSpace",
-            PersonalizationService.DEFAULT_MENU_DISPLAY_MODE.name()).toUpperCase());
+    return UserMenuDisplay.DISABLE != UserMenuDisplay.valueOf(resources.getString(
+        "displayUserFavoriteSpace", PersonalizationService.DEFAULT_MENU_DISPLAY_MODE.name()).
+        toUpperCase());
   }
 
   protected MainSessionController getMainSessionController() {
@@ -520,7 +526,9 @@ public class LookSilverpeasV5Helper implements LookHelper {
       Collections.reverse(spaces);
 
       String wallpaper = null;
-      for (int i = 0; wallpaper == null && i < spaces.size(); i++) {
+      for (int i = 0;
+          wallpaper == null && i < spaces.size();
+          i++) {
         SpaceInst space = spaces.get(i);
         wallpaper = getSpaceWallPaper(space.getId());
       }
@@ -550,8 +558,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     File file = new File(path + image);
     if (file.isFile()) {
       return FileServerUtils.getOnlineURL("Space" + spaceId, file.getName(), file.getName(),
-          FileUtil.
-              getMimeType(image), "look");
+          FileUtil.getMimeType(image), "look");
     }
     return null;
   }
@@ -626,7 +633,9 @@ public class LookSilverpeasV5Helper implements LookHelper {
     }
     List<PublicationDetail> filteredPublis = new ArrayList<PublicationDetail>();
     PublicationDetail publi;
-    for (int i = 0; publis != null && i < publis.size(); i++) {
+    for (int i = 0;
+        publis != null && i < publis.size();
+        i++) {
       publi = publis.get(i);
       if (PublicationDetail.VALID.equalsIgnoreCase(publi.getStatus())) {
         filteredPublis.add(publi);
@@ -647,35 +656,33 @@ public class LookSilverpeasV5Helper implements LookHelper {
     return publicationBm;
   }
 
-  public String getSpaceHomePage(String spaceId, HttpServletRequest request) {
-    SpaceInst spaceStruct = getOrganizationController().getSpaceInstById(spaceId);
-
+  public String getSpaceHomePage(String spaceId, HttpServletRequest request)
+      throws UnsupportedEncodingException {
+    SpaceInst space = getOrganizationController().getSpaceInstById(spaceId);
     // Page d'accueil de l'espace = Composant
-    if (spaceStruct != null
-        && (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST)
-        && spaceStruct.getFirstPageExtraParam() != null
-        && spaceStruct.getFirstPageExtraParam().length() > 0) {
-      if (getOrganizationController().isComponentAvailable(
-          spaceStruct.getFirstPageExtraParam(), getUserId())) {
-        return URLManager.getSimpleURL(URLManager.URL_COMPONENT,
-            spaceStruct.getFirstPageExtraParam());
+    if (space != null && (space.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST)
+        && StringUtil.isDefined(space.getFirstPageExtraParam())) {
+      if (getOrganizationController().isComponentAvailable(space.getFirstPageExtraParam(),
+          getUserId())) {
+        return URLManager.getSimpleURL(URLManager.URL_COMPONENT, space.getFirstPageExtraParam());
       }
     }
 
     // Page d'accueil de l'espace = URL
-    if (spaceStruct != null
-        && (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_HTML_PAGE)
-        && (spaceStruct.getFirstPageExtraParam() != null)
-        && (spaceStruct.getFirstPageExtraParam().length() > 0)) {
-      String destination = spaceStruct.getFirstPageExtraParam();
+    if (space != null
+        && (space.getFirstPageType() == SpaceInst.FP_TYPE_HTML_PAGE)
+        && (space.getFirstPageExtraParam() != null)
+        && (space.getFirstPageExtraParam().length() > 0)) {
+      String destination = space.getFirstPageExtraParam();
       destination = getParsedDestination(destination, "%ST_USER_LOGIN%",
           getMainSessionController().getCurrentUserDetail().getLogin());
       destination = getParsedDestination(destination, "%ST_USER_FULLNAME%",
-          URLEncoder.encode(getMainSessionController().getCurrentUserDetail().getDisplayedName()));
+          URLEncoder.encode(getMainSessionController().getCurrentUserDetail().getDisplayedName(),
+          "UTF-8"));
       destination = getParsedDestination(destination, "%ST_USER_ID%",
-          URLEncoder.encode(getMainSessionController().getUserId()));
+          URLEncoder.encode(getMainSessionController().getUserId(), "UTF-8"));
       destination = getParsedDestination(destination, "%ST_SESSION_ID%",
-          URLEncoder.encode(request.getSession().getId()));
+          URLEncoder.encode(request.getSession().getId(), "UTF-8"));
 
       // !!!! Add the password : this is an uggly patch that use a session
       // variable set in the "AuthenticationServlet" servlet
@@ -710,7 +717,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
   }
 
   /**
-   * @return user favorite space menu display mode
+   * 
+   * @param displayUserMenu 
    */
   @Override
   public void setDisplayUserMenu(UserMenuDisplay displayUserMenu) {
@@ -734,7 +742,9 @@ public class LookSilverpeasV5Helper implements LookHelper {
    */
   public List<Shortcut> getShortcuts(String id, int nb) {
     List<Shortcut> shortcuts = new ArrayList<Shortcut>();
-    for (int i = 1; i <= nb; i++) {
+    for (int i = 1;
+        i <= nb;
+        i++) {
       String prefix = "Shortcut." + id + "." + i;
       String url = getSettings(prefix + ".Url", "toBeDefined");
       String target = getSettings(prefix + ".Target", "toBeDefined");

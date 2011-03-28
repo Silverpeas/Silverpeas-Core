@@ -343,7 +343,7 @@ public class AjaxActionServlet extends HttpServlet {
     SilverTrace.debug("lookSilverpeasV5", AjaxActionServlet.class.getName() + ".getFrame",
             "root.MSG_GEN_ENTER_METHOD");
     HttpSession session = req.getSession(true);
-    GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
+    GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
 
     
     // Retrieve FrameJSP from look name parameter

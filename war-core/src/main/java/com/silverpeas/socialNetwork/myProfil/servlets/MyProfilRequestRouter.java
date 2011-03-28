@@ -326,6 +326,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
     if (lookHelper != null && lookHelper.isMenuPersonalisationEnabled() && StringUtil.isDefined(
         request.getParameter("MenuDisplay"))) {
       preferences.setDisplay(UserMenuDisplay.valueOf(request.getParameter("MenuDisplay")));
+      lookHelper.setDisplayUserMenu(preferences.getDisplay());
     }
     String selectedWorkSpace = request.getParameter("SelectedWorkSpace");
     if (!StringUtil.isDefined(selectedWorkSpace)) {

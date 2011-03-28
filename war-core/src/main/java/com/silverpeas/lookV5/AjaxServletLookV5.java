@@ -82,13 +82,13 @@ public class AjaxServletLookV5 extends HttpServlet {
   }
 
   @Override
-  public void doPost(HttpServletRequest req, HttpServletResponse res)
+  public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
-    HttpSession session = req.getSession(true);
+    HttpSession session = request.getSession(true);
     MainSessionController mainSessionController = (MainSessionController) session.getAttribute(
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
-        "SessionGraphicElementFactory");
+        GraphicElementFactory.GE_FACTORY_SESSION_ATT);
     LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
     OrganizationController orgaController = mainSessionController.getOrganizationController();
 
@@ -96,25 +96,19 @@ public class AjaxServletLookV5 extends HttpServlet {
     UserPreferences preferences = mainSessionController.getPersonalization();
 
     // Get ajax action
-    String responseId = req.getParameter("ResponseId");
-    String init = req.getParameter("Init");
-    String spaceId = req.getParameter("SpaceId");
-    String componentId = req.getParameter("ComponentId");
-    String axisId = req.getParameter("AxisId");
-    String valuePath = req.getParameter("ValuePath");
-    String getPDC = req.getParameter("GetPDC");
-    String pdc = req.getParameter("Pdc");
-
-    // New request parameter to manage Bookmarks view or classical view
-    String userMenuDisplayModeParam = req.getParameter("UserMenuDisplayMode");
-
+    String responseId = request.getParameter("ResponseId");
+    String init = request.getParameter("Init");
+    String spaceId = request.getParameter("SpaceId");
+    String componentId = request.getParameter("ComponentId");
+    String axisId = request.getParameter("AxisId");
+    String valuePath = request.getParameter("ValuePath");
+    String pdc = request.getParameter("Pdc");
     boolean displayContextualPDC = helper.displayContextualPDC();
-    boolean displayPDC = "true".equalsIgnoreCase(getPDC);
+    boolean displayPDC = "true".equalsIgnoreCase( request.getParameter("GetPDC"));
 
     // User favorite space DAO
     List<UserFavoriteSpaceVO> listUserFS = new ArrayList<UserFavoriteSpaceVO>();
-    if (UserMenuDisplay.DISABLE != helper.getDisplayUserMenu()) {
-
+    if (helper.isMenuPersonalisationEnabled()) {
       UserFavoriteSpaceDAO ufsDAO = DAOFactory.getUserFavoriteSpaceDAO();
       listUserFS = ufsDAO.getListUserFavoriteSpace(userId);
     }
@@ -132,20 +126,23 @@ public class AjaxServletLookV5 extends HttpServlet {
       gef.setSpaceId(spaceId);
     }
 
-    UserMenuDisplay userMenuDisplayMode = UserMenuDisplay.DISABLE;
-    if (UserMenuDisplay.DISABLE == helper.getDisplayUserMenu()) {
-      if (StringUtil.isDefined(userMenuDisplayModeParam)) {
-        helper.setDisplayUserMenu(UserMenuDisplay.valueOf(userMenuDisplayModeParam));
-      }else {
-        userMenuDisplayMode = preferences.getDisplay();
+     // New request parameter to manage Bookmarks view or classical view
+    UserMenuDisplay displayMode = helper.getDisplayUserMenu();
+    if (helper.isMenuPersonalisationEnabled()) {
+      if (StringUtil.isDefined(request.getParameter("UserMenuDisplayMode"))) {
+        displayMode = UserMenuDisplay.valueOf(request.getParameter("UserMenuDisplayMode"));
+      }else if(preferences.getDisplay().isNotDefault()){
+        displayMode = preferences.getDisplay();
       }
     }
+    helper.setDisplayUserMenu(displayMode);
+
     // Retrieve current look
     String defaultLook = gef.getDefaultLookName();
-    res.setContentType("text/xml");
-    res.setHeader("charset", "UTF-8");
+    response.setContentType("text/xml");
+    response.setHeader("charset", "UTF-8");
 
-    Writer writer = res.getWriter();
+    Writer writer = response.getWriter();
     writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     writer.write("<ajax-response>");
     writer.write("<response type=\"object\" id=\"" + responseId + "\">");
@@ -153,22 +150,21 @@ public class AjaxServletLookV5 extends HttpServlet {
     if ("1".equals(init)) {
       if (!StringUtil.isDefined(spaceId) && !StringUtil.isDefined(componentId)) {
         displayFirstLevelSpaces(userId, preferences.getLanguage(), defaultLook, orgaController,
-            helper, writer, listUserFS, userMenuDisplayMode);
+            helper, writer, listUserFS, displayMode);
       } else {
         // First get space's path cause it can be a subspace
-        List<String> spaceIdsPath = getSpaceIdsPath(spaceId, componentId,
-            orgaController);
+        List<String> spaceIdsPath = getSpaceIdsPath(spaceId, componentId, orgaController);
 
         // space transverse
         displaySpace(spaceId, componentId, spaceIdsPath, userId, preferences.getLanguage(),
             defaultLook, displayPDC, true, orgaController, helper, writer, listUserFS,
-            userMenuDisplayMode);
+            displayMode);
 
         // other spaces
         displayTree(userId, componentId, spaceIdsPath, preferences.getLanguage(),
-            defaultLook, orgaController, helper, writer, listUserFS, userMenuDisplayMode);
+            defaultLook, orgaController, helper, writer, listUserFS, displayMode);
 
-        displayPDC(getPDC, spaceId, componentId, userId, displayContextualPDC,
+        displayPDC(displayPDC, spaceId, componentId, userId, displayContextualPDC,
             mainSessionController, writer);
       }
     } else if (StringUtil.isDefined(axisId) && StringUtil.isDefined(valuePath)) {
@@ -193,12 +189,12 @@ public class AjaxServletLookV5 extends HttpServlet {
         List<String> spaceIdsPath = getSpaceIdsPath(spaceId, componentId, orgaController);
         displaySpace(spaceId, componentId, spaceIdsPath, userId, preferences.getLanguage(),
             defaultLook, displayPDC, false, orgaController, helper, writer, listUserFS,
-            userMenuDisplayMode);
-        displayPDC(getPDC, spaceId, componentId, userId, displayContextualPDC,
+            displayMode);
+        displayPDC(displayPDC, spaceId, componentId, userId, displayContextualPDC,
             mainSessionController, writer);
       }
     } else if (StringUtil.isDefined(componentId)) {
-      displayPDC(getPDC, spaceId, componentId, userId, displayContextualPDC, mainSessionController,
+      displayPDC(displayPDC, spaceId, componentId, userId, displayContextualPDC, mainSessionController,
           writer);
     } else if (StringUtil.isDefined(pdc)) {
       displayNotContextualPDC(userId, mainSessionController, writer);
@@ -219,12 +215,12 @@ public class AjaxServletLookV5 extends HttpServlet {
     }
   }
 
-  private void displayPDC(String getPDC, String spaceId, String componentId,
+  private void displayPDC(boolean displayPDC, String spaceId, String componentId,
       String userId, boolean displayContextualPDC, MainSessionController mainSC, Writer writer)
       throws IOException {
     try {
       writer.write("<pdc>");
-      if ("true".equalsIgnoreCase(getPDC)) {
+      if (displayPDC) {
         getPertinentAxis(spaceId, componentId, userId, mainSC, writer);
       }
       writer.write("</pdc>");

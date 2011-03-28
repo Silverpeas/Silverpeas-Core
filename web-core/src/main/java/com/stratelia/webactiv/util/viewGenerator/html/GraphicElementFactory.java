@@ -76,7 +76,7 @@ import java.util.ArrayList;
  * graphic component instanciation. You should never directly instanciate a component without using
  * this factory ! This class uses the "factory design pattern".
  */
-public class GraphicElementFactory extends Object {
+public class GraphicElementFactory {
 
   public static final String GE_FACTORY_SESSION_ATT = "SessionGraphicElementFactory";
   private final static ResourceLocator settings = new ResourceLocator(
@@ -104,12 +104,6 @@ public class GraphicElementFactory extends Object {
   private static final String FLOWPLAYER_CSS = "flowplayer.css";
   private static final String JQUERY_QTIP = "jquery.qtip-1.0.0-rc3.min.js";
   private static final String JQUERY_QTIP_STYLE = "silverpeas-qtip-style.js";
-
-  /**
-   * Creates new GraphicElementFactory
-   */
-  public GraphicElementFactory() {
-  }
 
   /**
    * Constructor declaration
