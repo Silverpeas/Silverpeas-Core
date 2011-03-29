@@ -73,16 +73,17 @@
       <artifactId>commons-dbcp</artifactId>
     </dependency>
     <dependency>
-      <groupId>bouncycastle</groupId>
+      <groupId>org.bouncycastle</groupId>
       <artifactId>bcprov-jdk16</artifactId>
     </dependency>
     <dependency>
-      <groupId>bouncycastle</groupId>
+      <groupId>org.bouncycastle</groupId>
       <artifactId>bcmail-jdk16</artifactId>
     </dependency>
     <dependency>
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>commons-fileupload</groupId>
@@ -260,10 +261,22 @@
     <dependency>
       <groupId>org.quartz-scheduler</groupId>
       <artifactId>quartz</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>jta</artifactId>
+          <groupId>javax.transaction</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>stax-api</artifactId>
+          <groupId>javax.xml.stream</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 
