@@ -23,19 +23,8 @@
  */
 package com.silverpeas.look;
 
-import java.net.URLEncoder;
-import java.rmi.RemoteException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.StringTokenizer;
-
-import javax.ejb.EJBException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
+import com.silverpeas.personalization.UserMenuDisplay;
+import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SessionManager;
@@ -53,6 +42,20 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+
+import javax.ejb.EJBException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.StringTokenizer;
+
 import static com.stratelia.webactiv.beans.admin.Admin.SPACE_KEY_PREFIX;
 
 public class LookSilverpeasV5Helper implements LookHelper {
@@ -66,9 +69,9 @@ public class LookSilverpeasV5Helper implements LookHelper {
   private String guestId = null;
   private boolean displayPDCInNav = false;
   private boolean displayPDCFrame = false;
-  private boolean displayContextualPDC = true;
-  private boolean displaySpaceIcons = true;
-  private boolean displayConnectedUsers = true;
+  private boolean shouldDisplayContextualPDC = true;
+  private boolean shouldDisplaySpaceIcons = true;
+  private boolean shouldDisplayConnectedUsers = true;
   private List<TopItem> topItems = null;
   private List<String> topSpaceIds = null; // sublist of topItems
   private String mainFrame = "MainFrameSilverpeasV5.jsp";
@@ -79,9 +82,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
   private PublicationHelper kmeliaTransversal = null;
   private PublicationBm publicationBm = null;
   // Attribute used to manage user favorite space look
-  private String displayUserFavoriteSpace = null;
+  private UserMenuDisplay displayUserMenu = UserMenuDisplay.DISABLE;
   private boolean enableUFSContainsState = false;
-  private static final String DEFAULT_USERMENU_DISPLAY_MODE = "DISABLE";
 
   /*
    * (non-Javadoc)
@@ -204,9 +206,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
         "com.silverpeas.lookSilverpeasV5.multilang.lookBundle",
         mainSessionController.getFavoriteLanguage());
     if (StringUtil.isDefined(resources.getString("MessageBundle"))) {
-      this.messages =
-          new ResourceLocator(resources.getString("MessageBundle"), mainSessionController.
-          getFavoriteLanguage());
+      this.messages = new ResourceLocator(resources.getString("MessageBundle"),
+          mainSessionController.getFavoriteLanguage());
     }
     initProperties();
     getTopItems();
@@ -216,12 +217,22 @@ public class LookSilverpeasV5Helper implements LookHelper {
     this.guestId = resources.getString("guestId");
     displayPDCInNav = resources.getBoolean("displayPDCInNav", false);
     displayPDCFrame = resources.getBoolean("displayPDCFrame", false);
-    displayContextualPDC = resources.getBoolean("displayContextualPDC", true);
-    displaySpaceIcons = resources.getBoolean("displaySpaceIcons", true);
-    displayConnectedUsers = resources.getBoolean("displayConnectedUsers", true);
-    displayUserFavoriteSpace = resources.getString("displayUserFavoriteSpace",
-        DEFAULT_USERMENU_DISPLAY_MODE);
+    shouldDisplayContextualPDC = resources.getBoolean("displayContextualPDC", true);
+    shouldDisplaySpaceIcons = resources.getBoolean("displaySpaceIcons", true);
+    shouldDisplayConnectedUsers = resources.getBoolean("displayConnectedUsers", true);
+    displayUserMenu = UserMenuDisplay.valueOf(resources.getString("displayUserFavoriteSpace",
+        PersonalizationService.DEFAULT_MENU_DISPLAY_MODE.name()).toUpperCase());
+    if (isMenuPersonalisationEnabled() && mainSC.getPersonalization().getDisplay().isNotDefault()) {
+      this.displayUserMenu = this.mainSC.getPersonalization().getDisplay();
+    }
     enableUFSContainsState = resources.getBoolean("enableUFSContainsState", false);
+  }
+
+  @Override
+  public boolean isMenuPersonalisationEnabled() {
+    return UserMenuDisplay.DISABLE != UserMenuDisplay.valueOf(resources.getString(
+        "displayUserFavoriteSpace", PersonalizationService.DEFAULT_MENU_DISPLAY_MODE.name()).
+        toUpperCase());
   }
 
   protected MainSessionController getMainSessionController() {
@@ -309,16 +320,16 @@ public class LookSilverpeasV5Helper implements LookHelper {
 
   @Override
   public boolean displayContextualPDC() {
-    return displayContextualPDC;
+    return shouldDisplayContextualPDC;
   }
 
   /*
    * (non-Javadoc)
-   * @see com.silverpeas.look.LookHelper#displaySpaceIcons()
+   * @see com.silverpeas.look.LookHelper#shouldDisplaySpaceIcons()
    */
   @Override
   public boolean displaySpaceIcons() {
-    return displaySpaceIcons;
+    return shouldDisplaySpaceIcons;
   }
 
   /*
@@ -355,7 +366,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
   @Override
   public int getNBConnectedUsers() {
     int nbConnectedUsers = 0;
-    if (displayConnectedUsers) {
+    if (shouldDisplayConnectedUsers) {
       // Remove the current user
       nbConnectedUsers = SessionManager.getInstance().getNbConnectedUsersList() - 1;
     }
@@ -573,7 +584,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
   public List<PublicationDetail> getValidPublications(NodePK nodePK) {
     List<PublicationDetail> publis = null;
     try {
-      publis = (List<PublicationDetail>) getPublicationBm().getDetailsByFatherPK(nodePK, null, true);
+      publis = (List<PublicationDetail>) getPublicationBm().getDetailsByFatherPK(nodePK, null,
+          true);
     } catch (RemoteException e) {
       SilverTrace.error("lookSilverpeasV5", "LookSilverpeasV5Helper.getPublications",
           "root.MSG_GEN_PARAM_VALUE", e);
@@ -594,7 +606,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
       try {
         publicationBm =
             ((PublicationBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBmHome.class)).create();
+                PublicationBmHome.class)).create();
       } catch (Exception e) {
         throw new EJBException(e);
       }
@@ -602,9 +614,9 @@ public class LookSilverpeasV5Helper implements LookHelper {
     return publicationBm;
   }
 
-  public String getSpaceHomePage(String spaceId, HttpServletRequest request) {
+  public String getSpaceHomePage(String spaceId, HttpServletRequest request)
+      throws UnsupportedEncodingException {
     SpaceInst spaceStruct = getOrganizationController().getSpaceInstById(spaceId);
-
     // Page d'accueil de l'espace = Composant
     if (spaceStruct != null
         && (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST)
@@ -628,9 +640,9 @@ public class LookSilverpeasV5Helper implements LookHelper {
       destination = getParsedDestination(destination, "%ST_USER_FULLNAME%",
           URLEncoder.encode(getMainSessionController().getCurrentUserDetail().getDisplayedName()));
       destination = getParsedDestination(destination, "%ST_USER_ID%",
-          URLEncoder.encode(getMainSessionController().getUserId()));
+          URLEncoder.encode(getMainSessionController().getUserId(), "UTF-8"));
       destination = getParsedDestination(destination, "%ST_SESSION_ID%",
-          URLEncoder.encode(request.getSession().getId()));
+          URLEncoder.encode(request.getSession().getId(), "UTF-8"));
 
       // !!!! Add the password : this is an uggly patch that use a session
       // variable set in the "AuthenticationServlet" servlet
@@ -647,7 +659,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     if (nLoginIndex != -1) {
       // Replace the keyword with the actual value
       String sParsed = sDestination.substring(0, nLoginIndex);
-      sParsed += sValue;
+      sParsed = sParsed + sValue;
       if (sDestination.length() > nLoginIndex + sKeyword.length()) {
         sParsed += sDestination.substring(nLoginIndex + sKeyword.length(), sDestination.length());
       }
@@ -660,16 +672,16 @@ public class LookSilverpeasV5Helper implements LookHelper {
    * @return user favorite space menu display mode
    */
   @Override
-  public String getDisplayUserFavoriteSpace() {
-    return displayUserFavoriteSpace;
+  public UserMenuDisplay getDisplayUserMenu() {
+    return displayUserMenu;
   }
 
   /**
-   * @return user favorite space menu display mode
+   * @param displayUserMenu
    */
   @Override
-  public void setDisplayUserFavoriteSpace(String displayUserFavoriteSpace) {
-    this.displayUserFavoriteSpace = displayUserFavoriteSpace;
+  public void setDisplayUserMenu(UserMenuDisplay displayUserMenu) {
+    this.displayUserMenu = displayUserMenu;
   }
 
   /**
@@ -682,6 +694,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
 
   /**
    * Returns a list of shortcuts to display on a page (home page, heading page...)
+   *
    * @param id identify the area of shorcuts
    * @param nb the number of shortcuts to retrieve
    * @return a List of Shorcut

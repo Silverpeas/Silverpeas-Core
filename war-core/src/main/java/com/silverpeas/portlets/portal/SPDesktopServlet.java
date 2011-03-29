@@ -603,7 +603,7 @@ public class SPDesktopServlet extends HttpServlet {
   private boolean isAnonymousUser(HttpServletRequest request) {
     HttpSession session = request.getSession();
     MainSessionController m_MainSessionCtrl =
-        (MainSessionController) session.getAttribute("SilverSessionController");
+        (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     GraphicElementFactory gef =
         (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
@@ -665,7 +665,7 @@ public class SPDesktopServlet extends HttpServlet {
   private MainSessionController getMainSessionController(HttpServletRequest request) {
     HttpSession session = request.getSession();
     MainSessionController m_MainSessionCtrl =
-        (MainSessionController) session.getAttribute("SilverSessionController");
+        (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 
     return m_MainSessionCtrl;
   }

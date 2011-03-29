@@ -82,7 +82,7 @@
 	 * First time, called by silverpeas : user information present into HTTP session
 	 */
 	if (terminal == null) {
-		MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute("SilverSessionController");
+		MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 		login = m_MainSessionCtrl.getCurrentUserDetail().getLogin();
 		String password = (String) session.getAttribute("Silverpeas_pwdForHyperlink");
 		

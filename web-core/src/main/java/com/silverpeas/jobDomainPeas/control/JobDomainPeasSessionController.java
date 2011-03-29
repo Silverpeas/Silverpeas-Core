@@ -1570,7 +1570,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public boolean isOnlyGroupManager() {
     return isGroupManager() && !getUserDetail().isAccessAdmin()
-        && !getUserDetail().isDomainAdminRestricted();
+        && !getUserDetail().isAccessDomainManager();
   }
 
   public boolean isGroupManagerOnCurrentGroup() throws JobDomainPeasException {

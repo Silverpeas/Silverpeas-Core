@@ -74,7 +74,7 @@ Frame frame = gef.getFrame();
 BrowseBar browseBar = window.getBrowseBar();
 OperationPane operationPane = window.getOperationPane();
 
-MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute("SilverSessionController");
+MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 String 					language 			= m_MainSessionCtrl.getFavoriteLanguage();
 ResourceLocator 		messages 			= new ResourceLocator("com.silverpeas.statistic.multilang.statistic", language);
 ResourceLocator 		generalMessage 		= GeneralPropertiesManager.getGeneralMultilang(language);

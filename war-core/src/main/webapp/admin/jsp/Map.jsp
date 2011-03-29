@@ -126,7 +126,7 @@ String[] m_asPrivateDomainsNames = null;
 String[] m_asPrivateDomainsIds = null;
 SpaceInst spaceInst = null;
 
-m_MainSessionCtrl = (MainSessionController) session.getAttribute("SilverSessionController");
+m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 
 if (m_MainSessionCtrl == null) {
     // No session controller in the request -> security exception

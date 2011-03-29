@@ -26,8 +26,14 @@ package com.silverpeas.form.fieldDisplayer;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.ecs.ElementContainer;
+import org.apache.ecs.html.TD;
+import org.apache.ecs.html.TR;
+import org.apache.ecs.html.Table;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -35,7 +41,6 @@ import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.contentManager.ContentManager;
@@ -46,13 +51,6 @@ import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import java.util.Iterator;
-import java.util.List;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.ecs.ElementContainer;
-import org.apache.ecs.html.TD;
-import org.apache.ecs.html.TR;
-import org.apache.ecs.html.Table;
 
 /**
  * A PdcPositionsFieldDisplayer is an object that prints out pdc positions for given axis.

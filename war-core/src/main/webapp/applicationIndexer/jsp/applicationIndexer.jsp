@@ -100,7 +100,7 @@ private String printSpaceAndSubSpaces(String spaceId, int depth, OrganizationCon
 <%
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
-MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute("SilverSessionController");
+MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 
 if (m_MainSessionCtrl == null || !"A".equals(m_MainSessionCtrl.getUserAccessLevel())) {
     // No session controller in the request -> security exception

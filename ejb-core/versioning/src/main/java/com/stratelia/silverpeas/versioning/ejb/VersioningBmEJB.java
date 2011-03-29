@@ -1408,8 +1408,8 @@ public class VersioningBmEJB implements SessionBean {
    * @return language by provided user id
    */
   protected String getDefaultUserLanguage(int userID) {
-    return SilverpeasServiceProvider.getPersonalizationService().getFavoriteLanguage(
-        String.valueOf(userID));
+    return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(
+        String.valueOf(userID)).getLanguage();
   }
 
   /**
@@ -1425,10 +1425,9 @@ public class VersioningBmEJB implements SessionBean {
       List<DocumentVersion> versions = VersioningDAO.getDocumentVersions(con, documentPK);
       result = versions.get(0);
     } catch (Exception re) {
-      throw new VersioningRuntimeException(
-          "VersioningBmEJB.getLastDocumentVersion",
-          SilverpeasRuntimeException.ERROR,
-          "versioning.GETTING_LAST_DOCUMENT_VERSION_FAILED", documentPK, re);
+      throw new VersioningRuntimeException("VersioningBmEJB.getLastDocumentVersion",
+          SilverpeasRuntimeException.ERROR, "versioning.GETTING_LAST_DOCUMENT_VERSION_FAILED",
+          documentPK, re);
     } finally {
       closeConnection(con);
     }
@@ -1447,10 +1446,9 @@ public class VersioningBmEJB implements SessionBean {
     try {
       result = VersioningDAO.getDocumentVersion(con, documentVersionPK);
     } catch (Exception re) {
-      throw new VersioningRuntimeException(
-          "VersioningBmEJB.getDocumentVersion",
-          SilverpeasRuntimeException.ERROR,
-          "versioning.GETTING_DOCUMENT_VERSION_FAILED", documentVersionPK, re);
+      throw new VersioningRuntimeException("VersioningBmEJB.getDocumentVersion",
+          SilverpeasRuntimeException.ERROR, "versioning.GETTING_DOCUMENT_VERSION_FAILED",
+          documentVersionPK, re);
     } finally {
       closeConnection(con);
     }

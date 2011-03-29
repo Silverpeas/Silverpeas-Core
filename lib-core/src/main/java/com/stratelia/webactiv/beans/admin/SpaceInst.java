@@ -37,7 +37,7 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 /**
  * The class SpaceInst is the representation in memory of a space
  */
-public class SpaceInst extends AbstractI18NBean implements Serializable, Comparable<SpaceInst> {
+public class SpaceInst extends AbstractI18NBean implements Serializable, Comparable<SpaceInst>, Cloneable {
 
   private static final long serialVersionUID = 4695928610067045964L;
   // First page possible types
@@ -49,28 +49,28 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
   final public static String STATUS_REMOVED = "R";
 
   /* Unique identifier of the space */
-  private String m_sId;
+  private String id;
 
   /* Unique identifier of the father of the space */
-  private String m_sDomainFatherId;
+  private String domainFatherId;
 
   /* Unique identifier of the space */
-  private String m_sName;
+  private String name;
 
   /* Describe the space */
-  private String m_sDescription;
+  private String description;
 
   /* User Id of the creator of the space */
-  private String m_sCreatorUserId;
+  private String creatorUserId;
 
   /* First page type of the space */
-  private int m_iFirstPageType;
+  private int firstPageType;
 
   /* First page extra param of the space */
-  private String m_sFirstPageExtraParam;
+  private String firstPageExtraParam;
 
   /* Space relative order */
-  private int m_iOrderNum;
+  private int orderNum;
   private Date createDate = null;
   private Date updateDate = null;
   private Date removeDate = null;
@@ -80,17 +80,17 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
   private UserDetail remover;
   private String updaterUserId;
   private String removerUserId;
-  private boolean isInheritanceBlocked = false;
+  private boolean inheritanceBlocked = false;
   private String look = null;
 
   /* Collection of components Instances */
-  private ArrayList<ComponentInst> m_alComponentInst;
+  private ArrayList<ComponentInst> components;
 
   /* Collection of space profiles Instances */
-  private ArrayList<SpaceProfileInst> m_alSpaceProfileInst;
+  private ArrayList<SpaceProfileInst> spaceProfiles;
 
   /* Array of space ids that are children of this space */
-  private String[] m_asSubSpaceIds;
+  private String[] subSpaceIds;
   private int level = 0;
   private boolean displaySpaceFirst = true;
   private boolean isPersonalSpace = false;
@@ -99,24 +99,24 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * Constructor
    */
   public SpaceInst() {
-    m_sId = "";
-    m_sDomainFatherId = "";
-    m_sName = "";
-    m_sDescription = "";
-    m_sCreatorUserId = "";
-    m_iFirstPageType = 0;
-    m_sFirstPageExtraParam = "";
-    m_iOrderNum = 0;
-    m_alComponentInst = new ArrayList<ComponentInst>();
-    m_alSpaceProfileInst = new ArrayList<SpaceProfileInst>();
-    m_asSubSpaceIds = new String[0];
+    id = "";
+    domainFatherId = "";
+    name = "";
+    description = "";
+    creatorUserId = "";
+    firstPageType = 0;
+    firstPageExtraParam = "";
+    orderNum = 0;
+    components = new ArrayList<ComponentInst>();
+    spaceProfiles = new ArrayList<SpaceProfileInst>();
+    subSpaceIds = new String[0];
     level = 0;
     displaySpaceFirst = true;
     isPersonalSpace = false;
   }
 
   public int compareTo(SpaceInst o) {
-    return m_iOrderNum - o.m_iOrderNum;
+    return orderNum - o.orderNum;
   }
 
   /**
@@ -124,7 +124,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @param sId new space id
    */
   public void setId(String sId) {
-    m_sId = sId;
+    id = sId;
   }
 
   /**
@@ -132,7 +132,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @return the requested space id
    */
   public String getId() {
-    return m_sId;
+    return id;
   }
 
   /**
@@ -140,7 +140,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @param sDomainFatherId The space father id
    */
   public void setDomainFatherId(String sDomainFatherId) {
-    m_sDomainFatherId = sDomainFatherId;
+    domainFatherId = sDomainFatherId;
   }
 
   /**
@@ -148,7 +148,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @return the space father id. If space has no father, returns an empty string.
    */
   public String getDomainFatherId() {
-    return m_sDomainFatherId;
+    return domainFatherId;
   }
 
   /**
@@ -156,7 +156,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @param sName The new space name
    */
   public void setName(String sName) {
-    m_sName = sName;
+    name = sName;
   }
 
   /**
@@ -164,7 +164,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @return the space name
    */
   public String getName() {
-    return m_sName;
+    return name;
   }
 
   public String getName(String language) {
@@ -190,7 +190,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @param sDescription The new space description
    */
   public void setDescription(String sDescription) {
-    m_sDescription = sDescription;
+    description = sDescription;
   }
 
   /**
@@ -198,7 +198,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @return The space description
    */
   public String getDescription() {
-    return m_sDescription;
+    return description;
   }
 
   public String getDescription(String language) {
@@ -219,7 +219,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @param sCreatorUserId The user id of person who created the space
    */
   public void setCreatorUserId(String sCreatorUserId) {
-    m_sCreatorUserId = sCreatorUserId;
+    creatorUserId = sCreatorUserId;
   }
 
   /**
@@ -227,7 +227,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @return The user id of person who created the space
    */
   public String getCreatorUserId() {
-    return m_sCreatorUserId;
+    return creatorUserId;
   }
 
   /**
@@ -235,7 +235,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @param iFirstPageType
    */
   public void setFirstPageType(int iFirstPageType) {
-    m_iFirstPageType = iFirstPageType;
+    firstPageType = iFirstPageType;
   }
 
   /**
@@ -243,7 +243,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @return The space first page type
    */
   public int getFirstPageType() {
-    return m_iFirstPageType;
+    return firstPageType;
   }
 
   /**
@@ -251,7 +251,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @param iOrderNum
    */
   public void setOrderNum(int iOrderNum) {
-    m_iOrderNum = iOrderNum;
+    orderNum = iOrderNum;
   }
 
   /**
@@ -259,7 +259,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @return
    */
   public int getOrderNum() {
-    return m_iOrderNum;
+    return orderNum;
   }
 
   /**
@@ -267,7 +267,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @param sFirstPageExtraParam
    */
   public void setFirstPageExtraParam(String sFirstPageExtraParam) {
-    m_sFirstPageExtraParam = sFirstPageExtraParam;
+    firstPageExtraParam = sFirstPageExtraParam;
   }
 
   /**
@@ -275,7 +275,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @return The space first page extra parameter
    */
   public String getFirstPageExtraParam() {
-    return m_sFirstPageExtraParam;
+    return firstPageExtraParam;
   }
 
   /**
@@ -284,9 +284,9 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    */
   public void setSubSpaceIds(String[] asSubSpaceIds) {
     if (asSubSpaceIds == null) {
-      m_asSubSpaceIds = new String[0];
+      subSpaceIds = new String[0];
     } else {
-      m_asSubSpaceIds = asSubSpaceIds;
+      subSpaceIds = asSubSpaceIds;
     }
   }
 
@@ -295,7 +295,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @return Array of String containing all the children space ids
    */
   public String[] getSubSpaceIds() {
-    return m_asSubSpaceIds;
+    return subSpaceIds;
   }
 
   /**
@@ -303,7 +303,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @return The number of components in that space
    */
   public int getNumComponentInst() {
-    return m_alComponentInst.size();
+    return components.size();
   }
 
   /**
@@ -312,7 +312,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @param componentInst component instance to be added
    */
   public void addComponentInst(ComponentInst componentInst) {
-    m_alComponentInst.add(componentInst);
+    components.add(componentInst);
   }
 
   /**
@@ -321,9 +321,9 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @param componentInst component instance to be removed
    */
   public void deleteComponentInst(ComponentInst componentInst) {
-    for (int nI = 0; nI < m_alComponentInst.size(); nI++) {
-      if (m_alComponentInst.get(nI).getName().equals(componentInst.getName())) {
-        m_alComponentInst.remove(nI);
+    for (int nI = 0; nI < components.size(); nI++) {
+      if (components.get(nI).getName().equals(componentInst.getName())) {
+        components.remove(nI);
         return;
       }
     }
@@ -334,7 +334,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @return The components in that space
    */
   public ArrayList<ComponentInst> getAllComponentsInst() {
-    return m_alComponentInst;
+    return components;
   }
 
   /**
@@ -342,7 +342,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * database, only in that spaceInst object !!!)
    */
   public void removeAllComponentsInst() {
-    m_alComponentInst = new ArrayList<ComponentInst>();
+    components = new ArrayList<ComponentInst>();
   }
 
   /**
@@ -351,10 +351,10 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @param componentInst component instance to be added
    */
   public ComponentInst getComponentInst(String sComponentName) {
-    if (!m_alComponentInst.isEmpty()) {
-      for (int nI = 0; nI < m_alComponentInst.size(); nI++) {
-        if (m_alComponentInst.get(nI).getName().equals(sComponentName)) {
-          return m_alComponentInst.get(nI);
+    if (!components.isEmpty()) {
+      for (int nI = 0; nI < components.size(); nI++) {
+        if (components.get(nI).getName().equals(sComponentName)) {
+          return components.get(nI);
         }
       }
     }
@@ -369,7 +369,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @return  
    */
   public ComponentInst getComponentInst(int nIndex) {
-    return m_alComponentInst.get(nIndex);
+    return components.get(nIndex);
   }
 
   /**
@@ -377,7 +377,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @return The number of space profiles in that space
    */
   public int getNumSpaceProfileInst() {
-    return m_alSpaceProfileInst.size();
+    return spaceProfiles.size();
   }
 
   /**
@@ -387,7 +387,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    */
   public void addSpaceProfileInst(SpaceProfileInst spaceProfileInst) {
     spaceProfileInst.setSpaceFatherId(getId());
-    m_alSpaceProfileInst.add(spaceProfileInst);
+    spaceProfiles.add(spaceProfileInst);
   }
 
   /**
@@ -396,10 +396,10 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @param spaceProfileInst space profile to be removed
    */
   public void deleteSpaceProfileInst(SpaceProfileInst spaceProfileInst) {
-    for (int nI = 0; nI < m_alSpaceProfileInst.size(); nI++) {
-      SpaceProfileInst profile = m_alSpaceProfileInst.get(nI);
+    for (int nI = 0; nI < spaceProfiles.size(); nI++) {
+      SpaceProfileInst profile = spaceProfiles.get(nI);
       if (profile.getId().equals(spaceProfileInst.getId())) {
-        m_alSpaceProfileInst.remove(nI);
+        spaceProfiles.remove(nI);
       }
     }
   }
@@ -409,7 +409,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @return The space profiles of that space
    */
   public ArrayList<SpaceProfileInst> getAllSpaceProfilesInst() {
-    return m_alSpaceProfileInst;
+    return spaceProfiles;
   }
 
   /**
@@ -417,7 +417,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * removed from database, only from that spaceInst object !!!)
    */
   public void removeAllSpaceProfilesInst() {
-    m_alSpaceProfileInst = new ArrayList<SpaceProfileInst>();
+    spaceProfiles = new ArrayList<SpaceProfileInst>();
   }
 
   /**
@@ -435,8 +435,8 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   private SpaceProfileInst getSpaceProfileInst(String sSpaceProfileName,
     boolean inherited) {
-    for (int nI = 0; nI < m_alSpaceProfileInst.size(); nI++) {
-      SpaceProfileInst profile = m_alSpaceProfileInst.get(nI);
+    for (int nI = 0; nI < spaceProfiles.size(); nI++) {
+      SpaceProfileInst profile = spaceProfiles.get(nI);
       if (profile.isInherited() == inherited
         && profile.getName().equals(sSpaceProfileName)) {
         return profile;
@@ -451,13 +451,13 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @param nIndex position of requested space profile in space profile list
    */
   public SpaceProfileInst getSpaceProfileInst(int nIndex) {
-    return m_alSpaceProfileInst.get(nIndex);
+    return spaceProfiles.get(nIndex);
   }
 
   public List<SpaceProfileInst> getInheritedProfiles() {
     List<SpaceProfileInst> profiles = new ArrayList<SpaceProfileInst>();
-    for (int nI = 0; nI < m_alSpaceProfileInst.size(); nI++) {
-      SpaceProfileInst profile = m_alSpaceProfileInst.get(nI);
+    for (int nI = 0; nI < spaceProfiles.size(); nI++) {
+      SpaceProfileInst profile = spaceProfiles.get(nI);
       if (profile.isInherited()) {
         profiles.add(profile);
       }
@@ -468,8 +468,8 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   public List<SpaceProfileInst> getProfiles() {
     List<SpaceProfileInst> profiles = new ArrayList<SpaceProfileInst>();
-    for (int nI = 0; nI < m_alSpaceProfileInst.size(); nI++) {
-      SpaceProfileInst profile = m_alSpaceProfileInst.get(nI);
+    for (int nI = 0; nI < spaceProfiles.size(); nI++) {
+      SpaceProfileInst profile = spaceProfiles.get(nI);
       if (!profile.isInherited()) {
         profiles.add(profile);
       }
@@ -540,11 +540,11 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
   }
 
   public boolean isInheritanceBlocked() {
-    return isInheritanceBlocked;
+    return inheritanceBlocked;
   }
 
   public void setInheritanceBlocked(boolean isInheritanceBlocked) {
-    this.isInheritanceBlocked = isInheritanceBlocked;
+    this.inheritanceBlocked = isInheritanceBlocked;
   }
 
   public String getLook() {
@@ -603,24 +603,24 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
     if (obj instanceof SpaceInst) {
       SpaceInst other = (SpaceInst) obj;
       return Objects.equal(other.createDate, createDate)
-        && Objects.equal(other.m_sId, m_sId)
+        && Objects.equal(other.id, id)
         && Objects.equal(other.level, level)
         && Objects.equal(other.look, look)
-        && Objects.equal(other.m_iFirstPageType, m_iFirstPageType)
-        && Objects.equal(other.m_iOrderNum, m_iOrderNum)
-        && Objects.equal(other.m_sCreatorUserId, m_sCreatorUserId)
-        && Objects.equal(other.m_sDescription, m_sDescription)
-        && Objects.equal(other.m_sDomainFatherId, m_sDomainFatherId)
-        && Objects.equal(other.m_sFirstPageExtraParam, m_sFirstPageExtraParam)
-        && Objects.equal(other.m_sName, m_sName);
+        && Objects.equal(other.firstPageType, firstPageType)
+        && Objects.equal(other.orderNum, orderNum)
+        && Objects.equal(other.creatorUserId, creatorUserId)
+        && Objects.equal(other.description, description)
+        && Objects.equal(other.domainFatherId, domainFatherId)
+        && Objects.equal(other.firstPageExtraParam, firstPageExtraParam)
+        && Objects.equal(other.name, name);
     }
     return false;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(createDate, m_sId, level, look, m_iFirstPageType, m_iOrderNum, 
-      m_sCreatorUserId, m_sDescription, m_sDomainFatherId, m_sFirstPageExtraParam, m_sName);
+    return Objects.hashCode(createDate, id, level, look, firstPageType, orderNum,
+        creatorUserId, description, domainFatherId, firstPageExtraParam, name);
   }
 
   @Override
@@ -628,13 +628,13 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
     SpaceInst clone =  new SpaceInst();
     
     // clone basic information
-    clone.setDescription(m_sDescription);
+    clone.setDescription(description);
     clone.setDisplaySpaceFirst(displaySpaceFirst);
-    clone.setFirstPageExtraParam(m_sFirstPageExtraParam);
-    clone.setFirstPageType(m_iFirstPageType);
-    clone.setInheritanceBlocked(isInheritanceBlocked);
+    clone.setFirstPageExtraParam(firstPageExtraParam);
+    clone.setFirstPageType(firstPageType);
+    clone.setInheritanceBlocked(inheritanceBlocked);
     clone.setLook(look);
-    clone.setName(m_sName);
+    clone.setName(name);
     clone.setPersonalSpace(isPersonalSpace);
     
     // clone profiles
@@ -657,11 +657,11 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
   
   public void removeInheritedProfiles() {
     ArrayList<SpaceProfileInst> newProfiles = new ArrayList<SpaceProfileInst>();
-    for (SpaceProfileInst profile : m_alSpaceProfileInst) {
+    for (SpaceProfileInst profile : spaceProfiles) {
       if (!profile.isInherited()) {
         newProfiles.add(profile);
       }
     }
-    m_alSpaceProfileInst = newProfiles;
+    spaceProfiles = newProfiles;
   }
 }

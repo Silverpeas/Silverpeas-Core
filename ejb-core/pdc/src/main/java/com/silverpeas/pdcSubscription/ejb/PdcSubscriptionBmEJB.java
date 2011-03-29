@@ -52,6 +52,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import javax.ejb.CreateException;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.sql.Connection;
@@ -70,8 +71,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
   /**
    * Remote interface method
    */
-  public ArrayList getPDCSubscriptionByUserId(int userId)
-      throws RemoteException {
+  public ArrayList getPDCSubscriptionByUserId(int userId) {
     Connection conn = null;
     ArrayList result = null;
 
@@ -146,8 +146,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
   /**
    * Remote interface method
    */
-  public void updatePDCSubscription(PDCSubscription subscription)
-      throws RemoteException {
+  public void updatePDCSubscription(PDCSubscription subscription) {
     SilverTrace.info("PdcSubscription",
         "PdcSubscriptionBmEJB.updatePDCSubscription()",
         "root.MSG_GEN_ENTER_METHOD", "subscription = "
@@ -170,7 +169,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
   /**
    * Remote interface method
    */
-  public void removePDCSubscriptionById(int id) throws RemoteException {
+  public void removePDCSubscriptionById(int id) {
     Connection conn = null;
 
     try {
@@ -189,9 +188,8 @@ public class PdcSubscriptionBmEJB implements SessionBean {
   /**
    * Remote interface method
    */
-  public void removePDCSubscriptionById(int[] ids) throws RemoteException {
+  public void removePDCSubscriptionById(int[] ids) {
     Connection conn = null;
-
     try {
       conn = openConnection();
       PdcSubscriptionDAO.removePDCSubscriptionById(conn, ids);
@@ -212,8 +210,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
    * @param axisId   the axis to be checked
    * @param axisName the name of the axis
    */
-  public void checkAxisOnDelete(int axisId, String axisName)
-      throws RemoteException {
+  public void checkAxisOnDelete(int axisId, String axisName) {
     Connection conn = null;
     List subscriptions = null;
 
@@ -222,8 +219,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
       // found all subscription uses axis provided
       subscriptions = PdcSubscriptionDAO.getPDCSubscriptionByUsedAxis(conn,
           axisId);
-      if (subscriptions == null
-          || (subscriptions != null && subscriptions.size() <= 0)) {
+      if (subscriptions == null || (subscriptions != null && subscriptions.isEmpty())) {
         return;
       }
       int[] pdcIds = new int[subscriptions.size()];
@@ -240,11 +236,9 @@ public class PdcSubscriptionBmEJB implements SessionBean {
       PdcSubscriptionDAO.removePDCSubscriptionById(conn, pdcIds);
 
     } catch (Exception e) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionBmEJB.checkAxisOnDelete",
-          PdcSubscriptionRuntimeException.ERROR,
-          "PdcSubscription.EX_CHECK_AXIS_FALIED", subscriptions, e);
-
+      throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.checkAxisOnDelete",
+          PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.EX_CHECK_AXIS_FALIED",
+          subscriptions, e);
     } finally {
       closeConnection(conn);
     }
@@ -269,8 +263,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
       conn = openConnection();
       subscriptions = PdcSubscriptionDAO.getPDCSubscriptionByUsedAxis(conn,
           axisId);
-      if (subscriptions == null
-          || (subscriptions != null && subscriptions.size() <= 0)) {
+      if (subscriptions == null || (subscriptions != null && subscriptions.isEmpty())) {
         return;
       }
 
@@ -285,8 +278,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
         // check if any criteria value has been
         // deleted
         if (checkSubscriptionRemove(subscription, axisId, oldPath, newPath)) {
-          adminId = getFirstAdministrator(ocontroller, subscription
-              .getOwnerId());
+          adminId = getFirstAdministrator(ocontroller, subscription.getOwnerId());
           sendDeleteNotif(subscription, axisName, true, adminId, pathInfo);
           removeIds[removeLength] = subscription.getId();
           removeLength++;
@@ -298,11 +290,9 @@ public class PdcSubscriptionBmEJB implements SessionBean {
       PdcSubscriptionDAO.removePDCSubscriptionById(conn, ids);
 
     } catch (Exception e) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionBmEJB.checkValueOnDelete",
-          PdcSubscriptionRuntimeException.ERROR,
-          "PdcSubscription.EX_CHECK_AXIS_FALIED", subscriptions, e);
-
+      throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.checkValueOnDelete",
+          PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.EX_CHECK_AXIS_FALIED",
+          subscriptions, e);
     } finally {
       closeConnection(conn);
     }
@@ -316,8 +306,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
    * @param componentId    component where classify event occures
    * @param silverObjectid object that was classified
    */
-  public void checkSubscriptions(List classifyValues, String componentId,
-      int silverObjectid) throws RemoteException {
+  public void checkSubscriptions(List classifyValues, String componentId, int silverObjectid) {
     SilverTrace.info("PdcSubscription",
         "PdcSubscriptionBmEJB.checkSubscriptions()",
         "root.MSG_GEN_ENTER_METHOD", "classifyValues = " + classifyValues
@@ -326,7 +315,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
 
     Connection conn = null;
     SilverContentInterface silverContent = null;
-    ArrayList spaceAndInstanceNames = null;
+    List<String> spaceAndInstanceNames = null;
     int firstAdminId = -1;
     OrganizationController organizationController = new OrganizationController();
 
@@ -343,17 +332,15 @@ public class PdcSubscriptionBmEJB implements SessionBean {
         if (isCorrespondingSubscription(subscription, classifyValues)) {
           if (silverContent == null) {
             silverContent = getSilverContent(componentId, silverObjectid);
-            spaceAndInstanceNames = getSpaceAndInstanceNames(componentId,
-                organizationController);
+            spaceAndInstanceNames = getSpaceAndInstanceNames(componentId, organizationController);
             firstAdminId = getFirstAdministrator(organizationController,
                 subscription.getOwnerId());
           }
           // The current subscription matches the new classification.
           // Now, we have to test if subscription's owner is allowed to access
           // the classified item.
-          String userId = new Integer(subscription.getOwnerId()).toString();
-          String[] roles = organizationController.getUserProfiles(userId,
-              componentId);
+          String userId = String.valueOf(subscription.getOwnerId());
+          String[] roles = organizationController.getUserProfiles(userId, componentId);
           if (roles.length > 0) {
             // if user have got at least one role, sends a notification to the
             // user specified in pdcSubscription
@@ -377,13 +364,11 @@ public class PdcSubscriptionBmEJB implements SessionBean {
   /**
    * get the silverContent object according to the given silverObjectid
    *
-   * @param componentId            - the component where is classified the silverContent
-   * @param silverObjectid         - the unique identifier of the silverContent
-   * @param organizationController - the OrganizationController
+   * @param componentId    - the component where is classified the silverContent
+   * @param silverObjectId - the unique identifier of the silverContent
    * @return SilverContentInterface the object which has been classified
    */
-  private SilverContentInterface getSilverContent(String componentId,
-      int silverObjectId) {
+  private SilverContentInterface getSilverContent(String componentId, int silverObjectId) {
     ArrayList silverobjectIds = new ArrayList();
     silverobjectIds.add(new Integer(silverObjectId));
 
@@ -418,16 +403,15 @@ public class PdcSubscriptionBmEJB implements SessionBean {
    * @param organizationController - the OrganizationController
    * @return ArrayList 1 - spaceName 2 - instanceName 3 - spaceId
    */
-  private ArrayList getSpaceAndInstanceNames(String componentId,
+  private List<String> getSpaceAndInstanceNames(String componentId,
       OrganizationController organizationController) {
-    ComponentInst componentInstance = organizationController
-        .getComponentInst(componentId);
+    ComponentInst componentInstance = organizationController.getComponentInst(componentId);
     String instanceName = componentInstance.getLabel();
     String workSpaceId = componentInstance.getDomainFatherId();
     SpaceInst spaceInst = organizationController.getSpaceInstById(workSpaceId);
     String spaceName = spaceInst.getName();
 
-    ArrayList spaceAndInstanceNames = new ArrayList();
+    List<String> spaceAndInstanceNames = new ArrayList<String>();
     spaceAndInstanceNames.add(spaceName);
     spaceAndInstanceNames.add(instanceName);
     spaceAndInstanceNames.add(workSpaceId);
@@ -616,9 +600,8 @@ public class PdcSubscriptionBmEJB implements SessionBean {
    * Sends a notification when subscription criterias math a new content classified
    */
   protected void sendSubscriptionNotif(PDCSubscription subscription,
-      ArrayList spaceAndInstanceNames, String componentId,
-      SilverContentInterface silverContent, int fromUserId)
-      throws NotificationManagerException {
+      List<String> spaceAndInstanceNames, String componentId, SilverContentInterface silverContent,
+      int fromUserId) throws NotificationManagerException {
     final int userID = subscription.getOwnerId();
     final String subscriptionName = subscription.getName();
     final java.util.Date classifiedDate = new java.util.Date();
@@ -628,16 +611,22 @@ public class PdcSubscriptionBmEJB implements SessionBean {
     if (silverContent != null) {
       String contentUrl = silverContent.getURL();
       String contentName = silverContent.getName();
-      documentUrl = "";
       if (contentUrl != null) {
-        documentUrl = "/RpdcSearch/jsp/GlobalContentForward?contentURL="
-            + URLEncoder.encode(contentUrl) + "&componentId=" + componentId;
+        StringBuilder documentUrlBuffer = new StringBuilder().append(
+            "/RpdcSearch/jsp/GlobalContentForward?contentURL=");
+        try {
+          documentUrlBuffer.append(URLEncoder.encode(contentUrl, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+          documentUrlBuffer.append(URLEncoder.encode(contentUrl));
+        }
+        documentUrlBuffer.append("&componentId=").append(componentId);
+        documentUrl = documentUrlBuffer.toString();
       }
       documentName = (contentName != null) ? contentName : "";
     }
 
-    String spaceName = (String) spaceAndInstanceNames.get(0);
-    String instanceName = (String) spaceAndInstanceNames.get(1);
+    String spaceName = spaceAndInstanceNames.get(0);
+    String instanceName = spaceAndInstanceNames.get(1);
 
     sendNotification(userID, fromUserId, subscriptionName, instanceName,
         componentId, spaceName, classifiedDate, "standartMessage", documentUrl,
@@ -649,6 +638,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
    *
    * @return Connection to use in all ejb db operations
    */
+
   protected Connection openConnection() {
     try {
       Connection con = DBUtil
@@ -721,8 +711,8 @@ public class PdcSubscriptionBmEJB implements SessionBean {
    * @return user preferred language by userid provided
    */
   protected String getDefaultUserLanguage(int userID) {
-    return SilverpeasServiceProvider.getPersonalizationService().getFavoriteLanguage(
-        String.valueOf(userID));
+    return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(
+        String.valueOf(userID)).getLanguage();
   }
 
   /**
@@ -732,7 +722,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
     final StringBuffer res = new StringBuffer();
     for (int i = 0; i < pathInfos.size(); i++) {
       if (i != 0) {
-        res.append("/");
+        res.append('/');
       }
       String value = (String) ((List) pathInfos.get(i)).get(0);
       res.append(value);

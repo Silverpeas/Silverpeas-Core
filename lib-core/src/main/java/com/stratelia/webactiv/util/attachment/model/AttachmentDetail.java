@@ -46,7 +46,7 @@ import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
  * Class declaration
  * @author
  */
-public final class AttachmentDetail extends AbstractI18NBean implements Serializable, MimeTypes {
+public final class AttachmentDetail extends AbstractI18NBean implements Serializable, MimeTypes, Cloneable {
 
   private static final long serialVersionUID = 5441809463555598057L;
   public static final String ATTACHMENTS_FOLDER = "attachments";

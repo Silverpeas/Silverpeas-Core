@@ -23,6 +23,7 @@
  */
 package com.silverpeas.personalization.dao;
 
+import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
 import org.dbunit.operation.DatabaseOperation;
 import org.dbunit.dataset.ReplacementDataSet;
@@ -74,7 +75,7 @@ public class PersonalizationDetailDaoTest {
   public void testGetPersonalizedDetail() throws Exception {
     String userId = "1000";
     UserPreferences expectedDetail = new UserPreferences(userId, "fr", "Initial", "", false,
-        true, true);
+        true, true, UserMenuDisplay.DISABLE);
     UserPreferences detail = dao.readByPrimaryKey(userId);
     assertThat(detail, notNullValue());
     assertThat(detail, is(expectedDetail));
@@ -82,14 +83,14 @@ public class PersonalizationDetailDaoTest {
     userId = "1010";
     detail = dao.readByPrimaryKey(userId);
     assertThat(detail, notNullValue());
-    expectedDetail = new UserPreferences(userId, "en", "Silverpeas", "WA47", false, true, true);
+    expectedDetail = new UserPreferences(userId, "en", "Silverpeas", "WA47", false, true, true,  UserMenuDisplay.ALL);
     assertThat(detail, is(expectedDetail));
   }
 
   @Test
   public void testInsertPersonalizeDetail() throws Exception {
     UserPreferences expectedDetail = new UserPreferences("1020", "fr", "Test", "WA500", false,
-        false, false);
+        false, false, UserMenuDisplay.BOOKMARKS);
     dao.save(expectedDetail);
     UserPreferences detail = dao.readByPrimaryKey("1020");
     assertThat(detail, notNullValue());

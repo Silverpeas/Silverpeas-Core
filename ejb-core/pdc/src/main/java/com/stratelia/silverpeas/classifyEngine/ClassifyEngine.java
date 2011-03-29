@@ -35,6 +35,7 @@ import java.sql.SQLException;
 
 import java.text.SimpleDateFormat;
 
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.DBUtil;
@@ -46,7 +47,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * unclassifying and searching SilverObjetIds Assumption : The SilverObjetIds processed are int
  * values from 0 to n The axis processed are int values from 0 to n
  */
-public class ClassifyEngine extends Object {
+public class ClassifyEngine implements Cloneable {
   // Maximum number of axis processed by the classifyEngine (from properties)
 
   static private int nbMaxAxis = 0;
@@ -61,8 +62,6 @@ public class ClassifyEngine extends Object {
   // GetSinglePertinentAxis Cache
   static private Hashtable<String, PertinentAxis> m_hSinglePertinentAxis =
       new Hashtable<String, PertinentAxis>(0);
-  // the date format used in database to represent a date
-  static private SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
 
   // Init Function
   static {
@@ -70,7 +69,7 @@ public class ClassifyEngine extends Object {
     ResourceLocator res = new ResourceLocator(
         "com.stratelia.silverpeas.classifyEngine.ClassifyEngine", "");
     String sMaxAxis = res.getString("MaxAxis");
-    nbMaxAxis = new Integer(sMaxAxis).intValue();
+    nbMaxAxis = Integer.parseInt(sMaxAxis);
     try {
       m_anRegisteredAxis = loadRegisteredAxis();
     } catch (ClassifyEngineException e) {
@@ -698,7 +697,7 @@ public class ClassifyEngine extends Object {
       // Open the connection
       connection = DBUtil.makeConnection(m_dbName);
 
-      String today = formatter.format(new java.util.Date());
+      String today = DateUtil.today2SQLDate();
 
       // build the statement to get the SilverObjectIds
       String sSQLStatement = SQLStatement.buildFindByCriteriasStatementByJoin(
@@ -714,12 +713,12 @@ public class ClassifyEngine extends Object {
       // works on dates
       if ((beforeDate != null && beforeDate.length() > 0)
           && (afterDate != null && afterDate.length() > 0)) {
-        prepStmt.setDate(1, new Date(formatter.parse(beforeDate).getTime()));
-        prepStmt.setDate(2, new Date(formatter.parse(afterDate).getTime()));
+        prepStmt.setDate(1, new Date(DateUtil.parseDate(beforeDate).getTime()));
+        prepStmt.setDate(2, new Date(DateUtil.parseDate(afterDate).getTime()));
       } else if (beforeDate != null && beforeDate.length() > 0) {
-        prepStmt.setDate(1, new Date(formatter.parse(beforeDate).getTime()));
+        prepStmt.setDate(1, new Date(DateUtil.parseDate(beforeDate).getTime()));
       } else if (afterDate != null && afterDate.length() > 0) {
-        prepStmt.setDate(1, new Date(formatter.parse(afterDate).getTime()));
+        prepStmt.setDate(1, new Date(DateUtil.parseDate(afterDate).getTime()));
       }
       SilverTrace.debug("classifyEngine",
           "ClassifyEngine.findSilverOjectByCriterias",
@@ -1095,7 +1094,7 @@ public class ClassifyEngine extends Object {
       // Open the connection
       connection = DBUtil.makeConnection(m_dbName);
 
-      String today = formatter.format(new java.util.Date());
+      String today = DateUtil.today2SQLDate();
 
       // Call the search On axis one by one
       ArrayList<PertinentAxis> alPertinentAxis = new ArrayList<PertinentAxis>();
@@ -1179,7 +1178,7 @@ public class ClassifyEngine extends Object {
       // Open the connection
       connection = DBUtil.makeConnection(m_dbName);
 
-      String today = formatter.format(new java.util.Date());
+      String today = DateUtil.today2SQLDate();
 
       // Call the search On axis one by one
       ArrayList<PertinentAxis> alPertinentAxis = new ArrayList<PertinentAxis>();
@@ -1211,7 +1210,7 @@ public class ClassifyEngine extends Object {
       List alCriterias, int nAxisId, String sRootValue,
       JoinStatement joinStatementAllPositions) throws SQLException,
       ClassifyEngineException {
-    String today = formatter.format(new java.util.Date());
+    String today = DateUtil.today2SQLDate();
     return getSinglePertinentAxisByJoin(connection, alCriterias, nAxisId,
         sRootValue, joinStatementAllPositions, today);
   }
@@ -1334,7 +1333,7 @@ public class ClassifyEngine extends Object {
       // Open the connection
       connection = DBUtil.makeConnection(m_dbName);
 
-      String today = formatter.format(new java.util.Date());
+      String today = DateUtil.today2SQLDate();
 
       // Build the statement
       String sSQLStatement = SQLStatement.buildGetPertinentValueStatement(
@@ -1405,7 +1404,7 @@ public class ClassifyEngine extends Object {
       // Open the connection
       connection = DBUtil.makeConnection(m_dbName);
 
-      String today = formatter.format(new java.util.Date());
+      String today = DateUtil.today2SQLDate();
 
       // Build the statement
       String sSQLStatement = SQLStatement.buildGetPertinentValueByJoinStatement(alCriterias, this.
@@ -1481,7 +1480,7 @@ public class ClassifyEngine extends Object {
       // Open the connection
       connection = DBUtil.makeConnection(m_dbName);
 
-      String today = formatter.format(new java.util.Date());
+      String today = DateUtil.today2SQLDate();
 
       // Build the statement
       String sSQLStatement = SQLStatement.buildGetObjectValuePairsByJoinStatement(alCriterias, this.

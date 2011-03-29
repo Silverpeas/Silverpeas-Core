@@ -46,7 +46,7 @@ public String getMessage(String messageName) {
 }
 %>
 <%
-  MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute("SilverSessionController");
+  MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
   messageBundle = new ResourceLocator("com.stratelia.silverpeas.portlet.multilang.portletBundle", m_MainSessionCtrl.getFavoriteLanguage());
   GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 %>

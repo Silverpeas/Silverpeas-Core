@@ -46,7 +46,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-    MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute("SilverSessionController");
+    MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     ClipboardSessionController clipboardSC = (ClipboardSessionController) request.getAttribute("clipboardScc");
     if (clipboardSC != null) clipboardSC.doIdle(Integer.parseInt(clipboardSC.getIntervalInSec()));
 

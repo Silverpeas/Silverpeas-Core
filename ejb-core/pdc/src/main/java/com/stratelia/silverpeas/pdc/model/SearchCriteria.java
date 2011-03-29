@@ -29,7 +29,7 @@ import com.stratelia.silverpeas.classifyEngine.Criteria;
 /**
  * @author Nicolas EYSSERIC
  */
-public class SearchCriteria extends Criteria implements java.io.Serializable {
+public class SearchCriteria extends Criteria implements java.io.Serializable, Cloneable {
 
   /**
    * Class version identifier

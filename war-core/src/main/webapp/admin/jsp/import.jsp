@@ -44,7 +44,7 @@
 // Ze graffik factory
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
-MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute("SilverSessionController");
+MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MainSessionController);
 
 String language = m_MainSessionCtrl.getFavoriteLanguage();
 ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(language);

@@ -26,12 +26,15 @@ package com.silverpeas.look;
 
 import java.util.List;
 
+import com.silverpeas.personalization.UserMenuDisplay;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 public interface LookHelper {
+
+  public final String SESSION_ATT = "Silverpeas_LookHelper";
 
   public abstract String getSpaceId();
 
@@ -44,6 +47,8 @@ public interface LookHelper {
   public abstract String getComponentId();
 
   public abstract void setComponentId(String componentId);
+
+  public abstract boolean isMenuPersonalisationEnabled();
 
   /**
    * @param spaceId can be id of a space or a subspace
@@ -94,10 +99,6 @@ public interface LookHelper {
 
   public abstract boolean isBackOfficeVisible();
 
-  /**
-   * @param componentIds - a String like that kmelia12, toolbox35,
-   * @return a List of ComponentInst available to current user
-   */
   public abstract List<TopItem> getTopItems();
 
   public abstract List<String> getTopSpaceIds();
@@ -118,9 +119,9 @@ public interface LookHelper {
 
   public abstract List<PublicationDetail> getValidPublications(NodePK nodePK);
 
-  public abstract String getDisplayUserFavoriteSpace();
+  public abstract UserMenuDisplay getDisplayUserMenu();
 
-  public abstract void setDisplayUserFavoriteSpace(String userMenuDisplayMode);
+  public abstract void setDisplayUserMenu(UserMenuDisplay userMenuDisplayMode);
 
   public abstract boolean isEnableUFSContainsState();
 }
