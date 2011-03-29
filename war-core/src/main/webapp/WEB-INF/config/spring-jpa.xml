@@ -6,11 +6,11 @@
        xmlns:jdbc="http://www.springframework.org/schema/jdbc"
        xmlns:hades="http://schemas.synyx.org/hades"
        xsi:schemaLocation="
-	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
-	http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
-	http://schemas.synyx.org/hades http://schemas.synyx.org/hades/hades.xsd">
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+  http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+  http://schemas.synyx.org/hades http://schemas.synyx.org/hades/hades.xsd">
 
   <context:annotation-config/>
 
@@ -20,12 +20,29 @@
 
   <bean id="jpaTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
     <property name="entityManagerFactory" ref="entityManagerFactory"/>
-  </bean>
+  </bean>  
+  
+  <bean id="pupp" class="com.silverpeas.jpa.MergingPersistenceUnitPostProcessor"/>
+
+  <bean id="pum" class="org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager">
+    <property name="persistenceXmlLocations">
+      <list>
+        <value>classpath*:META-INF/persistence.xml</value>
+      </list>
+    </property>
+    <property name="defaultDataSource" ref="myDataSource"/>
+    <property name="persistenceUnitPostProcessors">
+      <list>
+        <ref bean="pupp"/>
+      </list>
+    </property>
+    </bean>
 
   <bean id="entityManagerFactory"
         class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-    <property name="dataSource" ref="dataSource"/>
-    <property name="persistenceUnitName" value="personalization-pu"/>
+    <property name="dataSource" ref="myDataSource" />
+    <property name="persistenceUnitManager" ref="pum"/>
+    <property name="persistenceUnitName" value="silverpeas-pu"/>
     <property name="jpaVendorAdapter">
       <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
         <property name="showSql" value="false"/>
