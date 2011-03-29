@@ -109,7 +109,7 @@ else if (spaceGoTo != null)
 
 SilverTrace.info("authentication", "autoRedirect.jsp", "root.MSG_GEN_PARAM_VALUE", "componentId = "+componentId+", spaceId = "+spaceId);
 
-MainSessionController	m_MainSessionCtrl	= (MainSessionController) session.getAttribute("SilverSessionController");
+MainSessionController	m_MainSessionCtrl	= (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 GraphicElementFactory 	gef 				= (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
 //L'utilisateur n'est pas connect� ou est connect� en anonyme. Il retourne � la page de login.

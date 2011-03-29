@@ -30,23 +30,19 @@
 <%@ include file="importFrameSet.jsp" %>
 
 <%
-String strGoToNew 	= (String) session.getValue("gotoNew");
+String strGoToNew 	= (String) session.getAttribute("gotoNew");
 String spaceId 		= request.getParameter("SpaceId");
 String subSpaceId 	= request.getParameter("SubSpaceId");
-String fromTopBar 	= request.getParameter("FromTopBar");
 String componentId	= request.getParameter("ComponentId");
 String login		= request.getParameter("Login");
 
-LookSilverpeasV5Helper 	helper = (LookSilverpeasV5Helper) session.getAttribute("Silverpeas_LookHelper");
-
-/*System.out.println("frameBottom : spaceId = "+spaceId);
-System.out.println("frameBottom : componentId = "+componentId);*/
+LookSilverpeasV5Helper 	helper = (LookSilverpeasV5Helper) session.getAttribute(LookSilverpeasV5Helper.SESSION_ATT);
 
 ResourceLocator rsc = gef.getFavoriteLookSettings();
 int framesetWidth = Integer.parseInt(rsc.getString("domainsBarFramesetWidth"));
 
 String paramsForDomainsBar = "";
-if (fromTopBar != null && fromTopBar.equals("1")) {
+if ("1".equals(request.getParameter("FromTopBar"))) {
 	paramsForDomainsBar = (spaceId == null) ? "" : "?privateDomain="+spaceId+"&privateSubDomain="+subSpaceId+"&FromTopBar=1";
 } 
 else if (componentId != null) 
@@ -56,17 +52,6 @@ else if (componentId != null)
 else
 {
 	paramsForDomainsBar = "?privateDomain="+spaceId;
-	/*if (spaceId != null && spaceId.length() > 0 && !"null".equals(spaceId))
-	{
-		SpaceInstLight rootSpace = m_MainSessionCtrl.getOrganizationController().getRootSpace(spaceId);
-		String rootSpaceId = "";
-		if (rootSpace != null)
-			rootSpaceId = rootSpace.getFullId();
-		
-		paramsForDomainsBar = "?privateDomain="+rootSpaceId;
-		if (!rootSpaceId.equals(spaceId))
-			paramsForDomainsBar += "&privateSubDomain="+spaceId;
-	}*/
 }
 
 //Allow to force a page only on login and when user clicks on logo
@@ -101,10 +86,10 @@ else if (strGoToNew==null)
 
 //System.out.println("frameBottom : frameURL = "+frameURL);
 
-session.putValue("goto",null);
-session.putValue("gotoNew", null);
-session.putValue("RedirectToComponentId", null);
-session.putValue("RedirectToSpaceId", null);
+session.removeAttribute("goto");
+session.removeAttribute("gotoNew");
+session.removeAttribute("RedirectToComponentId");
+session.removeAttribute("RedirectToSpaceId");
 %>
 
 

@@ -37,6 +37,7 @@ import javax.servlet.http.HttpSession;
 
 import com.silverpeas.ical.ExportIcalManager;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.Domain;
@@ -44,7 +45,7 @@ import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 public class SubscribeAgenda extends HttpServlet {
-  
+
   private static final long serialVersionUID = -7864790793422182001L;
   HttpSession session;
   PrintWriter out;
@@ -116,9 +117,8 @@ public class SubscribeAgenda extends HttpServlet {
 
   private MainSessionController getMainSessionController(HttpServletRequest req) {
     HttpSession session = req.getSession(true);
-    MainSessionController mainSessionCtrl = (MainSessionController) session
-        .getAttribute("SilverSessionController");
-    return mainSessionCtrl;
+    return (MainSessionController) session.getAttribute(
+        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
   }
 
   private boolean isUserLogin(HttpServletRequest req) {
@@ -128,12 +128,11 @@ public class SubscribeAgenda extends HttpServlet {
   private void objectNotFound(HttpServletRequest req, HttpServletResponse res)
       throws IOException {
     boolean isLoggedIn = isUserLogin(req);
-    if (!isLoggedIn)
+    if (!isLoggedIn) {
       res.sendRedirect("/weblib/notFound.html");
-    else
-      res.sendRedirect(GeneralPropertiesManager.getGeneralResourceLocator()
-          .getString("ApplicationURL")
-          + "/admin/jsp/documentNotFound.jsp");
+    } else {
+      res.sendRedirect(URLManager.getApplicationURL() + "/admin/jsp/documentNotFound.jsp");
+    }
   }
 
 }

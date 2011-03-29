@@ -81,7 +81,7 @@ public class AjaxServlet extends HttpServlet {
 
   private String getUserId(HttpServletRequest req) {
     MainSessionController msc =
-        (MainSessionController) req.getSession().getAttribute("SilverSessionController");
+        (MainSessionController) req.getSession().getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     return msc.getCurrentUserDetail().getId();
   }
 

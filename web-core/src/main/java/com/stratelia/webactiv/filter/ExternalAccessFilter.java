@@ -93,7 +93,7 @@ public class ExternalAccessFilter implements Filter {
             // To use a specific stylesheet.
             gef.setExternalStylesheet(stylesheet);
           }
-          session.setAttribute("SessionGraphicElementFactory", gef);
+          session.setAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT, gef);
         }
       }
     }

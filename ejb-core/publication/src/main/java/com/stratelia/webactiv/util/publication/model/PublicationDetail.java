@@ -62,7 +62,7 @@ import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
  * @version 1.0
  */
 public class PublicationDetail extends AbstractI18NBean implements SilverContentInterface,
-    Serializable {
+    Serializable, Cloneable {
 
   private static final long serialVersionUID = 9199848912262605680L;
   private PublicationPK pk;

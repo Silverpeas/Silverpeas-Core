@@ -142,7 +142,7 @@ public class LoginServlet extends HttpServlet {
         gef.setSpaceId(personalWs);
       }
       gef.setMainSessionController(controller);
-      session.setAttribute("SessionGraphicElementFactory", gef);
+      session.setAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT, gef);
 
       String favoriteFrame = gef.getLookFrame();
       SilverTrace.debug("peasCore", "LoginServlet.service", "root.MSG_GEN_PARAM_VALUE",

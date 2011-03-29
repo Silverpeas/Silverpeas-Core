@@ -93,7 +93,6 @@ public class AjaxActionServlet extends HttpServlet {
 
   /**
    * @param req
-   * @param userId
    * @return JSON action result
    */
   private String addSpace(HttpServletRequest req) {
@@ -105,7 +104,7 @@ public class AjaxActionServlet extends HttpServlet {
     // Get current session
     HttpSession session = req.getSession(true);
     MainSessionController m_MainSessionCtrl = (MainSessionController) session
-        .getAttribute("SilverSessionController");
+        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     // Retrieve user identifier from session
     String userId = m_MainSessionCtrl.getUserId();
 
@@ -125,10 +124,7 @@ public class AjaxActionServlet extends HttpServlet {
         // Add list of spaces in JSon response
         JSONArray jsonAddedSpaces = getJSONSpaces(addedSubSpaceIds);
         jsonRslt.put("spaceids", jsonAddedSpaces);
-
-        // StringBuffer listAddedSpaceId = buildJsonArray(addedSubSpaceIds);
-        LookHelper helper = (LookHelper) session
-            .getAttribute("Silverpeas_LookHelper");
+        LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
 
         if (helper.isEnableUFSContainsState()) {
           // Retrieve all current space path (parent and root space identifier)
@@ -136,25 +132,14 @@ public class AjaxActionServlet extends HttpServlet {
 
           // Add this into jsonParentSpaces
           JSONArray jsonParentSpaces = getJSONSpaces(parentSpaceIds);
-
-          // StringBuffer listParentSpaceId = buildJsonArray(parentSpaceIds);
-          /*
-           * result = "{success:true, spaceids:" + listAddedSpaceId.toString() + ", parentids:" +
-           * listParentSpaceId.toString() + "}";
-           */
           jsonRslt.put("parentids", jsonParentSpaces);
-        } /*
-           * else { result = "{success:true, spaceids:" + listAddedSpaceId.toString() + "}"; }
-           */
+        }
       } else {
         // TODO bundle this message error
         jsonRslt.put("success", false);
         jsonRslt.put("message", "Technical problem in DAO");
-
-        // result = "{success:false, message:'Technical problem in DAO'}";
       }
     } else {
-      // result = "{success:false, message: 'Invalid parameter'}";
       jsonRslt.put("success", false);
       jsonRslt.put("message", "Invalid parameter");
     }
@@ -230,7 +215,6 @@ public class AjaxActionServlet extends HttpServlet {
 
   /**
    * @param req
-   * @param userId
    * @return JSON action result
    */
   private String removeSpace(HttpServletRequest req) {
@@ -239,7 +223,7 @@ public class AjaxActionServlet extends HttpServlet {
     // Get current session
     HttpSession session = req.getSession(true);
     MainSessionController m_MainSessionCtrl = (MainSessionController) session
-        .getAttribute("SilverSessionController");
+        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 
     // Retrieve user identifier from session
     String userId = m_MainSessionCtrl.getUserId();
@@ -263,8 +247,7 @@ public class AjaxActionServlet extends HttpServlet {
 
         List<UserFavoriteSpaceVO> listUFS = ufsDAO.getListUserFavoriteSpace(userId);
         // Check user favorite space state (enable contains state)
-        LookHelper helper = (LookHelper) session
-            .getAttribute("Silverpeas_LookHelper");
+        LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
         String spaceState = "empty";
         if (helper.isEnableUFSContainsState()) {
           if (UserFavoriteSpaceManager.containsFavoriteSubSpace(spaceId, listUFS, m_MainSessionCtrl
@@ -360,7 +343,7 @@ public class AjaxActionServlet extends HttpServlet {
     SilverTrace.debug("lookSilverpeasV5", AjaxActionServlet.class.getName() + ".getFrame",
             "root.MSG_GEN_ENTER_METHOD");
     HttpSession session = req.getSession(true);
-    GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
+    GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
 
     
     // Retrieve FrameJSP from look name parameter

@@ -350,11 +350,8 @@ public class AdminServlet extends HttpServlet {
     // retrieve userId from session
     HttpSession session = request.getSession();
     MainSessionController m_MainSessionCtrl = (MainSessionController) session
-        .getAttribute("SilverSessionController");
-
-    String userId = m_MainSessionCtrl.getUserId();
-
-    return userId;
+        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+    return m_MainSessionCtrl.getUserId();
 
   }
 
@@ -363,8 +360,7 @@ public class AdminServlet extends HttpServlet {
     // retrieve userId from session
     HttpSession session = request.getSession();
     MainSessionController m_MainSessionCtrl = (MainSessionController) session
-        .getAttribute("SilverSessionController");
-
+        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     return m_MainSessionCtrl.getFavoriteLanguage();
   }
 
