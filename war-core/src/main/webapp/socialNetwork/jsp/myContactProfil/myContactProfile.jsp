@@ -136,8 +136,8 @@
 	<fmt:message key="myContactProfile.tab.profile" var="profile" />
 	<fmt:message key="myContactProfile.tab.wall" var="wall" />
 	<view:tabs>
-    	<view:tab label="${wall}" action="<%="Main?userId="+userFull.getId()%>" selected="<%=Boolean.toString("Wall".equals(view)) %>" />
-    	<view:tab label="${profile}" action="<%="Infos?userId="+userFull.getId()%>" selected="<%=Boolean.toString("Infos".equals(view)) %>" />
+    	<view:tab label="${wall}" action='<%="Main?userId="+userFull.getId()%>' selected='<%="Wall".equals(view) %>' />
+    	<view:tab label="${profile}" action='<%="Infos?userId="+userFull.getId()%>' selected='<%=Infos".equals(view) %>' />
 	</view:tabs>
 	
 	<% if ("Infos".equals(view)) { %>

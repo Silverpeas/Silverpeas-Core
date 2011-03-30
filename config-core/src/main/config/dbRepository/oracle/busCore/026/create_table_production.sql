@@ -11,7 +11,7 @@ CREATE TABLE Personalization (
 	thesaurusStatus int NOT NULL,
 	dragAndDropStatus int default 1 NOT NULL,
 	webdavEditingStatus int default 0 NOT NULL,
-	menuDisplay varchar(50) DEFAULT 'DISABLE'
+	menuDisplay varchar(50) DEFAULT 'DEFAULT'
 );
 
 
