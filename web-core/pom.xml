@@ -77,10 +77,12 @@
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>commons-beanutils</groupId>
       <artifactId>commons-beanutils</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core</groupId>
@@ -176,6 +178,7 @@
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-lgpl</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>

@@ -31,6 +31,10 @@
       <artifactId>ejb-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-mapper-lgpl</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>personalization</artifactId>
       <version>${project.version}</version>
