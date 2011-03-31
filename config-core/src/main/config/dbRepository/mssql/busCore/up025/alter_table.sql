@@ -1,5 +1,5 @@
 ALTER TABLE personalization DROP COLUMN onlineEditingStatus;
-ALTER TABLE personalization ADD menuDisplay varchar(50) DEFAULT('DISABLE');
+ALTER TABLE personalization ADD menuDisplay varchar(50) DEFAULT('DEFAULT');
 
 UPDATE personalization SET languages = 'fr' WHERE languages like '%fr%';
 UPDATE personalization SET languages = 'en' WHERE languages like '%en%';
