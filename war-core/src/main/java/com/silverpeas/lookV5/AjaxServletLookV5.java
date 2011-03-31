@@ -708,7 +708,7 @@ public class AjaxServletLookV5 extends HttpServlet {
   }
 
   protected boolean isPersonalSpace(String spaceId) {
-    return "spacePerso".equalsIgnoreCase(spaceId);
+    return SpaceInst.PERSONAL_SPACE_ID.equalsIgnoreCase(spaceId);
   }
 
   protected void serializePersonalSpace(Writer writer, String userId, String language,

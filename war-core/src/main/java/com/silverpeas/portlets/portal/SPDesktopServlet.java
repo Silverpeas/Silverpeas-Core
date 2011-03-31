@@ -71,10 +71,8 @@ import com.sun.portal.portletcontainer.invoker.util.InvokerUtil;
 
 public class SPDesktopServlet extends HttpServlet {
 
-  public static final String PERSONNAL_SPACE_ID = "-10";
-  public static final String DEFAULT_SPACE_ID = "-20";
   private static final long serialVersionUID = -3241648887903159985L;
-  ServletContext context;
+  private ServletContext context;
   private static final Logger logger = Logger.getLogger("com.silverpeas.portlets.portal",
       "com.silverpeas.portlets.PCDLogMessages");
 
@@ -91,28 +89,29 @@ public class SPDesktopServlet extends HttpServlet {
     PortletRegistryCache.init();
   }
 
-  @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
-    try {
-      doGetPost(request, response);
-    } catch (Exception e) {
-      logger.log(Level.SEVERE, e.getMessage(), e);
-    }
-  }
+//  @Override
+//  public void doGet(HttpServletRequest request, HttpServletResponse response)
+//      throws ServletException, IOException {
+//    try {
+//      doGetPost(request, response);
+//    } catch (Exception e) {
+//      logger.log(Level.SEVERE, e.getMessage(), e);
+//    }
+//  }
+//
+//  @Override
+//  public void doPost(HttpServletRequest request, HttpServletResponse response)
+//      throws ServletException, IOException {
+//    doGetPost(request, response);
+//  }
 
   @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
-    doGetPost(request, response);
-  }
-
-  private void doGetPost(HttpServletRequest request, HttpServletResponse response)
+  protected void service(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
     String spaceHomePage = null;
     String spaceId = request.getParameter("SpaceId");
-    if (PERSONNAL_SPACE_ID.equals(spaceId) || DEFAULT_SPACE_ID.equals(spaceId)) {
+    if (SpaceInst.PERSONAL_SPACE_ID.equals(spaceId) || SpaceInst.DEFAULT_SPACE_ID.equals(spaceId)) {
       request.getSession().removeAttribute("Silverpeas_Portlet_SpaceId");
     } else if (StringUtil.isDefined(spaceId)) {
       request.getSession().setAttribute("Silverpeas_Portlet_SpaceId", spaceId);
@@ -140,8 +139,13 @@ public class SPDesktopServlet extends HttpServlet {
       }
       response.sendRedirect(spaceHomePage);
     } else {
-      String spContext = getUserIdOrSpaceId(request);
-      setUserIdAndSpaceIdInRequest(request);
+      spaceId = getSpaceId(request);
+      String userId = getMainSessionController(request).getUserId();
+      String spContext = userId;
+      if (StringUtil.isDefined(spaceId)) {
+        spContext = spaceId;
+      }
+      setUserIdAndSpaceIdInRequest(spaceId, userId, request);
 
       DesktopMessages.init(request);
       SilverTrace.debug("portlet", "SPDesktopServlet.doGetPost", "root.MSG_GEN_PARAM_VALUE",
@@ -569,7 +573,7 @@ public class SPDesktopServlet extends HttpServlet {
     portletWindowData.setCurrentMode(getCurrentPortletWindowMode(request, portletWindowName));
     portletWindowData.setCurrentWindowState(getCurrentPortletWindowState(request, portletWindowName));
     if (spContext.startsWith("space")) {
-      portletWindowData.setSpaceId(getUserIdOrSpaceId(request));
+      portletWindowData.setSpaceId(spContext);
     }
     if (isSpaceFrontOffice(request) || isAnonymousUser(request)) {
       portletWindowData.setEdit(false);
@@ -607,23 +611,15 @@ public class SPDesktopServlet extends HttpServlet {
     GraphicElementFactory gef =
         (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
-    return m_MainSessionCtrl.getUserId().equals(gef.getFavoriteLookSettings().getString("guestId"));
+    return m_MainSessionCtrl.getCurrentUserDetail().isAnonymous();
   }
 
-  private void setUserIdAndSpaceIdInRequest(HttpServletRequest request) {
-    String spaceId = getSpaceId(request);
+  private void setUserIdAndSpaceIdInRequest(String spaceId, String userId,
+      HttpServletRequest request) {
     request.setAttribute("SpaceId", spaceId);
-    request.setAttribute("UserId", getMainSessionController(request).getUserId());
+    request.setAttribute("UserId", userId);
     SilverTrace.debug("portlet", "SPDesktopServlet.setUserIdAndSpaceIdInRequest", "userId = "
         + getMainSessionController(request).getUserId());
-  }
-
-  private String getUserIdOrSpaceId(HttpServletRequest request) {
-    String spaceId = getSpaceId(request);
-    if (StringUtil.isDefined(spaceId) && ! PERSONNAL_SPACE_ID.equals(spaceId)) {
-      return spaceId;
-    }
-    return getMainSessionController(request).getUserId();
   }
 
   private String prefixSpaceId(String spaceId) {
@@ -641,20 +637,30 @@ public class SPDesktopServlet extends HttpServlet {
     return id;
   }
 
+  /**
+   * Gets the identifier of the selected space from the request.
+   * If the space is the user personal one or it is not of type portlet, then null is returned
+   * (no specific space)
+   * @param request the HTTP request.
+   * @return the space identifier or null if the space hasn't to be taken into account in the portlets
+   * rendering.
+   */
   private String getSpaceId(HttpServletRequest request) {
     String spaceId = request.getParameter(WindowInvokerConstants.DRIVER_SPACEID);
 
     if (!StringUtil.isDefined(spaceId)) {
       spaceId = request.getParameter("SpaceId");
 
-      if (StringUtil.isDefined(spaceId) && ! PERSONNAL_SPACE_ID.equals(spaceId)) {
+      if (StringUtil.isDefined(spaceId)) {
+        if (SpaceInst.PERSONAL_SPACE_ID.equals(spaceId)) {
+          return null;
+        }
         MainSessionController m_MainSessionCtrl = getMainSessionController(request);
-
         SpaceInst spaceStruct =
             m_MainSessionCtrl.getOrganizationController().getSpaceInstById(spaceId);
         // Page d'accueil de l'espace = Portlet ?
         if (spaceStruct == null || spaceStruct.getFirstPageType() != SpaceInst.FP_TYPE_PORTLET) {
-          spaceId = null;
+          return null;
         }
       }
     }
@@ -680,7 +686,8 @@ public class SPDesktopServlet extends HttpServlet {
   }
 
   private boolean isSpaceFrontOffice(HttpServletRequest request) {
-    return (StringUtil.isDefined(getSpaceId(request)) && !StringUtil.isDefined(request.getParameter(
+    String spaceId = getSpaceId(request);
+    return (StringUtil.isDefined(spaceId) && !StringUtil.isDefined(request.getParameter(
         WindowInvokerConstants.DRIVER_ROLE)));
   }
 
@@ -688,7 +695,7 @@ public class SPDesktopServlet extends HttpServlet {
       throws UnsupportedEncodingException {
     OrganizationController organizationCtrl = getOrganizationController(request);
     SpaceInst spaceStruct = null;
-    if(!PERSONNAL_SPACE_ID.equals(spaceId)) {
+    if(!SpaceInst.PERSONAL_SPACE_ID.equals(spaceId)) {
       spaceStruct = organizationCtrl.getSpaceInstById(spaceId);
     }
 
