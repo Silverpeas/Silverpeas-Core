@@ -40,6 +40,7 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import javax.servlet.http.HttpServletRequest;
 
 public class TicketDetail implements Serializable {
+  private static final long serialVersionUID = -612174156104966079L;
 
   private int fileId;
   private String componentId;
@@ -56,18 +57,54 @@ public class TicketDetail implements Serializable {
   private String keyFile;
   private Collection<DownloadDetail> downloads;
 
-  public TicketDetail() {
+  /**
+   * Creates a new download ticket with the specified information about the file to download.
+   * The ticket is not limited in time or in quantity. It is a continuous ticket.
+   * @param fileId the identifier of the file to download.
+   * @param componentId the identifier of the Silverpeas component instance to which the file belongs.
+   * @param versioning is the file versionned?
+   * @param creatorId the identifier of the ticket creator.
+   * @param creationDate the date at which the ticket was created.
+   * @return a TicketDetail instance.
+   */
+  public static TicketDetail continuousTicket(int fileId, String componentId, boolean versioning,
+      String creatorId, Date creationDate) {
+    return new TicketDetail(fileId, componentId, versioning, creatorId, creationDate, null,
+        -1);
   }
 
-  public TicketDetail(int fileId, String componentId, boolean versioning, String creatorId,
+  /**
+   * Creates a new download ticket with the specified information about the file to download.
+   * The ticket can be limited in time and in quantity. The first threshold reached expires the ticket.
+   * If the end date is null then no expiration date is defined for the ticket. If the maximum number
+   * of access is null or negative then no maximum download is defined for the ticket.
+   * @param fileId the identifier of the file to download.
+   * @param componentId the identifier of the Silverpeas component instance to which the file belongs.
+   * @param versioning is the file versionned?
+   * @param creatorId the identifier of the ticket creator.
+   * @param creationDate the date at which the ticket was created.
+   * @param endDate the date up to which the ticket is valid.
+   * @param nbAccessMax the maximum number of authorized download before the ticket expired.
+   * @return a TicketDetail instance.
+   */
+  public static TicketDetail aTicket(int fileId, String componentId, boolean versioning, String creatorId,
       Date creationDate, Date endDate, int nbAccessMax) {
-    setFileId(fileId);
-    setComponentId(componentId);
-    setVersioning(versioning);
-    setCreatorId(creatorId);
-    setCreationDate(creationDate);
-    setEndDate(endDate);
-    setNbAccessMax(nbAccessMax);
+    return new TicketDetail(fileId, componentId, versioning, creatorId, creationDate, endDate,
+        nbAccessMax);
+  }
+
+  protected TicketDetail() {
+  }
+
+  protected TicketDetail(int fileId, String componentId, boolean versioning, String creatorId,
+      Date creationDate, Date endDate, int nbAccessMax) {
+    this.fileId = fileId;
+    this.componentId = componentId;
+    this.versioning = versioning;
+    this.creatorId = creatorId;
+    this.creationDate = new Date(creationDate.getTime());
+    this.endDate = new Date(endDate.getTime());
+    this.nbAccessMax = nbAccessMax;
   }
 
   public int getFileId() {

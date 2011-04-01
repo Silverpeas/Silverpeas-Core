@@ -38,6 +38,7 @@ import com.silverpeas.external.filesharing.model.TicketDetail;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
+import static com.silverpeas.util.StringUtil.*;
 
 public class TicketDAO {
 
@@ -97,7 +98,7 @@ public class TicketDAO {
 
   public TicketDetail getTicket(Connection con, String key) throws SQLException {
     // récupérer un ticket
-    TicketDetail ticket = new TicketDetail();
+    TicketDetail ticket = null;
     String query = "select * from SB_fileSharing_ticket where keyFile = ? ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -164,7 +165,7 @@ public class TicketDAO {
     return downloads;
   }
 
-  public static String createTicket(Connection con, TicketDetail ticket) throws SQLException {
+  public String createTicket(Connection con, TicketDetail ticket) throws SQLException {
     // Création d'une commande
     String key = createUniKey();
     PreparedStatement prepStmt = null;
@@ -260,7 +261,7 @@ public class TicketDAO {
     }
   }
 
-  private static void deleteDownloads(Connection con, String key) throws SQLException {
+  private void deleteDownloads(Connection con, String key) throws SQLException {
     PreparedStatement prepStmt = null;
     try {
       // création de la requête
@@ -274,7 +275,7 @@ public class TicketDAO {
     }
   }
 
-  public static void deleteTicket(Connection con, String key) throws SQLException {
+  public void deleteTicket(Connection con, String key) throws SQLException {
     PreparedStatement prepStmt = null;
     try {
       // delete according history
@@ -297,32 +298,35 @@ public class TicketDAO {
    * Recuperation des colonnes du resulSet et construction de l'objet ticket
    * @param rs
    * @return
-   * @throws SQLException 
+   * @throws SQLException
    */
   protected TicketDetail recupTicket(ResultSet rs) throws SQLException {
-    TicketDetail ticket = new TicketDetail();
-    ticket.setFileId(rs.getInt("fileId"));
-    ticket.setComponentId(rs.getString("componentId"));
+
+    int fileId = rs.getInt("fileId");
+    String componentId = rs.getString("componentId");
     boolean versioning = "1".equals(rs.getString("versioning"));
-    ticket.setVersioning(versioning);
-    ticket.setCreatorId(rs.getString("creatorId"));
-    String creationDate = null;
+    String creatorId = rs.getString("creatorId");
+    Date creationDate = null;
     if (StringUtil.isDefined(rs.getString("creationDate"))) {
-      creationDate = rs.getString("creationDate");
-      ticket.setCreationDate(new Date(Long.parseLong(creationDate)));
+      creationDate = new Date(Long.parseLong(rs.getString("creationDate")));
     }
+    Date endDate = null;
+    if (StringUtil.isDefined(rs.getString("endDate"))) {
+      String dateInMillis = rs.getString("endDate");
+      if (isDefined(dateInMillis)) {
+        endDate = new Date(Long.parseLong(dateInMillis));
+      }
+    }
+    int nbMaxAccess = rs.getInt("NbAccessMax");
+
+    TicketDetail ticket = TicketDetail.aTicket(fileId, componentId, versioning, creatorId,
+        creationDate, endDate, nbMaxAccess);
     ticket.setUpdateId(rs.getString("updateId"));
     String updateDate = null;
     if (StringUtil.isDefined(rs.getString("updateDate"))) {
       updateDate = rs.getString("updateDate");
       ticket.setUpdateDate(new Date(Long.parseLong(updateDate)));
     }
-    String endDate = null;
-    if (StringUtil.isDefined(rs.getString("endDate"))) {
-      endDate = rs.getString("endDate");
-      ticket.setEndDate(new Date(Long.parseLong(endDate)));
-    }
-    ticket.setNbAccessMax(rs.getInt("NbAccessMax"));
     ticket.setNbAccess(rs.getInt("NbAccess"));
     ticket.setKeyFile(rs.getString("KeyFile"));
 
@@ -333,7 +337,7 @@ public class TicketDAO {
    * Recuperation des colonnes du resulSet et construction de l'objet download
    * @param rs
    * @return
-   * @throws SQLException 
+   * @throws SQLException
    */
   protected DownloadDetail recupDownload(ResultSet rs) throws SQLException {
     DownloadDetail download = new DownloadDetail();

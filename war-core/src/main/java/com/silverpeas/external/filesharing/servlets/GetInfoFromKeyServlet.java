@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.silverpeas.external.filesharing.model.FileSharingFactory;
+import com.silverpeas.external.filesharing.model.FileSharingServiceFactory;
 import com.silverpeas.external.filesharing.model.TicketDetail;
 import com.silverpeas.look.SilverpeasLook;
 import com.stratelia.silverpeas.versioning.model.Document;
@@ -46,12 +46,14 @@ import static com.silverpeas.external.filesharing.servlets.FileSharingConstants.
 public class GetInfoFromKeyServlet extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
+  private OrganizationController organizationController = new OrganizationController();
 
   @Override
   protected void service(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     String keyFile = request.getParameter(PARAM_KEYFILE);
-    TicketDetail ticket = FileSharingFactory.getFileSharing().getTicket(keyFile);
+    TicketDetail ticket = FileSharingServiceFactory.getFactory().getFileSharingService().getTicket(
+        keyFile);
     request.setAttribute(ATT_TICKET, ticket);
     if (!ticket.isValid()) {
       getServletContext().getRequestDispatcher("/fileSharing/jsp/invalidTicket.jsp").forward(
@@ -83,10 +85,13 @@ public class GetInfoFromKeyServlet extends HttpServlet {
    * @return the URL of the wallpaper.
    */
   private String getWallpaperFor(final TicketDetail ticket) {
-    OrganizationController organizationController = new OrganizationController();
-    ComponentInstLight component = organizationController.getComponentInstLight(ticket.
+    ComponentInstLight component = getOrganizationController().getComponentInstLight(ticket.
         getComponentId());
     return SilverpeasLook.getSilverpeasLook().getWallpaperOfSpaceOrDefaultOne(component.
         getDomainFatherId());
+  }
+
+  private OrganizationController getOrganizationController() {
+    return organizationController;
   }
 }

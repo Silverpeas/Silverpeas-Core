@@ -23,10 +23,10 @@
  */
 package com.silverpeas.lookV5;
 
+import com.silverpeas.external.filesharing.model.FileSharingServiceFactory;
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.external.filesharing.model.FileSharingInterface;
-import com.silverpeas.external.filesharing.model.FileSharingInterfaceImpl;
+import com.silverpeas.external.filesharing.model.FileSharingService;
 import com.silverpeas.external.webConnections.dao.WebConnectionService;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
 import com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings;
@@ -759,7 +759,7 @@ public class AjaxServletLookV5 extends HttpServlet {
             + "Main\"/>");
       }
       if (readBoolean(settings, "fileSharingVisible", true)) {
-        FileSharingInterface fileSharing = new FileSharingInterfaceImpl();
+        FileSharingService fileSharing = FileSharingServiceFactory.getFactory().getFileSharingService();
         if (!fileSharing.getTicketsByUser(userId).isEmpty()) {
           writer.write("<item id=\"fileSharing\" name=\""
               + EncodeHelper.escapeXml(message.getString("FileSharing"))
@@ -861,6 +861,7 @@ public class AjaxServletLookV5 extends HttpServlet {
    * @param userId
    * @param spaceId
    * @param orgaController
+   * @param helper
    * @return true or false
    */
   protected boolean isSpaceVisible(String userId, String spaceId,

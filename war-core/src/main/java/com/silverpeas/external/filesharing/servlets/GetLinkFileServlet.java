@@ -41,7 +41,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import com.silverpeas.external.filesharing.model.DownloadDetail;
-import com.silverpeas.external.filesharing.model.FileSharingFactory;
+import com.silverpeas.external.filesharing.model.FileSharingServiceFactory;
 import com.silverpeas.external.filesharing.model.TicketDetail;
 import com.silverpeas.util.web.servlet.RestRequest;
 import com.stratelia.silverpeas.versioning.model.DocumentPK;
@@ -54,9 +54,6 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 
 public class GetLinkFileServlet extends HttpServlet {
 
-  /**
-	 * 
-	 */
   private static final long serialVersionUID = -3386956747183311695L;
 
   @Override
@@ -75,7 +72,7 @@ public class GetLinkFileServlet extends HttpServlet {
       HttpServletResponse response) throws ServletException, IOException {
     RestRequest rest = new RestRequest(request, "myFile");
     String keyFile = rest.getElementValue(PARAM_KEYFILE);
-    TicketDetail ticket = FileSharingFactory.getFileSharing().getTicket(
+    TicketDetail ticket = FileSharingServiceFactory.getFactory().getFileSharingService().getTicket(
         keyFile);
     if (ticket.isValid()) {
       // recherche des infos sur le fichier...
@@ -119,10 +116,9 @@ public class GetLinkFileServlet extends HttpServlet {
             .openInputStream(realFile));
         IOUtils.copy(input, out);
         DownloadDetail download = new DownloadDetail(keyFile, new Date(), request.getRemoteAddr());
-        FileSharingFactory.getFileSharing().addDownload(download);
+        FileSharingServiceFactory.getFactory().getFileSharingService().addDownload(download);
         return;
       } catch (Exception ex) {
-        ex.printStackTrace();
       } finally {
         if (input != null) {
           IOUtils.closeQuietly(input);

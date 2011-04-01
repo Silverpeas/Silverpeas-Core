@@ -41,6 +41,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
@@ -177,8 +178,8 @@ public class FileSharingRequestRouter extends ComponentRequestRouter {
     String date = request.getParameter("EndDate");
     Date endDate = DateUtil.stringToDate(date, fileSharingSC.getLanguage());
     int nbAccessMax = Integer.parseInt(request.getParameter("NbAccessMax"));
-    return new TicketDetail(fileId, componentId, versioning, null, new Date(),
-        endDate, nbAccessMax);
+    return TicketDetail.aTicket(fileId, componentId, versioning, null,
+        new Date(), endDate, nbAccessMax);
   }
 
   private TicketDetail updateTicket(String keyFile,
