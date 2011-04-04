@@ -188,7 +188,7 @@ function getTools() {
 				try {
 					// get tools
 					var items = "";
-					for (var i = 0; i < data.length; ++i) {
+					for (var i = 0; data != null && i < data.length; ++i) {
 						if (i != 0) {
 							items += "&nbsp;&nbsp;|&nbsp;&nbsp;";
 						}
@@ -202,7 +202,7 @@ function getTools() {
 					//do nothing
 					alert(e);
 				}
-			});
+			}, 'json');
 }
 
 function getComponent(id, label, url, name, description) {
@@ -215,7 +215,7 @@ function getComponents() {
 				try {
 					// get components
 					var items = "";
-					for (var i = 0; i < data.length; ++i) {
+					for (var i = 0; data != null && i < data.length; ++i) {
 						if (i != 0) {
 							items += "&nbsp;&nbsp;|&nbsp;&nbsp;";
 						}
@@ -229,7 +229,7 @@ function getComponents() {
 					//do nothing
 					alert(e);
 				}
-			});
+			}, 'json');
 }
 
 $(document).ready(function() {
