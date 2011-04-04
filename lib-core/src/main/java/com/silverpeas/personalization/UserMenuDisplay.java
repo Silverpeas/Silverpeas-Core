@@ -33,7 +33,7 @@ public enum UserMenuDisplay {
    * DISABLE : no bookmarks menu tab is displayed.
    * DEFAULT : use the look display.
    */
-  DEFAULT, DISABLE, BOOKMARKS, ALL;
+  DISABLE, DEFAULT, BOOKMARKS, ALL;
   
   public boolean isNotDefault() {
     return this != DEFAULT;
