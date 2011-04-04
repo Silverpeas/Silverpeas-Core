@@ -56,7 +56,7 @@ private String printSpaceAndSubSpaces(String spaceId, int depth, String[] m_asPr
 {
     m_OrganizationController = m_MainSessionCtrl.getOrganizationController();
     String language = m_MainSessionCtrl.getFavoriteLanguage();
-    
+
       ArrayList alCompoInst = null;
       String[] asCompoNames = null;
       SpaceInst spaceInst = m_OrganizationController.getSpaceInstById(spaceId);
@@ -70,7 +70,7 @@ private String printSpaceAndSubSpaces(String spaceId, int depth, String[] m_asPr
             result += "<td class=\"txttitrecol\">&#8226; <a href=\""+URLManager.getSimpleURL(URLManager.URL_SPACE, spaceInst.getId())+"\" target=\"_top\">"+spaceInst.getName(language)+"</a></td></tr>\n";
         else
             result += "<td class=\"txttitrecol\">&#8226; "+spaceInst.getName(language)+"</td></tr>\n";
-			
+
         result += "<tr><td>\n";
 
     		String[] asAvailCompoForCurUser = m_OrganizationController.getAvailCompoIds(spaceInst.getId(), m_MainSessionCtrl.getUserId());
@@ -83,12 +83,12 @@ private String printSpaceAndSubSpaces(String spaceId, int depth, String[] m_asPr
     			for(int nJ=0; asAvailCompoForCurUser != null && nJ < asAvailCompoForCurUser.length; nJ++)
     				if(componentInst.getId().equals(asAvailCompoForCurUser[nJ]))
     					bAllowed = true;
-    
+
     			if(bAllowed) {
     				String label = componentInst.getLabel(language);
     				if (label == null || label.length() == 0)
     					label = componentInst.getName();
-    					
+
     				if (URLManager.displayUniversalLinks())
     					result += "&nbsp;<img src=\""+m_sContext+"/util/icons/component/"+componentInst.getName()+"Small.gif\" border=\"0\" width=\"15\" align=\"top\" alt=\"\"/>&nbsp;<a href=\""+URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentInst.getId())+"\" target=\"_top\">"+label+"</a>\n";
     				else
@@ -109,7 +109,7 @@ private String printSpaceAndSubSpaces(String spaceId, int depth, String[] m_asPr
         		   result += "</td></tr></table>\n";
     		   }
     		}
-    
+
     		result += "</td>\n";
     		result += "</tr>\n";
     		result += "</table>\n";
@@ -152,7 +152,7 @@ m_asPrivateDomainsIds = m_MainSessionCtrl.getUserAvailRootSpaceIds();
 m_asPrivateDomainsNames = m_OrganizationController.getSpaceNames(m_asPrivateDomainsIds);
 
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -170,15 +170,15 @@ function notifyAdministrators(context,compoId,users,groups) {
 function openClipboard() {
 	document.clipboardForm.submit();
 }
-  
+
 function getTool(id, label, url, nb, target) {
-	var res;	
+	var res;
 	if (url.substring(0,11).toLowerCase() == "javascript:") {
 		res = "<a href=\"#\" onclick=\""+url+"\">"+label+"</a>";
 	}
   	else {
   		res = "<a href=\""+"<%=m_sContext%>"+url+"\" target=\""+target+"\">"+label+"</a>";
-	}	
+	}
 	return res;
 }
 
@@ -188,7 +188,7 @@ function getTools() {
 				try {
 					// get tools
 					var items = "";
-					for (var i = 0; i < data.length; ++i) {
+					for (var i = 0; data != null && i < data.length; ++i) {
 						if (i != 0) {
 							items += "&nbsp;&nbsp;|&nbsp;&nbsp;";
 						}
@@ -202,7 +202,7 @@ function getTools() {
 					//do nothing
 					alert(e);
 				}
-			});
+			}, 'json');
 }
 
 function getComponent(id, label, url, name, description) {
@@ -215,7 +215,7 @@ function getComponents() {
 				try {
 					// get components
 					var items = "";
-					for (var i = 0; i < data.length; ++i) {
+					for (var i = 0; data != null && i < data.length; ++i) {
 						if (i != 0) {
 							items += "&nbsp;&nbsp;|&nbsp;&nbsp;";
 						}
@@ -229,7 +229,7 @@ function getComponents() {
 					//do nothing
 					alert(e);
 				}
-			});
+			}, 'json');
 }
 
 $(document).ready(function() {
@@ -249,10 +249,8 @@ $(document).ready(function() {
 	Frame frame=gef.getFrame();
 	out.println(frame.printBefore());
 
-	ResourceLocator lookSettings = gef.getFavoriteLookSettings(); 
-	String accessLoginId = lookSettings.getString("guestId");
-	boolean isAnonymAccess = currentUser.isAccessGuest() && currentUser.getId().equals(accessLoginId);
-	 
+	boolean isAnonymAccess = currentUser.isAnonymous();
+
 	Board board = gef.getBoard();
 %>
 

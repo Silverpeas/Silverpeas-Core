@@ -37,6 +37,7 @@ import org.apache.commons.beanutils.BeanUtils;
 
 public class UserDetail implements Serializable, Comparable<UserDetail> {
 
+  private static final String ANONYMOUS_ID_PROPERTY = "anonymousId";
   public static final String ADMIN_ACCESS = "A";
   public static final String USER_ACCESS = "U";
   public static final String REMOVED_ACCESS = "R";
@@ -282,8 +283,20 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * @return true if he's the anonymous user.
    */
   public boolean isAnonymous() {
-    String anonymousId = generalSettings.getString("anonymousId");
-    return getId().equals(anonymousId);
+    return getId().equals(getAnonymousUserId());
+  }
+
+  /**
+   * Gets the anonymous user or null if no such user exists.
+   * @return the detail about the anonymous user or null if no such user exists.
+   */
+  public static UserDetail getAnonymousUser() {
+    UserDetail anonymousUser = null;
+    if(isAnonymousUserExist()) {
+      OrganizationController organizationController = new OrganizationController();
+      anonymousUser = organizationController.getUserDetail(getAnonymousUserId());
+    }
+    return anonymousUser;
   }
 
   public String getDisplayedName() {
@@ -384,5 +397,30 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
       return status;
     }
     return "";
+  }
+
+  /**
+   * Is the anonymous user exist in this running Silverpeas application?
+   * @return true if the anonymous user exist, false otherwise.
+   */
+  public static boolean isAnonymousUserExist() {
+    return isDefined(getAnonymousUserId());
+  }
+
+  /**
+   * Is the specified user is the anonymous one?
+   * @param userId the identifier of the user.
+   * @return true if the specified user is the anonymous one, false otherwise.
+   */
+  public static boolean isAnonymousUser(String userId) {
+    return isAnonymousUserExist() && getAnonymousUserId().equals(userId);
+  }
+
+  /**
+   * Gets the unique identifier of the anonymous user as set in the general look properties.
+   * @return the anonymous user identifier.
+   */
+  protected static String getAnonymousUserId() {
+    return generalSettings.getString(ANONYMOUS_ID_PROPERTY, null);
   }
 }

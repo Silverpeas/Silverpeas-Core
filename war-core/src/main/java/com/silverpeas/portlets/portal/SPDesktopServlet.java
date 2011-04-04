@@ -55,8 +55,8 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.sun.portal.container.ChannelMode;
 import com.sun.portal.container.ChannelState;
 import com.sun.portal.container.PortletType;
@@ -608,10 +608,7 @@ public class SPDesktopServlet extends HttpServlet {
     HttpSession session = request.getSession();
     MainSessionController m_MainSessionCtrl =
         (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-    GraphicElementFactory gef =
-        (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-
-    return m_MainSessionCtrl.getCurrentUserDetail().isAnonymous();
+    return UserDetail.isAnonymousUser(m_MainSessionCtrl.getUserId());
   }
 
   private void setUserIdAndSpaceIdInRequest(String spaceId, String userId,

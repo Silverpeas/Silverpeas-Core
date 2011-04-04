@@ -83,7 +83,7 @@ public class ComponentAccessControllerTest {
         thenReturn("false");
 
     ComponentAccessController instance = new ComponentAccessController();
-    instance.setComponentAccessController(controller);
+    instance.setOrganizationController(controller);
     boolean result = instance.isRightOnTopicsEnabled("", componentId);
     assertEquals(false, result);
 
@@ -96,7 +96,7 @@ public class ComponentAccessControllerTest {
 
   /**
    * Test of isUserAuthorized method, of class ComponentAccessController.
-   * @throws Exception 
+   * @throws Exception
    */
   @Test
   public void testIsUserAuthorized() throws Exception {
@@ -139,7 +139,7 @@ public class ComponentAccessControllerTest {
         thenReturn("false");
 
     ComponentAccessController instance = new ComponentAccessController();
-    instance.setComponentAccessController(controller);
+    instance.setOrganizationController(controller);
     boolean result = instance.isUserAuthorized(userId, null);
     assertEquals(true, result);
 
