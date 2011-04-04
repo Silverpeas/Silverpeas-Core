@@ -23,58 +23,50 @@
  */
 package com.silverpeas.accesscontrol;
 
-import com.silverpeas.util.ComponentHelper;
-import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 /**
- * Check the access to a component for a user.
- * @author ehugonnet
+ * Check the access to a Silverpeas workspace for a user.
  */
 @Named
-public class ComponentAccessController implements AccessController<String> {
+public class WorkspaceAccessController implements AccessController<String> {
 
   @Inject
-  private OrganizationController controller;
+  private ComponentAccessController componentAccessController;
+  @Inject
+  private OrganizationController organizationController;
 
-  public ComponentAccessController() {
-  }
-
-  /**
-   * For tests only.
-   * @param controller the controller to set for tests.
-   */
-  protected void setOrganizationController(final OrganizationController controller) {
-    this.controller = controller;
-  }
-
-  /**
-   * Indicates that the rights are set on node as well as the component.
-   * @param userId
-   * @param componentId
-   * @return
-   */
-  public boolean isRightOnTopicsEnabled(String userId, String componentId) {
-    return isThemeTracker(componentId) && StringUtil.getBooleanValue(getOrganizationController().
-        getComponentParameterValue(componentId, "rightsOnTopics"));
-  }
-
-  private boolean isThemeTracker(String componentId) {
-    return ComponentHelper.getInstance().isThemeTracker(componentId);
+  public WorkspaceAccessController() {
   }
 
   @Override
-  public boolean isUserAuthorized(String userId, String componentId) {
-    if (componentId == null) { // Personal space
-      return true;
+  public boolean isUserAuthorized(String userId, String spaceId) {
+    boolean isAuthorized = false;
+    if (spaceId == null) { // Personal space
+      isAuthorized = true;
+    } else {
+      String[] componentIds = getOrganizationController().getAllComponentIds(spaceId);
+      for (String componentId : componentIds) {
+        if (getComponentAccessController().isUserAuthorized(userId, componentId)) {
+          isAuthorized = true;
+          break;
+        }
+      }
     }
-    if (StringUtil.getBooleanValue(getOrganizationController().getComponentParameterValue(
-        componentId, "publicFiles"))) {
-      return true;
+    return isAuthorized;
+  }
+
+  /**
+   * Gets controller of access on compoents used for performing its task.
+   * @return a component access controller.
+   */
+  private ComponentAccessController getComponentAccessController() {
+    if (componentAccessController == null) {
+      componentAccessController = new ComponentAccessController();
     }
-    return getOrganizationController().isComponentAvailable(componentId, userId);
+    return componentAccessController;
   }
 
   /**
@@ -82,9 +74,9 @@ public class ComponentAccessController implements AccessController<String> {
    * @return an organization controller instance.
    */
   private OrganizationController getOrganizationController() {
-    if (controller == null) {
-      controller = new OrganizationController();
+    if (organizationController == null) {
+      organizationController = new OrganizationController();
     }
-    return controller;
+    return organizationController;
   }
 }
