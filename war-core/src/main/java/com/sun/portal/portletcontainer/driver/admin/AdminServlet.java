@@ -184,8 +184,8 @@ public class AdminServlet extends HttpServlet {
   }
 
   private boolean isSpaceBackOffice(HttpServletRequest request) {
-    return (isDefined(getSpaceId(request)) && "admin".equalsIgnoreCase(request.
-        getParameter(WindowInvokerConstants.DRIVER_ROLE)));
+    return (isDefined(getSpaceId(request))
+        && "admin".equalsIgnoreCase(request.getParameter(WindowInvokerConstants.DRIVER_ROLE)));
   }
 
   private void createPortletWindow(HttpServletRequest request, PortletAdminData portletAdminData,
@@ -201,7 +201,7 @@ public class AdminServlet extends HttpServlet {
       String message = DesktopMessages.getLocalizedString(AdminConstants.NO_BASE_PORTLET);
       session.setAttribute(AdminConstants.CREATION_FAILED_ATTRIBUTE, message);
     } else {
-      boolean isValid = isDefined(portletWindowName.trim());
+      boolean isValid = isValid(portletWindowName);
       boolean isDuplicate = false;
       if (isValid) {
         // Check if a portlet window already exists with the same name.
@@ -223,7 +223,7 @@ public class AdminServlet extends HttpServlet {
 
       if (!isDuplicate) {
         if (isValid) {
-          isValid = isDefined(title.trim());
+          isValid = isValid(title);
         }
         StringBuilder messageBuilder =
             new StringBuilder(DesktopMessages.getLocalizedString(AdminConstants.CREATION_FAILED));
@@ -387,5 +387,9 @@ public class AdminServlet extends HttpServlet {
         session.setAttribute(AdminConstants.NO_WINDOW_DATA_ATTRIBUTE, messageBuilder.toString());
       }
     }
+  }
+
+  private boolean isValid(String term) {
+    return term != null && !term.trim().isEmpty();
   }
 }
