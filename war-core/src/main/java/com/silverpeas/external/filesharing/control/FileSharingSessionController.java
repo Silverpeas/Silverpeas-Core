@@ -30,7 +30,6 @@ import java.util.List;
 import com.silverpeas.external.filesharing.model.FileSharingService;
 import com.silverpeas.external.filesharing.model.FileSharingServiceFactory;
 import com.silverpeas.external.filesharing.model.TicketDetail;
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -57,16 +56,16 @@ public class FileSharingSessionController extends AbstractComponentSessionContro
 
   public String createTicket(TicketDetail ticket) {
     TicketDetail newTicket = ticket;
-    UserDetail user = getUserDetail();
-    newTicket.setCreatorId(user.getId());
-    newTicket.setCreatorName(user.getDisplayedName());
+    if (newTicket.getCreator() == null) {
+      newTicket.setCreator(getUserDetail());
+    }
     return getFileSharingService().createTicket(newTicket);
   }
 
   public void updateTicket(TicketDetail ticket) {
     TicketDetail newTicket = ticket;
-    newTicket.setUpdateId(getUserId());
-    newTicket.setUpdateName(getUserDetail().getDisplayedName());
+    UserDetail user = getUserDetail();
+    newTicket.setLastModifier(user);
     newTicket.setUpdateDate(new Date());
     getFileSharingService().updateTicket(newTicket);
   }
@@ -77,10 +76,6 @@ public class FileSharingSessionController extends AbstractComponentSessionContro
 
   public TicketDetail getTicket(String key) throws RemoteException {
     TicketDetail ticket = getFileSharingService().getTicket(key);
-    ticket.setCreatorName(getUserDetail(ticket.getCreatorId()).getDisplayedName());
-    if (StringUtil.isDefined(ticket.getUpdateId())) {
-      ticket.setUpdateName(getUserDetail(ticket.getUpdateId()).getDisplayedName());
-    }
     return ticket;
   }
 

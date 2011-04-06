@@ -80,7 +80,7 @@ public class GetLinkFileServlet extends HttpServlet {
       String fileType = null;
       String fileName = null;
       long fileSize = 0;
-      if (!ticket.isVersioning()) {
+      if (!ticket.isVersioned()) {
         AttachmentDetail attachment =
             AttachmentController.searchAttachmentByPK(new AttachmentPK("" + ticket.getFileId()));
         filePath =

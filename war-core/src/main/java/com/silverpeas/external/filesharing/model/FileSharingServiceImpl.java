@@ -190,7 +190,11 @@ public class FileSharingServiceImpl implements FileSharingService {
    * @param ticket the ticket to complete.
    */
   private void completeTicketDetail(final TicketDetail ticket) {
-    UserDetail creator = getOrganizationController().getUserDetail(ticket.getCreatorId());
-    ticket.setCreatorName(creator.getDisplayedName());
+    UserDetail creator = getOrganizationController().getUserDetail(ticket.getCreator().getId());
+    ticket.setCreator(creator);
+    if (ticket.getLastModifier() != null) {
+      UserDetail modifier = getOrganizationController().getUserDetail(ticket.getLastModifier().getId());
+      ticket.setLastModifier(modifier);
+    }
   }
 }

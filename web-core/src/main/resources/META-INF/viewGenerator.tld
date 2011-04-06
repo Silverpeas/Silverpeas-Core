@@ -10,6 +10,54 @@
   <uri>http://www.silverpeas.com/tld/viewGenerator</uri>
 
   <tag>
+    <name>formatDate</name>
+    <description>Tag to print out a date localized from the specified language</description>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.FormatDateTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <name>value</name>
+      <description>
+         The date to format
+      </description>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.util.Date</type>
+    </attribute>
+    <attribute>
+      <name>language</name>
+      <description>
+         The language to use for localizing the date
+      </description>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <name>formatDateTime</name>
+    <description>Tag to print out a date and time localized from the specified language</description>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.FormatDateTimeTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <name>value</name>
+      <description>
+         The date and time to format
+      </description>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.util.Date</type>
+    </attribute>
+    <attribute>
+      <name>language</name>
+      <description>
+         The language to use for localizing the date and time
+      </description>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
     <name>commentListing</name>
     <description>Tag to print out a list of comments on a given resource</description>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.comment.CommentListTag</tag-class>

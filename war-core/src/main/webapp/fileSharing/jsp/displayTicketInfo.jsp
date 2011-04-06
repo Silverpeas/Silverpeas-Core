@@ -64,7 +64,7 @@
     <c:if test="${attachment!=null}">
       <div class="tableBoard">
 
-        <strong><c:out value="${ticket.creatorName}"/></strong> <fmt:message key="fileSharing.shareFile"/><br/><br/>
+        <strong><c:out value="${ticket.creator.displayedName}"/></strong> <fmt:message key="fileSharing.shareFile"/><br/><br/>
 
         <img alt="image" src="<c:out value='${ticket.attachmentDetail.attachmentIcon}'/>" id="img_44"/>
 
@@ -86,7 +86,7 @@
     <c:if test="${document!=null}">
       <div class="tableBoard">
 
-        <strong><c:out value="${ticket.creatorName}"/></strong> <fmt:message key="fileSharing.shareFile"/><br/><br/>
+        <strong><c:out value="${ticket.creator.displayedName}"/></strong> <fmt:message key="fileSharing.shareFile"/><br/><br/>
 
         <img alt="image" src="<c:out value='${ticket.attachmentDetail.attachmentIcon}'/>" id="img_44"/>
 

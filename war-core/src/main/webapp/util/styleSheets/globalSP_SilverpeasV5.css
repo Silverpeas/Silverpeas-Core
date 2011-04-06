@@ -2332,14 +2332,14 @@ caption {
   color:#333366;
   border-bottom:1px solid #9E9ECF;
   display:block;
-  padding:0px 0 3px 0; 
+  padding:0px 0 3px 0;
   font-size:11px;
 }
 #directory .link:hover, #directory .link:focus {
   color:#000;
   border-bottom:1px solid #000;
   display:block;
-  padding:0px 0 3px 0; 
+  padding:0px 0 3px 0;
   font-size:11px;
 }
 
@@ -3174,20 +3174,20 @@ caption {
 	display: none;
 }
 
-#publicProfileContenu { 
-	margin-left:210px; 
+#publicProfileContenu {
+	margin-left:210px;
 }
 
 #publicProfileContenu #gef-tabs,
 #publicProfileContenu form,
-#publicProfileContenu center, 
+#publicProfileContenu center,
 #publicProfileContenu .tab-content,
-#contactProfil, 
+#contactProfil,
 #newsFeedProfil,
 #invitationProfil {
 	float:left;
 	width:100%;}
-	
+
 #publicProfileContenu  address { font-style:normal;}
 
 /* IMAGE  bg_tri.png à chercher dans corps dans fleche */
@@ -3269,7 +3269,7 @@ caption {
 #newsFeedProfil .profilPhoto {
 	width:50px;
 	height:50px;
-	overflow:hidden;    
+	overflow:hidden;
 	display: inline;
 	border:0;
 	float:left;
@@ -3284,7 +3284,7 @@ caption {
 	margin-left:70px;
 	color:#727272;
 	}
-	
+
 #newsFeedProfil .txt .detail  {
 	color:#333;
 	line-height:16px;
@@ -3311,12 +3311,12 @@ caption {
 	background-image:url(../icons/newsFeed_statut.gif);
 	padding-left:20px;
 	}
-	
+
 #newsFeedProfil .txt .decoration-publication {
 	background-image:url(../icons/newsFeed_publication.gif);
 	padding-left:20px;
 	}
-	
+
 #newsFeedProfil .txt .decoration-event,
 #newsFeedProfil .txt .decoration-lastevent {
 	background-image:url(../icons/newsFeed_event.gif);
@@ -3327,11 +3327,11 @@ caption {
 	background-image:url(../icons/newsFeed_picture.gif);
 	padding-left:20px;
 	}
-	
-#newsFeedProfil .name { 
+
+#newsFeedProfil .name {
 	color:#26334A;
 	}
-	
+
 #newsFeedProfil	.a_new {
 	height:50px;
 	}
@@ -3348,9 +3348,9 @@ html > body #newsFeedProfil	.a_new {
     background: transparent url("../icons/arrow/arrowDown.gif") no-repeat scroll right center;
 	padding-right: 30px;
 }
-	
+
 .newsFeed .inprogress {
-    background-color: #EAEAEA; 
+    background-color: #EAEAEA;
     border-bottom: 1px solid #CCCCCC;
     border-top: 1px solid #CCCCCC;
     clear: both;
@@ -3363,7 +3363,7 @@ html > body #newsFeedProfil	.a_new {
 .newsFeed .inprogress span {
 	background: #EAEAEA url("../icons/inProgress-horizontal.gif") no-repeat scroll right center;
 	padding-right: 30px;
-	margin: 0px 15px; 
+	margin: 0px 15px;
 }
 
 /* Invitation  et contact*/
@@ -3375,26 +3375,26 @@ html > body #newsFeedProfil	.a_new {
 #invitationProfil .a_invitation , #contactProfil .a_contact{
 	border:1px solid #CFCFCF;
 	padding:8px;
-	margin:8px 8px 0 0; 
+	margin:8px 8px 0 0;
 	height:84px;
 	position:relative;
-	
+
 	}
 
 html > body #invitationProfil .a_invitation , html > body  #contactProfil .a_contact{
 	min-height:84px;
 	height:auto;
 	}
-	
+
 /* Par défaut 1 colonne */
 .aff_colonnes .a_contact {
-	
-	
+
+
 }
 
 
-/*  
--- Pour affichage2 colonnes 
+/*
+-- Pour affichage2 colonnes
 #contactProfil .aff_colonnes .a_contact {
 	width:46%;
 	float:right;
@@ -3426,7 +3426,7 @@ html > body #invitationProfil .a_invitation , html > body  #contactProfil .a_con
 	height:auto;
 	}
 
-#invitationProfil a.name, #contactProfil .userName a{  
+#invitationProfil a.name, #contactProfil .userName a{
 	font-size:14px;
 	color:#000;
 	font-weight:bold;
@@ -3451,8 +3451,8 @@ html > body #invitationProfil .a_invitation , html > body  #contactProfil .a_con
  #contactProfil .action{
 	 margin-top:31px;
 }
-	 
-	 
+
+
 .action .link {
     border-bottom: 1px solid #9E9ECF;
     clear: right;
@@ -3474,7 +3474,7 @@ html > body #invitationProfil .a_invitation , html > body  #contactProfil .a_con
 	padding: 0;
 	list-style-type:none
 	}
-	
+
 #contactProfil ul li.infoConnection img {
     position: absolute;
     right: 10px;
@@ -3487,9 +3487,9 @@ html > body #invitationProfil .a_invitation , html > body  #contactProfil .a_con
     font-weight: bold;
     padding-top: 10px;
 }
-	
-/* general Style */	
-hr.sep  { 
+
+/* general Style */
+hr.sep  {
 	clear:both;
 	height:0px;
 	line-height:0px;
@@ -3506,7 +3506,7 @@ hr.sep  {
 .txtColor {
 	color:#3A5998;
 	}
-	
+
 /* class actuellement utilisée dans l'annuaire expert à généraliser */
 .linkMore {
     background: url("../icons/arrow/arrowDown.gif") no-repeat scroll right center #EFF9E3;
@@ -3631,7 +3631,7 @@ ul#attachmentList li.attachmentListItem .linkAllVersions {
 ul#attachmentList li.attachmentListItem .linkAllVersions a {
     color: #666;
 }
- 
+
 /*- [ attachments END ] ------------------------- */
 
 #admin-component .componentIcon {
@@ -3752,7 +3752,7 @@ ul#attachmentList li.attachmentListItem .linkAllVersions a {
   text-align: left;
 }
 
-#comments-update-box .text, 
+#comments-update-box .text,
 .commentaires #edition-box .text {
   width: 95%;
   height: 6em;
@@ -3852,7 +3852,7 @@ button {
 	display:block;
 	background-color:#e9e9e9;
 	border-bottom:1px solid #c6cdbf;
-	height:20px; 
+	height:20px;
 	line-height:20px;
 	padding:0 10px;
 	position:relative
@@ -3892,7 +3892,7 @@ button {
 	text-indent:32px;
 	line-height:14px;
 	padding:2px 0;
-}	
+}
 
 .add_position {
 	background:url(../icons/pdcPeasSmall-12x12.gif) 4px 3px no-repeat;
@@ -3918,8 +3918,8 @@ html:not([lang*=""]) .add_position:hover {
 	-moz-box-shadow:0 -1px 2px 1px #FFD37F inset;
 	color:#000;
 }
-	
-@media screen and (-webkit-min-device-pixel-ratio:0) { 
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
 	.add_position{
 		-webkit-border-radius:4px;
 		border:1px solid #003C74;
@@ -3928,5 +3928,10 @@ html:not([lang*=""]) .add_position:hover {
 	.add_position:hover{
 		-webkit-box-shadow:0 -1px 2px 1px #FFD37F inset;
 		color:#000;
-	}	
+	}
+}
+
+.disabled {
+  color: #B9B9B9;
+  background-color: #EAEAEA;
 }

@@ -36,6 +36,8 @@ import java.util.UUID;
 import com.silverpeas.external.filesharing.model.DownloadDetail;
 import com.silverpeas.external.filesharing.model.TicketDetail;
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
 import static com.silverpeas.util.StringUtil.*;
@@ -180,23 +182,28 @@ public class TicketDAO {
       prepStmt.setInt(1, ticket.getFileId());
       prepStmt.setString(2, ticket.getComponentId());
       prepStmt.setString(3, "0");
-      if (ticket.isVersioning()) {
+      if (ticket.isVersioned()) {
         prepStmt.setString(3, "1");
       }
-      prepStmt.setString(4, ticket.getCreatorId());
+      prepStmt.setString(4, ticket.getCreator().getId());
       prepStmt.setString(5, "" + today.getTime());
       Date endDate = ticket.getEndDate();
-      Calendar calendar = Calendar.getInstance();
-      calendar.setTime(endDate);
-      calendar.set(Calendar.HOUR_OF_DAY, 23);
-      calendar.set(Calendar.MINUTE, 59);
-      calendar.set(Calendar.SECOND, 59);
-      prepStmt.setString(6, Long.toString(calendar.getTime().getTime()));
+      if (endDate != null) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(endDate);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        prepStmt.setString(6, Long.toString(calendar.getTime().getTime()));
+      } else {
+        prepStmt.setString(6, null);
+      }
       prepStmt.setInt(7, ticket.getNbAccessMax());
       prepStmt.setString(8, key);
       prepStmt.executeUpdate();
     } catch (Exception e) {
-      // TODO trace
+      SilverTrace.error("fileSharing", getClass().getSimpleName() + ".createTicket",
+          "root.EX_NO_MESSAGE", e);
       return null;
     } finally {
       // fermeture
@@ -216,18 +223,24 @@ public class TicketDAO {
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, ticket.getFileId());
       prepStmt.setString(2, ticket.getComponentId());
-      prepStmt.setString(3, ticket.getUpdateId());
-      if (StringUtil.isDefined(ticket.getUpdateId())) {
+      if (ticket.getLastModifier() != null) {
+        prepStmt.setString(3, ticket.getLastModifier().getId());
         prepStmt.setString(4, "" + today.getTime());
       } else {
+        prepStmt.setString(3, null);
         prepStmt.setString(4, null);
       }
-      Calendar calendar = Calendar.getInstance();
-      calendar.setTime(ticket.getEndDate());
-      calendar.set(Calendar.HOUR_OF_DAY, 23);
-      calendar.set(Calendar.MINUTE, 59);
-      calendar.set(Calendar.SECOND, 59);
-      prepStmt.setString(5, Long.toString(calendar.getTime().getTime()));
+      Date endDate = ticket.getEndDate();
+      if (endDate != null) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(endDate);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        prepStmt.setString(5, Long.toString(calendar.getTime().getTime()));
+      } else {
+        prepStmt.setString(5, null);
+      }
       prepStmt.setInt(6, ticket.getNbAccessMax());
       prepStmt.setInt(7, ticket.getNbAccess());
       prepStmt.setString(8, ticket.getKeyFile());
@@ -306,22 +319,28 @@ public class TicketDAO {
     String componentId = rs.getString("componentId");
     boolean versioning = "1".equals(rs.getString("versioning"));
     String creatorId = rs.getString("creatorId");
+    String updateId = rs.getString("updateId");
     Date creationDate = null;
     if (StringUtil.isDefined(rs.getString("creationDate"))) {
       creationDate = new Date(Long.parseLong(rs.getString("creationDate")));
     }
     Date endDate = null;
-    if (StringUtil.isDefined(rs.getString("endDate"))) {
-      String dateInMillis = rs.getString("endDate");
-      if (isDefined(dateInMillis)) {
-        endDate = new Date(Long.parseLong(dateInMillis));
-      }
+    String dateInMillis = rs.getString("endDate");
+    if (isDefined(dateInMillis)) {
+      endDate = new Date(Long.parseLong(dateInMillis));
     }
     int nbMaxAccess = rs.getInt("NbAccessMax");
 
-    TicketDetail ticket = TicketDetail.aTicket(fileId, componentId, versioning, creatorId,
+    UserDetail creator = new UserDetail();
+    creator.setId(creatorId);
+    TicketDetail ticket = TicketDetail.aTicket(fileId, componentId, versioning, creator,
         creationDate, endDate, nbMaxAccess);
-    ticket.setUpdateId(rs.getString("updateId"));
+
+    if (isDefined(updateId)) {
+      UserDetail updater = new UserDetail();
+      updater.setId(updateId);
+      ticket.setLastModifier(updater);
+    }
     String updateDate = null;
     if (StringUtil.isDefined(rs.getString("updateDate"))) {
       updateDate = rs.getString("updateDate");

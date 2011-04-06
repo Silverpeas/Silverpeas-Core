@@ -59,7 +59,7 @@ public class GetInfoFromKeyServlet extends HttpServlet {
       getServletContext().getRequestDispatcher("/fileSharing/jsp/invalidTicket.jsp").forward(
           request, response);
     } else {
-      if (!ticket.isVersioning()) {
+      if (!ticket.isVersioned()) {
         request.setAttribute(ATT_ATTACHMENT,
             AttachmentController.searchAttachmentByPK(new AttachmentPK("" + ticket.getFileId())));
       } else {
