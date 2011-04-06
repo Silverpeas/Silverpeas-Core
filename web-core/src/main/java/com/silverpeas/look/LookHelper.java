@@ -67,8 +67,6 @@ public interface LookHelper {
 
   public abstract String getUserId();
 
-  public abstract String getAnonymousUserId();
-
   public abstract String getLanguage();
 
   public abstract boolean isAnonymousUser();

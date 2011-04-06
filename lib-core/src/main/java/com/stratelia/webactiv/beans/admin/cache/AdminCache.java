@@ -26,6 +26,7 @@ package com.stratelia.webactiv.beans.admin.cache;
 import java.util.Hashtable;
 import java.util.Iterator;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.Group;
@@ -253,10 +254,10 @@ public class AdminCache extends Object {
   protected void removeSpaceComponentsInst(String spaceId) {
     ComponentInst[] theComponents = m_hComponentInstCache.values().toArray(new ComponentInst[0]);
 
-    for (int i = 0; i < theComponents.length; i++) {
-      if (spaceId.equals(getShortSpaceId(theComponents[i].getDomainFatherId()))) {
-        removeComponentsProfilesInst(theComponents[i].getId());
-        removeComponentInst(theComponents[i]);
+    for (ComponentInst theComponent : theComponents) {
+      if (spaceId.equals(getShortSpaceId(theComponent.getDomainFatherId()))) {
+        removeComponentsProfilesInst(theComponent.getId());
+        removeComponentInst(theComponent);
       }
     }
   }
@@ -319,9 +320,9 @@ public class AdminCache extends Object {
   protected void removeComponentsProfilesInst(String componentId) {
     ProfileInst[] theProfiles = m_hProfileInstCache.values().toArray(new ProfileInst[0]);
 
-    for (int i = 0; i < theProfiles.length; i++) {
-      if (componentId.equals(theProfiles[i].getComponentFatherId())) {
-        removeProfileInst(theProfiles[i]);
+    for (ProfileInst theProfile : theProfiles) {
+      if (componentId.equals(theProfile.getComponentFatherId())) {
+        removeProfileInst(theProfile);
       }
     }
   }
@@ -538,10 +539,10 @@ public class AdminCache extends Object {
         String theSpaceId = getShortSpaceId(theSpace.getId());
         int j = 0;
         newChilds = new String[allChilds.length - 1];
-        for (int i = 0; i < allChilds.length; i++) {
-          if (!theSpaceId.equals(allChilds[i])) {
+        for (String allChild : allChilds) {
+          if (!theSpaceId.equals(allChild)) {
             if (j < allChilds.length - 1) {
-              newChilds[j++] = allChilds[i];
+              newChilds[j++] = allChild;
             } else { // oups, the child did not exist
               newChilds = allChilds;
             }
@@ -648,15 +649,11 @@ public class AdminCache extends Object {
 
   // ----- Groups -----
   public void opAddGroup(Group group) {
-    if ((group.getSuperGroupId() != null)
-        && (group.getSuperGroupId().length() > 0)) { // The group inherits of
-      // the permissions of the
-      // parent -> too
-      // complicated -> reset the
-      // permissions of all users
+    if (StringUtil.isDefined(group.getSuperGroupId())) { // The group inherits of
+      // the permissions of the parent -> too complicated -> reset the permissions of all users
       String[] uids = group.getUserIds();
-      for (int i = 0; i < uids.length; i++) {
-        opResetUserRights(uids[i]);
+      for (String uid : uids) {
+        opResetUserRights(uid);
       }
     }
   }

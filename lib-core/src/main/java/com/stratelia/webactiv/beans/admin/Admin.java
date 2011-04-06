@@ -3823,7 +3823,7 @@ public final class Admin {
 
   /**
    * @param spaces list of authorized spaces built by this method
-   * @param componentsId list of components' id (base to get authorized spaces) 
+   * @param componentsId list of components' id (base to get authorized spaces)
    * @param space a space candidate to be in authorized spaces list
    */
   void addAuthorizedSpace(Set<String> spaces, Set<String> componentsId, SpaceInstLight space) {

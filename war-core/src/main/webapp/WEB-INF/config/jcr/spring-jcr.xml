@@ -33,8 +33,8 @@
     <property name="homeDir" value="${jcr.home.dir.url}" />
     <property name="configurationProperties">
       <list>
-        <value>file://${SILVERPEAS_HOME}/properties/com/stratelia/webactiv/beans/admin/admin.properties</value>
-        <value>file://${SILVERPEAS_HOME}/properties/com/stratelia/webactiv/util/jcr.properties</value>
+        <value>file:///${SILVERPEAS_HOME}/properties/com/stratelia/webactiv/beans/admin/admin.properties</value>
+        <value>file:///${SILVERPEAS_HOME}/properties/com/stratelia/webactiv/util/jcr.properties</value>
       </list>
     </property>
   </bean>
@@ -48,8 +48,8 @@
   <bean id="jcrPropertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="locations">
       <list>
-        <value>file://${SILVERPEAS_HOME}/properties/com/stratelia/webactiv/beans/admin/admin.properties</value>
-        <value>file://${SILVERPEAS_HOME}/properties/com/stratelia/webactiv/util/jcr.properties</value>
+        <value>file:///${SILVERPEAS_HOME}/properties/com/stratelia/webactiv/beans/admin/admin.properties</value>
+        <value>file:///${SILVERPEAS_HOME}/properties/com/stratelia/webactiv/util/jcr.properties</value>
       </list>
     </property>
     <property name="searchSystemEnvironment" value="true" />
@@ -63,7 +63,6 @@
   <bean id="basicDaoFactory" class="com.silverpeas.jcrutil.BasicDaoFactory" factory-method="getInstance" />
 
   <bean id="jcrLoginModule" scope="prototype" class="com.stratelia.webactiv.jaas.SilverpeasLoginModule">
-    <property name="anonymousUserId" value="anonymous" />
     <property name="controller" ref="organizationController" />
     <property name="administrator" ref="adminController" />
     <property name="authenticator" ref="authenticator" />

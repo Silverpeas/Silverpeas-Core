@@ -168,7 +168,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
   private JSONObject getWAComponentAsJSONObject(WAComponent component, LookHelper helper) {
     JSONObject jsonObject = new JSONObject();
     jsonObject.put("name", component.getName());
-    jsonObject.put("description", component.getDescription());
+    jsonObject.put("description", component.getDescription().get(helper.getLanguage()));
     jsonObject.put("label", getComponentLabel(component.getName(), helper));
 
     return jsonObject;
