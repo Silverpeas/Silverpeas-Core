@@ -429,16 +429,10 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       // Nom
       nom = csvValues[i][0].getValueString();
       if (nom.length() == 0) {// champ obligatoire
-        listErrors.append(getString("JDP.ligne")).append(" = ").
-            append(String.valueOf(i + 1)).append(", ");
-        listErrors.append(getString("JDP.colonne")).append(" = 1, ");
-        listErrors.append(getString("JDP.valeur")).append(" = ").append(nom).append(", ");
+        listErrors.append(getErrorMessage(i+1, 1, nom));
         listErrors.append(getString("JDP.obligatoire")).append("<br/>");
       } else if (nom.length() > 100) {// verifier 100 char max
-        listErrors.append(getString("JDP.ligne")).append(" = ").
-            append(String.valueOf(i + 1)).append(", ");
-        listErrors.append(getString("JDP.colonne")).append(" = 1, ");
-        listErrors.append(getString("JDP.valeur")).append(" = ").append(", ");
+        listErrors.append(getErrorMessage(i+1, 1, nom));
         listErrors.append(getString("JDP.nbCarMax")).append(" 100 ").
             append(getString("JDP.caracteres")).append("<br/>");
       }
@@ -446,10 +440,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       // Prenom
       prenom = csvValues[i][1].getValueString(); // verifier 100 char max
       if (prenom.length() > 100) {
-        listErrors.append(getString("JDP.ligne")).append(" = ").append(String.valueOf(i + 1)).append(
-            ", ");
-        listErrors.append(getString("JDP.colonne")).append(" = 2, ");
-        listErrors.append(getString("JDP.valeur")).append(" = ").append(prenom).append(", ");
+        listErrors.append(getErrorMessage(i+1, 2, prenom));
         listErrors.append(getString("JDP.nbCarMax")).append(" 100 "
             + getString("JDP.caracteres")).append("<br/>");
       }
@@ -457,35 +448,22 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       // Login
       login = csvValues[i][2].getValueString();
       if (login.length() == 0) {// champ obligatoire
-        listErrors.append(getString("JDP.ligne")).append(" = ").append(String.valueOf(i + 1)).append(
-            ", ");
-        listErrors.append(getString("JDP.colonne")).append(" = 3, ");
-        listErrors.append(getString("JDP.valeur")).append(" = ").append(login).append(", ");
+        listErrors.append(getErrorMessage(i+1, 3, login));
         listErrors.append(getString("JDP.obligatoire")).append("<br/>");
       } else if (login.length() < JobDomainSettings.m_MinLengthLogin) {// verifier
-        // jobDomainPeasSettings.getString("minLengthLogin") char min
-        listErrors.append(getString("JDP.ligne")).append(" = ").append(String.valueOf(i + 1)).append(
-            ", ");
-        listErrors.append(getString("JDP.colonne")).append(" = 3, ");
-        listErrors.append(getString("JDP.valeur")).append(" = ").append(login).append(", ");
+        listErrors.append(getErrorMessage(i+1, 3, login));
         listErrors.append(getString("JDP.nbCarMin")).append(" ").append(
             JobDomainSettings.m_MinLengthLogin).append(" ").append(getString("JDP.caracteres")).
             append("<br/>");
       } else if (login.length() > 20) {// verifier 20 char max
-        listErrors.append(getString("JDP.ligne")).append(" = ").append(String.valueOf(i + 1)).append(
-            ", ");
-        listErrors.append(getString("JDP.colonne")).append(" = 3, ");
-        listErrors.append(getString("JDP.valeur")).append(" = ").append(login).append(", ");
+        listErrors.append(getErrorMessage(i+1, 3, login));
         listErrors.append(getString("JDP.nbCarMax")).append(" 20 ").append(getString(
             "JDP.caracteres")).append("<br/>");
       } else {// verif login unique
         existingLogin = m_AdminCtrl.getUserIdByLoginAndDomain(login,
             m_TargetDomainId);
         if (existingLogin != null) {
-          listErrors.append(getString("JDP.ligne")).append(" = ").append(String.valueOf(i + 1)).
-              append(", ");
-          listErrors.append(getString("JDP.colonne")).append(" = 3, ");
-          listErrors.append(getString("JDP.valeur")).append(" = ").append(login).append(", ");
+          listErrors.append(getErrorMessage(i+1, 3, login));
           listErrors.append(getString("JDP.existingLogin")).append("<br/>");
         }
       }
@@ -493,10 +471,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       // Email
       email = csvValues[i][3].getValueString(); // verifier 100 char max
       if (email.length() > 100) {
-        listErrors.append(getString("JDP.ligne")).append(" = ").append(String.valueOf(i + 1)).append(
-            ", ");
-        listErrors.append(getString("JDP.colonne")).append(" = 4, ");
-        listErrors.append(getString("JDP.valeur")).append(" = ").append(email).append(", ");
+        listErrors.append(getErrorMessage(i+1, 4, email));
         listErrors.append(getString("JDP.nbCarMax")).append(" 100 ").append(getString(
             "JDP.caracteres")).append("<br/>");
       }
@@ -506,40 +481,31 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       if (!"".equals(droits) && !"Admin".equals(droits)
           && !"AdminPdc".equals(droits) && !"AdminDomain".equals(droits)
           && !"User".equals(droits) && !"Guest".equals(droits)) {
-        listErrors.append(getString("JDP.ligne")).append(" = ").append(String.valueOf(i + 1)).append(
-            ", ");
-        listErrors.append(getString("JDP.colonne")).append(" = 5, ");
-        listErrors.append(getString("JDP.valeur")).append(" = ").append(droits).append(", ");
+        listErrors.append(getErrorMessage(i+1, 5, droits));
         listErrors.append(getString("JDP.valeursPossibles")).append("<br/>");
       }
 
       // MotDePasse
       motDePasse = csvValues[i][5].getValueString();
-      if (!JobDomainSettings.m_BlanksAllowedInPwd
-          && motDePasse.indexOf(" ") != -1) {
-        listErrors.append(getString("JDP.ligne")).append(" = ").append(String.valueOf(i + 1)).append(
-            ", ");
-        listErrors.append(getString("JDP.colonne")).append(" = 6, ");
-        listErrors.append(getString("JDP.valeur")).append(" = ").append(motDePasse).append(", ");
-        listErrors.append(getString("JDP.espaces")).append("<br/>");
-      } else if (motDePasse.length() < JobDomainSettings.m_MinLengthPwd) {// verifier
-        // jobDomainPeasSettings.getString("minLengthPwd")
-        // char
-        // min
-        listErrors.append(getString("JDP.ligne")).append(" = ").append(String.valueOf(i + 1)).append(
-            ", ");
-        listErrors.append(getString("JDP.colonne")).append(" = 6, ");
-        listErrors.append(getString("JDP.valeur")).append(" = ").append(motDePasse).append(", ");
-        listErrors.append(getString("JDP.nbCarMin")).append(" ").append(
-            JobDomainSettings.m_MinLengthPwd).append(" ").append(getString("JDP.caracteres")).append(
-            "<br/>");
-      } else if (motDePasse.length() > 32) {// verifier 32 char max
-        listErrors.append(getString("JDP.ligne")).append(" = ").append(String.valueOf(i + 1)).append(
-            ", ");
-        listErrors.append(getString("JDP.colonne")).append(" = 6, ");
-        listErrors.append(getString("JDP.valeur")).append(" = ").append(motDePasse).append(", ");
-        listErrors.append(getString("JDP.nbCarMax")).append(" 32 ").append(getString(
-            "JDP.caracteres")).append("<br/>");
+      // password is not mandatory
+      if (StringUtil.isDefined(motDePasse)) {
+        if (!JobDomainSettings.m_BlanksAllowedInPwd
+            && motDePasse.indexOf(" ") != -1) {
+          listErrors.append(getErrorMessage(i+1, 6, motDePasse));
+          listErrors.append(getString("JDP.espaces")).append("<br/>");
+        } else if (motDePasse.length() < JobDomainSettings.m_MinLengthPwd) {// verifier
+          // jobDomainPeasSettings.getString("minLengthPwd")
+          // char
+          // min
+          listErrors.append(getErrorMessage(i+1, 6, motDePasse));
+          listErrors.append(getString("JDP.nbCarMin")).append(" ").append(
+              JobDomainSettings.m_MinLengthPwd).append(" ").append(getString("JDP.caracteres")).append(
+              "<br/>");
+        } else if (motDePasse.length() > 32) {// verifier 32 char max
+          listErrors.append(getErrorMessage(i+1, 6, motDePasse));
+          listErrors.append(getString("JDP.nbCarMax")).append(" 32 ").append(getString(
+              "JDP.caracteres")).append("<br/>");
+        }
       }
 
       if (csvReader.getM_specificNbCols() > 0) {
@@ -549,10 +515,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           // title
           title = csvValues[i][6].getValueString(); // verifier 100 char max
           if (title.length() > 100) {
-            listErrors.append(getString("JDP.ligne")).append(" = ").append(String.valueOf(i + 1)).
-                append(", ");
-            listErrors.append(getString("JDP.colonne")).append(" = 7, ");
-            listErrors.append(getString("JDP.valeur")).append(" = ").append(title).append(", ");
+            listErrors.append(getErrorMessage(i+1, 7, title));
             listErrors.append(getString("JDP.nbCarMax")).append(" 100 ").append(getString(
                 "JDP.caracteres")).append("<br/>");
           }
@@ -560,10 +523,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           // company
           company = csvValues[i][7].getValueString(); // verifier 100 char max
           if (company.length() > 100) {
-            listErrors.append(getString("JDP.ligne")).append(" = ").append(String.valueOf(i + 1)).
-                append(", ");
-            listErrors.append(getString("JDP.colonne")).append(" = 8, ");
-            listErrors.append(getString("JDP.valeur")).append(" = ").append(company).append(", ");
+            listErrors.append(getErrorMessage(i+1, 8, company));
             listErrors.append(getString("JDP.nbCarMax")).append(" 100 ").append(getString(
                 "JDP.caracteres")).append("<br/>");
           }
@@ -571,10 +531,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           // position
           position = csvValues[i][8].getValueString(); // verifier 100 char max
           if (position.length() > 100) {
-            listErrors.append(getString("JDP.ligne")).append(" = ").append(String.valueOf(i + 1)).
-                append(", ");
-            listErrors.append(getString("JDP.colonne")).append(" = 9, ");
-            listErrors.append(getString("JDP.valeur")).append(" = ").append(position).append(", ");
+            listErrors.append(getErrorMessage(i+1, 9, position));
             listErrors.append(getString("JDP.nbCarMax")).append(" 100 ").append(getString(
                 "JDP.caracteres")).append("<br/>");
           }
@@ -582,10 +539,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           // boss
           boss = csvValues[i][9].getValueString(); // verifier 100 char max
           if (boss.length() > 100) {
-            listErrors.append(getString("JDP.ligne")).append(" = ").append(String.valueOf(i + 1)).
-                append(", ");
-            listErrors.append(getString("JDP.colonne")).append(" = 10, ");
-            listErrors.append(getString("JDP.valeur")).append(" = ").append(boss).append(", ");
+            listErrors.append(getErrorMessage(i+1, 10, boss));
             listErrors.append(getString("JDP.nbCarMax")).append(" 100 ").append(getString(
                 "JDP.caracteres")).append("<br/>");
           }
@@ -593,10 +547,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           // phone
           phone = csvValues[i][10].getValueString(); // verifier 20 char max
           if (phone.length() > 20) {
-            listErrors.append(getString("JDP.ligne")).append(" = ").append(String.valueOf(i + 1)).
-                append(", ");
-            listErrors.append(getString("JDP.colonne")).append(" = 11, ");
-            listErrors.append(getString("JDP.valeur")).append(" = ").append(phone).append(", ");
+            listErrors.append(getErrorMessage(i+1, 11, phone));
             listErrors.append(getString("JDP.nbCarMax")).append(" 20 ").append(getString(
                 "JDP.caracteres")).append("<br/>");
           }
@@ -604,10 +555,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           // homePhone
           homePhone = csvValues[i][11].getValueString(); // verifier 20 char max
           if (homePhone.length() > 20) {
-            listErrors.append(getString("JDP.ligne")).append(" = ").append(String.valueOf(i + 1)).
-                append(", ");
-            listErrors.append(getString("JDP.colonne")).append(" = 12, ");
-            listErrors.append(getString("JDP.valeur")).append(" = ").append(homePhone).append(", ");
+            listErrors.append(getErrorMessage(i+1, 12, homePhone));
             listErrors.append(getString("JDP.nbCarMax")).append(" 20 ").append(getString(
                 "JDP.caracteres")).append("<br/>");
           }
@@ -615,10 +563,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           // fax
           fax = csvValues[i][12].getValueString(); // verifier 20 char max
           if (fax.length() > 20) {
-            listErrors.append(getString("JDP.ligne")).append(" = ").append(String.valueOf(i + 1)).
-                append(", ");
-            listErrors.append(getString("JDP.colonne")).append(" = 13, ");
-            listErrors.append(getString("JDP.valeur")).append(" = ").append(fax).append(", ");
+            listErrors.append(getErrorMessage(i+1, 13, fax));
             listErrors.append(getString("JDP.nbCarMax")).append(" 20 ").append(getString(
                 "JDP.caracteres")).append("<br/>");
           }
@@ -627,11 +572,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           cellularPhone = csvValues[i][13].getValueString(); // verifier 20 char
           // max
           if (cellularPhone.length() > 20) {
-            listErrors.append(getString("JDP.ligne")).append(" = ").append(String.valueOf(i + 1)).
-                append(", ");
-            listErrors.append(getString("JDP.colonne")).append(" = 14, ");
-            listErrors.append(getString("JDP.valeur")).append(" = ").append(cellularPhone).append(
-                ", ");
+            listErrors.append(getErrorMessage(i+1, 14, cellularPhone));
             listErrors.append(getString("JDP.nbCarMax")).append(" 20 ").append(getString(
                 "JDP.caracteres")).append("<br/>");
           }
@@ -639,10 +580,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           // address
           address = csvValues[i][14].getValueString(); // verifier 500 char max
           if (address.length() > 500) {
-            listErrors.append(getString("JDP.ligne")).append(" = ").append(String.valueOf(i + 1)).
-                append(", ");
-            listErrors.append(getString("JDP.colonne")).append(" = 15, ");
-            listErrors.append(getString("JDP.valeur")).append(" = ").append(address).append(", ");
+            listErrors.append(getErrorMessage(i+1, 15, address));
             listErrors.append(getString("JDP.nbCarMax")).append(" 500 ").append(getString(
                 "JDP.caracteres")).append("<br/>");
           }
@@ -653,11 +591,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
             if (Variant.TYPE_STRING.equals(csvReader.getM_specificColType(j))) {
               informationSpecifiqueString = csvValues[i][j + 6].getValueString(); // verifier 50 char max
               if (informationSpecifiqueString.length() > 50) {
-                listErrors.append(getString("JDP.ligne")).append(" = ").append(String.valueOf(i + 1)).
-                    append(", ");
-                listErrors.append(getString("JDP.colonne")).append(" = ").append(j + 6).append(", ");
-                listErrors.append(getString("JDP.valeur")).append(" = ").append(
-                    informationSpecifiqueString).append(", ");
+                listErrors.append(getErrorMessage(i+1, j + 6, informationSpecifiqueString));
                 listErrors.append(getString("JDP.nbCarMax")).append(" 50 ").append(getString(
                     "JDP.caracteres")).append("<br/>");
               }
@@ -771,10 +705,18 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         }
       }
 
-      createUser(login, nom, prenom, email, userAccessLevel, true, motDePasse,
+      boolean passwordValid = StringUtil.isDefined(motDePasse); // password is not mandatory
+      createUser(login, nom, prenom, email, userAccessLevel, passwordValid, motDePasse,
           properties, null); // l'id User créé est dans m_TargetUserId
-
     }
+  }
+  
+  private String getErrorMessage(int line, int column, String value) {
+    StringBuilder str = new StringBuilder();
+    str.append(getString("JDP.ligne")).append(" = ").append(line).append(", ");
+    str.append(getString("JDP.colonne")).append(" = ").append(column).append(", ");
+    str.append(getString("JDP.valeur")).append(" = ").append(value).append(", ");
+    return str.toString();
   }
 
   private String getLastGroupId(UserFull theUser) {
