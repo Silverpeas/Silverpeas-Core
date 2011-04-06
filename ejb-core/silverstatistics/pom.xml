@@ -11,5 +11,12 @@
   <artifactId>silverstatistics</artifactId>
   <packaging>ejb</packaging>
   <name>EJB Silver Statistics</name>
-
+    <dependencies>
+        <dependency>
+            <groupId>com.silverpeas.core</groupId>
+            <artifactId>test-core</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>

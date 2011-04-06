@@ -221,7 +221,7 @@ public class SilverStatisticsManager
   /**
    * Method declaration
    *
-   * @param resources
+   * @param resource
    * @see
    */
   private void initDirectoryToScan(java.util.ResourceBundle resource) {
@@ -250,13 +250,6 @@ public class SilverStatisticsManager
           "silvertrace.ERR_INIT_APPENDER_FROM_PROP", e);
     }
   }
-
-  /*
-   * private static String getSoIdinDigitOfComponent(String value) { String myString = value;
-   * boolean ok = false; int i = 0; while (!ok && (i!=value.length())) { try {
-   * myString=value.substring(i, value.length()); i++; Integer.parseInt(myString); ok = true; }
-   * catch (NumberFormatException e) { ok = false; } } return myString; }
-   */
 
   /**
    * Method declaration
