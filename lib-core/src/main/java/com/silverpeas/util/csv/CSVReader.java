@@ -86,6 +86,20 @@ public class CSVReader extends SilverpeasSettings {
   }
   
   public void initCSVFormat(String propertiesFile, String rootPropertyName,
+      String separator) {
+    ResourceLocator rs = new ResourceLocator(propertiesFile, "");
+
+    m_colNames = readStringArray(rs, rootPropertyName, ".Name", -1);
+    m_nbCols = m_colNames.length;
+    m_colTypes = readStringArray(rs, rootPropertyName, ".Type", m_nbCols);
+    m_colDefaultValues = readStringArray(rs, rootPropertyName, ".Default",
+        m_nbCols);
+    m_colMandatory = readStringArray(rs, rootPropertyName, ".Mandatory",
+        m_nbCols);
+    m_separator = separator;
+  }
+  
+  public void initCSVFormat(String propertiesFile, String rootPropertyName,
       String separator, String specificPropertiesFile,
       String specificRootPropertyName) {
     initCSVFormat(propertiesFile, rootPropertyName, separator);
