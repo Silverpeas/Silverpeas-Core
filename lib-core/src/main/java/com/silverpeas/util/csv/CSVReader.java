@@ -53,6 +53,7 @@ public class CSVReader extends SilverpeasSettings {
   protected int m_specificNbCols = 0;
   protected String[] m_specificColNames;
   protected String[] m_specificColTypes;
+  protected String[] m_specificColMandatory;
   protected String[] m_specificParameterNames;
   
   //Active control file columns/object columns
@@ -83,7 +84,7 @@ public class CSVReader extends SilverpeasSettings {
   public CSVReader(String language) {
     m_utilMessages = new ResourceLocator("com.silverpeas.util.multilang.util", language);
   }
-
+  
   public void initCSVFormat(String propertiesFile, String rootPropertyName,
       String separator) {
     ResourceLocator rs = new ResourceLocator(propertiesFile, "");
@@ -101,16 +102,7 @@ public class CSVReader extends SilverpeasSettings {
   public void initCSVFormat(String propertiesFile, String rootPropertyName,
       String separator, String specificPropertiesFile,
       String specificRootPropertyName) {
-    ResourceLocator rs = new ResourceLocator(propertiesFile, "");
-
-    m_colNames = readStringArray(rs, rootPropertyName, ".Name", -1);
-    m_nbCols = m_colNames.length;
-    m_colTypes = readStringArray(rs, rootPropertyName, ".Type", m_nbCols);
-    m_colDefaultValues = readStringArray(rs, rootPropertyName, ".Default",
-        m_nbCols);
-    m_colMandatory = readStringArray(rs, rootPropertyName, ".Mandatory",
-        m_nbCols);
-    m_separator = separator;
+    initCSVFormat(propertiesFile, rootPropertyName, separator);
 
     ResourceLocator specificRs = new ResourceLocator(specificPropertiesFile, "");
     m_specificColNames = readStringArray(specificRs, specificRootPropertyName,
@@ -132,6 +124,10 @@ public class CSVReader extends SilverpeasSettings {
         m_specificColTypes[i] = Variant.TYPE_STRING;
       }
     }
+    
+    m_specificColMandatory = readStringArray(specificRs, specificRootPropertyName, ".Mandatory",
+        m_specificNbCols);
+    
     m_specificParameterNames = m_specificColNames;
   }
 
@@ -271,8 +267,7 @@ public class CSVReader extends SilverpeasSettings {
           SilverTrace.info("util", "CSVReader.parseLine()",
               "root.MSG_PARAM_VALUE", "Token=" + theValue);
           if ((theValue == null) || (theValue.length() <= 0)) {
-            if (Boolean.parseBoolean(m_colMandatory[i]))
-            {
+            if (Boolean.parseBoolean(m_specificColMandatory[i])) {
               listErrors.append(m_utilMessages.getString("util.ligne")).append(" = ").append(
                   Integer.toString(lineNumber)).append(", ");
               listErrors.append(m_utilMessages.getString("util.colonne")).append(" = ").append(
