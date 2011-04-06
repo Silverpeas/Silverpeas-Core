@@ -68,8 +68,6 @@ public abstract class RESTWebService {
    * it offers better scalability.
    */
   public static final String HTTP_AUTHORIZATION = "Authorization";
-  private static final ResourceLocator generalSettings = new ResourceLocator(
-      "com.stratelia.silverpeas.lookAndFeel.generalLook", "");
   @Inject
   @Named("sessionManager")
   private SessionManagement sessionManager;
@@ -254,11 +252,10 @@ public abstract class RESTWebService {
   private UserDetail validateUserSession(String sessionKey) {
     SessionInfo sessionInfo = getSessionManagement().getSessionInfo(sessionKey);
     if (sessionInfo == null) {
-      UserDetail anonymous = getAnonymousUserDetail();
-      if (anonymous == null) {
+      if (!UserDetail.isAnonymousUserExist()) {
         throw new WebApplicationException(Status.UNAUTHORIZED);
       }
-      return anonymous;
+      return UserDetail.getAnonymousUser();
     }
     return sessionInfo.getUserDetail();
   }
@@ -303,21 +300,5 @@ public abstract class RESTWebService {
    */
   private SessionManagement getSessionManagement() {
     return sessionManager;
-  }
-
-  /**
-   * Gets the detail on the anonymous user. If no anonymous user is defined for the Silverpeas
-   * system, then null is returned.
-   *
-   * @return the anonymous user detail or null if no such user is defined in the system.
-   */
-  private UserDetail getAnonymousUserDetail() {
-    String userId = generalSettings.getString("anonymousId");
-    UserDetail anonymous = null;
-    if (isDefined(userId)) {
-      AdminController adminController = new AdminController(userId);
-      anonymous = adminController.getUserDetail(userId);
-    }
-    return anonymous;
   }
 }

@@ -48,7 +48,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 public class LoginFilter implements Filter {
 
   private boolean isUserLoginQuestionMandatory;
-  private String anonymousId;
   private static ResourceLocator generalSettings = null;
 
   @Override
@@ -58,7 +57,6 @@ public class LoginFilter implements Filter {
     isUserLoginQuestionMandatory =
         "personalQuestion".equals(general.getString("forgottenPwdActive"))
         && "true".equals(general.getString("userLoginQuestionMandatory"));
-    anonymousId = general.getString("anonymousId");
     if (generalSettings == null) {
       generalSettings = new ResourceLocator("com.stratelia.webactiv.general", "");
     }
@@ -96,7 +94,7 @@ public class LoginFilter implements Filter {
         UserDetail userDetail = admin.getUserDetail(userId);
 
         if (userDetail != null
-            && !userDetail.getId().equals(anonymousId)
+            && !userDetail.isAnonymous()
             && (!StringUtil.isDefined(userDetail.getLoginQuestion()))) {
           request.setAttribute("userDetail", userDetail);
           destination = "/CredentialsServlet/ChangeQuestion";

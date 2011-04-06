@@ -704,7 +704,7 @@ public class SpaceInstManager {
    * @param ddManager
    * @param sSpaceInstId
    * @return true if the given space instance name is an existing space.
-   * @throws AdminException 
+   * @throws AdminException
    */
   public boolean isSpaceInstExist(DomainDriverManager ddManager, String sSpaceInstId) throws
       AdminException {

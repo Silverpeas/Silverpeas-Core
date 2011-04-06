@@ -23,6 +23,7 @@
  */
 package com.sun.portal.portletcontainer.admin;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,6 +50,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.sun.portal.portletcontainer.admin.registry.PortletRegistryTags;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 import com.sun.portal.portletcontainer.warupdater.PortletWarUpdaterUtil;
+import java.io.FileOutputStream;
 
 /**
  * PortletRegistryHelper is a Helper class to write to and read from the portlet registry xml files.
@@ -65,11 +67,9 @@ public class PortletRegistryHelper implements PortletRegistryTags {
   private static final String PORTLET_CONTAINER_DEFAULT_AUTODEPLOY_DIR_NAME = "autodeploy";
   private static final String PORTLET_CONTAINER_DEFAULT_CONFIG_DIR_NAME = "config";
   private static final String PORTLET_CONTAINER_HOME_TOKEN = "@portlet-container-home@";
-
   private static Logger logger = Logger.getLogger(
       "com.sun.portal.portletcontainer.admin",
       "com.silverpeas.portlets.PALogMessages");
-
   private static String CONFIG_FILE = "ContainerConfig.properties";
   private static Properties configProperties = null;
 
@@ -100,13 +100,15 @@ public class PortletRegistryHelper implements PortletRegistryTags {
   }
 
   public static Element getRootElement(Document document) {
-    if (document != null)
+    if (document != null) {
       return document.getDocumentElement();
+    }
     return null;
   }
 
   public static synchronized void writeFile(Document document, File file)
       throws PortletRegistryException {
+    FileOutputStream output = null;
     try {
       // Use a Transformer for output
       TransformerFactory tFactory = TransformerFactory.newInstance();
@@ -119,7 +121,8 @@ public class PortletRegistryHelper implements PortletRegistryTags {
 
       DOMSource source = new DOMSource(document);
       // StreamResult result = new StreamResult(System.out);
-      StreamResult result = new StreamResult(file);
+      output = new FileOutputStream(file);
+      StreamResult result = new StreamResult(output);
       transformer.transform(source, result);
     } catch (TransformerConfigurationException tce) {
       throw new PortletRegistryException(tce);
@@ -127,6 +130,15 @@ public class PortletRegistryHelper implements PortletRegistryTags {
       throw new PortletRegistryException(te);
     } catch (Exception e) {
       throw new PortletRegistryException(e);
+    } finally {
+      if (output != null) {
+        try {
+          output.close();
+        } catch (IOException ex) {
+          SilverTrace.warn("portlet", PortletRegistryHelper.class.getSimpleName() + ".writeFile()",
+              "root.EX_NO_MESSAGE", ex);
+        }
+      }
     }
   }
 
@@ -155,16 +167,15 @@ public class PortletRegistryHelper implements PortletRegistryTags {
     loadConfigFile();
     // In case loadConfigFile throws an exception configProperties will be null
     if (configProperties != null) {
-      registryLocation = configProperties
-          .getProperty(PORTLET_CONTAINER_DIR_PROPERTY);
+      registryLocation = configProperties.getProperty(PORTLET_CONTAINER_DIR_PROPERTY);
     }
     if (registryLocation == null
         || PORTLET_CONTAINER_HOME_TOKEN.equals(registryLocation)) {
       registryLocation = System.getProperty("user.home") + File.separator
           + PORTLET_CONTAINER_DEFAULT_DIR_NAME;
       if (logger.isLoggable(Level.WARNING)) {
-        logger.log(Level.WARNING, "PSPL_CSPPAM0003", new String[] {
-            PORTLET_CONTAINER_DIR_PROPERTY, registryLocation });
+        logger.log(Level.WARNING, "PSPL_CSPPAM0003", new String[]{
+              PORTLET_CONTAINER_DIR_PROPERTY, registryLocation});
       }
     }
     return registryLocation;

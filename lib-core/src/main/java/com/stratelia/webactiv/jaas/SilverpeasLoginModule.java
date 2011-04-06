@@ -48,13 +48,12 @@ import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.exception.WithNested;
 
 import org.apache.jackrabbit.core.security.authentication.CredentialsCallback;
 
 public class SilverpeasLoginModule implements LoginModule {
-
-  private String anonymousUserId;
 
   private String userId;
 
@@ -68,14 +67,6 @@ public class SilverpeasLoginModule implements LoginModule {
   private OrganizationController controller;
 
   private Admin administrator;
-
-  public String getAnonymousUserId() {
-    return anonymousUserId;
-  }
-
-  public void setAnonymousUserId(String anonymousUserId) {
-    this.anonymousUserId = anonymousUserId;
-  }
 
   public String getUserId() {
     return userId;
@@ -152,8 +143,9 @@ public class SilverpeasLoginModule implements LoginModule {
               principals.add(principal);
             }
           }
+
           if (principals.isEmpty()
-              && getAnonymousUserId().equals(sc.getUserID())) {
+              && UserDetail.isAnonymousUser(sc.getUserID())) {
             principals.add(new AnonymousPrincipal());
           }
           authenticated = true;
