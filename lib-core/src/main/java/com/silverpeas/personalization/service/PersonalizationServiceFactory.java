@@ -34,22 +34,21 @@ public class PersonalizationServiceFactory {
   private PersonalizationService personalizationService;
 
   /**
-   * Gets an instance of this CommentServiceFactory class.
-   * @return a CommentServiceFactory instance.
+   * Gets an instance of this PersonalizationServiceFactory class.
+   * @return a PersonalizationServiceFactory instance.
    */
   public static PersonalizationServiceFactory getFactory() {
     return instance;
   }
 
   /**
-   * Gets a CommentService instance.
-   * @return a CommentService instance.
+   * Gets a PersonalizationService instance.
+   * @return a PersonalizationService instance.
    */
   public PersonalizationService getPersonalizationService() {
     if (personalizationService == null) {
       SilverTrace.warn("personalization", getClass().getSimpleName() + ".getPersonalizationService()",
-          "EX_NO_MESSAGES", "IoC container not bootstrapped or no PersonalizationService bean found! "
-              + "Creates explicitly the bean");
+          "EX_NO_MESSAGES", "IoC container not bootstrapped or no PersonalizationService bean found!");
     }
     return personalizationService;
   }

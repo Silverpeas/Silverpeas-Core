@@ -90,9 +90,9 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
-          <descriptors>
-            <descriptor>assemblies/assembly.xml</descriptor>
-          </descriptors>
+          <descriptorRefs>
+            <descriptorRef>assembly</descriptorRef>
+          </descriptorRefs>
           <appendAssemblyId>true</appendAssemblyId>
           <attach>true</attach>
           <skipAssembly>true</skipAssembly>

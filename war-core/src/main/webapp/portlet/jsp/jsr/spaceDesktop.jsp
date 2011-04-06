@@ -30,18 +30,16 @@
 <%@ include file="header.jsp"%>
 
 <%
-	String currentSpaceId = request.getParameter("SpaceId");
-	
 	Window window = gef.getWindow();
 
 	BrowseBar browseBar = window.getBrowseBar();
   	browseBar.setSpaceId(currentSpaceId);
   	browseBar.setComponentId(null);
   	browseBar.setDomainName(message.getString("portlets.homepage"));
-	
+
 	out.println(window.printBefore());
 %>
-  
+
 <div id="portal-content">
 
   <c:if test="${layout==null}">
@@ -50,7 +48,7 @@
   <c:if test="${param.layout!=null}">
     <c:set var="layout" value="${param.layout}" scope="session" />
   </c:if>
-   
+
   <c:choose>
     <c:when test='${layout == "1"}'>
       <jsp:include page="layout-1.jsp" flush="true"/>
@@ -68,7 +66,7 @@
 <%
 	out.println(window.printAfter());
 %>
-  
+
 </div> <!-- closes portal-page -->
 
 </body>

@@ -31,9 +31,7 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.List;
 import javax.inject.Inject;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -61,7 +59,7 @@ public class SpaceWallpaperTest {
   @Before
   public void prepareMocks() {
     // check the resource bundle is loaded
-    assertEquals("403", resources.getString("guestId"));
+    assertTrue(resources.getBoolean("IsLoaded", false));
     assertNotNull(organizationController);
     when(organizationController.isSpaceAvailable(anyString(), anyString())).thenReturn(false);
     when(organizationController.isComponentAvailable(anyString(), anyString())).thenReturn(false);

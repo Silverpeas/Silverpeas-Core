@@ -33,35 +33,38 @@
 
 <%
   String currentSpaceId = request.getParameter("SpaceId");
-	Boolean disableMove = (Boolean) request.getAttribute("DisableMove");
-	if (disableMove == null)
-		disableMove = Boolean.FALSE;
+    if(SpaceInst.PERSONAL_SPACE_ID.equals(currentSpaceId)) {
+      currentSpaceId = null;
+    }
+    Boolean disableMove = (Boolean) request.getAttribute("DisableMove");
+    if (disableMove == null)
+        disableMove = Boolean.FALSE;
 
-	Window window = gef.getWindow();
+    Window window = gef.getWindow();
 
-	BrowseBar browseBar = window.getBrowseBar();
+    BrowseBar browseBar = window.getBrowseBar();
   browseBar.setSpaceId(currentSpaceId);
   browseBar.setComponentId(null);
   browseBar.setDomainName(message.getString("portlets.homepage"));
-  
-	if (!disableMove.booleanValue())
-	{
-		OperationPane operationPane = window.getOperationPane();
-	    operationPane.addOperation("", message.getString("portlets.createPortlet"), "javascript:openAdmin()");
-	}
-	
-	out.println(window.printBefore());
+
+    if (!disableMove.booleanValue())
+    {
+        OperationPane operationPane = window.getOperationPane();
+        operationPane.addOperation("", message.getString("portlets.createPortlet"), "javascript:openAdmin()");
+    }
+
+    out.println(window.printBefore());
 %>
-    
+
 <div id="portal-content">
 
   <c:if test="${layout==null}">
-      <c:set var="layout" value="1" scope="session" />
+    <c:set var="layout" value="1" scope="session" />
   </c:if>
   <c:if test="${param.layout!=null}">
     <c:set var="layout" value="${param.layout}" scope="session" />
   </c:if>
-   
+
   <c:choose>
     <c:when test='${layout == "1"}'>
       <jsp:include page="layout-1.jsp" flush="true"/>
@@ -75,32 +78,32 @@
   </c:choose>
 
 </div> <!-- closes portal-content -->
-  
+
 </div> <!-- closes portal-page -->
 
 <%
-	out.println(window.printAfter());
+    out.println(window.printAfter());
 %>
 
 <% if (!disableMove.booleanValue()) { %>
-	<script type="text/javascript" src="<%=m_context%>/portlet/jsp/jsr/js/demo.js"></script>
+<script type="text/javascript" src="<%=m_context%>/portlet/jsp/jsr/js/demo.js"></script>
 <% } %>
 
 <script type="text/javascript">
-function openAdmin()
-{
-	SP_openWindow("<%=m_context%>/portletAdmin?<%=WindowInvokerConstants.DRIVER_SPACEID%>=<c:out value="${spaceId}"/>", "PortletAdmin","770", "550", "toolbar=no, directories=no, menubar=no, locationbar=no ,resizable, scrollbars");
-}
+  function openAdmin()
+  {
+    SP_openWindow("<%=m_context%>/portletAdmin?<%=WindowInvokerConstants.DRIVER_SPACEID%>=<c:out value="${spaceId}"/>", "PortletAdmin","770", "550", "toolbar=no, directories=no, menubar=no, locationbar=no ,resizable, scrollbars");
+  }
 
-function getSilverpeasContext()
-{
-	return "<%=m_context%>";
-}
+  function getSilverpeasContext()
+  {
+    return "<%=m_context%>";
+  }
 
-function getSpaceId()
-{
-	return "<c:out value="${spaceId}"/>";
-}
+  function getSpaceId()
+  {
+    return "<c:out value="${spaceId}"/>";
+  }
 </script>
 
 </body>

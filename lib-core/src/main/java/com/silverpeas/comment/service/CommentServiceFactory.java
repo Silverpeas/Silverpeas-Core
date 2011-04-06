@@ -52,9 +52,8 @@ public class CommentServiceFactory {
    */
   public CommentService getCommentService() {
     if (commentService == null) {
-      SilverTrace.warn("comment", getClass().getSimpleName() + ".getCommentService()",
-          "EX_NO_MESSAGES", "IoC container not bootstrapped or no CommentService bean found! "
-          + "Creates explicitly the bean");
+      SilverTrace.error("comment", getClass().getSimpleName() + ".getCommentService()",
+          "EX_NO_MESSAGES", "IoC container not bootstrapped or no CommentService bean found!");
     }
     return commentService;
   }
