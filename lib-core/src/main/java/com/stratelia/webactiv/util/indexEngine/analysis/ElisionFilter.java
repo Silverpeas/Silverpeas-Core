@@ -29,21 +29,20 @@ import java.util.*;
 import org.apache.lucene.analysis.*;
 
 public class ElisionFilter extends TokenFilter {
-  private Set articles;
-  private static String apostrophes = "'\u2019";
+  private Set<String> articles;
+  private final static String apostrophes = "'\u2019";
 
-  public void setArticles(Set articles) {
-    this.articles = new HashSet();
-    for (Iterator iter = articles.iterator(); iter.hasNext(); this.articles
-        .add(((String) iter.next()).toLowerCase())) {
+  public void setArticles(Set<String> newArticles) {
+    this.articles = new HashSet<String>();
+    for (String article :  newArticles){
+        this.articles.add(article.toLowerCase());
     }
   }
 
   public ElisionFilter(TokenStream input) {
     super(input);
     articles = null;
-    articles = new HashSet(Arrays.asList(new String[] { "l", "m", "t", "qu",
-        "n", "s", "j", "d", "c" }));
+    articles = new HashSet(Arrays.asList("l", "m", "t", "qu","n", "s", "j", "d", "c"));
   }
 
   public ElisionFilter(TokenStream input, Set articles) {
@@ -62,6 +61,8 @@ public class ElisionFilter extends TokenFilter {
     }
   }
 
+  @Override
+  @Deprecated
   public Token next() throws IOException {
     Token t = input.next();
     if (t == null) {
