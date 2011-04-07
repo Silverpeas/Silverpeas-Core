@@ -10,55 +10,46 @@
   <uri>http://www.silverpeas.com/tld/viewGenerator</uri>
 
   <tag>
-    <name>formatDate</name>
     <description>Tag to print out a date localized from the specified language</description>
+    <name>formatDate</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.FormatDateTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
+      <description>The date to format</description>
       <name>value</name>
-      <description>
-         The date to format
-      </description>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.util.Date</type>
     </attribute>
     <attribute>
+      <description>The language to use for localizing the date</description>
       <name>language</name>
-      <description>
-         The language to use for localizing the date
-      </description>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
   </tag>
   <tag>
-    <name>formatDateTime</name>
     <description>Tag to print out a date and time localized from the specified language</description>
+    <name>formatDateTime</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.FormatDateTimeTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
+      <description>The date and time to format</description>
       <name>value</name>
-      <description>
-         The date and time to format
-      </description>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.util.Date</type>
     </attribute>
     <attribute>
+      <description>The language to use for localizing the date and time</description>
       <name>language</name>
-      <description>
-         The language to use for localizing the date and time
-      </description>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
   </tag>
   <tag>
-    <name>commentListing</name>
     <description>Tag to print out a list of comments on a given resource</description>
     <name>commentListing</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.comment.CommentListTag</tag-class>
@@ -106,7 +97,8 @@
   </tag>
   <tag>
     <description>Tag to print out an edition form for adding new comments on a given resource.
-    The edition is printed only for non-guest users.</description>
+    The edition is printed only for non-guest users.
+    </description>
     <name>commentEdition</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.comment.CommentEditionTag</tag-class>
     <body-content>JSP</body-content>
@@ -163,7 +155,8 @@
   </tag>
   <tag>
     <description>Tag to print out both a list of comments and an edition form for adding new comments on a given resource/
-    The edition form is printed only for non-guest users.</description>
+    The edition form is printed only for non-guest users.
+    </description>
     <name>comments</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.comment.CommentTag</tag-class>
     <body-content>JSP</body-content>
