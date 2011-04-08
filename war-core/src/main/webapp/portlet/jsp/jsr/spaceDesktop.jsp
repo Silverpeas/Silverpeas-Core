@@ -30,6 +30,10 @@
 <%@ include file="header.jsp"%>
 
 <%
+  String currentSpaceId = request.getParameter("SpaceId");
+  if (SpaceInst.PERSONAL_SPACE_ID.equals(currentSpaceId)) {
+    currentSpaceId = null;
+  }
 	Window window = gef.getWindow();
 
 	BrowseBar browseBar = window.getBrowseBar();
