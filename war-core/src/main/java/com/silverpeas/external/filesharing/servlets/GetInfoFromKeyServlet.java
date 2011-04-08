@@ -61,13 +61,10 @@ public class GetInfoFromKeyServlet extends HttpServlet {
     } else {
       if (!ticket.isVersioned()) {
         request.setAttribute(ATT_ATTACHMENT,
-            AttachmentController.searchAttachmentByPK(new AttachmentPK("" + ticket.getFileId())));
+            ticket.getAttachmentDetail());
       } else {
-        VersioningUtil versioningUtil = new VersioningUtil();
-        DocumentPK documentPK = new DocumentPK(ticket.getFileId(), ticket.getComponentId());
-        Document document = versioningUtil.getDocument(documentPK);
-        DocumentVersion version = versioningUtil.getLastPublicVersion(documentPK);
-
+        Document document = ticket.getDocument();
+        DocumentVersion version = new VersioningUtil().getLastPublicVersion(document.getPk());
         request.setAttribute(ATT_DOCUMENT, document);
         request.setAttribute(ATT_DOCUMENTVERSION, version);
       }

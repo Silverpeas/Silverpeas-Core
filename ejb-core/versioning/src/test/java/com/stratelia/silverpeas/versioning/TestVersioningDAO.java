@@ -62,7 +62,7 @@ public class TestVersioningDAO extends AbstractJndiCase {
     executeDDL(databaseConnection, baseTest.getDdlFile());
     baseTest.getDatabaseTester().closeConnection(databaseConnection);
   }
-  
+
   @Before
   @Override
   public void setUp() throws Exception {
@@ -204,6 +204,7 @@ public class TestVersioningDAO extends AbstractJndiCase {
     doc.setOrderNumber(1);
 
     DocumentVersion initialVersion = new DocumentVersion();
+    initialVersion.setCreationDate(new Date());
     initialVersion.setMimeType(MimeTypes.DEFAULT_MIME_TYPE);
     initialVersion.setAuthorId(doc.getOwnerId());
     initialVersion.setMajorNumber(RandomGenerator.getRandomInt());
