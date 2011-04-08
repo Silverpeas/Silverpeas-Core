@@ -24,54 +24,74 @@
 package com.stratelia.silverpeas.pdcPeas.vo;
 
 /**
- * ComponentVO is component value object representation
+ * ExternalComponentVO represents an external component value object
  */
-public class ComponentVO {
+public class ExternalComponentVO {
 
-  private String name = "";
-  private String id = "";
-  private int nbElt = 0;
+  private String serverName = "";
+  private String serverURL = "";
+  private String componentId = "";
 
   /**
    * Default constructor
    */
-  public ComponentVO() {
+  public ExternalComponentVO() {
     super();
   }
 
   /**
-   * Constructor with fields
-   * @param name the author name
-   * @param id the author identifier
+   * Constructor using fields
+   * @param serverName
+   * @param serverURL
+   * @param componentId
    */
-  public ComponentVO(String name, String id) {
+  public ExternalComponentVO(String serverName, String serverURL, String componentId) {
     super();
-    this.name = name;
-    this.id = id;
-    this.nbElt = 1;
+    this.serverName = serverName;
+    this.serverURL = serverURL;
+    this.componentId = componentId;
   }
 
-  public String getName() {
-    return name;
+  /**
+   * @return the serverName
+   */
+  public String getServerName() {
+    return serverName;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  /**
+   * @param serverName the serverName to set
+   */
+  public void setServerName(String serverName) {
+    this.serverName = serverName;
   }
 
-  public String getId() {
-    return id;
+  /**
+   * @return the serverURL
+   */
+  public String getServerURL() {
+    return serverURL;
   }
 
-  public void setId(String id) {
-    this.id = id;
+  /**
+   * @param serverURL the serverURL to set
+   */
+  public void setServerURL(String serverURL) {
+    this.serverURL = serverURL;
   }
 
-  public int getNbElt() {
-    return nbElt;
+  /**
+   * @return the componentId
+   */
+  public String getComponentId() {
+    return componentId;
   }
 
-  public void setNbElt(int nbElt) {
-    this.nbElt = nbElt;
+  /**
+   * @param componentId the componentId to set
+   */
+  public void setComponentId(String componentId) {
+    this.componentId = componentId;
   }
+
 }

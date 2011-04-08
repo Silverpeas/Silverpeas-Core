@@ -23,55 +23,66 @@
  */
 package com.stratelia.silverpeas.pdcPeas.vo;
 
+import java.util.List;
+
 /**
- * ComponentVO is component value object representation
+ * ExternalSilverpeasConfigVO represents an external silverpeas server value object
+ * 
+ * external.search.server.1.name=INPI
+ * external.search.server.1.data.path=D:\\silverpeas\\silverpeas_INPI_prod\\data
+ * external.search.server.1.component.filters=kmelia
+ * external.search.server.1.url=http://pegase.na.inpi/silverpeas
  */
-public class ComponentVO {
+public class ExternalSPConfigVO {
 
   private String name = "";
-  private String id = "";
-  private int nbElt = 0;
+  private String dataPath = "";
+  private List<String> components = null;
+  private String url = "";
 
   /**
-   * Default constructor
+   * Contructor using fields
+   * 
+   * @param name
+   * @param dataPath
+   * @param components
+   * @param url
    */
-  public ComponentVO() {
-    super();
-  }
-
-  /**
-   * Constructor with fields
-   * @param name the author name
-   * @param id the author identifier
-   */
-  public ComponentVO(String name, String id) {
+  public ExternalSPConfigVO(String name, String dataPath, List<String> components,
+      String url) {
     super();
     this.name = name;
-    this.id = id;
-    this.nbElt = 1;
+    this.dataPath = dataPath;
+    this.components = components;
+    this.url = url;
   }
 
+  /**
+   * @return the name
+   */
   public String getName() {
     return name;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  /**
+   * @return the dataPath
+   */
+  public String getDataPath() {
+    return dataPath;
   }
 
-  public String getId() {
-    return id;
+  /**
+   * @return the components
+   */
+  public List<String> getComponents() {
+    return components;
   }
 
-  public void setId(String id) {
-    this.id = id;
+  /**
+   * @return the url
+   */
+  public String getUrl() {
+    return url;
   }
 
-  public int getNbElt() {
-    return nbElt;
-  }
-
-  public void setNbElt(int nbElt) {
-    this.nbElt = nbElt;
-  }
 }

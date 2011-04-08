@@ -38,6 +38,7 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.indexEngine.model.CharReplacer;
+import com.stratelia.webactiv.util.indexEngine.model.ExternalComponent;
 import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
 import com.stratelia.webactiv.util.indexEngine.model.SpaceComponentPair;
 
@@ -82,6 +83,11 @@ public class QueryDescription implements Serializable {
   private List<FieldDescription> multiFieldQuery = null;
   private boolean searchBySpace = false;
 
+  /**
+   * The external searched components are build empty. This is a set of ExternalComponent
+   */
+  private Set<ExternalComponent> extComponents = new HashSet<ExternalComponent>();
+  
   /**
    * The no parameters constructor builds an empty query. The setQuery and addSpaceComponentPair()
    * methods should be called to initialize the query. Other criterium (language, creation date ...)
@@ -251,23 +257,27 @@ public class QueryDescription implements Serializable {
   }
 
   public void clearMultiFieldQuery() {
-    if (multiFieldQuery != null)
+    if (multiFieldQuery != null) {
       multiFieldQuery.clear();
+    }
   }
 
   public void addFieldQuery(FieldDescription fieldQuery) {
-    if (fieldQuery == null)
+    if (fieldQuery == null) {
       return;
+    }
 
-    if (multiFieldQuery == null)
+    if (multiFieldQuery == null) {
       multiFieldQuery = new ArrayList<FieldDescription>();
+    }
 
     multiFieldQuery.add(fieldQuery);
   }
 
   public void addFieldQueries(List<FieldDescription> fieldQueries) {
-    if (multiFieldQuery == null)
+    if (multiFieldQuery == null) {
       multiFieldQuery = new ArrayList<FieldDescription>();
+    }
 
     multiFieldQuery.addAll(fieldQueries);
   }
@@ -369,4 +379,25 @@ public class QueryDescription implements Serializable {
     this.requestedUpdatedAfter = requestedUpdatedAfter;
   }
 
+  
+  /**
+   * @return the external components
+   */
+  public Set<ExternalComponent> getExtComponents() {
+    return extComponents;
+  }
+
+  /**
+   * add new external component to the list
+   * @param server
+   * @param component
+   */
+  public void addExternalComponents(String server, String component, String path, String url) {
+    SilverTrace.info("searchEngine",
+        "QueryDescription.addExternalComponents()", "root.MSG_GEN_PARAM_VALUE",
+        "server = " + server + ", component=" + component);
+    //TODO add all needed information
+    extComponents.add(new ExternalComponent(server, component, path, url));
+  }
+  
 }

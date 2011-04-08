@@ -24,10 +24,16 @@
 
 package com.stratelia.webactiv.searchEngine.model;
 
-import java.util.*;
-import java.io.*;
-import org.apache.lucene.analysis.*;
-import com.stratelia.webactiv.util.indexEngine.model.*;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.Token;
+import org.apache.lucene.analysis.TokenStream;
+
+import com.stratelia.webactiv.util.indexEngine.model.WAAnalyzer;
 
 /**
  * Class used to set emphase arround the matching text in a result's display.
@@ -54,7 +60,7 @@ public class Emphaser {
    */
   public String emphaseMatchingResult(String query, String result,
       String language) {
-    Set queryWords = getQueryWords(query, language);
+    Set<String> queryWords = getQueryWords(query, language);
 
     StringBuffer emphasedResult = new StringBuffer();
     int firstUncopied = 0;
@@ -94,12 +100,12 @@ public class Emphaser {
    * @return
    * @see
    */
-  private Set getQueryWords(String query, String language) {
+  private Set<String> getQueryWords(String query, String language) {
     Analyzer analyzer = WAAnalyzer.getAnalyzer(language);
     TokenStream ts = analyzer.tokenStream(null, new StringReader(query));
     Token token;
 
-    Set queryWords = new HashSet();
+    Set<String> queryWords = new HashSet<String>();
 
     try {
       while ((token = ts.next()) != null) {

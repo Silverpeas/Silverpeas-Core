@@ -47,6 +47,14 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 
 public class PdcSearchRequestRouterHelper {
 
+  /**
+   * Retrieve query data from current request and prepare result view.
+   * @param pdcSC
+   * @param request
+   * @param setPdcInfo
+   * @return a QueryParameters
+   * @throws Exception
+   */
   public static QueryParameters saveUserChoicesAndSetPdcInfo(
       PdcSearchSessionController pdcSC, HttpServletRequest request,
       boolean setPdcInfo) throws Exception {
@@ -104,7 +112,7 @@ public class PdcSearchRequestRouterHelper {
       authorSearch = authorSearch.trim();
     }
 
-    SilverTrace.debug("pdcPeas","PdcPeasRequestRouterHelper.saveFavoriteRequest()",
+    SilverTrace.debug("pdcPeas", "PdcPeasRequestRouterHelper.saveFavoriteRequest()",
         "root.MSG_GEN_PARAM_VALUE", "authorSearch = " + authorSearch);
     QueryParameters queryParameters = pdcSC.getQueryParameters();
     queryParameters.setKeywords(query);
@@ -117,12 +125,17 @@ public class PdcSearchRequestRouterHelper {
     return queryParameters;
   }
 
+  /**
+   * Build information for the home jsp for the advancedsearch plain text. We get user choices about
+   * advanced search and store it in the PdcSearchSessionController
+   * @param pdcSC: the pdcSessionController
+   * @param request : the HttpServletRequest
+   * @return a QueryParameters from session updated with data from request
+   * @throws Exception
+   */
   public static QueryParameters saveUserChoices(
       PdcSearchSessionController pdcSC, HttpServletRequest request)
       throws Exception {
-    // build information for the home jsp for the advancedsearch plain text
-    // We get user choices about advanced search and store it in the
-    // PdcSearchSessionController
     String query = request.getParameter("query");
 
     QueryParameters queryParameters = pdcSC.getQueryParameters();
@@ -148,34 +161,33 @@ public class PdcSearchRequestRouterHelper {
       int sortRes = Integer.parseInt(paramSortRes);
       pdcSC.setSortValue(sortRes);
     }
-    String paramSortOrder = request.getParameter("sortOrder");   
+    String paramSortOrder = request.getParameter("sortOrder");
     if (paramSortOrder != null) {
       pdcSC.setSortOrder(paramSortOrder);
     }
     String paramSortResFieldXForm = request.getParameter(Keys.RequestSortXformField.value());
     if (StringUtil.isDefined(paramSortResFieldXForm)) {
       pdcSC.setXmlFormSortValue(paramSortResFieldXForm);
-    }
-    else {
+    } else {
       pdcSC.setXmlFormSortValue(null);
     }
     String sortImplementor = request.getParameter(Keys.RequestSortImplementor.value());
     if (StringUtil.isDefined(sortImplementor)) {
       pdcSC.setSortImplemtor(sortImplementor);
-    }
-    else {
+    } else {
       pdcSC.setSortImplemtor(null);
     }
     return queryParameters;
   }
 
   /**
-   * Get user choices from the PdcSearchSessionController and put it in the Request
-   * @param request 
+   * Get user choices from the PdcSearchSessionController and put it in the HTTP request. Prepare
+   * data that will be used in the result view.
+   * @param request
    * @param pdcSC
-   * @throws Exception 
+   * @throws Exception
    */
-  public static void setUserChoices(HttpServletRequest request, PdcSearchSessionController pdcSC) 
+  public static void setUserChoices(HttpServletRequest request, PdcSearchSessionController pdcSC)
       throws Exception {
     QueryParameters queryParameters = pdcSC.getQueryParameters();
     if (queryParameters != null) {
@@ -214,10 +226,12 @@ public class PdcSearchRequestRouterHelper {
   }
 
   /**
-   * set attributes into the request Attributes are build by information about both
-   * sessioncontroller
-   * @param pdcSC 
-   * @param setSpacesAndComponents
+   * Set attributes into the request in order to prepare data to be displayed. <br>
+   * Attributes are build by information which are inside the sessionController
+   * @param pdcSC the pdcSessionController
+   * @param request HTTP servlet request
+   * @param setSpacesAndComponents if false do nothing, else if add SpaceList and ComponentList
+   * attributes into the request
    * @throws Exception
    */
   public static void setAttributesAdvancedSearch(
@@ -259,7 +273,7 @@ public class PdcSearchRequestRouterHelper {
    * put in the request the primary axis and eventually the secondary axis accroding to search
    * context
    * @param pdcSC
-   * @param request 
+   * @param request
    * @throws Exception
    */
   public static void setPertinentAxis(PdcSearchSessionController pdcSC,
@@ -284,7 +298,7 @@ public class PdcSearchRequestRouterHelper {
         "root.MSG_GEN_PARAM_VALUE", "avant getAxis(P)");
 
     // we get primary and eventually secondary axis
-    List primarySearchAxis = pdcSC.getAxis("P");
+    List<SearchAxis> primarySearchAxis = pdcSC.getAxis("P");
     for (int p = 0; p < primarySearchAxis.size(); p++) {
       axis = (SearchAxis) primarySearchAxis.get(p);
       axis.setValues(pdcSC.getDaughterValues(
@@ -294,7 +308,7 @@ public class PdcSearchRequestRouterHelper {
     SilverTrace.info("pdcPeas",
         "PdcPeasRequestRouterHelper.setAttributesAdvancedSearch()",
         "root.MSG_GEN_PARAM_VALUE", "avant getAxis(S)");
-    List secondarySearchAxis = null;
+    List<SearchAxis> secondarySearchAxis = null;
     if ("YES".equals(showSecondarySearchAxis)) {
       // user wants to see secondary axis
       secondarySearchAxis = pdcSC.getAxis("S");
@@ -319,7 +333,7 @@ public class PdcSearchRequestRouterHelper {
    * context
    * @param pdcSC
    * @param request
-   * @throws Exception 
+   * @throws Exception
    */
   public static void setContext(PdcSearchSessionController pdcSC,
       HttpServletRequest request) throws Exception {
@@ -346,14 +360,14 @@ public class PdcSearchRequestRouterHelper {
     String treeId = "";
     List<List<Value>> pathCriteria = new ArrayList<List<Value>>(c.size());
     if (!c.isEmpty()) {
-      for(SearchCriteria sc : c) {
+      for (SearchCriteria sc : c) {
         searchAxisId = sc.getAxisId();
         if (primaryAxis != null) {
           // on parcourt la liste des axes primaires
           // si l'on trouve un axisId de searchCriteria = axisId de l'axe
           // primaire alors on le laisse
           // dans le searchCriteria sinon on le supprime
-          for (int j = 0 ; j < primaryAxis.size(); j++) {
+          for (int j = 0; j < primaryAxis.size(); j++) {
             sa = primaryAxis.get(j);
             if (searchAxisId == sa.getAxisId()) {
               isExistInPrimaryAxis = true;
@@ -395,7 +409,7 @@ public class PdcSearchRequestRouterHelper {
 
   public static String getLastValueOf(String path) {
     // cherche l'id de la valeur
-    // valeur de la forme /0/1/2/  
+    // valeur de la forme /0/1/2/
     String newValueId = path;
     int len = path.length();
     path = path.substring(0, len - 1); // on retire le dernier slash

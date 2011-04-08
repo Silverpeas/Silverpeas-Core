@@ -109,8 +109,9 @@ public class SearchCompletion {
     } finally {
       DBUtil.close(rs, ps);
       try {
-        if (con != null && !con.isClosed())
+        if (con != null && !con.isClosed()) {
           con.close();
+        }
       } catch (SQLException e) {
         SilverTrace.error("searchEngine", "SearchCompletion.getSuggestions()()",
             "root.EX_CONNECTION_CLOSE_FAILED", e);

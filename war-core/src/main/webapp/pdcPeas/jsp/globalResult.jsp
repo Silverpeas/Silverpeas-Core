@@ -34,7 +34,6 @@
 <%@ include file="checkAdvancedSearch.jsp"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%-- Set resource bundle --%>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
@@ -117,15 +116,17 @@ String [] spellingWords = (String []) request.getAttribute("spellingWords");
 ResultGroupFilter resultGroup = (ResultGroupFilter) request.getAttribute("ResultGroup");
 
 boolean isXmlSearchVisible = false;
-if (xmlSearch != null)
+if (xmlSearch != null) {
 	isXmlSearchVisible = xmlSearch.booleanValue();
+}
 
 // recuperation du choix de l'utilisateur
 String keywords = (String) request.getAttribute("Keywords");
-if (keywords == null)
+if (keywords == null) {
 	keywords = "";
-else
+} else {
 	keywords = EncodeHelper.javaStringToHtmlString(keywords);
+}
 
 Boolean activeSelection = (Boolean) request.getAttribute("ActiveSelection");
 if (activeSelection == null) {
@@ -173,11 +174,9 @@ if (!StringUtil.isDefined(pageId)) {
 %>
 
 <html>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
+<view:looknfeel />
 <% if (resultsDisplayMode == PdcSearchSessionController.SHOWRESULTS_OnlyPDC) { %>
 	<style>
 		#globalResultTab {
@@ -435,8 +434,8 @@ if (!StringUtil.isDefined(pageId)) {
 	    <%}%>
 	  });
 </script>
-</HEAD>
-<BODY class="searchEngine" id="<%=pageId %>">
+</head>
+<body class="searchEngine" id="<%=pageId %>">
 <form name="AdvancedSearch" action="javascript:sendQuery()" method="post">
 <%
 	browseBar.setComponentName(resource.getString("pdcPeas.ResultPage"));

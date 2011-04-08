@@ -148,13 +148,15 @@ public class GlobalSilverContent extends AbstractI18NBean implements java.io.Ser
   }
 
   public String getName(String language) {
-    if (!I18NHelper.isI18N)
+    if (!I18NHelper.isI18N) {
       return getName();
+    }
 
     GlobalSilverContentI18N s = (GlobalSilverContentI18N) getTranslations()
         .get(language);
-    if (s == null)
+    if (s == null) {
       s = (GlobalSilverContentI18N) getNextTranslation();
+    }
 
     return s.getName();
   }
@@ -164,13 +166,15 @@ public class GlobalSilverContent extends AbstractI18NBean implements java.io.Ser
   }
 
   public String getDescription(String language) {
-    if (!I18NHelper.isI18N)
+    if (!I18NHelper.isI18N) {
       return getDescription();
+    }
 
     GlobalSilverContentI18N s = (GlobalSilverContentI18N) getTranslations()
         .get(language);
-    if (s == null)
+    if (s == null) {
       s = (GlobalSilverContentI18N) getNextTranslation();
+    }
 
     return s.getDescription();
   }

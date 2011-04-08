@@ -58,6 +58,7 @@ import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.SearchEnginePropertiesManager;
+import com.stratelia.webactiv.util.indexEngine.model.ExternalComponent;
 import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
@@ -96,12 +97,12 @@ public class WAIndexSearcher {
     try {
       ResourceLocator resource = new ResourceLocator(
           "com.silverpeas.searchEngine.searchEngineSettings", "");
-      int paramOperand = Integer.parseInt(resource.getString("defaultOperand",
-          "0"));
-      if (paramOperand == 0)
+      int paramOperand = Integer.parseInt(resource.getString("defaultOperand", "0"));
+      if (paramOperand == 0) {
         defaultOperand = QueryParser.OR_OPERATOR;
-      else
+      } else {
         defaultOperand = QueryParser.AND_OPERATOR;
+      }
 
       maxNumberResult = SilverpeasSettings.readInt(resource, "maxResults", 100);
     } catch (MissingResourceException e) {
@@ -159,8 +160,9 @@ public class WAIndexSearcher {
           "searchEngine.MSG_CORRUPTED_INDEX_FILE", ioe);
     } finally {
       try {
-        if (searcher != null)
+        if (searcher != null) {
           searcher.close();
+        }
       } catch (IOException ioe) {
         SilverTrace.fatal("searchEngine", "WAIndexSearcher.search()",
             "searchEngine.MSG_CANNOT_CLOSE_SEARCHER", ioe);
@@ -178,7 +180,7 @@ public class WAIndexSearcher {
     long startTime = System.nanoTime();
     List<MatchingIndexEntry> results = null;
 
-    Searcher searcher = getSearcher(query.getSpaceComponentPairSet());
+    Searcher searcher = getSearcher(query);
 
     try {
       TopDocs topDocs = null;
@@ -277,10 +279,11 @@ public class WAIndexSearcher {
       while (languages.hasNext()) {
         language = (String) languages.next();
 
-        if (I18NHelper.isDefaultLanguage(language))
+        if (I18NHelper.isDefaultLanguage(language)) {
           fields[l] = searchField;
-        else
+        } else {
           fields[l] = searchField + "_" + language;
+        }
         queries[l] = query.getQuery();
         l++;
       }
@@ -362,8 +365,9 @@ public class WAIndexSearcher {
       String keyword = query.getQuery();
 
       int nbFields = fieldQueries.size();
-      if (StringUtil.isDefined(keyword))
+      if (StringUtil.isDefined(keyword)) {
         nbFields++;
+      }
 
       String[] fields = new String[nbFields];
       String[] queries = new String[nbFields];
@@ -513,6 +517,42 @@ public class WAIndexSearcher {
     }
   }
 
+  
+  /**
+   * Return a multi-searcher built on the searchers list matching the (space, component) pair set.
+   */
+  private Searcher getSearcher(QueryDescription query) {
+    List<Searcher> searcherList = new ArrayList<Searcher>();
+    Set<String> indexPathSet = getIndexPathSet(query.getSpaceComponentPairSet());
+
+    for (String path : indexPathSet) {
+      Searcher searcher = getSearcher(path);
+      if (searcher != null) {
+        searcherList.add(searcher);
+      }
+    }
+    
+    // Add searcher from external silverpeas server
+    Set<ExternalComponent> extSearchers = query.getExtComponents();
+    for (ExternalComponent externalComponent : extSearchers) {
+      String externalComponentPath = externalComponent.getDataPath();
+      Searcher searcher = getSearcher(externalComponentPath);
+      if (searcher != null) {
+        searcherList.add(searcher);
+      }
+    }
+
+    try {
+      return new MultiSearcher((Searcher[]) searcherList
+          .toArray(new Searcher[searcherList.size()]));
+    } catch (IOException e) {
+      SilverTrace.fatal("searchEngine", "WAIndexSearcher",
+          "searchEngine.MSG_CORRUPTED_INDEX_FILE", e);
+      return null;
+    }
+  }
+
+  
   /**
    * Build the set of all the path to the directories index corresponding the given (space,
    * component) pairs.
