@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.portlets.context.window.impl;
 
 import java.io.IOException;
@@ -53,6 +52,7 @@ import com.sun.portal.portletcontainer.common.PortletPreferencesUtility;
 import com.sun.portal.portletcontainer.common.PreferencesValidatorSetter;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryContext;
 import com.sun.portal.portletcontainer.portlet.impl.PortletResourceBundle;
+import javax.portlet.PortletRequest;
 
 /**
  * The <code>PortletPreferencesImpl</code> is the default implementation for the
@@ -75,17 +75,14 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
   private boolean useRBPreferenceName;
   private boolean useRBPreferenceValue;
   private boolean readOnly;
-
   // Map to hold the isReadOnly information
   protected Map predefinedPrefReadOnlyMap;
-
   // Map to hold user defined preferences information and a list to record
   // preferences that have changed since last store().
   protected Map userPrefMap;
   protected Map defaultMap;
   protected Set modifiedList;
   protected static final String[] EMPTY_STRING_ARRAY = new String[0];
-
   // Create a logger for this class
   private static Logger logger = Logger.getLogger("com.silverpeas.portlets.context.window.impl",
       "com.silverpeas.portlets.PCCTXLogMessages");
@@ -145,7 +142,7 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
   }
 
   public String getValue(String key, String def) {
-    String defs[] = { def };
+    String defs[] = {def};
     String values[] = getValues(key, defs);
 
     if (values == null || values.length == 0) {
@@ -174,8 +171,9 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
           if (rbPreferenceNames != null) {
             prefName = rbPreferenceNames.get(key);
           }
-          if (prefName == null)
+          if (prefName == null) {
             prefName = key;
+          }
           prefs[i] = getPreferenceValueFromRB(prefName, prefs[i]);
         }
       }
@@ -229,8 +227,9 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
       if (rbPreferenceNames != null) {
         prefName = rbPreferenceNames.get(name);
       }
-      if (prefName == null)
+      if (prefName == null) {
         prefName = name;
+      }
       prefMap.put(name, getValues(prefName, null));
     }
 
@@ -251,8 +250,9 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
     if (rbPreferenceNames != null) {
       prefName = rbPreferenceNames.get(key);
     }
-    if (prefName == null)
+    if (prefName == null) {
       prefName = key;
+    }
 
     if (!getIsReadOnly(prefName)) {
       userPrefMap.put(prefName, getDefault(prefName));
@@ -263,15 +263,14 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
   }
 
   public void store() throws IOException, ValidatorException {
-    String currentAction =
-        (String) request.getAttribute(PortletContainerConstants.CURRENT_PORTLET_ACTION);
-    if (!PortletActions.RENDER.equals(currentAction)) {
+    String lifecyclePhase = (String) request.getAttribute(PortletRequest.LIFECYCLE_PHASE);
+    if (PortletRequest.RENDER_PHASE.equals(lifecyclePhase)) {
+      throw new IllegalStateException("Not allowed to store preferences during render");
+    } else {
       if (preferencesValidator != null) {
         preferencesValidator.validate(this);
       }
       savePrefMap();
-    } else {
-      throw new IllegalStateException();
     }
   }
 
@@ -377,10 +376,11 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
       // Get the preference value from User PrefMap, if its not there
       // get it from the pre defined map.
       String pref = (String) defaultMap.get(prefName);
-      if (pref == null)
+      if (pref == null) {
         pref = def;
+      }
       if (logger.isLoggable(Level.INFO)) {
-        logger.log(Level.INFO, "PSPL_PCCTXCSPPCI0014", new Object[] { prefName, pref });
+        logger.log(Level.INFO, "PSPL_PCCTXCSPPCI0014", new Object[]{prefName, pref});
       }
       userPrefMap.put(prefName, pref);
     }
@@ -398,7 +398,7 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
       String value = (String) userPrefMap.get(key);
       prefMap.put(key, value);
       if (logger.isLoggable(Level.INFO)) {
-        logger.log(Level.INFO, "PSPL_PCCTXCSPPCI0015", new Object[] { key, value });
+        logger.log(Level.INFO, "PSPL_PCCTXCSPPCI0015", new Object[]{key, value});
       }
     }
     writePortletPreferences(prefMap);
@@ -434,23 +434,22 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
     try {
       if (logger.isLoggable(Level.FINE)) {
         logger.log(Level.FINE, "PSPL_PCCTXCSPPCI0016",
-            new Object[] { userID, portletID, portletWindowName });
+            new Object[]{userID, portletID, portletWindowName});
       }
       if (portletID != null) {
         portletRegistryContext.savePreferences(this.portletID.toString(), this.portletWindowName,
             this.userID, prefMap);
       } else {
         if (logger.isLoggable(Level.WARNING)) {
-          logger.log(Level.WARNING, "PSPL_PCCTXCSPPCI0017", new String[] { userID,
-              portletWindowName });
+          logger.log(Level.WARNING, "PSPL_PCCTXCSPPCI0017", new String[]{userID,
+                portletWindowName});
         }
       }
     } catch (Exception e) {
       if (logger.isLoggable(Level.SEVERE)) {
         logger.log(Level.SEVERE, "PSPL_PCCTXCSPPCI0018",
-            new Object[] { userID, portletID, portletWindowName });
+            new Object[]{userID, portletID, portletWindowName});
       }
     }
   }
-
 }

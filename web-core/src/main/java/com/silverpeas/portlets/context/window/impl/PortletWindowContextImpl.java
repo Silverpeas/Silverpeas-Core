@@ -93,7 +93,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     if (!StringUtil.isDefined(elementId)) {
       elementId = (String) request.getAttribute("UserId");
     }
-    
+
     try {
       PortletRegistryContextAbstractFactory afactory = new PortletRegistryContextAbstractFactory();
       PortletRegistryContextFactory factory = afactory.getPortletRegistryContextFactory();
@@ -128,13 +128,8 @@ public class PortletWindowContextImpl implements PortletWindowContext {
 
   @Override
   public String getLocaleString() {
-    Locale locale = getLocale();
+    Locale locale = request.getLocale();
     return locale.toString();
-  }
-
-  @Override
-  public Locale getLocale() {
-    return request.getLocale();
   }
 
   @Override
@@ -161,24 +156,6 @@ public class PortletWindowContextImpl implements PortletWindowContext {
   @Override
   public String getAuthenticationType() {
     return request.getAuthType();
-  }
-
-  @Override
-  public String getUserID() {
-    // The order in which this is suppose to be done
-    // 1. Check if userID is explicity set , If yes use it always
-    // 2. If user ID is null, Get from request - getPrincipal
-    // 3. If userID is null, see if wsrp is sending it (in case of resource URL)
-    // 4. else retun null.
-    if (elementId == null) {
-      Principal principal = request.getUserPrincipal();
-      if (principal != null) {
-        elementId = principal.getName();
-      } else {
-        elementId = request.getParameter("wsrp.userID");
-      }
-    }
-    return elementId;
   }
 
   @Override
@@ -378,7 +355,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
   }
 
   private String checkUserID() {
-    String userId = getUserID();
+    String userId = getUserRepresentation();
     if (userId == null) {
       userId = AUTHLESS_USER_ID;
     }
@@ -510,5 +487,23 @@ public class PortletWindowContextImpl implements PortletWindowContext {
 
   // TODO
   public void store() throws PortletWindowContextException {
+  }
+
+  @Override
+  public String getUserRepresentation() {
+    // The order in which this is suppose to be done
+    // 1. Check if elementId is explicity set , If yes use it always
+    // 2. If elementId is null, Get from request - getPrincipal
+    // 3. If elementId is null, see if wsrp is sending it (in case of resource URL)
+    // 4. else retun null.
+    if (elementId == null) {
+      Principal principal = request.getUserPrincipal();
+      if (principal != null) {
+        elementId = principal.getName();
+      } else {
+        elementId = request.getParameter("wsrp.userID");
+      }
+    }
+    return elementId;
   }
 }

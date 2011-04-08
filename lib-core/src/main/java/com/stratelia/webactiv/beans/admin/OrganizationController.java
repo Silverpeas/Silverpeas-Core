@@ -34,6 +34,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,7 +60,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
   // -------------------------------------------------------------------
   /**
    * Return all the spaces Id available in silverpeas
-   * @return 
+   * @return
    */
   public String[] getAllSpaceIds() {
     try {
@@ -227,7 +228,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
    * Return the tuples (space id, compo id) allowed for the given user and given component name
    * @param sUserId
    * @param sCompoName
-   * @return 
+   * @return
    */
   public CompoSpace[] getCompoForUser(String sUserId, String sCompoName) {
     try {
@@ -272,7 +273,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
   /**
    * Return the compo id for the given component name
    * @param sCompoName
-   * @return 
+   * @return
    */
   public String[] getCompoId(String sCompoName) {
     try {
@@ -684,7 +685,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
       return new UserDetail[0];
     }
   }
-  
+
   /**
    * Get path to Group
    */
@@ -986,8 +987,8 @@ public class OrganizationController extends AdminReference implements java.io.Se
           SilverTrace.info("admin",
               "OrganizationController.getUsersIdsByRoleNames",
               "root.MSG_GEN_PARAM_VALUE", "profileName = "
-                  + profileInst.getName() + ", profileId = "
-                  + profileInst.getId());
+              + profileInst.getName() + ", profileId = "
+              + profileInst.getId());
         }
       }
 
@@ -1115,5 +1116,15 @@ public class OrganizationController extends AdminReference implements java.io.Se
 
   public void reloadAdminCache() {
     m_Admin.reloadCache();
+  }
+
+  /**
+   * Is the anonymous access is activated for the running Silverpeas?
+   * When the anonymous access is activated, then a specific user for anonymous access should be
+   * set; all anonym accesses to the running Silverpeas are done with this user profile.
+   * @return true if the anonym access is activated, false otherwise.
+   */
+  public boolean isAnonymousAccessActivated() {
+    return UserDetail.isAnonymousUserExist();
   }
 }

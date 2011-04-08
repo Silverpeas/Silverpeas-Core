@@ -86,10 +86,10 @@ public class StringUtil {
   public static String escapeQuote(String text) {
     return text.replaceAll("'", " ");
   }
-  
-  
+
+
   /**
-   * Replaces 
+   * Replaces
    * @param name
    * @return a String with all quotes replaced by spaces
    */
@@ -264,5 +264,5 @@ public class StringUtil {
     NumberFormat numberFormat = NumberFormat.getInstance(new Locale(lang));
     return numberFormat.parse(value).floatValue();
   }
-  
+
 }

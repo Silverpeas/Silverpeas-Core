@@ -17,10 +17,6 @@
 
   <context:annotation-config/>
 
-  <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
-
-  <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>
-
   <bean name="personalizationService"
         class="com.silverpeas.personalization.service.DefaultPersonalizationService"/>
 

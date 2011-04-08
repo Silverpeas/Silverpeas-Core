@@ -23,6 +23,11 @@
  */
 package com.silverpeas.accesscontrol;
 
+import java.util.Collection;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import com.silverpeas.util.ComponentHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -32,10 +37,8 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import java.util.Collection;
-import javax.inject.Inject;
-import javax.inject.Named;
 
 /**
  * Check the access to an attachment for a user.
@@ -63,11 +66,23 @@ public class AttachmentAccessController implements AccessController<AttachmentDe
     if (ComponentHelper.getInstance().isThemeTracker(object.getForeignKey().getComponentName())) {
       String foreignId = object.getForeignKey().getId();
       if (StringUtil.isInteger(foreignId)) {
+        try {
+          PublicationDetail pubDetail =
+              getPublicationBm().getDetail(new PublicationPK(foreignId, object.getInstanceId()));
+          if (!pubDetail.isValid() && pubDetail.haveGotClone()) {
+            // file is attached to a clone, need to get nodes of cloned publication
+            foreignId = pubDetail.getCloneId();
+          }
+        } catch (Exception e) {
+          SilverTrace.error("accesscontrol", getClass().getSimpleName() + ".isUserAuthorized()",
+              "root.NO_EX_MESSAGE", e);
+          return false;
+        }
         Collection<NodePK> nodes;
         try {
           nodes =
-              getPublicationBm().getAllFatherPK(new PublicationPK(
-                  object.getForeignKey().getId(), object.getInstanceId()));
+              getPublicationBm().getAllFatherPK(
+                  new PublicationPK(foreignId, object.getInstanceId()));
         } catch (Exception ex) {
           SilverTrace.error("accesscontrol", getClass().getSimpleName() + ".isUserAuthorized()",
               "root.NO_EX_MESSAGE", ex);
