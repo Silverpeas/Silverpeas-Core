@@ -219,7 +219,7 @@
         </create_table>
   </upgrade>
 
-   <upgrade version="0254">
+   <upgrade version="025">
        <create_table>
             <file name="mssql\busCore\up025\alter_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </create_table>
