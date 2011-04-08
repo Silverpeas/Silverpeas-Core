@@ -25,6 +25,7 @@
 package com.stratelia.silverpeas.silverstatistics.control;
 
 import com.google.common.base.Joiner;
+import com.stratelia.silverpeas.silverstatistics.model.StatisticMode;
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsRuntimeException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -292,13 +293,10 @@ public class SilverStatisticsManagerDAO {
             if (currentType.equals("INTEGER")) {
               intToAdd = Integer.valueOf(valueKeys.get(conf.indexOfKey(
                   statsType, keyNameCurrent)));
-              if ((conf.getModeCumul(statsType))
-                  .equals(StatisticsConfig.MODEADD)) {
-                pstmt.setInt(countCumulKey, rs.getInt(keyNameCurrent)
-                    + intToAdd);
+              if (conf.getModeCumul(statsType) == StatisticMode.Add) {
+                pstmt.setInt(countCumulKey, rs.getInt(keyNameCurrent) + intToAdd);
               }
-              if ((conf.getModeCumul(statsType))
-                  .equals(StatisticsConfig.MODEREPLACE)) {
+              if (conf.getModeCumul(statsType) == StatisticMode.Replace) {
                 pstmt.setInt(countCumulKey, intToAdd);
               }
             }
@@ -306,13 +304,11 @@ public class SilverStatisticsManagerDAO {
               Long myLong = Long.valueOf(valueKeys.get(conf.indexOfKey(
                   statsType, keyNameCurrent)));
 
-              if ((conf.getModeCumul(statsType))
-                  .equals(StatisticsConfig.MODEADD)) {
+              if (conf.getModeCumul(statsType) == StatisticMode.Add) {
                 pstmt.setLong(countCumulKey,
                     (rs.getLong(keyNameCurrent) + myLong));
               }
-              if ((conf.getModeCumul(statsType))
-                  .equals(StatisticsConfig.MODEREPLACE)) {
+              if (conf.getModeCumul(statsType) == StatisticMode.Replace) {
                 pstmt.setLong(countCumulKey, myLong);
               }
             }
