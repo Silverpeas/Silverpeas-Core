@@ -48,6 +48,9 @@
       if (!ticketWindow.closed && ticketWindow.name == "ticketWindow")
         ticketWindow.close();
       ticketWindow = SP_openWindow(urlWindows, windowName, larg, haut, windowParams);
+      ticketWindow.onClose = function() {
+        location.reload(true);
+      }
     }
 
     function deleteTicket(keyFile) {
@@ -81,6 +84,8 @@
         <fmt:message key="fileSharing.operation" var="operationTicket"></fmt:message>
         <view:arrayColumn title="${operationTicket}" sortable="false"></view:arrayColumn>
         <c:forEach items="${requestScope.Tickets}" var="ticket">
+          <c:set var="endDate" value=""/>
+          <c:set var="accessCount" value="${ticket.nbAccess}"/>
           <view:arrayLine>
             <c:if test="${ticket.attachmentDetail != null || ticket.document != null}">
               <c:url var="lien" value="/File/${ticket.fileId}"/>
@@ -101,9 +106,14 @@
               %>
               <view:arrayCellText text="${ticketIcon}"/>
             </c:if>
-            <fmt:formatDate value="${ticket.endDate}" var="validateDate" />
-            <view:arrayCellText text="${validateDate}" />
-            <view:arrayCellText text="${ticket.nbAccess}/${ticket.nbAccessMax}" />
+            <c:if test="${ticket.endDate ne null}">
+              <fmt:formatDate value="${ticket.endDate}" var="endDate" />
+            </c:if>
+            <c:if test="${ticket.nbAccessMax gt 0}">
+              <c:set var="accessCount" value="${ticket.nbAccess}/${ticket.nbAccessMax}"/>
+            </c:if>
+            <view:arrayCellText text="${endDate}" />
+            <view:arrayCellText text="${accessCount}" />
             <%
               IconPane iconPane = gef.getIconPane();
               Icon updateIcon = iconPane.addIcon();
@@ -133,6 +143,7 @@
   <input type="hidden" name="Versioning"/>
   <input type="hidden" name="EndDate"/>
   <input type="hidden" name="NbAccessMax"/>
+  <input type="hidden" name="Continuous"/>
 </form>
 
 <form name="deleteForm" action="DeleteTicket" method="post">

@@ -38,20 +38,18 @@ import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.versioning.model.Document;
-import com.stratelia.silverpeas.versioning.model.DocumentPK;
-import com.stratelia.silverpeas.versioning.util.VersioningUtil;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 
 public class FileSharingRequestRouter extends ComponentRequestRouter {
+
+  private static final long serialVersionUID = -8855028133035807994L;
 
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
+  @Override
   public String getSessionControlBeanName() {
     return "FileSharing";
   }
@@ -63,6 +61,7 @@ public class FileSharingRequestRouter extends ComponentRequestRouter {
    * @return
    * @see
    */
+  @Override
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new FileSharingSessionController(mainSessionCtrl, componentContext);
@@ -104,25 +103,15 @@ public class FileSharingRequestRouter extends ComponentRequestRouter {
         String fileId = request.getParameter("FileId");
         String componentId = request.getParameter("ComponentId");
         String type = request.getParameter("Type"); // versioning or not
-
-        String logicalName = null;
-        if (StringUtil.isDefined(type) && "version".equalsIgnoreCase(type)) {
-          VersioningUtil versioningUtil = new VersioningUtil();
-          Document document =
-              versioningUtil.getDocument(new DocumentPK(Integer.parseInt(fileId), componentId));
-          logicalName = document.getName();
-        } else {
-          AttachmentDetail attachment =
-              AttachmentController.searchAttachmentByPK(new AttachmentPK(fileId));
-          logicalName = attachment.getLogicalName();
-        }
+        boolean versioned = StringUtil.isDefined(type) && "version".equalsIgnoreCase(type);
+        UserDetail creator = fileSharingSC.getUserDetail();
+        TicketDetail newTicket = TicketDetail.aTicket(Integer.parseInt(fileId), componentId,
+            versioned, creator, new Date(), new Date(), 1);
 
         // passage des paramètres
-        request.setAttribute("FileId", fileId);
-        request.setAttribute("Versioning", Boolean.valueOf("version".equalsIgnoreCase(type)));
-        request.setAttribute("ComponentId", componentId);
-        request.setAttribute("FileName", logicalName);
-        request.setAttribute("CreatorName", fileSharingSC.getUserDetail().getDisplayedName());
+        request.setAttribute("Ticket", newTicket);
+        request.setAttribute("Url", newTicket.getUrl(request));
+        request.setAttribute("Action", "CreateTicket");
         destination = rootDest + "ticketManager.jsp";
       } else if (function.equals("CreateTicket")) {
         // récupération des paramètres venus de l'écran de saisie et création de l'objet
@@ -138,6 +127,8 @@ public class FileSharingRequestRouter extends ComponentRequestRouter {
         String keyFile = request.getParameter("KeyFile");
         TicketDetail ticket = fileSharingSC.getTicket(keyFile);
         request.setAttribute("Ticket", ticket);
+        request.setAttribute("Url", ticket.getUrl(request));
+        request.setAttribute("Action", "UpdateTicket");
         // appel jsp
         destination = rootDest + "ticketManager.jsp";
       } else if (function.equals("UpdateTicket")) {
@@ -168,28 +159,40 @@ public class FileSharingRequestRouter extends ComponentRequestRouter {
   private TicketDetail generateTicket(
       FileSharingSessionController fileSharingSC, HttpServletRequest request)
       throws ParseException {
+    TicketDetail ticket;
+    UserDetail creator = fileSharingSC.getUserDetail();
     int fileId = Integer.parseInt(request.getParameter("FileId"));
     String componentId = request.getParameter("ComponentId");
     boolean versioning = false;
     if ("true".equals(request.getParameter("Versioning"))) {
       versioning = true;
     }
-    String date = request.getParameter("EndDate");
-    Date endDate = DateUtil.stringToDate(date, fileSharingSC.getLanguage());
-    int nbAccessMax = Integer.parseInt(request.getParameter("NbAccessMax"));
-    return new TicketDetail(fileId, componentId, versioning, null, new Date(),
-        endDate, nbAccessMax);
+    if (!StringUtil.isDefined(request.getParameter("Continuous"))) {
+      String date = request.getParameter("EndDate");
+      Date endDate = DateUtil.stringToDate(date, fileSharingSC.getLanguage());
+      int maxAccessNb = Integer.parseInt(request.getParameter("NbAccessMax"));
+      ticket = TicketDetail.aTicket(fileId, componentId, versioning, creator, new Date(), endDate,
+          maxAccessNb);
+    } else {
+      ticket = TicketDetail.continuousTicket(fileId, componentId, versioning, creator, new Date());
+    }
+    return ticket;
   }
 
   private TicketDetail updateTicket(String keyFile,
       FileSharingSessionController fileSharingSC, HttpServletRequest request)
       throws ParseException, RemoteException {
     TicketDetail ticket = fileSharingSC.getTicket(keyFile);
-    String date = request.getParameter("EndDate");
-    Date endDate = DateUtil.stringToDate(date, fileSharingSC.getLanguage());
-    int nbAccessMax = Integer.parseInt(request.getParameter("NbAccessMax"));
-    ticket.setEndDate(endDate);
-    ticket.setNbAccessMax(nbAccessMax);
+    if (!StringUtil.isDefined(request.getParameter("Continuous"))) {
+      String date = request.getParameter("EndDate");
+      Date endDate = DateUtil.stringToDate(date, fileSharingSC.getLanguage());
+      int maxAccessNb = Integer.parseInt(request.getParameter("NbAccessMax"));
+      ticket.setEndDate(endDate);
+      ticket.setNbAccessMax(maxAccessNb);
+    } else {
+      ticket.setContinuous();
+    }
+
     return ticket;
   }
 }
