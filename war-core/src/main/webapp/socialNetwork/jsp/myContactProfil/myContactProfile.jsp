@@ -135,9 +135,11 @@
 
 	<fmt:message key="myContactProfile.tab.profile" var="profile" />
 	<fmt:message key="myContactProfile.tab.wall" var="wall" />
+	<c:set var="wallAction"><%="Main?userId="+userFull.getId()%></c:set>
+	<c:set var="profileAction"><%="Infos?userId="+userFull.getId()%></c:set>
 	<view:tabs>
-    	<view:tab label="${wall}" action='<%="Main?userId="+userFull.getId()%>' selected='<%="Wall".equals(view) %>' />
-    	<view:tab label="${profile}" action='<%="Infos?userId="+userFull.getId()%>' selected='<%=Infos".equals(view) %>' />
+    	<view:tab label="${wall}" action="${wallAction}" selected="<%=Boolean.toString("Wall".equals(view)) %>" />
+    	<view:tab label="${profile}" action="${profileAction}" selected="<%=Boolean.toString("Infos".equals(view)) %>" />
 	</view:tabs>
 	
 	<% if ("Infos".equals(view)) { %>
