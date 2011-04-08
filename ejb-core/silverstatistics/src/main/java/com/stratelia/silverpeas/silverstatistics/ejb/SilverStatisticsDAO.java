@@ -59,7 +59,7 @@ public class SilverStatisticsDAO {
    * @throws SQLException
    * @see
    */
-  private static void insertDataStats(Connection con, String StatsType,
+  static void insertDataStats(Connection con, String StatsType,
       List<String> valueKeys, StatisticsConfig conf) throws SQLException {
     StringBuilder insertStatementBuf = new StringBuilder("INSERT INTO ");
     insertStatementBuf.append(conf.getTableName(StatsType)).append("(");

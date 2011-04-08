@@ -61,6 +61,7 @@ public class SilverStatisticsDAOTest {
 
   /**
    * Test of putDataStats method, of class SilverStatisticsDAO.
+   * @throws Exception 
    */
    /*@Test
  public void testPutDataStats() throws Exception {
@@ -73,4 +74,9 @@ public class SilverStatisticsDAOTest {
     // TODO review the generated test code and remove the default call to fail.
     fail("The test case is a prototype.");
   }*/
+  
+  
+  public void testInsertData() throws Exception {
+    SilverStatisticsDAO.insertDataStats(null, null, null, null);
+  }
 }

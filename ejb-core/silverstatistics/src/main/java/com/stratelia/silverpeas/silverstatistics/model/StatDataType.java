@@ -27,6 +27,6 @@ package com.stratelia.silverpeas.silverstatistics.model;
  *
  * @author ehugonnet
  */
-public enum StatType {
+public enum StatDataType {
   INTEGER, VARCHAR, DECIMAL;
 }

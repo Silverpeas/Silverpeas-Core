@@ -234,7 +234,7 @@ public class TypeStatisticsTest {
     assertThat(allKeys, hasSize(2));
     assertThat(allKeys, contains(value1, value2));
     String value3 = RandomGenerator.getRandomString();
-    instance.addKey(value3, StatType.VARCHAR);
+    instance.addKey(value3, StatDataType.VARCHAR);
     allKeys = instance.getAllKeys();
     assertNotNull(allKeys);
     assertThat(allKeys, hasSize(3));
@@ -248,7 +248,7 @@ public class TypeStatisticsTest {
   public void testAddCumulKey() throws Exception {
     String keyName = RandomGenerator.getRandomString();
     TypeStatistics instance = new TypeStatistics();
-    instance.addKey(keyName, StatType.INTEGER);
+    instance.addKey(keyName, StatDataType.INTEGER);
     instance.addCumulKey(keyName);
     Collection<String> allKeys = instance.getAllKeys();
     assertNotNull(allKeys);
@@ -279,8 +279,8 @@ public class TypeStatisticsTest {
     String notCumulKeyName = RandomGenerator.getRandomString();
     String cumulKeyName = RandomGenerator.getRandomString();
     TypeStatistics instance = new TypeStatistics();
-    instance.addKey(cumulKeyName, StatType.INTEGER);
-    instance.addKey(notCumulKeyName, StatType.VARCHAR);
+    instance.addKey(cumulKeyName, StatDataType.INTEGER);
+    instance.addKey(notCumulKeyName, StatDataType.VARCHAR);
     instance.addCumulKey(cumulKeyName);
     Collection<String> allKeys = instance.getAllKeys();
     assertNotNull(allKeys);
@@ -297,7 +297,7 @@ public class TypeStatisticsTest {
     TypeStatistics instance = new TypeStatistics();
     boolean result = instance.isDateStatKeyExist();
     assertFalse(result);
-    instance.addKey(TypeStatistics.STATISTIC_DATE_KEY, StatType.VARCHAR);
+    instance.addKey(TypeStatistics.STATISTIC_DATE_KEY, StatDataType.VARCHAR);
     result = instance.isDateStatKeyExist();
     assertTrue(result);
   }
@@ -311,13 +311,13 @@ public class TypeStatisticsTest {
     TypeStatistics instance = new TypeStatistics();
     boolean result = instance.isAGoodType(typeName);
     assertFalse(result);
-    typeName = StatType.INTEGER.name();
+    typeName = StatDataType.INTEGER.name();
     result = instance.isAGoodType(typeName);
     assertTrue(result);
-    typeName = StatType.VARCHAR.name();
+    typeName = StatDataType.VARCHAR.name();
     result = instance.isAGoodType(typeName);
     assertTrue(result);
-    typeName = StatType.DECIMAL.name();
+    typeName = StatDataType.DECIMAL.name();
     result = instance.isAGoodType(typeName);
     assertTrue(result);
   }
@@ -330,8 +330,8 @@ public class TypeStatisticsTest {
     String notCumulKeyName = RandomGenerator.getRandomString();
     String cumulKeyName = RandomGenerator.getRandomString();
     TypeStatistics instance = new TypeStatistics();
-    instance.addKey(cumulKeyName, StatType.INTEGER);
-    instance.addKey(notCumulKeyName, StatType.VARCHAR);
+    instance.addKey(cumulKeyName, StatDataType.INTEGER);
+    instance.addKey(notCumulKeyName, StatDataType.VARCHAR);
     instance.addCumulKey(cumulKeyName);
     assertFalse(instance.hasACumulType(notCumulKeyName));
     assertTrue(instance.hasACumulType(cumulKeyName));
@@ -345,8 +345,8 @@ public class TypeStatisticsTest {
     String notCumulKeyName = RandomGenerator.getRandomString();
     String cumulKeyName = RandomGenerator.getRandomString();
     TypeStatistics instance = new TypeStatistics();
-    instance.addKey(cumulKeyName, StatType.INTEGER);
-    instance.addKey(notCumulKeyName, StatType.VARCHAR);
+    instance.addKey(cumulKeyName, StatDataType.INTEGER);
+    instance.addKey(notCumulKeyName, StatDataType.VARCHAR);
     assertFalse(instance.hasGoodCumulKey());
     instance.addCumulKey(cumulKeyName);
     assertTrue(instance.hasGoodCumulKey());
@@ -360,11 +360,11 @@ public class TypeStatisticsTest {
     String notCumulKeyName = RandomGenerator.getRandomString();
     String cumulKeyName = RandomGenerator.getRandomString();
     TypeStatistics instance = new TypeStatistics();
-    instance.addKey(cumulKeyName, StatType.INTEGER);
-    instance.addKey(notCumulKeyName, StatType.VARCHAR);
+    instance.addKey(cumulKeyName, StatDataType.INTEGER);
+    instance.addKey(notCumulKeyName, StatDataType.VARCHAR);
     instance.addCumulKey(cumulKeyName);
-    assertEquals(StatType.INTEGER, instance.getKeyType(cumulKeyName));
-    assertEquals(StatType.VARCHAR, instance.getKeyType(notCumulKeyName));
+    assertEquals(StatDataType.INTEGER, instance.getKeyType(cumulKeyName));
+    assertEquals(StatDataType.VARCHAR, instance.getKeyType(notCumulKeyName));
   }
 
   /**

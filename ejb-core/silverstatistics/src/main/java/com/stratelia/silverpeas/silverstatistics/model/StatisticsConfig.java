@@ -133,7 +133,7 @@ public class StatisticsConfig {
             getName()), tokenSeparator);
 
         while (stKeyName.hasMoreTokens()) {
-          currentType.addKey(stKeyName.nextToken(), StatType.valueOf(stKeyType.nextToken()));
+          currentType.addKey(stKeyName.nextToken(), StatDataType.valueOf(stKeyType.nextToken()));
         }
         while (stKeyCumul.hasMoreTokens()) {
           currentType.addCumulKey(stKeyCumul.nextToken());

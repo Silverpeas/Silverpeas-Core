@@ -42,7 +42,7 @@ public class TypeStatistics {
   private String tableName;
   private int purgeInMonth;
   private List<String> allKeysName;
-  private List<StatType> allKeysValue;
+  private List<StatDataType> allKeysValue;
   private List<String> cumulKeysName;
   private boolean isRun;
   private boolean isAsynchron;
@@ -50,7 +50,7 @@ public class TypeStatistics {
 
   TypeStatistics() {
     allKeysName = new ArrayList<String>();
-    allKeysValue = new ArrayList<StatType>();
+    allKeysValue = new ArrayList<StatDataType>();
     cumulKeysName = new ArrayList<String>();
     name = "";
     tableName = "";
@@ -130,7 +130,7 @@ public class TypeStatistics {
     this.allKeysName.addAll(allTags);
   }
 
-  public void addKey(String keyName, StatType keyType)
+  public void addKey(String keyName, StatDataType keyType)
       throws SilverStatisticsTypeStatisticsException {
     if (!StringUtil.isDefined(keyName)) {
       throw new SilverStatisticsTypeStatisticsException("TypeStatistics",
@@ -170,7 +170,7 @@ public class TypeStatistics {
 
   public boolean isAGoodType(String typeName) {
     try {
-      StatType.valueOf(typeName);
+      StatDataType.valueOf(typeName);
       return true;
     } catch (IllegalArgumentException e) {
       return false;
@@ -178,15 +178,15 @@ public class TypeStatistics {
   }
 
   public boolean hasACumulType(String cumulKeyName) {
-    StatType type = allKeysValue.get(allKeysName.indexOf(cumulKeyName));
-    return StatType.INTEGER == type || StatType.DECIMAL == type;
+    StatDataType type = allKeysValue.get(allKeysName.indexOf(cumulKeyName));
+    return StatDataType.INTEGER == type || StatDataType.DECIMAL == type;
   }
 
   public boolean hasGoodCumulKey() {
     return !cumulKeysName.isEmpty();
   }
 
-  public StatType getKeyType(String keyName) {
+  public StatDataType getKeyType(String keyName) {
     return allKeysValue.get(allKeysName.indexOf(keyName));
   }
 

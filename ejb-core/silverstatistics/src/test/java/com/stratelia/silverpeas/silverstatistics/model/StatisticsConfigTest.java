@@ -53,9 +53,9 @@ public class StatisticsConfigTest {
   @Test
   public void testGetKeyType() throws Exception {
     String result = instance.getKeyType("Connexion", "userId");
-    assertEquals(StatType.INTEGER.name(), result);
+    assertEquals(StatDataType.INTEGER.name(), result);
     result = instance.getKeyType("Connexion", "dateStat");
-    assertEquals(StatType.VARCHAR.name(), result);
+    assertEquals(StatDataType.VARCHAR.name(), result);
   }
 
   /**
