@@ -27,10 +27,11 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
-<fmt:setLocale value="${requestScope.resources.language}"/>
-<view:setBundle basename="com.silverpeas.external.filesharing.multilang.fileSharingBundle"/>
-<view:setBundle basename="com.silverpeas.external.filesharing.settings.fileSharingIcons"
-                var="icons"/>
+<c:set var="language" value="${requestScope.resources.language}"/>
+<fmt:setLocale value="${language}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
+
 <%@ include file="check.jsp" %>
 <html>
 <head>
@@ -48,6 +49,9 @@
       if (!ticketWindow.closed && ticketWindow.name == "ticketWindow")
         ticketWindow.close();
       ticketWindow = SP_openWindow(urlWindows, windowName, larg, haut, windowParams);
+      ticketWindow.onClose = function() {
+        location.reload(true);
+      }
     }
 
     function deleteTicket(keyFile) {
@@ -81,11 +85,13 @@
         <fmt:message key="fileSharing.operation" var="operationTicket"></fmt:message>
         <view:arrayColumn title="${operationTicket}" sortable="false"></view:arrayColumn>
         <c:forEach items="${requestScope.Tickets}" var="ticket">
+          <c:set var="endDate" value=""/>
+          <c:set var="accessCount" value="${ticket.nbAccess}"/>
           <view:arrayLine>
             <c:if test="${ticket.attachmentDetail != null || ticket.document != null}">
               <c:url var="lien" value="/File/${ticket.fileId}"/>
               <c:choose>
-                <c:when test="${ticket.attachmentDetail != null}">
+                <c:when test="${not ticket.versioned}">
                    <view:arrayCellText text="${ticket.attachmentDetail.logicalName}"/>
                 </c:when>
                 <c:otherwise>
@@ -101,9 +107,14 @@
               %>
               <view:arrayCellText text="${ticketIcon}"/>
             </c:if>
-            <fmt:formatDate value="${ticket.endDate}" var="validateDate" />
-            <view:arrayCellText text="${validateDate}" />
-            <view:arrayCellText text="${ticket.nbAccess}/${ticket.nbAccessMax}" />
+            <c:if test="${ticket.endDate ne null}">
+              <c:set var="endDate"><view:formatDate value="${ticket.endDate}" language="${language}"/></c:set>
+            </c:if>
+            <c:if test="${ticket.nbAccessMax gt 0}">
+              <c:set var="accessCount" value="${ticket.nbAccess}/${ticket.nbAccessMax}"/>
+            </c:if>
+            <view:arrayCellText text="${endDate}" />
+            <view:arrayCellText text="${accessCount}" />
             <%
               IconPane iconPane = gef.getIconPane();
               Icon updateIcon = iconPane.addIcon();
@@ -133,6 +144,7 @@
   <input type="hidden" name="Versioning"/>
   <input type="hidden" name="EndDate"/>
   <input type="hidden" name="NbAccessMax"/>
+  <input type="hidden" name="Continuous"/>
 </form>
 
 <form name="deleteForm" action="DeleteTicket" method="post">
