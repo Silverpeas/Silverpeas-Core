@@ -23,6 +23,7 @@
  */
 package com.silverpeas.socialNetwork.myProfil.control;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -32,9 +33,11 @@ import java.util.Map;
 
 import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.silverpeas.socialNetwork.model.SocialInformationType;
+import com.silverpeas.socialNetwork.relationShip.RelationShipService;
 import com.silverpeas.socialNetwork.status.Status;
 import com.silverpeas.socialNetwork.status.StatusService;
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 
 /**
@@ -44,9 +47,9 @@ import com.stratelia.webactiv.util.DateUtil;
 public class SocialNetworkService {
 
   private String myId;
-  private List<String> myContactsIds;
 
-  public SocialNetworkService() {
+  public SocialNetworkService(String myId) {
+    this.myId = myId;
   }
 
   /**
@@ -101,9 +104,33 @@ public class SocialNetworkService {
     
     com.silverpeas.calendar.Date dBegin = new com.silverpeas.calendar.Date(begin);
     com.silverpeas.calendar.Date dEnd = new com.silverpeas.calendar.Date(end);
+        
+    List<String> myContactIds = getMyContactsIds();
+    myContactIds.add(myId); // add myself
     
-    List<SocialInformation> socialInformationsFull = new ProviderService().getSocialInformationsListOfMyContact(type, myId,
-        myContactsIds, dEnd, dBegin);
+    List<SocialInformation> socialInformationsFull =
+        new ProviderService().getSocialInformationsListOfMyContact(type, myId,
+            myContactIds, dEnd, dBegin);
+    
+    if (SocialInformationType.ALL.equals(type)) {
+      Collections.sort(socialInformationsFull);
+    }
+    
+    return processResults(socialInformationsFull);
+  }
+  
+  public Map<Date, List<SocialInformation>> getSocialInformationOfMyContact(String myContactId,
+      SocialInformationType type, Date begin, Date end) {
+    
+    com.silverpeas.calendar.Date dBegin = new com.silverpeas.calendar.Date(begin);
+    com.silverpeas.calendar.Date dEnd = new com.silverpeas.calendar.Date(end);
+    
+    List<String> myContactIds = new ArrayList<String>();
+    myContactIds.add(myContactId);
+        
+    List<SocialInformation> socialInformationsFull =
+        new ProviderService().getSocialInformationsListOfMyContact(type, myId,
+            myContactIds, dEnd, dBegin);
     
     if (SocialInformationType.ALL.equals(type)) {
       Collections.sort(socialInformationsFull);
@@ -134,37 +161,14 @@ public class SocialNetworkService {
     }
     return " ";
   }
-
-  /**
-   * get  last status of my contact
-   * @return String
-   */
-  public String getLastStatusOfMyContact() {
-    int contactId = -1;
-    if (StringUtil.isInteger(myContactsIds.get(0))) {
-      contactId = Integer.parseInt(myContactsIds.get(0));
+  
+  public List<String> getMyContactsIds() {
+    try {
+      return new RelationShipService().getMyContactsIds(Integer.parseInt(myId));
+    } catch (SQLException ex) {
+      SilverTrace.error("socialNetworkService", "SocialNetworkService.getMyContactsIds", "", ex);
     }
-    Status status = new StatusService().getLastStatusService(contactId);
-    if (StringUtil.isDefined(status.getDescription())) {
-      return status.getDescription();
-    }
-    return " ";
-  }
-
-  /**
-   *
-   * @param myId
-   */
-  public void setMyId(String myId) {
-    this.myId = myId;
-  }
-
-  /**
-   *
-   * @param myContactsIds
-   */
-  public void setMyContactsIds(List<String> myContactsIds) {
-    this.myContactsIds = myContactsIds;
+    return new ArrayList<String>();
   }
 
 }
