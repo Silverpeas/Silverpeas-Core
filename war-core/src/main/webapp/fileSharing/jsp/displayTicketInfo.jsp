@@ -42,10 +42,8 @@
 <c:set var="wallpaper" value="${requestScope.wallpaper}"/>
 <c:set var="ticket" value="${requestScope.attTicket}"/>
 <c:set var="endDate" value=""/>
-<c:set var="accessCount"><fmt:message key="fileSharing.nbAccess"/>: <c:out value="${ticket.nbAccess}"/></c:set>
 <c:if test="${not ticket.continuous}">
   <c:set var="endDate"><fmt:message key="fileSharing.endDate"/>: <view:formatDate value="${ticket.endDate}"/></c:set>
-  <c:set var="accessCount"><fmt:message key="fileSharing.nbAccess"/>: <c:out value="${ticket.nbAccess}/${ticket.nbAccessMax}"/></c:set>
 </c:if>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -53,7 +51,7 @@
   <head>
     <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>
 
-    <view:looknfeel/>
+    <link href="<c:url value='/util/styleSheets/silverpeas_light_style.css'/>" type="text/css" rel="stylesheet">
     <link href="<c:url value='/fileSharing/jsp/styleSheets/filesharing.css'/>" type="text/css" rel="stylesheet"/>
 
     <style type="text/css">
@@ -77,7 +75,6 @@
         <a target="_blank" href="<c:url value="/LinkFile/Key/${requestScope.Key}/${attachment.logicalName}" />" ><strong><c:out value="${attachment.logicalName}"/> </strong></a><br/>
         <fmt:message key="fileSharing.sizeFile" /> : <c:out value="${attachment.attachmentFileSize}"/><br/>
         <c:out value="${endDate}"/><br/>
-        <c:out value="${accessCount}"/>
         <hr/>
         <i><fmt:message key="fileSharing.downloadFileHelp"/></i>
       </div>
@@ -93,12 +90,11 @@
 
         <strong><c:out value="${ticket.creator.displayedName}"/></strong> <fmt:message key="fileSharing.shareFile"/><br/><br/>
 
-        <img alt="image" src="<c:out value='${ticket.attachmentDetail.attachmentIcon}'/>" id="img_44"/>
+        <img alt="image" src="<c:out value='${documentVersion.documentIcon}'/>" id="img_44"/>
 
         <a target="_blank" href="<c:url value="/LinkFile/Key/${requestScope.Key}/${documentVersion.logicalName}" />"><strong><c:out value="${document.name}"/> v<c:out value="${documentVersion.majorNumber}"/>.<c:out value="${documentVersion.minorNumber}"/> (<c:out value="${documentVersion.logicalName}"/>)</strong></a><br/>
         <fmt:message key="fileSharing.sizeFile" /> : <strong><c:out value="${documentVersion.displaySize}"/></strong><br/>
         <c:out value="${endDate}"/><br/>
-        <c:out value="${accessCount}"/>
         <hr/>
         <i><fmt:message key="fileSharing.downloadFileHelp"/></i>
       </div>
