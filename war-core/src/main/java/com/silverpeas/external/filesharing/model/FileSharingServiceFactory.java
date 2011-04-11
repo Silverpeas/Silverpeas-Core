@@ -24,10 +24,28 @@
 
 package com.silverpeas.external.filesharing.model;
 
-public class FileSharingFactory {
-  private static final FileSharingInterface fileSharing = new FileSharingInterfaceImpl();
+/**
+ * A factory of FileSharingService instances.
+ * This factory wraps the concrete implementation of the FileSharingService and the way the
+ * life-cycle of theses instances are managed.
+ */
+public class FileSharingServiceFactory {
+  private static final FileSharingServiceFactory instance = new FileSharingServiceFactory();
+  private FileSharingService fileSharingService = new FileSharingServiceImpl();
 
-  public static FileSharingInterface getFileSharing() {
-    return fileSharing;
+  /**
+   * Gets a factory of a file sharing service.
+   * @return an instance of the FileSharingServiceFactory.
+   */
+  public static FileSharingServiceFactory getFactory() {
+    return instance;
+  }
+
+  /**
+   * Gets an instance of the file sharing service.
+   * @return a FileSharingService instance.
+   */
+  public FileSharingService getFileSharingService() {
+    return fileSharingService;
   }
 }

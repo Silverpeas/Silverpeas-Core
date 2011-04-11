@@ -63,6 +63,7 @@ import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBmHome;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 
 /**
@@ -124,10 +125,41 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   public List<UserDetail> getAllUsers() {
     setCurrentView("tous");
     setCurrentDirectory(DIRECTORY_DEFAULT);
-    lastAlllistUsersCalled = Arrays.asList(getOrganizationController().getAllUsers());
+    switch (GeneralPropertiesManager.getDomainVisibility()) {
+      case GeneralPropertiesManager.DVIS_ALL:
+        // all users are visible
+        lastAlllistUsersCalled = Arrays.asList(getOrganizationController().getAllUsers());
+        break;
+      case GeneralPropertiesManager.DVIS_EACH:
+        // only users of user's domain are visible
+        lastAlllistUsersCalled = getUsersOfCurrentUserDomain();
+        break;
+      case GeneralPropertiesManager.DVIS_ONE:
+        // default domain users can see all users
+        // users of other domains can see only users of their domain
+        String currentUserDomainId = getUserDetail().getDomainId();
+        if ("0".equals(currentUserDomainId)) {
+          lastAlllistUsersCalled = Arrays.asList(getOrganizationController().getAllUsers());
+        } else {
+          lastAlllistUsersCalled = getUsersOfCurrentUserDomain();
+        }
+    }
+    
     lastListUsersCalled = lastAlllistUsersCalled;
     return lastAlllistUsersCalled;
 
+  }
+  
+  private List<UserDetail> getUsersOfCurrentUserDomain() {
+    String currentUserDomainId = getUserDetail().getDomainId();
+    UserDetail[] allUsers = getOrganizationController().getAllUsers();
+    List<UserDetail> users = new ArrayList<UserDetail>();
+    for (UserDetail var : allUsers) {
+      if (currentUserDomainId.equals(var.getDomainId())) {
+        users.add(var);
+      }
+    }
+    return users;
   }
 
   /**

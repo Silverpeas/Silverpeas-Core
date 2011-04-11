@@ -43,6 +43,7 @@ List 				xmlForms 	= (List) request.getAttribute("XMLForms");
 PublicationTemplate template 	= (PublicationTemplate) request.getAttribute("Template");
 DataRecord			emptyData	= (DataRecord) request.getAttribute("Data");
 PagesContext		context		= (PagesContext) request.getAttribute("context");
+context.setUseMandatory(false);
 List				webTabs		= (List) request.getAttribute("WebTabs");
 
 Form form = null;
