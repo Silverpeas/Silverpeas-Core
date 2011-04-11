@@ -21,62 +21,73 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.silverstatistics.ejb;
 
-import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
-import java.sql.Connection;
-import java.util.List;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import java.util.Map;
+import com.mockrunner.mock.jdbc.MockPreparedStatement;
 import org.junit.Test;
+import com.mockrunner.mock.jdbc.JDBCMockObjectFactory;
+import com.google.common.collect.Lists;
+import com.mockrunner.jdbc.JDBCTestModule;
+import com.mockrunner.mock.jdbc.MockConnection;
+import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
+import org.junit.Before;
+
+import java.util.List;
+
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 /**
- *
  * @author ehugonnet
  */
 public class SilverStatisticsDAOTest {
-  
+
+  private StatisticsConfig config;
+  private JDBCMockObjectFactory factory;
+  private JDBCTestModule module;
+
   public SilverStatisticsDAOTest() {
   }
 
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-  }
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {
-  }
-  
   @Before
-  public void setUp() {
-  }
-  
-  @After
-  public void tearDown() {
+  public void initialiseConfig() throws Exception {
+    config = new StatisticsConfig();
+    config.init();
+    factory = new JDBCMockObjectFactory();
+    module = new JDBCTestModule(factory);
+    module.setExactMatch(true);
   }
 
   /**
    * Test of putDataStats method, of class SilverStatisticsDAO.
-   * @throws Exception 
+   *
+   * @throws Exception
    */
-   /*@Test
- public void testPutDataStats() throws Exception {
-    System.out.println("putDataStats");
-    Connection con = null;
-    String StatsType = "";
-    List<String> valueKeys = null;
-    StatisticsConfig conf = null;
-    SilverStatisticsDAO.putDataStats(con, StatsType, valueKeys, conf);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+  /*@Test
+  public void testPutDataStats() throws Exception {
+  System.out.println("putDataStats");
+  Connection con = null;
+  String StatsType = "";
+  List<String> valueKeys = null;
+  StatisticsConfig conf = null;
+  SilverStatisticsDAO.putDataStats(con, StatsType, valueKeys, conf);
+  // TODO review the generated test code and remove the default call to fail.
+  fail("The test case is a prototype.");
   }*/
-  
-  
-  public void testInsertData() throws Exception {
-    SilverStatisticsDAO.insertDataStats(null, null, null, null);
+  @Test
+  public void testInsertDataForConnexion() throws Exception {
+    MockConnection connexion = factory.getMockConnection();
+    String typeofStat = "Connexion";
+    List<String> data = Lists.newArrayList("2011-01-17", "1620", "1", "1223229");
+    SilverStatisticsDAO.insertDataStats(connexion, typeofStat, data, config);
+    module.verifyAllStatementsClosed();
+    List<?> statements = module.getPreparedStatements();
+    assertNotNull(statements);
+    assertThat(statements, hasSize(1));
+    MockPreparedStatement pstmt =  module.getPreparedStatement(0);
+    assertThat(pstmt.getSQL(), is ("INSERT INTO SB_Stat_Connection(dateStat,userId,countConnection,duration) VALUES(?,?,?,?)"));
+    Map parameters = pstmt.getParameterMap();
+    assertThat((String)parameters.get("dateStat"), is("2011-01-17"));
   }
 }
