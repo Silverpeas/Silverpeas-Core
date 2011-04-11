@@ -63,7 +63,7 @@ public class DirectoryServlet extends HttpServlet {
         "ApplicationURL");
     HttpSession session = request.getSession();
     MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(
-        "SilverSessionController");
+        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     String userId = m_MainSessionCtrl.getUserId();
     directorySC.setUserId(userId);
     multilang = new ResourceLocator("com.silverpeas.directory.multilang.DirectoryBundle", "");

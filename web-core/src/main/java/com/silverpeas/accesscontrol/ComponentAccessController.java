@@ -46,7 +46,7 @@ public class ComponentAccessController implements AccessController<String> {
    * For tests only.
    * @param controller the controller to set for tests.
    */
-  protected void setComponentAccessController(final OrganizationController controller) {
+  protected void setOrganizationController(final OrganizationController controller) {
     this.controller = controller;
   }
 

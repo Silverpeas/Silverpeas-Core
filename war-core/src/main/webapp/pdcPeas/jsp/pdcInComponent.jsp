@@ -139,7 +139,7 @@ void displayAxisByType(boolean showAllAxis, String axisLabel, List axis, SearchC
 	PdcSearchSessionController pdcSC = (PdcSearchSessionController) session.getAttribute("Silverpeas_pdcSearch");
 
 	if (pdcSC == null) {
-		MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute("SilverSessionController");
+		MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 		pdcSC = setComponentSessionController(session, mainSessionCtrl);
 	}
 	

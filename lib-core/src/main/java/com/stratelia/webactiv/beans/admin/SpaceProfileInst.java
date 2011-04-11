@@ -30,121 +30,121 @@ import java.util.List;
 public class SpaceProfileInst extends Object implements Serializable {
 
   private static final long serialVersionUID = 1L;
-  private String m_sId;
-  private String m_sName;
-  private String m_sLabel;
-  private String m_sDescription;
-  private String m_sSpaceFatherId;
-  private ArrayList<String> m_alGroups;
-  private ArrayList<String> m_alUsers;
+  private String id;
+  private String name;
+  private String label;
+  private String description;
+  private String spaceFatherId;
+  private ArrayList<String> groups;
+  private ArrayList<String> users;
 
   private boolean isInherited = false;
 
   /** Creates new SpaceProfileInst */
   public SpaceProfileInst() {
-    m_sId = "";
-    m_sName = "";
-    m_sLabel = "";
-    m_sDescription = "";
-    m_sSpaceFatherId = "";
-    m_alGroups = new ArrayList<String>();
-    m_alUsers = new ArrayList<String>();
+    id = "";
+    name = "";
+    label = "";
+    description = "";
+    spaceFatherId = "";
+    groups = new ArrayList<String>();
+    users = new ArrayList<String>();
   }
 
   public void setId(String sId) {
-    m_sId = sId;
+    id = sId;
   }
 
   public String getId() {
-    return m_sId;
+    return id;
   }
 
   public void setName(String sName) {
-    m_sName = sName;
+    name = sName;
   }
 
   public String getName() {
-    return m_sName;
+    return name;
   }
 
   public void setLabel(String sLabel) {
-    m_sLabel = sLabel;
+    label = sLabel;
   }
 
   public String getLabel() {
-    return m_sLabel;
+    return label;
   }
 
   public void setDescription(String sDescription) {
-    m_sDescription = sDescription;
+    description = sDescription;
   }
 
   public String getDescription() {
-    return m_sDescription;
+    return description;
   }
 
   public void setSpaceFatherId(String sSpaceFatherId) {
-    m_sSpaceFatherId = sSpaceFatherId;
+    spaceFatherId = sSpaceFatherId;
   }
 
   public String getSpaceFatherId() {
-    return m_sSpaceFatherId;
+    return spaceFatherId;
   }
 
   public int getNumGroup() {
-    return m_alGroups.size();
+    return groups.size();
   }
 
   public String getGroup(int nIndex) {
-    return m_alGroups.get(nIndex);
+    return groups.get(nIndex);
   }
 
   public void addGroup(String sGroupId) {
-    m_alGroups.add(sGroupId);
+    groups.add(sGroupId);
   }
 
   public void removeGroup(String sGroupId) {
-    m_alGroups.remove(sGroupId);
+    groups.remove(sGroupId);
   }
 
   public ArrayList<String> getAllGroups() {
-    return m_alGroups;
+    return groups;
   }
 
   public void removeAllGroups() {
-    m_alGroups = new ArrayList<String>();
+    groups = new ArrayList<String>();
   }
 
   public int getNumUser() {
-    return m_alUsers.size();
+    return users.size();
   }
 
   public String getUser(int nIndex) {
-    return m_alUsers.get(nIndex);
+    return users.get(nIndex);
   }
 
   public void addUser(String sUserId) {
-    m_alUsers.add(sUserId);
+    users.add(sUserId);
   }
 
   public void removeUser(String sUserId) {
-    m_alUsers.remove(sUserId);
+    users.remove(sUserId);
   }
 
   public void addUsers(List<String> users) {
-    m_alUsers.addAll(users);
+    this.users.addAll(users);
   }
 
   public void addGroups(List<String> groups) {
-    m_alGroups.addAll(groups);
+    this.groups.addAll(groups);
   }
 
   public ArrayList<String> getAllUsers() {
-    return m_alUsers;
+    return users;
   }
 
   public void removeAllUsers() {
-    m_alUsers = new ArrayList<String>();
+    users = new ArrayList<String>();
   }
 
   public boolean isInherited() {
@@ -159,15 +159,13 @@ public class SpaceProfileInst extends Object implements Serializable {
   @SuppressWarnings("unchecked")
   protected SpaceProfileInst clone() {
     SpaceProfileInst clone = new SpaceProfileInst();
-    
-    clone.setDescription(m_sDescription);
-    //clone.setId(m_sId);
+    clone.setDescription(description);
     clone.setInherited(isInherited);
-    clone.setLabel(m_sLabel);
-    clone.setName(m_sName);
-    clone.setSpaceFatherId(m_sSpaceFatherId);    
-    clone.addGroups((List<String>) m_alGroups.clone());
-    clone.addUsers((List<String>) m_alUsers.clone());    
+    clone.setLabel(label);
+    clone.setName(name);
+    clone.setSpaceFatherId(spaceFatherId);
+    clone.addGroups((List<String>) groups.clone());
+    clone.addUsers((List<String>) users.clone());
     return clone;
   }
 }

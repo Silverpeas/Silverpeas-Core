@@ -34,34 +34,78 @@
 
 <view:setBundle basename="com.silverpeas.external.filesharing.multilang.fileSharingBundle"/>
 <view:setBundle basename="com.silverpeas.external.filesharing.settings.fileSharingIcons" var="icons" />
-<html>
-<head>
-<script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>
-<style type="text/css">
-td { font-family: "Verdana", "Arial", sans-serif; font-size: 10px}
-</style>
-</head>
 
 <c:set var="attachment" value="${requestScope.attAttachment}" />
 <c:set var="document" value="${requestScope.attDocument}" />
 <c:set var="documentVersion" value="${requestScope.attDocumentVersion}" />
 <c:set var="key" value="${requestScope.Key}" />
+<c:set var="wallpaper" value="${requestScope.wallpaper}"/>
+<c:set var="ticket" value="${requestScope.attTicket}"/>
+<c:set var="endDate" value=""/>
+<c:if test="${not ticket.continuous}">
+  <c:set var="endDate"><fmt:message key="fileSharing.endDate"/>: <view:formatDate value="${ticket.endDate}"/></c:set>
+</c:if>
 
-<body>
-<br/>
-<c:if test="${attachment!=null}">
-<table>
-	<tr><td><fmt:message key="fileSharing.nameFile" /> :</td><td><c:out value="${attachment.logicalName}"/></td></tr>
-	<tr><td><fmt:message key="fileSharing.sizeFile" /> :</td><td><c:out value="${attachment.attachmentFileSize}"/></td></tr>
-	<tr><td><fmt:message key="fileSharing.downloadLink" /> :</td><td><a href="<c:url value="/LinkFile/Key/${requestScope.Key}/${attachment.logicalName}" />" ><fmt:message key="fileSharing.downloadLink" /></a></td></tr>
-</table>
-</c:if>
-<c:if test="${document!=null}">
-<table>
-	<tr><td><fmt:message key="fileSharing.nameFile" /> :</td><td><c:out value="${document.name}"/> v<c:out value="${documentVersion.majorNumber}"/>.<c:out value="${documentVersion.minorNumber}"/> (<c:out value="${documentVersion.logicalName}"/>)</td></tr>
-	<tr><td><fmt:message key="fileSharing.sizeFile" /> :</td><td><c:out value="${documentVersion.displaySize}"/></td></tr>
-	<tr><td><fmt:message key="fileSharing.downloadLink" /> :</td><td><a href="<c:url value="/LinkFile/Key/${requestScope.Key}/${documentVersion.logicalName}" />" ><fmt:message key="fileSharing.downloadLink" /></a></td></tr>
-</table>
-</c:if>
-</body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>
+
+    <link href="<c:url value='/util/styleSheets/silverpeas_light_style.css'/>" type="text/css" rel="stylesheet">
+    <link href="<c:url value='/fileSharing/jsp/styleSheets/filesharing.css'/>" type="text/css" rel="stylesheet"/>
+
+    <style type="text/css">
+      <!--
+      body {
+        background-image: url('<c:out value="${wallpaper}" escapeXml="false"/>');;
+      }
+      -->
+    </style>
+  </head>
+
+
+  <body id="fileSharingTicket">
+    <c:if test="${attachment!=null}">
+      <div class="tableBoard">
+
+        <strong><c:out value="${ticket.creator.displayedName}"/></strong> <fmt:message key="fileSharing.shareFile"/><br/><br/>
+
+        <img alt="image" src="<c:out value='${ticket.attachmentDetail.attachmentIcon}'/>" id="img_44"/>
+
+        <a target="_blank" href="<c:url value="/LinkFile/Key/${requestScope.Key}/${attachment.logicalName}" />" ><strong><c:out value="${attachment.logicalName}"/> </strong></a><br/>
+        <fmt:message key="fileSharing.sizeFile" /> : <c:out value="${attachment.attachmentFileSize}"/><br/>
+        <c:out value="${endDate}"/><br/>
+        <hr/>
+        <i><fmt:message key="fileSharing.downloadFileHelp"/></i>
+      </div>
+
+      <div class="center">
+        <span class="milieuBoutonV5">
+          <a target="_blank" href="<c:url value="/LinkFile/Key/${requestScope.Key}/${attachment.logicalName}" />" ><fmt:message key="fileSharing.downloadLink"/></a>
+        </span>
+      </div>
+    </c:if>
+    <c:if test="${document!=null}">
+      <div class="tableBoard">
+
+        <strong><c:out value="${ticket.creator.displayedName}"/></strong> <fmt:message key="fileSharing.shareFile"/><br/><br/>
+
+        <img alt="image" src="<c:out value='${documentVersion.documentIcon}'/>" id="img_44"/>
+
+        <a target="_blank" href="<c:url value="/LinkFile/Key/${requestScope.Key}/${documentVersion.logicalName}" />"><strong><c:out value="${document.name}"/> v<c:out value="${documentVersion.majorNumber}"/>.<c:out value="${documentVersion.minorNumber}"/> (<c:out value="${documentVersion.logicalName}"/>)</strong></a><br/>
+        <fmt:message key="fileSharing.sizeFile" /> : <strong><c:out value="${documentVersion.displaySize}"/></strong><br/>
+        <c:out value="${endDate}"/><br/>
+        <hr/>
+        <i><fmt:message key="fileSharing.downloadFileHelp"/></i>
+      </div>
+
+      <div class="center">
+        <span class="milieuBoutonV5">
+          <a target="_blank" href="<c:url value="/LinkFile/Key/${requestScope.Key}/${documentVersion.logicalName}" />">
+            <fmt:message key="fileSharing.downloadLink" />
+          </a>
+        </span>
+      </div>
+    </c:if>
+  </body>
 </html>

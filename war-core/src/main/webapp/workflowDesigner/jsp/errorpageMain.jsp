@@ -55,7 +55,7 @@
 <%@ include file="check.jsp" %>
 
 <% 
-    MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute("SilverSessionController");
+    MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     String language = m_MainSessionCtrl.getFavoriteLanguage();
     ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(language);
 	Exception exception = (Exception) request.getAttribute("javax.servlet.jsp.jspException");

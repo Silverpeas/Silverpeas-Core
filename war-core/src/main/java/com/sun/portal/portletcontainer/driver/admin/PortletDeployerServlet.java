@@ -220,7 +220,7 @@ public class PortletDeployerServlet extends HttpServlet {
     // retrieve userId from session
     HttpSession session = request.getSession();
     MainSessionController m_MainSessionCtrl = (MainSessionController) session
-        .getAttribute("SilverSessionController");
+        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 
     return m_MainSessionCtrl.getFavoriteLanguage();
   }

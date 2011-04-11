@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="headLog.jsp" %>
 
@@ -46,6 +47,7 @@
 
 String componentId 	= (String) httpSession.getAttribute("RedirectToComponentId");
 String spaceId 		= (String) httpSession.getAttribute("RedirectToSpaceId");
+UserDetail anonymousUser = UserDetail.getAnonymousUser();
 
 boolean isAnonymousAccessAuthorized = false;
 if (redirection == null && componentId == null && spaceId == null)
@@ -55,15 +57,11 @@ if (redirection == null && componentId == null && spaceId == null)
 else
 {
 	OrganizationController organization = new OrganizationController();
-    ResourceLocator settings = new ResourceLocator(
-        "com.stratelia.webactiv.util.viewGenerator.settings.SilverpeasV5", "");
-    String guestId = settings.getString("guestId");
-
-	if (guestId != null)
+	if (organization.isAnonymousAccessActivated())
 	{
 		if (componentId != null)
 		{
-			if (organization.isComponentAvailable(componentId, guestId))
+			if (organization.isComponentAvailable(componentId, anonymousUser.getId()))
 			{
 				isAnonymousAccessAuthorized = true;
 			}
@@ -75,13 +73,13 @@ else
 				if ("Publication".equals(objectType))
 				{
 					KmeliaSecurity security = new KmeliaSecurity(organization);
-					isAnonymousAccessAuthorized = security.isAccessAuthorized(componentId, guestId, objectId);
+					isAnonymousAccessAuthorized = security.isAccessAuthorized(componentId, anonymousUser.getId(), objectId);
 				}
 			}
 		}
 		else if (spaceId != null)
 		{
-			if (organization.isSpaceAvailable(spaceId, guestId))
+			if (organization.isSpaceAvailable(spaceId, anonymousUser.getId()))
 			{
 				isAnonymousAccessAuthorized = true;
 			}
@@ -193,8 +191,8 @@ function checkSubmit(ev)
 if (isAnonymousAccessAuthorized) { %>
 <body>
 	<form id="EDform" action="<%=m_context%>/AuthenticationServlet" method="post" accept-charset="UTF-8">
-		<input type="hidden" name="Login" value="guest">
-		<input type="hidden" name="Password" value="guest">
+		<input type="hidden" name="Login" value="<%= anonymousUser.getLogin() %>">
+		<input type="hidden" name="Password" value="<%= anonymousUser.getLogin() %>">
 		<input type="hidden" name="DomainId" value="0">
 	</form>
 

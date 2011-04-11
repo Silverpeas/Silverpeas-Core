@@ -40,11 +40,13 @@ import javax.servlet.http.HttpSession;
 
 import com.silverpeas.portlets.portal.DesktopMessages;
 import com.silverpeas.portlets.portal.PortletWindowDataImpl;
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.sun.portal.portletcontainer.admin.registry.PortletRegistryConstants;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
+
+import static com.silverpeas.util.StringUtil.*;
 
 /**
  * AdminServlet is a router for admin related requests like deploying/undeploying of portlets and
@@ -52,24 +54,17 @@ import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
  */
 public class AdminServlet extends HttpServlet {
 
+  private static final long serialVersionUID = -7492755183604919041L;
   private ServletContext context;
 
+  @Override
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
     context = config.getServletContext();
   }
 
-  public void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
-    doGetPost(request, response);
-  }
-
-  public void doPost(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
-    doGetPost(request, response);
-  }
-
-  public void doGetPost(HttpServletRequest request, HttpServletResponse response)
+  @Override
+  protected void service(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
     String elementId = getUserIdOrSpaceId(request, false);
@@ -81,6 +76,7 @@ public class AdminServlet extends HttpServlet {
     response.setContentType("text/html;charset=UTF-8");
     HttpSession session = AdminUtils.getClearedSession(request);
     PortletAdminData portletAdminData = null;
+    String portletsRenderer = "/portlet/jsp/jsr/admin.jsp";
     try {
       portletAdminData = PortletAdminDataFactory.getPortletAdminData(elementId);
     } catch (PortletRegistryException pre) {
@@ -89,222 +85,28 @@ public class AdminServlet extends HttpServlet {
     AdminUtils.setAttributes(session, portletAdminData, elementId, userId, spaceId, language);
 
     if (isParameterPresent(request, AdminConstants.CREATE_PORTLET_WINDOW_SUBMIT)) {
-      // String portletWindowName = request.getParameter(AdminConstants.PORTLET_WINDOW_NAME);
-      Date timestamp = new Date();
-      String portletWindowName = String.valueOf(timestamp.getTime());
-      timestamp = null;
-
-      String portletName = request.getParameter(AdminConstants.PORTLET_LIST);
-      String title = request.getParameter(AdminConstants.PORTLET_WINDOW_TITLE);
-      if (portletName == null) {
-        String message = DesktopMessages.getLocalizedString(AdminConstants.NO_BASE_PORTLET);
-        session.setAttribute(AdminConstants.CREATION_FAILED_ATTRIBUTE, message);
-      } else {
-        boolean isValid = validateString(portletWindowName, false);
-        boolean isDuplicate = false;
-        if (isValid) {
-          // Check if a portlet window already exists with the same name.
-          List<String> portletWindowNames = portletAdminData.getPortletWindowNames();
-          if (portletWindowNames != null) {
-            for (String tempPortletWindowName : portletWindowNames) {
-              if (portletWindowName.equals(tempPortletWindowName)) {
-                String message =
-                    DesktopMessages.getLocalizedString(
-                    AdminConstants.PORTLET_WINDOW_NAME_ALREADY_EXISTS,
-                    new String[] { portletWindowName });
-                session.setAttribute(AdminConstants.CREATION_FAILED_ATTRIBUTE, message);
-                isDuplicate = true;
-                break;
-              }
-            }
-          }
-        }
-
-        if (!isDuplicate) {
-          if (isValid) {
-            isValid = validateString(title, true);
-          }
-          StringBuffer messageBuffer =
-              new StringBuffer(DesktopMessages.getLocalizedString(AdminConstants.CREATION_FAILED));
-          if (isValid) {
-            boolean success = false;
-            try {
-              success = portletAdminData.createPortletWindow(portletName, portletWindowName, title);
-            } catch (Exception ex) {
-              messageBuffer.append(".");
-              messageBuffer.append(ex.getMessage());
-            }
-            if (success) {
-              String message =
-                  DesktopMessages.getLocalizedString(AdminConstants.CREATION_SUCCEEDED);
-              session.setAttribute(AdminConstants.CREATION_SUCCEEDED_ATTRIBUTE, message);
-              AdminUtils.refreshList(request, elementId, userId, spaceId, language);
-            } else {
-              session.setAttribute(AdminConstants.CREATION_FAILED_ATTRIBUTE, messageBuffer
-                  .toString());
-            }
-          } else {
-            String message = DesktopMessages.getLocalizedString(AdminConstants.INVALID_CHARACTERS);
-            session.setAttribute(AdminConstants.CREATION_FAILED_ATTRIBUTE, message);
-          }
-        }
-      }
+      createPortletWindow(request, portletAdminData, session);
     } else if (isParameterPresent(request, AdminConstants.MODIFY_PORTLET_WINDOW_SUBMIT)) {
-      String portletWindowName = request.getParameter(AdminConstants.PORTLET_WINDOW_LIST);
-      setSelectedPortletWindow(session, portletWindowName);
-      String width = request.getParameter(AdminConstants.WIDTH_LIST);
-      String visibleValue = request.getParameter(AdminConstants.VISIBLE_LIST);
-      boolean visible;
-      if (PortletRegistryConstants.VISIBLE_TRUE.equals(visibleValue)) {
-        visible = true;
-      } else {
-        visible = false;
-      }
-      if (portletWindowName == null) {
-        String message = DesktopMessages.getLocalizedString(AdminConstants.NO_BASE_PORTLET_WINDOW);
-        session.setAttribute(AdminConstants.MODIFY_FAILED_ATTRIBUTE, message);
-      } else {
-        StringBuffer messageBuffer =
-            new StringBuffer(DesktopMessages.getLocalizedString(AdminConstants.MODIFY_FAILED));
-        boolean success = false;
-        try {
-          success = portletAdminData.modifyPortletWindow(portletWindowName, width, visible, null);
-          AdminUtils.setPortletWindowAttributes(session, portletAdminData, portletWindowName);
-        } catch (Exception ex) {
-          messageBuffer.append(".");
-          messageBuffer.append(ex.getMessage());
-        }
-        if (success) {
-          String message = DesktopMessages.getLocalizedString(AdminConstants.MODIFY_SUCCEEDED);
-          session.setAttribute(AdminConstants.MODIFY_SUCCEEDED_ATTRIBUTE, message);
-        } else {
-          session.setAttribute(AdminConstants.MODIFY_FAILED_ATTRIBUTE, messageBuffer.toString());
-        }
-      }
+      updatePortletWindow(request, portletAdminData, session);
     } else if (isParameterPresent(request, AdminConstants.MOVE_PORTLET_WINDOW)) {
-      // setSelectedPortletWindow(session, portletWindowName);
-      String column1 = request.getParameter("column1");
-      String column2 = request.getParameter("column2");
-
-      List windows = new ArrayList<PortletWindowDataImpl>();
-
-      List list = portletAdminData.getPortletWindowNames();
-
-      StringTokenizer tokenizer = new StringTokenizer(column1, ",");
-      PortletWindowDataImpl window = new PortletWindowDataImpl();
-      String token = null;
-      int i = 0;
-      while (tokenizer.hasMoreTokens()) {
-        token = tokenizer.nextToken();
-        window = new PortletWindowDataImpl();
-        window.setPortletWindowName(token);
-        window.setWidth("thick");
-        window.setRowNumber(i);
-        windows.add(window);
-        // movePortletWindow(token, "thick", Integer.toString(i), true, session, portletAdminData);
-        i++;
-      }
-
-      try {
-        String portletWindowName = null;
-        for (int p = 0; list != null && p < list.size(); p++) {
-          portletWindowName = (String) list.get(p);
-          if (!portletAdminData.isVisible(portletWindowName)) {
-            if ("thick".equals(portletAdminData.getWidth(portletWindowName))) {
-              // movePortletWindow(portletWindowName, "thick", Integer.toString(i), false, session,
-              // portletAdminData);
-              window = new PortletWindowDataImpl();
-              window.setPortletWindowName(token);
-              window.setWidth("thick");
-              window.setRowNumber(i);
-              windows.add(window);
-              i++;
-            }
-          }
-        }
-
-        tokenizer = new StringTokenizer(column2, ",");
-        i = 0;
-        while (tokenizer.hasMoreTokens()) {
-          token = tokenizer.nextToken();
-          // movePortletWindow(token, "thin", Integer.toString(i), true, session, portletAdminData);
-          window = new PortletWindowDataImpl();
-          window.setPortletWindowName(token);
-          window.setWidth("thin");
-          window.setRowNumber(i);
-          windows.add(window);
-          i++;
-        }
-
-        for (int p = 0; list != null && p < list.size(); p++) {
-          portletWindowName = (String) list.get(p);
-          if (!portletAdminData.isVisible(portletWindowName)) {
-            if ("thin".equals(portletAdminData.getWidth(portletWindowName))) {
-              // movePortletWindow(portletWindowName, "thin", Integer.toString(i), false, session,
-              // portletAdminData);
-              window = new PortletWindowDataImpl();
-              window.setPortletWindowName(token);
-              window.setWidth("thin");
-              window.setRowNumber(i);
-              windows.add(window);
-              i++;
-            }
-          }
-        }
-
-        portletAdminData.movePortletWindows(windows);
-      } catch (Exception e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-
-      RequestDispatcher reqd = context.getRequestDispatcher(getPresentationURI(request));
-      reqd.forward(request, response);
-
+      movePortletWindow(request, portletAdminData, session);
+      portletsRenderer = getPresentationURI(request);
     } else if (isParameterPresent(request, AdminConstants.PORTLET_WINDOW_LIST)) {
-      String portletWindowName = request.getParameter(AdminConstants.PORTLET_WINDOW_LIST);
-      setSelectedPortletWindow(session, portletWindowName);
-      if (portletWindowName == null) {
-        String message = DesktopMessages.getLocalizedString(AdminConstants.NO_BASE_PORTLET_WINDOW);
-        session.setAttribute(AdminConstants.NO_WINDOW_DATA_ATTRIBUTE, message);
-      } else {
-        StringBuffer messageBuffer =
-            new StringBuffer(DesktopMessages.getLocalizedString(AdminConstants.NO_WINDOW_DATA));
-        // Set the attribues for show/hide and thick/thin
-        boolean success = false;
-        try {
-          AdminUtils.setPortletWindowAttributes(session, portletAdminData, portletWindowName);
-          success = true;
-        } catch (Exception ex) {
-          messageBuffer.append(".");
-          messageBuffer.append(ex.getMessage());
-        }
-        if (!success) {
-          session.setAttribute(AdminConstants.NO_WINDOW_DATA_ATTRIBUTE, messageBuffer.toString());
-        }
-      }
+      selectPortletWindow(request, portletAdminData, session);
     } else {
       try {
         AdminUtils.setPortletWindowAttributes(session, portletAdminData, null);
       } catch (Exception ex) {
-        StringBuffer messageBuffer =
-            new StringBuffer(DesktopMessages.getLocalizedString(AdminConstants.NO_WINDOW_DATA));
-        messageBuffer.append(".");
-        messageBuffer.append(ex.getMessage());
-        session.setAttribute(AdminConstants.NO_WINDOW_DATA_ATTRIBUTE, messageBuffer.toString());
+        StringBuilder messageBuilder =
+            new StringBuilder(DesktopMessages.getLocalizedString(AdminConstants.NO_WINDOW_DATA));
+        messageBuilder.append(".");
+        messageBuilder.append(ex.getMessage());
+        session.setAttribute(AdminConstants.NO_WINDOW_DATA_ATTRIBUTE, messageBuilder.toString());
       }
     }
 
-    RequestDispatcher reqd = context.getRequestDispatcher("/portlet/jsp/jsr/admin.jsp");
+    RequestDispatcher reqd = context.getRequestDispatcher(portletsRenderer);
     reqd.forward(request, response);
-  }
-  
-
-  private boolean validateString(String name, boolean allowSpaces) {
-    if (name == null || name.trim().length() == 0) {
-      return false;
-    }
-    return true;
   }
 
   private boolean isParameterPresent(HttpServletRequest request,
@@ -323,7 +125,7 @@ public class AdminServlet extends HttpServlet {
   protected String getPresentationURI(HttpServletRequest request) {
     String spaceId = getSpaceId(request);
 
-    if (!StringUtil.isDefined(spaceId) || isSpaceBackOffice(request)) {
+    if (!isDefined(spaceId) || isSpaceBackOffice(request)) {
       return "/portlet/jsp/jsr/desktop.jsp";
     } else {
       request.setAttribute("DisableMove", Boolean.TRUE);
@@ -333,13 +135,13 @@ public class AdminServlet extends HttpServlet {
 
   private String getUserIdOrSpaceId(HttpServletRequest request,
       boolean getSpaceIdOnly) {
-    String userId = null;
     String spaceId = getSpaceId(request);
 
-    if (getSpaceIdOnly)
+    if (getSpaceIdOnly) {
       return spaceId;
+    }
 
-    if (!StringUtil.isDefined(spaceId)) {
+    if (!isDefined(spaceId)) {
       return getUserId(request);
     }
     return spaceId;
@@ -349,12 +151,10 @@ public class AdminServlet extends HttpServlet {
     // Display the private user homepage
     // retrieve userId from session
     HttpSession session = request.getSession();
-    MainSessionController m_MainSessionCtrl = (MainSessionController) session
-        .getAttribute("SilverSessionController");
-
-    String userId = m_MainSessionCtrl.getUserId();
-
-    return userId;
+    MainSessionController m_MainSessionCtrl =
+        (MainSessionController) session.getAttribute(
+        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+    return m_MainSessionCtrl.getUserId();
 
   }
 
@@ -362,33 +162,234 @@ public class AdminServlet extends HttpServlet {
     // Display the private user homepage
     // retrieve userId from session
     HttpSession session = request.getSession();
-    MainSessionController m_MainSessionCtrl = (MainSessionController) session
-        .getAttribute("SilverSessionController");
-
+    MainSessionController m_MainSessionCtrl =
+        (MainSessionController) session.getAttribute(
+        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     return m_MainSessionCtrl.getFavoriteLanguage();
   }
 
   private String getSpaceId(HttpServletRequest request) {
     String spaceId = request.getParameter("SpaceId");
-    if (!StringUtil.isDefined(spaceId))
+    if (!isDefined(spaceId)) {
       spaceId = request.getParameter(WindowInvokerConstants.DRIVER_SPACEID);
+    }
 
-    if (StringUtil.isDefined(spaceId)) {
+    if (isDefined(spaceId)) {
       // Display the space homepage
-      if (!spaceId.startsWith("space"))
+      if (!spaceId.startsWith("space")) {
         spaceId = "space" + spaceId;
+      }
     }
     return spaceId;
   }
 
   private boolean isSpaceBackOffice(HttpServletRequest request) {
-    return (StringUtil.isDefined(getSpaceId(request)) && "admin"
-        .equalsIgnoreCase(request
-        .getParameter(WindowInvokerConstants.DRIVER_ROLE)));
+    return (isDefined(getSpaceId(request))
+        && "admin".equalsIgnoreCase(request.getParameter(WindowInvokerConstants.DRIVER_ROLE)));
   }
 
-  private boolean isSpaceFrontOffice(HttpServletRequest request) {
-    return (StringUtil.isDefined(getSpaceId(request)) && !StringUtil
-        .isDefined(request.getParameter(WindowInvokerConstants.DRIVER_ROLE)));
+  private void createPortletWindow(HttpServletRequest request, PortletAdminData portletAdminData,
+      HttpSession session) {
+    // String portletWindowName = request.getParameter(AdminConstants.PORTLET_WINDOW_NAME);
+    Date timestamp = new Date();
+    String portletWindowName = String.valueOf(timestamp.getTime());
+    timestamp = null;
+
+    String portletName = request.getParameter(AdminConstants.PORTLET_LIST);
+    String title = request.getParameter(AdminConstants.PORTLET_WINDOW_TITLE);
+    if (portletName == null) {
+      String message = DesktopMessages.getLocalizedString(AdminConstants.NO_BASE_PORTLET);
+      session.setAttribute(AdminConstants.CREATION_FAILED_ATTRIBUTE, message);
+    } else {
+      boolean isValid = isValid(portletWindowName);
+      boolean isDuplicate = false;
+      if (isValid) {
+        // Check if a portlet window already exists with the same name.
+        List<String> portletWindowNames = portletAdminData.getPortletWindowNames();
+        if (portletWindowNames != null) {
+          for (String tempPortletWindowName : portletWindowNames) {
+            if (portletWindowName.equals(tempPortletWindowName)) {
+              String message =
+                  DesktopMessages.getLocalizedString(
+                  AdminConstants.PORTLET_WINDOW_NAME_ALREADY_EXISTS,
+                  new String[]{portletWindowName});
+              session.setAttribute(AdminConstants.CREATION_FAILED_ATTRIBUTE, message);
+              isDuplicate = true;
+              break;
+            }
+          }
+        }
+      }
+
+      if (!isDuplicate) {
+        if (isValid) {
+          isValid = isValid(title);
+        }
+        StringBuilder messageBuilder =
+            new StringBuilder(DesktopMessages.getLocalizedString(AdminConstants.CREATION_FAILED));
+        if (isValid) {
+          boolean success = false;
+          try {
+            success = portletAdminData.createPortletWindow(portletName, portletWindowName, title);
+          } catch (Exception ex) {
+            messageBuilder.append(".");
+            messageBuilder.append(ex.getMessage());
+          }
+          if (success) {
+            String elementId = getUserIdOrSpaceId(request, false);
+            String spaceId = getSpaceId(request);
+            String userId = getUserId(request);
+            String language = getLanguage(request);
+            String message =
+                DesktopMessages.getLocalizedString(AdminConstants.CREATION_SUCCEEDED);
+            session.setAttribute(AdminConstants.CREATION_SUCCEEDED_ATTRIBUTE, message);
+            AdminUtils.refreshList(request, elementId, userId, spaceId, language);
+          } else {
+            session.setAttribute(AdminConstants.CREATION_FAILED_ATTRIBUTE, messageBuilder.toString());
+          }
+        } else {
+          String message = DesktopMessages.getLocalizedString(AdminConstants.INVALID_CHARACTERS);
+          session.setAttribute(AdminConstants.CREATION_FAILED_ATTRIBUTE, message);
+        }
+      }
+    }
+  }
+
+  private void updatePortletWindow(HttpServletRequest request, PortletAdminData portletAdminData,
+      HttpSession session) {
+    String portletWindowName = request.getParameter(AdminConstants.PORTLET_WINDOW_LIST);
+    setSelectedPortletWindow(session, portletWindowName);
+    String width = request.getParameter(AdminConstants.WIDTH_LIST);
+    String visibleValue = request.getParameter(AdminConstants.VISIBLE_LIST);
+    boolean visible;
+    if (PortletRegistryConstants.VISIBLE_TRUE.equals(visibleValue)) {
+      visible = true;
+    } else {
+      visible = false;
+    }
+    if (portletWindowName == null) {
+      String message = DesktopMessages.getLocalizedString(AdminConstants.NO_BASE_PORTLET_WINDOW);
+      session.setAttribute(AdminConstants.MODIFY_FAILED_ATTRIBUTE, message);
+    } else {
+      StringBuilder messageBuilder =
+          new StringBuilder(DesktopMessages.getLocalizedString(AdminConstants.MODIFY_FAILED));
+      boolean success = false;
+      try {
+        success = portletAdminData.modifyPortletWindow(portletWindowName, width, visible, null);
+        AdminUtils.setPortletWindowAttributes(session, portletAdminData, portletWindowName);
+      } catch (Exception ex) {
+        messageBuilder.append(".");
+        messageBuilder.append(ex.getMessage());
+      }
+      if (success) {
+        String message = DesktopMessages.getLocalizedString(AdminConstants.MODIFY_SUCCEEDED);
+        session.setAttribute(AdminConstants.MODIFY_SUCCEEDED_ATTRIBUTE, message);
+      } else {
+        session.setAttribute(AdminConstants.MODIFY_FAILED_ATTRIBUTE, messageBuilder.toString());
+      }
+    }
+  }
+
+  private void movePortletWindow(HttpServletRequest request, PortletAdminData portletAdminData,
+      HttpSession session) {
+    // setSelectedPortletWindow(session, portletWindowName);
+    String column1 = request.getParameter("column1");
+    String column2 = request.getParameter("column2");
+
+    List<PortletWindowDataImpl> windows = new ArrayList<PortletWindowDataImpl>();
+    List<String> portletWindowNames = portletAdminData.getPortletWindowNames();
+
+    StringTokenizer tokenizer = new StringTokenizer(column1, ",");
+    PortletWindowDataImpl window = new PortletWindowDataImpl();
+    String token = null;
+    int i = 0;
+    while (tokenizer.hasMoreTokens()) {
+      token = tokenizer.nextToken();
+      window = new PortletWindowDataImpl();
+      window.setPortletWindowName(token);
+      window.setWidth("thick");
+      window.setRowNumber(i);
+      windows.add(window);
+      // movePortletWindow(token, "thick", Integer.toString(i), true, session, portletAdminData);
+      i++;
+    }
+
+    try {
+      for (String portletWindowName : portletWindowNames) {
+        if (!portletAdminData.isVisible(portletWindowName)) {
+          if ("thick".equals(portletAdminData.getWidth(portletWindowName))) {
+            // movePortletWindow(portletWindowName, "thick", Integer.toString(i), false, session,
+            // portletAdminData);
+            window = new PortletWindowDataImpl();
+            window.setPortletWindowName(token);
+            window.setWidth("thick");
+            window.setRowNumber(i);
+            windows.add(window);
+            i++;
+          }
+        }
+      }
+
+      tokenizer = new StringTokenizer(column2, ",");
+      i = 0;
+      while (tokenizer.hasMoreTokens()) {
+        token = tokenizer.nextToken();
+        // movePortletWindow(token, "thin", Integer.toString(i), true, session, portletAdminData);
+        window = new PortletWindowDataImpl();
+        window.setPortletWindowName(token);
+        window.setWidth("thin");
+        window.setRowNumber(i);
+        windows.add(window);
+        i++;
+      }
+
+      for (String portletWindowName : portletWindowNames) {
+        if (!portletAdminData.isVisible(portletWindowName)) {
+          if ("thin".equals(portletAdminData.getWidth(portletWindowName))) {
+            // movePortletWindow(portletWindowName, "thin", Integer.toString(i), false, session,
+            // portletAdminData);
+            window = new PortletWindowDataImpl();
+            window.setPortletWindowName(token);
+            window.setWidth("thin");
+            window.setRowNumber(i);
+            windows.add(window);
+            i++;
+          }
+        }
+      }
+
+      portletAdminData.movePortletWindows(windows);
+    } catch (Exception e) {
+      SilverTrace.error("portlet", "AdminServlet.movePortletWindow()", "root.EX_NO_MESSAGE", e);
+    }
+  }
+
+  private void selectPortletWindow(HttpServletRequest request, PortletAdminData portletAdminData,
+      HttpSession session) {
+    String portletWindowName = request.getParameter(AdminConstants.PORTLET_WINDOW_LIST);
+    setSelectedPortletWindow(session, portletWindowName);
+    if (portletWindowName == null) {
+      String message = DesktopMessages.getLocalizedString(AdminConstants.NO_BASE_PORTLET_WINDOW);
+      session.setAttribute(AdminConstants.NO_WINDOW_DATA_ATTRIBUTE, message);
+    } else {
+      StringBuilder messageBuilder =
+          new StringBuilder(DesktopMessages.getLocalizedString(AdminConstants.NO_WINDOW_DATA));
+      // Set the attribues for show/hide and thick/thin
+      boolean success = false;
+      try {
+        AdminUtils.setPortletWindowAttributes(session, portletAdminData, portletWindowName);
+        success = true;
+      } catch (Exception ex) {
+        messageBuilder.append(".");
+        messageBuilder.append(ex.getMessage());
+      }
+      if (!success) {
+        session.setAttribute(AdminConstants.NO_WINDOW_DATA_ATTRIBUTE, messageBuilder.toString());
+      }
+    }
+  }
+
+  private boolean isValid(String term) {
+    return term != null && !term.trim().isEmpty();
   }
 }

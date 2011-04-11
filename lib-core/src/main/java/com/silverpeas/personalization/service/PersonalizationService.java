@@ -24,35 +24,14 @@
 
 package com.silverpeas.personalization.service;
 
+import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
 
 public interface PersonalizationService {
 
-  public static final String DEFAULT_LOOK = "Initial";
+  public final String DEFAULT_LOOK = "Initial";
 
-  public void setFavoriteLanguage(String userId, String languages);
-
-  public String getFavoriteLanguage(String userId);
-
-  public String getFavoriteLook(String userId);
-
-  public void setFavoriteLook(String userId, String look);
-
-  public void setPersonalWorkSpace(String userId, String spaceId);
-
-  public String getPersonalWorkSpace(String userId);
-
-  public void setThesaurusStatus(String userId, boolean thesaurusStatus);
-
-  public boolean getThesaurusStatus(String userId);
-
-  public void setDragAndDropStatus(String userId, boolean dragAndDropStatus);
-
-  public boolean getDragAndDropStatus(String userId);
-
-  public void setWebdavEditingStatus(String userId, boolean webdavEditingStatus);
-
-  public boolean getWebdavEditingStatus(String userId);
+  public final UserMenuDisplay DEFAULT_MENU_DISPLAY_MODE = UserMenuDisplay.DEFAULT;
 
   public void saveUserSettings(UserPreferences userPreferences);
 

@@ -59,7 +59,7 @@
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 
 <%
-MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute("SilverSessionController");
+MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 OrganizationController 	organizationCtrl 	= null;
 GraphicElementFactory 	gef 				= null;
 String 					language 			= null;

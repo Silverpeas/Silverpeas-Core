@@ -26,7 +26,6 @@ package com.silverpeas.socialNetwork.newsFeed.servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -48,7 +47,6 @@ import org.json.JSONObject;
 import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.silverpeas.socialNetwork.model.SocialInformationType;
 import com.silverpeas.socialNetwork.myProfil.control.SocialNetworkService;
-import com.silverpeas.socialNetwork.newsFeed.control.NewsFeedService;
 import com.silverpeas.socialNetwork.relationShip.RelationShipService;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
@@ -61,8 +59,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 public class NewsFeedJSONServlet extends HttpServlet {
 
   private static final long serialVersionUID = -7056446975706739300L;
-  private SocialNetworkService socialNetworkService = new SocialNetworkService();
-  private NewsFeedService newsFeedService = new NewsFeedService();
 
   /**
    * servlet method for returning JSON format
@@ -76,7 +72,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
       throws ServletException, IOException {
     HttpSession session = request.getSession();
     MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(
-        "SilverSessionController");
+        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 
     String view = request.getParameter("View"); // Wall || Feed
     if (!StringUtil.isDefined(view)) {
@@ -163,25 +159,15 @@ public class NewsFeedJSONServlet extends HttpServlet {
   private Map<Date, List<SocialInformation>> getInformations(String view, String userId,
       SocialInformationType type, String anotherUserId, Date begin, Date end) {
     Map<Date, List<SocialInformation>> map = new LinkedHashMap<Date, List<SocialInformation>>();
-
-    // initialize myId for socialNetworkService
-    socialNetworkService.setMyId(userId);
+    
+    SocialNetworkService socialNetworkService = new SocialNetworkService(userId);
 
     if ("MyFeed".equals(view)) {
       // get all data from me and my contacts
-      newsFeedService.setMyId(Integer.parseInt(userId));
-      List<String> myContactsIds = newsFeedService.getMyContactsIds();
-      myContactsIds.add(0, userId);// add my self to the list
-      socialNetworkService.setMyContactsIds(myContactsIds);
       map = socialNetworkService.getSocialInformationOfMyContacts(type, begin, end);
     } else if ("MyContactWall".equals(view)) {
       // get all data from my contact
-      newsFeedService.setMyId(Integer.parseInt(userId));
-      // initialize myContactsIds
-      List<String> myContactsIds = new ArrayList<String>();
-      myContactsIds.add(0, anotherUserId);// add my self to the list
-      socialNetworkService.setMyContactsIds(myContactsIds);
-      map = socialNetworkService.getSocialInformationOfMyContacts(type, begin, end);
+      map = socialNetworkService.getSocialInformationOfMyContact(anotherUserId, type, begin, end);
     } else {
       // get all data from me
       map = socialNetworkService.getSocialInformation(type, begin, end);

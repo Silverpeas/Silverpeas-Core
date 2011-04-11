@@ -23,134 +23,132 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<c:set var="language" value="${requestScope.resources.language}"/>
+<fmt:setLocale value="${language}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
 <%@ include file="check.jsp" %>
-<% 
-Collection 	tickets 		= (Collection) request.getAttribute("Tickets");
-
-%>
-
 <html>
-
 <head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+  <view:looknfeel/>
+  <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+  <script type="text/javascript">
+    var ticketWindow = window;
 
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-
-<script type="text/javascript">
-
-var ticketWindow = window;
-
-function editTicket(keyFile) 
-{
-    urlWindows = "EditTicket?KeyFile="+keyFile;
-	windowName = "ticketWindow";
-	larg = "700";
-	haut = "400";
-    windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-    if (!ticketWindow.closed && ticketWindow.name== "ticketWindow")
+    function editTicket(keyFile) {
+      urlWindows = "EditTicket?KeyFile=" + keyFile;
+      windowName = "ticketWindow";
+      larg = "700";
+      haut = "400";
+      windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
+      if (!ticketWindow.closed && ticketWindow.name == "ticketWindow")
         ticketWindow.close();
-    ticketWindow = SP_openWindow(urlWindows, windowName, larg, haut, windowParams);
-}
-	
-function deleteTicket(keyFile) 
-{
-	if(window.confirm("<%=resource.getString("fileSharing.confirmDeleteTicket")%> ?"))
-	{
- 		document.deleteForm.KeyFile.value = keyFile;
-  		document.deleteForm.submit();
-	}
-}
+      ticketWindow = SP_openWindow(urlWindows, windowName, larg, haut, windowParams);
+      ticketWindow.onClose = function() {
+        location.reload(true);
+      }
+    }
 
-</script>
+    function deleteTicket(keyFile) {
+      if (window.confirm("<%=resource.getString("fileSharing.confirmDeleteTicket")%> ?")) {
+        document.deleteForm.KeyFile.value = keyFile;
+        document.deleteForm.submit();
+      }
+    }
+  </script>
 </head>
 <body>
+<fmt:message key="fileSharing.tickets" var="browseBar"/>
 <form name="readForm" action="" method="post">
-<input type="hidden" name="mode"/>
-<%
-	browseBar.setComponentName(resource.getString("fileSharing.tickets"));
-	
-	out.println(window.printBefore());
-	out.println(frame.printBefore());
-	
-	ArrayPane arrayPane = gef.getArrayPane("ticketList", "ViewTickets", request, session);
-	arrayPane.addArrayColumn(resource.getString("GML.nom"));
-	ArrayColumn columnTicket = arrayPane.addArrayColumn(resource.getString("fileSharing.ticket"));
-	columnTicket.setSortable(false);
-	arrayPane.addArrayColumn(resource.getString("fileSharing.endDate"));
-	arrayPane.addArrayColumn(resource.getString("fileSharing.nbAccess"));
-	ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("fileSharing.operation"));
-	columnOp.setSortable(false);
-	
-		// remplissage de l'ArrayPane avec les tickets
-		if ((tickets != null) && (tickets.size() != 0)) 
-		{
-			Iterator it = (Iterator) tickets.iterator();
-			while (it.hasNext()) 
-			{
-				ArrayLine line = arrayPane.addArrayLine();
-				TicketDetail ticket = (TicketDetail) it.next();
-				
-				if (ticket.getAttachmentDetail() != null || ticket.getDocument() != null)
-				{
-				
-					String fileId = Integer.toString(ticket.getFileId());
-					String lien = "/File/"+ fileId;
-					// ajouter le context devant le lien si n�c�ssaire
-					if (lien.indexOf("://") < 0) {
-						lien = m_context + lien;
-					}
-						
-					if (ticket.getAttachmentDetail() != null)
-						line.addArrayCellText(ticket.getAttachmentDetail().getLogicalName());
-					else
-						line.addArrayCellText(ticket.getDocument().getName());
-	
-					IconPane iconPane = gef.getIconPane();
-		         	Icon keyIcon = iconPane.addIcon();
-		          	keyIcon.setProperties(resource.getIcon("fileSharing.ticket"), resource.getString("fileSharing.ticket") , ticket.getUrl(request));
-					line.addArrayCellText(keyIcon.print());
-				
-					String valideDate = resource.getOutputDate(ticket.getEndDate());
-					ArrayCellText cell = line.addArrayCellText(valideDate);
-					cell.setCompareOn(ticket.getEndDate());
-					ArrayCellText cellNb = line.addArrayCellText(ticket.getNbAccess()+"/"+ticket.getNbAccessMax());
-					cellNb.setCompareOn(Integer.valueOf(ticket.getNbAccess()));
-					
-					iconPane = gef.getIconPane();
-		         	Icon updateIcon = iconPane.addIcon();
-		         	Icon deleteIcon = iconPane.addIcon();
-		         	String keyFile = ticket.getKeyFile();
-		          	updateIcon.setProperties(resource.getIcon("fileSharing.update"), resource.getString("fileSharing.updateTicket") , "javaScript:onClick=editTicket('"+ keyFile + "')");
-		         	deleteIcon.setProperties(resource.getIcon("fileSharing.delete"), resource.getString("fileSharing.deleteTicket") , "javaScript:onClick=deleteTicket('"+ keyFile + "')");
-	
-		        	line.addArrayCellText(updateIcon.print()+ "&nbsp;&nbsp;&nbsp;&nbsp;" + deleteIcon.print());
-				}
-			}
-		}
+  <input type="hidden" name="mode"/>
+  <view:browseBar path="${browseBar}"/>
+  <view:window>
+    <view:frame>
+      <view:arrayPane var="ticketList" routingAddress="ViewTickets">
+        <fmt:message key="GML.nom" var="ticketName"></fmt:message>
+        <view:arrayColumn title="${ticketName}"></view:arrayColumn>
 
-			
-	out.println(arrayPane.print());
-  	out.println(frame.printAfter());
-	out.println(window.printAfter());
-  %>
+        <fmt:message key="fileSharing.ticket" var="sharingTicket"></fmt:message>
+        <view:arrayColumn title="${sharingTicket}" sortable="false"></view:arrayColumn>
 
+        <fmt:message key="fileSharing.endDate" var="endDateTicket"></fmt:message>
+        <view:arrayColumn title="${endDateTicket}"></view:arrayColumn>
+
+        <fmt:message key="fileSharing.nbAccess" var="nbAccessTicket"></fmt:message>
+        <view:arrayColumn title="${nbAccessTicket}"></view:arrayColumn>
+
+        <fmt:message key="fileSharing.operation" var="operationTicket"></fmt:message>
+        <view:arrayColumn title="${operationTicket}" sortable="false"></view:arrayColumn>
+        <c:forEach items="${requestScope.Tickets}" var="ticket">
+          <c:set var="endDate" value=""/>
+          <c:set var="accessCount" value="${ticket.nbAccess}"/>
+          <view:arrayLine>
+            <c:if test="${ticket.attachmentDetail != null || ticket.document != null}">
+              <c:url var="lien" value="/File/${ticket.fileId}"/>
+              <c:choose>
+                <c:when test="${not ticket.versioned}">
+                   <view:arrayCellText text="${ticket.attachmentDetail.logicalName}"/>
+                </c:when>
+                <c:otherwise>
+                  <view:arrayCellText text="${ticket.document.name}"/>
+                </c:otherwise>
+              </c:choose>
+              <%
+               IconPane iconPane = gef.getIconPane();
+              Icon keyIcon = iconPane.addIcon();
+              keyIcon.setProperties(resource.getIcon("fileSharing.ticket"),
+                  resource.getString("fileSharing.ticket"), ((TicketDetail)pageContext.getAttribute("ticket")).getUrl(request));
+              pageContext.setAttribute("ticketIcon", keyIcon.print());
+              %>
+              <view:arrayCellText text="${ticketIcon}"/>
+            </c:if>
+            <c:if test="${ticket.endDate ne null}">
+              <c:set var="endDate"><view:formatDate value="${ticket.endDate}" language="${language}"/></c:set>
+            </c:if>
+            <c:if test="${ticket.nbAccessMax gt 0}">
+              <c:set var="accessCount" value="${ticket.nbAccess}/${ticket.nbAccessMax}"/>
+            </c:if>
+            <view:arrayCellText text="${endDate}" />
+            <view:arrayCellText text="${accessCount}" />
+            <%
+              IconPane iconPane = gef.getIconPane();
+              Icon updateIcon = iconPane.addIcon();
+              Icon deleteIcon = iconPane.addIcon();
+              String keyFile = ((TicketDetail)pageContext.getAttribute("ticket")).getKeyFile();
+              updateIcon.setProperties(resource.getIcon("fileSharing.update"),
+                  resource.getString("fileSharing.updateTicket"),
+                  "javaScript:onClick=editTicket('" + keyFile + "')");
+              deleteIcon.setProperties(resource.getIcon("fileSharing.delete"),
+                  resource.getString("fileSharing.deleteTicket"),
+                  "javaScript:onClick=deleteTicket('" + keyFile + "')");
+              pageContext.setAttribute("ticketUpdateDeleteIcons", updateIcon.print() + "&nbsp;&nbsp;&nbsp;&nbsp;" + deleteIcon.print());
+            %>
+            <view:arrayCellText text="${ticketUpdateDeleteIcons}" />
+          </view:arrayLine>
+        </c:forEach>
+      </view:arrayPane>
+
+    </view:frame>
+  </view:window>
 </form>
-  
+
 <form name="ticketForm" action="" method="post">
-	<input type="hidden" name ="KeyFile"/>
-	<input type="hidden" name="FileId"/>
-	<input type="hidden" name="ComponentId"/>
-	<input type="hidden" name="Versioning"/>
-	<input type="hidden" name="EndDate"/>
-	<input type="hidden" name="NbAccessMax"/>
+  <input type="hidden" name="KeyFile"/>
+  <input type="hidden" name="FileId"/>
+  <input type="hidden" name="ComponentId"/>
+  <input type="hidden" name="Versioning"/>
+  <input type="hidden" name="EndDate"/>
+  <input type="hidden" name="NbAccessMax"/>
+  <input type="hidden" name="Continuous"/>
 </form>
 
 <form name="deleteForm" action="DeleteTicket" method="post">
-	<input type="hidden" name="KeyFile"/>
+  <input type="hidden" name="KeyFile"/>
 </form>
 
 </body>

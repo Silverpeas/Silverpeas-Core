@@ -23,27 +23,16 @@
  */
 package com.silverpeas.lookV5;
 
-import static com.stratelia.silverpeas.util.SilverpeasSettings.readBoolean;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import com.silverpeas.external.filesharing.model.FileSharingInterface;
-import com.silverpeas.external.filesharing.model.FileSharingInterfaceImpl;
+import com.silverpeas.external.filesharing.model.FileSharingServiceFactory;
+import com.silverpeas.admin.components.Instanciateur;
+import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.external.filesharing.model.FileSharingService;
 import com.silverpeas.external.webConnections.dao.WebConnectionService;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
 import com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings;
 import com.silverpeas.look.LookHelper;
+import com.silverpeas.personalization.UserMenuDisplay;
+import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
@@ -62,9 +51,6 @@ import com.stratelia.webactiv.beans.admin.PersonalSpaceController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserFavoriteSpaceManager;
-import com.silverpeas.admin.components.Instanciateur;
-import com.silverpeas.admin.components.WAComponent;
-
 import com.stratelia.webactiv.organization.DAOFactory;
 import com.stratelia.webactiv.organization.UserFavoriteSpaceDAO;
 import com.stratelia.webactiv.organization.UserFavoriteSpaceVO;
@@ -72,11 +58,21 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
-public class AjaxServletLookV5 extends HttpServlet {
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-  private static final String DISABLE = "DISABLE";
-  private static final String ALL = "ALL";
-  private static final String BOOKMARKS = "BOOKMARKS";
+import static com.stratelia.silverpeas.util.SilverpeasSettings.readBoolean;
+
+public class AjaxServletLookV5 extends HttpServlet {
   private static final long serialVersionUID = 1L;
 
   @Override
@@ -86,40 +82,33 @@ public class AjaxServletLookV5 extends HttpServlet {
   }
 
   @Override
-  public void doPost(HttpServletRequest req, HttpServletResponse res)
+  public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
-    HttpSession session = req.getSession(true);
-
-    MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(
-        "SilverSessionController");
+    HttpSession session = request.getSession(true);
+    MainSessionController mainSessionController = (MainSessionController) session.getAttribute(
+        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
-        "SessionGraphicElementFactory");
-    LookHelper helper = (LookHelper) session.getAttribute("Silverpeas_LookHelper");
-    OrganizationController orgaController = m_MainSessionCtrl.getOrganizationController();
+        GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+    LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
+    OrganizationController orgaController = mainSessionController.getOrganizationController();
 
-    String userId = m_MainSessionCtrl.getUserId();
-    String language = m_MainSessionCtrl.getFavoriteLanguage();
+    String userId = mainSessionController.getUserId();
+    UserPreferences preferences = mainSessionController.getPersonalization();
 
     // Get ajax action
-    String responseId = req.getParameter("ResponseId");
-
-    String init = req.getParameter("Init");
-    String spaceId = req.getParameter("SpaceId");
-    String componentId = req.getParameter("ComponentId");
-    String axisId = req.getParameter("AxisId");
-    String valuePath = req.getParameter("ValuePath");
-    String getPDC = req.getParameter("GetPDC");
-    String pdc = req.getParameter("Pdc");
-
-    // New request parameter to manage Bookmarks view or classical view
-    String userMenuDisplayMode = req.getParameter("UserMenuDisplayMode");
-
+    String responseId = request.getParameter("ResponseId");
+    String init = request.getParameter("Init");
+    String spaceId = request.getParameter("SpaceId");
+    String componentId = request.getParameter("ComponentId");
+    String axisId = request.getParameter("AxisId");
+    String valuePath = request.getParameter("ValuePath");
+    String pdc = request.getParameter("Pdc");
     boolean displayContextualPDC = helper.displayContextualPDC();
-    boolean displayPDC = "true".equalsIgnoreCase(getPDC);
+    boolean displayPDC = "true".equalsIgnoreCase( request.getParameter("GetPDC"));
 
     // User favorite space DAO
     List<UserFavoriteSpaceVO> listUserFS = new ArrayList<UserFavoriteSpaceVO>();
-    if (!DISABLE.equalsIgnoreCase(helper.getDisplayUserFavoriteSpace())) {
+    if (helper.isMenuPersonalisationEnabled()) {
       UserFavoriteSpaceDAO ufsDAO = DAOFactory.getUserFavoriteSpaceDAO();
       listUserFS = ufsDAO.getListUserFavoriteSpace(userId);
     }
@@ -136,49 +125,53 @@ public class AjaxServletLookV5 extends HttpServlet {
       helper.setSpaceIdAndSubSpaceId(spaceId);
       gef.setSpaceId(spaceId);
     }
-    if (StringUtil.isDefined(userMenuDisplayMode)) {
-      helper.setDisplayUserFavoriteSpace(userMenuDisplayMode);
-    } else {
-      userMenuDisplayMode = helper.getDisplayUserFavoriteSpace();
+
+     // New request parameter to manage Bookmarks view or classical view
+    UserMenuDisplay displayMode = helper.getDisplayUserMenu();
+    if (helper.isMenuPersonalisationEnabled()) {
+      if (StringUtil.isDefined(request.getParameter("UserMenuDisplayMode"))) {
+        displayMode = UserMenuDisplay.valueOf(request.getParameter("UserMenuDisplayMode"));
+      }else if(preferences.getDisplay().isNotDefault()){
+        displayMode = preferences.getDisplay();
+      }
     }
+    helper.setDisplayUserMenu(displayMode);
 
     // Retrieve current look
     String defaultLook = gef.getDefaultLookName();
+    response.setContentType("text/xml");
+    response.setHeader("charset", "UTF-8");
 
-    res.setContentType("text/xml");
-    res.setHeader("charset", "UTF-8");
-
-    Writer writer = res.getWriter();
+    Writer writer = response.getWriter();
     writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     writer.write("<ajax-response>");
     writer.write("<response type=\"object\" id=\"" + responseId + "\">");
 
     if ("1".equals(init)) {
       if (!StringUtil.isDefined(spaceId) && !StringUtil.isDefined(componentId)) {
-        displayFirstLevelSpaces(userId, language, defaultLook, orgaController,
-            helper, writer, listUserFS, userMenuDisplayMode);
+        displayFirstLevelSpaces(userId, preferences.getLanguage(), defaultLook, orgaController,
+            helper, writer, listUserFS, displayMode);
       } else {
         // First get space's path cause it can be a subspace
-        List<String> spaceIdsPath = getSpaceIdsPath(spaceId, componentId,
-            orgaController);
+        List<String> spaceIdsPath = getSpaceIdsPath(spaceId, componentId, orgaController);
 
         // space transverse
-        displaySpace(spaceId, componentId, spaceIdsPath, userId, language,
+        displaySpace(spaceId, componentId, spaceIdsPath, userId, preferences.getLanguage(),
             defaultLook, displayPDC, true, orgaController, helper, writer, listUserFS,
-            userMenuDisplayMode);
+            displayMode);
 
         // other spaces
-        displayTree(userId, componentId, spaceIdsPath, language,
-            defaultLook, orgaController, helper, writer, listUserFS, userMenuDisplayMode);
+        displayTree(userId, componentId, spaceIdsPath, preferences.getLanguage(),
+            defaultLook, orgaController, helper, writer, listUserFS, displayMode);
 
-        displayPDC(getPDC, spaceId, componentId, userId, displayContextualPDC,
-            m_MainSessionCtrl, writer);
+        displayPDC(displayPDC, spaceId, componentId, userId, displayContextualPDC,
+            mainSessionController, writer);
       }
     } else if (StringUtil.isDefined(axisId) && StringUtil.isDefined(valuePath)) {
       try {
         writer.write("<pdc>");
         getPertinentValues(spaceId, componentId, userId, axisId, valuePath,
-            displayContextualPDC, m_MainSessionCtrl, writer);
+            displayContextualPDC, mainSessionController, writer);
         writer.write("</pdc>");
       } catch (PdcException e) {
         SilverTrace.error("lookSilverpeasV5", "Ajax", "root.ERROR");
@@ -188,21 +181,23 @@ public class AjaxServletLookV5 extends HttpServlet {
         // Affichage de l'espace perso
         ResourceLocator settings = gef.getFavoriteLookSettings();
         ResourceLocator message = new ResourceLocator(
-            "com.stratelia.webactiv.homePage.multilang.homePageBundle", language);
-        serializePersonalSpace(writer, userId, language, orgaController, helper, settings, message);
+            "com.stratelia.webactiv.homePage.multilang.homePageBundle", preferences.getLanguage());
+        serializePersonalSpace(writer, userId, preferences.getLanguage(), orgaController, helper,
+            settings, message);
       } else {
         // First get space's path cause it can be a subspace
         List<String> spaceIdsPath = getSpaceIdsPath(spaceId, componentId, orgaController);
-        displaySpace(spaceId, componentId, spaceIdsPath, userId, language, defaultLook, displayPDC,
-            false, orgaController, helper, writer, listUserFS, userMenuDisplayMode);
-        displayPDC(getPDC, spaceId, componentId, userId, displayContextualPDC, m_MainSessionCtrl,
-            writer);
+        displaySpace(spaceId, componentId, spaceIdsPath, userId, preferences.getLanguage(),
+            defaultLook, displayPDC, false, orgaController, helper, writer, listUserFS,
+            displayMode);
+        displayPDC(displayPDC, spaceId, componentId, userId, displayContextualPDC,
+            mainSessionController, writer);
       }
     } else if (StringUtil.isDefined(componentId)) {
-      displayPDC(getPDC, spaceId, componentId, userId, displayContextualPDC, m_MainSessionCtrl,
+      displayPDC(displayPDC, spaceId, componentId, userId, displayContextualPDC, mainSessionController,
           writer);
     } else if (StringUtil.isDefined(pdc)) {
-      displayNotContextualPDC(userId, m_MainSessionCtrl, writer);
+      displayNotContextualPDC(userId, mainSessionController, writer);
     }
     writer.write("</response>");
     writer.write("</ajax-response>");
@@ -220,12 +215,12 @@ public class AjaxServletLookV5 extends HttpServlet {
     }
   }
 
-  private void displayPDC(String getPDC, String spaceId, String componentId,
+  private void displayPDC(boolean displayPDC, String spaceId, String componentId,
       String userId, boolean displayContextualPDC, MainSessionController mainSC, Writer writer)
       throws IOException {
     try {
       writer.write("<pdc>");
-      if ("true".equalsIgnoreCase(getPDC)) {
+      if (displayPDC) {
         getPertinentAxis(spaceId, componentId, userId, mainSC, writer);
       }
       writer.write("</pdc>");
@@ -258,8 +253,8 @@ public class AjaxServletLookV5 extends HttpServlet {
   }
 
   /**
-   * @param spaceId : space identifier
-   * @param listUFS : the list of user favorite space
+   * @param spaceId        : space identifier
+   * @param listUFS        : the list of user favorite space
    * @param orgaController : the OrganizationController object
    * @return true if the current space contains user favorites sub space, false else if
    */
@@ -280,6 +275,7 @@ public class AjaxServletLookV5 extends HttpServlet {
 
   /**
    * displaySpace build XML response tree of current spaceId
+   *
    * @param spaceId
    * @param componentId
    * @param spacePath
@@ -292,14 +288,14 @@ public class AjaxServletLookV5 extends HttpServlet {
    * @param helper
    * @param writer
    * @param listUFS
-   * @param userMenuDisplayMode 
+   * @param userMenuDisplayMode
    * @throws IOException
    */
   private void displaySpace(String spaceId, String componentId, List<String> spacePath,
       String userId, String language, String defaultLook,
       boolean displayPDC, boolean displayTransverse,
       OrganizationController orgaController, LookHelper helper, Writer writer,
-      List<UserFavoriteSpaceVO> listUFS, String userMenuDisplayMode) throws IOException {
+      List<UserFavoriteSpaceVO> listUFS, UserMenuDisplay userMenuDisplayMode) throws IOException {
     boolean isTransverse = false;
     int i = 0;
     while (!isTransverse && i < spacePath.size()) {
@@ -330,7 +326,7 @@ public class AjaxServletLookV5 extends HttpServlet {
 
       if (open) {
         // Default display configuration
-         boolean spaceBeforeComponent = isSpaceBeforeComponentNeeded(space);
+        boolean spaceBeforeComponent = isSpaceBeforeComponentNeeded(space);
         if (spaceBeforeComponent) {
           getSubSpaces(spaceId, userId, spacePath, componentId, language,
               defaultLook, orgaController, helper, writer, listUFS, userMenuDisplayMode);
@@ -358,7 +354,7 @@ public class AjaxServletLookV5 extends HttpServlet {
   private String getFavoriteSpaceAttribute(String userId, OrganizationController orgaController,
       List<UserFavoriteSpaceVO> listUFS, SpaceInstLight space, LookHelper helper) {
     StringBuilder favSpace = new StringBuilder(20);
-    if (!DISABLE.equalsIgnoreCase(helper.getDisplayUserFavoriteSpace())) {
+    if (UserMenuDisplay.DISABLE != helper.getDisplayUserMenu()) {
       favSpace.append(" favspace=\"");
       if (isUserFavoriteSpace(listUFS, space.getShortId())) {
         favSpace.append("true");
@@ -381,13 +377,13 @@ public class AjaxServletLookV5 extends HttpServlet {
   private void displayTree(String userId, String targetComponentId,
       List<String> spacePath, String language, String defaultLook,
       OrganizationController orgaController, LookHelper helper, Writer out,
-      List<UserFavoriteSpaceVO> listUFS, String userMenuDisplayMode) throws IOException {
+      List<UserFavoriteSpaceVO> listUFS, UserMenuDisplay userMenuDisplayMode) throws IOException {
     // Then get all first level spaces
     String[] availableSpaceIds = getRootSpaceIds(userId, orgaController, helper);
 
-    out.write("<spaces menu=\"" + helper.getDisplayUserFavoriteSpace() + "\">");
+    out.write("<spaces menu=\"" + helper.getDisplayUserMenu() + "\">");
     String spaceId = null;
-    
+
     for (int nI = 0; nI < availableSpaceIds.length; nI++) {
       spaceId = availableSpaceIds[nI];
       boolean loadCurSpace = isLoadingContentNeeded(userMenuDisplayMode, userId, spaceId, listUFS,
@@ -422,9 +418,10 @@ public class AjaxServletLookV5 extends HttpServlet {
 
   /**
    * Recursive method to get the right look.
-   * @param space 
+   *
+   * @param space
    * @param defaultLook : current default look name
-   * @param orga : the organization controller
+   * @param orga        : the organization controller
    * @return the space style according to the space hierarchy
    */
   private String getSpaceLookAttribute(SpaceInstLight space, String defaultLook,
@@ -443,7 +440,7 @@ public class AjaxServletLookV5 extends HttpServlet {
 
   private void displayFirstLevelSpaces(String userId, String language,
       String defaultLook, OrganizationController orgaController, LookHelper helper,
-      Writer out, List<UserFavoriteSpaceVO> listUFS, String userMenuDisplayMode)
+      Writer out, List<UserFavoriteSpaceVO> listUFS, UserMenuDisplay userMenuDisplayMode)
       throws IOException {
     String[] availableSpaceIds = getRootSpaceIds(userId, orgaController, helper);
 
@@ -451,7 +448,7 @@ public class AjaxServletLookV5 extends HttpServlet {
     SpaceInstLight space = null;
     String spaceId = null;
     // Start writing XML spaces node
-    out.write("<spaces menu=\"" + helper.getDisplayUserFavoriteSpace() + "\">");
+    out.write("<spaces menu=\"" + helper.getDisplayUserMenu() + "\">");
     for (int nI = 0; nI < availableSpaceIds.length; nI++) {
       spaceId = availableSpaceIds[nI];
       boolean loadCurSpace = isLoadingContentNeeded(userMenuDisplayMode, userId, spaceId, listUFS,
@@ -475,7 +472,7 @@ public class AjaxServletLookV5 extends HttpServlet {
   private void getSubSpaces(String spaceId, String userId, List<String> spacePath,
       String targetComponentId, String language, String defaultLook,
       OrganizationController orgaController, LookHelper helper, Writer out,
-      List<UserFavoriteSpaceVO> listUFS, String userMenuDisplayMode)
+      List<UserFavoriteSpaceVO> listUFS, UserMenuDisplay userMenuDisplayMode)
       throws IOException {
     String[] spaceIds = orgaController.getAllSubSpaceIds(spaceId, userId);
 
@@ -528,7 +525,8 @@ public class AjaxServletLookV5 extends HttpServlet {
 
   private void getComponents(String spaceId, String targetComponentId,
       String userId, String language, OrganizationController orgaController,
-      Writer out, String userMenuDisplayMode, List<UserFavoriteSpaceVO> listUFS) throws IOException {
+      Writer out, UserMenuDisplay userMenuDisplayMode, List<UserFavoriteSpaceVO> listUFS)
+      throws IOException {
     boolean loadCurComponent = isLoadingContentNeeded(userMenuDisplayMode, userId, spaceId, listUFS,
         orgaController);
     if (loadCurComponent) {
@@ -710,7 +708,7 @@ public class AjaxServletLookV5 extends HttpServlet {
   }
 
   protected boolean isPersonalSpace(String spaceId) {
-    return "spacePerso".equalsIgnoreCase(spaceId);
+    return SpaceInst.PERSONAL_SPACE_ID.equalsIgnoreCase(spaceId);
   }
 
   protected void serializePersonalSpace(Writer writer, String userId, String language,
@@ -761,7 +759,7 @@ public class AjaxServletLookV5 extends HttpServlet {
             + "Main\"/>");
       }
       if (readBoolean(settings, "fileSharingVisible", true)) {
-        FileSharingInterface fileSharing = new FileSharingInterfaceImpl();
+        FileSharingService fileSharing = FileSharingServiceFactory.getFactory().getFileSharingService();
         if (!fileSharing.getTicketsByUser(userId).isEmpty()) {
           writer.write("<item id=\"fileSharing\" name=\""
               + EncodeHelper.escapeXml(message.getString("FileSharing"))
@@ -792,21 +790,21 @@ public class AjaxServletLookV5 extends HttpServlet {
       if (readBoolean(settings, "mailVisible", true)) {
         writer.write(
             "<item id=\"notifAdmins\" name=\""
-            + EncodeHelper.escapeXml(message.getString("Feedback"))
-            + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"javascript:notifyAdministrators()\"/>");
+                + EncodeHelper.escapeXml(message.getString("Feedback"))
+                + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"javascript:notifyAdministrators()\"/>");
       }
       if (readBoolean(settings, "clipboardVisible", true)) {
         writer.write(
             "<item id=\"clipboard\" name=\""
-            + EncodeHelper.escapeXml(message.getString("Clipboard"))
-            + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"javascript:openClipboard()\"/>");
+                + EncodeHelper.escapeXml(message.getString("Clipboard"))
+                + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"javascript:openClipboard()\"/>");
       }
       // fonctionnalité "Trouver une date"
       if (readBoolean(settings, "scheduleEventVisible", false)) {
-          writer.write("<item id=\"scheduleevent\" name=\""
-              + EncodeHelper.escapeXml(message.getString("ScheduleEvent"))
-              + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
-              + URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT) + "Main\"/>");
+        writer.write("<item id=\"scheduleevent\" name=\""
+            + EncodeHelper.escapeXml(message.getString("ScheduleEvent"))
+            + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\""
+            + URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT) + "Main\"/>");
       }
 
       if (readBoolean(settings, "PersonalSpaceAddingsEnabled", true)) {
@@ -832,12 +830,11 @@ public class AjaxServletLookV5 extends HttpServlet {
         }
         int nbComponentAvailables = psc.getVisibleComponents(orgaController).size();
         if (nbComponentAvailables > 0) {
-          if (personalSpace == null
-              || personalSpace.getAllComponentsInst().size() < nbComponentAvailables) {
+          if (personalSpace == null || personalSpace.getAllComponentsInst().size() < nbComponentAvailables) {
             writer.write(
                 "<item id=\"addComponent\" name=\""
-                + EncodeHelper.escapeXml(helper.getString("lookSilverpeasV5.personalSpace.add"))
-                + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"javascript:listComponents()\"/>");
+                    + EncodeHelper.escapeXml(helper.getString("lookSilverpeasV5.personalSpace.add"))
+                    + "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"javascript:listComponents()\"/>");
           }
         }
       }
@@ -845,37 +842,40 @@ public class AjaxServletLookV5 extends HttpServlet {
     writer.write("</spacePerso>");
   }
 
-  protected boolean isLoadingContentNeeded(String userMenuDisplayMode, String userId, String spaceId,
-      List<UserFavoriteSpaceVO> listUFS, OrganizationController orgaController) {
-    if (DISABLE.equalsIgnoreCase(userMenuDisplayMode) || ALL.equalsIgnoreCase(userMenuDisplayMode)) {
-      return true;
-    } else if (BOOKMARKS.equalsIgnoreCase(userMenuDisplayMode)) {
-      if (isUserFavoriteSpace(listUFS, spaceId)
-          || containsFavoriteSubSpace(spaceId, listUFS, orgaController, userId)) {
+  protected boolean isLoadingContentNeeded(UserMenuDisplay userMenuDisplayMode, String userId,
+      String spaceId, List<UserFavoriteSpaceVO> listUFS, OrganizationController orgaController) {
+    switch (userMenuDisplayMode) {
+      case DISABLE:
+      case ALL:
         return true;
-      }
+      case BOOKMARKS:
+        return isUserFavoriteSpace(listUFS, spaceId) || containsFavoriteSubSpace(spaceId, listUFS,
+            orgaController, userId);
     }
     return false;
   }
 
   /**
    * a Space is visible if at least one of its items is visible for the currentUser
+   *
    * @param userId
    * @param spaceId
    * @param orgaController
+   * @param helper
    * @return true or false
    */
-  protected boolean isSpaceVisible(String userId, String spaceId, OrganizationController orgaController, LookHelper helper) {
-     if (helper.getSettings("displaySpaceContainingOnlyHiddenComponents", true)) {
-       return true;
-     }
-     String compoIds[] = orgaController.getAvailCompoIds(spaceId, userId);
-     for (String id : compoIds) {
-       ComponentInst compInst = orgaController.getComponentInst(id);
-       if (!compInst.isHidden()) {
-         return true;
-       }
-     }
+  protected boolean isSpaceVisible(String userId, String spaceId,
+      OrganizationController orgaController, LookHelper helper) {
+    if (helper.getSettings("displaySpaceContainingOnlyHiddenComponents", true)) {
+      return true;
+    }
+    String compoIds[] = orgaController.getAvailCompoIds(spaceId, userId);
+    for (String id : compoIds) {
+      ComponentInst compInst = orgaController.getComponentInst(id);
+      if (!compInst.isHidden()) {
+        return true;
+      }
+    }
     return false;
   }
 

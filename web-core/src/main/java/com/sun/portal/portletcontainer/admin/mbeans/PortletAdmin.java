@@ -48,22 +48,21 @@ import com.sun.portal.portletcontainer.warupdater.PortletWarUpdaterUtil;
 public class PortletAdmin implements PortletAdminMBean {
 
   // Create a logger for this class
-  private static Logger logger = Logger.getLogger(PortletAdmin.class
-      .getPackage().getName(), "com.silverpeas.portlets.PALogMessages");
+  private static Logger logger = Logger.getLogger(PortletAdmin.class.getPackage().getName(),
+      "com.silverpeas.portlets.PALogMessages");
 
   public PortletAdmin() {
   }
 
-  private File preparePortlet(String warFileName) throws Exception {
+  private boolean preparePortlet(String warFileName) throws Exception {
     logger.log(Level.INFO, "PSPL_CSPPAM0031", warFileName);
     String warFileLocation = PortletRegistryHelper.getWarFileLocation();
     String configFileLocation = PortletRegistryHelper.getConfigFileLocation();
     // Create the updated war file in the war file location
-    PortletWarUpdater portletWarUpdater = new PortletWarUpdater(
-        configFileLocation, warFileLocation);
+    PortletWarUpdater portletWarUpdater = new PortletWarUpdater(configFileLocation);
 
     // Get the updated war file
-    return portletWarUpdater.preparePortlet(warFileName);
+    return portletWarUpdater.preparePortlet(new File(warFileName), warFileLocation);
   }
 
   private Boolean registerPortlet(String warFile, Properties roles,
@@ -95,17 +94,20 @@ public class PortletAdmin implements PortletAdminMBean {
   public Boolean deploy(String warFileName, Properties roles,
       Properties userinfo, boolean deployToContainer) throws Exception {
 
-    File preparedWarFile = preparePortlet(warFileName);
+    String warName = PortletWarUpdaterUtil.getWarName(warFileName);
 
-    Boolean registerSuccess = registerPortlet(warFileName, roles, userinfo,
-        preparedWarFile);
+    boolean prepareSuccess = preparePortlet(warFileName);
+    Boolean registerSuccess = Boolean.FALSE;
+
+    if (prepareSuccess) {
+      File preparedWarFile = new File(warFileName, warName);
+      registerSuccess = registerPortlet(warFileName, roles, userinfo, preparedWarFile);
+    }
 
     if (registerSuccess.booleanValue()) {
       if (deployToContainer) {
-        WebAppDeployer webAppDeployer = WebAppDeployerFactory.getInstance()
-            .getDeploymentManager();
+        WebAppDeployer webAppDeployer = WebAppDeployerFactory.getInstance().getDeploymentManager();
         if (webAppDeployer != null) {
-          String warName = PortletWarUpdaterUtil.getWarName(warFileName);
           webAppDeployer.deploy(warName);
         } else {
           throw new WebAppDeployerException("No WebAppDeployer Found");
@@ -148,8 +150,7 @@ public class PortletAdmin implements PortletAdminMBean {
     Boolean value = unregisterPortlet(warFileName);
     if (value.booleanValue()) {
       if (undeployFromContainer) {
-        WebAppDeployer webAppDeployer = WebAppDeployerFactory.getInstance()
-            .getDeploymentManager();
+        WebAppDeployer webAppDeployer = WebAppDeployerFactory.getInstance().getDeploymentManager();
         if (webAppDeployer != null) {
           String warName = PortletWarUpdaterUtil.getWarName(warFileName);
           boolean success = webAppDeployer.undeploy(warName);
@@ -183,10 +184,9 @@ public class PortletAdmin implements PortletAdminMBean {
     File destFile = new File(warFileLocation, warName);
     boolean remove = destFile.delete();
     if (logger.isLoggable(Level.FINEST)) {
-      logger.log(Level.FINEST, "PSPL_CSPPCWU0011", new String[] {
-          destFile.getAbsolutePath(), String.valueOf(remove) });
+      logger.log(Level.FINEST, "PSPL_CSPPCWU0011", new String[]{
+            destFile.getAbsolutePath(), String.valueOf(remove)});
     }
     return remove;
   }
-
 }

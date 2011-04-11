@@ -35,7 +35,7 @@
       </td>
     </tr>
     <c:choose>
-      <c:when test="{availableLooks empty}">
+      <c:when test="${empty availableLooks}">
         <input type="hidden" name="SelectedLook" value="<c:out value="${preferences.look}" />"/>
       </c:when>
       <c:otherwise>
@@ -44,7 +44,7 @@
           <td><select name="SelectedLook" size="1">
             <c:forEach items="${availableLooks}" var="look">
               <c:choose>
-                <c:when test="${request.preferences.language eq look}">
+                <c:when test="${request.preferences.look eq look}">
                   <option value="<c:out value="${look}"/>" selected="selected"><c:out
                       value="${look}"/></option>
                 </c:when>
@@ -66,9 +66,11 @@
               test="${empty preferences.personalWorkSpaceId || 'null' eq  preferences.personalWorkSpaceId}">selected="selected" </c:if>></option>
           <c:forEach items="${requestScope['SpaceTreeview']}" var="space">
             <c:set var="indentation" value=''/>
+            <c:if test="${space.level > 0}">
             <c:forEach begin="0" end="${space.level}">
               <c:set var="indentation">&nbsp;&nbsp;<c:out value="${indentation}" escapeXml="false"/></c:set>
             </c:forEach>
+            </c:if>
             <option value="<c:out value="${space.fullId}"/>"
                     <c:if test="${space.fullId eq preferences.personalWorkSpaceId}">selected="selected"</c:if> >
               <c:out value="${indentation}" escapeXml="false"/><c:out
@@ -77,6 +79,18 @@
         </select>
       </td>
     </tr>
+    <c:if test="${true == requestScope['MenuDisplay']}" >
+      <tr>
+      <td class="txtlibform"><fmt:message key="${'myProfile.settings.menuDisplay'}"/> :</td>
+      <td>
+        <select name="MenuDisplay" size="1">
+        <c:forEach items="${requestScope['MenuDisplayOptions']}" var="menuOption">
+         <option value="<c:out value="${menuOption}"/>" <c:if test="${menuOption eq preferences.display}">selected="selected" </c:if>><fmt:message key="myProfile.settings.${menuOption}" /></option>
+        </c:forEach>
+        </select>
+      </td>
+    </tr>
+    </c:if>
     <tr>
       <td class="txtlibform"><fmt:message key="${'myProfile.settings.Thesaurus'}"/> :</td>
       <td>

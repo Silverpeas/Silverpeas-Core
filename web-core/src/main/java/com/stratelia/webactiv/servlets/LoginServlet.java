@@ -32,6 +32,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
@@ -47,26 +48,21 @@ public class LoginServlet extends HttpServlet {
 
   private static final long serialVersionUID = 8524810441906567361L;
   private static final int HTTP_DEFAULT_PORT = 80;
-  private final String anonymousUserId;
 
   public LoginServlet() {
     super();
-    ResourceLocator settings = new ResourceLocator(
-        "com.stratelia.silverpeas.lookAndFeel.generalLook", "");
-    String id = settings.getString("anonymousId");
-    if (!isDefined(id)) {
-      anonymousUserId = "";
-    } else {
-      anonymousUserId = id;
-    }
   }
 
   @Override
   public void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
     MainSessionController controller = null;
 
-    // Get the session
+    // Get a new session
     HttpSession session = request.getSession(true);
+    if (!session.isNew()) {
+      closeSession(session);
+      session = request.getSession(true);
+    }
     StringBuilder absoluteUrl = new StringBuilder(256);
     if (request.isSecure() && !GeneralPropertiesManager.getBoolean("server.ssl", false)) {
       absoluteUrl.append("http");
@@ -114,7 +110,7 @@ public class LoginServlet extends HttpServlet {
     if ((controller != null) && (!controller.getCurrentUserDetail().isAccessRemoved())) {
       // Init session management and session object !!! This method reset the
       // Session Object
-      if (!controller.getUserId().equals(getAnonymousUserId())) {
+      if (!UserDetail.isAnonymousUser(controller.getUserId())) {
         SessionManager.getInstance().addSession(session, request, controller);
       }
 
@@ -141,7 +137,7 @@ public class LoginServlet extends HttpServlet {
         gef.setSpaceId(personalWs);
       }
       gef.setMainSessionController(controller);
-      session.setAttribute("SessionGraphicElementFactory", gef);
+      session.setAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT, gef);
 
       String favoriteFrame = gef.getLookFrame();
       SilverTrace.debug("peasCore", "LoginServlet.service", "root.MSG_GEN_PARAM_VALUE",
@@ -193,7 +189,19 @@ public class LoginServlet extends HttpServlet {
     }
   }
 
-  private String getAnonymousUserId() {
-    return anonymousUserId;
+  /**
+   * Closes any previous existing session for the current user.
+   * A previous session can exist with the anonymous accesses.
+   * @param session the previous HTTP session to close.
+   */
+  private void closeSession(final HttpSession session) {
+    MainSessionController controller =
+        (MainSessionController) session.getAttribute(
+        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+    if (controller != null && controller.getCurrentUserDetail().isAnonymous()) {
+      session.invalidate();
+    } else {
+      SessionManager.getInstance().closeSession(session.getId());
+    }
   }
 }

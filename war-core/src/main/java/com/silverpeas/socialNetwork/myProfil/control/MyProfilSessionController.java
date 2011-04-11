@@ -76,6 +76,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   /**
    * get all RelationShips ids for this user
+   *
    * @return:List<String>
    * @param: int myId
    */
@@ -104,6 +105,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   /**
    * get this user with full information
+   *
    * @param userId
    * @return UserFull
    */
@@ -113,6 +115,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   /**
    * update the properties of user
+   *
    * @param idUser
    * @param properties
    * @throws SocialNetworkException
@@ -149,7 +152,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
       throw new SocialNetworkException(
           "MyProfilSessionController.modifyUser()",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "UserId="
-          + idUser);
+              + idUser);
     }
 
   }
@@ -178,8 +181,8 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
       String userLoginAnswer, Map<String, String> properties) throws AuthenticationException {
     SilverTrace.info("personalizationPeas", "PersonalizationPeasSessionController.modifyUser()",
         "root.MSG_GEN_ENTER_METHOD", "UserId=" + idUser + " userLastName=" + userLastName
-        + " userFirstName=" + userFirstName + " userEMail=" + userEMail + " userAccessLevel="
-        + userAccessLevel);
+            + " userFirstName=" + userFirstName + " userEMail=" + userEMail + " userAccessLevel="
+            + userAccessLevel);
 
     UserFull theModifiedUser = m_AdminCtrl.getUserFull(idUser);
 
@@ -242,6 +245,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   /**
    * return my invitation list sent
+   *
    * @return List<InvitationUser>
    */
   public List<InvitationUser> getAllMyInvitationsSent() {
@@ -258,6 +262,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   /**
    * return my invitation list Received
+   *
    * @return List<InvitationUser>
    */
   public List<InvitationUser> getAllMyInvitationsReceived() {
@@ -275,7 +280,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   public void sendInvitation(String receiverId, String message) {
     Invitation invitation =
         new Invitation(Integer.parseInt(getUserId()), Integer.parseInt(receiverId), message,
-        new Date());
+            new Date());
     invitationService.invite(invitation);
   }
 

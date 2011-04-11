@@ -84,7 +84,7 @@ PdcClassifySessionController createComponentSessionController(MainSessionControl
 	PdcClassifySessionController pdcSC = (PdcClassifySessionController) session.getAttribute("Silverpeas_pdcClassify");
 
 	if (pdcSC == null) {
-		MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute("SilverSessionController");
+		MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 		pdcSC = setComponentSessionController(session, mainSessionCtrl);
 	}
 

@@ -31,7 +31,7 @@ import org.apache.commons.lang.time.FastDateFormat;
 /**
  * A date and time.
  */
-public class DateTime extends java.util.Date implements Datable<DateTime> {
+public class DateTime extends java.util.Date implements Datable<DateTime>, Cloneable {
   private static final long serialVersionUID = -2562622075317046753L;
 
   private TimeZone timeZone = TimeZone.getDefault();

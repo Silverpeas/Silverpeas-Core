@@ -1,22 +1,22 @@
 ALTER TABLE SB_Workflow_ProcessInstance
-ADD (errorStatus numeric(1) DEFAULT 0)
+ADD errorStatus numeric(1) DEFAULT 0
 ;
 ALTER TABLE SB_Workflow_ProcessInstance
-MODIFY errorStatus NOT NULL
+ALTER COLUMN errorStatus SET NOT NULL
 ;
 
 ALTER TABLE SB_Workflow_ProcessInstance
-ADD (timeoutStatus numeric(1) DEFAULT 0)
+ADD timeoutStatus numeric(1) DEFAULT 0
 ;
 ALTER TABLE SB_Workflow_ProcessInstance
-MODIFY timeoutStatus NOT NULL
+ALTER COLUMN timeoutStatus SET NOT NULL
 ;
 
 ALTER TABLE SB_Workflow_ActiveState
-ADD (timeoutStatus numeric(1) DEFAULT 0)
+ADD timeoutStatus numeric(1) DEFAULT 0
 ;
 ALTER TABLE SB_Workflow_ActiveState
-MODIFY timeoutStatus NOT NULL
+ALTER COLUMN timeoutStatus SET NOT NULL
 ;
 
 CREATE TABLE SB_Workflow_Error
@@ -34,7 +34,7 @@ CREATE TABLE SB_Workflow_Error
 )
 ;
 
-ALTER TABLE SB_Workflow_Error ADD 
+ALTER TABLE SB_Workflow_Error ADD
 	CONSTRAINT PK_Workflow_Error
 	PRIMARY KEY (id)
 ;

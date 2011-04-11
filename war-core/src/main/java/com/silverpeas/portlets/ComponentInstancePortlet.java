@@ -48,7 +48,7 @@ public class ComponentInstancePortlet extends GenericPortlet implements FormName
       throws PortletException, IOException {
     PortletSession session = request.getPortletSession();
     MainSessionController m_MainSessionCtrl = (MainSessionController) session
-        .getAttribute("SilverSessionController",
+        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT,
         PortletSession.APPLICATION_SCOPE);
 
     PortletPreferences pref = request.getPreferences();

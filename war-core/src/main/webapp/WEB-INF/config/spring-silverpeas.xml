@@ -42,6 +42,7 @@
   <ctx:component-scan base-package="com.silverpeas.scheduler"/>
   <ctx:component-scan base-package="com.silverpeas.calendar"/>
   <ctx:component-scan base-package="com.silverpeas.accesscontrol"/>
+  <ctx:component-scan base-package="com.silverpeas.look"/>
   <ctx:component-scan base-package="com.silverpeas.personalization"/>
   <ctx:component-scan base-package="com.silverpeas.delegatednews"/>
 
@@ -76,6 +77,11 @@
        the actual scheduling backend -->
   <bean id="schedulerFactory" class="com.silverpeas.scheduler.SchedulerFactory"
         factory-method="getFactory"/>
+
+  <!-- the Silverpeas look context gathering all of the look aspects -->
+  <bean id="silverpeasLook" class="com.silverpeas.look.SilverpeasLook"
+        factory-method="getSilverpeasLook"
+        depends-on="organizationController"/>
 
 </beans>
 
