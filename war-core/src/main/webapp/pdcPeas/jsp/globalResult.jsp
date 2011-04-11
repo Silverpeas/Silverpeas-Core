@@ -601,8 +601,9 @@ if (!StringUtil.isDefined(pageId)) {
 			} catch (Exception e) {
 				sCreationDate	= null;
 			}
+            String serverName = (StringUtil.isDefined(gsr.getIndexEntry().getServerName())? gsr.getIndexEntry().getServerName(): "defaultSrv");
 
-			out.println("<tr class=\"lineResult " + gsr.getSpaceId() + " " + gsr.getInstanceId() + "\">");
+			out.println("<tr class=\"lineResult " + gsr.getSpaceId() + " " + gsr.getInstanceId() + " " + serverName + "\">");
 
 			if (showPertinence)
 				out.println("<td class=\"pertinence\">"+displayPertinence(gsr.getRawScore(), fullStarSrc, emptyStarSrc)+"&nbsp;</td>");

@@ -80,6 +80,7 @@ public class IndexManager {
   public static final String THUMBNAIL = "thumbnail";
   public static final String THUMBNAIL_MIMETYPE = "thumbnailMimeType";
   public static final String THUMBNAIL_DIRECTORY = "thumbnailDirectory";
+  public static final String SERVER_NAME = "serverName";
   /**
    * Exhaustive list of indexation's operations Used by objects which must be indexed
    */
@@ -583,6 +584,8 @@ public class IndexManager {
         }
       }
     }
+    // Add server name inside Lucene doc
+    doc.add(new Field(SERVER_NAME, indexEntry.getServerName(), Store.YES, Index.NOT_ANALYZED));
     return doc;
   }
 

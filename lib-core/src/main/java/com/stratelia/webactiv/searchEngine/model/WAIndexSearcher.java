@@ -24,6 +24,7 @@
 
 package com.stratelia.webactiv.searchEngine.model;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -302,12 +303,12 @@ public class WAIndexSearcher {
       parsedQuery = queryParser.parse(query.getQuery());
       SilverTrace.info("searchEngine", "WAIndexSearcher.getHits",
           "root.MSG_GEN_PARAM_VALUE", "getOperator() = "
-          + queryParser.getDefaultOperator());
+              + queryParser.getDefaultOperator());
     }
 
     SilverTrace.info("searchEngine", "WAIndexSearcher.getHits",
         "root.MSG_GEN_PARAM_VALUE", "parsedQuery = "
-        + parsedQuery.toString());
+            + parsedQuery.toString());
     return parsedQuery;
   }
 
@@ -346,8 +347,8 @@ public class WAIndexSearcher {
           analyzer);
       SilverTrace
           .info("searchEngine", "WAIndexSearcher.getXMLHits",
-          "root.MSG_GEN_PARAM_VALUE", "parsedQuery = "
-          + parsedQuery.toString());
+              "root.MSG_GEN_PARAM_VALUE", "parsedQuery = "
+                  + parsedQuery.toString());
 
       return parsedQuery;
     } catch (org.apache.lucene.queryParser.ParseException e) {
@@ -394,8 +395,8 @@ public class WAIndexSearcher {
           analyzer);
       SilverTrace
           .info("searchEngine", "WAIndexSearcher.getMultiFieldHits",
-          "root.MSG_GEN_PARAM_VALUE", "parsedQuery = "
-          + parsedQuery.toString());
+              "root.MSG_GEN_PARAM_VALUE", "parsedQuery = "
+                  + parsedQuery.toString());
 
       return parsedQuery;
     } catch (org.apache.lucene.queryParser.ParseException e) {
@@ -463,7 +464,8 @@ public class WAIndexSearcher {
       }
       indexEntry.setSortableXMLFormFields(sortableField);
     }
-
+    // Set server name
+    indexEntry.setServerName(doc.get(IndexManager.SERVER_NAME));
     return indexEntry;
   }
 
@@ -517,7 +519,6 @@ public class WAIndexSearcher {
     }
   }
 
-  
   /**
    * Return a multi-searcher built on the searchers list matching the (space, component) pair set.
    */
@@ -531,11 +532,11 @@ public class WAIndexSearcher {
         searcherList.add(searcher);
       }
     }
-    
+
     // Add searcher from external silverpeas server
     Set<ExternalComponent> extSearchers = query.getExtComponents();
     for (ExternalComponent externalComponent : extSearchers) {
-      String externalComponentPath = externalComponent.getDataPath();
+      String externalComponentPath = getExternalComponentPath(externalComponent);
       Searcher searcher = getSearcher(externalComponentPath);
       if (searcher != null) {
         searcherList.add(searcher);
@@ -552,7 +553,14 @@ public class WAIndexSearcher {
     }
   }
 
-  
+  private String getExternalComponentPath(ExternalComponent extComp) {
+    StringBuilder extStrBuilder = new StringBuilder();
+    extStrBuilder.append(extComp.getDataPath()).append(File.separator);
+    extStrBuilder.append("index").append(File.separator);
+    extStrBuilder.append(extComp.getComponent()).append(File.separator).append("index");
+    return extStrBuilder.toString();
+  }
+
   /**
    * Build the set of all the path to the directories index corresponding the given (space,
    * component) pairs.
