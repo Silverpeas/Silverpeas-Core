@@ -41,7 +41,8 @@
 
   <bean id="silverpeasEntityManagerFactory"
         class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
-        p:dataSource-ref="dataSource" p:persistenceUnitManager-ref="pum"        
+        p:dataSource-ref="myDataSource"
+        p:persistence-xml-location="classpath*:META-INF/silverpeas-persistence.xml"
         p:persistenceUnitName="silverpeas-pu">
     <property name="jpaVendorAdapter">
       <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"
