@@ -93,7 +93,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
     if (!StringUtil.isDefined(elementId)) {
       elementId = (String) request.getAttribute("UserId");
     }
-    
+
     try {
       PortletRegistryContextAbstractFactory afactory = new PortletRegistryContextAbstractFactory();
       PortletRegistryContextFactory factory = afactory.getPortletRegistryContextFactory();

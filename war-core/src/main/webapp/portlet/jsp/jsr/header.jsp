@@ -39,7 +39,7 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.board.Board"%>
-
+<%@ page import="com.stratelia.webactiv.beans.admin.SpaceInst"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
 
 
@@ -53,7 +53,7 @@
 <%
 MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute("SilverSessionController");
 if (m_MainSessionCtrl == null)
-{	
+{
   String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
   getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
   return;

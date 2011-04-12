@@ -39,6 +39,9 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
  */
 public class SpaceInst extends AbstractI18NBean implements Serializable, Comparable<SpaceInst> {
 
+  public static final String PERSONAL_SPACE_ID = "-10";
+  public static final String DEFAULT_SPACE_ID = "-20";
+
   private static final long serialVersionUID = 4695928610067045964L;
   // First page possible types
   final public static int FP_TYPE_STANDARD = 0; // Page d'acueil standard
@@ -366,7 +369,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * Get a component from component list, given its name (WARNING : if more than one component
    * instance match the given name, the first one will be returned)
    * @param nIndex
-   * @return  
+   * @return
    */
   public ComponentInst getComponentInst(int nIndex) {
     return m_alComponentInst.get(nIndex);
@@ -626,7 +629,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
   @Override
   public SpaceInst clone() {
     SpaceInst clone =  new SpaceInst();
-    
+
     // clone basic information
     clone.setDescription(m_sDescription);
     clone.setDisplaySpaceFirst(displaySpaceFirst);
@@ -636,13 +639,13 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
     clone.setLook(look);
     clone.setName(m_sName);
     clone.setPersonalSpace(isPersonalSpace);
-    
+
     // clone profiles
     List<SpaceProfileInst> profiles = getProfiles();
     for (SpaceProfileInst profile : profiles) {
       clone.addSpaceProfileInst(profile.clone());
     }
-    
+
     // clone components
     List<ComponentInst> components = getAllComponentsInst();
     for (ComponentInst component : components) {
@@ -651,10 +654,10 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
     // clone subspace ids
     clone.setSubSpaceIds(getSubSpaceIds().clone());
-    
+
     return clone;
   }
-  
+
   public void removeInheritedProfiles() {
     ArrayList<SpaceProfileInst> newProfiles = new ArrayList<SpaceProfileInst>();
     for (SpaceProfileInst profile : m_alSpaceProfileInst) {
