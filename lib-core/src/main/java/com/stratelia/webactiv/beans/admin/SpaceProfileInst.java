@@ -100,7 +100,9 @@ public class SpaceProfileInst extends Object implements Serializable {
   }
 
   public void addGroup(String sGroupId) {
-    groups.add(sGroupId);
+    if (!groups.contains(sGroupId)) {
+      groups.add(sGroupId);
+    }
   }
 
   public void removeGroup(String sGroupId) {
@@ -124,7 +126,9 @@ public class SpaceProfileInst extends Object implements Serializable {
   }
 
   public void addUser(String sUserId) {
-    users.add(sUserId);
+    if (!users.contains(sUserId)) {
+      users.add(sUserId);
+    }
   }
 
   public void removeUser(String sUserId) {
@@ -132,11 +136,25 @@ public class SpaceProfileInst extends Object implements Serializable {
   }
 
   public void addUsers(List<String> users) {
-    this.users.addAll(users);
+    ArrayList<String> a = new ArrayList<String>(users);
+    a.removeAll(this.users);
+    this.users.addAll(a);
+  }
+  
+  public void setUsers(List<String> users) {
+    this.users.clear();
+    this.users.addAll(users); 
   }
 
   public void addGroups(List<String> groups) {
-    this.groups.addAll(groups);
+    ArrayList<String> a = new ArrayList<String>(groups);
+    a.removeAll(this.groups);
+    this.groups.addAll(a);
+  }
+  
+  public void setGroups(List<String> groups) {
+    this.groups.clear();
+    this.groups.addAll(groups); 
   }
 
   public ArrayList<String> getAllUsers() {
