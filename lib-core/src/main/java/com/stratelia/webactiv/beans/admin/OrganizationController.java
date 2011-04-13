@@ -269,22 +269,22 @@ public class OrganizationController extends AdminReference implements java.io.Se
       return new String[0];
     }
   }
-
+  
   /**
-   * Return the compo id for the given component name
-   * @param sCompoName
-   * @return
-   */
-  public String[] getCompoId(String sCompoName) {
-    try {
-      return m_Admin.getCompoId(sCompoName);
-    } catch (Exception e) {
-      SilverTrace.error("admin", "OrganizationController.getCompoId",
-          "admin.MSG_ERR_GET_AVAILABLE_INSTANCES_OF_COMPONENT",
-          "component name: '" + sCompoName + "'", e);
-      return new String[0];
+  * Return the compo id for the given component name
+  * @param sCompoName
+  * @return
+  */
+    public String[] getCompoId(String sCompoName) {
+      try {
+        return m_Admin.getCompoId(sCompoName);
+      } catch (Exception e) {
+        SilverTrace.error("admin", "OrganizationController.getCompoId",
+            "admin.MSG_ERR_GET_AVAILABLE_INSTANCES_OF_COMPONENT",
+            "component name: '" + sCompoName + "'", e);
+        return new String[0];
+      }
     }
-  }
 
   public String getComponentParameterValue(String sComponentId,
       String parameterName) {
