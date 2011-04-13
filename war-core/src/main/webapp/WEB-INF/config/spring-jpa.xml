@@ -3,14 +3,14 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:jee="http://www.springframework.org/schema/jee"
        xmlns:hades="http://schemas.synyx.org/hades"
        xmlns:p="http://www.springframework.org/schema/p"
        xsi:schemaLocation="
 	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
-	http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+  http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
 	http://schemas.synyx.org/hades http://schemas.synyx.org/hades/hades.xsd">
 
   <context:annotation-config/>
@@ -19,13 +19,30 @@
 
   <tx:annotation-driven transaction-manager="silverpeasTransactionManager"/>
 
+  <jee:jndi-lookup id="silverpeasDataSource" jndi-name="Silverpeas"/>
+
+  <bean id="silverpeasPersistenceUnitProcessor" class="com.silverpeas.jpa.MergingPersistenceUnitPostProcessor"/>
+
+  <bean id="persistenceUnitManager" class="org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager"
+        p:defaultDataSource-ref="silverpeasDataSource">
+    <property name="persistenceXmlLocations">
+      <list>
+        <value>classpath*:META-INF/silverpeas-persistence.xml</value>
+      </list>
+    </property>
+    <property name="persistenceUnitPostProcessors">
+      <list>
+        <ref bean="silverpeasPersistenceUnitProcessor"/>
+      </list>
+    </property>
+  </bean>
+
   <bean id="silverpeasTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"
         p:entityManagerFactory-ref="silverpeasEntityManagerFactory"/>
 
   <bean id="silverpeasEntityManagerFactory"
         class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
-        p:dataSource-ref="dataSource"
-        p:persistence-xml-location="classpath*:META-INF/silverpeas-persistence.xml"
+        p:persistenceUnitManager-ref="persistenceUnitManager"
         p:persistenceUnitName="silverpeas-pu">
     <property name="jpaVendorAdapter">
       <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"
