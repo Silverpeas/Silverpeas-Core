@@ -4,6 +4,9 @@
  */
 package com.stratelia.silverpeas.silverstatistics.model;
 
+import com.silverpeas.util.FileUtil;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.List;
 import com.silverpeas.jcrutil.RandomGenerator;
 import java.util.ArrayList;
@@ -27,7 +30,9 @@ public class StatisticsConfigTest {
   @Before
   public void initialiseConfig() throws Exception {
     instance = new StatisticsConfig();
-    instance.init();
+     ResourceBundle resource = FileUtil.loadBundle(
+          "com.stratelia.silverpeas.silverstatistics.SilverStatisticsTest", Locale.getDefault());
+    instance.initialize(resource);
   }
 
   /**

@@ -276,10 +276,8 @@ public class SilverStatisticsManagerDAO {
 
     try {
       rs = stmt.executeQuery(selectStatement);
-
-      while (rs.next()) {
-
-        pstmt = con.prepareStatement(updateStatement);
+      pstmt = con.prepareStatement(updateStatement);
+      while (rs.next()) {        
 
         rowExist = true;
         countCumulKey = 0;
@@ -423,7 +421,7 @@ public class SilverStatisticsManagerDAO {
    */
   static void deleteTablesOfTheDay(Connection con, String statsType,
       StatisticsConfig conf) throws SQLException {
-    String deleteStatement = "delete from " + conf.getTableName(statsType);
+    String deleteStatement = "DELETE FROM " + conf.getTableName(statsType);
     PreparedStatement prepStmt = null;
 
     try {
@@ -447,8 +445,8 @@ public class SilverStatisticsManagerDAO {
    */
   static void purgeTablesCumul(Connection con, String statsType,
       StatisticsConfig conf) throws SQLException {
-    StringBuffer deleteStatementBuf = new StringBuffer("delete from "
-        + conf.getTableName(statsType) + "Cumul where dateStat<");
+    StringBuffer deleteStatementBuf = new StringBuffer("DELETE FROM "
+        + conf.getTableName(statsType) + "Cumul WHERE dateStat<");
     String deleteStatement  ;
     PreparedStatement prepStmt = null;
 

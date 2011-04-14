@@ -182,14 +182,9 @@ public class SilverStatisticsEJB implements SessionBean {
     ctx = sc;
     myStatsConfig = new StatisticsConfig();
     try {
-      if (myStatsConfig.init() != 0) {
-        SilverTrace.error("silverstatistics",
-            "SilverStatisticsEJB.setSessionContext",
-            "silverstatistics.MSG_CONFIG_FILE");
-      }
+      myStatsConfig.init();
     } catch (SilverStatisticsConfigException e) {
-      SilverTrace.error("silverstatistics",
-          "SilverStatisticsEJB.setSessionContext",
+      SilverTrace.error("silverstatistics", "SilverStatisticsEJB.setSessionContext",
           "silverstatistics.MSG_CONFIG_FILE", e);
     }
   }

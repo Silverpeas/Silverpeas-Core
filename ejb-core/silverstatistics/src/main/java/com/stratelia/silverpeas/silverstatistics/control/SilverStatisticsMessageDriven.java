@@ -68,21 +68,16 @@ public class SilverStatisticsMessageDriven implements MessageDrivenBean, Message
    * @param sc
    * @see
    */
+  @Override
   public void setMessageDrivenContext(MessageDrivenContext sc) {
-    SilverTrace.info("silverstatistics",
-        "SilverStatisticsMessageDriven.setMessageDrivenContext",
+    SilverTrace.info("silverstatistics", "SilverStatisticsMessageDriven.setMessageDrivenContext",
         "root.MSG_GEN_PARAM_VALUE", "MessageDrivenContext=" + sc);
     ctx = sc;
     myStatsConfig = new StatisticsConfig();
     try {
-      if (myStatsConfig.init() != 0) {
-        SilverTrace.error("silverstatistics",
-            "SilverStatisticsMessageDriven.setSessionContext",
-            "silverstatistics.MSG_CONFIG_FILE");
-      }
+      myStatsConfig.init();
     } catch (SilverStatisticsConfigException e) {
-      SilverTrace.error("silverstatistics",
-          "SilverStatisticsMessageDriven.setSessionContext",
+      SilverTrace.error("silverstatistics", "SilverStatisticsMessageDriven.setSessionContext",
           "silverstatistics.MSG_CONFIG_FILE", e);
     }
   }

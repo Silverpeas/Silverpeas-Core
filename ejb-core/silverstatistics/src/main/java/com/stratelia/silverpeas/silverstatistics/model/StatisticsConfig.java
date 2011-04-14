@@ -66,42 +66,26 @@ public class StatisticsConfig {
   public StatisticsConfig() {
     allStatisticsConfig = new HashMap<String, TypeStatistics>();
   }
-
-  /**
-   * Method declaration
-   *
-   * @return
-   * @throws SilverStatisticsConfigException
-   *
-   * @see
-   */
-  public int init() throws SilverStatisticsConfigException {
+  
+  
+  public void initialize(ResourceBundle resource) throws SilverStatisticsConfigException {
     String configTypeName = "";
-
     try {
-      initGood = true;
-      ResourceBundle resource = FileUtil.loadBundle(
-          "com.stratelia.silverpeas.silverstatistics.SilverStatistics", Locale.getDefault());
-
+      initGood = true;     
       String tokenSeparator = resource.getString(STATSSEPARATOR);
-
       StringTokenizer stTypeStats = new StringTokenizer(resource.getString(STATSFAMILYTYPE),
           tokenSeparator);
-
       while (stTypeStats.hasMoreTokens()) {
         TypeStatistics currentType = new TypeStatistics();
-
         currentType.setName(stTypeStats.nextToken());
         configTypeName = currentType.getName();
         currentType.setTableName(resource.getString(STATSTABLENAME + currentType.getName()));
-
         try {
           currentType.setIsRun(
               StringUtil.getBooleanValue(resource.getString(STATSRUN + currentType.getName())));
         } catch (MissingResourceException e) {
           SilverTrace.info("silverstatistics", "StatisticsConfig.init", "setIsRun", e);
         }
-
         try {
           currentType.setPurge(
               Integer.parseInt(resource.getString(STATSPURGE + currentType.getName())));
@@ -149,8 +133,20 @@ public class StatisticsConfig {
       throw new SilverStatisticsConfigException("StatisticsConfig", SilverpeasException.FATAL,
           "silverstatistics.MSG_CONFIG_FILE_KEY_MISSING", configTypeName, e);
     }
+  }
 
-    return 0;
+  /**
+   * Method declaration
+   *
+   * @return
+   * @throws SilverStatisticsConfigException
+   *
+   * @see
+   */
+  public void init() throws SilverStatisticsConfigException {
+      ResourceBundle resource = FileUtil.loadBundle(
+          "com.stratelia.silverpeas.silverstatistics.SilverStatistics", Locale.getDefault());
+      initialize(resource);
   }
 
   /**

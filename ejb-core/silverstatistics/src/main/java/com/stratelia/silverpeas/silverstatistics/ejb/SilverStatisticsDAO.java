@@ -211,7 +211,7 @@ public class SilverStatisticsDAO {
         }
         else if ("INTEGER".equals(currentType)) {
           try {
-            new Integer(valueKeys.get(k));
+            Integer.valueOf(valueKeys.get(k));
           } catch (Exception e) {
             STOPPUTSTAT = true;
           }
