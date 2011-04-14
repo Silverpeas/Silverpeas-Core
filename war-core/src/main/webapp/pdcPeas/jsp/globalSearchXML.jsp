@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2009 Silverpeas
+    Copyright (C) 2000 - 2011 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -43,6 +43,7 @@ List 				xmlForms 	= (List) request.getAttribute("XMLForms");
 PublicationTemplate template 	= (PublicationTemplate) request.getAttribute("Template");
 DataRecord			emptyData	= (DataRecord) request.getAttribute("Data");
 PagesContext		context		= (PagesContext) request.getAttribute("context");
+context.setUseMandatory(false);
 List				webTabs		= (List) request.getAttribute("WebTabs");
 
 Form form = null;

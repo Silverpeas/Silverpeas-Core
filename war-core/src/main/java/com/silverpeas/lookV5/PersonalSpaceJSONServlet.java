@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -40,8 +40,8 @@ import javax.servlet.http.HttpSession;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.silverpeas.external.filesharing.model.FileSharingInterface;
-import com.silverpeas.external.filesharing.model.FileSharingInterfaceImpl;
+import com.silverpeas.external.filesharing.model.FileSharingService;
+import com.silverpeas.external.filesharing.model.FileSharingServiceFactory;
 import com.silverpeas.external.webConnections.dao.WebConnectionService;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
 import com.silverpeas.look.LookHelper;
@@ -290,7 +290,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
       }
       // mes tickets
       if (helper.getSettings("fileSharingVisible", true)) {
-        FileSharingInterface fileSharing = new FileSharingInterfaceImpl();
+        FileSharingService fileSharing = FileSharingServiceFactory.getFactory().getFileSharingService();
         try {
           if (!fileSharing.getTicketsByUser(helper.getUserId()).isEmpty()) {
             JSONObject tool =
@@ -299,7 +299,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
                     "Main");
             jsonArray.put(tool);
           }
-        } catch (RemoteException e) {
+        } catch (Exception e) {
           SilverTrace.error("admin", "PersonalSpaceJSONServlet.getToolsAsJSONArray",
               "root.CANT_GET_TICKETS", e);
         }
@@ -329,7 +329,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
       }
       if (helper.getSettings("mailVisible", true)) {
         JSONObject tool =
-            getToolAsJSONObject("notifAdmins", message.getString("Feedback"), 
+            getToolAsJSONObject("notifAdmins", message.getString("Feedback"),
                 "javascript:notifyAdministrators()");
         jsonArray.put(tool);
       }

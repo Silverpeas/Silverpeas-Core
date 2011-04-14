@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -84,10 +84,9 @@ public class CSVReader extends SilverpeasSettings {
   public CSVReader(String language) {
     m_utilMessages = new ResourceLocator("com.silverpeas.util.multilang.util", language);
   }
-
+  
   public void initCSVFormat(String propertiesFile, String rootPropertyName,
-      String separator, String specificPropertiesFile,
-      String specificRootPropertyName) {
+      String separator) {
     ResourceLocator rs = new ResourceLocator(propertiesFile, "");
 
     m_colNames = readStringArray(rs, rootPropertyName, ".Name", -1);
@@ -98,6 +97,12 @@ public class CSVReader extends SilverpeasSettings {
     m_colMandatory = readStringArray(rs, rootPropertyName, ".Mandatory",
         m_nbCols);
     m_separator = separator;
+  }
+  
+  public void initCSVFormat(String propertiesFile, String rootPropertyName,
+      String separator, String specificPropertiesFile,
+      String specificRootPropertyName) {
+    initCSVFormat(propertiesFile, rootPropertyName, separator);
 
     ResourceLocator specificRs = new ResourceLocator(specificPropertiesFile, "");
     m_specificColNames = readStringArray(specificRs, specificRootPropertyName,

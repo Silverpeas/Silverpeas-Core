@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -26,6 +26,7 @@ package com.silverpeas.jobStartPagePeas;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -34,6 +35,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
@@ -368,17 +370,13 @@ public class NavBarManager extends Object {
     Arrays.sort(valret);
     if (goRecurs) {
       DisplaySorted[] parents = valret;
-      DisplaySorted[] childs = null;
       List<DisplaySorted> alValret = new ArrayList<DisplaySorted>();
-      int i;
-      SpaceInst spaceInst;
-
       for (j = 0; j < parents.length; j++) {
         alValret.add(parents[j]);
-        spaceInst = m_administrationCtrl.getSpaceInstById("WA" + parents[j].id);
-        childs = createSpaceObjects(spaceInst.getSubSpaceIds(), true);
-        for (i = 0; i < childs.length; i++) {
-          alValret.add(childs[i]);
+        String[] subSpaceIds = m_administrationCtrl.getAllSubSpaceIds(parents[j].id);
+        DisplaySorted[] children = createSpaceObjects(subSpaceIds, true);
+        for (DisplaySorted child : children) {
+          alValret.add(child);
         }
       }
       valret = alValret.toArray(new DisplaySorted[0]);
@@ -388,14 +386,11 @@ public class NavBarManager extends Object {
 
   protected DisplaySorted buildSpaceObject(String spaceId) {
     DisplaySorted valret = new DisplaySorted();
-    SpaceInst spaceInst;
 
     valret.id = getShortSpaceId(spaceId);
     valret.isVisible = true;
-    spaceInst = m_administrationCtrl.getSpaceInstById("WA" + valret.id);
-    if ((spaceInst.getDomainFatherId() == null)
-        || (spaceInst.getDomainFatherId().length() <= 0)
-        || (spaceInst.getDomainFatherId().equals("0"))) {
+    SpaceInstLight spaceInst = m_administrationCtrl.getSpaceInstLight(spaceId);
+    if (spaceInst.isRoot()) {
       valret.type = DisplaySorted.TYPE_SPACE;
       valret.isAdmin = m_ManageableSpaces.contains(valret.id);
       if (!valret.isAdmin) { // Rattrapage....
@@ -476,20 +471,16 @@ public class NavBarManager extends Object {
     }
   }
 
-  protected boolean isAdminOfSpace(SpaceInst spaceInst) {
-    boolean valret = m_ManageableSpaces.contains(getShortSpaceId(spaceInst
-        .getId()))
+  protected boolean isAdminOfSpace(SpaceInstLight spaceInst) {
+    boolean valret = m_ManageableSpaces.contains(spaceInst.getShortId())
         || m_ManageableSpaces.contains(getShortSpaceId(spaceInst
-        .getDomainFatherId()));
-    SpaceInst parcSpaceInst = spaceInst;
+        .getFatherId()));
+    SpaceInstLight parcSpaceInst = spaceInst;
 
-    while ((!valret) && (parcSpaceInst.getDomainFatherId() != null)
-        && (parcSpaceInst.getDomainFatherId().length() > 0)
-        && (!parcSpaceInst.getDomainFatherId().equals("0"))) {
-      parcSpaceInst = m_administrationCtrl.getSpaceInstById(parcSpaceInst
-          .getDomainFatherId());
-      valret = m_ManageableSpaces.contains(getShortSpaceId(parcSpaceInst
-          .getId()));
+    while (!valret && !parcSpaceInst.isRoot()) {
+      parcSpaceInst = m_administrationCtrl.getSpaceInstLight(parcSpaceInst
+          .getFatherId());
+      valret = m_ManageableSpaces.contains(parcSpaceInst.getShortId());
     }
 
     return valret;
@@ -499,39 +490,28 @@ public class NavBarManager extends Object {
       boolean subSpaces) {
     // Get the space's components
     List<ComponentInst> components = spaceInst.getAllComponentsInst();
-    ComponentInst ci;
     String label;
     String link;
-    DisplaySorted[] valret;
     int objType;
-    boolean isTheSpaceAdmin = isAdminOfSpace(spaceInst);
+    boolean isTheSpaceAdmin = isAdminOfSpace(new SpaceInstLight(spaceInst));
     StringBuffer componentsSpaces = new StringBuffer();
-
-    valret = new DisplaySorted[components.size()];
-    for (int i = 0; i < components.size(); i++) {
-      valret[i] = new DisplaySorted();
-      ci = components.get(i);
-      valret[i].name = ci.getLabel(m_SessionCtrl.getLanguage());
-      if (valret[i].name == null) {
-        valret[i].name = ci.getName();
+    List<DisplaySorted> result = new ArrayList<DisplaySorted>();
+    int i = 0;
+    for (ComponentInst ci : components) {
+      DisplaySorted ds = new DisplaySorted();
+      ds.name = ci.getLabel(m_SessionCtrl.getLanguage());
+      if (ds.name == null) {
+        ds.name = ci.getName();
       }
-      valret[i].orderNum = ci.getOrderNum();
-      valret[i].id = ci.getId();
-      valret[i].type = DisplaySorted.TYPE_COMPONENT;
-      valret[i].isAdmin = isTheSpaceAdmin;
-      valret[i].isVisible = isTheSpaceAdmin;
-      valret[i].deep = spaceInst.getLevel();
-    }
-    Arrays.sort(valret);
-    for (int i = 0; i < components.size(); i++) {
-      if (valret[i].isVisible) {
-        ci = (ComponentInst) components.get(i);
+      ds.orderNum = ci.getOrderNum();
+      ds.id = ci.getId();
+      ds.type = DisplaySorted.TYPE_COMPONENT;
+      ds.isAdmin = isTheSpaceAdmin;
+      ds.deep = spaceInst.getLevel();
+      ds.isVisible = isTheSpaceAdmin;
+      if (ds.isVisible) {
         // Build HTML Line
-        label = ci.getLabel(m_SessionCtrl.getLanguage());
-        if ((label == null) || (label.length() == 0))
-          label = ci.getName();
-
-        // String id = ci.getId().substring(ci.getName().length());
+        label = ds.name;
         link = "GoToComponent?ComponentId=" + ci.getId();
         if (subSpaces) {
           if (i + 1 == components.size()) {
@@ -543,19 +523,22 @@ public class NavBarManager extends Object {
           objType = SPACE_COMPONENT;
         }
         componentsSpaces = new StringBuffer();
-        for (int j = 0; j < valret[i].deep - 1; j++) {
-          componentsSpaces.append("&nbsp&nbsp");
+        for (int j = 0; j < ds.deep - 1; j++) {
+          componentsSpaces.append("&nbsp;&nbsp;");
         }
-        valret[i].htmlLine = componentsSpaces.toString()
+        ds.htmlLine = componentsSpaces.toString()
             + urlFactory(link, "element" + m_elmtCounter++, ci.getName(),
             label, getComponentElementType(ci), objType, m_sContext,
             (m_bAdministrationAccess) ? "startPageContent" : "MyMain",
-            valret[i]);
+            ds);
       } else {
-        valret[i].htmlLine = "";
+        ds.htmlLine = "";
       }
+      result.add(ds);
+      i++;
     }
-    return valret;
+    Collections.sort(result);
+    return result.toArray(new DisplaySorted[result.size()]);
   }
 
   protected String urlFactory(String link, String elementLabel,

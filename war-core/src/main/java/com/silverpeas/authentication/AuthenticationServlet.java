@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -30,6 +30,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
@@ -254,7 +256,12 @@ public class AuthenticationServlet extends HttpServlet {
    */
   private void writeCookie(HttpServletResponse response, String name,
       String value, int duration) {
-    Cookie cookie = new Cookie(name, value);
+    Cookie cookie;
+    try {
+      cookie = new Cookie(name, URLEncoder.encode(value, "UTF-8"));
+    } catch (UnsupportedEncodingException ex) {
+      cookie = new Cookie(name, value);
+    }
     cookie.setMaxAge(duration); // Duration in s
     cookie.setPath("/");
     response.addCookie(cookie);

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -146,11 +146,11 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
   }
 
   public Date getCreationDate() {
-    return creationDate;
+    return new Date(creationDate.getTime());
   }
 
   public void setCreationDate(Date creationDate) {
-    this.creationDate = creationDate;
+    this.creationDate = new Date(creationDate.getTime());
   }
 
   public String getComments() {
@@ -237,24 +237,24 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
   }
 
   public String getJcrPath() {
-    StringBuffer jcrPath = new StringBuffer(500);
+    StringBuilder jcrPath = new StringBuilder(500);
     jcrPath.append(getInstanceId()).append('/');
     jcrPath.append(CONTEXT).append('/');
     if (getDocumentPK().getId() != null) {
       jcrPath.append(getDocumentPK().getId()).append('/');
     }
-    jcrPath.append(majorNumber + "." + minorNumber).append('/');
+    jcrPath.append(majorNumber).append(".").append(minorNumber).append('/');
     jcrPath.append(StringUtil.escapeQuote(getLogicalName()));
     return jcrPath.toString();
   }
 
   public String getWebdavUrl() {
-    StringBuffer url = new StringBuffer(500);
+    StringBuilder url = new StringBuilder(500);
     ResourceLocator messages = GeneralPropertiesManager
         .getGeneralResourceLocator();
     String webAppContext = messages.getString("ApplicationURL");
     if (!webAppContext.endsWith("/")) {
-      webAppContext = webAppContext + '/';
+      webAppContext += '/';
     }
     url.append(webAppContext).append(messages.getString("webdav.respository"))
         .append('/').append(messages.getString("webdav.workspace")).append('/')
@@ -295,7 +295,9 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
 
   /**
    * Overriden toString method for debug/trace purposes
+   * @return the String representation of this document.
    */
+  @Override
   public String toString() {
     return "DocumentVersion object : [  pk = " + pk + ", documentPK = "
         + documentPK + ", majorNumber = " + majorNumber + ", minorNumber = "
@@ -308,7 +310,9 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
 
   /**
    * Support Cloneable Interface
+   * @return the clone
    */
+  @Override
   public Object clone() {
     try {
       return super.clone();
@@ -325,7 +329,7 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
     String directory = FileRepositoryManager.getAbsolutePath(getInstanceId(),
         new String[] { CONTEXT });
     if (!directory.endsWith(File.separator)) {
-      directory = directory + File.separator;
+      directory += File.separator;
     }
     return directory + getPhysicalName();
   }
@@ -352,5 +356,16 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
 
   public void setXMLModelContentType(XMLModelContentType xmlModelContentType) {
     this.xmlModelContentType = xmlModelContentType;
+  }
+
+  public String getDocumentIcon() {
+    String icon = "";
+    if (getPhysicalName().lastIndexOf('.') >= 0) {
+      String fileType = FileRepositoryManager.getFileExtension(getPhysicalName());
+      icon = FileRepositoryManager.getFileIcon(fileType);
+    } else {
+      icon = FileRepositoryManager.getFileIcon("");
+    }
+    return icon;
   }
 }

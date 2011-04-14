@@ -181,6 +181,16 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <artifactId>jackson-xc</artifactId>
+      <groupId>org.codehaus.jackson</groupId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <artifactId>jackson-jaxrs</artifactId>
+      <groupId>org.codehaus.jackson</groupId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
       <scope>provided</scope>

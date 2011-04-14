@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2009 Silverpeas
+    Copyright (C) 2000 - 2011 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -25,8 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="java.io.IOException,javax.ejb.CreateException, java.sql.SQLException, javax.naming.NamingException,
-                 java.rmi.RemoteException,javax.ejb.FinderException,java.util.Date"%>
+<%@ page import="java.util.Date"%>
 <%@ page import="java.util.List"%>
 <%@ include file="checkStatistic.jsp" %>
 
@@ -69,18 +68,20 @@
     	HistoryByUser historyByUser = (HistoryByUser) it.next();
     	String actorName = historyByUser.getUser().getLastName() + " " + historyByUser.getUser().getFirstName();
     	ligne.addArrayCellText(actorName);
-    	ArrayCellText cell1 = null;
     	Date haveRead = historyByUser.getLastAccess();
     	String readingDate = "";
-        if (haveRead == null) 
+        if (haveRead == null) {
         	readingDate = "&nbsp;";
-        else 
+        } else { 
             readingDate = resource.getOutputDateAndHour(haveRead);
-        cell1 = ligne.addArrayCellText(readingDate);
-        if (haveRead != null)
+        }
+        ArrayCellText cell1 = ligne.addArrayCellText(readingDate);
+        if (haveRead != null) {
         	cell1.setCompareOn(haveRead);
+        }
         int nbAccess = historyByUser.getNbAccess();
-        ligne.addArrayCellText(nbAccess);
+        ArrayCellText cell2 = ligne.addArrayCellText(nbAccess);
+        cell2.setCompareOn(Integer.valueOf(nbAccess));
         
         if (haveRead != null)
         {

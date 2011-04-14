@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -63,6 +63,7 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
   private String updaterName = null;
   private String removerName = null;
   private List<SpaceInstLight> path = null;
+  private boolean isInheritanceBlocked = false;
 
   /**
    * Constructor
@@ -99,6 +100,8 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
     createdBy = compo.createdBy;
     updatedBy = compo.updatedBy;
     removedBy = compo.removedBy;
+    
+    isInheritanceBlocked = compo.inheritanceBlocked == 1;
   }
 
   /**
@@ -268,6 +271,14 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
 
   public int getOrderNum() {
     return orderNum;
+  }
+  
+  public boolean isInheritanceBlocked() {
+    return isInheritanceBlocked;
+  }
+
+  public void setInheritanceBlocked(boolean isInheritanceBlocked) {
+    this.isInheritanceBlocked = isInheritanceBlocked;
   }
 
   @Override

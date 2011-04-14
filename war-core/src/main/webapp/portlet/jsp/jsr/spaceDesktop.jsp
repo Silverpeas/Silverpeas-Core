@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2009 Silverpeas
+    Copyright (C) 2000 - 2011 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -30,6 +30,10 @@
 <%@ include file="header.jsp"%>
 
 <%
+  String currentSpaceId = request.getParameter("SpaceId");
+  if (SpaceInst.PERSONAL_SPACE_ID.equals(currentSpaceId)) {
+    currentSpaceId = null;
+  }
 	Window window = gef.getWindow();
 
 	BrowseBar browseBar = window.getBrowseBar();

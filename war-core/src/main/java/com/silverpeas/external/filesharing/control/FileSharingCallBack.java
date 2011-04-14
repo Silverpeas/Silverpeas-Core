@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,12 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.external.filesharing.control;
 
-import com.silverpeas.external.filesharing.model.FileSharingInterface;
-import com.silverpeas.external.filesharing.model.FileSharingInterfaceImpl;
+import com.silverpeas.external.filesharing.model.FileSharingService;
 import com.silverpeas.external.filesharing.model.FileSharingRuntimeException;
+import com.silverpeas.external.filesharing.model.FileSharingServiceFactory;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBack;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -76,7 +75,7 @@ public class FileSharingCallBack implements CallBack {
             fileId = document.getPk().getId();
             versioning = true;
           }
-          getFileSharingInterface().deleteTicketsByFile(fileId, versioning);
+          getFileSharingService().deleteTicketsByFile(fileId, versioning);
         }
       } catch (Exception e) {
         throw new FileSharingRuntimeException("FileSharingCallback.doInvoke()",
@@ -100,19 +99,11 @@ public class FileSharingCallBack implements CallBack {
   }
 
   private boolean isFileDelete(int action) {
-    return (action == CallBackManager.ACTION_ATTACHMENT_REMOVE || action == CallBackManager.ACTION_VERSIONING_REMOVE);
+    return (action == CallBackManager.ACTION_ATTACHMENT_REMOVE || action
+        == CallBackManager.ACTION_VERSIONING_REMOVE);
   }
 
-  private FileSharingInterface getFileSharingInterface() {
-    FileSharingInterface fileSharingInterface = null;
-    try {
-      fileSharingInterface = new FileSharingInterfaceImpl();
-    } catch (Exception e) {
-      throw new FileSharingRuntimeException(
-          "FileSharingSessionController.getFileSharingInterface()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
-    return fileSharingInterface;
+  private FileSharingService getFileSharingService() {
+    return FileSharingServiceFactory.getFactory().getFileSharingService();
   }
-
 }

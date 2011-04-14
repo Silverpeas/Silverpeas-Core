@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -36,8 +36,11 @@ import java.util.UUID;
 import com.silverpeas.external.filesharing.model.DownloadDetail;
 import com.silverpeas.external.filesharing.model.TicketDetail;
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
+import static com.silverpeas.util.StringUtil.*;
 
 public class TicketDAO {
 
@@ -97,7 +100,7 @@ public class TicketDAO {
 
   public TicketDetail getTicket(Connection con, String key) throws SQLException {
     // récupérer un ticket
-    TicketDetail ticket = new TicketDetail();
+    TicketDetail ticket = null;
     String query = "select * from SB_fileSharing_ticket where keyFile = ? ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -164,7 +167,7 @@ public class TicketDAO {
     return downloads;
   }
 
-  public static String createTicket(Connection con, TicketDetail ticket) throws SQLException {
+  public String createTicket(Connection con, TicketDetail ticket) throws SQLException {
     // Création d'une commande
     String key = createUniKey();
     PreparedStatement prepStmt = null;
@@ -179,23 +182,28 @@ public class TicketDAO {
       prepStmt.setInt(1, ticket.getFileId());
       prepStmt.setString(2, ticket.getComponentId());
       prepStmt.setString(3, "0");
-      if (ticket.isVersioning()) {
+      if (ticket.isVersioned()) {
         prepStmt.setString(3, "1");
       }
-      prepStmt.setString(4, ticket.getCreatorId());
+      prepStmt.setString(4, ticket.getCreator().getId());
       prepStmt.setString(5, "" + today.getTime());
       Date endDate = ticket.getEndDate();
-      Calendar calendar = Calendar.getInstance();
-      calendar.setTime(endDate);
-      calendar.set(Calendar.HOUR_OF_DAY, 23);
-      calendar.set(Calendar.MINUTE, 59);
-      calendar.set(Calendar.SECOND, 59);
-      prepStmt.setString(6, Long.toString(calendar.getTime().getTime()));
+      if (endDate != null) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(endDate);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        prepStmt.setString(6, Long.toString(calendar.getTime().getTime()));
+      } else {
+        prepStmt.setString(6, null);
+      }
       prepStmt.setInt(7, ticket.getNbAccessMax());
       prepStmt.setString(8, key);
       prepStmt.executeUpdate();
     } catch (Exception e) {
-      // TODO trace
+      SilverTrace.error("fileSharing", getClass().getSimpleName() + ".createTicket",
+          "root.EX_NO_MESSAGE", e);
       return null;
     } finally {
       // fermeture
@@ -215,18 +223,24 @@ public class TicketDAO {
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, ticket.getFileId());
       prepStmt.setString(2, ticket.getComponentId());
-      prepStmt.setString(3, ticket.getUpdateId());
-      if (StringUtil.isDefined(ticket.getUpdateId())) {
+      if (ticket.getLastModifier() != null) {
+        prepStmt.setString(3, ticket.getLastModifier().getId());
         prepStmt.setString(4, "" + today.getTime());
       } else {
+        prepStmt.setString(3, null);
         prepStmt.setString(4, null);
       }
-      Calendar calendar = Calendar.getInstance();
-      calendar.setTime(ticket.getEndDate());
-      calendar.set(Calendar.HOUR_OF_DAY, 23);
-      calendar.set(Calendar.MINUTE, 59);
-      calendar.set(Calendar.SECOND, 59);
-      prepStmt.setString(5, Long.toString(calendar.getTime().getTime()));
+      Date endDate = ticket.getEndDate();
+      if (endDate != null) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(endDate);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        prepStmt.setString(5, Long.toString(calendar.getTime().getTime()));
+      } else {
+        prepStmt.setString(5, null);
+      }
       prepStmt.setInt(6, ticket.getNbAccessMax());
       prepStmt.setInt(7, ticket.getNbAccess());
       prepStmt.setString(8, ticket.getKeyFile());
@@ -260,7 +274,7 @@ public class TicketDAO {
     }
   }
 
-  private static void deleteDownloads(Connection con, String key) throws SQLException {
+  private void deleteDownloads(Connection con, String key) throws SQLException {
     PreparedStatement prepStmt = null;
     try {
       // création de la requête
@@ -274,7 +288,7 @@ public class TicketDAO {
     }
   }
 
-  public static void deleteTicket(Connection con, String key) throws SQLException {
+  public void deleteTicket(Connection con, String key) throws SQLException {
     PreparedStatement prepStmt = null;
     try {
       // delete according history
@@ -297,32 +311,41 @@ public class TicketDAO {
    * Recuperation des colonnes du resulSet et construction de l'objet ticket
    * @param rs
    * @return
-   * @throws SQLException 
+   * @throws SQLException
    */
   protected TicketDetail recupTicket(ResultSet rs) throws SQLException {
-    TicketDetail ticket = new TicketDetail();
-    ticket.setFileId(rs.getInt("fileId"));
-    ticket.setComponentId(rs.getString("componentId"));
+
+    int fileId = rs.getInt("fileId");
+    String componentId = rs.getString("componentId");
     boolean versioning = "1".equals(rs.getString("versioning"));
-    ticket.setVersioning(versioning);
-    ticket.setCreatorId(rs.getString("creatorId"));
-    String creationDate = null;
+    String creatorId = rs.getString("creatorId");
+    String updateId = rs.getString("updateId");
+    Date creationDate = null;
     if (StringUtil.isDefined(rs.getString("creationDate"))) {
-      creationDate = rs.getString("creationDate");
-      ticket.setCreationDate(new Date(Long.parseLong(creationDate)));
+      creationDate = new Date(Long.parseLong(rs.getString("creationDate")));
     }
-    ticket.setUpdateId(rs.getString("updateId"));
+    Date endDate = null;
+    String dateInMillis = rs.getString("endDate");
+    if (isDefined(dateInMillis)) {
+      endDate = new Date(Long.parseLong(dateInMillis));
+    }
+    int nbMaxAccess = rs.getInt("NbAccessMax");
+
+    UserDetail creator = new UserDetail();
+    creator.setId(creatorId);
+    TicketDetail ticket = TicketDetail.aTicket(fileId, componentId, versioning, creator,
+        creationDate, endDate, nbMaxAccess);
+
+    if (isDefined(updateId)) {
+      UserDetail updater = new UserDetail();
+      updater.setId(updateId);
+      ticket.setLastModifier(updater);
+    }
     String updateDate = null;
     if (StringUtil.isDefined(rs.getString("updateDate"))) {
       updateDate = rs.getString("updateDate");
       ticket.setUpdateDate(new Date(Long.parseLong(updateDate)));
     }
-    String endDate = null;
-    if (StringUtil.isDefined(rs.getString("endDate"))) {
-      endDate = rs.getString("endDate");
-      ticket.setEndDate(new Date(Long.parseLong(endDate)));
-    }
-    ticket.setNbAccessMax(rs.getInt("NbAccessMax"));
     ticket.setNbAccess(rs.getInt("NbAccess"));
     ticket.setKeyFile(rs.getString("KeyFile"));
 
@@ -333,7 +356,7 @@ public class TicketDAO {
    * Recuperation des colonnes du resulSet et construction de l'objet download
    * @param rs
    * @return
-   * @throws SQLException 
+   * @throws SQLException
    */
   protected DownloadDetail recupDownload(ResultSet rs) throws SQLException {
     DownloadDetail download = new DownloadDetail();
