@@ -44,13 +44,12 @@ import static org.hamcrest.Matchers.*;
  *
  * @author ehugonnet
  */
-public class VolumeSilverStatisticsManagerDAOTest/* extends AbstractJndiCase */{
+public class SizeSilverStatisticsManagerDAOTest/* extends AbstractJndiCase */ {
 
   private StatisticsConfig config;
   private JDBCMockObjectFactory factory;
   private JDBCTestModule module;
-  
-  private static final String typeofStat = "Volume";
+  private static final String typeofStat = "Size";
 
   @Before
   public void initialiseConfig() throws Exception {
@@ -60,53 +59,47 @@ public class VolumeSilverStatisticsManagerDAOTest/* extends AbstractJndiCase */{
     module = new JDBCTestModule(factory);
     module.setExactMatch(true);
   }
-  
-  
-  public VolumeSilverStatisticsManagerDAOTest() {
+
+  public SizeSilverStatisticsManagerDAOTest() {
   }
-  
+
   @Test
   public void testInsertDataCumul() throws Exception {
     MockConnection connexion = factory.getMockConnection();
-    List<String> data = Lists.newArrayList("2011-04-17", "1308", "kmelia", "WA3", "kmelia36", "262");
+    List<String> data = Lists.newArrayList("2011-04-17", "/var/data/silverpeas/kmelia72", "262");
     SilverStatisticsManagerDAO.insertDataStatsCumul(connexion, typeofStat, data, config);
     module.verifyAllStatementsClosed();
     List<?> statements = module.getPreparedStatements();
     assertNotNull(statements);
     assertThat(statements, hasSize(1));
     MockPreparedStatement pstmt = module.getPreparedStatement(0);
-    assertThat(pstmt.getSQL(), is("INSERT INTO SB_Stat_VolumeCumul(dateStat,userId,peasType,spaceId,"
-        + "componentId,countVolume) VALUES(?,?,?,?,?,?)"));
+    assertThat(pstmt.getSQL(), is("INSERT INTO SB_Stat_SizeDirCumul(dateStat,fileDir,sizeDir) "
+        + "VALUES(?,?,?)"));
     Map parameters = pstmt.getParameterMap();
-    assertThat(parameters.size(), is(6));
+    assertThat(parameters.size(), is(3));
     assertThat((String) parameters.get(1), is("2011-04-01"));
-    assertThat((Integer) parameters.get(2), is(1308));
-    assertThat((String) parameters.get(3), is("kmelia"));
-    assertThat((String) parameters.get(4), is("WA3"));
-    assertThat((String) parameters.get(5), is("kmelia36"));
-    assertThat((Long) parameters.get(6), is(262L));
+    assertThat((String) parameters.get(2), is("/var/data/silverpeas/kmelia72"));
+    assertThat((Long) parameters.get(3), is(262L));
   }
-  
-  
+
   @Test
   public void testPurgeTablesCumul() throws Exception {
     MockConnection connexion = factory.getMockConnection();
     SilverStatisticsManagerDAO.purgeTablesCumul(connexion, typeofStat, config);
     module.verifyAllStatementsClosed();
-    List<?> statements = module.getPreparedStatements();
-    assertNotNull(statements);
     Calendar calend = Calendar.getInstance();
     calend.add(Calendar.YEAR, -10);
     String date = SilverStatisticsManagerDAO.getRequestDate(calend.get(Calendar.YEAR),
         calend.get(Calendar.MONTH) + 1);
+    List<?> statements = module.getPreparedStatements();
+    assertNotNull(statements);
     assertThat(statements, hasSize(1));
     MockPreparedStatement pstmt = module.getPreparedStatement(0);
-    assertThat(pstmt.getSQL(), is("DELETE FROM SB_Stat_VolumeCumul WHERE dateStat<"+ date));
+    assertThat(pstmt.getSQL(), is("DELETE FROM SB_Stat_SizeDirCumul WHERE dateStat<" + date));
     Map parameters = pstmt.getParameterMap();
     assertThat(parameters.size(), is(0));
   }
-  
-  
+
   @Test
   public void testDeleteTablesOfTheDay() throws Exception {
     MockConnection connexion = factory.getMockConnection();
@@ -116,35 +109,27 @@ public class VolumeSilverStatisticsManagerDAOTest/* extends AbstractJndiCase */{
     assertNotNull(statements);
     assertThat(statements, hasSize(1));
     MockPreparedStatement pstmt = module.getPreparedStatement(0);
-    assertThat(pstmt.getSQL(), is("DELETE FROM SB_Stat_Volume"));
+    assertThat(pstmt.getSQL(), is("DELETE FROM SB_Stat_SizeDir"));
     Map parameters = pstmt.getParameterMap();
     assertThat(parameters.size(), is(0));
   }
-  
-  
-   @Test
+
+  @Test
   public void testMakeStatCumulWithData() throws Exception {
     MockConnection connexion = factory.getMockConnection();
     StatementResultSetHandler statementHandler = connexion.getStatementResultSetHandler();
     statementHandler.setExactMatch(true);
     MockResultSet result = statementHandler.createResultSet();
     result.addColumn("dateStat", new Object[]{"2011-04-17"});
-    result.addColumn("userId", new Object[]{1308L});
-    result.addColumn("peasType", new Object[]{"kmelia"});
-    result.addColumn("spaceId", new Object[]{"WA3"});
-    result.addColumn("componentId", new Object[]{"kmelia36"});
-    result.addColumn("countVolume", new Object[]{32L});
-    statementHandler.prepareResultSet("SELECT * FROM SB_Stat_Volume", result);
+    result.addColumn("fileDir", new Object[]{"/var/data/silverpeas/kmelia56"});
+    result.addColumn("sizeDir", new Object[]{32L});
+    statementHandler.prepareResultSet("SELECT * FROM SB_Stat_SizeDir", result);
     MockResultSet cumulResult = statementHandler.createResultSet();
     cumulResult.addColumn("dateStat", new Object[]{"2011-04-01"});
-    cumulResult.addColumn("userId", new Object[]{1308L});
-    cumulResult.addColumn("peasType", new Object[]{"kmelia"});
-    cumulResult.addColumn("spaceId", new Object[]{"WA3"});
-    cumulResult.addColumn("componentId", new Object[]{"kmelia36"});
-    cumulResult.addColumn("countVolume", new Object[]{100L});
-    statementHandler.prepareResultSets("SELECT dateStat,userId,peasType,spaceId,componentId,"
-        + "countVolume FROM SB_Stat_VolumeCumul WHERE dateStat='2011-04-01' AND userId=1308 AND "
-        + "peasType='kmelia' AND spaceId='WA3' AND componentId='kmelia36'", new MockResultSet[]{
+    cumulResult.addColumn("fileDir", new Object[]{"/var/data/silverpeas/kmelia56"});
+    cumulResult.addColumn("sizeDir", new Object[]{100L});
+    statementHandler.prepareResultSets("SELECT dateStat,fileDir,sizeDir FROM SB_Stat_SizeDirCumul "
+        + "WHERE dateStat='2011-04-01' AND fileDir='/var/data/silverpeas/kmelia56'", new MockResultSet[]{
           cumulResult});
     SilverStatisticsManagerDAO.makeStatCumul(connexion, typeofStat, config);
     module.verifyAllStatementsClosed();
@@ -155,15 +140,14 @@ public class VolumeSilverStatisticsManagerDAOTest/* extends AbstractJndiCase */{
     assertNotNull(preparedStatements);
     assertThat(preparedStatements, hasSize(1));
     MockPreparedStatement pstmt = module.getPreparedStatement(0);
-    assertThat(pstmt.getSQL(), is(
-        "UPDATE SB_Stat_VolumeCumul SET countVolume=?  WHERE dateStat='2011-04-01' AND userId=1308 "
-        + "AND peasType='kmelia' AND spaceId='WA3' AND componentId='kmelia36'"));
+    assertThat(pstmt.getSQL(), is("UPDATE SB_Stat_SizeDirCumul SET sizeDir=?  WHERE "
+        + "dateStat='2011-04-01' AND fileDir='/var/data/silverpeas/kmelia56'"));
     Map parameters = pstmt.getParameterMap();
     assertThat(parameters.size(), is(1));
     //Mode Replace
     assertThat((Long) parameters.get(1), is(32L));
   }
-  
+
   @Test
   public void testMakeStatCumulWithoutExistingData() throws Exception {
     MockConnection connexion = factory.getMockConnection();
@@ -171,16 +155,12 @@ public class VolumeSilverStatisticsManagerDAOTest/* extends AbstractJndiCase */{
     statementHandler.setExactMatch(true);
     MockResultSet result = statementHandler.createResultSet();
     result.addColumn("dateStat", new Object[]{"2011-04-17"});
-    result.addColumn("userId", new Object[]{1308L});
-    result.addColumn("peasType", new Object[]{"kmelia"});
-    result.addColumn("spaceId", new Object[]{"WA3"});
-    result.addColumn("componentId", new Object[]{"kmelia36"});
-    result.addColumn("countVolume", new Object[]{262L});
-    statementHandler.prepareResultSet("SELECT * FROM SB_Stat_Volume", result);
+    result.addColumn("fileDir", new Object[]{"/var/data/silverpeas/kmelia36"});
+    result.addColumn("sizeDir", new Object[]{543L});
+    statementHandler.prepareResultSet("SELECT * FROM SB_Stat_SizeDir", result);
     MockResultSet cumulResult = statementHandler.createResultSet();
-    statementHandler.prepareResultSet("SELECT dateStat,userId,peasType,spaceId,componentId,"
-        + "countVolume FROM SB_Stat_VolumeCumul WHERE dateStat='2011-04-01' AND userId=1308 AND "
-        + "peasType='kmelia' AND spaceId='WA3' AND componentId='kmelia36'", cumulResult);
+    statementHandler.prepareResultSet("SELECT dateStat,fileDir,sizeDir FROM SB_Stat_SizeDirCumul "
+        + "WHERE dateStat='2011-04-01' AND fileDir='/var/data/silverpeas/kmelia36'", cumulResult);
     SilverStatisticsManagerDAO.makeStatCumul(connexion, typeofStat, config);
     module.verifyAllStatementsClosed();
     List<?> statements = module.getExecutedSQLStatements();
@@ -190,24 +170,18 @@ public class VolumeSilverStatisticsManagerDAOTest/* extends AbstractJndiCase */{
     assertNotNull(preparedStatements);
     assertThat(preparedStatements, hasSize(2));
     MockPreparedStatement pstmt = module.getPreparedStatement(0);
-    assertThat(pstmt.getSQL(), is("UPDATE SB_Stat_VolumeCumul SET countVolume=?  WHERE "
-        + "dateStat='2011-04-01' AND userId=1308 AND peasType='kmelia' AND spaceId='WA3' "
-        + "AND componentId='kmelia36'"));
+    assertThat(pstmt.getSQL(), is("UPDATE SB_Stat_SizeDirCumul SET sizeDir=?  WHERE "
+        + "dateStat='2011-04-01' AND fileDir='/var/data/silverpeas/kmelia36'"));
     Map parameters = pstmt.getParameterMap();
     assertThat(parameters.size(), is(0));
     pstmt = module.getPreparedStatement(1);
-    assertThat(pstmt.getSQL(), is("INSERT INTO SB_Stat_VolumeCumul(dateStat,userId,peasType,spaceId"
-        + ",componentId,countVolume) VALUES(?,?,?,?,?,?)"));
+    assertThat(pstmt.getSQL(), is("INSERT INTO SB_Stat_SizeDirCumul(dateStat,fileDir,sizeDir) "
+        + "VALUES(?,?,?)"));
     parameters = pstmt.getParameterMap();
-    assertThat(parameters.size(), is(6));
-    assertThat(parameters.size(), is(6));
+    assertThat(parameters.size(), is(3));
     assertThat((String) parameters.get(1), is("2011-04-01"));
-    assertThat((Integer) parameters.get(2), is(1308));
-    assertThat((String) parameters.get(3), is("kmelia"));
-    assertThat((String) parameters.get(4), is("WA3"));
-    assertThat((String) parameters.get(5), is("kmelia36"));
-    assertThat((Long) parameters.get(6), is(262L));
-   
-  }
+    assertThat((String) parameters.get(2), is("/var/data/silverpeas/kmelia36"));
+    assertThat((Long) parameters.get(3), is(543L));
 
+  }
 }

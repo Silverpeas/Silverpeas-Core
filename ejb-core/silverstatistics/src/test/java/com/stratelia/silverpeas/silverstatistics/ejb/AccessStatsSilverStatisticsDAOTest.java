@@ -99,8 +99,9 @@ public class AccessStatsSilverStatisticsDAOTest {
     assertNotNull(statements);
     assertThat(statements, hasSize(1));
     MockPreparedStatement pstmt = module.getPreparedStatement(0);
-    assertThat(pstmt.getSQL(),
-        is("UPDATE SB_Stat_Access SET countAccess=countAccess+?  WHERE dateStat='2011-04-17' AND userId=1308 AND peasType='kmelia' AND spaceId='WA3' AND componentId='kmelia36'"));
+    assertThat(pstmt.getSQL(),is("UPDATE SB_Stat_Access SET countAccess=countAccess+?  "
+        + "WHERE dateStat='2011-04-17' AND userId=1308 AND peasType='kmelia' AND spaceId='WA3' "
+        + "AND componentId='kmelia36'"));
     Map parameters = pstmt.getParameterMap();
     assertThat((Long) parameters.get(1), is(262L));
   }
@@ -118,8 +119,8 @@ public class AccessStatsSilverStatisticsDAOTest {
     assertNotNull(statements);
     assertThat(statements, hasSize(1));
     MockPreparedStatement pstmt = module.getPreparedStatement(0);
-    assertThat(pstmt.getSQL(), is(
-        "INSERT INTO SB_Stat_Access(dateStat,userId,peasType,spaceId,componentId,countAccess) VALUES(?,?,?,?,?,?)"));
+    assertThat(pstmt.getSQL(), is("INSERT INTO SB_Stat_Access(dateStat,userId,peasType,spaceId,"
+        + "componentId,countAccess) VALUES(?,?,?,?,?,?)"));
     Map parameters = pstmt.getParameterMap();
     assertThat((String) parameters.get(1), is("2011-04-17"));
     assertThat((Integer) parameters.get(2), is(1308));

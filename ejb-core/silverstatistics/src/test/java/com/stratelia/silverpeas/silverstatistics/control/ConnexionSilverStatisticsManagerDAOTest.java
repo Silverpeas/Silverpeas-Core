@@ -44,12 +44,12 @@ import static org.hamcrest.Matchers.*;
  *
  * @author ehugonnet
  */
-public class AccessSilverStatisticsManagerDAOTest/* extends AbstractJndiCase */ {
+public class ConnexionSilverStatisticsManagerDAOTest/* extends AbstractJndiCase */ {
 
   private StatisticsConfig config;
   private JDBCMockObjectFactory factory;
   private JDBCTestModule module;
-  private static final String typeofStat = "Access";
+  private static final String typeofStat = "Connexion";
 
   @Before
   public void initialiseConfig() throws Exception {
@@ -60,36 +60,27 @@ public class AccessSilverStatisticsManagerDAOTest/* extends AbstractJndiCase */ 
     module.setExactMatch(true);
   }
 
-  public AccessSilverStatisticsManagerDAOTest() {
-  }
-
-  @Test
-  public void testGetRequestDate() {
-    assertThat(SilverStatisticsManagerDAO.getRequestDate(10, 15), is("'10-15-01'"));
-    assertThat(SilverStatisticsManagerDAO.getRequestDate(5, 12), is("'5-12-01'"));
-    assertThat(SilverStatisticsManagerDAO.getRequestDate(20, 5), is("'20-05-01'"));
+  public ConnexionSilverStatisticsManagerDAOTest() {
   }
 
   @Test
   public void testInsertDataCumul() throws Exception {
     MockConnection connexion = factory.getMockConnection();
-    List<String> data = Lists.newArrayList("2011-04-17", "1308", "kmelia", "WA3", "kmelia36", "262");
+    List<String> data = Lists.newArrayList("2011-04-17", "1308", "512", "262");
     SilverStatisticsManagerDAO.insertDataStatsCumul(connexion, typeofStat, data, config);
     module.verifyAllStatementsClosed();
     List<?> statements = module.getPreparedStatements();
     assertNotNull(statements);
     assertThat(statements, hasSize(1));
     MockPreparedStatement pstmt = module.getPreparedStatement(0);
-    assertThat(pstmt.getSQL(),is("INSERT INTO SB_Stat_AccessCumul(dateStat,userId,peasType,spaceId,"
-        + "componentId,countAccess) VALUES(?,?,?,?,?,?)"));
+    assertThat(pstmt.getSQL(),is("INSERT INTO SB_Stat_ConnectionCumul(dateStat,userId,countConnection,"
+        + "duration) VALUES(?,?,?,?)"));
     Map parameters = pstmt.getParameterMap();
-    assertThat(parameters.size(), is(6));
+    assertThat(parameters.size(), is(4));
     assertThat((String) parameters.get(1), is("2011-04-01"));
     assertThat((Integer) parameters.get(2), is(1308));
-    assertThat((String) parameters.get(3), is("kmelia"));
-    assertThat((String) parameters.get(4), is("WA3"));
-    assertThat((String) parameters.get(5), is("kmelia36"));
-    assertThat((Long) parameters.get(6), is(262L));
+    assertThat((Long) parameters.get(3), is(512L));
+    assertThat((Long) parameters.get(4), is(262L));
   }
 
   @Test
@@ -100,22 +91,17 @@ public class AccessSilverStatisticsManagerDAOTest/* extends AbstractJndiCase */ 
     MockResultSet result = statementHandler.createResultSet();
     result.addColumn("dateStat", new Object[]{"2011-04-17"});
     result.addColumn("userId", new Object[]{1308L});
-    result.addColumn("peasType", new Object[]{"kmelia"});
-    result.addColumn("spaceId", new Object[]{"WA3"});
-    result.addColumn("componentId", new Object[]{"kmelia36"});
-    result.addColumn("countAccess", new Object[]{453L});
-    statementHandler.prepareResultSet("SELECT * FROM SB_Stat_Access", result);
+    result.addColumn("countConnection", new Object[]{1024L});
+    result.addColumn("duration", new Object[]{3005L});
+    statementHandler.prepareResultSet("SELECT * FROM SB_Stat_Connection", result);
     MockResultSet cumulResult = statementHandler.createResultSet();
     cumulResult.addColumn("dateStat", new Object[]{"2011-04-01"});
     cumulResult.addColumn("userId", new Object[]{1308L});
-    cumulResult.addColumn("peasType", new Object[]{"kmelia"});
-    cumulResult.addColumn("spaceId", new Object[]{"WA3"});
-    cumulResult.addColumn("componentId", new Object[]{"kmelia36"});
-    cumulResult.addColumn("countAccess", new Object[]{100L});
-    statementHandler.prepareResultSets("SELECT dateStat,userId,peasType,spaceId,componentId,"
-        + "countAccess FROM SB_Stat_AccessCumul WHERE dateStat='2011-04-01' AND userId=1308 AND "
-        + "peasType='kmelia' AND spaceId='WA3' AND componentId='kmelia36'", new MockResultSet[]{
-          cumulResult});
+    cumulResult.addColumn("countConnection", new Object[]{512L});
+    cumulResult.addColumn("duration", new Object[]{500L});
+    statementHandler.prepareResultSets("SELECT dateStat,userId,countConnection,duration FROM "
+        + "SB_Stat_ConnectionCumul WHERE dateStat='2011-04-01' AND userId=1308", 
+        new MockResultSet[]{cumulResult});
     SilverStatisticsManagerDAO.makeStatCumul(connexion, typeofStat, config);
     module.verifyAllStatementsClosed();
     List<?> statements = module.getExecutedSQLStatements();
@@ -125,12 +111,12 @@ public class AccessSilverStatisticsManagerDAOTest/* extends AbstractJndiCase */ 
     assertNotNull(preparedStatements);
     assertThat(preparedStatements, hasSize(1));
     MockPreparedStatement pstmt = module.getPreparedStatement(0);
-    assertThat(pstmt.getSQL(), is(
-        "UPDATE SB_Stat_AccessCumul SET countAccess=?  WHERE dateStat='2011-04-01' AND userId=1308 "
-        + "AND peasType='kmelia' AND spaceId='WA3' AND componentId='kmelia36'"));
+    assertThat(pstmt.getSQL(), is("UPDATE SB_Stat_ConnectionCumul SET countConnection=? ,"
+        + "duration=?  WHERE dateStat='2011-04-01' AND userId=1308"));
     Map parameters = pstmt.getParameterMap();
-    assertThat(parameters.size(), is(1));
-    assertThat((Long) parameters.get(1), is(100L + 453L));
+    assertThat(parameters.size(), is(2));
+    assertThat((Long) parameters.get(1), is(512L + 1024L));
+    assertThat((Long) parameters.get(2), is(500L + 3005L));
   }
   
   @Test
@@ -138,19 +124,17 @@ public class AccessSilverStatisticsManagerDAOTest/* extends AbstractJndiCase */ 
     MockConnection connexion = factory.getMockConnection();
     StatementResultSetHandler statementHandler = connexion.getStatementResultSetHandler();
     statementHandler.setExactMatch(true);
-    MockResultSet result = statementHandler.createResultSet();
+   MockResultSet result = statementHandler.createResultSet();
     result.addColumn("dateStat", new Object[]{"2011-04-17"});
     result.addColumn("userId", new Object[]{1308L});
-    result.addColumn("peasType", new Object[]{"kmelia"});
-    result.addColumn("spaceId", new Object[]{"WA3"});
-    result.addColumn("componentId", new Object[]{"kmelia36"});
-    result.addColumn("countAccess", new Object[]{262L});
+    result.addColumn("countConnection", new Object[]{36L});
+    result.addColumn("duration", new Object[]{12L});
+    statementHandler.prepareResultSet("SELECT * FROM SB_Stat_Connection", result);
     statementHandler.prepareResultSet("SELECT * FROM SB_Stat_Access", result);
     MockResultSet cumulResult = statementHandler.createResultSet();
-    statementHandler.prepareResultSet("SELECT * FROM SB_Stat_Access", result);
-    statementHandler.prepareResultSet("SELECT dateStat,userId,peasType,spaceId,componentId,"
-        + "countAccess FROM SB_Stat_AccessCumul WHERE dateStat='2011-04-01' AND userId=1308 AND "
-        + "peasType='kmelia' AND spaceId='WA3' AND componentId='kmelia36'", cumulResult);
+    statementHandler.prepareResultSets("SELECT dateStat,userId,countConnection,duration FROM "
+        + "SB_Stat_ConnectionCumul WHERE dateStat='2011-04-01' AND userId=1308", 
+        new MockResultSet[]{cumulResult});
     SilverStatisticsManagerDAO.makeStatCumul(connexion, typeofStat, config);
     module.verifyAllStatementsClosed();
     List<?> statements = module.getExecutedSQLStatements();
@@ -160,23 +144,19 @@ public class AccessSilverStatisticsManagerDAOTest/* extends AbstractJndiCase */ 
     assertNotNull(preparedStatements);
     assertThat(preparedStatements, hasSize(2));
     MockPreparedStatement pstmt = module.getPreparedStatement(0);
-    assertThat(pstmt.getSQL(), is("UPDATE SB_Stat_AccessCumul SET countAccess=?  WHERE "
-        + "dateStat='2011-04-01' AND userId=1308 AND peasType='kmelia' AND spaceId='WA3' "
-        + "AND componentId='kmelia36'"));
+    assertThat(pstmt.getSQL(), is("UPDATE SB_Stat_ConnectionCumul SET countConnection=? ,"
+        + "duration=?  WHERE dateStat='2011-04-01' AND userId=1308"));
     Map parameters = pstmt.getParameterMap();
     assertThat(parameters.size(), is(0));
     pstmt = module.getPreparedStatement(1);
-    assertThat(pstmt.getSQL(), is("INSERT INTO SB_Stat_AccessCumul(dateStat,userId,peasType,spaceId"
-        + ",componentId,countAccess) VALUES(?,?,?,?,?,?)"));
+    assertThat(pstmt.getSQL(), is("INSERT INTO SB_Stat_ConnectionCumul(dateStat,userId,"
+        + "countConnection,duration) VALUES(?,?,?,?)"));
     parameters = pstmt.getParameterMap();
-    assertThat(parameters.size(), is(6));
-    assertThat(parameters.size(), is(6));
+    assertThat(parameters.size(), is(4));
     assertThat((String) parameters.get(1), is("2011-04-01"));
     assertThat((Integer) parameters.get(2), is(1308));
-    assertThat((String) parameters.get(3), is("kmelia"));
-    assertThat((String) parameters.get(4), is("WA3"));
-    assertThat((String) parameters.get(5), is("kmelia36"));
-    assertThat((Long) parameters.get(6), is(262L));   
+    assertThat((Long) parameters.get(3), is(36L));
+    assertThat((Long) parameters.get(4), is(12L));
   }
 
   @Test
@@ -192,7 +172,7 @@ public class AccessSilverStatisticsManagerDAOTest/* extends AbstractJndiCase */ 
     String date = SilverStatisticsManagerDAO.getRequestDate(calend.get(Calendar.YEAR),
         calend.get(Calendar.MONTH) + 1);
     MockPreparedStatement pstmt = module.getPreparedStatement(0);
-    assertThat(pstmt.getSQL(), is("DELETE FROM SB_Stat_AccessCumul WHERE dateStat<" + date));
+    assertThat(pstmt.getSQL(), is("DELETE FROM SB_Stat_ConnectionCumul WHERE dateStat<" + date));
     Map parameters = pstmt.getParameterMap();
     assertThat(parameters.size(), is(0));
   }
@@ -206,7 +186,7 @@ public class AccessSilverStatisticsManagerDAOTest/* extends AbstractJndiCase */ 
     assertNotNull(statements);
     assertThat(statements, hasSize(1));
     MockPreparedStatement pstmt = module.getPreparedStatement(0);
-    assertThat(pstmt.getSQL(), is("DELETE FROM SB_Stat_Access"));
+    assertThat(pstmt.getSQL(), is("DELETE FROM SB_Stat_Connection"));
     Map parameters = pstmt.getParameterMap();
     assertThat(parameters.size(), is(0));
   }

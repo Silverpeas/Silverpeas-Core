@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.silverstatistics.control;
 
 import com.google.common.base.Joiner;
@@ -78,7 +77,9 @@ public class SilverStatisticsManagerDAO {
     insertStatementBuf.append(") ");
 
     insertStatementBuf.append("VALUES(?");
-    for (int j = 0; j < conf.getNumberOfKeys(statsType) - 1; j++) {
+    for (int j = 0;
+        j < conf.getNumberOfKeys(statsType) - 1;
+        j++) {
       insertStatementBuf.append(",?");
     }
     insertStatementBuf.append(")");
@@ -90,11 +91,12 @@ public class SilverStatisticsManagerDAO {
           "SilverStatisticsManagerDAO.insertDataStatsCumul",
           "root.MSG_GEN_PARAM_VALUE", "insertStatement=" + insertStatement);
       prepStmt = con.prepareStatement(insertStatement);
-      for (String currentKey : theKeys) {
+      for (String currentKey :
+          theKeys) {
         i++;
         String currentType = conf.getKeyType(statsType, currentKey);
         if (currentType.equals("DECIMAL")) {
-          long tmpLong  ;
+          long tmpLong;
 
           try {
             String tmpString = valueKeys.get(i - 1);
@@ -114,7 +116,7 @@ public class SilverStatisticsManagerDAO {
           }
         }
         if (currentType.equals("INTEGER")) {
-          int tmpInt  ;
+          int tmpInt;
 
           try {
             String tmpString = valueKeys.get(i - 1);
@@ -135,8 +137,7 @@ public class SilverStatisticsManagerDAO {
         }
         if (currentType.equals("VARCHAR")) {
           if (currentKey.equals("dateStat")) {
-            String dateFirstDayOfMonth = valueKeys.get(i - 1)
-                .substring(0, 8);
+            String dateFirstDayOfMonth = valueKeys.get(i - 1).substring(0, 8);
 
             dateFirstDayOfMonth = dateFirstDayOfMonth + "01";
             prepStmt.setString(i, dateFirstDayOfMonth);
@@ -177,13 +178,13 @@ public class SilverStatisticsManagerDAO {
     String updateStatement;
     String keyNameCurrent;
     String currentType;
-    Statement stmt  ;
+    Statement stmt;
     ResultSet rs = null;
     boolean rowExist = false;
     boolean firstKeyInWhere = true;
     int k = 0;
-    int countCumulKey  ;
-    int intToAdd  ;
+    int countCumulKey;
+    int intToAdd;
     PreparedStatement pstmt = null;
 
     updateStatementBuf.append(tableName).append("Cumul");
@@ -277,7 +278,7 @@ public class SilverStatisticsManagerDAO {
     try {
       rs = stmt.executeQuery(selectStatement);
       pstmt = con.prepareStatement(updateStatement);
-      while (rs.next()) {        
+      while (rs.next()) {
 
         rowExist = true;
         countCumulKey = 0;
@@ -346,7 +347,7 @@ public class SilverStatisticsManagerDAO {
     String selectStatement;
     String keyNameCurrent;
     String currentType;
-    Statement stmt  ;
+    Statement stmt;
     ResultSet rs = null;
 
     selectStatement = selectStatementBuf.toString();
@@ -358,7 +359,7 @@ public class SilverStatisticsManagerDAO {
     try {
       rs = stmt.executeQuery(selectStatement);
       Collection theKeys = conf.getAllKeys(statsType);
-      Iterator iteratorKeys  ;
+      Iterator iteratorKeys;
       String addToValueKeys = "";
 
       while (rs.next()) {
@@ -401,7 +402,7 @@ public class SilverStatisticsManagerDAO {
       SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatCumul",
           "silverstatistics.MSG_ALIMENTATION_BD", e);
       throw e;
-    }catch (IOException e) {
+    } catch (IOException e) {
       SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatCumul",
           "silverstatistics.MSG_ALIMENTATION_BD", e);
       throw e;
@@ -425,7 +426,7 @@ public class SilverStatisticsManagerDAO {
     PreparedStatement prepStmt = null;
 
     try {
-      SilverTrace.info("silverstatistics",  "SilverStatisticsManagerDAO.deleteTablesOfTheDay",
+      SilverTrace.info("silverstatistics", "SilverStatisticsManagerDAO.deleteTablesOfTheDay",
           "root.MSG_GEN_PARAM_VALUE", "deleteStatement=" + deleteStatement);
       prepStmt = con.prepareStatement(deleteStatement);
       prepStmt.executeUpdate();
@@ -440,14 +441,14 @@ public class SilverStatisticsManagerDAO {
    *
    * @param con
    * @param statsType
-   *@param conf  @throws SQLException
+   * @param conf 
+   * @throws SQLException
    * @see
    */
-  static void purgeTablesCumul(Connection con, String statsType,
-      StatisticsConfig conf) throws SQLException {
-    StringBuffer deleteStatementBuf = new StringBuffer("DELETE FROM "
-        + conf.getTableName(statsType) + "Cumul WHERE dateStat<");
-    String deleteStatement  ;
+  static void purgeTablesCumul(Connection con, String statsType, StatisticsConfig conf) throws
+      SQLException {
+    StringBuilder deleteStatementBuf = new StringBuilder("DELETE FROM " + conf.getTableName(
+        statsType) + "Cumul WHERE dateStat<");
     PreparedStatement prepStmt = null;
 
     // compute the last date to delete from
@@ -456,8 +457,8 @@ public class SilverStatisticsManagerDAO {
     deleteStatementBuf.append(getRequestDate(dateOfTheDay.get(Calendar.YEAR),
         dateOfTheDay.get(Calendar.MONTH) + 1));
 
-    deleteStatement = deleteStatementBuf.toString();
-    SilverTrace.info("silverstatistics","SilverStatisticsManagerDAO.purgeTablesCumul",
+    String deleteStatement = deleteStatementBuf.toString();
+    SilverTrace.info("silverstatistics", "SilverStatisticsManagerDAO.purgeTablesCumul",
         "root.MSG_GEN_PARAM_VALUE", "deleteStatement=" + deleteStatement);
 
     try {
@@ -469,13 +470,13 @@ public class SilverStatisticsManagerDAO {
   }
 
   static String getRequestDate(int year, int sMonth) {
-    StringBuffer dateStringBuf = new StringBuffer();
-    String month = (new Integer(sMonth)).toString();
+    StringBuilder dateStringBuf = new StringBuilder();
+    String month = String.valueOf(sMonth);
     if (month.length() < 2) {
       month = "0" + month;
     }
 
-    dateStringBuf.append("'").append((new Integer(year)).toString());
+    dateStringBuf.append("'").append(String.valueOf(year));
     dateStringBuf.append("-").append(month);
     dateStringBuf.append("-01" + "'");
     return dateStringBuf.toString();
@@ -491,7 +492,8 @@ public class SilverStatisticsManagerDAO {
   public static void makeStatAllCumul(StatisticsConfig conf) {
     Connection con = getConnection();
     if (conf != null && con != null && conf.isValidConfigFile()) {
-      for (String currentType : conf.getAllTypes()) {
+      for (String currentType :
+          conf.getAllTypes()) {
         try {
           purgeTablesCumul(con, currentType, conf);
         } catch (SQLException e) {
@@ -506,7 +508,7 @@ public class SilverStatisticsManagerDAO {
         } catch (IOException e) {
           SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatAllCumul",
               "silverstatistics.MSG_CUMUL_BD", e);
-        }finally {
+        } finally {
           try {
             deleteTablesOfTheDay(con, currentType, conf);
           } catch (SQLException e) {
@@ -562,5 +564,4 @@ public class SilverStatisticsManagerDAO {
       }
     }
   }
-
 }
