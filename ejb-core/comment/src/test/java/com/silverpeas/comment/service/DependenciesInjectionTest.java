@@ -60,7 +60,7 @@ public class DependenciesInjectionTest {
   public void theCommentServiceShouldBeGetByTheFactory() {
     CommentServiceFactory commentServiceFactory = CommentServiceFactory.getFactory();
     CommentService commentService = commentServiceFactory.getCommentService();
-    assertNotNull(service);
-    assertNotNull(service.getCommentDAO());
+    assertNotNull(commentService);
+    assertNotNull(((DefaultCommentService)commentService).getCommentDAO());
   }
 }
