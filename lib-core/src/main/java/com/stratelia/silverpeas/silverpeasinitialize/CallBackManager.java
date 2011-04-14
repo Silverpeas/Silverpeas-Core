@@ -62,7 +62,10 @@ public class CallBackManager {
   public final static int ACTION_XMLCONTENT_CREATE = 18;
   public final static int ACTION_XMLCONTENT_UPDATE = 19;
   public final static int ACTION_XMLCONTENT_DELETE = 20;
-  public final static int ACTION_LAST = 21;
+  public final static int ACTION_HEADER_PUBLICATION_UPDATE = 21;
+  public final static int ACTION_PUBLICATION_REMOVE = 22;
+  
+  public final static int ACTION_LAST = 23;
 
   private static final CallBackManager instance = new CallBackManager();
 
@@ -206,6 +209,9 @@ public class CallBackManager {
       case ACTION_XMLCONTENT_DELETE:
         sb.append("ACTION_XMLCONTENT_DELETE");
         break;
+      case ACTION_HEADER_PUBLICATION_UPDATE:
+        sb.append("ACTION_HEADER_PUBLICATION_UPDATE");
+        break;  
       default:
         sb.append("ACTION_UNKNOWN");
     }
