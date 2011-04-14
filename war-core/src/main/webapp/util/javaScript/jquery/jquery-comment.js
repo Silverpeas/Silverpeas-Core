@@ -98,7 +98,7 @@
       ok: 'Save'
     },
     validate: function( text ) {
-      if (text != null && text.length > 0)
+      if (text != null && $.trim(text).length > 0)
         return true
       else
         return false;
@@ -115,7 +115,7 @@
     /**
      * Sets up the JQuery comment plugin with the specified options. The options defines the settings
      * to apply to the comment plugin. Please see the settings declaration to have a glance at
-     * the different settigns parameters.
+     * the different settings parameters.
      */
     init : function( options ) {
 

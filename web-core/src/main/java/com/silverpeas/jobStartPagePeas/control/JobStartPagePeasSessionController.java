@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -109,7 +109,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
   // Init at first entry
   public void init() {
-    m_NavBarMgr.initWithUser(this, getUserDetail(), true);
+    m_NavBarMgr.initWithUser(this, getUserDetail());
   }
 
   public boolean isInheritanceEnable() {

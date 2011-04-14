@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -84,26 +84,31 @@ public class UserRoleTable extends Table<UserRoleRow> {
    * @return the UserRole whith the given roleName in the given instance. the UserRole whith the given roleName in the given instance.
    * @throws AdminPersistenceException 
    */
-  public UserRoleRow getUserRole(int instanceId, String roleName) throws AdminPersistenceException {
-    UserRoleRow[] userRoles = getRows(SELECT_USERROLE_BY_ROLENAME, new int[]{instanceId},
+  public UserRoleRow getUserRole(int instanceId, String roleName, int inherited) throws AdminPersistenceException {
+    UserRoleRow[] userRoles = getRows(SELECT_USERROLE_BY_ROLENAME, new int[]{instanceId, inherited},
         new String[]{roleName}).toArray(new UserRoleRow[0]);
 
     if (userRoles.length == 0) {
       return null;
     }
-    if (userRoles.length == 1) {
-      return userRoles[0];
+    
+    if (userRoles.length >= 2) {
+      SilverTrace.error("admin", "UserRoleTable.getUserRole", "root.MSG_GEN_PARAM_VALUE", "# = " +
+          userRoles.length + ", instanceId = " + instanceId + ", roleName = " + roleName);
     }
+    //if (userRoles.length == 1) {
+      return userRoles[0];
+    //}
 
-    throw new AdminPersistenceException("UserRoleTable.getUserRole",
+    /*throw new AdminPersistenceException("UserRoleTable.getUserRole",
         SilverpeasException.ERROR,
         "admin.EX_ERR_USERROLE_NAME_INSTANCEID_FOUND_TWICE",
         "instance id : '" + instanceId + "', userrole name: '" + roleName
-        + "'");
+        + "'");*/
   }
   static final private String SELECT_USERROLE_BY_ROLENAME = "select "
       + USERROLE_COLUMNS
-      + " from ST_UserRole where instanceId = ? and name = ? and objectId is null";
+      + " from ST_UserRole where instanceId = ? and isInherited = ? and rolename = ? and objectId is null";
 
   /**
    * Returns all the UserRoles.

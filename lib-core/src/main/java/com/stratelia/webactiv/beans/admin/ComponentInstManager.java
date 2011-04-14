@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -419,71 +419,6 @@ public class ComponentInstManager {
           + sComponentId + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
-    }
-  }
-
-  /*
-   * Updates component instance and recursively sub-elements in Silverpeas
-   */
-  public void updateComponentInstRecur(ComponentInst componentInst,
-      DomainDriverManager ddManager, ComponentInst compoInstNew)
-      throws AdminException {
-    ArrayList<String> alOldCompoProfile = new ArrayList<String>();
-    ArrayList<String> alNewCompoProfile = new ArrayList<String>();
-    ArrayList<String> alAddProfile = new ArrayList<String>();
-    ArrayList<String> alRemProfile = new ArrayList<String>();
-    ArrayList<String> alStayProfile = new ArrayList<String>();
-
-    try {
-      // Compute the Old component profile list
-      List<ProfileInst> alProfileInst = componentInst.getAllProfilesInst();
-      for (int nI = 0; nI < alProfileInst.size(); nI++) {
-        alOldCompoProfile.add(alProfileInst.get(nI).getName());
-      }
-
-      // Compute the New component profile list
-      alProfileInst = compoInstNew.getAllProfilesInst();
-      for (int nI = 0; nI < alProfileInst.size(); nI++) {
-        alNewCompoProfile.add(alProfileInst.get(nI).getName());
-      }
-
-      // Compute the remove Profile list
-      for (int nI = 0; nI < alOldCompoProfile.size(); nI++) {
-        if (alNewCompoProfile.indexOf(alOldCompoProfile.get(nI)) == -1) {
-          alRemProfile.add(alOldCompoProfile.get(nI));
-        }
-      }
-
-      // Compute the add and stay Profile list
-      for (int nI = 0; nI < alNewCompoProfile.size(); nI++) {
-        if (alOldCompoProfile.indexOf(alNewCompoProfile.get(nI)) == -1) {
-          alAddProfile.add(alNewCompoProfile.get(nI));
-        } else {
-          alStayProfile.add(alNewCompoProfile.get(nI));
-        }
-      }
-
-      // Add the new Profiles
-      for (int nI = 0; nI < alAddProfile.size(); nI++) {
-        m_ProfileInstManager.createProfileInst(compoInstNew.getProfileInst(alAddProfile.get(nI)),
-            ddManager, componentInst.getId());
-      }
-
-      // Remove the removed profiles
-      for (int nI = 0; nI < alRemProfile.size(); nI++) {
-        m_ProfileInstManager.deleteProfileInst(componentInst.getProfileInst(alRemProfile.get(nI)),
-            ddManager);
-      }
-
-      // Update the stayed profile
-      for (int nI = 0; nI < alStayProfile.size(); nI++) {
-        m_ProfileInstManager.updateProfileInst(componentInst.getProfileInst(alStayProfile.get(nI)),
-            ddManager, compoInstNew.getProfileInst(alStayProfile.get(nI)));
-      }
-    } catch (Exception e) {
-      throw new AdminException("ComponentInstManager.updateComponentInstRecur",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_COMPONENT",
-          "component id: '" + componentInst.getId() + "'", e);
     }
   }
 
