@@ -178,6 +178,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   // Activate external search
   private boolean isEnableExternalSearch = false;
   private List<ExternalSPConfigVO> externalServers = null;
+  private String curServerName = null;
 
   public PdcSearchSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext, String multilangBundle,
@@ -214,6 +215,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    */
   private void getExternalSPConfig() {
     if (isEnableExternalSearch) {
+      curServerName = getSettings().getString("server.name");
       externalServers = new ArrayList<ExternalSPConfigVO>();
       String prefixKey = "external.search.server.";
       String nameKey = ".name";
@@ -485,6 +487,20 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   public boolean isMatchingIndexEntryAvailable(MatchingIndexEntry mie) {
+    // Do not filter and check external components
+    if (isEnableExternalSearch) {
+      if (isExternalComponent(mie.getServerName())) {
+        // Fitler only Publication and Node data
+        String objectType = mie.getObjectType();
+        if ("Versioning".equals(objectType) || "Publication".equals(objectType) ||
+            "Node".equals(objectType)) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+
     String componentId = mie.getComponent();
     if (componentId.startsWith("kmelia")) {
       try {
@@ -567,6 +583,14 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         String location = result.getLocation();
         String type = result.getType();
 
+        if (isEnableExternalSearch) {
+          String extSrvName = result.getIndexEntry().getServerName();
+          if ((StringUtil.isDefined(extSrvName) && isExternalComponent(extSrvName)) ||
+              !StringUtil.isDefined(extSrvName)) {
+            continue;
+          }
+        }
+
         if (StringUtil.isDefined(authorId)) {
           if (!authorsMap.containsKey(authorId)) {
             authorsMap.put(authorId, curAuthor);
@@ -582,6 +606,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             componentsMap.get(instanceId).setNbElt(componentsMap.get(instanceId).getNbElt() + 1);
           }
         }
+
       }
     }
     List<AuthorVO> authors = new ArrayList<AuthorVO>(authorsMap.values());
@@ -795,6 +820,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return blackList;
   }
 
+  /**
+   * Enhance information from result before sending them to the view
+   * @param results a list of GlobalSilverResult to enhance
+   */
   private void setExtraInfoToResultsToDisplay(List<GlobalSilverResult> results) {
     String titleLink = "";
     String downloadLink = "";
@@ -830,101 +859,122 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         resultType = "Publication";
       }
 
-      if (resultType.startsWith("Attachment")) {
-        if (!componentId.startsWith("webPages")) {
+      // Declare if it's an internal server search
+      boolean isInternalSearch = true;
+
+      // Add only when External Search is enabled
+      // Check if external search exists
+      if (isEnableExternalSearch && indexEntry != null) {
+        // build external search url location
+        String serverName = indexEntry.getServerName();
+
+        if (StringUtil.isDefined(serverName) && isExternalComponent(serverName)) {
+          isInternalSearch = false;
+          titleLink = buildExternalServerURL(resultType, markAsReadJS, indexEntry, serverName);
+        } else if (!StringUtil.isDefined(serverName)) {
+          isInternalSearch = false;
+          titleLink = "javascript:showExternalSearchError();";
+        }
+      }
+
+      if (isInternalSearch) {
+        if (resultType.startsWith("Attachment")) {
+          if (!componentId.startsWith("webPages")) {
+            try {
+              downloadLink =
+                  getAttachmentUrl(indexEntry.getObjectType(), indexEntry.getComponent());
+            } catch (Exception e) {
+              SilverTrace.error("pdcPeas",
+                  "searchEngineSessionController.setExtraInfoToResultsToDisplay()",
+                  "pdcPeas.MSG_CANT_GET_DOWNLOAD_LINK", e);
+            }
+            underLink = getUrl(m_sContext, indexEntry);
+            int iStart = underLink.indexOf("Attachment");
+            int iEnd = underLink.indexOf('&', iStart);
+            underLink = underLink.substring(0, iStart) + "Publication" + underLink.substring(iEnd,
+                underLink.length());
+            StringBuilder titleLinkBuilder = new StringBuilder(256);
+            titleLinkBuilder.append("javascript:").append(markAsReadJS).append(" window.open('").
+                append(EncodeHelper.javaStringToJsString(downloadLink))
+                .append("');jumpToComponent('").
+                append(componentId).append("');document.location.href='").
+                append(EncodeHelper.javaStringToJsString(underLink)).append("&FileOpened=1';");
+            titleLink = titleLinkBuilder.toString();
+          } else {
+            ComponentInstLight componentInst = getOrganizationController().getComponentInstLight(
+                componentId);
+            if (componentInst != null) {
+              String title = componentInst.getLabel(getLanguage());
+              result.setTitle(title);
+              result.setType("Wysiwyg");
+              titleLink = getUrl(m_sContext, indexEntry);
+            }
+          }
+        } else if (resultType.startsWith("Versioning")) {
           try {
-            downloadLink = getAttachmentUrl(indexEntry.getObjectType(), indexEntry.getComponent());
+            downloadLink = getVersioningUrl(resultType.substring(10), componentId);
           } catch (Exception e) {
             SilverTrace.error("pdcPeas",
                 "searchEngineSessionController.setExtraInfoToResultsToDisplay()",
                 "pdcPeas.MSG_CANT_GET_DOWNLOAD_LINK", e);
           }
           underLink = getUrl(m_sContext, indexEntry);
-          int iStart = underLink.indexOf("Attachment");
+          int iStart = underLink.indexOf("Versioning");
           int iEnd = underLink.indexOf('&', iStart);
           underLink = underLink.substring(0, iStart) + "Publication" + underLink.substring(iEnd,
               underLink.length());
-          StringBuilder titleLinkBuilder = new StringBuilder(256);
-          titleLinkBuilder.append("javascript:").append(markAsReadJS).append(" window.open('").
-              append(EncodeHelper.javaStringToJsString(downloadLink))
-              .append("');jumpToComponent('").
-              append(componentId).append("');document.location.href='").
-              append(EncodeHelper.javaStringToJsString(underLink)).append("&FileOpened=1';");
-          titleLink = titleLinkBuilder.toString();
-        } else {
-          ComponentInstLight componentInst = getOrganizationController().getComponentInstLight(
+          titleLink = buildTitleLink(markAsReadJS, downloadLink, componentId, underLink, true);
+        } else if (resultType.equals("LinkedFile")) {
+          // open the linked file inside a popup window
+          downloadLink =
+              FileServerUtils.getUrl(indexEntry.getTitle(), indexEntry.getObjectId(),
+                  AttachmentController.getMimeType(indexEntry.getTitle()));
+          // window opener is reloaded on the main page of the component
+          underLink = m_sContext + URLManager.getURL("useless", componentId) + "Main";
+          titleLink = buildTitleLink(markAsReadJS, downloadLink, componentId, underLink, false);
+        } else if (resultType.equals("TreeNode")) {
+          // the PDC uses this type of object.
+          // window.opener is not reloaded.
+          // the glossary is opened in popup mode.
+          String objectId = indexEntry.getObjectId();
+          String treeId = objectId.substring(objectId.indexOf("_") + 1, objectId.length());
+          String valueId = objectId.substring(0, objectId.indexOf("_"));
+          String uniqueId = treeId + "_" + valueId;
+          SilverTrace.warn("pdcPeas", "PdcSearchRequestRouter.buildResultList()",
+              "root.MSG_GEN_PARAM_VALUE", "uniqueId= " + uniqueId);
+          titleLink = "javascript:" + markAsReadJS + " openGlossary('" + uniqueId + "');";
+        } else if (resultType.equals("Space")) {
+          // retour sur l'espace
+          String spaceId = indexEntry.getObjectId();
+          titleLink = "javascript:" + markAsReadJS + " goToSpace('" + spaceId
+              + "');document.location.href='"
+              + URLManager.getSimpleURL(URLManager.URL_SPACE, spaceId) + "';";
+        } else if (resultType.equals("Component")) {
+          // retour sur le composant
+          componentId = indexEntry.getObjectId();
+          underLink = URLManager.getSimpleURL(URLManager.URL_COMPONENT,
               componentId);
-          if (componentInst != null) {
-            String title = componentInst.getLabel(getLanguage());
-            result.setTitle(title);
-            result.setType("Wysiwyg");
-            titleLink = getUrl(m_sContext, indexEntry);
+          titleLink = "javascript:" + markAsReadJS + " jumpToComponent('" + componentId
+              + "');document.location.href='" + underLink + "';";
+        } else if (componentId.startsWith("user@")) {
+          titleLink = m_sContext + URLManager.getURL(resultType) + indexEntry.getPageAndParams();
+        } else if (resultType.equals("UserFull")) {
+          UserDetail userDetail = getUserDetail(indexEntry.getPK().getObjectId());
+          if (userDetail != null) {
+            result.setThumbnailURL(userDetail.getAvatar());
           }
-        }
-      } else if (resultType.startsWith("Versioning")) {
-        try {
-          downloadLink = getVersioningUrl(resultType.substring(10), componentId);
-        } catch (Exception e) {
-          SilverTrace.error("pdcPeas",
-              "searchEngineSessionController.setExtraInfoToResultsToDisplay()",
-              "pdcPeas.MSG_CANT_GET_DOWNLOAD_LINK", e);
-        }
-        underLink = getUrl(m_sContext, indexEntry);
-        int iStart = underLink.indexOf("Versioning");
-        int iEnd = underLink.indexOf('&', iStart);
-        underLink = underLink.substring(0, iStart) + "Publication" + underLink.substring(iEnd,
-            underLink.length());
-        titleLink = buildTitleLink(markAsReadJS, downloadLink, componentId, underLink, true);
-      } else if (resultType.equals("LinkedFile")) {
-        // open the linked file inside a popup window
-        downloadLink =
-            FileServerUtils.getUrl(indexEntry.getTitle(), indexEntry.getObjectId(),
-                AttachmentController.getMimeType(indexEntry.getTitle()));
-        // window opener is reloaded on the main page of the component
-        underLink = m_sContext + URLManager.getURL("useless", componentId) + "Main";
-        titleLink = buildTitleLink(markAsReadJS, downloadLink, componentId, underLink, false);
-      } else if (resultType.equals("TreeNode")) {
-        // the PDC uses this type of object.
-        // window.opener is not reloaded.
-        // the glossary is opened in popup mode.
-        String objectId = indexEntry.getObjectId();
-        String treeId = objectId.substring(objectId.indexOf("_") + 1, objectId.length());
-        String valueId = objectId.substring(0, objectId.indexOf("_"));
-        String uniqueId = treeId + "_" + valueId;
-        SilverTrace.warn("pdcPeas", "PdcSearchRequestRouter.buildResultList()",
-            "root.MSG_GEN_PARAM_VALUE", "uniqueId= " + uniqueId);
-        titleLink = "javascript:" + markAsReadJS + " openGlossary('" + uniqueId + "');";
-      } else if (resultType.equals("Space")) {
-        // retour sur l'espace
-        String spaceId = indexEntry.getObjectId();
-        titleLink = "javascript:" + markAsReadJS + " goToSpace('" + spaceId
-            + "');document.location.href='"
-            + URLManager.getSimpleURL(URLManager.URL_SPACE, spaceId) + "';";
-      } else if (resultType.equals("Component")) {
-        // retour sur le composant
-        componentId = indexEntry.getObjectId();
-        underLink = URLManager.getSimpleURL(URLManager.URL_COMPONENT,
-            componentId);
-        titleLink = "javascript:" + markAsReadJS + " jumpToComponent('" + componentId
-            + "');document.location.href='" + underLink + "';";
-      } else if (componentId.startsWith("user@")) {
-        titleLink = m_sContext + URLManager.getURL(resultType) + indexEntry.getPageAndParams();
-      } else if (resultType.equals("UserFull")) {
-        UserDetail userDetail = getUserDetail(indexEntry.getPK().getObjectId());
-        if (userDetail != null) {
-          result.setThumbnailURL(userDetail.getAvatar());
-        }
-        titleLink = "javascript:" + markAsReadJS + " viewUserProfile('" + indexEntry.getPK().
-            getObjectId() + "');";
-      } else {
-        titleLink = "javascript:" + markAsReadJS + " jumpToComponent('" + componentId
-            + "');";
-        if (indexEntry != null) {
-          titleLink += "document.location.href='" + getUrl(m_sContext, indexEntry) + "';";
+          titleLink = "javascript:" + markAsReadJS + " viewUserProfile('" + indexEntry.getPK().
+              getObjectId() + "');";
         } else {
-          titleLink +=
-              "document.location.href='"
-                  + getUrl(m_sContext, componentId, "useless", result.getURL()) + "';";
+          titleLink = "javascript:" + markAsReadJS + " jumpToComponent('" + componentId
+              + "');";
+          if (indexEntry != null) {
+            titleLink += "document.location.href='" + getUrl(m_sContext, indexEntry) + "';";
+          } else {
+            titleLink +=
+                "document.location.href='"
+                    + getUrl(m_sContext, componentId, "useless", result.getURL()) + "';";
+          }
         }
       }
 
@@ -936,7 +986,50 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       if (isExportEnabled()) {
         result.setExportable(isCompliantResult(result));
       }
+
     }
+  }
+
+  /**
+   * Only called when isEnableExternalSearch is activated.
+   * Build an external link using Silverpeas permalink 
+   * @see URLManager.getSimpleURL
+   * @param resultType the result type
+   * @param markAsReadJS javascript string to mark this result as read
+   * @param indexEntry the current indexEntry
+   * @param serverName the server name string
+   * @return a string which represents an external server URL
+   */
+  private String buildExternalServerURL(String resultType, String markAsReadJS,
+      MatchingIndexEntry indexEntry, String serverName) {
+    StringBuilder extURLSB = new StringBuilder();
+    for (ExternalSPConfigVO extSrv : externalServers) {
+      if (serverName.equalsIgnoreCase(extSrv.getName())) {
+        extURLSB.append("javascript:").append(markAsReadJS).append(" ");
+        extURLSB.append("window.open('").append(extSrv.getUrl());
+        // Retrieve the URLManager type
+        int type = 0;
+        String objectId = "";
+        String compId = indexEntry.getComponent();
+        if ("Publication".equals(resultType)) {
+          // exemple http://server/silverpeas/Publication/ID_PUBLI
+          type = URLManager.URL_PUBLI;
+          objectId = indexEntry.getObjectId();
+        } else if ("Node".equals(resultType)) {
+          // exemple http://server/silverpeas/Topic/ID_TOPIC?ComponentId=ID_COMPONENT
+          type = URLManager.URL_TOPIC;
+          objectId = indexEntry.getObjectId();
+        } else if ("File".equals(resultType)) {
+          // exemple http://server/silverpeas/File/ID_FILE
+          type = URLManager.URL_FILE;
+          objectId = indexEntry.getObjectId();
+        }
+        extURLSB.append(URLManager.getSimpleURL(type, objectId, compId, false));
+        extURLSB.append("','").append(extSrv.getName()).append("');void 0;");
+
+      }
+    }
+    return extURLSB.toString();
   }
 
   private String buildTitleLink(String markAsReadJS, String downloadLink, String componentId,
@@ -1008,8 +1101,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
       GlobalSilverResult gsr = new GlobalSilverResult(result);
 
-      SilverTrace.info(
-          "pdcPeas",
+      SilverTrace.info("pdcPeas",
           "PdcSearchSessionController.matchingIndexEntries2GlobalSilverResults()",
           "root.MSG_GEN_PARAM_VALUE", "title= " + title);
 
@@ -1032,69 +1124,80 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         // We must search if the eventual associated Publication have not been
         // already added to the result
         String objectIdAndObjectType = result.getObjectId() + "&&Publication&&"
-            + result.getComponent();
+              + result.getComponent();
         if (returnedObjects.contains(objectIdAndObjectType)) {
           // the Publication have already been added
           continue;
         } else {
           objectIdAndObjectType = result.getObjectId() + "&&Wysiwyg&&"
-              + result.getComponent();
+                + result.getComponent();
           returnedObjects.add(objectIdAndObjectType);
         }
       } else if ("Publication".equals(result.getObjectType())) {
         // We must search if the eventual associated Wysiwyg have not been
         // already added to the result
         String objectIdAndObjectType = result.getObjectId() + "&&Wysiwyg&&"
-            + result.getComponent();
+              + result.getComponent();
         if (returnedObjects.contains(objectIdAndObjectType)) {
           // the Wysiwyg have already been added
           continue;
         } else {
           objectIdAndObjectType = result.getObjectId() + "&&Publication&&"
-              + result.getComponent();
+                + result.getComponent();
           returnedObjects.add(objectIdAndObjectType);
         }
       }
 
-      // preparation sur l'emplacement du document
-      if (componentId.startsWith("user@")) {
-        UserDetail user = getOrganizationController().getUserDetail(
-            componentId.substring(5, componentId.indexOf("_")));
-        String component = componentId.substring(componentId.indexOf("_") + 1);
-        place = user.getDisplayedName() + " / " + component;
-      } else if (componentId.equals("pdc")) {
-        place = getString("pdcPeas.pdc");
-      } else if (componentId.equals("users")) {
-        place = "";
+      // Check if it's an external search before searching components information
+      if (isExternalComponent(result.getServerName())) {
+        place =
+            StringUtil.isDefined(result.getServerName()) ? result.getServerName()
+                : getString("pdcPeas.external.search.unknown");
       } else {
-        if (places == null) {
-          places = new Hashtable<String, String>();
-        }
+        // preparation sur l'emplacement du document
+        if (componentId.startsWith("user@")) {
+          UserDetail user = getOrganizationController().getUserDetail(
+              componentId.substring(5, componentId.indexOf("_")));
+          String component = componentId.substring(componentId.indexOf("_") + 1);
+          place = user.getDisplayedName() + " / " + component;
+        } else if (componentId.equals("pdc")) {
+          place = getString("pdcPeas.pdc");
+        } else if (componentId.equals("users")) {
+          place = "";
+        } else {
+          if (places == null) {
+            places = new Hashtable<String, String>();
+          }
 
-        place = places.get(componentId);
+          place = places.get(componentId);
 
-        if (place == null) {
-          ComponentInstLight componentInst = getOrganizationController().getComponentInstLight(
-              componentId);
-          if (componentInst != null) {
-            place = getSpaceLabel(componentInst.getDomainFatherId()) + " / "
-                + componentInst.getLabel(getLanguage());
-            places.put(componentId, place);
+          if (place == null) {
+            ComponentInstLight componentInst = getOrganizationController().getComponentInstLight(
+                componentId);
+            if (componentInst != null) {
+              place = getSpaceLabel(componentInst.getDomainFatherId()) + " / "
+                  + componentInst.getLabel(getLanguage());
+              places.put(componentId, place);
+            }
           }
         }
+        String userId = result.getCreationUser();
+        gsr.setCreatorName(getCompleteUserName(userId));
       }
-
       gsr.setLocation(place);
-
-      String userId = result.getCreationUser();
-      gsr.setCreatorName(getCompleteUserName(userId));
-
       results.add(gsr);
     }
     if (places != null) {
       places.clear();
     }
     return results;
+  }
+
+  private boolean isExternalComponent(String serverName) {
+    if (StringUtil.isDefined(curServerName) && !curServerName.equalsIgnoreCase(serverName)) {
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -2551,5 +2654,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    */
   public void setSortImplemtor(String sortImplementor) {
     this.sortImplementor = sortImplementor;
+  }
+
+  /**
+   * @return the isEnableExternalSearch attribute
+   */
+  public boolean isEnableExternalSearch() {
+    return isEnableExternalSearch;
   }
 }

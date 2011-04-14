@@ -29,10 +29,11 @@
 <%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
 <%@ page import="com.silverpeas.util.EncodeHelper"%>
-<%@page import="com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController"%>
-<%@page import="com.stratelia.silverpeas.pdcPeas.vo.*"%>
+<%@ page import="com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController"%>
+<%@ page import="com.stratelia.silverpeas.pdcPeas.vo.*"%>
 <%@ include file="checkAdvancedSearch.jsp"%>
 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%-- Set resource bundle --%>
@@ -97,6 +98,7 @@ int nbTotalResults		= ((Integer) request.getAttribute("NbTotalResults")).intValu
 int indexOfFirstResult	= ((Integer) request.getAttribute("IndexOfFirstResult")).intValue();
 Boolean exportEnabled	= (Boolean) request.getAttribute("ExportEnabled");
 Boolean refreshEnabled	= (Boolean) request.getAttribute("RefreshEnabled");
+boolean externalSearchEnabled = ((Boolean) request.getAttribute("ExternalSearchEnabled")).booleanValue();
 Boolean	xmlSearch		= (Boolean) request.getAttribute("XmlSearchVisible");
 boolean	showPertinence	= ((Boolean) request.getAttribute("PertinenceVisible")).booleanValue();
 
@@ -402,12 +404,26 @@ if (!StringUtil.isDefined(pageId)) {
 
     //used for mark as read functionality
   	<%  if(markResult){ %>
-		function markAsRead(id) {
-			if(id!=""){
-				$.post('<%=m_context%>/RpdcSearch/jsp/markAsRead', {id:id});
-			}
-		}
-	<%}%>
+function markAsRead(id) {
+  if(id!=""){
+    //$.post('<%=m_context%>/RpdcSearch/jsp/markAsRead', {id:id});
+    $.ajax({
+      url: '<%=m_context%>/SearchEngineAjaxServlet',
+      data: {Action: 'markAsRead',
+        id:id},
+      success: function(data){
+        //alert('markAsRead succeeded on element ' + data.id);
+        $("#readSpanId_" + data.id).attr('class', 'markedkAsRead');
+      },
+      error : function() {
+         alert("XMLHttpRequest error ");
+      },
+      dataType: 'json'
+    });
+  }
+}
+
+<%}%>
 
 	<% if(spellingWords!= null && StringUtil.isDefined(spellingWords[0])){ %>
 		function dymsend() {
@@ -433,6 +449,10 @@ if (!StringUtil.isDefined(pageId)) {
 			            });
 	    <%}%>
 	  });
+
+function showExternalSearchError() {
+  $("#externalSearchErrorDivId").dialog();
+}
 </script>
 </head>
 <body class="searchEngine" id="<%=pageId %>">
@@ -449,9 +469,9 @@ if (!StringUtil.isDefined(pageId)) {
 		operationPane.addOperation(resource.getIcon("pdcPeas.toExport"), resource.getString("pdcPeas.ToExport"), "javascript:openExportPopup();");
 		operationPane.addOperation(resource.getIcon("pdcPeas.exportPDF"), resource.getString("pdcPeas.exportPDF"), "javascript:openExportPDFPopup();");
 	}
-
-	out.println(window.printBefore());
-
+%>
+<view:window>
+<%
 	tabs = gef.getTabbedPane();
 	tabs.addTab(resource.getString("pdcPeas.SearchResult"), "#", true);
 	if (webTabs != null)
@@ -586,8 +606,9 @@ if (!StringUtil.isDefined(pageId)) {
 			gsr				= (GlobalSilverResult) resultsOnThisPage.get(nI);
 			sName			= EncodeHelper.javaStringToHtmlString(gsr.getName(language));
 			sDescription	= gsr.getDescription(language);
-			if (sDescription != null && sDescription.length() > 400)
+			if (sDescription != null && sDescription.length() > 400) {
 				sDescription = sDescription.substring(0, 400)+"...";
+			}
 			sURL			= gsr.getTitleLink();
 			sDownloadURL	= gsr.getDownloadLink();
 			sLocation		= gsr.getLocation();
@@ -601,12 +622,17 @@ if (!StringUtil.isDefined(pageId)) {
 			} catch (Exception e) {
 				sCreationDate	= null;
 			}
-            String serverName = (StringUtil.isDefined(gsr.getIndexEntry().getServerName())? gsr.getIndexEntry().getServerName(): "defaultSrv");
+            
+            String serverName = "";
+			if (externalSearchEnabled) {
+              serverName = "external_server_" + (StringUtil.isDefined(gsr.getIndexEntry().getServerName())? gsr.getIndexEntry().getServerName(): "unknown");
+            }
 
 			out.println("<tr class=\"lineResult " + gsr.getSpaceId() + " " + gsr.getInstanceId() + " " + serverName + "\">");
 
-			if (showPertinence)
+			if (showPertinence) {
 				out.println("<td class=\"pertinence\">"+displayPertinence(gsr.getRawScore(), fullStarSrc, emptyStarSrc)+"&nbsp;</td>");
+			}
 
 			if (activeSelection.booleanValue() || exportEnabled.booleanValue()) {
 				if (gsr.isExportable()) {
@@ -645,16 +671,17 @@ if (!StringUtil.isDefined(pageId)) {
 			}
 
 			out.println("<td>");
-			if (activeSelection.booleanValue())
-				out.println("<span class=\"textePetitBold\">"+sName+"</span>");
-			else {
+            String curResultId = "readSpanId_" + gsr.getResultId();
+			if (activeSelection.booleanValue()) {
+              out.println("<span id=\"" + curResultId + "\" class=\"textePetitBold\">"+sName+"</span>");
+			} else {
 			  	String cssClass="textePetitBold";
 			  	String cssClassDisableVisited="";
 			  	if(gsr.isHasRead()){
 			  	  cssClass="markedkAsRead";
 			  	  cssClassDisableVisited ="markedkAsReadDisableVisited";
 			  	}
-				out.println("<a href=\""+sURL+"\" class=\""+cssClassDisableVisited +"\"><span class=\""+ cssClass+ "\">"+sName+"</span></a>");
+				out.println("<a href=\""+sURL+"\" class=\""+cssClassDisableVisited +"\"><span id=\"" + curResultId + "\" class=\""+ cssClass+ "\">"+sName+"</span></a>");
 			} 
 			if (StringUtil.isDefined(sDownloadURL))
 			{
@@ -864,9 +891,8 @@ if (!StringUtil.isDefined(pageId)) {
       </div>
     	<%
     }
-
-	out.println(window.printAfter());
 %>
+</view:window>
 
 	<input type="hidden" name="selectedIds"/>
 	<input type="hidden" name="notSelectedIds"/>
@@ -880,6 +906,11 @@ if (!StringUtil.isDefined(pageId)) {
 	<input type="hidden" name="sortImp" value="<%=sortImplementor%>"/>
 
 </form>
+<div id="externalSearchErrorDivId" style="display:none" title="<fmt:message key="pdcPeas.error"/>">
+  <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 0 0;"></span>
+  <fmt:message key="pdcPeas.external.search.error" />
+  </p>
+</div>
 <view:progressMessage/>
 </body>
 </html>
