@@ -99,6 +99,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -146,10 +147,11 @@ public class ImportExport {
     try {
       String mappingDir = settings.getString("mappingDir");
       String mappingFileName = settings.getString("importExportMapping");
-      File mappingFile = new File(mappingDir, mappingFileName);
-
+      if (!mappingDir.endsWith("/")) {
+        mappingDir += "/";
+      }
       // Load mapping and instantiate a Marshaller
-      mapping.loadMapping(mappingFile.getPath());
+      mapping.loadMapping(new URL(mappingDir + mappingFileName));
 
       writer = new OutputStreamWriter(new FileOutputStream(xmlToExportPath), Charsets.UTF_8);
       Marshaller mar = new Marshaller(writer);
