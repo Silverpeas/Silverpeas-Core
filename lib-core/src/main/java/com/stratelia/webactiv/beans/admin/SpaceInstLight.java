@@ -33,6 +33,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.organization.SpaceRow;
@@ -192,6 +193,9 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
   }
 
   public void setId(String id) {
+    if (StringUtil.isDefined(id) && id.startsWith("WA")) {
+      id = id.substring(2);
+    }
     this.id = id;
   }
 

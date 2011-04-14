@@ -109,7 +109,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
   // Init at first entry
   public void init() {
-    m_NavBarMgr.initWithUser(this, getUserDetail(), true);
+    m_NavBarMgr.initWithUser(this, getUserDetail());
   }
 
   public boolean isInheritanceEnable() {
