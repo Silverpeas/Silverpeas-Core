@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -29,7 +29,7 @@ import java.util.List;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.dao.RoleDAO;
-import com.stratelia.webactiv.organization.ComponentInstanceRow;
+import com.stratelia.webactiv.organization.AdminPersistenceException;
 import com.stratelia.webactiv.organization.UserRoleRow;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
@@ -92,40 +92,7 @@ public class ProfileInstManager extends Object {
    */
   public ProfileInst getProfileInst(DomainDriverManager ddManager, String sProfileId,
       String sFatherId) throws AdminException {
-    if (sFatherId == null) {
-      try {
-        ddManager.getOrganizationSchema();
-        ComponentInstanceRow instance = ddManager.organization.instance.
-            getComponentInstanceOfUserRole(idAsInt(sProfileId));
-        if (instance == null) {
-          instance = new ComponentInstanceRow();
-        }
-        sFatherId = idAsString(instance.id);
-      } catch (Exception e) {
-        throw new AdminException("ProfileInstManager.getProfileInst", SilverpeasException.ERROR,
-            "admin.EX_ERR_GET_PROFILE", "profile Id: '" + sProfileId + "', father component Id: '"
-            + sFatherId + "'", e);
-      } finally {
-        ddManager.releaseOrganizationSchema();
-      }
-    }
-
-    ProfileInst profileInst = new ProfileInst();
-    setProfileInst(profileInst, ddManager, sProfileId, sFatherId);
-
-    return profileInst;
-  }
-
-  /**
-   * Set Profile information with the given id
-   * @param profileInst
-   * @param ddManager
-   * @param sProfileId
-   * @param sFatherId
-   * @throws AdminException 
-   */
-  public void setProfileInst(ProfileInst profileInst, DomainDriverManager ddManager,
-      String sProfileId, String sFatherId) throws AdminException {
+    ProfileInst profileInst = null;
     try {
       ddManager.getOrganizationSchema();
 
@@ -133,37 +100,8 @@ public class ProfileInstManager extends Object {
       UserRoleRow userRole = ddManager.organization.userRole.getUserRole(idAsInt(sProfileId));
 
       if (userRole != null) {
-        // Set the attributes of the profile Inst
-        profileInst.setId(sProfileId);
-        profileInst.setName(userRole.roleName);
-        profileInst.setLabel(userRole.name);
-        profileInst.setDescription(userRole.description);
-        profileInst.setComponentFatherId(sFatherId);
-        if (userRole.isInherited == 1) {
-          profileInst.setInherited(true);
-        }
-        if (userRole.objectId > 0) {
-          profileInst.setObjectId(userRole.objectId);
-        }
-        profileInst.setObjectType(userRole.objectType);
-
-        // Get the groups
-        String[] asGroupIds = ddManager.organization.group.getDirectGroupIdsInUserRole(idAsInt(
-            sProfileId));
-
-        // Set the groups to the profile
-        for (int nI = 0; asGroupIds != null && nI < asGroupIds.length; nI++) {
-          profileInst.addGroup(asGroupIds[nI]);
-        }
-
-        // Get the Users
-        String[] asUsersIds = ddManager.organization.user.getDirectUserIdsOfUserRole(idAsInt(
-            sProfileId));
-
-        // Set the Users to the profile
-        for (int nI = 0; asUsersIds != null && nI < asUsersIds.length; nI++) {
-          profileInst.addUser(asUsersIds[nI]);
-        }
+        profileInst = userRoleRow2ProfileInst(userRole);
+        setUsersAndGroups(ddManager, profileInst);
       } else {
         SilverTrace.error("admin", "ProfileInstManager.setProfileInst",
             "root.EX_RECORD_NOT_FOUND", "sProfileId = " + sProfileId);
@@ -173,6 +111,78 @@ public class ProfileInstManager extends Object {
           SilverpeasException.ERROR, "admin.EX_ERR_SET_PROFILE",
           "profile Id: '" + sProfileId + "', father component Id: '"
           + sFatherId + "'", e);
+    } finally {
+      ddManager.releaseOrganizationSchema();
+    }
+    return profileInst;
+  }
+  
+  private ProfileInst userRoleRow2ProfileInst(UserRoleRow userRole) {
+    // Set the attributes of the profile Inst
+    ProfileInst profileInst = new ProfileInst();
+    profileInst.setId(Integer.toString(userRole.id));
+    profileInst.setName(userRole.roleName);
+    profileInst.setLabel(userRole.name);
+    profileInst.setDescription(userRole.description);
+    profileInst.setComponentFatherId(Integer.toString(userRole.instanceId));
+    if (userRole.isInherited == 1) {
+      profileInst.setInherited(true);
+    }
+    if (userRole.objectId > 0) {
+      profileInst.setObjectId(userRole.objectId);
+    }
+    profileInst.setObjectType(userRole.objectType);
+    return profileInst;
+  }
+  
+  private void setUsersAndGroups(DomainDriverManager ddManager, ProfileInst profileInst)
+      throws AdminPersistenceException {
+
+    // Get the groups
+    String[] asGroupIds =
+        ddManager.organization.group.getDirectGroupIdsInUserRole(idAsInt(profileInst.getId()));
+
+    // Set the groups to the space profile
+    if (asGroupIds != null) {
+      for (String groupId : asGroupIds) {
+        profileInst.addGroup(groupId);
+      }
+    }
+
+    // Get the Users
+    String[] asUsersIds = ddManager.organization.user.getDirectUserIdsOfUserRole(idAsInt(
+        profileInst.getId()));
+
+    // Set the Users to the space profile
+    if (asUsersIds != null) {
+      for (String userId : asUsersIds) {
+        profileInst.addUser(userId);
+      }
+    }
+  }
+  
+  public ProfileInst getInheritedProfileInst(DomainDriverManager ddManager,
+      String instanceId, String roleName)
+      throws AdminException {
+    try {
+      ddManager.getOrganizationSchema();
+
+      // Load the profile detail
+      UserRoleRow userRole =
+          ddManager.organization.userRole.getUserRole(idAsInt(instanceId), roleName, 1);
+
+      ProfileInst profileInst = null;
+      if (userRole != null) {
+        // Set the attributes of the profile Inst
+        profileInst = userRoleRow2ProfileInst(userRole);
+        setUsersAndGroups(ddManager, profileInst);
+      }
+
+      return profileInst;
+    } catch (Exception e) {
+      throw new AdminException("ProfileInstManager.getInheritedProfileInst",
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE_PROFILE",
+          "instanceId = " + instanceId + ", role = " + roleName, e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -196,9 +206,11 @@ public class ProfileInstManager extends Object {
     }
   }
 
-  public String updateProfileInst(ProfileInst profileInst,
-      DomainDriverManager ddManager, ProfileInst profileInstNew)
+  public String updateProfileInst(DomainDriverManager ddManager, ProfileInst profileInstNew)
       throws AdminException {
+    
+    ProfileInst profileInst = getProfileInst(ddManager, profileInstNew.getId(), null);
+    
     ArrayList<String> alOldProfileGroup = new ArrayList<String>();
     ArrayList<String> alNewProfileGroup = new ArrayList<String>();
     ArrayList<String> alAddGroup = new ArrayList<String>();
@@ -213,86 +225,86 @@ public class ProfileInstManager extends Object {
     try {
       // Compute the Old profile group list
       ArrayList<String> alGroup = profileInst.getAllGroups();
-      for (int nI = 0; nI < alGroup.size(); nI++) {
-        alOldProfileGroup.add(alGroup.get(nI));
+      for (String groupId : alGroup) {
+        alOldProfileGroup.add(groupId);
       }
 
       // Compute the New profile group list
       alGroup = profileInstNew.getAllGroups();
-      for (int nI = 0; nI < alGroup.size(); nI++) {
-        alNewProfileGroup.add(alGroup.get(nI));
+      for (String groupId : alGroup) {
+        alNewProfileGroup.add(groupId);
       }
 
       // Compute the remove group list
-      for (int nI = 0; nI < alOldProfileGroup.size(); nI++) {
-        if (alNewProfileGroup.indexOf(alOldProfileGroup.get(nI)) == -1) {
-          alRemGroup.add(alOldProfileGroup.get(nI));
+      for (String groupId : alOldProfileGroup) {
+        if (alNewProfileGroup.indexOf(groupId) == -1) {
+          alRemGroup.add(groupId);
         }
       }
 
       // Compute the add and stay group list
-      for (int nI = 0; nI < alNewProfileGroup.size(); nI++) {
-        if (alOldProfileGroup.indexOf(alNewProfileGroup.get(nI)) == -1) {
-          alAddGroup.add(alNewProfileGroup.get(nI));
+      for (String groupId : alNewProfileGroup) {
+        if (alOldProfileGroup.indexOf(groupId) == -1) {
+          alAddGroup.add(groupId);
         } else {
-          alStayGroup.add(alNewProfileGroup.get(nI));
+          alStayGroup.add(groupId);
         }
       }
 
       // Add the new Groups
-      for (int nI = 0; nI < alAddGroup.size(); nI++) {
+      for (String groupId : alAddGroup) {
         // Create the links between the profile and the group
         ddManager.organization.userRole.addGroupInUserRole(
-            idAsInt(alAddGroup.get(nI)), idAsInt(profileInst.getId()));
+            idAsInt(groupId), idAsInt(profileInst.getId()));
       }
 
       // Remove the removed groups
-      for (int nI = 0; nI < alRemGroup.size(); nI++) {
+      for (String groupId : alRemGroup) {
         // delete the node link Profile_Group
         ddManager.organization.userRole.removeGroupFromUserRole(
-            idAsInt(alRemGroup.get(nI)), idAsInt(profileInst.getId()));
+            idAsInt(groupId), idAsInt(profileInst.getId()));
       }
 
       // Compute the Old profile User list
       ArrayList<String> alUser = profileInst.getAllUsers();
-      for (int nI = 0; nI < alUser.size(); nI++) {
-        alOldProfileUser.add(alUser.get(nI));
+      for (String userId : alUser) {
+        alOldProfileUser.add(userId);
       }
 
       // Compute the New profile User list
       alUser = profileInstNew.getAllUsers();
-      for (int nI = 0; nI < alUser.size(); nI++) {
-        alNewProfileUser.add(alUser.get(nI));
+      for (String userId : alUser) {
+        alNewProfileUser.add(userId);
       }
 
       // Compute the remove User list
-      for (int nI = 0; nI < alOldProfileUser.size(); nI++) {
-        if (alNewProfileUser.indexOf(alOldProfileUser.get(nI)) == -1) {
-          alRemUser.add(alOldProfileUser.get(nI));
+      for (String userId : alOldProfileUser) {
+        if (alNewProfileUser.indexOf(userId) == -1) {
+          alRemUser.add(userId);
         }
       }
 
       // Compute the add and stay User list
-      for (int nI = 0; nI < alNewProfileUser.size(); nI++) {
-        if (alOldProfileUser.indexOf(alNewProfileUser.get(nI)) == -1) {
-          alAddUser.add(alNewProfileUser.get(nI));
+      for (String userId : alNewProfileUser) {
+        if (alOldProfileUser.indexOf(userId) == -1) {
+          alAddUser.add(userId);
         } else {
-          alStayUser.add(alNewProfileUser.get(nI));
+          alStayUser.add(userId);
         }
       }
 
       // Add the new Users
-      for (int nI = 0; nI < alAddUser.size(); nI++) {
+      for (String userId : alAddUser) {
         // Create the links between the profile and the User
         ddManager.organization.userRole.addUserInUserRole(
-            idAsInt(alAddUser.get(nI)), idAsInt(profileInst.getId()));
+            idAsInt(userId), idAsInt(profileInst.getId()));
       }
 
       // Remove the removed Users
-      for (int nI = 0; nI < alRemUser.size(); nI++) {
+      for (String userId : alRemUser) {
         // delete the node link Profile_User
         ddManager.organization.userRole.removeUserFromUserRole(
-            idAsInt(alRemUser.get(nI)), idAsInt(profileInst.getId()));
+            idAsInt(userId), idAsInt(profileInst.getId()));
       }
 
       // update the profile node

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -69,11 +69,11 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
   /**
    * Returns the SpaceUserRole whith the given RoleName in the given space.
    */
-  public SpaceUserRoleRow getSpaceUserRole(int spaceId, String RoleName) throws
+  public SpaceUserRoleRow getSpaceUserRole(int spaceId, String roleName, int inherited) throws
       AdminPersistenceException {
     SpaceUserRoleRow[] spaceUserRoles = (SpaceUserRoleRow[]) getRows(
-        SELECT_SPACEUSERROLE_BY_ROLENAME, new int[]{spaceId},
-        new String[]{RoleName}).toArray(new SpaceUserRoleRow[0]);
+        SELECT_SPACEUSERROLE_BY_ROLENAME, new int[]{spaceId, inherited},
+        new String[]{roleName}).toArray(new SpaceUserRoleRow[0]);
 
     if (spaceUserRoles.length == 0) {
       return null;
@@ -83,12 +83,12 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
       throw new AdminPersistenceException(
           "SpaceUserRoleTable.getSpaceUserRole", SilverpeasException.ERROR,
           "admin.EX_ERR_SPACEUSERROLE_NAME_SPACEID_FOUND_TWICE", "space id : '"
-          + spaceId + "', space userrole name: '" + RoleName + "'");
+          + spaceId + "', space userrole name: '" + roleName + "'");
     }
   }
   static final private String SELECT_SPACEUSERROLE_BY_ROLENAME = "select "
       + SPACEUSERROLE_COLUMNS
-      + " from ST_SpaceUserRole where spaceId = ? and name = ?";
+      + " from ST_SpaceUserRole where spaceId = ? and isInherited = ? and rolename = ?";
 
   /**
    * Returns all the SpaceUserRoles.
