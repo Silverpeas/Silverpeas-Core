@@ -112,6 +112,8 @@ import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.exception.UtilException;
+import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
@@ -439,65 +441,72 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return plainSearchResults;
   }
 
+  /**
+   * Main method to add external components to a query description object
+   * @param query the query description used to build Lucene query
+   */
   private void addExternalComponents(QueryDescription query) {
     if (this.isEnableExternalSearch) {
-      loopOnExternalConfig(query);
-    }
-  }
-
-  private void loopOnExternalConfig(QueryDescription query) {
-    for (ExternalSPConfigVO extServerCfg : this.externalServers) {
-      // Loop on each directory in order to add all the external components
-      List<String> filteredComponents = extServerCfg.getComponents();
-      if (filteredComponents != null && !filteredComponents.isEmpty()) {
-        browseExternalServerDirectory(query, extServerCfg, filteredComponents);
-      }
-    }
-  }
-
-  private void browseExternalServerDirectory(QueryDescription query,
-      ExternalSPConfigVO extServerCfg, List<String> filteredComponents) {
-    File[] listDirectory =
-        listFiles(extServerCfg.getDataPath() + File.separator + "index");
-    if (listDirectory.length > 0) {
-      for (File file : listDirectory) {
-        filterExternalComponents(query, extServerCfg, filteredComponents, file);
-      }
-    }
-  }
-
-  private void filterExternalComponents(QueryDescription query, ExternalSPConfigVO extServerCfg,
-      List<String> filteredComponents, File file) {
-    if (file.isDirectory()) {
-      String fileName = file.getName();
-      for (String authorizedComp : filteredComponents) {
-        if (fileName.indexOf(authorizedComp) >= 0) {
-          query.addExternalComponents(extServerCfg.getName(), fileName, extServerCfg
-              .getDataPath(), extServerCfg.getUrl());
+      for (ExternalSPConfigVO extServerCfg : this.externalServers) {
+        // Loop on each directory in order to add all the external components
+        List<String> filteredComponents = extServerCfg.getComponents();
+        if (filteredComponents != null && !filteredComponents.isEmpty()) {
+          browseExternalServerDirectory(query, extServerCfg);
         }
       }
     }
   }
 
-  public File[] listFiles(String directoryPath) {
-    File[] files = null;
-    File directoryToScan = new File(directoryPath);
-    files = directoryToScan.listFiles();
-    return files;
+  /**
+   * This method retrieve the list of subfolders from external server configuration path. Then it
+   * filters each directory using the external list of authorized components.
+   * @param query the QueryDescription where adding new ExternalComponent search
+   * @param extServerCfg the external server configuration read from properties file
+   */
+  private void browseExternalServerDirectory(QueryDescription query, ExternalSPConfigVO extServerCfg) {
+    Collection<File> listDir = new ArrayList<File>();
+    try {
+      listDir =
+          FileFolderManager.getAllSubFolder(extServerCfg.getDataPath() + File.separator + "index");
+    } catch (UtilException e) {
+      SilverTrace.error("pdcPeas", "PdcSearchSessionController.browseExternalServerDirectory()",
+          "I/O exception folder = " + extServerCfg.getDataPath() + File.separator + "index", e);
+    }
+    if (!listDir.isEmpty()) {
+      for (File file : listDir) {
+        filterExternalComponents(query, extServerCfg, file);
+      }
+    }
+  }
+
+  /**
+   * Filter the list of external component for Lucene search purpose
+   * @param query : the query description used to build lucene query
+   * @param extServerCfg : the external server configuration
+   * @param file : current external directory
+   */
+  private void filterExternalComponents(QueryDescription query, ExternalSPConfigVO extServerCfg,
+      File file) {
+    String fileName = file.getName();
+    List<String> filteredComponents = extServerCfg.getComponents();
+    for (String authorizedComp : filteredComponents) {
+      if (fileName.indexOf(authorizedComp) >= 0) {
+        query.addExternalComponents(extServerCfg.getName(), fileName, extServerCfg
+              .getDataPath(), extServerCfg.getUrl());
+      }
+    }
   }
 
   public boolean isMatchingIndexEntryAvailable(MatchingIndexEntry mie) {
     // Do not filter and check external components
-    if (isEnableExternalSearch) {
-      if (isExternalComponent(mie.getServerName())) {
-        // Fitler only Publication and Node data
-        String objectType = mie.getObjectType();
-        if ("Versioning".equals(objectType) || "Publication".equals(objectType) ||
-            "Node".equals(objectType)) {
-          return true;
-        } else {
-          return false;
-        }
+    if (isEnableExternalSearch && isExternalComponent(mie.getServerName())) {
+      // Fitler only Publication and Node data
+      String objectType = mie.getObjectType();
+      if ("Versioning".equals(objectType) || "Publication".equals(objectType) ||
+          "Node".equals(objectType)) {
+        return true;
+      } else {
+        return false;
       }
     }
 
@@ -991,8 +1000,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Only called when isEnableExternalSearch is activated.
-   * Build an external link using Silverpeas permalink 
+   * Only called when isEnableExternalSearch is activated. Build an external link using Silverpeas
+   * permalink
    * @see URLManager.getSimpleURL
    * @param resultType the result type
    * @param markAsReadJS javascript string to mark this result as read

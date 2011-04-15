@@ -52,11 +52,11 @@ public class SearchEngineAjaxServlet extends HttpServlet {
   /**
    * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
    * @param req The HTPP request.
-   * @param res The HTTP response.
+   * @param resp The HTTP response.
    * @throws ServletException if a servlet-specific error occurs.
    * @throws IOException if an I/O error occurs.
    */
-  protected void processRequest(HttpServletRequest req, HttpServletResponse res)
+  protected void processRequest(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
 
     String action = getAction(req);
@@ -68,8 +68,13 @@ public class SearchEngineAjaxServlet extends HttpServlet {
       result = "{success:false, message:'Unknown action servlet'}";
     }
 
+    // Prepare response
+    //resp.setContentType("application/json;charset=UTF-8");
+    resp.setContentType("text");
+    resp.setHeader("charset", "UTF-8");
+    
     // Send response
-    Writer writer = res.getWriter();
+    Writer writer = resp.getWriter();
     writer.write(result);
   }
 

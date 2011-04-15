@@ -409,14 +409,16 @@ function markAsRead(id) {
     //$.post('<%=m_context%>/RpdcSearch/jsp/markAsRead', {id:id});
     $.ajax({
       url: '<%=m_context%>/SearchEngineAjaxServlet',
-      data: {Action: 'markAsRead',
+      data: { Action: 'markAsRead',
         id:id},
       success: function(data){
         //alert('markAsRead succeeded on element ' + data.id);
         $("#readSpanId_" + data.id).attr('class', 'markedkAsRead');
       },
-      error : function() {
-         alert("XMLHttpRequest error ");
+      error: function() {
+        //alert('XMLHttpRequest error');
+        //HttpRequest, textStatus, errorThrown
+        //alert(HttpRequest.status + " - " + textStatus+" - "+errorThrown);
       },
       dataType: 'json'
     });
