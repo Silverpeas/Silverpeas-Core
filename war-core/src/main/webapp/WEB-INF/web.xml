@@ -483,6 +483,10 @@
     <servlet-class>com.stratelia.silverpeas.pdcPeas.servlets.PdcAjaxServlet</servlet-class>
   </servlet>
   <servlet>
+  	<servlet-name>SearchEngineAjaxServlet</servlet-name>
+    <servlet-class>com.stratelia.silverpeas.pdcPeas.servlets.SearchEngineAjaxServlet</servlet-class>
+  </servlet>
+  <servlet>
     <servlet-name>DirectoryRequestRouter</servlet-name>
     <servlet-class>com.silverpeas.directory.servlets.DirectoryRequestRouter</servlet-class>
   </servlet>
@@ -856,6 +860,10 @@
   <servlet-mapping>
     <servlet-name>PdcAjaxServlet</servlet-name>
     <url-pattern>/PdcAjaxServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>SearchEngineAjaxServlet</servlet-name>
+    <url-pattern>/SearchEngineAjaxServlet</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>DirectoryRequestRouter</servlet-name>
