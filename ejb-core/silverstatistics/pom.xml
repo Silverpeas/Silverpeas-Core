@@ -35,10 +35,5 @@
       <artifactId>mockrunner</artifactId>
       <classifier>jdk1.6-j2ee1.4</classifier>
     </dependency>
-    <dependency>
-      <groupId>com.silverpeas.core</groupId>
-      <artifactId>lib-core</artifactId>
-      <version>${project.version}</version>
-    </dependency>
   </dependencies>
 </project>

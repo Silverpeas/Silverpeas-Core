@@ -44,12 +44,12 @@ import static org.hamcrest.Matchers.*;
  *
  * @author ehugonnet
  */
-public class ConnexionSilverStatisticsManagerDAOTest/* extends AbstractJndiCase */ {
+public class ConnexionSilverStatisticsManagerDAOTest {
 
   private StatisticsConfig config;
   private JDBCMockObjectFactory factory;
   private JDBCTestModule module;
-  private static final String typeofStat = "Connexion";
+  private static final StatType typeofStat = StatType.Connexion;
 
   @Before
   public void initialiseConfig() throws Exception {

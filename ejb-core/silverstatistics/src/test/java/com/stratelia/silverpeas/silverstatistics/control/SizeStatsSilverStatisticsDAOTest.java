@@ -21,8 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.silverpeas.silverstatistics.ejb;
+package com.stratelia.silverpeas.silverstatistics.control;
 
+import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsDAO;
+import com.stratelia.silverpeas.silverstatistics.control.StatType;
 import com.mockrunner.jdbc.StatementResultSetHandler;
 import com.mockrunner.mock.jdbc.MockResultSet;
 import java.util.Map;
@@ -43,15 +45,14 @@ import static org.junit.Assert.*;
 /**
  * @author ehugonnet
  */
-public class AccessStatsSilverStatisticsDAOTest {
+public class SizeStatsSilverStatisticsDAOTest {
 
   private StatisticsConfig config;
   private JDBCMockObjectFactory factory;
   private JDBCTestModule module;
-  
-  private static final String typeofStat = "Access";
+  private static final StatType typeofStat = StatType.Size;
 
-  public AccessStatsSilverStatisticsDAOTest() {
+  public SizeStatsSilverStatisticsDAOTest() {
   }
 
   @Before
@@ -63,11 +64,11 @@ public class AccessStatsSilverStatisticsDAOTest {
     module.setExactMatch(true);
   }
 
- 
   @Test
   public void testInsertData() throws Exception {
     MockConnection connexion = factory.getMockConnection();
-    List<String> data = Lists.newArrayList("2011-04-17", "1308", "kmelia", "WA3", "kmelia36", "262");
+    List<String> data = Lists.newArrayList("2008-01-01", "/var/opt/silverpeas/silverpeas/data",
+        "459564912");
     SilverStatisticsDAO.insertDataStats(connexion, typeofStat, data, config);
     module.verifyAllStatementsClosed();
     List<?> statements = module.getPreparedStatements();
@@ -75,35 +76,33 @@ public class AccessStatsSilverStatisticsDAOTest {
     assertThat(statements, hasSize(1));
     MockPreparedStatement pstmt = module.getPreparedStatement(0);
     assertThat(pstmt.getSQL(), is(
-        "INSERT INTO SB_Stat_Access(dateStat,userId,peasType,spaceId,componentId,countAccess) VALUES(?,?,?,?,?,?)"));
+        "INSERT INTO SB_Stat_SizeDir(dateStat,fileDir,sizeDir) VALUES(?,?,?)"));
     Map parameters = pstmt.getParameterMap();
-    assertThat((String) parameters.get(1), is("2011-04-17"));
-    assertThat((Integer) parameters.get(2), is(1308));
-    assertThat((String) parameters.get(3), is("kmelia"));
-    assertThat((String) parameters.get(4), is("WA3"));
-    assertThat((String) parameters.get(5), is("kmelia36"));
-    assertThat((Long) parameters.get(6), is(262L));
+    assertThat((String) parameters.get(1), is("2008-01-01"));
+    assertThat((String) parameters.get(2), is("/var/opt/silverpeas/silverpeas/data"));
+    assertThat((Long) parameters.get(3), is(459564912L));
   }
 
-   @Test
+  @Test
   public void testPutDataStatsWithExistingData() throws Exception {
     MockConnection connexion = factory.getMockConnection();
     StatementResultSetHandler statementHandler = connexion.getStatementResultSetHandler();
     MockResultSet result = statementHandler.createResultSet();
     result.addRow(new Long[]{10000L});
     statementHandler.prepareGlobalResultSet(result);
-    List<String> data = Lists.newArrayList("2011-04-17", "1308", "kmelia", "WA3", "kmelia36", "262");
+    List<String> data = Lists.newArrayList("2008-01-01", "/var/opt/silverpeas/silverpeas/data",
+        "459564912");
     SilverStatisticsDAO.putDataStats(connexion, typeofStat, data, config);
     module.verifyAllStatementsClosed();
     List<?> statements = module.getPreparedStatements();
     assertNotNull(statements);
     assertThat(statements, hasSize(1));
     MockPreparedStatement pstmt = module.getPreparedStatement(0);
-    assertThat(pstmt.getSQL(),is("UPDATE SB_Stat_Access SET countAccess=countAccess+?  "
-        + "WHERE dateStat='2011-04-17' AND userId=1308 AND peasType='kmelia' AND spaceId='WA3' "
-        + "AND componentId='kmelia36'"));
+    assertThat(pstmt.getSQL(),
+        is(
+        "UPDATE SB_Stat_SizeDir SET sizeDir=sizeDir+?  WHERE dateStat='2008-01-01' AND fileDir='/var/opt/silverpeas/silverpeas/data'"));
     Map parameters = pstmt.getParameterMap();
-    assertThat((Long) parameters.get(1), is(262L));
+    assertThat((Long) parameters.get(1), is(459564912L));
   }
 
   @Test
@@ -112,21 +111,20 @@ public class AccessStatsSilverStatisticsDAOTest {
     StatementResultSetHandler statementHandler = connexion.getStatementResultSetHandler();
     MockResultSet emptyResult = statementHandler.createResultSet();
     statementHandler.prepareGlobalResultSet(emptyResult);
-    List<String> data = Lists.newArrayList("2011-04-17", "1308", "kmelia", "WA3", "kmelia36", "262");
+    List<String> data = Lists.newArrayList("2008-01-01", "/var/opt/silverpeas/silverpeas/data",
+        "459564912");
     SilverStatisticsDAO.putDataStats(connexion, typeofStat, data, config);
     module.verifyAllStatementsClosed();
     List<?> statements = module.getPreparedStatements();
     assertNotNull(statements);
     assertThat(statements, hasSize(1));
     MockPreparedStatement pstmt = module.getPreparedStatement(0);
-    assertThat(pstmt.getSQL(), is("INSERT INTO SB_Stat_Access(dateStat,userId,peasType,spaceId,"
-        + "componentId,countAccess) VALUES(?,?,?,?,?,?)"));
+    assertThat(pstmt.getSQL(), is(
+        "INSERT INTO SB_Stat_SizeDir(dateStat,fileDir,sizeDir) VALUES(?,?,?)"));
     Map parameters = pstmt.getParameterMap();
-    assertThat((String) parameters.get(1), is("2011-04-17"));
-    assertThat((Integer) parameters.get(2), is(1308));
-    assertThat((String) parameters.get(3), is("kmelia"));
-    assertThat((String) parameters.get(4), is("WA3"));
-    assertThat((String) parameters.get(5), is("kmelia36"));
-    assertThat((Long) parameters.get(6), is(262L));
+    assertThat((String) parameters.get(1), is("2008-01-01"));
+    assertThat((String) parameters.get(2), is("/var/opt/silverpeas/silverpeas/data"));
+    assertThat((Long) parameters.get(3), is(459564912L));
   }
+  
 }

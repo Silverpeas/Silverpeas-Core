@@ -28,5 +28,5 @@ package com.stratelia.silverpeas.silverstatistics.model;
  * @author ehugonnet
  */
 public enum StatisticsModule {
-  Connexion ,Size , Access, Volume;
+  Connexion ,Size , Access, Volume
 }

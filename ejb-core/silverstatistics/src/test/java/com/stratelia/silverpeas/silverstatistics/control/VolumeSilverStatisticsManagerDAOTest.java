@@ -44,13 +44,13 @@ import static org.hamcrest.Matchers.*;
  *
  * @author ehugonnet
  */
-public class VolumeSilverStatisticsManagerDAOTest/* extends AbstractJndiCase */{
+public class VolumeSilverStatisticsManagerDAOTest {
 
   private StatisticsConfig config;
   private JDBCMockObjectFactory factory;
   private JDBCTestModule module;
   
-  private static final String typeofStat = "Volume";
+  private static final StatType typeofStat = StatType.Volume;
 
   @Before
   public void initialiseConfig() throws Exception {

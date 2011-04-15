@@ -28,5 +28,5 @@ package com.stratelia.silverpeas.silverstatistics.model;
  * @author ehugonnet
  */
 public enum StatisticMode {
-    Add, Replace;
+    Add, Replace
 }

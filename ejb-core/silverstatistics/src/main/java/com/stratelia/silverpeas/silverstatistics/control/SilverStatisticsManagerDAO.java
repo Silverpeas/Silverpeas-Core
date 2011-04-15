@@ -63,10 +63,10 @@ public class SilverStatisticsManagerDAO {
    * @param conf   @throws SQLException
    * @see
    */
-  static void insertDataStatsCumul(Connection con, String statsType,
+  static void insertDataStatsCumul(Connection con, StatType statsType,
       List<String> valueKeys, StatisticsConfig conf) throws SQLException, IOException {
-    StringBuffer insertStatementBuf = new StringBuffer("INSERT INTO "
-        + conf.getTableName(statsType) + "Cumul" + "(");
+    StringBuffer insertStatementBuf = new StringBuffer(
+        "INSERT INTO " + conf.getTableName(statsType) + "Cumul" + "(");
     String insertStatement;
     PreparedStatement prepStmt = null;
     int i = 0;
@@ -169,7 +169,7 @@ public class SilverStatisticsManagerDAO {
    * @throws SQLException
    * @see
    */
-  public static void putDataStatsCumul(Connection con, String statsType,
+  public static void putDataStatsCumul(Connection con, StatType statsType,
       List<String> valueKeys, StatisticsConfig conf) throws SQLException, IOException {
     StringBuffer selectStatementBuf = new StringBuffer("SELECT ");
     StringBuffer updateStatementBuf = new StringBuffer("UPDATE ");
@@ -340,7 +340,7 @@ public class SilverStatisticsManagerDAO {
    * @throws SQLException
    * @see
    */
-  public static void makeStatCumul(Connection con, String statsType,
+  public static void makeStatCumul(Connection con, StatType statsType,
       StatisticsConfig conf) throws SQLException, IOException {
     StringBuffer selectStatementBuf = new StringBuffer("SELECT * FROM "
         + conf.getTableName(statsType));
@@ -420,7 +420,7 @@ public class SilverStatisticsManagerDAO {
    * @throws SQLException
    * @see
    */
-  static void deleteTablesOfTheDay(Connection con, String statsType,
+  static void deleteTablesOfTheDay(Connection con, StatType statsType,
       StatisticsConfig conf) throws SQLException {
     String deleteStatement = "DELETE FROM " + conf.getTableName(statsType);
     PreparedStatement prepStmt = null;
@@ -445,7 +445,7 @@ public class SilverStatisticsManagerDAO {
    * @throws SQLException
    * @see
    */
-  static void purgeTablesCumul(Connection con, String statsType, StatisticsConfig conf) throws
+  static void purgeTablesCumul(Connection con, StatType statsType, StatisticsConfig conf) throws
       SQLException {
     StringBuilder deleteStatementBuf = new StringBuilder("DELETE FROM " + conf.getTableName(
         statsType) + "Cumul WHERE dateStat<");
@@ -492,7 +492,7 @@ public class SilverStatisticsManagerDAO {
   public static void makeStatAllCumul(StatisticsConfig conf) {
     Connection con = getConnection();
     if (conf != null && con != null && conf.isValidConfigFile()) {
-      for (String currentType :
+      for (StatType currentType :
           conf.getAllTypes()) {
         try {
           purgeTablesCumul(con, currentType, conf);
