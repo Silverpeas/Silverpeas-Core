@@ -47,9 +47,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<!--Load the resource bundle for the page -->
-<view:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle" />
-
 <%
 MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 if (m_MainSessionCtrl == null)
@@ -64,12 +61,15 @@ String 					language 			= m_MainSessionCtrl.getFavoriteLanguage();
 ResourceLocator 		message 			= new ResourceLocator("com.silverpeas.portlets.multilang.portletsBundle", language);
 String 					m_context 			= GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 %>
+
+<fmt:setLocale value="<%= language %>"/>
+<!--Load the resource bundle for the page -->
+<view:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle" />
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></meta>
     <title><fmt:message key="portlets.homepage"/></title>
 	<view:looknfeel />
-
     <c:set var="list" value="${sessionScope['com.sun.portal.portletcontainer.markupHeaders']}" />
     <c:forEach items="${list}" var="portlet">
         <c:out value="${portlet}" escapeXml="false" />
