@@ -31,21 +31,23 @@ import java.util.List;
  */
 public class Axis implements java.io.Serializable {
 
+  private static final long serialVersionUID = 5450029132820518355L;
+
   /**
-   * The object which contains attributs of an axe
+   * The object which contains attributes of an axe
    */
   private AxisHeader header = null;
 
   /**
    * The list which contains sorted values of a tree
    */
-  private List values = null;
+  private List<Value> values = null;
 
   //
   // Constructor
   //
 
-  public Axis(AxisHeader header, List values) {
+  public Axis(AxisHeader header, List<Value> values) {
     this.header = header;
     this.values = values;
   }
@@ -66,7 +68,7 @@ public class Axis implements java.io.Serializable {
    * Returns the sorted List containing values of a tree.
    * @return the List
    */
-  public List getValues() {
+  public List<Value> getValues() {
     return this.values;
   }
 

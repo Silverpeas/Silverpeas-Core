@@ -27,31 +27,34 @@ package com.silverpeas.pdcSubscriptionPeas.control;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.ejb.RemoveException;
 
+import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
+import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBm;
+import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBmHome;
+import com.silverpeas.pdcSubscription.model.PDCSubscription;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.classifyEngine.Criteria;
+import com.stratelia.silverpeas.pdc.control.PdcBm;
+import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
+import com.stratelia.silverpeas.pdc.model.AxisHeader;
+import com.stratelia.silverpeas.pdc.model.PdcException;
+import com.stratelia.silverpeas.pdc.model.Value;
+import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.subscribe.control.SubscribeBm;
 import com.stratelia.webactiv.util.subscribe.control.SubscribeBmHome;
-
-import com.stratelia.silverpeas.peasCore.*;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
-import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
-import com.stratelia.silverpeas.pdc.model.AxisHeader;
-import com.stratelia.silverpeas.pdc.model.PdcException;
-import com.stratelia.silverpeas.classifyEngine.Criteria;
-import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBm;
-import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBmHome;
-import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
-import com.silverpeas.pdcSubscription.model.PDCSubscription;
 
 public class PdcSubscriptionSessionController extends AbstractComponentSessionController {
 
@@ -121,18 +124,16 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     return nodeBm;
   }
 
-  public Collection getUserSubscribe(String userId) {
-    Collection subscribe = new ArrayList();
-    if (userId == null || "".equals(userId) || ("null".equals(userId)))
+  public Collection<Collection<NodeDetail>> getUserSubscribe(String userId) {
+    Collection<Collection<NodeDetail>> subscribe = new ArrayList<Collection<NodeDetail>>();
+    if (!StringUtil.isDefined(userId)) {
       userId = getUserId();
+    }
     try {
-      Collection list = getSubscribeBm().getUserSubscribePKs(userId);
-      Iterator i = list.iterator();
-      while (i.hasNext()) {
-        NodePK pk = (NodePK) i.next();
-
+      Collection<NodePK> list = getSubscribeBm().getUserSubscribePKs(userId);
+      for (NodePK pk : list) {
         try {
-          Collection path = getNodeBm().getPath(pk);
+          Collection<NodeDetail> path = getNodeBm().getPath(pk);
           subscribe.add(path);
         } catch (RemoteException e) {
           // User is subscribe to a non existing component or topic
@@ -164,12 +165,12 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     }
   }
 
-  public ArrayList getUserPDCSubscription() throws RemoteException {
+  public List<PDCSubscription> getUserPDCSubscription() throws RemoteException {
     initEJB();
     return scBm.getPDCSubscriptionByUserId(Integer.parseInt(getUserId()));
   }
 
-  public ArrayList getUserPDCSubscription(int userId) throws RemoteException {
+  public List<PDCSubscription> getUserPDCSubscription(int userId) throws RemoteException {
     initEJB();
     return scBm.getPDCSubscriptionByUserId(userId);
   }
@@ -205,7 +206,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     return axisHeader;
   }
 
-  public List getFullPath(String valueId, String treeId) throws PdcException {
+  public List<Value> getFullPath(String valueId, String treeId) throws PdcException {
     return getPdcBm().getFullPath(valueId, treeId);
   }
 
@@ -224,13 +225,11 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     return newValueId;
   }
 
-  public List getPathCriterias(List searchCriterias) throws Exception {
-    ArrayList pathCriteria = new ArrayList();
+  public List<List<Value>> getPathCriterias(List<Criteria> searchCriterias) throws Exception {
+    List<List<Value>> pathCriteria = new ArrayList<List<Value>>();
 
     if (searchCriterias.size() > 0) {
-      for (int i = 0; i < searchCriterias.size(); i++) {
-        Criteria sc = (Criteria) searchCriterias.get(i);
-
+      for (Criteria sc : searchCriterias) {
         int searchAxisId = sc.getAxisId();
         String searchValue = getLastValueOf(sc.getValue());
         AxisHeader axis = getAxisHeader(new Integer(searchAxisId).toString());
@@ -240,7 +239,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
           treeId = new Integer(axis.getRootId()).toString();
         }
 
-        List fullPath = new ArrayList();
+        List<Value> fullPath = new ArrayList<Value>();
         if (searchValue != null && treeId != null) {
           fullPath = getFullPath(searchValue, treeId);
         }

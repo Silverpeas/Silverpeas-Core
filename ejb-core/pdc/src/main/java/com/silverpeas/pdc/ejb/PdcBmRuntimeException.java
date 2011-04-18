@@ -28,6 +28,8 @@ import com.stratelia.webactiv.util.exception.*;
 
 public class PdcBmRuntimeException extends SilverpeasRuntimeException {
 
+  private static final long serialVersionUID = 6109210792330849912L;
+
   public PdcBmRuntimeException(String callingClass, int errorLevel,
       String message) {
     super(callingClass, errorLevel, message);

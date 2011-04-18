@@ -28,21 +28,24 @@
  */
 package com.silverpeas.pdcSubscription.model;
 
-import java.util.ArrayList;
+import java.util.List;
+
+import com.stratelia.silverpeas.classifyEngine.Criteria;
 
 public class PDCSubscription implements java.io.Serializable, Cloneable {
 
+  private static final long serialVersionUID = 7886692014029046614L;
   public static final int NULL_ID = -1;
 
   private int id = NULL_ID;
   private String name;
-  private ArrayList pdcContext;
+  private List<Criteria> pdcContext;
   private int ownerId = NULL_ID;
 
   protected PDCSubscription() {
   }
 
-  public PDCSubscription(int id, String name, ArrayList pdcContext, int ownerId) {
+  public PDCSubscription(int id, String name, List<Criteria> pdcContext, int ownerId) {
     this.id = id;
     this.name = name;
     this.pdcContext = pdcContext;
@@ -65,11 +68,11 @@ public class PDCSubscription implements java.io.Serializable, Cloneable {
     this.name = name;
   }
 
-  public ArrayList getPdcContext() {
+  public List<Criteria> getPdcContext() {
     return pdcContext;
   }
 
-  public void setPdcContext(ArrayList pdcContext) {
+  public void setPdcContext(List<Criteria> pdcContext) {
     this.pdcContext = pdcContext;
   }
 

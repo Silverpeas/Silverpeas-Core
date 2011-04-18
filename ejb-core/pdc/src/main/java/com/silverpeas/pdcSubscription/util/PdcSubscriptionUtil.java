@@ -28,6 +28,7 @@ import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
 import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBm;
 import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBmHome;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
+import com.stratelia.silverpeas.classifyEngine.Value;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 
 import java.rmi.RemoteException;
@@ -70,7 +71,7 @@ public class PdcSubscriptionUtil {
     scBm.updatePDCSubscription(subscription);
   }
 
-  public void checkSubscriptions(List classifyValues, String componentId,
+  public void checkSubscriptions(List<? extends Value> classifyValues, String componentId,
       int silverObjectid) throws RemoteException {
     initEJB();
     scBm.checkSubscriptions(classifyValues, componentId, silverObjectid);
@@ -82,8 +83,8 @@ public class PdcSubscriptionUtil {
     scBm.checkAxisOnDelete(axisId, axisName);
   }
 
-  public void checkValueOnDelete(int axiId, String axisName, List oldPath,
-      List newPath, List pathInfo) throws RemoteException {
+  public void checkValueOnDelete(int axiId, String axisName, List<String> oldPath,
+      List<String> newPath, List<com.stratelia.silverpeas.pdc.model.Value> pathInfo) throws RemoteException {
     initEJB();
     scBm.checkValueOnDelete(axiId, axisName, oldPath, newPath, pathInfo);
   }

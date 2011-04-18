@@ -881,9 +881,9 @@ public class ThesaurusBm {
       IdPK pk = new IdPK();
       Collection<Jargon> jargons = daoJ.findByWhereClause(pk, " idUser='" + idUser
           + "'" + " AND type=0");
-      Iterator i = jargons.iterator();
+      Iterator<Jargon> i = jargons.iterator();
       if (i.hasNext()) {
-        jargon = (Jargon) i.next();
+        jargon = i.next();
       }
 
     } catch (PersistenceException e) {

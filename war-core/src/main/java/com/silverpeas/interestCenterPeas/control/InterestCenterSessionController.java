@@ -26,7 +26,7 @@ package com.silverpeas.interestCenterPeas.control;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
 
 import javax.ejb.RemoveException;
 
@@ -77,7 +77,7 @@ public class InterestCenterSessionController extends AbstractComponentSessionCon
   /**
    * Method getICByUserId returns ArrayList of all InterestCenter objects for user given by userId
    */
-  public ArrayList getICByUserId() throws RemoteException {
+  public List<InterestCenter> getICByUserId() throws RemoteException {
     initEJB();
     return icEjb.getICByUserID(Integer.parseInt(getUserId()));
   }
@@ -111,9 +111,9 @@ public class InterestCenterSessionController extends AbstractComponentSessionCon
    */
   public void removeICByPKs(String[] iDs) throws RemoteException {
     initEJB();
-    ArrayList pkToRemove = new ArrayList();
-    for (int i = 0; i < iDs.length; i++) {
-      pkToRemove.add(Integer.valueOf(iDs[i]));
+    List<Integer> pkToRemove = new ArrayList<Integer>();
+    for (String id : iDs) {
+      pkToRemove.add(Integer.valueOf(id));
     }
     icEjb.removeICByPK(pkToRemove);
   }
@@ -127,12 +127,8 @@ public class InterestCenterSessionController extends AbstractComponentSessionCon
   }
 
   public boolean isICExists(String nameIC) throws RemoteException {
-    ArrayList icList;
-    InterestCenter ic;
-    icList = getICByUserId();
-    Iterator it = icList.iterator();
-    while (it.hasNext()) {
-      ic = (InterestCenter) it.next();
+    List<InterestCenter> icList = getICByUserId();
+    for (InterestCenter ic : icList) {
       if (nameIC.equals(ic.getName())) {
         return true;
       }

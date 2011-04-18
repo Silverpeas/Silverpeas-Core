@@ -32,6 +32,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class PdcSubscriptionRuntimeException extends SilverpeasRuntimeException {
 
+  private static final long serialVersionUID = -4560552411663289681L;
+
   public PdcSubscriptionRuntimeException(String callingClass, int level,
       String message) {
     super(callingClass, ERROR, message);

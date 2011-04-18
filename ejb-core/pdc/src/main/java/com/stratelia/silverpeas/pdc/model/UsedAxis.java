@@ -36,6 +36,8 @@ import com.stratelia.webactiv.persistence.*;
  */
 public class UsedAxis extends SilverpeasBean implements java.io.Serializable {
 
+  private static final long serialVersionUID = -4027631654408246315L;
+
   /**
    * The Job'Peas instance which used this axis
    */

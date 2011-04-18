@@ -32,6 +32,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class DAOException extends SilverpeasException {
 
+  private static final long serialVersionUID = 295595784957874204L;
+
   public DAOException(String callingClass, String message) {
     super(callingClass, ERROR, message);
   }

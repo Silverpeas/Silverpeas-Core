@@ -60,6 +60,7 @@ import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.security.ComponentSecurity;
+import com.stratelia.silverpeas.classifyEngine.Criteria;
 import com.stratelia.silverpeas.containerManager.ContainerPeas;
 import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
 import com.stratelia.silverpeas.containerManager.ContainerWorkspace;
@@ -1367,7 +1368,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return axisHeader;
   }
 
-  public List getFullPath(String valueId, String treeId) throws PdcException {
+  public List<Value> getFullPath(String valueId, String treeId) throws PdcException {
     return getPdcBm().getFullPath(valueId, treeId);
   }
 
@@ -1753,7 +1754,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
   }
 
-  public ArrayList getICenters() {
+  public List<InterestCenter> getICenters() {
     try {
       int id = Integer.parseInt(getUserId());
       return (new InterestCenterUtil()).getICByUserId(id);
@@ -1769,10 +1770,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       int id = Integer.parseInt(icId);
       InterestCenter ic = (new InterestCenterUtil()).getICByID(id);
       getSearchContext().clearCriterias();
-      List<SearchCriteria> criterias = ic.getPdcContext();
-      for (SearchCriteria criteria :
-          criterias) {
-        searchContext.addCriteria(criteria);
+      List<Criteria> criterias = ic.getPdcContext();
+      for (Criteria criteria : criterias) {
+        searchContext.addCriteria(new SearchCriteria(criteria.getAxisId(), criteria.getValue()));
       }
       return ic;
     } catch (Exception e) {

@@ -58,20 +58,20 @@ public class InvitationService {
     Connection connection = null;
     try {
       connection = getConnection();
-      if ((invitationDao.isExists(connection, invitation.getSenderId(), invitation.getReceiverId()) || invitationDao
-          .isExists(connection, invitation.getReceiverId(), invitation.getSenderId()))) {
+      boolean alreadySent = invitationDao.isExists(connection, invitation.getSenderId(), invitation.getReceiverId()) || invitationDao
+      .isExists(connection, invitation.getReceiverId(), invitation.getSenderId());
+      if (alreadySent) {
         resultRnvitation = -1;
-      } else if (relationShipDao.isInRelationShip(connection, invitation.getSenderId(), invitation.
-          getReceiverId())) {
-        resultRnvitation = -2;
       } else {
-        resultRnvitation = invitationDao.createInvitation(connection, invitation);
+        if (relationShipDao.isInRelationShip(connection, invitation.getSenderId(), invitation.getReceiverId())) {
+          resultRnvitation = -2;
+        } else {
+          resultRnvitation = invitationDao.createInvitation(connection, invitation);
+        }
       }
-      connection.commit();
     } catch (Exception ex) {
       SilverTrace.error("Silverpeas.Bus.SocialNetwork.Invitation", "InvitationService.invite", "",
           ex);
-      DBUtil.rollback(connection);
     } finally {
       DBUtil.close(connection);
     }
@@ -88,12 +88,10 @@ public class InvitationService {
     try {
       connection = getConnection();
       invitationDao.deleteInvitation(connection, id);
-      connection.commit();
     } catch (Exception ex) {
       SilverTrace.error("Silverpeas.Bus.SocialNetwork.Invitation",
           "InvitationService.ignoreInvitation", "",
           ex);
-      DBUtil.rollback(connection);
     } finally {
       DBUtil.close(connection);
     }
@@ -111,6 +109,7 @@ public class InvitationService {
     Connection connection = null;
     try {
       connection = getConnection();
+      connection.setAutoCommit(false);
       Invitation invitation = invitationDao.getInvitation(connection, idInvitation);
       if (invitation == null) {
         resultAccepteInvitation = -1;
@@ -160,12 +159,10 @@ public class InvitationService {
     try {
       connection = getConnection();
       invitations = invitationDao.getAllMyInvitationsSent(connection, myId);
-      connection.commit();
     } catch (Exception ex) {
       SilverTrace.error("Silverpeas.Bus.SocialNetwork.Invitation",
           "InvitationService.ignoreInvitation", "",
           ex);
-      DBUtil.rollback(connection);
     } finally {
       DBUtil.close(connection);
     }
@@ -184,12 +181,10 @@ public class InvitationService {
     try {
       connection = getConnection();
       invitations = invitationDao.getAllMyInvitationsReceive(connection, myId);
-      connection.commit();
     } catch (Exception ex) {
       SilverTrace.error("Silverpeas.Bus.SocialNetwork.Invitation",
           "InvitationService.ignoreInvitation", "",
           ex);
-      DBUtil.rollback(connection);
     } finally {
       DBUtil.close(connection);
     }
@@ -204,21 +199,18 @@ public class InvitationService {
    */
   public Invitation getInvitation(int id) {
     Connection connection = null;
-    Invitation invitation = new Invitation();
 
     try {
       connection = getConnection();
-      invitation = invitationDao.getInvitation(connection, id);
-      connection.commit();
+      return invitationDao.getInvitation(connection, id);
     } catch (Exception ex) {
       SilverTrace.error("Silverpeas.Bus.SocialNetwork.Invitation",
           "InvitationService.ignoreInvitation", "",
           ex);
-      DBUtil.rollback(connection);
     } finally {
       DBUtil.close(connection);
     }
-    return invitation;
+    return null;
   }
 
   /**
@@ -229,21 +221,18 @@ public class InvitationService {
    */
   public Invitation getInvitation(int senderId, int receiverId) {
     Connection connection = null;
-    Invitation invitation = new Invitation();
 
     try {
       connection = getConnection();
-      invitation = invitationDao.getInvitation(connection, senderId, receiverId);
-      connection.commit();
+      return invitationDao.getInvitation(connection, senderId, receiverId);
     } catch (Exception ex) {
       SilverTrace.error("Silverpeas.Bus.SocialNetwork.Invitation",
           "InvitationService.ignoreInvitation", "",
           ex);
-      DBUtil.rollback(connection);
     } finally {
       DBUtil.close(connection);
     }
-    return invitation;
+    return null;
   }
 
   /**
@@ -254,8 +243,6 @@ public class InvitationService {
    */
 
   private Connection getConnection() throws UtilException, SQLException {
-    Connection connection = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-    connection.setAutoCommit(false);
-    return connection;
+    return DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
   }
 }

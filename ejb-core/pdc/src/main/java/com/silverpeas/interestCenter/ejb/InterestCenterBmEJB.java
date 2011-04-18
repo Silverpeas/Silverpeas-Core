@@ -28,19 +28,20 @@
  */
 package com.silverpeas.interestCenter.ejb;
 
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.util.List;
+
+import javax.ejb.CreateException;
+import javax.ejb.EJBException;
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
+
 import com.silverpeas.interestCenter.InterestCenterRuntimeException;
 import com.silverpeas.interestCenter.model.InterestCenter;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
-import javax.ejb.SessionBean;
-import javax.ejb.EJBException;
-import javax.ejb.SessionContext;
-import javax.ejb.CreateException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.sql.Connection;
 
 /**
  * InterestCenterBm EJB implementation for detailed comments for each method see remote interface
@@ -49,11 +50,12 @@ import java.sql.Connection;
  */
 public class InterestCenterBmEJB implements SessionBean {
 
-  public ArrayList getICByUserID(int userID) {
+  private static final long serialVersionUID = -5867239072798551540L;
+
+  public List<InterestCenter> getICByUserID(int userID) {
     Connection con = openConnection();
-    ArrayList result = null;
     try {
-      result = InterestCenterDAO.getICByUserID(con, userID);
+      return InterestCenterDAO.getICByUserID(con, userID);
     } catch (Exception e) {
       throw new InterestCenterRuntimeException(
           "InterestCenterBmEJB.getICByUserID()",
@@ -61,14 +63,12 @@ public class InterestCenterBmEJB implements SessionBean {
     } finally {
       closeConnection(con);
     }
-    return result;
   }
 
   public InterestCenter getICByID(int icPK) {
     Connection con = openConnection();
-    InterestCenter result = null;
     try {
-      result = InterestCenterDAO.getICByPK(con, icPK);
+      return InterestCenterDAO.getICByPK(con, icPK);
     } catch (Exception e) {
       throw new InterestCenterRuntimeException(
           "InterestCenterBmEJB.getICByID()",
@@ -76,14 +76,12 @@ public class InterestCenterBmEJB implements SessionBean {
     } finally {
       closeConnection(con);
     }
-    return result;
   }
 
   public int createIC(InterestCenter ic) {
     Connection con = openConnection();
-    int result = -1;
     try {
-      result = InterestCenterDAO.createIC(con, ic);
+      return InterestCenterDAO.createIC(con, ic);
     } catch (Exception e) {
       throw new InterestCenterRuntimeException(
           "InterestCenterBmEJB.createIC()", "InterestCenter.CANNOT_CREATE_IC",
@@ -91,7 +89,6 @@ public class InterestCenterBmEJB implements SessionBean {
     } finally {
       closeConnection(con);
     }
-    return result;
   }
 
   public void updateIC(InterestCenter ic) {
@@ -107,7 +104,7 @@ public class InterestCenterBmEJB implements SessionBean {
     }
   }
 
-  public void removeICByPK(ArrayList pks) {
+  public void removeICByPK(List<Integer> pks) {
     Connection con = openConnection();
     try {
       InterestCenterDAO.removeICByPK(con, pks);

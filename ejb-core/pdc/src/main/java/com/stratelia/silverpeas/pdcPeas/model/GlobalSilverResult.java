@@ -23,10 +23,7 @@
  */
 package com.stratelia.silverpeas.pdcPeas.model;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
-
-import javax.imageio.ImageIO;
 
 import com.silverpeas.util.ImageUtil;
 import com.silverpeas.util.StringUtil;

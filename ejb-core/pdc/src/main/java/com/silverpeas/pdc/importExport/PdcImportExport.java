@@ -218,7 +218,7 @@ public class PdcImportExport {
       listAxisType.add(axisType);
       // Récupération de la totalité de l'arbre de l'axe avec la méthode
       // récursive getValueTree
-      List listPdcValueType = getValueTree(axisId, valueRoot.getPK().getId());
+      List<PdcValueType> listPdcValueType = getValueTree(axisId, valueRoot.getPK().getId());
       axisType.setListPdcValueType(listPdcValueType);
     }
     return pdcType;

@@ -29,7 +29,7 @@
 package com.silverpeas.interestCenter.ejb;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
+import java.util.List;
 
 import com.silverpeas.interestCenter.model.InterestCenter;
 
@@ -41,7 +41,7 @@ public interface InterestCenterBm extends javax.ejb.EJBObject {
   /**
    * @return a list of <code>InterestCenter</code>s by user id provided
    */
-  public ArrayList getICByUserID(int userID) throws RemoteException;
+  public List<InterestCenter> getICByUserID(int userID) throws RemoteException;
 
   /**
    * @param icPK <code>InterestCenter</code> id
@@ -63,7 +63,7 @@ public interface InterestCenterBm extends javax.ejb.EJBObject {
    * @param pks ArrayList of <code>java.lang.Integer</code> - id's of <code>InterestCenter</code>s
    * to be deleted
    */
-  public void removeICByPK(ArrayList pks) throws RemoteException;
+  public void removeICByPK(List<Integer> pks) throws RemoteException;
 
   /**
    * @param pk an id of <code>InterestCenter</code> to be deleted

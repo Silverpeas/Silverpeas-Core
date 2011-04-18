@@ -22,7 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// TODO : reporter dans CVS (done)
 package com.stratelia.silverpeas.treeManager.control;
 
 import java.sql.*;

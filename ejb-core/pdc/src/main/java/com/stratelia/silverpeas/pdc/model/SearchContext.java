@@ -25,6 +25,7 @@
 package com.stratelia.silverpeas.pdc.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -45,7 +46,7 @@ public class SearchContext implements ContainerPositionInterface, java.io.Serial
     this.criterias = criterias;
   }
 
-  public ArrayList<SearchCriteria> getCriterias() {
+  public List<SearchCriteria> getCriterias() {
     return criterias;
   }
 
