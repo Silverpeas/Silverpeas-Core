@@ -41,6 +41,8 @@ import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.PersistenceException;
 import org.exolab.castor.jdo.QueryResults;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.DataRecordUtil;
 import com.silverpeas.form.Field;
@@ -64,6 +66,7 @@ import com.silverpeas.workflow.api.instance.Question;
 import com.silverpeas.workflow.api.instance.UpdatableProcessInstance;
 import com.silverpeas.workflow.api.model.Form;
 import com.silverpeas.workflow.api.model.Input;
+import com.silverpeas.workflow.api.model.Item;
 import com.silverpeas.workflow.api.model.Presentation;
 import com.silverpeas.workflow.api.model.ProcessModel;
 import com.silverpeas.workflow.api.model.QualifiedUsers;
@@ -283,18 +286,34 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
       for (TimeOutAction timeOutAction : timeOutActions) {
         if (timeOutAction.getOrder() == order) {
           Calendar now = Calendar.getInstance();
-          String delay = timeOutAction.getDelay();
-          if ((StringUtil.isDefined(delay)) && (delay.endsWith("d"))) {
-            now.add(Calendar.DAY_OF_YEAR, Integer.parseInt(delay.substring(0, delay.length() - 1)));
-            timeOutDate = now.getTime();
-          } else if ((StringUtil.isDefined(delay)) && (delay.endsWith("h"))) {
-            now.add(Calendar.HOUR, Integer.parseInt(delay.substring(0, delay.length() - 1)));
-            timeOutDate = now.getTime();
-          } else {
-            SilverTrace.warn("workflowEngine", "ProcessInstanceImpl.addActiveState",
-                "root.ERR_BAD_DELAY_FORMAT", "delay =" + delay);
+
+          // Check if an item has been mapped to timeoutdate
+          Item dateItem = timeOutAction.getDateItem();
+          if (dateItem != null) {
+            try {
+              DateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
+              Field dateItemField = getField(dateItem.getName());
+              timeOutDate = formatter.parse(dateItemField.getValue());
+            } catch (Exception e) {
+              SilverTrace.warn("workflowEngine", "ProcessInstanceImpl.computeTimeOutDate",
+                  "root.ERR_BAD_DATE_ITEM", "date item =" + dateItem.getName());
+            }
           }
 
+          // if no item set, then use delay to compute next timeout
+          else {
+            String delay = timeOutAction.getDelay();
+            if ((StringUtil.isDefined(delay)) && (delay.endsWith("d"))) {
+              now.add(Calendar.DAY_OF_YEAR, Integer.parseInt(delay.substring(0, delay.length() - 1)));
+              timeOutDate = now.getTime();
+            } else if ((StringUtil.isDefined(delay)) && (delay.endsWith("h"))) {
+              now.add(Calendar.HOUR, Integer.parseInt(delay.substring(0, delay.length() - 1)));
+              timeOutDate = now.getTime();
+            } else {
+              SilverTrace.warn("workflowEngine", "ProcessInstanceImpl.computeTimeOutDate",
+                  "root.ERR_BAD_DELAY_FORMAT", "delay =" + delay);
+            }
+          }
           break;
         }
       }

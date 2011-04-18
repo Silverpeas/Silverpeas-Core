@@ -29,11 +29,11 @@
 
     <class name="com.silverpeas.workflow.engine.model.ProcessModelImpl">
         <map-to xml="processModel" />
-        
+
         <field name="name" type="string">
             <bind-xml name="name" node="attribute" />
         </field>
-        <field name="labels" type="com.silverpeas.workflow.api.model.ContextualDesignation" collection="arraylist" 
+        <field name="labels" type="com.silverpeas.workflow.api.model.ContextualDesignation" collection="arraylist"
                get-method="iterateLabel" set-method="addLabel" create-method="createDesignation">
             <bind-xml name="label" node="element" />
         </field>
@@ -75,7 +75,7 @@
             <bind-xml name="forms" node="element" />
         </field>
     </class>
-    
+
     <!-- Implements ContextualDesignation -->
     <class name="com.silverpeas.workflow.engine.model.SpecificLabel">
         <field name="content" type="string">
@@ -88,19 +88,19 @@
             <bind-xml name="lang" node="attribute" />
         </field>
     </class>
-    
+
     <class name="com.silverpeas.workflow.engine.model.RolesImpl">
         <field name="roleList" type="com.silverpeas.workflow.api.model.Role" collection="arraylist"
                get-method="iterateRole" set-method="addRole" create-method="createRole">
             <bind-xml name="role" node="element" />
         </field>
     </class>
-    
+
     <class name="com.silverpeas.workflow.engine.model.RoleImpl">
         <field name="name" type="string">
             <bind-xml name="name" node="attribute" />
         </field>
-        <field name="labels" type="com.silverpeas.workflow.api.model.ContextualDesignation" collection="arraylist" 
+        <field name="labels" type="com.silverpeas.workflow.api.model.ContextualDesignation" collection="arraylist"
                get-method="iterateLabel" set-method="addLabel" create-method="createDesignation">
             <bind-xml name="label" node="element" />
         </field>
@@ -109,18 +109,18 @@
             <bind-xml name="description" node="element" />
         </field>
     </class>
-    
+
     <class name="com.silverpeas.workflow.engine.model.PresentationImpl">
-        <field name="titles" type="com.silverpeas.workflow.api.model.ContextualDesignation" collection="arraylist" 
+        <field name="titles" type="com.silverpeas.workflow.api.model.ContextualDesignation" collection="arraylist"
                get-method="iterateTitle" set-method="addTitle" create-method="createDesignation">
             <bind-xml name="title" node="element" />
         </field>
-        <field name="columns" type="com.silverpeas.workflow.api.model.Columns" collection="vector"  
+        <field name="columns" type="com.silverpeas.workflow.api.model.Columns" collection="vector"
                get-method="iterateColumns" set-method="addColumns" create-method="createColumns">
             <bind-xml name="columns" node="element"/>
         </field>
     </class>
-    
+
     <class name="com.silverpeas.workflow.engine.model.ColumnsImpl">
         <field name="column" type="com.silverpeas.workflow.engine.model.ColumnImpl"
             collection="vector" get-method="iterateColumn" set-method="addColumn"
@@ -131,7 +131,7 @@
             <bind-xml name="role" node="attribute" />
         </field>
     </class>
-    
+
     <class name="com.silverpeas.workflow.engine.model.ColumnImpl">
         <field name="item" type="com.silverpeas.workflow.api.model.Item">
             <bind-xml name="item" node="attribute" reference="true"/>
@@ -140,12 +140,12 @@
 
     <class name="com.silverpeas.workflow.engine.model.ParticipantsImpl">
         <field name="participantList"
-            type="com.silverpeas.workflow.api.model.Participant" collection="arraylist" 
+            type="com.silverpeas.workflow.api.model.Participant" collection="arraylist"
             get-method="iterateParticipant" set-method="addParticipant" create-method="createParticipant">
             <bind-xml name="participant" node="element" />
         </field>
     </class>
-    
+
     <class name="com.silverpeas.workflow.engine.model.ParticipantImpl" identity="name">
         <field name="name" type="string">
             <bind-xml name="name" node="attribute" />
@@ -153,7 +153,7 @@
         <field name="resolvedState" type="string">
             <bind-xml name="resolvedState" node="attribute" />
         </field>
-        <field name="labels" type="com.silverpeas.workflow.api.model.ContextualDesignation" collection="arraylist" 
+        <field name="labels" type="com.silverpeas.workflow.api.model.ContextualDesignation" collection="arraylist"
                get-method="iterateLabel" set-method="addLabel" create-method="createDesignation">
             <bind-xml name="label" node="element" />
         </field>
@@ -169,7 +169,7 @@
             <bind-xml name="state" node="element" />
         </field>
     </class>
-    
+
     <class name="com.silverpeas.workflow.engine.model.StateImpl" identity="name">
         <field name="name" type="string">
             <bind-xml name="name" node="attribute" />
@@ -177,14 +177,14 @@
         <field name="timeoutAction" type="com.silverpeas.workflow.api.model.Action">
             <bind-xml name="timeoutAction" node="attribute" reference="true" />
         </field>
-        <field name="timeoutInterval" type="string" get-method="castor_getTimeoutInterval" 
+        <field name="timeoutInterval" type="string" get-method="castor_getTimeoutInterval"
                set-method="castor_setTimeoutInterval">
             <bind-xml name="timeoutInterval" node="attribute" />
         </field>
         <field name="timeoutNotifyAdmin" type="boolean">
             <bind-xml name="timeoutNotifyAdmin" node="attribute" />
         </field>
-        <field name="labels" type="com.silverpeas.workflow.api.model.ContextualDesignation" collection="arraylist" 
+        <field name="labels" type="com.silverpeas.workflow.api.model.ContextualDesignation" collection="arraylist"
                get-method="iterateLabel" set-method="addLabel" create-method="createDesignation">
             <bind-xml name="label" node="element" />
         </field>
@@ -192,12 +192,12 @@
                get-method="iterateDescription" set-method="addDescription" create-method="createDesignation">
             <bind-xml name="description" node="element" />
         </field>
-        <field name="activities" type="com.silverpeas.workflow.api.model.ContextualDesignation" collection="arraylist" 
+        <field name="activities" type="com.silverpeas.workflow.api.model.ContextualDesignation" collection="arraylist"
                get-method="iterateActivity" set-method="addActivity" create-method="createDesignation">
             <bind-xml name="activity" node="element" />
         </field>
         <field name="workingUsers"
-            type="com.silverpeas.workflow.api.model.QualifiedUsers" get-method="getWorkingUsersEx" 
+            type="com.silverpeas.workflow.api.model.QualifiedUsers" get-method="getWorkingUsersEx"
             create-method="createQualifiedUsers" set-method="setWorkingUsers">
             <bind-xml name="workingUsers" node="element" />
         </field>
@@ -207,17 +207,17 @@
             <bind-xml name="interestedUsers" node="element" />
         </field>
         <field name="allowedActions" type="com.silverpeas.workflow.api.model.AllowedActions"
-            get-method="getAllowedActionsEx" set-method="setAllowedActions" 
+            get-method="getAllowedActionsEx" set-method="setAllowedActions"
             create-method="createAllowedActions">
             <bind-xml name="allowedActions" node="element" />
         </field>
         <field name="timeoutActions" type="com.silverpeas.workflow.api.model.TimeOutActions"
-            get-method="getTimeOutActionsEx" set-method="setTimeOutActions" 
+            get-method="getTimeOutActionsEx" set-method="setTimeOutActions"
             create-method="createTimeOutActions">
             <bind-xml name="timeOutActions" node="element" />
         </field>
     </class>
-    
+
     <!-- Class implements StateSetter -->
     <class name="com.silverpeas.workflow.engine.model.StateRef">
         <field name="state" type="com.silverpeas.workflow.api.model.State">
@@ -236,7 +236,7 @@
         <field name="form" type="com.silverpeas.workflow.api.model.Form">
             <bind-xml name="form" node="attribute" reference="true" />
         </field>
-        <field name="labels" type="com.silverpeas.workflow.api.model.ContextualDesignation" collection="arraylist" 
+        <field name="labels" type="com.silverpeas.workflow.api.model.ContextualDesignation" collection="arraylist"
                get-method="iterateLabel" set-method="addLabel" create-method="createDesignation">
             <bind-xml name="label" node="element" />
         </field>
@@ -286,9 +286,12 @@
         <field name="delay" type="string">
             <bind-xml name="delay" node="attribute" />
         </field>
-        <field name="order" type="string" get-method="castor_getOrder" 
+        <field name="order" type="string" get-method="castor_getOrder"
                set-method="castor_setOrder">
             <bind-xml name="order" node="attribute" />
+        </field>
+        <field name="dateItem" type="com.silverpeas.workflow.api.model.Item">
+            <bind-xml name="dateItem" node="attribute" reference="true" />
         </field>
     </class>
 
@@ -337,12 +340,12 @@
                create-method="createQualifiedUsers">
             <bind-xml name="notify" node="element" />
         </field>
-        <field name="triggers" type="com.silverpeas.workflow.api.model.Triggers" 
+        <field name="triggers" type="com.silverpeas.workflow.api.model.Triggers"
             create-method="createTriggers">
             <bind-xml name="triggers" node="element" />
         </field>
     </class>
-    
+
     <class name="com.silverpeas.workflow.engine.model.TriggersImpl">
         <field name="triggerList" type="com.silverpeas.workflow.api.model.Trigger"
             collection="vector" get-method="iterateTrigger" set-method="addTrigger"
@@ -350,7 +353,7 @@
             <bind-xml name="trigger" node="element" />
         </field>
     </class>
-    
+
     <class name="com.silverpeas.workflow.engine.model.TriggerImpl" identity="name">
     	<field name="name" type="string">
             <bind-xml name="name" node="attribute"/>
@@ -383,7 +386,7 @@
         <field name="mapTo" type="string">
             <bind-xml name="mapTo" node="attribute" />
         </field>
-        <field name="labels" type="com.silverpeas.workflow.api.model.ContextualDesignation" collection="arraylist" 
+        <field name="labels" type="com.silverpeas.workflow.api.model.ContextualDesignation" collection="arraylist"
                get-method="iterateLabel" set-method="addLabel" create-method="createDesignation">
             <bind-xml name="label" node="element" />
         </field>
@@ -425,7 +428,7 @@
         <field name="value" type="string">
             <bind-xml name="value" node="attribute" />
         </field>
-        <field name="labels" type="com.silverpeas.workflow.api.model.ContextualDesignation" collection="arraylist" 
+        <field name="labels" type="com.silverpeas.workflow.api.model.ContextualDesignation" collection="arraylist"
                get-method="iterateLabel" set-method="addLabel" create-method="createDesignation">
             <bind-xml name="label" node="element" />
         </field>
@@ -460,7 +463,7 @@
         <field name="HTMLFileName" type="string">
             <bind-xml name="HTMLFileName" node="attribute" />
         </field>
-        <field name="titles" type="com.silverpeas.workflow.api.model.ContextualDesignation" collection="arraylist" 
+        <field name="titles" type="com.silverpeas.workflow.api.model.ContextualDesignation" collection="arraylist"
                get-method="iterateTitle" set-method="addTitle" create-method="createDesignation">
             <bind-xml name="title" node="element" />
         </field>
@@ -481,17 +484,17 @@
         <field name="senderId" type="string">
             <bind-xml name="senderId" node="attribute"/>
         </field>
-        <field name="relatedUserList" type="com.silverpeas.workflow.api.model.RelatedUser" 
+        <field name="relatedUserList" type="com.silverpeas.workflow.api.model.RelatedUser"
                collection="vector" get-method="iterateRelatedUser" set-method="addRelatedUser"
                create-method="createRelatedUser">
             <bind-xml name="relatedUser" node="element"/>
         </field>
-		<field name="relatedGroupList" type="com.silverpeas.workflow.api.model.RelatedGroup" 
+		<field name="relatedGroupList" type="com.silverpeas.workflow.api.model.RelatedGroup"
                collection="vector" get-method="iterateRelatedGroup" set-method="addRelatedGroup"
                create-method="createRelatedGroup">
             <bind-xml name="relatedGroup" node="element"/>
         </field>
-        <field name="userInRoleList" type="com.silverpeas.workflow.api.model.UserInRole" 
+        <field name="userInRoleList" type="com.silverpeas.workflow.api.model.UserInRole"
                collection="vector" get-method="iterateUserInRole" set-method="addUserInRole"
                create-method="createUserInRole">
             <bind-xml name="userInRole" node="element"/>
