@@ -1159,7 +1159,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
       // Check if it's an external search before searching components information
       if (isExternalComponent(result.getServerName())) {
-        place =
+        place = getString("pdcPeas.external.search.label") + " ";
+        place +=
             StringUtil.isDefined(result.getServerName()) ? result.getServerName()
                 : getString("pdcPeas.external.search.unknown");
       } else {
