@@ -26,7 +26,7 @@ package com.stratelia.silverpeas.silverstatistics.control;
 
 import com.silverpeas.util.FileUtil;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.MissingResourceException;
@@ -135,9 +135,7 @@ public class SilverStatisticsVolumeAlimentation {
     }
 
     if (spaceIds != null) {
-      for (String spaceId : spaceIds) {
-        resultList.add(spaceId);
-      }
+      resultList.addAll(Arrays.asList(spaceIds));
     }
     return resultList;
   }
