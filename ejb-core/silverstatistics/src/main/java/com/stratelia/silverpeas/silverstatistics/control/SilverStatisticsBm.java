@@ -21,26 +21,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.silverstatistics.control;
 
-import java.rmi.RemoteException;
-
-import javax.ejb.CreateException;
-import javax.ejb.EJBHome;
-
 /**
- * Interface declaration
- * @author SLR
+ *
+ * @author ehugonnet
  */
-public interface SilverStatisticsHome extends EJBHome {
+public interface SilverStatisticsBm {
+  
+  public void putStats(StatType typeOfStats, String data) throws java.rmi.RemoteException;
 
-  /**
-   * Method declaration
-   * @return
-   * @throws CreateException
-   * @throws RemoteException
-   * @see
-   */
-  SilverStatistics create() throws RemoteException, CreateException;
+  public void makeStatAllCumul() throws java.rmi.RemoteException;
+
+  public void makeVolumeAlimentationForAllComponents() throws java.rmi.RemoteException;
 }
