@@ -1021,10 +1021,10 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * Parse fields values and check ones that have wysiwyg displayer.
    * In case of new process instance, txt files may not have been created yet.
    * if yes, value must start with "xmlWysiwygField_"
-   * 
+   *
    * @param step
    * @param actionData
-   * 
+   *
    * @throws WorkflowException
    * @throws FormException
    */
@@ -1063,10 +1063,10 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
    * Parse fields values and check ones that have wysiwyg displayer.
    * In case of new process instance, txt files may not have been created yet.
    * if yes, value must start with "xmlWysiwygField_"
-   * 
+   *
    * @param step
    * @param actionData
-   * 
+   *
    * @throws WorkflowException
    * @throws FormException
    */
@@ -1465,9 +1465,9 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
 
   /**
    * @param state
-   * @return User
+   * @return LockingUser
    */
-  public User getLockingUser(String state) throws WorkflowException {
+  public LockingUser getLockingUser(String state) throws WorkflowException {
     SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getLockingUser",
         "root.MSG_GEN_ENTER_METHOD", "state : " + state);
 
@@ -1481,7 +1481,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
       SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getLockingUser",
           "root.MSG_GEN_ENTER_METHOD", "Locking user found for state : " + state + ", userId = " + foundUser.
           getUserId());
-      return WorkflowHub.getUserManager().getUser(foundUser.getUserId());
+      return foundUser;
     } else {
       SilverTrace.debug("workflowEngine", "ProcessInstanceImpl.getLockingUser",
           "root.MSG_GEN_ENTER_METHOD", "no locking user for state : " + state);
@@ -2330,7 +2330,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance // ,
 
   /**
    * Returns the timeout action to be launched after given date
-   * @throws WorkflowException 
+   * @throws WorkflowException
    */
   public ActionAndState getTimeOutAction(Date dateRef) throws WorkflowException {
 
