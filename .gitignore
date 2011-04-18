@@ -6,3 +6,6 @@ target
 .settings/
 .classpath
 .project
+
+/web-core/src/main/java/META-INF
+/war-core/src/main/webapp/META-INF
