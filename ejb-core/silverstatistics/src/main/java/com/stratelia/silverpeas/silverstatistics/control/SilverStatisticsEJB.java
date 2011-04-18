@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.silverstatistics.control;
 
 import java.io.IOException;
@@ -33,7 +32,6 @@ import java.util.StringTokenizer;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
-import com.stratelia.silverpeas.silverstatistics.ejb.SilverStatisticsDAO;
 import com.stratelia.silverpeas.silverstatistics.model.SilverStatisticsConfigException;
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsRuntimeException;
@@ -41,62 +39,56 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import java.util.List;
 
 /**
  * Class declaration
  * @author SLR
  */
-
 public class SilverStatisticsEJB implements SessionBean {
 
   private static final String dbName = JNDINames.SILVERSTATISTICS_DATASOURCE;
-
+  private static final long serialVersionUID = -2084739513469943886L;
   private SessionContext ctx;
   private StatisticsConfig myStatsConfig;
 
   /**
-   * Method declaration
-   * @param typeOfStats
-   * @param data
-   * @return
-   * @throws RemoteException
-   * @see
+   * 
+   * @param type
+   * @param data 
    */
-  public void putStats(String typeOfStats, String data) {
-    ArrayList dataArray = new ArrayList();
+  public void putStats(StatType type, String data) {
+    List<String> dataArray = new ArrayList<String>();
     Connection myCon = null;
 
-    StringTokenizer stData = new StringTokenizer(data,
-        SilverStatisticsConstants.SEPARATOR);
+    StringTokenizer stData = new StringTokenizer(data, SilverStatisticsConstants.SEPARATOR);
 
     while (stData.hasMoreTokens()) {
       dataArray.add(stData.nextToken());
     }
 
-    if (myStatsConfig.isGoodDatas(typeOfStats, dataArray)) {
+    if (myStatsConfig.isGoodDatas(type, dataArray)) {
       try {
         myCon = getConnection();
-        SilverStatisticsDAO.putDataStats(myCon, typeOfStats, dataArray, myStatsConfig);
+        SilverStatisticsDAO.putDataStats(myCon, type, dataArray, myStatsConfig);
       } catch (SQLException e) {
         SilverTrace.error("silverstatistics", "SilverStatisticsEJB.putStats",
-            "silverstatistics.MSG_ALIMENTATION_BD", "typeOfStats = "
-            + typeOfStats + ", dataArray = " + dataArray, e);
+            "silverstatistics.MSG_ALIMENTATION_BD",
+            "typeOfStats = " + type + ", dataArray = " + dataArray, e);
       } catch (IOException e) {
         SilverTrace.error("silverstatistics", "SilverStatisticsEJB.putStats",
             "silverstatistics.MSG_ALIMENTATION_BD", "typeOfStats = "
-            + typeOfStats + ", dataArray = " + dataArray, e);
+            + type + ", dataArray = " + dataArray, e);
       } catch (StatisticsRuntimeException e) {
         SilverTrace.error("silverstatistics", "SilverStatisticsEJB.putStats",
             "MSG_CONNECTION_BD");
       } finally {
-        freeConnection(myCon);
+        DBUtil.close(myCon);
       }
 
     } else {
-      SilverTrace
-          .error("silverstatistics", "SilverStatisticsEJB.putStats",
-          "MSG_CONFIG_DATAS", "data en entree=" + data + " pour "
-          + typeOfStats);
+      SilverTrace.error("silverstatistics", "SilverStatisticsEJB.putStats",
+          "MSG_CONFIG_DATAS", "data en entree=" + data + " pour " + type);
     }
   }
 
@@ -109,9 +101,8 @@ public class SilverStatisticsEJB implements SessionBean {
   }
 
   /**
-   * Method declaration
-   * @return
-   * @see
+   * 
+   * @return 
    */
   private Connection getConnection() {
     try {
@@ -119,22 +110,6 @@ public class SilverStatisticsEJB implements SessionBean {
     } catch (Exception e) {
       throw new StatisticsRuntimeException("StatisticsEJB.getConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
-    }
-  }
-
-  /**
-   * Method declaration
-   * @param con
-   * @see
-   */
-  private void freeConnection(Connection con) {
-    if (con != null) {
-      try {
-        con.close();
-      } catch (Exception e) {
-        SilverTrace.error("statistics", "StatisticsEJB.freeConnection()",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
-      }
     }
   }
 
@@ -156,6 +131,7 @@ public class SilverStatisticsEJB implements SessionBean {
    * Method declaration
    * @see
    */
+  @Override
   public void ejbRemove() {
   }
 
@@ -163,6 +139,7 @@ public class SilverStatisticsEJB implements SessionBean {
    * Method declaration
    * @see
    */
+  @Override
   public void ejbActivate() {
   }
 
@@ -170,28 +147,23 @@ public class SilverStatisticsEJB implements SessionBean {
    * Method declaration
    * @see
    */
+  @Override
   public void ejbPassivate() {
   }
 
   /**
-   * Method declaration
-   * @param sc
-   * @see
+   * 
+   * @param sc 
    */
+  @Override
   public void setSessionContext(SessionContext sc) {
     ctx = sc;
     myStatsConfig = new StatisticsConfig();
     try {
-      if (myStatsConfig.init() != 0) {
-        SilverTrace.error("silverstatistics",
-            "SilverStatisticsEJB.setSessionContext",
-            "silverstatistics.MSG_CONFIG_FILE");
-      }
+      myStatsConfig.init();
     } catch (SilverStatisticsConfigException e) {
-      SilverTrace.error("silverstatistics",
-          "SilverStatisticsEJB.setSessionContext",
+      SilverTrace.error("silverstatistics", "SilverStatisticsEJB.setSessionContext",
           "silverstatistics.MSG_CONFIG_FILE", e);
     }
   }
-
 }
