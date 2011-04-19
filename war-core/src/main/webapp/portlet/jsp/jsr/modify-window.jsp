@@ -25,8 +25,8 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@page import="com.silverpeas.portlets.portal.DriverUtil, 
-                com.sun.portal.portletcontainer.driver.admin.AdminConstants, 
+<%@page import="com.silverpeas.portlets.portal.DriverUtil,
+                com.sun.portal.portletcontainer.driver.admin.AdminConstants,
                 com.sun.portal.portletcontainer.admin.registry.PortletRegistryConstants" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -34,6 +34,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <!--Load the resource bundle for the page -->
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle" />
 
 <h1 class="portal-content-header" id="modify-window-content"><fmt:message key="portlets.modifyWindow"/></h1>
@@ -65,7 +66,7 @@
                 </td>
             </tr>
             <tr>
-				<td class="txtlibform">Affichage :</td>
+              <td class="txtlibform"><fmt:message key="portlets.show"/>&nbsp;:</td>
                 <td>
                     <table>
                         <tr>
@@ -98,7 +99,7 @@
                         </option>
                     </select>
                 </td>
-            </tr>            
+            </tr>
             <tr>
                 <td align="center" colspan="2"><input id="modify" type="Submit" name="<%=AdminConstants.MODIFY_PORTLET_WINDOW_SUBMIT%>" value="<fmt:message key="portlets.modifyPortletWindow"/>"/></td>
             </tr>
