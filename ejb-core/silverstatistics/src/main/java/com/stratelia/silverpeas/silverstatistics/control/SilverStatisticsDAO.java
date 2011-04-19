@@ -21,12 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-// TODO : reporter dans CVS (done)
-package com.stratelia.silverpeas.silverstatistics.ejb;
+package com.stratelia.silverpeas.silverstatistics.control;
 
 import com.google.common.base.Joiner;
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silverstatistics.control.StatType;
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
@@ -37,7 +36,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -48,32 +46,35 @@ import java.util.List;
  * @author sleroux
  */
 public class SilverStatisticsDAO {
+
   /**
    * Method declaration
    *
    * @param con
-   * @param StatsType
+   * @param type
    * @param valueKeys
    * @param conf
    * @return
    * @throws SQLException
    * @see
    */
-  private static void insertDataStats(Connection con, String StatsType,
+  static void insertDataStats(Connection con, StatType type,
       List<String> valueKeys, StatisticsConfig conf) throws SQLException {
     StringBuilder insertStatementBuf = new StringBuilder("INSERT INTO ");
-    insertStatementBuf.append(conf.getTableName(StatsType)).append("(");
+    insertStatementBuf.append(conf.getTableName(type)).append("(");
     PreparedStatement prepStmt = null;
     int i = 0;
 
 
-    Collection<String> theKeys = conf.getAllKeys(StatsType);
+    Collection<String> theKeys = conf.getAllKeys(type);
     Joiner joiner = Joiner.on(",");
     joiner.appendTo(insertStatementBuf, theKeys);
     insertStatementBuf.append(") ");
 
     insertStatementBuf.append("VALUES(?");
-    for (int j = 0; j < conf.getNumberOfKeys(StatsType) - 1; j++) {
+    for (int j = 0;
+        j < conf.getNumberOfKeys(type) - 1;
+        j++) {
       insertStatementBuf.append(",?");
     }
     insertStatementBuf.append(")");
@@ -84,15 +85,16 @@ public class SilverStatisticsDAO {
           "root.MSG_GEN_PARAM_VALUE",
           "insertStatement=" + insertStatement);
       prepStmt = con.prepareStatement(insertStatement);
-      for (String currentKey : theKeys) {
+      for (String currentKey :
+          theKeys) {
         i++;
-        String currentType = conf.getKeyType(StatsType, currentKey);
+        String currentType = conf.getKeyType(type, currentKey);
         if (currentType.equals("DECIMAL")) {
           long tmpLong;
           try {
             String tmpString = valueKeys.get(i - 1);
-            if (tmpString.equals("") || tmpString == null) {
-              if (!conf.isCumulKey(StatsType, currentKey)) {
+            if (!StringUtil.isDefined(tmpString)) {
+              if (!conf.isCumulKey(type, currentKey)) {
                 prepStmt.setNull(i, java.sql.Types.DECIMAL);
               } else {
                 prepStmt.setLong(i, 0);
@@ -109,8 +111,8 @@ public class SilverStatisticsDAO {
           int tmpInt;
           try {
             String tmpString = valueKeys.get(i - 1);
-            if (tmpString.equals("") || tmpString == null) {
-              if (!conf.isCumulKey(StatsType, currentKey)) {
+            if (!StringUtil.isDefined(tmpString)) {
+              if (!conf.isCumulKey(type, currentKey)) {
                 prepStmt.setNull(i, java.sql.Types.INTEGER);
               } else {
                 prepStmt.setInt(i, 0);
@@ -125,7 +127,7 @@ public class SilverStatisticsDAO {
         }
         if (currentType.equals("VARCHAR")) {
           String tmpString = valueKeys.get(i - 1);
-          if (tmpString.equals("") || tmpString == null) {
+          if (!StringUtil.isDefined(tmpString)) {
             prepStmt.setNull(i, java.sql.Types.VARCHAR);
           } else {
             prepStmt.setString(i, valueKeys.get(i - 1));
@@ -139,21 +141,19 @@ public class SilverStatisticsDAO {
   }
 
   /**
-   * Method declaration
-   *
+   * 
    * @param con
-   * @param StatsType
+   * @param type
    * @param valueKeys
    * @param conf
-   * @return
    * @throws SQLException
-   * @see
+   * @throws IOException 
    */
-  public static void putDataStats(Connection con, String StatsType,
-      List<String> valueKeys, StatisticsConfig conf) throws SQLException, IOException {
-    StringBuffer selectStatementBuf = new StringBuffer("SELECT ");
+  public static void putDataStats(Connection con, StatType type, List<String> valueKeys,
+      StatisticsConfig conf) throws SQLException, IOException {
+    StringBuilder selectStatementBuf = new StringBuilder("SELECT ");
     StringBuffer updateStatementBuf = new StringBuffer("UPDATE ");
-    String tableName = conf.getTableName(StatsType);
+    String tableName = conf.getTableName(type);
     Statement stmt;
     ResultSet rs = null;
     boolean rowExist = false;
@@ -167,7 +167,7 @@ public class SilverStatisticsDAO {
     updateStatementBuf.append(tableName);
     updateStatementBuf.append(" SET ");
 
-    Collection<String> theKeys = conf.getAllKeys(StatsType);
+    Collection<String> theKeys = conf.getAllKeys(type);
     Iterator<String> iteratorKeys = theKeys.iterator();
     while (iteratorKeys.hasNext()) {
       String keyNameCurrent = iteratorKeys.next();
@@ -175,7 +175,7 @@ public class SilverStatisticsDAO {
       if (iteratorKeys.hasNext()) {
         selectStatementBuf.append(",");
       }
-      if (conf.isCumulKey(StatsType, keyNameCurrent)) {
+      if (conf.isCumulKey(type, keyNameCurrent)) {
         updateStatementBuf.append(keyNameCurrent);
         updateStatementBuf.append("=").append(keyNameCurrent).append("+? ,");
       }
@@ -189,14 +189,14 @@ public class SilverStatisticsDAO {
     iteratorKeys = theKeys.iterator();
     while (iteratorKeys.hasNext()) {
       String keyNameCurrent = iteratorKeys.next();
-      if (!conf.isCumulKey(StatsType, keyNameCurrent)) {
+      if (!conf.isCumulKey(type, keyNameCurrent)) {
         if (!firstKeyInWhere) {
           selectStatementBuf.append(" AND ");
           updateStatementBuf.append(" AND ");
         }
         selectStatementBuf.append(keyNameCurrent);
         updateStatementBuf.append(keyNameCurrent);
-        String currentType = conf.getKeyType(StatsType, keyNameCurrent);
+        String currentType = conf.getKeyType(type, keyNameCurrent);
         if ("DECIMAL".equals(currentType)) {
           try {
             Long.parseLong(valueKeys.get(k));
@@ -210,10 +210,9 @@ public class SilverStatisticsDAO {
             selectStatementBuf.append("=").append(valueKeys.get(k));
             updateStatementBuf.append("=").append(valueKeys.get(k));
           }
-        }
-        else if ("INTEGER".equals(currentType)) {
+        } else if ("INTEGER".equals(currentType)) {
           try {
-            new Integer(valueKeys.get(k));
+            Integer.valueOf(valueKeys.get(k));
           } catch (Exception e) {
             STOPPUTSTAT = true;
           }
@@ -224,8 +223,7 @@ public class SilverStatisticsDAO {
             selectStatementBuf.append("=").append(valueKeys.get(k));
             updateStatementBuf.append("=").append(valueKeys.get(k));
           }
-        }
-        else if ("VARCHAR".equals(currentType)) {
+        } else if ("VARCHAR".equals(currentType)) {
           if (!StringUtil.isDefined(valueKeys.get(k))) {
             selectStatementBuf.append("=" + "NULL");
             updateStatementBuf.append("=" + "NULL");
@@ -263,13 +261,13 @@ public class SilverStatisticsDAO {
           while (iteratorKeys.hasNext()) {
             String keyNameCurrent = iteratorKeys.next();
 
-            if (conf.isCumulKey(StatsType, keyNameCurrent)) {
+            if (conf.isCumulKey(type, keyNameCurrent)) {
               countCumulKey++;
-              String currentType = conf.getKeyType(StatsType, keyNameCurrent);
+              String currentType = conf.getKeyType(type, keyNameCurrent);
               if (currentType.equals("INTEGER")) {
                 try {
-                  intToAdd = Integer.parseInt(valueKeys.get(conf
-                      .indexOfKey(StatsType, keyNameCurrent)));
+                  intToAdd = Integer.parseInt(valueKeys.get(conf.indexOfKey(type,
+                      keyNameCurrent)));
                 } catch (NumberFormatException e) {
                   intToAdd = 0;
                 }
@@ -278,7 +276,7 @@ public class SilverStatisticsDAO {
               if (currentType.equals("DECIMAL")) {
                 try {
                   longToAdd = Long.parseLong(
-                      valueKeys.get(conf.indexOfKey(StatsType, keyNameCurrent)));
+                      valueKeys.get(conf.indexOfKey(type, keyNameCurrent)));
                 } catch (NumberFormatException e) {
                   longToAdd = 0;
                 }
@@ -293,9 +291,8 @@ public class SilverStatisticsDAO {
       DBUtil.close(rs, stmt);
       DBUtil.close(pstmt);
       if ((!STOPPUTSTAT) && (!rowExist)) {
-        insertDataStats(con, StatsType, valueKeys, conf);
+        insertDataStats(con, type, valueKeys, conf);
       }
     }
   }
-
 }

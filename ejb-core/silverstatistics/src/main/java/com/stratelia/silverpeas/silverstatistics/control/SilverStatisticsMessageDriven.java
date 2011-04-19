@@ -21,18 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.silverstatistics.control;
-
-import java.rmi.RemoteException;
-import java.util.StringTokenizer;
-
-import javax.ejb.EJBException;
-import javax.ejb.MessageDrivenBean;
-import javax.ejb.MessageDrivenContext;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.TextMessage;
 
 import com.stratelia.silverpeas.silverstatistics.model.SilverStatisticsConfigException;
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
@@ -40,11 +29,22 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 
+import javax.ejb.EJBException;
+import javax.ejb.MessageDrivenBean;
+import javax.ejb.MessageDrivenContext;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import javax.jms.TextMessage;
+import java.rmi.RemoteException;
+import java.util.StringTokenizer;
+
 /**
  * Class declaration
  * @author
  */
 public class SilverStatisticsMessageDriven implements MessageDrivenBean, MessageListener {
+
+  private static final long serialVersionUID = -7349058052737871887L;
   private StatisticsConfig myStatsConfig;
   private SilverStatistics silverStatistics = null;
   private MessageDrivenContext ctx;
@@ -60,6 +60,7 @@ public class SilverStatisticsMessageDriven implements MessageDrivenBean, Message
    * Method declaration
    * @see
    */
+  @Override
   public void ejbRemove() {
   }
 
@@ -68,75 +69,56 @@ public class SilverStatisticsMessageDriven implements MessageDrivenBean, Message
    * @param sc
    * @see
    */
+  @Override
   public void setMessageDrivenContext(MessageDrivenContext sc) {
-    SilverTrace.info("silverstatistics",
-        "SilverStatisticsMessageDriven.setMessageDrivenContext",
+    SilverTrace.info("silverstatistics", "SilverStatisticsMessageDriven.setMessageDrivenContext",
         "root.MSG_GEN_PARAM_VALUE", "MessageDrivenContext=" + sc);
     ctx = sc;
     myStatsConfig = new StatisticsConfig();
     try {
-      if (myStatsConfig.init() != 0) {
-        SilverTrace.error("silverstatistics",
-            "SilverStatisticsMessageDriven.setSessionContext",
-            "silverstatistics.MSG_CONFIG_FILE");
-      }
+      myStatsConfig.init();
     } catch (SilverStatisticsConfigException e) {
-      SilverTrace.error("silverstatistics",
-          "SilverStatisticsMessageDriven.setSessionContext",
+      SilverTrace.error("silverstatistics", "SilverStatisticsMessageDriven.setSessionContext",
           "silverstatistics.MSG_CONFIG_FILE", e);
     }
   }
 
   /**
    * Method declaration
-   * @param m
+   * @param message
    */
-  public void onMessage(Message m) {
-
-    TextMessage tm = (TextMessage) m;
-    String msg = "";
-    String typeOfStats = "";
-    String stat = "";
-
+  @Override
+  public void onMessage(Message message) {
+    TextMessage textMessage = (TextMessage) message;
     try {
-      msg = tm.getText();
-      SilverTrace.debug("silverstatistics",
-          "SilverStatisticsMessageDriven.onMessage",
+      String msg = textMessage.getText();
+      SilverTrace.debug("silverstatistics", "SilverStatisticsMessageDriven.onMessage",
           "root.MSG_GEN_PARAM_VALUE", "msg=" + msg);
 
-      StringTokenizer stData = new StringTokenizer(msg,
-          SilverStatisticsConstants.SEPARATOR);
-
+      StringTokenizer stData = new StringTokenizer(msg, SilverStatisticsConstants.SEPARATOR);
       if (stData.hasMoreTokens()) {
-        typeOfStats = stData.nextToken();
-        if (typeOfStats.length() + SilverStatisticsConstants.SEPARATOR.length() < msg
-            .length()) {
-          stat = msg.substring(typeOfStats.length()
-              + SilverStatisticsConstants.SEPARATOR.length(), msg.length());
-
+        String typeOfStats = stData.nextToken();
+        if (typeOfStats.length() + SilverStatisticsConstants.SEPARATOR.length() < msg.length()) {
+          String stat = msg.substring(typeOfStats.length() + SilverStatisticsConstants.SEPARATOR.length(),
+              msg.length());
           try {
-            SilverTrace.info("silverstatistics",
-                "SilverStatisticsMessageDriven.onMessage",
+            SilverTrace.info("silverstatistics", "SilverStatisticsMessageDriven.onMessage",
                 "root.MSG_GEN_PARAM_VALUE", "before putStats stat=" + stat);
-            getSilverStatistics().putStats(typeOfStats, stat);
-            SilverTrace.debug("silverstatistics",
-                "SilverStatisticsMessageDriven.onMessage", "after putStats");
+            getSilverStatistics().putStats(StatType.valueOf(typeOfStats), stat);
+            SilverTrace.debug("silverstatistics", "SilverStatisticsMessageDriven.onMessage",
+                "after putStats");
           } catch (RemoteException ex) {
-            SilverTrace.error("silverstatistics",
-                "SilverStatisticsMessageDriven.onMessage",
-                "impossible de trouver " + JNDINames.SILVERSTATISTICS_EJBHOME,
-                ex);
+            SilverTrace.error("silverstatistics", "SilverStatisticsMessageDriven.onMessage",
+                "impossible de trouver " + JNDINames.SILVERSTATISTICS_EJBHOME, ex);
           }
         } else {
-          SilverTrace
-              .error("silverstatistics",
-              "SilverStatisticsMessageDriven.onMessage", "Mauvais message",
-              msg);
+          SilverTrace.error("silverstatistics", "SilverStatisticsMessageDriven.onMessage",
+              "Mauvais message", msg);
         }
       }
     } catch (Exception e) {
-      SilverTrace.error("silverstatistics",
-          "SilverStatisticsMessageDriven.onMessage", "Probleme jms ", e);
+      SilverTrace.error("silverstatistics", "SilverStatisticsMessageDriven.onMessage",
+          "Probleme jms ", e);
     }
   }
 
@@ -148,10 +130,8 @@ public class SilverStatisticsMessageDriven implements MessageDrivenBean, Message
   private SilverStatistics getSilverStatistics() {
     if (silverStatistics == null) {
       try {
-        SilverStatisticsHome silverStatisticsHome = (SilverStatisticsHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.SILVERSTATISTICS_EJBHOME,
-            SilverStatisticsHome.class);
-
+        SilverStatisticsHome silverStatisticsHome = EJBUtilitaire.getEJBObjectRef(
+            JNDINames.SILVERSTATISTICS_EJBHOME, SilverStatisticsHome.class);
         silverStatistics = silverStatisticsHome.create();
       } catch (Exception e) {
         throw new EJBException(e.getMessage());
@@ -159,5 +139,4 @@ public class SilverStatisticsMessageDriven implements MessageDrivenBean, Message
     }
     return silverStatistics;
   }
-
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2009 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,26 +21,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.silverstatistics.control;
 
-import java.rmi.RemoteException;
-
-import javax.ejb.CreateException;
-import javax.ejb.EJBHome;
-
 /**
- * Interface declaration
- * @author SLR
+ * Supported type of statisitcs used and stored by Silverpeas
+ * @author ehugonnet
  */
-public interface SilverStatisticsHome extends EJBHome {
-
-  /**
-   * Method declaration
-   * @return
-   * @throws CreateException
-   * @throws RemoteException
-   * @see
-   */
-  SilverStatistics create() throws RemoteException, CreateException;
+public enum StatType {
+  Access, Size, Volume, Connexion
 }

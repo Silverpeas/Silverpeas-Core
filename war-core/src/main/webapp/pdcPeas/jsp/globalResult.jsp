@@ -409,6 +409,7 @@ function markAsRead(id) {
     //$.post('<%=m_context%>/RpdcSearch/jsp/markAsRead', {id:id});
     $.ajax({
       url: '<%=m_context%>/SearchEngineAjaxServlet',
+      async: false,
       data: { Action: 'markAsRead',
         id:id},
       success: function(data){
