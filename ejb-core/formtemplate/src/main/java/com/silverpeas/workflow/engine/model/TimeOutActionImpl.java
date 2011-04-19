@@ -27,6 +27,7 @@ package com.silverpeas.workflow.engine.model;
 import java.io.Serializable;
 
 import com.silverpeas.workflow.api.model.Action;
+import com.silverpeas.workflow.api.model.Item;
 import com.silverpeas.workflow.api.model.TimeOutAction;
 
 /**
@@ -38,7 +39,8 @@ public class TimeOutActionImpl implements TimeOutAction, Serializable {
   private Action action = null;
   private String delay = null;
   private int order= 0;
-  
+  private Item dateItem = null;
+
   /* (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.TimeOutAction#getAction()
    */
@@ -59,6 +61,13 @@ public class TimeOutActionImpl implements TimeOutAction, Serializable {
     this.order = order;
   }
 
+  /**
+   * @param dateItem the dateItem to set
+   */
+  public void setDateItem(Item dateItem) {
+    this.dateItem = dateItem;
+  }
+
   /* (non-Javadoc)
    * @see com.silverpeas.workflow.api.model.TimeOutAction#getDelay()
    */
@@ -74,7 +83,15 @@ public class TimeOutActionImpl implements TimeOutAction, Serializable {
   public int getOrder() {
     return order;
   }
-  
+
+  /* (non-Javadoc)
+   * @see com.silverpeas.workflow.api.model.TimeOutAction#getDateItem()
+   */
+  @Override
+  public Item getDateItem() {
+    return dateItem;
+  }
+
   /**
    * Get the timeout action order
    * @return order (as a String)
