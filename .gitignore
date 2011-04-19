@@ -14,3 +14,5 @@ target
 /web-core/.settings
 /web-core/.classpath
 /web-core/.project
+/web-core/src/main/java/META-INF
+/war-core/src/main/webapp/META-INF
