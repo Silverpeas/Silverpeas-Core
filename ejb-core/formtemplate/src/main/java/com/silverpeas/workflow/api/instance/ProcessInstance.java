@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -30,6 +30,7 @@ import com.silverpeas.workflow.api.model.*;
 import com.silverpeas.workflow.api.user.*;
 import com.silverpeas.workflow.api.*;
 import com.silverpeas.workflow.engine.instance.ActionAndState;
+import com.silverpeas.workflow.engine.instance.LockingUser;
 import com.silverpeas.form.*;
 
 public interface ProcessInstance {
@@ -168,7 +169,7 @@ public interface ProcessInstance {
    * @param state
    * @return User
    */
-  public User getLockingUser(String state) throws WorkflowException;
+  public LockingUser getLockingUser(String state) throws WorkflowException;
 
   /**
    * Get the validity state of this instance
@@ -182,7 +183,7 @@ public interface ProcessInstance {
    */
   public boolean isLockedByAdmin();
 
-  
+
   /**
    * Get the error status of this instance
    * @return true if this instance is in error
@@ -208,8 +209,8 @@ public interface ProcessInstance {
    * @param user the unlocking user
    */
   public void unLock(State state, User user) throws WorkflowException;
-  
-  
+
+
   /**
    * Gets concrete users affected to given role at runtime
    * @param role the name of the role
@@ -217,7 +218,7 @@ public interface ProcessInstance {
    * @throws WorkflowException
    */
   public List<User> getUsersInRole(String role) throws WorkflowException;
-  
+
   /**
    * Gets concrete users affected to given group at runtime
    * @param groupId the id of the group
@@ -244,7 +245,7 @@ public interface ProcessInstance {
 
   /**
    * Get step saved by given user id.
-   * @throws WorkflowException 
+   * @throws WorkflowException
    */
   public HistoryStep getSavedStep(String userId) throws WorkflowException;
 
@@ -321,10 +322,10 @@ public interface ProcessInstance {
    * Returns this instance title.
    */
   public String getTitle(String role, String lang);
-  
+
   /**
    * Returns the timeout action to be launched after given date
-   * @throws WorkflowException 
+   * @throws WorkflowException
    */
   public ActionAndState getTimeOutAction(Date dateRef) throws WorkflowException;
 }

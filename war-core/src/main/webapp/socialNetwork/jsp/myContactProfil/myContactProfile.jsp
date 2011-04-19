@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2009 Silverpeas
+    Copyright (C) 2000 - 2011 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -137,9 +137,11 @@
 	<fmt:message key="myContactProfile.tab.wall" var="wall" />
 	<c:set var="wallAction"><%="Main?userId="+userFull.getId()%></c:set>
 	<c:set var="profileAction"><%="Infos?userId="+userFull.getId()%></c:set>
+	<c:set var="wallSelected"><%=Boolean.toString("Wall".equals(view)) %></c:set>
+	<c:set var="profileSelected"><%=Boolean.toString("Infos".equals(view)) %></c:set>
 	<view:tabs>
-    	<view:tab label="${wall}" action="${wallAction}" selected="<%=Boolean.toString("Wall".equals(view)) %>" />
-    	<view:tab label="${profile}" action="${profileAction}" selected="<%=Boolean.toString("Infos".equals(view)) %>" />
+    	<view:tab label="${wall}" action="${wallAction}" selected="${wallSelected}" />
+    	<view:tab label="${profile}" action="${profileAction}" selected="${profileSelected}" />
 	</view:tabs>
 	
 	<% if ("Infos".equals(view)) { %>

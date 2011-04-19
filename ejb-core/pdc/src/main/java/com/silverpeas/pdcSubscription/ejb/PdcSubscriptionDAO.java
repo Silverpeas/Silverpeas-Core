@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,24 +22,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// TODO : reporter dans CVS (done)
 /*
  * Aliaksei_Budnikau
  * Date: Oct 24, 2002
  */
 package com.silverpeas.pdcSubscription.ejb;
 
-import com.silverpeas.pdcSubscription.model.PDCSubscription;
-
-import java.util.ArrayList;
-import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.silverpeas.pdcSubscription.model.PDCSubscription;
 import com.stratelia.silverpeas.classifyEngine.Criteria;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 
 public class PdcSubscriptionDAO {
@@ -50,7 +49,7 @@ public class PdcSubscriptionDAO {
   public static final String GET_SUBSCRIPTION_BY_USERID_QUERY = "SELECT id, name, ownerId "
       + " FROM " + PDC_SUBSRIPTION_TABLE_NAME + " WHERE ownerId = ? ";
 
-  public static ArrayList getPDCSubscriptionByUserId(Connection conn, int userId)
+  public static List<PDCSubscription> getPDCSubscriptionByUserId(Connection conn, int userId)
       throws PdcSubscriptionRuntimeException, SQLException {
     if (conn == null) {
       throw new PdcSubscriptionRuntimeException(
@@ -62,7 +61,7 @@ public class PdcSubscriptionDAO {
           "PdcSubscriptionDAO.getPDCSubscriptionByUserId",
           SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_NULL_VALUE_OBJECT_OR_PK");
     }
-    ArrayList result = new ArrayList();
+    List<PDCSubscription> result = new ArrayList<PDCSubscription>();
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
 
@@ -87,14 +86,14 @@ public class PdcSubscriptionDAO {
   public static final String GET_ALL_SUBSCRIPTIONS_QUERY = "SELECT id, name, ownerId FROM "
       + PDC_SUBSRIPTION_TABLE_NAME;
 
-  public static ArrayList getAllPDCSubscriptions(Connection conn)
+  public static List<PDCSubscription> getAllPDCSubscriptions(Connection conn)
       throws PdcSubscriptionRuntimeException, SQLException {
     if (conn == null) {
       throw new PdcSubscriptionRuntimeException(
           "PdcSubscriptionDAO.getAllPDCSubscriptions",
           SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_NO_CONNECTION");
     }
-    ArrayList result = new ArrayList();
+    List<PDCSubscription> result = new ArrayList<PDCSubscription>();
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
 
@@ -126,14 +125,14 @@ public class PdcSubscriptionDAO {
       "SELECT id, pdcSubscriptionId, axisId, value FROM "
       + PDC_SUBSRIPTION_AXIS_TABLE_NAME + " WHERE pdcSubscriptionId = ? ";
 
-  private static ArrayList getCriteriasBySubscriptionID(Connection conn,
+  private static List<Criteria> getCriteriasBySubscriptionID(Connection conn,
       int scId) throws PdcSubscriptionRuntimeException, SQLException {
     if (conn == null) {
       throw new PdcSubscriptionRuntimeException(
           "PdcSubscriptionDAO.getCriteriasBySubscriptionID",
           SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_NO_CONNECTION");
     }
-    ArrayList result = new ArrayList();
+    List<Criteria> result = new ArrayList<Criteria>();
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
 
@@ -245,8 +244,7 @@ public class PdcSubscriptionDAO {
             subscription);
       }
 
-      ArrayList ctx = subscription.getPdcContext();
-
+      List<Criteria> ctx = subscription.getPdcContext();
       if (ctx != null && ctx.size() != 0) {
         createSearchCriterias(conn, ctx, newId);
       }
@@ -263,7 +261,7 @@ public class PdcSubscriptionDAO {
       + " (id, pdcSubscriptionId, axisId, value) VALUES (?, ?, ?, ?)";
 
   private static void createSearchCriterias(Connection conn,
-      ArrayList searchCriterias, int subscriptionId)
+      List<Criteria> searchCriterias, int subscriptionId)
       throws PdcSubscriptionRuntimeException, SQLException {
     if (conn == null) {
       throw new PdcSubscriptionRuntimeException(
@@ -285,9 +283,7 @@ public class PdcSubscriptionDAO {
     try {
       prepStmt = conn.prepareStatement(CREATE_PDC_SEARCHCRITERIA_QUERY);
 
-      for (int i = 0; i < searchCriterias.size(); i++) {
-        Criteria sc = (Criteria) searchCriterias.get(i);
-
+      for (Criteria sc : searchCriterias) {
         try {
           newId = DBUtil.getNextId(PDC_SUBSRIPTION_AXIS_TABLE_NAME, new String(
               "id"));
@@ -349,7 +345,7 @@ public class PdcSubscriptionDAO {
             subscription);
       }
 
-      ArrayList ctx = subscription.getPdcContext();
+      List<Criteria> ctx = subscription.getPdcContext();
       removeSearchCriterias(conn, subscription.getId());
       if (ctx != null && ctx.size() != 0) {
         createSearchCriterias(conn, ctx, subscription.getId());
@@ -446,7 +442,7 @@ public class PdcSubscriptionDAO {
   public final static String FIND_SUBSCRIPTION_BY_AXIS_QUERY = "SELECT pdcSubscriptionId FROM "
       + PDC_SUBSRIPTION_AXIS_TABLE_NAME + " WHERE axisId = ? ";
 
-  public static ArrayList getPDCSubscriptionByUsedAxis(Connection conn,
+  public static List<PDCSubscription> getPDCSubscriptionByUsedAxis(Connection conn,
       int axisId) throws PdcSubscriptionRuntimeException, SQLException {
     if (conn == null) {
       throw new PdcSubscriptionRuntimeException(
@@ -458,9 +454,9 @@ public class PdcSubscriptionDAO {
           "PdcSubscriptionDAO.getPDCSubscriptionByUsedAxis",
           SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_NULL_VALUE_OBJECT_OR_PK");
     }
-    ArrayList result = new ArrayList();
+    List<PDCSubscription> result = new ArrayList<PDCSubscription>();
 
-    ArrayList ids = new ArrayList();
+    List<Integer> ids = new ArrayList<Integer>();
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -477,8 +473,7 @@ public class PdcSubscriptionDAO {
         }
       }
 
-      for (int i = 0; i < ids.size(); i++) {
-        int subscrId = ((Integer) ids.get(i)).intValue();
+      for (Integer subscrId : ids) {
         PDCSubscription subscription = getPDCSubsriptionById(conn, subscrId);
         result.add(subscription);
       }

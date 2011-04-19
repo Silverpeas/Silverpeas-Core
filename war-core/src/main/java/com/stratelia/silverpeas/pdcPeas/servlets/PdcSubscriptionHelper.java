@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,6 +25,8 @@
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +34,6 @@ import javax.servlet.http.HttpServletRequest;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
 import com.silverpeas.pdcSubscription.util.PdcSubscriptionUtil;
 import com.stratelia.silverpeas.classifyEngine.Criteria;
-import com.stratelia.silverpeas.pdc.model.SearchContext;
 import com.stratelia.silverpeas.pdc.model.SearchCriteria;
 import com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController;
 
@@ -108,11 +109,9 @@ public class PdcSubscriptionHelper {
       name = "";
     }
 
-    // retrieve a SearchContext according to request parameters
-    SearchContext context = getSearchContextFromRequest(request);
-
-    PDCSubscription subscription = new PDCSubscription(-1, name, context
-        .getCriterias(), Integer.parseInt(pdcSC.getUserId()));
+    PDCSubscription subscription =
+        new PDCSubscription(-1, name, getCriteriasFromRequest(request), Integer.parseInt(pdcSC
+            .getUserId()));
     (new PdcSubscriptionUtil()).createPDCSubsription(subscription);
     request.setAttribute("requestSaved", "yes");
   }
@@ -127,10 +126,7 @@ public class PdcSubscriptionHelper {
       }
       subscription.setName(name);
 
-      // retrieve a SearchContext according to request parameters
-      SearchContext context = getSearchContextFromRequest(request);
-
-      subscription.setPdcContext(context.getCriterias());
+      subscription.setPdcContext(getCriteriasFromRequest(request));
       (new PdcSubscriptionUtil()).updatePDCSubsription(subscription);
     }
     request.setAttribute("requestSaved", "yes");
@@ -140,11 +136,10 @@ public class PdcSubscriptionHelper {
     return new SearchCriteria(c.getAxisId(), c.getValue());
   }
 
-  // build a SearchContext according to request parameters
-  public static SearchContext getSearchContextFromRequest(HttpServletRequest request) {
+  public static List<Criteria> getCriteriasFromRequest(HttpServletRequest request) {
     String axisValueCouples = request.getParameter("AxisValueCouples");
     StringTokenizer tokenizer = new StringTokenizer(axisValueCouples, ",");
-    SearchContext context = new SearchContext();
+    List<Criteria> criterias = new ArrayList<Criteria>();
     int i = -1;
     while (tokenizer.hasMoreTokens()) {
       String axisValueCouple = tokenizer.nextToken();
@@ -152,10 +147,10 @@ public class PdcSubscriptionHelper {
       if (i != -1) {
         String axisId = axisValueCouple.substring(0, i);
         String valuePath = axisValueCouple.substring(i + 1);
-        context.addCriteria(new SearchCriteria(Integer.parseInt(axisId), valuePath));
+        criterias.add(new Criteria(Integer.parseInt(axisId), valuePath));
       }
     }
-    return context;
+    return criterias;
   }
 
 }

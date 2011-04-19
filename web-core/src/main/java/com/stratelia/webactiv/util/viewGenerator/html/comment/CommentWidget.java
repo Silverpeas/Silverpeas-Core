@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -223,7 +223,7 @@ public abstract class CommentWidget extends TagSupport {
         + "'}, updateBox: { title: '" + settings.getString("comment.comment")
         + "'}, editionBox: { title: '" + settings.getString("comment.add") + "', ok: '"
         + settings.getString("GML.validate")
-        + "'}, validate: function(text) { if (text == null || text.length == 0) { " + "alert('"
+        + "'}, validate: function(text) { if (text == null || $.trim(text).length == 0) { " + "alert('"
         + settings.getString("comment.pleaseFill_single") + "');"
         + "} else if (!isValidTextArea(text)) { alert('" + settings.getString(
         "comment.champsTropLong") + "'); } else { return true; } return false; }," + "mandatory: '"

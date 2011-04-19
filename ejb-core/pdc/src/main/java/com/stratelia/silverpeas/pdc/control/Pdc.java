@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -29,6 +29,7 @@ package com.stratelia.silverpeas.pdc.control;
 import java.util.List;
 
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
+import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
@@ -38,25 +39,23 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  */
 public class Pdc {
 
-  private List selectedSilverContents = null;
+  private List<GlobalSilverResult> selectedSilverContents = null;
   private String urlToReturn = null;
 
   public Pdc() {
   }
 
-  public void setSelectedSilverContents(List selectedSilverContents) {
+  public void setSelectedSilverContents(List<GlobalSilverResult> selectedSilverContents) {
     this.selectedSilverContents = selectedSilverContents;
-    GlobalSilverContent gsc = null;
-    for (int i = 0; i < selectedSilverContents.size(); i++) {
-      gsc = (GlobalSilverContent) selectedSilverContents.get(i);
+    for (GlobalSilverContent gsc : selectedSilverContents) {
       SilverTrace.info("Pdc", "Pdc.setSelectedSilverContents()",
           "root.MSG_GEN_PARAM_VALUE", "new silverContent selected = "
           + gsc.getName());
     }
   }
 
-  public List getSelectedSilverContents() {
-    return this.selectedSilverContents;
+  public List<GlobalSilverResult> getSelectedSilverContents() {
+    return selectedSilverContents;
   }
 
   public void setURLToReturn(String url) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -28,8 +28,7 @@
 package com.silverpeas.interestCenter.util;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
 
 import com.silverpeas.interestCenter.InterestCenterRuntimeException;
 import com.silverpeas.interestCenter.ejb.InterestCenterBm;
@@ -70,7 +69,7 @@ public class InterestCenterUtil {
   /**
    * Method getICByUserId returns ArrayList of all InterestCenter objects for user given by userId
    */
-  public ArrayList getICByUserId(int userId) throws RemoteException {
+  public List<InterestCenter> getICByUserId(int userId) throws RemoteException {
     initEJB();
     return icEjb.getICByUserID(userId);
   }
@@ -89,20 +88,13 @@ public class InterestCenterUtil {
    */
 
   public int isICExists(String nameIC, int userId) throws RemoteException {
-    ArrayList icList;
-    InterestCenter ic;
-
-    icList = getICByUserId(userId);
-    Iterator it = icList.iterator();
-    while (it.hasNext()) {
-      ic = (InterestCenter) it.next();
+    List<InterestCenter> icList = getICByUserId(userId);
+    for (InterestCenter ic : icList) {
       if (nameIC.equals(ic.getName())) {
         return ic.getId();
       }
     }
-
     return -1;
-
   }
 
   /**

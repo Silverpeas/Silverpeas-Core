@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -47,6 +47,7 @@ import com.silverpeas.workflow.api.model.ProcessModel;
 import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.workflow.api.task.Task;
 import com.silverpeas.workflow.api.user.User;
+import com.silverpeas.workflow.engine.instance.LockingUser;
 import com.silverpeas.workflow.engine.instance.ProcessInstanceImpl;
 import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
 import com.silverpeas.workflow.engine.model.StateImpl;
@@ -70,7 +71,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
   public void process(TaskDoneEvent event) throws WorkflowException {
 	  process(event, false);
   }
-  
+
   /**
    * A task has been done and sent to the workflow Enginewhich has to process it.
    * @param event the task event that has been done.
@@ -105,36 +106,36 @@ public class WorkflowEngineImpl implements WorkflowEngine {
 	    try {
 	      // Get database connection
 	      db = WorkflowJDOManager.getDatabase();
-	
+
 	      // begin transaction
 	      db.begin();
-	
+
 	      // Re-load process instance
 	      instance = (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class,
 	          instance.getInstanceId());
-	
+
 	      // Do workflow stuff
 	      try {
 	        // Over-locks the process instance by admin
 	        this.manageLocks((GenericEvent) event, instance);
-	
+
 	        // Tests if user is declared as a working user
 	        if (!creationEvent)
 	          this.manageRights((GenericEvent) event, instance);
-	
+
 	        // Tests if user is declared as the working user for this state
 	        if (!creationEvent)
 	          this.checkUserLock((GenericEvent) event, instance);
-	
+
 	        // Checks the datas associated to the event
 	        /* xoxox a faire en concordance avec les specs du form manager */
-	
+
 	      } catch (WorkflowException we) {
 	        db.rollback();
 	        throw new WorkflowException("WorkflowEngineImpl.process",
 	            "workflowEngine.EX_ERR_PROCESS_EVENT", we);
 	      }
-	
+
 	      // commit
 	      db.commit();
 	    } catch (PersistenceException pe) {
@@ -144,7 +145,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
 	      WorkflowJDOManager.closeDatabase(db);
 	    }
     }
-    
+
     // All is OK, send the TaskDoneEvent to the WorkflowEngineThread
     WorkflowEngineThread.addTaskDoneRequest(event);
   }
@@ -217,11 +218,11 @@ public class WorkflowEngineImpl implements WorkflowEngine {
     } finally {
       WorkflowJDOManager.closeDatabase(db);
     }
-    
+
     // All is OK, send the TaskDoneEvent to the WorkflowEngineThread
     WorkflowEngineThread.addTaskSavedRequest(event);
   }
-  
+
   /**
    * A question has been sent to a previous participant
    * @param event the question event containing all necessary information
@@ -478,7 +479,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
   private void checkUserLock(GenericEvent event,
       UpdatableProcessInstance instance) throws WorkflowException {
     State resolvedState;
-    User lockingUser;
+    LockingUser lockingUser;
     User actor;
 
     resolvedState = event.getResolvedState();
@@ -492,7 +493,8 @@ public class WorkflowEngineImpl implements WorkflowEngine {
       throw new WorkflowException("WorkflowEngineImpl.process(TaskDoneEvent)",
           "EX_ERR_NO_LOCK_BEFORE_ACTION");
 
-    if (!lockingUser.equals(actor))
+    User user = WorkflowHub.getUserManager().getUser(lockingUser.getUserId());
+    if (!user.equals(actor))
       throw new WorkflowException("WorkflowEngineImpl.process(TaskDoneEvent)",
           "EX_ERR_INSTANCE_LOCKED_BY_ANOTHER_USER");
   }

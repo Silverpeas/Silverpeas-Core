@@ -407,7 +407,7 @@ table.fc-header {
 /* event styles */
 
 .fc-grid .fc-event-time {
-
+	padding-right: 2px;
 	}
 
 /* right-to-left */

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,10 +27,11 @@
 
 package com.silverpeas.interestCenterPeas.servlets;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.silverpeas.interestCenter.model.InterestCenter;
 import com.silverpeas.interestCenterPeas.control.InterestCenterSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
@@ -44,6 +45,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  */
 public class InterestCenterPeasRequestRouter extends ComponentRequestRouter {
 
+  private static final long serialVersionUID = -6581146192028464533L;
   private InterestCenterSessionController icSC = null;
 
   /**
@@ -109,7 +111,7 @@ public class InterestCenterPeasRequestRouter extends ComponentRequestRouter {
             icSC.removeICByPKs(iDs);
           }
         }
-        ArrayList icList = icSC.getICByUserId();
+        List<InterestCenter> icList = icSC.getICByUserId();
         request.setAttribute("icList", icList);
         destination = "iCenterList.jsp";
       }

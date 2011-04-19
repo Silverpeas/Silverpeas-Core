@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -128,8 +128,8 @@ public class ContainerContextImpl implements ContainerContext, java.io.Serializa
   /*
    * Get All the SilverContentIds corresponding to the given position in the given Components
    */
-  public List getSilverContentIdByPosition(
-      ContainerPositionInterface containerPosition, List alComponentIds) {
+  public List<Integer> getSilverContentIdByPosition(
+      ContainerPositionInterface containerPosition, List<String> alComponentIds) {
     try {
       ContainerInterface ci = containerPeas.getContainerInterface();
       return ci

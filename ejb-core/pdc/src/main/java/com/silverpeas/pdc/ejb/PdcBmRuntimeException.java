@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,6 +27,8 @@ package com.silverpeas.pdc.ejb;
 import com.stratelia.webactiv.util.exception.*;
 
 public class PdcBmRuntimeException extends SilverpeasRuntimeException {
+
+  private static final long serialVersionUID = 6109210792330849912L;
 
   public PdcBmRuntimeException(String callingClass, int errorLevel,
       String message) {

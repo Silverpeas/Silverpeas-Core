@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,7 +27,6 @@
  */
 package com.silverpeas.glossary;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -36,7 +35,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.PdcException;
-import com.stratelia.silverpeas.treeManager.model.TreeNode;
+import com.stratelia.silverpeas.pdc.model.Value;
 
 /**
  * @author David Derigent
@@ -66,7 +65,7 @@ public class HighlightGlossaryTerms {
       String language) {
 
     PdcBmImpl pdc = new PdcBmImpl();
-    List<TreeNode> glossary = null;
+    List<Value> glossary = null;
     // get the glossary terms
     try {
       Axis axis = pdc.getAxisDetail(axisId);
@@ -78,7 +77,7 @@ public class HighlightGlossaryTerms {
     }
     // highlight the term retrieved in the content
     if (glossary != null && !glossary.isEmpty()) {
-      for (TreeNode node : glossary) {
+      for (Value node : glossary) {
         publicationContent =
             highlight(node.getName(language), publicationContent, node.getDescription(language),
             className, onlyFirst);

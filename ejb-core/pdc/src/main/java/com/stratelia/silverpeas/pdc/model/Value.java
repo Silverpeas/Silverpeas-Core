@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -30,13 +30,15 @@ import com.stratelia.silverpeas.treeManager.model.TreeNode;
 
 public class Value extends TreeNode implements java.io.Serializable {
 
+  private static final long serialVersionUID = 2248040737072584720L;
+
   /**
    * The primary key of the object Value
    */
   ValuePK pk = null;
 
   private int nbObjects = 0;
-  private List pathValues = null;
+  private List<Value> pathValues = null;
   private String axisId = "unknown";
   private String fullPath = null;
 
@@ -97,11 +99,11 @@ public class Value extends TreeNode implements java.io.Serializable {
     this.nbObjects = nbObjects;
   }
 
-  public void setPathValues(List pathValues) {
+  public void setPathValues(List<Value> pathValues) {
     this.pathValues = pathValues;
   }
 
-  public List getPathValues() {
+  public List<Value> getPathValues() {
     return this.pathValues;
   }
 

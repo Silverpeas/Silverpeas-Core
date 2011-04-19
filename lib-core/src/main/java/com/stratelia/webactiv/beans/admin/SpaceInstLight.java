@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -33,6 +33,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.organization.SpaceRow;
@@ -65,6 +66,7 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
   private List<SpaceInstLight> path = null;
   private boolean displaySpaceFirst = true;
   private boolean isPersonalSpace = false;
+  private boolean inheritanceBlocked = false;
 
   public SpaceInstLight() {
     id = "";
@@ -75,6 +77,7 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
     level = -1;
     displaySpaceFirst = true;
     isPersonalSpace = false;
+    inheritanceBlocked = false;
   }
 
   public SpaceInstLight(SpaceRow spaceRow) {
@@ -102,6 +105,7 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
       look = spaceRow.look;
       displaySpaceFirst = (spaceRow.displaySpaceFirst == 1);
       isPersonalSpace = spaceRow.isPersonalSpace == 1;
+      inheritanceBlocked = spaceRow.inheritanceBlocked == 1;
     }
   }
 
@@ -122,6 +126,7 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
       setTranslations(spaceInst.getTranslations());
       displaySpaceFirst = spaceInst.isDisplaySpaceFirst();
       isPersonalSpace = spaceInst.isPersonalSpace();
+      inheritanceBlocked = spaceInst.isInheritanceBlocked();
     }
   }
 
@@ -188,6 +193,9 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
   }
 
   public void setId(String id) {
+    if (StringUtil.isDefined(id) && id.startsWith("WA")) {
+      id = id.substring(2);
+    }
     this.id = id;
   }
 
@@ -320,6 +328,14 @@ public class SpaceInstLight extends AbstractI18NBean implements Serializable,
 
   public void setPersonalSpace(boolean isPersonalSpace) {
     this.isPersonalSpace = isPersonalSpace;
+  }
+  
+  public boolean isInheritanceBlocked() {
+    return inheritanceBlocked;
+  }
+
+  public void setInheritanceBlocked(boolean isInheritanceBlocked) {
+    this.inheritanceBlocked = isInheritanceBlocked;
   }
 
   @Override

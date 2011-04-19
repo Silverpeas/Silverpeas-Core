@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2009 Silverpeas
+    Copyright (C) 2000 - 2011 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -503,6 +503,10 @@
     <servlet-class>com.silverpeas.socialNetwork.myProfil.servlets.MyProfilRequestRouter</servlet-class>
   </servlet>
   <servlet>
+    <servlet-name>MyProfilJSONServlet</servlet-name>
+    <servlet-class>com.silverpeas.socialNetwork.myProfil.servlets.JSONServlet</servlet-class>
+  </servlet>
+  <servlet>
     <servlet-name>MyContactProfilRequestRouter</servlet-name>
     <servlet-class>com.silverpeas.socialNetwork.myContactProfil.servlets.MyContactProfilRequestRouter</servlet-class>
   </servlet>
@@ -872,6 +876,10 @@
   <servlet-mapping>
     <servlet-name>MyProfilRequestRouter</servlet-name>
     <url-pattern>/RMyProfil/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>MyProfilJSONServlet</servlet-name>
+    <url-pattern>/RmyProfilJSON/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>MyContactProfilRequestRouter</servlet-name>

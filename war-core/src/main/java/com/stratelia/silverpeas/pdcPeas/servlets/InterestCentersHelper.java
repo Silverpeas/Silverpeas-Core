@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -23,12 +23,14 @@
  */
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.interestCenter.model.InterestCenter;
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.classifyEngine.Criteria;
 import com.stratelia.silverpeas.pdc.model.PdcException;
-import com.stratelia.silverpeas.pdc.model.SearchContext;
 import com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
@@ -63,8 +65,8 @@ public class InterestCentersHelper {
       ic.setBeforeDate(getDate(request.getParameter("beforedate"), pdcSC));
       ic.setAuthorID(request.getParameter("authorSearch"));
 
-      SearchContext pdcContext = PdcSubscriptionHelper.getSearchContextFromRequest(request);
-      ic.setPdcContext(pdcContext.getCriterias());
+      List<Criteria> criteria = PdcSubscriptionHelper.getCriteriasFromRequest(request);
+      ic.setPdcContext(criteria);
 
       int icId = pdcSC.saveICenter(ic);
       request.setAttribute("requestSaved", "yes");

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -43,17 +43,15 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.monthCalendar;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Class declaration
@@ -161,41 +159,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
         "root.MSG_GEN_PARAM_VALUE", "numbersWeekInMonth = "
         + numbersWeekInMonth);
 
-    modifiedListEventMonth();
-    SilverTrace.debug("viewgenerator", "MonthCalendarWA1.setCurrentMonth()",
-        "root.MSG_GEN_PARAM_VALUE", "cal.getTime() = " + cal.getTime());
     this.listWeek = initListWeek();
-  }
-
-  /**
-   * the events are limited at the date of current month example 1: current month jun event
-   * Startdate = 28/05 - EndDate = 15/06 for the object monthCalendar this event is modified: event
-   * StartDate = 1/06 - EndDate = 15/06 example 2: current month = jun event StartDate = 9/06 -
-   * EnDate = 18/07 for the object monthCalendar this event is modified: event StartDate = 9/06 -
-   * EndDate = 30/06
-   * @return: void
-   * @exception catched : java.text.ParseException: print int the log file, the event iisn't add
-   * @see com.stratelia.webactiv.util.DateUtil
-   */
-  private void modifiedListEventMonth() {
-    for(Event eventMonth : listEventMonth) {
-      // limitation de la date de début de l'événement au premier jour du
-      // mois courrant
-      cal.set(Calendar.DAY_OF_MONTH, 1);
-      Date startDateOfMonth = cal.getTime();
-
-      cal.add(Calendar.DAY_OF_MONTH, cal
-          .getActualMaximum(Calendar.DAY_OF_MONTH) - 1);
-      Date endDateOfMonth = cal.getTime();
-
-      if (eventMonth.getStartDate().compareTo(startDateOfMonth) < 0) {
-        eventMonth.setStartDate(startDateOfMonth);
-
-      }
-      if (eventMonth.getEndDate().compareTo(endDateOfMonth) > 0) {
-        eventMonth.setEndDate(endDateOfMonth);
-      }
-    }
   }
 
   /**

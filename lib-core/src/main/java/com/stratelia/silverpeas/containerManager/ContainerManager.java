@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -723,7 +723,6 @@ public class ContainerManager extends Object implements java.io.Serializable {
 
     List<String> alGivenTables = new ArrayList<String>();
     List<String> alGivenKeys = new ArrayList<String>();
-    List<String> notUsedComponents = new ArrayList<String>();
 
     alGivenTables.add(m_sLinksTable);
     alGivenKeys.add("positionId");
@@ -737,34 +736,23 @@ public class ContainerManager extends Object implements java.io.Serializable {
 
     // works on the componentId List
     if (alComponentId != null && alComponentId.size() > 0) {
-      String component = "";
-      int nContainerInstanceId;
-
-      sSQLStatement.append("( ");
-      for (int nI = 0; nI < alComponentId.size(); nI++) {
-        component = alComponentId.get(nI);
+      sSQLStatement.append(" CML.containerInstanceId IN (");
+      boolean first = true;
+      for (String component : alComponentId) {
         // Get the containerInstanceId corresponding to the given componentId
-        nContainerInstanceId = this.getContainerInstanceId(component);
+        int nContainerInstanceId = this.getContainerInstanceId(component);
         // We need only components in a container
         if (nContainerInstanceId != -1) {
-          sSQLStatement.append("CML.containerInstanceId = "
-              + nContainerInstanceId);
-
-          if (nI < alComponentId.size() - 1) {
-            sSQLStatement.append(" OR ");
+          if (!first) {
+            sSQLStatement.append(", ");
           } else {
-            sSQLStatement.append(")");
+            first = false;
           }
-        } else {
-          notUsedComponents.add(component);
+          
+          sSQLStatement.append(nContainerInstanceId);
         }
       }
-      // retire le dernier " OR )" s'il existe !! et le remplace par " ) "
-      String strSQLStatement = sSQLStatement.toString();
-      int len = sSQLStatement.length();
-      if (strSQLStatement.endsWith(" OR ")) {
-        sSQLStatement.replace(len - 3, len, ")"); // ajoute une parenthese
-      }
+      sSQLStatement.append(") ");
     }
 
     if (alPositions != null && alPositions.size() > 0) {
@@ -779,7 +767,6 @@ public class ContainerManager extends Object implements java.io.Serializable {
       }
     }
 
-    notUsedComponents = null;
     joinStatement.setWhere(sSQLStatement.toString());
     SilverTrace.info("containerManager",
         "ContainerManager.getFilterPositionsByComponentIdStatement",

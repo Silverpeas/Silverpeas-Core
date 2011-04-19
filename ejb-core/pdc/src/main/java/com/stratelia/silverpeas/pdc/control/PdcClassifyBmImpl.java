@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -101,7 +101,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
       throw new PdcException("PdcClassifyBmImpl.addPosition",
           SilverpeasException.ERROR, "Pdc.CANNOT_ADD_POSITION", e);
     } finally {
-      closeConnection(connection);
+      DBUtil.close(connection);
     }
   }
 
@@ -152,7 +152,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
       throw new PdcException("PdcClassifyBmImpl.deletePosition",
           SilverpeasException.ERROR, "Pdc.CANNOT_DELETE_POSITION", e);
     } finally {
-      closeConnection(connection);
+      DBUtil.close(connection);
     }
   }
 
@@ -204,8 +204,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
       throws PdcException {
     try {
       // Get the join statement for all positions for the given componentId
-      return containerManager.getFilterPositionsByComponentIdStatement(null,
-          (List) alComponentId);
+      return containerManager.getFilterPositionsByComponentIdStatement(null, alComponentId);
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.getPositions",
           SilverpeasException.ERROR, "Pdc.CANNOT_GET_POSITIONS", e);
@@ -223,7 +222,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
 
   public void unregisterAxis(Connection con, int axisId) throws PdcException {
     try {
-      List alDeletedPositionIds = classifyEngine.unregisterAxis(con, axisId);
+      List<Integer> alDeletedPositionIds = classifyEngine.unregisterAxis(con, axisId);
       containerManager.removeAllPositionIdsLink(con, alDeletedPositionIds);
 
     } catch (Exception e) {
@@ -307,11 +306,10 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
     boolean hasOnePosition = false;
     // de toutes ces SilverObjectId, je récupère toutes
     // les positions correspondantes
-    ArrayList positions = new ArrayList();
-    for (int i = 0; i < objectIdList.size(); i++) {
-      if (((Integer) objectIdList.get(i)).intValue() != -1) {
-        positions = (ArrayList) getPositions(((Integer) objectIdList.get(i))
-            .intValue(), instanceId);
+    List<Position> positions = new ArrayList<Position>();
+    for (Integer objectId : objectIdList) {
+      if (objectId.intValue() != -1) {
+        positions = getPositions(objectId.intValue(), instanceId);
         // maintenant, je récupère toutes les valeurs de toutes les positions
         // pour ne prendre que les path de chaques Values
         // si la valeur de base ne fait pas partie du chemin alors on ne peut
@@ -319,9 +317,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
         // modifier cette valeur
         // et il faut que la nouvelle valeur de base ne soit pas dans le chemin
         String onePath = "";
-        Position position = null;
-        for (int k = 0; k < positions.size(); k++) {
-          position = (Position) positions.get(k);
+        for (Position position : positions) {
           com.stratelia.silverpeas.classifyEngine.Value value = position
               .getValueByAxis(usedAxis.getAxisId());
           onePath = value.getValue();
@@ -353,8 +349,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
   public List<PertinentAxis> getPertinentAxis(SearchContext searchContext, List<Integer> axisIds)
       throws PdcException {
     try {
-      return classifyEngine.getPertinentAxis(searchContext.getCriterias(),
-          axisIds);
+      return classifyEngine.getPertinentAxis(searchContext.getCriterias(), axisIds);
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.getPertinentAxis",
           SilverpeasException.ERROR, "Pdc.CANNOT_GET_PERTINENT_AXIS", e);
@@ -364,8 +359,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
   public List<PertinentValue> getPertinentValues(SearchContext searchContext, int axisId)
       throws PdcException {
     try {
-      return classifyEngine.getPertinentValues(searchContext.getCriterias(),
-          axisId);
+      return classifyEngine.getPertinentValues(searchContext.getCriterias(), axisId);
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.getPertinentValues",
           SilverpeasException.ERROR, "Pdc.CANNOT_GET_PERTINENT_VALUES", e);
@@ -388,8 +382,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
       throws PdcException {
     try {
       return classifyEngine.getSinglePertinentAxisByJoin(null, searchContext
-          .getCriterias(), new Integer(axisId).intValue(), sRootValue,
-          joinStatementAllPositions);
+          .getCriterias(), Integer.parseInt(axisId), sRootValue, joinStatementAllPositions);
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.getPertinentAxis",
           SilverpeasException.ERROR, "Pdc.CANNOT_GET_PERTINENT_AXIS", e);
@@ -484,21 +477,13 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
 
   private void rollbackConnection(Connection con) {
     try {
-      if (con != null)
+      if (con != null) {
         con.rollback();
+      }
     } catch (Exception e) {
       SilverTrace.error("Pdc", "PdcClassifyBmImpl.rollbackConnection()",
           "root.EX_CONNECTION_CLOSE_FAILED", "", e);
     }
   }
 
-  private void closeConnection(Connection connection) {
-    try {
-      if (!connection.isClosed())
-        connection.close();
-    } catch (Exception e) {
-      SilverTrace.error("Pdc", "PdcClassifyBmImpl.closeConnection",
-          "root.EX_CONNECTION_CLOSE_FAILED", "", e);
-    }
-  }
 }

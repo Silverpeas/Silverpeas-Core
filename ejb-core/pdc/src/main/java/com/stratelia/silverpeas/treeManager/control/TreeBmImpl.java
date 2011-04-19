@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -123,6 +123,7 @@ public class TreeBmImpl implements TreeBm {
         + " and orderNumber >= " + order + " ORDER BY orderNumber ASC";
 
     try {
+      @SuppressWarnings("unchecked")
       Collection<TreeNodePersistence> nodesToUpdate = getDAO().findByWhereClause(con, node.getPK(),
           whereClause);
       boolean nodeHasMoved = true;
@@ -321,10 +322,7 @@ public class TreeBmImpl implements TreeBm {
       getDAO().removeWhere(rootPK, whereClause);
 
       // Remove all index of nodes under the rootId
-      TreeNode nodeToDelete = null;
-      for (int i = 0; i < subTree.size(); i++) {
-        nodeToDelete = subTree.get(i);
-
+      for (TreeNode nodeToDelete : subTree) {
         // remove node translations
         treeI18NDAO.deleteNodeTranslations(con, nodeToDelete.getPK().getId(),
             treeId);
@@ -367,9 +365,7 @@ public class TreeBmImpl implements TreeBm {
     }
 
     // Remove all index of nodes of the tree
-    TreeNode nodeToDelete = null;
-    for (int i = 0; i < tree.size(); i++) {
-      nodeToDelete = (TreeNode) tree.get(i);
+    for (TreeNode nodeToDelete : tree) {
       deleteIndex((TreeNodePK) nodeToDelete.getPK(), treeId);
     }
 
@@ -403,25 +399,21 @@ public class TreeBmImpl implements TreeBm {
         // pour chaque élément on le place correctement dans la liste
         // ordonnée
         if (list != null && list.size() > 0) {
-          // Premier élément de la liste est l'élément racine
-          TreeNodePersistence rootPers = list.get(0);
-          root = new TreeNode(rootPers);
-
-          // get translations for DB
-          setTranslations(con, root);
-
-          // On l'insére dans la liste en première position
-          sortedList.add(root);
-
           TreeNode node = null;
-          TreeNodePersistence nodePers = null;
           int position = -1;
           // On parcours le reste de la liste
-          for (int i = 1; i < list.size(); i++) {
-            nodePers = (TreeNodePersistence) list.get(i);
+          boolean first = true;
+          for (TreeNodePersistence nodePers : list) {
             node = new TreeNode(nodePers);
             setTranslations(con, node);
-            position = whereInsertNodeToCorrectPlaceInList(sortedList, node);
+            if (first) {
+              // Premier élément de la liste est l'élément racine
+              // On l'insére dans la liste en première position
+              position = 0;
+              first = false;
+            } else {
+              position = whereInsertNodeToCorrectPlaceInList(sortedList, node);
+            }
             sortedList.add(position, node);
           }
         }
@@ -562,6 +554,7 @@ public class TreeBmImpl implements TreeBm {
    * @return a List of TreeNodePersistence
    * @throws TreeManagerException
    */
+  @SuppressWarnings("unchecked")
   private List<TreeNodePersistence> getDescendants(Connection con, TreeNode root, AxisFilter filter)
       throws TreeManagerException {
     String rootId = root.getPK().getId();
@@ -638,6 +631,7 @@ public class TreeBmImpl implements TreeBm {
     TreeNode node = null;
     try {
       String whereClause = "treeId = " + treeId + " and id = " + nodePK.getId();
+      @SuppressWarnings("unchecked")
       List<TreeNodePersistence> nodes =
           (List<TreeNodePersistence>) getDAO().findByWhereClause(con, nodePK, whereClause);
       if (nodes.size() > 0) {
@@ -669,6 +663,7 @@ public class TreeBmImpl implements TreeBm {
     return chaine;
   }
 
+  @SuppressWarnings("unchecked")
   public List<TreeNode> getNodesByName(Connection con, String nodeName)
       throws TreeManagerException {
     SilverTrace.info("treeManager", "TreeManagerBmImpl.getNodesByName()",
@@ -734,12 +729,10 @@ public class TreeBmImpl implements TreeBm {
     // Ajouter 1 au niveau des descendants
     List<TreeNodePersistence> list = getDescendants(con, refNode); // Attention ICI
     if (list.size() > 0) {
-      TreeNodePersistence nodeToUpdate = null;
       String pathToUpdate = "";
       String endOfPath = "";
-      for (int i = 0; i < list.size(); i++) {
+      for (TreeNodePersistence nodeToUpdate : list) {
         // Modifie le niveau et le chemin de chaque descendant
-        nodeToUpdate = list.get(i);
         nodeToUpdate.setLevelNumber(nodeToUpdate.getLevelNumber() + 1);
         pathToUpdate = nodeToUpdate.getPath();
         SilverTrace.info("treeManager",
@@ -872,19 +865,16 @@ public class TreeBmImpl implements TreeBm {
 
     try {
       // ATTENTION il faut traiter l'ordre des frères
+      @SuppressWarnings("unchecked")
       Collection<TreeNodePersistence> nodesToUpdate = getDAO().findByWhereClause(con,
           father.getPK(), whereClause);
 
-      Iterator<TreeNodePersistence> it = nodesToUpdate.iterator();
       TreeNode nodeToMove = null;
-      TreeNodePersistence tnp = null;
-      while (it.hasNext()) {
-        tnp = (TreeNodePersistence) it.next();
+      for (TreeNodePersistence tnp : nodesToUpdate) {
         // On modifie l'ordre du noeud en ajoutant 1 par rapport au nouveau
         // noeud
         order++;
         tnp.setOrderNumber(order);
-        // getDAO().update(nodeToMove);
         nodeToMove = new TreeNode(tnp);
         TreeDAO.updateNode(con, nodeToMove);
       }
@@ -894,11 +884,9 @@ public class TreeBmImpl implements TreeBm {
     }
 
     try {
-      // pk = (TreeNodePK) getDAO().add(nodeToInsert);
       nodeToInsert.setTreeId(treeId);
       pk = TreeDAO.createNode(con, nodeToInsert);
       nodeToInsert.setPK(pk);
-      // createIndex(nodeToInsert);
       createIndex(con, nodeToInsert);
     } catch (Exception e) {
       throw new TreeManagerException("TreeBmImpl.createSonToNode()",
@@ -908,6 +896,7 @@ public class TreeBmImpl implements TreeBm {
     return pk.getId();
   }
 
+  @SuppressWarnings("unchecked")
   public List<TreeNode> getSonsToNode(Connection con, TreeNodePK treeNodePK, String treeId)
       throws TreeManagerException {
     SilverTrace.info("treeManager", "TreeManagerBmImpl.getSonsToNode()",
@@ -942,8 +931,8 @@ public class TreeBmImpl implements TreeBm {
       TreeDAO.levelUp(con, path + nodeId + "/", treeId);
 
       // Change le père de chaque fils du noeud à supprimer
-      TreeDAO.changeFatherAndPath(con, new Integer(nodeId).intValue(),
-          new Integer(newFather).intValue(), path, treeId);
+      TreeDAO.changeFatherAndPath(con, Integer.parseInt(nodeId),
+          Integer.parseInt(newFather), path, treeId);
 
       // Update du path pour les valeurs descendantes.
       TreeDAO.updatePath(con, nodeId, treeId);
@@ -989,7 +978,6 @@ public class TreeBmImpl implements TreeBm {
     ArrayList<TreeNode> list = new ArrayList<TreeNode>();
     try {
       // récupère la valeur de la colonne path de la table SB_Tree_Tree
-      // if (path.length() > 1){
       StringTokenizer st = new StringTokenizer(path, "/");
       String whereClause = "treeId = " + treeId + " and (1=0 ";
       while (st.hasMoreTokens()) {
@@ -999,10 +987,10 @@ public class TreeBmImpl implements TreeBm {
           + ") order by levelNumber ASC";
       SilverTrace.info("treeManager", "TreeManagerBmImpl.getFullPath()",
           "root.MSG_GEN_PARAM_VALUE", "whereClause = " + whereClause);
+      @SuppressWarnings("unchecked")
       Collection<TreeNodePersistence> tree = getDAO().findByWhereClause(con, nodePK, whereClause);
 
       list.addAll(persistence2TreeNode(con, tree));
-      // }
     } catch (Exception e) {
       throw new TreeManagerException("TreeBmImpl.getFullPath()",
           SilverpeasException.ERROR, "treeManager.CREATING_SON_FAILED", e);
@@ -1016,9 +1004,7 @@ public class TreeBmImpl implements TreeBm {
       throws TreeManagerException {
     List<TreeNode> nodes = new ArrayList<TreeNode>();
     if (silverpeasBeans != null) {
-      Iterator<TreeNodePersistence> it = silverpeasBeans.iterator();
-      while (it.hasNext()) {
-        TreeNodePersistence silverpeasBean = it.next();
+      for (TreeNodePersistence silverpeasBean : silverpeasBeans) {
         TreeNode node = new TreeNode(silverpeasBean);
         nodes.add(node);
         // ajout des traductions :
@@ -1047,10 +1033,7 @@ public class TreeBmImpl implements TreeBm {
 
   public void indexTree(Connection con, int treeId) throws TreeManagerException {
     List<TreeNode> tree = getTree(con, Integer.toString(treeId));
-    Iterator<TreeNode> itTree = tree.iterator();
-    TreeNode node = null;
-    while (itTree.hasNext()) {
-      node = itTree.next();
+    for (TreeNode node : tree) {
       createIndex(node);
     }
   }

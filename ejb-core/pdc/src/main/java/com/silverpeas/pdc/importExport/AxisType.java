@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -40,7 +40,7 @@ public class AxisType {
 
   private int id;
   private String path;
-  private List listPdcValueType; // liste de PdcValueType;
+  private List<PdcValueType> listPdcValueType;
   private String name;
 
   /**
@@ -65,11 +65,11 @@ public class AxisType {
     this.name = name;
   }
 
-  public List getListPdcValueType() {
+  public List<PdcValueType> getListPdcValueType() {
     return listPdcValueType;
   }
 
-  public void setListPdcValueType(List listPdcValueType) {
+  public void setListPdcValueType(List<PdcValueType> listPdcValueType) {
     this.listPdcValueType = listPdcValueType;
   }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,6 +27,5 @@ package com.stratelia.silverpeas.silverstatistics.control;
 import java.util.Collection;
 
 public interface ComponentStatisticsInterface {
-  public Collection getVolume(String spaceId, String componentId)
-      throws Exception;
+  public Collection getVolume(String spaceId, String componentId) throws Exception;
 }

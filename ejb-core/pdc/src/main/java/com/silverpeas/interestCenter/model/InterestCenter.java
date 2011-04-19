@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -28,9 +28,13 @@
  */
 package com.silverpeas.interestCenter.model;
 
-import java.util.ArrayList;
+import java.util.List;
+
+import com.stratelia.silverpeas.classifyEngine.Criteria;
 
 public class InterestCenter implements Cloneable, java.io.Serializable {
+
+  private static final long serialVersionUID = -7711570385270494209L;
 
   /** This constant indicates that pk reference in class was not initilized */
   public static final int NULLID = -1;
@@ -43,7 +47,7 @@ public class InterestCenter implements Cloneable, java.io.Serializable {
   private String authorID;
   private java.util.Date afterDate;
   private java.util.Date beforeDate;
-  private ArrayList pdcContext;
+  private List<Criteria> pdcContext;
   private int ownerID;
 
   /**
@@ -59,7 +63,7 @@ public class InterestCenter implements Cloneable, java.io.Serializable {
    */
   public InterestCenter(int iD, String name, String query, String workSpaceID,
       String peasID, String authorID, java.util.Date afterDate,
-      java.util.Date beforeDate, ArrayList pcdContext, int ownerID) {
+      java.util.Date beforeDate, List<Criteria> pcdContext, int ownerID) {
     this.id = iD;
     this.name = name;
     this.query = query;
@@ -136,11 +140,11 @@ public class InterestCenter implements Cloneable, java.io.Serializable {
     this.beforeDate = beforeDate;
   }
 
-  public ArrayList getPdcContext() {
+  public List<Criteria> getPdcContext() {
     return pdcContext;
   }
 
-  public void setPdcContext(ArrayList pdcContext) {
+  public void setPdcContext(List<Criteria> pdcContext) {
     this.pdcContext = pdcContext;
   }
 

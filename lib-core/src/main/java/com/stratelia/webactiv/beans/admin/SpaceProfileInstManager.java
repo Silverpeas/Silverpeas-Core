@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,6 +25,7 @@ package com.stratelia.webactiv.beans.admin;
 
 import java.util.ArrayList;
 
+import com.stratelia.webactiv.organization.AdminPersistenceException;
 import com.stratelia.webactiv.organization.SpaceRow;
 import com.stratelia.webactiv.organization.SpaceUserRoleRow;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -103,60 +104,23 @@ public class SpaceProfileInstManager {
       }
     }
 
-    SpaceProfileInst spaceProfileInst = new SpaceProfileInst();
-    spaceProfileInst.removeAllGroups();
-    spaceProfileInst.removeAllUsers();
-    this.setSpaceProfileInst(spaceProfileInst, ddManager, sSpaceProfileId, sFatherId);
-    return spaceProfileInst;
-  }
-
-  /**
-   * get information for given id and store it in the given SpaceProfileInst object
-   * @param spaceProfileInst
-   * @param ddManager
-   * @param sSpaceProfileId
-   * @param sFatherId
-   * @throws AdminException 
-   */
-  public void setSpaceProfileInst(SpaceProfileInst spaceProfileInst,
-      DomainDriverManager ddManager, String sSpaceProfileId, String sFatherId)
-      throws AdminException {
     try {
       ddManager.getOrganizationSchema();
 
       // Load the profile detail
       SpaceUserRoleRow spaceUserRole = ddManager.organization.spaceUserRole.getSpaceUserRole(idAsInt(
           sSpaceProfileId));
-
-      // Set the attributes of the space profile Inst
-      spaceProfileInst.setId(sSpaceProfileId);
-      spaceProfileInst.setName(spaceUserRole.roleName);
-      spaceProfileInst.setLabel(spaceUserRole.name);
-      spaceProfileInst.setDescription(spaceUserRole.description);
-      spaceProfileInst.setSpaceFatherId(sFatherId);
-      if (spaceUserRole.isInherited == 1) {
-        spaceProfileInst.setInherited(true);
+      
+      SpaceProfileInst spaceProfileInst = null;
+      if (spaceUserRole != null) {
+        // Set the attributes of the space profile Inst
+        spaceProfileInst = spaceUserRoleRow2SpaceProfileInst(spaceUserRole);
+        setUsersAndGroups(ddManager, spaceProfileInst);
       }
-
-      // Get the groups
-      String[] asGroupIds = ddManager.organization.group.getDirectGroupIdsInSpaceUserRole(idAsInt(
-          sSpaceProfileId));
-
-      // Set the groups to the space profile
-      for (int nI = 0; asGroupIds != null && nI < asGroupIds.length; nI++) {
-        spaceProfileInst.addGroup(asGroupIds[nI]);
-      }
-
-      // Get the Users
-      String[] asUsersIds = ddManager.organization.user.getDirectUserIdsOfSpaceUserRole(idAsInt(
-          sSpaceProfileId));
-
-      // Set the Users to the space profile
-      for (int nI = 0; asUsersIds != null && nI < asUsersIds.length; nI++) {
-        spaceProfileInst.addUser(asUsersIds[nI]);
-      }
+      
+      return spaceProfileInst;
     } catch (Exception e) {
-      throw new AdminException("SpaceProfileInstManager.setSpaceProfileInst",
+      throw new AdminException("SpaceProfileInstManager.getSpaceProfileInst",
           SilverpeasException.ERROR, "admin.EX_ERR_SET_SPACE_PROFILE",
           "space profile Id: '" + sSpaceProfileId + "', space Id: '"
           + sFatherId + "'", e);
@@ -164,6 +128,99 @@ public class SpaceProfileInstManager {
       ddManager.releaseOrganizationSchema();
     }
   }
+
+  /**
+   * get information for given id and store it in the given SpaceProfileInst object
+   * @param ddManager
+   * @param spaceId
+   * @param roleName
+   * @throws AdminException 
+   */
+  public SpaceProfileInst getInheritedSpaceProfileInstByName(DomainDriverManager ddManager,
+      String spaceId, String roleName)
+      throws AdminException {
+    return getSpaceProfileInst(ddManager, spaceId, roleName, true);
+  }
+  
+  public SpaceProfileInst getSpaceProfileInstByName(DomainDriverManager ddManager,
+      String spaceId, String roleName)
+      throws AdminException {
+    return getSpaceProfileInst(ddManager, spaceId, roleName, false);
+  }
+  
+  private SpaceProfileInst getSpaceProfileInst(DomainDriverManager ddManager,
+      String spaceId, String roleName, boolean inherited)
+      throws AdminException {
+    try {
+      ddManager.getOrganizationSchema();
+      
+      int iInherited = 0;
+      if (inherited) {
+        iInherited = 1;
+      }
+
+      // Load the profile detail
+      SpaceUserRoleRow spaceUserRole =
+          ddManager.organization.spaceUserRole.getSpaceUserRole(idAsInt(spaceId), roleName, iInherited);
+
+      SpaceProfileInst spaceProfileInst = null;
+      if (spaceUserRole != null) {
+        // Set the attributes of the space profile Inst
+        spaceProfileInst = spaceUserRoleRow2SpaceProfileInst(spaceUserRole);
+        setUsersAndGroups(ddManager, spaceProfileInst);
+      }
+
+      return spaceProfileInst;
+    } catch (Exception e) {
+      throw new AdminException("SpaceProfileInstManager.getInheritedSpaceProfileInst",
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_SPACE_PROFILE",
+          "spaceId = " + spaceId + ", role = " + roleName, e);
+    } finally {
+      ddManager.releaseOrganizationSchema();
+    }
+  }
+  
+  private void setUsersAndGroups(DomainDriverManager ddManager, SpaceProfileInst spaceProfileInst)
+      throws AdminPersistenceException {
+    
+    // Get the groups
+    String[] asGroupIds =
+        ddManager.organization.group.getDirectGroupIdsInSpaceUserRole(idAsInt(spaceProfileInst
+            .getId()));
+
+    // Set the groups to the space profile
+    if (asGroupIds != null) {
+      for (String groupId : asGroupIds) {
+        spaceProfileInst.addGroup(groupId);
+      }
+    }
+
+    // Get the Users
+    String[] asUsersIds = ddManager.organization.user.getDirectUserIdsOfSpaceUserRole(idAsInt(
+        spaceProfileInst.getId()));
+
+    // Set the Users to the space profile
+    if (asUsersIds != null) {
+      for (String userId : asUsersIds) {
+        spaceProfileInst.addUser(userId);
+      }
+    }
+  }
+  
+  private SpaceProfileInst spaceUserRoleRow2SpaceProfileInst(SpaceUserRoleRow spaceUserRole) {
+    // Set the attributes of the space profile Inst
+    SpaceProfileInst spaceProfileInst = new SpaceProfileInst();
+    spaceProfileInst.setId(Integer.toString(spaceUserRole.id));
+    spaceProfileInst.setName(spaceUserRole.roleName);
+    spaceProfileInst.setLabel(spaceUserRole.name);
+    spaceProfileInst.setDescription(spaceUserRole.description);
+    spaceProfileInst.setSpaceFatherId(Integer.toString(spaceUserRole.spaceId));
+    if (spaceUserRole.isInherited == 1) {
+      spaceProfileInst.setInherited(true);
+    }
+    return spaceProfileInst;
+  }
+
 
   /**
    * Deletes space profile instance from Silverpeas
@@ -208,86 +265,86 @@ public class SpaceProfileInstManager {
     try {
       // Compute the Old spaceProfile group list
       ArrayList<String> alGroup = spaceProfileInst.getAllGroups();
-      for (int nI = 0; nI < alGroup.size(); nI++) {
-        alOldSpaceProfileGroup.add(alGroup.get(nI));
+      for (String groupId : alGroup) {
+        alOldSpaceProfileGroup.add(groupId);
       }
 
       // Compute the New spaceProfile group list
       alGroup = spaceProfileInstNew.getAllGroups();
-      for (int nI = 0; nI < alGroup.size(); nI++) {
-        alNewSpaceProfileGroup.add(alGroup.get(nI));
+      for (String groupId : alGroup) {
+        alNewSpaceProfileGroup.add(groupId);
       }
 
       // Compute the remove group list
-      for (int nI = 0; nI < alOldSpaceProfileGroup.size(); nI++) {
-        if (alNewSpaceProfileGroup.indexOf(alOldSpaceProfileGroup.get(nI)) == -1) {
-          alRemGroup.add(alOldSpaceProfileGroup.get(nI));
+      for (String groupId : alOldSpaceProfileGroup) {
+        if (alNewSpaceProfileGroup.indexOf(groupId) == -1) {
+          alRemGroup.add(groupId);
         }
       }
 
       // Compute the add and stay group list
-      for (int nI = 0; nI < alNewSpaceProfileGroup.size(); nI++) {
-        if (alOldSpaceProfileGroup.indexOf(alNewSpaceProfileGroup.get(nI)) == -1) {
-          alAddGroup.add(alNewSpaceProfileGroup.get(nI));
+      for (String groupId : alNewSpaceProfileGroup) {
+        if (alOldSpaceProfileGroup.indexOf(groupId) == -1) {
+          alAddGroup.add(groupId);
         } else {
-          alStayGroup.add(alNewSpaceProfileGroup.get(nI));
+          alStayGroup.add(groupId);
         }
       }
 
       // Add the new Groups
-      for (int nI = 0; nI < alAddGroup.size(); nI++) {
+      for (String groupId : alAddGroup) {
         // Create the links between the spaceProfile and the group
         ddManager.organization.spaceUserRole.addGroupInSpaceUserRole(
-            idAsInt(alAddGroup.get(nI)), idAsInt(spaceProfileInst.getId()));
+            idAsInt(groupId), idAsInt(spaceProfileInst.getId()));
       }
 
       // Remove the removed groups
-      for (int nI = 0; nI < alRemGroup.size(); nI++) {
+      for (String groupId : alRemGroup) {
         // delete the node link SpaceProfile_Group
         ddManager.organization.spaceUserRole.removeGroupFromSpaceUserRole(
-            idAsInt(alRemGroup.get(nI)), idAsInt(spaceProfileInst.getId()));
+            idAsInt(groupId), idAsInt(spaceProfileInst.getId()));
       }
 
       // Compute the Old spaceProfile User list
       ArrayList<String> alUser = spaceProfileInst.getAllUsers();
-      for (int nI = 0; nI < alUser.size(); nI++) {
-        alOldSpaceProfileUser.add(alUser.get(nI));
+      for (String userId : alUser) {
+        alOldSpaceProfileUser.add(userId);
       }
 
       // Compute the New spaceProfile User list
       alUser = spaceProfileInstNew.getAllUsers();
-      for (int nI = 0; nI < alUser.size(); nI++) {
-        alNewSpaceProfileUser.add(alUser.get(nI));
+      for (String userId : alUser) {
+        alNewSpaceProfileUser.add(userId);
       }
 
       // Compute the remove User list
-      for (int nI = 0; nI < alOldSpaceProfileUser.size(); nI++) {
-        if (alNewSpaceProfileUser.indexOf(alOldSpaceProfileUser.get(nI)) == -1) {
-          alRemUser.add(alOldSpaceProfileUser.get(nI));
+      for (String userId : alOldSpaceProfileUser) {
+        if (alNewSpaceProfileUser.indexOf(userId) == -1) {
+          alRemUser.add(userId);
         }
       }
 
       // Compute the add and stay User list
-      for (int nI = 0; nI < alNewSpaceProfileUser.size(); nI++) {
-        if (alOldSpaceProfileUser.indexOf(alNewSpaceProfileUser.get(nI)) == -1) {
-          alAddUser.add(alNewSpaceProfileUser.get(nI));
+      for (String userId : alNewSpaceProfileUser) {
+        if (alOldSpaceProfileUser.indexOf(userId) == -1) {
+          alAddUser.add(userId);
         } else {
-          alStayUser.add(alNewSpaceProfileUser.get(nI));
+          alStayUser.add(userId);
         }
       }
 
       // Add the new Users
-      for (int nI = 0; nI < alAddUser.size(); nI++) {
+      for (String userId : alAddUser) {
         // Create the links between the spaceProfile and the User
         ddManager.organization.spaceUserRole.addUserInSpaceUserRole(
-            idAsInt(alAddUser.get(nI)), idAsInt(spaceProfileInst.getId()));
+            idAsInt(userId), idAsInt(spaceProfileInst.getId()));
       }
 
       // Remove the removed Users
-      for (int nI = 0; nI < alRemUser.size(); nI++) {
+      for (String userId : alRemUser) {
         // delete the node link SpaceProfile_User
         ddManager.organization.spaceUserRole.removeUserFromSpaceUserRole(
-            idAsInt(alRemUser.get(nI)), idAsInt(spaceProfileInst.getId()));
+            idAsInt(userId), idAsInt(spaceProfileInst.getId()));
       }
 
       // update the spaceProfile node

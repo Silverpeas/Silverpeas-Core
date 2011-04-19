@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -75,7 +75,6 @@ public class ClassifyPosition extends Position<ClassifyValue> implements
    * Méthodes nécéssaire pour le mapping castor du module importExport.
    * @return
    */
-  @SuppressWarnings("unchecked")
   public List<ClassifyValue> getListClassifyValue() {
     return super.getValues();
   }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -40,19 +40,20 @@ import com.stratelia.silverpeas.treeManager.model.TreeNode;
  */
 public class PdcValueType extends TreeNode {
 
-  private List listPdcValueType;// liste de PdcValueType
+  private static final long serialVersionUID = -581591562816027206L;
+  private List<PdcValueType> listPdcValueType;// liste de PdcValueType
 
   /**
    * @return
    */
-  public List getListPdcValueType() {
+  public List<PdcValueType> getListPdcValueType() {
     return listPdcValueType;
   }
 
   /**
    * @param list
    */
-  public void setListPdcValueType(List list) {
+  public void setListPdcValueType(List<PdcValueType> list) {
     listPdcValueType = list;
   }
 }

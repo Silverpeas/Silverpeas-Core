@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -218,7 +218,7 @@ public class PdcImportExport {
       listAxisType.add(axisType);
       // Récupération de la totalité de l'arbre de l'axe avec la méthode
       // récursive getValueTree
-      List listPdcValueType = getValueTree(axisId, valueRoot.getPK().getId());
+      List<PdcValueType> listPdcValueType = getValueTree(axisId, valueRoot.getPK().getId());
       axisType.setListPdcValueType(listPdcValueType);
     }
     return pdcType;

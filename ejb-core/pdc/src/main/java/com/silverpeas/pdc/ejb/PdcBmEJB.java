@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -47,6 +47,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class PdcBmEJB implements javax.ejb.SessionBean {
+
+  private static final long serialVersionUID = -1829121357409874581L;
   com.stratelia.silverpeas.pdc.control.PdcBm pdc = null;
   ContentManager contentManager = null;
 
@@ -71,8 +73,8 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
     return contentManager;
   }
 
-  public ArrayList findGlobalSilverContents(
-      ContainerPositionInterface containerPosition, List componentIds,
+  public List<GlobalSilverContent> findGlobalSilverContents(
+      ContainerPositionInterface containerPosition, List<String> componentIds,
       boolean recursiveSearch, boolean visibilitySensitive) {
     ArrayList<Integer> silverContentIds = new ArrayList<Integer>();
     try {
@@ -85,14 +87,14 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", c);
     }
 
-    return (ArrayList) getSilverContentsByIds(silverContentIds);
+    return getSilverContentsByIds(silverContentIds);
   }
 
-  public ArrayList findGlobalSilverContents(
-      ContainerPositionInterface containerPosition, List componentIds,
+  public List<GlobalSilverContent> findGlobalSilverContents(
+      ContainerPositionInterface containerPosition, List<String> componentIds,
       String authorId, String afterDate, String beforeDate,
       boolean recursiveSearch, boolean visibilitySensitive) {
-    ArrayList silverContentIds = new ArrayList();
+    List<Integer> silverContentIds = new ArrayList<Integer>();
     try {
       // get the silverContentids classified in the context
       silverContentIds.addAll(getPdcBm().findSilverContentIdByPosition(
@@ -103,7 +105,7 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", c);
     }
 
-    return (ArrayList) getSilverContentsByIds(silverContentIds);
+    return getSilverContentsByIds(silverContentIds);
   }
 
   public Value getValue(String axisId, String valueId) throws RemoteException {
@@ -144,14 +146,14 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
       return positionId;
   }
 
-  public ArrayList getDaughters(String axisId, String valueId)
+  public List<Value> getDaughters(String axisId, String valueId)
       throws RemoteException {
-    return (ArrayList) getPdcBm().getDaughters(axisId, valueId);
+    return getPdcBm().getDaughters(axisId, valueId);
   }
 
-  public ArrayList getSubAxisValues(String axisId, String valueId)
+  public List<Value> getSubAxisValues(String axisId, String valueId)
       throws RemoteException {
-    return (ArrayList) getPdcBm().getSubAxisValues(axisId, valueId);
+    return getPdcBm().getSubAxisValues(axisId, valueId);
   }
 
   public int getSilverContentId(String objectId, String componentId) {
@@ -167,28 +169,22 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
     return silverContentId;
   }
 
-  public ArrayList getPositions(int silverContentId, String componentId) {
-    ArrayList positions = null;
+  public List<ClassifyPosition> getPositions(int silverContentId, String componentId) {
     try {
-      positions = (ArrayList) getPdcBm().getPositions(silverContentId,
-          componentId);
+      return getPdcBm().getPositions(silverContentId, componentId);
     } catch (PdcException e) {
       throw new PdcBmRuntimeException("PdcBmEJB.getPositions",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
-    return positions;
   }
 
-  public List getSilverContentIds(List docFeatures) {
-    ArrayList silverContentIds = null;
+  public List<Integer> getSilverContentIds(List<String> docFeatures) {
     try {
-      silverContentIds = (ArrayList) getContentManager().getSilverContentId(
-          docFeatures);
+      return (ArrayList<Integer>) getContentManager().getSilverContentId(docFeatures);
     } catch (Exception e) {
       throw new PdcBmRuntimeException("PdcBmEJB.getSilverContentIds",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
-    return silverContentIds;
   }
 
   public String getInternalContentId(int silverContentId) {
@@ -227,13 +223,12 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
 	  }
   }
   
-  private List getSilverContentsByIds(List silverContentIds) {
+  private List<GlobalSilverContent> getSilverContentsByIds(List<Integer> silverContentIds) {
     SilverTrace.info("Pdc", "PdcBmEJB.getSilverContentsByIds",
         "root.MSG_GEN_PARAM_VALUE", "silverContentIds = " + silverContentIds);
 
     // recherche des componentId a partir de silverContentId
     ContentPeas contentP = null;
-    String instanceId = "";
     List<GlobalSilverContent> alSilverContents = new ArrayList<GlobalSilverContent>();
     List<String> alInstanceIds = new ArrayList<String>();
 
@@ -247,8 +242,6 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", c);
     }
 
-    instanceId = ""; // reinitialisation
-
     // une fois la liste des instanceId définie, on parcourt cette liste pour
     // en
     // retirer les SilverContentIds
@@ -256,9 +249,7 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
     List<Integer> allSilverContentIds = new ArrayList<Integer>();
     List<Integer> newAlSilverContentIds = new ArrayList<Integer>();
 
-    for (int j = 0; j < alInstanceIds.size(); j++) {
-      instanceId = (String) alInstanceIds.get(j);
-
+    for (String instanceId : alInstanceIds) {
       try {
         contentP = getContentManager().getContentPeas(instanceId);
 
@@ -280,7 +271,7 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
       // dans la liste résultat (alSilverContentIds).
       allSilverContentIds.retainAll(silverContentIds);
 
-      List silverContentTempo = null;
+      List<SilverContentInterface> silverContentTempo = null;
       if (contentP != null) {
         try {
           // we are going to search only SilverContent of this instanceId
@@ -288,7 +279,7 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
               .getContentInterface();
 
           silverContentTempo = contentInterface.getSilverContentById(
-              allSilverContentIds, instanceId, null, new ArrayList());
+              allSilverContentIds, instanceId, null, new ArrayList<String>());
         } catch (ContentManagerException c) {
           throw new PdcBmRuntimeException("PdcBmEJB.getSilverContentsByIds",
               SilverpeasRuntimeException.ERROR,
@@ -323,12 +314,10 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
    * @return a List of GlobalSilverContent
    */
   private List<GlobalSilverContent> transformSilverContentsToGlobalSilverContents(
-      List silverContentTempo) {
+      List<SilverContentInterface> silverContentTempo) {
     ArrayList<GlobalSilverContent> silverContents = new ArrayList<GlobalSilverContent>();
     GlobalSilverContent gsc = null;
-    SilverContentInterface sci = null;
-    for (int i = 0; i < silverContentTempo.size(); i++) {
-      sci = (SilverContentInterface) silverContentTempo.get(i);
+    for (SilverContentInterface sci : silverContentTempo) {
       gsc = new GlobalSilverContent(sci, "useless", null, null);
       silverContents.add(gsc);
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,6 +27,8 @@
 
 package com.stratelia.silverpeas.silverstatistics.control;
 
+import com.stratelia.webactiv.util.JNDINames;
+
 import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.jms.QueueConnection;
@@ -38,8 +40,6 @@ import javax.jms.TextMessage;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-
-import com.stratelia.webactiv.util.JNDINames;
 
 /*
  * CVS Informations
@@ -69,7 +69,6 @@ public final class SilverStatisticsSender {
   private QueueConnection queueConnection = null;
   private QueueSender queueSender = null;
   private QueueSession queueSession = null;
-  private Queue queue = null;
   private TextMessage msg = null;
 
   private Context ctx = null;
@@ -92,7 +91,6 @@ public final class SilverStatisticsSender {
    * @see
    */
   public SilverStatisticsSender() throws Exception {
-    try {
       Context ctx = getInitialContext();
       QueueConnectionFactory factory = (QueueConnectionFactory) ctx
           .lookup(JNDINames.SILVERSTATISTICS_JMS_FACTORY);
@@ -100,13 +98,10 @@ public final class SilverStatisticsSender {
       queueConnection = factory.createQueueConnection();
       // Create a non-transacted JMS Session
       queueSession = queueConnection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
-      queue = (Queue) ctx.lookup(JNDINames.SILVERSTATISTICS_JMS_QUEUE);
+      Queue queue = (Queue) ctx.lookup(JNDINames.SILVERSTATISTICS_JMS_QUEUE);
       queueSender = queueSession.createSender(queue);
       msg = queueSession.createTextMessage();
       queueConnection.start();
-    } catch (Exception e) {
-      throw e;
-    }
   }
 
   /**
@@ -116,12 +111,8 @@ public final class SilverStatisticsSender {
    * @see
    */
   public void send(String message) throws JMSException {
-    try {
       msg.setText(message);
       queueSender.send(msg);
-    } catch (JMSException e) {
-      throw e;
-    }
   }
 
   /**
