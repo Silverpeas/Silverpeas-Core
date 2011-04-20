@@ -189,7 +189,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings");
 
     isExportEnabled = isExportLicenseOK();
-    isRefreshEnabled = "true".equals(getSettings().getString("EnableRefresh"));
+    isRefreshEnabled = getSettings().getBoolean("EnableRefresh", true);
 
     try {
       isThesaurusEnableByUser = getActiveThesaurusByUser();
@@ -200,7 +200,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     searchContext.setUserId(getUserId());
 
     // Initialize external search
-    isEnableExternalSearch = "true".equals(getSettings().getString("external.search.enable"));
+    isEnableExternalSearch = getSettings().getBoolean("external.search.enable", false);
     getExternalSPConfig();
   }
 
@@ -1218,7 +1218,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     boolean srvFound = false;
     if (StringUtil.isDefined(serverName)) {
       for (ExternalSPConfigVO extSrv: externalServers) {
-        if (serverName.equals(extSrv.getName())) {
+        if (serverName.equalsIgnoreCase(extSrv.getName())) {
           srvLabel = getString("external.search.server." + extSrv.getConfigOrder() + ".label");
           srvFound = true;
         }
