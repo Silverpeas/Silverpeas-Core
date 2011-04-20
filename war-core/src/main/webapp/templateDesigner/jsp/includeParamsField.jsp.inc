@@ -46,16 +46,10 @@ if (field != null)
 	var errorMsg = "";
     var errorNb = 0;
 	
-	function sendData() 
-	{
-		if (isCorrectForm()) 
-		{
+	function sendData() {
+		if (isCorrectForm()) {
 			document.fieldForm.submit();
-			window.opener.location.href = "<%=m_context%>/RtemplateDesigner/jsp/ViewFields?Scope=0";
-			window.close();
-		}
-		else
-		{
+		} else {
 			errorMsg = "";
     		errorNb = 0;
 		}

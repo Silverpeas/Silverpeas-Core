@@ -159,6 +159,9 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
         GenericFieldTemplate field = request2Field(request);
 
         templateDesignerSC.addField(field);
+        
+        request.setAttribute("UrlToReload", "ViewFields");
+        destination = root + "closeWindow.jsp";
       } else if (function.equals("EditField")) {
         String fieldName = request.getParameter("FieldName");
 
@@ -174,8 +177,9 @@ public class TemplateDesignerRequestRouter extends ComponentRequestRouter {
         GenericFieldTemplate field = request2Field(request);
 
         templateDesignerSC.updateField(field);
-
-        destination = getDestination("ViewFields", componentSC, request);
+        
+        request.setAttribute("UrlToReload", "ViewFields");
+        destination = root + "closeWindow.jsp";
       } else if (function.equals("DeleteField")) {
         String fieldName = request.getParameter("FieldName");
 
