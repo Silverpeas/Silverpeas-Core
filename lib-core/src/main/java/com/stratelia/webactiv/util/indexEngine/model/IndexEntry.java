@@ -33,7 +33,6 @@ import java.util.Map;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
@@ -75,8 +74,7 @@ public class IndexEntry implements Serializable {
 
   private String serverName = null;
   
-  private static ResourceLocator resource =
-    new ResourceLocator("com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", "");
+  
 
   /**
    * This constructor set the key part of the IndexEntry but leave empty the object type. This
@@ -114,7 +112,6 @@ public class IndexEntry implements Serializable {
    */
   public IndexEntry(IndexEntryPK pk) {
     this.pk = pk;
-    this.serverName = resource.getString("server.name", "Silverpeas");
   }
 
   /**

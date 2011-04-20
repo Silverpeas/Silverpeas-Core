@@ -30,8 +30,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.MissingResourceException;
 import java.util.Map.Entry;
+import java.util.MissingResourceException;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -41,13 +41,12 @@ import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.Term;
 import org.apache.lucene.index.IndexWriter.MaxFieldLength;
+import org.apache.lucene.index.Term;
 
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.SearchEnginePropertiesManager;
@@ -109,6 +108,7 @@ public class IndexManager {
    * @param indexEntry 
    */
   public void addIndexEntry(FullIndexEntry indexEntry) {
+    indexEntry.setServerName(serverName);
     String indexPath = getIndexDirectoryPath(indexEntry);
     IndexWriter writer = getIndexWriter(indexPath, indexEntry.getLang());
     removeIndexEntry(writer, indexEntry.getPK());
@@ -277,7 +277,6 @@ public class IndexManager {
    */
   private void getProperties(String propertiesFileName) {
     ResourceLocator resource = null;
-    String stringValue = null;
 
     try {
       resource = new ResourceLocator(propertiesFileName, "");
@@ -285,48 +284,20 @@ public class IndexManager {
     }
 
     if (resource != null) {
-      try {
-        stringValue = resource.getString("lucene.maxFieldLength");
-        maxFieldLength = Integer.parseInt(stringValue);
-      } catch (MissingResourceException e) {
-      } catch (NumberFormatException e) {
-      }
+      maxFieldLength = resource.getInteger("lucene.maxFieldLength", maxFieldLength);
+      mergeFactor = resource.getInteger("lucene.mergeFactor", mergeFactor);
+      maxMergeDocs = resource.getInteger("lucene.maxMergeDocs", maxMergeDocs);
 
-      try {
-        stringValue = resource.getString("lucene.mergeFactor");
-        mergeFactor = Integer.parseInt(stringValue);
-      } catch (MissingResourceException e) {
-      } catch (NumberFormatException e) {
-      }
-
-      try {
-        stringValue = resource.getString("lucene.maxMergeDocs");
-        maxMergeDocs = Integer.parseInt(stringValue);
-      } catch (MissingResourceException e) {
-      } catch (NumberFormatException e) {
-      }
-
-      try {
-        stringValue = resource.getString("lucene.RAMBufferSizeMB", Double.toString(
+      String stringValue = resource.getString("lucene.RAMBufferSizeMB", Double.toString(
             IndexWriter.DEFAULT_RAM_BUFFER_SIZE_MB));
-        RAMBufferSizeMB = Double.parseDouble(stringValue);
-      } catch (MissingResourceException e) {
-      } catch (NumberFormatException e) {
-      }
+      RAMBufferSizeMB = Double.parseDouble(stringValue);
 
-      try {
-        stringValue = resource.getString("lucene.RAMBufferSizeMB", Double.toString(
+      stringValue = resource.getString("lucene.RAMBufferSizeMB", Double.toString(
             IndexWriter.DEFAULT_RAM_BUFFER_SIZE_MB));
-        RAMBufferSizeMB = Double.parseDouble(stringValue);
-      } catch (MissingResourceException e) {
-      } catch (NumberFormatException e) {
-      }
+      RAMBufferSizeMB = Double.parseDouble(stringValue);
 
-      try {
-        enableDymIndexing = SilverpeasSettings.readBoolean(resource, "enableDymIndexing", false);
-      } catch (MissingResourceException e) {
-      } catch (NumberFormatException e) {
-      }
+      enableDymIndexing = resource.getBoolean("enableDymIndexing", false);
+      serverName = resource.getString("server.name", "Silverpeas");
     }
 
   }
@@ -655,4 +626,5 @@ public class IndexManager {
   private double RAMBufferSizeMB = IndexWriter.DEFAULT_RAM_BUFFER_SIZE_MB;
   // enable the "Did you mean " indexing
   private boolean enableDymIndexing = false;
+  private String serverName = null;
 }
