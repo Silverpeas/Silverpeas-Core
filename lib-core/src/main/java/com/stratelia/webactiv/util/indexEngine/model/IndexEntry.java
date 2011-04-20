@@ -33,6 +33,7 @@ import java.util.Map;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
@@ -72,6 +73,11 @@ public class IndexEntry implements Serializable {
   private Map<String, String> previews = null;
   private Map<String, String> keywordsI18N = null;
 
+  private String serverName = null;
+  
+  private static ResourceLocator resource =
+    new ResourceLocator("com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", "");
+
   /**
    * This constructor set the key part of the IndexEntry but leave empty the object type. This
    * constructor can be used by any component which indexes only one kind of entities and then
@@ -108,6 +114,7 @@ public class IndexEntry implements Serializable {
    */
   public IndexEntry(IndexEntryPK pk) {
     this.pk = pk;
+    this.serverName = resource.getString("server.name", "Silverpeas");
   }
 
   /**
@@ -451,4 +458,19 @@ public class IndexEntry implements Serializable {
   public void setLastModificationUser(String lastModificationUser) {
     this.lastModificationUser = lastModificationUser;
   }
+
+  /**
+   * @return the serverName in order to distinguish each server for external server research
+   */
+  public String getServerName() {
+    return serverName;
+  }
+
+  /**
+   * @param serverName the serverName to set
+   */
+  public void setServerName(String serverName) {
+    this.serverName = serverName;
+  }
+  
 }

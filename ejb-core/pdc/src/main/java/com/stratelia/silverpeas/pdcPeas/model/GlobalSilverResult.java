@@ -48,6 +48,7 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
   private boolean hasRead = false; // marks a result as redden
   private int resultId = 0;
   private int hits = -1;
+  private String externalUrl = null;
 
   public GlobalSilverResult(GlobalSilverContent gsc) {
     super(gsc.getName(), gsc.getDescription(), gsc.getId(), gsc.getSpaceId(),
@@ -167,6 +168,20 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
 
   public int getHits() {
     return hits;
+  }
+
+  /**
+   * @return the externalUrl
+   */
+  public String getExternalUrl() {
+    return externalUrl;
+  }
+
+  /**
+   * @param externalUrl the externalUrl to set
+   */
+  public void setExternalUrl(String externalUrl) {
+    this.externalUrl = externalUrl;
   }
 
   @Override
