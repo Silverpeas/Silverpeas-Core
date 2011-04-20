@@ -7,7 +7,7 @@ Iterator		languages	= ((List) request.getAttribute("Languages")).iterator();
 String name = "";
 String mandatoryChecked = "";
 String searchable = "";
-String nameDisabled = "";
+boolean nameDisabled = false;
 String actionForm = "AddField";
 Map parameters = null;
 
@@ -22,16 +22,18 @@ if (field != null)
 	}
 	
 	if (actionForm.equals("UpdateField")) {
-		nameDisabled 	= "readOnly='readonly'";
+		nameDisabled = true;
 	}
 	
 	parameters = field.getParameters("fr");
 		
-	if (field.isMandatory())
+	if (field.isMandatory()) {
 		mandatoryChecked = "checked";
+	}
 		
-	if (field.isSearchable())
+	if (field.isSearchable()) {
 		searchable = "checked";
+	}
 }
 %>
 <html>
@@ -57,12 +59,20 @@ if (field != null)
 	
 	function checkFieldName()
 	{
-		var fieldName = stripInitialWhitespace(document.fieldForm.FieldName.value);
-     	if (isWhitespace(fieldName))
-     	{
-           	errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
-           	errorNb++;
-     	}
+		<% if (!nameDisabled) { %>
+			var fieldName = stripInitialWhitespace(document.fieldForm.FieldName.value);
+	     	if (isWhitespace(fieldName))
+	     	{
+	           	errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
+	           	errorNb++;
+	     	} else {
+	     		var regexp = /^[a-zA-Z0-9]*$/;
+	      		if(!regexp.test(fieldName)) {
+		        	errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustContainsLettersAndDigitsOnly")%>\n";
+	           		errorNb++;
+		      	}
+	     	}
+     	<% } %>
 	}
 	
 	function checkErrors()
