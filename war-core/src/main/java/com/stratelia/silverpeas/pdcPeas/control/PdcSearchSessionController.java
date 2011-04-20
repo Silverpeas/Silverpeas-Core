@@ -231,8 +231,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         String url = getSettings().getString(prefixKey + cptSrv + urlKey);
         String components = getSettings().getString(prefixKey + cptSrv + filterKey);
         String[] componentsArray = components.split(",");
-        externalServers.add(new ExternalSPConfigVO(srvName, path, Arrays.asList(componentsArray),
-            url));
+        externalServers.add(new ExternalSPConfigVO(srvName, cptSrv, path, 
+            Arrays.asList(componentsArray), url));
         // Loop increase
         cptSrv++;
         srvName = getSettings().getString(prefixKey + cptSrv + nameKey);
@@ -1160,9 +1160,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       // Check if it's an external search before searching components information
       if (isExternalComponent(result.getServerName())) {
         place = getString("pdcPeas.external.search.label") + " ";
-        place +=
-            StringUtil.isDefined(result.getServerName()) ? result.getServerName()
-                : getString("pdcPeas.external.search.unknown");
+        place += getExternalServerLabel(result.getServerName());
       } else {
         // preparation sur l'emplacement du document
         if (componentId.startsWith("user@")) {
@@ -1208,6 +1206,28 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       return true;
     }
     return false;
+  }
+  
+  /**
+   * 
+   * @param serverName
+   * @return the server label
+   */
+  private String getExternalServerLabel(String serverName) {
+    String srvLabel = "";
+    boolean srvFound = false;
+    if (StringUtil.isDefined(serverName)) {
+      for (ExternalSPConfigVO extSrv: externalServers) {
+        if (serverName.equals(extSrv.getName())) {
+          srvLabel = getString("external.search.server." + extSrv.getConfigOrder() + ".label");
+          srvFound = true;
+        }
+      }
+    } 
+    if (!srvFound) {
+      srvLabel = getString("pdcPeas.external.search.unknown");
+    }
+    return srvLabel;
   }
 
   /**

@@ -27,7 +27,6 @@ import java.util.List;
 
 /**
  * ExternalSilverpeasConfigVO represents an external silverpeas server value object
- * 
  * external.search.server.1.name=INPI
  * external.search.server.1.data.path=D:\\silverpeas\\silverpeas_INPI_prod\\data
  * external.search.server.1.component.filters=kmelia
@@ -36,22 +35,24 @@ import java.util.List;
 public class ExternalSPConfigVO {
 
   private String name = "";
+  private int configOrder = 0;
   private String dataPath = "";
   private List<String> components = null;
   private String url = "";
 
   /**
    * Contructor using fields
-   * 
    * @param name
+   * @param configOrder
    * @param dataPath
    * @param components
    * @param url
    */
-  public ExternalSPConfigVO(String name, String dataPath, List<String> components,
+  public ExternalSPConfigVO(String name, int configOrder, String dataPath, List<String> components,
       String url) {
     super();
     this.name = name;
+    this.configOrder = configOrder;
     this.dataPath = dataPath;
     this.components = components;
     this.url = url;
@@ -83,6 +84,13 @@ public class ExternalSPConfigVO {
    */
   public String getUrl() {
     return url;
+  }
+
+  /**
+   * @return the configOrder
+   */
+  public int getConfigOrder() {
+    return configOrder;
   }
 
 }
