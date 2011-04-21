@@ -29,6 +29,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <c:set value="${sessionScope['com.sun.portal.portletcontainer.driver.portletWindows']}" var="map"/>
 <c:set var="thinportlets" value='${map["thin"]}' />
 <c:set var="thickportlets" value='${map["thick"]}' />

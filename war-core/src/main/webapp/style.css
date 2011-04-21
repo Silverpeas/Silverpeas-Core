@@ -166,3 +166,15 @@ p label span {
 #question {
 	width:400px;
 }
+
+.fnfinformation {
+  float:right;
+  margin-top:30px;
+  font-size:14px;
+  text-align:left;	
+}
+.fnfinformation ul li {
+  padding-left:5px;
+  margin-left:25px;
+  text-align:left;	
+}

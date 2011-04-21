@@ -76,10 +76,10 @@ public class SpaceModelFactory {
 
   /**
    * Read a spaceModel from database and construct a SpaceModel in memory
-   * @param os 
+   * @param os
    * @param aSpaceId the space database Id
    * @return a spaceModel
-   * @throws PortletException  
+   * @throws PortletException
    */
   public static SpaceModel getSpaceModel(PortletSchema os, String aSpaceId) throws PortletException {
     // Test the arguments
@@ -451,7 +451,7 @@ public class SpaceModelFactory {
       // Create a schema for accessing tables
       os = new PortletSchema(0);
       PortletRowTable prt = os.portletRow;
-      // 
+      //
       String req = "Select R.* from ST_PortletColumn C, ST_PortletRow R Where C.spaceId = "
           + spaceId + " and R.portletColumnId = C.id";
 

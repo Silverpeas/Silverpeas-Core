@@ -24,7 +24,7 @@
 package com.stratelia.silverpeas.pdcPeas.vo;
 
 /**
- * AuthorVO is author value object representation
+ * ComponentVO is component value object representation
  */
 public class ComponentVO {
 

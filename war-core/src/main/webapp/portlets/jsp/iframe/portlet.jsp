@@ -32,7 +32,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
 <portlet:defineObjects/>
-
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle basename="com.silverpeas.portlets.multilang.portletsBundle"/>
 
 <%

@@ -32,6 +32,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <!--Load the resource bundle for the page -->
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle basename="DesktopMessages" />
 
 <form id="portal-content-change-layout" method="POST" action="<%=DriverUtil.getPortletsURL(request)%>" >

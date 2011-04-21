@@ -72,6 +72,10 @@ public class IndexEntry implements Serializable {
   private Map<String, String> previews = null;
   private Map<String, String> keywordsI18N = null;
 
+  private String serverName = null;
+  
+  
+
   /**
    * This constructor set the key part of the IndexEntry but leave empty the object type. This
    * constructor can be used by any component which indexes only one kind of entities and then
@@ -451,4 +455,19 @@ public class IndexEntry implements Serializable {
   public void setLastModificationUser(String lastModificationUser) {
     this.lastModificationUser = lastModificationUser;
   }
+
+  /**
+   * @return the serverName in order to distinguish each server for external server research
+   */
+  public String getServerName() {
+    return serverName;
+  }
+
+  /**
+   * @param serverName the serverName to set
+   */
+  public void setServerName(String serverName) {
+    this.serverName = serverName;
+  }
+  
 }

@@ -7,7 +7,7 @@
 	<display-name>Menu Tree Tag</display-name>
 	<tlib-version>1.1</tlib-version>
 	<short-name>menuTree</short-name>
-	<uri>http://www.silverpeas.com/menuTree</uri>
+	<uri>http://www.silverpeas.com/tld/menuTree</uri>
 	<tag>
 		<description>
        Loads the css and javascript file relating to tree menu
