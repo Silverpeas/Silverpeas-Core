@@ -25,6 +25,8 @@ package com.silverpeas.accesscontrol;
 
 import com.silverpeas.util.ComponentHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
@@ -45,7 +47,7 @@ public class AttachmentAccessController implements AccessController<AttachmentDe
   public AttachmentAccessController() {
     accessController = new NodeAccessController();
   }
-  
+
   /**
    * For test only.
    * @param accessController 
@@ -58,14 +60,30 @@ public class AttachmentAccessController implements AccessController<AttachmentDe
   public boolean isUserAuthorized(MainSessionController controller, String componentId,
       AttachmentDetail object) throws Exception {
     if (ComponentHelper.getInstance().isThemeTracker(object.getForeignKey().getComponentName())) {
-      Collection<NodePK> nodes = getPublicationBm().getAllFatherPK(new PublicationPK(
-          object.getForeignKey().getId(), componentId));
-      for (NodePK nodePk : nodes) {
-        if (accessController.isUserAuthorized(controller, componentId, nodePk)) {
-          return true;
+      String foreignId = object.getForeignKey().getId();
+      if (StringUtil.isInteger(foreignId)) {
+        try {
+          Collection<NodePK> nodes = getPublicationBm().getAllFatherPK(new PublicationPK(object.
+              getForeignKey().getId(), object.getInstanceId()));
+          for (NodePK nodePk :
+              nodes) {
+            if (accessController.isUserAuthorized(controller, componentId, nodePk)) {
+              return true;
+            }
+          }
+        } catch (Exception ex) {
+          SilverTrace.error("accesscontrol", getClass().getSimpleName() + ".isUserAuthorized()",
+              "root.NO_EX_MESSAGE", ex);
+          return false;
         }
+
+        return false;
+      } else if (foreignId.startsWith("Node_")) {
+        // case of files attached to topic (images of wysiwyg description)
+        String nodeId = foreignId.substring("Node_".length());
+        return accessController.isUserAuthorized(controller, componentId, new NodePK(nodeId, object.
+            getInstanceId()));
       }
-      return false;
     }
     return true;
   }
