@@ -95,7 +95,7 @@ public class IndexManager {
    * properties file "com/stratelia/webactiv/util/indexEngine/indexEngine.properties".
    */
   public IndexManager() {
-    getProperties("com.stratelia.webactiv.util.indexEngine.IndexEngine");
+    initProperties("com.stratelia.webactiv.util.indexEngine.IndexEngine");
 
     SilverTrace.debug("indexEngine", "IndexManager",
         "indexEngine.INFO_INDEX_ENGINE_STARTED", "maxFieldLength="
@@ -275,15 +275,9 @@ public class IndexManager {
   /**
    * Reads and set the index engine parameters from the given properties file
    */
-  private void getProperties(String propertiesFileName) {
-    ResourceLocator resource = null;
-
+  private void initProperties(String propertiesFileName) {
     try {
-      resource = new ResourceLocator(propertiesFileName, "");
-    } catch (MissingResourceException e) {
-    }
-
-    if (resource != null) {
+      ResourceLocator resource = new ResourceLocator(propertiesFileName, "");
       maxFieldLength = resource.getInteger("lucene.maxFieldLength", maxFieldLength);
       mergeFactor = resource.getInteger("lucene.mergeFactor", mergeFactor);
       maxMergeDocs = resource.getInteger("lucene.maxMergeDocs", maxMergeDocs);
@@ -298,8 +292,10 @@ public class IndexManager {
 
       enableDymIndexing = resource.getBoolean("enableDymIndexing", false);
       serverName = resource.getString("server.name", "Silverpeas");
+    } catch (MissingResourceException e) {
+      SilverTrace.error("indexEngine", "IndexManager.initProperties",
+          "indexEngine.ERR_CANT_LOAD_PROPERTIES", e);
     }
-
   }
 
   /**
