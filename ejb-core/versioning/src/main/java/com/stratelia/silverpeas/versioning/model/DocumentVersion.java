@@ -32,6 +32,7 @@ import java.io.File;
 import java.util.Date;
 
 import com.silverpeas.form.importExport.XMLModelContentType;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -47,14 +48,10 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
   public final static int STATUS_VALIDATION_REQUIRED = 1;
   public final static int STATUS_VERSION_VALIDATED = 2;
   public final static int STATUS_VERSION_REFUSED = 3;
-
   public final static int TYPE_DEFAULT_VERSION = 1;
   public final static int TYPE_PUBLIC_VERSION = 0;
-
   public final static String CONTEXT = "Versioning";
-
   public final static String CONTEXT_VERSIONING = CONTEXT + File.separator;
-
   private DocumentVersionPK pk;
   private DocumentPK documentPK;
   private int majorNumber;
@@ -250,15 +247,13 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
 
   public String getWebdavUrl() {
     StringBuilder url = new StringBuilder(500);
-    ResourceLocator messages = GeneralPropertiesManager
-        .getGeneralResourceLocator();
+    ResourceLocator messages = GeneralPropertiesManager.getGeneralResourceLocator();
     String webAppContext = messages.getString("ApplicationURL");
     if (!webAppContext.endsWith("/")) {
       webAppContext += '/';
     }
-    url.append(webAppContext).append(messages.getString("webdav.respository"))
-        .append('/').append(messages.getString("webdav.workspace")).append('/')
-        .append(getJcrPath());
+    url.append(webAppContext).append(messages.getString("webdav.respository")).append('/').append(messages.
+        getString("webdav.workspace")).append('/').append(getJcrPath());
     return url.toString();
   }
 
@@ -267,14 +262,10 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
    * @return true or false
    */
   public boolean isSpinfireDocument() {
-    boolean isSpinfireDocument = false;
-    if (getMimeType() != null) {
-      SilverTrace.info("versioning", "DocumentVersion.isSpinfireDocument()",
-          "root.MSG_GEN_PARAM_VALUE", "isSpinfireDocument = "
-          + (getMimeType().equals(SPINFIRE_MIME_TYPE)));
-      isSpinfireDocument = getMimeType().equals(SPINFIRE_MIME_TYPE);
-    }
-    return isSpinfireDocument;
+    SilverTrace.info("versioning", "DocumentVersion.isSpinfireDocument()",
+        "root.MSG_GEN_PARAM_VALUE", "isSpinfireDocument = " + SPINFIRE_MIME_TYPE.equals(
+        getMimeType()));
+    return SPINFIRE_MIME_TYPE.equals(getMimeType());
   }
 
   /**
@@ -283,9 +274,8 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
    */
   public boolean isOpenOfficeCompatibleDocument() {
     boolean isOpenOfficeCompatibleDocument = false;
-    if (getMimeType() != null) {
-      isOpenOfficeCompatibleDocument = OPEN_OFFICE_MIME_TYPES
-          .contains(getMimeType());
+    if (getLogicalName() != null) {
+      isOpenOfficeCompatibleDocument = FileUtil.isOpenOfficeCompatible(getLogicalName());
       SilverTrace.info("versioning", "DocumentVersion.isSpinfireDocument()",
           "root.MSG_GEN_PARAM_VALUE", "isOpenOfficeCompatibleDocument = "
           + isOpenOfficeCompatibleDocument);
@@ -327,7 +317,7 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
    */
   public String getDocumentPath() {
     String directory = FileRepositoryManager.getAbsolutePath(getInstanceId(),
-        new String[] { CONTEXT });
+        new String[]{CONTEXT});
     if (!directory.endsWith(File.separator)) {
       directory += File.separator;
     }

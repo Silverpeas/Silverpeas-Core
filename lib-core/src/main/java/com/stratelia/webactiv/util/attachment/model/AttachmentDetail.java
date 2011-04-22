@@ -879,8 +879,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
    * @return true if the attachment is compatible with OpenOffice false otherwise.
    */
   public boolean isOpenOfficeCompatible(String language) {
-    String currentType = getType(language);
-    return OPEN_OFFICE_MIME_TYPES.contains(currentType);
+    return FileUtil.isOpenOfficeCompatible(getLogicalName(language));
   }
 
   public boolean isOfficeDocument() {
