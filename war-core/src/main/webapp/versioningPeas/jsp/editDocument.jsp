@@ -49,7 +49,7 @@
 
       int versionType = DocumentVersion.TYPE_DEFAULT_VERSION;
       if (request.getParameter("VersionType") != null && !request.getParameter("VersionType").equals("")) {
-        versionType = (new Integer(request.getParameter("VersionType"))).intValue();
+        versionType = Integer.parseInt(request.getParameter("VersionType"));
       }
 
       String action = request.getParameter("Action");
@@ -137,8 +137,8 @@
       }
 
       String status = (iStatus == 0 ? messages.getString("free") : lock_message + " " + versioningSC.getUserNameByID(document.getOwnerId()) + " - " + resources.getOutputDate(document.getLastCheckOutDate()));
-      String documentName = document.getName();//request.getParameter("name");
-      String documentDescription = document.getDescription();//request.getParameter("name");
+      String documentName = document.getName();
+      String documentDescription = document.getDescription();
       String documentComments = document.getAdditionalInfo();
 
       // declaration of messages !!!
@@ -198,9 +198,9 @@
               if (iStatus == Document.STATUS_CHECKINED || (document.getOwnerId() != user_id && lastVersion.getAuthorId() != user_id && !"admin".equals(flag))) {
                 URLs[j++] = versionURL;
               } else {
-                String ooUrl = java.net.URLEncoder.encode(httpServerBase + lastVersion.getWebdavUrl());
+                String ooUrl = java.net.URLEncoder.encode(httpServerBase + lastVersion.getWebdavUrl(), "UTF-8");
                 String webdavUrl = httpServerBase + m_context + "/attachment/jsp/launch.jsp?documentUrl=" + ooUrl;
-                URLs[j++] = webdavUrl; //response.encodeURL(request.getServerName() + ':' + request.getServerPort() + lastVersion.getWebdavUrl());
+                URLs[j++] = webdavUrl;
               }
             } else {
               URLs[j++] = versionURL;
@@ -235,13 +235,12 @@
       ArrayList users = document.getWorkList();
       boolean is_buttons_visible = false;
       DocumentVersion version = (DocumentVersion) not_filtered_version.get(not_filtered_version.size() - 1);
-      boolean isOfficeDocument = version.isOfficeDocument();
+      boolean isOpenOfficeCompatibleDocument = version.isOpenOfficeCompatibleDocument();
       DocumentVersion first_version = (DocumentVersion) not_filtered_version.get(0);
 
       if (document.getTypeWorkList() == 0) {
         is_buttons_visible = true;
         if (document.getStatus() == 0) /* has writes to checkout */ {
-//            if (isExist(users, user_id) || "publisher".equals(flag) || "admin".equals(flag) )
           if (is_user_writer || "publisher".equals(flag) || "admin".equals(flag)) {
             operationPane.addOperation(iconsCheckOut, checkOut_msg, "Checkout?DocId=" + docId);
           }
@@ -263,7 +262,7 @@
         } else {
           if (document.getOwnerId() == user_id || first_version.getAuthorId() == user_id || "admin".equals(flag)) {
             if (is_user_writer && version.getStatus() != DocumentVersion.STATUS_VALIDATION_REQUIRED || first_version.getAuthorId() == user_id || "admin".equals(flag)) {
-              operationPane.addOperation(iconsCheckIn, checkIn_msg, "javascript:perfAction('checkin','" + isOfficeDocument + "');");
+              operationPane.addOperation(iconsCheckIn, checkIn_msg, "javascript:perfAction('checkin','" + isOpenOfficeCompatibleDocument + "');");
               if (document.getOwnerId() == user_id && isWriter(users, user_id) && version.getStatus() != DocumentVersion.STATUS_VALIDATION_REQUIRED) {
                 operationPane.addOperation(iconsAddVersion, addVersion_msg, "AddNewVersion?documentId=" + docId);
                 newVersionAllowed = true;
@@ -280,16 +279,16 @@
       } else if (document.getTypeWorkList() == 2) {
         if (document.getStatus() == 0) /* has writes to checkout */ {
           Worker user = (Worker) document.getWorkList().get(document.getCurrentWorkListOrder());
-          if (user.isWriter() && user.getUserId() == user_id /*|| "admin".equals(flag)*/) {
+          if (user.isWriter() && user.getUserId() == user_id) {
             operationPane.addOperation(iconsCheckOut, checkOut_msg, "javascript:perfAction('checkout','');");
             is_buttons_visible = true;
           }
         } else {
           Worker user = (Worker) document.getWorkList().get(document.getCurrentWorkListOrder());
           if (user_id == user.getUserId() || first_version.getAuthorId() == user_id || "admin".equals(flag)) {
-            if (user_id == user.getUserId() && (user.isWriter() /*&& version.getStatus() != DocumentVersion.STATUS_VALIDATION_REQUIRED*/) || "admin".equals(flag) || first_version.getAuthorId() == user_id) {
-              operationPane.addOperation(iconsCheckIn, checkIn_msg, "javascript:perfAction('checkin','" + isOfficeDocument + "');");
-              if (user_id == user.getUserId() && user.isWriter() /*&& version.getStatus() != DocumentVersion.STATUS_VALIDATION_REQUIRED*/) {
+            if (user_id == user.getUserId() && (user.isWriter()) || "admin".equals(flag) || first_version.getAuthorId() == user_id) {
+              operationPane.addOperation(iconsCheckIn, checkIn_msg, "javascript:perfAction('checkin','" + isOpenOfficeCompatibleDocument + "');");
+              if (user_id == user.getUserId() && user.isWriter()) {
                 operationPane.addOperation(iconsAddVersion, addVersion_msg, "AddNewVersion?documentId=" + docId + "&hide_radio=true");
                 newVersionAllowed = true;
               }

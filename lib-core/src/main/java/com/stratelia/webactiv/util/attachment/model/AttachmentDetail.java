@@ -838,15 +838,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
   }
 
   public boolean isOfficeDocument(String language) {
-    boolean isOfficeDocument = false;
-    String mimeType = getType(language);
-    if (mimeType != null) {
-      SilverTrace.info("attachment", "AttachmentDetail.isOfficeDocument()",
-          "root.MSG_GEN_PARAM_VALUE", "is Office Document = "
-          + MS_OFFICE_MIME_TYPES.contains(mimeType));
-      isOfficeDocument = MS_OFFICE_MIME_TYPES.contains(mimeType);
-    }
-    return isOfficeDocument;
+    return isOpenOfficeCompatible(language);
   }
 
   /**
@@ -883,7 +875,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
   }
 
   public boolean isOfficeDocument() {
-    return isOfficeDocument(null);
+    return isOpenOfficeCompatible();
   }
 
   /**

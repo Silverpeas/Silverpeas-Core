@@ -223,14 +223,7 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
    * @return true or false
    */
   public boolean isOfficeDocument() {
-    boolean isOfficeDocument = false;
-    if (getMimeType() != null) {
-      isOfficeDocument = MS_OFFICE_MIME_TYPES.contains(getMimeType());
-      SilverTrace.info("versioning", "DocumentVersion.isOfficeDocument()",
-          "root.MSG_GEN_PARAM_VALUE", "is Office Document = "
-          + isOfficeDocument);
-    }
-    return isOfficeDocument;
+    return isOpenOfficeCompatibleDocument();
   }
 
   public String getJcrPath() {
