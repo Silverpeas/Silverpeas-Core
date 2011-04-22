@@ -1142,8 +1142,9 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public void setBeginDateAndHour(Date beginDateAndHour) {
     if (beginDateAndHour != null) {
       this.beginDateAndHour = (Date) beginDateAndHour.clone();
+    } else {
+      this.beginDateAndHour = null;
     }
-    this.beginDateAndHour = null;
   }
 
   public Date getEndDateAndHour() {
@@ -1156,8 +1157,9 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public void setEndDateAndHour(Date endDateAndHour) {
     if (endDateAndHour != null) {
       this.endDateAndHour = (Date) endDateAndHour.clone();
+    } else {
+      this.endDateAndHour = null;
     }
-    this.endDateAndHour = null;
   }
 
   public Date getDraftOutDate() {
