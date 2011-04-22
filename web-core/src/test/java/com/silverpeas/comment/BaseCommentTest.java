@@ -21,10 +21,30 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.silverpeas.comment;
+
+import com.silverpeas.comment.service.CommentActionNotifier;
+import com.silverpeas.jms.JMSTestFacade;
+import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
- * <p>The JMS adapter to the notification API.</p>
- * <p>It provides an implementation of the Silverpeas notification API built upon the JMS
- * technology.</p>
+ * The base class of all of the test cases in which are involved the comment service.
+ * It bootstraps the default messaging service used by the notification API and prepares the topic
+ * used in the notification of the actions on comments.
  */
-package com.silverpeas.notification.jms;
+@RunWith(SpringJUnit4ClassRunner.class)
+public abstract class BaseCommentTest {
+
+  private static JMSTestFacade jmsTestFacade;
+
+  @BeforeClass
+  public static void boostrapMessagingSystem() throws Exception {
+    if (jmsTestFacade == null) {
+      jmsTestFacade = new JMSTestFacade();
+      jmsTestFacade.bootstrap();
+      jmsTestFacade.newTopic(CommentActionNotifier.TOPIC_NAME);
+    }
+  }
+}

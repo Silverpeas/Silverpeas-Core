@@ -23,8 +23,8 @@
  */
 
 /**
- * <p>The JMS adapter to the notification API.</p>
- * <p>It provides an implementation of the Silverpeas notification API built upon the JMS
- * technology.</p>
+ * <p>The backend of the JMS adapter.</p>
+ * <p>It provides an access point to a JMS system and encapsulates the management of the connections
+ * and of the sessions with the underlying JMS system.</p>
  */
-package com.silverpeas.notification.jms;
+package com.silverpeas.notification.jms.access;

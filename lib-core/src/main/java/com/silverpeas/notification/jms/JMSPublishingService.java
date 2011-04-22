@@ -23,52 +23,36 @@
  */
 package com.silverpeas.notification.jms;
 
+import com.silverpeas.notification.jms.access.JMSAccessObject;
 import com.silverpeas.notification.NotificationPublisher;
 import com.silverpeas.notification.NotificationTopic;
 import com.silverpeas.notification.PublishingException;
 import com.silverpeas.notification.SilverpeasNotification;
-import com.stratelia.webactiv.util.JNDINames;
-import java.io.Serializable;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jms.ObjectMessage;
-import javax.jms.Session;
-import javax.jms.Topic;
-import javax.jms.TopicConnection;
-import javax.jms.TopicConnectionFactory;
 import javax.jms.TopicPublisher;
-import javax.jms.TopicSession;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
 /**
- * Service for publishing an event by using a JMS system.
+ * Service for publishing an event by using a JMS system. This service is managed by the IoC
+ * container under the name 'notificationPublisher' as required by the Notification API.
+ * The JMS system is injected as a dependency by the IoC container.
  */
-@Named("eventPublisher")
-public class JMSPublishingService implements NotificationPublisher, JMSServiceProvider {
+@Named("notificationPublisher")
+public class JMSPublishingService implements NotificationPublisher {
 
-  private TopicConnectionFactory connectionFactory;
-
-  /**
-   * Constructs a new JMS publishing service by bootstrapping the connection with the underlying
-   * JMS system.
-   * @throws NamingException when the underlying JMS system can be access through the name under
-   * which it is supposed to be deployed.
-   */
-  public JMSPublishingService() throws NamingException {
-    connectionFactory = InitialContext.doLookup(JNDINames.JMS_FACTORY);
-  }
+  @Inject
+  private JMSAccessObject jmsService;
 
   @Override
-  public <T extends Serializable> void publish(SilverpeasNotification<T> event, NotificationTopic onTopic) {
+  public void publish(SilverpeasNotification notification, NotificationTopic onTopic) {
     try {
       String topicName = onTopic.getName();
-      Topic jmsTopic = InitialContext.doLookup(PREFIX_TOPIC_JNDI + topicName);
-      TopicConnection topicConnection = connectionFactory.createTopicConnection();
-      TopicSession session = topicConnection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
-      TopicPublisher publisher = session.createPublisher(jmsTopic);
-      ObjectMessage message = session.createObjectMessage();
-      message.setObject(event);
+      TopicPublisher publisher = jmsService.createTopicPublisher(topicName);
+      ObjectMessage message = jmsService.createObjectMessageFor(publisher);
+      message.setObject(notification);
       publisher.publish(message);
+      jmsService.disposeTopicPublisher(publisher);
     } catch (Exception ex) {
       throw new PublishingException(ex);
     }

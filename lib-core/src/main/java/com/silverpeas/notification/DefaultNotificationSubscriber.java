@@ -33,7 +33,7 @@ import javax.inject.Inject;
  * It encapsulates the access to the underlying messaging broker for performing the actual
  * notification subscriptions.
  *
- * The business specific notification subscriber that extend this class must be registered within
+ * The business specific notification subscriber extending this class must be registered within
  * an IoC container so that it will be automatically instanciated and the subscription will be then
  * automatically performed by the IoC container. The IoC container will inject the implementation of
  * the messaging system used to accomplish the notification mechanism in Silverpeas.
@@ -77,12 +77,12 @@ public abstract class DefaultNotificationSubscriber implements NotificationSubsc
   }
 
   @Override
-  public void subscribeForNotifications(NotificationTopic onTopic) {
+  public final void subscribeForNotifications(NotificationTopic onTopic) {
     subscribingService.subscribe(this, onTopic);
   }
 
   @Override
-  public void unsubscribeForNotifications(NotificationTopic onTopic) {
+  public final void unsubscribeForNotifications(NotificationTopic onTopic) {
     subscribingService.unsubscribe(this, onTopic);
   }
 

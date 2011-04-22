@@ -53,12 +53,6 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>com.mockrunner</groupId>
-      <artifactId>mockrunner</artifactId>
-      <classifier>jdk1.6-j2ee1.4</classifier>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
       <scope>compile</scope>
@@ -91,6 +85,34 @@
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.jms</groupId>
+      <artifactId>jms-api</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.mockrunner</groupId>
+      <artifactId>mockrunner</artifactId>
+      <classifier>jdk1.6-j2ee1.4</classifier>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.mockrunner</groupId>
+      <artifactId>mockrunner-jms</artifactId>
+      <classifier>jdk1.6-j2ee1.4</classifier>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockejb</groupId>
+      <artifactId>mockejb</artifactId>
+      <version>0.6-beta2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
       <scope>compile</scope>
     </dependency>
   </dependencies>

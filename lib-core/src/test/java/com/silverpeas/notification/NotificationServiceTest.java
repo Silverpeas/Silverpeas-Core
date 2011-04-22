@@ -21,10 +21,38 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.silverpeas.notification;
+
+import com.silverpeas.jms.JMSTestFacade;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
- * <p>The JMS adapter to the notification API.</p>
- * <p>It provides an implementation of the Silverpeas notification API built upon the JMS
- * technology.</p>
+ * The base class of all of the test cases on the Silverpeas notification service.
+ * It bootstraps the default messaging service used by the notification API and prepares a set of
+ * data shared by the tests.
  */
-package com.silverpeas.notification.jms;
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = "/spring-notification.xml")
+public abstract class NotificationServiceTest {
+
+  private static JMSTestFacade jmsTestFacade;
+
+  @BeforeClass
+  public static void bootstrapJMS() throws Exception {
+    jmsTestFacade = new JMSTestFacade();
+    jmsTestFacade.bootstrap();
+  }
+
+  @AfterClass
+  public static void shutdownJMS() throws Exception {
+    jmsTestFacade.shutdown();
+  }
+
+  public static JMSTestFacade getJMSTestFacade() {
+    return jmsTestFacade;
+  }
+}

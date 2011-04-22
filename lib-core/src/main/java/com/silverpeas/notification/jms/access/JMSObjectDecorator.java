@@ -21,10 +21,49 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.silverpeas.notification.jms.access;
+
+import javax.jms.Session;
 
 /**
- * <p>The JMS adapter to the notification API.</p>
- * <p>It provides an implementation of the Silverpeas notification API built upon the JMS
- * technology.</p>
+ * A decorator of JMS objects to provide to them, as additional attribute, the JMS session in which
+ * they are involved.
+ * @param <T> the type of the JMS object this decorator works on.
  */
-package com.silverpeas.notification.jms;
+public abstract class JMSObjectDecorator<T> {
+
+  private Session session;
+  private T decoratedObject;
+
+  /**
+   * Sets the session from which this JMS object is created.
+   * @param session the JMS session to set.
+   */
+  public void setSession(final Session session) {
+    this.session = session;
+  }
+
+  /**
+   * Gets the JMS session within which this object is living.
+   * @return the JMS session.
+   */
+  public Session getSession() {
+    return session;
+  }
+
+  /**
+   * Gets the JMS object decorated by this.
+   * @return the decorated JMS object.
+   */
+  protected T getDecoratedObject() {
+    return decoratedObject;
+  }
+
+  /**
+   * Sets the JMS object to decorate.
+   * @param object the JMS object to decorate.
+   */
+  protected void setDecoratedObject(final T object) {
+    this.decoratedObject = object;
+  }
+}

@@ -23,68 +23,72 @@
  */
 package com.silverpeas.notification.jms;
 
+import com.silverpeas.notification.jms.access.JMSAccessObject;
+import javax.inject.Inject;
 import com.silverpeas.notification.NotificationTopic;
 import com.silverpeas.notification.NotificationSubscriber;
 import com.silverpeas.notification.MessageSubscribingService;
 import com.silverpeas.notification.SubscriptionException;
-import com.stratelia.webactiv.util.JNDINames;
-import java.util.UUID;
 import javax.inject.Named;
-import javax.jms.Session;
-import javax.jms.Topic;
-import javax.jms.TopicConnection;
-import javax.jms.TopicConnectionFactory;
-import javax.jms.TopicSession;
 import javax.jms.TopicSubscriber;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import static com.silverpeas.notification.jms.SilverpeasMessageListener.*;
 
 /**
  * Implementation of the subscribing service using the JMS API.
+ * This service is managed by the IoC container under the name 'messageSubscribingService' as
+ * required by the Notification API.
+ * The JMS system is injected as a dependency by the IoC container.
  */
 @Named("messageSubscribingService")
-public class JMSSubscribingService implements MessageSubscribingService, JMSServiceProvider {
+public class JMSSubscribingService implements MessageSubscribingService {
 
-  private TopicConnectionFactory connectionFactory;
-
-  /**
-   * Constructs a new JMS subscribing service by bootstrapping the connection with the underlying
-   * JMS system.
-   * @throws NamingException when the underlying JMS system can be access through the name under
-   * which it is supposed to be deployed.
-   */
-  public JMSSubscribingService() throws NamingException {
-    connectionFactory = InitialContext.doLookup(JNDINames.JMS_FACTORY);
-  }
+  @Inject
+  private JMSAccessObject jmsService;
 
   @Override
-  public void subscribe(NotificationSubscriber subscriber, NotificationTopic onTopic) {
+  public synchronized void subscribe(NotificationSubscriber subscriber, NotificationTopic onTopic) {
+
+    String topicName = onTopic.getName();
+    String subscriptionId = subscriber.getId();
+    ManagedTopicsSubscriber topicsSubscriber =
+      ManagedTopicsSubscriber.getManagedTopicsSubscriberById(subscriptionId);
+    if (topicsSubscriber == null) {
+      topicsSubscriber = ManagedTopicsSubscriber.getNewManagedTopicsSubscriber();
+    }
     try {
-      String topicName = onTopic.getName();
-      String subscriptionId = UUID.randomUUID().toString();
-      Topic jmsTopic = InitialContext.doLookup(PREFIX_TOPIC_JNDI + topicName);
-      TopicConnection topicConnection = connectionFactory.createTopicConnection();
-      TopicSession session = topicConnection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
-      TopicSubscriber topicSubscriber = session.createDurableSubscriber(jmsTopic, subscriptionId);
-      topicSubscriber.setMessageListener(mapMessageListenerTo(subscriber).forTopic(topicName));
-      topicConnection.start();
-      subscriber.setId(subscriptionId);
+      if (!topicsSubscriber.isSubscribedTo(topicName)) {
+        subscriptionId = topicsSubscriber.getId();
+        TopicSubscriber jmsSubscriber = jmsService.createTopicSubscriber(topicName);
+        jmsSubscriber.setMessageListener(mapMessageListenerTo(subscriber).forTopic(topicName));
+        topicsSubscriber.addSubscription(jmsSubscriber);
+        topicsSubscriber.save();
+        subscriber.setId(subscriptionId);
+      }
     } catch (Exception ex) {
       throw new SubscriptionException(ex);
     }
   }
 
   @Override
-  public void unsubscribe(NotificationSubscriber subscriber, NotificationTopic fromTopic) {
+  public synchronized void unsubscribe(NotificationSubscriber subscriber,
+    NotificationTopic fromTopic) {
     try {
-      TopicConnection topicConnection = connectionFactory.createTopicConnection();
-      TopicSession session = topicConnection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
-      session.unsubscribe(subscriber.getId());
-      session.close();
+      ManagedTopicsSubscriber topicsSubscriber =
+        ManagedTopicsSubscriber.getManagedTopicsSubscriberById(subscriber.getId());
+      if (topicsSubscriber != null) {
+        TopicSubscriber jmsSubscriber = topicsSubscriber.getSubscription(fromTopic.getName());
+        if (jmsSubscriber != null) {
+          jmsService.disposeTopicSubscriber(jmsSubscriber);
+          topicsSubscriber.removeSubscription(jmsSubscriber);
+          if (topicsSubscriber.hasNoSusbscriptions()) {
+            topicsSubscriber.delete();
+          }
+        }
+      }
     } catch (Exception ex) {
       throw new SubscriptionException(ex);
     }
   }
+
 
 }

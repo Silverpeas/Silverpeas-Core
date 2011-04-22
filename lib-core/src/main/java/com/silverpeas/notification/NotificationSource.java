@@ -28,8 +28,8 @@ import java.io.Serializable;
 /**
  * The source from which a notification was generated.
  *
- * Usually, a notification is triggered by a user action and it informs the event on the resource
- * involved in the action. For example, the creation of a new publication by a user in
+ * Usually, a notification is triggered by a user action and it informs the event concerning the
+ * resource involved in the action. For example, the creation of a new publication by a user in
  * Silverpeas. So the notification is always generated within the scope of a Silverpeas component
  * instance and may involve the action of a given user.
  *

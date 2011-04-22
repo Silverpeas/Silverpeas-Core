@@ -23,6 +23,7 @@
  */
 package com.silverpeas.comment.web.json;
 
+import com.silverpeas.comment.BaseCommentTest;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.web.CommentEntity;
@@ -34,9 +35,7 @@ import java.net.URISyntaxException;
 import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.junit.Assert.*;
 import static com.silverpeas.comment.web.json.JSONCommentMatcher.*;
 import static com.silverpeas.export.ExportDescriptor.*;
@@ -44,9 +43,8 @@ import static com.silverpeas.export.ExportDescriptor.*;
 /**
  * Unit tests on the exporting in JSON of comment instances.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/spring-comment-webservice.xml")
-public class JSONCommentExportingTest {
+public class JSONCommentExportingTest extends BaseCommentTest {
 
   private static final String commentId = "2";
   private static final String componentId = "kmelia2";

@@ -23,45 +23,27 @@
  */
 package com.silverpeas.notification;
 
+import com.silverpeas.jms.JMSTestFacade;
 import com.mockrunner.mock.jms.MockMessage;
 import com.mockrunner.mock.jms.MockObjectMessage;
 import javax.inject.Inject;
 import com.silverpeas.notification.jms.JMSPublishingService;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.test.annotation.ExpectedException;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.junit.Assert.*;
 import static com.silverpeas.notification.NotificationTopic.*;
 
 /**
- * Unit test on the publishing of a silverpeas event.
+ * Unit test on the publishing of a notification.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/spring-notification.xml")
-public class NotificationPublishingTest {
+public class NotificationPublishingTest extends NotificationServiceTest {
 
-  private static JMSTestFacade jmsTestFacade;
   @Inject
   private NotificationPublisher eventPublisher;
 
   public NotificationPublishingTest() {
-  }
-
-  @BeforeClass
-  public static void bootstrapJMS() throws Exception {
-    jmsTestFacade = new JMSTestFacade();
-    jmsTestFacade.bootstrap();
-  }
-
-  @AfterClass
-  public static void shutdownJMS() throws Exception {
-    jmsTestFacade.shutdown();
   }
 
   @Before
@@ -85,12 +67,13 @@ public class NotificationPublishingTest {
   public void publishAnEventToAnExistingTopicShouldSucceed() throws Exception {
     NotificationSource source = new NotificationSource().withUserId("simpson").
       withComponentInstanceId("toto1");
-    SilverpeasNotification<String> expectedNotif = new SilverpeasNotification<String>(source,
-      "coucou");
-    expectedNotif.addParameter("test", "true");
+    MyResource resource = new MyResource("toto");
+    SilverpeasNotification expectedNotif = new SilverpeasNotification(source,
+      resource);
+    //expectedNotif.addParameter("test", "true");
     eventPublisher.publish(expectedNotif, onTopic(JMSTestFacade.DEFAULT_TOPIC));
     MockMessage msg = new MockObjectMessage(expectedNotif);
-    jmsTestFacade.verifyReceivedTopicMessageEquals(JMSTestFacade.DEFAULT_TOPIC, 0, msg);
+    getJMSTestFacade().verifyReceivedTopicMessageEquals(JMSTestFacade.DEFAULT_TOPIC, 0, msg);
   }
 
   @Test
@@ -98,8 +81,9 @@ public class NotificationPublishingTest {
   public void publishAnEventToAnUnexistingTopicShouldSucceed() throws Exception {
     NotificationSource source = new NotificationSource().withUserId("simpson").
       withComponentInstanceId("toto1");
-    SilverpeasNotification<String> expectedNotif = new SilverpeasNotification<String>(source,
-      "coucou");
+    MyResource resource = new MyResource("coucou");
+    SilverpeasNotification expectedNotif = new SilverpeasNotification(source,
+      resource);
     eventPublisher.publish(expectedNotif, onTopic("unknown"));
   }
 }

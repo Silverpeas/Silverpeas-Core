@@ -21,14 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.notification;
+package com.silverpeas.jms;
 
 import com.mockrunner.ejb.EJBTestModule;
 import com.mockrunner.jms.JMSTestCaseAdapter;
 import com.mockrunner.jms.MessageManager;
 import com.mockrunner.mock.jms.MockMessage;
 import com.mockrunner.mock.jms.MockTopic;
-import com.stratelia.webactiv.util.JNDINames;
 import javax.jms.Topic;
 
 /**
@@ -40,7 +39,7 @@ public class JMSTestFacade extends JMSTestCaseAdapter {
    * The name of the topic created by default for testing purpose.
    */
   public static final String DEFAULT_TOPIC = "toto";
-
+  public static String JMS_FACTORY = "com.stratelia.silverpeas.notificationserver.jms.QueueConnectionFactory";
   private EJBTestModule ejbTestModule;
   private MockTopic topic;
 
@@ -51,14 +50,29 @@ public class JMSTestFacade extends JMSTestCaseAdapter {
   public void bootstrap() throws Exception {
     super.setUp();
     ejbTestModule = createEJBTestModule();
-    ejbTestModule.bindToContext(JNDINames.JMS_FACTORY, getJMSMockObjectFactory().
-        createMockConnectionFactory());
-    topic = getDestinationManager().createTopic(DEFAULT_TOPIC);
-    ejbTestModule.bindToContext("topic/" + DEFAULT_TOPIC, topic);
+    ejbTestModule.bindToContext(JMS_FACTORY, getJMSMockObjectFactory().
+      createMockConnectionFactory());
+    topic = (MockTopic) newTopic(DEFAULT_TOPIC);
+  }
+
+  /**
+   * Creates a new topic with the specified name. The topic will be registered in the mocked JNDI
+   * under the JNDI name "topic/"topicName.
+   * @param topicName the name of the topic.
+   * @return the new topic.
+   * @throws Exception if an error occurs while creating the new topic.
+   */
+  public Topic newTopic(String topicName) throws Exception {
+    Topic newTopic = getDestinationManager().createTopic(topicName);
+    ejbTestModule.bindToContext("topic/" + topicName, newTopic);
+    return newTopic;
   }
 
   /**
    * Shutdowns the mocked JMS system.
+   * Warning, shutdowning the messaging system within a runtime in which several different test
+   * cases will be run can break theses tests cases as the JMS system can be shared among theses
+   * test cases.
    * @throws Exception if the shutdown failed.
    */
   public void shutdown() throws Exception {
@@ -927,6 +941,4 @@ public class JMSTestFacade extends JMSTestCaseAdapter {
   public void verifyTopicSubscriberClosed(int i, String string, int i1) {
     super.verifyTopicSubscriberClosed(i, string, i1);
   }
-
-
 }

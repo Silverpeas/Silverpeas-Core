@@ -23,26 +23,22 @@
  */
 package com.silverpeas.notification;
 
-import java.io.Serializable;
-
 /**
- * A publisher of a notification.
+ * A publisher of a notification in Silverpeas.
  * A notification is a message (id est notice) informing one or several subscribers about an action
  * or an event occuring in Silverpeas and in what a Silverpeas object or resource is involved.
  *
  * The implementation of this interface should wrap the underlying messaging system used to deliver
- * notification to the several subscribers to a such type of announcements. The implementation
- * should be deployed into an IoC container under the name 'eventPublisher'.
+ * notification to the several subscribers of a such type of announcements. The implementation
+ * should be deployed into an IoC container under the name 'notificationPublisher'.
  */
 public interface NotificationPublisher {
 
   /**
-   * Publishes an event. All subscribers for a such event will recieve it.
-   * If the event publication failed, then an EventPublicationException will be thrown.
-   * @param <T> the type of the object for which the event was generated. The object is carried by
-   * the event.
-   * @param event the event to publish.
-   * @param onTopic the topic on which the event should be published.
+   * Publishes a notification. All subscribers for a such announcement will recieve it.
+   * If the event publication failed, then a PublishingException runtime exception will be thrown.
+   * @param notification the notification to publish.
+   * @param onTopic the topic on which the notification should be published.
    */
-  <T extends Serializable> void publish(final SilverpeasNotification<T> event, final NotificationTopic onTopic);
+  void publish(final SilverpeasNotification notification, final NotificationTopic onTopic);
 }

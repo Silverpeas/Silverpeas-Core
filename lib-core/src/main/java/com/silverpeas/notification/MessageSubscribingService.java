@@ -24,23 +24,27 @@
 package com.silverpeas.notification;
 
 /**
- * Front end of the subscribing service of a specific messaging system.
- * It wraps the actual underlying MOM system used without having a strong dependency on it
- * (JMS, AMQP, ...).
+ * Front end of the subscribing service in a specific messaging system.
+ * It wraps the actual underlying MOM system used for the subsccription without having a strong
+ * dependency on it (JMS, AMQP, ...).
  * The concrete MOM system implementing this interface is managed by the IoC container under the
  * name 'messageSubscribingService'.
  */
 public interface MessageSubscribingService {
 
   /**
-   * Subscribes the specified event listener on the specified topic.
+   * Subscribes the specified notification listener on the specified topic.
+   * The topic should exists, otherwise a SubscribingException is thrown.
+   * If the subscriber is already subscribed to the topic, then nothing is done.
    * @param listener the listener to subscribe.
    * @param onTopic the event topic to subscribe.
    */
   void subscribe(final NotificationSubscriber listener, final NotificationTopic onTopic);
 
   /**
-   * Unsubscribes the specified event listener from the specified topic.
+   * Unsubscribes the specified notification listener from the specified topic.
+   * If the subscriber isn't subscribed to the specified topic, nothing is done.
+   * The topic should exists, otherwise a SubscribingException is thrown.
    * @param listener the listener to unsubscribe.
    * @param fromTopic the event topîc to unsubscribe.
    */

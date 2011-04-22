@@ -27,7 +27,7 @@ import javax.inject.Inject;
 
 /**
  * Factory of notification publishers for beans not managed by an IoC container. IoC container
- * managed bean should use directly a NotificationPublisher instance as it will be injected as
+ * managed beans should use directly a NotificationPublisher instance as it will be injected as
  * dependency by the IoC container.
  * This factory wraps the concrete implementation of the NotifcationPublisher interface by using
  * the IoC container.
@@ -37,22 +37,22 @@ public class NotificationPublisherFactory {
   private static NotificationPublisherFactory instance = new NotificationPublisherFactory();
 
   @Inject
-  private NotificationPublisher eventPublisher;
+  private NotificationPublisher publisher;
 
   /**
    * Gets an instance of this factory.
-   * @return an EventPublisherFactory instance.
+   * @return a NotificationPublisherFactory instance.
    */
   public static NotificationPublisherFactory getFactory() {
     return instance;
   }
 
   /**
-   * Gets an event publisher.
+   * Gets a notification publisher.
    * @return an implementation of the NotificationPublisher interface.
    */
   public NotificationPublisher getNotificationPublisher() {
-    return eventPublisher;
+    return publisher;
   }
 
   private NotificationPublisherFactory() {}
