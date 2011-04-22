@@ -629,6 +629,36 @@ public class ComponentInstManager {
       DBUtil.close(con);
     }
   }
+  
+  public List<Parameter> getParameters(DomainDriverManager ddManager, String componentId)
+      throws AdminException {
+    try {
+      ddManager.getOrganizationSchema();
+
+      // Get the parameters if any
+      List<Parameter> parameters =
+          ddManager.organization.instanceData.getAllParametersInComponent(idAsInt(
+              componentId));
+      return (parameters);
+    } catch (Exception e) {
+      throw new AdminException("ComponentInstManager.getParameters", SilverpeasException.ERROR,
+          "admin.EX_ERR_GET_COMPONENT_PARAMETERS", "componentId = " + componentId, e);
+    } finally {
+      ddManager.releaseOrganizationSchema();
+    }
+  }
+  
+  public Parameter getParameter(DomainDriverManager ddManager, String componentId, String param) throws AdminException {
+    List<Parameter> parameters = getParameters(ddManager, componentId);
+    if (parameters != null) {
+      for(Parameter parameter : parameters) {
+        if(parameter.getName().equalsIgnoreCase(param)){
+          return parameter;
+        }
+      }
+    }
+    return null;
+  }
 
   /**
    * Converts ComponentInst to ComponentInstanceRow

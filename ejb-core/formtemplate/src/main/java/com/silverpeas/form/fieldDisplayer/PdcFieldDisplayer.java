@@ -635,8 +635,6 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
     String axisId;
     String valueId;
     int separatorIndex;
-    List<TreeNode> nodes;
-    Iterator<TreeNode> nodesIter;
     TreeNode node;
     String nodeId;
     StringBuffer valuesPath;
@@ -650,9 +648,9 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
         if (separatorIndex != -1) {
           axisId = classifyValueData.substring(0, separatorIndex);
           valueId = classifyValueData.substring(separatorIndex + 1);
-          nodes = getFullPath(valueId, axisId);
+          List<Value> nodes = getFullPath(valueId, axisId);
           if (nodes != null) {
-            nodesIter = nodes.iterator();
+            Iterator<Value> nodesIter = nodes.iterator();
             ArrayList<Value> values = new ArrayList<Value>();
             valuesPath = new StringBuffer();
             while (nodesIter.hasNext()) {
@@ -741,10 +739,10 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer {
    * @return The list of nodes which describe the path of the axis value corresponding to the ids
    * given as parameters.
    */
-  private List<TreeNode> getFullPath(String valueId, String axisId) {
-    List<TreeNode> nodes = null;
+  private List<Value> getFullPath(String valueId, String axisId) {
+    List<Value> nodes = null;
     try {
-      nodes = getPdcBm().getFullPath(valueId, axisId);
+      return getPdcBm().getFullPath(valueId, axisId);
     } catch (PdcException e) {
       SilverTrace.info("form", "PdcFieldDisplayer.getFullPath", "form.EX_CANT_GET_FULL_PATH",
           "(" + valueId + " ; " + axisId + ")");

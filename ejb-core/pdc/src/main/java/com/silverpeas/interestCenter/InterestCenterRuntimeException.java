@@ -32,6 +32,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class InterestCenterRuntimeException extends SilverpeasRuntimeException {
 
+  private static final long serialVersionUID = -8453982114851005023L;
+
   public InterestCenterRuntimeException(String callingClass, String message) {
     super(callingClass, ERROR, message);
   }

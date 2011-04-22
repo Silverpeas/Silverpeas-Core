@@ -33,25 +33,26 @@ import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.Value;
 
 import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
+import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 
 /**
  * Interface declaration
  * @author neysseri
  */
 public interface PdcBm extends EJBObject {
-  public ArrayList getDaughters(String axisId, String valueId)
+  public List<Value> getDaughters(String axisId, String valueId)
       throws RemoteException;
 
-  public ArrayList getSubAxisValues(String axisId, String valueId)
+  public List<Value> getSubAxisValues(String axisId, String valueId)
       throws RemoteException;
 
-  public ArrayList findGlobalSilverContents(
-      ContainerPositionInterface containerPosition, List componentIds,
+  public List<GlobalSilverContent> findGlobalSilverContents(
+      ContainerPositionInterface containerPosition, List<String> componentIds,
       boolean recursiveSearch, boolean visibilitySensitive)
       throws RemoteException;
 
-  public ArrayList findGlobalSilverContents(
-      ContainerPositionInterface containerPosition, List componentIds,
+  public List<GlobalSilverContent> findGlobalSilverContents(
+      ContainerPositionInterface containerPosition, List<String> componentIds,
       String authorId, String afterDate, String beforeDate,
       boolean recursiveSearch, boolean visibilitySensitive)
       throws RemoteException;
@@ -59,12 +60,12 @@ public interface PdcBm extends EJBObject {
   public int getSilverContentId(String objectId, String componentId)
       throws RemoteException;
 
-  public ArrayList getPositions(int silverContentId, String componentId)
+  public List<ClassifyPosition> getPositions(int silverContentId, String componentId)
       throws RemoteException;
 
   public Value getValue(String axisId, String valueId) throws RemoteException;
 
-  public List getSilverContentIds(List docFeatures) throws RemoteException;
+  public List<Integer> getSilverContentIds(List<String> docFeatures) throws RemoteException;
 
   public String getInternalContentId(int silverContentId)
       throws RemoteException;

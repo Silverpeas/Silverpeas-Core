@@ -26,6 +26,7 @@ package com.stratelia.silverpeas.classifyEngine;
 
 import java.util.*;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.util.JoinStatement;
 
 class SQLStatement extends Object {
@@ -69,64 +70,60 @@ class SQLStatement extends Object {
   }
 
   // Build the SQL statement to classify the object
-  public String buildClassifyStatement(int nSilverObjectId, Position position,
+  public String buildClassifyStatement(int nSilverObjectId, Position<Value> position,
       int nNextPositionId) {
     StringBuffer sSQLStatement = new StringBuffer(1000);
-    List alValues = position.getValues();
+    List<Value> alValues = position.getValues();
 
     // Build the SQL statement to classify the object
     sSQLStatement.append("INSERT INTO ").append(m_sClassifyTable).append(" (")
         .append(m_sPositionIdColumn).append(", ").append(
         m_sSilverObjectIdColumn).append(", ");
 
-    // visibility attributes
-    // sSQLStatement.append(m_sBeginDateColumn + ", " + m_sEndDateColumn + ", "
-    // + m_sIsVisibleColumn + ", ");
-
     for (int nI = 0; nI < alValues.size(); nI++) {
-      sSQLStatement.append(m_sAxisColumn).append(
-          ((Value) alValues.get(nI)).getPhysicalAxisId());
-      if (nI < alValues.size() - 1)
+      sSQLStatement.append(m_sAxisColumn).append(alValues.get(nI).getPhysicalAxisId());
+      if (nI < alValues.size() - 1) {
         sSQLStatement.append(", ");
-      else
+      } else {
         sSQLStatement.append(") ");
+      }
     }
 
     // Put the values
     sSQLStatement.append("VALUES(").append(nNextPositionId).append(", ")
         .append(nSilverObjectId).append(", ");
 
-    // visibility attributes
-    // sSQLStatement.append("'0000/00/00', '9999/99/99', 1, ");
-
-    if (alValues.get(0) != null)
+    if (alValues.get(0) != null) {
       sSQLStatement.append("'");
+    }
     for (int nI = 0; nI < alValues.size(); nI++) {
-      sSQLStatement.append(((Value) alValues.get(nI)).getValue());
-      if (nI < alValues.size() - 1)
-        if (((Value) alValues.get(nI)).getValue() == null)
-          if (((Value) alValues.get(nI + 1)).getValue() != null)
+      sSQLStatement.append(alValues.get(nI).getValue());
+      if (nI < alValues.size() - 1) {
+        if (alValues.get(nI).getValue() == null) {
+          if (alValues.get(nI + 1).getValue() != null) {
             sSQLStatement.append(", '");
-          else
+          } else {
             sSQLStatement.append(", ");
-        else if (((Value) alValues.get(nI + 1)).getValue() != null)
+          }
+        } else if (alValues.get(nI + 1).getValue() != null) {
           sSQLStatement.append("', '");
-        else
+        } else {
           sSQLStatement.append("', ");
-
-      else if (((Value) alValues.get(nI)).getValue() == null)
+        }
+      } else if (alValues.get(nI).getValue() == null) {
         sSQLStatement.append(") ");
-      else
+      } else {
         sSQLStatement.append("') ");
+      }
     }
 
     return sSQLStatement.toString();
   }
 
   // Build the SQL statement to get a position
-  public String buildVerifyStatement(int nSilverObjectId, Position position) {
+  public String buildVerifyStatement(int nSilverObjectId, Position<Value> position) {
     StringBuffer sSQLStatement = new StringBuffer(1000);
-    List alValues = position.getValues();
+    List<Value> alValues = position.getValues();
 
     // Build the SQL statement to classify the object
     sSQLStatement.append("SELECT ").append(m_sPositionIdColumn)
@@ -136,11 +133,12 @@ class SQLStatement extends Object {
     sSQLStatement.append(" WHERE (");
     Value value = null;
     for (int nI = 0; nI < alValues.size(); nI++) {
-      value = (Value) alValues.get(nI);
+      value = alValues.get(nI);
       sSQLStatement.append(m_sAxisColumn).append(value.getPhysicalAxisId());
       sSQLStatement.append(" = '").append(value.getValue()).append("'");
-      if (nI < alValues.size() - 1)
+      if (nI < alValues.size() - 1) {
         sSQLStatement.append(" AND ");
+      }
     }
     sSQLStatement.append(")");
 
@@ -152,9 +150,9 @@ class SQLStatement extends Object {
 
   // Build the SQL statement to remove the object
   public String buildRemoveByPositionStatement(int nSilverObjectId,
-      Position position) {
+      Position<Value> position) {
     StringBuffer sSQLStatement = new StringBuffer(1000);
-    List alValues = position.getValues();
+    List<Value> alValues = position.getValues();
 
     // Build the SQL statement to remove the object
     sSQLStatement.append("DELETE FROM ").append(m_sClassifyTable).append(
@@ -162,12 +160,13 @@ class SQLStatement extends Object {
         nSilverObjectId).append(" AND ");
     for (int nI = 0; nI < alValues.size(); nI++) {
       sSQLStatement.append(m_sAxisColumn).append(
-          ((Value) alValues.get(nI)).getAxisId()).append("='").append(
-          ((Value) alValues.get(nI)).getValue()).append("'");
-      if (nI < alValues.size() - 1)
+          alValues.get(nI).getAxisId()).append("='").append(
+          alValues.get(nI).getValue()).append("'");
+      if (nI < alValues.size() - 1) {
         sSQLStatement.append(" AND ");
-      else
+      } else {
         sSQLStatement.append(")");
+      }
     }
     return sSQLStatement.toString();
   }
@@ -193,14 +192,14 @@ class SQLStatement extends Object {
   }
 
   // Update a Position with the given one for the given SilverObjectId
-  public String buildUpdateByPositionIdStatement(Position newPosition) {
+  public String buildUpdateByPositionIdStatement(Position<Value> newPosition) {
     StringBuffer sSQLStatement = new StringBuffer(1000);
     sSQLStatement.append("UPDATE ").append(m_sClassifyTable).append(" SET ")
         .append(m_sPositionIdColumn).append(" = ").append(
         newPosition.getPositionId()).append(", ");
-    List alValues = newPosition.getValues();
+    List<Value> alValues = newPosition.getValues();
     for (int nI = 0; nI < alValues.size(); nI++) {
-      Value oneValue = (Value) alValues.get(nI);
+      Value oneValue = alValues.get(nI);
       sSQLStatement.append(m_sAxisColumn).append(oneValue.getPhysicalAxisId());
       String value = oneValue.getValue();
       if (value.equals("-")) {
@@ -210,8 +209,9 @@ class SQLStatement extends Object {
         sSQLStatement.append(" = '").append(value).append("'");
       }
 
-      if (nI < alValues.size() - 1)
+      if (nI < alValues.size() - 1) {
         sSQLStatement.append(", ");
+      }
     }
 
     sSQLStatement.append(" WHERE ").append(m_sPositionIdColumn).append(" = ")
@@ -240,21 +240,23 @@ class SQLStatement extends Object {
     StringBuffer sSQLStatement = new StringBuffer(1000);
     sSQLStatement.append("SELECT ").append(m_sSilverObjectIdColumn).append(
         " FROM ").append(m_sClassifyTable);
-    if (alPositionIds.size() != 0)
+    if (alPositionIds.size() != 0) {
       sSQLStatement.append(" WHERE ");
+    }
     for (int nI = 0; nI < alPositionIds.size(); nI++) {
       sSQLStatement.append("(").append(m_sPositionIdColumn).append(" = ")
           .append(((Integer) alPositionIds.get(0)).intValue()).append(")");
       if (nI < alPositionIds.size() - 1)
         sSQLStatement.append(" OR ");
     }
-    if (alPositionIds.size() != 0)
+    if (alPositionIds.size() != 0) {
       sSQLStatement.append(" GROUP BY ").append(m_sSilverObjectIdColumn);
+    }
 
     return sSQLStatement.toString();
   }
 
-  public String buildFindByCriteriasStatementByJoin(List alCriterias,
+  public String buildFindByCriteriasStatementByJoin(List<Criteria> alCriterias,
       JoinStatement joinStatementContainer, JoinStatement joinStatementContent,
       String todayFormatted) {
     return buildFindByCriteriasStatementByJoin(alCriterias,
@@ -268,7 +270,7 @@ class SQLStatement extends Object {
    * (useful for taglib functionality)
    * @return the Sql query string
    */
-  public String buildFindByCriteriasStatementByJoin(List alCriterias,
+  public String buildFindByCriteriasStatementByJoin(List<Criteria> alCriterias,
       JoinStatement joinStatementContainer, JoinStatement joinStatementContent,
       String todayFormatted, boolean recursiveSearch) {
     return buildFindByCriteriasStatementByJoin(alCriterias,
@@ -276,7 +278,7 @@ class SQLStatement extends Object {
         recursiveSearch, true);
   }
 
-  public String buildFindByCriteriasStatementByJoin(List alCriterias,
+  public String buildFindByCriteriasStatementByJoin(List<Criteria> alCriterias,
       JoinStatement joinStatementContainer, JoinStatement joinStatementContent,
       String todayFormatted, boolean recursiveSearch,
       boolean visibilitySensitive) {
@@ -313,15 +315,17 @@ class SQLStatement extends Object {
       if (((Criteria) alCriterias.get(nI)).getValue() != null) {
         sSQLStatement.append(" AND (").append(m_sAxisColumn).append(
             ((Criteria) alCriterias.get(nI)).getAxisId());
-        if (recursiveSearch)
+        if (recursiveSearch) {
           sSQLStatement.append(" LIKE '");
-        else
+        } else {
           sSQLStatement.append(" = '");
+        }
         sSQLStatement.append(((Criteria) alCriterias.get(nI)).getValue());
-        if (recursiveSearch)
+        if (recursiveSearch) {
           sSQLStatement.append("%')");
-        else
+        } else {
           sSQLStatement.append("')");
+        }
       }
     }
 
@@ -329,8 +333,9 @@ class SQLStatement extends Object {
     sSQLStatement.append(" AND ('").append(todayFormatted).append(
         "' between CMC.beginDate AND CMC.endDate)");
 
-    if (visibilitySensitive)
+    if (visibilitySensitive) {
       sSQLStatement.append(" AND (CMC.isVisible = 1 )");
+    }
 
     sSQLStatement.append(" GROUP BY CEC.").append(m_sSilverObjectIdColumn);
 
@@ -367,8 +372,9 @@ class SQLStatement extends Object {
     for (int nI = 0; nI < nbMaxAxis; nI++) {
       sSQLStatement.append("(").append(m_sAxisColumn).append(nI).append(
           " IS NULL)");
-      if (nI < nbMaxAxis - 1)
+      if (nI < nbMaxAxis - 1) {
         sSQLStatement.append(" AND ");
+      }
     }
 
     return sSQLStatement.toString();
@@ -382,8 +388,9 @@ class SQLStatement extends Object {
     for (int nI = 0; nI < nbMaxAxis; nI++) {
       sSQLStatement.append("(").append(m_sAxisColumn).append(nI).append(
           " IS NULL)");
-      if (nI < nbMaxAxis - 1)
+      if (nI < nbMaxAxis - 1) {
         sSQLStatement.append(" AND ");
+      }
     }
 
     return sSQLStatement.toString();
@@ -394,34 +401,36 @@ class SQLStatement extends Object {
     StringBuffer sSQLStatement = new StringBuffer(1000);
 
     // Build the SQL statement to remove the values
-    if (newValue.getValue() != null)
+    if (newValue.getValue() != null) {
       sSQLStatement.append("UPDATE ").append(m_sClassifyTable).append(" SET ")
           .append(m_sAxisColumn).append(newValue.getAxisId()).append(" = '")
           .append(newValue.getValue()).append("'");
-    else
+    } else {
       sSQLStatement.append("UPDATE ").append(m_sClassifyTable).append(" SET ")
           .append(m_sAxisColumn).append(newValue.getAxisId()).append(" = ")
           .append(newValue.getValue());
+    }
 
-    if (oldValue.getValue() != null)
+    if (oldValue.getValue() != null) {
       sSQLStatement.append(" WHERE (").append(m_sAxisColumn).append(
           oldValue.getAxisId()).append(" = '").append(oldValue.getValue())
           .append("')");
-    else
+    } else {
       sSQLStatement.append(" WHERE (").append(m_sAxisColumn).append(
           oldValue.getAxisId()).append(" IS NULL)");
+    }
 
     return sSQLStatement.toString();
   }
 
   // Get the pertinent Axis corresponding to the criterias
-  public String buildGetPertinentAxisStatement(List alCriterias, int nAxisId,
+  public String buildGetPertinentAxisStatement(List<Criteria> alCriterias, int nAxisId,
       String todayFormatted) {
     return buildGetPertinentAxisStatement(alCriterias, nAxisId, todayFormatted,
         true);
   }
 
-  public String buildGetPertinentAxisStatement(List alCriterias, int nAxisId,
+  public String buildGetPertinentAxisStatement(List<Criteria> alCriterias, int nAxisId,
       String todayFormatted, boolean visibilitySensitive) {
     StringBuffer sSQLStatement = new StringBuffer(1000);
 
@@ -429,18 +438,22 @@ class SQLStatement extends Object {
         .append(" CEC, SB_ContentManager_Content CMC WHERE CEC.").append(
         m_sSilverObjectIdColumn).append(" = CMC.silverContentId AND (CEC.")
         .append(m_sPositionIdColumn).append(" <> -1) ");
-    for (int nI = 0; alCriterias != null && nI < alCriterias.size(); nI++)
-
-      if (((Criteria) alCriterias.get(nI)).getValue() != null)
-        sSQLStatement.append(" AND (CEC.").append(m_sAxisColumn).append(
-            ((Criteria) alCriterias.get(nI)).getAxisId()).append(" LIKE '")
-            .append(((Criteria) alCriterias.get(nI)).getValue()).append("%')");
+    if (alCriterias != null) {
+      for (Criteria criteria : alCriterias) {
+        if (criteria.getValue() != null) {
+          sSQLStatement.append(" AND (CEC.").append(m_sAxisColumn).append(
+              criteria.getAxisId()).append(" LIKE '")
+              .append(criteria.getValue()).append("%')");
+        }
+      }
+    }
 
     // Set the visibility constraints --> en faire une fonction
     sSQLStatement.append(" AND ('").append(todayFormatted).append(
         "' between CMC.beginDate AND CMC.endDate)");
-    if (visibilitySensitive)
+    if (visibilitySensitive) {
       sSQLStatement.append(" AND (CMC.isVisible = 1 )");
+    }
 
     // Set the pertinent axiom
     sSQLStatement.append(" AND (CEC.").append(m_sAxisColumn).append(nAxisId)
@@ -450,14 +463,14 @@ class SQLStatement extends Object {
   }
 
   // Get the pertinent Axis corresponding to the criterias
-  public String buildGetPertinentAxisStatementByJoin(List alCriterias,
+  public String buildGetPertinentAxisStatementByJoin(List<? extends Criteria> alCriterias,
       int nAxisId, String sRootValue, JoinStatement joinStatementAllPositions,
       String todayFormatted) {
     return buildGetPertinentAxisStatementByJoin(alCriterias, nAxisId,
         sRootValue, joinStatementAllPositions, todayFormatted, true);
   }
 
-  public String buildGetPertinentAxisStatementByJoin(List alCriterias,
+  public String buildGetPertinentAxisStatementByJoin(List<? extends Criteria> alCriterias,
       int nAxisId, String sRootValue, JoinStatement joinStatementAllPositions,
       String todayFormatted, boolean visibilitySensitive) {
     StringBuffer sSQLStatement = new StringBuffer(1000);
@@ -474,40 +487,45 @@ class SQLStatement extends Object {
     sSQLStatement.append(" AND CEC.").append(m_sSilverObjectIdColumn).append(
         " = CMC.silverContentId ");
     String whereClause = joinStatementAllPositions.getWhere();
-    if ((whereClause != null) && (!whereClause.equals(""))) {
+    if (StringUtil.isDefined(whereClause)) {
       sSQLStatement.append(" AND ").append(whereClause);
     }
-    for (int nI = 0; alCriterias != null && nI < alCriterias.size(); nI++)
-      if (((Criteria) alCriterias.get(nI)).getValue() != null)
-        sSQLStatement.append(" AND (CEC.").append(m_sAxisColumn).append(
-            ((Criteria) alCriterias.get(nI)).getAxisId()).append(" LIKE '")
-            .append(((Criteria) alCriterias.get(nI)).getValue()).append("%')");
+    if (alCriterias != null) {
+      for (Criteria criteria : alCriterias) {
+        if (criteria.getValue() != null) {
+          sSQLStatement.append(" AND (CEC.").append(m_sAxisColumn).append(
+              criteria.getAxisId()).append(" LIKE '")
+              .append(criteria.getValue()).append("%')");
+        }
+      }
+    }
 
     // Set the visibility constraints --> en faire une fonction
     sSQLStatement.append(" AND ('").append(todayFormatted).append(
         "' between CMC.beginDate AND CMC.endDate)");
-    if (visibilitySensitive)
+    if (visibilitySensitive) {
       sSQLStatement.append(" AND (CMC.isVisible = 1 )");
+    }
 
     // Set the pertinent axiom
-    if (sRootValue.length() == 0)
+    if (sRootValue.length() == 0) {
       sSQLStatement.append(" AND (CEC.").append(m_sAxisColumn).append(nAxisId)
           .append(" IS NOT NULL)");
-    else
+    } else {
       sSQLStatement.append(" AND (CEC.").append(m_sAxisColumn).append(nAxisId)
           .append(" LIKE '").append(sRootValue).append("%')");
-
+    }
     return sSQLStatement.toString();
   }
 
   // Get the pertinent Value corresponding to the criterias
-  public String buildGetPertinentValueStatement(List alCriterias, int nAxisId,
+  public String buildGetPertinentValueStatement(List<Criteria> alCriterias, int nAxisId,
       String todayFormatted) {
     return buildGetPertinentValueStatement(alCriterias, nAxisId,
         todayFormatted, true);
   }
 
-  public String buildGetPertinentValueStatement(List alCriterias, int nAxisId,
+  public String buildGetPertinentValueStatement(List<Criteria> alCriterias, int nAxisId,
       String todayFormatted, boolean visibilitySensitive) {
     StringBuffer sSQLStatement = new StringBuffer(1000);
     sSQLStatement.append("SELECT COUNT(CEC.").append(m_sSilverObjectIdColumn)
@@ -515,28 +533,33 @@ class SQLStatement extends Object {
         .append(m_sClassifyTable).append("CEC, SB_ContentManager_Content CMC ");
     sSQLStatement.append("WHERE CEC.").append(m_sSilverObjectIdColumn).append(
         " = CMC.silverContentId ");
-    for (int nI = 0; alCriterias.size() != 0 && nI < alCriterias.size(); nI++)
-      if (((Criteria) alCriterias.get(nI)).getValue() != null) {
+
+    for (int nI = 0; alCriterias.size() != 0 && nI < alCriterias.size(); nI++) {
+      if (alCriterias.get(nI).getValue() != null) {
         sSQLStatement.append("(CEC.").append(m_sAxisColumn).append(
-            ((Criteria) alCriterias.get(nI)).getAxisId()).append(" LIKE '")
-            .append(((Criteria) alCriterias.get(nI)).getValue()).append("%')");
-        if (nI < alCriterias.size() - 1)
+            alCriterias.get(nI).getAxisId()).append(" LIKE '")
+            .append(alCriterias.get(nI).getValue()).append("%')");
+        if (nI < alCriterias.size() - 1) {
           sSQLStatement.append(" AND ");
+        }
       }
+    }
 
     // Set the pertinent axiom
-    if (alCriterias.size() != 0)
+    if (alCriterias.size() != 0) {
       sSQLStatement.append(" AND (CEC.").append(m_sAxisColumn).append(nAxisId)
           .append(" IS NOT NULL)");
-    else
+    } else {
       sSQLStatement.append("(CEC.").append(m_sAxisColumn).append(nAxisId)
           .append(" IS NOT NULL)");
+    }
 
     // Set the visibility constraints --> en faire une fonction
     sSQLStatement.append(" AND ('").append(todayFormatted).append(
         "' between CMC.beginDate AND CMC.endDate)");
-    if (visibilitySensitive)
+    if (visibilitySensitive) {
       sSQLStatement.append(" AND (CMC.isVisible = 1 )");
+    }
 
     // Group By
     sSQLStatement.append(" GROUP BY CEC.").append(m_sAxisColumn)
@@ -546,14 +569,14 @@ class SQLStatement extends Object {
   }
 
   // Get the pertinent Value corresponding to the criterias
-  public String buildGetPertinentValueByJoinStatement(List alCriterias,
+  public String buildGetPertinentValueByJoinStatement(List<Criteria> alCriterias,
       int nAxisId, JoinStatement joinStatementAllPositions,
       String todayFormatted) {
     return buildGetPertinentValueByJoinStatement(alCriterias, nAxisId,
         joinStatementAllPositions, todayFormatted, true);
   }
 
-  public String buildGetPertinentValueByJoinStatement(List alCriterias,
+  public String buildGetPertinentValueByJoinStatement(List<Criteria> alCriterias,
       int nAxisId, JoinStatement joinStatementAllPositions,
       String todayFormatted, boolean visibilitySensitive) {
     StringBuffer sSQLStatement = new StringBuffer(1000);
@@ -572,11 +595,12 @@ class SQLStatement extends Object {
       sSQLStatement.append(" AND ").append(whereClause);
     }
 
-    for (int nI = 0; alCriterias.size() != 0 && nI < alCriterias.size(); nI++)
-      if (((Criteria) alCriterias.get(nI)).getValue() != null)
+    for (Criteria criteria : alCriterias) {
+      if (criteria.getValue() != null) {
         sSQLStatement.append(" AND (CEC.").append(m_sAxisColumn).append(
-            ((Criteria) alCriterias.get(nI)).getAxisId()).append(" LIKE '")
-            .append(((Criteria) alCriterias.get(nI)).getValue()).append("%')");
+            criteria.getAxisId()).append(" LIKE '").append(criteria.getValue()).append("%')");
+      }
+    }
 
     // Set the pertinent axiom
     sSQLStatement.append(" AND (CEC.").append(m_sAxisColumn).append(nAxisId)
@@ -585,8 +609,9 @@ class SQLStatement extends Object {
     // Set the visibility constraints --> en faire une fonction
     sSQLStatement.append(" AND ('").append(todayFormatted).append(
         "' between CMC.beginDate AND CMC.endDate)");
-    if (visibilitySensitive)
+    if (visibilitySensitive) {
       sSQLStatement.append(" AND (CMC.isVisible = 1 )");
+    }
 
     // Group By
     sSQLStatement.append(" GROUP BY CEC.").append(m_sAxisColumn)
@@ -595,7 +620,7 @@ class SQLStatement extends Object {
     return sSQLStatement.toString();
   }
 
-  public String buildGetObjectValuePairsByJoinStatement(List alCriterias,
+  public String buildGetObjectValuePairsByJoinStatement(List<Criteria> alCriterias,
       int nAxisId, JoinStatement joinStatementAllPositions,
       String todayFormatted, boolean visibilitySensitive) {
     StringBuffer sSQLStatement = new StringBuffer(1000);
@@ -615,15 +640,16 @@ class SQLStatement extends Object {
     sSQLStatement.append(" AND CMC.contentInstanceId").append(
         " = CMI.instanceId ");
     String whereClause = joinStatementAllPositions.getWhere();
-    if ((whereClause != null) && (!whereClause.equals(""))) {
+    if (StringUtil.isDefined(whereClause)) {
       sSQLStatement.append(" AND ").append(whereClause);
     }
 
-    for (int nI = 0; alCriterias.size() != 0 && nI < alCriterias.size(); nI++)
-      if (((Criteria) alCriterias.get(nI)).getValue() != null)
+    for (Criteria criteria : alCriterias) {
+      if (criteria.getValue() != null) {
         sSQLStatement.append(" AND (CEC.").append(m_sAxisColumn).append(
-            ((Criteria) alCriterias.get(nI)).getAxisId()).append(" LIKE '")
-            .append(((Criteria) alCriterias.get(nI)).getValue()).append("%')");
+            criteria.getAxisId()).append(" LIKE '").append(criteria.getValue()).append("%')");
+      }
+    }
 
     // Set the pertinent axiom
     sSQLStatement.append(" AND (CEC.").append(m_sAxisColumn).append(nAxisId)
@@ -632,11 +658,9 @@ class SQLStatement extends Object {
     // Set the visibility constraints --> en faire une fonction
     sSQLStatement.append(" AND ('").append(todayFormatted).append(
         "' between CMC.beginDate AND CMC.endDate)");
-    if (visibilitySensitive)
+    if (visibilitySensitive) {
       sSQLStatement.append(" AND (CMC.isVisible = 1 )");
-
-    // Group By
-    // sSQLStatement.append(" GROUP BY CEC.").append(m_sAxisColumn).append(nAxisId);
+    }
 
     return sSQLStatement.toString();
   }

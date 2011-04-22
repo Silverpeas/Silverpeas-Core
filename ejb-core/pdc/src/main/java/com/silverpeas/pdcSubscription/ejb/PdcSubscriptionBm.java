@@ -28,18 +28,18 @@
  */
 package com.silverpeas.pdcSubscription.ejb;
 
-import com.silverpeas.pdcSubscription.model.PDCSubscription;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.rmi.RemoteException;
+import java.util.List;
+
+import com.silverpeas.pdcSubscription.model.PDCSubscription;
+import com.stratelia.silverpeas.classifyEngine.Value;
 
 public interface PdcSubscriptionBm extends javax.ejb.EJBObject {
 
   /**
    * @return a list of <code>PDCSubscriptions</code> finded by id provided
    */
-  public ArrayList getPDCSubscriptionByUserId(int userId)
+  public List<PDCSubscription> getPDCSubscriptionByUserId(int userId)
       throws RemoteException;
 
   public PDCSubscription getPDCSubsriptionById(int id) throws RemoteException;
@@ -64,7 +64,7 @@ public interface PdcSubscriptionBm extends javax.ejb.EJBObject {
    * @param componentId component where classify event occures
    * @param silverObjectid object that was classified
    */
-  public void checkSubscriptions(List classifyValues, String componentId,
+  public void checkSubscriptions(List<? extends Value> classifyValues, String componentId,
       int silverObjectid) throws RemoteException;
 
   /**
@@ -76,8 +76,8 @@ public interface PdcSubscriptionBm extends javax.ejb.EJBObject {
    * @param newPath new path. That will be places instead of old for this axis
    * @param pathInfo should contains PdcBm.getFullPath data structure
    */
-  public void checkValueOnDelete(int axiId, String axisName, List oldPath,
-      List newPath, List pathInfo) throws RemoteException;
+  public void checkValueOnDelete(int axiId, String axisName, List<String> oldPath,
+      List<String> newPath, List<com.stratelia.silverpeas.pdc.model.Value> pathInfo) throws RemoteException;
 
   /**
    * Implements PDCSubscription check for axis deletion. It deletes all references to this axis from

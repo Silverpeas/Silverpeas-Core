@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
 package com.stratelia.silverpeas.portlet;
@@ -100,7 +100,7 @@ public class Portlet {
       int aId, // now the instanceId in the database
       int aRowId, // The PortletRowId in the database
       String aRequestRooter, // The Component request rooter
-      String aComponentName, // 
+      String aComponentName, //
       String aComponentInstanceId,
       String aName, // This name will be in the title bar
       String aDescription, String aTitlebarUrl,

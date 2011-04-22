@@ -37,9 +37,11 @@ import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
 
 public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter {
 
+  private static final long serialVersionUID = -441269066150311066L;
   private PdcSubscriptionSessionController pdcSC = null;
 
   public ComponentSessionController createComponentSessionController(
@@ -86,7 +88,7 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter {
         String userId = request.getParameter("userId");
         String action = request.getParameter("action");
         // passage des parametres ...
-        Collection subscribeThemeList = pdcSC.getUserSubscribe(userId);
+        Collection<Collection<NodeDetail>> subscribeThemeList = pdcSC.getUserSubscribe(userId);
         request.setAttribute("SubscribeThemeList", subscribeThemeList);
         request.setAttribute("action", action);
         request.setAttribute("userId", userId);
@@ -130,7 +132,7 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter {
         pdcSC.removeICByPK(ids_i);
       }
     }
-    ArrayList list = pdcSC.getUserPDCSubscription();
+    List<PDCSubscription> list = pdcSC.getUserPDCSubscription();
 
     return doInitSubscrListRequest(request, list);
   }
@@ -142,7 +144,7 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter {
       throws Exception {
     request.setAttribute("action", "showUserSubscriptions");
     request.setAttribute("userId", String.valueOf(userId));
-    ArrayList list = pdcSC.getUserPDCSubscription(userId);
+    List<PDCSubscription> list = pdcSC.getUserPDCSubscription(userId);
     return doInitSubscrListRequest(request, list);
   }
 
@@ -153,11 +155,10 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter {
    * @return jsp name
    */
   private String doInitSubscrListRequest(HttpServletRequest request,
-      List subscriptions) throws Exception {
+      List<PDCSubscription> subscriptions) throws Exception {
     request.setAttribute("subscriptionList", subscriptions);
     List pathContext = new ArrayList();
-    for (int i = 0; i < subscriptions.size(); i++) {
-      PDCSubscription subscription = (PDCSubscription) subscriptions.get(i);
+    for (PDCSubscription subscription : subscriptions) {
       pathContext.add(pdcSC.getPathCriterias(subscription.getPdcContext()));
     }
     request.setAttribute("PathContext", pathContext);

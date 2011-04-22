@@ -28,26 +28,34 @@ package com.silverpeas.workflow.api.model;
  * Interface describing a representation of the &lt;timeoutAction&gt; element of a Process Model.
  */
 public interface TimeOutAction {
-  
+
   /**
    * Get timeoutAction order.
    * As several timeout might be defined, an order is set.
-   *  
+   *
    * @return  timeout order
    */
   public int getOrder();
-  
+
   /**
    * return the Action to be launch
    * @return the action
    */
   public Action getAction();
-   
+
   /**
    * Get delay after which the action is launched.
    * (format : #d delay in days, #h delay in hours)
-   * 
+   *
    * @return  delay as String
    */
   public String getDelay();
+
+  /**
+   * Get date item from data folder used to determine when the action is launched.
+   *
+   * @return  item
+   */
+  public Item getDateItem();
+
 }

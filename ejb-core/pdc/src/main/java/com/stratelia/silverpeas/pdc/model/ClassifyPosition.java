@@ -75,7 +75,6 @@ public class ClassifyPosition extends Position<ClassifyValue> implements
    * Méthodes nécéssaire pour le mapping castor du module importExport.
    * @return
    */
-  @SuppressWarnings("unchecked")
   public List<ClassifyValue> getListClassifyValue() {
     return super.getValues();
   }

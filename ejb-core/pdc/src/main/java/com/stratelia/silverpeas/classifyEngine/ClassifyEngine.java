@@ -23,23 +23,21 @@
  */
 package com.stratelia.silverpeas.classifyEngine;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Hashtable;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
 
-import java.text.SimpleDateFormat;
-
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.JoinStatement;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
@@ -305,8 +303,7 @@ public class ClassifyEngine implements Cloneable {
       throws ClassifyEngineException {
     // Convert the Axis Ids
     List<Value> alValues = position.getValues();
-    for (int nI = 0; nI < alValues.size(); nI++) {
-      Value value = (Value) alValues.get(nI);
+    for (Value value : alValues) {
       value.setPhysicalAxisId(getPhysicalAxisId(value.getAxisId()));
     }
 
@@ -365,8 +362,7 @@ public class ClassifyEngine implements Cloneable {
 
     // Convert the Axis Ids
     List<Value> alValues = position.getValues();
-    for (int nI = 0; nI < alValues.size(); nI++) {
-      Value value = (Value) alValues.get(nI);
+    for (Value value : alValues) {
       value.setPhysicalAxisId(getPhysicalAxisId(value.getAxisId()));
     }
 
@@ -418,7 +414,7 @@ public class ClassifyEngine implements Cloneable {
    * connection is null, then we have to open a connection and close it
    */
   public void unclassifySilverObjectByPosition(Connection connection,
-      int nSilverObjectId, Position position) throws ClassifyEngineException {
+      int nSilverObjectId, Position<Value> position) throws ClassifyEngineException {
     boolean bCloseConnection = false;
 
     // Check the minimum required
@@ -426,8 +422,7 @@ public class ClassifyEngine implements Cloneable {
 
     // Convert the Axis Ids
     List<Value> alValues = position.getValues();
-    for (int nI = 0; nI < alValues.size(); nI++) {
-      Value value = (Value) alValues.get(nI);
+    for (Value value : alValues) {
       value.setAxisId(this.getPhysicalAxisId(value.getAxisId()));
     }
     PreparedStatement prepStmt = null;
@@ -562,8 +557,7 @@ public class ClassifyEngine implements Cloneable {
 
     // Convert the Axis Ids
     List<Value> alValues = newPosition.getValues();
-    for (int nI = 0; nI < alValues.size(); nI++) {
-      Value value = (Value) alValues.get(nI);
+    for (Value value : alValues) {
       value.setPhysicalAxisId(getPhysicalAxisId(value.getAxisId()));
     }
 
@@ -829,9 +823,9 @@ public class ClassifyEngine implements Cloneable {
       resSet = prepStmt.executeQuery();
 
       // Fetch the results and convert them in Positions
-      ArrayList<Position> alResults = new ArrayList<Position>();
+      List<Position> alResults = new ArrayList<Position>();
       while (resSet.next()) {
-        Position position = new Position();
+        Position<Value> position = new Position<Value>();
         position.setPositionId(resSet.getInt(1));
 
         List<Value> alValues = new ArrayList<Value>();
@@ -1035,7 +1029,7 @@ public class ClassifyEngine implements Cloneable {
     }
   }
 
-  private void checkPosition(Position position) throws ClassifyEngineException {
+  private void checkPosition(Position<Value> position) throws ClassifyEngineException {
     if (position != null) {
       position.checkPosition();
     } else {
@@ -1044,13 +1038,13 @@ public class ClassifyEngine implements Cloneable {
     }
   }
 
-  private void checkParameters(int nSilverObjectId, Position position)
+  private void checkParameters(int nSilverObjectId, Position<Value> position)
       throws ClassifyEngineException {
     this.checkSilverObjectId(nSilverObjectId);
     this.checkPosition(position);
   }
 
-  private void checkCriterias(List<Criteria> alCriterias) throws ClassifyEngineException {
+  private void checkCriterias(List<? extends Criteria> alCriterias) throws ClassifyEngineException {
     // Check if the given array of criterias is valid
     if (alCriterias == null) {
       throw new ClassifyEngineException("ClassifyEngine.checkCriterias",
@@ -1058,8 +1052,8 @@ public class ClassifyEngine implements Cloneable {
     }
 
     // Check that each criteria is valid
-    for (int nI = 0; nI < alCriterias.size(); nI++) {
-      ((Criteria) alCriterias.get(nI)).checkCriteria();
+    for (Criteria criteria : alCriterias) {
+      criteria.checkCriteria();
     }
   }
 
@@ -1075,7 +1069,7 @@ public class ClassifyEngine implements Cloneable {
    * Return a List of PertinentAxis corresponding to the given criterias for the given AxisIds The
    * return list is ordered like the given one considering the AxisId
    */
-  public List<PertinentAxis> getPertinentAxis(List alGivenCriterias, List<Integer> alAxisIds)
+  public List<PertinentAxis> getPertinentAxis(List<? extends Criteria> alGivenCriterias, List<Integer> alAxisIds)
       throws ClassifyEngineException {
     Connection connection = null;
 
@@ -1083,9 +1077,8 @@ public class ClassifyEngine implements Cloneable {
     this.checkCriterias(alGivenCriterias);
 
     // Convert the Axis Ids
-    ArrayList<Criteria> alCriterias = new ArrayList<Criteria>();
-    for (int nI = 0; nI < alGivenCriterias.size(); nI++) {
-      Criteria criteria = (Criteria) alGivenCriterias.get(nI);
+    List<Criteria> alCriterias = new ArrayList<Criteria>();
+    for (Criteria criteria : alGivenCriterias) {
       alCriterias.add(new Criteria(
           this.getPhysicalAxisId(criteria.getAxisId()), criteria.getValue()));
     }
@@ -1122,7 +1115,7 @@ public class ClassifyEngine implements Cloneable {
   }
 
   private PertinentAxis getSinglePertinentAxis(Connection connection,
-      List alCriterias, int nAxisId, String todayFormatted)
+      List<Criteria> alCriterias, int nAxisId, String todayFormatted)
       throws SQLException, ClassifyEngineException {
     // build the statements
     String sSQLStatement = SQLStatement.buildGetPertinentAxisStatement(
@@ -1159,7 +1152,7 @@ public class ClassifyEngine implements Cloneable {
    * Return a List of PertinentAxis corresponding to the given criterias for the given AxisIds and
    * given Join Statement The return list is ordered like the given one considering the AxisId
    */
-  public List<PertinentAxis> getPertinentAxisByJoin(List alGivenCriterias, List<Integer> alAxisIds,
+  public List<PertinentAxis> getPertinentAxisByJoin(List<? extends Criteria> alGivenCriterias, List<Integer> alAxisIds,
       JoinStatement joinStatementAllPositions) throws ClassifyEngineException {
     Connection connection = null;
 
@@ -1167,9 +1160,8 @@ public class ClassifyEngine implements Cloneable {
     this.checkCriterias(alGivenCriterias);
 
     // Convert the Axis Ids
-    ArrayList alCriterias = new ArrayList();
-    for (int nI = 0; nI < alGivenCriterias.size(); nI++) {
-      Criteria criteria = (Criteria) alGivenCriterias.get(nI);
+    List<Criteria> alCriterias = new ArrayList<Criteria>();
+    for (Criteria criteria : alGivenCriterias) {
       alCriterias.add(new Criteria(
           this.getPhysicalAxisId(criteria.getAxisId()), criteria.getValue()));
     }
@@ -1207,7 +1199,7 @@ public class ClassifyEngine implements Cloneable {
   }
 
   public PertinentAxis getSinglePertinentAxisByJoin(Connection connection,
-      List alCriterias, int nAxisId, String sRootValue,
+      List<? extends Criteria> alCriterias, int nAxisId, String sRootValue,
       JoinStatement joinStatementAllPositions) throws SQLException,
       ClassifyEngineException {
     String today = DateUtil.today2SQLDate();
@@ -1219,7 +1211,7 @@ public class ClassifyEngine implements Cloneable {
    * Return a PertinentAxis object corresponding to the given AxisId, rootValue and search Criterias
    */
   public PertinentAxis getSinglePertinentAxisByJoin(Connection connection,
-      List alCriterias, int nAxisId, String sRootValue,
+      List<? extends Criteria> alCriterias, int nAxisId, String sRootValue,
       JoinStatement joinStatementAllPositions, String todayFormatted)
       throws SQLException, ClassifyEngineException {
     SilverTrace.info("classifyEngine",
@@ -1235,9 +1227,8 @@ public class ClassifyEngine implements Cloneable {
         this.checkCriterias(alCriterias);
 
         // Convert the Axis Ids
-        ArrayList<Criteria> alComputedCriterias = new ArrayList<Criteria>();
-        for (int nI = 0; nI < alCriterias.size(); nI++) {
-          Criteria criteria = (Criteria) alCriterias.get(nI);
+        List<Criteria> alComputedCriterias = new ArrayList<Criteria>();
+        for (Criteria criteria : alCriterias) {
           alComputedCriterias.add(new Criteria(this.getPhysicalAxisId(criteria.getAxisId()), criteria.
               getValue()));
         }
@@ -1309,7 +1300,7 @@ public class ClassifyEngine implements Cloneable {
    * Return a List of PertinentValues corresponding to the givenAxisId The return list is ordered
    * like the given one considering the AxisId
    */
-  public List<PertinentValue> getPertinentValues(List alGivenCriterias, int nLogicalAxisId)
+  public List<PertinentValue> getPertinentValues(List<? extends Criteria> alGivenCriterias, int nLogicalAxisId)
       throws ClassifyEngineException {
     SilverTrace.info("classifyEngine", "ClassifyEngine.getPertinentValues",
         "root.MSG_GEN_ENTER_METHOD", "nLogicalAxisId = " + nLogicalAxisId);
@@ -1321,8 +1312,7 @@ public class ClassifyEngine implements Cloneable {
 
     // Convert the Axis Ids
     ArrayList<Criteria> alCriterias = new ArrayList<Criteria>();
-    for (int nI = 0; nI < alGivenCriterias.size(); nI++) {
-      Criteria criteria = (Criteria) alGivenCriterias.get(nI);
+    for (Criteria criteria : alGivenCriterias) {
       alCriterias.add(new Criteria(
           this.getPhysicalAxisId(criteria.getAxisId()), criteria.getValue()));
     }
@@ -1379,7 +1369,7 @@ public class ClassifyEngine implements Cloneable {
    * Return a List of PertinentValues corresponding to the givenAxisId The return list is ordered
    * like the given one considering the AxisId
    */
-  public List<PertinentValue> getPertinentValuesByJoin(List alGivenCriterias,
+  public List<PertinentValue> getPertinentValuesByJoin(List<? extends Criteria> alGivenCriterias,
       int nLogicalAxisId, JoinStatement joinStatementAllPositions)
       throws ClassifyEngineException {
     SilverTrace.info("classifyEngine",
@@ -1391,9 +1381,8 @@ public class ClassifyEngine implements Cloneable {
     this.checkCriterias(alGivenCriterias);
 
     // Convert the Axis Ids
-    ArrayList alCriterias = new ArrayList();
-    for (int nI = 0; nI < alGivenCriterias.size(); nI++) {
-      Criteria criteria = (Criteria) alGivenCriterias.get(nI);
+    List<Criteria> alCriterias = new ArrayList<Criteria>();
+    for (Criteria criteria : alGivenCriterias) {
       alCriterias.add(new Criteria(
           this.getPhysicalAxisId(criteria.getAxisId()), criteria.getValue()));
     }
@@ -1455,7 +1444,7 @@ public class ClassifyEngine implements Cloneable {
    * Return a List of ObjectValuePair corresponding to the givenAxisId The return list is ordered
    * like the given one considering the AxisId
    */
-  public List<ObjectValuePair> getObjectValuePairsByJoin(List alGivenCriterias,
+  public List<ObjectValuePair> getObjectValuePairsByJoin(List<? extends Criteria> alGivenCriterias,
       int nLogicalAxisId, JoinStatement joinStatementAllPositions)
       throws ClassifyEngineException {
     SilverTrace.info("classifyEngine",
@@ -1467,9 +1456,8 @@ public class ClassifyEngine implements Cloneable {
     this.checkCriterias(alGivenCriterias);
 
     // Convert the Axis Ids
-    List alCriterias = new ArrayList();
-    for (int nI = 0; nI < alGivenCriterias.size(); nI++) {
-      Criteria criteria = (Criteria) alGivenCriterias.get(nI);
+    List<Criteria> alCriterias = new ArrayList<Criteria>();
+    for (Criteria criteria : alGivenCriterias) {
       alCriterias.add(new Criteria(
           this.getPhysicalAxisId(criteria.getAxisId()), criteria.getValue()));
     }

@@ -24,6 +24,7 @@
 
 package com.stratelia.webactiv.searchEngine.model;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,6 +59,7 @@ import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.SearchEnginePropertiesManager;
+import com.stratelia.webactiv.util.indexEngine.model.ExternalComponent;
 import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
@@ -96,12 +98,12 @@ public class WAIndexSearcher {
     try {
       ResourceLocator resource = new ResourceLocator(
           "com.silverpeas.searchEngine.searchEngineSettings", "");
-      int paramOperand = Integer.parseInt(resource.getString("defaultOperand",
-          "0"));
-      if (paramOperand == 0)
+      int paramOperand = Integer.parseInt(resource.getString("defaultOperand", "0"));
+      if (paramOperand == 0) {
         defaultOperand = QueryParser.OR_OPERATOR;
-      else
+      } else {
         defaultOperand = QueryParser.AND_OPERATOR;
+      }
 
       maxNumberResult = SilverpeasSettings.readInt(resource, "maxResults", 100);
     } catch (MissingResourceException e) {
@@ -159,8 +161,9 @@ public class WAIndexSearcher {
           "searchEngine.MSG_CORRUPTED_INDEX_FILE", ioe);
     } finally {
       try {
-        if (searcher != null)
+        if (searcher != null) {
           searcher.close();
+        }
       } catch (IOException ioe) {
         SilverTrace.fatal("searchEngine", "WAIndexSearcher.search()",
             "searchEngine.MSG_CANNOT_CLOSE_SEARCHER", ioe);
@@ -178,7 +181,7 @@ public class WAIndexSearcher {
     long startTime = System.nanoTime();
     List<MatchingIndexEntry> results = null;
 
-    Searcher searcher = getSearcher(query.getSpaceComponentPairSet());
+    Searcher searcher = getSearcher(query);
 
     try {
       TopDocs topDocs = null;
@@ -277,10 +280,11 @@ public class WAIndexSearcher {
       while (languages.hasNext()) {
         language = (String) languages.next();
 
-        if (I18NHelper.isDefaultLanguage(language))
+        if (I18NHelper.isDefaultLanguage(language)) {
           fields[l] = searchField;
-        else
+        } else {
           fields[l] = searchField + "_" + language;
+        }
         queries[l] = query.getQuery();
         l++;
       }
@@ -299,12 +303,12 @@ public class WAIndexSearcher {
       parsedQuery = queryParser.parse(query.getQuery());
       SilverTrace.info("searchEngine", "WAIndexSearcher.getHits",
           "root.MSG_GEN_PARAM_VALUE", "getOperator() = "
-          + queryParser.getDefaultOperator());
+              + queryParser.getDefaultOperator());
     }
 
     SilverTrace.info("searchEngine", "WAIndexSearcher.getHits",
         "root.MSG_GEN_PARAM_VALUE", "parsedQuery = "
-        + parsedQuery.toString());
+            + parsedQuery.toString());
     return parsedQuery;
   }
 
@@ -343,8 +347,8 @@ public class WAIndexSearcher {
           analyzer);
       SilverTrace
           .info("searchEngine", "WAIndexSearcher.getXMLHits",
-          "root.MSG_GEN_PARAM_VALUE", "parsedQuery = "
-          + parsedQuery.toString());
+              "root.MSG_GEN_PARAM_VALUE", "parsedQuery = "
+                  + parsedQuery.toString());
 
       return parsedQuery;
     } catch (org.apache.lucene.queryParser.ParseException e) {
@@ -362,8 +366,9 @@ public class WAIndexSearcher {
       String keyword = query.getQuery();
 
       int nbFields = fieldQueries.size();
-      if (StringUtil.isDefined(keyword))
+      if (StringUtil.isDefined(keyword)) {
         nbFields++;
+      }
 
       String[] fields = new String[nbFields];
       String[] queries = new String[nbFields];
@@ -390,8 +395,8 @@ public class WAIndexSearcher {
           analyzer);
       SilverTrace
           .info("searchEngine", "WAIndexSearcher.getMultiFieldHits",
-          "root.MSG_GEN_PARAM_VALUE", "parsedQuery = "
-          + parsedQuery.toString());
+              "root.MSG_GEN_PARAM_VALUE", "parsedQuery = "
+                  + parsedQuery.toString());
 
       return parsedQuery;
     } catch (org.apache.lucene.queryParser.ParseException e) {
@@ -459,7 +464,8 @@ public class WAIndexSearcher {
       }
       indexEntry.setSortableXMLFormFields(sortableField);
     }
-
+    // Set server name
+    indexEntry.setServerName(doc.get(IndexManager.SERVER_NAME));
     return indexEntry;
   }
 
@@ -511,6 +517,48 @@ public class WAIndexSearcher {
           "searchEngine.MSG_CORRUPTED_INDEX_FILE", e);
       return null;
     }
+  }
+
+  /**
+   * Return a multi-searcher built on the searchers list matching the (space, component) pair set.
+   */
+  private Searcher getSearcher(QueryDescription query) {
+    List<Searcher> searcherList = new ArrayList<Searcher>();
+    Set<String> indexPathSet = getIndexPathSet(query.getSpaceComponentPairSet());
+
+    for (String path : indexPathSet) {
+      Searcher searcher = getSearcher(path);
+      if (searcher != null) {
+        searcherList.add(searcher);
+      }
+    }
+
+    // Add searcher from external silverpeas server
+    Set<ExternalComponent> extSearchers = query.getExtComponents();
+    for (ExternalComponent externalComponent : extSearchers) {
+      String externalComponentPath = getExternalComponentPath(externalComponent);
+      Searcher searcher = getSearcher(externalComponentPath);
+      if (searcher != null) {
+        searcherList.add(searcher);
+      }
+    }
+
+    try {
+      return new MultiSearcher((Searcher[]) searcherList
+          .toArray(new Searcher[searcherList.size()]));
+    } catch (IOException e) {
+      SilverTrace.fatal("searchEngine", "WAIndexSearcher",
+          "searchEngine.MSG_CORRUPTED_INDEX_FILE", e);
+      return null;
+    }
+  }
+
+  private String getExternalComponentPath(ExternalComponent extComp) {
+    StringBuilder extStrBuilder = new StringBuilder();
+    extStrBuilder.append(extComp.getDataPath()).append(File.separator);
+    extStrBuilder.append("index").append(File.separator);
+    extStrBuilder.append(extComp.getComponent()).append(File.separator).append("index");
+    return extStrBuilder.toString();
   }
 
   /**

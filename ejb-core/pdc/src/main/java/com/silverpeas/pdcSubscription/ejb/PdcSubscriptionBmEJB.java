@@ -28,6 +28,17 @@
  */
 package com.silverpeas.pdcSubscription.ejb;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ejb.CreateException;
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
+
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
@@ -49,20 +60,9 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 
-import javax.ejb.CreateException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.List;
-
-//import com.stratelia.silverpeas.peasCore.URLManager;
-
 public class PdcSubscriptionBmEJB implements SessionBean {
 
+  private static final long serialVersionUID = 5087897193810397409L;
   public final static String DATE_FORMAT = "yyyy/MM/dd";
   public final static String MESSAGE_TITLE = "notification.title";
   public final static String MESSAGE_DELETE_TITLE = "notification.delete.title";
@@ -71,13 +71,11 @@ public class PdcSubscriptionBmEJB implements SessionBean {
   /**
    * Remote interface method
    */
-  public ArrayList getPDCSubscriptionByUserId(int userId) {
+  public List<PDCSubscription> getPDCSubscriptionByUserId(int userId) {
     Connection conn = null;
-    ArrayList result = null;
-
     try {
       conn = openConnection();
-      result = PdcSubscriptionDAO.getPDCSubscriptionByUserId(conn, userId);
+      return PdcSubscriptionDAO.getPDCSubscriptionByUserId(conn, userId);
     } catch (Exception re) {
       throw new PdcSubscriptionRuntimeException(
           "PdcSubscriptionBmEJB.getPDCSubscriptionByUserId",
@@ -87,8 +85,6 @@ public class PdcSubscriptionBmEJB implements SessionBean {
     } finally {
       closeConnection(conn);
     }
-
-    return result;
   }
 
   /**
@@ -212,14 +208,14 @@ public class PdcSubscriptionBmEJB implements SessionBean {
    */
   public void checkAxisOnDelete(int axisId, String axisName) {
     Connection conn = null;
-    List subscriptions = null;
+    List<PDCSubscription> subscriptions = null;
 
     try {
       conn = openConnection();
       // found all subscription uses axis provided
       subscriptions = PdcSubscriptionDAO.getPDCSubscriptionByUsedAxis(conn,
           axisId);
-      if (subscriptions == null || (subscriptions != null && subscriptions.isEmpty())) {
+      if (subscriptions == null || subscriptions.isEmpty()) {
         return;
       }
       int[] pdcIds = new int[subscriptions.size()];
@@ -227,7 +223,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
       int adminId;
 
       for (int i = 0; i < subscriptions.size(); i++) {
-        PDCSubscription subscription = (PDCSubscription) subscriptions.get(i);
+        PDCSubscription subscription = subscriptions.get(i);
         pdcIds[i] = subscription.getId();
         adminId = getFirstAdministrator(ocontroller, subscription.getOwnerId());
         sendDeleteNotif(subscription, axisName, false, adminId, null);
@@ -254,16 +250,16 @@ public class PdcSubscriptionBmEJB implements SessionBean {
    * @param newPath  new path. That will be places instead of old for this axis
    * @param pathInfo should contains PdcBm.getFullPath data structure
    */
-  public void checkValueOnDelete(int axisId, String axisName, List oldPath,
-      List newPath, List pathInfo) throws RemoteException {
+  public void checkValueOnDelete(int axisId, String axisName, List<String> oldPath,
+      List<String> newPath, List<List<String>> pathInfo) throws RemoteException {
     Connection conn = null;
-    List subscriptions = null;
+    List<PDCSubscription> subscriptions = null;
 
     try {
       conn = openConnection();
       subscriptions = PdcSubscriptionDAO.getPDCSubscriptionByUsedAxis(conn,
           axisId);
-      if (subscriptions == null || (subscriptions != null && subscriptions.isEmpty())) {
+      if (subscriptions == null || subscriptions.isEmpty()) {
         return;
       }
 
@@ -272,8 +268,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
       OrganizationController ocontroller = new OrganizationController();
       int adminId;
 
-      for (int i = 0; i < subscriptions.size(); i++) {
-        PDCSubscription subscription = (PDCSubscription) subscriptions.get(i);
+      for (PDCSubscription subscription : subscriptions) {
         // for each subscription containing axis affected by value deletion
         // check if any criteria value has been
         // deleted
@@ -306,7 +301,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
    * @param componentId    component where classify event occures
    * @param silverObjectid object that was classified
    */
-  public void checkSubscriptions(List classifyValues, String componentId, int silverObjectid) {
+  public void checkSubscriptions(List<Value> classifyValues, String componentId, int silverObjectid) {
     SilverTrace.info("PdcSubscription",
         "PdcSubscriptionBmEJB.checkSubscriptions()",
         "root.MSG_GEN_ENTER_METHOD", "classifyValues = " + classifyValues
@@ -323,10 +318,9 @@ public class PdcSubscriptionBmEJB implements SessionBean {
       conn = openConnection();
       // load all PDCSubscritions into the memory to perform future check of
       // them
-      ArrayList subscriptions = PdcSubscriptionDAO.getAllPDCSubscriptions(conn);
+      List<PDCSubscription> subscriptions = PdcSubscriptionDAO.getAllPDCSubscriptions(conn);
       // loop through all subscription
-      for (int i = 0; i < subscriptions.size(); i++) {
-        PDCSubscription subscription = (PDCSubscription) subscriptions.get(i);
+      for (PDCSubscription subscription : subscriptions) {
         // check if current subscription corresponds a list of classify values
         // provided into the method
         if (isCorrespondingSubscription(subscription, classifyValues)) {
@@ -369,17 +363,17 @@ public class PdcSubscriptionBmEJB implements SessionBean {
    * @return SilverContentInterface the object which has been classified
    */
   private SilverContentInterface getSilverContent(String componentId, int silverObjectId) {
-    ArrayList silverobjectIds = new ArrayList();
+    ArrayList<Integer> silverobjectIds = new ArrayList<Integer>();
     silverobjectIds.add(new Integer(silverObjectId));
 
-    List silverContents = null;
+    List<SilverContentInterface> silverContents = null;
     SilverContentInterface silverContent = null;
     try {
       ContentManager contentManager = new ContentManager();
       ContentPeas contentPeas = contentManager.getContentPeas(componentId);
       ContentInterface contentInterface = (ContentInterface) contentPeas
           .getContentInterface();
-      ArrayList userRoles = new ArrayList();
+      ArrayList<String> userRoles = new ArrayList<String>();
       userRoles.add("admin");
       silverContents = contentInterface.getSilverContentById(silverobjectIds,
           componentId, "unknown", userRoles);
@@ -441,10 +435,9 @@ public class PdcSubscriptionBmEJB implements SessionBean {
    * @return true if subscription should be removed
    */
   protected boolean checkSubscriptionRemove(PDCSubscription subscription,
-      int axisId, List oldPath, List newPath) {
-    List subscriptionCtx = subscription.getPdcContext();
-    for (int i = 0; i < subscriptionCtx.size(); i++) {
-      Criteria criteria = (Criteria) subscriptionCtx.get(i);
+      int axisId, List<String> oldPath, List<String> newPath) {
+    List<Criteria> subscriptionCtx = subscription.getPdcContext();
+    for (Criteria criteria : subscriptionCtx) {
       if (criteria.getAxisId() == axisId) {
         // check if criterias value has been removed from axis
         if (checkValuesRemove(criteria.getValue(), oldPath, newPath)) {
@@ -458,8 +451,8 @@ public class PdcSubscriptionBmEJB implements SessionBean {
   /**
    * @return true if path provided was removed should be removed
    */
-  protected boolean checkValuesRemove(String originalPath, List oldPath,
-      List newPath) {
+  protected boolean checkValuesRemove(String originalPath, List<String> oldPath,
+      List<String> newPath) {
     if (!originalPath.endsWith("/")) {
       originalPath += "/";
     }
@@ -482,9 +475,8 @@ public class PdcSubscriptionBmEJB implements SessionBean {
    * result:true <br> Ex2: path /2/3/4/5/ value: /3/ result true <br> Ex2: path /2/3/4/5/ value: /8/
    * result false
    */
-  protected boolean checkValueInPath(String value, List pathList) {
-    for (int i = 0; i < pathList.size(); i++) {
-      String path = (String) pathList.get(i);
+  protected boolean checkValueInPath(String value, List<String> pathList) {
+    for (String path : pathList) {
       if (path.indexOf(value) != -1) {
         return true;
       }
@@ -496,13 +488,13 @@ public class PdcSubscriptionBmEJB implements SessionBean {
    * @return true if subscription provided match the list of classify values
    */
   protected boolean isCorrespondingSubscription(PDCSubscription subscription,
-      List classifyValues) {
+      List<Value> classifyValues) {
     SilverTrace.info("PdcSubscription",
         "PdcSubscriptionBmEJB.isCorrespondingSubscription()",
         "root.MSG_GEN_ENTER_METHOD", "subscription = "
             + subscription.toString() + ", classifyValues = "
             + classifyValues.toString());
-    List searchCriterias = subscription.getPdcContext();
+    List<Criteria> searchCriterias = subscription.getPdcContext();
 
     if (searchCriterias == null || classifyValues == null || searchCriterias.isEmpty() ||
         classifyValues.isEmpty() || searchCriterias.size() > classifyValues.size()) {
@@ -515,14 +507,12 @@ public class PdcSubscriptionBmEJB implements SessionBean {
      * of SearchCriteria. The start of the value String of ClassifyValue should match the whole
      * value String of SearchCriteria.
      */
-    for (int i = 0; i < searchCriterias.size(); i++) {
-      Criteria criteria = (Criteria) searchCriterias.get(i);
+    for (Criteria criteria : searchCriterias) {
       if (criteria == null) {
         continue;
       }
       boolean result = false;
-      for (int j = 0; j < classifyValues.size(); j++) {
-        Value value = (Value) classifyValues.get(j);
+      for (Value value : classifyValues) {
         if (checkValues(criteria, value)) {
           result = true;
           break;
@@ -552,7 +542,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
    * Sends delete notifications
    */
   protected void sendDeleteNotif(PDCSubscription subscription, String axisName,
-      boolean isValueDeleted, int fromUser, List path)
+      boolean isValueDeleted, int fromUser, List<List<String>> path)
       throws NotificationManagerException {
     SilverTrace.info("PdcSubscription",
         "PdcSubscriptionBmEJB.sendDeleteNotif()", "root.MSG_GEN_ENTER_METHOD");
@@ -617,7 +607,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
         try {
           documentUrlBuffer.append(URLEncoder.encode(contentUrl, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
-          documentUrlBuffer.append(URLEncoder.encode(contentUrl));
+          documentUrlBuffer.append(contentUrl);
         }
         documentUrlBuffer.append("&componentId=").append(componentId);
         documentUrl = documentUrlBuffer.toString();
@@ -718,13 +708,13 @@ public class PdcSubscriptionBmEJB implements SessionBean {
   /**
    * Formats a path (of values) to be showed to users
    */
-  protected String formatPath(List pathInfos) {
+  protected String formatPath(List<com.stratelia.silverpeas.pdc.model.Value> pathInfos) {
     final StringBuffer res = new StringBuffer();
     for (int i = 0; i < pathInfos.size(); i++) {
       if (i != 0) {
         res.append('/');
       }
-      String value = (String) ((List) pathInfos.get(i)).get(0);
+      String value = pathInfos.get(i).getName();
       res.append(value);
     }
     return res.toString();

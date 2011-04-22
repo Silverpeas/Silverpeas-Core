@@ -22,25 +22,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// TODO : reporter dans CVS (done)
 /*
  * Aliaksei_Budnikau
  * Date: Oct 14, 2002
  */
 package com.silverpeas.interestCenter.ejb;
 
-import com.silverpeas.interestCenter.model.InterestCenter;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.silverpeas.pdc.model.SearchCriteria;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
-import java.util.ArrayList;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.text.SimpleDateFormat;
+import java.sql.SQLException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.silverpeas.interestCenter.model.InterestCenter;
+import com.stratelia.silverpeas.classifyEngine.Criteria;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DBUtil;
 
 public class InterestCenterDAO {
 
@@ -60,7 +60,7 @@ public class InterestCenterDAO {
   /**
    * @return a list of <code>InterestCenter</code>s by user id provided
    */
-  public static ArrayList getICByUserID(Connection con, int userid)
+  public static List<InterestCenter> getICByUserID(Connection con, int userid)
       throws SQLException, DAOException {
     if (con == null) {
       throw new DAOException("InterestCenterDAO.getICByUserID",
@@ -69,13 +69,13 @@ public class InterestCenterDAO {
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    ArrayList result = null;
+    List<InterestCenter> result = null;
 
     try {
       prepStmt = con.prepareStatement(GET_IC_BY_USERID_QUERY);
       prepStmt.setInt(1, userid);
 
-      result = new ArrayList();
+      result = new ArrayList<InterestCenter>();
       rs = prepStmt.executeQuery();
 
       while (rs.next()) {
@@ -164,7 +164,7 @@ public class InterestCenterDAO {
 
     ic.setOwnerID(rs.getInt(9));
 
-    ArrayList pdcContext = loadPdcContext(con, ic.getId());
+    List<Criteria> pdcContext = loadPdcContext(con, ic.getId());
     ic.setPdcContext(pdcContext);
     return ic;
   }
@@ -231,7 +231,7 @@ public class InterestCenterDAO {
             + ". DataObject: " + interestCenter);
       }
 
-      ArrayList list = interestCenter.getPdcContext();
+      List<Criteria> list = interestCenter.getPdcContext();
       if (list != null && list.size() != 0) {
         appendPdcContext(con, list, newId);
       }
@@ -293,7 +293,7 @@ public class InterestCenterDAO {
             .toString());
       }
 
-      ArrayList list = interestCenter.getPdcContext();
+      List<Criteria> list = interestCenter.getPdcContext();
       if (list != null && list.size() != 0) {
         updatePdcContext(con, list, interestCenter.getId());
       }
@@ -307,10 +307,9 @@ public class InterestCenterDAO {
    * @param pks ArrayList of <code>java.lang.Integer</code> - id's of <code>InterestCenter</code>s
    * to be deleted
    */
-  public static void removeICByPK(Connection con, ArrayList removePKList)
+  public static void removeICByPK(Connection con, List<Integer> removePKList)
       throws SQLException, DAOException {
-    for (int i = 0; i < removePKList.size(); i++) {
-      Integer pk = (Integer) removePKList.get(i);
+    for (Integer pk : removePKList) {
       removeICByPK(con, pk.intValue());
     }
   }
@@ -354,7 +353,7 @@ public class InterestCenterDAO {
   /**
    * @return list of SearchCriteria
    */
-  public static ArrayList loadPdcContext(Connection con, int icId)
+  public static List<Criteria> loadPdcContext(Connection con, int icId)
       throws SQLException, DAOException {
     if (con == null) {
       throw new DAOException("InterestCenterDAO.loadPdcContext",
@@ -362,19 +361,19 @@ public class InterestCenterDAO {
     }
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    ArrayList result = null;
+    List<Criteria> result = null;
 
     try {
       prepStmt = con.prepareStatement(LOAD_PDC_PK_QUERY);
       prepStmt.setInt(1, icId);
 
-      result = new ArrayList();
+      result = new ArrayList<Criteria>();
       rs = prepStmt.executeQuery();
 
       while (rs.next()) {
         int axisId = rs.getInt(1);
         String value = rs.getString(2);
-        SearchCriteria sc = new SearchCriteria(axisId, value);
+        Criteria sc = new Criteria(axisId, value);
 
         result.add(sc);
       }
@@ -394,7 +393,7 @@ public class InterestCenterDAO {
    * Appends a list of SearchCriteria to the InterestCenter by InterestCenterID
    * @param icId InterestCenterID
    */
-  public static int[] appendPdcContext(Connection con, ArrayList pdcContext,
+  public static int[] appendPdcContext(Connection con, List<Criteria> pdcContext,
       int icId) throws SQLException, DAOException {
     if (con == null) {
       throw new DAOException("InterestCenterDAO.appendPdcContext",
@@ -411,7 +410,7 @@ public class InterestCenterDAO {
       generatedPKs = new int[pdcContext.size()];
 
       for (int i = 0; i < pdcContext.size(); i++) {
-        SearchCriteria criteria = (SearchCriteria) pdcContext.get(i);
+        Criteria criteria = pdcContext.get(i);
 
         int newId = -1;
         try {
@@ -447,7 +446,7 @@ public class InterestCenterDAO {
    * Updates SearchCriterias list for interestCenter by InterestCenterID
    * @param icId InterestCenterID
    */
-  public static void updatePdcContext(Connection con, ArrayList list, int icId)
+  public static void updatePdcContext(Connection con, List<Criteria> list, int icId)
       throws SQLException, DAOException {
     if (con == null) {
       throw new DAOException("InterestCenterDAO.updatePdcContext",

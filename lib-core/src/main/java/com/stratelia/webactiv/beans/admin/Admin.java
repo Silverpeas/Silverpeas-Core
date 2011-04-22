@@ -1046,9 +1046,8 @@ public final class Admin {
    */
   public List<Parameter> getComponentParameters(String sComponentId) {
     try {
-      // Get the component inst corresponding to the given Id
-      ComponentInst compoInst = getComponentInst(sComponentId);
-      return compoInst.getParameters();
+      return componentManager
+          .getParameters(domainDriverManager, getDriverComponentId(sComponentId));
     } catch (Exception e) {
       SilverTrace.error(MODULE_ADMIN, "Admin.getComponentParameters",
           "admin.EX_ERR_GET_COMPONENT_PARAMS", "sComponentId: '" + sComponentId + "'", e);
@@ -1061,14 +1060,18 @@ public final class Admin {
    */
   public String getComponentParameterValue(String sComponentId, String parameterName) {
     try {
-      // Get the component inst corresponding to the given Id
-      ComponentInst compoInst = getComponentInst(sComponentId);
-      return compoInst.getParameterValue(parameterName);
+      Parameter parameter =
+          componentManager.getParameter(domainDriverManager, getDriverComponentId(sComponentId),
+              parameterName);
+      if (parameter != null) {
+        return parameter.getValue();
+      }
     } catch (Exception e) {
       SilverTrace.error(MODULE_ADMIN, "Admin.getComponentParameterValue",
           "admin.EX_ERR_GET_COMPONENT_PARAMS", "sComponentId: '" + sComponentId + "'", e);
       return "";
     }
+    return "";
   }
 
   public void restoreComponentFromBasket(String sComponentId)

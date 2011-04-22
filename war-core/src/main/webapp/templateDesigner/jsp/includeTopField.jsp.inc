@@ -10,7 +10,14 @@
 <table CELLSPACING="5" WIDTH="100%">
 <tr>
 <td class="txtlibform" width="10"><%=resource.getString("GML.name")%> :</td>
-<td><input type="text" name="FieldName" size="30" value="<%=name%>" <%=nameDisabled%>/><input type="hidden" name="Displayer" value="<%=displayer%>"/>&nbsp;<img border="0" src="<%=resource.getIcon("templateDesigner.mandatory")%>" width="5" height="5"></td>
+<td>
+	<% if (!nameDisabled) { %>
+		<input type="text" name="FieldName" size="30" value="<%=name%>"/>&nbsp;<img src="<%=resource.getIcon("templateDesigner.mandatory")%>" width="5" height="5"/>
+	<% } else { %>
+		<%=name%><input type="hidden" name="FieldName" value="<%=name%>"/>
+	<% } %>
+	<input type="hidden" name="Displayer" value="<%=displayer%>"/>
+</td>
 </tr>
 <% 
 	while (languages.hasNext()) {

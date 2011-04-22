@@ -25,19 +25,20 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@page import="com.silverpeas.portlets.portal.DriverUtil, 
-                java.util.ArrayList, 
-                java.util.HashMap" %> 
+<%@page import="com.silverpeas.portlets.portal.DriverUtil,
+                java.util.ArrayList,
+                java.util.HashMap" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <!--Load the resource bundle for the page -->
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle basename="DesktopMessages" />
 <%
    java.util.ArrayList tabs = new java.util.ArrayList();
-   
+
    java.util.HashMap tab = new java.util.HashMap();
    tab.put("id", "dt");
    tab.put("url", DriverUtil.getPortletsURL(request));
@@ -45,10 +46,10 @@
     <c:set var="portletsTitle">
         <fmt:message key="portlets"/>
     </c:set>
-<% 
+<%
    tab.put("title",pageContext.getAttribute("portletsTitle"));
    tabs.add(tab);
-   
+
    tab = new java.util.HashMap();
    tab.put("id", "portletAdmin");
    tab.put("url",DriverUtil.getAdminURL(request));
@@ -67,7 +68,7 @@
        tab.put("title", DriverUtil.getWSRPTabName());
        tabs.add(tab);
    }
-   
+
    pageContext.setAttribute("tabs", tabs);
 %>
 

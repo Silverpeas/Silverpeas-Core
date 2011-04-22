@@ -40,7 +40,7 @@ public class AxisType {
 
   private int id;
   private String path;
-  private List listPdcValueType; // liste de PdcValueType;
+  private List<PdcValueType> listPdcValueType;
   private String name;
 
   /**
@@ -65,11 +65,11 @@ public class AxisType {
     this.name = name;
   }
 
-  public List getListPdcValueType() {
+  public List<PdcValueType> getListPdcValueType() {
     return listPdcValueType;
   }
 
-  public void setListPdcValueType(List listPdcValueType) {
+  public void setListPdcValueType(List<PdcValueType> listPdcValueType) {
     this.listPdcValueType = listPdcValueType;
   }
 
