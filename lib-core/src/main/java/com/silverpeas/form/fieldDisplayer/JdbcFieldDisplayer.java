@@ -130,6 +130,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer {
     if (!field.getTypeName().equals(JdbcField.TYPE)) {
       SilverTrace.info("form", "JdbcFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
           JdbcField.TYPE);
+      jdbcField = new JdbcField();
     } else {
       jdbcField = (JdbcField) field;
     }
