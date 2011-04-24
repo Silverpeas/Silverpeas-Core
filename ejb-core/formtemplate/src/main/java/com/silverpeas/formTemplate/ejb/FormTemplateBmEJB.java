@@ -40,11 +40,12 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 public class FormTemplateBmEJB implements javax.ejb.SessionBean {
+
+  private static final long serialVersionUID = 339452185858865016L;
 
   public FormTemplateBmEJB() {
   }
