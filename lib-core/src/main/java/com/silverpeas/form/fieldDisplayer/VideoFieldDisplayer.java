@@ -108,17 +108,17 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
 
   @Override
   public void displayScripts(final PrintWriter out, final FieldTemplate template,
-          final PagesContext pagesContext) throws IOException {
+          final PagesContext pageContext) throws IOException {
     checkFieldType(template.getTypeName(), "VideoFieldDisplayer.displayScripts");
-    String language = pagesContext.getLanguage();
+    String language = pageContext.getLanguage();
     String fieldName = template.getFieldName();
-    if (template.isMandatory() && pagesContext.useMandatory()) {
+    if (template.isMandatory() && pageContext.useMandatory()) {
       out
               .append("	if (isWhitespace(stripInitialWhitespace(field.value))) {\n")
               .append("		var ").append(fieldName).append("Value = document.getElementById('")
               .append(fieldName).append(Field.FILE_PARAM_NAME_SUFFIX).append("').value;\n")
               .append("   var ").append(fieldName).append("Operation = document.")
-              .append(pagesContext.getFormName()).append(".")
+              .append(pageContext.getFormName()).append(".")
               .append(fieldName).append(OPERATION_KEY).append(".value;\n")
               .append("		if (").append(fieldName).append("Value=='' || ")
               .append(fieldName).append("Operation=='").append(Operation.DELETION.name()).append("') {\n")
@@ -130,7 +130,8 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer {
               .append("	}\n");
     }
 
-    Util.getJavascriptChecker(template.getFieldName(), pagesContext, out);
+    Util.includeFileNameLengthChecker(template, pageContext, out);
+    Util.getJavascriptChecker(template.getFieldName(), pageContext, out);
   }
 
   @Override
