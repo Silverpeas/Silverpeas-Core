@@ -24,9 +24,12 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.popup;
 
-import com.stratelia.webactiv.persistence.*;
+import com.stratelia.webactiv.persistence.SilverpeasBean;
+import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 
 public class POPUPMessageBean extends SilverpeasBean {
+
+  private static final long serialVersionUID = 7025111830012761169L;
 
   public POPUPMessageBean() {
   }
@@ -80,10 +83,11 @@ public class POPUPMessageBean extends SilverpeasBean {
   }
 
   public void setAnswerAllowed(boolean answerAllowed) {
-    if (answerAllowed)
+    if (answerAllowed) {
       this.answerAllowed = "1";
-    else
+    } else {
       this.answerAllowed = "0";
+    }
   }
 
   public String getMsgDate() {

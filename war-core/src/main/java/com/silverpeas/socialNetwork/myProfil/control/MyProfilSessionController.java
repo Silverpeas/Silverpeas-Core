@@ -23,6 +23,16 @@
  */
 package com.silverpeas.socialNetwork.myProfil.control;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.jobDomainPeas.JobDomainSettings;
 import com.silverpeas.personalization.UserPreferences;
@@ -30,11 +40,18 @@ import com.silverpeas.socialNetwork.SocialNetworkException;
 import com.silverpeas.socialNetwork.invitation.Invitation;
 import com.silverpeas.socialNetwork.invitation.InvitationService;
 import com.silverpeas.socialNetwork.invitation.model.InvitationUser;
+import com.silverpeas.socialNetwork.relationShip.RelationShip;
 import com.silverpeas.socialNetwork.relationShip.RelationShipService;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.authentication.AuthenticationException;
 import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
+import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
+import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
+import com.stratelia.silverpeas.notificationManager.NotificationParameters;
+import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -42,23 +59,17 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Bensalem Nabil
  */
 public class MyProfilSessionController extends AbstractComponentSessionController {
 
-  private AdminController m_AdminCtrl = null;
+  private AdminController adminCtrl = null;
   private RelationShipService relationShipService = new RelationShipService();
   private InvitationService invitationService = null;
   private long domainActions = -1;
@@ -70,13 +81,12 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
         "com.silverpeas.socialNetwork.multilang.socialNetworkBundle",
         "com.silverpeas.socialNetwork.settings.socialNetworkIcons",
         "com.silverpeas.socialNetwork.settings.socialNetworkSettings");
-    m_AdminCtrl = new AdminController(getUserId());
+    adminCtrl = new AdminController(getUserId());
     invitationService = new InvitationService();
   }
 
   /**
    * get all RelationShips ids for this user
-   *
    * @return:List<String>
    * @param: int myId
    */
@@ -84,8 +94,8 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
     try {
       return relationShipService.getMyContactsIds(Integer.parseInt(userId));
     } catch (SQLException ex) {
-      SilverTrace.error("MyContactProfilSessionController",
-          "MyContactProfilSessionController.getContactsForUser", "", ex);
+      SilverTrace.error("MyProfilSessionController",
+          "MyProfilSessionController.getContactsIdsForUser", "", ex);
     }
     return new ArrayList<String>();
   }
@@ -93,7 +103,8 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   public boolean isAContact(String userId) {
     if (StringUtil.isDefined(userId)) {
       try {
-        return relationShipService.isInRelationShip(Integer.parseInt(getUserId()), Integer.parseInt(
+        return relationShipService.isInRelationShip(Integer.parseInt(getUserId()), Integer
+            .parseInt(
             userId));
       } catch (SQLException e) {
         SilverTrace.error("MyContactProfilSessionController",
@@ -105,7 +116,6 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   /**
    * get this user with full information
-   *
    * @param userId
    * @return UserFull
    */
@@ -115,7 +125,6 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   /**
    * update the properties of user
-   *
    * @param idUser
    * @param properties
    * @throws SocialNetworkException
@@ -129,7 +138,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
         "PersonalizationPeasSessionController.modifyUser()",
         "root.MSG_GEN_ENTER_METHOD", "UserId=" + idUser);
 
-    theModifiedUser = m_AdminCtrl.getUserFull(idUser);
+    theModifiedUser = adminCtrl.getUserFull(idUser);
     if (theModifiedUser == null) {
       throw new SocialNetworkException(
           "MyProfilSessionController.modifyUser()",
@@ -147,7 +156,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
       theModifiedUser.setValue(key, value);
     }
 
-    idRet = m_AdminCtrl.updateUserFull(theModifiedUser);
+    idRet = adminCtrl.updateUserFull(theModifiedUser);
     if (idRet == null || idRet.length() <= 0) {
       throw new SocialNetworkException(
           "MyProfilSessionController.modifyUser()",
@@ -163,7 +172,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   public long getDomainActions() {
     if (domainActions == -1) {
-      domainActions = m_AdminCtrl.getDomainActions(getUserDetail().getDomainId());
+      domainActions = adminCtrl.getDomainActions(getUserDetail().getDomainId());
     }
     return domainActions;
   }
@@ -176,7 +185,8 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
     return JobDomainSettings.m_BlanksAllowedInPwd;
   }
 
-  public void modifyUser(String idUser, String userLastName, String userFirstName, String userEMail,
+  public void modifyUser(String idUser, String userLastName, String userFirstName,
+      String userEMail,
       String userAccessLevel, String oldPassword, String newPassword, String userLoginQuestion,
       String userLoginAnswer, Map<String, String> properties) throws AuthenticationException {
     SilverTrace.info("personalizationPeas", "PersonalizationPeasSessionController.modifyUser()",
@@ -184,7 +194,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
             + " userFirstName=" + userFirstName + " userEMail=" + userEMail + " userAccessLevel="
             + userAccessLevel);
 
-    UserFull theModifiedUser = m_AdminCtrl.getUserFull(idUser);
+    UserFull theModifiedUser = adminCtrl.getUserFull(idUser);
 
     if (isUserDomainRW()) {
       theModifiedUser.setLastName(userLastName);
@@ -211,7 +221,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
         value = properties.get(key);
         theModifiedUser.setValue(key, value);
       }
-      m_AdminCtrl.updateUserFull(theModifiedUser);
+      adminCtrl.updateUserFull(theModifiedUser);
 
     } else {
       if (StringUtil.isDefined(newPassword)) {
@@ -245,15 +255,13 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   /**
    * return my invitation list sent
-   *
    * @return List<InvitationUser>
    */
   public List<InvitationUser> getAllMyInvitationsSent() {
     List<InvitationUser> invitationUsers = new ArrayList<InvitationUser>();
     List<Invitation> invitations =
         invitationService.getAllMyInvitationsSent(Integer.parseInt(getUserId()));
-    for (Invitation varI :
-        invitations) {
+    for (Invitation varI : invitations) {
       invitationUsers.add(new InvitationUser(varI,
           getUserDetail(Integer.toString(varI.getReceiverId()))));
     }
@@ -262,15 +270,13 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   /**
    * return my invitation list Received
-   *
    * @return List<InvitationUser>
    */
   public List<InvitationUser> getAllMyInvitationsReceived() {
     List<InvitationUser> invitationUsers = new ArrayList<InvitationUser>();
     List<Invitation> invitations =
         invitationService.getAllMyInvitationsReceive(Integer.parseInt(getUserId()));
-    for (Invitation varI :
-        invitations) {
+    for (Invitation varI : invitations) {
       invitationUsers.add(new InvitationUser(varI, getUserDetail(
           Integer.toString(varI.getSenderId()))));
     }
@@ -281,14 +287,139 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
     Invitation invitation =
         new Invitation(Integer.parseInt(getUserId()), Integer.parseInt(receiverId), message,
             new Date());
-    invitationService.invite(invitation);
+    if (invitationService.invite(invitation) >= 0) {
+      notifyUser(receiverId, message);
+    }
   }
 
+  /**
+   * @param message
+   */
+  private void notifyUser(String receiverId, String message) {
+    try {
+      NotificationSender notificationSender = new NotificationSender(null);
+
+      // Send a notification to alert people about a new relationship ask.
+      Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
+      String subject = getString("myProfile.invitations.notification.send.subject");
+      SilverTrace.debug("MyProfilSessionController", MyProfilSessionController.class.getName() +
+          ".getAlertNotificationMetaData()", "root.MSG_GEN_PARAM_VALUE", "subject = " + subject);
+
+      NotificationMetaData notifMetaData =
+          new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
+              "sendInvitation");
+
+      UserDetail senderUser = getUserDetail();
+      notifMetaData.setSource(senderUser.getDisplayedName());
+
+      List<String> languages = DisplayI18NHelper.getLanguages();
+      for (String language : languages) {
+        // Create a new silverpeas template
+        SilverpeasTemplate template = getNewTemplate();
+        template.setAttribute("senderUser", senderUser);
+        template.setAttribute("userName", senderUser.getDisplayedName());
+        template.setAttribute("senderMessage", message);
+        templates.put(language, template);
+        notifMetaData.addLanguage(language, subject, "");
+        ResourceLocator localizedMessage = new ResourceLocator(
+            "com.silverpeas.socialNetwork.multilang.socialNetworkBundle", language);
+        notifMetaData.addLanguage(language, localizedMessage.getString(
+            "myProfile.invitations.notification.send.subject", subject), "");
+      }
+      if (message != null && message.trim().length() > 0) {
+        setNotificationContent(notifMetaData, message, "fr");
+        setNotificationContent(notifMetaData, message, "en");
+        setNotificationContent(notifMetaData, message, "de");
+      }
+      notifMetaData.setSender(getUserId());
+      notifMetaData.addUserRecipient(receiverId);
+      // notifMetaData.setLink("http://localhost:8080/silverpeas/defaultLogin.jsp?%2FRkmelia");
+      notificationSender.notifyUser(notifMetaData);
+    } catch (NotificationManagerException e) {
+      SilverTrace.error("MyProfilSessionController", "MyProfilSessionController.sendInvitation",
+          "root.EX_CANT_SEND_MESSAGE", e);
+    }
+  }
+
+  private void setNotificationContent(NotificationMetaData notif, String message, String language) {
+    notif.addExtraMessage(message, "Message", language);
+  }
+
+  /**
+   * @param id the invitation identifier
+   * @see InvitationService.ignoreInvitation
+   */
   public void ignoreInvitation(String id) {
     invitationService.ignoreInvitation(Integer.parseInt(id));
   }
 
-  public void acceptInvitation(String id) {
-    invitationService.accepteInvitation(Integer.parseInt(id));
+  /**
+   * @param invitationId the invitation identifier
+   */
+  public void acceptInvitation(String invitationId) {
+    int relationShipId = invitationService.accepteInvitation(Integer.parseInt(invitationId));
+    if (relationShipId >= 0) {
+      acceptInvitationNotif(relationShipId);
+    }
   }
+
+  /**
+   * @param message
+   */
+  private void acceptInvitationNotif(int relationShipId) {
+    RelationShip curRelation = invitationService.getRelationShip(relationShipId);
+    try {
+      //Retrieve sender information
+      UserDetail senderUser = getUserDetail();
+      String displayedName = senderUser.getDisplayedName();
+      
+      NotificationSender notificationSender = new NotificationSender(null);
+      // Send a notification to alert people about new relationship.
+      Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
+      String subject = displayedName + " " + getString("myProfile.invitations.notification.accept.subject");
+      
+      SilverTrace.debug("MyProfilSessionController", MyProfilSessionController.class.getName() +
+          ".getAlertNotificationMetaData()", "root.MSG_GEN_PARAM_VALUE", "subject = " + subject);
+
+      NotificationMetaData notifMetaData =
+          new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
+              "acceptInvitation");
+
+      notifMetaData.setSource(displayedName);
+
+      List<String> languages = DisplayI18NHelper.getLanguages();
+      for (String language : languages) {
+        // Create a new silverpeas template
+        SilverpeasTemplate template = getNewTemplate();
+        template.setAttribute("senderUser", senderUser);
+        template.setAttribute("userName", senderUser.getDisplayedName());
+        templates.put(language, template);
+        notifMetaData.addLanguage(language, subject, "");
+        ResourceLocator localizedMessage = new ResourceLocator(
+            "com.silverpeas.socialNetwork.multilang.socialNetworkBundle", language);
+        notifMetaData.addLanguage(language, localizedMessage.getString(
+            "myProfile.invitations.notification.accept.subject", subject), "");
+      }
+      notifMetaData.setSender(getUserId());
+      notifMetaData.addUserRecipient(Integer.toString(curRelation.getInviterId()));
+      // notifMetaData.setLink("http://localhost:8080/silverpeas/defaultLogin.jsp?%2FRkmelia");
+      notificationSender.notifyUser(notifMetaData);
+    } catch (NotificationManagerException e) {
+      SilverTrace.error("MyProfilSessionController", "MyProfilSessionController.sendInvitation",
+          "root.EX_CANT_SEND_MESSAGE", e);
+    }
+  }
+
+  /**
+   * @return a SilverpeasTemplate
+   */
+  private SilverpeasTemplate getNewTemplate() {
+    Properties templateConfig = new Properties();
+    templateConfig.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, getSettings()
+        .getString("templatePath"));
+    templateConfig.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, getSettings()
+        .getString("customersTemplatePath"));
+    return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfig);
+  }
+
 }
