@@ -164,7 +164,7 @@ function B_VALIDER_ONCLICK() {
 		<%
 		for(int nI=0; parameters != null && nI < parameters.size(); nI++)
 		{ 
-			parameter = (Parameter) parameters.get(nI);
+			parameter = (LocalizedParameter) parameters.get(nI);
 			if (parameter.isCheckbox()) {
 			%>
 		    	if (document.infoInstance.<%=parameter.getName()%>.checked)
@@ -206,7 +206,7 @@ function isCorrectForm() {
 	<%
 	for(int nI=0; parameters != null && nI < parameters.size(); nI++)
 	{ 
-		parameter = (Parameter) parameters.get(nI);
+		parameter = (LocalizedParameter) parameters.get(nI);
 		if (parameter.isMandatory() && !parameter.isRadio()) 
 		{
 		%>
