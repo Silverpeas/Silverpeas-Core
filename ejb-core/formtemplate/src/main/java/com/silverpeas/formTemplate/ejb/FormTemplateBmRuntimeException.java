@@ -28,6 +28,8 @@ import com.stratelia.webactiv.util.exception.*;
 
 public class FormTemplateBmRuntimeException extends SilverpeasRuntimeException {
 
+  private static final long serialVersionUID = 7629673036810587018L;
+
   public FormTemplateBmRuntimeException(String callingClass, int errorLevel,
       String message) {
     super(callingClass, errorLevel, message);

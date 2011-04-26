@@ -47,6 +47,13 @@ daysInMonth[10] = 31;
 daysInMonth[11] = 30;
 daysInMonth[12] = 31;
 
+function getDateSeparator(lang) {
+	if (lang == "de") {
+		return ".";
+	}
+	return "/";
+}
+
 // Global variable defaultEmptyOK defines default return value 
 // for many functions when they are passed the empty string. 
 // By default, they will return defaultEmptyOK.
@@ -74,12 +81,12 @@ daysInMonth[12] = 31;
 var defaultEmptyOK = false
 
 function extractYear(date, language) {
-    d = date.split("/");
+	d = date.split(getDateSeparator(language));
     return d[2];
 }
 
 function extractMonth(date, language) {
-    d = date.split("/");
+    d = date.split(getDateSeparator(language));
     if (language == 'en')
         return d[0];
     else
@@ -87,7 +94,7 @@ function extractMonth(date, language) {
 }
 
 function extractDay(date, language) {
-    d = date.split("/");
+    d = date.split(getDateSeparator(language));
     if (language == 'en')
         return d[1];
     else
@@ -102,6 +109,28 @@ function extractHour(hour, language) {
 function extractMinute(hour, language) {
     d = hour.split(":");
     return d[1];
+}
+
+function isDateOK(date, language) {
+	var re = /(\d\d\/\d\d\/\d\d\d\d)/i;
+	if (language == "de") {
+		re = /(\d\d\.\d\d\.\d\d\d\d)/i;
+	}
+	var year = extractYear(date, language);
+    var month = extractMonth(date, language);
+    var day = extractDay(date, language);
+	return (date.replace(re, "OK") == "OK") && isCorrectDate(year, month, day);
+}
+
+function isDate1AfterDate2(date1, date2, language) {
+	var year1 = extractYear(date1, language);
+    var month1 = extractMonth(date1, language);
+    var day1 = extractDay(date1, language);
+    var year2 = extractYear(date2, language);
+    var month2 = extractMonth(date2, language);
+    var day2 = extractDay(date2, language);
+    
+    return isD1AfterD2(year1, month1, day1, year2, month2, day2);
 }
 
 function isCorrectDate(y, m, d) {
@@ -479,6 +508,14 @@ function isD1AfterD2Hour(year1, month1, day1, hour1, minute1, year2, month2, day
 			ok = false;
 	}		
 	return(ok);
+}
+
+function isFuture(date, language) {
+	var year = extractYear(date, language);
+    var month = extractMonth(date, language);
+    var day = extractDay(date, language);
+    
+    return isFutureDate(year, month, day);
 }
 
 function isFutureDate(year, month, day) {

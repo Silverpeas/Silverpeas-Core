@@ -26,7 +26,6 @@ package com.silverpeas.form.fieldType;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import com.silverpeas.form.Field;
@@ -49,6 +48,9 @@ import com.stratelia.webactiv.util.node.model.NodePK;
  * @see FieldDisplayer
  */
 public class AccessPathField extends TextField {
+
+  private static final long serialVersionUID = 9112703938534783673L;
+
   /**
    * The text field type name.
    */
@@ -99,18 +101,13 @@ public class AccessPathField extends TextField {
 
     // Space > SubSpace
     if (componentId != null && !"useless".equals(componentId)) {
-      List listSpaces = organizationController
-          .getSpacePathToComponent(componentId);
-      Iterator itSpace = listSpaces.iterator();
-      SpaceInst space;
-      while (itSpace.hasNext()) {
-        space = (SpaceInst) itSpace.next();
+      List<SpaceInst> listSpaces = organizationController.getSpacePathToComponent(componentId);
+      for (SpaceInst space : listSpaces) {
         currentAccessPath += space.getName() + " > ";
       }
 
       // Service
-      currentAccessPath += organizationController.getComponentInstLight(
-          componentId).getLabel();
+      currentAccessPath += organizationController.getComponentInstLight(componentId).getLabel();
 
       // Theme > SubTheme
       String pathString = "";
@@ -127,7 +124,7 @@ public class AccessPathField extends TextField {
 
         if (nodeBm != null) {
           NodePK nodePk = new NodePK(nodeId, componentId);
-          Collection listPath = null;
+          Collection<NodeDetail> listPath = null;
           try {
             listPath = nodeBm.getPath(nodePk);
           } catch (RemoteException e) {
@@ -136,19 +133,15 @@ public class AccessPathField extends TextField {
           }
 
           if (listPath != null) {
-            Iterator iterator = listPath.iterator();
-            NodeDetail nodeInPath = null;
             String nodeName;
-            while (iterator.hasNext()) {
-              nodeInPath = (NodeDetail) iterator.next();
+            for (NodeDetail nodeInPath : listPath) {
               if (!nodeInPath.getNodePK().getId().equals("0")) {
                 if (contentLanguage != null) {
                   nodeName = nodeInPath.getName(contentLanguage);
                 } else {
                   nodeName = nodeInPath.getName();
                 }
-                pathString += EncodeHelper.javaStringToHtmlString(nodeName)
-                    + " > ";
+                pathString += EncodeHelper.javaStringToHtmlString(nodeName) + " > ";
               }
             }
 

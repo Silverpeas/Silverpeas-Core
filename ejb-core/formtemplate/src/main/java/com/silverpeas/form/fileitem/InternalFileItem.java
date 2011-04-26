@@ -39,6 +39,7 @@ import org.apache.commons.fileupload.FileItem;
  */
 public class InternalFileItem implements FileItem {
 
+  private static final long serialVersionUID = 754043464419634444L;
   private String fieldName;
   private String value;
 

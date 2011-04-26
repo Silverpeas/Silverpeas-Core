@@ -93,7 +93,6 @@ function isCorrectForm() {
      var errorMsg 			= "";
      var errorNb 			= 0;
      var login 				= document.connectionForm.Login.value;
-     var re 				= /(\d\d\/\d\d\/\d\d\d\d)/i;
 
      if (isWhitespace(login)) {
            errorMsg +="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("webConnections.login")%>' <%=resource.getString("GML.MustBeFilled")%>\n";

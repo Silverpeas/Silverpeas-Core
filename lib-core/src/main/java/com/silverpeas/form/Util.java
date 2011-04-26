@@ -26,6 +26,7 @@ package com.silverpeas.form;
 import java.io.PrintWriter;
 import java.util.Map;
 
+import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
@@ -68,22 +69,14 @@ public class Util {
     addSilverpeasScript(includes, "/util/javaScript/dateUtils.js");
     addSilverpeasScript(includes, "/util/javaScript/checkForm.js");
     addSilverpeasScript(includes, "/util/javaScript/animation.js");
-    // includes home made scripts
-    includes.append("<script type=\"text/javascript\" src=\"").append(path);
-    includes.append("/util/javaScript/dateUtils.js\"></script>\n");
-
-    includes.append("<script type=\"text/javascript\">\n");
-    includes.append("function calendar(idField) {\n	SP_openWindow('").append(path);
-    includes.append(URLManager.getURL(URLManager.CMP_AGENDA));
-    includes.append("calendar.jsp?idElem='+idField,'Calendrier',180,200,'');\n");
-    includes.append("}\n</script>\n");
 
     // includes external scripts once because
     // including several times the same script (once per field) can provide
     // dysfunction on this fields
-    String webContext =path;
+    String webContext = path;
     addExternalStyleSheet(includes, webContext, "/util/yui/fonts/fonts-min.css");
-    addExternalStyleSheet(includes, webContext,"/util/yui/autocomplete/assets/skins/sam/autocomplete.css");
+    addExternalStyleSheet(includes, webContext,
+        "/util/yui/autocomplete/assets/skins/sam/autocomplete.css");
     addExternalScript(includes, webContext, "/util/yui/yahoo-dom-event/yahoo-dom-event.js");
     addExternalScript(includes, webContext, "/util/yui/animation/animation-min.js");
     addExternalScript(includes, webContext, "/util/yui/datasource/datasource-min.js");
@@ -97,7 +90,8 @@ public class Util {
     includes.append(script).append("\"></script>\n");
   }
 
-  private static void addExternalStyleSheet(StringBuilder includes, String webContext, String styleSheet) {
+  private static void addExternalStyleSheet(StringBuilder includes, String webContext,
+      String styleSheet) {
     includes.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"").append(webContext);
     includes.append(styleSheet).append("\" />\n");
   }
@@ -119,11 +113,31 @@ public class Util {
     out.println(" } ");
   }
 
+  public static void includeFileNameLengthChecker(FieldTemplate template, PagesContext pageContext,
+      PrintWriter out) {
+    out.println(" //check length of filename ");
+    out.println("   var lastIndexOfPathSeparator = field.value.lastIndexOf('/');");
+    out.println("   if (lastIndexOfPathSeparator == -1) {");
+    out.println("   //check Windows path");
+    out.println("     lastIndexOfPathSeparator = field.value.lastIndexOf('\\\\');");
+    out.println("   } ");
+    out.println("   if (lastIndexOfPathSeparator == -1) { ");
+    out.println("     lastIndexOfPathSeparator = 0;");
+    out.println("   } ");
+    out.println("   var filename = field.value.substring(lastIndexOfPathSeparator); ");
+    out.println("   if (filename.length > 100) { ");
+    out.println("       errorMsg+=\"  - '" +
+        EncodeHelper.javaStringToJsString(template.getLabel(pageContext.getLanguage())) + "' " +
+        Util.getString("form.field.file.toolong", language) + "\\n \";");
+    out.println("       errorNb++;");
+    out.println("   } ");
+  }
+
   private synchronized static void setLanguage(String lg) {
     if ((language == null) || (!language.trim().toLowerCase().equals(lg.trim().toLowerCase()))) {
       language = lg;
       generalMessage = GeneralPropertiesManager.getGeneralMultilang(language);
-      message = new ResourceLocator("com.silverpeas.form.multilang.formBundle",language);
+      message = new ResourceLocator("com.silverpeas.form.multilang.formBundle", language);
     }
   }
 
@@ -132,7 +146,7 @@ public class Util {
    */
   public static String getMandatorySnippet() {
     return "&nbsp;<img src=\"" + getIcon("mandatoryField")
-        + "\" width=\"5\" height=\"5\" border=\"0\" alt=\""
+        + "\" width=\"5\" height=\"5\" alt=\""
         + Util.getString("GML.requiredField", language) + "\"/>";
   }
 
