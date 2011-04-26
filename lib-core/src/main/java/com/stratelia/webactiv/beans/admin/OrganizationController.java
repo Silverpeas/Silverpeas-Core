@@ -30,14 +30,13 @@
 package com.stratelia.webactiv.beans.admin;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This objet is used by all the admin jsp such as SpaceManagement, UserManagement, etc... It
@@ -564,7 +563,7 @@ public class OrganizationController extends AdminReference implements java.io.Se
 
   public String[] getUserProfiles(String userId, String componentId) {
     try {
-      return m_Admin.getCurrentProfiles(userId, getComponentInst(componentId));
+      return m_Admin.getCurrentProfiles(userId, componentId);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getUserProfiles",
           "admin.MSG_ERR_GET_PROFILES_FOR_USER_AND_COMPONENT", "userId: '"
@@ -1126,5 +1125,15 @@ public class OrganizationController extends AdminReference implements java.io.Se
    */
   public boolean isAnonymousAccessActivated() {
     return UserDetail.isAnonymousUserExist();
+  }
+  
+  public String[] getAllowedComponentIds(String userId) {
+    try {
+      return m_Admin.getAvailCompoIds(userId);
+    } catch (AdminException e) {
+      SilverTrace.error("admin", "OrganizationController.getAllowedComponentIds",
+          "admin.MSG_ERR_GET_AVAILABLE_COMPONENTIDS", e);
+      return new String[0];
+    }
   }
 }

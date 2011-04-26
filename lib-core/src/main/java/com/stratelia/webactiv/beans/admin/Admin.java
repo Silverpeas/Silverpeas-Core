@@ -4462,9 +4462,7 @@ public final class Admin {
       String[] asProfileIds = getProfileIds(sUserId);
 
       for (String asProfileId : asProfileIds) {
-        for (int nJ = 0;
-            nJ < componentInst.getNumProfileInst();
-            nJ++) {
+        for (int nJ = 0; nJ < componentInst.getNumProfileInst(); nJ++) {
           if (componentInst.getProfileInst(nJ).getId().equals(asProfileId)) {
             alProfiles.add(componentInst.getProfileInst(nJ).getName());
           }
@@ -4477,6 +4475,14 @@ public final class Admin {
           "admin.MSG_ERR_GET_CURRENT_PROFILE", e);
       return new String[0];
     }
+  }
+  
+  /**
+   * Get the profile names of the given user for the given component
+   */
+  public String[] getCurrentProfiles(String sUserId, String componentId)
+      throws AdminException {
+    return profileManager.getProfileNamesOfUser(sUserId, getAllGroupsOfUser(sUserId), Integer.parseInt(getDriverComponentId(componentId)));
   }
 
   /**
