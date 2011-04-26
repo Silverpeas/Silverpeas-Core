@@ -105,8 +105,7 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
       AdminPersistenceException {
     List<InstanceDataRow> rows = getRows(SELECT_ALL_COMPONENT_PARAMETERS, componentId);
     List<Parameter> params = new ArrayList<Parameter>();
-    for (InstanceDataRow row :
-        rows) {
+    for (InstanceDataRow row : rows) {
       Parameter param = new Parameter();
       param.setName(row.name);
       param.setValue(row.value);

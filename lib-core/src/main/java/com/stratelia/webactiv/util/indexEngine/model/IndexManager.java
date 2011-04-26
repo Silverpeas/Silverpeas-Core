@@ -30,8 +30,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.MissingResourceException;
 import java.util.Map.Entry;
+import java.util.MissingResourceException;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -41,13 +41,12 @@ import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.Term;
 import org.apache.lucene.index.IndexWriter.MaxFieldLength;
+import org.apache.lucene.index.Term;
 
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.SearchEnginePropertiesManager;
@@ -80,6 +79,7 @@ public class IndexManager {
   public static final String THUMBNAIL = "thumbnail";
   public static final String THUMBNAIL_MIMETYPE = "thumbnailMimeType";
   public static final String THUMBNAIL_DIRECTORY = "thumbnailDirectory";
+  public static final String SERVER_NAME = "serverName";
   /**
    * Exhaustive list of indexation's operations Used by objects which must be indexed
    */
@@ -95,7 +95,7 @@ public class IndexManager {
    * properties file "com/stratelia/webactiv/util/indexEngine/indexEngine.properties".
    */
   public IndexManager() {
-    getProperties("com.stratelia.webactiv.util.indexEngine.IndexEngine");
+    initProperties("com.stratelia.webactiv.util.indexEngine.IndexEngine");
 
     SilverTrace.debug("indexEngine", "IndexManager",
         "indexEngine.INFO_INDEX_ENGINE_STARTED", "maxFieldLength="
@@ -108,6 +108,7 @@ public class IndexManager {
    * @param indexEntry 
    */
   public void addIndexEntry(FullIndexEntry indexEntry) {
+    indexEntry.setServerName(serverName);
     String indexPath = getIndexDirectoryPath(indexEntry);
     IndexWriter writer = getIndexWriter(indexPath, indexEntry.getLang());
     removeIndexEntry(writer, indexEntry.getPK());
@@ -274,60 +275,27 @@ public class IndexManager {
   /**
    * Reads and set the index engine parameters from the given properties file
    */
-  private void getProperties(String propertiesFileName) {
-    ResourceLocator resource = null;
-    String stringValue = null;
-
+  private void initProperties(String propertiesFileName) {
     try {
-      resource = new ResourceLocator(propertiesFileName, "");
+      ResourceLocator resource = new ResourceLocator(propertiesFileName, "");
+      maxFieldLength = resource.getInteger("lucene.maxFieldLength", maxFieldLength);
+      mergeFactor = resource.getInteger("lucene.mergeFactor", mergeFactor);
+      maxMergeDocs = resource.getInteger("lucene.maxMergeDocs", maxMergeDocs);
+
+      String stringValue = resource.getString("lucene.RAMBufferSizeMB", Double.toString(
+            IndexWriter.DEFAULT_RAM_BUFFER_SIZE_MB));
+      RAMBufferSizeMB = Double.parseDouble(stringValue);
+
+      stringValue = resource.getString("lucene.RAMBufferSizeMB", Double.toString(
+            IndexWriter.DEFAULT_RAM_BUFFER_SIZE_MB));
+      RAMBufferSizeMB = Double.parseDouble(stringValue);
+
+      enableDymIndexing = resource.getBoolean("enableDymIndexing", false);
+      serverName = resource.getString("server.name", "Silverpeas");
     } catch (MissingResourceException e) {
+      SilverTrace.error("indexEngine", "IndexManager.initProperties",
+          "indexEngine.ERR_CANT_LOAD_PROPERTIES", e);
     }
-
-    if (resource != null) {
-      try {
-        stringValue = resource.getString("lucene.maxFieldLength");
-        maxFieldLength = Integer.parseInt(stringValue);
-      } catch (MissingResourceException e) {
-      } catch (NumberFormatException e) {
-      }
-
-      try {
-        stringValue = resource.getString("lucene.mergeFactor");
-        mergeFactor = Integer.parseInt(stringValue);
-      } catch (MissingResourceException e) {
-      } catch (NumberFormatException e) {
-      }
-
-      try {
-        stringValue = resource.getString("lucene.maxMergeDocs");
-        maxMergeDocs = Integer.parseInt(stringValue);
-      } catch (MissingResourceException e) {
-      } catch (NumberFormatException e) {
-      }
-
-      try {
-        stringValue = resource.getString("lucene.RAMBufferSizeMB", Double.toString(
-            IndexWriter.DEFAULT_RAM_BUFFER_SIZE_MB));
-        RAMBufferSizeMB = Double.parseDouble(stringValue);
-      } catch (MissingResourceException e) {
-      } catch (NumberFormatException e) {
-      }
-
-      try {
-        stringValue = resource.getString("lucene.RAMBufferSizeMB", Double.toString(
-            IndexWriter.DEFAULT_RAM_BUFFER_SIZE_MB));
-        RAMBufferSizeMB = Double.parseDouble(stringValue);
-      } catch (MissingResourceException e) {
-      } catch (NumberFormatException e) {
-      }
-
-      try {
-        enableDymIndexing = SilverpeasSettings.readBoolean(resource, "enableDymIndexing", false);
-      } catch (MissingResourceException e) {
-      } catch (NumberFormatException e) {
-      }
-    }
-
   }
 
   /**
@@ -583,6 +551,8 @@ public class IndexManager {
         }
       }
     }
+    // Add server name inside Lucene doc
+    doc.add(new Field(SERVER_NAME, indexEntry.getServerName(), Store.YES, Index.NOT_ANALYZED));
     return doc;
   }
 
@@ -652,4 +622,5 @@ public class IndexManager {
   private double RAMBufferSizeMB = IndexWriter.DEFAULT_RAM_BUFFER_SIZE_MB;
   // enable the "Did you mean " indexing
   private boolean enableDymIndexing = false;
+  private String serverName = null;
 }

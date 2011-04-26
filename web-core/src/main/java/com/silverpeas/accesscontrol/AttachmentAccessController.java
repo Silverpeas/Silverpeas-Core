@@ -66,48 +66,61 @@ public class AttachmentAccessController implements AccessController<AttachmentDe
     if (ComponentHelper.getInstance().isThemeTracker(object.getForeignKey().getComponentName())) {
       String foreignId = object.getForeignKey().getId();
       if (StringUtil.isInteger(foreignId)) {
-        try {
-          PublicationDetail pubDetail =
-              getPublicationBm().getDetail(new PublicationPK(foreignId, object.getInstanceId()));
-          if (!pubDetail.isValid() && pubDetail.haveGotClone()) {
-            // file is attached to a clone, need to get nodes of cloned publication
-            foreignId = pubDetail.getCloneId();
-          }
+        try {           
+            foreignId = getActualForeignId(foreignId, object.getInstanceId());
         } catch (Exception e) {
           SilverTrace.error("accesscontrol", getClass().getSimpleName() + ".isUserAuthorized()",
               "root.NO_EX_MESSAGE", e);
           return false;
         }
-        Collection<NodePK> nodes;
         try {
-          nodes =
-              getPublicationBm().getAllFatherPK(
-                  new PublicationPK(foreignId, object.getInstanceId()));
+          Collection<NodePK> nodes = getPublicationBm().getAllFatherPK(new PublicationPK(foreignId,
+              object.getInstanceId()));
+          for (NodePK nodePk : nodes) {
+            if (getNodeAccessController().isUserAuthorized(userId, nodePk)) {
+              return true;
+            }
+          }
         } catch (Exception ex) {
           SilverTrace.error("accesscontrol", getClass().getSimpleName() + ".isUserAuthorized()",
               "root.NO_EX_MESSAGE", ex);
           return false;
         }
-        for (NodePK nodePk : nodes) {
-          if (getNodeAccessController().isUserAuthorized(userId, nodePk)) {
-            return true;
-          }
-        }
         return false;
-      } else if (foreignId.startsWith("Node_")) {
-        // case of files attached to topic (images of wysiwyg description)
+      } else if (isFileAttachedToWysiwygDescriptionOfNode(foreignId)) {
         String nodeId = foreignId.substring("Node_".length());
-        return getNodeAccessController().isUserAuthorized(userId,
-            new NodePK(nodeId, object.getInstanceId()));
+        return getNodeAccessController().isUserAuthorized(userId, new NodePK(nodeId, object.
+            getInstanceId()));
       }
     }
     return true;
   }
 
+  private boolean isFileAttachedToWysiwygDescriptionOfNode(String foreignId) {
+    return StringUtil.isDefined(foreignId) && foreignId.startsWith("Node_");
+  }
+
   protected PublicationBm getPublicationBm() throws Exception {
-    PublicationBmHome pubBmHome = (PublicationBmHome) EJBUtilitaire.getEJBObjectRef(
+    PublicationBmHome pubBmHome = EJBUtilitaire.getEJBObjectRef(
         JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
     return pubBmHome.create();
+  }
+
+  /**
+   * Return the 'real' id of the publication to which this file is attached to. In case of a clone 
+   * publication we need the cloneId (that is the original publication).
+   * @param foreignId
+   * @param instanceId
+   * @return
+   * @throws Exception 
+   */
+  private String getActualForeignId(String foreignId, String instanceId) throws Exception {
+    PublicationDetail pubDetail = getPublicationBm().getDetail(new PublicationPK(foreignId,
+        instanceId));
+    if (!pubDetail.isValid() && pubDetail.haveGotClone()) {
+      return pubDetail.getCloneId();
+    }
+    return foreignId;
   }
 
   /**

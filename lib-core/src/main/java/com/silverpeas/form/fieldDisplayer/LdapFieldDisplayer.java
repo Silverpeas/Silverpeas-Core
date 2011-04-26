@@ -133,6 +133,7 @@ public class LdapFieldDisplayer extends AbstractFieldDisplayer {
     if (!field.getTypeName().equals(LdapField.TYPE)) {
       SilverTrace.info("form", "LdapFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
           LdapField.TYPE);
+      ldapField = new LdapField();
     } else {
       ldapField = (LdapField) field;
     }

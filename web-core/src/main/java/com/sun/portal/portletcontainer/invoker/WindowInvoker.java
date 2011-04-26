@@ -1077,56 +1077,30 @@ public abstract class WindowInvoker
   public String getActionURL(HttpServletRequest request,
     ChannelMode portletWindowMode,
     ChannelState portletWindowState) {
-    StringBuffer processURL = new StringBuffer(getPortletWindowContext().
-      getDesktopURL(request));
-
-    processURL.append("?").
-      append(DRIVER_ACTION).
-      append("=").
-      append(ACTION).
-      append("&").
-      append(PORTLET_WINDOW_MODE_KEY).
-      append("=").
-      append(
-      portletWindowMode.toString()).
-      append("&").
-      append(
-      PORTLET_WINDOW_STATE_KEY).
-      append("=").
-      append(
-      portletWindowState.toString()).
-      append("&").
-      append(
-      PORTLET_WINDOW_KEY).
-      append("=").
-      append(getPortletWindowName());
-
-    String spaceId = (String) request.getAttribute("SpaceId");
-    if (StringUtil.isDefined(spaceId)) {
-      processURL.append("&").
-        append(WindowInvokerConstants.DRIVER_SPACEID).
-        append("=").
-        append(spaceId);
-      processURL.append("&").
-        append(WindowInvokerConstants.DRIVER_ROLE).
-        append(
-        "=").
-        append("admin");
-    }
-
-    return processURL.toString();
+    return computeURL(request, ACTION);
   }
 
   public String getRenderURL(HttpServletRequest request,
     ChannelMode portletWindowMode,
     ChannelState portletWindowState) {
-    StringBuffer processURL = new StringBuffer(getPortletWindowContext().
+    return computeURL(request, RENDER);
+  }
+
+  /**
+   * Computes the URL corresponding to the state of the portlet (in rendering, in performing an
+   * action, ...)
+   * @param request
+   * @param portletState
+   * @return
+   */
+  private String computeURL(HttpServletRequest request, String portletState) {
+    StringBuilder processURL = new StringBuilder(getPortletWindowContext().
       getDesktopURL(request));
 
     processURL.append("?").
       append(DRIVER_ACTION).
       append("=").
-      append(RENDER).
+      append(portletState).
       append("&").
       append(PORTLET_WINDOW_MODE_KEY).
       append("=").
