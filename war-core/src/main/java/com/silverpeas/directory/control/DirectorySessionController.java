@@ -35,6 +35,7 @@ import java.util.Set;
 import com.silverpeas.directory.DirectoryException;
 import com.silverpeas.directory.model.Member;
 import com.silverpeas.directory.model.UserFragmentVO;
+import com.silverpeas.session.SessionInfo;
 import com.silverpeas.socialNetwork.relationShip.RelationShipService;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
@@ -46,7 +47,6 @@ import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.silverpeas.session.SessionInfo;
 import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -86,7 +86,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private UserDetail commonUserDetail;
   private UserDetail otherUserDetail;
   private Group currentGroup;
-  private Domain currentDomain;
+  private List<Domain> currentDomains;
   private SpaceInstLight currentSpace;
   private Properties stConfig;
   private RelationShipService relationShipService;
@@ -296,12 +296,21 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    * @see
    */
   public List<UserDetail> getAllUsersByDomain(String domainId) {
+    List<String> domainIds = new ArrayList<String>();
+    domainIds.add(domainId);
+    return getAllUsersByDomains(domainIds);
+  }
+  
+  public List<UserDetail> getAllUsersByDomains(List<String> domainIds) {
     getAllUsers();// recuperer tous les users
     setCurrentDirectory(DIRECTORY_DOMAIN);
-    currentDomain = getOrganizationController().getDomain(domainId);
+    currentDomains = new ArrayList<Domain>();
+    for (String domainId : domainIds) {
+      currentDomains.add(getOrganizationController().getDomain(domainId));
+    }
     lastListUsersCalled = new ArrayList<UserDetail>();
     for (UserDetail var : lastAlllistUsersCalled) {
-      if (var.getDomainId() == null ? domainId == null : var.getDomainId().equals(domainId)) {
+      if (domainIds.contains(var.getDomainId())) {
         lastListUsersCalled.add(var);
       }
     }
@@ -486,8 +495,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     return currentGroup;
   }
 
-  public Domain getCurrentDomain() {
-    return currentDomain;
+  public List<Domain> getCurrentDomains() {
+    return currentDomains;
   }
 
   public SpaceInstLight getCurrentSpace() {
