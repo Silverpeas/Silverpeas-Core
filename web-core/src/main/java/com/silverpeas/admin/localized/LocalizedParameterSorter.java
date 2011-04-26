@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.admin.components;
+package com.silverpeas.admin.localized;
 
 import java.util.Comparator;
 
@@ -29,10 +29,10 @@ import java.util.Comparator;
  *
  * @author ehugonnet
  */
-public class ParameterSorter implements Comparator<Parameter> {
+public class LocalizedParameterSorter implements Comparator<LocalizedParameter> {
 
   @Override
-  public int compare(Parameter param1, Parameter param2) {
+  public int compare(LocalizedParameter param1, LocalizedParameter param2) {
     int result = param1.getOrder() - param2.getOrder();
     if(result  == 0) {
       result =  param1.getName().compareTo(param2.getName());
