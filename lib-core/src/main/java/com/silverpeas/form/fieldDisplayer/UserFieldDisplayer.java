@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.fieldDisplayer;
 
 import java.io.PrintWriter;
@@ -39,7 +38,9 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.apache.commons.fileupload.FileItem;
 
@@ -55,12 +56,10 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer {
 
   /**
    * Returns the name of the managed types.
+   * @return 
    */
   public String[] getManagedTypes() {
-    String[] s = new String[0];
-
-    s[0] = UserField.TYPE;
-    return s;
+    return new String[] {UserField.TYPE};
   }
 
   /**
@@ -72,17 +71,21 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer {
    * <LI>the fieldName is unknown by the template.
    * <LI>the field type is not a managed type.
    * </UL>
+   * @param out 
+   * @param template 
+   * @param pagesContext
+   * @throws java.io.IOException  
    */
-  public void displayScripts(PrintWriter out, FieldTemplate template,
-      PagesContext PagesContext) throws java.io.IOException {
-    String language = PagesContext.getLanguage();
+  @Override
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
+      throws IOException {
+    String language = pagesContext.getLanguage();
 
-    if (!template.getTypeName().equals(UserField.TYPE)) {
+    if (!UserField.TYPE.equals(template.getTypeName())) {
       SilverTrace.info("form", "TextFieldDisplayer.displayScripts",
           "form.INFO_NOT_CORRECT_TYPE", UserField.TYPE);
-
     }
-    if (template.isMandatory() && PagesContext.useMandatory()) {
+    if (template.isMandatory() && pagesContext.useMandatory()) {
       out.println("   if (isWhitespace(stripInitialWhitespace(field.value))) {");
       out.println("      errorMsg+=\"  - '"
           + EncodeHelper.javaStringToJsString(template.getLabel(language))
@@ -92,7 +95,7 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer {
       out.println("   }");
     }
 
-    Util.getJavascriptChecker(template.getFieldName(), PagesContext, out);
+    Util.getJavascriptChecker(template.getFieldName(), pagesContext, out);
   }
 
   /**
@@ -102,12 +105,18 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer {
    * <UL>
    * <LI>the field type is not a managed type.
    * </UL>
+   * @param out 
+   * @param field 
+   * @param PagesContext
+   * @param template 
+   * @throws FormException  
    */
+  @Override
   public void display(PrintWriter out, Field field, FieldTemplate template,
       PagesContext PagesContext) throws FormException {
     SilverTrace.info("form", "UserFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
-        "fieldName = " + template.getFieldName() + ", value = " + field.getValue() +
-        ", fieldType = " + field.getTypeName());
+        "fieldName = " + template.getFieldName() + ", value = " + field.getValue()
+        + ", fieldType = " + field.getTypeName());
 
     String language = PagesContext.getLanguage();
     String selectUserImg = Util.getIcon("userPanel");
@@ -131,21 +140,21 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer {
       userName = field.getValue();
     }
     html +=
-        "<input type=\"hidden\"" + " id=\"" + fieldName + "\" name=\"" + fieldName + "\" value=\"" +
-        EncodeHelper.javaStringToHtmlString(userId) + "\"/>";
+        "<input type=\"hidden\"" + " id=\"" + fieldName + "\" name=\"" + fieldName + "\" value=\""
+        + EncodeHelper.javaStringToHtmlString(userId) + "\"/>";
 
     if (!template.isHidden()) {
       html +=
           "<input type=\"text\" disabled=\"disabled\" size=\"50\" "
-          + "id=\"" + fieldName + "_name\" name=\"" + fieldName + "$$name\" value=\"" +
-          EncodeHelper.javaStringToHtmlString(userName) + "\"/>";
+          + "id=\"" + fieldName + "_name\" name=\"" + fieldName + "$$name\" value=\""
+          + EncodeHelper.javaStringToHtmlString(userName) + "\"/>";
     }
 
     if (!template.isHidden() && !template.isDisabled()
         && !template.isReadOnly()) {
       html +=
-          "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('" +
-          URLManager.getApplicationURL() + "/RselectionPeasWrapper/jsp/open"
+          "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('"
+          + URLManager.getApplicationURL() + "/RselectionPeasWrapper/jsp/open"
           + "?formName=" + PagesContext.getFormName()
           + "&elementId=" + fieldName
           + "&elementName=" + fieldName + "_name"
@@ -159,8 +168,8 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer {
       html +=
           "&nbsp;<a href=\"#\" onclick=\"javascript:"
           + "document." + PagesContext.getFormName() + "." + fieldName + ".value='';"
-          + "document." + PagesContext.getFormName() + "." + fieldName + "$$name" +
-          ".value='';"
+          + "document." + PagesContext.getFormName() + "." + fieldName + "$$name"
+          + ".value='';"
           + "\">";
       html += "<img src=\""
           + deleteUserImg
@@ -176,12 +185,12 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer {
     out.println(html);
   }
 
-  public List<String> update(String newId, Field field,
-      FieldTemplate template,
+  @Override
+  public List<String> update(String newId, Field field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
 
-    if (field.getTypeName().equals(UserField.TYPE)) {
-      if (newId == null || newId.trim().equals("")) {
+    if (UserField.TYPE.equals(field.getTypeName())) {
+      if (!StringUtil.isDefined(newId)) {
         field.setNull();
       } else {
         ((UserField) field).setUserId(newId);
@@ -190,21 +199,19 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer {
       throw new FormException("UserFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
           UserField.TYPE);
     }
-    return new ArrayList<String>();
+    return Collections.emptyList();
   }
 
   /**
    * Method declaration
    * @return
    */
+  @Override
   public boolean isDisplayedMandatory() {
     return true;
   }
 
-  /**
-   * Method declaration
-   * @return
-   */
+  @Override
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
     return 2;
   }
@@ -214,11 +221,10 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer {
       PagesContext pageContext) throws FormException {
     String itemName = template.getFieldName();
     String value = FileUploadUtil.getParameter(items, itemName);
-    if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES &&
-        !StringUtil.isDefined(value)) {
+    if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES
+        && !StringUtil.isDefined(value)) {
       return new ArrayList<String>();
     }
     return update(value, field, template, pageContext);
   }
-
 }

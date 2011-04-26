@@ -22,9 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 /*
  * SilverpeasCalendar.java
  * 
@@ -43,7 +40,7 @@ import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event;
  * @version
  */
 public interface Calendar extends SimpleGraphicElement {
-  public void setEvents(List events);
+  public void setEvents(List<Event> events);
 
   public void addEvent(Event event);
 
@@ -61,6 +58,7 @@ public interface Calendar extends SimpleGraphicElement {
 
   public void setEmptyDayNonSelectable(boolean nonSelectable);
 
+  @Override
   public String print();
 
 }

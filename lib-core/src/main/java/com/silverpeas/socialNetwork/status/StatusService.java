@@ -34,6 +34,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.UtilException;
+import java.util.Collections;
 
 public class StatusService {
 
@@ -170,7 +171,7 @@ public class StatusService {
     } finally {
       DBUtil.close(connection);
     }
-    return new ArrayList<SocialInformation>();
+    return Collections.emptyList();
   }
 /**
  * when data base is PostgreSQL get SocialInformation of my conatct
@@ -192,6 +193,6 @@ public class StatusService {
     } finally {
       DBUtil.close(connection);
     }
-    return new ArrayList<SocialInformation>();
+    return Collections.emptyList();
   }
 }
