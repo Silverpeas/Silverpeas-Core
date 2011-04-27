@@ -24,11 +24,13 @@
 package com.silverpeas.bootstrap;
 
 import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.security.SilverpeasSSLSocketFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.security.Security;
+import java.security.GeneralSecurityException;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -39,7 +41,7 @@ import javax.servlet.ServletContextListener;
 import org.springframework.web.context.ContextLoaderListener;
 
 public class SilverpeasContextBootStrapper implements ServletContextListener {
-  
+
   private ContextLoaderListener springContextListener = new ContextLoaderListener();
 
   @Override
@@ -70,15 +72,44 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
         Properties systemFileProperties = new Properties(System.getProperties());
         systemFileProperties.load(fis);
         System.setProperties(systemFileProperties);
+        if (isTrustoreConfigured()) {
+          registerSSLSocketFactory();
+        }
       } catch (FileNotFoundException e) {
         Logger.getLogger("bootstrap").log(Level.SEVERE,
             "File systemSettings.properties in directory {0} not found.", pathInitialize);
       } catch (IOException e) {
         Logger.getLogger("bootstrap").log(Level.SEVERE, "Unable to read systemSettings.properties.");
+      } catch (GeneralSecurityException e) {
+        Logger.getLogger("bootstrap").log(Level.SEVERE, "Unable to configure the trustore.");
       }
-      // Add SSL support
-     // Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
+
     }
     springContextListener.contextInitialized(sce);
+  }
+
+  boolean isTrustoreConfigured() {
+    return StringUtil.isDefined(System.getProperty(SilverpeasSSLSocketFactory.TRUSTSTORE_KEY));
+  }
+
+  /**
+   * Adding SilverpeasSSLSocketFactory as the SSLSocketFactory for all mail protocoles.
+   * @throws GeneralSecurityException 
+   */
+  void registerSSLSocketFactory() throws GeneralSecurityException {
+    System.setProperty("mail.imap.ssl.enable", "true");
+    System.setProperty("mail.imap.ssl.socketFactory.class",
+        "com.silverpeas.util.security.SilverpeasSSLSocketFactory");
+    System.setProperty("mail.smtp.ssl.socketFactory.class",
+        "com.silverpeas.util.security.SilverpeasSSLSocketFactory");
+    System.setProperty("mail.smtps.ssl.socketFactory.class",
+        "com.silverpeas.util.security.SilverpeasSSLSocketFactory");
+    System.setProperty("mail.pop3.ssl.socketFactory.class",
+        "com.silverpeas.util.security.SilverpeasSSLSocketFactory");
+    System.setProperty("mail.pop3s.ssl.socketFactory.class",
+        "com.silverpeas.util.security.SilverpeasSSLSocketFactory");
+    System.setProperty("mail.imaps.ssl.socketFactory.class",
+        "com.silverpeas.util.security.SilverpeasSSLSocketFactory");
+    System.setProperty("mail.imap.ssl.socketFactory.fallback", "false");
   }
 }
