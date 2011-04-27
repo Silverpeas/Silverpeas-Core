@@ -48,22 +48,22 @@ public class SILVERMAILPersistence {
   /**
    * 
    */
-  public static void addMessage(SILVERMAILMessage p_Msg) throws SILVERMAILException {
+  public static void addMessage(SILVERMAILMessage silverMsg) throws SILVERMAILException {
     SilverpeasBeanDAO dao;
     SILVERMAILMessageBean smb = new SILVERMAILMessageBean();
 
-    if (p_Msg != null) {
+    if (silverMsg != null) {
       try {
         dao = SilverpeasBeanDAOFactory.getDAO(
             "com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessageBean");
-        smb.setUserId(p_Msg.getUserId());
-        smb.setSenderName(p_Msg.getSenderName());
+        smb.setUserId(silverMsg.getUserId());
+        smb.setSenderName(silverMsg.getSenderName());
         smb.setFolderId(0); // 0 = INBOX
-        smb.setSubject(p_Msg.getSubject());
-        smb.setBody(Integer.toString(LongText.addLongText(p_Msg.getBody())));
-        smb.setUrl(p_Msg.getUrl());
-        smb.setSource(p_Msg.getSource());
-        smb.setDateMsg(p_Msg.getDate());
+        smb.setSubject(silverMsg.getSubject());
+        smb.setBody(Integer.toString(LongText.addLongText(silverMsg.getBody())));
+        smb.setUrl(silverMsg.getUrl());
+        smb.setSource(silverMsg.getSource());
+        smb.setDateMsg(silverMsg.getDate());
         smb.setReaden(0);
         dao.add((SilverpeasBean) smb);
       } catch (Exception e) {
@@ -73,36 +73,36 @@ public class SILVERMAILPersistence {
     }
   }
 
-  public static Collection<SILVERMAILMessage> getNotReadMessagesOfFolder(int p_UserId,
-      String p_FolderName)
+  public static Collection<SILVERMAILMessage> getNotReadMessagesOfFolder(int userId,
+      String folderName)
       throws SILVERMAILException {
-    return getMessageOfFolder(p_UserId, p_FolderName, 0);
+    return getMessageOfFolder(userId, folderName, 0);
   }
 
-  public static Collection<SILVERMAILMessage> getReadMessagesOfFolder(int p_UserId,
-      String p_FolderName)
+  public static Collection<SILVERMAILMessage> getReadMessagesOfFolder(int userId,
+      String folderName)
       throws SILVERMAILException {
-    return getMessageOfFolder(p_UserId, p_FolderName, 1);
+    return getMessageOfFolder(userId, folderName, 1);
   }
 
-  public static Collection<SILVERMAILMessage> getMessageOfFolder(int p_UserId, String p_FolderName)
+  public static Collection<SILVERMAILMessage> getMessageOfFolder(int userId, String folderName)
       throws SILVERMAILException {
-    return getMessageOfFolder(p_UserId, p_FolderName, -1);
+    return getMessageOfFolder(userId, folderName, -1);
   }
 
   /**
-   * @param p_UserId
-   * @param p_FolderName
+   * @param userId
+   * @param folderName
    * @param readState not read only (0) , read only (1), all messages (-1) 
    * @return
    * @throws SILVERMAILException
    */
-  public static Collection<SILVERMAILMessage> getMessageOfFolder(int p_UserId, String p_FolderName,
+  public static Collection<SILVERMAILMessage> getMessageOfFolder(int userId, String folderName,
       int readState) throws SILVERMAILException {
     List<SILVERMAILMessage> folderMessageList = new ArrayList<SILVERMAILMessage>();
     StringBuilder whereClause = new StringBuilder("USERID=");
-    whereClause.append(p_UserId);
-    whereClause.append(" AND FOLDERID=").append(convertFolderNameToId(p_FolderName));
+    whereClause.append(userId);
+    whereClause.append(" AND FOLDERID=").append(convertFolderNameToId(folderName));
     if (readState != -1) {
       whereClause.append(" and readen = ").append(readState);
     }
@@ -118,14 +118,14 @@ public class SILVERMAILPersistence {
         Iterator cmbIterator = collectionMessageBean.iterator();
         String userLogin = null;
         if (cmbIterator.hasNext()) {
-          userLogin = getUserLogin(p_UserId);
+          userLogin = getUserLogin(userId);
         }
         while (cmbIterator.hasNext()) {
           String body = "";
           SILVERMAILMessageBean pmb = (SILVERMAILMessageBean) cmbIterator.next();
           SILVERMAILMessage silverMailMessage = new SILVERMAILMessage();
           silverMailMessage.setId(((IdPK) pmb.getPK()).getIdAsLong());
-          silverMailMessage.setUserId(p_UserId);
+          silverMailMessage.setUserId(userId);
           silverMailMessage.setUserLogin(userLogin);
           silverMailMessage.setSenderName(pmb.getSenderName());
           silverMailMessage.setSubject(pmb.getSubject());
@@ -153,7 +153,7 @@ public class SILVERMAILPersistence {
       throw new SILVERMAILException(
           "SILVERMAILPersistence.getMessageOfFolder()",
           SilverpeasException.ERROR, "silvermail.EX_CANT_READ_MSG", "UserId="
-          + Long.toString(p_UserId) + ";Folder=" + p_FolderName, e);
+          + Long.toString(userId) + ";Folder=" + folderName, e);
     }
 
     return folderMessageList;
@@ -162,14 +162,14 @@ public class SILVERMAILPersistence {
   /**
    * 
    */
-  public static SILVERMAILMessage getMessage(long p_Id) throws SILVERMAILException {
+  public static SILVERMAILMessage getMessage(long msgId) throws SILVERMAILException {
     SILVERMAILMessage result = null;
     IdPK pk = new IdPK();
 
     try {
       SilverpeasBeanDAO dao = SilverpeasBeanDAOFactory.getDAO(
           "com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessageBean");
-      pk.setIdAsLong(p_Id);
+      pk.setIdAsLong(msgId);
       SILVERMAILMessageBean smb = (SILVERMAILMessageBean) dao.findByPrimaryKey(pk);
       if (smb != null) {
         String body = "";
@@ -200,7 +200,7 @@ public class SILVERMAILPersistence {
     } catch (com.stratelia.webactiv.persistence.PersistenceException e) {
       throw new SILVERMAILException("SILVERMAILPersistence.getMessage()",
           SilverpeasException.ERROR, "silvermail.EX_CANT_READ_MSG", "MsgId="
-          + Long.toString(p_Id), e);
+          + Long.toString(msgId), e);
     }
     return result;
   }
@@ -208,13 +208,13 @@ public class SILVERMAILPersistence {
   /**
    *  
    */
-  public static void deleteMessage(long p_Id) throws SILVERMAILException {
+  public static void deleteMessage(long msgId) throws SILVERMAILException {
     IdPK pk = new IdPK();
 
     try {
       SilverpeasBeanDAO dao = SilverpeasBeanDAOFactory.getDAO(
           "com.stratelia.silverpeas.notificationserver.channel.silvermail.SILVERMAILMessageBean");
-      pk.setIdAsLong(p_Id);
+      pk.setIdAsLong(msgId);
       try {
         int longTextId = -1;
         SILVERMAILMessageBean toDel = (SILVERMAILMessageBean) dao.findByPrimaryKey(pk);
@@ -222,19 +222,19 @@ public class SILVERMAILPersistence {
         LongText.removeLongText(longTextId);
       } catch (Exception e) {
         SilverTrace.debug("silvermail", "SILVERMAILListener.deleteMessage()",
-            "PB converting body id to LongText", "Message Body = " + p_Id);
+            "PB converting body id to LongText", "Message Body = " + msgId);
       }
       dao.remove(pk);
     } catch (Exception e) {
       throw new SILVERMAILException("SILVERMAILPersistence.deleteMessage()",
           SilverpeasException.ERROR, "silvermail.EX_CANT_DEL_MSG", "MsgId="
-          + Long.toString(p_Id), e);
+          + Long.toString(msgId), e);
     }
   }
 
-  public static void deleteAllMessages(int p_UserId, String p_FolderName)
+  public static void deleteAllMessages(int userId, String folderName)
       throws SILVERMAILException {
-    Collection<SILVERMAILMessage> messages = getMessageOfFolder(p_UserId, p_FolderName);
+    Collection<SILVERMAILMessage> messages = getMessageOfFolder(userId, folderName);
     for (SILVERMAILMessage message : messages) {
       deleteMessage(message.getId());
     }

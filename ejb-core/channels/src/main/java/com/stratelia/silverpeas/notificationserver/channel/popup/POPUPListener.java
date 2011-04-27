@@ -35,6 +35,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.silverpeas.silvertrace.*;
 
 public class POPUPListener extends AbstractListener {
+  private static final long serialVersionUID = 6562344573142185894L;
+
   public POPUPListener() {
   }
 

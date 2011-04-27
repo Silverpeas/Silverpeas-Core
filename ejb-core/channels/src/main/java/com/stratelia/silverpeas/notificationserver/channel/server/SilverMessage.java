@@ -24,14 +24,6 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.server;
 
-/*
- * SilverMessage.java
- *
- * Created on 15/04/2002
- *
- * Author neysseri
- */
-
 /**
  * @author neysseri
  * @version
@@ -57,7 +49,7 @@ public class SilverMessage {
    */
   public SilverMessage(String what) {
     this.m_What = what;
-    this.m_Content = new String("");
+    this.m_Content = "";
   }
 
   /**

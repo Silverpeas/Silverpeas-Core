@@ -100,11 +100,11 @@ public class InvitationDao {
   }
 
   /**
-   * rturn invitation between 2 users
-   * @param connection
-   * @param senderId
-   * @param receiverId
-   * @return Invitation
+   * 
+   * @param connection a Connection
+   * @param senderId the sender identifier
+   * @param receiverId the receiver identifier
+   * @return invitation between 2 users
    * @throws SQLException
    */
   public Invitation getInvitation(Connection connection, int senderId, int receiverId) throws
@@ -133,11 +133,12 @@ public class InvitationDao {
   }
 
   /**
-   * rturn invitation
+   * retrieve an invitation
    * @param connection
    * @param id
    * @return Invitation
    * @throws SQLException
+   * @return an invitation 
    */
 
   public Invitation getInvitation(Connection connection, int id) throws SQLException {
@@ -190,7 +191,7 @@ public class InvitationDao {
 
     PreparedStatement pstmt = null;
     ResultSet rs = null;
-    List<Invitation> invitation_list = new ArrayList<Invitation>();
+    List<Invitation> invitations = new ArrayList<Invitation>();
     try {
       pstmt = connection.prepareStatement(SELECT_ALL_INVITATIONS_SENT);
       pstmt.setInt(1, myId);
@@ -203,12 +204,12 @@ public class InvitationDao {
         invitation.setReceiverId(rs.getInt(3));
         invitation.setMessage(rs.getString(4));
         invitation.setInvitationDate(new Date(rs.getTimestamp(5).getTime()));
-        invitation_list.add(invitation);
+        invitations.add(invitation);
       }
     } finally {
       DBUtil.close(rs, pstmt);
     }
-    return invitation_list;
+    return invitations;
   }
 
   /**
@@ -223,7 +224,7 @@ public class InvitationDao {
 
     PreparedStatement pstmt = null;
     ResultSet rs = null;
-    List<Invitation> invitation_list = new ArrayList<Invitation>();
+    List<Invitation> invitations = new ArrayList<Invitation>();
     try {
       pstmt = connection.prepareStatement(SELECT_ALL_INVITATIONS_RECEIVE);
       pstmt.setInt(1, myId);
@@ -236,11 +237,11 @@ public class InvitationDao {
         invitation.setReceiverId(rs.getInt(3));
         invitation.setMessage(rs.getString(4));
         invitation.setInvitationDate(new Date(rs.getTimestamp(5).getTime()));
-        invitation_list.add(invitation);
+        invitations.add(invitation);
       }
     } finally {
       DBUtil.close(rs, pstmt);
     }
-    return invitation_list;
+    return invitations;
   }
 }

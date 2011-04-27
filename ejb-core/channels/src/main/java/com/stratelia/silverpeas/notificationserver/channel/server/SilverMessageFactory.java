@@ -24,14 +24,6 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.server;
 
-/*
- * SilverMessageFactory.java
- *
- * Created on 15/04/2002
- *
- * Author neysseri
- */
-
 import java.util.Collection;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -107,16 +99,16 @@ public class SilverMessageFactory {
   }
 
   /**
-   * -------------------------------------------------------------------------- pop del
+   * pop del
    */
-  public static void del(String p_MsgId) {
+  public static void del(String msgId) {
     try {
       SilverpeasBeanDAO dao;
       IdPK pk = new IdPK();
 
       dao = SilverpeasBeanDAOFactory
           .getDAO("com.stratelia.silverpeas.notificationserver.channel.server.ServerMessageBean");
-      pk.setId(p_MsgId);
+      pk.setId(msgId);
       try {
         ServerMessageBean toDel = (ServerMessageBean) dao.findByPrimaryKey(pk);
         int longTextId = -1;
@@ -125,19 +117,19 @@ public class SilverMessageFactory {
         LongText.removeLongText(longTextId);
       } catch (Exception e) {
         SilverTrace.debug("server", "SilverMessageFactory.del()",
-            "PB converting body id to LongText", "Message Body = " + p_MsgId);
+            "PB converting body id to LongText", "Message Body = " + msgId);
       }
       dao.remove(pk);
     } catch (PersistenceException e) {
       SilverTrace.error("server", "SilverMessageFactory.del()",
-          "server.EX_CANT_DEL_MSG", "MsgId=" + p_MsgId, e);
+          "server.EX_CANT_DEL_MSG", "MsgId=" + msgId, e);
     }
   }
 
   /**
    * -------------------------------------------------------------------------- pop push
    */
-  public static void push(String userId, String p_Message, String sessionId) {
+  public static void push(String userId, String message, String sessionId) {
     SilverpeasBeanDAO dao;
     ServerMessageBean pmb = new ServerMessageBean();
 
@@ -146,12 +138,12 @@ public class SilverMessageFactory {
       dao = SilverpeasBeanDAOFactory
           .getDAO("com.stratelia.silverpeas.notificationserver.channel.server.ServerMessageBean");
       pmb.setUserId(Long.parseLong(userId));
-      pmb.setBody(Integer.toString(LongText.addLongText(p_Message)));
+      pmb.setBody(Integer.toString(LongText.addLongText(message)));
       pmb.setSessionId(sessionId);
       dao.add((SilverpeasBean) pmb);
     } catch (Exception e) {
       SilverTrace.error("server", "SilverMessageFactory.push()",
-          "server.EX_CANT_PUSH_MSG", "UserId=" + userId + ";Msg=" + p_Message,
+          "server.EX_CANT_PUSH_MSG", "UserId=" + userId + ";Msg=" + message,
           e);
     }
   }
