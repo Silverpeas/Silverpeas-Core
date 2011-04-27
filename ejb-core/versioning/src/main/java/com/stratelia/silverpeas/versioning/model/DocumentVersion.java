@@ -221,7 +221,9 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
   /**
    * Return if a document is an Office file
    * @return true or false
+   * @deprecated Use isOpenOfficeCompatibleDocument instead as Ms office is no longer a special case.
    */
+  @Deprecated
   public boolean isOfficeDocument() {
     return isOpenOfficeCompatibleDocument();
   }

@@ -874,6 +874,12 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
     return FileUtil.isOpenOfficeCompatible(getLogicalName(language));
   }
 
+  /**
+   * Use isOpenOfficeCompatible instead as Ms Office is no longer a special case.
+   * @return
+   * @deprecated Use isOpenOfficeCompatible instead as Ms Office is no longer a special case.
+   */
+  @Deprecated
   public boolean isOfficeDocument() {
     return isOpenOfficeCompatible();
   }

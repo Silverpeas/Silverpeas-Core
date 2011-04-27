@@ -125,7 +125,7 @@ public class TestJcrDocumentService extends AbstractJcrRegisteringTestCase {
     doc.setMimeType(MimeTypes.MIME_TYPE_OO_FORMATTED_TEXT);
     doc.setMinorNumber(1);
     doc.setPhysicalName("1210692002788.odp");
-    assertFalse(doc.isOfficeDocument());
+    assertTrue(doc.isOfficeDocument());
     assertTrue(doc.isOpenOfficeCompatibleDocument());
     doc.setMimeType(MimeTypes.EXCEL_MIME_TYPE1);
     assertTrue(doc.isOfficeDocument());
