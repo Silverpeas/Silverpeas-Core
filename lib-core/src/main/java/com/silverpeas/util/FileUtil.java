@@ -164,8 +164,8 @@ public class FileUtil implements MimeTypes {
     if (loc == null) {
       loc = Locale.ROOT;
     }
-    ResourceBundle result =  ResourceBundle.getBundle(name, loc, new ConfigurationClassLoader(FileUtil.class.
-        getClassLoader()));
+    ResourceBundle result = ResourceBundle.getBundle(name, loc,
+        new ConfigurationClassLoader(FileUtil.class.getClassLoader()));
     return result;
   }
 
@@ -176,26 +176,35 @@ public class FileUtil implements MimeTypes {
   public static boolean isWindows() {
     return OsEnum.getOS().isWindows();
   }
-  
+
   /**
    * Indicates if the current file is of type archive.
    * @param filename the name of the file.
    * @return true is the file s of type archive - false otherwise.
-   */  
+   */
   public static boolean isArchive(String filename) {
     String mimeType = getMimeType(filename);
     return ARCHIVE_MIME_TYPE.equalsIgnoreCase(mimeType) || SHORT_ARCHIVE_MIME_TYPE.equalsIgnoreCase(
         mimeType) || JAVA_ARCHIVE_MIME_TYPE.equalsIgnoreCase(mimeType);
   }
-  
-  
+
   /**
    * Indicates if the current file is of type archive.
    * @param filename the name of the file.
    * @return true is the file s of type archive - false otherwise.
-   */  
+   */
   public static boolean isImage(String filename) {
     return FilenameUtils.isExtension(filename, IMAGE_EXTENTIONS);
+  }
+
+  public static boolean isOpenOfficeCompatible(String filename) {
+    String mimeType = getMimeType(filename);
+    return OPEN_OFFICE_MIME_TYPES.contains(mimeType) || isMsOfficeExtension(mimeType);
+  }
+
+  static boolean isMsOfficeExtension(String mimeType) {
+    return mimeType.startsWith(WORD_2007_EXTENSION) || mimeType.startsWith(EXCEL_2007_EXTENSION)
+        || mimeType.startsWith(POWERPOINT_2007_EXTENSION);
   }
 
   private FileUtil() {
