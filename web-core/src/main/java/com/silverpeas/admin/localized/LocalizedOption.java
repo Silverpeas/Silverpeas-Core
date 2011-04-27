@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,44 +21,33 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.silverpeas.admin.localized;
 
-/*
- * SilverpeasCalendar.java
- * 
- * Created on 11 juin 2001, 14:38
- */
-
-package com.stratelia.webactiv.util.viewGenerator.html.calendar;
-
-import java.util.List;
-
-import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
-import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event;
+import com.silverpeas.admin.components.Option;
+import com.silverpeas.ui.DisplayI18NHelper;
 
 /**
- * @author groccia
- * @version
+ *
+ * @author ehugonnet
  */
-public interface Calendar extends SimpleGraphicElement {
-  public void setEvents(List<Event> events);
+public class LocalizedOption {
 
-  public void addEvent(Event event);
+  private final Option realOption;
+  private final String lang;
 
-  public void setWeekDayStyle(String value);
+  LocalizedOption(Option option, String lang) {
+    this.realOption = option;
+    this.lang = lang;
+  }
 
-  public void setMonthDayStyle(String value);
+  public String getName() {
+    if (realOption.getName().containsKey(lang)) {
+      return realOption.getName().get(lang);
+    }
+    return realOption.getName().get(DisplayI18NHelper.getDefaultLanguage());
+  }
 
-  public void setMonthVisible(boolean value);
-
-  public void setNavigationBar(boolean value);
-
-  public void setShortName(boolean value);
-
-  public void setNonSelectableDays(List nonSelectableDays);
-
-  public void setEmptyDayNonSelectable(boolean nonSelectable);
-
-  @Override
-  public String print();
-
+  public String getValue() {
+    return realOption.getValue();
+  }
 }

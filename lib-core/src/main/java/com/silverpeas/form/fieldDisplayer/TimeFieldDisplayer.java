@@ -21,11 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.fieldDisplayer;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +43,7 @@ import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
+import java.util.Collections;
 
 /**
  * A TimeFieldDisplayer is an object which can display a time
@@ -60,11 +59,10 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer {
 
   /**
    * Returns the name of the managed types.
+   * @return 
    */
   public String[] getManagedTypes() {
-    String[] s = new String[0];
-    s[0] = TextField.TYPE;
-    return s;
+    return new String[]{TextField.TYPE};
   }
 
   /**
@@ -76,12 +74,15 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer {
    * <LI>the fieldName is unknown by the template.
    * <LI>the field type is not a managed type.
    * </UL>
+   * @param out 
+   * @param template
+   * @param PagesContext 
+   * @throws java.io.IOException  
    */
-  public void displayScripts(PrintWriter out,
-      FieldTemplate template,
-      PagesContext PagesContext) throws java.io.IOException {
+  @Override
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext)
+      throws java.io.IOException {
     String language = PagesContext.getLanguage();
-
     if (!template.getTypeName().equals(TextField.TYPE)) {
       SilverTrace.info("form", "TimeFieldDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
           TextField.TYPE);
@@ -89,9 +90,8 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer {
 
     if (template.isMandatory() && PagesContext.useMandatory()) {
       out.println("	if (isWhitespace(stripInitialWhitespace(field.value))) {");
-      out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' " +
-          Util.getString("GML.MustBeFilled",
-          language) + "\\n \";");
+      out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' "
+          + Util.getString("GML.MustBeFilled", language) + "\\n \";");
       out.println("		errorNb++;");
       out.println("	}");
     }
@@ -114,12 +114,15 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer {
    * <UL>
    * <LI>the field type is not a managed type.
    * </UL>
+   * @param out 
+   * @param field 
+   * @param template 
+   * @param pageContext 
+   * @throws FormException 
    */
-  public void display(PrintWriter out,
-      Field field,
-      FieldTemplate template,
-      PagesContext pageContext) throws FormException {
-
+  @Override
+  public void display(PrintWriter out, Field field, FieldTemplate template, PagesContext pageContext)
+      throws FormException {
     String value = "";
     String html = "";
 
@@ -127,23 +130,19 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer {
     SilverTrace.info("form", "TimeFieldDisplayer.display", "root.MSG_GEN_PARAM_VALUE",
         "fieldName=" + fieldName);
     Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
-
     if (field == null) {
       return;
     }
-
     if (!field.getTypeName().equals(TextField.TYPE)) {
       SilverTrace.info("form", "TimeFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
           TextField.TYPE);
     }
 
-    String defaultParam =
-        (parameters.containsKey("default") ? parameters.get("default") : "");
+    String defaultParam = (parameters.containsKey("default") ? parameters.get("default") : "");
     String defaultValue = "";
     if ("now".equalsIgnoreCase(defaultParam) && !pageContext.isIgnoreDefaultValues()) {
       defaultValue = DateUtil.formatTime(new Date());
     }
-
     value = (!field.isNull() ? field.getValue(pageContext.getLanguage()) : defaultValue);
     if (pageContext.isBlankFieldsUse()) {
       value = "";
@@ -166,9 +165,8 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer {
       }
 
       img image = null;
-      if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly() &&
-          !template.isHidden() && pageContext.
-          useMandatory()) {
+      if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly()
+          && !template.isHidden() && pageContext.useMandatory()) {
         image = new img();
         image.setSrc(Util.getIcon("mandatoryField"));
         image.setWidth(5);
@@ -190,30 +188,27 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer {
     out.println(html);
   }
 
-  public List<String> update(String newValue,
-      Field field,
-      FieldTemplate template,
-      PagesContext PagesContext)
-      throws FormException {
-
+  public List<String> update(String newValue, Field field, FieldTemplate template,
+      PagesContext PagesContext) throws FormException {
     if (!field.getTypeName().equals(TextField.TYPE)) {
       throw new FormException("TimeFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
           TextField.TYPE);
     }
-
     if (field.acceptValue(newValue, PagesContext.getLanguage())) {
       field.setValue(newValue, PagesContext.getLanguage());
     } else {
       throw new FormException("TimeFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
           TextField.TYPE);
     }
-    return new ArrayList<String>();
+    return Collections.emptyList();
   }
 
+  @Override
   public boolean isDisplayedMandatory() {
     return true;
   }
 
+  @Override
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
     return 1;
   }

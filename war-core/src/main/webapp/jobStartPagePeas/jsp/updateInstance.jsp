@@ -23,15 +23,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.admin.localized.LocalizedOption"%>
+<%@page import="com.silverpeas.admin.localized.LocalizedParameter"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="check.jsp" %>
 
 <%!
 
-void displayParameter(Parameter parameter, ResourcesWrapper resource, JspWriter out) throws java.io.IOException
+void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, JspWriter out) throws java.io.IOException
 {
-	String help = (String) parameter.getHelp().get(resource.getLanguage());
+	String help = parameter.getHelp();
 
 	if (help != null) {
 		//help = Encode.javaStringToJsString(help);
@@ -43,7 +45,7 @@ void displayParameter(Parameter parameter, ResourcesWrapper resource, JspWriter 
 	
 	}
 	out.println("<td class=\"intfdcolor4\" nowrap valign=\"center\" align=left>");
-	out.println("<span class=\"txtlibform\">"+parameter.getLabel().get(resource.getLanguage())+" : </span>");
+	out.println("<span class=\"txtlibform\">"+parameter.getLabel()+" : </span>");
 	out.println("</td>");
 	out.println("<td class=\"intfdcolor4\" align=left valign=\"top\">");
 
@@ -71,8 +73,8 @@ void displayParameter(Parameter parameter, ResourcesWrapper resource, JspWriter 
 			String selected = "";
 			for (int i=0; i<options.size(); i++)
 			{
-				Option option = (Option) options.get(i);
-				String name = ((String) option.getName().get(resource.getLanguage()));
+				LocalizedOption option = (LocalizedOption) options.get(i);
+				String name = option.getName();
 				String value = option.getValue();
 				selected = "";
 				if (parameter.getValue() != null && parameter.getValue().toLowerCase().equals(value.toLowerCase())) {
@@ -88,17 +90,18 @@ void displayParameter(Parameter parameter, ResourcesWrapper resource, JspWriter 
 		List radios = parameter.getOptions();
 		if (radios != null)
 		{
-			for (int i=0; i<radios.size(); i++)
-			{
-	      		Option radio = (Option) radios.get(i);
-				String name = ((String) radio.getName().get(resource.getLanguage()));
-				String value = (String) radio.getValue();
-				String checked = "";
-				if (parameter.getValue() != null && parameter.getValue().toLowerCase().equals(value) || i==0)
-					checked = " checked";
-				out.println("<input type=\"radio\" name=\""+parameter.getName()+"\" value=\""+value+"\""+checked+">");
-				out.println(name+"&nbsp;<br>");
-      		}		
+			for (int i = 0; i < radios.size(); i++) {
+          LocalizedOption radio = (LocalizedOption) radios.get(i);
+          String name = radio.getName();
+          String value = radio.getValue();
+          String checked = "";
+          if (parameter.getValue() != null && parameter.getValue().toLowerCase().equals(value) || i == 0) {
+            checked = " checked";
+          }
+          out.println(
+              "<input type=\"radio\" name=\"" + parameter.getName() + "\" value=\"" + value + "\"" + checked + ">");
+          out.println(name + "&nbsp;<br>");
+        }	
 		}
 		else {
 			out.println(parameter.getValue());
@@ -133,7 +136,7 @@ boolean 		isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEna
 
 String m_ComponentIcon = iconsPath+"/util/icons/component/"+compoInst.getName()+"Small.gif";
 
-Parameter parameter = null;
+LocalizedParameter parameter = null;
 
 browseBar.setComponentId(compoInst.getId());
 browseBar.setExtraInformation(resource.getString("GML.modify"));
@@ -161,7 +164,7 @@ function B_VALIDER_ONCLICK() {
 		<%
 		for(int nI=0; parameters != null && nI < parameters.size(); nI++)
 		{ 
-			parameter = (Parameter) parameters.get(nI);
+			parameter = (LocalizedParameter) parameters.get(nI);
 			if (parameter.isCheckbox()) {
 			%>
 		    	if (document.infoInstance.<%=parameter.getName()%>.checked)
@@ -203,7 +206,7 @@ function isCorrectForm() {
 	<%
 	for(int nI=0; parameters != null && nI < parameters.size(); nI++)
 	{ 
-		parameter = (Parameter) parameters.get(nI);
+		parameter = (LocalizedParameter) parameters.get(nI);
 		if (parameter.isMandatory() && !parameter.isRadio()) 
 		{
 		%>
@@ -340,7 +343,7 @@ out.println(board.printBefore());
 		out.println("<table border=0 width=\"100%\">");
 		for(int nI=0; parameters != null && nI < parameters.size(); nI++)
 		{
-			parameter = (Parameter) parameters.get(nI);
+			parameter = (LocalizedParameter) parameters.get(nI);
 			if (nI%2 == 0)
 				out.println("<tr valign=\"middle\">");
 
@@ -361,7 +364,7 @@ out.println(board.printBefore());
 	} else {
 		for(int nI=0; parameters != null && nI < parameters.size(); nI++)
 		{
-			parameter = (Parameter) parameters.get(nI);
+			parameter = (LocalizedParameter) parameters.get(nI);
 			out.println("<tr valign=\"middle\">");
 			displayParameter(parameter, resource, out);
 			out.println("</tr>");
@@ -370,7 +373,7 @@ out.println(board.printBefore());
 	
 	for(int nI=0; hiddenParameters != null && nI < hiddenParameters.size(); nI++)
 	{
-		parameter = (Parameter) hiddenParameters.get(nI);
+		parameter = (LocalizedParameter) hiddenParameters.get(nI);
 		
 		out.println("<input type=\"hidden\" name=\""+parameter.getName()+"\" value=\""+parameter.getValue()+"\"/>\n");
 	}

@@ -21,44 +21,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.silverpeas.admin.localized;
 
-/*
- * SilverpeasCalendar.java
- * 
- * Created on 11 juin 2001, 14:38
- */
-
-package com.stratelia.webactiv.util.viewGenerator.html.calendar;
-
-import java.util.List;
-
-import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
-import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event;
+import java.util.Comparator;
 
 /**
- * @author groccia
- * @version
+ *
+ * @author ehugonnet
  */
-public interface Calendar extends SimpleGraphicElement {
-  public void setEvents(List<Event> events);
-
-  public void addEvent(Event event);
-
-  public void setWeekDayStyle(String value);
-
-  public void setMonthDayStyle(String value);
-
-  public void setMonthVisible(boolean value);
-
-  public void setNavigationBar(boolean value);
-
-  public void setShortName(boolean value);
-
-  public void setNonSelectableDays(List nonSelectableDays);
-
-  public void setEmptyDayNonSelectable(boolean nonSelectable);
+public class LocalizedParameterSorter implements Comparator<LocalizedParameter> {
 
   @Override
-  public String print();
-
+  public int compare(LocalizedParameter param1, LocalizedParameter param2) {
+    int result = param1.getOrder() - param2.getOrder();
+    if(result  == 0) {
+      result =  param1.getName().compareTo(param2.getName());
+    }
+    return result;
+  }
 }
