@@ -60,7 +60,7 @@ public abstract class AbstractCalendar implements
   private String context = "";
   protected ResourceLocator settings = null;
   protected String language = null;
-  private List events = null;
+  private List<Event> events = null;
   private List nonSelectableDays = null;
   private Date currentDate = null;
   private boolean emptyDayNonSelectable = false; // true => les jours sans
@@ -77,13 +77,16 @@ public abstract class AbstractCalendar implements
         "com.stratelia.webactiv.multilang.generalMultilang", language);
   }
 
-  public void setEvents(List events) {
-    this.events = events;
+  @Override
+  public void setEvents(List<Event> events) {
+    this.events = new ArrayList<Event>(events);
   }
 
+  @Override
   public void addEvent(Event event) {
-    if (events == null)
-      events = new ArrayList();
+    if (events == null) {
+      events = new ArrayList<Event>();
+    }
     events.add(event);
   }
 
@@ -91,6 +94,7 @@ public abstract class AbstractCalendar implements
     return emptyDayNonSelectable;
   }
 
+  @Override
   public void setEmptyDayNonSelectable(boolean nonSelectable) {
     this.emptyDayNonSelectable = nonSelectable;
   }
@@ -100,6 +104,7 @@ public abstract class AbstractCalendar implements
    * @param value
    * @see
    */
+  @Override
   public void setWeekDayStyle(String value) {
     weekDayStyle = value;
   }
@@ -109,6 +114,7 @@ public abstract class AbstractCalendar implements
    * @param value
    * @see
    */
+  @Override
   public void setMonthDayStyle(String value) {
     monthDayStyle = value;
   }
@@ -118,6 +124,7 @@ public abstract class AbstractCalendar implements
    * @param value
    * @see
    */
+  @Override
   public void setMonthVisible(boolean value) {
     monthVisible = value;
   }
@@ -127,6 +134,7 @@ public abstract class AbstractCalendar implements
    * @param value
    * @see
    */
+  @Override
   public void setNavigationBar(boolean value) {
     navigationBar = value;
   }
@@ -136,6 +144,7 @@ public abstract class AbstractCalendar implements
    * @param value
    * @see
    */
+  @Override
   public void setShortName(boolean value) {
     shortName = value;
   }
@@ -147,7 +156,7 @@ public abstract class AbstractCalendar implements
     return context;
   }
 
-  public Collection getEvents() {
+  public Collection<Event> getEvents() {
     return events;
   }
 
