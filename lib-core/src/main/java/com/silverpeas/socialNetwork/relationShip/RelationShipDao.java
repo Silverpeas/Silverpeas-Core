@@ -46,6 +46,8 @@ public class RelationShipDao {
       "SELECT id, user1Id, user2Id, typeRelationShipId, acceptanceDate,inviterId FROM sb_sn_RelationShip  WHERE user1Id = ? and user2Id= ?";
   private static final String SELECT_ALL_MY_RELATIONSHIP =
       "SELECT id, user1Id, user2Id, typeRelationShipId, acceptanceDate,inviterId FROM sb_sn_RelationShip  WHERE user1Id = ?";
+  private static final String SELECT_RELATIONSHIP_BYID =
+      "SELECT id, user1Id, user2Id, typeRelationShipId, acceptanceDate,inviterId FROM sb_sn_RelationShip  WHERE id = ?";
 
   /**
    * rturn int (the id of this new relationShip)
@@ -196,9 +198,10 @@ public class RelationShipDao {
     ResultSet rs = null;
     PreparedStatement pstmt = null;
     List<SocialInformation> listMyRelation = new ArrayList<SocialInformation>();
-    String query = "SELECT id, user1Id, user2Id, typeRelationShipId, acceptanceDate,inviterId "
-        + "FROM sb_sn_RelationShip  WHERE user1Id = ? and acceptanceDate >= ? and acceptanceDate <= ? order by acceptanceDate desc, id desc ";
-    
+    String query =
+        "SELECT id, user1Id, user2Id, typeRelationShipId, acceptanceDate,inviterId "
+            + "FROM sb_sn_RelationShip  WHERE user1Id = ? and acceptanceDate >= ? and acceptanceDate <= ? order by acceptanceDate desc, id desc ";
+
     try {
       pstmt = con.prepareStatement(query);
       pstmt.setInt(1, Integer.parseInt(userId));
@@ -235,7 +238,9 @@ public class RelationShipDao {
     List<SocialInformation> listMyRelation = new ArrayList<SocialInformation>();
     String query =
         "SELECT id, user1Id, user2Id, typeRelationShipId, acceptanceDate,inviterId "
-            + "FROM sb_sn_RelationShip WHERE user1Id in(" + toSqlString(myContactsIds) +
+            +
+            "FROM sb_sn_RelationShip WHERE user1Id in(" +
+            toSqlString(myContactsIds) +
             ")and inviterid=user1Id and acceptanceDate >= ? and acceptanceDate <= ? order by acceptanceDate desc ";
     try {
       pstmt = con.prepareStatement(query);
@@ -252,7 +257,7 @@ public class RelationShipDao {
     }
     return listMyRelation;
   }
-  
+
   private RelationShip resultSet2RelationShip(ResultSet rs) throws SQLException {
     RelationShip relationShip = new RelationShip();
     relationShip.setId(rs.getInt(1));
@@ -263,11 +268,12 @@ public class RelationShipDao {
     relationShip.setInviterId(rs.getInt(6));
     return relationShip;
   }
-/**
- * convert list of contact ids to string for using in the query SQL
- * @param list
- * @return String
- */
+
+  /**
+   * convert list of contact ids to string for using in the query SQL
+   * @param list
+   * @return String
+   */
   private static String toSqlString(List<String> list) {
     StringBuilder result = new StringBuilder(100);
     if (list == null || list.isEmpty()) {
@@ -338,5 +344,29 @@ public class RelationShipDao {
     }
     return myContactsIds;
 
+  }
+
+  /**
+   * @param connection
+   * @param relationShipId the relationship identifier
+   * @return RelationShip loaded from relation ship identifier
+   */
+  public RelationShip getRelationShip(Connection connection, int relationShipId)
+      throws SQLException {
+    RelationShip relationShip = null;
+    ResultSet rs = null;
+    PreparedStatement pstmt = null;
+    try {
+      pstmt = connection.prepareStatement(SELECT_RELATIONSHIP_BYID);
+      pstmt.setInt(1, relationShipId);
+      rs = pstmt.executeQuery();
+      if (rs.next()) {
+        relationShip = resultSet2RelationShip(rs);
+      }
+
+    } finally {
+      DBUtil.close(rs, pstmt);
+    }
+    return relationShip;
   }
 }

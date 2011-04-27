@@ -36,8 +36,9 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  */
 
 public class POPUPException extends SilverpeasException {
+  private static final long serialVersionUID = 4331281166921453606L;
+
   /**
-   * -------------------------------------------------------------------------- constructor
    * constructor
    */
   public POPUPException(String callingClass, int errorLevel, String message) {
@@ -85,7 +86,7 @@ public class POPUPException extends SilverpeasException {
   }
 
   /**
-   * -------------------------------------------------------------------------- getModule getModule
+   * getModule
    */
   public String getModule() {
     return "popup";
