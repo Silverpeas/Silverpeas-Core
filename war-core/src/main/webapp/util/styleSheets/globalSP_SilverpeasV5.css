@@ -3727,6 +3727,7 @@ ul#attachmentList li.attachmentListItem .linkAllVersions a {
     text-align: justify;
     text-indent: 41px;
 	margin:0;
+	white-space: normal;
 }
 
 .commentaires #list-box {
