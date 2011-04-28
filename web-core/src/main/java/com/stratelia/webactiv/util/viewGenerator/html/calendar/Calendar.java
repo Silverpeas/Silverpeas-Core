@@ -30,6 +30,7 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.calendar;
 
+import java.util.Date;
 import java.util.List;
 
 import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
@@ -54,7 +55,7 @@ public interface Calendar extends SimpleGraphicElement {
 
   public void setShortName(boolean value);
 
-  public void setNonSelectableDays(List nonSelectableDays);
+  public void setNonSelectableDays(List<Date> nonSelectableDays);
 
   public void setEmptyDayNonSelectable(boolean nonSelectable);
 
