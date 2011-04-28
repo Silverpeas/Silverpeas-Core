@@ -33,7 +33,6 @@ import static com.silverpeas.treeMenu.model.MenuConstants.REQUEST_KEY_NODE_TYPE;
 import java.rmi.RemoteException;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import com.silverpeas.treeMenu.model.MenuItem;
 import com.silverpeas.treeMenu.model.NodeType;
@@ -63,14 +62,14 @@ public class TreeHandler {
    */
   public static String ProcessMenu(HttpServletRequest request, String menuType)
       throws RemoteException {
-    MainSessionController mainSessionCtrl = new SilverpeasWebUtil().getMainSessionController(request);
+    MainSessionController mainSessionCtrl =
+        new SilverpeasWebUtil().getMainSessionController(request);
     OrganizationController controller = mainSessionCtrl.getOrganizationController();
     String userId = mainSessionCtrl.getUserId();
     String language = mainSessionCtrl.getFavoriteLanguage();
     MenuItem items =
         TreeBuilder.buildLevelMenu(TreeFilterFactory.getTreeFilter(menuType),
-        getMenuItemFather(request), userId,
-        language, controller);
+            getMenuItemFather(request), userId, language, controller);
 
     // transform the children to json
     return TreeMenuJason.getListAsJSONArray(items.getChildren()).toString();
