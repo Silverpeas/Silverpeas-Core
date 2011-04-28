@@ -57,9 +57,9 @@ public class TestRelationShipService extends AbstractTestDao {
    */
   public void testRemoveRelationShip() throws Exception {
     RelationShip expectedRelationShip1 = new RelationShip(1, 2, 0, toDate(2010, Calendar.FEBRUARY,
-        01, 10, 34, 15), 2);
+        1, 10, 34, 15), 2);
     RelationShip expectedRelationShip2 = new RelationShip(2, 1, 0, toDate(2010, Calendar.FEBRUARY,
-        01, 10, 34, 15), 1);
+        1, 10, 34, 15), 1);
     expectedRelationShip1.setId(1);
     expectedRelationShip2.setId(2);
 
@@ -102,7 +102,7 @@ public class TestRelationShipService extends AbstractTestDao {
 
 
     RelationShip expectedRelationShip1 = new RelationShip(1, 2, 0, toDate(2010, Calendar.FEBRUARY,
-        01, 10, 34, 15), 2);
+        1, 10, 34, 15), 2);
     expectedRelationShip1.setId(1);
     RelationShip expectedRelationShip2 = new RelationShip(1, 3, 0, toDate(2010, Calendar.MAY, 11, 15,
         25, 32), 3);

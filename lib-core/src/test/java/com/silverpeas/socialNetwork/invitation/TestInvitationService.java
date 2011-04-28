@@ -78,7 +78,7 @@ public class TestInvitationService extends AbstractTestDao {
   public void testignoreInvitation() throws Exception {
 
     Invitation expectedLisaInviteMartha = new Invitation(2, 3, "lisa to martha", toDate(2010,
-        Calendar.APRIL, 03, 11, 23, 15));
+        Calendar.APRIL, 3, 11, 23, 15));
     expectedLisaInviteMartha.setId(2);
     Invitation lisaInviteMartha = invitationService.getInvitation(2);
     assertNotNull("Invitation should exist", lisaInviteMartha);
@@ -96,7 +96,7 @@ public class TestInvitationService extends AbstractTestDao {
    */
   public void testGetInvitation() throws Exception {
     Invitation simpsonInviteLisa = new Invitation(1, 2, "simpson to lisa", toDate(2010,
-        Calendar.FEBRUARY, 01, 10, 34, 15));
+        Calendar.FEBRUARY, 1, 10, 34, 15));
     int id = 1;
     simpsonInviteLisa.setId(1);
 
@@ -114,9 +114,9 @@ public class TestInvitationService extends AbstractTestDao {
   public void testGetAllMyInvitationsSent() throws Exception {
 
     Invitation simpsonInviteLisa = new Invitation(1, 2, "simpson to lisa", toDate(2010,
-        Calendar.FEBRUARY, 01, 10, 34, 15));
+        Calendar.FEBRUARY, 1, 10, 34, 15));
     Invitation simpsonInviteNabil = new Invitation(1, 4, "simpson to nabil", toDate(2010,
-        Calendar.JULY, 02, 10, 33, 10));
+        Calendar.JULY, 2, 10, 33, 10));
     int myId = 1;
 
     List<Invitation> invitations = invitationService.getAllMyInvitationsSent(myId);
@@ -141,7 +141,7 @@ public class TestInvitationService extends AbstractTestDao {
         Calendar.MAY, 11, 15, 25, 32));
 
     Invitation jacquesinviteSimpson = new Invitation(5, 1, "jacques to simpson", toDate(2010,
-        Calendar.JULY, 02, 10, 33, 10));
+        Calendar.JULY, 2, 10, 33, 10));
     int myId = 1;
 
     List<Invitation> invitations = invitationService.getAllMyInvitationsReceive(myId);

@@ -24,13 +24,13 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.admin.components.Parameter;
+import com.silverpeas.util.i18n.AbstractI18NBean;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-
-import com.silverpeas.util.i18n.AbstractI18NBean;
 
 public class ComponentInst extends AbstractI18NBean implements Serializable, Cloneable,
     Comparable<ComponentInst> {
@@ -235,8 +235,7 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
 
   public List<ProfileInst> getInheritedProfiles() {
     List<ProfileInst> profiles = new ArrayList<ProfileInst>();
-    for (int nI = 0; nI < m_alProfileInst.size(); nI++) {
-      ProfileInst profile = m_alProfileInst.get(nI);
+    for (ProfileInst profile : m_alProfileInst) {
       if (profile.isInherited()) {
         profiles.add(profile);
       }
@@ -247,8 +246,7 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
 
   public List<ProfileInst> getProfiles() {
     List<ProfileInst> profiles = new ArrayList<ProfileInst>();
-    for (int nI = 0; nI < m_alProfileInst.size(); nI++) {
-      ProfileInst profile = m_alProfileInst.get(nI);
+    for (ProfileInst profile : m_alProfileInst) {
       if (!profile.isInherited()) {
         profiles.add(profile);
       }
@@ -261,20 +259,18 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
     m_alProfileInst = new ArrayList<ProfileInst>();
   }
 
-  public ProfileInst getProfileInst(String sProfileName) {
-    for (int nI = 0; nI < m_alProfileInst.size(); nI++) {
-      ProfileInst profile = m_alProfileInst.get(nI);
-      if (!profile.isInherited() && profile.getName().equals(sProfileName)) {
+  public ProfileInst getProfileInst(String profileName) {
+    for (ProfileInst profile : m_alProfileInst) {
+      if (!profile.isInherited() && profile.getName().equals(profileName)) {
         return profile;
       }
     }
     return null;
   }
 
-  public ProfileInst getInheritedProfileInst(String sProfileName) {
-    for (int nI = 0; nI < m_alProfileInst.size(); nI++) {
-      ProfileInst profile = m_alProfileInst.get(nI);
-      if (profile.isInherited() && profile.getName().equals(sProfileName)) {
+  public ProfileInst getInheritedProfileInst(String profileName) {
+    for (ProfileInst profile : m_alProfileInst) {
+      if (profile.isInherited() && profile.getName().equals(profileName)) {
         return profile;
       }
     }

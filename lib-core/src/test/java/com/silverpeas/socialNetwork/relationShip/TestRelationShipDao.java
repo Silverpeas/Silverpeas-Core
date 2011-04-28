@@ -23,16 +23,15 @@
  */
 package com.silverpeas.socialNetwork.relationShip;
 
+import com.silverpeas.components.model.AbstractTestDao;
+import com.silverpeas.socialNetwork.model.SocialInformation;
+import com.stratelia.webactiv.util.DateUtil;
+import org.dbunit.database.IDatabaseConnection;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-
-import org.dbunit.database.IDatabaseConnection;
-
-import com.silverpeas.components.model.AbstractTestDao;
-import com.silverpeas.socialNetwork.model.SocialInformation;
-import com.stratelia.webactiv.util.DateUtil;
 
 /**
  * @author Bensalem Nabil
@@ -59,7 +58,7 @@ public class TestRelationShipDao extends AbstractTestDao {
     IDatabaseConnection connexion = null;
 
     RelationShip newRelationShip =
-        new RelationShip(5, 6, 0, toDate(2010, Calendar.FEBRUARY, 01, 10,
+        new RelationShip(5, 6, 0, toDate(2010, Calendar.FEBRUARY, 1, 10,
             34, 15), 6);
     try {
       connexion = getConnection();
@@ -87,7 +86,7 @@ public class TestRelationShipDao extends AbstractTestDao {
     IDatabaseConnection connexion = null;
 
     RelationShip expectedRelationShip =
-        new RelationShip(1, 2, 0, toDate(2010, Calendar.FEBRUARY, 01,
+        new RelationShip(1, 2, 0, toDate(2010, Calendar.FEBRUARY, 1,
             10, 34, 15), 2);
     expectedRelationShip.setId(1);
     try {
@@ -111,7 +110,7 @@ public class TestRelationShipDao extends AbstractTestDao {
     IDatabaseConnection connexion = null;
 
     RelationShip expectedRelationShip =
-        new RelationShip(1, 2, 0, toDate(2010, Calendar.FEBRUARY, 01,
+        new RelationShip(1, 2, 0, toDate(2010, Calendar.FEBRUARY, 1,
             10, 34, 15), 2);
     expectedRelationShip.setId(1);
     try {
@@ -137,7 +136,7 @@ public class TestRelationShipDao extends AbstractTestDao {
   public void testGetRelationShipById() throws Exception {
     IDatabaseConnection connexion = null;
 
-    RelationShip expectedRelationShip = new RelationShip(1, 2, 0, toDate(2010, Calendar.FEBRUARY, 01,
+    RelationShip expectedRelationShip = new RelationShip(1, 2, 0, toDate(2010, Calendar.FEBRUARY, 1,
         10, 34, 15), 2);
     expectedRelationShip.setId(1);
     try {
@@ -160,11 +159,10 @@ public class TestRelationShipDao extends AbstractTestDao {
     IDatabaseConnection connexion = null;
 
     RelationShip expectedRelationShip1 = new RelationShip(1, 2, 0, toDate(2010, Calendar.FEBRUARY,
-        01, 10, 34, 15), 2);
+        1, 10, 34, 15), 2);
     expectedRelationShip1.setId(1);
     RelationShip expectedRelationShip2 =
-        new RelationShip(1, 3, 0, toDate(2010, Calendar.MAY, 11, 15,
-            25, 32), 3);
+        new RelationShip(1, 3, 0, toDate(2010, Calendar.MAY, 11, 15, 25, 32), 3);
     expectedRelationShip2.setId(4);
     int myId = 1;
     try {

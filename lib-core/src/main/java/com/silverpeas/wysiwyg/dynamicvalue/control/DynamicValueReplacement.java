@@ -81,7 +81,6 @@ public class DynamicValueReplacement {
 
       // build the HTML select with the key list
       if (list != null) {
-        DynamicValue dynamicValue = null;
         ResourceLocator message = null;
         StringBuilder builder = new StringBuilder();
         // gets the words to display in the first select option
@@ -99,15 +98,13 @@ public class DynamicValueReplacement {
         }
 
         // build the HTML select
-        builder
-            .append(
+        builder.append(
                 " <select id=\"dynamicValues_").append(fieldName).append(
                 "\" name=\"dynamicValues\" onchange=\"chooseDynamicValues" +
                     FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_')) +
                     "();this.selectedIndex=0;\">")
             .append("<option value=\"\">" + firstOption + "</option>");
-        for (Iterator<DynamicValue> iterator = list.iterator(); iterator.hasNext();) {
-          dynamicValue = iterator.next();
+        for (DynamicValue dynamicValue : list) {
           builder.append("<option value=\"" + dynamicValue.getKey() + "\">" +
               dynamicValue.getKey() + "</option>");
         }

@@ -25,6 +25,8 @@
 package com.silverpeas.util.cryptage;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.security.PrivateKey;
@@ -34,8 +36,6 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class SilverCryptKeysAsymetric {
 
@@ -76,9 +76,9 @@ public class SilverCryptKeysAsymetric {
         vectaliases.add(en.nextElement());
       }
       String[] aliases = (vectaliases.toArray(new String[vectaliases.size()]));
-      for (int i = 0; i < aliases.length; i++) {
-        if (ks.isKeyEntry(aliases[i])) {
-          alias = aliases[i];
+      for (String aliase : aliases) {
+        if (ks.isKeyEntry(aliase)) {
+          alias = aliase;
           break;
         }
       }

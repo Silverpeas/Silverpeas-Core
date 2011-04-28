@@ -24,16 +24,12 @@
 package com.silverpeas.socialNetwork.invitation;
 
 import com.silverpeas.components.model.AbstractTestDao;
-import java.io.IOException;
-import java.util.Calendar;
+import org.dbunit.database.IDatabaseConnection;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import javax.naming.NamingException;
-import org.dbunit.database.IDatabaseConnection;
-import org.junit.Before;
-import org.junit.BeforeClass;
 
 /**
  *
@@ -91,14 +87,13 @@ public class TestInvitationDao extends AbstractTestDao {
   public void testDeleteInvitation() throws Exception {
     IDatabaseConnection connexion = null;
 
-    Invitation expectedLisaInviteMartha = new Invitation(2, 3, "lisa to martha", toDate(2010, 04, 03,
+    Invitation expectedLisaInviteMartha = new Invitation(2, 3, "lisa to martha", toDate(2010, 4, 3,
         11, 23, 15));
     expectedLisaInviteMartha.setId(2);
     try {
       connexion = getConnection();
       Invitation lisaInviteMartha = dao.getInvitation(connexion.getConnection(), 2);
       assertNotNull("Invitation should exist", lisaInviteMartha);
-      //assertEquals("Invitation should be lisa", expectedLisaInviteMartha, lisaInviteMartha);
       dao.deleteInvitation(connexion.getConnection(), 2);
       lisaInviteMartha = dao.getInvitation(connexion.getConnection(), 2);
       assertNull("Invitation should no longer exist", lisaInviteMartha);
@@ -116,7 +111,7 @@ public class TestInvitationDao extends AbstractTestDao {
     IDatabaseConnection connexion = null;
 
     Invitation simpsonInviteLisa = new Invitation(1, 2, "simpson to lisa", toDate(2010,
-        Calendar.FEBRUARY, 01, 10, 34, 15));
+        Calendar.FEBRUARY, 1, 10, 34, 15));
     int id = 1;
     simpsonInviteLisa.setId(1);
     try {
@@ -144,9 +139,9 @@ public class TestInvitationDao extends AbstractTestDao {
   public void testGetAllMyInvitationsSent() throws Exception {
     IDatabaseConnection connexion = null;
     Invitation simpsonInviteLisa = new Invitation(1, 2, "simpson to lisa", toDate(2010,
-        Calendar.FEBRUARY, 01, 10, 34, 15));
+        Calendar.FEBRUARY, 1, 10, 34, 15));
     Invitation simpsonInviteNabil = new Invitation(1, 4, "simpson to nabil", toDate(2010,
-        Calendar.JULY, 02, 10, 33, 10));
+        Calendar.JULY, 2, 10, 33, 10));
     int myId = 1;
     try {
       connexion = getConnection();
@@ -177,7 +172,7 @@ public class TestInvitationDao extends AbstractTestDao {
         Calendar.MAY, 11, 15, 25, 32));
 
     Invitation jacquesinviteSimpson = new Invitation(5, 1, "jacques to simpson", toDate(2010,
-        Calendar.JULY, 02, 10, 33, 10));
+        Calendar.JULY, 2, 10, 33, 10));
     int myId = 1;
     try {
       connexion = getConnection();
