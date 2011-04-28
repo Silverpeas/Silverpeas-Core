@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,9 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.util.web.servlet;
 
+import com.silverpeas.util.StringUtil;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -181,15 +181,14 @@ public class FileUploadUtil {
   }
 
   public static String getFileName(FileItem file) {
-    if (file == null) {
+    if (file == null || !StringUtil.isDefined(file.getName())) {
       return "";
     }
     String fullFileName = file.getName();
-    if (fullFileName == null) {
-      return "";
-    }
-    return fullFileName.substring(fullFileName.lastIndexOf(File.separator) + 1, fullFileName
-        .length());
+    fullFileName = fullFileName.replace('\\', File.separatorChar);
+    fullFileName = fullFileName.replace('/', File.separatorChar);
+    return fullFileName.substring(fullFileName.lastIndexOf(File.separatorChar) + 1,
+        fullFileName.length()).trim();
   }
 
   public static void saveToFile(File file, FileItem item) throws IOException {
@@ -201,5 +200,8 @@ public class FileUploadUtil {
       IOUtils.closeQuietly(in);
       IOUtils.closeQuietly(out);
     }
+  }
+
+  private FileUploadUtil() {
   }
 }
