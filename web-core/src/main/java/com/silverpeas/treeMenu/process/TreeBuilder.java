@@ -148,7 +148,7 @@ public class TreeBuilder {
           if (allowedComponents.contains(component.getName())) {
             MenuItem item =
                 new MenuItem(component.getLabel(language), componentId, level,
-                NodeType.COMPONENT, isLeaf, father, null);
+                NodeType.COMPONENT, isLeaf, father, componentId);
             item.setComponentName(component.getName());
             item.setLabelStyle(ICON_STYLE_PREFIX + component.getName());
             children.add(item);
