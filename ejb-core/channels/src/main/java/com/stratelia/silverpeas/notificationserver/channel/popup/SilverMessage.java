@@ -24,14 +24,6 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.popup;
 
-/*
- * SilverMessage.java
- *
- * Created on 30 august 2001
- *
- * Author D.Blot
- */
-
 /**
  * @author dblot
  * @version
@@ -63,7 +55,7 @@ public class SilverMessage {
    */
   public SilverMessage(String what) {
     this.m_What = what;
-    this.m_Content = new String("");
+    this.m_Content = "";
   }
 
   /**

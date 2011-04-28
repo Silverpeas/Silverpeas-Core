@@ -23,13 +23,12 @@
  */
 package com.silverpeas.socialNetwork.status;
 
+import com.silverpeas.components.model.AbstractTestDao;
+import org.dbunit.database.IDatabaseConnection;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-
-import org.dbunit.database.IDatabaseConnection;
-
-import com.silverpeas.components.model.AbstractTestDao;
 
 public class TestSatusDao extends AbstractTestDao {
 
@@ -62,7 +61,7 @@ public class TestSatusDao extends AbstractTestDao {
 
   public void testGetStatus() throws Exception {
     IDatabaseConnection connexion = null;
-    Status status = new Status(1, toDate(2010, Calendar.FEBRUARY, 01, 10, 34, 15), "je suis là");
+    Status status = new Status(1, toDate(2010, Calendar.FEBRUARY, 1, 10, 34, 15), "je suis là");
     int id = 1;
     status.setId(id);
     try {
@@ -78,7 +77,7 @@ public class TestSatusDao extends AbstractTestDao {
 
   public void testGetLastStatus() throws Exception {
     IDatabaseConnection connexion = null;
-    Status status = new Status(1, toDate(2010, Calendar.JULY, 02, 10, 33, 10),
+    Status status = new Status(1, toDate(2010, Calendar.JULY, 2, 10, 33, 10),
         "travaille sur readmine");
     status.setId(4);
 
@@ -135,7 +134,6 @@ public class TestSatusDao extends AbstractTestDao {
 
   @Override
   protected String getDatasetFileName() {
-    // TODO Auto-generated method stub
     return "socialNetwork_Status-dataset.xml";
   }
 

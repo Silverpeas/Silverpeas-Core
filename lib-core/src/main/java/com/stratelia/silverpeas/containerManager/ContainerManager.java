@@ -25,14 +25,18 @@
 // TODO : reporter dans CVS (done)
 package com.stratelia.silverpeas.containerManager;
 
-import java.util.*;
-import java.sql.*;
-
-import com.stratelia.webactiv.util.exception.*;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.silverpeas.silvertrace.*;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.JoinStatement;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
 
 /**
  * This class represents the ContainerManager API It is the gateway to all the silverpeas containers
@@ -143,7 +147,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
           "ContainerManager.registerNewContainerInstance",
           SilverpeasException.ERROR,
           "containerManager.EX_CANT_REGISTER_CONTAINER_INSTANCE",
-          "sComponentId: " + sComponentId + "    sContainerType: "
+          "componentId: " + sComponentId + "    sContainerType: "
           + sContainerType, e);
     } finally {
       DBUtil.close(prepStmt);
@@ -195,7 +199,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
           "ContainerManager.unregisterNewContainerInstance",
           SilverpeasException.ERROR,
           "containerManager.EX_CANT_UNREGISTER_CONTAINER_INSTANCE",
-          "sComponentId: " + sComponentId + "    sContainerType: "
+          "componentId: " + sComponentId + "    sContainerType: "
           + sContainerType, e);
     } finally {
       DBUtil.close(prepStmt);
@@ -207,16 +211,16 @@ public class ContainerManager extends Object implements java.io.Serializable {
   /**
    * Return the containerPeas corresponding to the given componentId
    */
-  public ContainerPeas getContainerPeas(String sComponentId)
+  public ContainerPeas getContainerPeas(String componentId)
       throws ContainerManagerException {
     // Get the containerType
-    String sContainerType = this.getContainerType(sComponentId);
+    String sContainerType = this.getContainerType(componentId);
 
     // Get the containerPeas from the containerType
-    for (int nI = 0; nI < s_acContainerPeas.size(); nI++) {
-      if (((ContainerPeas) s_acContainerPeas.get(nI)).getType().equals(
+    for (ContainerPeas s_acContainerPea : s_acContainerPeas) {
+      if (((ContainerPeas) s_acContainerPea).getType().equals(
           sContainerType)) {
-        return (ContainerPeas) s_acContainerPeas.get(nI);
+        return (ContainerPeas) s_acContainerPea;
 
       }
     }
@@ -320,7 +324,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
 
     /*
      * for (nIndex = 0; nIndex < s_asAssoComponentId.size(); nIndex++) { if (((String)
-     * s_asAssoComponentId.get(nIndex)).equals(sComponentId)) { containerInstanceId = ((Integer)
+     * s_asAssoComponentId.get(nIndex)).equals(componentId)) { containerInstanceId = ((Integer)
      * s_asAssoInstanceId.get(nIndex)).intValue(); break; } }
      */
 
@@ -635,7 +639,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
           "ContainerManager.addContainerContentInstanceLink",
           SilverpeasException.ERROR,
           "containerManager.EX_CANT_ADDLINK_CONTAINER_POSITION",
-          "nPositionId: " + nPositionId + "sComponentId: " + sComponentId, e);
+          "nPositionId: " + nPositionId + "componentId: " + sComponentId, e);
     } finally {
       DBUtil.close(prepStmt);
     }
@@ -669,7 +673,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
           "ContainerManager.removeContainerContentInstanceLink",
           SilverpeasException.ERROR,
           "containerManager.EX_CANT_REMOVELINK_CONTAINER_POSITION",
-          "nPositionId: " + nPositionId + "sComponentId: " + sComponentId, e);
+          "nPositionId: " + nPositionId + "componentId: " + sComponentId, e);
     } finally {
       DBUtil.close(prepStmt);
     }
@@ -827,7 +831,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
       throw new ContainerManagerException(
           "ContainerManager.filterPositionsByComponentId",
           SilverpeasException.ERROR,
-          "containerManager.EX_CANT_FILTER_POSITIONS", "sComponentId: "
+          "containerManager.EX_CANT_FILTER_POSITIONS", "componentId: "
           + sComponentId, e);
     } finally {
       DBUtil.close(resSet, prepStmt);
@@ -840,10 +844,10 @@ public class ContainerManager extends Object implements java.io.Serializable {
    */
 
   /*
-   * public List filterSilverContentIdsByComponentId(List alDoubleIds, String sComponentId) throws
+   * public List filterSilverContentIdsByComponentId(List alDoubleIds, String componentId) throws
    * ContainerManagerException { try { List alPositionIds = (List) alDoubleIds.get(0); List
    * alObjectIds = (List) alDoubleIds.get(1); // Filter by positions List alFilteredPositionIds =
-   * this.filterPositionsByComponentId(alPositionIds, sComponentId); // Build the return list of
+   * this.filterPositionsByComponentId(alPositionIds, componentId); // Build the return list of
    * FilteredSilverContentIds (Group By objectId) int nObjectsDone = 0; int[] anObjectsDone = new
    * int[alFilteredPositionIds.size()]; List alFilteredObjectIds = new ArrayList(); for(int nI=0;
    * alFilteredPositionIds!= null && nI < alFilteredPositionIds.size(); nI++) for(int nJ=0;
@@ -855,7 +859,7 @@ public class ContainerManager extends Object implements java.io.Serializable {
    * ((Integer)alObjectIds.get(nJ)).intValue(); } return alFilteredObjectIds; } catch(Exception e) {
    * throw new ContainerManagerException ("ContainerManager.filterSilverContentIdsByComponentId"
    * ,SilverpeasException. ERROR,"containerManager.EX_CANT_FILTER_SILVERCONTENTIDS",
-   * "sComponentId: " + sComponentId , e); } }
+   * "componentId: " + componentId , e); } }
    */
 
   /**

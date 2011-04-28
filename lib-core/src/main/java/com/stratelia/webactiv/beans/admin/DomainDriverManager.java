@@ -89,18 +89,15 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   public void startServer(Admin theAdmin, long nbSleepSec) throws Exception {
     Domain[] doms = getAllDomains();
-    AbstractDomainDriver synchroDomain = null;
-
     theThread = new DomainSynchroThread(theAdmin, nbSleepSec);
-    for (int i = 0; i < doms.length; i++) {
+    for (Domain dom : doms) {
       try {
-        synchroDomain = getDomainDriver(Integer.parseInt(doms[i].getId()));
+        AbstractDomainDriver synchroDomain = getDomainDriver(Integer.parseInt(dom.getId()));
+        if (synchroDomain != null && synchroDomain.isSynchroThreaded()) {
+          theThread.addDomain(dom.getId());
+        }
       } catch (Exception e) {
-        SilverTrace.warn("admin", "DomainDriverManager.startServer",
-            "admin.CANT_GET_DOMAIN", e);
-      }
-      if (synchroDomain != null && synchroDomain.isSynchroThreaded()) {
-        theThread.addDomain(doms[i].getId());
+        SilverTrace.warn("admin", "DomainDriverManager.startServer", "admin.CANT_GET_DOMAIN", e);
       }
     }
     startSynchroThread();
@@ -1159,16 +1156,16 @@ public class DomainDriverManager extends AbstractDomainDriver {
       return null;
     }
 
-    for (int i = 0; i < ids.length; i++) {
+    for (String id : ids) {
       // Get the user information
       try {
-        UserRow ur = organization.user.getUser(idAsInt(ids[i]));
+        UserRow ur = organization.user.getUser(idAsInt(id));
         if ((ur != null) && (ur.domainId == domainId)) {
           specificIds.add(ur.specificId);
         }
       } catch (Exception e) {
         SilverTrace.error("admin", "DomainDriverManager.getUser",
-            "admin.MSG_ERR_GET_USER", "user Id: '" + ids[i] + "'", e);
+            "admin.MSG_ERR_GET_USER", "user Id: '" + id + "'", e);
       }
     }
     return specificIds.toArray(new String[specificIds.size()]);

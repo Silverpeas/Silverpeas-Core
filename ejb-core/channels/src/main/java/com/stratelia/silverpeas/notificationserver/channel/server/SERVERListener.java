@@ -34,6 +34,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.util.Map;
 
 public class SERVERListener extends AbstractListener {
+  private static final long serialVersionUID = 4337750320339018904L;
+
   public SERVERListener() {
   }
 

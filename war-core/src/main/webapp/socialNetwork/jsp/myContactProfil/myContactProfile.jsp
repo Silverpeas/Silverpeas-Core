@@ -49,6 +49,7 @@
 
     String language = request.getLocale().getLanguage();
     UserFull userFull = (UserFull) request.getAttribute("UserFull");
+    Member member = (Member) request.getAttribute("Member");
     String view = (String) request.getAttribute("View");
     
     List contacts = (List) request.getAttribute("Contacts");
@@ -74,9 +75,20 @@
   
 	<div class="info tableBoard">
  		<h2 class="userName"><%=userFull.getFirstName() %> <br /><%=userFull.getLastName() %></h2>
+ 		<p class="infoConnection">
+        	<% if (member.isConnected()) { %>
+				<img src="<%=m_context%>/util/icons/online.gif" alt="connected"/> <fmt:message key="GML.user.online.for" /> <%=member.getDuration()%>
+			<% } else { %>
+            	<img src="<%=m_context%>/util/icons/offline.gif" alt="deconnected"/> <fmt:message key="GML.user.offline" />
+            <% } %>
+        </p>
        	<p class="statut">
 			<%=userFull.getStatus() %>
-        </p>  
+        </p>
+        <!-- action  -->
+        <div class="action">
+            <a href="#" class="link notification" onclick="initNotification(<%=userFull.getId() %>,'<%=userFull.getDisplayedName() %>')"><fmt:message key="GML.notification.send" /></a>
+        </div> <!-- /action  -->
         <div class="profilPhoto">
 			<img src="<%=m_context + userFull.getAvatar()%>" alt="viewUser" class="avatar"/>
         </div>  
@@ -154,6 +166,8 @@
               
 </div>
 </view:window>
+
+<%@include file="../notificationDialog.jsp" %>
     
 </body>
 </html>

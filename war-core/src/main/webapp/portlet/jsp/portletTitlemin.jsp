@@ -29,10 +29,13 @@
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
 
 <%
+    MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+    String 					language 			= m_MainSessionCtrl.getFavoriteLanguage();
 	String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-	ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang("fr");
+	ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(language);
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 	out.println(gef.getLookStyleSheet());
 %>

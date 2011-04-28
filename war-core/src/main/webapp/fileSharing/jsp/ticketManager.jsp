@@ -75,7 +75,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
     <script type="text/javascript" src="<c:url value='/util/javaScript/checkForm.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/util/javaScript/dateUtils.js'/>"></script>
-    <script language="javascript">
+    <script type="text/javascript">
       var continuousTicket = !<c:out value="${ticket.continuous}"/>;
       $(window).load(function () {
         toggleContinuous();
@@ -114,7 +114,6 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
         var nb 				= document.ticketForm.NbAccessMax.value;
         var nbMin = <c:out value="${maxAccessNb}"/>;
         var endDate 			= document.ticketForm.EndDate.value;
-        var re 				= /(\d\d\/\d\d\/\d\d\d\d)/i;
 
         if (nb > 100 || nb < nbMin) {
           errorMsg+="  - <fmt:message key='GML.theField'/> '<fmt:message key='fileSharing.nbAccessMax'/>' <fmt:message key='fileSharing.maxValue'/> " +
@@ -125,7 +124,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
           errorMsg +="  - <fmt:message key='GML.theField'/> '<fmt:message key='fileSharing.endDate'/>' <fmt:message key='GML.MustBeFilled'/>\n";
           errorNb++;
         } else {
-          if (isDateOK(document.ticketForm.EndDate)==false)
+          if (!isDateOK(endDate, '<c:out value="${language}"/>'))
           {
             errorMsg+="  - <fmt:message key='GML.theField'/> '<fmt:message key='fileSharing.endDate'/>' <fmt:message key='GML.MustContainsCorrectDate'/>\n";
             errorNb++;
@@ -147,26 +146,6 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
             break;
           }
           return result;
-        }
-
-        function isDateOK(input)
-        {
-          var re 		= /(\d\d\/\d\d\/\d\d\d\d)/i;
-          var date	= input.value;
-
-          if (!isWhitespace(date)) {
-            if (date.replace(re, "OK") != "OK") {
-              return false;
-            } else {
-              var year 	= extractYear(date, '<c:out value="${language}"/>');
-              var month	= extractMonth(date, '<c:out value="${language}"/>');
-              var day 	= extractDay(date, '<c:out value="${language}"/>');
-              if (isCorrectDate(year, month, day)==false) {
-                return false;
-              }
-            }
-          }
-          return true;
         }
 
         function toggleContinuous(effect) {

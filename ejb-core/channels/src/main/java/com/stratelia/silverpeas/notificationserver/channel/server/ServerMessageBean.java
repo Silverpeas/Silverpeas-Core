@@ -29,6 +29,8 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 
 public class ServerMessageBean extends SilverpeasBean {
 
+  private static final long serialVersionUID = 769537113068849221L;
+
   public ServerMessageBean() {
   }
 

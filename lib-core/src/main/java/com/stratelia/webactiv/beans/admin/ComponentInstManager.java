@@ -23,12 +23,6 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -41,6 +35,12 @@ import com.stratelia.webactiv.organization.SpaceRow;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 public class ComponentInstManager {
 
@@ -429,9 +429,9 @@ public class ComponentInstManager {
       ComponentInst compoInstNew) throws AdminException {
     try {
       List<Parameter> parameters = compoInstNew.getParameters();
-      for (int nI = 0; nI < parameters.size(); nI++) {
-        ddManager.organization.instanceData.updateInstanceData(
-            idAsInt(compoInstNew.getId()), parameters.get(nI));
+      for (Parameter parameter : parameters) {
+        ddManager.organization.instanceData.updateInstanceData(idAsInt(compoInstNew.getId()),
+            parameter);
       }
 
       // Create the component node
@@ -628,6 +628,36 @@ public class ComponentInstManager {
     } finally {
       DBUtil.close(con);
     }
+  }
+  
+  public List<Parameter> getParameters(DomainDriverManager ddManager, String componentId)
+      throws AdminException {
+    try {
+      ddManager.getOrganizationSchema();
+
+      // Get the parameters if any
+      List<Parameter> parameters =
+          ddManager.organization.instanceData.getAllParametersInComponent(idAsInt(
+              componentId));
+      return (parameters);
+    } catch (Exception e) {
+      throw new AdminException("ComponentInstManager.getParameters", SilverpeasException.ERROR,
+          "admin.EX_ERR_GET_COMPONENT_PARAMETERS", "componentId = " + componentId, e);
+    } finally {
+      ddManager.releaseOrganizationSchema();
+    }
+  }
+  
+  public Parameter getParameter(DomainDriverManager ddManager, String componentId, String param) throws AdminException {
+    List<Parameter> parameters = getParameters(ddManager, componentId);
+    if (parameters != null) {
+      for(Parameter parameter : parameters) {
+        if(parameter.getName().equalsIgnoreCase(param)){
+          return parameter;
+        }
+      }
+    }
+    return null;
   }
 
   /**

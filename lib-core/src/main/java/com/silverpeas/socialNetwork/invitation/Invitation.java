@@ -33,20 +33,30 @@ public class Invitation {
   private String message;
   private Date invitationDate;
 
+  /**
+   * Constructor using fields
+   * 
+   * @param senderId
+   * @param receiverId
+   * @param message
+   * @param invitationDate
+   */
   public Invitation(int senderId, int receiverId, String message, Date invitationDate) {
     this.senderId = senderId;
     this.receiverId = receiverId;
     this.message = message;
     this.invitationDate = invitationDate;
-
   }
 
+  /**
+   * Default Constructor
+   */
   public Invitation() {
   }
 
   /**
    * get Id of invitation
-   * @return int
+   * @return id the invitation identifier
    */
   public int getId() {
     return id;
@@ -146,8 +156,9 @@ public class Invitation {
     if ((this.message == null) ? (other.message != null) : !this.message.equals(other.message)) {
       return false;
     }
-    if (this.invitationDate != other.invitationDate && (this.invitationDate == null || !this.invitationDate.
-        equals(other.invitationDate))) {
+    if (this.invitationDate != other.invitationDate &&
+        (this.invitationDate == null || !this.invitationDate.
+            equals(other.invitationDate))) {
       return false;
     }
     return true;

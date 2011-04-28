@@ -32,6 +32,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.organization.UserRoleRow;
 import com.stratelia.webactiv.util.DBUtil;
 
@@ -121,6 +122,19 @@ public class RoleDAO {
     return roles;
   }
 
+  public static List<UserRoleRow> getRoles(Connection con, List<String> groupIds, int userId,
+      int instanceId)
+      throws SQLException {
+    List<UserRoleRow> roles = new ArrayList<UserRoleRow>();
+    if (groupIds != null && groupIds.size() > 0) {
+      roles.addAll(getRoles(con, -1, null, instanceId, groupIds));
+    }
+    if (userId != -1) {
+      roles.addAll(getRoles(con, instanceId, userId));
+    }
+    return roles;
+  }
+
   public static List<UserRoleRow> getRoles(Connection con, int objectId,
       String objectType, int instanceId, List<String> groupIds, int userId) throws SQLException {
     List<UserRoleRow> roles = new ArrayList<UserRoleRow>();
@@ -140,10 +154,14 @@ public class RoleDAO {
 
     String queryAllAvailableComponentIds = "select " + USERROLE_COLUMNS
         + " from st_userrole r, st_userrole_group_rel gr"
-        + " where r.id=gr.userroleid"
-        + " and r.objectId = " + objectId
-        + " and r.objectType = '" + objectType + "'"
-        + " and r.instanceId = " + instanceId
+        + " where r.id=gr.userroleid";
+    if (objectId != -1) {
+      queryAllAvailableComponentIds += " and r.objectId = " + objectId;
+    }
+    if (StringUtil.isDefined(objectType)) {
+      queryAllAvailableComponentIds += " and r.objectType = '" + objectType + "'";
+    }
+    queryAllAvailableComponentIds += " and r.instanceId = " + instanceId
         + " and gr.groupId IN (" + list2String(groupIds) + ")";
 
     Statement stmt = null;
@@ -201,6 +219,34 @@ public class RoleDAO {
       stmt.setString(2, objectType);
       stmt.setInt(3, instanceId);
       stmt.setInt(4, userId);
+
+      rs = stmt.executeQuery();
+
+      while (rs.next()) {
+        roles.add(fetchUserRole(rs));
+      }
+
+      return roles;
+    } finally {
+      DBUtil.close(rs, stmt);
+    }
+  }
+
+  private final static String queryAllUserRolesOnComponent = "select " + USERROLE_COLUMNS
+      + " from st_userrole r, st_userrole_user_rel ur"
+      + " where r.id=ur.userroleid"
+      + " and r.instanceId = ? "
+      + " and ur.userId = ? ";
+
+  private static List<UserRoleRow> getRoles(Connection con, int instanceId, int userId) throws SQLException {
+    List<UserRoleRow> roles = new ArrayList<UserRoleRow>();
+
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+    try {
+      stmt = con.prepareStatement(queryAllUserRolesOnComponent);
+      stmt.setInt(1, instanceId);
+      stmt.setInt(2, userId);
 
       rs = stmt.executeQuery();
 

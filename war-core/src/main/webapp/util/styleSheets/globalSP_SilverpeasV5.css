@@ -3010,7 +3010,7 @@ caption {
 }
 
 #myProfileFiche .action .invitation {
-	display: none;
+	/*display: none;*/
 }
 
 #myProfileContenu {
@@ -3168,10 +3168,6 @@ caption {
 	color:#333333; font-size:10px;
 	padding:10px 0 0;
 	margin:0;
-}
-
-#publicProfileFiche .action .invitation {
-	display: none;
 }
 
 #publicProfileContenu {
@@ -3727,6 +3723,7 @@ ul#attachmentList li.attachmentListItem .linkAllVersions a {
     text-align: justify;
     text-indent: 41px;
 	margin:0;
+	white-space: normal;
 }
 
 .commentaires #list-box {

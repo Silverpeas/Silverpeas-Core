@@ -67,8 +67,8 @@ public class TestAttachmentDetail extends TestCase {
     attachment.setSize(975048);
     attachment.setType("application/vnd.oasis.opendocument.presentation");
     attachment.setTitle("Test OpenOffice");
-    assertFalse(attachment.isOfficeDocument());
-    assertFalse(attachment.isOfficeDocument("fr"));
+    assertTrue(attachment.isOfficeDocument());
+    assertTrue(attachment.isOfficeDocument("fr"));
     assertTrue(attachment.isOpenOfficeCompatible(null));
     assertTrue(attachment.isOpenOfficeCompatible("fr"));
     assertEquals("kmelia57", attachment.getInstanceId());
@@ -123,8 +123,8 @@ public class TestAttachmentDetail extends TestCase {
     attachment.setSize(975048);
     attachment.setType("application/vnd.oasis.opendocument.presentation");
     attachment.setTitle("Test OpenOffice");
-    assertFalse(attachment.isOfficeDocument());
-    assertFalse(attachment.isOfficeDocument("fr"));
+    assertTrue(attachment.isOfficeDocument());
+    assertTrue(attachment.isOfficeDocument("fr"));
     assertTrue(attachment.isOpenOfficeCompatible(null));
     assertTrue(attachment.isOpenOfficeCompatible("fr"));
     assertEquals("kmelia57", attachment.getInstanceId());
