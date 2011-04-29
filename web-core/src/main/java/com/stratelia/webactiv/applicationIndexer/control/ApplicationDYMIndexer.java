@@ -35,8 +35,7 @@ import com.stratelia.webactiv.util.indexEngine.model.DidYouMeanIndexer;
 /**
  * Executes a partial or full reindexing of spelling indexes
  */
-public class ApplicationDYMIndexer {
-  final OrganizationController organizationController = new OrganizationController();
+public class ApplicationDYMIndexer extends AbstractIndexer {
 
   public ApplicationDYMIndexer() {
     setSilverTraceLevel();
@@ -52,60 +51,7 @@ public class ApplicationDYMIndexer {
     indexPdc();
   }
 
-  /**
-   * Indexes all component of all spaces
-   * @throws Exception whether an exception occurred
-   */
-  public void indexAllSpaces() throws Exception {
-    index(null, null);
-  }
-
-  /**
-   * Allows to realize three type of operation :<br/>
-   * - reindexing one or all spaces </br> - reindexing one or numerous component
-   * @param spaceId space identifier
-   * @param componentId component identifier
-   * @throws Exception whether an exception occurred
-   */
-  public void index(String spaceId, String componentId) throws Exception {
-    SilverTrace.info(ApplicationDYMIndexer.class.toString(), "ApplicationDYMIndexer.index()",
-        "root.MSG_GEN_ENTER_METHOD");
-    if (spaceId == null) {
-      // index whole application
-      String[] spaceIds = organizationController.getAllSpaceIds();
-      SilverTrace.info(ApplicationDYMIndexer.class.toString(), "ApplicationDYMIndexer.index()",
-          "applicationIndexer.MSG_INDEXING_ALL_SPACES");
-      for (int i = 0; i < spaceIds.length; i++) {
-        indexSpace(spaceIds[i]);
-      }
-    } else {
-      if (!StringUtil.isDefined(componentId)) {
-        // index whole space
-        indexSpace(spaceId);
-      } else {
-        // index only one component
-        indexComponent(spaceId, componentId);
-      }
-    }
-    SilverTrace.info(ApplicationDYMIndexer.class.toString(), "ApplicationDYMIndexer.index()",
-        "root.MSG_GEN_EXIT_METHOD");
-  }
-
-  /**
-   * Indexes one space
-   * @param spaceId space identifier
-   * @throws Exception whether an exception occurred
-   */
-  private void indexSpace(String spaceId) throws Exception {
-    SilverTrace.info(ApplicationDYMIndexer.class.toString(), "ApplicationDYMIndexer.indexSpace()",
-        "applicationIndexer.MSG_START_INDEXING_SPACE", "spaceId = " + spaceId);
-    String[] componentIds = organizationController.getAllComponentIdsRecur(spaceId);
-    for (String componentId : componentIds) {
-      indexComponent(spaceId, componentId);
-    }
-    SilverTrace.info(ApplicationDYMIndexer.class.toString(), "ApplicationDYMIndexer.indexSpace()",
-        "applicationIndexer.MSG_END_INDEXING_SPACE", "spaceId = " + spaceId);
-  }
+  
 
   /**
    * Indexes one component
@@ -113,7 +59,7 @@ public class ApplicationDYMIndexer {
    * @param componentId component identifier
    * @throws Exception whether an exception occurred
    */
-  private void indexComponent(String spaceId, String componentId) throws Exception {
+  public void indexComponent(String spaceId, String componentId) throws Exception {
     SilverTrace.info(ApplicationDYMIndexer.class.toString(),
         "ApplicationDYMIndexer.indexComponent()", "applicationIndexer.MSG_START_INDEXING_COMPONENT",
         "component = " + componentId);
@@ -176,13 +122,6 @@ public class ApplicationDYMIndexer {
         "personalComponent = " + personalComponent);
   }
 
-  /**
-   * creates an spellchecker index for each personal component
-   */
-  public void indexPersonalComponents() {
-    indexPersonalComponent("agenda");
-    indexPersonalComponent("todo");
-  }
 
   /**
    * creates a spellchecker index for the PDC
@@ -191,9 +130,5 @@ public class ApplicationDYMIndexer {
     setSilverTraceLevel();
     String pdcIndexPath = FileRepositoryManager.getAbsoluteIndexPath(null, "pdc");
     DidYouMeanIndexer.createSpellIndexForAllLanguage("content", pdcIndexPath);
-  }
-
-  private void setSilverTraceLevel() {
-    SilverTrace.setTraceLevel(ApplicationDYMIndexer.class.toString(), SilverTrace.TRACE_LEVEL_INFO);
   }
 }

@@ -32,10 +32,9 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 
-public class ApplicationIndexer {
+public class ApplicationIndexer extends AbstractIndexer {
 
   private MainSessionController mainSessionController = null;
-  final OrganizationController organizationController = new OrganizationController();
 
   public ApplicationIndexer(MainSessionController msc) {
     this.mainSessionController = msc;
@@ -48,33 +47,7 @@ public class ApplicationIndexer {
     indexUsers();
   }
 
-  public void indexAllSpaces() throws Exception {
-    index(null, null);
-  }
-
-  public void index(String currentSpaceId, String componentId) throws Exception {
-    setSilverTraceLevel();
-    SilverTrace.info("applicationIndexer", "ApplicationIndexer.index()", "root.MSG_GEN_ENTER_METHOD");
-    if (currentSpaceId == null) {
-      // index whole application
-      String[] spaceIds = organizationController.getAllSpaceIds();
-      SilverTrace.info("applicationIndexer", "ApplicationIndexer.index()",
-          "applicationIndexer.MSG_INDEXING_ALL_SPACES");
-      for (String spaceId : spaceIds) {
-        indexSpace(spaceId);
-      }
-    } else {
-      if (!StringUtil.isDefined(componentId)) {
-        // index whole space
-        indexSpace(currentSpaceId);
-      } else {
-        // index only one component
-        indexComponent(currentSpaceId, componentId);
-      }
-    }
-    SilverTrace.info("applicationIndexer", "ApplicationIndexer.index()",
-        "root.MSG_GEN_EXIT_METHOD");
-  }
+  
 
   public void index(String personalComponent) throws Exception {
     setSilverTraceLevel();
@@ -83,18 +56,9 @@ public class ApplicationIndexer {
     }
   }
 
-  private void indexSpace(String spaceId) throws Exception {
-    SilverTrace.info("applicationIndexer", "ApplicationIndexer.indexSpace()",
-        "applicationIndexer.MSG_START_INDEXING_SPACE", "spaceId = " + spaceId);
-    String[] componentIds = organizationController.getAllComponentIdsRecur(spaceId);
-    for (String componentId : componentIds) {
-      indexComponent(spaceId, componentId);
-    }
-    SilverTrace.info("applicationIndexer", "ApplicationIndexer.indexSpace()",
-        "applicationIndexer.MSG_END_INDEXING_SPACE", "spaceId = " + spaceId);
-  }
+  
 
-  private void indexComponent(String spaceId, ComponentInst compoInst) {
+  public void indexComponent(String spaceId, ComponentInst compoInst) {
     SilverTrace.info("applicationIndexer", "ApplicationIndexer.indexComponent()",
         "applicationIndexer.MSG_START_INDEXING_COMPONENT", "component = " + compoInst.getLabel());
     ComponentIndexerInterface componentIndexer = getIndexer(compoInst);
@@ -118,7 +82,7 @@ public class ApplicationIndexer {
     }
   }
 
-  private void indexPersonalComponent(String personalComponent) {
+  public void indexPersonalComponent(String personalComponent) {
     SilverTrace.info("applicationIndexer", "ApplicationIndexer.indexPersonalComponent()",
         "applicationIndexer.MSG_START_INDEXING_PERSONAL_COMPONENT",
         "personalComponent = " + personalComponent);
@@ -143,14 +107,10 @@ public class ApplicationIndexer {
         "personalComponent = " + personalComponent);
   }
 
-  private void indexComponent(String spaceId, String componentId) throws Exception {
+  @Override
+  public void indexComponent(String spaceId, String componentId) throws Exception {
     ComponentInst compoInst = organizationController.getComponentInst(componentId);
     indexComponent(spaceId, compoInst);
-  }
-
-  public void indexPersonalComponents() throws Exception {
-    index("Agenda");
-    index("Todo");
   }
 
   public void indexPdc() throws Exception {
@@ -213,10 +173,6 @@ public class ApplicationIndexer {
       }
     }
     return componentIndexer;
-  }
-
-  private void setSilverTraceLevel() {
-    SilverTrace.setTraceLevel("applicationIndexer", SilverTrace.TRACE_LEVEL_INFO);
   }
 
   public void indexUsers() {
