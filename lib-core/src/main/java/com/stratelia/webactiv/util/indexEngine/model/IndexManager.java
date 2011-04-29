@@ -88,7 +88,6 @@ public class IndexManager {
   public static final int REMOVE = 1;
   public static final int READD = 2;
   private Map<String, IndexWriter> indexWriters = new HashMap<String, IndexWriter>();
-  
 
   /**
    * The constructor takes no parameters and all the index engine parameters are taken from the
@@ -176,10 +175,10 @@ public class IndexManager {
     try {
       // removing document according to indexEntryPK 
       writer.deleteDocuments(term);
-      
+
       // closing associated index searcher and removing it from cache
       IndexSearchersCache.removeIndexSearcher(getIndexDirectoryPath(indexEntry));
-      
+
     } catch (Exception e) {
       SilverTrace.error("indexEngine", "IndexManager",
           "indexEngine.MSG_REMOVE_REQUEST_FAILED", indexEntry.toString(), e);
@@ -283,11 +282,11 @@ public class IndexManager {
       maxMergeDocs = resource.getInteger("lucene.maxMergeDocs", maxMergeDocs);
 
       String stringValue = resource.getString("lucene.RAMBufferSizeMB", Double.toString(
-            IndexWriter.DEFAULT_RAM_BUFFER_SIZE_MB));
+          IndexWriter.DEFAULT_RAM_BUFFER_SIZE_MB));
       RAMBufferSizeMB = Double.parseDouble(stringValue);
 
       stringValue = resource.getString("lucene.RAMBufferSizeMB", Double.toString(
-            IndexWriter.DEFAULT_RAM_BUFFER_SIZE_MB));
+          IndexWriter.DEFAULT_RAM_BUFFER_SIZE_MB));
       RAMBufferSizeMB = Double.parseDouble(stringValue);
 
       enableDymIndexing = resource.getBoolean("enableDymIndexing", false);
@@ -310,7 +309,6 @@ public class IndexManager {
     if (writer == null) {
       try {
         boolean createIndex = false;
-
         File file = new File(path);
         if (!file.exists()) {
           file.mkdirs();
@@ -319,8 +317,7 @@ public class IndexManager {
           createIndex = !IndexReader.indexExists(file);
         }
 
-        writer =
-            new IndexWriter(path, getAnalyzer(language), createIndex, MaxFieldLength.UNLIMITED);
+        writer =  new IndexWriter(path, getAnalyzer(language), createIndex, MaxFieldLength.UNLIMITED);
         writer.setMaxFieldLength(maxFieldLength);
         writer.setMergeFactor(mergeFactor);
         writer.setMaxMergeDocs(maxMergeDocs);
@@ -331,8 +328,7 @@ public class IndexManager {
             writer.close();
           } catch (Exception e2) {
             SilverTrace.error("indexEngine", "IndexManager.getIndexWriter",
-                "indexEngine.MSG_INDEX_OPTIMIZATION_FAILED",
-                "Can't Close Index Writer" + path, e2);
+                "indexEngine.MSG_INDEX_OPTIMIZATION_FAILED", "Can't Close Index Writer" + path, e2);
           }
         }
         writer = null;
@@ -429,7 +425,7 @@ public class IndexManager {
     if (indexEntry.isIndexId()) {
       doc.add(new Field(CONTENT, indexEntry.getObjectId(), Store.NO, Index.NOT_ANALYZED));
     }
-    if (!isWysiwyg(indexEntry)) {      
+    if (!isWysiwyg(indexEntry)) {
       if (indexEntry.getObjectType() != null
           && indexEntry.getObjectType().startsWith("Attachment")) {
         doc.add(new Field(getFieldName(HEADER, indexEntry.getLang()),
@@ -566,31 +562,31 @@ public class IndexManager {
   /**
    * Add file to Document
    */
-  private void addFile(Document doc, FileDescription f) {
-    SilverTrace.debug("indexEngine", "IndexManager.addFile",
-        "root.MSG_GEN_ENTER_METHOD", "file = " + f.getPath() + ", type = "
-        + f.getFormat());
-    Reader reader = null;
+  private void addFile(Document doc, FileDescription fileDescription) {
+    SilverTrace.debug("indexEngine", "IndexManager.addFile", "root.MSG_GEN_ENTER_METHOD",
+        "file = " + fileDescription.getPath() + ", type = " + fileDescription.getFormat());
+    File file = new File(fileDescription.getPath());
+    if (!file.exists() || !file.isFile()) {
+      return;
+    }
     try {
-      reader = getReader(f);
-
-      SilverTrace.debug("indexEngine", "IndexManager.addFile",
-          "root.MSG_GEN_PARAM_VALUE", "reader returned");
-
+      Reader reader = getReader(fileDescription);
+      SilverTrace.debug("indexEngine", "IndexManager.addFile", "root.MSG_GEN_PARAM_VALUE",
+          "reader returned");
       if (reader != null) {
-        SilverTrace.debug("indexEngine", "IndexManager.addFile",
-            "root.MSG_GEN_PARAM_VALUE", "reader is not null");
-        Field fFile = new Field(getFieldName(CONTENT, f.getLang()), reader);
-        SilverTrace.debug("indexEngine", "IndexManager.addFile",
-            "root.MSG_GEN_PARAM_VALUE", "doc = " + fFile.name() + ", field = "
-            + fFile.toString());
-        doc.add(fFile);
+        SilverTrace.debug("indexEngine", "IndexManager.addFile", "root.MSG_GEN_PARAM_VALUE",
+            "reader is not null");
+        Field field = new Field(getFieldName(CONTENT, fileDescription.getLang()), reader);
+        SilverTrace.debug("indexEngine", "IndexManager.addFile", "root.MSG_GEN_PARAM_VALUE",
+            "doc = " + field.name() + ", field = " + field.toString());
+        doc.add(field);
       }
     } catch (Exception e) {
       SilverTrace.error("indexEngine", "IndexManager",
-          "indexEngine.MSG_FILE_PARSING_FAILED", f.getPath(), e);
+          "indexEngine.MSG_FILE_PARSING_FAILED", fileDescription.getPath(), e);
     }
   }
+
   /**
    * Added by NEY - 22/01/2004 
    * Module Wysiwyg is reused by several modules like publication,...
@@ -609,10 +605,9 @@ public class IndexManager {
    */
   private boolean isWysiwyg(FullIndexEntry indexEntry) {
     return "Wysiwyg".equals(indexEntry.getObjectType())
-        && (indexEntry.getComponent().startsWith("kmelia") 
+        && (indexEntry.getComponent().startsWith("kmelia")
         || indexEntry.getComponent().startsWith("kmax"));
   }
-  
   /*
    * The lucene index engine parameters.
    */
