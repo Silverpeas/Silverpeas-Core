@@ -21,12 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.persistence;
 
-import java.sql.*;
-import java.util.*;
-import com.stratelia.webactiv.util.*;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import java.sql.Connection;
+import java.util.Collection;
 
 /**
  * SilverpeasBeanDAO is the interface to use for instanciable component persistence. To get a
@@ -42,7 +41,7 @@ import com.stratelia.webactiv.util.*;
  * moment, SilverpeasBeanDAO is able to work with int, String and Date. This list can grow in the
  * near futur.
  */
-public interface SilverpeasBeanDAO {
+public interface SilverpeasBeanDAO<T extends SilverpeasBeanIntf> {
 
   public static final int CONNECTION_TYPE_EJBDATASOURCE_SILVERPEAS = 0;
   public static final int CONNECTION_TYPE_DATASOURCE_SILVERPEAS = 1;
@@ -53,10 +52,9 @@ public interface SilverpeasBeanDAO {
    * update the row in db with the new bean properties.
    * @param bean the SilverpeasBean to update, with its complete primaryKey.
    */
-  public void update(SilverpeasBeanIntf bean) throws PersistenceException;
+  public void update(T bean) throws PersistenceException;
 
-  public void update(Connection con, SilverpeasBeanIntf bean)
-      throws PersistenceException;
+  public void update(Connection con, T bean) throws PersistenceException;
 
   /**
    * create the bean and a row in DB.
@@ -64,10 +62,9 @@ public interface SilverpeasBeanDAO {
    * and componentId.
    * @return The complete primary key, with the id.
    */
-  public WAPrimaryKey add(SilverpeasBeanIntf bean) throws PersistenceException;
+  public WAPrimaryKey add(T bean) throws PersistenceException;
 
-  public WAPrimaryKey add(Connection con, SilverpeasBeanIntf bean)
-      throws PersistenceException;
+  public WAPrimaryKey add(Connection con, T bean) throws PersistenceException;
 
   /**
    * remove the row in db represented by the primary key.
@@ -76,18 +73,16 @@ public interface SilverpeasBeanDAO {
    */
   public void remove(WAPrimaryKey pk) throws PersistenceException;
 
-  public void remove(Connection con, WAPrimaryKey pk)
-      throws PersistenceException;
+  public void remove(Connection con, WAPrimaryKey pk) throws PersistenceException;
 
   /**
    * remove all row in db represented by the where clause.
    * @param the where clause.
    */
-  public void removeWhere(WAPrimaryKey pk, String p_WhereClause)
-      throws PersistenceException;
+  public void removeWhere(WAPrimaryKey pk, String p_WhereClause) throws PersistenceException;
 
-  public void removeWhere(Connection con, WAPrimaryKey pk, String p_WhereClause)
-      throws PersistenceException;
+  public void removeWhere(Connection con, WAPrimaryKey pk, String p_WhereClause) throws
+      PersistenceException;
 
   /**
    * get a bean list, representing a specific row selection.
@@ -96,21 +91,18 @@ public interface SilverpeasBeanDAO {
    * will be selected (all rows in the table).
    * @return The list of SilverpeasBeanIntfs corresponding to the where clause
    */
-  public Collection findByWhereClause(WAPrimaryKey pk, String whereClause)
+  public Collection<T> findByWhereClause(WAPrimaryKey pk, String whereClause)
       throws PersistenceException;
 
-  public Collection findByWhereClause(Connection con, WAPrimaryKey pk,
-      String whereClause) throws PersistenceException;
+  public Collection<T> findByWhereClause(Connection con, WAPrimaryKey pk, String whereClause) throws
+      PersistenceException;
 
   /**
    * get a bean representing a row in db from its pk
    * @param pk the complete beans primary key
    * @return The SilverpeasBeanIntfs corresponding to the pk, null if not found
    */
-  public SilverpeasBeanIntf findByPrimaryKey(WAPrimaryKey pk)
-      throws PersistenceException;
+  public T findByPrimaryKey(WAPrimaryKey pk) throws PersistenceException;
 
-  public SilverpeasBeanIntf findByPrimaryKey(Connection con, WAPrimaryKey pk)
-      throws PersistenceException;
-
+  public T findByPrimaryKey(Connection con, WAPrimaryKey pk) throws PersistenceException;
 }
