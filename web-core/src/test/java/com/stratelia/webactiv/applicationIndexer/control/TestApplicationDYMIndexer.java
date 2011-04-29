@@ -116,9 +116,8 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
    * @throws Exception
    */
   public final void testIndexAllSpaces() throws Exception {
-
     ApplicationDYMIndexer indexer = new ApplicationDYMIndexer();
-    indexer.oc.reloadAdminCache();
+    indexer.organizationController.reloadAdminCache();
     indexer.indexAllSpaces();
     // check one component of first space
     String indexSpellcheckerPath =
