@@ -23,12 +23,10 @@
  */
 package com.stratelia.webactiv.applicationIndexer.control;
 
-import com.silverpeas.util.StringUtil;
 import java.io.File;
 import java.io.FilenameFilter;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.indexEngine.model.DidYouMeanIndexer;
 
@@ -59,11 +57,11 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
    * @param componentId component identifier
    * @throws Exception whether an exception occurred
    */
+  @Override
   public void indexComponent(String spaceId, String componentId) throws Exception {
     SilverTrace.info(ApplicationDYMIndexer.class.toString(),
         "ApplicationDYMIndexer.indexComponent()", "applicationIndexer.MSG_START_INDEXING_COMPONENT",
         "component = " + componentId);
-
     try {
       String ComponentIndexPath = FileRepositoryManager.getAbsoluteIndexPath(null, componentId);
       DidYouMeanIndexer.createSpellIndexForAllLanguage("content", ComponentIndexPath);
@@ -84,6 +82,7 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
    * existing indexes
    * @param personalComponent personal component name
    */
+  @Override
   public void indexPersonalComponent(String personalComponent) {
     SilverTrace.info(ApplicationDYMIndexer.class.toString(),
         "ApplicationDYMIndexer.indexPersonalComponent()",

@@ -24,13 +24,12 @@
 package com.stratelia.webactiv.applicationIndexer.control;
 
 import com.silverpeas.pdc.PdcIndexer;
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
+import org.apache.commons.lang.StringUtils;
 
 public class ApplicationIndexer extends AbstractIndexer {
 
@@ -47,16 +46,12 @@ public class ApplicationIndexer extends AbstractIndexer {
     indexUsers();
   }
 
-  
-
   public void index(String personalComponent) throws Exception {
     setSilverTraceLevel();
     if (personalComponent != null) {
       indexPersonalComponent(personalComponent);
     }
   }
-
-  
 
   public void indexComponent(String spaceId, ComponentInst compoInst) {
     SilverTrace.info("applicationIndexer", "ApplicationIndexer.indexComponent()",
@@ -82,6 +77,7 @@ public class ApplicationIndexer extends AbstractIndexer {
     }
   }
 
+  @Override
   public void indexPersonalComponent(String personalComponent) {
     SilverTrace.info("applicationIndexer", "ApplicationIndexer.indexPersonalComponent()",
         "applicationIndexer.MSG_START_INDEXING_PERSONAL_COMPONENT",
@@ -120,15 +116,11 @@ public class ApplicationIndexer extends AbstractIndexer {
   }
 
   String firstLetterToUpperCase(String str) {
-    String c = str.substring(0, 1);
-    c = c.toUpperCase();
-    return c + str.substring(1);
+    return StringUtils.capitalize(str);
   }
 
   String firstLetterToLowerCase(String str) {
-    String c = str.substring(0, 1);
-    c = c.toLowerCase();
-    return c + str.substring(1);
+    return StringUtils.uncapitalize(str);
   }
 
   private ComponentIndexerInterface getIndexer(ComponentInst compoInst) {

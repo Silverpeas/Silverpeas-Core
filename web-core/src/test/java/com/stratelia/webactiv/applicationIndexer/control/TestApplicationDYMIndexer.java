@@ -100,8 +100,7 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
    * @throws IOException
    */
   public final void testIndexPdc() throws IOException {
-    String indexSpellcheckerPath =
-        indexDirectory + File.separatorChar + "pdc" + File.separatorChar
+    String indexSpellcheckerPath = indexDirectory + File.separatorChar + "pdc" + File.separatorChar
         + "indexSpell";
     ApplicationDYMIndexer indexer = new ApplicationDYMIndexer();
     indexer.indexPdc();
