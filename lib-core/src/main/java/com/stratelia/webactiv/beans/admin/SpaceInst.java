@@ -23,16 +23,16 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import com.google.common.base.Objects;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * The class SpaceInst is the representation in memory of a space
@@ -351,17 +351,16 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
   /**
    * Add a component in component list (WARNING : component will not be added in database, only in
    * that spaceInst object !!!)
-   * @param componentInst component instance to be added
+   * @param componentName component instance to be added
    */
-  public ComponentInst getComponentInst(String sComponentName) {
+  public ComponentInst getComponentInst(String componentName) {
     if (!components.isEmpty()) {
-      for (int nI = 0; nI < components.size(); nI++) {
-        if (components.get(nI).getName().equals(sComponentName)) {
-          return components.get(nI);
+      for (ComponentInst component : components) {
+        if (component.getName().equals(componentName)) {
+          return component;
         }
       }
     }
-
     return null;
   }
 
@@ -436,12 +435,9 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
     return getSpaceProfileInst(sSpaceProfileName, true);
   }
 
-  private SpaceProfileInst getSpaceProfileInst(String sSpaceProfileName,
-    boolean inherited) {
-    for (int nI = 0; nI < spaceProfiles.size(); nI++) {
-      SpaceProfileInst profile = spaceProfiles.get(nI);
-      if (profile.isInherited() == inherited
-        && profile.getName().equals(sSpaceProfileName)) {
+  private SpaceProfileInst getSpaceProfileInst(String spaceProfileName, boolean inherited) {
+    for (SpaceProfileInst profile : spaceProfiles) {
+      if (profile.isInherited() == inherited && profile.getName().equals(spaceProfileName)) {
         return profile;
       }
     }
@@ -459,8 +455,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   public List<SpaceProfileInst> getInheritedProfiles() {
     List<SpaceProfileInst> profiles = new ArrayList<SpaceProfileInst>();
-    for (int nI = 0; nI < spaceProfiles.size(); nI++) {
-      SpaceProfileInst profile = spaceProfiles.get(nI);
+    for (SpaceProfileInst profile : spaceProfiles) {
       if (profile.isInherited()) {
         profiles.add(profile);
       }
@@ -471,8 +466,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   public List<SpaceProfileInst> getProfiles() {
     List<SpaceProfileInst> profiles = new ArrayList<SpaceProfileInst>();
-    for (int nI = 0; nI < spaceProfiles.size(); nI++) {
-      SpaceProfileInst profile = spaceProfiles.get(nI);
+    for (SpaceProfileInst profile : spaceProfiles) {
       if (!profile.isInherited()) {
         profiles.add(profile);
       }

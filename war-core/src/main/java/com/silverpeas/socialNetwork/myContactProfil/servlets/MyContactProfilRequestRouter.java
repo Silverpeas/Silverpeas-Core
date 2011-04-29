@@ -29,6 +29,7 @@ import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.silverpeas.directory.model.Member;
 import com.silverpeas.socialNetwork.myContactProfil.control.MyContactProfilSessionController;
 import com.silverpeas.socialNetwork.user.model.SNFullUser;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -88,7 +89,7 @@ public class MyContactProfilRequestRouter extends ComponentRequestRouter {
     }
 
     request.setAttribute("UserFull", sc.getUserFull(userId));
-    request.setAttribute("snUserFull", new SNFullUser(userId));
+    request.setAttribute("Member", new Member(sc.getUserDetail(userId)));
     List<String> contactIds = sc.getContactsIdsForUser(userId);
     request.setAttribute("Contacts", chooseContactsToDisplay(contactIds, sc));
     request.setAttribute("ContactsNumber", contactIds.size());

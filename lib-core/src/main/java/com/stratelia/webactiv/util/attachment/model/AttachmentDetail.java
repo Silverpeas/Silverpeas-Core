@@ -679,10 +679,10 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
   public String getJcrPath(String language) {
     StringBuffer jcrPath = new StringBuffer(500);
     jcrPath.append(ATTACHMENTS_FOLDER).append('/').append(getInstanceId()).append('/');
-    if (this.context != null && !"".equals(this.context)) {
+    if (StringUtil.isDefined(this.context)) {
       String[] elements = FileRepositoryManager.getAttachmentContext(this.context);
-      for (int i = 0; i < elements.length; i++) {
-        jcrPath.append(elements[i]).append('/');
+      for (String element : elements) {
+        jcrPath.append(element).append('/');
       }
     }
     if (getPK().getId() != null) {

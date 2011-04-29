@@ -28,7 +28,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -46,7 +45,7 @@ public class CalendarWA1 extends AbstractCalendar {
 
   public String print() {
     StringBuffer result = new StringBuffer(255);
-    List nonSelectableDays = getNonSelectableDays();
+    List<Date> nonSelectableDays = getNonSelectableDays();
     boolean nonSelectable = isEmptyDayNonSelectable();
 
     int firstDayOfWeek = Integer.parseInt(settings.getString("GML.weekFirstDay"));
@@ -151,13 +150,11 @@ public class CalendarWA1 extends AbstractCalendar {
     // Record in HashSet all the days of the month with an event
     calendar.setTime(getCurrentDate());
     String dayStyle = monthDayStyle;
-    HashSet dayWithEvents = new HashSet();
+    HashSet<Integer> dayWithEvents = new HashSet<Integer>();
 
-    Collection events = getEvents();
+    Collection<Event> events = getEvents();
     if (events != null) {
-      for (Iterator i = events.iterator(); i.hasNext();) {
-        Event event = (Event) i.next();
-
+      for (Event event : events) {
         Calendar calendarEvents = Calendar.getInstance();
         calendarEvents.setTime(event.getStartDate());
         int currentMonth = calendar.get(Calendar.MONTH);

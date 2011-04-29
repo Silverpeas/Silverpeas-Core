@@ -61,7 +61,7 @@ public abstract class AbstractCalendar implements
   protected ResourceLocator settings = null;
   protected String language = null;
   private List<Event> events = null;
-  private List nonSelectableDays = null;
+  private List<Date> nonSelectableDays = null;
   private Date currentDate = null;
   private boolean emptyDayNonSelectable = false; // true => les jours sans
 
@@ -79,7 +79,9 @@ public abstract class AbstractCalendar implements
 
   @Override
   public void setEvents(List<Event> events) {
-    this.events = new ArrayList<Event>(events);
+    if (events != null) {
+      this.events = new ArrayList<Event>(events);
+    }
   }
 
   @Override
@@ -160,11 +162,11 @@ public abstract class AbstractCalendar implements
     return events;
   }
 
-  public List getNonSelectableDays() {
+  public List<Date> getNonSelectableDays() {
     return nonSelectableDays;
   }
 
-  public void setNonSelectableDays(List nonSelectableDays) {
+  public void setNonSelectableDays(List<Date> nonSelectableDays) {
     this.nonSelectableDays = nonSelectableDays;
   }
 

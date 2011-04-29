@@ -62,7 +62,7 @@ boolean valueIsAscendant(String valueId, String baseValuePaths) {
 String getValueSearchContext(SearchContext searchContext, int axisId)
 {
 		if (searchContext != null) { //searchContext peut etre null si on a chang� la selection d'une combo
-			ArrayList alCriterias = searchContext.getCriterias();
+			List alCriterias = searchContext.getCriterias();
 			for(int nI=0; alCriterias != null && nI < alCriterias.size(); nI++)
 			{
 					SearchCriteria criteria = (SearchCriteria) alCriterias.get(nI);
