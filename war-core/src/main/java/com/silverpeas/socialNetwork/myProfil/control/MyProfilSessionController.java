@@ -186,9 +186,9 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   }
 
   public void modifyUser(String idUser, String userLastName, String userFirstName,
-      String userEMail,
-      String userAccessLevel, String oldPassword, String newPassword, String userLoginQuestion,
-      String userLoginAnswer, Map<String, String> properties) throws AuthenticationException {
+      String userEMail, String userAccessLevel, String oldPassword, String newPassword,
+      String userLoginQuestion, String userLoginAnswer, Map<String, String> properties)
+      throws AuthenticationException {
     SilverTrace.info("personalizationPeas", "PersonalizationPeasSessionController.modifyUser()",
         "root.MSG_GEN_ENTER_METHOD", "UserId=" + idUser + " userLastName=" + userLastName
             + " userFirstName=" + userFirstName + " userEMail=" + userEMail + " userAccessLevel="
@@ -369,15 +369,16 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   private void acceptInvitationNotif(int relationShipId) {
     RelationShip curRelation = invitationService.getRelationShip(relationShipId);
     try {
-      //Retrieve sender information
+      // Retrieve sender information
       UserDetail senderUser = getUserDetail();
       String displayedName = senderUser.getDisplayedName();
-      
+
       NotificationSender notificationSender = new NotificationSender(null);
       // Send a notification to alert people about new relationship.
       Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-      String subject = displayedName + " " + getString("myProfile.invitations.notification.accept.subject");
-      
+      String subject =
+          displayedName + " " + getString("myProfile.invitations.notification.accept.subject");
+
       SilverTrace.debug("MyProfilSessionController", MyProfilSessionController.class.getName() +
           ".getAlertNotificationMetaData()", "root.MSG_GEN_PARAM_VALUE", "subject = " + subject);
 
