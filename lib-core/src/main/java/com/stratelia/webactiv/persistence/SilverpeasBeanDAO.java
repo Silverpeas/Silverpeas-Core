@@ -40,6 +40,7 @@ import java.util.Collection;
  * need to have getXXX and setXXX methods for each "column" you want to be persistant. For the
  * moment, SilverpeasBeanDAO is able to work with int, String and Date. This list can grow in the
  * near futur.
+ * @param <T> 
  */
 public interface SilverpeasBeanDAO<T extends SilverpeasBeanIntf> {
 
@@ -51,6 +52,7 @@ public interface SilverpeasBeanDAO<T extends SilverpeasBeanIntf> {
   /**
    * update the row in db with the new bean properties.
    * @param bean the SilverpeasBean to update, with its complete primaryKey.
+   * @throws PersistenceException  
    */
   public void update(T bean) throws PersistenceException;
 
