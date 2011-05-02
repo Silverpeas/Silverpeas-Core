@@ -44,6 +44,7 @@
   <ctx:component-scan base-package="com.silverpeas.accesscontrol"/>
   <ctx:component-scan base-package="com.silverpeas.look"/>
   <ctx:component-scan base-package="com.silverpeas.personalization"/>
+  <ctx:component-scan base-package="com.silverpeas.delegatednews"/>
 
   <!-- The Bean Validator (JSR-303) bootstrapping through Spring. The Hibernate implementation is used -->
   <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />

@@ -9,17 +9,17 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.beans.admin;
 
@@ -281,7 +281,7 @@ public final class Admin {
   /**
    * add a space instance in database
    *
-   * @param userId    Id of user who add the space
+   * @param userId Id of user who add the space
    * @param spaceInst SpaceInst object containing information about the space to be created
    * @return the created space id
    */
@@ -361,7 +361,7 @@ public final class Admin {
   /**
    * Delete the given space The delete is apply recursively to the sub-spaces
    *
-   * @param sUserId        Id of user who deletes the space
+   * @param sUserId Id of user who deletes the space
    * @param sClientSpaceId Id of the space to be deleted
    * @return the deleted space id
    */
@@ -374,10 +374,10 @@ public final class Admin {
    * Delete the given space if it's not the general space The delete is apply recursively to the
    * sub-spaces
    *
-   * @param sUserId             Id of user who deletes the space
-   * @param sClientSpaceId      Id of the space to be deleted
+   * @param sUserId Id of user who deletes the space
+   * @param sClientSpaceId Id of the space to be deleted
    * @param startNewTransaction Flag : must be true at first call to initialize transaction, then
-   *                            false for recurrents calls
+   * false for recurrents calls
    * @return the deleted space id
    */
   public String deleteSpaceInstById(String sUserId, String sClientSpaceId,
@@ -573,7 +573,7 @@ public final class Admin {
   /**
    * Get the space instance with the given space id
    *
-   * @param sSpaceId       client space id
+   * @param sSpaceId client space id
    * @param bDriverSpaceId true is space id is in 'driver' format, false for 'client' format
    * @return Space information as SpaceInst object
    */
@@ -1543,7 +1543,7 @@ public final class Admin {
    * Set space profile to a component. There is persistance.
    *
    * @param component the object to set profiles
-   * @param space     the object to get profiles
+   * @param space the object to get profiles
    * @throws AdminException
    */
   public void setSpaceProfilesToComponent(ComponentInst component, SpaceInst space) throws
@@ -1610,12 +1610,12 @@ public final class Admin {
       ComponentInst[] componentInsts) throws AdminException {
     try {
       SilverTrace.info(MODULE_ADMIN, "admin.moveComponentInst", "root.MSG_GEN_PARAM_VALUE",
-          "spaceId= " + spaceId + "  componentId=" + componentId);
+          "spaceId= " + spaceId + " componentId=" + componentId);
       String sDriverComponentId = getDriverComponentId(componentId);
       // Convert the client space Id in driver space Id
       String sDriverSpaceId = getDriverSpaceId(spaceId);
       SilverTrace.info(MODULE_ADMIN, "admin.moveComponentInst", "root.MSG_GEN_PARAM_VALUE",
-          "sDriverSpaceId= " + sDriverSpaceId + "  sDriverComponentId=" + sDriverComponentId);
+          "sDriverSpaceId= " + sDriverSpaceId + " sDriverComponentId=" + sDriverComponentId);
       ComponentInst componentInst = getComponentInst(componentId);
       String oldSpaceId = componentInst.getDomainFatherId();
       // Open the connections with auto-commit to false
@@ -2851,9 +2851,9 @@ public final class Admin {
   /**
    * Add the given user in Silverpeas and specific domain
    *
-   * @param userDetail          user to add
+   * @param userDetail user to add
    * @param addOnlyInSilverpeas true if user must not be added in distant datasource (used by
-   *                            synchronization tools)
+   * synchronization tools)
    * @return id of created user
    */
   public String addUser(UserDetail userDetail, boolean addOnlyInSilverpeas)
@@ -3585,7 +3585,7 @@ public final class Admin {
    * @param userId
    * @param spaceId
    * @return true if user is allowed to access to one component (at least) in given space, false
-   *         otherwise.
+   * otherwise.
    * @throws AdminException
    */
   public boolean isSpaceAvailable(String userId, String spaceId) throws AdminException {
@@ -4249,7 +4249,7 @@ public final class Admin {
   /**
    * gets the available component for a given user
    *
-   * @param userId        user identifier used to get component
+   * @param userId user identifier used to get component
    * @param componentName type of component to retrieve ( for example : kmelia, forums, blog)
    * @return a list of ComponentInstLight object
    * @throws AdminException
