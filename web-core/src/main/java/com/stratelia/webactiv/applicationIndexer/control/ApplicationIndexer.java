@@ -142,29 +142,43 @@ public class ApplicationIndexer extends AbstractIndexer {
     } else if ("webPages".equalsIgnoreCase(packageName)) {
       packageName = "webpages";
       className = "WebPages";
+    } else if ("mydb".equalsIgnoreCase(packageName)) {
+      packageName = "mydb";
+      className = "MyDB";
     }
     try {
-      componentIndexer = (ComponentIndexerInterface) Class.forName(
-          "com.stratelia.webactiv." + packageName + "." + className + "Indexer").newInstance();
-    } catch (ClassNotFoundException ce) {
-      classNotFound = true;
-    } catch (Exception e) {
-      SilverTrace.debug("applicationIndexer", "ApplicationIndexer.getIndexer()",
-          "applicationIndexer.EX_INDEXING_PERSONAL_COMPONENT_FAILED", "component = " + compoName, e);
-    }
-    if (classNotFound) {
-      try {
-        componentIndexer = (ComponentIndexerInterface) Class.forName(
-            "com.silverpeas." + packageName + "." + className + "Indexer").newInstance();
-      } catch (ClassNotFoundException ce) {
-        SilverTrace.debug("applicationIndexer", "ApplicationIndexer.getIndexer()",
-            "applicationIndexer.EX_INDEXER_COMPONENT_NOT_FOUND", "component = " + compoName);
-      } catch (Exception e) {
-        SilverTrace.debug("applicationIndexer", "ApplicationIndexer.getIndexer()",
-            "applicationIndexer.EX_INDEXING_COMPONENT_FAILED", "component = " + compoName, e);
+      componentIndexer = loadIndexer(
+          "com.stratelia.webactiv." + packageName + "." + className + "Indexer");
+      if (componentIndexer == null) {
+        componentIndexer = loadIndexer("com.silverpeas." + packageName + "." + className + "Indexer");
       }
+    } catch (InstantiationException e) {
+      SilverTrace.error("applicationIndexer", "ApplicationIndexer.getIndexer()",
+          "applicationIndexer.EX_INDEXING_PERSONAL_COMPONENT_FAILED", "component = " + compoName, e);
+      componentIndexer = new ComponentIndexerAdapter();
+
+    } catch (IllegalAccessException e) {
+      SilverTrace.error("applicationIndexer", "ApplicationIndexer.getIndexer()",
+          "applicationIndexer.EX_INDEXING_PERSONAL_COMPONENT_FAILED", "component = " + compoName, e);
+      componentIndexer = new ComponentIndexerAdapter();
+    }
+    if (componentIndexer == null) {
+      SilverTrace.error("applicationIndexer", "ApplicationIndexer.getIndexer()",
+          "applicationIndexer.EX_INDEXER_COMPONENT_NOT_FOUND",
+          "component = " + compoName + " with classes com.stratelia.webactiv." + packageName + "."
+          + className + "Indexer and com.silverpeas." + packageName + "." + className + "Indexer");
+      componentIndexer = new ComponentIndexerAdapter();
     }
     return componentIndexer;
+  }
+
+  private ComponentIndexerInterface loadIndexer(String className) throws InstantiationException,
+      IllegalAccessException {
+    try {
+      return (ComponentIndexerInterface) Class.forName(className).newInstance();
+    } catch (ClassNotFoundException ex) {
+      return null;
+    }
   }
 
   public void indexUsers() {
