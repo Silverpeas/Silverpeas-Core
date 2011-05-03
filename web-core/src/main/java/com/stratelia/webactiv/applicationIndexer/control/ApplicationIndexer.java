@@ -123,29 +123,11 @@ public class ApplicationIndexer extends AbstractIndexer {
     return StringUtils.uncapitalize(str);
   }
 
-  private ComponentIndexerInterface getIndexer(ComponentInst compoInst) {
-    String compoName = firstLetterToUpperCase(compoInst.getName());
+  ComponentIndexerInterface getIndexer(ComponentInst compoInst) {
     ComponentIndexerInterface componentIndexer = null;
-    boolean classNotFound = false;
-
-    String packageName = compoInst.getName();
-    String className = firstLetterToUpperCase(compoInst.getName());
-    if ("toolbox".equalsIgnoreCase(packageName)) {
-      packageName = "kmelia";
-      className = "Kmelia";
-    } else if ("bookmark".equalsIgnoreCase(packageName)) {
-      packageName = "webSites";
-      className = "WebSites";
-    } else if ("pollingStation".equalsIgnoreCase(packageName)) {
-      packageName = "survey";
-      className = "Survey";
-    } else if ("webPages".equalsIgnoreCase(packageName)) {
-      packageName = "webpages";
-      className = "WebPages";
-    } else if ("mydb".equalsIgnoreCase(packageName)) {
-      packageName = "mydb";
-      className = "MyDB";
-    }
+    String compoName= firstLetterToUpperCase(compoInst.getName());
+    String className = getClassName(compoInst);
+    String packageName  = getPackage(compoInst);
     try {
       componentIndexer = loadIndexer(
           "com.stratelia.webactiv." + packageName + "." + className + "Indexer");
@@ -156,7 +138,6 @@ public class ApplicationIndexer extends AbstractIndexer {
       SilverTrace.error("applicationIndexer", "ApplicationIndexer.getIndexer()",
           "applicationIndexer.EX_INDEXING_PERSONAL_COMPONENT_FAILED", "component = " + compoName, e);
       componentIndexer = new ComponentIndexerAdapter();
-
     } catch (IllegalAccessException e) {
       SilverTrace.error("applicationIndexer", "ApplicationIndexer.getIndexer()",
           "applicationIndexer.EX_INDEXING_PERSONAL_COMPONENT_FAILED", "component = " + compoName, e);
@@ -167,18 +148,59 @@ public class ApplicationIndexer extends AbstractIndexer {
           "applicationIndexer.EX_INDEXER_COMPONENT_NOT_FOUND",
           "component = " + compoName + " with classes com.stratelia.webactiv." + packageName + "."
           + className + "Indexer and com.silverpeas." + packageName + "." + className + "Indexer");
-      componentIndexer = new ComponentIndexerAdapter();
+      return new ComponentIndexerAdapter();
     }
     return componentIndexer;
   }
 
-  private ComponentIndexerInterface loadIndexer(String className) throws InstantiationException,
+  ComponentIndexerInterface loadIndexer(String className) throws InstantiationException,
       IllegalAccessException {
     try {
       return (ComponentIndexerInterface) Class.forName(className).newInstance();
     } catch (ClassNotFoundException ex) {
       return null;
     }
+  }
+
+  String getClassName(ComponentInst compoInst) {
+    String name = compoInst.getName();
+    String className = firstLetterToUpperCase(name);
+    if ("toolbox".equalsIgnoreCase(name)) {
+      return "Kmelia";
+    }
+    if ("bookmark".equalsIgnoreCase(name)) {
+      return "WebSites";
+    }
+    if ("pollingStation".equalsIgnoreCase(name)) {
+      return "Survey";
+    }
+    if ("webPages".equalsIgnoreCase(name)) {
+      return "WebPages";
+    }
+    if ("mydb".equalsIgnoreCase(name)) {
+      return "MyDB";
+    }
+    return className;
+  }
+
+  String getPackage(ComponentInst compoInst) {    
+    String packageName  = firstLetterToLowerCase(compoInst.getName());
+    if ("toolbox".equalsIgnoreCase(packageName)) {
+      return "kmelia";
+    }
+    if ("bookmark".equalsIgnoreCase(packageName)) {
+      return "webSites";
+    }
+    if ("pollingStation".equalsIgnoreCase(packageName)) {
+      return "survey";
+    }
+    if ("webPages".equalsIgnoreCase(packageName)) {
+      return "webpages";
+    }
+    if ("mydb".equalsIgnoreCase(packageName)) {
+      return "mydb";
+    }
+    return packageName;
   }
 
   public void indexUsers() {
