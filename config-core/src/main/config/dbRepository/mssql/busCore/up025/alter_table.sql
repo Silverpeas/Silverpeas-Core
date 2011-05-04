@@ -1,3 +1,4 @@
+ALTER TABLE personalization DROP COLUMN onlineEditingStatus;
 ALTER TABLE personalization ADD menuDisplay varchar(50) DEFAULT('DEFAULT');
 
 UPDATE personalization SET languages = 'fr' WHERE languages like '%fr%';
