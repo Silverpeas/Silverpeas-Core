@@ -75,7 +75,7 @@ public class HTMLConverterTest {
 
   @Test
   public void convertAnHTMLDocumentToODT() throws Exception {
-    File convertedDocument = converter.convert(document, in(odt));
+    File convertedDocument = converter.convert(document, inFormat(odt));
     assertThat(convertedDocument.exists(), is(true));
     assertThat((Long)convertedDocument.length(), greaterThanOrEqualTo(12378l));
   }
@@ -84,12 +84,12 @@ public class HTMLConverterTest {
   public void convertANonHTMLDocument() throws Exception {
     File wrongDocument = getDocumentNamed(WRONG_DOCUMENT_NAME);
     assertThat(wrongDocument.exists(), is(true));
-    converter.convert(wrongDocument, in(odt));
+    converter.convert(wrongDocument, inFormat(odt));
   }
 
   @Test(expected=DocumentFormatException.class)
   public void convertAnHTMLDocumentIntoANonSupportedFormat() throws Exception {
-    converter.convert(document, in(pdf));
+    converter.convert(document, inFormat(pdf));
   }
 
   private File getDocumentNamed(String name) throws Exception {

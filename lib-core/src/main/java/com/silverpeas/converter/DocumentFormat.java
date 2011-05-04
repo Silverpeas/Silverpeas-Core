@@ -50,7 +50,7 @@ public enum DocumentFormat {
    * @param format a document format.
    * @return the document format passed as argument.
    */
-  public static DocumentFormat in(final DocumentFormat format) {
+  public static DocumentFormat inFormat(final DocumentFormat format) {
     return format;
   }
 
@@ -60,7 +60,7 @@ public enum DocumentFormat {
    * @param format the format of the document.
    * @return an instance of DocumentFormat corresponding to the specified format.
    */
-  public static DocumentFormat in(String format) {
+  public static DocumentFormat inFormat(String format) {
     return DocumentFormat.valueOf(format);
   }
 }

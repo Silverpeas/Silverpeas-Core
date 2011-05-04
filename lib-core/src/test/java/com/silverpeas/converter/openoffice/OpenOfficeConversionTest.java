@@ -67,14 +67,14 @@ public class OpenOfficeConversionTest {
   @Test(expected = DocumentFormatException.class)
   public void convertingANonODTDocumentShouldThrowADocumentFormatException() throws Exception {
     File document = aDocumentsProvider().getMSWordDocument();
-    converter.convert(document, in(pdf));
+    converter.convert(document, inFormat(pdf));
   }
 
   @Test(expected = DocumentFormatException.class)
   public void convertingADocumentIntoANonSupportedFormatShouldThrowADocumentFormatException() throws
     Exception {
     File document = aDocumentsProvider().getMSWordDocument();
-    converter.convert(document, in(odt));
+    converter.convert(document, inFormat(odt));
   }
 
   @Test(expected = DocumentFormatConversionException.class)
@@ -82,13 +82,13 @@ public class OpenOfficeConversionTest {
     throws Exception {
     ODTConverter odtConverter = DocumentFormatConverterFactory.getFactory().getODTConverter();
     File document = aDocumentsProvider().getODTDocument();
-    odtConverter.convert(document, in(pdf));
+    odtConverter.convert(document, inFormat(pdf));
   }
 
   @Test
   public void conversionWithAnOpenOfficeServiceUpShouldSucceed() throws Exception {
     File document = aDocumentsProvider().getODTDocument();
-    File convertedDocument = converter.convert(document, in(pdf));
+    File convertedDocument = converter.convert(document, inFormat(pdf));
     assertNotNull(convertedDocument);
 
     OpenOfficeDocumentConverter ooconverter = converter.getMockedOpenOfficeDocumentConverter();

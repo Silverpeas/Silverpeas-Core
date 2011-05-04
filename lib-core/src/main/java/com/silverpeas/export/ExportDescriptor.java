@@ -41,20 +41,12 @@ public class ExportDescriptor extends ImportExportDescriptor {
    * @return an export descriptor.
    */
   public static ExportDescriptor withWriter(final Writer writer) {
-    return new ExportDescriptor(writer);
-  }
-
-  /**
-   * Constructs a new export descriptor withWriter the specified writer. No specific format information
-   * will be passed to the exporter.
-   * @param writer the writer into wich the resources will be serialized.
-   */
-  private ExportDescriptor(final Writer writer) {
-    super();
+    ExportDescriptor descriptor = new ExportDescriptor();
     if (writer == null) {
       throw new IllegalArgumentException("The writer cannot be null!");
     }
-    this.writer = writer;
+    descriptor.setWriter(writer);
+    return descriptor;
   }
 
   /**
@@ -63,6 +55,10 @@ public class ExportDescriptor extends ImportExportDescriptor {
    */
   public Writer getWriter() {
     return this.writer;
+  }
+  
+  private void setWriter(final Writer writer) {
+    this.writer = writer;
   }
 
 }

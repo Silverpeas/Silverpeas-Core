@@ -45,7 +45,8 @@ import org.apache.commons.io.FilenameUtils;
 public class FileRepositoryManager extends Object {
 
   final static String s_sUpLoadPath = GeneralPropertiesManager.getString("uploadsPath");
-  static String s_sIndexUpLoadPath = GeneralPropertiesManager.getString("uploadsIndexPath");
+  static final String s_sIndexUpLoadPath = GeneralPropertiesManager.getString("uploadsIndexPath");
+  static final String exportTemplatePath = GeneralPropertiesManager.getString("exportTemplatePath");
   static String s_sTempPath = "";
   final static ResourceLocator uploadSettings=  new ResourceLocator(
           "com.stratelia.webactiv.util.uploads.uploadSettings", "");
@@ -57,7 +58,7 @@ public class FileRepositoryManager extends Object {
     try {
       s_sTempPath = GeneralPropertiesManager.getString("tempPath");
       if (!s_sTempPath.endsWith(File.separator)) {
-        s_sTempPath = s_sTempPath + File.separatorChar;
+        s_sTempPath += File.separatorChar;
       }
     } catch (Exception e) {
       SilverTrace.error("util", "FileRepositoryManager static",
@@ -387,5 +388,17 @@ public class FileRepositoryManager extends Object {
    */
   public static String getIndexUpLoadPath() {
     return s_sIndexUpLoadPath + File.separator;
+  }
+  
+  /**
+   * Gets the path of the repository that contains the templates to use in exports.
+   * @return the path of the export template repository.
+   */
+  public static String getExportTemplateRepository() {
+    String path = exportTemplatePath;
+    if (!path.endsWith("/")) {
+      path += "/";
+    }
+    return path;
   }
 }

@@ -42,7 +42,6 @@ import java.util.ResourceBundle;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourceBundleWrapper;
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -75,21 +75,21 @@ public class ODTConverterTest {
 
   @Test
   public void convertAnODTDocumentToPDF() throws Exception {
-    File convertedDocument = converter.convert(document, in(pdf));
+    File convertedDocument = converter.convert(document, inFormat(pdf));
     assertThat(convertedDocument.exists(), is(true));
     assertThat((Long)convertedDocument.length(), greaterThanOrEqualTo(143312l));
   }
 
   @Test
   public void convertAnODTDocumentToDoc() throws Exception {
-    File convertedDocument = converter.convert(document, in(doc));
+    File convertedDocument = converter.convert(document, inFormat(doc));
     assertThat(convertedDocument.exists(), is(true));
     assertThat((Long)convertedDocument.length(), greaterThanOrEqualTo(157184l));
   }
 
   @Test
   public void convertAnODTDocumentToRTF() throws Exception {
-    File convertedDocument = converter.convert(document, in(rtf));
+    File convertedDocument = converter.convert(document, inFormat(rtf));
     assertThat(convertedDocument.exists(), is(true));
     assertThat((Long)convertedDocument.length(), greaterThanOrEqualTo(1333739l));
   }
@@ -98,12 +98,12 @@ public class ODTConverterTest {
   public void convertANonODTDocument() throws Exception {
     File wrongDocument = getDocumentNamed(WRONG_DOCUMENT_NAME);
     assertThat(wrongDocument.exists(), is(true));
-    converter.convert(wrongDocument, in(pdf));
+    converter.convert(wrongDocument, inFormat(pdf));
   }
 
   @Test(expected=DocumentFormatException.class)
   public void convertAnODTDocumentIntoANonSupportedFormat() throws Exception {
-    converter.convert(document, in(odt));
+    converter.convert(document, inFormat(odt));
   }
 
   private File getDocumentNamed(String name) throws Exception {
