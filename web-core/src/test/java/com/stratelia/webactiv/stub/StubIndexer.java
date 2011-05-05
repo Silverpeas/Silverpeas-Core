@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,31 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.persistence;
+package com.stratelia.webactiv.stub;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerAdapter;
 
-import com.stratelia.webactiv.persistence.database.SilverpeasBeanDAOImpl;
-
-public class SilverpeasBeanDAOFactory {
-
-  private static Map<String, SilverpeasBeanDAO<? extends SilverpeasBeanIntf>> silverpeasBeanDAOs = new HashMap<String, SilverpeasBeanDAO<? extends SilverpeasBeanIntf>>();
-
-  @SuppressWarnings("unchecked")
-  public static <T extends SilverpeasBeanIntf> SilverpeasBeanDAO<T> getDAO(String beanName) throws
-      PersistenceException {
-    SilverpeasBeanDAO<T> result = null;
-    synchronized (SilverpeasBeanDAOFactory.class) {
-      result = (SilverpeasBeanDAO<T>) silverpeasBeanDAOs.get(beanName);
-      if (result == null) {
-        result = new SilverpeasBeanDAOImpl<T>(beanName);
-        silverpeasBeanDAOs.put(beanName, result);
-      }
-    }
-    return result;
-  }
-
-  private SilverpeasBeanDAOFactory() {
-  }
+/**
+ *
+ * @author ehugonnet
+ */
+public class StubIndexer extends ComponentIndexerAdapter {
+  
 }

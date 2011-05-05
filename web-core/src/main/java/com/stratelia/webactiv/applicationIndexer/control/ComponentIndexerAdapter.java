@@ -21,31 +21,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.persistence;
+package com.stratelia.webactiv.applicationIndexer.control;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-import com.stratelia.webactiv.persistence.database.SilverpeasBeanDAOImpl;
+/**
+ *
+ * @author ehugonnet
+ */
+public class ComponentIndexerAdapter implements ComponentIndexerInterface {
 
-public class SilverpeasBeanDAOFactory {
-
-  private static Map<String, SilverpeasBeanDAO<? extends SilverpeasBeanIntf>> silverpeasBeanDAOs = new HashMap<String, SilverpeasBeanDAO<? extends SilverpeasBeanIntf>>();
-
-  @SuppressWarnings("unchecked")
-  public static <T extends SilverpeasBeanIntf> SilverpeasBeanDAO<T> getDAO(String beanName) throws
-      PersistenceException {
-    SilverpeasBeanDAO<T> result = null;
-    synchronized (SilverpeasBeanDAOFactory.class) {
-      result = (SilverpeasBeanDAO<T>) silverpeasBeanDAOs.get(beanName);
-      if (result == null) {
-        result = new SilverpeasBeanDAOImpl<T>(beanName);
-        silverpeasBeanDAOs.put(beanName, result);
-      }
-    }
-    return result;
+  public ComponentIndexerAdapter() {
   }
 
-  private SilverpeasBeanDAOFactory() {
+  @Override
+  public void index(MainSessionController mainSessionCtrl, ComponentContext context) throws
+      Exception {
+    SilverTrace.info("applicationIndexer", "ApplicationIndexer.getIndexer()",
+        "Fake indexer when we have problems loading a real one.");
   }
 }

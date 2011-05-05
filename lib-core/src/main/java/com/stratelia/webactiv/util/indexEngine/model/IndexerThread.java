@@ -38,6 +38,7 @@ public class IndexerThread extends Thread {
   /**
    * Builds and starts the thread which will process all the requests. This method is synchonized on
    * the requests queue in order to guarantee that only one IndexerThread is running.
+   * @param indexManager 
    */
   static public void start(IndexManager indexManager) {
     synchronized (requestList) {
@@ -52,6 +53,7 @@ public class IndexerThread extends Thread {
 
   /**
    * Add a request 'add entry index'
+   * @param indexEntry 
    */
   static public void addIndexEntry(FullIndexEntry indexEntry) {
     synchronized (requestList) {
@@ -79,6 +81,7 @@ public class IndexerThread extends Thread {
    * indexManager. This method should be private but is already declared public in the base class
    * Thread.
    */
+  @Override
   public void run() {
     Request request = null;
 

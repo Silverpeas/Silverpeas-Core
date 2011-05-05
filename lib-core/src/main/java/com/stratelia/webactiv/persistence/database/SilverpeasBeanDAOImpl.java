@@ -21,81 +21,83 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.persistence.database;
 
-import java.sql.*;
-import java.util.*;
-import java.beans.*;
-import java.lang.reflect.*;
-import com.stratelia.webactiv.util.*;
-import com.stratelia.webactiv.util.exception.*;
-import com.stratelia.silverpeas.silvertrace.*;
-import com.stratelia.webactiv.persistence.*;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.persistence.JdbcData;
+import com.stratelia.webactiv.persistence.PersistenceException;
+import com.stratelia.webactiv.persistence.SilverpeasBean;
+import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
+import com.stratelia.webactiv.persistence.SilverpeasBeanIntf;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
-public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
-  private PropertyDescriptor[] properties = null;
-  private Class silverpeasBeanClass = null;
+public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements SilverpeasBeanDAO<T> {
 
+  private final PropertyDescriptor[] properties;
+  private Class<T> silverpeasBeanClass;
   // how to make connection with the database
   private int m_ConnectionType = SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
-  private String m_DatasourceName = null;
+  private String datasourceName = null;
   private JdbcData m_JdbcData = null;
-  private String m_TableName = null;
+  private String tableName = null;
 
-  /**
-   * SilverpeasBeanDAOImpl
-   */
-  public SilverpeasBeanDAOImpl(String beanClassName)
-      throws PersistenceException {
+  @SuppressWarnings("unchecked")
+  public SilverpeasBeanDAOImpl(String beanClassName) throws PersistenceException {
     try {
-      silverpeasBeanClass = Class.forName(beanClassName);
+      silverpeasBeanClass = (Class<T>) Class.forName(beanClassName);
+      T object = silverpeasBeanClass.newInstance();
 
-      Object object = silverpeasBeanClass.newInstance();
-
-      if (!(object instanceof SilverpeasBean))
+      if (!(object instanceof SilverpeasBean)) {
         throw new PersistenceException(
             "SilverpeasBeanDAOImpl.SilverpeasBeanDAOImpl( String beanClassName )",
             SilverpeasException.ERROR, "persistence.EX_ISNOT_SILVERPEASBEAN",
             "classe= " + beanClassName, null);
-
+      }
       BeanInfo infos = Introspector.getBeanInfo(silverpeasBeanClass);
       properties = infos.getPropertyDescriptors();
 
       for (int i = 0; i < properties.length; i++) {
         String type = properties[i].getPropertyType().getName();
-        SilverTrace
-            .info(
-            "persistence",
+        SilverTrace.info("persistence",
             "SilverpeasBeanDAOImpl.SilverpeasBeanDAOImpl( String beanClassName )",
-            "root.MSG_GEN_PARAM_VALUE", "new(" + beanClassName
-            + "), property Name = " + properties[i].getName()
-            + ", type = " + type);
-        if (isTypeValid(type) == false) {
-          SilverTrace
-              .warn(
-              "persistence",
+            "root.MSG_GEN_PARAM_VALUE", "new(" + beanClassName + "), property Name = "
+            + properties[i].getName() + ", type = " + type);
+        if (!isTypeValid(type)) {
+          SilverTrace.warn("persistence",
               "SilverpeasBeanDAOImpl.SilverpeasBeanDAOImpl( String beanClassName )",
               "persistence.MSG_WARN_PROPERTIE_NOT_MANAGED", "");
         }
       }
-
-      SilverpeasBeanIntf sb = (SilverpeasBean) object;
-
-      m_ConnectionType = sb._getConnectionType();
+      m_ConnectionType = object._getConnectionType();
       switch (m_ConnectionType) {
         case SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE: {
-          m_DatasourceName = sb._getDatasourceName();
+          datasourceName = object._getDatasourceName();
           break;
         }
         case SilverpeasBeanDAO.CONNECTION_TYPE_JDBC_CLASSIC: {
-          m_JdbcData = sb._getJdbcData();
+          m_JdbcData = object._getJdbcData();
           break;
         }
       }
-
-      m_TableName = sb._getTableName();
-
+      tableName = object._getTableName();
     } catch (Exception e) {
       throw new PersistenceException(
           "SilverpeasBeanDAOImpl.SilverpeasBeanDAOImpl( String beanClassName )",
@@ -104,83 +106,66 @@ public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
     }
   }
 
+  @Override
   public void remove(WAPrimaryKey pk) throws PersistenceException {
     remove(null, pk);
   }
 
-  /**
-   * remove
-   */
-  public void remove(Connection connection, WAPrimaryKey pk)
-      throws PersistenceException {
-    Connection con = null;
-    if (connection == null)
+  @Override
+  public void remove(Connection connection, WAPrimaryKey pk) throws PersistenceException {
+    Connection con;
+    if (connection == null) {
       con = getConnection();
-    else
+    } else {
       con = connection;
-
+    }
     PreparedStatement prepStmt = null;
-
     try {
-      String updateStatement = "delete from " + getTableName(pk)
-          + " where id = ?";
-
+      String updateStatement = "delete from " + getTableName(pk) + " where id = ?";
       prepStmt = con.prepareStatement(updateStatement);
-      SilverTrace.info("persistence",
-          "SilverpeasBeanDAOImpl.remove(WAPrimaryKey pk)",
-          "root.MSG_GEN_PARAM_VALUE", "queryStr = " + updateStatement
-          + ", id= " + pk.getId());
-
+      SilverTrace.info("persistence", "SilverpeasBeanDAOImpl.remove(WAPrimaryKey pk)",
+          "root.MSG_GEN_PARAM_VALUE", "queryStr = " + updateStatement + ", id= " + pk.getId());
       prepStmt.setInt(1, Integer.parseInt(pk.getId()));
       prepStmt.executeUpdate();
     } catch (Exception e) {
-      throw new PersistenceException(
-          "SilverpeasBeanDAOImpl.remove(WAPrimaryKey pk)",
+      throw new PersistenceException("SilverpeasBeanDAOImpl.remove(WAPrimaryKey pk)",
           SilverpeasException.ERROR, "persistence.EX_CANT_REMOVE_OBJECT", "", e);
     } finally {
       try {
         DBUtil.close(prepStmt);
-        if (connection == null)
+        if (connection == null) {
           closeConnection(con);
+        }
       } catch (Exception e) {
-        throw new PersistenceException(
-            "SilverpeasBeanDAOImpl.remove(WAPrimaryKey pk)",
+        throw new PersistenceException("SilverpeasBeanDAOImpl.remove(WAPrimaryKey pk)",
             SilverpeasException.ERROR, "root.EX_RESOURCE_CLOSE_FAILED", "", e);
       }
     }
   }
 
-  public void removeWhere(WAPrimaryKey pk, String p_WhereClause)
-      throws PersistenceException {
-    removeWhere(null, pk, p_WhereClause);
+  @Override
+  public void removeWhere(WAPrimaryKey pk, String whereClause) throws PersistenceException {
+    removeWhere(null, pk, whereClause);
   }
 
-  /**
-   * removeWhere
-   */
-  public void removeWhere(Connection connection, WAPrimaryKey pk,
-      String p_WhereClause) throws PersistenceException {
-
-    Connection con = null;
-    if (connection == null)
+  @Override
+  public void removeWhere(Connection connection, WAPrimaryKey pk, String whereClause) throws
+      PersistenceException {
+    Connection con;
+    if (connection == null) {
       con = getConnection();
-    else
+    } else {
       con = connection;
-
+    }
     PreparedStatement prepStmt = null;
-
     try {
-      String updateStatement = "delete from " + getTableName(pk) + " where "
-          + p_WhereClause;
+      String updateStatement = "delete from " + getTableName(pk) + " where " + whereClause;
 
       prepStmt = con.prepareStatement(updateStatement);
-      SilverTrace
-          .info(
-          "persistence",
+      SilverTrace.info("persistence",
           "SilverpeasBeanDAOImpl.removeWhere( WAPrimaryKey pk, String p_WhereClause )",
-          "root.MSG_GEN_PARAM_VALUE", "queryStr = " + updateStatement
-          + ", id= " + pk.getId() + ", whereClause= " + p_WhereClause);
-
+          "root.MSG_GEN_PARAM_VALUE", "queryStr = " + updateStatement + ", id= " + pk.getId()
+          + ", whereClause= " + whereClause);
       prepStmt.executeUpdate();
     } catch (Exception e) {
       throw new PersistenceException(
@@ -189,8 +174,9 @@ public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
     } finally {
       try {
         DBUtil.close(prepStmt);
-        if (connection == null)
+        if (connection == null) {
           closeConnection(con);
+        }
       } catch (Exception e) {
         throw new PersistenceException(
             "SilverpeasBeanDAOImpl.removeWhere( WAPrimaryKey pk, String p_WhereClause )",
@@ -199,47 +185,42 @@ public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
     }
   }
 
-  public void update(SilverpeasBeanIntf bean) throws PersistenceException {
+  @Override
+  public void update(T bean) throws PersistenceException {
     update(null, bean);
   }
 
-  /**
-   * update
-   */
-  public void update(Connection connection, SilverpeasBeanIntf bean)
-      throws PersistenceException {
-    Connection con = null;
-    if (connection == null)
+  @Override
+  public void update(Connection connection, T bean) throws PersistenceException {
+    Connection con;
+    if (connection == null) {
       con = getConnection();
-    else
+    } else {
       con = connection;
-
+    }
     PreparedStatement prepStmt = null;
 
     try {
       String statement = null;
-
       for (int i = 0; i < properties.length; i++) {
         String type = properties[i].getPropertyType().getName();
-        SilverTrace.info("persistence",
-            "SilverpeasBeanDAOImpl.update(SilverpeasBean bean)",
-            "root.MSG_GEN_PARAM_VALUE", "property Name = "
-            + properties[i].getName() + ", type = " + type);
+        SilverTrace.info("persistence", "SilverpeasBeanDAOImpl.update(SilverpeasBean bean)",
+            "root.MSG_GEN_PARAM_VALUE", "property Name = " + properties[i].getName()
+            + ", type = " + type);
 
         if (isTypeValid(type) == true) {
-          if (statement == null)
+          if (statement == null) {
             statement = properties[i].getName() + " = ? ";
-          else
+          } else {
             statement += ", " + properties[i].getName() + " = ? ";
+          }
         }
       }
 
-      String updateStatement = "update " + getTableName(bean.getPK()) + " set "
-          + statement + " where id = ?";
+      String updateStatement = "update " + getTableName(bean.getPK()) + " set " + statement + " where id = ?";
 
       prepStmt = con.prepareStatement(updateStatement);
-      SilverTrace.info("persistence",
-          "SilverpeasBeanDAOImpl.update(SilverpeasBean bean)",
+      SilverTrace.info("persistence", "SilverpeasBeanDAOImpl.update(SilverpeasBean bean)",
           "root.MSG_GEN_PARAM_VALUE", "queryStr = " + updateStatement
           + ", id= " + bean.getPK().getId());
 
@@ -250,52 +231,45 @@ public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
       prepStmt.executeUpdate();
 
     } catch (Exception e) {
-      throw new PersistenceException(
-          "SilverpeasBeanDAOImpl.update(SilverpeasBean bean) ",
+      throw new PersistenceException("SilverpeasBeanDAOImpl.update(SilverpeasBean bean) ",
           SilverpeasException.ERROR, "persistence.EX_CANT_UPDATE_OBJECT", "", e);
     } finally {
       try {
         DBUtil.close(prepStmt);
-        if (connection == null)
+        if (connection == null) {
           closeConnection(con);
+        }
       } catch (Exception e) {
-        throw new PersistenceException(
-            "SilverpeasBeanDAOImpl.update(SilverpeasBean bean)",
+        throw new PersistenceException("SilverpeasBeanDAOImpl.update(SilverpeasBean bean)",
             SilverpeasException.ERROR, "root.EX_RESOURCE_CLOSE_FAILED", "", e);
       }
     }
 
   }
 
-  public WAPrimaryKey add(SilverpeasBeanIntf bean) throws PersistenceException {
+  @Override
+  public WAPrimaryKey add(T bean) throws PersistenceException {
     return add(null, bean);
   }
 
-  /**
-   * add
-   */
-  public WAPrimaryKey add(Connection connection, SilverpeasBeanIntf bean)
-      throws PersistenceException {
-
-    Connection con = null;
-    if (connection == null)
+  @Override
+  public WAPrimaryKey add(Connection connection, T bean) throws PersistenceException {
+    Connection con;
+    if (connection == null) {
       con = getConnection();
-    else
+    } else {
       con = connection;
+    }
     PreparedStatement prepStmt = null;
-
     try {
       String columns = null;
       String statement = null;
-
       for (int i = 0; i < properties.length; i++) {
         String type = properties[i].getPropertyType().getName();
-        SilverTrace.info("persistence",
-            "SilverpeasBeanDAOImpl.add(SilverpeasBean bean)",
-            "root.MSG_GEN_PARAM_VALUE", "property Name = "
-            + properties[i].getName() + ", type = " + type);
-
-        if (isTypeValid(type) == true) {
+        SilverTrace.info("persistence", "SilverpeasBeanDAOImpl.add(SilverpeasBean bean)",
+            "root.MSG_GEN_PARAM_VALUE", "property Name = " + properties[i].getName()
+            + ", type = " + type);
+        if (isTypeValid(type)) {
           if (columns == null) {
             columns = properties[i].getName();
             statement = " ? ";
@@ -305,140 +279,115 @@ public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
           }
         }
       }
-
       columns += ", id";
       statement += ", ? ";
-
-      String insertStatement = "insert into " + getTableName(bean.getPK())
-          + " (" + columns + ") " + " values (" + statement + ")";
-
+      String insertStatement = "insert into " + getTableName(bean.getPK()) + " (" + columns
+          + ") " + " values (" + statement + ")";
       prepStmt = con.prepareStatement(insertStatement);
-      SilverTrace.info("persistence",
-          "SilverpeasBeanDAOImpl.add(SilverpeasBean bean)",
-          "root.MSG_GEN_PARAM_VALUE", "queryStr = " + insertStatement
-          + ", id= " + bean.getPK().getId());
+      SilverTrace.info("persistence", "SilverpeasBeanDAOImpl.add(SilverpeasBean bean)",
+          "root.MSG_GEN_PARAM_VALUE", "queryStr = " + insertStatement + ", id= "
+          + bean.getPK().getId());
 
       int count = prepareStatementSetProperties(prepStmt, bean);
-
       // for the where clause
       int id = DBUtil.getNextId(getTableName(bean.getPK()), "id");
       prepStmt.setInt(count, id);
       prepStmt.executeUpdate();
-
       bean.getPK().setId(id + "");
       return bean.getPK();
 
     } catch (Exception e) {
-      throw new PersistenceException(
-          "SilverpeasBeanDAOImpl.add(SilverpeasBean bean)",
+      throw new PersistenceException("SilverpeasBeanDAOImpl.add(SilverpeasBean bean)",
           SilverpeasException.ERROR, "persistence.EX_CANT_ADD_OBJECT", "", e);
     } finally {
       try {
         DBUtil.close(prepStmt);
-        if (connection == null)
+        if (connection == null) {
           closeConnection(con);
+        }
       } catch (Exception e) {
-        throw new PersistenceException(
-            "SilverpeasBeanDAOImpl.add(SilverpeasBean bean)",
+        throw new PersistenceException("SilverpeasBeanDAOImpl.add(SilverpeasBean bean)",
             SilverpeasException.ERROR, "root.EX_RESOURCE_CLOSE_FAILED", "", e);
       }
     }
   }
 
-  public SilverpeasBeanIntf findByPrimaryKey(WAPrimaryKey pk)
-      throws PersistenceException {
+  @Override
+  public T findByPrimaryKey(WAPrimaryKey pk) throws PersistenceException {
     return findByPrimaryKey(null, pk);
   }
 
-  /**
-   * findByPrimaryKey
-   */
-  public SilverpeasBeanIntf findByPrimaryKey(Connection connection,
-      WAPrimaryKey pk) throws PersistenceException {
-
+  @Override
+  public T findByPrimaryKey(Connection connection, WAPrimaryKey pk) throws PersistenceException {
     PreparedStatement prepStmt = null;
-    Connection con = null;
-    if (connection == null)
+    Connection con;
+    if (connection == null) {
       con = getConnection();
-    else
+    } else {
       con = connection;
+    }
     ResultSet rs = null;
-
     try {
-      String selectStatement = "select  " + getColumnNames() + " from "
-          + getTableName(pk) + " where id = ?";
+      String selectStatement = "select  " + getColumnNames() + " from " + getTableName(pk) + " where id = ?";
 
-      SilverTrace.info("persistence",
-          "SilverpeasBeanDAOImpl.findByPrimaryKey(WAPrimaryKey pk)",
-          "root.MSG_GEN_PARAM_VALUE", "queryStr = " + selectStatement
-          + ", id= " + pk.getId());
+      SilverTrace.info("persistence", "SilverpeasBeanDAOImpl.findByPrimaryKey(WAPrimaryKey pk)",
+          "root.MSG_GEN_PARAM_VALUE", "queryStr = " + selectStatement + ", id= " + pk.getId());
       prepStmt = con.prepareStatement(selectStatement);
-
       prepStmt.setInt(1, Integer.parseInt(pk.getId()));
       rs = prepStmt.executeQuery();
-
       if (rs.next()) {
-        SilverpeasBeanIntf bean = getSilverpeasBeanFromResultSet(pk, rs);
-        return bean;
-      } else
-        return null;
+        return getSilverpeasBeanFromResultSet(pk, rs);
+      }
+      return null;
     } catch (Exception e) {
-      throw new PersistenceException(
-          "SilverpeasBeanDAOImpl.findByPrimaryKey(WAPrimaryKey pk)",
+      throw new PersistenceException("SilverpeasBeanDAOImpl.findByPrimaryKey(WAPrimaryKey pk)",
           SilverpeasException.ERROR, "persistence.EX_CANT_FIND_OBJECT", "", e);
     } finally {
       try {
         DBUtil.close(rs, prepStmt);
-        if (connection == null)
+        if (connection == null) {
           closeConnection(con);
+        }
       } catch (Exception e) {
-        throw new PersistenceException(
-            "SilverpeasBeanDAOImpl.findByPrimaryKey(WAPrimaryKey pk)",
+        throw new PersistenceException("SilverpeasBeanDAOImpl.findByPrimaryKey(WAPrimaryKey pk)",
             SilverpeasException.ERROR, "root.EX_RESOURCE_CLOSE_FAILED", "", e);
       }
     }
   }
 
-  public Collection findByWhereClause(WAPrimaryKey pk, String whereClause)
-      throws PersistenceException {
+  @Override
+  public Collection<T> findByWhereClause(WAPrimaryKey pk, String whereClause) throws
+      PersistenceException {
     return findByWhereClause(null, pk, whereClause);
   }
 
-  /**
-   * findByWhereClause
-   */
-  public Collection findByWhereClause(Connection connection, WAPrimaryKey pk,
-      String whereClause) throws PersistenceException {
-
+  @Override
+  public Collection<T> findByWhereClause(Connection connection, WAPrimaryKey pk, String whereClause)
+      throws PersistenceException {
     PreparedStatement prepStmt = null;
-    Connection con = null;
-    if (connection == null)
+    Connection con;
+    if (connection == null) {
       con = getConnection();
-    else
+    } else {
       con = connection;
-
+    }
     ResultSet rs = null;
-
     try {
-
-      String selectStatement = "select distinct " + getColumnNames() + " from "
-          + getTableName(pk);
-
-      if (whereClause != null)
+      String selectStatement = "select distinct " + getColumnNames() + " from " + getTableName(pk);
+      if (whereClause != null) {
         selectStatement += " where " + whereClause;
+      }
 
-      SilverTrace
-          .info(
-          "persistence",
+      SilverTrace.info("persistence",
           "SilverpeasBeanDAOImpl.findByWhereClause(WAPrimaryKey pk, String whereClause)",
-          "root.MSG_GEN_PARAM_VALUE", "queryStr = " + selectStatement
-          + ", id= " + pk.getId() + ", whereClause= " + whereClause);
+          "root.MSG_GEN_PARAM_VALUE",
+          "queryStr = " + selectStatement + ", id= " + pk.getId() + ", whereClause= " + whereClause);
       prepStmt = con.prepareStatement(selectStatement);
 
       rs = prepStmt.executeQuery();
-      ArrayList list = new ArrayList();
+      List<T> list = new ArrayList<T>();
       while (rs.next()) {
-        SilverpeasBeanIntf bean = getSilverpeasBeanFromResultSet(pk, rs);
+        T bean = getSilverpeasBeanFromResultSet(pk, rs);
         list.add(bean);
       }
       return list;
@@ -449,8 +398,9 @@ public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
     } finally {
       try {
         DBUtil.close(rs, prepStmt);
-        if (connection == null)
+        if (connection == null) {
           closeConnection(con);
+        }
       } catch (Exception e) {
         throw new PersistenceException(
             "SilverpeasBeanDAOImpl.findByWhereClause(WAPrimaryKey pk, String whereClause)",
@@ -461,7 +411,6 @@ public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
   }
 
   /*--------------------------------------------------------------------------------------------------------------------*/
-
   /**
    * getConnection
    */
@@ -470,21 +419,20 @@ public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
       Connection con = null;
       switch (m_ConnectionType) {
         case SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE: {
-          con = DBUtil.makeConnection(m_DatasourceName);
+          con = DBUtil.makeConnection(datasourceName);
           break;
         }
         case SilverpeasBeanDAO.CONNECTION_TYPE_JDBC_CLASSIC: {
           Class.forName(m_JdbcData.JDBCdriverName);
-          con = DriverManager.getConnection(m_JdbcData.JDBCurl,
-              m_JdbcData.JDBClogin, m_JdbcData.JDBCpassword);
+          con = DriverManager.getConnection(m_JdbcData.JDBCurl, m_JdbcData.JDBClogin,
+              m_JdbcData.JDBCpassword);
           break;
         }
         case SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS: {
           con = DBUtil.makeConnection(JNDINames.PERSISTENCE_DB_DATASOURCE);
           break;
         }
-        default /* CONNECTION_TYPE_EJBDATASOURCE_SILVERPEAS */
-        : {
+        default /* CONNECTION_TYPE_EJBDATASOURCE_SILVERPEAS */: {
           con = DBUtil.makeConnection(JNDINames.PERSISTENCE_EJB_DATASOURCE);
           break;
         }
@@ -502,8 +450,9 @@ public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
   private void closeConnection(Connection dbConnect) {
 
     try {
-      if (dbConnect != null)
+      if (dbConnect != null) {
         dbConnect.close();
+      }
     } catch (SQLException se) {
       SilverTrace.error("persistence",
           "SilverpeasBeanDAOImpl.closeConnection(Connection dbConnect)",
@@ -525,10 +474,11 @@ public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
           + properties[i].getName() + ", type = " + type);
 
       if (isTypeValid(type) == true) {
-        if (statement == null)
+        if (statement == null) {
           statement = properties[i].getName();
-        else
+        } else {
           statement += ", " + properties[i].getName();
+        }
       }
     }
     statement += ", id";
@@ -538,11 +488,9 @@ public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
   /**
    * getSilverpeasBeanFromResultSet
    */
-  private SilverpeasBeanIntf getSilverpeasBeanFromResultSet(WAPrimaryKey pk,
-      ResultSet rs) throws Exception {
+  private T getSilverpeasBeanFromResultSet(WAPrimaryKey pk, ResultSet rs) throws Exception {
 
-    SilverpeasBeanIntf bean = (SilverpeasBeanIntf) silverpeasBeanClass
-        .newInstance();
+    T bean = (T) silverpeasBeanClass.newInstance();
     int count = 1;
 
     for (int i = 0; i < properties.length; i++) {
@@ -586,12 +534,11 @@ public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
           try {
             parameters[0] = DateUtil.parse(value);
           } catch (Exception e) {
-            SilverTrace
-                .error(
-                    "persistence",
-                    "SilverpeasBeanDAOImpl.getSilverpeasBeanFromResultSet(WAPrimaryKey pk, ResultSet rs)",
-                    "root.EX_CANT_PARSE_DATE", "property Name = "
-                        + properties[i].getName() + ", date= " + value);
+            SilverTrace.error(
+                "persistence",
+                "SilverpeasBeanDAOImpl.getSilverpeasBeanFromResultSet(WAPrimaryKey pk, ResultSet rs)",
+                "root.EX_CANT_PARSE_DATE", "property Name = "
+                + properties[i].getName() + ", date= " + value);
             throw e;
           }
           properties[i].getWriteMethod().invoke(bean, parameters);
@@ -639,8 +586,8 @@ public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
 
     String result = "";
 
-    if (m_TableName != null) {
-      result = m_TableName;
+    if (tableName != null) {
+      result = tableName;
     } else {
       result = pk.getTableName();
     }
@@ -651,63 +598,49 @@ public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
   /**
    * isTypeValid
    */
-  private boolean isTypeValid(String p_JavaTypeName) {
-
-    boolean result = false;
-
-    if ((p_JavaTypeName.equals("int"))
-        || (p_JavaTypeName.equals("java.lang.Integer"))
-        || (p_JavaTypeName.equals("long"))
-        || (p_JavaTypeName.equals("java.lang.Long"))
-        || (p_JavaTypeName.equals("java.lang.String"))
-        || (p_JavaTypeName.equals("java.util.Date"))
-        || (p_JavaTypeName.equals("float"))
-        || (p_JavaTypeName.equals("java.lang.Float"))
-        || (p_JavaTypeName.equals("double"))
-        || (p_JavaTypeName.equals("java.lang.Double"))
-        || (p_JavaTypeName.equals("boolean"))
-        || (p_JavaTypeName.equals("java.lang.Boolean"))) {
-      result = true;
-    }
-
-    return result;
+  private boolean isTypeValid(String javaTypeName) {
+    return "int".equals(javaTypeName) || "java.lang.Integer".equals(javaTypeName)
+        || "long".equals(javaTypeName) || "java.lang.Long".equals(javaTypeName)
+        || "java.lang.String".equals(javaTypeName) || "java.util.Date".equals(javaTypeName)
+        || "float".equals(javaTypeName) || "java.lang.Float".equals(javaTypeName)
+        || "double".equals(javaTypeName) || "java.lang.Double".equals(javaTypeName)
+        || "boolean".equals(javaTypeName) || "java.lang.Boolean".equals(javaTypeName);
   }
 
   /**
    * prepareStatementSetProperties
    */
-  private int prepareStatementSetProperties(PreparedStatement prepStmt,
-      SilverpeasBeanIntf bean) throws IllegalAccessException, SQLException,
-      InvocationTargetException {
-
+  private int prepareStatementSetProperties(PreparedStatement prepStmt, T bean) throws
+      IllegalAccessException, SQLException, InvocationTargetException {
     int count = 1;
-    String type;
 
     for (int i = 0; i < properties.length; i++) {
-      type = properties[i].getPropertyType().getName();
-      if ((type.equals("int")) || (type.equals("java.lang.Integer"))) {
-        Integer integer = (Integer) properties[i].getReadMethod().invoke(bean,
-            null);
-        if (integer == null)
+      String type = properties[i].getPropertyType().getName();
+      if (("int".equals(type)) || ("java.lang.Integer".equals(type))) {
+        Integer integer = (Integer) properties[i].getReadMethod().invoke(bean, null);
+        if (integer == null) {
           prepStmt.setInt(count, -1);
-        else
+        } else {
           prepStmt.setInt(count, integer.intValue());
+        }
         count++;
-      } else if ((type.equals("long")) || (type.equals("java.lang.Long"))) {
+      } else if (("long".equals(type)) || ("java.lang.Long".equals(type))) {
         Long l = (Long) properties[i].getReadMethod().invoke(bean, null);
-        if (l == null)
+        if (l == null) {
           prepStmt.setLong(count, 0);
-        else
+        } else {
           prepStmt.setLong(count, l.longValue());
+        }
         count++;
-      } else if ((type.equals("boolean")) || (type.equals("java.lang.Boolean"))) {
+      } else if (("boolean".equals(type)) || ("java.lang.Boolean".equals(type))) {
         Boolean l = (Boolean) properties[i].getReadMethod().invoke(bean, null);
-        if (l == null)
+        if (l == null) {
           prepStmt.setBoolean(count, false);
-        else
+        } else {
           prepStmt.setBoolean(count, l.booleanValue());
+        }
         count++;
-      } else if (type.equals("java.lang.String")) {
+      } else if ("java.lang.String".equals(type)) {
         String string = (String) properties[i].getReadMethod().invoke(bean,
             null);
         if (string == null) {
@@ -716,28 +649,29 @@ public class SilverpeasBeanDAOImpl implements SilverpeasBeanDAO {
           prepStmt.setString(count, string);
         }
         count++;
-      } else if (type.equals("java.util.Date")) {
-        java.util.Date date = (java.util.Date) properties[i].getReadMethod()
-            .invoke(bean, null);
+      } else if ("java.util.Date".equals(type)) {
+        java.util.Date date = (java.util.Date) properties[i].getReadMethod().invoke(bean, null);
         if (date == null) {
           prepStmt.setNull(count, Types.VARCHAR);
         } else {
           prepStmt.setString(count, DateUtil.date2SQLDate(date));
         }
         count++;
-      } else if ((type.equals("float")) || (type.equals("java.lang.Float"))) {
+      } else if (("float".equals(type)) || ("java.lang.Float".equals(type))) {
         Float f = (Float) properties[i].getReadMethod().invoke(bean, null);
-        if (f == null)
+        if (f == null) {
           prepStmt.setFloat(count, 0);
-        else
+        } else {
           prepStmt.setFloat(count, f.floatValue());
+        }
         count++;
-      } else if ((type.equals("double")) || (type.equals("java.lang.Double"))) {
+      } else if (("double".equals(type)) || ("java.lang.Double".equals(type))) {
         Double d = (Double) properties[i].getReadMethod().invoke(bean, null);
-        if (d == null)
+        if (d == null) {
           prepStmt.setDouble(count, 0);
-        else
+        } else {
           prepStmt.setDouble(count, d.doubleValue());
+        }
         count++;
       } else {
         SilverTrace.debug("persistence",
