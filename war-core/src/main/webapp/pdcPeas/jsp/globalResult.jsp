@@ -627,7 +627,7 @@ function showExternalSearchError() {
 			}
             
             String serverName = "";
-			if (externalSearchEnabled) {
+			if (externalSearchEnabled && gsr.getIndexEntry() != null) {
               serverName = "external_server_" + (StringUtil.isDefined(gsr.getIndexEntry().getServerName())? gsr.getIndexEntry().getServerName(): "unknown");
             }
 
