@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.versioningPeas.servlets;
 
 import java.io.File;
@@ -66,6 +65,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 public class VersioningRequestRouter extends ComponentRequestRouter {
+
   private static final long serialVersionUID = 4808952397898736028L;
 
   @Override
@@ -128,7 +128,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         Document document = versioningSC.getEditingDocument();
         ArrayList<Worker> users = document.getWorkList();
         if (lines != null) {
-          int users_count = (new Integer(lines)).intValue();
+          int users_count = Integer.parseInt(lines);
           if (users_count == users.size()) {
             ArrayList<Worker> new_users = new ArrayList<Worker>(users_count);
 
@@ -163,8 +163,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
             if (addIndex >= 0 && addIndex < users_count) {
               Worker user = new_users.get(addIndex);
               Worker new_user =
-                  new Worker(user.getUserId(), Integer.parseInt(versioningSC.getEditingDocument()
-                  .getPk().getId()),
+                  new Worker(user.getUserId(), Integer.parseInt(versioningSC.getEditingDocument().
+                  getPk().getId()),
                   0, user.isApproval(), true, versioningSC.getComponentId(),
                   user.getType(), user.isSaved(), user.isUsed(), user.getListType());
               new_users.add(addIndex + 1, new_user);
@@ -184,7 +184,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         if (!StringUtil.isDefined(listType)) {
           listType = VersioningSessionController.WRITERS_LIST_SIMPLE;
         }
-        document.setCurrentWorkListOrder(new Integer(listType).intValue());
+        document.setCurrentWorkListOrder(Integer.parseInt(listType));
         ProfileInst profile = versioningSC.getProfile(VersioningSessionController.WRITER);
         ArrayList<Worker> workers = new ArrayList<Worker>();
         if (profile != null) {
@@ -234,8 +234,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         String role = request.getParameter("Role");
         String listType = request.getParameter("ListType");
         if (StringUtil.isDefined(listType)) {
-          versioningSC.getEditingDocument().setCurrentWorkListOrder(
-              new Integer(listType).intValue());
+          versioningSC.getEditingDocument().setCurrentWorkListOrder(Integer.parseInt(listType));
         }
         versioningSC.initUserPanelInstanceForGroupsUsers(role);
         destination = Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
@@ -306,8 +305,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         String name = request.getParameter("name");
         String description = request.getParameter("description");
         String comments = request.getParameter("comments");
-        Document document = versioningSC.getDocument(new DocumentPK(
-            new Integer(docId).intValue(), versioningSC.getComponentId()));
+        Document document = versioningSC.getDocument(new DocumentPK(Integer.parseInt(docId),
+            versioningSC.getComponentId()));
         document.setDescription(description);
         document.setName(name);
         document.setAdditionalInfo(comments);
@@ -339,7 +338,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         String setType = request.getParameter("SetType"); // 'U'for users or 'G'
         // for groups
         versioningSC.setWorkerValidator(versioningSC.getEditingDocument().getWorkList(),
-            new Integer(setTypeId).intValue(), setType);
+            Integer.parseInt(setTypeId), setType);
         destination = getDestination("ViewWritersList", versioningSC, request);
       } else if (function.equals("ListPublicVersionsOfDocument")) {
         String documentId = request.getParameter("DocId");
@@ -403,7 +402,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
         Document document = versioningSC.getDocument(documentPK);
         document.setStatus(1);
         document.setLastCheckOutDate(new Date());
-        versioningSC.checkDocumentOut(documentPK, new Integer(versioningSC.getUserId()).intValue(),
+        versioningSC.checkDocumentOut(documentPK, Integer.parseInt(versioningSC.getUserId()),
             new Date());
         document = versioningSC.getDocument(documentPK);
         versioningSC.setEditingDocument(document);
@@ -465,8 +464,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
           }
 
           logicalName =
-              logicalName.substring(logicalName.lastIndexOf(File.separator) + 1, logicalName
-              .length());
+              logicalName.substring(logicalName.lastIndexOf(File.separator) + 1,
+              logicalName.length());
           type = logicalName.substring(logicalName.lastIndexOf(".") + 1,
               logicalName.length());
           physicalName = new Long(new Date().getTime()).toString() + "." + type;
@@ -488,8 +487,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
 
         DocumentVersion documentVersion = null;
         DocumentVersion lastVersion = versioningSC.getLastVersion(docPK);
-        if (com.stratelia.silverpeas.versioning.ejb.RepositoryHelper.getJcrDocumentService()
-            .isNodeLocked(lastVersion)) {
+        if (com.stratelia.silverpeas.versioning.ejb.RepositoryHelper.getJcrDocumentService().
+            isNodeLocked(lastVersion)) {
           destination = rootDestination + "documentLocked.jsp";
         } else {
 
@@ -618,8 +617,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
 
     List<FileItem> items = FileUploadUtil.parseRequest(request);
     String comments = FileUploadUtil.getParameter(items, "comments", "", encoding);
-    int versionType =
-        new Integer(FileUploadUtil.getParameter(items, "versionType", "0", encoding)).intValue();
+    int versionType = Integer.parseInt(FileUploadUtil.getParameter(items, "versionType", "0",
+        encoding));
 
     FileItem fileItem = FileUploadUtil.getFile(items, "file_upload");
     boolean runOnUnix = !FileUtil.isWindows();
@@ -653,10 +652,9 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
       minorNumber = 0;
     }
     DocumentVersion documentVersion =
-        new DocumentVersion(null, docPK,
-        majorNumber, minorNumber, new Integer(versioningSC.getUserId()).intValue(), new Date(),
-        comments, versionType, 0, physicalName,
-        logicalName, mimeType, size, versioningSC.getComponentId());
+        new DocumentVersion(null, docPK, majorNumber, minorNumber, Integer.parseInt(versioningSC.
+        getUserId()), new Date(), comments, versionType, 0, physicalName, logicalName, mimeType,
+        size, versioningSC.getComponentId());
 
     boolean addXmlForm = !isXMLFormEmpty(versioningSC, items);
     if (addXmlForm) {
@@ -672,9 +670,9 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
 
     PublicationPK pubPK = new PublicationPK(publicationId, versioningSC.getComponentId());
     Document document = new Document(docPK, pubPK, name, description, 0,
-        new Integer(versioningSC.getUserId()).intValue(), new Date(), comments,
-        versioningSC.getComponentId(), null, null, 0, new Integer(
-        VersioningSessionController.WRITERS_LIST_SIMPLE).intValue());
+        Integer.parseInt(versioningSC.getUserId()), new Date(), comments,
+        versioningSC.getComponentId(), null, null, 0, Integer.parseInt(
+        VersioningSessionController.WRITERS_LIST_SIMPLE));
 
     String docId = versioningSC.createDocument(document, documentVersion).getId();
 
@@ -729,8 +727,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
       }
 
       PagesContext context =
-          new PagesContext("myForm", "3", versioningSC.getLanguage(), false, versioningSC
-          .getComponentId(), versioningSC.getUserId());
+          new PagesContext("myForm", "3", versioningSC.getLanguage(), false, versioningSC.
+          getComponentId(), versioningSC.getUserId());
       context.setObjectId(objectId);
 
       form.update(items, data, context);
@@ -767,8 +765,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
       }
 
       PagesContext context =
-          new PagesContext("myForm", "3", versioningSC.getLanguage(), false, versioningSC
-          .getComponentId(), versioningSC.getUserId());
+          new PagesContext("myForm", "3", versioningSC.getLanguage(), false, versioningSC.
+          getComponentId(), versioningSC.getUserId());
       context.setObjectId(objectId);
 
       isEmpty = form.isEmpty(items, data, context);

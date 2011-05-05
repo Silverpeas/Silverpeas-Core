@@ -31,9 +31,15 @@ import java.util.List;
  * and declare it in the containerDescriptor (xml)
  */
 public interface ContentInterface {
-  /** Find all the SilverContents with the given SilverContentIds */
+  /**
+   * Find all the SilverContents with the given SilverContentIds.
+   * @param alSilverContentId
+   * @param sComponentId
+   * @param sUserId
+   * @param alContentUserRoles
+   * @return 
+   */
   public List<SilverContentInterface> getSilverContentById(List<Integer> alSilverContentId,
-      String sComponentId,
-      String sUserId, List<String> alContentUserRoles);
+      String sComponentId, String sUserId, List<String> alContentUserRoles);
 
 }
