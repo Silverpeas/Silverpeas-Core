@@ -100,8 +100,7 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
    * @throws IOException
    */
   public final void testIndexPdc() throws IOException {
-    String indexSpellcheckerPath =
-        indexDirectory + File.separatorChar + "pdc" + File.separatorChar
+    String indexSpellcheckerPath = indexDirectory + File.separatorChar + "pdc" + File.separatorChar
         + "indexSpell";
     ApplicationDYMIndexer indexer = new ApplicationDYMIndexer();
     indexer.indexPdc();
@@ -116,9 +115,8 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
    * @throws Exception
    */
   public final void testIndexAllSpaces() throws Exception {
-
     ApplicationDYMIndexer indexer = new ApplicationDYMIndexer();
-    indexer.oc.reloadAdminCache();
+    indexer.organizationController.reloadAdminCache();
     indexer.indexAllSpaces();
     // check one component of first space
     String indexSpellcheckerPath =

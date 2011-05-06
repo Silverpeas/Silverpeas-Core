@@ -21,156 +21,92 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.applicationIndexer.control;
 
 import com.silverpeas.pdc.PdcIndexer;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.silverpeas.peasCore.*;
-import com.stratelia.silverpeas.silvertrace.*;
+import org.apache.commons.lang.StringUtils;
 
-public class ApplicationIndexer extends Object {
+public class ApplicationIndexer extends AbstractIndexer {
 
-  MainSessionController msc = null;
-  OrganizationController oc = null;
+  private MainSessionController mainSessionController = null;
 
   public ApplicationIndexer(MainSessionController msc) {
-    this.msc = msc;
+    this.mainSessionController = msc;
   }
 
   public void indexAll() throws Exception {
     indexAllSpaces();
-
     indexPersonalComponents();
-
     indexPdc();
-    
     indexUsers();
-  }
-
-  public void indexAllSpaces() throws Exception {
-    index(null, null);
-  }
-
-  public void index(String spaceId, String componentId) throws Exception {
-    setSilverTraceLevel();
-    oc = new OrganizationController();
-    SilverTrace.info("applicationIndexer", "ApplicationIndexer.index()",
-        "root.MSG_GEN_ENTER_METHOD");
-    if (spaceId == null) {
-      // index whole application
-      String[] spaceIds = oc.getAllSpaceIds();
-      SilverTrace.info("applicationIndexer", "ApplicationIndexer.index()",
-          "applicationIndexer.MSG_INDEXING_ALL_SPACES");
-      for (int i = 0; i < spaceIds.length; i++) {
-        indexSpace(spaceIds[i]);
-      }
-    } else {
-      if (componentId == null || "".equals(componentId)
-          || "null".equals(componentId)) {
-        // index whole space
-        indexSpace(spaceId);
-      } else {
-        // index only one component
-        indexComponent(spaceId, componentId);
-      }
-    }
-    SilverTrace.info("applicationIndexer", "ApplicationIndexer.index()",
-        "root.MSG_GEN_EXIT_METHOD");
   }
 
   public void index(String personalComponent) throws Exception {
     setSilverTraceLevel();
-    oc = new OrganizationController();
     if (personalComponent != null) {
       indexPersonalComponent(personalComponent);
     }
   }
 
-  private void indexSpace(String spaceId) throws Exception {
-    SilverTrace.info("applicationIndexer", "ApplicationIndexer.indexSpace()",
-        "applicationIndexer.MSG_START_INDEXING_SPACE", "spaceId = " + spaceId);
-    String[] compos = oc.getAllComponentIdsRecur(spaceId);
-    for (int nI = 0; nI < compos.length; nI++)
-      indexComponent(spaceId, compos[nI]);
-    SilverTrace.info("applicationIndexer", "ApplicationIndexer.indexSpace()",
-        "applicationIndexer.MSG_END_INDEXING_SPACE", "spaceId = " + spaceId);
-  }
-
-  private void indexComponent(String spaceId, ComponentInst compoInst)
-      throws Exception {
-    SilverTrace.info("applicationIndexer",
-        "ApplicationIndexer.indexComponent()",
-        "applicationIndexer.MSG_START_INDEXING_COMPONENT", "component = "
-        + compoInst.getLabel());
-    ComponentIndexerInterface cii = getIndexer(compoInst);
-    if (cii != null) {
+  public void indexComponent(String spaceId, ComponentInst compoInst) {
+    SilverTrace.info("applicationIndexer", "ApplicationIndexer.indexComponent()",
+        "applicationIndexer.MSG_START_INDEXING_COMPONENT", "component = " + compoInst.getLabel());
+    ComponentIndexerInterface componentIndexer = getIndexer(compoInst);
+    if (componentIndexer != null) {
       try {
-        ComponentContext componentContext = msc.createComponentContext(spaceId,
+        ComponentContext componentContext = mainSessionController.createComponentContext(spaceId,
             compoInst.getId());
-        cii.index(msc, componentContext);
+        componentIndexer.index(mainSessionController, componentContext);
       } catch (Exception e) {
-        SilverTrace.error("applicationIndexer",
-            "ApplicationIndexer.indexComponent()",
+        SilverTrace.error("applicationIndexer", "ApplicationIndexer.indexComponent()",
             "applicationIndexer.EX_INDEXING_COMPONENT_FAILED", "component = "
             + compoInst.getLabel(), e);
       }
-      SilverTrace.info("applicationIndexer",
-          "ApplicationIndexer.indexComponent()",
+      SilverTrace.info("applicationIndexer", "ApplicationIndexer.indexComponent()",
           "applicationIndexer.MSG_END_INDEXING_COMPONENT", "component = "
           + compoInst.getLabel());
     } else {
-      SilverTrace.info("applicationIndexer",
-          "ApplicationIndexer.indexComponent()",
+      SilverTrace.info("applicationIndexer", "ApplicationIndexer.indexComponent()",
           "applicationIndexer.MSG_COMPONENT_INDEXER_NOT_FOUND", "component = "
           + compoInst.getLabel());
     }
   }
 
-  private void indexPersonalComponent(String personalComponent)
-      throws Exception {
-    SilverTrace.info("applicationIndexer",
-        "ApplicationIndexer.indexPersonalComponent()",
+  @Override
+  public void indexPersonalComponent(String personalComponent) {
+    SilverTrace.info("applicationIndexer", "ApplicationIndexer.indexPersonalComponent()",
         "applicationIndexer.MSG_START_INDEXING_PERSONAL_COMPONENT",
         "personalComponent = " + personalComponent);
     String compoName = firstLetterToLowerCase(personalComponent);
-    ComponentIndexerInterface cii = null;
     try {
-      ComponentContext componentContext = msc
-          .createComponentContext(null, null);
+      ComponentContext componentContext = mainSessionController.createComponentContext(null, null);
       componentContext.setCurrentComponentId(personalComponent);
-      cii = (ComponentIndexerInterface) Class.forName(
-          "com.stratelia.webactiv." + compoName + "." + personalComponent
-          + "Indexer").newInstance();
-      cii.index(msc, componentContext);
+      ComponentIndexerInterface componentIndexer = (ComponentIndexerInterface) Class.forName(
+          "com.stratelia.webactiv." + compoName + "." + personalComponent + "Indexer").newInstance();
+      componentIndexer.index(mainSessionController, componentContext);
     } catch (ClassNotFoundException ce) {
-      SilverTrace.error("applicationIndexer",
-          "ApplicationIndexer.indexPersonalComponent()",
+      SilverTrace.error("applicationIndexer", "ApplicationIndexer.indexPersonalComponent()",
           "applicationIndexer.EX_INDEXER_PERSONAL_COMPONENT_NOT_FOUND",
-          "personalComponent = " + personalComponent, ce);
+          "personalComponent = " + personalComponent);
     } catch (Exception e) {
-      SilverTrace.error("applicationIndexer",
-          "ApplicationIndexer.indexPersonalComponent()",
+      SilverTrace.error("applicationIndexer", "ApplicationIndexer.indexPersonalComponent()",
           "applicationIndexer.EX_INDEXING_PERSONAL_COMPONENT_FAILED",
           "personalComponent = " + personalComponent, e);
     }
-    SilverTrace.info("applicationIndexer",
-        "ApplicationIndexer.indexPersonalComponent()",
+    SilverTrace.info("applicationIndexer", "ApplicationIndexer.indexPersonalComponent()",
         "applicationIndexer.MSG_END_INDEXING_PERSONAL_COMPONENT",
         "personalComponent = " + personalComponent);
   }
 
-  private void indexComponent(String spaceId, String componentId)
-      throws Exception {
-    ComponentInst compoInst = oc.getComponentInst(componentId);
+  @Override
+  public void indexComponent(String spaceId, String componentId) throws Exception {
+    ComponentInst compoInst = organizationController.getComponentInst(componentId);
     indexComponent(spaceId, compoInst);
-  }
-
-  public void indexPersonalComponents() throws Exception {
-    index("Agenda");
-    index("Todo");
   }
 
   public void indexPdc() throws Exception {
@@ -179,78 +115,97 @@ public class ApplicationIndexer extends Object {
     indexer.index();
   }
 
-  private String firstLetterToUpperCase(String str) {
-    String c = str.substring(0, 1);
-    c = c.toUpperCase();
-    return c + str.substring(1);
+  String firstLetterToUpperCase(String str) {
+    return StringUtils.capitalize(str);
   }
 
-  private String firstLetterToLowerCase(String str) {
-    String c = str.substring(0, 1);
-    c = c.toLowerCase();
-    return c + str.substring(1);
+  String firstLetterToLowerCase(String str) {
+    return StringUtils.uncapitalize(str);
   }
 
-  private ComponentIndexerInterface getIndexer(ComponentInst compoInst) {
-    String compoName = firstLetterToUpperCase(compoInst.getName());
-    ComponentIndexerInterface cii = null;
-    boolean classNotFound = false;
-
-    String packageName = compoInst.getName();
-    String className = firstLetterToUpperCase(compoInst.getName());
-    if (packageName.equalsIgnoreCase("toolbox")) {
-      packageName = "kmelia";
-      className = firstLetterToUpperCase("kmelia");
-    } else if (packageName.equalsIgnoreCase("bookmark")) {
-      packageName = "webSites";
-      className = firstLetterToUpperCase("webSites");
-    } else if (packageName.equalsIgnoreCase("pollingStation")) {
-      packageName = "survey";
-      className = firstLetterToUpperCase("survey");
-    } else if (packageName.equalsIgnoreCase("webPages")) {
-      packageName = "webpages";
-      className = firstLetterToUpperCase("webPages");
-    }
+  ComponentIndexerInterface getIndexer(ComponentInst compoInst) {
+    ComponentIndexerInterface componentIndexer = null;
+    String compoName= firstLetterToUpperCase(compoInst.getName());
+    String className = getClassName(compoInst);
+    String packageName  = getPackage(compoInst);
     try {
-      cii = (ComponentIndexerInterface) Class.forName(
-          "com.stratelia.webactiv." + packageName + "." + className
-          + "Indexer").newInstance();
-    } catch (ClassNotFoundException ce) {
-      classNotFound = true;
-    } catch (Exception e) {
-      SilverTrace.debug("applicationIndexer",
-          "ApplicationIndexer.getIndexer()",
-          "applicationIndexer.EX_INDEXING_PERSONAL_COMPONENT_FAILED",
-          "component = " + compoName, e);
-    }
-    if (classNotFound) {
-      try {
-        cii = (ComponentIndexerInterface) Class.forName(
-            "com.silverpeas." + packageName + "." + className + "Indexer")
-            .newInstance();
-      } catch (ClassNotFoundException ce) {
-        SilverTrace.debug("applicationIndexer",
-            "ApplicationIndexer.getIndexer()",
-            "applicationIndexer.EX_INDEXER_COMPONENT_NOT_FOUND", "component = "
-            + compoName, ce);
-      } catch (Exception e) {
-        SilverTrace.debug("applicationIndexer",
-            "ApplicationIndexer.getIndexer()",
-            "applicationIndexer.EX_INDEXING_COMPONENT_FAILED", "component = "
-            + compoName, e);
+      componentIndexer = loadIndexer(
+          "com.stratelia.webactiv." + packageName + "." + className + "Indexer");
+      if (componentIndexer == null) {
+        componentIndexer = loadIndexer("com.silverpeas." + packageName + "." + className + "Indexer");
       }
+    } catch (InstantiationException e) {
+      SilverTrace.error("applicationIndexer", "ApplicationIndexer.getIndexer()",
+          "applicationIndexer.EX_INDEXING_PERSONAL_COMPONENT_FAILED", "component = " + compoName, e);
+      componentIndexer = new ComponentIndexerAdapter();
+    } catch (IllegalAccessException e) {
+      SilverTrace.error("applicationIndexer", "ApplicationIndexer.getIndexer()",
+          "applicationIndexer.EX_INDEXING_PERSONAL_COMPONENT_FAILED", "component = " + compoName, e);
+      componentIndexer = new ComponentIndexerAdapter();
     }
-    return cii;
+    if (componentIndexer == null) {
+      SilverTrace.error("applicationIndexer", "ApplicationIndexer.getIndexer()",
+          "applicationIndexer.EX_INDEXER_COMPONENT_NOT_FOUND",
+          "component = " + compoName + " with classes com.stratelia.webactiv." + packageName + "."
+          + className + "Indexer and com.silverpeas." + packageName + "." + className + "Indexer");
+      return new ComponentIndexerAdapter();
+    }
+    return componentIndexer;
   }
 
-  private void setSilverTraceLevel() {
-    SilverTrace.setTraceLevel("applicationIndexer",
-        SilverTrace.TRACE_LEVEL_INFO);
+  ComponentIndexerInterface loadIndexer(String className) throws InstantiationException,
+      IllegalAccessException {
+    try {
+      return (ComponentIndexerInterface) Class.forName(className).newInstance();
+    } catch (ClassNotFoundException ex) {
+      return null;
+    }
   }
-  
+
+  String getClassName(ComponentInst compoInst) {
+    String name = compoInst.getName();
+    String className = firstLetterToUpperCase(name);
+    if ("toolbox".equalsIgnoreCase(name)) {
+      return "Kmelia";
+    }
+    if ("bookmark".equalsIgnoreCase(name)) {
+      return "WebSites";
+    }
+    if ("pollingStation".equalsIgnoreCase(name)) {
+      return "Survey";
+    }
+    if ("webPages".equalsIgnoreCase(name)) {
+      return "WebPages";
+    }
+    if ("mydb".equalsIgnoreCase(name)) {
+      return "MyDB";
+    }
+    return className;
+  }
+
+  String getPackage(ComponentInst compoInst) {    
+    String packageName  = firstLetterToLowerCase(compoInst.getName());
+    if ("toolbox".equalsIgnoreCase(packageName)) {
+      return "kmelia";
+    }
+    if ("bookmark".equalsIgnoreCase(packageName)) {
+      return "webSites";
+    }
+    if ("pollingStation".equalsIgnoreCase(packageName)) {
+      return "survey";
+    }
+    if ("webPages".equalsIgnoreCase(packageName)) {
+      return "webpages";
+    }
+    if ("mydb".equalsIgnoreCase(packageName)) {
+      return "mydb";
+    }
+    return packageName;
+  }
+
   public void indexUsers() {
-   AdminController admin = new AdminController(null);
-   admin.indexAllUsers();
-   admin = null;
+    AdminController admin = new AdminController(null);
+    admin.indexAllUsers();
+    admin = null;
   }
 }
