@@ -39,7 +39,7 @@ public class ImageDisplay extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
-    ImageProfil profile = new ImageProfil(getAvatar(req), DirectoryRequestRouter.AVATAR_FOLDER);
+    ImageProfil profile = new ImageProfil(getAvatar(req));
     InputStream in = null;
     OutputStream out = null;
     try {
@@ -61,6 +61,3 @@ public class ImageDisplay extends HttpServlet {
     return req.getPathInfo().substring(position + 1);
   }
 }
-  
-
-

@@ -373,8 +373,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   public String getAvatar() {
     String avatar = getAvatarFileName();
-    File image = new File(FileRepositoryManager.getAbsolutePath("avatar")
-        + File.separatorChar + avatar);
+    File image = new File(FileRepositoryManager.getAvatarPath() + File.separatorChar + avatar);
     if (image.exists()) {
       return "/display/avatar/" + avatar;
     }
