@@ -48,17 +48,6 @@
 
   <SCRIPT LANGUAGE="JAVASCRIPT">
     <!--
-    // This function open a silverpeas window
-    function openSPWindow(fonction, windowName) {
-      SP_openWindow(fonction, windowName, '500', '250', 'scrollbars=yes, resizable, alwaysRaised');
-    }
-
-    function ConfirmAndSend(targetURL, textToDisplay) {
-      if (window.confirm(textToDisplay)) {
-        window.location.href = targetURL;
-      }
-    }
-
     //--------------------------------------------------------------------------------------DoIdle
     ID = window.setTimeout("DoIdle();", <%=settings.getString("refreshList")%> * 1000
     )
@@ -75,7 +64,7 @@
     }
 
     function enterPopup(userId) {
-      manageWindow('OpenDiscussion?userId=' + userId, 'popupDiscussion' + userId, '650', '400',
+      manageWindow('OpenDiscussion?userId=' + userId, 'popupDiscussion' + userId, '650', '460',
           'menubar=no,scrollbars=no,statusbar=no');
     }
 
