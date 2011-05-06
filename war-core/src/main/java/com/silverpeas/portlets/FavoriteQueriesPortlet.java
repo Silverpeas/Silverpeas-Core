@@ -34,6 +34,7 @@ import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import com.silverpeas.interestCenter.model.InterestCenter;
 import com.silverpeas.interestCenter.util.InterestCenterUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -47,7 +48,7 @@ public class FavoriteQueriesPortlet extends GenericPortlet implements FormNames 
         .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT,
         PortletSession.APPLICATION_SCOPE);
 
-    Iterator iCentersList = (new InterestCenterUtil()).getICByUserId(
+    Iterator<InterestCenter> iCentersList = (new InterestCenterUtil()).getICByUserId(
         Integer.parseInt(m_MainSessionCtrl.getUserId())).iterator();
 
     request.setAttribute("Queries", iCentersList);

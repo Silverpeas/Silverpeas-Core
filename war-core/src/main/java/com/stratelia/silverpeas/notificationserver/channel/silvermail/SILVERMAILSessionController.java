@@ -97,7 +97,7 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
    * @return
    * @see
    */
-  public Collection getFolderMessageList(String folderName)
+  public Collection<SILVERMAILMessage> getFolderMessageList(String folderName)
       throws SILVERMAILException {
     return SILVERMAILPersistence.getMessageOfFolder(Integer
         .parseInt(getUserId()), folderName);

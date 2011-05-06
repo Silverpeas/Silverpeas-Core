@@ -42,6 +42,8 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
  */
 public class AlertUserPeasRequestRouter extends ComponentRequestRouter {
 
+  private static final long serialVersionUID = 5335551355656715989L;
+
   /**
    * Method declaration
    * @param mainSessionCtrl

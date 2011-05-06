@@ -24,12 +24,12 @@
 
 package com.silverpeas.portlets.portal;
 
-import com.silverpeas.util.FileUtil;
 import java.text.MessageFormat;
-import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
+
+import com.silverpeas.util.FileUtil;
 
 /**
  * DesktopMessages is used to get the localized messages from DesktopMessages.properties

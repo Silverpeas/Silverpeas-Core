@@ -28,6 +28,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class DownloadDetail implements Serializable {
+
+  private static final long serialVersionUID = -3552579238204831286L;
   private int id;
   private String keyFile;
   private Date downloadDate;

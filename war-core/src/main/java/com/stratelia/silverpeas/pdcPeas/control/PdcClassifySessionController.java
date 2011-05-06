@@ -24,7 +24,6 @@
 
 package com.stratelia.silverpeas.pdcPeas.control;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -27,6 +27,9 @@ package com.silverpeas.external.filesharing.model;
 import com.stratelia.webactiv.util.exception.*;
 
 public class FileSharingRuntimeException extends SilverpeasRuntimeException {
+
+  private static final long serialVersionUID = -461008369601745045L;
+
   /**
    * -------------------------------------------------------------------------- constructors
    * constructors

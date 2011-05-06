@@ -29,6 +29,7 @@ package com.stratelia.silverpeas.genericPanelPeas.servlets;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,6 +47,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasTrappedException;
  * @author
  */
 public class GenericPanelPeasRequestRouter extends ComponentRequestRouter {
+
+  private static final long serialVersionUID = 157358334718653187L;
 
   /**
    * Method declaration
@@ -187,11 +190,10 @@ public class GenericPanelPeasRequestRouter extends ComponentRequestRouter {
   }
 
   protected String[] getFilters(HttpServletRequest request) {
-    ArrayList filters = new ArrayList();
+    List<String> filters = new ArrayList<String>();
     int i = 0;
-    String theValue = null;
 
-    theValue = request.getParameter("filter" + Integer.toString(i));
+    String theValue = request.getParameter("filter" + Integer.toString(i));
     while (theValue != null) {
       filters.add(theValue);
       i++;
@@ -200,8 +202,8 @@ public class GenericPanelPeasRequestRouter extends ComponentRequestRouter {
     return (String[]) filters.toArray(new String[0]);
   }
 
-  protected Set getSelected(HttpServletRequest request, int nbMaxDisplayed) {
-    HashSet selected = new HashSet();
+  protected Set<String> getSelected(HttpServletRequest request, int nbMaxDisplayed) {
+    HashSet<String> selected = new HashSet<String>();
     int i = 0;
     String theValue = null;
 

@@ -31,35 +31,13 @@ import com.stratelia.silverpeas.peasCore.*;
 import com.silverpeas.jobManagerPeas.JobManagerService;
 import com.silverpeas.jobManagerPeas.control.JobManagerPeasSessionController;
 
-/*
- * CVS Informations
- *
- * $Id: JobManagerPeasRequestRouter.java,v 1.3 2006/03/28 18:00:20 dlesimple Exp $
- *
- * $Log: JobManagerPeasRequestRouter.java,v $
- * Revision 1.3  2006/03/28 18:00:20  dlesimple
- * Ménage imports inutiles
- *
- * Revision 1.2  2002/10/14 16:23:27  dlesimple
- * Mode maintenance
- *
- * Revision 1.1.1.1  2002/08/06 14:47:55  nchaix
- * no message
- *
- * Revision 1.2  2002/03/28 08:39:50  groccia
- * no message
- *
- * Revision 1.1  2002/03/20 17:19:57  tleroi
- * Add jobManagerPeas
- *
- *
- */
-
 /**
  * Class declaration
  * @author
  */
 public class JobManagerPeasRequestRouter extends ComponentRequestRouter {
+
+  private static final long serialVersionUID = -2003485584890163789L;
 
   /**
    * Method declaration

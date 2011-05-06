@@ -39,9 +39,11 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
 import com.stratelia.silverpeas.versioning.ejb.VersioningBmHome;
+import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.attachment.control.AttachmentBmImpl;
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 
 public class MyCheckOutFiles extends GenericPortlet implements FormNames {
 
@@ -52,8 +54,8 @@ public class MyCheckOutFiles extends GenericPortlet implements FormNames {
         .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT,
         PortletSession.APPLICATION_SCOPE);
 
-    Iterator attachments = null;
-    Iterator documents = null;
+    Iterator<AttachmentDetail> attachments = null;
+    Iterator<Document> documents = null;
     try {
       attachments = (new AttachmentBmImpl()).getAttachmentsByWorkerId(
           m_MainSessionCtrl.getUserId()).iterator();
