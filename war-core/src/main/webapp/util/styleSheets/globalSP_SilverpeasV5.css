@@ -2105,6 +2105,16 @@ td.browsebar a:hover {
 	padding-top: 10px;
 }
 
+#globalResultList .fileIcon {
+	vertical-align: middle;
+	margin-right: 5px;
+}
+
+#globalResultList .fileDownload {
+	vertical-align: middle;
+	margin-left: 3px;
+}
+
 #globalResultHelp {
 	padding-top: 10px;
 }
