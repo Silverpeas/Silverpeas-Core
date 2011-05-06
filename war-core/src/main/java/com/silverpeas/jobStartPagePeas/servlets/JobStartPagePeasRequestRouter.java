@@ -1135,12 +1135,10 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
     if (StringUtil.isDefined(componentInst.getName())) {
       componentInstSelected = jobStartPageSC.getComponentByName(componentInst.getName());
     } else {
-      String componentNum = request.getParameter("ComponentNum");
-      componentInstSelected = jobStartPageSC.getComponentByNum(Integer.parseInt(componentNum));
-      String jobPeas = componentInstSelected.getName();
-      componentInst.setName(jobPeas);
+      String componentName = request.getParameter("ComponentName");
+      componentInstSelected = jobStartPageSC.getComponentByName(componentName);
+      componentInst.setName(componentName);
     }
-
 
     List<Parameter> parameters = componentInstSelected.cloneParameters();
     SilverTrace.info("jobStartPagePeas",
@@ -1255,9 +1253,9 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
 
   private String prepareCreateInstance(JobStartPagePeasSessionController sessionController,
       HttpServletRequest request) {
-    String componentNum = request.getParameter("ComponentNum");
+    String componentName = request.getParameter("ComponentName");
     LocalizedComponent componentInstSelected = new LocalizedComponent(sessionController.
-        getComponentByNum(Integer.parseInt(componentNum)), sessionController.getLanguage());
+        getComponentByName(componentName), sessionController.getLanguage());
     setSpacesNameInRequest(sessionController, request);
     List<LocalizedParameter> visibleParameters = getVisibleParameters(componentInstSelected.
         getSortedParameters());
@@ -1270,7 +1268,6 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
     request.setAttribute("Parameters", visibleParameters);
     request.setAttribute("HiddenParameters", getHiddenParameters(componentInstSelected.
         getSortedParameters()));
-    request.setAttribute("ComponentNum", componentNum);
     request.setAttribute("WAComponent", componentInstSelected);
     request.setAttribute("brothers", sessionController.getBrotherComponents(true));
     return "/jobStartPagePeas/jsp/createInstance.jsp";

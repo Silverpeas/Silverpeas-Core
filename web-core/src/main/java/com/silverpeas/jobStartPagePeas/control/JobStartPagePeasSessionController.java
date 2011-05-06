@@ -123,7 +123,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   public boolean isUserAdmin() {
-    return getUserDetail().getAccessLevel().equalsIgnoreCase("A");
+    return getUserDetail().isAccessAdmin();
   }
 
   // method du spaceInst
@@ -375,14 +375,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       idSpace = idSpace.substring(2);
     }
     return adminController.getSpaceInstById("WA" + idSpace);
-  }
-
-  public String[][] getCurrentSpaceTemplateProfilesGroups() {
-    return currentSpaceTemplateProfilesGroups;
-  }
-
-  public String[][] getCurrentSpaceTemplateProfilesUsers() {
-    return m_TemplateProfilesUsers;
   }
 
   public void setCreateSpaceParameters(String name, String desc, String ssEspace,
@@ -989,32 +981,15 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     return result;
   }
 
-  public WAComponent getComponentByNum(int num) {
-    WAComponent[] compos = getAllComponents();
-    if (num < compos.length) {
-      return compos[num];
-    }
-    return null;
-  }
-
   public WAComponent getComponentByName(String name) {
     WAComponent[] compos = getAllComponents();
-    for (int nI = 0; compos != null && nI < compos.length; nI++) {
-      if (compos[nI].getName().equals(name)) {
-        return compos[nI];
+    if (compos != null) {
+      for (WAComponent compo : compos) {
+        if (compo.getName().equals(name)) {
+          return compo;
+        }
       }
     }
-    return null;
-  }
-
-  public ComponentInst getComponentInst(ComponentInst[] m_aComponentInst,
-      String sComponentName) {
-    for (int nI = 0; m_aComponentInst != null && nI < m_aComponentInst.length; nI++) {
-      if (m_aComponentInst[nI].getName().equals(sComponentName)) {
-        return m_aComponentInst[nI];
-      }
-    }
-
     return null;
   }
 
@@ -1025,17 +1000,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         getUserDetail().getId(), SilverTrace.SPY_ACTION_CREATE);
 
     componentInst.setCreatorUserId(getUserId());
-    String res = adminController.addComponentInst(componentInst);
-    return res;
-  }
-
-  public ComponentInst getComponentInst(String sComponentName,
-      String sInstanceId) {
-    String id = sInstanceId.substring(sComponentName.length());
-    SilverTrace.info("jobStartPagePeas",
-        "JobStartPagePeasSessionController.getComponentInst()",
-        "root.MSG_GEN_PARAM_VALUE", "idComponent = " + id);
-    return adminController.getComponentInst(id);
+    return adminController.addComponentInst(componentInst);
   }
 
   public ComponentInst getComponentInst(String sInstanceId) {
