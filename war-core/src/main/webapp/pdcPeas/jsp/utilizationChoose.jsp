@@ -75,7 +75,7 @@ function goBack(){
 %>
 <CENTER>
     <%
-    ArrayPane arrayPane = gef.getArrayPane("PdcPeas", "", request, session);    
+    ArrayPane arrayPane = gef.getArrayPane("PdcPeas", pdcUtilizationContext+"ChangeViewType?ViewType="+viewType, request, session);    
 
     ArrayColumn arrayColumn0 = arrayPane.addArrayColumn("&nbsp;");
 	arrayColumn0.setSortable(false);
