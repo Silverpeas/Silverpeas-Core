@@ -44,6 +44,8 @@ import com.stratelia.webactiv.util.node.model.NodePK;
  */
 public class GoToTopic extends GoTo {
 
+  private static final long serialVersionUID = 148348921885581569L;
+
   @Override
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
