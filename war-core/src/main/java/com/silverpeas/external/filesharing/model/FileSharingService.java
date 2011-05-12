@@ -24,7 +24,6 @@
 
 package com.silverpeas.external.filesharing.model;
 
-import java.rmi.RemoteException;
 import java.util.List;
 
 /**

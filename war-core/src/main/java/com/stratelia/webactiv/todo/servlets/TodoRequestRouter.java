@@ -36,6 +36,7 @@ import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.calendar.model.Attendee;
 import com.stratelia.webactiv.todo.control.ToDoSessionController;
 
 /**
@@ -43,6 +44,9 @@ import com.stratelia.webactiv.todo.control.ToDoSessionController;
  * @author
  */
 public class TodoRequestRouter extends ComponentRequestRouter {
+
+  private static final long serialVersionUID = 6455939825707914384L;
+
   /**
    * This method creates a TodoSessionController instance
    * @param mainSessionCtrl The MainSessionController instance
@@ -93,7 +97,7 @@ public class TodoRequestRouter extends ComponentRequestRouter {
         destination = scc.initSelectionPeas();
       } else if (function.startsWith("saveMembers")) {
         // retour du userPanel
-        Collection attendees = scc.getUserSelected();
+        Collection<Attendee> attendees = scc.getUserSelected();
         scc.setCurrentAttendees(attendees);
         destination = "/todo/jsp/todoEdit.jsp?Action=DiffusionListOK";
       } else {

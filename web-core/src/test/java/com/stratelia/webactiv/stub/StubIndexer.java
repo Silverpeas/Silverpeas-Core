@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,28 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.stratelia.webactiv.stub;
 
-package com.stratelia.webactiv.servlets;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerAdapter;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.silverpeas.peasUtil.GoTo;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-
-public class GoToComponent extends GoTo {
-
-  private static final long serialVersionUID = -7281629150484820205L;
-
-  public String getDestination(String objectId, HttpServletRequest req,
-      HttpServletResponse res) throws Exception {
-    OrganizationController organization = new OrganizationController();
-    ComponentInstLight component = organization.getComponentInstLight(objectId);
-
-    if (component != null)
-      return "ComponentId=" + objectId;
-
-    return null;
-  }
+/**
+ *
+ * @author ehugonnet
+ */
+public class StubIndexer extends ComponentIndexerAdapter {
+  
 }

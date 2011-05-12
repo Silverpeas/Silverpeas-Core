@@ -31,7 +31,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.directory.model.Member;
 import com.silverpeas.socialNetwork.myContactProfil.control.MyContactProfilSessionController;
-import com.silverpeas.socialNetwork.user.model.SNFullUser;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;

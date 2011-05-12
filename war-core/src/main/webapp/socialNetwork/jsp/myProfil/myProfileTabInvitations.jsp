@@ -41,10 +41,7 @@ $(function() {
 		resizable: false,
 		modal: true,
 		buttons: {
-			"<fmt:message key="GML.no" />": function() {
-				$( this ).dialog( "close" );
-			},
-			<fmt:message key="GML.yes" />: function() {
+			"<fmt:message key="GML.yes" />": function() {
 				$.getJSON("<%=m_context%>/InvitationJSON",
 	                { 
 	        			IEFix: new Date().getTime(),
@@ -61,6 +58,9 @@ $(function() {
 	            		}
 	        		});
 				$( this ).dialog( "close" );
+			},
+			"<fmt:message key="GML.no" />": function() {
+				$( this ).dialog( "close" );
 			}
 		}
 	});
@@ -70,10 +70,7 @@ $(function() {
 		resizable: false,
 		modal: true,
 		buttons: {
-			<fmt:message key="GML.no" />: function() {
-				$( this ).dialog( "close" );
-			},
-			<fmt:message key="GML.yes" />: function() {
+			"<fmt:message key="GML.yes" />": function() {
 				$.getJSON("<%=m_context%>/InvitationJSON",
 	                { 
 	        			IEFix: new Date().getTime(),
@@ -90,6 +87,9 @@ $(function() {
 	                		alert(data.error);
 	            		}
 	        		});
+				$( this ).dialog( "close" );
+			},
+			"<fmt:message key="GML.no" />": function() {
 				$( this ).dialog( "close" );
 			}
 		}

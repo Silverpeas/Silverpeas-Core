@@ -198,7 +198,7 @@ public class GenericPanelPeasSessionController extends AbstractComponentSessionC
     return m_Nav.getNbMaxDisplayed();
   }
 
-  public void setSelectedElements(Set elements) {
+  public void setSelectedElements(Set<String> elements) {
     m_Nav.setSelectedElements(elements);
   }
 

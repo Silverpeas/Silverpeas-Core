@@ -45,8 +45,10 @@ import org.apache.commons.io.FilenameUtils;
 public class FileRepositoryManager extends Object {
 
   final static String s_sUpLoadPath = GeneralPropertiesManager.getString("uploadsPath");
-  static final String s_sIndexUpLoadPath = GeneralPropertiesManager.getString("uploadsIndexPath");
   static final String exportTemplatePath = GeneralPropertiesManager.getString("exportTemplatePath");
+  static String s_sIndexUpLoadPath = GeneralPropertiesManager.getString("uploadsIndexPath");
+  final static String avatarPath = GeneralPropertiesManager.getString("avatar.path", s_sUpLoadPath +
+      File.pathSeparator + "avatar");
   static String s_sTempPath = "";
   final static ResourceLocator uploadSettings=  new ResourceLocator(
           "com.stratelia.webactiv.util.uploads.uploadSettings", "");
@@ -83,6 +85,10 @@ public class FileRepositoryManager extends Object {
     SilverTrace.debug("util", "FileRepositoryManager.getAbsolutePath",
         " sComponentId= " + sComponentId);
     return s_sUpLoadPath + File.separator + sComponentId + File.separator;
+  }
+  
+  static public String getAvatarPath() {
+    return avatarPath;
   }
 
   // Add by Jean-Claude Groccia

@@ -350,7 +350,7 @@ public class PdcUtilizationDAO {
 
     List<AxisHeader> axisUsed = new ArrayList<AxisHeader>();
 
-    if (instanceIds != null && instanceIds.size() == 0) {
+    if (instanceIds == null || instanceIds.isEmpty()) {
       return axisUsed;
     }
 
@@ -360,16 +360,17 @@ public class PdcUtilizationDAO {
         + "where U.axisId = A.id ";
 
     // la liste instanceIds n'est jamais nulle
-    if (instanceIds.size() > 0) {
-      selectStatement += "  and (U.instanceId = ? ";
+    selectStatement += "  and U.instanceId IN (";
+    boolean first = true;
+    for (String instanceId : instanceIds) {
+      if (!first) {
+        selectStatement += ",";
+      }
+      selectStatement += "'"+instanceId+"'";
+      first = false;
     }
-    for (int i = 1; i < instanceIds.size(); i++) {
-      selectStatement += " or U.instanceId = ? ";
-    }
-    if (instanceIds.size() > 0) {
-      selectStatement += " ) ";
-    }
-
+    selectStatement += " ) ";
+    
     AxisFilterNode condition;
     String property;
 
@@ -416,11 +417,6 @@ public class PdcUtilizationDAO {
       prepStmt = con.prepareStatement(selectStatement);
 
       int index = 1;
-
-      // on affecte les valeurs
-      for (int i = 0; i < instanceIds.size(); i++) {
-        prepStmt.setString(index++, (String) instanceIds.get(i));
-      }
 
       for (int i = 0; i < filter.size(); i++) {
         if (i == 0) {

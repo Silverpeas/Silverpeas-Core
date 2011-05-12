@@ -37,6 +37,7 @@ import javax.portlet.RenderResponse;
 
 import com.silverpeas.myLinks.ejb.MyLinksBm;
 import com.silverpeas.myLinks.ejb.MyLinksBmHome;
+import com.silverpeas.myLinks.model.LinkDetail;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -51,14 +52,18 @@ public class MyBookmarksPortlet extends GenericPortlet implements FormNames {
     MainSessionController m_MainSessionCtrl = (MainSessionController) session
         .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT,
         PortletSession.APPLICATION_SCOPE);
-
-    List links = new ArrayList();
-    try {
-      links = (List) getMyLinksBm().getAllLinks(m_MainSessionCtrl.getUserId());
-    } catch (Exception e) {
-      SilverTrace.error("portlet", "MyBookmarksPortlet", "portlet.ERROR", e);
+    
+    List<LinkDetail> links = new ArrayList<LinkDetail>();
+    if (m_MainSessionCtrl != null) {
+      try {
+        MyLinksBm myLinksBm = getMyLinksBm();
+        if (myLinksBm != null) {
+          links = (List<LinkDetail>) myLinksBm.getAllLinks(m_MainSessionCtrl.getUserId());
+        }
+      } catch (Exception e) {
+        SilverTrace.error("portlet", "MyBookmarksPortlet", "portlet.ERROR", e);
+      }
     }
-
     request.setAttribute("Links", links.iterator());
 
     include(request, response, "portlet.jsp");

@@ -49,8 +49,6 @@ import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
  */
 public class DirectoryRequestRouter extends ComponentRequestRouter {
 
-  public static final String AVATAR_FOLDER = "avatar";
-
   private static final long serialVersionUID = -1683812983096083815L;
 
   @Override

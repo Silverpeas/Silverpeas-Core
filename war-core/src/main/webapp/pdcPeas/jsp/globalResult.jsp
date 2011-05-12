@@ -155,10 +155,9 @@ if (urlToRedirect != null) {
     backButtonClick = "location.href='" + URLDecoder.decode(urlToRedirect, "UTF-8") + "';";
 }
 
-String fullStarSrc		= "<img src=\""+m_context+"/pdcPeas/jsp/icons/starGreen.gif\">";
-String emptyStarSrc		= "<img src=\""+m_context+"/pdcPeas/jsp/icons/pdcPeas_emptyStar.gif\">";
-String downloadSrc		= "<img border=0 align=absmiddle src=\""+resource.getIcon("pdcPeas.download")+"\" alt=\""+resource.getString("pdcPeas.DownloadInfo")+"\">";
-String attachmentSrc	= "<img border=0 align=absmiddle src=\""+resource.getIcon("pdcPeas.attachment")+"\">&nbsp;";
+String fullStarSrc		= "<img src=\""+m_context+"/pdcPeas/jsp/icons/starGreen.gif\"/>";
+String emptyStarSrc		= "<img src=\""+m_context+"/pdcPeas/jsp/icons/pdcPeas_emptyStar.gif\"/>";
+String downloadSrc		= "<img src=\""+resource.getIcon("pdcPeas.download")+"\" class=\"fileDownload\" alt=\""+resource.getString("pdcPeas.DownloadInfo")+"\"/>";
 
 Board board = gef.getBoard();
 Button searchButton = gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
@@ -627,7 +626,7 @@ function showExternalSearchError() {
 			}
             
             String serverName = "";
-			if (externalSearchEnabled) {
+			if (externalSearchEnabled && gsr.getIndexEntry() != null) {
               serverName = "external_server_" + (StringUtil.isDefined(gsr.getIndexEntry().getServerName())? gsr.getIndexEntry().getServerName(): "unknown");
             }
 
@@ -652,7 +651,7 @@ function showExternalSearchError() {
 			if (gsr.getType() != null && (gsr.getType().startsWith("Attachment")|| gsr.getType().startsWith("Versioning") || gsr.getType().equals("LinkedFile")) ) {
                 fileType	= sName.substring(sName.lastIndexOf(".")+1, sName.length());
 				fileIcon	= FileRepositoryManager.getFileIcon(fileType);
-				sName = "<img src=\""+fileIcon+"\" border=\"0\" width=\"30\" heigth=\"30\" align=\"absmiddle\"/>"+sName;
+				sName = "<img src=\""+fileIcon+"\" class=\"fileIcon\"/>"+sName;
 				//no preview, display this is an attachment
 				if (gsr.getType().startsWith("Attachment") || gsr.getType().equals("LinkedFile")) {
 					sDescription = null;

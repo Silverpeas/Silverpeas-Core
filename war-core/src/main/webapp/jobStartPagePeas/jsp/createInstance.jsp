@@ -134,7 +134,6 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 LocalizedComponent 	component 			= (LocalizedComponent) request.getAttribute("WAComponent");
 List 			parameters 			= (List) request.getAttribute("Parameters");
 List 			hiddenParameters 	= (List) request.getAttribute("HiddenParameters");
-String 			m_ComponentNum 		= (String) request.getAttribute("ComponentNum");
 ComponentInst[] brothers 			= (ComponentInst[]) request.getAttribute("brothers");
 String 			spaceId				= (String) request.getAttribute("CurrentSpaceId");
 
@@ -266,7 +265,7 @@ function toDoOnLoad() {
 </HEAD>
 <BODY id="admin-component" onload="javascript:toDoOnLoad()">
 <FORM NAME="infoInstance" action="EffectiveCreateInstance" METHOD="POST">
-	<input type="hidden" name="ComponentNum" value="<%=m_ComponentNum%>">
+	<input type="hidden" name="ComponentName" value="<%=component.getName()%>"/>
 <%
 out.println(window.printBefore());
 out.println(frame.printBefore());

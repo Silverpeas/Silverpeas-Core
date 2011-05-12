@@ -29,6 +29,7 @@ import java.util.Collection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.calendar.control.CalendarBm;
 import com.stratelia.webactiv.calendar.control.CalendarBmHome;
+import com.stratelia.webactiv.calendar.model.ToDoHeader;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -58,9 +59,9 @@ public class ToDoAccess {
    * @return Collection of TodoHeaders
    * @throws TodoException
    */
-  static public Collection getNotCompletedToDos(String userId)
+  static public Collection<ToDoHeader> getNotCompletedToDos(String userId)
       throws TodoException {
-    Collection result;
+    Collection<ToDoHeader> result;
 
     SilverTrace.info("todo", "ToDoAccess.getNotCompletedToDos()",
         "root.MSG_GEN_ENTER_METHOD");

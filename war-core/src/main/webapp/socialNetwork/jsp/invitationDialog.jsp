@@ -12,9 +12,6 @@ $(function() {
 		height: "auto",
 		width: 500,
 		buttons: {
-			"<fmt:message key="GML.cancel" />": function() {
-				closeInvitationDialog();
-			},
 			"<fmt:message key="GML.ok"/>": function() {
 				var message = $("#invitation-message").val();
 		    	$.getJSON("<%=m_context%>/InvitationJSON",
@@ -37,6 +34,9 @@ $(function() {
              			alert(data.error);
          			}
      			});
+			},
+			"<fmt:message key="GML.cancel" />": function() {
+				closeInvitationDialog();
 			}
 		}
 	});

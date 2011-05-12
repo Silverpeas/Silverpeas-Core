@@ -41,6 +41,9 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 public class GoToPublication extends GoTo {
+
+  private static final long serialVersionUID = -5940054543777929024L;
+
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
     PublicationPK pubPK = new PublicationPK(objectId);

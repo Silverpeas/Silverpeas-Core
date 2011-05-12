@@ -12,9 +12,6 @@ $(function() {
 		height: "auto",
 		width: 500,
 		buttons: {
-			"<fmt:message key="GML.cancel" />": function() {
-				$( this ).dialog( "close" );
-			},
 			"<fmt:message key="GML.ok"/>": function() {
 				var title = $("#txtTitle").val();
 				var message = $("#txtMessage").val();
@@ -41,6 +38,9 @@ $(function() {
 			    } else {
 			    	window.alert(errorMsg);
 			    }
+			},
+			"<fmt:message key="GML.cancel" />": function() {
+				$( this ).dialog( "close" );
 			}
 		}
 	});

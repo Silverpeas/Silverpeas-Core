@@ -21,28 +21,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.stratelia.webactiv.applicationIndexer.control;
 
-package com.stratelia.webactiv.servlets;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+/**
+ *
+ * @author ehugonnet
+ */
+public class ComponentIndexerAdapter implements ComponentIndexerInterface {
 
-import com.silverpeas.peasUtil.GoTo;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+  public ComponentIndexerAdapter() {
+  }
 
-public class GoToComponent extends GoTo {
-
-  private static final long serialVersionUID = -7281629150484820205L;
-
-  public String getDestination(String objectId, HttpServletRequest req,
-      HttpServletResponse res) throws Exception {
-    OrganizationController organization = new OrganizationController();
-    ComponentInstLight component = organization.getComponentInstLight(objectId);
-
-    if (component != null)
-      return "ComponentId=" + objectId;
-
-    return null;
+  @Override
+  public void index(MainSessionController mainSessionCtrl, ComponentContext context) throws
+      Exception {
+    SilverTrace.info("applicationIndexer", "ApplicationIndexer.getIndexer()",
+        "Fake indexer when we have problems loading a real one.");
   }
 }

@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.indexEngine.parser.pdfParser;
 
 import java.io.FileInputStream;
@@ -32,20 +31,21 @@ import java.io.StringReader;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.indexEngine.parser.Parser;
+import java.io.File;
+import org.apache.commons.io.FileUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
 
 /**
  * the pdfParser parse a pdf file
  */
-
 public class PdfParser2 implements Parser {
 
   public PdfParser2() {
   }
 
+  @Override
   public Reader getReader(String path, String encoding) {
-
     Reader reader = null;
     InputStream file = null;
     PDDocument document = null;
@@ -54,11 +54,10 @@ public class PdfParser2 implements Parser {
       document = PDDocument.load(file);
       PDFTextStripper extractor = new PDFTextStripper();
       String text = extractor.getText(document);
-
       reader = new StringReader(text);
     } catch (Exception e) {
-      SilverTrace.error("indexEngine", "PdfParser2",
-          "indexEngine.MSG_IO_ERROR_WHILE_READING", path, e);
+      SilverTrace.error("indexEngine", "PdfParser2", "indexEngine.MSG_IO_ERROR_WHILE_READING", path,
+          e);
     } finally {
       try {
         document.close();
@@ -70,5 +69,4 @@ public class PdfParser2 implements Parser {
     }
     return reader;
   }
-
 }

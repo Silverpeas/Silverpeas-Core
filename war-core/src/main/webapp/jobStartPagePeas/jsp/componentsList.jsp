@@ -101,10 +101,10 @@
                 </c:if>
                 <tr>
                   <td align="center" width="30">
-                    <a href="CreateInstance?ComponentNum=<c:out value="${loop.index}" />" title="<c:out value="${component.description}" />"><img src="<%=iconsPath%>/util/icons/component/<c:out value="${component.name}" />Small.gif" class="component-icon" alt=""/></a>
+                    <a href="CreateInstance?ComponentName=<c:out value="${component.name}" />" title="<c:out value="${component.description}" />"><img src="<%=iconsPath%>/util/icons/component/<c:out value="${component.name}" />Small.gif" class="component-icon" alt=""/></a>
                   </td>
                   <td align="left">
-                    <a href="CreateInstance?ComponentNum=<c:out value="${loop.index}" />" title="<c:out value="${component.description}" />"><c:out value="${component.label}" /></a>
+                    <a href="CreateInstance?ComponentName=<c:out value="${component.name}" />" title="<c:out value="${component.description}" />"><c:out value="${component.label}" /></a>
                   </td>
                 </tr>
               </c:if>

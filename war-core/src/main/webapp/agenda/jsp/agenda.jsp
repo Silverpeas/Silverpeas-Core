@@ -411,10 +411,10 @@ function viewCurrentAgenda()
  		<% } %>
  		<div id="rss">
  			<% if (StringUtil.isDefined(rssURL)) { %>
-				<a href="<%=m_context+rssURL%>"><img src="<%= m_context+"icons/rss.gif"%>" border="0" alt="rss"/></a>
+				<a href="<%=m_context+rssURL%>"><img src="<%= m_context+"/util/icons/rss.gif"%>" alt="rss"/></a>
 			<% } %>
 			<% if (!agenda.isOtherAgendaMode()) { %>
-				<a href="<%=m_context+subscribeAgendaUrl%>" title="<%=agenda.getString("agenda.Subscribe")%>"><img align="top" src="icons/ical.gif" border="0" alt=""/></a>
+				<a href="<%=m_context+subscribeAgendaUrl%>" title="<%=agenda.getString("agenda.Subscribe")%>"><img align="top" src="icons/ical.gif" alt="iCal"/></a>
 			<% } %>
  		</div>
  	</div>

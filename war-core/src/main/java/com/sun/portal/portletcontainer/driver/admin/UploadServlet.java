@@ -57,6 +57,8 @@ import com.sun.portal.portletcontainer.warupdater.PortletWarUpdaterUtil;
  */
 public class UploadServlet extends HttpServlet {
 
+  private static final long serialVersionUID = 6041525805480787611L;
+
   private ServletContext context;
 
   private long maxUploadSize;
@@ -104,11 +106,12 @@ public class UploadServlet extends HttpServlet {
     upload.setSizeMax(maxUploadSize);
 
     // Parse the request
-    List fileItems = upload.parseRequest(request);
-    Iterator itr = fileItems.iterator();
+    @SuppressWarnings("unchecked")
+    List<FileItem> fileItems = upload.parseRequest(request);
+    Iterator<FileItem> itr = fileItems.iterator();
 
     while (itr.hasNext()) {
-      FileItem fi = (FileItem) itr.next();
+      FileItem fi = itr.next();
       // The following is not being used since in the upload form we are
       // not using any
       // non-file form fields. If you do put in some form fields you want
@@ -125,7 +128,7 @@ public class UploadServlet extends HttpServlet {
     itr = fileItems.iterator();
     int i = 0;
     while (itr.hasNext()) {
-      FileItem fi = (FileItem) itr.next();
+      FileItem fi = itr.next();
       if (!fi.isFormField()) {
         fileNames[i] = processFileItem(fi);
         i++;

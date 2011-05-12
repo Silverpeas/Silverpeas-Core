@@ -41,6 +41,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  */
 public class TodoException extends SilverpeasException {
 
+  private static final long serialVersionUID = 7400587699905944913L;
+
   /**
    * Creates new TodoException
    */
