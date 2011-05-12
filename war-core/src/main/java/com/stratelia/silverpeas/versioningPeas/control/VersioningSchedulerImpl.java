@@ -26,10 +26,8 @@ package com.stratelia.silverpeas.versioningPeas.control;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.Date;
 
-import com.silverpeas.util.FileUtil;
 import com.silverpeas.scheduler.Job;
 import com.silverpeas.scheduler.JobExecutionContext;
 import com.silverpeas.scheduler.Scheduler;
@@ -37,8 +35,8 @@ import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerFactory;
 import com.silverpeas.scheduler.trigger.JobTrigger;
+import com.silverpeas.util.FileUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.versioning.ejb.VersioningRuntimeException;
 import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
@@ -51,7 +49,7 @@ public class VersioningSchedulerImpl
 
   public static final String VERSIONING_JOB_NAME_PROCESS_ACTIFY = "V_ProcessActify";
   public static final String VERSIONING_JOB_NAME_PURGE_ACTIFY = "V_PurgeActify";
-  private ResourceLocator resourcesAttachment = new ResourceLocator(
+  private final ResourceLocator resourcesAttachment = new ResourceLocator(
       "com.stratelia.webactiv.util.attachment.Attachment", "");
 
   public VersioningSchedulerImpl() {
@@ -80,29 +78,24 @@ public class VersioningSchedulerImpl
 
   /**
    * Publish in Silverpeas 3d files converted by Actify
+   * @throws FileNotFoundException 
    * @throws IOException
-   * @throws Exception
    */
-  public synchronized void doProcessActify(java.util.Date date)
-      throws VersioningRuntimeException, RemoteException,
-      FileNotFoundException, IOException, Exception {
+  public synchronized void doProcessActify(java.util.Date date) throws FileNotFoundException, IOException {
     VersioningUtil versioningUtil = new VersioningUtil();
     String componentId;
     String documentId;
     long now = new Date().getTime();
 
     String resultActifyPath = resourcesAttachment.getString("ActifyPathResult");
-    int delayBeforeProcess = new Integer(resourcesAttachment.getString("DelayBeforeProcess")).
-        intValue();
+    int delayBeforeProcess = resourcesAttachment.getInteger("DelayBeforeProcess", 1);
 
     File folderToAnalyse = new File(FileRepositoryManager.getTemporaryPath()
         + resultActifyPath);
     File[] elementsList = folderToAnalyse.listFiles();
 
     // List all folders in Actify
-    for (int i = 0; i < elementsList.length; i++) {
-      File element = elementsList[i];
-
+    for (File element : elementsList) {
       long lastModified = element.lastModified();
       String dirName = element.getName();
       String resultActifyFullPath = FileRepositoryManager.getTemporaryPath()
@@ -160,8 +153,8 @@ public class VersioningSchedulerImpl
    * Purge native 3D files alreday converted by Actify
    * @throws Exception
    */
-  public synchronized void doPurgeActify(Date date) throws Exception {
-    int delayBeforePurge = new Integer(resourcesAttachment.getString("DelayBeforePurge")).intValue();
+  public synchronized void doPurgeActify(Date date) {
+    int delayBeforePurge = resourcesAttachment.getInteger("DelayBeforePurge", 10);
     long now = new Date().getTime();
 
     File folderToAnalyse = new File(FileRepositoryManager.getTemporaryPath()
@@ -169,8 +162,7 @@ public class VersioningSchedulerImpl
     File[] elementsList = folderToAnalyse.listFiles();
 
     // List all folders in Actify
-    for (int i = 0; i < elementsList.length; i++) {
-      File element = elementsList[i];
+    for (File element : elementsList) {
       long lastModified = element.lastModified();
       if (element.isDirectory()
           && lastModified + delayBeforePurge * 1000 * 60 < now) {
@@ -190,7 +182,7 @@ public class VersioningSchedulerImpl
     return new Job(VERSIONING_JOB_NAME_PROCESS_ACTIFY) {
 
       @Override
-      public void execute(JobExecutionContext context) throws Exception {
+      public void execute(JobExecutionContext context) throws FileNotFoundException, IOException {
         Date date = context.getFireTime();
         doProcessActify(date);
       }
@@ -205,7 +197,7 @@ public class VersioningSchedulerImpl
     return new Job(VERSIONING_JOB_NAME_PURGE_ACTIFY) {
 
       @Override
-      public void execute(JobExecutionContext context) throws Exception {
+      public void execute(JobExecutionContext context) {
         Date date = context.getFireTime();
         doPurgeActify(date);
       }
@@ -213,7 +205,7 @@ public class VersioningSchedulerImpl
   }
 
   @Override
-  public void triggerFired(SchedulerEvent anEvent) throws Exception {
+  public void triggerFired(SchedulerEvent anEvent) {
     SilverTrace.debug("versioningPeas",
         "VersioningScheduleImpl.handleSchedulerEvent", "The job '"
         + anEvent.getJobExecutionContext().getJobName() + "' is starting");

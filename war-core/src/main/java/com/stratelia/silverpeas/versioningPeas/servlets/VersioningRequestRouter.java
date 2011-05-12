@@ -34,13 +34,14 @@ import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
+import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
+import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.FileUtil;
@@ -593,11 +594,11 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
    * @param request
    * @param versioningSC
    * @return
+   * @throws Exception 
    * @throws IOException
    */
   private void saveNewDocument(HttpServletRequest request,
-      VersioningSessionController versioningSC) throws FileUploadException,
-      Exception, RemoteException {
+      VersioningSessionController versioningSC) throws Exception {
     SilverTrace.debug("versioningPeas",
         "VersioningRequestRooter.saveNewDocument()",
         "root.MSG_GEN_ENTER_METHOD");
@@ -700,7 +701,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
   }
 
   private void saveXMLData(VersioningSessionController versioningSC,
-      DocumentVersionPK newVersionPK, List<FileItem> items) throws Exception {
+      DocumentVersionPK newVersionPK, List<FileItem> items) throws FormException,
+      PublicationTemplateException {
     String xmlFormName = versioningSC.getXmlForm();
     if (StringUtil.isDefined(xmlFormName) && newVersionPK != null) {
       String xmlFormShortName = xmlFormName.substring(
@@ -736,8 +738,8 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
     }
   }
 
-  private boolean isXMLFormEmpty(VersioningSessionController versioningSC,
-      List<FileItem> items) throws Exception {
+  private boolean isXMLFormEmpty(VersioningSessionController versioningSC, List<FileItem> items)
+      throws PublicationTemplateException, FormException {
     boolean isEmpty = true;
     String xmlFormName = versioningSC.getXmlForm();
     if (StringUtil.isDefined(xmlFormName)) {
@@ -776,7 +778,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter {
 
   private void setXMLFormIntoRequest(String documentId,
       VersioningSessionController versioningSC, HttpServletRequest request)
-      throws Exception {
+      throws PublicationTemplateException, NumberFormatException, RemoteException, FormException {
     String componentId = versioningSC.getComponentId();
     String objectId = request.getParameter("ObjectId");
     String objectType = "Versioning";
