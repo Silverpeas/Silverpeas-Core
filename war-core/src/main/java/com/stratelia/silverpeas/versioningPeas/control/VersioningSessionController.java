@@ -994,7 +994,22 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     if (isWriter(document, userId)) {
       return true;
     }
-    if (VER_USE_NONE.equals(fileRightsMode) || VER_USE_WRITERS.equals(fileRightsMode)) {
+    
+    if (VER_USE_NONE.equals(fileRightsMode)) {
+      // No specific rights activated on document
+      // Check rights according to rights of component (or topic)
+      if (topicRightsEnabled()) {
+        profile = getInheritedProfile(READER);
+        if (profile.getObjectId() != -1) {
+          // topic have no rights defined (on itself or by its fathers)
+          // check if user have access to this component
+          return getOrganizationController().isComponentAvailable(getComponentId(), userId);
+        }
+      } else {
+        // check if user have access to this component
+        return getOrganizationController().isComponentAvailable(getComponentId(), userId);
+      }
+    } else if (VER_USE_WRITERS.equals(fileRightsMode)) {
       profile = getInheritedProfile(READER);
     } else {
       profile = getCurrentProfile(READER);
