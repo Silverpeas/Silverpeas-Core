@@ -62,12 +62,12 @@ public abstract class ImportExportDescriptor {
    * @param format the export/import format to set.
    * @return itself.
    */
-  public ImportExportDescriptor inFormat(String format) {
+  public <O extends ImportExportDescriptor> O inFormat(String format) {
     if (! isDefined(format)) {
       this.format = NO_FORMAT;
     }
     this.format = format;
-    return this;
+    return (O) this;
   }
 
   /**
@@ -78,9 +78,9 @@ public abstract class ImportExportDescriptor {
    * @param value the parameter value.
    * @return itself.
    */
-  public <T extends Serializable> ImportExportDescriptor withParameter(String name, final T value) {
+  public <T extends Serializable, O extends ImportExportDescriptor> O withParameter(String name, final T value) {
     this.parameters.put(name, value);
-    return this;
+    return (O) this;
   }
   
   /**
@@ -100,9 +100,9 @@ public abstract class ImportExportDescriptor {
    * @param name the parameter name.
    * @return itself.
    */
-  public ImportExportDescriptor withoutParameter(String name) {
+  public <O extends ImportExportDescriptor> O withoutParameter(String name) {
     this.parameters.remove(name);
-    return this;
+    return (O) this;
   }
 
   /**

@@ -40,10 +40,11 @@ public interface Exporter<T extends Serializable> {
   /**
    * Exports the specified serializable resources according to the export information carried by the
    * specified export descriptor.
-   * The serializable resources are exported by using the writer provided by the descriptor. According
-   * to the kind of writer, the way the resources are actually exported can be customized (export in
-   * a file, in a string, through a web service, ...).
-   * Once the export is done (with success or failure), the writer is closed.
+   * The serializable resources are exported by using either writer or the output stream provided by
+   * the descriptor. According to the kind of the writer or of the output stream, the way the
+   * resources are actually exported can be customized (export in a file, in a string, through a
+   * web service, ...).
+   * Once the export is done (with success or failure), the writer and the output stream is closed.
    * @param descriptor the export descriptor in which information about the export process is
    * indicated.
    * @param serializables the serializable resources to export.
@@ -55,10 +56,11 @@ public interface Exporter<T extends Serializable> {
   /**
    * Exports the specified list of serializable resources according to the export information carried
    * by the specified export descriptor.
-   * The serializable resources are exported by using the writer provided by the descriptor. According
-   * to the kind of writer, the way the resources are actually exported can be customized (export in
-   * a file, in a string, through a web service, ...).
-   * Once the export is done (with success or failure), the writer is closed.
+   * The serializable resources are exported by using either writer or the output stream provided by
+   * the descriptor. According to the kind of the writer or of the output stream, the way the
+   * resources are actually exported can be customized (export in a file, in a string, through a
+   * web service, ...).
+   * Once the export is done (with success or failure), the writer and the output stream is closed.
    * @param descriptor the export descriptor in which information about the export process is
    * indicated.
    * @param serializables the list of serializable resources to export.

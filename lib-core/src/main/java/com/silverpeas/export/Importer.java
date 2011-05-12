@@ -38,8 +38,8 @@ import java.util.List;
 public interface Importer<T extends Serializable> {
 
   /**
-   * Imports the serialized resources from the reader and the import parameters carried by the specified
-   * descriptor.
+   * Imports the serialized resources from the reader or the input stream and the import parameters
+   * carried by the specified descriptor.
    * The resources are deserialized each of them in an instance of T and they are returned in a list.
    * @param descriptor the import descriptor in which information about the import process is
    * indicated.

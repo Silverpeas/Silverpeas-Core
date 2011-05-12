@@ -45,7 +45,7 @@ public interface DocumentFormatConversion {
    * @return the file with the converted document.
    */
   File convert(final File source, final DocumentFormat inFormat);
-
+  
   /**
    * Gets the formats of documents supported by the converter.
    * @return an array with the different formats into which the object implementing this interface
