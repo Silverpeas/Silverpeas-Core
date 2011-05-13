@@ -23,6 +23,8 @@
  */
 package com.silverpeas.converter;
 
+import com.silverpeas.util.MimeTypes;
+
 /**
  * Enumeration of the different formats of documents supported in Silverpeas.
  */
@@ -31,19 +33,19 @@ public enum DocumentFormat {
   /**
    * The Portable Document Format aka PDF. ISO 32000-1:2008 standard format.
    */
-  pdf,
+  pdf(MimeTypes.PDF_MIME_TYPE),
   /**
    * The MS-Word 97/2000/XP format.
    */
-  doc,
+  doc(MimeTypes.WORD_MIME_TYPE),
   /**
    * The Microsoft's Rich Text Format aka RTF.
    */
-  rtf,
+  rtf(MimeTypes.RTF_MIME_TYPE),
   /**
    * The OpenDocument format for text. ISO 26300:2006 standard format.
    */
-  odt;
+  odt(MimeTypes.MIME_TYPE_OO_FORMATTED_TEXT);
 
   /**
    * A helper method to improve readability in method calls with a document format as argument.
@@ -63,4 +65,18 @@ public enum DocumentFormat {
   public static DocumentFormat inFormat(String format) {
     return DocumentFormat.valueOf(format);
   }
+  
+  /**
+   * Gets the MIME type corrsponding to this document format.
+   * @return the MIME type of this document format.
+   */
+  public String getMimeType() {
+    return this.mimeType;
+  }
+  
+  private DocumentFormat(final String mimeType) {
+    this.mimeType = mimeType;
+  }
+  
+  private String mimeType;
 }
