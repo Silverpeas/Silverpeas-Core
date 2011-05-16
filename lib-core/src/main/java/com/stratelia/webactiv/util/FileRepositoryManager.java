@@ -90,6 +90,15 @@ public class FileRepositoryManager extends Object {
   static public String getAvatarPath() {
     return avatarPath;
   }
+  
+  /**
+   * Gets the path of the repository into which attachments and other files are uploaded in
+   * Silverpeas.
+   * @return the path of the root repository for uploads.
+   */
+  static public String getUploadPath() {
+    return s_sUpLoadPath + File.separator;
+  }
 
   // Add by Jean-Claude Groccia
   // @param: sSpaceId: type String: the name of the space
