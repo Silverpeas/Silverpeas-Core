@@ -24,18 +24,18 @@
 
 package com.stratelia.silverpeas.domains.silverpeasdriver;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import com.stratelia.webactiv.organization.AdminPersistenceException;
 import com.stratelia.webactiv.organization.Table;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
  * A UserTable object manages the DomainSP_User table.
  */
-public class SPUserTable extends Table {
+public class SPUserTable extends Table<SPUserRow> {
   public SPUserTable(DomainSPSchema schema) {
     super(schema, "DomainSP_User");
     this.organization = schema;
@@ -69,7 +69,7 @@ public class SPUserTable extends Table {
     u.login = rs.getString(15);
     u.password = rs.getString(16);
     toBoolean = rs.getString(17);
-    if ((toBoolean != null) && (toBoolean.equalsIgnoreCase("Y"))) {
+    if ("Y".equalsIgnoreCase(toBoolean)) {
       u.passwordValid = true;
     } else {
       u.passwordValid = false;
@@ -87,27 +87,6 @@ public class SPUserTable extends Table {
 
   static final private String SELECT_USER_BY_ID = "select " + USER_COLUMNS
       + " from DomainSP_User where id = ?";
-
-  /**
-   * Returns the User with the given login.
-   */
-  public SPUserRow getUserByLogin(String login)
-      throws AdminPersistenceException {
-    SPUserRow[] users = (SPUserRow[]) getRows(SELECT_USER_BY_LOGIN,
-        new String[] { login }).toArray(new SPUserRow[0]);
-
-    if (users.length == 0)
-      return null;
-    else if (users.length == 1)
-      return users[0];
-    else {
-      throw new AdminPersistenceException("SPUserTable.getUserByLogin",
-          SilverpeasException.ERROR, "admin.EX_ERR_LOGIN_FOUND_TWICE");
-    }
-  }
-
-  static final private String SELECT_USER_BY_LOGIN = "select " + USER_COLUMNS
-      + " from DomainSP_User where login = ?";
 
   /**
    * Returns all the Users.
@@ -177,8 +156,7 @@ public class SPUserTable extends Table {
       + " ?,?,?,?,?," + " ?,?,?,?,?,?,?," + " ?,?,?,?,?" + ")";
 
   protected void prepareInsert(String insertQuery, PreparedStatement insert,
-      Object row) throws SQLException {
-    SPUserRow u = (SPUserRow) row;
+      SPUserRow u) throws SQLException {
     if (u.id == -1) {
       u.id = getNextId();
     }
@@ -253,8 +231,7 @@ public class SPUserTable extends Table {
       + " passwordValid = ?" + " where id = ?";
 
   protected void prepareUpdate(String updateQuery, PreparedStatement update,
-      Object row) throws SQLException {
-    SPUserRow u = (SPUserRow) row;
+      SPUserRow u) throws SQLException {
 
     update.setString(1, truncate(u.firstName, 100));
     update.setString(2, truncate(u.lastName, 100));
@@ -302,7 +279,7 @@ public class SPUserTable extends Table {
   /**
    * Fetch the current user row from a resultSet.
    */
-  protected Object fetchRow(ResultSet rs) throws SQLException {
+  protected SPUserRow fetchRow(ResultSet rs) throws SQLException {
     return fetchUser(rs);
   }
 

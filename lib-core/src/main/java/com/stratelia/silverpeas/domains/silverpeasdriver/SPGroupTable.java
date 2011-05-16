@@ -24,19 +24,19 @@
 
 package com.stratelia.silverpeas.domains.silverpeasdriver;
 
+import com.stratelia.webactiv.organization.AdminPersistenceException;
+import com.stratelia.webactiv.organization.Table;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import com.stratelia.webactiv.organization.AdminPersistenceException;
-import com.stratelia.webactiv.organization.Table;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-
 /**
  * A GroupTable object manages the DomainSP_Group table.
  */
-public class SPGroupTable extends Table {
+public class SPGroupTable extends Table<SPGroupRow> {
   public SPGroupTable(DomainSPSchema schema) {
     super(schema, "DomainSP_Group");
     this.organization = schema;
@@ -71,51 +71,6 @@ public class SPGroupTable extends Table {
 
   static final private String SELECT_GROUP_BY_ID = "select " + GROUP_COLUMNS
       + " from DomainSP_Group where id = ?";
-
-  /**
-   * Returns the root Group whith the given name.
-   */
-  public SPGroupRow getRootGroup(String name) throws AdminPersistenceException {
-    SPGroupRow[] groups = (SPGroupRow[]) getRows(SELECT_ROOT_GROUP_BY_NAME,
-        new String[] { name }).toArray(new SPGroupRow[0]);
-
-    if (groups.length == 0)
-      return null;
-    else if (groups.length == 1)
-      return groups[0];
-    else {
-      throw new AdminPersistenceException("SPGroupTable.getRootGroup",
-          SilverpeasException.ERROR, "admin.EX_ERR_GROUP_NAME_FOUND_TWICE",
-          "name : '" + name + "'");
-    }
-  }
-
-  static final private String SELECT_ROOT_GROUP_BY_NAME = "select "
-      + GROUP_COLUMNS + " from DomainSP_Group"
-      + " where superGroupId is null and name = ?";
-
-  /**
-   * Returns the Group whith the given name in the given super group.
-   */
-  public SPGroupRow getGroup(int superGroupId, String name)
-      throws AdminPersistenceException {
-    SPGroupRow[] groups = (SPGroupRow[]) getRows(SELECT_GROUP_BY_NAME,
-        new int[] { superGroupId }, new String[] { name }).toArray(
-        new SPGroupRow[0]);
-
-    if (groups.length == 0)
-      return null;
-    else if (groups.length == 1)
-      return groups[0];
-    else {
-      throw new AdminPersistenceException("SPGroupTable.getGroup",
-          SilverpeasException.ERROR, "admin.EX_ERR_GROUP_NAME_FOUND_TWICE",
-          "name: '" + name + "', father group Id: '" + superGroupId + "'");
-    }
-  }
-
-  static final private String SELECT_GROUP_BY_NAME = "select " + GROUP_COLUMNS
-      + " from DomainSP_Group" + " where superGroupId = ? and name = ?";
 
   /**
    * Returns all the Groups.
@@ -175,33 +130,6 @@ public class SPGroupTable extends Table {
   static final private String SELECT_USER_GROUPS = "select " + GROUP_COLUMNS
       + " from DomainSP_Group,DomainSP_Group_User_Rel"
       + " where id = groupId and userId = ?";
-
-  /**
-   * Returns all the groups in a given userRole (not recursive).
-   */
-  public SPGroupRow[] getDirectGroupsInUserRole(int userRoleId)
-      throws AdminPersistenceException {
-    return (SPGroupRow[]) getRows(SELECT_USERROLE_GROUPS, userRoleId).toArray(
-        new SPGroupRow[0]);
-  }
-
-  static final private String SELECT_USERROLE_GROUPS = "select "
-      + GROUP_COLUMNS + " from DomainSP_Group,ST_UserRole_Group_Rel"
-      + " where id = groupId and userRoleId = ?";
-
-  /**
-   * Returns all the groups in a given userRole (not recursive).
-   */
-  public String[] getDirectGroupIdsInUserRole(int userRoleId)
-      throws AdminPersistenceException {
-    return (String[]) getIds(SELECT_USERROLE_GROUP_IDS, userRoleId).toArray(
-        new String[0]);
-  }
-
-  static final private String SELECT_USERROLE_GROUP_IDS =
-      "select id from DomainSP_Group,ST_UserRole_Group_Rel"
-      + " where id = groupId and userRoleId = ?";
-
   /**
    * Returns all the groups in a given spaceUserRole (not recursive).
    */
@@ -263,8 +191,7 @@ public class SPGroupTable extends Table {
       + " values  (? ,? ,? ,?)";
 
   protected void prepareInsert(String insertQuery, PreparedStatement insert,
-      Object row) throws SQLException {
-    SPGroupRow g = (SPGroupRow) row;
+      SPGroupRow g) throws SQLException {
     if (g.id == -1) {
       g.id = getNextId();
     }
@@ -289,8 +216,7 @@ public class SPGroupTable extends Table {
       + " name = ?," + " description = ?" + " where id = ?";
 
   protected void prepareUpdate(String updateQuery, PreparedStatement update,
-      Object row) throws SQLException {
-    SPGroupRow g = (SPGroupRow) row;
+      SPGroupRow g) throws SQLException {
 
     update.setString(1, truncate(g.name, 100));
     update.setString(2, truncate(g.description, 500));
@@ -391,7 +317,7 @@ public class SPGroupTable extends Table {
   /**
    * Fetch the current group row from a resultSet.
    */
-  protected Object fetchRow(ResultSet rs) throws SQLException {
+  protected SPGroupRow fetchRow(ResultSet rs) throws SQLException {
     return fetchGroup(rs);
   }
 

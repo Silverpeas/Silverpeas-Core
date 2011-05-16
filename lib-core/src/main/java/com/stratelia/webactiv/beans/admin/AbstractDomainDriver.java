@@ -33,7 +33,7 @@ import java.util.List;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-abstract public class AbstractDomainDriver extends Object {
+abstract public class AbstractDomainDriver {
 
   protected int domainId = -1; // The domainId of this instance of domain
   // driver
