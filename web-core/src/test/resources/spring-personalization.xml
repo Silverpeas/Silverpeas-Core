@@ -23,7 +23,7 @@
   <bean name="personalizationServiceFactory"
         class="com.silverpeas.personalization.service.PersonalizationServiceFactory" factory-method="getFactory"/>
 
-  <hades:dao-config base-package="com.silverpeas" transaction-manager-ref="jpaTransactionManager"/>
+  <hades:dao-config base-package="com.silverpeas.personalization" transaction-manager-ref="jpaTransactionManager"/>
 
   <tx:annotation-driven transaction-manager="jpaTransactionManager"/>
 

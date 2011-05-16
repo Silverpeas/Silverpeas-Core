@@ -17,20 +17,17 @@
 
   <context:component-scan base-package="com.silverpeas.personalization"/>
 
-  <bean name="personalizationService"
-        class="com.silverpeas.personalization.service.DefaultPersonalizationService"/>
-
   <bean name="personalizationServiceFactory"
         class="com.silverpeas.personalization.service.PersonalizationServiceFactory" factory-method="getFactory"/>
 
-  <hades:dao-config base-package="com.silverpeas" transaction-manager-ref="jpaTransactionManager"/>
+  <hades:dao-config base-package="com.silverpeas.personalization" transaction-manager-ref="jpaTransactionManager"/>
 
   <tx:annotation-driven transaction-manager="jpaTransactionManager"/>
 
   <bean id="jpaTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"
         p:entityManagerFactory-ref="entityManagerFactory"/>
 
-  <jdbc:embedded-database id="dataSource" type="H2">
+  <jdbc:embedded-database id="dataSource" type="H2" >
     <jdbc:script location="classpath:/com/silverpeas/personalization/dao/create-database.sql" />
   </jdbc:embedded-database>
 
@@ -42,7 +39,7 @@
     <property name="jpaVendorAdapter">
       <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"
             p:showSql="false"
-            p:generateDdl="true"/>
+            p:generateDdl="false"/>
     </property>
   </bean>
 </beans>
