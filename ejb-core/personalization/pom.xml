@@ -21,10 +21,12 @@
     <dependency>
       <groupId>org.synyx.hades</groupId>
       <artifactId>org.synyx.hades</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.transaction</groupId>
