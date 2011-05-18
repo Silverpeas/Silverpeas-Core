@@ -38,9 +38,9 @@ import java.util.List;
 import javax.inject.Named;
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;
-import net.fortuna.ical4j.model.CategoryList;
 import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.Recur;
+import net.fortuna.ical4j.model.TextList;
 import net.fortuna.ical4j.model.TimeZoneRegistry;
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.component.VEvent;
@@ -122,10 +122,7 @@ public class ICal4JICalCodec implements ICalCodec {
       }
 
       // Add Categories
-      CategoryList categoryList = new CategoryList();
-      for (String category : event.getCategories().asList()) {
-        categoryList.add(category);
-      }
+      TextList categoryList = new TextList(event.getCategories().asArray());
       if (!categoryList.isEmpty()) {
         iCalEvent.getProperties().add(new Categories(categoryList));
       }

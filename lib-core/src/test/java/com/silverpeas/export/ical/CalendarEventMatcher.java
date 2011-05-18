@@ -111,6 +111,9 @@ public class CalendarEventMatcher extends BaseMatcher<String> {
     } else if (recurrence.getEndDate() != NO_RECURRENCE_END_DATE) {
       rrule.append(";UNTIL=").append(recurrence.getEndDate().toICalInUTC());
     }
+    if (recurrence.getFrequency().getInterval() > 1) {
+      rrule.append(";INTERVAL=").append(recurrence.getFrequency().getInterval());
+    }
     List<DayOfWeekOccurrence> daysOfWeek = recurrence.getDaysOfWeek();
     if (!daysOfWeek.isEmpty()) {
       rrule.append(";BYDAY=");
@@ -153,9 +156,6 @@ public class CalendarEventMatcher extends BaseMatcher<String> {
       case YEAR:
         freq += "YEARLY";
         break;
-    }
-    if (period.getInterval() > 1) {
-      freq += ";INTERVAL=" + period.getInterval();
     }
     return freq;
   }
