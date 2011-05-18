@@ -186,7 +186,7 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper)
 	  if (displayContextualPDC) {
 		  try
 		  {
-			  top.pdcFrame.location.href=getFooterPage()+"spaces="+spaceId+"&componentSearch="+componentId;
+			  top.pdcFrame.location.href=getFooterPage()+"spaces="+spaceId+"&componentSearch="+componentId+"&FromPDCFrame=true";
 		  }
 		  catch (e)
 		  {

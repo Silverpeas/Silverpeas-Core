@@ -23,6 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.admin.localized.LocalizedOption"%>
+<%@page import="com.silverpeas.admin.localized.LocalizedParameter"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="java.util.ArrayList"%>
@@ -33,9 +35,9 @@
 
 <%!
 
-void displayParameter(Parameter parameter, ResourcesWrapper resource, JspWriter out) throws java.io.IOException
+void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, JspWriter out) throws java.io.IOException
 {
-	String help = (String) parameter.getHelp().get(resource.getLanguage());
+	String help = parameter.getHelp();
 	if (help != null) {
 		out.println("<td align=\"left\">");
 		out.print("<img src=\""+resource.getIcon("JSPP.instanceHelpInfo")+"\" title=\""+help+"\" class=\"parameterInfo\"/>");
@@ -45,7 +47,7 @@ void displayParameter(Parameter parameter, ResourcesWrapper resource, JspWriter 
 	}
 
 	out.println("<td class=\"textePetitBold\" nowrap valign=\"center\">");
-	out.println(parameter.getLabel().get(resource.getLanguage()) +" : ");
+	out.println(parameter.getLabel() +" : ");
 	out.println("</td>");
 	out.println("<td align=\"left\" valign=\"top\">");
 	
@@ -65,8 +67,8 @@ void displayParameter(Parameter parameter, ResourcesWrapper resource, JspWriter 
 		{
 			for (int i=0; i<options.size(); i++)
 			{
-				Option option = (Option) options.get(i);
-				String name = (String) option.getName().get(resource.getLanguage()) ;
+				LocalizedOption option = (LocalizedOption) options.get(i);
+				String name = option.getName();
 				String value = option.getValue();
 				if (parameter.getValue() != null && parameter.getValue().toLowerCase().equals(value.toLowerCase())) {
 				  	out.println(name);
@@ -81,8 +83,8 @@ void displayParameter(Parameter parameter, ResourcesWrapper resource, JspWriter 
 		{
 	      for (int i=0; i<radios.size(); i++)
 	      {
-	      		Option radio = (Option) radios.get(i);
-				String name = (String) radio.getName().get(resource.getLanguage()) ;
+	      		LocalizedOption radio = (LocalizedOption) radios.get(i);
+				String name = radio.getName();
 				String value = radio.getValue();
 				String checked = "";
 				if (parameter.getValue() != null && parameter.getValue().toLowerCase().equals(value) || i==0) {
@@ -131,6 +133,7 @@ String prof = null;
 while (i.hasNext()) {
 	theProfile = (ProfileInst) i.next();
 	profile = theProfile.getLabel();
+  System.out.println(theProfile + " " + profile);
 	prof = resource.getString(profile.replace(' ', '_'));
 	if (prof.equals(""))
 		prof = profile;
@@ -269,14 +272,14 @@ out.println(board.printBefore());
 	if (parameters.size() >= 5)
 		on2Columns = true;
 	
-	Parameter parameter = null;
+	LocalizedParameter parameter = null;
 	if (on2Columns)
 	{
 		out.println("<td>");
 		out.println("<table border=\"0\" width=\"100%\">");
 		for(int nI=0; parameters != null && nI < parameters.size(); nI++)
 		{
-			parameter = (Parameter) parameters.get(nI);
+			parameter = (LocalizedParameter) parameters.get(nI);
 			if (nI%2 == 0)
 				out.println("<tr>");
 
@@ -297,7 +300,7 @@ out.println(board.printBefore());
 	} else {
 		for(int nI=0; parameters != null && nI < parameters.size(); nI++)
 		{
-			parameter = (Parameter) parameters.get(nI);
+			parameter = (LocalizedParameter) parameters.get(nI);
 
 			out.println("<tr>");
 			displayParameter(parameter, resource, out);

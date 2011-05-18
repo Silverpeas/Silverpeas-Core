@@ -118,7 +118,7 @@ public class ImportDragAndDrop extends HttpServlet {
         if (!item.isFormField()) {
           String fileUploadId = item.getFieldName().substring(4);
           String parentPath = FileUploadUtil.getParameter(items, "relpathinfo" + fileUploadId, null);
-          String fileName = item.getName();
+          String fileName = FileUploadUtil.getFileName(item);
           if (StringUtil.isDefined(parentPath)) {
             if (parentPath.endsWith(":\\")) { // special case for file on root of disk
               parentPath = parentPath.substring(0, parentPath.indexOf(':') + 1);
@@ -127,8 +127,6 @@ public class ImportDragAndDrop extends HttpServlet {
           SilverTrace.info("importExportPeas", "Drop.doPost",
               "root.MSG_GEN_PARAM_VALUE", "fileName = " + fileName);
           if (fileName != null) {
-            fileName = fileName.replace('\\', File.separatorChar);
-            fileName = fileName.replace('/', File.separatorChar);
             if (fileName.indexOf(File.separatorChar) >= 0) {
               fileName = fileName.substring(fileName.lastIndexOf(File.separatorChar));
               parentPath = parentPath + File.separatorChar +

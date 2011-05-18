@@ -37,6 +37,7 @@ import org.json.JSONObject;
 
 import com.silverpeas.directory.control.DirectorySessionController;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class DirectoryJSONServlet extends HttpServlet {
@@ -57,6 +58,14 @@ public class DirectoryJSONServlet extends HttpServlet {
 
     DirectorySessionController dsc =
         (DirectorySessionController) session.getAttribute("Silverpeas_" + "directory");
+    if (dsc == null) {
+      MainSessionController msc =
+          (MainSessionController) session
+              .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+      if (msc != null) {
+        dsc = new DirectorySessionController(msc, msc.createComponentContext(null, null));
+      }
+    }
 
     res.setContentType("application/json");
 

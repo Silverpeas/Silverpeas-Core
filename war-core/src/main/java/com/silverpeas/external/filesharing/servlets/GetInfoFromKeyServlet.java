@@ -23,6 +23,14 @@
  */
 package com.silverpeas.external.filesharing.servlets;
 
+import static com.silverpeas.external.filesharing.servlets.FileSharingConstants.ATT_ATTACHMENT;
+import static com.silverpeas.external.filesharing.servlets.FileSharingConstants.ATT_DOCUMENT;
+import static com.silverpeas.external.filesharing.servlets.FileSharingConstants.ATT_DOCUMENTVERSION;
+import static com.silverpeas.external.filesharing.servlets.FileSharingConstants.ATT_KEYFILE;
+import static com.silverpeas.external.filesharing.servlets.FileSharingConstants.ATT_TICKET;
+import static com.silverpeas.external.filesharing.servlets.FileSharingConstants.ATT_WALLPAPER;
+import static com.silverpeas.external.filesharing.servlets.FileSharingConstants.PARAM_KEYFILE;
+
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -34,14 +42,10 @@ import com.silverpeas.external.filesharing.model.FileSharingServiceFactory;
 import com.silverpeas.external.filesharing.model.TicketDetail;
 import com.silverpeas.look.SilverpeasLook;
 import com.stratelia.silverpeas.versioning.model.Document;
-import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import static com.silverpeas.external.filesharing.servlets.FileSharingConstants.*;
 
 public class GetInfoFromKeyServlet extends HttpServlet {
 

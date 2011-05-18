@@ -48,6 +48,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * @version %I%, %G%
  */
 public class POPUPRequestRouter extends ComponentRequestRouter {
+  
+  private static final long serialVersionUID = -240502612963231503L;
   /**
    * Name of the session bean that will be used for this application. This must be matched by the
    * useBean actions in the JSPs.

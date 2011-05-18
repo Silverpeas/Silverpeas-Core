@@ -679,10 +679,10 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
   public String getJcrPath(String language) {
     StringBuffer jcrPath = new StringBuffer(500);
     jcrPath.append(ATTACHMENTS_FOLDER).append('/').append(getInstanceId()).append('/');
-    if (this.context != null && !"".equals(this.context)) {
+    if (StringUtil.isDefined(this.context)) {
       String[] elements = FileRepositoryManager.getAttachmentContext(this.context);
-      for (int i = 0; i < elements.length; i++) {
-        jcrPath.append(elements[i]).append('/');
+      for (String element : elements) {
+        jcrPath.append(element).append('/');
       }
     }
     if (getPK().getId() != null) {
@@ -838,15 +838,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
   }
 
   public boolean isOfficeDocument(String language) {
-    boolean isOfficeDocument = false;
-    String mimeType = getType(language);
-    if (mimeType != null) {
-      SilverTrace.info("attachment", "AttachmentDetail.isOfficeDocument()",
-          "root.MSG_GEN_PARAM_VALUE", "is Office Document = "
-          + MS_OFFICE_MIME_TYPES.contains(mimeType));
-      isOfficeDocument = MS_OFFICE_MIME_TYPES.contains(mimeType);
-    }
-    return isOfficeDocument;
+    return isOpenOfficeCompatible(language);
   }
 
   /**
@@ -879,12 +871,17 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
    * @return true if the attachment is compatible with OpenOffice false otherwise.
    */
   public boolean isOpenOfficeCompatible(String language) {
-    String currentType = getType(language);
-    return OPEN_OFFICE_MIME_TYPES.contains(currentType);
+    return FileUtil.isOpenOfficeCompatible(getLogicalName(language));
   }
 
+  /**
+   * Use isOpenOfficeCompatible instead as Ms Office is no longer a special case.
+   * @return
+   * @deprecated Use isOpenOfficeCompatible instead as Ms Office is no longer a special case.
+   */
+  @Deprecated
   public boolean isOfficeDocument() {
-    return isOfficeDocument(null);
+    return isOpenOfficeCompatible();
   }
 
   /**

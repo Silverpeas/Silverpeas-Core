@@ -65,7 +65,6 @@ import static com.silverpeas.socialNetwork.myProfil.servlets.MyProfileRoutes.*;
  */
 public class MyProfilRequestRouter extends ComponentRequestRouter {
 
-  private static final String AVATAR_FOLDER = "avatar";
   private static final long serialVersionUID = -9194682447286602180L;
   private final int NUMBER_CONTACTS_TO_DISPLAY = 3;
 
@@ -193,7 +192,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
       throws IOException, UtilException {
     List<FileItem> parameters = FileUploadUtil.parseRequest(request);
     FileItem file = FileUploadUtil.getFile(parameters, "WAIMGVAR0");
-    ImageProfil img = new ImageProfil(nameAvatar, AVATAR_FOLDER);
+    ImageProfil img = new ImageProfil(nameAvatar);
     img.saveImage(file.getInputStream());
     return nameAvatar;
   }
@@ -207,14 +206,9 @@ public class MyProfilRequestRouter extends ComponentRequestRouter {
    */
   private List<UserDetail> getContactsToDisplay(List<String> contactIds,
       MyProfilSessionController sc) {
-    int numberOfContactsTodisplay;
+    int numberOfContactsTodisplay =
+        sc.getSettings().getInteger("numberOfContactsTodisplay", NUMBER_CONTACTS_TO_DISPLAY);
     List<UserDetail> contacts = new ArrayList<UserDetail>();
-    try {
-      numberOfContactsTodisplay =
-          Integer.parseInt(sc.getSettings().getString("numberOfContactsTodisplay"));
-    } catch (NumberFormatException ex) {
-      numberOfContactsTodisplay = NUMBER_CONTACTS_TO_DISPLAY;
-    }
     if (contactIds.size() <= numberOfContactsTodisplay) {
       for (String userId : contactIds) {
         contacts.add(sc.getUserDetail(userId));

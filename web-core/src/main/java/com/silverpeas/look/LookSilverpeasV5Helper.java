@@ -219,12 +219,16 @@ public class LookSilverpeasV5Helper implements LookHelper {
     shouldDisplayContextualPDC = resources.getBoolean("displayContextualPDC", true);
     shouldDisplaySpaceIcons = resources.getBoolean("displaySpaceIcons", true);
     shouldDisplayConnectedUsers = resources.getBoolean("displayConnectedUsers", true);
-    displayUserMenu = UserMenuDisplay.valueOf(resources.getString("displayUserFavoriteSpace",
-        PersonalizationService.DEFAULT_MENU_DISPLAY_MODE.name()).toUpperCase());
-    if (isMenuPersonalisationEnabled() && mainSC.getPersonalization().getDisplay().isNotDefault()) {
-      this.displayUserMenu = this.mainSC.getPersonalization().getDisplay();
+    if (isAnonymousUser()) {
+      displayUserMenu = UserMenuDisplay.DISABLE;
+    } else {
+      displayUserMenu = UserMenuDisplay.valueOf(resources.getString("displayUserFavoriteSpace",
+          PersonalizationService.DEFAULT_MENU_DISPLAY_MODE.name()).toUpperCase());
+      if (isMenuPersonalisationEnabled() && mainSC.getPersonalization().getDisplay().isNotDefault()) {
+        this.displayUserMenu = this.mainSC.getPersonalization().getDisplay();
+      }
+      enableUFSContainsState = resources.getBoolean("enableUFSContainsState", false);
     }
-    enableUFSContainsState = resources.getBoolean("enableUFSContainsState", false);
   }
 
   @Override

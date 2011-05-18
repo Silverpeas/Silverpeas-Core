@@ -23,17 +23,17 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.dao.GroupDAO;
 import com.stratelia.webactiv.organization.GroupRow;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GroupManager {
 
@@ -649,9 +649,9 @@ public class GroupManager {
           + " (table ST_Group_User_Rel)", null);
       String[] asUserIds = group.getUserIds();
       int nUserAdded = 0;
-      for (int nI = 0; nI < asUserIds.length; nI++) {
-        if (asUserIds[nI] != null && asUserIds[nI].length() > 0) {
-          ddManager.organization.group.addUserInGroup(idAsInt(asUserIds[nI]), idAsInt(sGroupId));
+      for (String asUserId : asUserIds) {
+        if (StringUtil.isDefined(asUserId)) {
+          ddManager.organization.group.addUserInGroup(idAsInt(asUserId), idAsInt(sGroupId));
           nUserAdded++;
         }
       }
@@ -747,41 +747,41 @@ public class GroupManager {
 
       // Compute the remove users list
       String[] asNewUsersId = group.getUserIds();
-      for (int nI = 0; nI < asOldUsersId.length; nI++) {
+      for (String anAsOldUsersId : asOldUsersId) {
         boolean bFound = false;
-        for (int nJ = 0; nJ < asNewUsersId.length; nJ++) {
-          if (asOldUsersId[nI].equals(asNewUsersId[nJ])) {
+        for (String anAsNewUsersId : asNewUsersId) {
+          if (anAsOldUsersId.equals(anAsNewUsersId)) {
             bFound = true;
           }
         }
 
         if (!bFound) {
-          alRemUsers.add(asOldUsersId[nI]);
+          alRemUsers.add(anAsOldUsersId);
         }
       }
 
       // Compute the add users list
-      for (int nI = 0; nI < asNewUsersId.length; nI++) {
+      for (String anAsNewUsersId : asNewUsersId) {
         boolean bFound = false;
-        for (int nJ = 0; nJ < asOldUsersId.length; nJ++) {
-          if (asNewUsersId[nI].equals(asOldUsersId[nJ])) {
+        for (String anAsOldUsersId : asOldUsersId) {
+          if (anAsNewUsersId.equals(anAsOldUsersId)) {
             bFound = true;
           }
         }
 
         if (!bFound) {
-          alAddUsers.add(asNewUsersId[nI]);
+          alAddUsers.add(anAsNewUsersId);
         }
       }
       // Remove the users that are not in this group anymore
-      for (int nI = 0; nI < alRemUsers.size(); nI++) {
+      for (String alRemUser : alRemUsers) {
         ddManager.organization.group.removeUserFromGroup(
-            idAsInt(alRemUsers.get(nI)), idAsInt(sGroupId));
+            idAsInt(alRemUser), idAsInt(sGroupId));
       }
 
       // Add the new users of the group
-      for (int nI = 0; nI < alAddUsers.size(); nI++) {
-        ddManager.organization.group.addUserInGroup(idAsInt(alAddUsers.get(nI)), idAsInt(sGroupId));
+      for (String alAddUser : alAddUsers) {
+        ddManager.organization.group.addUserInGroup(idAsInt(alAddUser), idAsInt(sGroupId));
       }
 
       SynchroReport.info("GroupManager.updateGroup()", "Groupe : "
@@ -846,13 +846,12 @@ public class GroupManager {
     ArrayList<AdminGroupInst> alChildrenGroupInst = new ArrayList<AdminGroupInst>();
 
     // Search the children group
-    for (int nI = 0; nI < aGroup.length; nI++) {
-      if (aGroup[nI].getSuperGroupId() != null
-          && aGroup[nI].getSuperGroupId().equals(sFatherGroupId)) {
+    for (Group anAGroup : aGroup) {
+      if (anAGroup.getSuperGroupId() != null && anAGroup.getSuperGroupId().equals(sFatherGroupId)) {
         AdminGroupInst adminGroupInst = new AdminGroupInst();
-        adminGroupInst.setGroup(aGroup[nI]);
-        adminGroupInst.setChildrenAdminGroupInst(this.getChildrenGroupInst(
-            ddManager, adminGroupInst.getGroup().getId(), aGroup));
+        adminGroupInst.setGroup(anAGroup);
+        adminGroupInst.setChildrenAdminGroupInst(this.getChildrenGroupInst(ddManager,
+            adminGroupInst.getGroup().getId(), aGroup));
         alChildrenGroupInst.add(adminGroupInst);
       }
     }

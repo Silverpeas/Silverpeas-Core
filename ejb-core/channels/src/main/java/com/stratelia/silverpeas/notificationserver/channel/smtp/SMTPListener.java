@@ -42,9 +42,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.util.Map;
 
 public class SMTPListener extends AbstractListener implements SMTPConstant {
-  
-  private static final long serialVersionUID = -241712070051475710L;
 
+  private static final long serialVersionUID = -241712070051475710L;
 
   public SMTPListener() {
   }
@@ -66,7 +65,7 @@ public class SMTPListener extends AbstractListener implements SMTPConstant {
     } catch (NotificationServerException e) {
       SilverTrace.error("smtp", "SMTPListner.onMessage()",
           "smtp.EX_CANT_PROCESS_MSG", "JMS Message = " + msg.toString()
-          + ", Payload = " + m_payload == null ? "" : m_payload, e);
+              + ", Payload = " + m_payload == null ? "" : m_payload, e);
     }
   }
 
@@ -98,21 +97,19 @@ public class SMTPListener extends AbstractListener implements SMTPConstant {
           SilverpeasException.ERROR, "smtp.EX_MISSING_FROM");
     } else {
       String body = p_Message.getMessage();
+      // Transform text to html format
+      body = EncodeHelper.javaStringToHtmlParagraphe(body + "\n\n");
       if (tmpUrlString != null) {
-        // Transform text to html format
-        body = EncodeHelper.javaStringToHtmlParagraphe(body + "\n\n");
         body += "<a href=\"" + tmpUrlString + "\" target=_blank>"
             + messages.getString("clickHere") + "</a> "
             + messages.getString("ToAccessDocument");
       }
 
       if (tmpAttachmentIdString == null) {
-        sendEmail(tmpFromString, p_Message.getTargetReceipt(),
-            tmpSubjectString, body, (tmpUrlString != null));
+        sendEmail(tmpFromString, p_Message.getTargetReceipt(), tmpSubjectString, body, true);
       } else {
         // For the moment, send the email without attachment
-        sendEmail(tmpFromString, p_Message.getTargetReceipt(),
-            tmpSubjectString, body, false);
+        sendEmail(tmpFromString, p_Message.getTargetReceipt(), tmpSubjectString, body, false);
       }
     }
   }
@@ -136,7 +133,7 @@ public class SMTPListener extends AbstractListener implements SMTPConstant {
     javax.mail.Session session = javax.mail.Session.getInstance(properties, null);
     session.setDebug(isDebug()); // print on the console all SMTP messages.
     try {
-      InternetAddress fromAddress = getAuthorizedEmailAddress(pFrom);     
+      InternetAddress fromAddress = getAuthorizedEmailAddress(pFrom);
       InternetAddress[] toAddress = null;
       // parsing destination address for compliance with RFC822
       try {
@@ -175,7 +172,7 @@ public class SMTPListener extends AbstractListener implements SMTPConstant {
       if (isAuthenticated()) {
         SilverTrace.info("smtp", "SMTPListner.sendEmail()",
             "root.MSG_GEN_PARAM_VALUE", "m_Host = " + getMailServer() + " m_Port="
-            + getPort() + " m_User=" + getLogin());
+                + getPort() + " m_User=" + getLogin());
         transport.connect(getMailServer(), getPort(), getLogin(), getPassword());
       } else {
         transport.connect();

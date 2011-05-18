@@ -32,6 +32,9 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 
 public class GoToComponent extends GoTo {
+
+  private static final long serialVersionUID = -7281629150484820205L;
+
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
     OrganizationController organization = new OrganizationController();

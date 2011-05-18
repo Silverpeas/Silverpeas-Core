@@ -118,8 +118,10 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
       throw new PdcBmRuntimeException("PdcBmEJB.getValue",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
-    SilverTrace.info("Pdc", "PdcBmEJB.getValue", "root.MSG_GEN_PARAM_VALUE",
-        "returned valueId = " + value.getValuePK().getId());
+    if (value != null) {
+      SilverTrace.info("Pdc", "PdcBmEJB.getValue", "root.MSG_GEN_PARAM_VALUE",
+          "returned value name = " + value.getName());
+    }
     return value;
   }
 
@@ -178,9 +180,10 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
     }
   }
 
+  @SuppressWarnings("unchecked")
   public List<Integer> getSilverContentIds(List<String> docFeatures) {
     try {
-      return (ArrayList<Integer>) getContentManager().getSilverContentId(docFeatures);
+      return (List<Integer>) getContentManager().getSilverContentId(docFeatures);
     } catch (Exception e) {
       throw new PdcBmRuntimeException("PdcBmEJB.getSilverContentIds",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

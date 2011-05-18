@@ -24,122 +24,102 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <%
+  String spaceId = (String) request.getAttribute("CurrentSpaceId");
 
-WAComponent[] m_ListComponents = (WAComponent[]) request.getAttribute("ListComponents");
-String 		spaceId				= (String) request.getAttribute("CurrentSpaceId");
-
-browseBar.setSpaceId(spaceId);
-browseBar.setClickable(false);
-browseBar.setExtraInformation(resource.getString("JSPP.creationInstance"));
+  browseBar.setSpaceId(spaceId);
+  browseBar.setClickable(false);
+  browseBar.setExtraInformation(resource.getString("JSPP.creationInstance"));
 %>
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
-<script type="text/javascript">
-$(document).ready(function() 
-{
-   // By suppling no content attribute, the library uses each elements title attribute by default
-   $('a[title]').qtip({
-      content: {
-         text: false // Use each elements title attribute
-      },
-      style: 'silverpeas',
-	  position: {
-		  corner: {
-			target: 'topRight',
-			tooltip: 'bottomLeft'
-		  },
-		  adjust: {
-			  screen: true
-		  }
-	  }
-   });
-});
-</script>
-<style type="text/css">
-.component-icon {
-	margin: 2px;
-}
-</style>
-</HEAD>
-<BODY onLoad="javascript:window.resizeTo(750,700)">
-<%
-out.println(window.printBefore());
-out.println(frame.printBefore());
-%>
-<center>
-<%
-out.println(board.printBefore());
-%>
-<br>
-	<TABLE width="70%" align="center" border=0 cellPadding=0 cellSpacing=0>
-		<%
-        String currentSuite = "";
-		for(int nI=0; m_ListComponents!= null && nI < m_ListComponents.length; nI++)
-		{
-            if (m_ListComponents[nI].isVisible())
-            {
-                String suiteLabel = (String) m_ListComponents[nI].getSuite().get(resource.getLanguage());
-                if (!currentSuite.equalsIgnoreCase(suiteLabel) && (m_ListComponents[nI].getSuite() != null))
-                {
-                    currentSuite = suiteLabel;
-                    %>
-		<TR>
-			<TD colspan="2" align="center" class="txttitrecol">&nbsp;</TD>
-		</TR>
-		<TR>
-			<TD colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=resource.getIcon("JSPP.px")%>"></TD>
-		</TR>
-		<TR>
-			<TD align="center" class="txttitrecol">
-				&nbsp;
-			</TD>
-			<TD align="center" class="txttitrecol">
-				 <%=currentSuite.substring(3)%> 
-			</TD>
-		</TR>
-		<TR>
-			<TD colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=resource.getIcon("JSPP.px")%>"></TD>
-		</TR>
-		<TR>
-			<TD colspan="2" align="center" height="2"><img src="<%=resource.getIcon("JSPP.px")%>"></TD>
-		</TR>
-        <%
-                }
-		%>
-		<TR>
-			<TD align="center" width="30">
-				<a href="CreateInstance?ComponentNum=<%=nI%>" title="<%=m_ListComponents[nI].getDescription().get(resource.getLanguage())%>"><img src="<%=iconsPath%>/util/icons/component/<%=m_ListComponents[nI].getName()%>Small.gif" class="component-icon" alt=""/></a>
-			</TD>
-			<TD align="left">
-				<a href="CreateInstance?ComponentNum=<%=nI%>" title="<%=m_ListComponents[nI].getDescription().get(resource.getLanguage())%>"><%=m_ListComponents[nI].getLabel().get(resource.getLanguage())%></a>
-			</TD>
-		</TR>
-		<%
+<html>
+  <head>
+    <title><%=resource.getString("GML.popupTitle")%></title>
+    <view:looknfeel/>
+    <%
+      out.println(gef.getLookStyleSheet());
+    %>
+    <script type="text/javascript">
+      $(document).ready(function() 
+      {
+        // By suppling no content attribute, the library uses each elements title attribute by default
+        $('a[title]').qtip({
+          content: {
+            text: false // Use each elements title attribute
+          },
+          style: 'silverpeas',
+          position: {
+            corner: {
+              target: 'topRight',
+              tooltip: 'bottomLeft'
+            },
+            adjust: {
+              screen: true
             }
-		}
-		%>
-	</TABLE>
-
-<%
-out.println(board.printAfter());
-%>
-<br><br>
-<%
-	ButtonPane buttonPane = gef.getButtonPane();
-	buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:window.close();", false));
-	out.println(buttonPane.print());
-%>
-</center>
-<%
-out.println(frame.printAfter());
-out.println(window.printAfter());
-%>
-</BODY>
-</HTML>
+          }
+        });
+      });
+    </script>
+    <style type="text/css">
+      .component-icon {
+        margin: 2px;
+      }
+    </style>
+  </head>
+  <body onLoad="javascript:window.resizeTo(750,700)">
+    <view:window>
+      <view:frame> 
+      <center>
+        <view:board>
+          <br />
+          <table width="70%" align="center" border="0" cellPadding="0" cellSpacing="0">
+            <c:set var="currentSuite" value="" scope="page"/>
+            <c:forEach items="${requestScope.ListComponents}" var="component" varStatus="loop">
+              <c:if test="${component.visible}">
+                <c:if test="${component.suite != null && component.suite != currentSuite}">
+                  <c:set var="currentSuite" value="${component.suite}" scope="page"/>         
+                  <tr>
+                    <td colspan="2" align="center" class="txttitrecol">&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=resource.getIcon("JSPP.px")%>"></td>
+                  </tr>
+                  <tr>
+                    <td align="center" class="txttitrecol">&nbsp;</td>
+                    <td align="center" class="txttitrecol"><c:out value="${currentSuite}"/></td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=resource.getIcon("JSPP.px")%>"></td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" align="center" height="2"><img src="<%=resource.getIcon("JSPP.px")%>"></td>
+                  </tr>
+                </c:if>
+                <tr>
+                  <td align="center" width="30">
+                    <a href="CreateInstance?ComponentName=<c:out value="${component.name}" />" title="<c:out value="${component.description}" />"><img src="<%=iconsPath%>/util/icons/component/<c:out value="${component.name}" />Small.gif" class="component-icon" alt=""/></a>
+                  </td>
+                  <td align="left">
+                    <a href="CreateInstance?ComponentName=<c:out value="${component.name}" />" title="<c:out value="${component.description}" />"><c:out value="${component.label}" /></a>
+                  </td>
+                </tr>
+              </c:if>
+            </c:forEach>
+          </table>
+        </view:board>
+        <br /><br />
+        <%
+          ButtonPane buttonPane = gef.getButtonPane();
+          buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"),
+              "javascript:window.close();", false));
+          out.println(buttonPane.print());
+        %>
+      </center>
+    </view:frame>
+  </view:window>
+</body>
+</html>

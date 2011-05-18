@@ -56,6 +56,7 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
  */
 public class OnlineFileServer extends HttpServlet {
 
+  private static final long serialVersionUID = -6153872618631360113L;
   HttpSession session;
   PrintWriter out;
 

@@ -28,22 +28,21 @@ import com.silverpeas.util.PathTestUtil;
   }
 	@Test
 	public void testIsImage() {
-	  ImageProfil imageProfil = new ImageProfil("nidale.jpg", "");
+	  ImageProfil imageProfil = new ImageProfil("nidale.jpg");
 	  assertEquals(true, imageProfil.isImage());
-	  imageProfil = new ImageProfil("nidale.bmp", "");
+	  imageProfil = new ImageProfil("nidale.bmp");
     assertEquals(true, imageProfil.isImage());
-    imageProfil = new ImageProfil("nidale.jpeg", "");
+    imageProfil = new ImageProfil("nidale.jpeg");
     assertEquals(true, imageProfil.isImage());
-    imageProfil = new ImageProfil("nidale.gif", "");
+    imageProfil = new ImageProfil("nidale.gif");
     assertEquals(true, imageProfil.isImage());
-    imageProfil = new ImageProfil("nidale.txt", "");
+    imageProfil = new ImageProfil("nidale.txt");
     assertEquals(false, imageProfil.isImage());
 	}
 
 	@Test
 	public void testExtractImage() throws IOException {
-	  String subdirectory = "read";
-    ImageProfil imageProfil = new ImageProfil("SilverAdmin.jpg", subdirectory);
+    ImageProfil imageProfil = new ImageProfil("SilverAdmin.jpg");
     imageProfil.saveImage(this.getClass().getResourceAsStream("SilverAdmin.jpg"));
     IOUtils.contentEquals(this.getClass().getResourceAsStream("SilverAdmin.jpg"),imageProfil.getImage());
 	}

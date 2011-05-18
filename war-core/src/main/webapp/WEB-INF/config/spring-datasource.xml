@@ -30,12 +30,12 @@
   xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-  <!-- <bean id="MydataSource" name="MydataSource"
+  <bean id="myDataSource" name="myDataSource"
     class="org.springframework.jndi.JndiObjectFactoryBean">
     <property name="jndiName">
       <value>jdbc/Silverpeas</value>
     </property>
-  </bean>-->
+  </bean>
 
   <bean id="dataSource" name="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
     destroy-method="close">

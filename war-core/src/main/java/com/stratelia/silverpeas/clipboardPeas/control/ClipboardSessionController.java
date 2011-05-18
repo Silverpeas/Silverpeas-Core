@@ -25,10 +25,9 @@ package com.stratelia.silverpeas.clipboardPeas.control;
 
 import java.awt.datatransfer.Transferable;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -43,7 +42,6 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
-
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
 

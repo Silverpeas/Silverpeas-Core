@@ -32,6 +32,8 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 
 public class GoToSpace extends GoTo {
 
+  private static final long serialVersionUID = 8638938283373035004L;
+
   @Override
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {

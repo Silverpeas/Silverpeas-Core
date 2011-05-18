@@ -54,6 +54,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  */
 public class SILVERMAILRequestRouter extends ComponentRequestRouter {
 
+  private static final long serialVersionUID = -1666867964822716456L;
+
   /**
    * Package from which to attempt to load RequestHandler objects
    */

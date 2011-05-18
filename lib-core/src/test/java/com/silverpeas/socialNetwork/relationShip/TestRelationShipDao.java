@@ -23,19 +23,17 @@
  */
 package com.silverpeas.socialNetwork.relationShip;
 
+import com.silverpeas.components.model.AbstractTestDao;
+import com.silverpeas.socialNetwork.model.SocialInformation;
+import com.stratelia.webactiv.util.DateUtil;
+import org.dbunit.database.IDatabaseConnection;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.dbunit.database.IDatabaseConnection;
-
-import com.silverpeas.components.model.AbstractTestDao;
-import com.silverpeas.socialNetwork.model.SocialInformation;
-import com.stratelia.webactiv.util.DateUtil;
-
 /**
- *
  * @author Bensalem Nabil
  */
 public class TestRelationShipDao extends AbstractTestDao {
@@ -55,15 +53,13 @@ public class TestRelationShipDao extends AbstractTestDao {
 
   /*
    * Test Create RelationShip
-   *
-   *
    */
   public void testCreateRelationShip() throws Exception {
     IDatabaseConnection connexion = null;
 
-
-    RelationShip newRelationShip = new RelationShip(5, 6, 0, toDate(2010, Calendar.FEBRUARY, 01, 10,
-        34, 15), 6);
+    RelationShip newRelationShip =
+        new RelationShip(5, 6, 0, toDate(2010, Calendar.FEBRUARY, 1, 10,
+            34, 15), 6);
     try {
       connexion = getConnection();
       int id = dao.createRelationShip(connexion.getConnection(), newRelationShip);
@@ -71,8 +67,9 @@ public class TestRelationShipDao extends AbstractTestDao {
 
       assertTrue("New id is correct", id > 0);
       newRelationShip.setId(id);
-      RelationShip createdRelationShip = dao.getRelationShip(connexion.getConnection(), newRelationShip.
-          getUser1Id(), newRelationShip.getUser2Id());
+      RelationShip createdRelationShip =
+          dao.getRelationShip(connexion.getConnection(), newRelationShip.
+              getUser1Id(), newRelationShip.getUser2Id());
       assertNotNull("RelationShip not found in db", createdRelationShip);
       assertEquals("RelationShip in db not as expected", newRelationShip, createdRelationShip);
 
@@ -80,17 +77,17 @@ public class TestRelationShipDao extends AbstractTestDao {
       closeConnection(connexion);
     }
   }
+
   /*
    * Test delete RelationShip
-   *
-   *
    */
 
   public void testDeleteRelationShip() throws Exception {
     IDatabaseConnection connexion = null;
 
-    RelationShip expectedRelationShip = new RelationShip(1, 2, 0, toDate(2010, Calendar.FEBRUARY, 01,
-        10, 34, 15), 2);
+    RelationShip expectedRelationShip =
+        new RelationShip(1, 2, 0, toDate(2010, Calendar.FEBRUARY, 1,
+            10, 34, 15), 2);
     expectedRelationShip.setId(1);
     try {
       connexion = getConnection();
@@ -108,44 +105,64 @@ public class TestRelationShipDao extends AbstractTestDao {
 
   /*
    * Test get RelationShip
-   *
-   *
    */
   public void testGetRelationShip() throws Exception {
     IDatabaseConnection connexion = null;
 
-    RelationShip expectedRelationShip = new RelationShip(1, 2, 0, toDate(2010, Calendar.FEBRUARY, 01,
-        10, 34, 15), 2);
+    RelationShip expectedRelationShip =
+        new RelationShip(1, 2, 0, toDate(2010, Calendar.FEBRUARY, 1,
+            10, 34, 15), 2);
     expectedRelationShip.setId(1);
     try {
       connexion = getConnection();
-      RelationShip dbrelationShip = dao.getRelationShip(connexion.getConnection(), expectedRelationShip.
-          getUser1Id(), expectedRelationShip.getUser2Id());
+      RelationShip dbrelationShip =
+          dao.getRelationShip(connexion.getConnection(), expectedRelationShip.
+              getUser1Id(), expectedRelationShip.getUser2Id());
       assertNotNull("RelationShip not found in db", dbrelationShip);
       assertEquals("RelationShip in db not as expected", expectedRelationShip, dbrelationShip);
-      boolean isInRelationShip = dao.isInRelationShip(connexion.getConnection(), expectedRelationShip.
-          getUser1Id(), expectedRelationShip.getUser2Id());
+      boolean isInRelationShip =
+          dao.isInRelationShip(connexion.getConnection(), expectedRelationShip.
+              getUser1Id(), expectedRelationShip.getUser2Id());
       assertTrue("must be true", isInRelationShip);
-
 
     } finally {
       closeConnection(connexion);
     }
   }
+
+  /*
+   * Test get RelationShipById
+   */
+  public void testGetRelationShipById() throws Exception {
+    IDatabaseConnection connexion = null;
+
+    RelationShip expectedRelationShip = new RelationShip(1, 2, 0, toDate(2010, Calendar.FEBRUARY, 1,
+        10, 34, 15), 2);
+    expectedRelationShip.setId(1);
+    try {
+      connexion = getConnection();
+      RelationShip dbrelationShip = dao.getRelationShip(connexion.getConnection(), expectedRelationShip.getId());
+      assertNotNull("RelationShip not found in db", dbrelationShip);
+      assertEquals("RelationShip in db not as expected", expectedRelationShip, dbrelationShip);
+      boolean isInRelationShip = dao.isInRelationShip(connexion.getConnection(), expectedRelationShip.
+          getUser1Id(), expectedRelationShip.getUser2Id());
+      assertTrue("must be true", isInRelationShip);
+    } finally {
+      closeConnection(connexion);
+    }
+  }
+  
   /*
    * Test get All my RelationShip sent
-   *
-   *
    */
-
   public void testGetAllMyRelationShips() throws Exception {
     IDatabaseConnection connexion = null;
 
     RelationShip expectedRelationShip1 = new RelationShip(1, 2, 0, toDate(2010, Calendar.FEBRUARY,
-        01, 10, 34, 15), 2);
+        1, 10, 34, 15), 2);
     expectedRelationShip1.setId(1);
-    RelationShip expectedRelationShip2 = new RelationShip(1, 3, 0, toDate(2010, Calendar.MAY, 11, 15,
-        25, 32), 3);
+    RelationShip expectedRelationShip2 =
+        new RelationShip(1, 3, 0, toDate(2010, Calendar.MAY, 11, 15, 25, 32), 3);
     expectedRelationShip2.setId(4);
     int myId = 1;
     try {
@@ -155,10 +172,10 @@ public class TestRelationShipDao extends AbstractTestDao {
       assertEquals("Should have 2 relationships in db", 2, relationShips.size());
       assertEquals("First should be 1 et 2", expectedRelationShip1, relationShips.get(0));
       assertEquals("Second should be 1 et 3", expectedRelationShip2, relationShips.get(1));
-      
+
       Date begin = DateUtil.parse("2010/12/31");
       Date end = DateUtil.parse("2010/01/01");
-      
+
       List<SocialInformation> listSIR = dao.getAllMyRelationShips(connexion.
           getConnection(), myId + "", begin, end);
       assertNotNull("Relationships should exist", listSIR);

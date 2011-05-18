@@ -21,19 +21,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.silverpeasinitialize;
 
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.security.Security;
-import java.util.Enumeration;
 import java.util.Locale;
-import java.util.Properties;
 
 /**
  * Title: Description: Copyright: Copyright (c) 2001 Company:
@@ -41,10 +34,10 @@ import java.util.Properties;
  * @version 1.0
  */
 public final class SilverpeasInitializer {
+
   private static boolean isInitialized = false;
   private static final String INITIALIZESETTINGS = "InitializeSettings.properties";
-
-  private java.util.ResourceBundle _silverpeasinitializeSettings;
+  private java.util.ResourceBundle silverpeasInitialisationSettings;
 
   /**
    * Constructor declaration
@@ -52,13 +45,13 @@ public final class SilverpeasInitializer {
    */
   public SilverpeasInitializer() {
   }
-  
+
   /**
    * Is the Silverpeas context already initialized?
    * @return true if the Silverpeas is initialized, false otherwise.
    */
   public static synchronized boolean isInitialized() {
-      return isInitialized;
+    return isInitialized;
   }
 
   /**
@@ -76,36 +69,28 @@ public final class SilverpeasInitializer {
     initialized();
     try {
       // Add properties
-      _silverpeasinitializeSettings = FileUtil.loadBundle(
+      silverpeasInitialisationSettings = FileUtil.loadBundle(
           "com.stratelia.silverpeas._silverpeasinitialize.settings._silverpeasinitializeSettings",
           new Locale("fr", ""));
-      if (StringUtil.getBooleanValue(_silverpeasinitializeSettings.getString("initialize"))) {
-        initPropertySystem();
+      if (StringUtil.getBooleanValue(silverpeasInitialisationSettings.getString("initialize"))) {
         File[] listFileInitialize = getListInitializeSettingsFile();
-
         if (listFileInitialize != null) {
           int len = listFileInitialize.length;
           int lengthRef = INITIALIZESETTINGS.length();
-
           for (int i = 0; i < len; i++) {
             String tmpFileName = listFileInitialize[i].getName();
             int index = tmpFileName.indexOf(INITIALIZESETTINGS);
-
             if (tmpFileName.length() - lengthRef == index) {
-              processInitializeSettingsFile(listFileInitialize[i]
-                  .getAbsoluteFile());
+              processInitializeSettingsFile(listFileInitialize[i].getAbsoluteFile());
             }
           }
         }
-
       } else {
-        LogMsg(this, LOG_DEBUG, "SilverpeasInitializer",
+        LogMsg(this, "SilverpeasInitializer",
             "Do not initialize because of _silverpeasinitializeSettings.initialize=false.");
       }
-      // Add SSL support
-      Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
     } catch (Exception e) {
-      LogMsg(this, LOG_ERROR, "SilverpeasInitializer", e.getMessage());
+      LogMsg(this, "SilverpeasInitializer", e.getMessage());
     }
   }
 
@@ -116,14 +101,9 @@ public final class SilverpeasInitializer {
    */
   private File[] getListInitializeSettingsFile() {
     File[] result = null;
-    File pathInitialize = new File(_silverpeasinitializeSettings
-        .getString("pathInitialize"));
-
+    File pathInitialize = new File(silverpeasInitialisationSettings.getString("pathInitialize"));
     if (pathInitialize == null) {
-      LogMsg(
-          this,
-          LOG_ERROR,
-          "getListInitializeSettingsFile",
+      LogMsg(this, "getListInitializeSettingsFile",
           "Repository Initialize for InitializeSettings.xml files is not defined in Settings.");
     } else {
       result = pathInitialize.listFiles();
@@ -143,65 +123,13 @@ public final class SilverpeasInitializer {
 
   /**
    * Method declaration
-   * @see
-   */
-  private void initPropertySystem() {
-    File pathInitialize = new File(_silverpeasinitializeSettings
-        .getString("pathInitialize"));
-
-    if (pathInitialize == null) {
-      LogMsg(
-          this,
-          LOG_ERROR,
-          "initPropertySystem",
-          "Repository Initialize for systemSettings.properties file is not defined in Settings.");
-    } else {
-      try {
-        FileInputStream fis = new FileInputStream(new File(pathInitialize,
-            "systemSettings.properties"));
-        Properties systemFileProperties = new Properties();
-
-        systemFileProperties.load(fis);
-        Properties systemProperties = System.getProperties();
-
-        for (Enumeration e = systemFileProperties.propertyNames(); e
-            .hasMoreElements();) {
-          String key = (String) e.nextElement();
-
-          if (systemProperties.getProperty(key) != null) {
-            System.out
-                .println("_SilverpeasInitialize : override system property ["
-                + key + "] = " + "(" + systemProperties.getProperty(key)
-                + ") -> (" + systemFileProperties.getProperty(key) + ")");
-          }
-          systemProperties.put(key, systemFileProperties.getProperty(key));
-        }
-        System.setProperties(systemProperties);
-      } catch (FileNotFoundException e) {
-        LogMsg(this, LOG_ERROR, "initPropertySystem",
-            "File systemSettings.properties in directory " + pathInitialize
-            + " not found.");
-      } catch (IOException e) {
-        LogMsg(this, LOG_ERROR, "initPropertySystem",
-            "Unable to read systemSettings.properties.");
-      }
-    }
-  }
-
-  private static int LOG_ERROR = 0;
-  private static int LOG_DEBUG = 600;
-
-  /**
-   * Method declaration
    * @param obj
-   * @param debugLevel
    * @param fct
    * @param msg
    * @see
    */
-  private static void LogMsg(Object obj, int debugLevel, String fct, String msg) {
+  private static void LogMsg(Object obj, String fct, String msg) {
     String from = obj.getClass().getName() + "." + fct + "()";
-
     System.out.println(from + " : " + msg);
   }
 

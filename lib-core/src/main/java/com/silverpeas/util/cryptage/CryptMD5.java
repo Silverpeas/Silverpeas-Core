@@ -25,15 +25,15 @@
 package com.silverpeas.util.cryptage;
 
 import com.google.common.io.Closeables;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.exception.UtilException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.exception.UtilException;
 
 public class CryptMD5 {
 
@@ -59,9 +59,8 @@ public class CryptMD5 {
 
     StringBuilder hashString = new StringBuilder();
     String hex;
-    for (int i = 0; i < hash.length; ++i) {
-      hex = Integer.toHexString(hash[i]);
-
+    for (byte aHash : hash) {
+      hex = Integer.toHexString(aHash);
       if (hex.length() == 1) {
         hashString.append('0');
         hashString.append(hex.charAt(hex.length() - 1));
@@ -69,7 +68,6 @@ public class CryptMD5 {
         hashString.append(hex.substring(hex.length() - 2));
       }
     }
-
     return hashString.toString();
   }
 
@@ -109,13 +107,11 @@ public class CryptMD5 {
       (byte) '9', (byte) 'a', (byte) 'b', (byte) 'c', (byte) 'd', (byte) 'e',
       (byte) 'f' };
 
-  protected static String getHexString(byte[] raw)
-      throws UnsupportedEncodingException {
-    byte[] hex = new byte[2 * raw.length];
+  protected static String getHexString(byte[] rawData) throws UnsupportedEncodingException {
+    byte[] hex = new byte[2 * rawData.length];
     int index = 0;
-
-    for (int i = 0; i < raw.length; i++) {
-      int v = raw[i] & 0xFF;
+    for (byte raw : rawData) {
+      int v = raw & 0xFF;
       hex[index++] = HEX_CHAR_TABLE[v >>> 4];
       hex[index++] = HEX_CHAR_TABLE[v & 0xF];
     }

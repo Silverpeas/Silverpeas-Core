@@ -45,6 +45,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.agenda.control.AgendaAccess;
 import com.stratelia.webactiv.agenda.control.AgendaException;
+import com.stratelia.webactiv.calendar.model.JournalHeader;
 
 public class NextEventsPortlet extends GenericPortlet implements FormNames {
 
@@ -58,13 +59,14 @@ public class NextEventsPortlet extends GenericPortlet implements FormNames {
     PortletPreferences pref = request.getPreferences();
     int nbEvents = Integer.parseInt(pref.getValue("nbEvents", "5"));
 
-    List events = new ArrayList();
+    List<JournalHeader> events = new ArrayList<JournalHeader>();
     try {
-      events = (List) AgendaAccess.getNextDaySchedulables(m_MainSessionCtrl
+      events = (List<JournalHeader>) AgendaAccess.getNextDaySchedulables(m_MainSessionCtrl
           .getUserId());
 
-      if (events.size() > nbEvents)
+      if (events.size() > nbEvents) {
         events = events.subList(0, nbEvents);
+      }
     } catch (AgendaException e) {
       SilverTrace.error("portlet", "NextEvents", "portlet.ERROR", e);
     }

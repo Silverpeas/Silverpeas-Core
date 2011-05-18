@@ -24,6 +24,7 @@
 
 package com.silverpeas.util.web.servlet;
 
+import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadBase;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
@@ -32,8 +33,9 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockMultipartHttpServletRequest;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
-
+import static org.mockito.Mockito.*;
 /**
  *
  * @author ehugonnet
@@ -54,7 +56,7 @@ public class FileUploadUtilTest {
   @Test
   public void testIsRequestMultipart() {
     MockHttpServletRequest request = new MockHttpServletRequest();
-    assertFalse(FileUploadUtil.isRequestMultipart(request));
+    assertThat(FileUploadUtil.isRequestMultipart(request), is(false));
     request.setContentType(FileUploadBase.MULTIPART_FORM_DATA);
     assertFalse(FileUploadUtil.isRequestMultipart(request));
     request.setContentType(null);
@@ -80,5 +82,18 @@ public class FileUploadUtilTest {
     assertNotNull(content);
     request.addFile(new MockMultipartFile("FrenchScrum.odp", content));
     assertNotNull(content);
+  }
+  
+  
+  @Test
+  public void testGetFileName() throws Exception {
+    FileItem item = mock(FileItem.class);
+    when(item.getName()).thenReturn("C:\\Documents and Settings\\rivoirede\\Bureau\\GED KHOLER\\import_kohler_partiel.xml");
+    String fileName = FileUploadUtil.getFileName(item);
+    assertThat(fileName, is("import_kohler_partiel.xml"));
+    item = mock(FileItem.class);
+    when(item.getName()).thenReturn("/home/silver/SilverpeasV5/temp/test_partiel.xml");
+    fileName = FileUploadUtil.getFileName(item);
+    assertThat(fileName, is("test_partiel.xml"));
   }
 }

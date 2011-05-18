@@ -83,9 +83,6 @@ $(document).ready(function(){
             width: 300,
             title: "<fmt:message key="profil.actions.changeStatus" />",
             buttons: {
-    			<fmt:message key="GML.cancel"/>: function() {
-					$(this).dialog( "close" );
-				},
 				"<fmt:message key="GML.ok"/>": function() {
 						var status = $("#newStatus");
 						$( "#myProfileFiche .statut").html(status.val());
@@ -94,6 +91,9 @@ $(document).ready(function(){
 						url+='&status='+status.val();
 				        $.getJSON(url);
 						$( this ).dialog( "close" );
+				},
+				"<fmt:message key="GML.cancel"/>": function() {
+					$(this).dialog( "close" );
 				}
 			}
     };
@@ -108,11 +108,11 @@ $(document).ready(function(){
             width: 500,
             title: "<fmt:message key="profil.actions.changePhoto" />",
             buttons: {
-    			<fmt:message key="GML.cancel"/>: function() {
-					$(this).dialog( "close" );
-				},
 				"<fmt:message key="GML.ok"/>": function() {
 					document.photoForm.submit();
+				},
+				"<fmt:message key="GML.cancel"/>": function() {
+					$(this).dialog( "close" );
 				}
 			}
     };

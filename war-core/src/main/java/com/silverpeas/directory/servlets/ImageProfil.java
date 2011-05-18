@@ -14,11 +14,9 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 public class ImageProfil {
 
   private String photoFileName;
-  private String subDirectory;
 
-  public ImageProfil(String photo, String subDirectory) {
+  public ImageProfil(String photo) {
     this.photoFileName = photo;
-    this.subDirectory = subDirectory;
   }
 
   public boolean isImage() {
@@ -37,15 +35,17 @@ public class ImageProfil {
    * @throws IOException
    */
   public void saveImage(InputStream data) throws IOException {
-    File image = new File(FileRepositoryManager.getAbsolutePath(subDirectory)
-        + File.separatorChar + photoFileName);
+    File image = getImageFile();
     image.getParentFile().mkdir();
     FileUtil.writeFile(image, data);
   }
 
   public InputStream getImage() throws IOException {
-    File image = new File(FileRepositoryManager.getAbsolutePath(subDirectory)
-        + File.separatorChar + photoFileName);
+    File image = getImageFile();
     return new FileInputStream(image);
+  }
+  
+  private File getImageFile() {
+    return new File(FileRepositoryManager.getAvatarPath() + File.separatorChar + photoFileName);
   }
 }

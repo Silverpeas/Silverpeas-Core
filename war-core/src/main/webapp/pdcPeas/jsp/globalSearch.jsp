@@ -450,56 +450,25 @@ var errorMsg;
 var errorNb;
 function areDatesOK(afterDate, beforeDate)
 {
-	var re = /(\d\d\/\d\d\/\d\d\d\d)/i;
-	
-	if (!isWhitespace(afterDate))
-	{
-		var yearBegin = extractYear(afterDate, '<%=resource.getLanguage()%>');
-		var monthBegin = extractMonth(afterDate, '<%=resource.getLanguage()%>');
-		var dayBegin = extractDay(afterDate, '<%=resource.getLanguage()%>');
-	}
-
-	if (!isWhitespace(beforeDate))
-	{
-		var yearEnd = extractYear(beforeDate, '<%=resource.getLanguage()%>');
-		var monthEnd = extractMonth(beforeDate, '<%=resource.getLanguage()%>');
-		var dayEnd = extractDay(beforeDate, '<%=resource.getLanguage()%>');
-	}
-
 	var afterDateOK = true;
 
-	if (isWhitespace(afterDate)) {
-		//do nothing
-	} else {
-		if (afterDate.replace(re, "OK") != "OK") {
+	if (!isWhitespace(afterDate)) {
+		if (!isDateOK(afterDate, '<%=resource.getLanguage()%>')) {
 		   errorMsg+="  - <%=resource.getString("pdcPeas.TheField")%> '<%=resource.getString("pdcPeas.AfterDate")%>' <%=resource.getString("pdcPeas.MustContainsCorrectDate")%>\n";
 		   errorNb++;
 		   afterDateOK = false;
-		} else {
-		   if (isCorrectDate(yearBegin, monthBegin, dayBegin)==false) {
-			 errorMsg+="  - <%=resource.getString("pdcPeas.TheField")%> '<%=resource.getString("pdcPeas.AfterDate")%>' <%=resource.getString("pdcPeas.MustContainsCorrectDate")%>\n";
-			 errorNb++;
-			 afterDateOK = false;
-		   }
 		}
 	 }
-	 if (isWhitespace(beforeDate)) {
-		//do nothing
-	 } else {
-		   if (beforeDate.replace(re, "OK") != "OK") {
+	 if (!isWhitespace(beforeDate)) {
+		   if (!isDateOK(beforeDate, '<%=resource.getLanguage()%>')) {
 				 errorMsg+="  - <%=resource.getString("pdcPeas.TheField")%> '<%=resource.getString("pdcPeas.BeforeDate")%>' <%=resource.getString("pdcPeas.MustContainsCorrectDate")%>\n";
 				 errorNb++;
 		   } else {
-				 if (isCorrectDate(yearEnd, monthEnd, dayEnd)==false) {
-					 errorMsg+="  - <%=resource.getString("pdcPeas.TheField")%> '<%=resource.getString("pdcPeas.BeforeDate")%>' <%=resource.getString("pdcPeas.MustContainsCorrectDate")%>\n";
-					 errorNb++;
-				 } else {
-					 if ((isWhitespace(afterDate) == false) && (isWhitespace(beforeDate) == false)) {
-						   if (afterDateOK && isD1AfterD2(yearEnd, monthEnd, dayEnd, yearBegin, monthBegin, dayBegin) == false) {
-								  errorMsg+="  - <%=resource.getString("pdcPeas.TheField")%> '<%=resource.getString("pdcPeas.BeforeDate")%>' <%=resource.getString("pdcPeas.MustContainsPostDateToBeginDate")%>\n";
-								  errorNb++;
-						   }
-					 }
+				 if (!isWhitespace(afterDate) && !isWhitespace(beforeDate)) {
+					   if (afterDateOK && !isDate1AfterDate2(beforeDate, afterDate, '<%=resource.getLanguage()%>')) {
+							  errorMsg+="  - <%=resource.getString("pdcPeas.TheField")%> '<%=resource.getString("pdcPeas.BeforeDate")%>' <%=resource.getString("pdcPeas.MustContainsPostDateToBeginDate")%>\n";
+							  errorNb++;
+					   }
 				 }
 		   }
 	 }
@@ -508,7 +477,6 @@ function areDatesOK(afterDate, beforeDate)
 function checkDates() {
 	errorMsg = "";
 	errorNb = 0;
-	var re = /(\d\d\/\d\d\/\d\d\d\d)/i;
 	
 	var afterDate	= document.AdvancedSearch.createafterdate.value;
 	var beforeDate	= document.AdvancedSearch.createbeforedate.value;

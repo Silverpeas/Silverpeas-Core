@@ -594,10 +594,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         String type = result.getType();
 
         if (isEnableExternalSearch) {
-          String extSrvName = result.getIndexEntry().getServerName();
-          if ((StringUtil.isDefined(extSrvName) && isExternalComponent(extSrvName)) ||
-              !StringUtil.isDefined(extSrvName)) {
-            continue;
+          if (result.getIndexEntry() != null) {
+            String extSrvName = result.getIndexEntry().getServerName();
+            if ((StringUtil.isDefined(extSrvName) && isExternalComponent(extSrvName)) ||
+                !StringUtil.isDefined(extSrvName)) {
+              continue;
+            }
           }
         }
 
@@ -1462,7 +1464,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     } else {
       if (isShowOnlyPertinentAxisAndValues()) {
         return getPdcBm().getPertinentAxisByInstanceIds(searchContext,
-            viewType, componentList);
+            viewType, getCopyOfInstanceIds());
       } else {
         // we get all axis (pertinent or not) from a type P or S
         List<AxisHeader> axis = getPdcBm().getAxisByType(viewType);
@@ -1509,7 +1511,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     } else {
       if (isShowOnlyPertinentAxisAndValues()) {
         values = getPdcBm().getPertinentDaughterValuesByInstanceIds(
-            searchContext, axisId, valueId, componentList);
+            searchContext, axisId, valueId, getCopyOfInstanceIds());
       } else {
         values = setNBNumbersToOne(getPdcBm().getDaughters(axisId, valueId));
       }
@@ -1538,7 +1540,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           axisId, getCurrentComponentId());
     } else {
       result = getPdcBm().getFirstLevelAxisValuesByInstanceIds(searchContext,
-          axisId, componentList);
+          axisId, getCopyOfInstanceIds());
     }
     SilverTrace.info("pdcPeas",
         "PdcSearchSessionController.getFirstLevelAxisValues()",
@@ -2692,5 +2694,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    */
   public boolean isEnableExternalSearch() {
     return isEnableExternalSearch;
+  }
+  
+  private List<String> getCopyOfInstanceIds() {
+    return new ArrayList<String>(componentList);
   }
 }

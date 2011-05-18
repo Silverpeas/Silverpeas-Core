@@ -27,6 +27,9 @@ package com.stratelia.silverpeas.notificationUser;
 import com.stratelia.webactiv.util.exception.*;
 
 public class NotificationUserException extends SilverpeasException {
+  
+  private static final long serialVersionUID = -4911322356263914926L;
+
   /**
    * -------------------------------------------------------------------------- constructors
    * constructors

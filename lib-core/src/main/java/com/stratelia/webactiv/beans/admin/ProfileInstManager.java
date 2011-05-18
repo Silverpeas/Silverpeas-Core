@@ -49,7 +49,7 @@ public class ProfileInstManager extends Object {
    * @param ddManager
    * @param sFatherCompoId
    * @return
-   * @throws AdminException 
+   * @throws AdminException
    */
   public String createProfileInst(ProfileInst profileInst,
       DomainDriverManager ddManager, String sFatherCompoId)
@@ -64,13 +64,15 @@ public class ProfileInstManager extends Object {
 
       // Update the CSpace with the links TProfile-TGroup
       for (int nI = 0; nI < profileInst.getNumGroup(); nI++) {
-        ddManager.organization.userRole.addGroupInUserRole(idAsInt(profileInst.getGroup(nI)), idAsInt(
+        ddManager.organization.userRole.addGroupInUserRole(idAsInt(profileInst.getGroup(nI)),
+            idAsInt(
             sProfileNodeId));
       }
 
       // Update the CSpace with the links TProfile-TUser
       for (int nI = 0; nI < profileInst.getNumUser(); nI++) {
-        ddManager.organization.userRole.addUserInUserRole(idAsInt(profileInst.getUser(nI)), idAsInt(
+        ddManager.organization.userRole.addUserInUserRole(idAsInt(profileInst.getUser(nI)),
+            idAsInt(
             sProfileNodeId));
       }
 
@@ -78,7 +80,7 @@ public class ProfileInstManager extends Object {
     } catch (Exception e) {
       throw new AdminException("ProfileInstManager.createProfileInst", SilverpeasException.ERROR,
           "admin.EX_ERR_ADD_PROFILE", "profile name: '" + profileInst.getName()
-          + "', father component Id: '" + sFatherCompoId + "'", e);
+              + "', father component Id: '" + sFatherCompoId + "'", e);
     }
   }
 
@@ -88,7 +90,7 @@ public class ProfileInstManager extends Object {
    * @param sProfileId
    * @param sFatherId
    * @return
-   * @throws AdminException 
+   * @throws AdminException
    */
   public ProfileInst getProfileInst(DomainDriverManager ddManager, String sProfileId,
       String sFatherId) throws AdminException {
@@ -110,13 +112,13 @@ public class ProfileInstManager extends Object {
       throw new AdminException("ProfileInstManager.setProfileInst",
           SilverpeasException.ERROR, "admin.EX_ERR_SET_PROFILE",
           "profile Id: '" + sProfileId + "', father component Id: '"
-          + sFatherId + "'", e);
+              + sFatherId + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
     return profileInst;
   }
-  
+
   private ProfileInst userRoleRow2ProfileInst(UserRoleRow userRole) {
     // Set the attributes of the profile Inst
     ProfileInst profileInst = new ProfileInst();
@@ -134,7 +136,7 @@ public class ProfileInstManager extends Object {
     profileInst.setObjectType(userRole.objectType);
     return profileInst;
   }
-  
+
   private void setUsersAndGroups(DomainDriverManager ddManager, ProfileInst profileInst)
       throws AdminPersistenceException {
 
@@ -160,7 +162,7 @@ public class ProfileInstManager extends Object {
       }
     }
   }
-  
+
   public ProfileInst getInheritedProfileInst(DomainDriverManager ddManager,
       String instanceId, String roleName)
       throws AdminException {
@@ -192,7 +194,7 @@ public class ProfileInstManager extends Object {
    * Deletes profile instance from Silverpeas
    * @param profileInst
    * @param ddManager
-   * @throws AdminException 
+   * @throws AdminException
    */
   public void deleteProfileInst(ProfileInst profileInst,
       DomainDriverManager ddManager) throws AdminException {
@@ -208,9 +210,9 @@ public class ProfileInstManager extends Object {
 
   public String updateProfileInst(DomainDriverManager ddManager, ProfileInst profileInstNew)
       throws AdminException {
-    
+
     ProfileInst profileInst = getProfileInst(ddManager, profileInstNew.getId(), null);
-    
+
     ArrayList<String> alOldProfileGroup = new ArrayList<String>();
     ArrayList<String> alNewProfileGroup = new ArrayList<String>();
     ArrayList<String> alAddGroup = new ArrayList<String>();
@@ -325,7 +327,7 @@ public class ProfileInstManager extends Object {
    * @param sUserId
    * @param groupIds
    * @return
-   * @throws AdminException 
+   * @throws AdminException
    */
   public String[] getProfileIdsOfUser(String sUserId, List<String> groupIds) throws AdminException {
     Connection con = null;
@@ -349,12 +351,38 @@ public class ProfileInstManager extends Object {
     }
   }
 
+  public String[] getProfileNamesOfUser(String sUserId, List<String> groupIds, int componentId)
+      throws AdminException {
+    Connection con = null;
+    try {
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+
+      List<UserRoleRow> roles =
+          RoleDAO.getRoles(con, groupIds, Integer.parseInt(sUserId), componentId);
+      List<String> roleNames = new ArrayList<String>();
+
+      for (UserRoleRow role : roles) {
+        if (!roleNames.contains(role.roleName)) {
+          roleNames.add(role.roleName);
+        }
+      }
+
+      return roleNames.toArray(new String[roleNames.size()]);
+
+    } catch (Exception e) {
+      throw new AdminException("ProfiledObjectManager.getProfileNamesOfUser",
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_PROFILES", e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+
   /**
    * Get all the profiles Id for the given group
    * @param ddManager
    * @param sGroupId
    * @return
-   * @throws AdminException 
+   * @throws AdminException
    */
   public String[] getProfileIdsOfGroup(DomainDriverManager ddManager,
       String sGroupId) throws AdminException {
@@ -384,7 +412,7 @@ public class ProfileInstManager extends Object {
   /**
    * Converts ProfileInst to UserRoleRow
    * @param profileInst
-   * @return 
+   * @return
    */
   private UserRoleRow makeUserRoleRow(ProfileInst profileInst) {
     UserRoleRow userRole = new UserRoleRow();

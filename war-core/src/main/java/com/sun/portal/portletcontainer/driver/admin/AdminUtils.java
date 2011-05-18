@@ -110,9 +110,9 @@ public class AdminUtils {
       throws Exception {
     // If portlet window name is null, get the name from the portlet window list
     if (portletWindowName == null) {
-      List list = portletAdminData.getPortletWindowNames();
+      List<String> list = portletAdminData.getPortletWindowNames();
       if (list != null) {
-        portletWindowName = (String) list.get(0);
+        portletWindowName = list.get(0);
       }
     }
     if (portletWindowName != null) {

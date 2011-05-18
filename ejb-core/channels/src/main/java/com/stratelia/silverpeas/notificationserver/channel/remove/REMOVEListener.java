@@ -30,6 +30,8 @@ import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
 import javax.jms.Message;
 
 public class REMOVEListener extends AbstractListener {
+  private static final long serialVersionUID = 6228192030238517258L;
+
   public REMOVEListener() {
   }
 

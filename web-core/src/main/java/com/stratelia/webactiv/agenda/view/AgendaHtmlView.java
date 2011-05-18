@@ -1010,7 +1010,8 @@ public class AgendaHtmlView {
     }
 
     StringBuilder result = new StringBuilder("onmouseover=\"return overlib('");
-    result.append(EncodeHelper.javaStringToHtmlParagraphe(schedule.getDescription()));
+    result.append(EncodeHelper.javaStringToJsString(EncodeHelper
+        .javaStringToHtmlParagraphe(schedule.getDescription())));
     result.append("',CAPTION,'").append(EncodeHelper.javaStringToJsString(categs)).append(
         "');\" onmouseout=\"return nd();\">");
     return result.toString();

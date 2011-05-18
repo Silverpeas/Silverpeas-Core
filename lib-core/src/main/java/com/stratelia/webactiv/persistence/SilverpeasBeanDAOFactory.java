@@ -30,17 +30,22 @@ import com.stratelia.webactiv.persistence.database.SilverpeasBeanDAOImpl;
 
 public class SilverpeasBeanDAOFactory {
 
-  private static Map<String, SilverpeasBeanDAO> silverpeasBeanDAOs = new HashMap<String, SilverpeasBeanDAO>();
+  private static Map<String, SilverpeasBeanDAO<? extends SilverpeasBeanIntf>> silverpeasBeanDAOs = new HashMap<String, SilverpeasBeanDAO<? extends SilverpeasBeanIntf>>();
 
-  public static SilverpeasBeanDAO getDAO(String beanName) throws PersistenceException {
-    SilverpeasBeanDAO result = null;
+  @SuppressWarnings("unchecked")
+  public static <T extends SilverpeasBeanIntf> SilverpeasBeanDAO<T> getDAO(String beanName) throws
+      PersistenceException {
+    SilverpeasBeanDAO<T> result = null;
     synchronized (SilverpeasBeanDAOFactory.class) {
-      result = silverpeasBeanDAOs.get(beanName);
+      result = (SilverpeasBeanDAO<T>) silverpeasBeanDAOs.get(beanName);
       if (result == null) {
-        result = new SilverpeasBeanDAOImpl(beanName);
+        result = new SilverpeasBeanDAOImpl<T>(beanName);
         silverpeasBeanDAOs.put(beanName, result);
       }
     }
     return result;
+  }
+
+  private SilverpeasBeanDAOFactory() {
   }
 }

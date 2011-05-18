@@ -28,7 +28,6 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.io.StringReader;
 import java.net.URLDecoder;
 
@@ -52,6 +51,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
  * @author neysseri
  */
 public class TempFileServer extends HttpServlet {
+
+  private static final long serialVersionUID = 5483484250458795672L;
 
   @Override
   public void init(ServletConfig config) {

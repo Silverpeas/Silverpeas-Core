@@ -41,7 +41,7 @@ import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -63,16 +63,17 @@ public class UniqueIdFieldDisplayer extends AbstractFieldDisplayer {
     return new String[] { TextField.TYPE };
   }
 
+  @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
       throws IOException {
     if (!template.getTypeName().equals(TextField.TYPE)) {
       SilverTrace.info("form", "UniqueIdFieldDisplayer.displayScripts",
           "form.INFO_NOT_CORRECT_TYPE", TextField.TYPE);
     }
-
     Util.getJavascriptChecker(template.getFieldName(), pagesContext, out);
   }
 
+  @Override
   public void display(PrintWriter out, Field field, FieldTemplate template, PagesContext pageContext)
       throws FormException {
     if (field == null) {
@@ -110,6 +111,7 @@ public class UniqueIdFieldDisplayer extends AbstractFieldDisplayer {
     out.println(input.toString());
   }
 
+  @Override
   public List<String> update(String newValue, Field field, FieldTemplate template,
       PagesContext pagesContext)
       throws FormException {
@@ -123,13 +125,15 @@ public class UniqueIdFieldDisplayer extends AbstractFieldDisplayer {
       throw new FormException("UniqueIdFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
           TextField.TYPE);
     }
-    return new ArrayList<String>();
+    return Collections.emptyList();
   }
 
+  @Override
   public boolean isDisplayedMandatory() {
     return true;
   }
 
+  @Override
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
     return 1;
   }

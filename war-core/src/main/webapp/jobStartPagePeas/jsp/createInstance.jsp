@@ -23,18 +23,24 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.admin.localized.LocalizedComponent"%>
+<%@page import="com.silverpeas.admin.localized.LocalizedOption"%>
+<%@page import="com.silverpeas.admin.localized.LocalizedParameter"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 
 <%!
 
-void displayParameter(Parameter parameter, ResourcesWrapper resource, JspWriter out) throws java.io.IOException
+void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, JspWriter out) throws java.io.IOException
 {
 	// Value
 
 	boolean isSelect =parameter.isSelect() ||parameter.isXmlTemplate();
-	String help = (String) parameter.getHelp().get(resource.getLanguage());
+	String help = parameter.getHelp();
 	if (help != null) {
 		//help = Encode.javaStringToJsString(help);
 		out.println("<td valign=\"top\" align=\"left\">");
@@ -45,7 +51,7 @@ void displayParameter(Parameter parameter, ResourcesWrapper resource, JspWriter 
 	}
 
 	out.println("<td class=\"intfdcolor4\" nowrap valign=\"top\" align=left>");
-	out.println("<span class=\"txtlibform\">"+parameter.getLabel().get(resource.getLanguage())+" : </span>");
+	out.println("<span class=\"txtlibform\">"+parameter.getLabel()+" : </span>");
 	out.println("</td>");
 	out.println("<td class=\"intfdcolor4\" align=left valign=\"top\">");
 
@@ -73,8 +79,8 @@ void displayParameter(Parameter parameter, ResourcesWrapper resource, JspWriter 
 			String selected = "";
 			for (int i=0; i<options.size(); i++)
 			{
-				Option option = (Option) options.get(i);
-				String name = (String) option.getName().get(resource.getLanguage());
+				LocalizedOption option = (LocalizedOption) options.get(i);
+				String name = option.getName();
 				String value = option.getValue();
 				selected = "";
 				if (parameter.getValue() != null && parameter.getValue().toLowerCase().equals(value.toLowerCase())) {
@@ -92,8 +98,8 @@ void displayParameter(Parameter parameter, ResourcesWrapper resource, JspWriter 
 		{
 			for (int i=0; i<radios.size(); i++)
 			{
-				Option radio = (Option) radios.get(i);
-				String name = (String) radio.getName().get(resource.getLanguage());
+				LocalizedOption radio = (LocalizedOption) radios.get(i);
+				String name = radio.getName();
 				String value =  radio.getValue();
 				String checked = "";
 				if (i==0)
@@ -125,19 +131,18 @@ void displayParameter(Parameter parameter, ResourcesWrapper resource, JspWriter 
 %>
 
 <%
-WAComponent 	component 			= (WAComponent) request.getAttribute("WAComponent");
+LocalizedComponent 	component 			= (LocalizedComponent) request.getAttribute("WAComponent");
 List 			parameters 			= (List) request.getAttribute("Parameters");
 List 			hiddenParameters 	= (List) request.getAttribute("HiddenParameters");
-String 			m_ComponentNum 		= (String) request.getAttribute("ComponentNum");
 ComponentInst[] brothers 			= (ComponentInst[]) request.getAttribute("brothers");
 String 			spaceId				= (String) request.getAttribute("CurrentSpaceId");
 
-String m_JobPeas = (String) component.getLabel().get(resource.getLanguage());
+String m_JobPeas = component.getLabel();
 String m_ComponentType = component.getName();
 
 String m_ComponentIcon = iconsPath+"/util/icons/component/"+m_ComponentType+"Small.gif";
 
-Parameter parameter = null;
+LocalizedParameter parameter = null;
 
 browseBar.setSpaceId(spaceId);
 browseBar.setClickable(false);
@@ -165,7 +170,7 @@ function B_VALIDER_ONCLICK() {
 		<%
 		for(int nI=0; parameters != null && nI < parameters.size(); nI++)
 		{
-			parameter = (Parameter) parameters.get(nI);
+			parameter = (LocalizedParameter) parameters.get(nI);
 			if (parameter.isCheckbox()) {
 			%>
                 if (document.infoInstance.<%=parameter.getName()%>.checked) 
@@ -207,7 +212,7 @@ function isCorrectForm() {
 	<%
 	for(int nI=0; parameters != null && nI < parameters.size(); nI++)
 	{
-		parameter = (Parameter) parameters.get(nI);
+		parameter = (LocalizedParameter) parameters.get(nI);
 		if (parameter.isMandatory() && !parameter.isRadio())
 		{
 		%>
@@ -260,7 +265,7 @@ function toDoOnLoad() {
 </HEAD>
 <BODY id="admin-component" onload="javascript:toDoOnLoad()">
 <FORM NAME="infoInstance" action="EffectiveCreateInstance" METHOD="POST">
-	<input type="hidden" name="ComponentNum" value="<%=m_ComponentNum%>">
+	<input type="hidden" name="ComponentName" value="<%=component.getName()%>"/>
 <%
 out.println(window.printBefore());
 out.println(frame.printBefore());
@@ -313,7 +318,7 @@ out.println(board.printBefore());
 		out.println("<table border=0 width=\"100%\">");
 		for(int nI=0; parameters != null && nI < parameters.size(); nI++)
 		{
-			parameter = (Parameter) parameters.get(nI);
+			parameter = (LocalizedParameter) parameters.get(nI);
 			if (nI%2 == 0)
 				out.println("<tr>");
 
@@ -334,7 +339,7 @@ out.println(board.printBefore());
 	} else {
 		for(int nI=0; parameters != null && nI < parameters.size(); nI++)
 		{
-			parameter = (Parameter) parameters.get(nI);
+			parameter = (LocalizedParameter) parameters.get(nI);
 			out.println("<tr>");
 			displayParameter(parameter, resource, out);
 			out.println("</tr>");
@@ -343,7 +348,7 @@ out.println(board.printBefore());
 
 	for(int nI=0; hiddenParameters != null && nI < hiddenParameters.size(); nI++)
 	{
-		parameter = (Parameter) hiddenParameters.get(nI);
+		parameter = (LocalizedParameter) hiddenParameters.get(nI);
 
 		out.println("<input type=\"hidden\" name=\""+parameter.getName()+"\" value=\""+parameter.getValue()+"\"/>\n");
 	}

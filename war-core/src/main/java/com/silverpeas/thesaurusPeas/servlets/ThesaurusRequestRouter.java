@@ -28,10 +28,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.thesaurus.ThesaurusException;
+import com.silverpeas.thesaurus.model.Jargon;
 import com.silverpeas.thesaurus.model.Synonym;
 import com.silverpeas.thesaurusPeas.control.ThesaurusSessionController;
 import com.stratelia.silverpeas.pdc.model.Value;
@@ -42,6 +44,8 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class ThesaurusRequestRouter extends ComponentRequestRouter {
+
+  private static final long serialVersionUID = -4111516203248522174L;
 
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
@@ -89,7 +93,7 @@ public class ThesaurusRequestRouter extends ComponentRequestRouter {
 
         request.setAttribute("listVoca", scc.getListVoca());
         request.setAttribute("listAxis", scc.getListAxis());
-        request.setAttribute("listTerms", new ArrayList());
+        request.setAttribute("listTerms", new ArrayList<Value>());
         destination = "/thesaurusPeas/jsp/thesaurus.jsp";
       } else if (function.equals("SetVoca")) {
         long idVoca = new Long(request.getParameter("idVoca")).longValue();
@@ -189,7 +193,7 @@ public class ThesaurusRequestRouter extends ComponentRequestRouter {
 
       } else if (function.equals("UserAssignments")) {
         scc.setUserPanelJargons();
-        Collection listJargons = new ArrayList();
+        Collection<Jargon> listJargons = new ArrayList<Jargon>();
         listJargons.addAll(scc.getUserSelectedJargons());
         listJargons.addAll(scc.getUserSelectedNewJargons());
         request.setAttribute("listJargons", listJargons);
@@ -197,7 +201,7 @@ public class ThesaurusRequestRouter extends ComponentRequestRouter {
 
       } else if (function.equals("UserAssignmentsBack")) {
         scc.setJargons();
-        Collection listJargons = new ArrayList();
+        Collection<Jargon> listJargons = new ArrayList<Jargon>();
         listJargons.addAll(scc.getUserSelectedJargons());
         listJargons.addAll(scc.getUserSelectedNewJargons());
         request.setAttribute("listJargons", listJargons);
@@ -215,15 +219,16 @@ public class ThesaurusRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("validateSynonyms")) {
         String termId = request.getParameter("termId");
         String[] names = request.getParameterValues("field" + termId);
-        ArrayList namesA = new ArrayList();
-        ArrayList namesWithStatus = new ArrayList();
-        Hashtable h;
+        List<String> namesA = new ArrayList<String>();
+        List<Hashtable<String, String>> namesWithStatus =
+            new ArrayList<Hashtable<String, String>>();
+        Hashtable<String, String> h;
         String status;
         String name;
         if (names != null) {
           for (int i = 0; i < names.length; i++) {
             status = names[i];
-            h = new Hashtable();
+            h = new Hashtable<String, String>();
             h.put("status", status);
             i++;
             name = names[i];
@@ -307,21 +312,22 @@ public class ThesaurusRequestRouter extends ComponentRequestRouter {
 
   private void processSynonyms(HttpServletRequest request, String termId,
       ThesaurusSessionController scc) throws ThesaurusException {
-    Iterator it = scc.getAxisTerms().iterator();
+    Iterator<Value> it = scc.getAxisTerms().iterator();
     String id;
-    ArrayList namesWithStatus;
+    List<Hashtable<String, String>> namesWithStatus;
     String temp[];
-    Hashtable hTermSynonyms = new Hashtable();
-    Hashtable hSynonym;
+    Hashtable<String, List<Hashtable<String, String>>> hTermSynonyms =
+        new Hashtable<String, List<Hashtable<String, String>>>();
+    Hashtable<String, String> hSynonym;
     String status;
     int i;
     while (it.hasNext()) {
-      id = ((Value) it.next()).getValuePK().getId();
+      id = it.next().getValuePK().getId();
       temp = request.getParameterValues("field" + id);
-      namesWithStatus = new ArrayList();
+      namesWithStatus = new ArrayList<Hashtable<String, String>>();
       for (i = 0; i < temp.length; i++) {
         status = temp[i];
-        hSynonym = new Hashtable();
+        hSynonym = new Hashtable<String, String>();
         if (id.equals(termId)) {
           hSynonym.put("status", "verified");
         } else {
@@ -338,22 +344,23 @@ public class ThesaurusRequestRouter extends ComponentRequestRouter {
 
   private void loadSynonyms(HttpServletRequest request,
       ThesaurusSessionController scc) throws ThesaurusException {
-    Iterator it = scc.getAxisTerms().iterator();
-    Iterator itSynonyms;
+    Iterator<Value> it = scc.getAxisTerms().iterator();
+    Iterator<Synonym> itSynonyms;
     String id;
-    ArrayList namesWithStatus;
-    Hashtable hTermSynonyms = new Hashtable();
-    Hashtable hSynonym;
-    Collection synonyms;
+    List<Hashtable<String, String>> namesWithStatus;
+    Hashtable<String, List<Hashtable<String, String>>> hTermSynonyms =
+        new Hashtable<String, List<Hashtable<String, String>>>();
+    Hashtable<String, String> hSynonym;
+    Collection<Synonym> synonyms;
     while (it.hasNext()) {
-      id = ((Value) it.next()).getValuePK().getId();
+      id = it.next().getValuePK().getId();
       synonyms = scc.getSynonyms(id);
-      namesWithStatus = new ArrayList();
+      namesWithStatus = new ArrayList<Hashtable<String, String>>();
       itSynonyms = synonyms.iterator();
       while (itSynonyms.hasNext()) {
-        hSynonym = new Hashtable();
+        hSynonym = new Hashtable<String, String>();
         hSynonym.put("status", "verified");
-        hSynonym.put("name", ((Synonym) itSynonyms.next()).getName());
+        hSynonym.put("name", itSynonyms.next().getName());
         namesWithStatus.add(hSynonym);
       }
       hTermSynonyms.put(id, namesWithStatus);

@@ -201,17 +201,11 @@ public class SilverpeasLoginModule implements LoginModule {
   }
 
   protected void fillPrincipal(SilverpeasUserPrincipal principal) {
-    String[] spaceIds = controller.getAllSpaceIds(principal.getUserId());
-    for (int i = 0; i < spaceIds.length; i++) {
-      String[] componentIds = controller.getAvailCompoIds(spaceIds[i],
-          principal.getUserId());
-      for (int j = 0; j < componentIds.length; j++) {
-        String[] profiles = controller.getUserProfiles(principal
-            .getUserId(), componentIds[j]);
-        for (int k = 0; k < profiles.length; k++) {
-          principal.addUserProfile(new SilverpeasUserProfileEntry(
-              componentIds[j], profiles[k]));
-        }
+    String[] componentIds = controller.getAllowedComponentIds(principal.getUserId());
+    for (String componentId : componentIds) {
+      String[] profiles = controller.getUserProfiles(principal.getUserId(), componentId);
+      for (String profile : profiles) {
+        principal.addUserProfile(new SilverpeasUserProfileEntry(componentId, profile));
       }
     }
   }

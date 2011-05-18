@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,30 +21,41 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.silverpeas.admin.localized;
 
-package com.stratelia.silverpeas.silverpeasinitialize;
+import com.silverpeas.admin.components.Profile;
+import com.silverpeas.ui.DisplayI18NHelper;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+/**
+ *
+ * @author ehugonnet
+ */
+public class LocalizedProfile {
+  
+   private final Profile realProfile;
+  private final String lang;
 
-@Deprecated
-public class SilverpeasContextInitializer implements ServletContextListener {
-
-  @Override
-  /**
-   * Do nothing
-   */
-  public void contextDestroyed(ServletContextEvent sce) {
+  LocalizedProfile(Profile realProfile, String lang) {
+    this.realProfile = realProfile;
+    this.lang = lang;
   }
 
-  @Override
-  /**
-   * Initialise Silverpeas.
-   */
-  public void contextInitialized(ServletContextEvent sce) {
-    // Just to be sure that the Initializer is called at least once
-    SilverpeasInitializer si = new SilverpeasInitializer();
-    //si.startInitialize();
+  public String getName() {
+    return realProfile.getName();
   }
 
+  public String getHelp() {
+    if (realProfile.getHelp().containsKey(lang)) {
+      return realProfile.getHelp().get(lang);
+    }
+    return realProfile.getHelp().get(DisplayI18NHelper.getDefaultLanguage());
+  }
+
+  public String getLabel() {
+    if (realProfile.getLabel().containsKey(lang)) {
+      return realProfile.getLabel().get(lang);
+    }
+    return realProfile.getLabel().get(DisplayI18NHelper.getDefaultLanguage());
+  }
+  
 }

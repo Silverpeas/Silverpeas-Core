@@ -43,27 +43,38 @@ public class InvitationService {
   private InvitationDao invitationDao;
   private RelationShipDao relationShipDao;
 
+  /**
+   * Default Constructor
+   */
   public InvitationService() {
     invitationDao = new InvitationDao();
     relationShipDao = new RelationShipDao();
   }
 
-  /*
-   * send invitationreturn -1 if the invitation already exists return -2 if the relationShip already
-   * exists return the id of inviation if the adding done
-   * @param: int id
+  /**
+   * send invitation
+   * @param invitation an Invitation object
+   * @return the following integer value
+   * <ul>
+   * <li>-1 if the invitation already exists</li>
+   * <li>-2 if the relationShip already exists</li>
+   * <li>the id of invitation if the adding has been done successfully</li>
+   * </ul>
    */
   public int invite(Invitation invitation) {
     int resultRnvitation = 0;
     Connection connection = null;
     try {
       connection = getConnection();
-      boolean alreadySent = invitationDao.isExists(connection, invitation.getSenderId(), invitation.getReceiverId()) || invitationDao
-      .isExists(connection, invitation.getReceiverId(), invitation.getSenderId());
+      boolean alreadySent =
+          invitationDao.isExists(connection, invitation.getSenderId(), invitation.getReceiverId()) ||
+              invitationDao
+                  .isExists(connection, invitation.getReceiverId(), invitation.getSenderId());
       if (alreadySent) {
         resultRnvitation = -1;
       } else {
-        if (relationShipDao.isInRelationShip(connection, invitation.getSenderId(), invitation.getReceiverId())) {
+        if (relationShipDao.isInRelationShip(connection, invitation.getSenderId(), invitation
+            .getReceiverId())) {
           resultRnvitation = -2;
         } else {
           resultRnvitation = invitationDao.createInvitation(connection, invitation);
@@ -78,11 +89,10 @@ public class InvitationService {
     return resultRnvitation;
   }
 
-  /*
+  /**
    * ignore this invitation
-   * @param: int id
+   * @param id : the invitation identifier to ignore (delete)
    */
-
   public void ignoreInvitation(int id) {
     Connection connection = null;
     try {
@@ -97,13 +107,12 @@ public class InvitationService {
     }
   }
 
-  /*
-   * accepte this invitation that the sender an receiver become in Relationreturn -1 if this
-   * Invitation not existsreturn -2 if the RelationShip already exists return the id of RelationShip
-   * if the adding done
-   * @param: int idInvitation
+  /**
+   * accept invitation between sender and receiver and create the relationship
+   * @param idInvitation
+   * @return -1 if this Invitation not exists, -2 if the RelationShip already exists, else the id of
+   * RelationShip if the action has been done successfully
    */
-
   public int accepteInvitation(int idInvitation) {
     int resultAccepteInvitation = 0;
     Connection connection = null;
@@ -117,7 +126,6 @@ public class InvitationService {
           getReceiverId())) {
         resultAccepteInvitation = -2;
       } else {
-
         RelationShip ship1 = new RelationShip();
         ship1.setUser1Id(invitation.getSenderId());
         ship1.setUser2Id(invitation.getReceiverId());
@@ -148,17 +156,17 @@ public class InvitationService {
   }
 
   /**
-   * return All my invitations sented
-   * @param myId
+   * return all my invitations sent
+   * @param userId the user identifier
    * @return List<Invitation>
    */
-  public List<Invitation> getAllMyInvitationsSent(int myId) {
+  public List<Invitation> getAllMyInvitationsSent(int userId) {
     Connection connection = null;
     List<Invitation> invitations = new ArrayList<Invitation>();
 
     try {
       connection = getConnection();
-      invitations = invitationDao.getAllMyInvitationsSent(connection, myId);
+      invitations = invitationDao.getAllMyInvitationsSent(connection, userId);
     } catch (Exception ex) {
       SilverTrace.error("Silverpeas.Bus.SocialNetwork.Invitation",
           "InvitationService.ignoreInvitation", "",
@@ -244,5 +252,25 @@ public class InvitationService {
 
   private Connection getConnection() throws UtilException, SQLException {
     return DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
+  }
+
+  /**
+   * 
+   * @param relationShipId the relationship identifier
+   * @return a RelationShip
+   */
+  public RelationShip getRelationShip(int relationShipId) {
+    Connection connection = null;
+
+    try {
+      connection = getConnection();
+      return relationShipDao.getRelationShip(connection, relationShipId);
+    } catch (Exception ex) {
+      SilverTrace.error("Silverpeas.Bus.SocialNetwork.Invitation",
+          "InvitationService.getRelationShip", "", ex);
+    } finally {
+      DBUtil.close(connection);
+    }
+    return null;
   }
 }

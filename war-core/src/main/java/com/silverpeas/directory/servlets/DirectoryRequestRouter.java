@@ -23,27 +23,24 @@
  */
 package com.silverpeas.directory.servlets;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
-import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.directory.DirectoryException;
 import com.silverpeas.directory.control.DirectorySessionController;
 import com.silverpeas.directory.model.Member;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
 
@@ -51,8 +48,6 @@ import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
  * @author azzedine
  */
 public class DirectoryRequestRouter extends ComponentRequestRouter {
-
-  public static final String AVATAR_FOLDER = "avatar";
 
   private static final long serialVersionUID = -1683812983096083815L;
 
@@ -86,6 +81,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
         String groupId = request.getParameter("GroupId");
         String spaceId = request.getParameter("SpaceId");
         String domainId = request.getParameter("DomainId");
+        String domainIds = request.getParameter("DomainIds");
         String userId = request.getParameter("UserId");
 
         if (StringUtil.isDefined(groupId)) {
@@ -94,6 +90,13 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
           users = directorySC.getAllUsersBySpace(spaceId);
         } else if (StringUtil.isDefined(domainId)) {
           users = directorySC.getAllUsersByDomain(domainId);
+        } else if (StringUtil.isDefined(domainIds)) {
+          List<String> lDomainIds = new ArrayList<String>();
+          StringTokenizer tokenizer = new StringTokenizer(domainIds, ",");
+          while (tokenizer.hasMoreTokens()) {
+            lDomainIds.add(tokenizer.nextToken());
+          }
+          users = directorySC.getAllUsersByDomains(lDomainIds);
         } else if (StringUtil.isDefined(userId)) {
           users = directorySC.getAllContactsOfUser(userId);
         } else {
@@ -135,7 +138,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
         request.setAttribute("User", new Member(directorySC.getUserDetail(userId)));
         destination = "/directory/jsp/notificationUser.jsp";
 
-      } 
+      }
     } catch (DirectoryException e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
@@ -145,7 +148,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   *return true if this searche by index
+   * return true if this searche by index
    */
   boolean isSearchByIndex(String lettre) {
     if (lettre != null && lettre.length() == 1) {
@@ -156,8 +159,8 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   *tronsform list of UserDetail to list of Membre
-   *@param List<UserDetail>
+   * tronsform list of UserDetail to list of Membre
+   * @param List<UserDetail>
    */
   List<Member> toListMember(List<UserDetail> uds) {
     List<Member> listMember = new ArrayList<Member>();
@@ -168,8 +171,8 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   *do pagination
-   *@param HttpServletRequest request
+   * do pagination
+   * @param HttpServletRequest request
    */
   String doPagination(HttpServletRequest request, List<UserDetail> users,
       DirectorySessionController directorySC) {
@@ -195,7 +198,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
     processBreadCrumb(request, directorySC);
     return "/directory/jsp/directory.jsp";
   }
-  
+
   private void processBreadCrumb(HttpServletRequest request, DirectorySessionController directorySC) {
     int directory = directorySC.getCurrentDirectory();
     String breadCrumb = directorySC.getString("directory.breadcrumb." + directory);
@@ -218,7 +221,15 @@ public class DirectoryRequestRouter extends ComponentRequestRouter {
         break;
 
       case DirectorySessionController.DIRECTORY_DOMAIN:
-        breadCrumb += " " + directorySC.getCurrentDomain().getName();
+        breadCrumb += " ";
+        boolean first = true;
+        for (Domain domain : directorySC.getCurrentDomains()) {
+          if (!first) {
+            breadCrumb += " & ";
+          }
+          breadCrumb += domain.getName();
+          first = false;
+        }
         break;
 
       case DirectorySessionController.DIRECTORY_SPACE:

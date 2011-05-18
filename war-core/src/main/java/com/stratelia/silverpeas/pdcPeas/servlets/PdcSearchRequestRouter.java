@@ -436,9 +436,9 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
 
         destination = "/pdcPeas/jsp/pdcInComponent.jsp";
       } else if (function.startsWith("ChangeSearchType")) {
-        processChangeSearchType(function, pdcSC, request);
+        boolean setAdvancedSearchItems = processChangeSearchType(function, pdcSC, request);
 
-        destination = doGlobalView(pdcSC, request, false);
+        destination = doGlobalView(pdcSC, request, false, setAdvancedSearchItems);
       } else if (function.startsWith("LoadAdvancedSearch")) {
 
         pdcSC.setSearchType(PdcSearchSessionController.SEARCH_EXPERT);
@@ -960,11 +960,11 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
 
   private String doGlobalView(PdcSearchSessionController pdcSC, HttpServletRequest request)
       throws Exception, PdcException, ContentManagerException {
-    return doGlobalView(pdcSC, request, true);
+    return doGlobalView(pdcSC, request, true, true);
   }
 
   private String doGlobalView(PdcSearchSessionController pdcSC, HttpServletRequest request,
-      boolean saveUserChoice)
+      boolean saveUserChoice, boolean setAdvancedSearchItems)
       throws Exception, PdcException, ContentManagerException {
     this.initContainerContentInfo(pdcSC, true, null);
     pdcSC.setContainerPeas(containerPeasPDC);
@@ -979,7 +979,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
 
     if (pdcSC.getSearchType() >= PdcSearchSessionController.SEARCH_ADVANCED) {
       PdcSearchRequestRouterHelper.setUserChoices(request, pdcSC);
-      PdcSearchRequestRouterHelper.setAttributesAdvancedSearch(pdcSC, request, true);
+      PdcSearchRequestRouterHelper.setAttributesAdvancedSearch(pdcSC, request,
+          setAdvancedSearchItems);
     }
     if (pdcSC.getSearchType() == PdcSearchSessionController.SEARCH_EXPERT) {
       PdcSearchRequestRouterHelper.setPertinentAxis(pdcSC, request);
@@ -1296,7 +1297,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
    * @param alSilverContentIds - la liste de silvercontentId
    * @return la liste des silvercontents
    */
-  @SuppressWarnings("unchecked")
   private List<GlobalSilverContent> pdcSearchOnly(List<Integer> alSilverContentIds,
       PdcSearchSessionController pdcSC)
       throws Exception {
@@ -1785,8 +1785,9 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
     return destination;
   }
 
-  private void processChangeSearchType(String function, PdcSearchSessionController pdcSC,
+  private boolean processChangeSearchType(String function, PdcSearchSessionController pdcSC,
       HttpServletRequest request) throws Exception {
+    boolean setAdvancedSearchItems = true;
     pdcSC.setSearchPage(request.getParameter("SearchPage"));
     pdcSC.setSearchPageId(request.getParameter("SearchPageId"));
     pdcSC.setResultPage(request.getParameter("ResultPage"));
@@ -1836,7 +1837,14 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
       pdcSC.getQueryParameters().setInstanceId(instanceId);
 
       pdcSC.setSearchType(PdcSearchSessionController.SEARCH_EXPERT);
+      
+      if (StringUtil.getBooleanValue(request.getParameter("FromPDCFrame"))) {
+        // Exclusive case to display pertinent classification axis in PDC frame
+        // Advanced search items are useless in this case
+        setAdvancedSearchItems = false;
+      }
     }
+    return setAdvancedSearchItems;
   }
 
   private String getDestinationDuringSearch(PdcSearchSessionController pdcSC,

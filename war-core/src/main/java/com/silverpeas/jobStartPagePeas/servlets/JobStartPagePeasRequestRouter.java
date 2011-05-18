@@ -27,6 +27,9 @@ import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.ParameterInputType;
 import com.silverpeas.admin.components.ParameterSorter;
 import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.admin.localized.LocalizedComponent;
+import com.silverpeas.admin.localized.LocalizedParameter;
+import com.silverpeas.admin.localized.LocalizedParameterSorter;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -274,34 +277,13 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       destination = "/jobStartPagePeas/jsp/componentInfo.jsp";
     } else if ("ListComponent".equals(function)) {
       setSpacesNameInRequest(jobStartPageSC, request);
-      request.setAttribute("ListComponents", jobStartPageSC.getAllComponents());
+      request.setAttribute("ListComponents", jobStartPageSC.getAllLocalizedComponents());
       destination = "/jobStartPagePeas/jsp/componentsList.jsp";
     } else if (function.equals("CreateInstance")) {
-      String componentNum = request.getParameter("ComponentNum");
-      WAComponent componentInstSelected = jobStartPageSC.getComponentByNum(Integer.parseInt(
-          componentNum));
-      setSpacesNameInRequest(jobStartPageSC, request);
-      List<Parameter> visibleParameters = getVisibleParameters(componentInstSelected.
-          getSortedParameters());
-
-      Parameter hiddenParam = createIsHiddenParam("no");
-      visibleParameters.add(0, hiddenParam);
-
-      if (JobStartPagePeasSettings.isPublicParameterEnable) {
-        Parameter publicParam = createIsPublicParam("no");
-        visibleParameters.add(0, publicParam);
-      }
-      request.setAttribute("Parameters", visibleParameters);
-      request.setAttribute("HiddenParameters", getHiddenParameters(componentInstSelected.
-          getSortedParameters()));
-      request.setAttribute("ComponentNum", componentNum);
-      request.setAttribute("WAComponent", componentInstSelected);
-      request.setAttribute("brothers", jobStartPageSC.getBrotherComponents(true));
-      destination = "/jobStartPagePeas/jsp/createInstance.jsp";
+      destination = prepareCreateInstance(jobStartPageSC, request);
     } else if ("EffectiveCreateInstance".equals(function)) {
       // Create the component
       ComponentInst componentInst = new ComponentInst();
-
       request2ComponentInst(componentInst, request, jobStartPageSC);
 
       SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById();
@@ -325,53 +307,11 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
         destination = "/jobStartPagePeas/jsp/error.jsp";
       }
     } else if (function.equals("UpdateInstance")) {
-      ComponentInst compoint1 = jobStartPageSC.getComponentInst(
-          jobStartPageSC.getManagedInstanceId());
-      // Search for component 'generic' label
-      String sCompoName = compoint1.getName();
-      WAComponent componentInstBase = jobStartPageSC.getComponentByName(sCompoName);
-      sCompoName = componentInstBase.getLabel().get(jobStartPageSC.getLanguage());
-      List<Parameter> dbParameters = compoint1.getParameters();
-      List<Parameter> parameters = componentInstBase.cloneParameters();
-      mergeParametersWith(parameters, dbParameters);
-      Collections.sort(parameters, new ParameterSorter());
-      List<Parameter> visibleParameters = getVisibleParameters(parameters);
-
-      String isHidden = "no";
-      if (compoint1.isHidden()) {
-        isHidden = "yes";
-      }
-
-      Parameter hiddenParam = createIsHiddenParam(isHidden);
-      visibleParameters.add(0, hiddenParam);
-
-      if (JobStartPagePeasSettings.isPublicParameterEnable) {
-        String isPublic = "no";
-        if (compoint1.isPublic()) {
-          isPublic = "yes";
-        }
-
-        Parameter publicParam = createIsPublicParam(isPublic);
-        visibleParameters.add(0, publicParam);
-      }
-
-      request.setAttribute("Parameters", visibleParameters);
-      Collections.sort(parameters, new ParameterSorter());
-      request.setAttribute("HiddenParameters", getHiddenParameters(parameters));
-
-      request.setAttribute("JobPeas", sCompoName);
-      request.setAttribute("ComponentInst", compoint1);
-
-      request.setAttribute("IsInheritanceEnable", Boolean.valueOf(
-          JobStartPagePeasSettings.isInheritanceEnable));
-
-      destination = "/jobStartPagePeas/jsp/updateInstance.jsp";
+      destination = prepareUpdateInstance(jobStartPageSC, request);
     } else if (function.equals("EffectiveUpdateInstance")) {
       ComponentInst componentInst = jobStartPageSC.getComponentInst(jobStartPageSC.
           getManagedInstanceId());
-
       request2ComponentInst(componentInst, request, jobStartPageSC);
-
       // Update the instance
       String componentId = jobStartPageSC.updateComponentInst(componentInst);
       if (componentId != null && componentId.length() > 0) {
@@ -384,9 +324,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
         // Si la création de l'espace se passe mal alors l'exception n'est pas
         // déportée vers les appelants
         request.setAttribute("When", "ComponentUpdate");
-
         setSpacesNameInRequest(jobStartPageSC, request);
-
         destination = "/jobStartPagePeas/jsp/error.jsp";
       }
     } else if (function.equals("DeleteInstance")) {
@@ -609,10 +547,10 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
         destination = "/jobStartPagePeas/jsp/welcome.jsp";
       }
     } else if (function.equals("OpenComponent")) {
-    	jobStartPageSC.init();
-    	
-    	destination = getDestination("GoToComponent", jobStartPageSC, request);
-      	
+      jobStartPageSC.init();
+
+      destination = getDestination("GoToComponent", jobStartPageSC, request);
+
     }
 
     return destination;
@@ -1011,24 +949,24 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       if (destination == null) {
         destination = "/jobStartPagePeas/jsp/" + function;
       }
-      if (destination.equals("/jobStartPagePeas/jsp/jobStartPageNav.jsp")) {
+      if ("/jobStartPagePeas/jsp/jobStartPageNav.jsp".equals(destination)) {
         request.setAttribute("Spaces", jobStartPageSC.getSpaces());
         request.setAttribute("SubSpaces", jobStartPageSC.getSubSpaces());
         request.setAttribute("SpaceComponents", jobStartPageSC.getSpaceComponents());
         request.setAttribute("SubSpaceComponents", jobStartPageSC.getSubSpaceComponents());
         request.setAttribute("CurrentSpaceId", jobStartPageSC.getSpaceId());
         request.setAttribute("CurrentSubSpaceId", jobStartPageSC.getSubSpaceId());
-      } else if (destination.equals("/jobStartPagePeas/jsp/welcome.jsp")) {
+      } else if ("/jobStartPagePeas/jsp/welcome.jsp".equals(destination)) {
         request.setAttribute("isUserAdmin", Boolean.valueOf(jobStartPageSC.isUserAdmin()));
         request.setAttribute("globalMode", Boolean.valueOf(jobStartPageSC.isAppInMaintenance()));
         request.setAttribute("IsBackupEnable", jobStartPageSC.isBackupEnable());
         request.setAttribute("IsBasketEnable", Boolean.valueOf(
             JobStartPagePeasSettings.isBasketEnable));
-      } else if (destination.equals("/jobStartPagePeas/jsp/startPageInfo.jsp")) {
+      } else if ("/jobStartPagePeas/jsp/startPageInfo.jsp".equals(destination)) {
         SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById(); // espace
         // courant
         request.setAttribute("isUserAdmin", Boolean.valueOf(jobStartPageSC.isUserAdmin()));
-        request.setAttribute("FirstPageType", new Integer(spaceint1.getFirstPageType()));
+        request.setAttribute("FirstPageType", Integer.valueOf(spaceint1.getFirstPageType()));
         request.setAttribute("Description", spaceint1.getDescription());
         String spaceId = jobStartPageSC.getManagedSpaceId();
         request.setAttribute("currentSpaceId", spaceId);
@@ -1045,46 +983,9 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
             JobStartPagePeasSettings.isInheritanceEnable));
 
         request.setAttribute("Space", spaceint1);
-      } else if (destination.equals("/jobStartPagePeas/jsp/componentInfo.jsp")) {
-        ComponentInst compoint1 = jobStartPageSC.getComponentInst(jobStartPageSC.
-            getManagedInstanceId());
-        String sCompoName = compoint1.getName();
-
-        // Search for component 'generic' label
-        WAComponent componentInstBase = jobStartPageSC.getComponentByName(sCompoName);
-        sCompoName = componentInstBase.getLabel().get(jobStartPageSC.getLanguage());
-        List<Parameter> dbParameters = compoint1.getParameters();
-        List<Parameter> parameters = componentInstBase.cloneParameters();
-        mergeParametersWith(parameters, dbParameters);
-        Collections.sort(parameters, new ParameterSorter());
-        List<Parameter> visibleParameters = getVisibleParameters(parameters);
-
-        String isHidden = "no";
-        if (compoint1.isHidden()) {
-          isHidden = "yes";
-        }
-
-        Parameter hiddenParam = createIsHiddenParam(isHidden);
-        visibleParameters.add(0, hiddenParam);
-
-        if (JobStartPagePeasSettings.isPublicParameterEnable) {
-          String isPublic = "no";
-          if (compoint1.isPublic()) {
-            isPublic = "yes";
-          }
-          Parameter publicParam = createIsPublicParam(isPublic);
-          visibleParameters.add(0, publicParam);
-        }
-
-        request.setAttribute("Parameters", visibleParameters);
-
-        request.setAttribute("ComponentInst", compoint1);
-        request.setAttribute("JobPeas", sCompoName);
-
-        request.setAttribute("Profiles", jobStartPageSC.getAllProfiles(compoint1));
-        request.setAttribute("IsInheritanceEnable", Boolean.valueOf(
-            JobStartPagePeasSettings.isInheritanceEnable));
-      } else if (destination.equals("/jobStartPagePeas/jsp/roleInstance.jsp")) {
+      } else if ("/jobStartPagePeas/jsp/componentInfo.jsp".equals(destination)) {
+        prepareDisplayComponentInfo(jobStartPageSC, request);
+      } else if ("/jobStartPagePeas/jsp/roleInstance.jsp".equals(destination)) {
         ComponentInst compoint1 = jobStartPageSC.getComponentInst(jobStartPageSC.
             getManagedInstanceId());
         request.setAttribute("ComponentInst", compoint1);
@@ -1148,9 +1049,9 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
     }
   }
 
-  private List<Parameter> getVisibleParameters(List<Parameter> parameters) {
-    List<Parameter> visibleParameters = new ArrayList<Parameter>();
-    for (Parameter parameter : parameters) {
+  private List<LocalizedParameter> getVisibleParameters(List<LocalizedParameter> parameters) {
+    List<LocalizedParameter> visibleParameters = new ArrayList<LocalizedParameter>();
+    for (LocalizedParameter parameter : parameters) {
       if (parameter.isVisible()) {
         visibleParameters.add(parameter);
       }
@@ -1158,9 +1059,9 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
     return visibleParameters;
   }
 
-  private List<Parameter> getHiddenParameters(List<Parameter> parameters) {
-    List<Parameter> hiddenParameters = new ArrayList<Parameter>();
-    for (Parameter parameter : parameters) {
+  private List<LocalizedParameter> getHiddenParameters(List<LocalizedParameter> parameters) {
+    List<LocalizedParameter> hiddenParameters = new ArrayList<LocalizedParameter>();
+    for (LocalizedParameter parameter : parameters) {
       if (parameter.isHidden()) {
         hiddenParameters.add(parameter);
       }
@@ -1221,30 +1122,23 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
     String pPublic = request.getParameter("PublicComponent");
     String pHidden = request.getParameter("HiddenComponent");
     String pInheritance = request.getParameter("InheritanceBlocked");
-
     componentInst.setLabel(name);
     componentInst.setDescription(desc);
-
     componentInst.setPublic(StringUtil.isDefined(pPublic));
     componentInst.setHidden(StringUtil.isDefined(pHidden));
-
     if (StringUtil.isDefined(pInheritance)) {
       componentInst.setInheritanceBlocked(StringUtil.getBooleanValue(pInheritance));
     }
-
     I18NHelper.setI18NInfo(componentInst, request);
-
     // Add the parameters (if they exist)
     WAComponent componentInstSelected = null;
     if (StringUtil.isDefined(componentInst.getName())) {
       componentInstSelected = jobStartPageSC.getComponentByName(componentInst.getName());
     } else {
-      String componentNum = request.getParameter("ComponentNum");
-      componentInstSelected = jobStartPageSC.getComponentByNum(Integer.parseInt(componentNum));
-      String jobPeas = componentInstSelected.getName();
-      componentInst.setName(jobPeas);
+      String componentName = request.getParameter("ComponentName");
+      componentInstSelected = jobStartPageSC.getComponentByName(componentName);
+      componentInst.setName(componentName);
     }
-
 
     List<Parameter> parameters = componentInstSelected.cloneParameters();
     SilverTrace.info("jobStartPagePeas",
@@ -1314,5 +1208,109 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       publicParam.setValue(isPublic);
     }
     return publicParam;
+  }
+
+  private String prepareUpdateInstance(JobStartPagePeasSessionController sessionController,
+      HttpServletRequest request) {
+    ComponentInst componentInst = sessionController.getComponentInst(sessionController.
+        getManagedInstanceId());
+    // Search for component 'generic' label
+    WAComponent waComponent = sessionController.getComponentByName(componentInst.getName());
+    LocalizedComponent localizedComponent = new LocalizedComponent(waComponent,
+        sessionController.getLanguage());
+    List<Parameter> parameters = waComponent.cloneParameters();
+    mergeParametersWith(parameters, componentInst.getParameters());
+    Collections.sort(parameters, new ParameterSorter());
+    List<LocalizedParameter> localizedParameters = new ArrayList<LocalizedParameter>(
+        parameters.size());
+    for (Parameter parameter : parameters) {
+      localizedParameters.add(new LocalizedParameter((parameter), sessionController.getLanguage()));
+    }
+    List<LocalizedParameter> visibleParameters = getVisibleParameters(localizedParameters);
+    String isHidden = "no";
+    if (componentInst.isHidden()) {
+      isHidden = "yes";
+    }
+    Parameter hiddenParam = createIsHiddenParam(isHidden);
+    visibleParameters.add(0, new LocalizedParameter(hiddenParam, sessionController.getLanguage()));
+    if (JobStartPagePeasSettings.isPublicParameterEnable) {
+      String isPublic = "no";
+      if (componentInst.isPublic()) {
+        isPublic = "yes";
+      }
+      Parameter publicParam = createIsPublicParam(isPublic);
+      visibleParameters.add(0, new LocalizedParameter(publicParam, sessionController.getLanguage()));
+    }
+    request.setAttribute("Parameters", visibleParameters);
+    Collections.sort(localizedParameters, new LocalizedParameterSorter());
+    request.setAttribute("HiddenParameters", getHiddenParameters(localizedParameters));
+    request.setAttribute("JobPeas", localizedComponent.getLabel());
+    request.setAttribute("ComponentInst", componentInst);
+    request.setAttribute("IsInheritanceEnable", Boolean.valueOf(
+        JobStartPagePeasSettings.isInheritanceEnable));
+    return "/jobStartPagePeas/jsp/updateInstance.jsp";
+  }
+
+  private String prepareCreateInstance(JobStartPagePeasSessionController sessionController,
+      HttpServletRequest request) {
+    String componentName = request.getParameter("ComponentName");
+    LocalizedComponent componentInstSelected = new LocalizedComponent(sessionController.
+        getComponentByName(componentName), sessionController.getLanguage());
+    setSpacesNameInRequest(sessionController, request);
+    List<LocalizedParameter> visibleParameters = getVisibleParameters(componentInstSelected.
+        getSortedParameters());
+    Parameter hiddenParam = createIsHiddenParam("no");
+    visibleParameters.add(0, new LocalizedParameter(hiddenParam, sessionController.getLanguage()));
+    if (JobStartPagePeasSettings.isPublicParameterEnable) {
+      Parameter publicParam = createIsPublicParam("no");
+      visibleParameters.add(0, new LocalizedParameter(publicParam, sessionController.getLanguage()));
+    }
+    request.setAttribute("Parameters", visibleParameters);
+    request.setAttribute("HiddenParameters", getHiddenParameters(componentInstSelected.
+        getSortedParameters()));
+    request.setAttribute("WAComponent", componentInstSelected);
+    request.setAttribute("brothers", sessionController.getBrotherComponents(true));
+    return "/jobStartPagePeas/jsp/createInstance.jsp";
+  }
+
+  private void prepareDisplayComponentInfo(JobStartPagePeasSessionController sessionController,
+      HttpServletRequest request) {
+    ComponentInst componentInst = sessionController.getComponentInst(sessionController.
+        getManagedInstanceId());
+    // Search for component 'generic' label
+    WAComponent waComponent = sessionController.getComponentByName(componentInst.getName());
+    List<Parameter> parameters = waComponent.cloneParameters();
+    mergeParametersWith(parameters, componentInst.getParameters());
+    Collections.sort(parameters, new ParameterSorter());
+    List<LocalizedParameter> localizedParameters = new ArrayList<LocalizedParameter>(
+        parameters.size());
+    for (Parameter parameter : parameters) {
+      localizedParameters.add(new LocalizedParameter((parameter), sessionController.getLanguage()));
+    }
+    List<LocalizedParameter> visibleParameters = getVisibleParameters(localizedParameters);
+    String isHidden = "no";
+    if (componentInst.isHidden()) {
+      isHidden = "yes";
+    }
+    LocalizedParameter hiddenParam = new LocalizedParameter(createIsHiddenParam(isHidden),
+        sessionController.getLanguage());
+    visibleParameters.add(0, hiddenParam);
+    if (JobStartPagePeasSettings.isPublicParameterEnable) {
+      String isPublic = "no";
+      if (componentInst.isPublic()) {
+        isPublic = "yes";
+      }
+      LocalizedParameter publicParam = new LocalizedParameter(createIsPublicParam(isPublic),
+          sessionController.getLanguage());
+      visibleParameters.add(0, publicParam);
+    }
+    LocalizedComponent localizedComponent = new LocalizedComponent(waComponent, sessionController.
+        getLanguage());
+    request.setAttribute("Parameters", visibleParameters);
+    request.setAttribute("ComponentInst", componentInst);
+    request.setAttribute("JobPeas", localizedComponent.getName());
+    request.setAttribute("Profiles", sessionController.getAllProfiles(componentInst));
+    request.setAttribute("IsInheritanceEnable", Boolean.valueOf(
+        JobStartPagePeasSettings.isInheritanceEnable));
   }
 }

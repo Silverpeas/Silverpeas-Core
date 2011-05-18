@@ -51,14 +51,6 @@
 <html>
   <head>
     <view:looknfeel />
-    <script type="text/javascript" src="/silverpeas/util/javaScript/animation.js"></script>
-    <script type="text/javascript" src="/silverpeas/util/javaScript/checkForm.js"></script>
-    <script type="text/javascript">    
-      function OpenPopupInvitaion(usersId,name){
-        options="directories=no, menubar=no,toolbar=no,scrollbars=yes, resizable=no, alwaysRaised";
-        SP_openWindow('<%=m_context%>/Rinvitation/jsp/invite?Recipient='+usersId, 'strWindowName', '350', '200',options);
-      }
-    </script>
   </head>
   <body id="publicProfile">
     <view:window>
@@ -79,10 +71,10 @@
                
 	    <!-- action  -->
         <div class="action">
-        	<a href="#" class="link invitation" onclick="OpenPopupInvitaion(268,'admin ');"><fmt:message key="notification.sendMessage" /></a>
+        	<a href="#" class="link invitation" onclick="initInvitation(<%=member.getId() %>,'<%=userFull.getDisplayedName() %>');"><fmt:message key="invitation.send" /></a>
             <br />
             <a href="#" class="link notification" onclick="initNotification(<%=member.getId() %>,'<%=userFull.getDisplayedName() %>')"><fmt:message key="GML.notification.send" /></a>
-        </div> <!-- /action  -->              
+        </div> <!-- /action  -->
 
         <!-- profilPhoto  -->  
 		<div class="profilPhoto">
@@ -136,6 +128,7 @@
 </view:window>
     
     <%@include file="../notificationDialog.jsp" %>
+    <%@include file="../invitationDialog.jsp" %>
     
   </body>
 </html>

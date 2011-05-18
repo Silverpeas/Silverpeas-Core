@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.ejb.RemoveException;
@@ -71,7 +72,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
   private CalendarBm calendarBm;
   private ResourceLocator settings;
   private ToDoHeader currentToDoHeader = null;
-  private Collection currentAttendees = null;
+  private Collection<Attendee> currentAttendees = null;
   private NotificationSender notifSender = null;
 
   private Map<String, ComponentInstLight> componentsMap = new HashMap<String, ComponentInstLight>();
@@ -91,8 +92,8 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   private void initEJB() {
     try {
-      calendarBm = ((CalendarBmHome) EJBUtilitaire.getEJBObjectRef(
-          JNDINames.CALENDARBM_EJBHOME, CalendarBmHome.class)).create();
+      calendarBm = EJBUtilitaire.getEJBObjectRef(
+          JNDINames.CALENDARBM_EJBHOME, CalendarBmHome.class).create();
     } catch (Exception e) {
       new TodoException("ToDoSessionControl.ToDoSessionControl()",
           SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -107,7 +108,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    * methods for ToDo
    */
 
-  public Collection getToDos() throws TodoException {
+  public Collection<ToDoHeader> getToDos() throws TodoException {
     if (getViewType() == PARTICIPANT_TODO_VIEW) {
       return getNotCompletedToDos();
     }
@@ -126,20 +127,15 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    * @throws TodoException
    * @see
    */
-  public Collection getNotCompletedToDos() throws TodoException {
-    Collection result;
-
+  public Collection<ToDoHeader> getNotCompletedToDos() throws TodoException {
     SilverTrace.info("todo", "ToDoSessionController.getNotCompletedToDos()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      result = calendarBm.getNotCompletedToDosForUser(getUserId());
+      return calendarBm.getNotCompletedToDosForUser(getUserId());
     } catch (Exception e) {
       throw new TodoException("ToDoSessionController.getNotCompletedToDos()",
           SilverpeasException.ERROR, "todo.MSG_CANT_GET_ENDED_TODOS", e);
     }
-    SilverTrace.info("todo", "ToDoSessionController.getNotCompletedToDos()",
-        "root.MSG_GEN_EXIT_METHOD");
-    return result;
   }
 
   /**
@@ -148,15 +144,11 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    * @throws TodoException
    * @see
    */
-  public Collection getOrganizerToDos() throws TodoException {
+  public Collection<ToDoHeader> getOrganizerToDos() throws TodoException {
     SilverTrace.info("todo", "ToDoSessionController.getOrganizerToDos()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      Collection result = calendarBm.getOrganizerToDos(getUserId());
-
-      SilverTrace.info("todo", "ToDoSessionController.getOrganizerToDos()",
-          "root.MSG_GEN_EXIT_METHOD");
-      return result;
+      return calendarBm.getOrganizerToDos(getUserId());
     } catch (Exception e) {
       throw new TodoException("ToDoSessionController.getOrganizerToDos()",
           SilverpeasException.ERROR, "todo.MSG_CANT_GET_TODOS_ORGANIZER", e);
@@ -170,15 +162,11 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    * @throws TodoException
    * @see
    */
-  public Collection getClosedToDos() throws TodoException {
+  public Collection<ToDoHeader> getClosedToDos() throws TodoException {
     SilverTrace.info("todo", "ToDoSessionController.getClosedToDos()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      Collection result = calendarBm.getClosedToDos(getUserId());
-
-      SilverTrace.info("todo", "ToDoSessionController.getClosedToDos()",
-          "root.MSG_GEN_EXIT_METHOD");
-      return result;
+      return calendarBm.getClosedToDos(getUserId());
     } catch (Exception e) {
       throw new TodoException("ToDoSessionController.getClosedToDos()",
           SilverpeasException.ERROR, "todo.MSG_CANT_GET_CLOSED_TODOS", e);
@@ -301,14 +289,12 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    */
   protected void notifyAttendees(String id, String title, String text) {
     try {
-      Collection attendees = getToDoAttendees(id);
+      Collection<Attendee> attendees = getToDoAttendees(id);
       NotificationMetaData notifMetaData = new NotificationMetaData(
           NotificationParameters.NORMAL, title, text);
       notifMetaData.setSender(getUserId());
       notifMetaData.setSource(getString("todo"));
-      for (Iterator i = attendees.iterator(); i.hasNext();) {
-        Attendee attendee = (Attendee) i.next();
-
+      for (Attendee attendee : attendees) {
         notifMetaData.addUserRecipient(attendee.getUserId());
       }
       getNotificationSender().notifyUser(notifMetaData);
@@ -459,20 +445,15 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    * methods for attendees
    */
 
-  public Collection getToDoAttendees(String todoId) throws TodoException {
-    Collection result;
-
+  public Collection<Attendee> getToDoAttendees(String todoId) throws TodoException {
     SilverTrace.info("todo", "ToDoSessionController.getToDoAttendees()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      result = calendarBm.getToDoAttendees(todoId);
+      return calendarBm.getToDoAttendees(todoId);
     } catch (Exception e) {
       throw new TodoException("ToDoSessionController.getToDoAttendees()",
           SilverpeasException.ERROR, "todo.MSG_CANT_GET_TODO_ATTENDEES", e);
     }
-    SilverTrace.info("todo", "ToDoSessionController.getToDoAttendees()",
-        "root.MSG_GEN_EXIT_METHOD");
-    return result;
   }
 
   /**
@@ -581,7 +562,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    * @return
    * @see
    */
-  public Collection getCurrentAttendees() {
+  public Collection<Attendee> getCurrentAttendees() {
     return currentAttendees;
   }
 
@@ -590,7 +571,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    * @param attendees
    * @see
    */
-  public void setCurrentAttendees(Collection attendees) {
+  public void setCurrentAttendees(Collection<Attendee> attendees) {
     currentAttendees = attendees;
   }
 
@@ -622,14 +603,13 @@ public class ToDoSessionController extends AbstractComponentSessionController {
     sel.setCancelURL(cancelUrl);
 
     // set les users deja selectionnés
-    Collection members = getCurrentAttendees();
+    Collection<Attendee> members = getCurrentAttendees();
     if (members != null) {
-      String[] usersSelected;
-      usersSelected = new String[members.size()];
-      Iterator i = members.iterator();
+      String[] usersSelected = new String[members.size()];
+      Iterator<Attendee> i = members.iterator();
       int j = 0;
       while (i.hasNext()) {
-        Attendee attendee = (Attendee) i.next();
+        Attendee attendee = i.next();
         usersSelected[j] = attendee.getUserId();
         j++;
       }
@@ -650,10 +630,10 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    * @throws TodoException
    * @see
    */
-  public Collection getUserSelected() throws TodoException {
+  public Collection<Attendee> getUserSelected() throws TodoException {
     Selection sel = getSelection();
-    ArrayList attendees = new ArrayList();
-    Collection oldAttendees = null;
+    List<Attendee> attendees = new ArrayList<Attendee>();
+    Collection<Attendee> oldAttendees = null;
 
     ToDoHeader todo = getCurrentToDoHeader();
     if (todo.getId() != null) {
@@ -662,20 +642,18 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
     String[] selectedUsers = sel.getSelectedElements();
     if (selectedUsers != null) {
-      for (int i = 0; i < selectedUsers.length; i++) {
+      for (String selectedUserId : selectedUsers) {
         Attendee newAttendee = null;
         if (oldAttendees != null) {
-          Iterator attI = oldAttendees.iterator();
-          while (attI.hasNext()) {
-            Attendee attendee = (Attendee) attI.next();
-            if (attendee.getUserId().equals(selectedUsers[i])) {
+          for (Attendee attendee : oldAttendees) {
+            if (attendee.getUserId().equals(selectedUserId)) {
               newAttendee = attendee;
             }
           } // fin while
         } // fin if
 
         if (newAttendee == null) {
-          newAttendee = new Attendee(selectedUsers[i]);
+          newAttendee = new Attendee(selectedUserId);
         }
         attendees.add(newAttendee);
       } // fin for

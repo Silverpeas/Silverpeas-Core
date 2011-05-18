@@ -35,13 +35,11 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 abstract public class AbstractDomainDriver extends Object {
 
-  protected int m_DomainId = -1; // The domainId of this instance of domain
+  protected int domainId = -1; // The domainId of this instance of domain
   // driver
-  protected List<DomainProperty> m_Properties = new ArrayList<DomainProperty>(); // liste ordonnée
-  // des
-  // properties du bundle
-  // domainSP
-  protected String[] m_aKeys = null;
+  protected List<DomainProperty> domainProperties = new ArrayList<DomainProperty>(); // liste ordonnée
+  // des properties du bundle domainSP
+  protected String[] keys = null;
   protected String m_PropertiesMultilang = "";
   protected Hashtable<String, HashMap<String, String>> m_PropertiesLabels =
       new Hashtable<String, HashMap<String, String>>();
@@ -169,16 +167,16 @@ abstract public class AbstractDomainDriver extends Object {
     String s;
     DomainProperty newElmt;
 
-    m_DomainId = domainId;
+    this.domainId = domainId;
 
     // Init the domain's specific users properties
-    m_Properties.clear();
+    domainProperties.clear();
     m_PropertiesMultilang = rs.getString("property.ResourceFile");
     s = rs.getString("property.Number");
     if ((s != null) && (s.length() > 0)) {
       nbProps = Integer.parseInt(s);
     }
-    m_aKeys = new String[nbProps];
+    keys = new String[nbProps];
     m_mapParameters = new String[nbProps];
     for (i = 1; i <= nbProps; i++) {
       s = rs.getString("property_" + Integer.toString(i) + ".Name");
@@ -186,8 +184,8 @@ abstract public class AbstractDomainDriver extends Object {
         newElmt = new DomainProperty(rs, String.valueOf(i)); // Retreives all
         // property's
         // infos
-        m_Properties.add(newElmt);
-        m_aKeys[i - 1] = newElmt.getName();
+        domainProperties.add(newElmt);
+        keys[i - 1] = newElmt.getName();
         m_mapParameters[i - 1] = newElmt.getMapParameter();
       }
     }
@@ -200,11 +198,11 @@ abstract public class AbstractDomainDriver extends Object {
   }
 
   public String[] getPropertiesNames() {
-    return m_aKeys;
+    return keys;
   }
 
   public DomainProperty getProperty(String propName) {
-    Iterator<DomainProperty> it = m_Properties.iterator();
+    Iterator<DomainProperty> it = domainProperties.iterator();
     DomainProperty domainProp;
     while (it.hasNext()) {
       domainProp = it.next();
@@ -227,7 +225,7 @@ abstract public class AbstractDomainDriver extends Object {
 
     addPropertiesToImport(props, theDescriptions);
 
-    Iterator<DomainProperty> it = m_Properties.iterator();
+    Iterator<DomainProperty> it = domainProperties.iterator();
     DomainProperty domainProp;
     while (it.hasNext()) {
       domainProp = it.next();
@@ -258,8 +256,8 @@ abstract public class AbstractDomainDriver extends Object {
     if (valret == null) {
       HashMap<String, String> newLabels = new HashMap<String, String>();
       ResourceLocator rs = new ResourceLocator(m_PropertiesMultilang, language);
-      for (int i = 0; i < m_aKeys.length; i++) {
-        newLabels.put(m_aKeys[i], rs.getString(m_aKeys[i]));
+      for (String key : keys) {
+        newLabels.put(key, rs.getString(key));
       }
       m_PropertiesLabels.put(language, newLabels);
       valret = newLabels;
@@ -273,8 +271,8 @@ abstract public class AbstractDomainDriver extends Object {
     if (valret == null) {
       HashMap<String, String> newDescriptions = new HashMap<String, String>();
       ResourceLocator rs = new ResourceLocator(m_PropertiesMultilang, language);
-      for (int i = 0; i < m_aKeys.length; i++) {
-        newDescriptions.put(m_aKeys[i], rs.getString(m_aKeys[i] + ".description"));
+      for (String key : keys) {
+        newDescriptions.put(key, rs.getString(key + ".description"));
       }
       m_PropertiesDescriptions.put(language, newDescriptions);
       valret = newDescriptions;
@@ -336,14 +334,14 @@ abstract public class AbstractDomainDriver extends Object {
       String toTimeStamp) throws Exception {
     throw new AdminException("AbstractDomainDriver.getAllChangedUsers",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   public Group[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp)
       throws Exception {
     throw new AdminException("AbstractDomainDriver.getAllChangedGroups",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   /**
@@ -374,7 +372,7 @@ abstract public class AbstractDomainDriver extends Object {
   public UserDetail importUser(String userLogin) throws Exception {
     throw new AdminException("AbstractDomainDriver.importUser",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   /**
@@ -384,7 +382,7 @@ abstract public class AbstractDomainDriver extends Object {
   public void removeUser(String userId) throws Exception {
     throw new AdminException("AbstractDomainDriver.removeUser",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   /**
@@ -395,7 +393,7 @@ abstract public class AbstractDomainDriver extends Object {
   public UserDetail synchroUser(String userId) throws Exception {
     throw new AdminException("AbstractDomainDriver.synchroUser",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   /**
@@ -406,7 +404,7 @@ abstract public class AbstractDomainDriver extends Object {
   public String createUser(UserDetail user) throws Exception {
     throw new AdminException("AbstractDomainDriver.createUser",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   /**
@@ -416,7 +414,7 @@ abstract public class AbstractDomainDriver extends Object {
   public void deleteUser(String userId) throws Exception {
     throw new AdminException("AbstractDomainDriver.deleteUser",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   /**
@@ -426,7 +424,7 @@ abstract public class AbstractDomainDriver extends Object {
   public void updateUserFull(UserFull user) throws Exception {
     throw new AdminException("AbstractDomainDriver.updateUser",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   /**
@@ -436,7 +434,7 @@ abstract public class AbstractDomainDriver extends Object {
   public void updateUserDetail(UserDetail user) throws Exception {
     throw new AdminException("AbstractDomainDriver.updateUser",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   /**
@@ -447,7 +445,7 @@ abstract public class AbstractDomainDriver extends Object {
   public UserDetail getUser(String userId) throws Exception {
     throw new AdminException("AbstractDomainDriver.getUser",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   /**
@@ -465,7 +463,7 @@ abstract public class AbstractDomainDriver extends Object {
   public String[] getUserMemberGroupIds(String userId) throws Exception {
     throw new AdminException("AbstractDomainDriver.getUserMemberGroupIds",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   /**
@@ -475,20 +473,20 @@ abstract public class AbstractDomainDriver extends Object {
   public UserDetail[] getAllUsers() throws Exception {
     throw new AdminException("AbstractDomainDriver.getAllUsers",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   public UserDetail[] getUsersBySpecificProperty(String propertyName,
       String value) throws Exception {
     throw new AdminException("AbstractDomainDriver.getUsersBySpecificProperty",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   public UserDetail[] getUsersByQuery(Hashtable<String, String> query) throws Exception {
     throw new AdminException("AbstractDomainDriver.getUsersByQuery",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   /**
@@ -499,7 +497,7 @@ abstract public class AbstractDomainDriver extends Object {
   public Group importGroup(String groupName) throws Exception {
     throw new AdminException("AbstractDomainDriver.importGroup",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   /**
@@ -509,7 +507,7 @@ abstract public class AbstractDomainDriver extends Object {
   public void removeGroup(String groupId) throws Exception {
     throw new AdminException("AbstractDomainDriver.removeGroup",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   /**
@@ -520,7 +518,7 @@ abstract public class AbstractDomainDriver extends Object {
   public Group synchroGroup(String groupId) throws Exception {
     throw new AdminException("AbstractDomainDriver.synchroGroup",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   /**
@@ -531,7 +529,7 @@ abstract public class AbstractDomainDriver extends Object {
   public String createGroup(Group m_Group) throws Exception {
     throw new AdminException("AbstractDomainDriver.createGroup",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   /**
@@ -541,7 +539,7 @@ abstract public class AbstractDomainDriver extends Object {
   public void deleteGroup(String groupId) throws Exception {
     throw new AdminException("AbstractDomainDriver.deleteGroup",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   /**
@@ -552,7 +550,7 @@ abstract public class AbstractDomainDriver extends Object {
   public void updateGroup(Group m_Group) throws Exception {
     throw new AdminException("AbstractDomainDriver.updateGroup",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   /**
@@ -564,7 +562,7 @@ abstract public class AbstractDomainDriver extends Object {
   public Group getGroup(String groupId) throws Exception {
     throw new AdminException("AbstractDomainDriver.getGroup",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   /**
@@ -576,7 +574,7 @@ abstract public class AbstractDomainDriver extends Object {
   public Group getGroupByName(String groupName) throws Exception {
     throw new AdminException("AbstractDomainDriver.getGroupByName",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   /**
@@ -588,7 +586,7 @@ abstract public class AbstractDomainDriver extends Object {
   public Group[] getGroups(String groupId) throws Exception {
     throw new AdminException("AbstractDomainDriver.getGroups",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   /**
@@ -599,7 +597,7 @@ abstract public class AbstractDomainDriver extends Object {
   public Group[] getAllGroups() throws Exception {
     throw new AdminException("AbstractDomainDriver.getAllGroups",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   /**
@@ -610,7 +608,7 @@ abstract public class AbstractDomainDriver extends Object {
   public Group[] getAllRootGroups() throws Exception {
     throw new AdminException("AbstractDomainDriver.getAllRootGroups",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   /**
@@ -622,7 +620,7 @@ abstract public class AbstractDomainDriver extends Object {
   public String[] getGroupMemberGroupIds(String groupId) throws Exception {
     throw new AdminException("AbstractDomainDriver.getGroupMemberGroupIds",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   /**
@@ -634,7 +632,7 @@ abstract public class AbstractDomainDriver extends Object {
   public void startTransaction(boolean bAutoCommit) throws Exception {
     throw new AdminException("AbstractDomainDriver.startTransaction",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   /**
@@ -644,7 +642,7 @@ abstract public class AbstractDomainDriver extends Object {
   public void commit() throws Exception {
     throw new AdminException("AbstractDomainDriver.commit",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   /**
@@ -654,7 +652,7 @@ abstract public class AbstractDomainDriver extends Object {
   public void rollback() throws Exception {
     throw new AdminException("AbstractDomainDriver.rollback",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 
   static protected int idAsInt(String id) {
@@ -685,6 +683,6 @@ abstract public class AbstractDomainDriver extends Object {
   public List<String> getUserAttributes() throws Exception {
     throw new AdminException("AbstractDomainDriver.getUserAttributes",
         SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(m_DomainId));
+        "DomainId=" + Integer.toString(domainId));
   }
 }
