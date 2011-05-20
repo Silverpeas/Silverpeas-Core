@@ -24,12 +24,6 @@
 
 package com.stratelia.silverpeas.domains.sqldriver;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import com.silverpeas.util.cryptage.CryptMD5;
 import com.silverpeas.util.cryptage.UnixMD5Crypt;
 import com.stratelia.silverpeas.authentication.Authentication;
@@ -43,6 +37,13 @@ import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.organization.AdminPersistenceException;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Hashtable;
+import java.util.List;
 
 public class SQLDriver extends AbstractDomainDriver {
   protected Connection openedConnection = null;
@@ -83,6 +84,32 @@ public class SQLDriver extends AbstractDomainDriver {
     drvSettings.initFromProperties(rs);
   }
 
+  @Override
+  public UserDetail[] getAllChangedUsers(String fromTimeStamp, String toTimeStamp)
+      throws Exception {
+    return new UserDetail[0];
+  }
+
+  @Override
+  public Group[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp) throws Exception {
+    return new Group[0];  
+  }
+
+  @Override
+  public UserDetail importUser(String userLogin) throws Exception {
+    return null;  
+  }
+
+  @Override
+  public void removeUser(String userId) throws Exception {
+    
+  }
+
+  @Override
+  public UserDetail synchroUser(String userId) throws Exception {
+    return null;  
+  }
+
   /**
    * Get an DomainSQL schema from the pool.
    */
@@ -121,7 +148,7 @@ public class SQLDriver extends AbstractDomainDriver {
   }
 
   /**
-   * @param m_User
+   * @param ud
    * @return String
    */
   public String createUser(UserDetail ud) throws Exception {
@@ -163,7 +190,7 @@ public class SQLDriver extends AbstractDomainDriver {
   }
 
   /**
-   * @param m_User
+   * @param uf
    */
   public void updateUserFull(UserFull uf) throws Exception {
     try {
@@ -214,7 +241,7 @@ public class SQLDriver extends AbstractDomainDriver {
   }
 
   /**
-   * @param m_User
+   * @param ud
    */
   public void updateUserDetail(UserDetail ud) throws Exception {
     try {
@@ -284,6 +311,11 @@ public class SQLDriver extends AbstractDomainDriver {
     }
   }
 
+  @Override
+  public String[] getUserMemberGroupIds(String userId) throws Exception {
+    return new String[0];  
+  }
+
   /**
    * @return User[]
    */
@@ -322,8 +354,28 @@ public class SQLDriver extends AbstractDomainDriver {
     }
   }
 
+  @Override
+  public UserDetail[] getUsersByQuery(Hashtable<String, String> query) throws Exception {
+    return new UserDetail[0];
+  }
+
+  @Override
+  public Group importGroup(String groupName) throws Exception {
+    return null;  
+  }
+
+  @Override
+  public void removeGroup(String groupId) throws Exception {
+    
+  }
+
+  @Override
+  public Group synchroGroup(String groupId) throws Exception {
+    return null;  
+  }
+
   /**
-   * @param m_Group
+   * @param group
    * @return String
    */
   public String createGroup(Group group) throws Exception {
@@ -380,7 +432,7 @@ public class SQLDriver extends AbstractDomainDriver {
   }
 
   /**
-   * @param m_Group
+   * @param group
    */
   public void updateGroup(Group group) throws Exception {
     List<String> alAddUsers = new ArrayList<String>();

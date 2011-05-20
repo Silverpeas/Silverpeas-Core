@@ -21,24 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.directory.servlets;
+package com.silverpeas.domains.silverpeasdriver;
 
+import com.stratelia.webactiv.beans.admin.DomainDriver;
 
-import javax.servlet.http.HttpServletRequest;
-import org.junit.Assert;
-import org.junit.Test;
-import org.mockito.Mockito;
-
-
-public class ImageDisplayTest {
-
-  @Test
-  public void getAvatarName() {
-    HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-    Mockito.when(request.getPathInfo()).thenReturn("/display/avatar/nbourakbi.jpg");
-    ImageDisplay display = new ImageDisplay();
-    String result = display.getAvatar(request);
-    String expectedResult = "nbourakbi.jpg";
-    Assert.assertEquals("Verifying avatar name", expectedResult, result);
-  }
+public interface SilverpeasDomainDriver extends DomainDriver {
+  
 }

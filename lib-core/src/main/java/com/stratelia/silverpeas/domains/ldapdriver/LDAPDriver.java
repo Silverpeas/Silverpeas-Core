@@ -24,13 +24,6 @@
 
 package com.stratelia.silverpeas.domains.ldapdriver;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
 import com.stratelia.webactiv.beans.admin.DomainProperty;
@@ -38,6 +31,12 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.ResourceLocator;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Domain driver for LDAP access. Could be used to access any type of LDAP DB (even exchange)
@@ -294,6 +293,26 @@ public class LDAPDriver extends AbstractDomainDriver {
     return getUser(userId);
   }
 
+  @Override
+  public String createUser(UserDetail user) throws Exception {
+    return null;  
+  }
+
+  @Override
+  public void deleteUser(String userId) throws Exception {
+    
+  }
+
+  @Override
+  public void updateUserFull(UserFull user) throws Exception {
+    
+  }
+
+  @Override
+  public void updateUserDetail(UserDetail user) throws Exception {
+    
+  }
+
   /**
    * Retrieve user information from database
    * @param userId The user id as stored in the database
@@ -446,6 +465,21 @@ public class LDAPDriver extends AbstractDomainDriver {
     return getGroup(groupId);
   }
 
+  @Override
+  public String createGroup(Group m_Group) throws Exception {
+    return null;  
+  }
+
+  @Override
+  public void deleteGroup(String groupId) throws Exception {
+    
+  }
+
+  @Override
+  public void updateGroup(Group m_Group) throws Exception {
+    
+  }
+
   /**
    * Retrieve group information from database
    * @param groupId The group id as stored in the database
@@ -463,6 +497,11 @@ public class LDAPDriver extends AbstractDomainDriver {
       LDAPUtility.closeConnection(ld);
     }
     return groupReturned;
+  }
+
+  @Override
+  public Group getGroupByName(String groupName) throws Exception {
+    return null;  
   }
 
   /**

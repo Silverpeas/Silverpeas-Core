@@ -68,7 +68,7 @@ import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.silverpeas.util.SilverpeasSettings;
-import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
+import com.stratelia.webactiv.beans.admin.DomainDriver;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.DomainProperty;
@@ -937,7 +937,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         m_TargetUserId = null;
       }
 
-      if ((getDomainActions() & AbstractDomainDriver.ACTION_X509_USER) != 0) {
+      if ((getDomainActions() & DomainDriver.ACTION_X509_USER) != 0) {
         // revocate user's certificate
         revocateCertificate(user);
       }

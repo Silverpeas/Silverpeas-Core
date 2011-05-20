@@ -31,7 +31,7 @@ public class UserFull extends UserDetail {
 
   private static final long serialVersionUID = 1L;
   protected HashMap<String, String> m_hInfos = null;
-  protected AbstractDomainDriver m_pDomainDriver = null;
+  protected DomainDriver m_pDomainDriver = null;
   protected String m_password = "";
   protected boolean m_isPasswordValid = false;
   protected boolean m_isPasswordAvailable = false;
@@ -42,13 +42,13 @@ public class UserFull extends UserDetail {
     m_hInfos = new HashMap<String, String>();
   }
 
-  public UserFull(AbstractDomainDriver domainDriver) {
+  public UserFull(DomainDriver domainDriver) {
     super();
     m_hInfos = new HashMap<String, String>();
     m_pDomainDriver = domainDriver;
   }
 
-  public UserFull(AbstractDomainDriver domainDriver, UserDetail toClone) {
+  public UserFull(DomainDriver domainDriver, UserDetail toClone) {
     super(toClone);
     m_hInfos = new HashMap<String, String>();
     m_pDomainDriver = domainDriver;

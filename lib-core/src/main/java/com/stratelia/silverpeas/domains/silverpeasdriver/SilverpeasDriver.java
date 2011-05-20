@@ -24,9 +24,6 @@
 
 package com.stratelia.silverpeas.domains.silverpeasdriver;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.silverpeas.util.cryptage.CryptMD5;
 import com.silverpeas.util.cryptage.UnixMD5Crypt;
 import com.stratelia.silverpeas.authentication.Authentication;
@@ -39,6 +36,10 @@ import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.organization.AdminPersistenceException;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
 
 public class SilverpeasDriver extends AbstractDomainDriver {
   public DomainSPSchema organization = null;
@@ -58,6 +59,32 @@ public class SilverpeasDriver extends AbstractDomainDriver {
    */
   public void initFromProperties(ResourceLocator rs) throws Exception {
     m_PasswordEncryption = rs.getString("database.SQLPasswordEncryption");
+  }
+
+  @Override
+  public UserDetail[] getAllChangedUsers(String fromTimeStamp, String toTimeStamp)
+      throws Exception {
+    return new UserDetail[0];
+  }
+
+  @Override
+  public Group[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp) throws Exception {
+    return new Group[0];  
+  }
+
+  @Override
+  public UserDetail importUser(String userLogin) throws Exception {
+    return null;  
+  }
+
+  @Override
+  public void removeUser(String userId) throws Exception {
+    
+  }
+
+  @Override
+  public UserDetail synchroUser(String userId) throws Exception {
+    return null;  
   }
 
   // when we are in a transaction the connection must not be released.
@@ -88,7 +115,7 @@ public class SilverpeasDriver extends AbstractDomainDriver {
   }
 
   /**
-   * @param m_User
+   * @param ud
    * @return String
    */
   public String createUser(UserDetail ud) throws Exception {
@@ -141,7 +168,7 @@ public class SilverpeasDriver extends AbstractDomainDriver {
   }
 
   /**
-   * @param m_User
+   * @param ud
    */
   public void updateUserFull(UserFull ud) throws Exception {
     try {
@@ -190,7 +217,7 @@ public class SilverpeasDriver extends AbstractDomainDriver {
   }
 
   /**
-   * @param m_User
+   * @param ud
    */
   public void updateUserDetail(UserDetail ud) throws Exception {
     try {
@@ -272,6 +299,11 @@ public class SilverpeasDriver extends AbstractDomainDriver {
     } finally {
       this.releaseDomainSPSchema();
     }
+  }
+
+  @Override
+  public String[] getUserMemberGroupIds(String userId) throws Exception {
+    return new String[0];  
   }
 
   /**
@@ -365,6 +397,26 @@ public class SilverpeasDriver extends AbstractDomainDriver {
     }
   }
 
+  @Override
+  public UserDetail[] getUsersByQuery(Hashtable<String, String> query) throws Exception {
+    return new UserDetail[0];
+  }
+
+  @Override
+  public Group importGroup(String groupName) throws Exception {
+    return null;  
+  }
+
+  @Override
+  public void removeGroup(String groupId) throws Exception {
+    
+  }
+
+  @Override
+  public Group synchroGroup(String groupId) throws Exception {
+    return null;  
+  }
+
   /**
    * @param m_Group
    * @return String
@@ -414,7 +466,7 @@ public class SilverpeasDriver extends AbstractDomainDriver {
   }
 
   /**
-   * @param m_Group
+   * @param group
    */
   public void updateGroup(Group group) throws Exception {
     List<String> alRemUsers = new ArrayList<String>();
@@ -510,6 +562,11 @@ public class SilverpeasDriver extends AbstractDomainDriver {
     } finally {
       this.releaseDomainSPSchema();
     }
+  }
+
+  @Override
+  public Group getGroupByName(String groupName) throws Exception {
+    return null;  
   }
 
   /**
@@ -622,6 +679,11 @@ public class SilverpeasDriver extends AbstractDomainDriver {
     } finally {
       this.releaseDomainSPSchema();
     }
+  }
+
+  @Override
+  public String[] getGroupMemberGroupIds(String groupId) throws Exception {
+    return new String[0];  
   }
 
   /**

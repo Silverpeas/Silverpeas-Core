@@ -26,7 +26,7 @@ package com.stratelia.silverpeas.domains.silverpeasdriver;
 
 import java.io.Serializable;
 
-import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
+import com.stratelia.webactiv.beans.admin.DomainDriver;
 import com.stratelia.webactiv.beans.admin.UserFull;
 
 public class SPUserFull extends UserFull implements Serializable {
@@ -39,7 +39,7 @@ public class SPUserFull extends UserFull implements Serializable {
     setPasswordAvailable(true);
   }
 
-  public SPUserFull(AbstractDomainDriver domainDriver) {
+  public SPUserFull(DomainDriver domainDriver) {
     super(domainDriver);
     setPasswordAvailable(true);
   }
