@@ -27,10 +27,6 @@
   <bean id="jpaTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"
         p:entityManagerFactory-ref="entityManagerFactory"/>
 
-  <jdbc:embedded-database id="dataSource" type="H2" >
-    <jdbc:script location="classpath:/com/silverpeas/personalization/dao/create-database.sql" />
-  </jdbc:embedded-database>
-
   <bean id="entityManagerFactory"
         class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
         p:dataSource-ref="dataSource"

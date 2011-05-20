@@ -23,8 +23,6 @@
  */
 package com.silverpeas.personalization.dao;
 
-import org.junit.After;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -41,7 +39,6 @@ import org.junit.Test;
 
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -51,7 +48,7 @@ import static org.hamcrest.Matchers.*;
  * @author ehugonnet
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-personalization.xml"})
+@ContextConfiguration(locations = {"/spring-personalization.xml", "/spring-personalization-embbed-datasource.xml"})
 @TransactionConfiguration(transactionManager = "jpaTransactionManager")
 public class PersonalizationDetailDaoTest {
 

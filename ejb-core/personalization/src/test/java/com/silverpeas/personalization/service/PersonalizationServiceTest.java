@@ -31,7 +31,7 @@ import static org.hamcrest.Matchers.notNullValue;
  * @author ehugonnet
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-personalization.xml"})
+@ContextConfiguration(locations = {"/spring-personalization.xml", "/spring-personalization-embbed-datasource.xml"})
 @TransactionConfiguration(transactionManager = "jpaTransactionManager")
 public class PersonalizationServiceTest {
 
