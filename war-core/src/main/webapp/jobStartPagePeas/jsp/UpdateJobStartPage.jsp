@@ -109,7 +109,7 @@ function isCorrectForm() {
 }
 function sendData()
 {
-	if (document.multichoice.choix[3].checked) {
+	if ($('#url-radio').is(':checked')) {
 		if (isCorrectForm()) {
 			document.multichoice.submit();
 		}
