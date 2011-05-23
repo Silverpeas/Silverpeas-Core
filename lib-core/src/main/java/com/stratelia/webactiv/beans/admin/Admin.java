@@ -2806,8 +2806,7 @@ public final class Admin {
    */
   public String getUserIdByAuthenticationKey(String authenticationKey) throws Exception {
 
-    Hashtable<String, String> userParameters = domainDriverManager.authenticate(
-        authenticationKey);
+    Map<String, String> userParameters = domainDriverManager.authenticate(authenticationKey);
     String login = userParameters.get("login");
     String domainId = userParameters.get("domainId");
     return userManager.getUserIdByLoginAndDomain(domainDriverManager, login, domainId);
@@ -2898,13 +2897,12 @@ public final class Admin {
    */
   public String deleteUser(String sUserId) throws AdminException {
     try {
-      if (sUserId.equals(m_sDAPIGeneralAdminId)) {
+      if (m_sDAPIGeneralAdminId.equals(sUserId)) {
         SilverTrace.warn("admin", "Admin.deleteUser",
             "admin.MSG_WARN_TRY_TO_DELETE_GENERALADMIN");
         return null;
-      } else {
-        return deleteUser(sUserId, false);
       }
+      return deleteUser(sUserId, false);
 
     } catch (Exception e) {
       throw new AdminException("Admin.deleteUser", SilverpeasException.ERROR,
@@ -2915,8 +2913,7 @@ public final class Admin {
   /**
    * Delete the given user from silverpeas and specific domain
    */
-  public String deleteUser(String sUserId, boolean onlyInSilverpeas)
-      throws AdminException {
+  public String deleteUser(String sUserId, boolean onlyInSilverpeas) throws AdminException {
     UserDetail user = null;
 
     try {
@@ -2934,17 +2931,14 @@ public final class Admin {
       }
 
       // Delete the user
-      String sReturnUserId = userManager.deleteUser(domainDriverManager, user,
-          onlyInSilverpeas);
+      String sReturnUserId = userManager.deleteUser(domainDriverManager, user, onlyInSilverpeas);
 
       // Commit the transaction
       domainDriverManager.commit();
       if (user.getDomainId() != null && !onlyInSilverpeas) {
         domainDriverManager.commit(user.getDomainId());
       }
-
       cache.opRemoveUser(user);
-
       return sReturnUserId;
     } catch (Exception e) {
       try {
@@ -3366,12 +3360,10 @@ public final class Admin {
 
     try {
       // Authenticate the given user
-      Hashtable<String, String> loginDomain = domainDriverManager.authenticate(sKey, removeKey);
-      if ((!loginDomain.containsKey("login"))
-          || (!loginDomain.containsKey("domainId"))) {
-        throw new AdminException("Admin.authenticate",
-            SilverpeasException.WARNING, "admin.MSG_ERR_AUTHENTICATE_USER",
-            "key : '" + sKey + "'");
+      Map<String, String> loginDomain = domainDriverManager.authenticate(sKey, removeKey);
+      if ((!loginDomain.containsKey("login")) || (!loginDomain.containsKey("domainId"))) {
+        throw new AdminException("Admin.authenticate", SilverpeasException.WARNING,
+            "admin.MSG_ERR_AUTHENTICATE_USER", "key : '" + sKey + "'");
       }
 
       // Get the Silverpeas userId
@@ -5483,7 +5475,7 @@ public final class Admin {
               childs[i].getSpecificId(), latestGroup.getDomainId());
           existingGroup = getGroup(existingGroupId);
           if (existingGroup.getSuperGroupId().equals(latestGroup.getId())) {
-          // Only synchronize the group if latestGroup is his true parent
+            // Only synchronize the group if latestGroup is his true parent
             synchronizeGroup(existingGroupId, recurs);
           }
         } catch (AdminException e) // The group doesn't exist -> Import him
@@ -5635,7 +5627,8 @@ public final class Admin {
     SilverTrace.info("admin", "admin.synchronizeRemoveUser", "root.MSG_GEN_ENTER_METHOD",
         "userId=" + userId);
     UserDetail theUserDetail = getUserDetail(userId);
-    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(theUserDetail.getDomainId()));
+    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(theUserDetail.
+        getDomainId()));
     synchroDomain.removeUser(theUserDetail.getSpecificId());
     deleteUser(userId, true);
     List<UserDetail> listUsersRemove = new ArrayList<UserDetail>();

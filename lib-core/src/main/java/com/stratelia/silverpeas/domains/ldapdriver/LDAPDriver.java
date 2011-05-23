@@ -33,10 +33,9 @@ import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Domain driver for LDAP access. Could be used to access any type of LDAP DB (even exchange)
@@ -69,7 +68,7 @@ public class LDAPDriver extends AbstractDomainDriver {
     addPropertiesToImport(props, null);
   }
 
-  public void addPropertiesToImport(List<DomainProperty> props, HashMap<String, String> descriptions) {
+  public void addPropertiesToImport(List<DomainProperty> props, Map<String, String> descriptions) {
     DomainProperty property = new DomainProperty();
     property.setName("lastName");
     property.setMapParameter(driverSettings.getUsersLastNameField());
@@ -389,7 +388,7 @@ public class LDAPDriver extends AbstractDomainDriver {
     }
   }
 
-  public UserDetail[] getUsersByQuery(Hashtable<String, String> query) throws Exception {
+  public UserDetail[] getUsersByQuery(Map<String, String> query) throws Exception {
     String extraFilter = "";
     Iterator<String> properties = query.keySet().iterator();
     String propertyName = null;

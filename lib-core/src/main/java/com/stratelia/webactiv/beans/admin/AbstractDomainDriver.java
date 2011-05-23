@@ -28,9 +28,9 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 abstract public class AbstractDomainDriver implements DomainDriver {
 
@@ -40,10 +40,10 @@ abstract public class AbstractDomainDriver implements DomainDriver {
   // des properties du bundle domainSP
   protected String[] keys = null;
   protected String m_PropertiesMultilang = "";
-  protected Hashtable<String, HashMap<String, String>> m_PropertiesLabels =
-      new Hashtable<String, HashMap<String, String>>();
-  protected Hashtable<String, HashMap<String, String>> m_PropertiesDescriptions =
-      new Hashtable<String, HashMap<String, String>>();
+  protected Map<String, HashMap<String, String>> m_PropertiesLabels =
+      new HashMap<String, HashMap<String, String>>();
+  protected Map<String, HashMap<String, String>> m_PropertiesDescriptions =
+      new HashMap<String, HashMap<String, String>>();
   protected String[] m_mapParameters = null;
   protected boolean synchroInProcess = false;
   protected boolean x509Enabled = false;
@@ -123,9 +123,8 @@ abstract public class AbstractDomainDriver implements DomainDriver {
   public List<DomainProperty> getPropertiesToImport(String language) {
     List<DomainProperty> props = new ArrayList<DomainProperty>();
 
-    HashMap<String, String> theLabels = getPropertiesLabels(language);
-    HashMap<String, String> theDescriptions = getPropertiesDescriptions(language);
-
+    Map<String, String> theLabels = getPropertiesLabels(language);
+    Map<String, String> theDescriptions = getPropertiesDescriptions(language);
     addPropertiesToImport(props, theDescriptions);
 
     Iterator<DomainProperty> it = domainProperties.iterator();
@@ -153,12 +152,11 @@ abstract public class AbstractDomainDriver implements DomainDriver {
    * @param theDescriptions 
    */
   @Override
-  public void addPropertiesToImport(List<DomainProperty> props,
-      HashMap<String, String> theDescriptions) {
+  public void addPropertiesToImport(List<DomainProperty> props, Map<String, String> theDescriptions) {
   }
 
   @Override
-  public HashMap<String, String> getPropertiesLabels(String language) {
+  public Map<String, String> getPropertiesLabels(String language) {
     HashMap<String, String> valret = m_PropertiesLabels.get(language);
     if (valret == null) {
       HashMap<String, String> newLabels = new HashMap<String, String>();
@@ -173,8 +171,8 @@ abstract public class AbstractDomainDriver implements DomainDriver {
   }
 
   @Override
-  public HashMap<String, String> getPropertiesDescriptions(String language) {
-    HashMap<String, String> valret = m_PropertiesDescriptions.get(language);
+  public Map<String, String> getPropertiesDescriptions(String language) {
+    Map<String, String> valret = m_PropertiesDescriptions.get(language);
 
     if (valret == null) {
       HashMap<String, String> newDescriptions = new HashMap<String, String>();
@@ -270,7 +268,6 @@ abstract public class AbstractDomainDriver implements DomainDriver {
     synchroInProcess = false;
     return "";
   }
- 
 
   static protected int idAsInt(String id) {
     if (!StringUtil.isDefined(id)) {

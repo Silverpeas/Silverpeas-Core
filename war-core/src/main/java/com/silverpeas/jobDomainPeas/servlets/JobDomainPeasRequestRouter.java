@@ -769,7 +769,7 @@ public class JobDomainPeasRequestRouter extends ComponentRequestRouter {
       JobDomainPeasSessionController jobDomainSC) {
     String selectedIds = request.getParameter("Pagination_SelectedIds");
     String notSelectedIds = request.getParameter("Pagination_NotSelectedIds");
-    ArrayList<String> memSelected = jobDomainSC.getListSelectedUsers();
+    List<String> memSelected = jobDomainSC.getListSelectedUsers();
     StringTokenizer st = new StringTokenizer(selectedIds, ",");
     while (st.hasMoreTokens()) {
       String id = st.nextToken();

@@ -25,9 +25,8 @@ package com.stratelia.webactiv.beans.admin;
 
 import com.stratelia.webactiv.util.ResourceLocator;
 
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 public interface DomainDriver {
   /**
@@ -145,11 +144,11 @@ public interface DomainDriver {
 
   void addPropertiesToImport(List<DomainProperty> props);
 
-  void addPropertiesToImport(List<DomainProperty> props, HashMap<String, String> theDescriptions);
+  void addPropertiesToImport(List<DomainProperty> props, Map<String, String> theDescriptions);
 
-  HashMap<String, String> getPropertiesLabels(String language);
+  Map<String, String> getPropertiesLabels(String language);
 
-  HashMap<String, String> getPropertiesDescriptions(String language);
+  Map<String, String> getPropertiesDescriptions(String language);
 
   void initFromProperties(ResourceLocator rs) throws Exception;
 
@@ -213,7 +212,7 @@ public interface DomainDriver {
   UserDetail[] getUsersBySpecificProperty(String propertyName,
       String value) throws Exception;
 
-  UserDetail[] getUsersByQuery(Hashtable<String, String> query) throws Exception;
+  UserDetail[] getUsersByQuery(Map<String, String> query) throws Exception;
 
   Group importGroup(String groupName) throws Exception;
 

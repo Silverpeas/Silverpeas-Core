@@ -33,9 +33,12 @@ import com.stratelia.webactiv.beans.admin.DomainProperty;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
+import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +46,6 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -77,27 +79,26 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   @Override
   public UserDetail[] getAllChangedUsers(String fromTimeStamp, String toTimeStamp)
       throws Exception {
-    return new UserDetail[0];  
+    return new UserDetail[0];
   }
 
   @Override
   public Group[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp) throws Exception {
-    return new Group[0];  
+    return new Group[0];
   }
 
   @Override
   public UserDetail importUser(String userLogin) throws Exception {
-    return null;  
+    return null;
   }
 
   @Override
   public void removeUser(String userId) throws Exception {
-    
   }
 
   @Override
   public UserDetail synchroUser(String userId) throws Exception {
-    return null;  
+    return null;
   }
 
   /**
@@ -107,9 +108,16 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    */
   @Override
   public String createUser(UserDetail ud) {
-    SPUser user = convertToSPUser(ud, new SPUser());
-    user = userDao.saveAndFlush(user);
-    return String.valueOf(user.getId());
+    try {
+      SPUser user = convertToSPUser(ud, new SPUser());
+      int id = DBUtil.getNextId("domainsp_user", "id");
+      user.setId(id);
+      user = userDao.saveAndFlush(user);
+      return String.valueOf(id);
+    } catch (UtilException ex) {
+      Logger.getLogger(SilverpeasDriver.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return "-1";
   }
 
   /**
@@ -119,13 +127,18 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   @Override
   public void deleteUser(String userId) {
     SPUser user = userDao.readByPrimaryKey(Integer.valueOf(userId));
+    if(user.getGroups() != null) {
+      for(SPGroup group : user.getGroups()) {
+        group.getUsers().remove(user);
+        groupDao.saveAndFlush(group);
+      }
+    }
     userDao.delete(user);
   }
 
   @Override
   public void updateUserFull(UserFull userFull) throws UtilException {
-    SPUser oldUser = userDao.readByPrimaryKey(Integer.valueOf(userFull.getId()));
-    oldUser.setId(Integer.valueOf(userFull.getSpecificId()));
+    SPUser oldUser = userDao.readByPrimaryKey(Integer.valueOf(userFull.getSpecificId()));
     oldUser.setFirstname(userFull.getFirstName());
     oldUser.setLastname(userFull.getLastName());
     oldUser.setLogin(userFull.getLogin());
@@ -159,7 +172,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    */
   @Override
   public void updateUserDetail(UserDetail ud) {
-    SPUser user = userDao.readByPrimaryKey(Integer.valueOf(ud.getId()));
+    SPUser user = userDao.readByPrimaryKey(Integer.valueOf(ud.getSpecificId()));
     if (user != null) {
       userDao.save(convertToSPUser(ud, user));
     }
@@ -201,7 +214,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
 
   @Override
   public String[] getUserMemberGroupIds(String userId) throws Exception {
-    return new String[0];  
+    return new String[0];
   }
 
   /**
@@ -250,23 +263,22 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   @Override
-  public UserDetail[] getUsersByQuery(Hashtable<String, String> query) throws Exception {
-    return new UserDetail[0];  
+  public UserDetail[] getUsersByQuery(Map<String, String> query) throws Exception {
+    return new UserDetail[0];
   }
 
   @Override
   public Group importGroup(String groupName) throws Exception {
-    return null;  
+    return null;
   }
 
   @Override
   public void removeGroup(String groupId) throws Exception {
-    
   }
 
   @Override
   public Group synchroGroup(String groupId) throws Exception {
-    return null;  
+    return null;
   }
 
   /**
@@ -275,21 +287,29 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    */
   @Override
   public String createGroup(Group group) {
-    SPGroup spGroup = new SPGroup();
-    spGroup.setDescription(group.getDescription());
-    spGroup.setName(group.getName());
-    if (StringUtil.isDefined(group.getSuperGroupId())) {
-      SPGroup parent = groupDao.readByPrimaryKey(Integer.valueOf(group.getSuperGroupId()));
-      spGroup.setParent(parent);
+    try {
+      SPGroup spGroup = new SPGroup();
+      int id = DBUtil.getNextId("domainsp_group", "id");
+      spGroup.setId(id);
+      group.setId(String.valueOf(id));
+      spGroup.setDescription(group.getDescription());
+      spGroup.setName(group.getName());
+      if (StringUtil.isDefined(group.getSuperGroupId())) {
+        SPGroup parent = groupDao.readByPrimaryKey(Integer.valueOf(group.getSuperGroupId()));
+        spGroup.setParent(parent);
+      }
+      String[] userIds = group.getUserIds();
+      for (String userId : userIds) {
+        SPUser user = userDao.readByPrimaryKey(Integer.valueOf(userId));
+        spGroup.getUsers().add(user);
+        user.getGroups().add(spGroup);
+      }
+      spGroup = groupDao.saveAndFlush(spGroup);
+      return String.valueOf(spGroup.getId());
+    } catch (UtilException ex) {
+      Logger.getLogger(SilverpeasDriver.class.getName()).log(Level.SEVERE, null, ex);
     }
-    String[] userIds = group.getUserIds();
-    for (String userId : userIds) {
-      SPUser user = userDao.readByPrimaryKey(Integer.valueOf(userId));
-      spGroup.getUsers().add(user);
-      user.getGroups().add(spGroup);
-    }
-    spGroup = groupDao.saveAndFlush(spGroup);
-    return String.valueOf(spGroup.getId());
+    return "";
   }
 
   /**
@@ -299,6 +319,19 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   public void deleteGroup(String groupId) {
     SPGroup group = groupDao.readByPrimaryKey(Integer.valueOf(groupId));
     if (group != null) {
+      for (SPUser user : group.getUsers()) {
+        user.getGroups().remove(group);
+      }
+      for (SPGroup subGroup : group.getSubGroups()) {
+        subGroup.setParent(group.getParent());
+        group.getParent().getSubGroups().add(subGroup);
+        groupDao.saveAndFlush(subGroup);
+      }
+     SPGroup parent = group.getParent();
+      if (parent != null && parent != null) {
+        parent.getSubGroups().remove(group);
+        groupDao.saveAndFlush(parent);
+      }
       groupDao.delete(group);
     }
   }
@@ -353,7 +386,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
 
   @Override
   public Group getGroupByName(String groupName) throws Exception {
-    return null;  
+    return null;
   }
 
   /**
@@ -396,22 +429,19 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
 
   @Override
   public String[] getGroupMemberGroupIds(String groupId) throws Exception {
-    return new String[0];  
+    return new String[0];
   }
 
   @Override
   public void startTransaction(boolean bAutoCommit) throws Exception {
-    
   }
 
   @Override
   public void commit() throws Exception {
-    
   }
 
   @Override
   public void rollback() throws Exception {
-    
   }
 
   /**

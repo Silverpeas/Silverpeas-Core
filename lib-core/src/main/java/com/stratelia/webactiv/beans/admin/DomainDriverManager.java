@@ -39,13 +39,16 @@ import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DomainDriverManager extends AbstractDomainDriver {
 
   public OrganizationSchema organization = null;
-  private Hashtable<String, DomainDriver> domainDriverInstances = new Hashtable<String, DomainDriver>();
+  private Map<String, DomainDriver> domainDriverInstances = new ConcurrentHashMap<String, DomainDriver>();
   private DomainSynchroThread theThread = null;
 
   public DomainDriverManager() {
@@ -53,13 +56,11 @@ public class DomainDriverManager extends AbstractDomainDriver {
   // when we are in a transaction the connection must not be released.
   private boolean inTransaction = false;
   private int nbConnected = 0;
-  private Object semaphore = new Object();
-
   /**
    * Get an organization schema from the pool.
    */
   public void getOrganizationSchema() throws AdminException {
-    synchronized (semaphore) {
+    synchronized (this) {
       if (organization == null) {
         try {
           organization = OrganizationSchemaPool.getOrganizationSchema();
@@ -77,7 +78,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
    * Release the organization schema.
    */
   public void releaseOrganizationSchema() throws AdminException {
-    synchronized (semaphore) {
+    synchronized (this) {
       nbConnected--;
       if (organization != null && !inTransaction && nbConnected <= 0) {
         com.stratelia.webactiv.organization.OrganizationSchemaPool.releaseOrganizationSchema(
@@ -402,7 +403,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   @Override
-  public UserDetail[] getUsersByQuery(Hashtable<String, String> query) throws Exception {
+  public UserDetail[] getUsersByQuery(Map<String, String> query) throws Exception {
     return new UserDetail[0];
   }
 
@@ -818,7 +819,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
    * @param sKey
    * @return boolean
    */
-  public Hashtable<String, String> authenticate(String sKey) throws Exception {
+  public Map<String, String> authenticate(String sKey) throws Exception {
     return authenticate(sKey, true);
   }
 
@@ -828,8 +829,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
    * @return
    * @throws Exception
    */
-  public Hashtable<String, String> authenticate(String sKey, boolean removeKey) throws Exception {
-    Hashtable<String, String> loginDomainId = new Hashtable<String, String>();
+  public Map<String, String> authenticate(String sKey, boolean removeKey) throws Exception {
+    Map<String, String> loginDomainId = new HashMap<String, String>();
     try {
       // Start transaction
       this.startTransaction(false);

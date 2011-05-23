@@ -48,7 +48,7 @@ import static org.hamcrest.Matchers.*;
  * @author ehugonnet
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-domains.xml", "/spring-domains-embbed-datasource.xml"})
+@ContextConfiguration(locations = {"classpath:/spring-domains-embbed-datasource.xml", "classpath:/spring-domains.xml"})
 @TransactionConfiguration(transactionManager = "jpaTransactionManager")
 @Transactional
 public class SPUserDaoTest {

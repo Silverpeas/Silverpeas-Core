@@ -18,6 +18,7 @@
       <artifactId>test-core</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
+      <type>jar</type>
     </dependency>
     <dependency>
       <groupId>informa</groupId>

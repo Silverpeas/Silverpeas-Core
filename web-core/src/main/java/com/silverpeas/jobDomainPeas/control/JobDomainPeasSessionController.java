@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -90,7 +90,7 @@ import com.stratelia.webactiv.util.exception.UtilTrappedException;
 public class JobDomainPeasSessionController extends AbstractComponentSessionController {
 
   String m_TargetUserId = null;
-  String m_TargetDomainId = "";
+  String targetDomainId = "";
   DomainNavigationStock m_TargetDomain = null;
   Vector<GroupNavigationStock> m_GroupsPath = new Vector<GroupNavigationStock>();
   SynchroThread m_theThread = null;
@@ -100,7 +100,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   List<UserDetail> usersToImport = null;
   Hashtable<String, String> queryToImport = null;
   AdminController m_AdminCtrl = null;
-  private ArrayList<String> listSelectedUsers = new ArrayList<String>();
+  private List<String> listSelectedUsers = new ArrayList<String>();
   // pagination de la liste des résultats
   private int indexOfFirstItemToDisplay = 0;
   boolean refreshDomain = true;
@@ -139,20 +139,15 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   public boolean isAccessGranted() {
-    boolean accessGranted = false;
-    if (getUserManageableGroupIds().size() > 0) {
+    if (!getUserManageableGroupIds().isEmpty() || getUserDetail().isAccessAdmin() || getUserDetail().
+        isAccessDomainManager()) {
       return true;
     }
-    if (getUserDetail().isAccessAdmin()
-        || getUserDetail().isAccessDomainManager()) {
-      return true;
-    }
-
-    return accessGranted;
+    return false;
   }
-  
+
   public void setRefreshDomain(boolean refreshDomain) {
-	  this.refreshDomain = refreshDomain;
+    this.refreshDomain = refreshDomain;
   }
 
   /*
@@ -209,7 +204,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         + userAccessLevel);
 
     existingUser = m_AdminCtrl.getUserIdByLoginAndDomain(userLogin,
-        m_TargetDomainId);
+        targetDomainId);
     if ((existingUser != null) && (existingUser.length() > 0)) {
       JobDomainPeasTrappedException te = new JobDomainPeasTrappedException(
           "JobDomainPeasSessionController.createUser()",
@@ -219,9 +214,9 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     }
 
     theNewUser.setId("-1");
-    if ((m_TargetDomainId != null) && (m_TargetDomainId.equals("-1") == false)
-        && (m_TargetDomainId.length() > 0)) {
-      theNewUser.setDomainId(m_TargetDomainId);
+    if ((targetDomainId != null) && (targetDomainId.equals("-1") == false)
+        && (targetDomainId.length() > 0)) {
+      theNewUser.setDomainId(targetDomainId);
     }
     theNewUser.setLogin(userLogin);
     theNewUser.setLastName(userLastName);
@@ -338,13 +333,13 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       if (nomRegroup != null && nomRegroup.length() > 0) {
         // Recherche le groupe dans le domaine
         Group group = m_AdminCtrl.getGroupByNameInDomain(nomRegroup,
-            m_TargetDomainId);
+            targetDomainId);
 
         if (group == null) {
           // le groupe n'existe pas, on le crée
           group = new Group();
           group.setId("-1");
-          group.setDomainId(m_TargetDomainId);
+          group.setDomainId(targetDomainId);
           group.setSuperGroupId(null); // groupe à la racine
           group.setName(nomRegroup);
           group.setDescription("");
@@ -429,10 +424,10 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       // Nom
       nom = csvValues[i][0].getValueString();
       if (nom.length() == 0) {// champ obligatoire
-        listErrors.append(getErrorMessage(i+1, 1, nom));
+        listErrors.append(getErrorMessage(i + 1, 1, nom));
         listErrors.append(getString("JDP.obligatoire")).append("<br/>");
       } else if (nom.length() > 100) {// verifier 100 char max
-        listErrors.append(getErrorMessage(i+1, 1, nom));
+        listErrors.append(getErrorMessage(i + 1, 1, nom));
         listErrors.append(getString("JDP.nbCarMax")).append(" 100 ").
             append(getString("JDP.caracteres")).append("<br/>");
       }
@@ -440,7 +435,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       // Prenom
       prenom = csvValues[i][1].getValueString(); // verifier 100 char max
       if (prenom.length() > 100) {
-        listErrors.append(getErrorMessage(i+1, 2, prenom));
+        listErrors.append(getErrorMessage(i + 1, 2, prenom));
         listErrors.append(getString("JDP.nbCarMax")).append(" 100 "
             + getString("JDP.caracteres")).append("<br/>");
       }
@@ -448,22 +443,22 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       // Login
       login = csvValues[i][2].getValueString();
       if (login.length() == 0) {// champ obligatoire
-        listErrors.append(getErrorMessage(i+1, 3, login));
+        listErrors.append(getErrorMessage(i + 1, 3, login));
         listErrors.append(getString("JDP.obligatoire")).append("<br/>");
       } else if (login.length() < JobDomainSettings.m_MinLengthLogin) {// verifier
-        listErrors.append(getErrorMessage(i+1, 3, login));
+        listErrors.append(getErrorMessage(i + 1, 3, login));
         listErrors.append(getString("JDP.nbCarMin")).append(" ").append(
             JobDomainSettings.m_MinLengthLogin).append(" ").append(getString("JDP.caracteres")).
             append("<br/>");
       } else if (login.length() > 20) {// verifier 20 char max
-        listErrors.append(getErrorMessage(i+1, 3, login));
+        listErrors.append(getErrorMessage(i + 1, 3, login));
         listErrors.append(getString("JDP.nbCarMax")).append(" 20 ").append(getString(
             "JDP.caracteres")).append("<br/>");
       } else {// verif login unique
         existingLogin = m_AdminCtrl.getUserIdByLoginAndDomain(login,
-            m_TargetDomainId);
+            targetDomainId);
         if (existingLogin != null) {
-          listErrors.append(getErrorMessage(i+1, 3, login));
+          listErrors.append(getErrorMessage(i + 1, 3, login));
           listErrors.append(getString("JDP.existingLogin")).append("<br/>");
         }
       }
@@ -471,7 +466,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       // Email
       email = csvValues[i][3].getValueString(); // verifier 100 char max
       if (email.length() > 100) {
-        listErrors.append(getErrorMessage(i+1, 4, email));
+        listErrors.append(getErrorMessage(i + 1, 4, email));
         listErrors.append(getString("JDP.nbCarMax")).append(" 100 ").append(getString(
             "JDP.caracteres")).append("<br/>");
       }
@@ -481,7 +476,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       if (!"".equals(droits) && !"Admin".equals(droits)
           && !"AdminPdc".equals(droits) && !"AdminDomain".equals(droits)
           && !"User".equals(droits) && !"Guest".equals(droits)) {
-        listErrors.append(getErrorMessage(i+1, 5, droits));
+        listErrors.append(getErrorMessage(i + 1, 5, droits));
         listErrors.append(getString("JDP.valeursPossibles")).append("<br/>");
       }
 
@@ -491,18 +486,19 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       if (StringUtil.isDefined(motDePasse)) {
         if (!JobDomainSettings.m_BlanksAllowedInPwd
             && motDePasse.indexOf(" ") != -1) {
-          listErrors.append(getErrorMessage(i+1, 6, motDePasse));
+          listErrors.append(getErrorMessage(i + 1, 6, motDePasse));
           listErrors.append(getString("JDP.espaces")).append("<br/>");
         } else if (motDePasse.length() < JobDomainSettings.m_MinLengthPwd) {// verifier
           // jobDomainPeasSettings.getString("minLengthPwd")
           // char
           // min
-          listErrors.append(getErrorMessage(i+1, 6, motDePasse));
+          listErrors.append(getErrorMessage(i + 1, 6, motDePasse));
           listErrors.append(getString("JDP.nbCarMin")).append(" ").append(
-              JobDomainSettings.m_MinLengthPwd).append(" ").append(getString("JDP.caracteres")).append(
+              JobDomainSettings.m_MinLengthPwd).append(" ").append(getString("JDP.caracteres")).
+              append(
               "<br/>");
         } else if (motDePasse.length() > 32) {// verifier 32 char max
-          listErrors.append(getErrorMessage(i+1, 6, motDePasse));
+          listErrors.append(getErrorMessage(i + 1, 6, motDePasse));
           listErrors.append(getString("JDP.nbCarMax")).append(" 32 ").append(getString(
               "JDP.caracteres")).append("<br/>");
         }
@@ -515,7 +511,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           // title
           title = csvValues[i][6].getValueString(); // verifier 100 char max
           if (title.length() > 100) {
-            listErrors.append(getErrorMessage(i+1, 7, title));
+            listErrors.append(getErrorMessage(i + 1, 7, title));
             listErrors.append(getString("JDP.nbCarMax")).append(" 100 ").append(getString(
                 "JDP.caracteres")).append("<br/>");
           }
@@ -523,7 +519,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           // company
           company = csvValues[i][7].getValueString(); // verifier 100 char max
           if (company.length() > 100) {
-            listErrors.append(getErrorMessage(i+1, 8, company));
+            listErrors.append(getErrorMessage(i + 1, 8, company));
             listErrors.append(getString("JDP.nbCarMax")).append(" 100 ").append(getString(
                 "JDP.caracteres")).append("<br/>");
           }
@@ -531,7 +527,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           // position
           position = csvValues[i][8].getValueString(); // verifier 100 char max
           if (position.length() > 100) {
-            listErrors.append(getErrorMessage(i+1, 9, position));
+            listErrors.append(getErrorMessage(i + 1, 9, position));
             listErrors.append(getString("JDP.nbCarMax")).append(" 100 ").append(getString(
                 "JDP.caracteres")).append("<br/>");
           }
@@ -539,7 +535,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           // boss
           boss = csvValues[i][9].getValueString(); // verifier 100 char max
           if (boss.length() > 100) {
-            listErrors.append(getErrorMessage(i+1, 10, boss));
+            listErrors.append(getErrorMessage(i + 1, 10, boss));
             listErrors.append(getString("JDP.nbCarMax")).append(" 100 ").append(getString(
                 "JDP.caracteres")).append("<br/>");
           }
@@ -547,7 +543,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           // phone
           phone = csvValues[i][10].getValueString(); // verifier 20 char max
           if (phone.length() > 20) {
-            listErrors.append(getErrorMessage(i+1, 11, phone));
+            listErrors.append(getErrorMessage(i + 1, 11, phone));
             listErrors.append(getString("JDP.nbCarMax")).append(" 20 ").append(getString(
                 "JDP.caracteres")).append("<br/>");
           }
@@ -555,7 +551,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           // homePhone
           homePhone = csvValues[i][11].getValueString(); // verifier 20 char max
           if (homePhone.length() > 20) {
-            listErrors.append(getErrorMessage(i+1, 12, homePhone));
+            listErrors.append(getErrorMessage(i + 1, 12, homePhone));
             listErrors.append(getString("JDP.nbCarMax")).append(" 20 ").append(getString(
                 "JDP.caracteres")).append("<br/>");
           }
@@ -563,7 +559,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           // fax
           fax = csvValues[i][12].getValueString(); // verifier 20 char max
           if (fax.length() > 20) {
-            listErrors.append(getErrorMessage(i+1, 13, fax));
+            listErrors.append(getErrorMessage(i + 1, 13, fax));
             listErrors.append(getString("JDP.nbCarMax")).append(" 20 ").append(getString(
                 "JDP.caracteres")).append("<br/>");
           }
@@ -572,7 +568,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           cellularPhone = csvValues[i][13].getValueString(); // verifier 20 char
           // max
           if (cellularPhone.length() > 20) {
-            listErrors.append(getErrorMessage(i+1, 14, cellularPhone));
+            listErrors.append(getErrorMessage(i + 1, 14, cellularPhone));
             listErrors.append(getString("JDP.nbCarMax")).append(" 20 ").append(getString(
                 "JDP.caracteres")).append("<br/>");
           }
@@ -580,7 +576,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           // address
           address = csvValues[i][14].getValueString(); // verifier 500 char max
           if (address.length() > 500) {
-            listErrors.append(getErrorMessage(i+1, 15, address));
+            listErrors.append(getErrorMessage(i + 1, 15, address));
             listErrors.append(getString("JDP.nbCarMax")).append(" 500 ").append(getString(
                 "JDP.caracteres")).append("<br/>");
           }
@@ -591,7 +587,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
             if (Variant.TYPE_STRING.equals(csvReader.getM_specificColType(j))) {
               informationSpecifiqueString = csvValues[i][j + 6].getValueString(); // verifier 50 char max
               if (informationSpecifiqueString.length() > 50) {
-                listErrors.append(getErrorMessage(i+1, j + 6, informationSpecifiqueString));
+                listErrors.append(getErrorMessage(i + 1, j + 6, informationSpecifiqueString));
                 listErrors.append(getString("JDP.nbCarMax")).append(" 50 ").append(getString(
                     "JDP.caracteres")).append("<br/>");
               }
@@ -710,7 +706,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           properties, null); // l'id User créé est dans m_TargetUserId
     }
   }
-  
+
   private String getErrorMessage(int line, int column, String value) {
     StringBuilder str = new StringBuilder();
     str.append(getString("JDP.ligne")).append(" = ").append(line).append(", ");
@@ -757,7 +753,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       if (nomLastGroup != null && nomLastGroup.length() > 0) {
         // Recherche le groupe dans le domaine
         Group group = m_AdminCtrl.getGroupByNameInDomain(nomLastGroup,
-            m_TargetDomainId);
+            targetDomainId);
         if (group != null) {
           return group.getId();
         }
@@ -840,7 +836,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     refresh();
     setTargetUser(idRet);
   }
-  
+
   public void modifyUserFull(String idUser, String userAccessLevel,
       HashMap<String, String> properties)
       throws JobDomainPeasException {
@@ -869,7 +865,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       throw new JobDomainPeasException(
           "JobDomainPeasSessionController.modifyUserFull()",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "UserId="
-              + idUser);
+          + idUser);
     }
     refresh();
     setTargetUser(idRet);
@@ -947,7 +943,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   public Iterator<DomainProperty> getPropertiesToImport() throws JobDomainPeasException {
-    return m_AdminCtrl.getSpecificPropertiesToImportUsers(m_TargetDomainId,
+    return m_AdminCtrl.getSpecificPropertiesToImportUsers(targetDomainId,
         getLanguage()).iterator();
   }
 
@@ -957,7 +953,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.importUser()",
         "root.MSG_GEN_ENTER_METHOD", "userLogin=" + userLogin);
 
-    idRet = m_AdminCtrl.synchronizeImportUser(m_TargetDomainId, userLogin);
+    idRet = m_AdminCtrl.synchronizeImportUser(targetDomainId, userLogin);
     if (!StringUtil.isDefined(idRet)) {
       throw new JobDomainPeasException("JobDomainPeasSessionController.importUser()",
           SilverpeasException.ERROR, "admin.MSG_ERR_SYNCHRONIZE_USER",
@@ -972,7 +968,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       SilverTrace.info("jobDomainPeas",
           "JobDomainPeasSessionController.importUsers()",
           "root.MSG_GEN_ENTER_METHOD", "specificId=" + specificIds[i]);
-      m_AdminCtrl.synchronizeImportUser(m_TargetDomainId, specificIds[i]);
+      m_AdminCtrl.synchronizeImportUser(targetDomainId, specificIds[i]);
     }
     refresh();
   }
@@ -981,7 +977,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.searchUsers()",
         "root.MSG_GEN_ENTER_METHOD", "query=" + query.toString());
     queryToImport = query;
-    usersToImport = m_AdminCtrl.searchUsers(m_TargetDomainId, query);
+    usersToImport = m_AdminCtrl.searchUsers(targetDomainId, query);
     return usersToImport;
   }
 
@@ -994,7 +990,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   public UserFull getUser(String specificId) {
-    return m_AdminCtrl.getUserFull(m_TargetDomainId, specificId);
+    return m_AdminCtrl.getUserFull(targetDomainId, specificId);
   }
 
   public void synchroUser(String idUser) throws JobDomainPeasException {
@@ -1174,7 +1170,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     Group gr = m_AdminCtrl.getGroupById(groupId);
 
     if (GroupNavigationStock.isGroupValid(gr)) {
-      if (this.refreshDomain && (!StringUtil.isDefined(gr.getSuperGroupId()) || "-1".equals(gr.getSuperGroupId()))) {
+      if (this.refreshDomain && (!StringUtil.isDefined(gr.getSuperGroupId()) || "-1".equals(gr.
+          getSuperGroupId()))) {
         return true;
       }
       return false;
@@ -1288,9 +1285,9 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         "root.MSG_GEN_ENTER_METHOD", "ParentId=" + idParent + " Name="
         + groupName + " Desc=" + groupDescription);
     theNewGroup.setId("-1");
-    if (StringUtil.isDefined(m_TargetDomainId)
-        && !"-1".equals(m_TargetDomainId)) {
-      theNewGroup.setDomainId(m_TargetDomainId);
+    if (StringUtil.isDefined(targetDomainId)
+        && !"-1".equals(targetDomainId)) {
+      theNewGroup.setDomainId(targetDomainId);
     }
     theNewGroup.setSuperGroupId(idParent);
     theNewGroup.setName(groupName);
@@ -1397,7 +1394,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.importGroup()",
         "root.MSG_GEN_ENTER_METHOD", "groupName=" + groupName);
 
-    String idRet = m_AdminCtrl.synchronizeImportGroup(m_TargetDomainId,
+    String idRet = m_AdminCtrl.synchronizeImportGroup(targetDomainId,
         groupName);
     if (!StringUtil.isDefined(idRet)) {
       throw new JobDomainPeasException("JobDomainPeasSessionController.importGroup()",
@@ -1421,14 +1418,14 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   public void setTargetDomain(String domainId) {
     if (!StringUtil.isDefined(domainId)) {
       m_TargetDomain = null;
-      m_TargetDomainId = "";
+      targetDomainId = "";
     } else {
       List<String> manageableGroupIds = null;
       if (isOnlyGroupManager()) {
         manageableGroupIds = getUserManageableGroupIds();
       }
       m_TargetDomain = new DomainNavigationStock(domainId, m_AdminCtrl, manageableGroupIds);
-      m_TargetDomainId = domainId;
+      targetDomainId = domainId;
     }
   }
 
@@ -1440,8 +1437,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   public long getDomainActions() {
-    if (m_TargetDomainId.length() > 0) {
-      return m_AdminCtrl.getDomainActions(m_TargetDomainId);
+    if (targetDomainId.length() > 0) {
+      return m_AdminCtrl.getDomainActions(targetDomainId);
     }
     return 0;
   }
@@ -1456,7 +1453,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       valret = new String[1][3];
       valret[0][0] = ud.getDomainId();
       valret[0][1] = EncodeHelper.javaStringToHtmlString(userDomain.getName());
-      if (m_TargetDomainId.equals(userDomain.getId())) {
+      if (targetDomainId.equals(userDomain.getId())) {
         valret[0][2] = "selected";
       } else {
         valret[0][2] = "";
@@ -1469,7 +1466,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       // Domaine mixte
       valret[0][0] = "-1";
       valret[0][1] = getString("JDP.domainMixt");
-      if (m_TargetDomainId.equals("-1")) {
+      if (targetDomainId.equals("-1")) {
         valret[0][2] = "selected";
       } else {
         valret[0][2] = "";
@@ -1479,7 +1476,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       for (int i = 1; i < valret.length; i++) {
         valret[i][0] = allDomains[i - 1].getId();
         valret[i][1] = EncodeHelper.javaStringToHtmlString(allDomains[i - 1].getName());
-        if (m_TargetDomainId.equals(allDomains[i - 1].getId())) {
+        if (targetDomainId.equals(allDomains[i - 1].getId())) {
           valret[i][2] = "selected";
         } else {
           valret[i][2] = "";
@@ -1490,7 +1487,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       valret = new String[2][3];
       valret[0][0] = "-1";
       valret[0][1] = getString("JDP.domainMixt");
-      if (m_TargetDomainId.equals("-1")) {
+      if (targetDomainId.equals("-1")) {
         valret[0][2] = "selected";
       } else {
         valret[0][2] = "";
@@ -1501,7 +1498,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
       valret[1][0] = userDomain.getId();
       valret[1][1] = EncodeHelper.javaStringToHtmlString(userDomain.getName());
-      if (m_TargetDomainId.equals(userDomain.getId())) {
+      if (targetDomainId.equals(userDomain.getId())) {
         valret[1][2] = "selected";
       } else {
         valret[1][2] = "";
@@ -1548,7 +1545,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   public Group[] getAllRootGroups() {
-    if (m_TargetDomainId.length() <= 0) {
+    if (targetDomainId.length() <= 0) {
       return new Group[0];
     }
     Group[] selGroupsArray = m_TargetDomain.getAllGroupPage();
@@ -2076,8 +2073,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     String idRet = null;
 
-    if (!StringUtil.isDefined(m_TargetDomainId)
-        || m_TargetDomainId.equals("-1")) {
+    if (!StringUtil.isDefined(targetDomainId)
+        || targetDomainId.equals("-1")) {
       throw new JobDomainPeasException(
           "JobDomainPeasSessionController.modifyDomain()",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_DOMAIN");
@@ -2124,8 +2121,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     String idRet = null;
 
-    if ((m_TargetDomainId == null) || (m_TargetDomainId.equals("-1"))
-        || (m_TargetDomainId.equals("0")) || (m_TargetDomainId.length() <= 0)) {
+    if ((targetDomainId == null) || (targetDomainId.equals("-1"))
+        || (targetDomainId.equals("0")) || (targetDomainId.length() <= 0)) {
       throw new JobDomainPeasException(
           "JobDomainPeasSessionController.modifySQLDomain()",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_DOMAIN");
@@ -2149,8 +2146,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   public void deleteDomain() throws JobDomainPeasException {
     String idRet = null;
 
-    if ((m_TargetDomainId == null) || (m_TargetDomainId.equals("-1"))
-        || (m_TargetDomainId.equals("0")) || (m_TargetDomainId.length() <= 0)) {
+    if ((targetDomainId == null) || (targetDomainId.equals("-1"))
+        || (targetDomainId.equals("0")) || (targetDomainId.length() <= 0)) {
       throw new JobDomainPeasException(
           "JobDomainPeasSessionController.deleteDomain()",
           SilverpeasException.ERROR, "admin.MSG_ERR_DELETE_DOMAIN");
@@ -2170,8 +2167,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     String domainName = cheminProperties.substring(39);
 
     // 1-Suppression en base de données du Domaine dans ST_Domain
-    if ((m_TargetDomainId == null) || (m_TargetDomainId.equals("-1"))
-        || (m_TargetDomainId.equals("0")) || (m_TargetDomainId.length() <= 0)) {
+    if ((targetDomainId == null) || (targetDomainId.equals("-1"))
+        || (targetDomainId.equals("0")) || (targetDomainId.length() <= 0)) {
       throw new JobDomainPeasException(
           "JobDomainPeasSessionController.deleteSQLDomain()",
           SilverpeasException.ERROR, "admin.MSG_ERR_DELETE_DOMAIN");
@@ -2228,14 +2225,9 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     fileDomain.delete();
 
     // 6-Suppression du fichier domain<domainName>.properties
-    String cheminFichierAutDomain = pathInitialize.substring(0,
-        indexOfInitialize)
-        + "properties"
-        + File.separator
-        + "com"
-        + File.separator
-        + "stratelia"
-        + File.separator + "silverpeas" + File.separator + "authentication";
+    String cheminFichierAutDomain = pathInitialize.substring(0, indexOfInitialize)
+        + "properties" + File.separatorChar + "com" + File.separatorChar
+        + "stratelia" + File.separatorChar + "silverpeas" + File.separatorChar + "authentication";
     String nomFichierAutDomain = "autDomain" + domainName + ".properties";
 
     File directoryAutDomain = new File(cheminFichierAutDomain);
@@ -2264,8 +2256,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   /*
    * Selection Peas functions
    */
-  public String initSelectionPeasForGroups(String compoURL)
-      throws JobDomainPeasException {
+  public String initSelectionPeasForGroups(String compoURL) throws JobDomainPeasException {
     String hostSpaceName = getString("JDP.userPanelGroup");
     PairObject hostComponentName = new PairObject(getTargetGroup().getName(),
         compoURL + "groupContent");
@@ -2282,11 +2273,10 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     sel.setGoBackURL(hostUrl);
     sel.setCancelURL(cancelUrl);
 
-    if ((m_TargetDomainId != null) && (!m_TargetDomainId.equals("-1"))
-        && (m_TargetDomainId.length() > 0)) {
+    if (StringUtil.isDefined(targetDomainId) && !"-1".equals(targetDomainId)) {
       // Add extra params
       SelectionUsersGroups sug = new SelectionUsersGroups();
-      sug.setDomainId(m_TargetDomainId);
+      sug.setDomainId(targetDomainId);
       sel.setExtraParams(sug);
     }
 
@@ -2326,14 +2316,13 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     sel.setGoBackURL(hostUrl);
     sel.setCancelURL(cancelUrl);
 
-    if ((m_TargetDomainId == null) || (m_TargetDomainId.equals("-1"))
-        || (m_TargetDomainId.length() <= 0)) {
+    if (!StringUtil.isDefined(targetDomainId) || "-1".equals(targetDomainId)) {
       sel.setElementSelectable(false);
     }
 
     // Add extra params
     SelectionUsersGroups sug = new SelectionUsersGroups();
-    sug.setDomainId(m_TargetDomainId);
+    sug.setDomainId(targetDomainId);
     sel.setExtraParams(sug);
 
     // Contraintes
@@ -2358,7 +2347,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         "JobDomainPeasSessionController.synchroSQLDomain()",
         "root.MSG_GEN_PARAM_VALUE",
         "------------SYNCHRO SQL DOMAIN APPELE----------- domainId="
-        + m_TargetDomainId);
+        + targetDomainId);
     if (m_theThread == null) {
       SynchroReport.setTraceLevel(SynchroReport.TRACE_LEVEL_INFO);
       SynchroReport.setState(SynchroReport.STATE_WAITSTART);
@@ -2379,49 +2368,40 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   protected String synchronizeSilverpeasViaWebService() {
-    SilverTrace.info("jobDomainPeas",
-        "JobDomainPeasSessionController.synchroSQLDomain()",
-        "root.MSG_GEN_PARAM_VALUE",
-        "------------SYNCHRO SQL DOMAIN APPELE----------- domainId="
-        + m_TargetDomainId);
-
+    SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.synchroSQLDomain()",
+        "root.MSG_GEN_PARAM_VALUE", "------------SYNCHRO SQL DOMAIN APPELE----------- domainId="
+        + targetDomainId);
     String sReport = "";
     SynchroUserWebServiceItf synchroUserWebService = null;
     try {
       sReport = "Démarrage de la synchronisation...\n\n";
       // Démarrage de la synchro avec la Popup d'affichage
       SynchroReport.startSynchro();
-
       Domain theDomain = getTargetDomain();
 
       SynchroReport.warn("jobDomainPeas.synchronizeSilverpeasViaWebService",
-          "Domaine : " + theDomain.getName() + " (id : " + theDomain.getId()
-          + ")", null);
+          "Domaine : " + theDomain.getName() + " (id : " + theDomain.getId() + ")", null);
 
-      // 1- Récupère la liste des groupes à synchroniser (en insert et
-      // update)
+      // 1- Récupère la liste des groupes à synchroniser (en insert et update)
       Collection<Group> listGroupToInsertUpdate;
       try {
         listGroupToInsertUpdate = JobDomainPeasDAO.selectGroupSynchroInsertUpdateTableDomain_Group(
             theDomain);
       } catch (SQLException e1) {
-        throw new JobDomainPeasException(
-            "JobDomainPeasSessionController.synchroSQLDomain()",
+        throw new JobDomainPeasException("JobDomainPeasSessionController.synchroSQLDomain()",
             SilverpeasException.ERROR, "admin.MSG_ERR_SYNCHRONIZE_DOMAIN", e1);
       }
 
       // 2- Traitement Domaine, appel aux webServices
       String propDomainFileName = theDomain.getPropFileName();
 
-      ResourceLocator propDomainSql = new ResourceLocator(propDomainFileName,
-          "");
+      ResourceLocator propDomainSql = new ResourceLocator(propDomainFileName, "");
       String nomClasseWebService = propDomainSql.getString("ExternalSynchroClass");
       try {
-        synchroUserWebService = (SynchroUserWebServiceItf) Class.forName(
-            nomClasseWebService).newInstance();
+        synchroUserWebService = (SynchroUserWebServiceItf) Class.forName(nomClasseWebService).
+            newInstance();
       } catch (Exception e) {
-        throw new JobDomainPeasException(
-            "JobDomainPeasSessionController.synchroSQLDomain()",
+        throw new JobDomainPeasException("JobDomainPeasSessionController.synchroSQLDomain()",
             SilverpeasException.ERROR, "admin.MSG_ERR_SYNCHRONIZE_DOMAIN", e);
       }
 
@@ -2435,15 +2415,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       if (listGroupToInsertUpdate != null && listGroupToInsertUpdate.size() > 0) {
 
         // Insertion / Update des groupes
-        sReport += synchroUserWebService.insertUpdateListGroupWebService(
-            theDomain.getId(), theDomain.getName(), listGroupToInsertUpdate);
-
-        // Suppression des groupes
-        /*
-         * Collection listGroupSilverpeas = Arrays.asList(m_AdminCtrl.getAllGroupIds()); sReport +=
-         * synchroUserWebService.deleteListGroupWebService(theDomain.getId(), listGroupSilverpeas);
-         */
-
+        sReport += synchroUserWebService.insertUpdateListGroupWebService(theDomain.getId(),
+            theDomain.getName(), listGroupToInsertUpdate);
       }
 
       // 4- Récupère la liste des users à synchroniser (en insert et update)
@@ -2452,8 +2425,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         listUserToInsertUpdate = JobDomainPeasDAO.selectUserSynchroInsertUpdateTableDomain_User(
             theDomain);
       } catch (SQLException e1) {
-        throw new JobDomainPeasException(
-            "JobDomainPeasSessionController.synchroSQLDomain()",
+        throw new JobDomainPeasException("JobDomainPeasSessionController.synchroSQLDomain()",
             SilverpeasException.ERROR, "admin.MSG_ERR_SYNCHRONIZE_DOMAIN", e1);
       }
 
@@ -2468,26 +2440,16 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       }
 
       // 6-Traitement users, appel aux webServices
-      if ((listUserToInsertUpdate != null && listUserToInsertUpdate.size() > 0)
-          || (listUserToDelete != null && listUserToDelete.size() > 0)) {
-
-        // CBO : UPDATE 09.04.2008
-        /*
-         * //Insertion / Update des users if(listUserToInsertUpdate != null &&
-         * listUserToInsertUpdate.size()>0) { sReport +=
-         * synchroUserWebService.insertUpdateListUserWebService (theDomain.getId(),
-         * listUserToInsertUpdate, listGroupToInsertUpdate); } //Suppression des users
-         * if(listUserToDelete != null && listUserToDelete.size()>0) { sReport +=
-         * synchroUserWebService.deleteListUserWebService(theDomain.getId(), listUserToDelete); }
-         */
+      if ((listUserToInsertUpdate != null && !listUserToInsertUpdate.isEmpty())
+          || (listUserToDelete != null && !listUserToDelete.isEmpty())) {
         // Suppression des users
-        if (listUserToDelete != null && listUserToDelete.size() > 0) {
+        if (listUserToDelete != null && !listUserToDelete.isEmpty()) {
           sReport += synchroUserWebService.deleteListUserWebService(theDomain.getId(),
               listUserToDelete);
         }
 
         // Insertion / Update des users
-        if (listUserToInsertUpdate != null && listUserToInsertUpdate.size() > 0) {
+        if (listUserToInsertUpdate != null && !listUserToInsertUpdate.isEmpty()) {
           sReport += synchroUserWebService.insertUpdateListUserWebService(
               theDomain.getId(), listUserToInsertUpdate,
               listGroupToInsertUpdate);
@@ -2508,7 +2470,6 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     } finally {
       // Fin de synchro avec la Popup d'affichage
       SynchroReport.stopSynchro();
-
       synchroUserWebService.endConnection();
     }
     return sReport;
@@ -2519,11 +2480,11 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         "JobDomainPeasSessionController.synchroDomain()",
         "root.MSG_GEN_PARAM_VALUE",
         "------------SYNCHRO DOMAIN APPELE----------- domainId="
-        + m_TargetDomainId);
+        + targetDomainId);
     if (m_theThread == null) {
       SynchroReport.setTraceLevel(traceLevel);
       SynchroReport.setState(SynchroReport.STATE_WAITSTART);
-      m_theThread = new SynchroLdapThread(this, m_AdminCtrl, m_TargetDomainId);
+      m_theThread = new SynchroLdapThread(this, m_AdminCtrl, targetDomainId);
       m_ErrorOccured = null;
       m_SynchroReport = "";
       m_theThread.startTheThread();
@@ -2542,9 +2503,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   public boolean isEnCours() {
     if (m_theThread == null) {
       return false;
-    } else {
-      return m_theThread.isEnCours();
     }
+    return m_theThread.isEnCours();
   }
 
   public Exception getErrorOccured() {
@@ -2558,9 +2518,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
       m_ErrorOccured.printStackTrace(pw);
       return m_ErrorOccured.toString() + "\n" + sw.getBuffer().toString();
-    } else {
-      return m_SynchroReport;
     }
+    return m_SynchroReport;
   }
 
   public void threadFinished() {
@@ -2573,12 +2532,11 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     UserDetail user = getUserDetail(userId);
 
     try {
-      X509Factory.buildP12(user.getId(), user.getLogin(), user.getLastName(),
-          user.getFirstName(), user.getDomainId());
+      X509Factory.buildP12(user.getId(), user.getLogin(), user.getLastName(), user.getFirstName(),
+          user.getDomainId());
     } catch (UtilException e) {
-      throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.getP12()", SilverpeasException.ERROR,
-          "admin.MSG_ERR_CANT_GET_P12", e);
+      throw new JobDomainPeasException("JobDomainPeasSessionController.getP12()",
+          SilverpeasException.ERROR, "admin.MSG_ERR_CANT_GET_P12", e);
     }
   }
 
@@ -2587,10 +2545,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     try {
       X509Factory.revocateUserCertificate(user.getId());
     } catch (UtilException e) {
-      throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.revocateCertificate()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_CANT_REVOCATE_CERTIFICATE",
-          e);
+      throw new JobDomainPeasException("JobDomainPeasSessionController.revocateCertificate()",
+          SilverpeasException.ERROR, "admin.MSG_ERR_CANT_REVOCATE_CERTIFICATE", e);
     }
   }
 
@@ -2598,8 +2554,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   /**
    * Get list of selected users Ids
    */
-  public ArrayList<String> getListSelectedUsers() {
-    SilverTrace.info("jobDomainPeas","JobDomainPeasSessionController.getListUsersSelected()", "",
+  public List<String> getListSelectedUsers() {
+    SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.getListUsersSelected()", "",
         "listSelectedUsers (taille) = (" + listSelectedUsers.size() + ") "
         + listSelectedUsers.toString());
     return listSelectedUsers;
@@ -2609,9 +2565,9 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     listSelectedUsers.clear();
   }
 
-  public void setListSelectedUsers(ArrayList<String> list) {
+  public void setListSelectedUsers(List<String> list) {
     listSelectedUsers = list;
-    SilverTrace.info("jobDomainPeas","JobDomainPeasSessionController.setListSelectedUsers()", "",
+    SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.setListSelectedUsers()", "",
         "listSelectedUsers (taille) = (" + listSelectedUsers.size() + ") "
         + listSelectedUsers.toString());
   }
