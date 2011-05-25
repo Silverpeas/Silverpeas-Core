@@ -25,6 +25,7 @@
 package com.silverpeas.calendar;
 
 import com.stratelia.webactiv.util.DateUtil;
+import java.util.Calendar;
 import java.util.TimeZone;
 import org.apache.commons.lang.time.FastDateFormat;
 
@@ -34,6 +35,8 @@ import org.apache.commons.lang.time.FastDateFormat;
 public class DateTime extends java.util.Date implements Datable<DateTime>, Cloneable {
   private static final long serialVersionUID = -2562622075317046753L;
 
+  private static final String ISO_8601_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+  
   private TimeZone timeZone = TimeZone.getDefault();
 
   /**
@@ -42,6 +45,44 @@ public class DateTime extends java.util.Date implements Datable<DateTime>, Clone
    */
   public static DateTime now() {
     return new DateTime(new java.util.Date());
+  }
+  
+  /**
+   * Creates a new date time from the specified parts of the time specification year month day hour
+   * minute second millisecond. The hour, minute, second and millisecond parts are optional; if not
+   * passed, they are set at 0. For example, the following patterns are valid:
+   * <ul>
+   * <li>at(2011, 5, 23, 10, 57, 23, 12) meaning in ISO 86601 2011-05-23T10:57:23.012</li>
+   * <li>at(2011, 5, 23, 10, 57, 23) meaning in ISO 86601 2011-05-23T10:57:23.00</li>
+   * <li>at(2011, 5, 23, 10, 57) meaning in ISO 86601 2011-05-23T10:57:00.00</li>
+   * <li>at(2011, 5, 23, 10) meaning in ISO 86601 2011-05-23T10:00:00.00</li>
+   * <li>at(2011, 5, 23) meaning in ISO 86601 2011-05-23T00:00:00.00</li>
+   * </ul>
+   * @param timeParts the different parts of the date time to set in the following order: year,
+   * month, day, hour, minute, second, millisecond. The year, month, and day are mandatory whereas
+   * other time parts are optional. If one optional part isn't passed, then it is set to 0.
+   * @return a date time matching the specified date and time specification.
+   */
+  public static DateTime dateTimeAt(int ... timeParts) {
+    if (timeParts.length < 3) {
+      throw new IllegalArgumentException("The year, month and day must be set");
+    }
+    Calendar calendar = Calendar.getInstance();
+    calendar.set(timeParts[0], timeParts[1], timeParts[2], 0, 0, 0);
+    calendar.set(Calendar.MILLISECOND, 0);
+    if (timeParts.length >= 4) {
+      calendar.set(Calendar.HOUR_OF_DAY, timeParts[3]);
+    }
+    if (timeParts.length >= 5) {
+      calendar.set(Calendar.MINUTE, timeParts[4]);
+    }
+    if (timeParts.length >= 6) {
+      calendar.set(Calendar.SECOND, timeParts[5]);
+    }
+    if (timeParts.length >= 7) {
+      calendar.set(Calendar.MILLISECOND, timeParts[6]);
+    }
+    return new DateTime(calendar.getTime());
   }
 
   /**
