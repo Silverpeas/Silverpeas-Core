@@ -36,50 +36,6 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 
-/*
- * CVS Informations
- *
- * $Id: ResourcesWrapper.java,v 1.9 2008/04/16 14:45:00 neysseri Exp $
- *
- * $Log: ResourcesWrapper.java,v $
- * Revision 1.9  2008/04/16 14:45:00  neysseri
- * no message
- *
- * Revision 1.8.2.2  2008/04/14 06:36:12  ehugonnet
- * Les icons sont maintenant dans le properties icons
- * Revision 1.8.2.1 2008/04/09 06:05:18
- * ehugonnet Gestion des Resources comme des ResourceBundle plutot que des
- * properties afin de les rendre disponible pour JSTL Revision 1.8 2008/03/21
- * 12:03:14 neysseri Ajout de la méthode boolean getSetting(String key, boolean
- * defaultValue)
- *
- * Revision 1.7 2007/12/03 15:02:17 neysseri no message
- *
- * Revision 1.6 2007/12/03 13:48:58 neysseri no message
- *
- * Revision 1.5.10.2 2007/10/01 14:07:19 neysseri no message
- *
- * Revision 1.5.10.1 2007/09/14 10:32:45 neysseri no message
- *
- * Revision 1.5 2006/04/28 17:21:47 neysseri no message
- *
- * Revision 1.4 2005/09/30 14:22:36 neysseri Centralisation de la gestion des
- * dates
- *
- * Revision 1.3 2005/08/18 11:14:50 neysseri no message
- *
- * Revision 1.2.8.1 2005/08/10 17:26:23 neysseri Ajout méthode getSetting()
- *
- * Revision 1.2 2003/02/10 14:09:58 neysseri no message
- *
- * Revision 1.1.1.1 2002/08/06 14:48:19 nchaix no message
- *
- * Revision 1.3 2002/02/25 17:10:04 neysseri Maintenant, la méthode getIcon()
- * renvoie le contexte+le contenu du properties
- *
- * Revision 1.2 2002/02/07 10:55:15 tleroi no message
- *
- */
 
 /**
  * Class declaration
@@ -175,17 +131,22 @@ public class ResourcesWrapper {
   }
 
   public String getStringWithParam(String key, String param) {
+    String[] params = {param};
+    return getStringWithParams(key, params);
+  }
+  
+  public String getStringWithParams(String key, String[] params) {
     String valret = null;
 
     if (key != null) {
       valret = key;
       if (key.startsWith("GML.")) {
         if (genericMultilang != null) {
-          valret = genericMultilang.getStringWithParam(key, param);
+          valret = genericMultilang.getStringWithParams(key, params);
         }
       } else {
         if (specificMultilang != null) {
-          valret = specificMultilang.getStringWithParam(key, param);
+          valret = specificMultilang.getStringWithParams(key, params);
         }
       }
     }
