@@ -33,6 +33,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ page import="java.util.*"%>
 <%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
+<%@ page import="com.silverpeas.look.LookHelper"%>
 <%@ page import="com.stratelia.webactiv.util.*"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.*"%>
 <%@ page import="com.stratelia.webactiv.clipboard.model.*"%>
@@ -49,17 +50,19 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     ClipboardSessionController clipboardSC = (ClipboardSessionController) request.getAttribute("clipboardScc");
     if (clipboardSC != null) clipboardSC.doIdle(Integer.parseInt(clipboardSC.getIntervalInSec()));
+    LookHelper lookHelper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
 
     int nbConnectedUsers = 0;
     String language = m_MainSessionCtrl.getFavoriteLanguage();
     ResourceLocator message = new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", language);
     ResourceLocator homePageSettings = new ResourceLocator("com.stratelia.webactiv.homePage.homePageSettings", "");
     String connectedUsers = message.getString("connectedUsers");
-    if ("yes".equals(homePageSettings.getString("displayConnectedUsers")))
-    {
+    boolean displayConnectedUsers = homePageSettings.getBoolean("displayConnectedUsers", true) && lookHelper != null && lookHelper.getSettings("displayConnectedUsers", true);
+    if (displayConnectedUsers) {
         nbConnectedUsers = SessionManager.getInstance().getNbConnectedUsersList() - 1;
-        if (nbConnectedUsers <= 1)
+        if (nbConnectedUsers <= 1) {
             connectedUsers = message.getString("connectedUser");
+        }
     }
 
 %>
@@ -86,7 +89,7 @@ var counter = 0;
 // call Update function in 1 second after first load
 ID = window.setTimeout ("DoIdle(" + interval + ");", interval * 1000);
 
-<% if ("yes".equals(homePageSettings.getString("displayConnectedUsers"))) { %>
+<% if (displayConnectedUsers) { %>
     // call "TopBar refresh" in x second after first load
     ID = window.setTimeout ("refreshTopBar(" + interval + ");", interval * 500);
 <% } %>
@@ -98,7 +101,7 @@ function DoIdle()
 	self.location.href = "../../Rclipboard/jsp/IdleSilverpeasV5.jsp?message=IDLE";
 }
 
-<% if ("yes".equals(homePageSettings.getString("displayConnectedUsers"))) { %>
+<% if (displayConnectedUsers) { %>
 function refreshTopBar()
 {
 	top.topFrame.setConnectedUsers(<%=nbConnectedUsers%>);
