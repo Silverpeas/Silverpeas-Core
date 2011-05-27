@@ -362,7 +362,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     int nbConnectedUsers = 0;
     if (shouldDisplayConnectedUsers) {
       // Remove the current user
-      nbConnectedUsers = SessionManager.getInstance().getNbConnectedUsersList() - 1;
+      nbConnectedUsers = SessionManager.getInstance().getNbConnectedUsersList(getMainSessionController().getCurrentUserDetail()) - 1;
     }
     return nbConnectedUsers;
   }
