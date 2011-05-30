@@ -243,7 +243,7 @@ function init()
 	}
 %>
 	<td><img src="<%=resource.getIcon("pdcPeas.noColorPix")%>" width="20" height="1" alt=""/></td>
-	<td><%=searchButton.print()%></td><td><img src="<%=resource.getIcon("pdcPeas.1px")%>" width="0" height="1" alt=""/></td><td><a href="javaScript:raz()"><img src="<%=m_context%>/admin/jsp/icons/silverpeasV5/refresh.gif" border="0" alt="Remise à zéro"/></a></td>
+	<td><%=searchButton.print()%></td><td><img src="<%=resource.getIcon("pdcPeas.1px")%>" width="0" height="1" alt=""/></td><td><a href="javaScript:raz()" title="<%=resource.getString("GML.reset")%>"><img src="<%=m_context%>/admin/jsp/icons/silverpeasV5/refresh.gif" border="0" alt="<%=resource.getString("GML.reset")%>"/></a></td>
 	</tr></table>
 </form>
 </center>
