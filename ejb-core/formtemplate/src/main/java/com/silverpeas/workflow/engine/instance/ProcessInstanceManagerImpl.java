@@ -32,7 +32,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import org.exolab.castor.jdo.Database;
@@ -688,7 +690,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
     String selectQuery = "";
     OQLQuery query = null;
     QueryResults results;
-    List<ProcessInstance> instances = new ArrayList<ProcessInstance>();
+    Set<ProcessInstance> instances = new HashSet<ProcessInstance>();
 
     try {
       // Constructs the query
