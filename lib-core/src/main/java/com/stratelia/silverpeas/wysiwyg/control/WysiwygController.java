@@ -31,8 +31,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.ejb.FinderException;
 import javax.naming.NamingException;
@@ -49,11 +53,11 @@ import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetailI18N;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import java.util.HashMap;
-import java.util.Map;
+import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 
 /**
  * @author neysseri
@@ -713,22 +717,53 @@ public class WysiwygController {
     String content = null;
     String fileName = null;
     boolean useDefaultLanguage = (language == null || I18NHelper.isDefaultLanguage(language) );
-    
+
     if (!useDefaultLanguage) {
       fileName = WysiwygController.getWysiwygFileName(objectId, language);
       content = WysiwygController.loadFileAndAttachment(fileName, null, componentId, WYSIWYG_CONTEXT);
     }
-    
+
     // use default language also if content has not been found in specified language
     if ( (!StringUtil.isDefined(content)) || (useDefaultLanguage) ) {
       fileName = WysiwygController.getWysiwygFileName(objectId);
       content = WysiwygController.loadFileAndAttachment(fileName, null, componentId, WYSIWYG_CONTEXT);
     }
-    
+
     if (content == null) {
       content = "";
     }
     return content;
+  }
+
+  /**
+  * Get all Silverpeas Files linked by wysiwyg content (bases on pattern "<a href='/silverpeas/
+  * @param content
+  * @return
+  * @throws WysiwygException
+  */
+  public static List<String> getEmbeddedAttachmentIds(String content)
+     throws WysiwygException {
+    List<String> attachmentIds = new ArrayList<String>();
+
+    if (content != null) {
+      // 1 - search url with format : /silverpeas/File/####
+      Pattern attachmentLinkPattern = Pattern.compile("href=\\\"\\/silverpeas\\/File\\/(.*?)\\\"");
+      Matcher linkMatcher = attachmentLinkPattern.matcher(content);
+      while (linkMatcher.find()) {
+        String fileId = linkMatcher.group(1);
+        attachmentIds.add(fileId);
+      }
+
+      // 2 - search url with format : /silverpeas/FileServer/....attachmentId=###...
+      attachmentLinkPattern = Pattern.compile("href=\\\"\\/silverpeas\\/FileServer\\/(.*?)attachmentId=(\\d*)");
+      linkMatcher = attachmentLinkPattern.matcher(content);
+      while (linkMatcher.find()) {
+        String fileId = linkMatcher.group(2);
+        attachmentIds.add(fileId);
+      }
+    }
+
+    return attachmentIds;
   }
 
   /**
@@ -1217,5 +1252,53 @@ public class WysiwygController {
       }
     }
     return components;
+  }
+
+  /**
+   * Index given embedded linked files
+   *
+   * @param indexEntry  index entry to update
+   * @param embeddedAttachmentIds   embedded linked files ids
+   */
+  public static void indexEmbeddedLinkedFiles(FullIndexEntry indexEntry,
+      List<String> embeddedAttachmentIds) {
+    for (String attachmentId : embeddedAttachmentIds) {
+      try {
+        AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(attachmentId));
+        if (attachment != null) {
+          String attLanguage = attachment.getLanguage();
+          String physicalName = null;
+          String type = null;
+
+          AttachmentDetailI18N translation = null;
+          if (attLanguage != null) {
+            translation = (AttachmentDetailI18N) attachment.getTranslation(attLanguage);
+            physicalName = translation.getPhysicalName();
+            type = translation.getType();
+          }
+          else {
+            physicalName = attachment.getPhysicalName();
+            type = attachment.getType();
+          }
+
+          String path;
+          if (attachment.getAttachmentGroup() == AttachmentDetail.GROUP_FILE_LINK) {
+            /*
+            * c'est un lien, le chemin est contenu dans la colonne physicalName(complet) un lien,
+            * le chemin est contenu dans la colonne physicalName(complet)
+            */
+            path = attachment.getPhysicalName();
+          } else {
+            path = AttachmentController.createPath(attachment.getInstanceId(), attachment.getContext()) + File.separator
+            + physicalName;
+          }
+
+          indexEntry.addLinkedFileContent(path, null, type, attLanguage);
+          indexEntry.addLinkedFileId(attachmentId);
+        }
+      } catch (Exception e) {
+        SilverTrace.warn("wisiwyg", "WysiwygController", "root.MSG_GEN_PARAM_VALUE", "Erreur dans l'indexation d'un fichier joint lié au contenu wysiwyg - attachmentId:"+attachmentId);
+      }
+    }
   }
 }
