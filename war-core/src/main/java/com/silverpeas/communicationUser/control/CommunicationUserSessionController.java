@@ -84,7 +84,7 @@ public class CommunicationUserSessionController extends AbstractComponentSession
    * @return
    */
   public int getNbConnectedUsersList() {
-    return SessionManager.getInstance().getNbConnectedUsersList();
+    return SessionManager.getInstance().getNbConnectedUsersList(getUserDetail());
   }
 
   /**
@@ -93,7 +93,7 @@ public class CommunicationUserSessionController extends AbstractComponentSession
    * @return Collection of connected Users
    */
   public Collection<SessionInfo> getDistinctConnectedUsersList() {
-    return SessionManager.getInstance().getDistinctConnectedUsersList();
+    return SessionManager.getInstance().getDistinctConnectedUsersList(getUserDetail());
   }
 
   /**

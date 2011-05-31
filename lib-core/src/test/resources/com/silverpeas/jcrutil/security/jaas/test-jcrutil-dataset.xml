@@ -120,17 +120,17 @@
   <st_notifdefaultaddress id="4" userid="10" notifaddressid="-12" />
 
   <personalization id="11" languages="en," look="Initial" personalwspace="WA3" thesaurusstatus="0"
-    draganddropstatus="1" onlineeditingstatus="1" webdaveditingstatus="1" />
+    draganddropstatus="1" webdaveditingstatus="1" />
   <personalization id="7" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0"
-    draganddropstatus="1" onlineeditingstatus="1" webdaveditingstatus="1" />
+    draganddropstatus="1" webdaveditingstatus="1" />
   <personalization id="8" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0"
-    draganddropstatus="1" onlineeditingstatus="1" webdaveditingstatus="1" />
+    draganddropstatus="1" webdaveditingstatus="1" />
   <personalization id="9" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0"
-    draganddropstatus="1" onlineeditingstatus="1" webdaveditingstatus="1" />
+    draganddropstatus="1" webdaveditingstatus="1" />
   <personalization id="10" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0"
-    draganddropstatus="1" onlineeditingstatus="1" webdaveditingstatus="1" />
+    draganddropstatus="1" webdaveditingstatus="1" />
   <personalization id="0" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0"
-    draganddropstatus="1" onlineeditingstatus="1" webdaveditingstatus="1" />
+    draganddropstatus="1" webdaveditingstatus="1" />
 
   <st_userrole id="58" instanceid="60" name="Gestionnaire" rolename="admin" isinherited="0" />
   <st_userrole id="59" instanceid="60" name="Modérateur" rolename="moderator" isinherited="0" />

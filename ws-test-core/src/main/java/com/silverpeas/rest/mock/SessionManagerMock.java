@@ -26,6 +26,8 @@ package com.silverpeas.rest.mock;
 
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,12 +43,12 @@ public class SessionManagerMock implements SessionManagement {
   private Map<String, SessionInfo> sessions = new HashMap<String, SessionInfo>();
 
   @Override
-  public Collection<SessionInfo> getDistinctConnectedUsersList() {
+  public Collection<SessionInfo> getDistinctConnectedUsersList(UserDetail user) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
-  public int getNbConnectedUsersList() {
+  public int getNbConnectedUsersList(UserDetail user) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
