@@ -26,6 +26,8 @@ package com.silverpeas.session;
 
 import java.util.Collection;
 
+import com.stratelia.webactiv.beans.admin.UserDetail;
+
 /**
  * It defines the contract the session management implementation in Silverpeas should implement.
  * It should have only one activated implementation in Sivlerpeas and it should be managed by an
@@ -37,13 +39,13 @@ public interface SessionManagement {
    * Gets all the connected users and the duration of their session.
    * @return Collection of SessionInfo
    */
-  Collection<SessionInfo> getDistinctConnectedUsersList();
+  Collection<SessionInfo> getDistinctConnectedUsersList(UserDetail user);
 
   /**
    * Gets the count of connected users.
    * @return the count of connected users
    */
-  int getNbConnectedUsersList();
+  int getNbConnectedUsersList(UserDetail user);
 
   /**
    * Gets information about the specified user session.

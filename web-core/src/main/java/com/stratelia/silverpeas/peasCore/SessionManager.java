@@ -23,38 +23,8 @@
  */
 package com.stratelia.silverpeas.peasCore;
 
-import com.silverpeas.session.SessionManagement;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.scheduler.JobExecutionContext;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.NotificationParameters;
-import com.stratelia.silverpeas.notificationManager.NotificationSender;
-
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import com.silverpeas.scheduler.Job;
-import com.silverpeas.scheduler.Scheduler;
-import com.silverpeas.scheduler.SchedulerEvent;
-import com.silverpeas.scheduler.SchedulerEventListener;
-import com.silverpeas.scheduler.SchedulerException;
-import com.silverpeas.scheduler.SchedulerFactory;
-import com.silverpeas.scheduler.trigger.JobTrigger;
-import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
-
-import com.stratelia.silverpeas.silvertrace.SilverLog;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.persistence.IdPK;
-import com.stratelia.webactiv.persistence.PersistenceException;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
-import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
-import com.stratelia.webactiv.servlets.LogoutServlet;
-
-import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -63,14 +33,43 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import com.silverpeas.scheduler.Job;
+import com.silverpeas.scheduler.JobExecutionContext;
+import com.silverpeas.scheduler.Scheduler;
+import com.silverpeas.scheduler.SchedulerEvent;
+import com.silverpeas.scheduler.SchedulerEventListener;
+import com.silverpeas.scheduler.SchedulerException;
+import com.silverpeas.scheduler.SchedulerFactory;
+import com.silverpeas.scheduler.trigger.JobTrigger;
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
+import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
+import com.stratelia.silverpeas.notificationManager.NotificationParameters;
+import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
+import com.stratelia.silverpeas.silvertrace.SilverLog;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.persistence.IdPK;
+import com.stratelia.webactiv.persistence.PersistenceException;
+import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
+import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
+import com.stratelia.webactiv.servlets.LogoutServlet;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration This object is a singleton used by LoginServlet : when the user log in,
  * ComponentRequestRouter : when the user access a component. It provides functions to manage the
  * sessions, to write a log journal and getFactory informations about the logged users.
- * @author Marc Guillemin
+ * @author Nicolas Eysseric
  */
 public class SessionManager
     implements SchedulerEventListener, SessionManagement {
@@ -372,19 +371,52 @@ public class SessionManager
    * @return Collection of SessionInfo
    */
   @Override
-  public Collection<com.silverpeas.session.SessionInfo> getDistinctConnectedUsersList() {
+  public Collection<com.silverpeas.session.SessionInfo> getDistinctConnectedUsersList(UserDetail user) {
     Map<String, com.silverpeas.session.SessionInfo> distinctConnectedUsersList =
         new HashMap<String, com.silverpeas.session.SessionInfo>();
     Collection<SessionInfo> sessionsInfos = getConnectedUsersList();
     for (SessionInfo si : sessionsInfos) {
-      String userLogin = si.getUserDetail().getLogin();
-      // keep users with distinct login
-      if (!distinctConnectedUsersList.containsKey(userLogin)
-          && !si.getUserDetail().isAccessGuest()) {
-        distinctConnectedUsersList.put(userLogin, si);
+      UserDetail sessionUser = si.getUserDetail();
+      String key = sessionUser.getLogin()+sessionUser.getDomainId();
+      // keep users with distinct login and domainId
+      if (!distinctConnectedUsersList.containsKey(key) && !sessionUser.isAccessGuest()) {
+        switch (GeneralPropertiesManager.getDomainVisibility()) {
+          case GeneralPropertiesManager.DVIS_ALL:
+            // all users are visible
+            distinctConnectedUsersList.put(key, si);
+            break;
+          case GeneralPropertiesManager.DVIS_EACH:
+            // only users of user's domain are visible
+            if (user.getDomainId().equalsIgnoreCase(sessionUser.getDomainId())) {
+              distinctConnectedUsersList.put(key, si);
+            }
+            break;
+          case GeneralPropertiesManager.DVIS_ONE:
+            // default domain users can see all users
+            // users of other domains can see only users of their domain
+            if (user.getDomainId().equals("0")) {
+              distinctConnectedUsersList.put(key, si);
+            } else {
+              if (user.getDomainId().equalsIgnoreCase(sessionUser.getDomainId())) {
+                distinctConnectedUsersList.put(key, si);
+              }
+            }
+        }
       }
     }
+    
+    
     return distinctConnectedUsersList.values();
+  }
+  
+  
+  /**
+   * Do not use this method. Use getNbConnectedUsersList(UserDetail user) instead.
+   * @return 1
+   * @deprecated
+   */
+  public int getNbConnectedUsersList() {
+    return 1;
   }
 
   /**
@@ -393,8 +425,8 @@ public class SessionManager
    * @return nb of connected users
    */
   @Override
-  public int getNbConnectedUsersList() {
-    return getDistinctConnectedUsersList().size();
+  public int getNbConnectedUsersList(UserDetail user) {
+    return getDistinctConnectedUsersList(user).size();
   }
 
   /**

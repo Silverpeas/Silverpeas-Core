@@ -98,8 +98,8 @@ public class WysiwygController {
       AttachmentDetail attD = vectAttachment.get(i);
 
       String path =
-          FileServerUtils.getUrl(spaceId, componentId, attD.getLogicalName(), attD.getPhysicalName(), attD.
-          getType(), "Attachment/" + context);
+          FileServerUtils.getUrl(spaceId, componentId, attD.getLogicalName(), attD.getPhysicalName(),
+          attD.getType(), "Attachment/" + context);
 
       imagesList[i][0] = path;
       imagesList[i][1] = attD.getLogicalName();
@@ -308,8 +308,6 @@ public class WysiwygController {
 
   /* supprDoubleAntiSlash */
   private static String supprDoubleAntiSlash(String chemin) {
-    /* ex : id\\rep1\\rep11\\rep111 */
-    /* res = id\rep1\rep11\re111 */
     String res = "";
     int i = 0;
     while (i < chemin.length()) {
@@ -377,9 +375,7 @@ public class WysiwygController {
     return res;
   }
 
-  /*
-   * ============================================ END WEBSITES FUNCTIONS
-   * ==================================== /** Method declaration built the name of the file to be
+  /** Method declaration built the name of the file to be
    * attached.
    * @param id String : for example the id of the publication.
    * @return fileName String : name of the file
@@ -453,22 +449,18 @@ public class WysiwygController {
 
   public static void createFileAndAttachment(String textHtml, String fileName, String spaceId,
       String componentId, String context, String id, String userId, boolean indexIt,
-      boolean invokeCallback)
-      throws WysiwygException {
+      boolean invokeCallback) throws WysiwygException {
+    if (!StringUtil.isDefined(textHtml)) {
+      return;
+    }
     try {
       int iUserId = -1;
 
       if (userId != null) {
         iUserId = Integer.parseInt(userId);
       }
-
-      // create path
       String path = AttachmentController.createPath(componentId, context);
-
-      // create file
-      File f = WysiwygController.createFile(path, fileName, textHtml);
-
-      // create AttachmentPK with spaceId and componentId
+      File file = WysiwygController.createFile(path, fileName, textHtml);
       AttachmentPK atPK = new AttachmentPK(null, spaceId, componentId);
 
       // create foreignKey with spaceId, componentId and id
@@ -476,13 +468,10 @@ public class WysiwygController {
       AttachmentPK foreignKey = new AttachmentPK(id, spaceId, componentId);
 
       // create AttachmentDetail Object
-      AttachmentDetail ad =
-          new AttachmentDetail(atPK, fileName, fileName, null, "text/html", f.length(), context,
-          new java.util.Date(), foreignKey);
+      AttachmentDetail ad = new AttachmentDetail(atPK, fileName, fileName, null, "text/html", file.
+          length(), context, new java.util.Date(), foreignKey);
       ad.setAuthor(userId);
-
       AttachmentController.createAttachment(ad, indexIt, invokeCallback);
-
       if (invokeCallback) {
         CallBackManager callBackManager = CallBackManager.get();
         callBackManager.invoke(CallBackManager.ACTION_ON_WYSIWYG, iUserId, componentId, id);
@@ -506,7 +495,7 @@ public class WysiwygController {
    * @see AttachmentController
    */
   public static void createFileAndAttachment(String textHtml, String spaceId, String componentId,
-      String id) throws WysiwygException /* , FinderException, NamingException, SQLException */ {
+      String id) throws WysiwygException {
     String fileName = WysiwygController.getWysiwygFileName(id);
 
     WysiwygController.createFileAndAttachment(textHtml, fileName, spaceId, componentId,
@@ -712,19 +701,19 @@ public class WysiwygController {
       throws WysiwygException {
     String content = null;
     String fileName = null;
-    boolean useDefaultLanguage = (language == null || I18NHelper.isDefaultLanguage(language) );
-    
+    boolean useDefaultLanguage = (language == null || I18NHelper.isDefaultLanguage(language));
+
     if (!useDefaultLanguage) {
       fileName = WysiwygController.getWysiwygFileName(objectId, language);
       content = WysiwygController.loadFileAndAttachment(fileName, null, componentId, WYSIWYG_CONTEXT);
     }
-    
+
     // use default language also if content has not been found in specified language
-    if ( (!StringUtil.isDefined(content)) || (useDefaultLanguage) ) {
+    if ((!StringUtil.isDefined(content)) || (useDefaultLanguage)) {
       fileName = WysiwygController.getWysiwygFileName(objectId);
       content = WysiwygController.loadFileAndAttachment(fileName, null, componentId, WYSIWYG_CONTEXT);
     }
-    
+
     if (content == null) {
       content = "";
     }
@@ -869,9 +858,12 @@ public class WysiwygController {
   }
 
   /**
-   * createFile : creation or update of a file Param = cheminFichier =
-   * c:\\j2sdk\\public_html\\WAUploads\\webSite10\\nomSite\\rep1\\rep2 nomFichier = index.html
-   * contenuFichier = code du fichier : "<HTML><TITLE>...."
+   * Creation or update of a file
+   * @param cheminFichier the path to the directory containing the file.
+   *  @param nomFichier the name of the file.
+   * @param contenuFichier the content of the file.
+   * @ return
+   * @throws WysiwygException
    */
   protected static File createFile(String cheminFichier, String nomFichier, String contenuFichier)
       throws WysiwygException {

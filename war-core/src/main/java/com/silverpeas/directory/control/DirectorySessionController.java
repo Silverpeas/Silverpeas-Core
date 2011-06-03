@@ -409,14 +409,13 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     setCurrentView("connected");
     List<UserDetail> connectedUsers = new ArrayList<UserDetail>();
 
-    Collection<SessionInfo> sessions = SessionManager.getInstance().getDistinctConnectedUsersList();
+    Collection<SessionInfo> sessions =
+        SessionManager.getInstance().getDistinctConnectedUsersList(getUserDetail());
     for (SessionInfo session : sessions) {
       connectedUsers.add(session.getUserDetail());
     }
 
-    ArrayList<UserDetail> users = new ArrayList<UserDetail>(lastAlllistUsersCalled);
-    users.retainAll(connectedUsers);
-    lastListUsersCalled = users;
+    lastListUsersCalled = connectedUsers;
     return lastListUsersCalled;
   }
 
