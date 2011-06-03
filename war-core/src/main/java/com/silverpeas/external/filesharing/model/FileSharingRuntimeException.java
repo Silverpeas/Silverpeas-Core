@@ -24,16 +24,12 @@
 
 package com.silverpeas.external.filesharing.model;
 
-import com.stratelia.webactiv.util.exception.*;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class FileSharingRuntimeException extends SilverpeasRuntimeException {
 
   private static final long serialVersionUID = -461008369601745045L;
 
-  /**
-   * -------------------------------------------------------------------------- constructors
-   * constructors
-   */
   public FileSharingRuntimeException(String callingClass, int errorLevel,
       String message) {
     super(callingClass, errorLevel, message);
@@ -54,9 +50,7 @@ public class FileSharingRuntimeException extends SilverpeasRuntimeException {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 
-  /**
-   * -------------------------------------------------------------------------- getModule getModule
-   */
+  @Override
   public String getModule() {
     return "FileSharing";
   }
