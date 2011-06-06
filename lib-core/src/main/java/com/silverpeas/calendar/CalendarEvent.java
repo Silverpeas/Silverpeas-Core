@@ -278,6 +278,14 @@ public class CalendarEvent implements Serializable {
   public boolean isRecurring() {
     return this.recurrence != CalendarEventRecurrence.NO_RECURRENCE;
   }
+  
+  /**
+   * Is this event occurring on all the day(s)?
+   * @return true if this event is occurring on all its day(s).
+   */
+  public boolean isOnAllDay() {
+    return this.startDate instanceof Date || this.endDate instanceof Date;
+  }
 
   private CalendarEvent() {
   }

@@ -204,7 +204,7 @@ public class DateTimeTest {
   }
 
   private String iso8601Text() {
-    return "2011-01-20T11:00+0100";
+    return "2011-01-20T11:00:20+0100";
   }
 
   private String iCalText() {

@@ -23,9 +23,9 @@
  */
 package com.silverpeas.export.ical.ical4j;
 
+import net.fortuna.ical4j.model.property.TzId;
 import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.Property;
-import net.fortuna.ical4j.model.parameter.TzId;
 import java.util.TimeZone;
 import com.silverpeas.export.EncodingException;
 import com.silverpeas.calendar.CalendarEvent;
@@ -81,12 +81,14 @@ public class ICal4JICalCodec implements ICalCodec {
     List<VEvent> iCalEvents = new ArrayList<VEvent>();
     for (CalendarEvent event : events) {
       Date startDate = anICal4JDateCodec().encode(event.getStartDate());
-      Date enDate = anICal4JDateCodec().encode(event.getEndDate());
-      VEvent iCalEvent = new VEvent(startDate, enDate, event.getTitle());
-      iCalEvent.getProperties().getProperty(Property.DTSTART).getParameters().add(asTzId(event.
-          getStartDate().getTimeZone()));
-      iCalEvent.getProperties().getProperty(Property.DTEND).getParameters().add(asTzId(event.
-          getStartDate().getTimeZone()));
+      Date endDate = anICal4JDateCodec().encode(event.getEndDate());
+      VEvent iCalEvent;
+      if (event.isOnAllDay() && startDate.equals(endDate)) {
+        iCalEvent = new VEvent(startDate, event.getTitle());
+      } else {
+        iCalEvent = new VEvent(startDate, endDate, event.getTitle());
+      }
+      iCalEvent.getProperties().add(asTzId(event.getStartDate().getTimeZone()));
 
       // Generate UID
       try {

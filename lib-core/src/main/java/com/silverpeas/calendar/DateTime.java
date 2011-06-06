@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.calendar;
 
 import com.stratelia.webactiv.util.DateUtil;
@@ -33,10 +32,8 @@ import org.apache.commons.lang.time.FastDateFormat;
  * A date and time.
  */
 public class DateTime extends java.util.Date implements Datable<DateTime>, Cloneable {
-  private static final long serialVersionUID = -2562622075317046753L;
 
-  private static final String ISO_8601_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
-  
+  private static final long serialVersionUID = -2562622075317046753L;
   private TimeZone timeZone = TimeZone.getDefault();
 
   /**
@@ -46,7 +43,7 @@ public class DateTime extends java.util.Date implements Datable<DateTime>, Clone
   public static DateTime now() {
     return new DateTime(new java.util.Date());
   }
-  
+
   /**
    * Creates a new date time from the specified parts of the time specification year month day hour
    * minute second millisecond. The hour, minute, second and millisecond parts are optional; if not
@@ -63,7 +60,7 @@ public class DateTime extends java.util.Date implements Datable<DateTime>, Clone
    * other time parts are optional. If one optional part isn't passed, then it is set to 0.
    * @return a date time matching the specified date and time specification.
    */
-  public static DateTime dateTimeAt(int ... timeParts) {
+  public static DateTime dateTimeAt(int... timeParts) {
     if (timeParts.length < 3) {
       throw new IllegalArgumentException("The year, month and day must be set");
     }
@@ -72,15 +69,15 @@ public class DateTime extends java.util.Date implements Datable<DateTime>, Clone
     calendar.set(Calendar.MILLISECOND, 0);
     if (timeParts.length >= 4) {
       calendar.set(Calendar.HOUR_OF_DAY, timeParts[3]);
-    }
-    if (timeParts.length >= 5) {
-      calendar.set(Calendar.MINUTE, timeParts[4]);
-    }
-    if (timeParts.length >= 6) {
-      calendar.set(Calendar.SECOND, timeParts[5]);
-    }
-    if (timeParts.length >= 7) {
-      calendar.set(Calendar.MILLISECOND, timeParts[6]);
+      if (timeParts.length >= 5) {
+        calendar.set(Calendar.MINUTE, timeParts[4]);
+        if (timeParts.length >= 6) {
+          calendar.set(Calendar.SECOND, timeParts[5]);
+          if (timeParts.length >= 7) {
+            calendar.set(Calendar.MILLISECOND, timeParts[6]);
+          }
+        }
+      }
     }
     return new DateTime(calendar.getTime());
   }
@@ -116,6 +113,12 @@ public class DateTime extends java.util.Date implements Datable<DateTime>, Clone
 
   @Override
   public String toISO8601() {
+    FastDateFormat formatter = FastDateFormat.getInstance(ISO_8601_PATTERN, getTimeZone());
+    return formatter.format(this);
+  }
+
+  @Override
+  public String toShortISO8601() {
     FastDateFormat formatter = FastDateFormat.getInstance(SHORT_ISO_8601_PATTERN, getTimeZone());
     return formatter.format(this);
   }
