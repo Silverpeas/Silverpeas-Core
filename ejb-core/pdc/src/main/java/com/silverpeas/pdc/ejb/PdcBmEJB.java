@@ -42,6 +42,7 @@ import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
+import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
@@ -224,6 +225,24 @@ public class PdcBmEJB implements javax.ejb.SessionBean {
 		    }
 		  }
 	  }
+  }
+  
+  public List<Value> getAxisValues(int treeId) {
+    try {
+      return getPdcBm().getAxisValues(treeId);
+    } catch (PdcException e) {
+      throw new PdcBmRuntimeException("PdcBmEJB.getAxisValues",
+        SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
+  }
+  
+  public int addUsedAxis(UsedAxis usedAxis) {
+    try {
+      return getPdcBm().addUsedAxis(usedAxis);
+    } catch (PdcException e) {
+      throw new PdcBmRuntimeException("PdcBmEJB.usedAxis",
+        SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
   }
   
   private List<GlobalSilverContent> getSilverContentsByIds(List<Integer> silverContentIds) {
