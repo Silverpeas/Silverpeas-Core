@@ -993,7 +993,8 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
         request.setAttribute("Profiles", jobStartPageSC.getAllProfiles(compoint1));
 
         // Profile, liste des groupes et user du role courant
-        request.setAttribute("Profile", jobStartPageSC.getManagedProfile());
+        ProfileInst profile = jobStartPageSC.getManagedProfile();
+        request.setAttribute("Profile", profile);
         request.setAttribute("listGroup", jobStartPageSC.getAllCurrentGroupInstance());
         request.setAttribute("listUser", jobStartPageSC.getAllCurrentUserInstance());
 
@@ -1009,6 +1010,9 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
         request.setAttribute("ProfileEditable", jobStartPageSC.isProfileEditable());
         request.setAttribute("IsInheritanceEnable", Boolean.valueOf(
             JobStartPagePeasSettings.isInheritanceEnable));
+        
+        String profileHelp = jobStartPageSC.getManagedProfileHelp(compoint1.getName());
+        request.setAttribute("ProfileHelp", profileHelp);
       }
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
