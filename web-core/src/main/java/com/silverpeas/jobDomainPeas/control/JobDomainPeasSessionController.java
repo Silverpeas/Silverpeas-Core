@@ -150,7 +150,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     return accessGranted;
   }
-  
+
   public void setRefreshDomain(boolean refreshDomain) {
 	  this.refreshDomain = refreshDomain;
   }
@@ -368,7 +368,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
    * @param filePart
    * @throws UtilTrappedException
    * @throws JobDomainPeasTrappedException
-   * @throws JobDomainPeasException 
+   * @throws JobDomainPeasException
    */
   public void importCsvUsers(FileItem filePart) throws UtilTrappedException,
       JobDomainPeasTrappedException, JobDomainPeasException {
@@ -455,9 +455,9 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         listErrors.append(getString("JDP.nbCarMin")).append(" ").append(
             JobDomainSettings.m_MinLengthLogin).append(" ").append(getString("JDP.caracteres")).
             append("<br/>");
-      } else if (login.length() > 20) {// verifier 20 char max
+      } else if (login.length() > 50) {// verifier 20 char max
         listErrors.append(getErrorMessage(i+1, 3, login));
-        listErrors.append(getString("JDP.nbCarMax")).append(" 20 ").append(getString(
+        listErrors.append(getString("JDP.nbCarMax")).append(" 50 ").append(getString(
             "JDP.caracteres")).append("<br/>");
       } else {// verif login unique
         existingLogin = m_AdminCtrl.getUserIdByLoginAndDomain(login,
@@ -710,7 +710,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           properties, null); // l'id User créé est dans m_TargetUserId
     }
   }
-  
+
   private String getErrorMessage(int line, int column, String value) {
     StringBuilder str = new StringBuilder();
     str.append(getString("JDP.ligne")).append(" = ").append(line).append(", ");
@@ -840,7 +840,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     refresh();
     setTargetUser(idRet);
   }
-  
+
   public void modifyUserFull(String idUser, String userAccessLevel,
       HashMap<String, String> properties)
       throws JobDomainPeasException {
