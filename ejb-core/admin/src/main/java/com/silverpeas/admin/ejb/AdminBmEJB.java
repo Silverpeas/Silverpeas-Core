@@ -154,6 +154,15 @@ public class AdminBmEJB implements javax.ejb.SessionBean {
       throws RemoteException {
     SecurityHolder.addData(securityId, userId, domainId, persistent);
   }
+  
+  public String addComponentInst(ComponentInst componentInst, String userId)
+      throws RemoteException {
+    return getAdminController().addComponentInst(componentInst, userId);
+  }
+  
+  public void updateComponentOrderNum(String sComponentId, int orderNum) throws RemoteException {
+    getAdminController().updateComponentOrderNum(sComponentId, orderNum);
+  }
 
   /* Ejb Methods */
 
