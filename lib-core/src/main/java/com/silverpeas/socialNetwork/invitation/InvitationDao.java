@@ -40,6 +40,8 @@ public class InvitationDao {
   private static final String INSERT_INVITATION =
       "INSERT INTO sb_sn_invitation (id, senderID, receiverId, message, invitationDate) VALUES (?, ?, ?, ?, ?)";
   private static final String DELETE_INVITATION = "DELETE FROM sb_sn_invitation WHERE id = ?";
+  private static final String DELETE_SAME_INVITATIONS =
+      "DELETE FROM sb_sn_invitation  WHERE id IN (SELECT invit.id FROM sb_sn_invitation invit, sb_sn_invitation tmp WHERE tmp.id = ? AND ((tmp.senderid= invit.senderid AND tmp.receiverid = invit.receiverid) OR (tmp.senderid = invit.receiverid AND tmp.receiverid = invit.senderid)))";
   private static final String SELECT_INVITATION =
       "SELECT id, senderID, receiverId, message, invitationDate FROM sb_sn_invitation  WHERE senderID = ? and receiverId= ?";
   private static final String SELECT_INVITATION_BY_ID =
@@ -79,18 +81,18 @@ public class InvitationDao {
   }
 
   /**
-   * Delete invitation rturn true whene this invitation was deleting
+   * Delete invitation return true when this invitation was deleting
    * @param connection
-   * @param id
+   * @param invitationId the invitation identifier
    * @return boolean
    * @throws SQLException
    */
-  public boolean deleteInvitation(Connection connection, int id) throws SQLException {
+  public boolean deleteInvitation(Connection connection, int invitationId) throws SQLException {
     PreparedStatement pstmt = null;
     boolean endAction = false;
     try {
       pstmt = connection.prepareStatement(DELETE_INVITATION);
-      pstmt.setInt(1, id);
+      pstmt.setInt(1, invitationId);
       pstmt.executeUpdate();
       endAction = true;
     } finally {
@@ -100,7 +102,33 @@ public class InvitationDao {
   }
 
   /**
-   * 
+   * Delete invitations from same receiver and sender
+   * <ul>
+   * <li>Delete nothing if invitation doesn't exist</li>
+   * <li>Delete one invitation if only one invitation has been sent from sender to receiver</li>
+   * <li>Delete two invitations if sender and receiver has sent an invitation</li>
+   * </ul>
+   * @param connection
+   * @param invitationId the invitation identifier
+   * @return true true when invitations from same sender identifier and receiver identifier are
+   * deleted, false else if
+   * @throws SQLException
+   */
+  public boolean deleteSameInvitations(Connection connection, int invitationId) throws SQLException {
+    PreparedStatement pstmt = null;
+    boolean endAction = false;
+    try {
+      pstmt = connection.prepareStatement(DELETE_SAME_INVITATIONS);
+      pstmt.setInt(1, invitationId);
+      pstmt.executeUpdate();
+      endAction = true;
+    } finally {
+      DBUtil.close(pstmt);
+    }
+    return endAction;
+  }
+
+  /**
    * @param connection a Connection
    * @param senderId the sender identifier
    * @param receiverId the receiver identifier
@@ -138,7 +166,7 @@ public class InvitationDao {
    * @param id
    * @return Invitation
    * @throws SQLException
-   * @return an invitation 
+   * @return an invitation
    */
 
   public Invitation getInvitation(Connection connection, int id) throws SQLException {
