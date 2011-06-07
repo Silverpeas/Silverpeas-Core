@@ -36,9 +36,12 @@ package com.stratelia.webactiv.util.viewGenerator.html.window;
 import java.util.List;
 
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar;
 import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane;
@@ -54,8 +57,6 @@ public abstract class AbstractWindow implements Window {
   private GraphicElementFactory gef = null;
   private String body = null;
   private String width = null;
-
-  // private String iconsPath = null;
 
   /**
    * Constructor declaration
@@ -106,12 +107,6 @@ public abstract class AbstractWindow implements Window {
    * @see
    */
   public String getIconsPath() {
-    /*
-     * if (iconsPath == null) { ResourceLocator generalSettings = new
-     * ResourceLocator("com.stratelia.webactiv.general", "fr"); iconsPath =
-     * generalSettings.getString("ApplicationURL") +
-     * GraphicElementFactory.getSettings().getString("IconsPath"); } return iconsPath;
-     */
     return GraphicElementFactory.getIconsPath();
   }
 
@@ -165,8 +160,28 @@ public abstract class AbstractWindow implements Window {
   public OperationPane getOperationPane() {
     if (this.operationPane == null) {
       this.operationPane = getGEF().getOperationPane();
+      if (GeneralPropertiesManager.getGeneralResourceLocator().getBoolean(
+          "AdminFromComponentEnable", true) &&
+          StringUtil.isDefined(getGEF().getComponentId())) {
+        addOperationToSetupComponent();
+      }
     }
     return this.operationPane;
+  }
+  
+  private void addOperationToSetupComponent() {
+    MainSessionController msc = getGEF().getMainSessionController();
+    if (msc.getOrganizationController().isComponentManageable(getGEF().getComponentId(),
+        msc.getUserId())) {
+      String label =
+          GeneralPropertiesManager.getGeneralMultilang(getGEF().getMultilang().getLanguage())
+              .getString("GML.operations.setupComponent");
+      String url =
+          URLManager.getApplicationURL() + "/R" + URLManager.CMP_JOBSTARTPAGEPEAS +
+              "/jsp/SetupComponent?ComponentId=" + getGEF().getComponentId();
+      this.operationPane.addOperation("useless", label, url);
+      this.operationPane.addLine();
+    }
   }
 
   /**
