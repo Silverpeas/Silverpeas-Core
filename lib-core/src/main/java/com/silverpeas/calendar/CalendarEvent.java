@@ -32,6 +32,7 @@ import static com.silverpeas.util.StringUtil.*;
 /**
  * The event in a calendar.
  * An event in the calendar is described by a starting and an ending date and a name.
+ * The start and end dates in an event must be in the same type (either a date or a datable).
  */
 @DateRange(startDate="startDate", endDate="endDate")
 public class CalendarEvent implements Serializable {
@@ -50,11 +51,11 @@ public class CalendarEvent implements Serializable {
   private final CalendarEventAttendees attendees = new CalendarEventAttendees();
 
   /**
-   * Creates a new calendar event starting at the specified date.
+   * Creates a new calendar event starting and ending at the specified date.
    * @param startDate the start date of the event.
    * @return a calendar event.
    */
-  public static CalendarEvent anEventAt(final Datable<?> startDate) {
+  public static <T extends Datable<?>> CalendarEvent anEventAt(final T startDate) {
     return new CalendarEvent().startingAt(startDate).endingAt(startDate);
   }
 
@@ -63,11 +64,11 @@ public class CalendarEvent implements Serializable {
    * end date.
    * @param startDate the start date of the event. The start date defines the inclusive date at
    * which the event starts.
-   * @param endDate the end date of the event. The end date defines the exclusive date at which the
-   * event ends up.
+   * @param endDate the end date of the event. The end date defines the non-inclusive date at which
+   * the event ends up.
    * @return a calendar event.
    */
-  public static CalendarEvent anEventAt(final Datable<?> startDate, final Datable<?> endDate) {
+  public static <T extends Datable<?>> CalendarEvent anEventAt(final T startDate, final T endDate) {
     return new CalendarEvent().startingAt(startDate).endingAt(endDate);
   }
 
@@ -87,7 +88,7 @@ public class CalendarEvent implements Serializable {
   }
 
   /**
-   * Sets an end date to this event. By default, the event end date is exclusive and it is set to
+   * Sets an end date to this event. By default, the event end date is non inclusive and it is set to
    * the start date. For a recurring event, the end date is the one for each occurrences of the
    * event.
    * @param endDate the event end date.
