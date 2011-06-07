@@ -32,7 +32,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
- *
  * @author Bensalem Nabil
  */
 public class TestInvitationDao extends AbstractTestDao {
@@ -52,12 +51,9 @@ public class TestInvitationDao extends AbstractTestDao {
 
   /*
    * Test Create invitation
-   *
-   *
    */
   public void testCreateInvitation() throws Exception {
     IDatabaseConnection connexion = null;
-
 
     Invitation invitation = new Invitation(4, 6, "message 50 to 30", new Date());
     try {
@@ -71,19 +67,14 @@ public class TestInvitationDao extends AbstractTestDao {
       assertNotNull("Invitation not found in db", createdInvitation);
       assertEquals("Invitation in db not as expected", invitation, createdInvitation);
 
-
-
-
     } finally {
       closeConnection(connexion);
     }
   }
+
   /*
    * Test delete invitation
-   *
-   *
    */
-
   public void testDeleteInvitation() throws Exception {
     IDatabaseConnection connexion = null;
 
@@ -103,9 +94,35 @@ public class TestInvitationDao extends AbstractTestDao {
   }
 
   /*
+   * Test delete same invitations
+   */
+  public void testDeleteSameInvitations() throws Exception {
+    IDatabaseConnection connexion = null;
+
+    Invitation expectedLisaInviteBart =
+        new Invitation(2, 6, "lisa to bart", toDate(2011, 5, 2, 10, 8, 00));
+    expectedLisaInviteBart.setId(7);
+    Invitation expectedBartInviteLisa=
+      new Invitation(3, 2, "bart to lisa", toDate(2011, 5, 2, 10, 5, 00));
+    expectedBartInviteLisa.setId(6);
+    try {
+      connexion = getConnection();
+      Invitation lisaInviteBart = dao.getInvitation(connexion.getConnection(), 7);
+      assertNotNull("Invitation should exist", lisaInviteBart);
+      Invitation bartInviteLisa = dao.getInvitation(connexion.getConnection(), 6);
+      assertNotNull("Invitation should exist", bartInviteLisa);
+      dao.deleteSameInvitations(connexion.getConnection(), 7);
+      lisaInviteBart = dao.getInvitation(connexion.getConnection(), 7);
+      assertNull("Invitation should no longer exist", lisaInviteBart);
+      bartInviteLisa = dao.getInvitation(connexion.getConnection(), 6);
+      assertNull("Invitation should no longer exist", bartInviteLisa);
+    } finally {
+      closeConnection(connexion);
+    }
+  }
+
+  /*
    * Test get invitation
-   *
-   *
    */
   public void testGetInvitation() throws Exception {
     IDatabaseConnection connexion = null;
@@ -118,22 +135,23 @@ public class TestInvitationDao extends AbstractTestDao {
       connexion = getConnection();
       Invitation dbInvitation = dao.getInvitation(connexion.getConnection(), id);
       assertNotNull("Invitation not found in db", dbInvitation);
-      //assertEquals("Invitation in db not as expected", simpsonInviteLisa, dbInvitation);
+      // assertEquals("Invitation in db not as expected", simpsonInviteLisa, dbInvitation);
       assertEquals("Contact in db not as expected", simpsonInviteLisa.getId(), dbInvitation.getId());
       assertEquals("Contact in db not as expected", simpsonInviteLisa.getSenderId(), dbInvitation.
           getSenderId());
-      assertEquals("Contact in db not as expected", simpsonInviteLisa.getReceiverId(), dbInvitation.
+      assertEquals("Contact in db not as expected", simpsonInviteLisa.getReceiverId(), dbInvitation
+          .
           getReceiverId());
-      assertEquals("Contact in db not as expected", simpsonInviteLisa.getInvitationDate(), dbInvitation.
-          getInvitationDate());
+      assertEquals("Contact in db not as expected", simpsonInviteLisa.getInvitationDate(),
+          dbInvitation.
+              getInvitationDate());
     } finally {
       closeConnection(connexion);
     }
   }
+
   /*
    * Test get All my invitations sent
-   *
-   *
    */
 
   public void testGetAllMyInvitationsSent() throws Exception {
@@ -153,16 +171,13 @@ public class TestInvitationDao extends AbstractTestDao {
       simpsonInviteNabil.setId(invitations.get(1).getId());
       assertEquals("Second should be simpson to Nabil", simpsonInviteNabil, invitations.get(1));
 
-
-
     } finally {
       closeConnection(connexion);
     }
   }
+
   /*
    * Test get All my invitations Receive
-   *
-   *
    */
 
   public void testGetAllMyInvitationsReceive() throws Exception {
@@ -176,7 +191,8 @@ public class TestInvitationDao extends AbstractTestDao {
     int myId = 1;
     try {
       connexion = getConnection();
-      List<Invitation> invitations = dao.getAllMyInvitationsReceive(connexion.getConnection(), myId);
+      List<Invitation> invitations =
+          dao.getAllMyInvitationsReceive(connexion.getConnection(), myId);
       assertNotNull("Invitation should exist", invitations);
       assertEquals("Should have 2 invitations in db", 2, invitations.size());
       marthanviteSimpson.setId(invitations.get(0).getId());

@@ -332,6 +332,15 @@ public class WAComponent {
     }
     return profiles;
   }
+  
+  public Profile getProfile(String name) {
+    for (Profile profile : getProfiles()) {
+      if (profile.getName().equals(name)) {
+        return profile;
+      }
+    }
+    return null;
+  }
 
   /**
    * Sets the value of the profiles property.

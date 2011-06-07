@@ -21,8 +21,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.external.filesharing.dao;
+package com.silverpeas.external.filesharing.model;
 
+
+import com.silverpeas.external.filesharing.model.DownloadDetail;
+import com.silverpeas.external.filesharing.model.TicketDetail;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.exception.UtilException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -32,15 +40,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-
-import com.silverpeas.external.filesharing.model.DownloadDetail;
-import com.silverpeas.external.filesharing.model.TicketDetail;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.exception.UtilException;
-import static com.silverpeas.util.StringUtil.*;
 
 public class TicketDAO {
 
@@ -194,7 +193,7 @@ public class TicketDAO {
         calendar.set(Calendar.HOUR_OF_DAY, 23);
         calendar.set(Calendar.MINUTE, 59);
         calendar.set(Calendar.SECOND, 59);
-        prepStmt.setString(6, Long.toString(calendar.getTime().getTime()));
+        prepStmt.setString(6, java.lang.Long.toString(calendar.getTime().getTime()));
       } else {
         prepStmt.setString(6, null);
       }
@@ -237,7 +236,7 @@ public class TicketDAO {
         calendar.set(Calendar.HOUR_OF_DAY, 23);
         calendar.set(Calendar.MINUTE, 59);
         calendar.set(Calendar.SECOND, 59);
-        prepStmt.setString(5, Long.toString(calendar.getTime().getTime()));
+        prepStmt.setString(5, java.lang.Long.toString(calendar.getTime().getTime()));
       } else {
         prepStmt.setString(5, null);
       }
@@ -326,7 +325,7 @@ public class TicketDAO {
     }
     Date endDate = null;
     String dateInMillis = rs.getString("endDate");
-    if (isDefined(dateInMillis)) {
+    if (StringUtil.isDefined(dateInMillis)) {
       endDate = new Date(Long.parseLong(dateInMillis));
     }
     int nbMaxAccess = rs.getInt("NbAccessMax");
@@ -336,7 +335,7 @@ public class TicketDAO {
     TicketDetail ticket = TicketDetail.aTicket(fileId, componentId, versioning, creator,
         creationDate, endDate, nbMaxAccess);
 
-    if (isDefined(updateId)) {
+    if (StringUtil.isDefined(updateId)) {
       UserDetail updater = new UserDetail();
       updater.setId(updateId);
       ticket.setLastModifier(updater);

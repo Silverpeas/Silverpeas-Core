@@ -81,8 +81,7 @@ public class SpaceInstanciator extends Object {
         JAXBContext context = JAXBContext.newInstance("com.silverpeas.admin.spaces");
         XMLInputFactory factory = XMLInputFactory.newFactory();
         Unmarshaller unmarshaller = context.createUnmarshaller();
-        for (String fileName :
-            list) {
+        for (String fileName : list) {
           if (fileName.toLowerCase().endsWith(".xml")) {
             String spaceName = fileName.substring(0, fileName.length() - 4);
             String fullPath = xmlPackage + File.separator + fileName;
@@ -150,8 +149,7 @@ public class SpaceInstanciator extends Object {
     SpaceInst space = new SpaceInst();
     space.setName(st.getDefaultName());
     space.setDescription(st.getDescription());
-    for (SpaceComponent component :
-        st.getComponents()) {
+    for (SpaceComponent component : st.getComponents()) {
       WAComponent wacomponent = allComponentsModels.get(component.getType());
       if (wacomponent != null) {
         ComponentInst ci = new ComponentInst();
@@ -159,10 +157,11 @@ public class SpaceInstanciator extends Object {
         ci.setLabel(component.getLabel());
         ci.setDescription(component.getDescription());
         ci.setParameters(wacomponent.getParameters());
-        for (SpaceComponentParameter param :
-            component.getParameters()) {
+        for (SpaceComponentParameter param : component.getParameters()) {
           Parameter parameter = ci.getParameter(param.getName());
-          parameter.setValue(param.getValue());
+          if (parameter != null) {
+            parameter.setValue(param.getValue());
+          }
         }
         space.addComponentInst(ci);
       }

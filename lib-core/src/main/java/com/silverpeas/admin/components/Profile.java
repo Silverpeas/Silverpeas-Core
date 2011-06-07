@@ -13,6 +13,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
+import com.silverpeas.util.StringUtil;
+
 
 /**
  * <p>Java class for ProfileType complex type.
@@ -62,6 +64,19 @@ public class Profile
      */
     public void setName(String value) {
         this.name = value;
+    }
+    
+    public String getHelp(String lang) {
+      String help = getHelp().get(lang);
+      String label = getLabel().get(lang);
+      if (!StringUtil.isDefined(help)) {
+        help = getHelp().get("en");
+        label = getLabel().get("en");
+      }
+      if (!help.equals(label)) {
+        return help;
+      }
+      return null;
     }
 
 }

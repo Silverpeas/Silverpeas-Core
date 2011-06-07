@@ -255,6 +255,11 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   public ProfileInst getManagedProfile() {
     return m_ManagedProfile;
   }
+  
+  public String getManagedProfileHelp(String componentName) {
+    return getComponentByName(componentName).getProfile(getManagedProfile().getName()).getHelp(
+        getLanguage());
+  }
 
   public ProfileInst getManagedInheritedProfile() {
     return m_ManagedInheritedProfile;
