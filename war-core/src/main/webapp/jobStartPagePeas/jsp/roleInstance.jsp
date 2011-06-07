@@ -45,6 +45,13 @@
 	Boolean 	m_ProfileEditable 	= (Boolean) request.getAttribute("ProfileEditable");
 	boolean 	isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnable")).booleanValue();
 	String		help				= (String) request.getAttribute("ProfileHelp");
+	int			scope				= ((Integer) request.getAttribute("Scope")).intValue();
+
+	if (scope == JobStartPagePeasSessionController.SCOPE_FRONTOFFICE) {
+	  // use default breadcrumb
+	  browseBar.setSpaceJavascriptCallback(null);
+	  browseBar.setComponentJavascriptCallback(null);
+	}
 	
 	browseBar.setComponentId(componentInst.getId());
  	

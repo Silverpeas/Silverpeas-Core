@@ -365,11 +365,13 @@ public class SelectionPeasRequestRouter extends ComponentRequestRouter {
 
   protected Set<String> getValues(String param) {
     HashSet<String> selected = new HashSet<String>();
-    StringTokenizer tokenizer = new StringTokenizer(param, ",");
-    while (tokenizer.hasMoreTokens()) {
-      String theValue = tokenizer.nextToken();
-      if (StringUtil.isDefined(theValue)) {
-        selected.add(theValue);
+    if (param != null) {
+      StringTokenizer tokenizer = new StringTokenizer(param, ",");
+      while (tokenizer.hasMoreTokens()) {
+        String theValue = tokenizer.nextToken();
+        if (StringUtil.isDefined(theValue)) {
+          selected.add(theValue);
+        }
       }
     }
     return selected;

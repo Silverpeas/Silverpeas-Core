@@ -68,7 +68,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
   private MainSessionController mainSC = null;
   private String userId = null;
   private boolean displayPDCInNav = false;
-  private boolean displayPDCFrame = false;
+  private boolean shouldDisplayPDCFrame = false;
   private boolean shouldDisplayContextualPDC = true;
   private boolean shouldDisplaySpaceIcons = true;
   private boolean shouldDisplayConnectedUsers = true;
@@ -215,7 +215,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
 
   private void initProperties() {
     displayPDCInNav = resources.getBoolean("displayPDCInNav", false);
-    displayPDCFrame = resources.getBoolean("displayPDCFrame", false);
+    shouldDisplayPDCFrame = resources.getBoolean("displayPDCFrame", false);
     shouldDisplayContextualPDC = resources.getBoolean("displayContextualPDC", true);
     shouldDisplaySpaceIcons = resources.getBoolean("displaySpaceIcons", true);
     shouldDisplayConnectedUsers = resources.getBoolean("displayConnectedUsers", true);
@@ -309,7 +309,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
    */
   @Override
   public boolean displayPDCFrame() {
-    return displayPDCFrame;
+    return shouldDisplayPDCFrame;
   }
 
   @Override
