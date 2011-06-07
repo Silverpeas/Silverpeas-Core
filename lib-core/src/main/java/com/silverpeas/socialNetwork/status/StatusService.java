@@ -25,7 +25,7 @@ package com.silverpeas.socialNetwork.status;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.silverpeas.calendar.Date;
@@ -34,7 +34,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.UtilException;
-import java.util.Collections;
 
 public class StatusService {
 
@@ -43,20 +42,22 @@ public class StatusService {
   public StatusService() {
     statusDao = new StatusDao();
   }
-/**
- * get Connection
- * @return Connection
- * @throws UtilException
- * @throws SQLException
- */
+
+  /**
+   * get Connection
+   * @return Connection
+   * @throws UtilException
+   * @throws SQLException
+   */
   private Connection getConnection() throws UtilException, SQLException {
     return DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
   }
-/**
- * Change my Staus
- * @param status
- * @return String
- */
+
+  /**
+   * Change my Staus
+   * @param status
+   * @return String
+   */
   public String changeStatusService(Status status) {
     Connection connection = null;
     int id = -1;
@@ -67,18 +68,19 @@ public class StatusService {
         return status.getDescription();
       }
     } catch (Exception ex) {
-      SilverTrace.error("Silverpeas.Bus.SocialNetwork.Status", "StatusService.changeStatus", "",
-          ex);
+      SilverTrace
+          .error("Silverpeas.Bus.SocialNetwork.Status", "StatusService.changeStatus", "", ex);
     } finally {
       DBUtil.close(connection);
     }
     return null;
   }
-/**
- * delete my Status
- * @param id
- * @return boolean
- */
+
+  /**
+   * delete my Status
+   * @param id
+   * @return boolean
+   */
   public boolean deleteStatusService(int id) {
     Connection connection = null;
     boolean delete_status = false;
@@ -86,18 +88,19 @@ public class StatusService {
       connection = getConnection();
       delete_status = statusDao.deleteStatus(connection, id);
     } catch (Exception ex) {
-      SilverTrace.error("Silverpeas.Bus.SocialNetwork.Status", "StatusService.deleteStatus", "",
-          ex);
+      SilverTrace
+          .error("Silverpeas.Bus.SocialNetwork.Status", "StatusService.deleteStatus", "", ex);
     } finally {
       DBUtil.close(connection);
     }
     return delete_status;
   }
-/**
- * get Status for user
- * @param id
- * @return Status
- */
+
+  /**
+   * get Status for user
+   * @param id
+   * @return Status
+   */
   public Status getStatusService(int id) {
     Connection connection = null;
     Status status = new Status();
@@ -105,18 +108,18 @@ public class StatusService {
       connection = getConnection();
       status = statusDao.getStatus(connection, id);
     } catch (Exception ex) {
-      SilverTrace.error("Silverpeas.Bus.SocialNetwork.Status", "StatusService.getStatus", "",
-          ex);
+      SilverTrace.error("Silverpeas.Bus.SocialNetwork.Status", "StatusService.getStatus", "", ex);
     } finally {
       DBUtil.close(connection);
     }
     return status;
   }
-/**
- * get last status for user
- * @param userid
- * @return
- */
+
+  /**
+   * get last status for user
+   * @param userid
+   * @return
+   */
   public Status getLastStatusService(int userid) {
     Connection connection = null;
     Status status = new Status();
@@ -132,55 +135,57 @@ public class StatusService {
     return status;
 
   }
-/**
- * update status
- * @param status
- * @return boolean
- */
-  public boolean UpdateStatusService(Status status) {
+
+  /**
+   * update status
+   * @param status
+   * @return boolean
+   * @unused
+   */
+  public boolean updateStatusService(Status status) {
     Connection connection = null;
     boolean update_status = false;
     try {
       connection = getConnection();
-      update_status = statusDao.UpdateStatus(connection, status);
+      update_status = statusDao.updateStatus(connection, status);
     } catch (Exception ex) {
-      SilverTrace.error("Silverpeas.Bus.SocialNetwork.Status", "StatusService.UpdateStatus", "",
-          ex);
+      SilverTrace
+          .error("Silverpeas.Bus.SocialNetwork.Status", "StatusService.UpdateStatus", "", ex);
     } finally {
       DBUtil.close(connection);
     }
     return update_status;
   }
-/**
- * get all my SocialInformation
- * according to number of Item and the first Index
- * @param userId
- * @param nbElement
- * @param firstIndex
- * @return List<SocialInformationStatus>
- */
+
+  /**
+   * get all my SocialInformation according to number of Item and the first Index
+   * @param userId
+   * @param nbElement
+   * @param firstIndex
+   * @return List<SocialInformationStatus>
+   */
   public List<SocialInformation> getAllStatusService(int userId, Date begin, Date end) {
     Connection connection = null;
     try {
       connection = getConnection();
       return statusDao.getAllStatus(connection, userId, begin, end);
     } catch (Exception ex) {
-      SilverTrace.error("Silverpeas.Bus.SocialNetwork.Status",
-          "StatusService.getAllStatus", "",
-          ex);
+      SilverTrace
+          .error("Silverpeas.Bus.SocialNetwork.Status", "StatusService.getAllStatus", "", ex);
     } finally {
       DBUtil.close(connection);
     }
     return Collections.emptyList();
   }
-/**
- * when data base is PostgreSQL get SocialInformation of my conatct
- * according to number of Item and the first Index
- * @param myContactsIds
- * @param numberOfElement
- * @param firstIndex
- * @return List<SocialInformationStatus>
- */
+
+  /**
+   * when data base is PostgreSQL get SocialInformation of my conatct according to number of Item
+   * and the first Index
+   * @param myContactsIds
+   * @param numberOfElement
+   * @param firstIndex
+   * @return List<SocialInformationStatus>
+   */
   List<SocialInformation> getSocialInformationsListOfMyContacts(List<String> myContactsIds,
       Date begin, Date end) {
     Connection connection = null;
@@ -188,8 +193,8 @@ public class StatusService {
       connection = getConnection();
       return statusDao.getSocialInformationsListOfMyContacts(connection, myContactsIds, begin, end);
     } catch (Exception ex) {
-      SilverTrace.error("Silverpeas.Bus.SocialNetwork.Status", "StatusService.getAllStatus", "",
-          ex);
+      SilverTrace
+          .error("Silverpeas.Bus.SocialNetwork.Status", "StatusService.getAllStatus", "", ex);
     } finally {
       DBUtil.close(connection);
     }

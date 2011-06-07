@@ -40,5 +40,7 @@
     <sb_sn_invitation id="3" senderid="3" receiverid="1" message="martha to simpson" invitationDate="2010-05-11 15:25:32.0000"  />
     <sb_sn_invitation id="4" senderid="1" receiverid="4" message="simpson to nabil" invitationDate="2010-07-02 10:33:10.0000"  />
     <sb_sn_invitation id="5" senderid="5" receiverid="1" message="jacques to simpson" invitationDate="2010-07-02 10:33:10.0000"  />
+    <sb_sn_invitation id="6" senderid="6" receiverid="2" message="bart to lisa" invitationDate="2011-05-02 10:05:00.0000"  />
+    <sb_sn_invitation id="7" senderid="2" receiverid="6" message="lisa to bart" invitationDate="2011-05-02 10:08:00.0000"  />
     <sb_sn_relationship />
 </dataset>
