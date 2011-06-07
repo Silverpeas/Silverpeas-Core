@@ -44,6 +44,7 @@
 	List 		m_listUser 			= (List) request.getAttribute("listUser"); //List of UserDetail
 	Boolean 	m_ProfileEditable 	= (Boolean) request.getAttribute("ProfileEditable");
 	boolean 	isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnable")).booleanValue();
+	String		help				= (String) request.getAttribute("ProfileHelp");
 	
 	browseBar.setComponentId(componentInst.getId());
  	
@@ -125,6 +126,12 @@ out.println(window.printBefore());
 out.println(tabbedPane.print());
 out.println(frame.printBefore());
 %>
+<% if (StringUtil.isDefined(help)) { %>
+	<span class="inlineMessage">
+	<%= help %>
+	</span>
+	<br clear="all"/>
+<% } %>
 <center>
 <%
 out.println(board.printBefore());

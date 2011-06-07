@@ -419,6 +419,22 @@ public class AdminController extends AdminReference implements java.io.Serializa
       return "";
     }
   }
+  
+  /**
+   * @param componentInst The component instance to add.
+   * @param userId The id of the user who becomes the instance's creator.
+   * @return The id of the new component instance.
+   */
+  public String addComponentInst(ComponentInst componentInst, String userId) {
+    SilverTrace.info("admin", "AdminController.addComponentInst", "root.MSG_GEN_ENTER_METHOD");
+    try {
+      return m_Admin.addComponentInst(userId, componentInst);
+    } catch (Exception e) {
+      SilverTrace.error(
+        "admin", "AdminController.addComponentInst", "admin.MSG_ERR_ADD_COMPONENT", e);
+      return "";
+    }
+  }
 
   /** Delete the component Instance corresponding to the given component id */
   public String deleteComponentInst(String sComponentId, boolean definitive) {
@@ -1650,4 +1666,5 @@ public class AdminController extends AdminReference implements java.io.Serializa
       throws AdminException {
     return m_Admin.copyAndPasteSpace(spaceId, toSpaceId, userId);
   }
+  
 }

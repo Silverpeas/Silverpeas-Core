@@ -38,7 +38,6 @@ import com.silverpeas.calendar.Date;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.rest.Exposable;
-import com.silverpeas.util.EncodeHelper;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 

@@ -42,7 +42,7 @@ public class SocialInformationStatus implements SocialInformation {
   public SocialInformationStatus(Status status) {
 
     this.description = status.getDescription();
-    this.author = new Integer(status.getUserId()).toString();
+    this.author = Integer.toString(status.getUserId());
     this.title = author;
     this.date = new java.sql.Timestamp(status.getCreationDate().getTime());
     this.url = "#";
@@ -64,7 +64,6 @@ public class SocialInformationStatus implements SocialInformation {
    */
   @Override
   public Date getDate() {
-    // TODO Auto-generated method stub
     return date;
   }
 
@@ -74,13 +73,11 @@ public class SocialInformationStatus implements SocialInformation {
    */
   @Override
   public String getDescription() {
-    // TODO Auto-generated method stub
     return description;
   }
 
   @Override
   public String getIcon() {
-    // TODO Auto-generated method stub
     return icon;
   }
 
@@ -90,7 +87,6 @@ public class SocialInformationStatus implements SocialInformation {
    */
   @Override
   public boolean isUpdeted() {
-    // TODO Auto-generated method stub
     return false;
   }
 
@@ -100,7 +96,6 @@ public class SocialInformationStatus implements SocialInformation {
    */
   @Override
   public String getTitle() {
-    // TODO Auto-generated method stub
     return title;
   }
 
@@ -110,13 +105,11 @@ public class SocialInformationStatus implements SocialInformation {
    */
   @Override
   public String getUrl() {
-    // TODO Auto-generated method stub
     return url;
   }
 
   @Override
   public String getType() {
-    // TODO Auto-generated method stub
     return type.toString();
   }
 
