@@ -98,6 +98,9 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   // Space sort buffers
   SpaceInst[] m_BrothersSpaces = new SpaceInst[0];
   ComponentInst[] m_BrothersComponents = new ComponentInst[0];
+  public static final int SCOPE_BACKOFFICE = 0;
+  public static final int SCOPE_FRONTOFFICE = 1;
+  private int scope = SCOPE_BACKOFFICE;
 
   public JobStartPagePeasSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
@@ -235,10 +238,20 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
   public void setManagedInstanceId(String sId) {
     m_ManagedInstanceId = sId;
+    setScope(SCOPE_BACKOFFICE);
+  }
+  
+  public void setManagedInstanceId(String sId, int scope) {
+    setManagedInstanceId(sId);
+    setScope(scope);
   }
 
   public String getManagedInstanceId() {
     return m_ManagedInstanceId;
+  }
+  
+  public boolean isComponentManageable(String componentId) {
+    return getOrganizationController().isComponentManageable(componentId, getUserId());
   }
 
   public void setManagedProfile(ProfileInst sProfile) {
@@ -1157,15 +1170,18 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     selection.setHostSpaceName(hostSpaceName);
 
     PairObject hostComponentName = null;
-    String idFather = getSpaceInstById().getDomainFatherId();
-    if (idFather != null && !idFather.equals("0")) {// je suis sur un ss-espace
-      SpaceInst spaceFather = getSpaceInstById(idFather);
-      hostComponentName = new PairObject(spaceFather.getName() + " > " + getSpaceInstById().
-          getName(), null);
-    } else {
-      hostComponentName = new PairObject(getSpaceInstById().getName(), null);
+    SpaceInst space = getSpaceInstById();
+    if (space != null) {
+      String idFather = space.getDomainFatherId();
+      if (idFather != null && !idFather.equals("0")) {// je suis sur un ss-espace
+        SpaceInst spaceFather = getSpaceInstById(idFather);
+        hostComponentName = new PairObject(spaceFather.getName() + " > " + getSpaceInstById().
+            getName(), null);
+      } else {
+        hostComponentName = new PairObject(getSpaceInstById().getName(), null);
+      }
+      selection.setHostComponentName(hostComponentName);
     }
-    selection.setHostComponentName(hostComponentName);
 
     ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(getLanguage());
     String compoName = getComponentInst(getManagedInstanceId()).getLabel();
@@ -1179,9 +1195,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     }
     SilverTrace.info("jobStartPagePeas",
         "JobStartPagePeasSessionController.initUserPanelInstanceForGroupsUsers()",
-        "root.MSG_GEN_PARAM_VALUE", "compoURL = " + compoURL + " hostSpaceName=" + hostSpaceName
-        + " hostComponentName=" + getSpaceInstById().
-        getName() + " hostUrlTest=" + hostUrl);
+        "root.MSG_GEN_PARAM_VALUE", "hostUrl=" + hostUrl);
     selection.setGoBackURL(hostUrl);
     selection.setCancelURL(compoURL + "CancelCreateOrUpdateInstanceProfile");
     List<String> users = getManagedProfile().getAllUsers();
@@ -1414,5 +1428,13 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
           SilverpeasRuntimeException.ERROR, "jobStartPagePeas.EX_PASTE_ERROR",
           "spaceId = " + spaceId + " in space " + getManagedSpaceId(), e);
     }
+  }
+
+  public void setScope(int scope) {
+    this.scope = scope;
+  }
+
+  public int getScope() {
+    return scope;
   }
 }

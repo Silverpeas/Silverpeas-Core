@@ -108,6 +108,13 @@ String 			m_JobPeas 			= (String) request.getAttribute("JobPeas");
 List 			parameters 			= (List) request.getAttribute("Parameters");
 List 		    m_Profiles 			= (List) request.getAttribute("Profiles");
 boolean 		isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnable")).booleanValue();
+int				scope				= ((Integer) request.getAttribute("Scope")).intValue();
+
+if (scope == JobStartPagePeasSessionController.SCOPE_FRONTOFFICE) {
+  //use default breadcrumb
+  browseBar.setSpaceJavascriptCallback(null);
+  browseBar.setComponentJavascriptCallback(null);
+}
 
 String m_ComponentIcon = iconsPath+"/util/icons/component/"+compoInst.getName()+"Small.gif";
 
@@ -118,11 +125,13 @@ browseBar.setExtraInformation(resource.getString("GML.description"));
 browseBar.setI18N(compoInst, resource.getLanguage());
 
 operationPane.addOperation(resource.getIcon("JSPP.instanceUpdate"),resource.getString("JSPP.ComponentPanelModifyTitle"),"javascript:onClick=updateInstance(800, 350)");
-operationPane.addOperation(resource.getIcon("JSPP.ComponentOrder"),resource.getString("JSPP.ComponentOrder"),"javascript:onClick=openPopup('PlaceComponentAfter', 750, 230)");
-if (JobStartPagePeasSettings.useComponentsCopy) {
-	operationPane.addOperation(resource.getIcon("JSPP.CopyComponent"),resource.getString("GML.copy"),"javascript:onClick=clipboardCopy()");
+if (scope == JobStartPagePeasSessionController.SCOPE_BACKOFFICE) {
+	operationPane.addOperation(resource.getIcon("JSPP.ComponentOrder"),resource.getString("JSPP.ComponentOrder"),"javascript:onClick=openPopup('PlaceComponentAfter', 750, 230)");
+	if (JobStartPagePeasSettings.useComponentsCopy) {
+		operationPane.addOperation(resource.getIcon("JSPP.CopyComponent"),resource.getString("GML.copy"),"javascript:onClick=clipboardCopy()");
+	}
+	operationPane.addOperation(resource.getIcon("JSPP.instanceDel"),resource.getString("JSPP.ComponentPanelDeleteTitle"),"javascript:onClick=deleteInstance()");
 }
-operationPane.addOperation(resource.getIcon("JSPP.instanceDel"),resource.getString("JSPP.ComponentPanelDeleteTitle"),"javascript:onClick=deleteInstance()");
 
 tabbedPane.addTab(resource.getString("GML.description"),"#",true);
 Iterator i = m_Profiles.iterator();

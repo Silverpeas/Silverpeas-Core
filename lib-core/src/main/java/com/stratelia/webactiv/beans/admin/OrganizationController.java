@@ -882,6 +882,17 @@ public class OrganizationController extends AdminReference implements java.io.Se
       return false;
     }
   }
+  
+  public boolean isComponentManageable(String componentId, String userId) {
+    try {
+      return m_Admin.isComponentManageable(componentId, userId);
+    } catch (Exception e) {
+      SilverTrace.error("admin", "OrganizationController.isComponentManageable",
+          "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user Id: '"
+          + userId + "', componentId: '" + componentId + "'", e);
+      return false;
+    }
+  }
 
   public boolean isSpaceAvailable(String spaceId, String userId) {
     try {

@@ -273,6 +273,14 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       SilverTrace.info("jobStartPagePeas", "JobStartPagePeasRequestRouter.GoToComponent",
           "root.MSG_GEN_PARAM_VALUE", "compoId = " + compoId);
       destination = "/jobStartPagePeas/jsp/componentInfo.jsp";
+    } else if ("SetupComponent".equals(function)) {
+      String compoId = request.getParameter("ComponentId");
+      if (jobStartPageSC.isComponentManageable(compoId)) {
+        jobStartPageSC.setManagedInstanceId(compoId, JobStartPagePeasSessionController.SCOPE_FRONTOFFICE);
+        destination = "/jobStartPagePeas/jsp/componentInfo.jsp";
+      } else {
+        destination = "/admin/jsp/accessForbidden.jsp";
+      }
     } else if ("GoToCurrentComponent".equals(function)) {
       destination = "/jobStartPagePeas/jsp/componentInfo.jsp";
     } else if ("ListComponent".equals(function)) {
@@ -314,10 +322,15 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       request2ComponentInst(componentInst, request, jobStartPageSC);
       // Update the instance
       String componentId = jobStartPageSC.updateComponentInst(componentInst);
-      if (componentId != null && componentId.length() > 0) {
-        refreshNavBar(jobStartPageSC, request);
-        request.setAttribute("urlToReload", "GoToComponent?ComponentId="
-            + componentInst.getId());
+      if (StringUtil.isDefined(componentId)) {
+        if (jobStartPageSC.getScope() == JobStartPagePeasSessionController.SCOPE_BACKOFFICE) {
+          refreshNavBar(jobStartPageSC, request);
+          request.setAttribute("urlToReload", "GoToComponent?ComponentId="
+              + componentInst.getId());
+        } else {
+          request.setAttribute("urlToReload", "SetupComponent?ComponentId="
+              + componentInst.getId());
+        }
         destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
       } else {
         // TODO : Mauvaise gestion des exceptions
@@ -1013,6 +1026,8 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
         
         String profileHelp = jobStartPageSC.getManagedProfileHelp(compoint1.getName());
         request.setAttribute("ProfileHelp", profileHelp);
+        
+        request.setAttribute("Scope", jobStartPageSC.getScope());
       }
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
@@ -1024,11 +1039,10 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
     return destination;
   }
 
-  protected void refreshNavBar(
-      JobStartPagePeasSessionController jobStartPageSC,
+  protected void refreshNavBar(JobStartPagePeasSessionController jobStartPageSC,
       HttpServletRequest request) {
-    jobStartPageSC.refreshCurrentSpaceCache();
-    request.setAttribute("haveToRefreshNavBar", Boolean.TRUE);
+      jobStartPageSC.refreshCurrentSpaceCache();
+      request.setAttribute("haveToRefreshNavBar", Boolean.TRUE);
   }
 
   private void setSpacesNameInRequest(
@@ -1316,5 +1330,6 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
     request.setAttribute("Profiles", sessionController.getAllProfiles(componentInst));
     request.setAttribute("IsInheritanceEnable", Boolean.valueOf(
         JobStartPagePeasSettings.isInheritanceEnable));
+    request.setAttribute("Scope", sessionController.getScope());
   }
 }
