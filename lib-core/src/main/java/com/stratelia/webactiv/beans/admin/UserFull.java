@@ -25,13 +25,14 @@ package com.stratelia.webactiv.beans.admin;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 public class UserFull extends UserDetail {
 
   private static final long serialVersionUID = 1L;
   protected HashMap<String, String> m_hInfos = null;
-  protected AbstractDomainDriver m_pDomainDriver = null;
+  protected DomainDriver m_pDomainDriver = null;
   protected String m_password = "";
   protected boolean m_isPasswordValid = false;
   protected boolean m_isPasswordAvailable = false;
@@ -42,13 +43,13 @@ public class UserFull extends UserDetail {
     m_hInfos = new HashMap<String, String>();
   }
 
-  public UserFull(AbstractDomainDriver domainDriver) {
+  public UserFull(DomainDriver domainDriver) {
     super();
     m_hInfos = new HashMap<String, String>();
     m_pDomainDriver = domainDriver;
   }
 
-  public UserFull(AbstractDomainDriver domainDriver, UserDetail toClone) {
+  public UserFull(DomainDriver domainDriver, UserDetail toClone) {
     super(toClone);
     m_hInfos = new HashMap<String, String>();
     m_pDomainDriver = domainDriver;
@@ -117,7 +118,7 @@ public class UserFull extends UserDetail {
   }
 
   // Labels' getters
-  public HashMap<String, String> getSpecificLabels(String language) {
+  public Map<String, String> getSpecificLabels(String language) {
     if (m_pDomainDriver != null) {
       return m_pDomainDriver.getPropertiesLabels(language);
     }
@@ -128,7 +129,7 @@ public class UserFull extends UserDetail {
     String valret = null;
 
     if (m_pDomainDriver != null) {
-      HashMap<String, String> theLabels = m_pDomainDriver.getPropertiesLabels(language);
+      Map<String, String> theLabels = m_pDomainDriver.getPropertiesLabels(language);
       valret = theLabels.get(propertyName);
     }
     if (valret == null) {

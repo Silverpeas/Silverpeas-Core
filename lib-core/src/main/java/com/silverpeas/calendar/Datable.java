@@ -41,10 +41,17 @@ public interface Datable<T extends Datable<? super T>> {
 
   /**
    * The pattern for the short ISO 8601 date representation.
-   * The date is at the accuratly to the minute and the time zone is specified as defined in the
+   * The date is at the accuracy to the minute and the time zone is specified as defined in the
    * RFC 822 (indicated by the Z symbol).
    */
   static final String SHORT_ISO_8601_PATTERN = "yyyy-MM-dd'T'HH:mmZ";
+
+  /**
+   * The pattern for the ISO 8601 date representation.
+   * The date is at the accuracy to the second and the time zone is specified as defined in the
+   * RFC 822 (indicated by the Z symbol).
+   */
+  static final String ISO_8601_PATTERN = "yyyy-MM-dd'T'HH:mm:ssZ";
 
   /**
    * The pattern for the iCal date representation in the current time zone of the datable.
@@ -107,16 +114,32 @@ public interface Datable<T extends Datable<? super T>> {
   TimeZone getTimeZone();
 
   /**
-   * Gets a short ISO 8601 textual representation of this datable by taking into account of its
-   * underlying timezone. The representation is at the accuracy to the minute.
+   * Gets an ISO 8601 textual representation of this datable by taking into account of its
+   * underlying timezone.
+   *
+   * For date and time, the representation is at the accuracy to the second.
    * The ISO 8601 format in which the date is returned is one of the more common in the Web, that is
    * with the date and time separators (the hyphen for dates and the double-points for times):
-   * yyyy-MM-dd'T'HH:mm where yyyy means the year in 4 digits, MM means the month in year in two
+   * yyyy-MM-dd'T'HH:mm:ss where yyyy means the year in 4 digits, MM means the month in year in two
    * digits, dd means the day in month in two digits, HH means the hour (24-o'clock) in two digits,
-   * and mm means the minute in two digits.
-   * @return the short ISO 8601 textual representation of this datable.
+   * mm means the minute in two digits, and ss the second in two digits.
+   * @return the ISO 8601 textual representation of this datable.
    */
   String toISO8601();
+
+  /**
+   * Gets an ISO 8601 textual representation of this datable by taking into account of its
+   * underlying timezone.
+   *
+   * For date and time, the representation is at the accuracy to the minute.
+   * The ISO 8601 format in which the date is returned is one of the more common in the Web, that is
+   * with the date and time separators (the hyphen for dates and the double-points for times):
+   * yyyy-MM-dd'T'HH:mm:ss where yyyy means the year in 4 digits, MM means the month in year in two
+   * digits, dd means the day in month in two digits, HH means the hour (24-o'clock) in two digits,
+   * and mm means the minute in two digits.
+   * @return a short ISO 8601 textual representation of this datable.
+   */
+  String toShortISO8601();
 
   /**
    * Gets the ISO 8601 textual representation of this date as it is in the iCal specification.

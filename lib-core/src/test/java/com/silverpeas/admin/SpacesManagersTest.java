@@ -31,7 +31,12 @@ import org.junit.Test;
 
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"/spring-domains.xml", "/spring-jdbc-datasource.xml"})
 public class SpacesManagersTest extends AbstractTestDao {
 
   private AdminController getAdminController() {

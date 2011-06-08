@@ -37,5 +37,6 @@
   <ctx:component-scan base-package="com.silverpeas.rest"/>
   <ctx:component-scan base-package="com.silverpeas.comment.web"/>
   <import resource="spring-personalization.xml" />
+  <import resource="spring-jdbc-datasource.xml" />
 </beans>
 
