@@ -163,7 +163,7 @@ public class StatusDao {
    * @return boolean
    * @throws SQLException
    */
-  public boolean UpdateStatus(Connection connection, Status status) throws SQLException {
+  public boolean updateStatus(Connection connection, Status status) throws SQLException {
     PreparedStatement pstmt = null;
     boolean endAction = false;
     try {

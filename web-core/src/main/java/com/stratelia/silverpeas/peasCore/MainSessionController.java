@@ -23,11 +23,18 @@
  */
 package com.stratelia.silverpeas.peasCore;
 
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.List;
+
+import javax.ejb.RemoveException;
+
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.admin.components.Parameter;
-import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.silverpeas.alertUser.AlertUser;
@@ -53,14 +60,6 @@ import com.stratelia.webactiv.clipboard.control.ejb.ClipboardBmHome;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-
-import javax.ejb.RemoveException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.List;
 
 /*
  This object is used by all the components jsp that have access to the session.

@@ -23,7 +23,6 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html;
 
-import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
@@ -84,7 +83,7 @@ public class GraphicElementFactory {
   private ResourceLocator lookSettings = null;
   private ResourceLocator silverpeasLookSettings = null;
   private ResourceLocator favoriteLookSettings = null;
-  private String defaultLook = "com.stratelia.webactiv.util.viewGenerator.settings.Initial";
+  private final static String defaultLook = "com.stratelia.webactiv.util.viewGenerator.settings.Initial";
   private final static ResourceLocator generalSettings = new ResourceLocator(
       "com.stratelia.webactiv.general", I18NHelper.defaultLanguage);
   private final static String iconsPath = URLManager.getApplicationURL() + settings.getString(

@@ -4128,6 +4128,20 @@ public final class Admin {
           + "'", e);
     }
   }
+  
+  public boolean isComponentManageable(String componentId, String userId) throws AdminException {
+    boolean manageable = getUserDetail(userId).isAccessAdmin();
+    if (!manageable) {
+      // check if user is manager of at least one space parent
+      String[] spaceIds = getUserManageableSpaceIds(userId);
+      ComponentInstLight component = getComponentInstLight(componentId);
+      if (component != null) {
+        List<String> toCheck = Arrays.asList(spaceIds);
+        manageable = toCheck.contains(getDriverSpaceId(component.getDomainFatherId()));
+      }
+    }
+    return manageable;
+  }
 
   /**
    * Get ids of components allowed to user in given space (not in subspaces)
