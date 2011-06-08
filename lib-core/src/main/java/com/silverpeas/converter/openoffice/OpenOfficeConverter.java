@@ -48,6 +48,7 @@ public abstract class OpenOfficeConverter implements DocumentFormatConversion {
   private static final ResourceLocator settings = new ResourceLocator(
     "com.silverpeas.converter.openoffice", "");
   private static final String OPENOFFICE_PORT = "openoffice.port";
+  private static final String OPENOFFICE_HOST = "openoffice.host";
 
   @Override
   public abstract DocumentFormat[] getSupportedFormats();
@@ -93,8 +94,9 @@ public abstract class OpenOfficeConverter implements DocumentFormatConversion {
    * occurs when no OpenOffice service is available for example.
    */
   protected OpenOfficeConnection openConnection() throws ConnectException {
-    OpenOfficeConnection connection = new SocketOpenOfficeConnection(settings.getInteger(
-      OPENOFFICE_PORT, 8100));
+    String host = settings.getString(OPENOFFICE_HOST, "localhost");
+    int port = settings.getInteger(OPENOFFICE_PORT, 8100);
+    OpenOfficeConnection connection = new SocketOpenOfficeConnection(host, port);
     connection.connect();
     return connection;
   }
