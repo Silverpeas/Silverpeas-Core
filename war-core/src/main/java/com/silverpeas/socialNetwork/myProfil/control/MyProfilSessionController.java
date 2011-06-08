@@ -56,8 +56,8 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
 import com.stratelia.webactiv.beans.admin.AdminController;
+import com.stratelia.webactiv.beans.admin.DomainDriver;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
@@ -167,7 +167,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   }
 
   public boolean isUserDomainRW() {
-    return (getDomainActions() & AbstractDomainDriver.ACTION_CREATE_USER) != 0;
+    return (getDomainActions() & DomainDriver.ACTION_CREATE_USER) != 0;
   }
 
   public long getDomainActions() {
