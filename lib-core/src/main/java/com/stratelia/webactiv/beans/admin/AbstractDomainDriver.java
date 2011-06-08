@@ -24,16 +24,15 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.util.ResourceLocator;
+
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-
-abstract public class AbstractDomainDriver extends Object {
+abstract public class AbstractDomainDriver implements DomainDriver {
 
   protected int domainId = -1; // The domainId of this instance of domain
   // driver
@@ -41,114 +40,13 @@ abstract public class AbstractDomainDriver extends Object {
   // des properties du bundle domainSP
   protected String[] keys = null;
   protected String m_PropertiesMultilang = "";
-  protected Hashtable<String, HashMap<String, String>> m_PropertiesLabels =
-      new Hashtable<String, HashMap<String, String>>();
-  protected Hashtable<String, HashMap<String, String>> m_PropertiesDescriptions =
-      new Hashtable<String, HashMap<String, String>>();
+  protected Map<String, HashMap<String, String>> m_PropertiesLabels =
+      new HashMap<String, HashMap<String, String>>();
+  protected Map<String, HashMap<String, String>> m_PropertiesDescriptions =
+      new HashMap<String, HashMap<String, String>>();
   protected String[] m_mapParameters = null;
   protected boolean synchroInProcess = false;
   protected boolean x509Enabled = false;
-  /**
-   * No possible actions Mask
-   * @see #getDriverActions
-   */
-  final static public long ACTION_NONE = 0x00000000;
-  /**
-   * Read Users' infos action Mask
-   * @see #getDriverActions
-   */
-  final static public long ACTION_READ_USER = 0x00000001;
-  /**
-   * Read Groups' infos action Mask
-   * @see #getDriverActions
-   */
-  final static public long ACTION_READ_GROUP = 0x00000002;
-  /**
-   * Update Users' infos action Mask
-   * @see #getDriverActions
-   */
-  final static public long ACTION_UPDATE_USER = 0x00000004;
-  /**
-   * Update Groups' infos action Mask
-   * @see #getDriverActions
-   */
-  final static public long ACTION_UPDATE_GROUP = 0x00000008;
-  /**
-   * Create User action Mask
-   * @see #getDriverActions
-   */
-  final static public long ACTION_CREATE_USER = 0x00000010;
-  /**
-   * Create Group action Mask
-   * @see #getDriverActions
-   */
-  final static public long ACTION_CREATE_GROUP = 0x00000020;
-  /**
-   * Delete User action Mask
-   * @see #getDriverActions
-   */
-  final static public long ACTION_DELETE_USER = 0x00000040;
-  /**
-   * Delete Group action Mask
-   * @see #getDriverActions
-   */
-  final static public long ACTION_DELETE_GROUP = 0x00000080;
-  /**
-   * Add/Remove User from group action Mask
-   * @see #getDriverActions
-   */
-  final static public long ACTION_EDIT_USER_IN_GROUP = 0x00000100;
-  /**
-   * Add a user in Silverpeas DB by synchronization with a reference LDAP DB
-   * @see #getDriverActions
-   */
-  final static public long ACTION_IMPORT_USER = 0x00000200;
-  /**
-   * Updates user Silverpeas infos from LDAP DB
-   * @see #getDriverActions
-   */
-  final static public long ACTION_SYNCHRO_USER = 0x00000400;
-  /**
-   * Remove user entry from Silverpeas
-   * @see #getDriverActions
-   */
-  final static public long ACTION_REMOVE_USER = 0x00000800;
-  /**
-   * Add a group in Silverpeas DB by synchronization with a reference LDAP DB
-   * @see #getDriverActions
-   */
-  final static public long ACTION_IMPORT_GROUP = 0x00001000;
-  /**
-   * Updates group Silverpeas infos from LDAP DB
-   * @see #getDriverActions
-   */
-  final static public long ACTION_SYNCHRO_GROUP = 0x00002000;
-  /**
-   * Remove group entry from Silverpeas
-   * @see #getDriverActions
-   */
-  final static public long ACTION_REMOVE_GROUP = 0x00004000;
-  /**
-   * Create a x509 certificate and store it in server's truststore
-   * @see #getDriverActions
-   */
-  final static public long ACTION_X509_USER = 0x00008000;
-  /**
-   * All available actions Mask
-   * @see #getDriverActions
-   */
-  final static public long ACTION_MASK_ALL = 0xFFFFFFFF;
-  final static public long ACTION_MASK_RW = ACTION_READ_USER
-      | ACTION_READ_GROUP | ACTION_UPDATE_USER | ACTION_UPDATE_GROUP
-      | ACTION_CREATE_USER | ACTION_CREATE_GROUP | ACTION_DELETE_USER
-      | ACTION_DELETE_GROUP | ACTION_EDIT_USER_IN_GROUP;
-  final static public long ACTION_MASK_RO = ACTION_READ_USER
-      | ACTION_READ_GROUP | ACTION_IMPORT_USER | ACTION_SYNCHRO_USER
-      | ACTION_REMOVE_USER | ACTION_IMPORT_GROUP | ACTION_SYNCHRO_GROUP
-      | ACTION_REMOVE_GROUP;
-  final static public long ACTION_MASK_MIXED_GROUPS = ACTION_READ_GROUP
-      | ACTION_UPDATE_GROUP | ACTION_CREATE_GROUP | ACTION_DELETE_GROUP
-      | ACTION_EDIT_USER_IN_GROUP;
 
   /**
    * Initialize the domain driver with the initialization parameter stocked in table This parameter
@@ -159,6 +57,7 @@ abstract public class AbstractDomainDriver extends Object {
    * @param authenticationServer name of the authentication server (no more used yet)
    * @throws Exception
    */
+  @Override
   public void init(int domainId, String initParam, String authenticationServer)
       throws Exception {
     ResourceLocator rs = new ResourceLocator(initParam, "");
@@ -197,10 +96,12 @@ abstract public class AbstractDomainDriver extends Object {
     initFromProperties(rs);
   }
 
+  @Override
   public String[] getPropertiesNames() {
     return keys;
   }
 
+  @Override
   public DomainProperty getProperty(String propName) {
     Iterator<DomainProperty> it = domainProperties.iterator();
     DomainProperty domainProp;
@@ -213,16 +114,17 @@ abstract public class AbstractDomainDriver extends Object {
     return null;
   }
 
+  @Override
   public String[] getMapParameters() {
     return m_mapParameters;
   }
 
+  @Override
   public List<DomainProperty> getPropertiesToImport(String language) {
     List<DomainProperty> props = new ArrayList<DomainProperty>();
 
-    HashMap<String, String> theLabels = getPropertiesLabels(language);
-    HashMap<String, String> theDescriptions = getPropertiesDescriptions(language);
-
+    Map<String, String> theLabels = getPropertiesLabels(language);
+    Map<String, String> theDescriptions = getPropertiesDescriptions(language);
     addPropertiesToImport(props, theDescriptions);
 
     Iterator<DomainProperty> it = domainProperties.iterator();
@@ -240,6 +142,7 @@ abstract public class AbstractDomainDriver extends Object {
     return props;
   }
 
+  @Override
   public void addPropertiesToImport(List<DomainProperty> props) {
   }
 
@@ -248,10 +151,12 @@ abstract public class AbstractDomainDriver extends Object {
    * @param props
    * @param theDescriptions 
    */
-  public void addPropertiesToImport(List<DomainProperty> props, HashMap<String, String> theDescriptions) {
+  @Override
+  public void addPropertiesToImport(List<DomainProperty> props, Map<String, String> theDescriptions) {
   }
 
-  public HashMap<String, String> getPropertiesLabels(String language) {
+  @Override
+  public Map<String, String> getPropertiesLabels(String language) {
     HashMap<String, String> valret = m_PropertiesLabels.get(language);
     if (valret == null) {
       HashMap<String, String> newLabels = new HashMap<String, String>();
@@ -265,8 +170,9 @@ abstract public class AbstractDomainDriver extends Object {
     return valret;
   }
 
-  public HashMap<String, String> getPropertiesDescriptions(String language) {
-    HashMap<String, String> valret = m_PropertiesDescriptions.get(language);
+  @Override
+  public Map<String, String> getPropertiesDescriptions(String language) {
+    Map<String, String> valret = m_PropertiesDescriptions.get(language);
 
     if (valret == null) {
       HashMap<String, String> newDescriptions = new HashMap<String, String>();
@@ -285,12 +191,14 @@ abstract public class AbstractDomainDriver extends Object {
    * class who need it.
    * @param rs name of resource file
    */
+  @Override
   public void initFromProperties(ResourceLocator rs) throws Exception {
   }
 
   /**
    * Called when Admin starts the synchronization
    */
+  @Override
   public long getDriverActions() {
     if (x509Enabled) {
       return ACTION_MASK_RW | AbstractDomainDriver.ACTION_X509_USER;
@@ -298,59 +206,55 @@ abstract public class AbstractDomainDriver extends Object {
     return ACTION_MASK_RW;
   }
 
+  @Override
   public boolean isSynchroOnLoginEnabled() {
     return false;
   }
 
+  @Override
   public boolean isSynchroThreaded() {
     return false;
   }
 
+  @Override
   public boolean isSynchroOnLoginRecursToGroups() {
     return true;
   }
 
+  @Override
   public boolean isGroupsInheritProfiles() {
     return false;
   }
 
+  @Override
   public boolean mustImportUsers() {
     return true;
   }
 
+  @Override
   public String getTimeStamp(String minTimeStamp) throws Exception {
     return "";
   }
 
+  @Override
   public String getTimeStampField() throws Exception {
     return null;
   }
 
+  @Override
   public boolean isX509CertificateEnabled() {
     return false;
-  }
-
-  public UserDetail[] getAllChangedUsers(String fromTimeStamp,
-      String toTimeStamp) throws Exception {
-    throw new AdminException("AbstractDomainDriver.getAllChangedUsers",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
-  }
-
-  public Group[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp)
-      throws Exception {
-    throw new AdminException("AbstractDomainDriver.getAllChangedGroups",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
   }
 
   /**
    * Called when Admin starts the synchronization
    */
+  @Override
   public void beginSynchronization() throws Exception {
     synchroInProcess = true;
   }
 
+  @Override
   public boolean isSynchroInProcess() throws Exception {
     return synchroInProcess;
   }
@@ -359,300 +263,10 @@ abstract public class AbstractDomainDriver extends Object {
    * Called when Admin ends the synchronization
    * @param cancelSynchro true if the synchronization is cancelled, false if it ends normally
    */
+  @Override
   public String endSynchronization(boolean cancelSynchro) throws Exception {
     synchroInProcess = false;
     return "";
-  }
-
-  /**
-   * Import a given user in Database from the reference
-   * @param userLogin The User Login to import
-   * @return The User object that contain new user information
-   */
-  public UserDetail importUser(String userLogin) throws Exception {
-    throw new AdminException("AbstractDomainDriver.importUser",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
-  }
-
-  /**
-   * Remove a given user from database
-   * @param userId The user id To remove synchro
-   */
-  public void removeUser(String userId) throws Exception {
-    throw new AdminException("AbstractDomainDriver.removeUser",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
-  }
-
-  /**
-   * Update user information in database
-   * @param userId The User Id to synchronize
-   * @return The User object that contain new user information
-   */
-  public UserDetail synchroUser(String userId) throws Exception {
-    throw new AdminException("AbstractDomainDriver.synchroUser",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
-  }
-
-  /**
-   * Create a given user in Database
-   * @param m_User The User object that contain new user information@return String
-   * @return The user id as stored in the database
-   */
-  public String createUser(UserDetail user) throws Exception {
-    throw new AdminException("AbstractDomainDriver.createUser",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
-  }
-
-  /**
-   * Delete a given user from database
-   * @param userId The user id as stored in the database
-   */
-  public void deleteUser(String userId) throws Exception {
-    throw new AdminException("AbstractDomainDriver.deleteUser",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
-  }
-
-  /**
-   * Update user information in database
-   * @param m_User The User object that contain user information
-   */
-  public void updateUserFull(UserFull user) throws Exception {
-    throw new AdminException("AbstractDomainDriver.updateUser",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
-  }
-
-  /**
-   * Update user information in database
-   * @param m_User The User object that contain user information
-   */
-  public void updateUserDetail(UserDetail user) throws Exception {
-    throw new AdminException("AbstractDomainDriver.updateUser",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
-  }
-
-  /**
-   * Retrieve user information from database
-   * @param userId The user id as stored in the database
-   * @return The User object that contain new user information
-   */
-  public UserDetail getUser(String userId) throws Exception {
-    throw new AdminException("AbstractDomainDriver.getUser",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
-  }
-
-  /**
-   * Retrieve user information from database
-   * @param userId The user id as stored in the database
-   * @return The full User object that contain ALL user informations
-   */
-  abstract public UserFull getUserFull(String userId) throws Exception;
-
-  /**
-   * Retrieve user's groups
-   * @param userId The user id as stored in the database
-   * @return The User's groups specific Ids
-   */
-  public String[] getUserMemberGroupIds(String userId) throws Exception {
-    throw new AdminException("AbstractDomainDriver.getUserMemberGroupIds",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
-  }
-
-  /**
-   * Retrieve all users from the database
-   * @return User[] An array of User Objects that contain users information
-   */
-  public UserDetail[] getAllUsers() throws Exception {
-    throw new AdminException("AbstractDomainDriver.getAllUsers",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
-  }
-
-  public UserDetail[] getUsersBySpecificProperty(String propertyName,
-      String value) throws Exception {
-    throw new AdminException("AbstractDomainDriver.getUsersBySpecificProperty",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
-  }
-
-  public UserDetail[] getUsersByQuery(Hashtable<String, String> query) throws Exception {
-    throw new AdminException("AbstractDomainDriver.getUsersByQuery",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
-  }
-
-  /**
-   * Import a given group in Database from the reference
-   * @param groupName The group name to import
-   * @return The group object that contain new group information
-   */
-  public Group importGroup(String groupName) throws Exception {
-    throw new AdminException("AbstractDomainDriver.importGroup",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
-  }
-
-  /**
-   * Remove a given group from database
-   * @param groupId The group id To remove synchro
-   */
-  public void removeGroup(String groupId) throws Exception {
-    throw new AdminException("AbstractDomainDriver.removeGroup",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
-  }
-
-  /**
-   * Update group information in database
-   * @param groupId The group Id to synchronize
-   * @return The group object that contain new group information
-   */
-  public Group synchroGroup(String groupId) throws Exception {
-    throw new AdminException("AbstractDomainDriver.synchroGroup",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
-  }
-
-  /**
-   * Create a given group in database
-   * @param m_Group New group information
-   * @return The group id as stored in the database
-   */
-  public String createGroup(Group m_Group) throws Exception {
-    throw new AdminException("AbstractDomainDriver.createGroup",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
-  }
-
-  /**
-   * Delete a given group from database
-   * @param groupId The group id as stored in the database
-   */
-  public void deleteGroup(String groupId) throws Exception {
-    throw new AdminException("AbstractDomainDriver.deleteGroup",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
-  }
-
-  /**
-   * Update group information in database
-   * @param m_Group The Group object that contains user information
-   * @throws Exception  
-   */
-  public void updateGroup(Group m_Group) throws Exception {
-    throw new AdminException("AbstractDomainDriver.updateGroup",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
-  }
-
-  /**
-   * Retrieve group information from database
-   * @param groupId The group id as stored in the database
-   * @return The Group object that contains group information
-   * @throws Exception  
-   */
-  public Group getGroup(String groupId) throws Exception {
-    throw new AdminException("AbstractDomainDriver.getGroup",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
-  }
-
-  /**
-   * Retrieve group information from database
-   * @param groupName The group name as stored in the database
-   * @return The Group object that contains group information
-   * @throws Exception  
-   */
-  public Group getGroupByName(String groupName) throws Exception {
-    throw new AdminException("AbstractDomainDriver.getGroupByName",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
-  }
-
-  /**
-   * Retrieve all groups contained in the given group
-   * @param groupId The group id as stored in the database
-   * @return Group[] An array of Group Objects that contain groups information
-   * @throws Exception  
-   */
-  public Group[] getGroups(String groupId) throws Exception {
-    throw new AdminException("AbstractDomainDriver.getGroups",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
-  }
-
-  /**
-   * Retrieve all groups from the database
-   * @return Group[] An array of Group Objects that contain groups information
-   * @throws Exception  
-   */
-  public Group[] getAllGroups() throws Exception {
-    throw new AdminException("AbstractDomainDriver.getAllGroups",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
-  }
-
-  /**
-   * Retrieve all root groups from the database
-   * @return Group[] An array of Group Objects that contain groups information
-   * @throws Exception  
-   */
-  public Group[] getAllRootGroups() throws Exception {
-    throw new AdminException("AbstractDomainDriver.getAllRootGroups",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
-  }
-
-  /**
-   * Retrieve group's parents
-   * @param groupId The group id as stored in the database
-   * @return The Group's parents specific Ids
-   * @throws Exception  
-   */
-  public String[] getGroupMemberGroupIds(String groupId) throws Exception {
-    throw new AdminException("AbstractDomainDriver.getGroupMemberGroupIds",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
-  }
-
-  /**
-   * Start a new transaction
-   * @param bAutoCommit Specifies is transaction is automatically committed (without explicit
-   * 'commit' statement)
-   * @throws Exception  
-   */
-  public void startTransaction(boolean bAutoCommit) throws Exception {
-    throw new AdminException("AbstractDomainDriver.startTransaction",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
-  }
-
-  /**
-   * Commit transaction
-   * @throws Exception  
-   */
-  public void commit() throws Exception {
-    throw new AdminException("AbstractDomainDriver.commit",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
-  }
-
-  /**
-   * Rollback transaction
-   * @throws Exception  
-   */
-  public void rollback() throws Exception {
-    throw new AdminException("AbstractDomainDriver.rollback",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
   }
 
   static protected int idAsInt(String id) {
@@ -672,17 +286,5 @@ abstract public class AbstractDomainDriver extends Object {
    */
   static protected String idAsString(int id) {
     return String.valueOf(id);
-  }
-
-  /**
-   * get user specifics attributes for the driver
-   * @param userId
-   * @return List of attributes name
-   * @throws Exception
-   */
-  public List<String> getUserAttributes() throws Exception {
-    throw new AdminException("AbstractDomainDriver.getUserAttributes",
-        SilverpeasException.ERROR, "admin.EX_ERR_DOMAIN_DOES_NOT_SUPPORT",
-        "DomainId=" + Integer.toString(domainId));
   }
 }

@@ -18,6 +18,7 @@
       <artifactId>test-core</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
+      <type>jar</type>
     </dependency>
     <dependency>
       <groupId>informa</groupId>
@@ -55,6 +56,18 @@
     <dependency>
       <groupId>org.hibernate.javax.persistence</groupId>
       <artifactId>hibernate-jpa-2.0-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.synyx.hades</groupId>
+      <artifactId>org.synyx.hades</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-entitymanager</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.jms</groupId>

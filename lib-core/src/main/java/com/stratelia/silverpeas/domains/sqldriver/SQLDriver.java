@@ -21,14 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.domains.sqldriver;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import com.silverpeas.util.cryptage.CryptMD5;
 import com.silverpeas.util.cryptage.UnixMD5Crypt;
@@ -44,7 +37,15 @@ import com.stratelia.webactiv.organization.AdminPersistenceException;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 public class SQLDriver extends AbstractDomainDriver {
+
   protected Connection openedConnection = null;
   protected boolean inTransaction = false;
   protected String passwordEncryption = null;
@@ -58,7 +59,6 @@ public class SQLDriver extends AbstractDomainDriver {
    * Constructor
    */
   public SQLDriver() {
-
   }
 
   /*
@@ -69,9 +69,10 @@ public class SQLDriver extends AbstractDomainDriver {
   public String[] getGroupMemberGroupIds(String groupId) throws Exception {
     Group group = getGroup(groupId);
     if ((group != null) && (group.getSuperGroupId() != null)) {
-      return new String[] { group.getSuperGroupId() };
-    } else
+      return new String[]{group.getSuperGroupId()};
+    } else {
       return null;
+    }
   }
 
   /**
@@ -83,6 +84,31 @@ public class SQLDriver extends AbstractDomainDriver {
     drvSettings.initFromProperties(rs);
   }
 
+  @Override
+  public UserDetail[] getAllChangedUsers(String fromTimeStamp, String toTimeStamp)
+      throws Exception {
+    return new UserDetail[0];
+  }
+
+  @Override
+  public Group[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp) throws Exception {
+    return new Group[0];
+  }
+
+  @Override
+  public UserDetail importUser(String userLogin) throws Exception {
+    return null;
+  }
+
+  @Override
+  public void removeUser(String userId) throws Exception {
+  }
+
+  @Override
+  public UserDetail synchroUser(String userId) throws Exception {
+    return null;
+  }
+
   /**
    * Get an DomainSQL schema from the pool.
    */
@@ -92,8 +118,8 @@ public class SQLDriver extends AbstractDomainDriver {
           "root.MSG_GEN_ENTER_METHOD");
       try {
         Class.forName(drvSettings.getClassName());
-        openedConnection = DriverManager.getConnection(drvSettings
-            .getJDBCUrl(), drvSettings.getAccessLogin(),
+        openedConnection = DriverManager.getConnection(drvSettings.getJDBCUrl(), drvSettings.
+            getAccessLogin(),
             drvSettings.getAccessPasswd());
       } catch (Exception e) {
         throw new AdminException("SQLDriver.openConnection",
@@ -121,7 +147,7 @@ public class SQLDriver extends AbstractDomainDriver {
   }
 
   /**
-   * @param m_User
+   * @param ud
    * @return String
    */
   public String createUser(UserDetail ud) throws Exception {
@@ -136,8 +162,7 @@ public class SQLDriver extends AbstractDomainDriver {
       return idAsString(userId);
     } catch (Exception e) {
       throw new AdminException("SQLDriver.createUser",
-          SilverpeasException.ERROR, "admin.EX_ERR_ADD_USER", ud
-          .getFirstName()
+          SilverpeasException.ERROR, "admin.EX_ERR_ADD_USER", ud.getFirstName()
           + " " + ud.getLastName(), e);
     } finally {
       this.closeConnection();
@@ -163,7 +188,7 @@ public class SQLDriver extends AbstractDomainDriver {
   }
 
   /**
-   * @param m_User
+   * @param uf
    */
   public void updateUserFull(UserFull uf) throws Exception {
     try {
@@ -191,22 +216,19 @@ public class SQLDriver extends AbstractDomainDriver {
         if (Authentication.ENC_TYPE_UNIX.equals(passwordEncryption)
             && !uf.getPassword().equals(fromPwd)) {
           toPwd = UnixMD5Crypt.crypt(uf.getPassword());
-        } else if (Authentication.ENC_TYPE_MD5
-            .equals(passwordEncryption)
+        } else if (Authentication.ENC_TYPE_MD5.equals(passwordEncryption)
             && !uf.getPassword().equals(fromPwd)) {
           toPwd = CryptMD5.crypt(uf.getPassword());
         } else {
           toPwd = uf.getPassword();
         }
-        localUserMgr
-            .updateUserPassword(openedConnection, userId, toPwd);
+        localUserMgr.updateUserPassword(openedConnection, userId, toPwd);
         localUserMgr.updateUserPasswordValid(openedConnection, userId,
             uf.isPasswordValid());
       }
     } catch (Exception e) {
       throw new AdminException("SQLDriver.updateUserFull",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", uf
-          .getFirstName()
+          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", uf.getFirstName()
           + " " + uf.getLastName(), e);
     } finally {
       this.closeConnection();
@@ -214,7 +236,7 @@ public class SQLDriver extends AbstractDomainDriver {
   }
 
   /**
-   * @param m_User
+   * @param ud
    */
   public void updateUserDetail(UserDetail ud) throws Exception {
     try {
@@ -222,8 +244,7 @@ public class SQLDriver extends AbstractDomainDriver {
       localUserMgr.updateUser(openedConnection, ud);
     } catch (Exception e) {
       throw new AdminException("SQLDriver.updateUserDetail",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", ud
-          .getFirstName()
+          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", ud.getFirstName()
           + " " + ud.getLastName(), e);
     } finally {
       this.closeConnection();
@@ -284,14 +305,18 @@ public class SQLDriver extends AbstractDomainDriver {
     }
   }
 
+  @Override
+  public String[] getUserMemberGroupIds(String userId) throws Exception {
+    return new String[0];
+  }
+
   /**
    * @return User[]
    */
   public UserDetail[] getAllUsers() throws Exception {
     try {
       this.openConnection();
-      return (UserDetail[]) (localUserMgr.getAllUsers(openedConnection)
-          .toArray(new UserDetail[0]));
+      return (UserDetail[]) (localUserMgr.getAllUsers(openedConnection).toArray(new UserDetail[0]));
     } catch (Exception e) {
       throw new AdminException("SQLDriver.getAllUsers",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_USERS", e);
@@ -309,12 +334,10 @@ public class SQLDriver extends AbstractDomainDriver {
     } else {
       try {
         this.openConnection();
-        return (UserDetail[]) (localUserMgr.getUsersBySpecificProperty(
-            openedConnection, property.getMapParameter(),
-            propertyValue).toArray(new UserDetail[0]));
+        return localUserMgr.getUsersBySpecificProperty( openedConnection, property.getMapParameter(),
+            propertyValue).toArray(new UserDetail[0]);
       } catch (Exception e) {
-        throw new AdminException(
-            "SQLDriver.getUsersBySpecificProperty",
+        throw new AdminException("SQLDriver.getUsersBySpecificProperty",
             SilverpeasException.ERROR, "admin.EX_ERR_GET_USERS", e);
       } finally {
         this.closeConnection();
@@ -322,8 +345,27 @@ public class SQLDriver extends AbstractDomainDriver {
     }
   }
 
+  @Override
+  public UserDetail[] getUsersByQuery(Map<String, String> query) throws Exception {
+    return new UserDetail[0];
+  }
+
+  @Override
+  public Group importGroup(String groupName) throws Exception {
+    return null;
+  }
+
+  @Override
+  public void removeGroup(String groupId) throws Exception {
+  }
+
+  @Override
+  public Group synchroGroup(String groupId) throws Exception {
+    return null;
+  }
+
   /**
-   * @param m_Group
+   * @param group
    * @return String
    */
   public String createGroup(Group group) throws Exception {
@@ -336,15 +378,16 @@ public class SQLDriver extends AbstractDomainDriver {
       theGrpIdStr = Integer.toString(theGrpId);
       // Add the users in the group
       String[] asUserIds = group.getUserIds();
-      for (int nI = 0; nI < asUserIds.length; nI++)
-        if (asUserIds[nI] != null && asUserIds[nI].length() > 0)
+      for (int nI = 0; nI < asUserIds.length; nI++) {
+        if (asUserIds[nI] != null && asUserIds[nI].length() > 0) {
           addUserInGroup(asUserIds[nI], theGrpIdStr);
+        }
+      }
 
       return theGrpIdStr;
     } catch (Exception e) {
       throw new AdminException("SQLDriver.createGroup",
-          SilverpeasException.ERROR, "admin.EX_ERR_ADD_GROUP", group
-          .getName(), e);
+          SilverpeasException.ERROR, "admin.EX_ERR_ADD_GROUP", group.getName(), e);
     } finally {
       this.closeConnection();
     }
@@ -380,7 +423,7 @@ public class SQLDriver extends AbstractDomainDriver {
   }
 
   /**
-   * @param m_Group
+   * @param group
    */
   public void updateGroup(Group group) throws Exception {
     List<String> alAddUsers = new ArrayList<String>();
@@ -388,9 +431,10 @@ public class SQLDriver extends AbstractDomainDriver {
 
     try {
       if (group == null || group.getName().length() == 0
-          || group.getSpecificId().length() == 0)
+          || group.getSpecificId().length() == 0) {
         throw new AdminException("SQLDriver.updateGroup",
             SilverpeasException.ERROR, "admin.EX_ERR_INVALID_GROUP");
+      }
 
       this.openConnection();
 
@@ -398,25 +442,28 @@ public class SQLDriver extends AbstractDomainDriver {
       localGroupMgr.updateGroup(openedConnection, group);
 
       // Update the users if necessary
-      List<String> asOldUsersId = localGroupUserRelMgr
-          .getDirectUserIdsOfGroup(openedConnection, groupId);
+      List<String> asOldUsersId = localGroupUserRelMgr.getDirectUserIdsOfGroup(openedConnection,
+          groupId);
       // Compute the users list
       String[] asNewUsersId = group.getUserIds();
 
       for (int nJ = 0; nJ < asNewUsersId.length; nJ++) {
-        if (!asOldUsersId.remove(asNewUsersId[nJ]))
+        if (!asOldUsersId.remove(asNewUsersId[nJ])) {
           alAddUsers.add(asNewUsersId[nJ]);
+        }
       }
 
       // Remove the users that are not in this group anymore
-      for (int nI = 0; nI < asOldUsersId.size(); nI++)
+      for (int nI = 0; nI < asOldUsersId.size(); nI++) {
         localGroupUserRelMgr.removeGroupUserRel(openedConnection,
             groupId, idAsInt(((String) asOldUsersId.get(nI))));
+      }
 
       // Add the new users of the group
-      for (int nI = 0; nI < alAddUsers.size(); nI++)
+      for (int nI = 0; nI < alAddUsers.size(); nI++) {
         localGroupUserRelMgr.createGroupUserRel(openedConnection,
             groupId, idAsInt(((String) alAddUsers.get(nI))));
+      }
     } catch (Exception e) {
       throw new AdminException("SQLDriver.updateGroup",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_GROUP",
@@ -437,8 +484,7 @@ public class SQLDriver extends AbstractDomainDriver {
           idAsInt(groupId));
       if (valret != null) {
         // Get the selected users for this group
-        List<String> asUsersId = localGroupUserRelMgr
-            .getDirectUserIdsOfGroup(openedConnection,
+        List<String> asUsersId = localGroupUserRelMgr.getDirectUserIdsOfGroup(openedConnection,
             idAsInt(groupId));
         valret.setUserIds((String[]) asUsersId.toArray(new String[0]));
       }
@@ -482,8 +528,7 @@ public class SQLDriver extends AbstractDomainDriver {
 
       for (Group theGroup : ar) {
         // Get the selected users for this group
-        List<String> asUsersId = localGroupUserRelMgr
-            .getDirectUserIdsOfGroup(openedConnection,
+        List<String> asUsersId = localGroupUserRelMgr.getDirectUserIdsOfGroup(openedConnection,
             idAsInt(theGroup.getSpecificId()));
         theGroup.setUserIds((String[]) asUsersId.toArray(new String[0]));
       }
@@ -508,8 +553,7 @@ public class SQLDriver extends AbstractDomainDriver {
 
       for (Group theGroup : ar) {
         // Get the selected users for this group
-        List<String> asUsersId = localGroupUserRelMgr
-            .getDirectUserIdsOfGroup(openedConnection,
+        List<String> asUsersId = localGroupUserRelMgr.getDirectUserIdsOfGroup(openedConnection,
             idAsInt(theGroup.getSpecificId()));
         theGroup.setUserIds((String[]) asUsersId.toArray(new String[0]));
       }
@@ -532,8 +576,7 @@ public class SQLDriver extends AbstractDomainDriver {
       List<Group> ar = localGroupMgr.getDirectSubGroups(openedConnection, -1);
       for (Group theGroup : ar) {
         // Get the selected users for this group
-        List<String> asUsersId = localGroupUserRelMgr
-            .getDirectUserIdsOfGroup(openedConnection,
+        List<String> asUsersId = localGroupUserRelMgr.getDirectUserIdsOfGroup(openedConnection,
             idAsInt(theGroup.getSpecificId()));
         theGroup.setUserIds((String[]) asUsersId.toArray(new String[0]));
       }
@@ -630,7 +673,7 @@ public class SQLDriver extends AbstractDomainDriver {
           SilverpeasException.ERROR, "admin.EX_ERR_ROLLBACK", e);
     }
   }
-  
+
   public List<String> getUserAttributes() throws Exception {
     return Arrays.asList(getPropertiesNames());
   }

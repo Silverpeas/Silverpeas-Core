@@ -178,4 +178,7 @@ public class RandomGenerator {
     beforeDate.add(Calendar.DAY_OF_MONTH, -1 - random.nextInt(10));
     return date;
   }
+
+  private RandomGenerator() {
+  }
 }

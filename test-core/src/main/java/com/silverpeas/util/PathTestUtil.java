@@ -48,8 +48,10 @@ public class PathTestUtil {
       TARGET_DIR =
           System.getProperty("basedir") + File.separatorChar + "target" + File.separatorChar;
     } catch (IOException ex) {
-      Logger.getLogger(PathTestUtil.class.getName())
-          .log(Level.SEVERE, null, ex);
+      Logger.getLogger(PathTestUtil.class.getName()).log(Level.SEVERE, null, ex);
     }
+  }
+
+  private PathTestUtil() {
   }
 }
