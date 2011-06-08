@@ -117,6 +117,11 @@ public class Date extends java.util.Date implements Datable<Date>, Cloneable {
   }
 
   @Override
+  public String toShortISO8601() {
+    return DateUtil.formatAsISO8601Day(this);
+  }
+
+  @Override
   public String toICal() {
     return DateUtil.formatAsICalDay(this);
   }

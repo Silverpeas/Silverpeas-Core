@@ -28,6 +28,7 @@ import com.silverpeas.calendar.CalendarEventRecurrence;
 import com.silverpeas.calendar.DateTime;
 import com.silverpeas.calendar.Date;
 import com.silverpeas.export.ExportDescriptor;
+import com.silverpeas.export.ExportException;
 import com.silverpeas.export.ExporterFactory;
 import java.io.IOException;
 import java.util.Arrays;
@@ -228,6 +229,27 @@ public class ICalExporterTest {
     String content = FileUtils.readFileToString(icsFile);
     assertThat(content, describes(event));
   }
+  
+  @Test
+  public void exportOneEventOnDayStartingAtAGivenTime() throws Exception {
+    CalendarEvent event = anEventAt(DateTime.now()).withTitle("toto").withPriority(10);
+    exporter.export(descriptor, event);
+    File icsFile = new File(icsPath);
+    assertThat(icsFile.exists(), is(true));
+    String content = FileUtils.readFileToString(icsFile);
+    assertThat(content, describes(event));
+  }
+  
+  /**
+   * An event defined on a day cannot have an end date in iCal.
+   * @throws Exception if the ical export of the event failed.
+   */
+  @Test(expected=ExportException.class)
+  public void exportOneEventOnDayEndingAtAGivenTime() throws Exception {
+    CalendarEvent event = anEventAt(Date.today()).endingAt(DateTime.now()).withTitle("toto").
+        withPriority(10);
+    exporter.export(descriptor, event);
+  }
 
   private CalendarEvent generateEventWithTitle(String title, boolean onDay) {
     CalendarEvent event;
@@ -237,8 +259,8 @@ public class ICalExporterTest {
     } else {
       Calendar endingDate = Calendar.getInstance();
       endingDate.add(Calendar.HOUR_OF_DAY, 2);
-      event = anEventAt(new DateTime((startingDate.getTime())));
-      event.endingAt(new DateTime(endingDate.getTime()));
+      event = anEventAt(new DateTime((startingDate.getTime()))).
+          endingAt(new DateTime(endingDate.getTime()));
     }
     event.withTitle(title).withPriority(10);
     event.getAttendees().add("emmanuel.hugonnet@silverpeas.com");

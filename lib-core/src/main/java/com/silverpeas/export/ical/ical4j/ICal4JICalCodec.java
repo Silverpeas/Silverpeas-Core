@@ -23,9 +23,9 @@
  */
 package com.silverpeas.export.ical.ical4j;
 
+import net.fortuna.ical4j.model.property.TzId;
 import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.Property;
-import net.fortuna.ical4j.model.parameter.TzId;
 import java.util.TimeZone;
 import com.silverpeas.export.EncodingException;
 import com.silverpeas.calendar.CalendarEvent;
@@ -38,9 +38,9 @@ import java.util.List;
 import javax.inject.Named;
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;
-import net.fortuna.ical4j.model.CategoryList;
 import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.Recur;
+import net.fortuna.ical4j.model.TextList;
 import net.fortuna.ical4j.model.TimeZoneRegistry;
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.component.VEvent;
@@ -81,12 +81,14 @@ public class ICal4JICalCodec implements ICalCodec {
     List<VEvent> iCalEvents = new ArrayList<VEvent>();
     for (CalendarEvent event : events) {
       Date startDate = anICal4JDateCodec().encode(event.getStartDate());
-      Date enDate = anICal4JDateCodec().encode(event.getEndDate());
-      VEvent iCalEvent = new VEvent(startDate, enDate, event.getTitle());
-      iCalEvent.getProperties().getProperty(Property.DTSTART).getParameters().add(asTzId(event.
-          getStartDate().getTimeZone()));
-      iCalEvent.getProperties().getProperty(Property.DTEND).getParameters().add(asTzId(event.
-          getStartDate().getTimeZone()));
+      Date endDate = anICal4JDateCodec().encode(event.getEndDate());
+      VEvent iCalEvent;
+      if (event.isOnAllDay() && startDate.equals(endDate)) {
+        iCalEvent = new VEvent(startDate, event.getTitle());
+      } else {
+        iCalEvent = new VEvent(startDate, endDate, event.getTitle());
+      }
+      iCalEvent.getProperties().add(asTzId(event.getStartDate().getTimeZone()));
 
       // Generate UID
       try {
@@ -122,10 +124,7 @@ public class ICal4JICalCodec implements ICalCodec {
       }
 
       // Add Categories
-      CategoryList categoryList = new CategoryList();
-      for (String category : event.getCategories().asList()) {
-        categoryList.add(category);
-      }
+      TextList categoryList = new TextList(event.getCategories().asArray());
       if (!categoryList.isEmpty()) {
         iCalEvent.getProperties().add(new Categories(categoryList));
       }
