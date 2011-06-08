@@ -23,35 +23,33 @@
  */
 package com.silverpeas.export.ical;
 
+import org.hamcrest.Matcher;
+import org.hamcrest.Factory;
 import com.silverpeas.calendar.CalendarEventRecurrence;
 import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.calendar.RecurrencePeriod;
-import com.silverpeas.calendar.DateTime;
 import com.silverpeas.calendar.Datable;
 import com.silverpeas.calendar.CalendarEventCategories;
+import com.silverpeas.calendar.Date;
 import com.silverpeas.calendar.DayOfWeek;
 import com.silverpeas.calendar.DayOfWeekOccurrence;
 import java.util.List;
-import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
+import org.hamcrest.TypeSafeMatcher;
 import static com.silverpeas.calendar.CalendarEventRecurrence.*;
 import static com.silverpeas.calendar.DayOfWeekOccurrence.*;
 
 /**
- *
+ * A matcher of a VEVENT instruction in an iCal calendar with a Silverpeas calendar event.
  */
-public class CalendarEventMatcher extends BaseMatcher<String> {
+public class CalendarEventMatcher extends TypeSafeMatcher<String> {
 
   private CalendarEvent expectedEvent;
   private StringBuilder failureMessage = new StringBuilder();
 
-  public static CalendarEventMatcher describes(final CalendarEvent event) {
+  @Factory
+  public static Matcher<String> describes(final CalendarEvent event) {
     return new CalendarEventMatcher(event);
-  }
-
-  @Override
-  public boolean matches(final Object item) {
-    return matches((String) item);
   }
 
   @Override
@@ -59,7 +57,8 @@ public class CalendarEventMatcher extends BaseMatcher<String> {
     description.appendText(failureMessage.toString());
   }
 
-  public boolean matches(final String actualICalContent) {
+  @Override
+  public boolean matchesSafely(String actualICalContent) {
     if (!actualICalContent.contains("BEGIN:VEVENT")) {
       failureMessage.append("BEGIN:VEVENT");
       return false;
@@ -73,11 +72,17 @@ public class CalendarEventMatcher extends BaseMatcher<String> {
       return false;
     }
     if (!actualICalContent.contains("DTSTART" + asIcalDate(expectedEvent.getStartDate()) + "\r\n")) {
-      failureMessage.append("DTSTART:").append(asIcalDate(expectedEvent.getStartDate()));
+      failureMessage.append("DTSTART").append(asIcalDate(expectedEvent.getStartDate()));
       return false;
     }
-    if (!actualICalContent.contains("DTEND" + asIcalDate(expectedEvent.getEndDate()) + "\r\n")) {
-      failureMessage.append("DTEND:").append(asIcalDate(expectedEvent.getEndDate()));
+    if (!expectedEvent.isOnAllDay() &&
+        !actualICalContent.contains("DTEND" + asIcalDate(expectedEvent.getEndDate()) + "\r\n")) {
+      failureMessage.append("DTEND").append(asIcalDate(expectedEvent.getEndDate()));
+      return false;
+    }
+    String timeZone = expectedEvent.getStartDate().getTimeZone().getID();
+    if (!actualICalContent.contains("TZID:" + timeZone + "\r\n")) {
+      failureMessage.append("TZID:").append(timeZone);
       return false;
     }
     if (!actualICalContent.contains(asIcalCategories(expectedEvent.getCategories()))) {
@@ -110,6 +115,9 @@ public class CalendarEventMatcher extends BaseMatcher<String> {
       rrule.append(";COUNT=").append(recurrence.getRecurrenceCount());
     } else if (recurrence.getEndDate() != NO_RECURRENCE_END_DATE) {
       rrule.append(";UNTIL=").append(recurrence.getEndDate().toICalInUTC());
+    }
+    if (recurrence.getFrequency().getInterval() > 1) {
+      rrule.append(";INTERVAL=").append(recurrence.getFrequency().getInterval());
     }
     List<DayOfWeekOccurrence> daysOfWeek = recurrence.getDaysOfWeek();
     if (!daysOfWeek.isEmpty()) {
@@ -154,9 +162,6 @@ public class CalendarEventMatcher extends BaseMatcher<String> {
         freq += "YEARLY";
         break;
     }
-    if (period.getInterval() > 1) {
-      freq += ";INTERVAL=" + period.getInterval();
-    }
     return freq;
   }
 
@@ -190,10 +195,10 @@ public class CalendarEventMatcher extends BaseMatcher<String> {
 
   private String asIcalDate(final Datable<?> aDate) {
     String icalDate;
-    if (aDate instanceof DateTime) {
-      icalDate = ";TZID=Europe/Paris:";
+    if (aDate instanceof Date) {
+      icalDate = ";VALUE=DATE:";
     } else {
-      icalDate = ";VALUE=DATE;TZID=Europe/Paris:";
+      icalDate = ":";
     }
     icalDate += aDate.toICal();
     return icalDate;
