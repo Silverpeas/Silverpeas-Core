@@ -15,4 +15,4 @@ insert into ST_Domain(id, name, description, propFileName, className, authentica
 values             (-1, 'internal', 'Do not remove - Used by Silverpeas engine', '-', '-', '-', '0', '');
 
 insert into ST_Domain(id, name, description, propFileName, className, authenticationServer, theTimeStamp, silverpeasServerURL)
-values             (0, 'domainSilverpeas', 'default domain for Silverpeas', 'com.stratelia.silverpeas.domains.domainSP', 'com.silverpeas.domains.silverpeasdriver.SilverpeasDriver', 'autDomainSP', '0', '${URLSERVER}');
+values             (0, 'domainSilverpeas', 'default domain for Silverpeas', 'com.stratelia.silverpeas.domains.domainSP', 'com.silverpeas.domains.silverpeasdriver.SilverpeasDomainDriver', 'autDomainSP', '0', '${URLSERVER}');
