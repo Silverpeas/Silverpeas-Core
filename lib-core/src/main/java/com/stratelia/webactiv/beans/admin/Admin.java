@@ -58,7 +58,6 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.containerManager.ContainerManager;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.domains.ldapdriver.LDAPSynchroUserItf;
-import com.stratelia.silverpeas.domains.silverpeasdriver.DomainSPSchemaPool;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
@@ -2807,8 +2806,7 @@ public final class Admin {
    */
   public String getUserIdByAuthenticationKey(String authenticationKey) throws Exception {
 
-    Hashtable<String, String> userParameters = domainDriverManager.authenticate(
-        authenticationKey);
+    Map<String, String> userParameters = domainDriverManager.authenticate(authenticationKey);
     String login = userParameters.get("login");
     String domainId = userParameters.get("domainId");
     return userManager.getUserIdByLoginAndDomain(domainDriverManager, login, domainId);
@@ -2829,7 +2827,7 @@ public final class Admin {
       throws Exception {
     SilverTrace.info("admin", "admin.getUserFull", "root.MSG_GEN_ENTER_METHOD",
         "domainId=" + domainId);
-    AbstractDomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(
+    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(
         domainId));
 
     return synchroDomain.getUserFull(specificId);
@@ -2899,13 +2897,12 @@ public final class Admin {
    */
   public String deleteUser(String sUserId) throws AdminException {
     try {
-      if (sUserId.equals(m_sDAPIGeneralAdminId)) {
+      if (m_sDAPIGeneralAdminId.equals(sUserId)) {
         SilverTrace.warn("admin", "Admin.deleteUser",
             "admin.MSG_WARN_TRY_TO_DELETE_GENERALADMIN");
         return null;
-      } else {
-        return deleteUser(sUserId, false);
       }
+      return deleteUser(sUserId, false);
 
     } catch (Exception e) {
       throw new AdminException("Admin.deleteUser", SilverpeasException.ERROR,
@@ -2916,8 +2913,7 @@ public final class Admin {
   /**
    * Delete the given user from silverpeas and specific domain
    */
-  public String deleteUser(String sUserId, boolean onlyInSilverpeas)
-      throws AdminException {
+  public String deleteUser(String sUserId, boolean onlyInSilverpeas) throws AdminException {
     UserDetail user = null;
 
     try {
@@ -2935,17 +2931,14 @@ public final class Admin {
       }
 
       // Delete the user
-      String sReturnUserId = userManager.deleteUser(domainDriverManager, user,
-          onlyInSilverpeas);
+      String sReturnUserId = userManager.deleteUser(domainDriverManager, user, onlyInSilverpeas);
 
       // Commit the transaction
       domainDriverManager.commit();
       if (user.getDomainId() != null && !onlyInSilverpeas) {
         domainDriverManager.commit(user.getDomainId());
       }
-
       cache.opRemoveUser(user);
-
       return sReturnUserId;
     } catch (Exception e) {
       try {
@@ -3267,7 +3260,7 @@ public final class Admin {
   public long getDomainActions(String domainId) throws AdminException {
     try {
       if (domainId != null && domainId.equals("-1")) {
-        return AbstractDomainDriver.ACTION_MASK_MIXED_GROUPS;
+        return DomainDriver.ACTION_MASK_MIXED_GROUPS;
       }
       return domainDriverManager.getDomainActions(domainId);
     } catch (Exception e) {
@@ -3367,19 +3360,17 @@ public final class Admin {
 
     try {
       // Authenticate the given user
-      Hashtable<String, String> loginDomain = domainDriverManager.authenticate(sKey, removeKey);
-      if ((!loginDomain.containsKey("login"))
-          || (!loginDomain.containsKey("domainId"))) {
-        throw new AdminException("Admin.authenticate",
-            SilverpeasException.WARNING, "admin.MSG_ERR_AUTHENTICATE_USER",
-            "key : '" + sKey + "'");
+      Map<String, String> loginDomain = domainDriverManager.authenticate(sKey, removeKey);
+      if ((!loginDomain.containsKey("login")) || (!loginDomain.containsKey("domainId"))) {
+        throw new AdminException("Admin.authenticate", SilverpeasException.WARNING,
+            "admin.MSG_ERR_AUTHENTICATE_USER", "key : '" + sKey + "'");
       }
 
       // Get the Silverpeas userId
       String sLogin = loginDomain.get("login");
       String sDomainId = loginDomain.get("domainId");
 
-      AbstractDomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(
+      DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(
           sDomainId));
       // Get the user Id or import it if the domain accept it
       try {
@@ -5052,7 +5043,7 @@ public final class Admin {
       String propertyName, String propertyValue) throws AdminException {
     int iDomainId = Integer.parseInt(domainId);
     UserDetail[] users = new UserDetail[0];
-    AbstractDomainDriver domainDriver = null;
+    DomainDriver domainDriver = null;
     try {
       domainDriver = domainDriverManager.getDomainDriver(iDomainId);
     } catch (Exception e) {
@@ -5101,7 +5092,7 @@ public final class Admin {
   // Performs a differencial synchro
   public void difSynchro(String domainId) throws Exception {
     String sReport = "Dif User synchronization : \n";
-    AbstractDomainDriver synchroDomain;
+    DomainDriver synchroDomain;
     String specificId;
     String silverpeasId;
     UserDetail[] distantUDs;
@@ -5372,8 +5363,7 @@ public final class Admin {
   /**
    *
    */
-  public String synchronizeGroup(String groupId, boolean recurs)
-      throws Exception {
+  public String synchronizeGroup(String groupId, boolean recurs) throws Exception {
     SilverTrace.info("admin", "admin.synchronizeGroup",
         "root.MSG_GEN_ENTER_METHOD", "GroupId=" + groupId);
     Group theGroup = getGroup(groupId);
@@ -5381,7 +5371,7 @@ public final class Admin {
     if (theGroup.isSynchronized()) {
       synchronizeGroupByRule(groupId, false);
     } else {
-      AbstractDomainDriver synchroDomain =
+      DomainDriver synchroDomain =
           domainDriverManager.getDomainDriver(Integer.parseInt(theGroup.getDomainId()));
       Group gr = synchroDomain.synchroGroup(theGroup.getSpecificId());
 
@@ -5400,7 +5390,7 @@ public final class Admin {
       String askedParentId, boolean recurs, boolean isIdKey) throws Exception {
     SilverTrace.info("admin", "admin.synchronizeImportGroup",
         "root.MSG_GEN_ENTER_METHOD", "groupKey=" + groupKey);
-    AbstractDomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(
+    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(
         domainId));
     Group gr;
     String groupId;
@@ -5472,13 +5462,13 @@ public final class Admin {
     SilverTrace.info("admin", "admin.synchronizeRemoveGroup",
         "root.MSG_GEN_ENTER_METHOD", "GroupId=" + groupId);
     Group theGroup = getGroup(groupId);
-    AbstractDomainDriver synchroDomain =
+    DomainDriver synchroDomain =
         domainDriverManager.getDomainDriver(Integer.parseInt(theGroup.getDomainId()));
     synchroDomain.removeGroup(theGroup.getSpecificId());
     return deleteGroupById(groupId, true);
   }
 
-  protected void internalSynchronizeGroup(AbstractDomainDriver synchroDomain,
+  protected void internalSynchronizeGroup(DomainDriver synchroDomain,
       Group latestGroup, boolean recurs) throws Exception {
     latestGroup.setUserIds(translateUserIds(latestGroup.getDomainId(),
         latestGroup.getUserIds()));
@@ -5498,16 +5488,8 @@ public final class Admin {
               groupManager.getGroupIdBySpecificIdAndDomainId(domainDriverManager,
               childs[i].getSpecificId(), latestGroup.getDomainId());
           existingGroup = getGroup(existingGroupId);
-          if (existingGroup.getSuperGroupId().equals(latestGroup.getId())) { // Only
-            // synchronize
-            // the
-            // group
-            // if
-            // latestGroup
-            // is
-            // his
-            // true
-            // parent
+          if (existingGroup.getSuperGroupId().equals(latestGroup.getId())) {
+            // Only synchronize the group if latestGroup is his true parent
             synchronizeGroup(existingGroupId, recurs);
           }
         } catch (AdminException e) // The group doesn't exist -> Import him
@@ -5536,7 +5518,7 @@ public final class Admin {
       domainDriverManager.startTransaction(false);
 
       UserDetail theUserDetail = getUserDetail(userId);
-      AbstractDomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(
+      DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(
           theUserDetail.getDomainId()));
       // Synchronize the user's infos
       UserDetail ud = synchroDomain.synchroUser(theUserDetail.getSpecificId());
@@ -5601,7 +5583,7 @@ public final class Admin {
       throws Exception {
     SilverTrace.info("admin", "admin.synchronizeImportUserByLogin",
         "root.MSG_GEN_ENTER_METHOD", "userLogin=" + userLogin);
-    AbstractDomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(
+    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(
         domainId));
     UserDetail ud = synchroDomain.importUser(userLogin);
     String userId;
@@ -5619,7 +5601,7 @@ public final class Admin {
       Exception {
     SilverTrace.info("admin", "admin.synchronizeImportUser",
         "root.MSG_GEN_ENTER_METHOD", "specificId=" + specificId);
-    AbstractDomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(
+    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(
         domainId));
     UserDetail ud = synchroDomain.getUser(specificId);
     String userId;
@@ -5635,9 +5617,8 @@ public final class Admin {
       String language) throws Exception {
     SilverTrace.info("admin", "admin.getSpecificPropertiesToImportUsers",
         "root.MSG_GEN_ENTER_METHOD", "domainId=" + domainId);
-    AbstractDomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(
+    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(
         domainId));
-
     return synchroDomain.getPropertiesToImport(language);
   }
 
@@ -5645,9 +5626,7 @@ public final class Admin {
       throws Exception {
     SilverTrace.info("admin", "admin.searchUsers", "root.MSG_GEN_ENTER_METHOD",
         "domainId=" + domainId);
-    AbstractDomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(
-        domainId));
-
+    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(domainId));
     return synchroDomain.getUsersByQuery(query);
   }
 
@@ -5662,8 +5641,8 @@ public final class Admin {
     SilverTrace.info("admin", "admin.synchronizeRemoveUser", "root.MSG_GEN_ENTER_METHOD",
         "userId=" + userId);
     UserDetail theUserDetail = getUserDetail(userId);
-    AbstractDomainDriver synchroDomain =
-        domainDriverManager.getDomainDriver(Integer.parseInt(theUserDetail.getDomainId()));
+    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(theUserDetail.
+        getDomainId()));
     synchroDomain.removeUser(theUserDetail.getSpecificId());
     deleteUser(userId, true);
     List<UserDetail> listUsersRemove = new ArrayList<UserDetail>();
@@ -5681,7 +5660,7 @@ public final class Admin {
     String sDomainSpecificErrors;
     String fromTimeStamp, toTimeStamp;
     Domain theDomain;
-    AbstractDomainDriver synchroDomain;
+    DomainDriver synchroDomain;
 
     synchronized (semaphore) {
       SilverTrace.info("admin", "admin.synchronizeSilverpeasWithDomain",
@@ -6469,7 +6448,6 @@ public final class Admin {
           "root.MSG_GEN_ENTER_METHOD",
           "RESET ALL DB CONNECTIONS ! (Scheduled : " + isScheduled + ")");
       OrganizationSchemaPool.releaseConnections();
-      DomainSPSchemaPool.releaseConnections();
       ConnectionPool.releaseConnections();
     } catch (Exception e) {
       throw new AdminException("Admin.resetAllDBConnections",
@@ -6571,7 +6549,7 @@ public final class Admin {
   /**
    * Rename component Label if necessary
    *
-   * @param name
+   * @param label
    * @param listComponents
    * @return
    */

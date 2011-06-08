@@ -21,27 +21,29 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.admin;
 
-import com.silverpeas.components.model.AbstractTestDao;
-import java.util.List;
-
-
-import org.junit.Test;
-
+import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.springframework.transaction.annotation.Transactional;
+import com.silverpeas.components.model.AbstractSpringJndiDaoTest;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.GroupProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import java.util.List;
+import org.junit.Test;
+import org.springframework.test.context.ContextConfiguration;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.*;
 
-public class UsersAndGroupsTest extends AbstractTestDao {
-
+@ContextConfiguration(locations = {"classpath:/spring-jdbc-datasource.xml",
+  "classpath:/spring-domains.xml"})
+public class UsersAndGroupsTest extends AbstractSpringJndiDaoTest {
 
   @Test
-  public void testAddUser() {
+  public void shouldAddNewUser() {
     UserDetail user = new UserDetail();
     user.setAccessLevel("A");
     user.setDomainId("0");
@@ -51,37 +53,37 @@ public class UsersAndGroupsTest extends AbstractTestDao {
     user.setLogin("neysseri");
     AdminController ac = getAdminController();
     String userId = ac.addUser(user);
-    assertEquals("2", userId);
+    assertThat(userId, is("2"));
   }
 
   @Test
-  public void testUpdateUser() {
+  public void shouldUpdateUser() {
     AdminController ac = getAdminController();
     UserDetail user = ac.getUserDetail("1");
     String newEmail = "ney@silverpeas.com";
     user.seteMail(newEmail);
     ac.updateUser(user);
     user = ac.getUserDetail("1");
-    assertEquals(newEmail, user.geteMail());
+    assertThat(user.geteMail(), is(newEmail));
   }
 
   @Test
-  public void testDeleteUser() {
+  public void shouldDeleteUser() {
     AdminController ac = getAdminController();
     String userId = ac.deleteUser("1");
-    assertEquals("1", userId);
+    assertThat(userId, is("1"));
     UserDetail user = ac.getUserDetail(userId);
-    assertEquals("R", user.getAccessLevel());
+    assertThat(user.getAccessLevel(), is("R"));
   }
 
   @Test
-  public void testAddGroup() {
+  public void shouldAddGroup() {
     AdminController ac = getAdminController();
     Group group = new Group();
     group.setDomainId("0");
     group.setName("Groupe 2");
     String groupId = ac.addGroup(group);
-    assertEquals("2", groupId);
+    assertThat(groupId, is("2"));
   }
 
   @Test
@@ -92,29 +94,29 @@ public class UsersAndGroupsTest extends AbstractTestDao {
     group.setDescription(desc);
     ac.updateGroup(group);
     group = ac.getGroupById("1");
-    assertEquals(desc, group.getDescription());
+    assertThat(group.getDescription(), is(desc));
   }
 
   @Test
-  public void testDeleteGroup() {
+  public void shouldDeleteGroup() {
     AdminController ac = getAdminController();
     ac.deleteGroupById("1");
     Group group = ac.getGroupById("1");
-    assertNull(group.getId());
+    assertThat(group.getId(), is(nullValue()));
   }
 
   @Test
-  public void testUsersInGroup() {
+  public void shouldFindUsersInGroup() {
     AdminController ac = getAdminController();
     Group subGroup = new Group();
     subGroup.setDomainId("0");
     subGroup.setName("Groupe 1-1");
     subGroup.setSuperGroupId("1");
     String groupId = ac.addGroup(subGroup);
-    assertEquals("2", groupId);
+    assertThat(groupId, is("2"));
 
     String[] subGroupIds = ac.getAllSubGroupIds("1");
-    assertEquals(subGroupIds.length, 1);
+    assertThat(subGroupIds.length, is(1));
 
     String[] userIds = new String[1];
     userIds[0] = "1";
@@ -124,13 +126,11 @@ public class UsersAndGroupsTest extends AbstractTestDao {
 
     // test if users of subgroups are indirectly attach to root group
     UserDetail[] users = ac.getAllUsersOfGroup("1");
-    assertEquals(1, users.length);
-
+    assertThat(users.length, is(1));
     subGroup.setUserIds(new String[0]);
     ac.updateGroup(subGroup);
-
     users = ac.getAllUsersOfGroup("1");
-    assertEquals(0, users.length);
+    assertThat(users.length, is(0));
   }
 
   @Test
@@ -141,18 +141,17 @@ public class UsersAndGroupsTest extends AbstractTestDao {
     ac.updateGroupProfile(profile);
     Admin admin = new Admin();
     List<String> managerIds = admin.getUserManageableGroupIds("1");
-    assertEquals(1, managerIds.size());
+    assertThat(managerIds, hasSize(1));
   }
 
   @Override
   protected String getDatasetFileName() {
     return "test-usersandgroups-dataset.xml";
   }
-  
-    private AdminController getAdminController() {
+
+  private AdminController getAdminController() {
     AdminController ac = new AdminController(null);
     ac.reloadAdminCache();
     return ac;
   }
-
 }

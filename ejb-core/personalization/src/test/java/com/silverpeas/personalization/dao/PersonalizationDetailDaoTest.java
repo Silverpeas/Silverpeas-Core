@@ -23,21 +23,23 @@
  */
 package com.silverpeas.personalization.dao;
 
+import javax.inject.Inject;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.transaction.TransactionConfiguration;
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
+import javax.sql.DataSource;
 import org.dbunit.operation.DatabaseOperation;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.naming.NamingException;
-import java.io.IOException;
-import javax.sql.DataSource;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
-import org.junit.AfterClass;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -45,33 +47,31 @@ import static org.hamcrest.Matchers.*;
 /**
  * @author ehugonnet
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"/spring-personalization.xml", "/spring-personalization-embbed-datasource.xml"})
+@TransactionConfiguration(transactionManager = "jpaTransactionManager")
 public class PersonalizationDetailDaoTest {
 
-  private static PersonalizationDetailDao dao;
-  private static ClassPathXmlApplicationContext context;
+  @Inject
+  private PersonalizationDetailDao dao;
+  @Inject
+  private DataSource dataSource;
   
   public PersonalizationDetailDaoTest() {
   }
 
-  @BeforeClass
-  public static void generalSetUp() throws IOException, NamingException, Exception {
-    context = new ClassPathXmlApplicationContext("spring-personalization.xml");
-    dao = (PersonalizationDetailDao) context.getBean("personalizationDetailDao");
-    DataSource ds = (DataSource) context.getBean("dataSource");
+  @Before
+  public void generalSetUp() throws Exception {	
     ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
-    PersonalizationDetailDaoTest.class.getClassLoader().getResourceAsStream(
-    "com/silverpeas/personalization/dao/personalization-dataset.xml")));
+        PersonalizationDetailDaoTest.class.getClassLoader().getResourceAsStream(
+        "com/silverpeas/personalization/dao/personalization-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
-    IDatabaseConnection connection = new DatabaseConnection(ds.getConnection());
-    DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet); 
-  }
-  
-   @AfterClass
-  public static void tearDownClass() throws Exception {
-    context.close();
+    IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
+    DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
   }
 
   @Test
+  @Transactional
   public void testGetPersonalizedDetail() throws Exception {
     String userId = "1000";
     UserPreferences expectedDetail = new UserPreferences(userId, "fr", "Initial", "", false,
@@ -83,11 +83,13 @@ public class PersonalizationDetailDaoTest {
     userId = "1010";
     detail = dao.readByPrimaryKey(userId);
     assertThat(detail, notNullValue());
-    expectedDetail = new UserPreferences(userId, "en", "Silverpeas", "WA47", false, true, true,  UserMenuDisplay.ALL);
+    expectedDetail = new UserPreferences(userId, "en", "Silverpeas", "WA47", false, true, true,
+        UserMenuDisplay.ALL);
     assertThat(detail, is(expectedDetail));
   }
 
   @Test
+  @Transactional
   public void testInsertPersonalizeDetail() throws Exception {
     UserPreferences expectedDetail = new UserPreferences("1020", "fr", "Test", "WA500", false,
         false, false, UserMenuDisplay.BOOKMARKS);
