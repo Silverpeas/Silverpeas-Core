@@ -139,7 +139,7 @@ public class ICal4JRecurrenceCodec {
         break;
     }
     if (dayOfWeekOccurrence.nth() != ALL_OCCURRENCES) {
-      weekday = new WeekDay(weekday.getDay(), dayOfWeekOccurrence.nth());
+      weekday = new WeekDay(weekday, dayOfWeekOccurrence.nth());
     }
     return weekday;
   }

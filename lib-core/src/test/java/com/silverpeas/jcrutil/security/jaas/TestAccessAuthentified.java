@@ -24,6 +24,8 @@
 
 package com.silverpeas.jcrutil.security.jaas;
 
+import org.junit.runner.RunWith;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.io.ByteArrayInputStream;
 import java.util.Calendar;
 
@@ -45,7 +47,8 @@ import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import static org.junit.Assert.*;
 
-@ContextConfiguration(inheritLocations=false, locations={"/spring-jaas.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(inheritLocations=false, locations={"classpath:/spring-jaas.xml", "classpath:/spring-domains.xml"})
 public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
 
   private static final String FOLDER_NAME = "SimpleTest";

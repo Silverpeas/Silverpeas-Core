@@ -24,19 +24,19 @@
 package com.stratelia.webactiv.organization;
 
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.SynchroReport;
+import com.stratelia.webactiv.util.Schema;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.SynchroReport;
-import com.stratelia.webactiv.util.Schema;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import java.util.Collection;
 
 /**
  * A Table object manages a table in a database.
@@ -198,7 +198,7 @@ public abstract class Table<T> {
    * @return
    * @throws AdminPersistenceException 
    */
-  protected ArrayList<String> getIds(String query) throws AdminPersistenceException {
+  protected List<String> getIds(String query) throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
     try {
@@ -221,7 +221,7 @@ public abstract class Table<T> {
    * @return
    * @throws AdminPersistenceException 
    */
-  protected ArrayList<String> getIds(String query, int id) throws AdminPersistenceException {
+  protected List<String> getIds(String query, int id) throws AdminPersistenceException {
     ResultSet rs = null;
 
     PreparedStatement select = null;
@@ -246,7 +246,7 @@ public abstract class Table<T> {
    * @return
    * @throws AdminPersistenceException 
    */
-  protected ArrayList<String> getIds(String query, int[] ids) throws AdminPersistenceException {
+  protected List<String> getIds(String query, int[] ids) throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
     try {
@@ -273,7 +273,7 @@ public abstract class Table<T> {
    * @return
    * @throws AdminPersistenceException 
    */
-  protected ArrayList<String> getIds(String query, int[] ids, String[] params) throws
+  protected List<String> getIds(String query, int[] ids, String[] params) throws
       AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
@@ -304,7 +304,7 @@ public abstract class Table<T> {
    * @return
    * @throws AdminPersistenceException 
    */
-  protected ArrayList<T> getRows(String query) throws AdminPersistenceException {
+  protected List<T> getRows(String query) throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
     try {
@@ -351,7 +351,7 @@ public abstract class Table<T> {
    * @return
    * @throws AdminPersistenceException 
    */
-  protected ArrayList<T> getRows(String query, int[] ids) throws
+  protected List<T> getRows(String query, int[] ids) throws
       AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
@@ -378,7 +378,7 @@ public abstract class Table<T> {
    * @return
    * @throws AdminPersistenceException 
    */
-  protected ArrayList<T> getRows(String query, String[] params)
+  protected List<T> getRows(String query, String[] params)
       throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
@@ -408,7 +408,7 @@ public abstract class Table<T> {
    * @return
    * @throws AdminPersistenceException 
    */
-  protected ArrayList<T> getRows(String query, int[] ids, String[] params)
+  protected List<T> getRows(String query, int[] ids, String[] params)
       throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
@@ -684,7 +684,7 @@ public abstract class Table<T> {
    * @return
    * @throws AdminPersistenceException 
    */
-  protected ArrayList<T> getMatchingRows(String returnedColumns, String[] matchColumns,
+  protected List<T> getMatchingRows(String returnedColumns, String[] matchColumns,
       String[] matchValues) throws AdminPersistenceException {
     String query = "select " + returnedColumns + " from " + tableName;
     ArrayList<String> notNullValues = new ArrayList<String>();
@@ -739,7 +739,7 @@ public abstract class Table<T> {
     return result;
   }
 
-  protected ArrayList<T> getRows(ResultSet rs) throws SQLException {
+  protected List<T> getRows(ResultSet rs) throws SQLException {
     ArrayList<T> result = new ArrayList<T>();
     while (rs.next()) {
       result.add(fetchRow(rs));
@@ -747,7 +747,7 @@ public abstract class Table<T> {
     return result;
   }
 
-  protected ArrayList<String> getIds(ResultSet rs) throws SQLException {
+  protected List<String> getIds(ResultSet rs) throws SQLException {
     ArrayList<String> result = new ArrayList<String>();
     while (rs.next()) {
       result.add(String.valueOf(rs.getInt(1)));

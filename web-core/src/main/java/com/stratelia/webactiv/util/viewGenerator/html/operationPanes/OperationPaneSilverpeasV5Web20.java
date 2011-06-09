@@ -27,10 +27,10 @@ package com.stratelia.webactiv.util.viewGenerator.html.operationPanes;
 import java.util.Vector;
 
 import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
 
+  private final static String line = "</ul>\n<ul>";
   /**
    * Constructor declaration
    * @see
@@ -65,7 +65,7 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
    * @see
    */
   public void addLine() {
-    getStack().add("</ul>\n<ul>");
+    getStack().add(line);
   }
 
   /**
@@ -87,8 +87,20 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
     result.append("<div id=\"menuwithgroups\" class=\"yuimenu\">");
     result.append("<div class=\"bd\">");
     result.append("<ul class=\"first-of-type\">");
-    for (int i = 0; i < stack.size(); i++) {
-      result.append(stack.elementAt(i));
+    
+    // prevents to display a line as last entry
+    String lastElement = stack.lastElement();
+    if (lastElement.equals(line)) {
+      stack.removeElementAt(stack.size()-1);
+    }
+    
+    String lastItem = "";
+    for (String item : stack) {
+      if (!item.equals(lastItem)) {
+        // prevents to display two same items
+        result.append(item);
+      }
+      lastItem = item;
     }
     result.append("</ul>");
     result.append("</div>");

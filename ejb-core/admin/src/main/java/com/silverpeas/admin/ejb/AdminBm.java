@@ -71,4 +71,8 @@ public interface AdminBm extends EJBObject {
 
   public void addSecurityData(String securityId, String userId, String domainId, boolean persistent)
       throws RemoteException;
+  
+  public String addComponentInst(ComponentInst componentInst, String userId) throws RemoteException;
+  
+  public void updateComponentOrderNum(String sComponentId, int orderNum) throws RemoteException;
 }

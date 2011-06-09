@@ -304,13 +304,6 @@ public class GroupManager {
         group.setDescription(gr.description);
         group.setRule(gr.rule);
       }
-
-      // Get the father id
-      /*
-       * gr = ddManager.organization.group.getSuperGroup(idAsInt(sGroupId)); if(gr != null)
-       * group.setSuperGroupId(idAsString(gr.id));
-       */
-
       // Get the selected users for this group
       String[] asUsersId = ddManager.organization.user.getDirectUserIdsOfGroup(idAsInt(sGroupId));
       if (asUsersId != null) {

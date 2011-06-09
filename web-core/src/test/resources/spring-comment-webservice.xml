@@ -43,5 +43,6 @@
   <bean id="notificationPublisherFactory" class="com.silverpeas.notification.NotificationPublisherFactory"
         factory-method="getFactory"/>
   <import resource="spring-personalization.xml" />
+  <import resource="spring-jdbc-datasource.xml" />
 </beans>
 

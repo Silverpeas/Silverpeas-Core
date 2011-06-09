@@ -26,7 +26,8 @@
 -->
 
 <dataset>
-  <st_domain id="0" name="Silverpeas" propfilename="com.stratelia.silverpeas.domains.domainSP" classname="com.stratelia.silverpeas.domains.silverpeasdriver.SilverpeasDriver" authenticationserver="autDomainSP" />
+  <st_domain id="0" name="Silverpeas" propfilename="com.stratelia.silverpeas.domains.domainSP" 
+  classname="com.silverpeas.domains.silverpeasdriver.SilverpeasDomainDriver" authenticationserver="autDomainSP" />
   <st_user id="1" domainid="0" specificid="1" lastname="Administrateur" login="SilverAdmin" accesslevel="A" />
   <domainsp_user id="1" lastname="Administrateur" login="SilverAdmin" />
   <st_group id="1" domainid="0" specificid="1" name="Groupe 1"/>	

@@ -121,7 +121,7 @@ public class TestSatusDao extends AbstractTestDao {
       connexion = getConnection();
       Status status = dao.getStatus(connexion.getConnection(), 3);
       assertNotNull("Status should exist", status);
-      dao.UpdateStatus(connexion.getConnection(), updateStatus);
+      dao.updateStatus(connexion.getConnection(), updateStatus);
       status = dao.getStatus(connexion.getConnection(), 3);
       assertEquals(status, updateStatus);
 

@@ -56,8 +56,8 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
 import com.stratelia.webactiv.beans.admin.AdminController;
+import com.stratelia.webactiv.beans.admin.DomainDriver;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
@@ -167,7 +167,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   }
 
   public boolean isUserDomainRW() {
-    return (getDomainActions() & AbstractDomainDriver.ACTION_CREATE_USER) != 0;
+    return (getDomainActions() & DomainDriver.ACTION_CREATE_USER) != 0;
   }
 
   public long getDomainActions() {
@@ -186,9 +186,9 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   }
 
   public void modifyUser(String idUser, String userLastName, String userFirstName,
-      String userEMail,
-      String userAccessLevel, String oldPassword, String newPassword, String userLoginQuestion,
-      String userLoginAnswer, Map<String, String> properties) throws AuthenticationException {
+      String userEMail, String userAccessLevel, String oldPassword, String newPassword,
+      String userLoginQuestion, String userLoginAnswer, Map<String, String> properties)
+      throws AuthenticationException {
     SilverTrace.info("personalizationPeas", "PersonalizationPeasSessionController.modifyUser()",
         "root.MSG_GEN_ENTER_METHOD", "UserId=" + idUser + " userLastName=" + userLastName
             + " userFirstName=" + userFirstName + " userEMail=" + userEMail + " userAccessLevel="
@@ -369,15 +369,16 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   private void acceptInvitationNotif(int relationShipId) {
     RelationShip curRelation = invitationService.getRelationShip(relationShipId);
     try {
-      //Retrieve sender information
+      // Retrieve sender information
       UserDetail senderUser = getUserDetail();
       String displayedName = senderUser.getDisplayedName();
-      
+
       NotificationSender notificationSender = new NotificationSender(null);
       // Send a notification to alert people about new relationship.
       Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-      String subject = displayedName + " " + getString("myProfile.invitations.notification.accept.subject");
-      
+      String subject =
+          displayedName + " " + getString("myProfile.invitations.notification.accept.subject");
+
       SilverTrace.debug("MyProfilSessionController", MyProfilSessionController.class.getName() +
           ".getAlertNotificationMetaData()", "root.MSG_GEN_PARAM_VALUE", "subject = " + subject);
 
