@@ -23,32 +23,32 @@
  */
 package com.silverpeas.calendar;
 
-import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
+import org.hamcrest.Factory;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 
 /**
- *
+ * A matcher of datable objects between them, whatever their concrete type (a date or a date time).
  */
-public class DatableMatcher extends BaseMatcher<Datable<?>> {
+public class DatableMatcher extends TypeSafeMatcher<Datable<?>> {
 
   private final DateOperator operator;
   private final Datable<?> expected;
 
-  public static DatableMatcher isBefore(final Datable<?> expected) {
+  @Factory
+  public static Matcher<Datable<?>> isBefore(final Datable<?> expected) {
     return new DatableMatcher(DateOperator.BEFORE, expected);
   }
 
-  public static DatableMatcher isAfter(final Datable<?> expected) {
+  @Factory
+  public static Matcher<Datable<?>> isAfter(final Datable<?> expected) {
     return new DatableMatcher(DateOperator.AFTER, expected);
   }
 
-  public static DatableMatcher isEqualTo(final Datable<?> expected) {
+  @Factory
+  public static Matcher<Datable<?>> isEqualTo(final Datable<?> expected) {
     return new DatableMatcher(DateOperator.EQUAL, expected);
-  }
-
-  @Override
-  public boolean matches(Object item) {
-    return matches((Datable<?>) item);
   }
 
   @Override
@@ -74,7 +74,8 @@ public class DatableMatcher extends BaseMatcher<Datable<?>> {
     this.expected = expected;
   }
 
-  private boolean matches(final Datable<?> actual) {
+  @Override
+  public boolean matchesSafely(final Datable<?> actual) {
     if (!actual.getClass().equals(expected.getClass())) {
       return false;
     }
