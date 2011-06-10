@@ -75,11 +75,19 @@ public class ImportDescriptor extends ImportExportDescriptor {
   }
 
   /**
-   * Gets the reader with the which the resources have to be imported.
+   * Gets the reader with which the resources have to be imported.
    * @return the reader.
    */
   public Reader getReader() {
     return this.reader;
+  }
+  
+  /**
+   * Gets the input stream with which the resources have to be imported.
+   * @return the input stream.
+   */
+  public InputStream getInputStream() {
+    return this.inputStream;
   }
   
   private void setReader(final Reader reader) {

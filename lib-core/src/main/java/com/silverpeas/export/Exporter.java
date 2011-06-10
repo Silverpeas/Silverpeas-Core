@@ -38,35 +38,18 @@ import java.util.List;
 public interface Exporter<T extends Serializable> {
 
   /**
-   * Exports the specified serializable resources according to the export information carried by the
+   * Exports the specified serializable resource according to the export information carried by the
    * specified export descriptor.
-   * The serializable resources are exported by using either writer or the output stream provided by
-   * the descriptor. According to the kind of the writer or of the output stream, the way the
-   * resources are actually exported can be customized (export in a file, in a string, through a
+   * The serializable resource is exported by using either the writer or the output stream provided
+   * by the descriptor. According to the kind of the writer or of the output stream, the way the
+   * resource is actually exported can be customized (export in a file, in a string, through a
    * web service, ...).
    * Once the export is done (with success or failure), the writer and the output stream is closed.
    * @param descriptor the export descriptor in which information about the export process is
    * indicated.
-   * @param serializables the serializable resources to export.
-   * @throws ExportException when an unexpected error occurs while exporting
-   * the resources.
+   * @param serializable the serializable resource to export.
+   * @throws ExportException when an unexpected error occurs while exporting the resource.
    */
-  void export(final ExportDescriptor descriptor, final T ... serializables) throws ExportException;
-
-  /**
-   * Exports the specified list of serializable resources according to the export information carried
-   * by the specified export descriptor.
-   * The serializable resources are exported by using either writer or the output stream provided by
-   * the descriptor. According to the kind of the writer or of the output stream, the way the
-   * resources are actually exported can be customized (export in a file, in a string, through a
-   * web service, ...).
-   * Once the export is done (with success or failure), the writer and the output stream is closed.
-   * @param descriptor the export descriptor in which information about the export process is
-   * indicated.
-   * @param serializables the list of serializable resources to export.
-   * @throws ExportException when an unexpected error occurs while exporting
-   * the resources.
-   */
-  void export(final ExportDescriptor descriptor, final List<T> serializables) throws ExportException;
+  void export(final ExportDescriptor descriptor, final T serializable) throws ExportException;
 
 }

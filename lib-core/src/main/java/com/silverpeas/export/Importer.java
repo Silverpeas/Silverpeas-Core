@@ -38,15 +38,15 @@ import java.util.List;
 public interface Importer<T extends Serializable> {
 
   /**
-   * Imports the serialized resources from the reader or the input stream and the import parameters
-   * carried by the specified descriptor.
-   * The resources are deserialized each of them in an instance of T and they are returned in a list.
+   * Imports a serialized resource from either the reader or the input stream and according to the
+   * import parameters carried by the specified descriptor.
+   * The resource is deserialized in an instance of T.
    * @param descriptor the import descriptor in which information about the import process is
    * indicated.
    * @throws ImportException when an unexpected error occurs while importing
-   * the resources.
-   * @return a list of instances of T corresponfding to the imported resources.
+   * the resource.
+   * @return an instance of T corresponfding to the imported resource.
    */
-  List<T> importFrom(final ImportDescriptor descriptor) throws ImportException;
+  T importFrom(final ImportDescriptor descriptor) throws ImportException;
 
 }
