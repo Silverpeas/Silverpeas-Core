@@ -29,31 +29,14 @@ package com.stratelia.silverpeas.peasCore;
 
 import com.stratelia.webactiv.util.exception.*;
 
-/*
- * CVS Informations
- * 
- * $Id: PeasCoreRuntimeException.java,v 1.2 2002/10/28 16:45:37 neysseri Exp $
- * 
- * $Log: PeasCoreRuntimeException.java,v $
- * Revision 1.2  2002/10/28 16:45:37  neysseri
- * Branch "InterestCenters" merging
- *
- * Revision 1.1.1.1  2002/08/06 14:47:52  nchaix
- * no message
- *
- * Revision 1.1  2002/01/28 15:28:21  tleroi
- * Split clipboard and personalization
- *
- * Revision 1.2  2002/01/18 18:04:07  tleroi
- * Centralize URLS + Stabilisation Lot 2 - SilverTrace et Exceptions
- *
- */
-
 /**
  * Class declaration
  * @author t.leroi
  */
 public class PeasCoreRuntimeException extends SilverpeasRuntimeException {
+
+  private static final long serialVersionUID = -7330702522588574816L;
+
   /**
    * -------------------------------------------------------------------------- constructor
    * constructor

@@ -23,11 +23,14 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
-import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import static com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane.ACTION_PARAMETER_NAME;
+import static com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane.COLUMN_PARAMETER_NAME;
+import static com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane.TARGET_PARAMETER_NAME;
+
 import javax.servlet.http.HttpServletRequest;
-import org.apache.ecs.xhtml.address;
-import static com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane.*;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
 /**
  * @author squere
  * @version

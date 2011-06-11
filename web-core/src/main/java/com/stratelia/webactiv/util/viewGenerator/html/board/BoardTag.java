@@ -32,6 +32,8 @@ import javax.servlet.jsp.tagext.TagSupport;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 public class BoardTag extends TagSupport {
+  
+  private static final long serialVersionUID = 8744598404692060576L;
   private static final String BOARD_PAGE_ATT = "pageContextBoard";
 
   public int doEndTag() throws JspException {
