@@ -177,7 +177,9 @@ public class VersioningImportExport {
       }
 
       nbFilesProcessed++;
-      indexer.createIndex(document, version);
+      if (indexIt) {
+        indexer.createIndex(document, version);
+      }
     }
     return nbFilesProcessed;
   }
