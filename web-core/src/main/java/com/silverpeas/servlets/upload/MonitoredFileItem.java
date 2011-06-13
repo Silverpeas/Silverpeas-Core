@@ -33,6 +33,8 @@ import org.apache.commons.fileupload.disk.DiskFileItem;
  * @author ehugonnet
  */
 public class MonitoredFileItem extends DiskFileItem {
+
+  private static final long serialVersionUID = 2984169387237073808L;
   private OutputStreamListener listener;
   private MonitoredOutputStream monitoredOutputStream;
 

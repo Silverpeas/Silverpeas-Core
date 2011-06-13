@@ -44,7 +44,7 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
  * @version 1.0
  */
 public abstract class AbstractNavigationList implements NavigationList {
-  private Collection items = null;
+  private Collection<Item> items = null;
   private String title = null;
   private int nbCol = 3;
 
@@ -52,7 +52,7 @@ public abstract class AbstractNavigationList implements NavigationList {
    * Creates new AbstractNavigationList
    */
   public AbstractNavigationList() {
-    items = new ArrayList();
+    items = new ArrayList<Item>();
   }
 
   public void addItem(String label, String URL, int nbelem, String info,
@@ -94,7 +94,7 @@ public abstract class AbstractNavigationList implements NavigationList {
    * Get the items collection
    * @return The items collection
    */
-  public Collection getItems() {
+  public Collection<Item> getItems() {
     return this.items;
   }
 
@@ -151,7 +151,7 @@ public abstract class AbstractNavigationList implements NavigationList {
    * directory, "nbelem" is the number of files you can find in this directory
    */
   public void addItemSubItem(String label, String URL, int nbelem,
-      Collection links) {
+      Collection<Link> links) {
     items.add(new Item(label, URL, nbelem, links));
   }
 

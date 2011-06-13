@@ -129,10 +129,6 @@ public abstract class RssServlet<T> extends HttpServlet {
           Writer writer = res.getWriter();
           RSS_2_0_Exporter rssExporter = new RSS_2_0_Exporter(writer, "UTF-8");
           rssExporter.write(channel);
-
-          if (rssExporter == null) {
-            objectNotFound(req, res);
-          }
         } else {
           objectNotFound(req, res);
         }
