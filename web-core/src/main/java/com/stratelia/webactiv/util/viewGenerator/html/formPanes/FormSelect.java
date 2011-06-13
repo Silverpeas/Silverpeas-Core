@@ -32,10 +32,11 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.formPanes;
 
-import javax.servlet.jsp.PageContext;
-import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
-import java.util.Vector;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.PageContext;
 
 /**
  * @author frageade
@@ -46,9 +47,9 @@ public class FormSelect extends FormLine {
 
   private int size;
   private int nbItems;
-  private Vector itemsLabels;
-  private Vector itemValues;
-  private Vector itemsSelected;
+  private List<String> itemsLabels;
+  private List<String> itemValues;
+  private List<Boolean> itemsSelected;
 
   /**
    * Constructor declaration
@@ -60,9 +61,9 @@ public class FormSelect extends FormLine {
     super(nam, val);
     setLabel(nam);
     size = 1;
-    itemsLabels = new Vector();
-    itemValues = new Vector();
-    itemsSelected = new Vector();
+    itemsLabels = new ArrayList<String>();
+    itemValues = new ArrayList<String>();
+    itemsSelected = new ArrayList<Boolean>();
     nbItems = 0;
     setType("select");
   }
@@ -79,9 +80,9 @@ public class FormSelect extends FormLine {
     super(nam, val);
     setLabel(lab);
     size = siz;
-    itemsLabels = new Vector();
-    itemValues = new Vector();
-    itemsSelected = new Vector();
+    itemsLabels = new ArrayList<String>();
+    itemValues = new ArrayList<String>();
+    itemsSelected = new ArrayList<Boolean>();
     nbItems = 0;
     setType("select");
   }
@@ -124,12 +125,12 @@ public class FormSelect extends FormLine {
     retour = retour + "\n<td><select name=\"" + name + "\" size=\""
         + String.valueOf(size) + "\">";
     for (int i = 0; i < nbItems; i++) {
-      retour = retour + "\n<option value=\"" + (String) itemValues.elementAt(i)
+      retour = retour + "\n<option value=\"" + itemValues.get(i)
           + "\"";
-      if (((Boolean) itemsSelected.elementAt(i)).booleanValue()) {
+      if (itemsSelected.get(i)) {
         retour = retour + " selected ";
       }
-      retour = retour + ">" + (String) itemsLabels.elementAt(i) + "</option>";
+      retour = retour + ">" + itemsLabels.get(i) + "</option>";
     }
     retour = retour + "\n</select></td>";
     return retour;

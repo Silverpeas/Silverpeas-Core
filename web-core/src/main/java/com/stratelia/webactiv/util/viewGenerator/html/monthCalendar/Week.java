@@ -35,13 +35,12 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html.monthCalendar;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Class declaration

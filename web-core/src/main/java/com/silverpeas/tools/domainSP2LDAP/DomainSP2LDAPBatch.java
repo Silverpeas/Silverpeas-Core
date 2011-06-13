@@ -3,8 +3,6 @@ package com.silverpeas.tools.domainSP2LDAP;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Domain;
@@ -19,7 +17,7 @@ public class DomainSP2LDAPBatch
 {
   private OrganizationController organizationController;
   private AdminController adminController;
-  public final String DOMAIN_SILVERPEAS_ID = "0";
+  public static final String DOMAIN_SILVERPEAS_ID = "0";
   
   public OrganizationController getOrganizationController() {
     if (organizationController == null)
