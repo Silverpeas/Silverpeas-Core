@@ -24,6 +24,7 @@
 
 package com.silverpeas.rest;
 
+import javax.inject.Inject;
 import com.silverpeas.rest.mock.OrganizationControllerMock;
 import com.silverpeas.session.SessionInfo;
 import java.util.UUID;
@@ -40,7 +41,6 @@ import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 import com.sun.jersey.test.framework.WebAppDescriptor;
 import org.junit.Before;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.ContextLoaderListener;
 import static org.junit.Assert.*;
 
@@ -53,11 +53,11 @@ public abstract class RESTWebServiceTest extends AbstractSpringAwareJerseyTest {
 
   protected static final String CONTEXT_NAME = "silverpeas";
 
-  @Autowired
+  @Inject
   private SessionManagement sessionManager;
-  @Autowired
+  @Inject
   private AccessControllerMock accessController;
-  @Autowired
+  @Inject
   private OrganizationControllerMock organizationController;
   private Client webClient;
 
@@ -129,7 +129,7 @@ public abstract class RESTWebServiceTest extends AbstractSpringAwareJerseyTest {
   public void denieAuthorizationToUsers() {
     accessController.setAuthorization(false);
   }
-
+  
   /**
    * Creates a new user.
    * @return a new user.
