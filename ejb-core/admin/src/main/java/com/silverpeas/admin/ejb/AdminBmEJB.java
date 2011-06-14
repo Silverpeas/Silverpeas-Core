@@ -35,10 +35,13 @@ import com.stratelia.silverpeas.authentication.security.SecurityHolder;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.SpaceAndChildren;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 
 public class AdminBmEJB implements javax.ejb.SessionBean {
+
+  private static final long serialVersionUID = 8753816261083500713L;
   AdminController ac = null;
 
   public AdminBmEJB() {
@@ -51,13 +54,11 @@ public class AdminBmEJB implements javax.ejb.SessionBean {
     return ac;
   }
 
-  public ArrayList getAllRootSpaceIds() throws RemoteException {
+  public ArrayList<String> getAllRootSpaceIds() throws RemoteException {
     String[] spaceIds = getAdminController().getAllRootSpaceIds();
-    String spaceId = null;
-    ArrayList result = new ArrayList();
+    ArrayList<String> result = new ArrayList<String>();
 
-    for (int i = 0; i < spaceIds.length; i++) {
-      spaceId = spaceIds[i];
+    for (String spaceId : spaceIds) {
       result.add(spaceId);
     }
 
@@ -65,8 +66,7 @@ public class AdminBmEJB implements javax.ejb.SessionBean {
   }
 
   public SpaceInst getSpaceInstById(String spaceId) throws RemoteException {
-    SpaceInst spaceInst = getAdminController().getSpaceInstById(spaceId);
-    return spaceInst;
+    return getAdminController().getSpaceInstById(spaceId);
   }
 
   public SpaceInstLight getSpaceInstLight(String spaceId) throws RemoteException {
@@ -74,21 +74,18 @@ public class AdminBmEJB implements javax.ejb.SessionBean {
   }
 
   public ComponentInst getComponentInst(String componentId) throws RemoteException {
-    ComponentInst componentInst = getAdminController().getComponentInst(componentId);
-    return componentInst;
+    return getAdminController().getComponentInst(componentId);
   }
 
   public ComponentInstLight getComponentInstLight(String componentId) throws RemoteException {
     return getAdminController().getComponentInstLight(componentId);
   }
 
-  public ArrayList getAvailCompoIds(String spaceId, String userId) throws RemoteException {
+  public ArrayList<String> getAvailCompoIds(String spaceId, String userId) throws RemoteException {
     String[] compoIds = getAdminController().getAvailCompoIds(spaceId, userId);
-    String compoId = null;
-    ArrayList result = new ArrayList();
+    ArrayList<String> result = new ArrayList<String>();
 
-    for (int i = 0; i < compoIds.length; i++) {
-      compoId = compoIds[i];
+    for (String compoId : compoIds) {
       result.add(compoId);
     }
 
@@ -97,46 +94,37 @@ public class AdminBmEJB implements javax.ejb.SessionBean {
 
   public boolean isComponentAvailable(String spaceId, String componentId, String userId)
       throws RemoteException {
-    // List availableComponentIds = getAvailCompoIds(spaceId, userId);
-
-    // return availableComponentIds.contains(componentId);
     return getAdminController().isComponentAvailable(componentId, userId);
   }
 
-  public List getAvailableSpaceIds(String userId) throws RemoteException {
+  public List<String> getAvailableSpaceIds(String userId) throws RemoteException {
     String[] spaceIds = getAdminController().getAllSpaceIds(userId);
-    String spaceId = null;
-    ArrayList result = new ArrayList();
+    List<String> result = new ArrayList<String>();
 
-    for (int i = 0; i < spaceIds.length; i++) {
-      spaceId = spaceIds[i];
+    for (String spaceId : spaceIds) {
       result.add(spaceId);
     }
 
     return result;
   }
 
-  public List getAvailableSubSpaceIds(String spaceId, String userId) throws RemoteException {
+  public List<String> getAvailableSubSpaceIds(String spaceId, String userId) throws RemoteException {
     String[] subSpaceIds = getAdminController().getAllSubSpaceIds(spaceId, userId);
-    String subSpaceId = null;
-    ArrayList result = new ArrayList();
+    List<String> result = new ArrayList<String>();
 
-    for (int i = 0; i < subSpaceIds.length; i++) {
-      subSpaceId = subSpaceIds[i];
+    for (String subSpaceId : subSpaceIds) {
       result.add(subSpaceId);
     }
 
     return result;
   }
 
-  public Hashtable getTreeView(String userId, String spaceId) throws RemoteException {
+  public Hashtable<String, SpaceAndChildren> getTreeView(String userId, String spaceId) throws RemoteException {
     return getAdminController().getTreeView(userId, spaceId);
   }
 
   public String authenticate(String sKey, String sSessionId) throws RemoteException {
-    String userId = getAdminController().authenticate(sKey, sSessionId, false);
-
-    return userId;
+    return getAdminController().authenticate(sKey, sSessionId, false);
   }
 
   public String getUserIdByLoginAndDomain(String login, String domainId)
