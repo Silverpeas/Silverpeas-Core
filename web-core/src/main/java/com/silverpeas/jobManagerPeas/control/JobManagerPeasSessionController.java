@@ -103,6 +103,10 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
         JobManagerService.LEVEL_OPERATION, m_context
         + URLManager.getURL(URLManager.CMP_JOBORGANIZATIONPEAS) + "Main",
         null, false);
+    JobManagerService jsp = new JobManagerService("14", "JSP",
+        JobManagerService.LEVEL_OPERATION, m_context
+        + URLManager.getURL(URLManager.CMP_JOBSEARCHPEAS) + "Main",
+        null, false);
 
     // tools
     // JobManagerService jRepositoryImport = new JobManagerService("41", "JRI",
@@ -163,7 +167,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
 
     if (getUserDetail().isAccessAdmin()) {
       // l'administrateur à accès au tout
-      String[] id = { "11", "13", "12" };
+      String[] id = { "11", "13", "12", "14" };
       jDesigner = new JobManagerService("1", "JD",
           JobManagerService.LEVEL_SERVICE, null, id, false);
 
@@ -226,7 +230,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
       services.put(jdp.getId(), jdp);
       services.put(jrp.getId(), jrp);
       services.put(jspp.getId(), jspp);
-      // services.put(jst.getId(), jst);
+      services.put(jsp.getId(), jsp);
 
       services.put(jSTAT.getId(), jSTAT);
       services.put(jSTAT1.getId(), jSTAT1);
@@ -238,8 +242,8 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
       // services.put(jImportExport.getId(), jImportExport);
     } else if (isManager) {
       if (getUserDetail().isAccessDomainManager()) {
-        // l'administrateur du composant à accès seulement à certaine
-        // fonction
+        // l'administrateur du composant à accès seulement à certaines
+        // fonctions
         String[] id3 = { "11", "13", "12" };
         jDesigner = new JobManagerService("1", "JD",
             JobManagerService.LEVEL_SERVICE, null, id3, false);
@@ -251,7 +255,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
         services.put(jrp.getId(), jrp);
         services.put(jspp.getId(), jspp);
       } else {
-        // l'administrateur d'espace à accès seulement à certaine fonction
+        // l'administrateur d'espace à accès seulement à certaines fonctions
         if (getUserManageableGroupIds().size() > 0) {
           // Il est également gestionnaire de groupe, il a acces au
           // référentiel

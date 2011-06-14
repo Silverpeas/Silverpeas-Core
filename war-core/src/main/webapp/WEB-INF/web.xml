@@ -249,6 +249,10 @@
     <servlet-class>com.silverpeas.jobStartPagePeas.servlets.JobStartPagePeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
+    <servlet-name>JobSearchPeasRequestRouter</servlet-name>
+    <servlet-class>com.silverpeas.jobSearchPeas.servlets.JobSearchPeasRequestRouter</servlet-class>
+  </servlet>
+  <servlet>
     <servlet-name>DragAndDrop</servlet-name>
     <servlet-class>com.silverpeas.attachment.servlets.DragAndDrop</servlet-class>
   </servlet>
@@ -653,6 +657,10 @@
   <servlet-mapping>
     <servlet-name>JobStartPagePeasRequestRouter</servlet-name>
     <url-pattern>/RjobStartPagePeas/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>JobSearchPeasRequestRouter</servlet-name>
+    <url-pattern>/RjobSearchPeas/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>DragAndDrop</servlet-name>
