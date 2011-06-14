@@ -23,17 +23,6 @@
  */
 package com.silverpeas.rest;
 
-import com.silverpeas.SilverpeasServiceProvider;
-import com.silverpeas.accesscontrol.AccessController;
-import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagement;
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.util.ResourceLocator;
-import org.apache.commons.codec.binary.Base64;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
@@ -45,7 +34,16 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import org.apache.commons.codec.binary.Base64;
+
+import com.silverpeas.SilverpeasServiceProvider;
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagement;
+import com.stratelia.webactiv.beans.admin.AdminController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserFull;
 
 /**
  * The class of the Silverpeas REST web services. It provides all of the common features required by

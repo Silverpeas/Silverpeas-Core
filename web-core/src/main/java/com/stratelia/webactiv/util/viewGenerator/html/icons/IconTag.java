@@ -33,6 +33,8 @@ import com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPaneTag;
 
 public class IconTag extends TagSupport {
 
+  private static final long serialVersionUID = -3286118333215989238L;
+
   static final String TABBEDPANE_PAGE_ATT = "pageContextTabbedPane";
 
   private String iconName = null;

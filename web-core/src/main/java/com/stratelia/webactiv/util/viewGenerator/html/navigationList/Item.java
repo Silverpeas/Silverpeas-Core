@@ -47,7 +47,7 @@ public class Item {
   private String URL;
   private int nbelem;
   private String info;
-  private Collection links;
+  private Collection<Link> links;
   private String universalLink;
 
   /**
@@ -57,7 +57,7 @@ public class Item {
    * @param nbelem
    * @param info
    */
-  public Item(String label, String URL, int nbelem, Collection links) {
+  public Item(String label, String URL, int nbelem, Collection<Link> links) {
     this.URL = URL;
     this.label = label;
     this.nbelem = nbelem;
@@ -193,7 +193,7 @@ public class Item {
    * @return
    * @see
    */
-  public Collection getLinks() {
+  public Collection<Link> getLinks() {
     return links;
   }
 
@@ -204,7 +204,7 @@ public class Item {
    * @param links
    * @see
    */
-  public void setLinks(Collection links) {
+  public void setLinks(Collection<Link> links) {
     this.links = links;
   }
 

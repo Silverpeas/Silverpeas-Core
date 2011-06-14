@@ -32,9 +32,11 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.formPanes;
 
-import java.util.Vector;
-import javax.servlet.jsp.PageContext;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.PageContext;
 
 /**
  * @author frageade
@@ -43,7 +45,7 @@ import javax.servlet.http.HttpServletRequest;
 
 public class FormButtonsLine extends FormLine {
 
-  private Vector buttons;
+  private List<FormButton> buttons;
 
   /**
    * Constructor declaration
@@ -53,7 +55,7 @@ public class FormButtonsLine extends FormLine {
    */
   public FormButtonsLine(String nam, String val) {
     super(nam, val);
-    buttons = new Vector();
+    buttons = new ArrayList<FormButton>();
     setType("buttonLine");
   }
 
@@ -67,7 +69,7 @@ public class FormButtonsLine extends FormLine {
   public FormButtonsLine(String nam, String val, String lab) {
     super(nam, val);
     setLabel(lab);
-    buttons = new Vector();
+    buttons = new ArrayList<FormButton>();
     setType("buttonLine");
   }
 
@@ -95,8 +97,8 @@ public class FormButtonsLine extends FormLine {
     }
     if (buttons.size() > 0) {
       retour = retour + "\n<td><table><tr>";
-      for (int i = 0; i < buttons.size(); i++) {
-        retour = retour + ((FormButton) buttons.elementAt(i)).print();
+      for (FormButton button : buttons) {
+        retour = retour + button.print();
       }
       retour = retour + "\n</tr></table></td>";
     } else {
@@ -147,8 +149,8 @@ public class FormButtonsLine extends FormLine {
     }
     if (buttons.size() > 0) {
       retour = retour + "\n<td><table><tr>";
-      for (int i = 0; i < buttons.size(); i++) {
-        retour = retour + ((FormButton) buttons.elementAt(i)).printDemo();
+      for (FormButton button : buttons) {
+        retour = retour + button.printDemo();
       }
       retour = retour + "\n</tr></table></td>";
     } else {
@@ -170,8 +172,8 @@ public class FormButtonsLine extends FormLine {
     retour = retour + "\n<value>" + value + "</value>";
     if (buttons.size() > 0) {
       retour = retour + "\n<actions>";
-      for (int i = 0; i < buttons.size(); i++) {
-        retour = retour + ((FormButton) buttons.elementAt(i)).toLineXML();
+      for (FormButton button : buttons) {
+        retour = retour + button.toLineXML();
       }
       retour = retour + "\n</actions>";
     }
