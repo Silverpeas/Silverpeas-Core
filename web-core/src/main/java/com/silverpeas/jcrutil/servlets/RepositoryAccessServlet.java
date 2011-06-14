@@ -230,7 +230,6 @@ public class RepositoryAccessServlet extends HttpServlet {
     return getClass().getName() + "$RMIRemoteFactoryDelegater";
   }
 
-  @SuppressWarnings("unchecked")
   private void registerRMI(RmiConfiguration config) throws ServletException {
     String rmiUri = "//" + config.getHost() + ":" + config.getPort() + "/"
         + config.getName();

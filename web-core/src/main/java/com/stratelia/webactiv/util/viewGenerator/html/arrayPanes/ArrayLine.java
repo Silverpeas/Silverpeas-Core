@@ -24,7 +24,8 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
@@ -37,11 +38,11 @@ import com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane;
  */
 public class ArrayLine implements SimpleGraphicElement, Comparable {
 
-  private Vector cells = null;
+  private List<SimpleGraphicElement> cells = null;
   private ArrayPane pane;
   private String css = null;
 
-  private Vector sublines = null;
+  private List<ArrayLine> sublines = null;
 
   /**
    * Constructor declaration
@@ -49,8 +50,8 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
    * @see
    */
   public ArrayLine(ArrayPane pane) {
-    cells = new Vector();
-    sublines = new Vector();
+    cells = new ArrayList<SimpleGraphicElement>();
+    sublines = new ArrayList<ArrayLine>();
     this.pane = pane;
   }
 
@@ -93,11 +94,11 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
   }
 
   public ArrayCellText addArrayCellText(int number) {
-    return addArrayCellText(new Integer(number).toString());
+    return addArrayCellText(Integer.toString(number));
   }
 
   public ArrayCellText addArrayCellText(float number) {
-    return addArrayCellText(new Float(number).toString());
+    return addArrayCellText(Float.toString(number));
   }
 
   /**
@@ -245,7 +246,7 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
    */
   public SimpleGraphicElement getCellAt(int column) {
     try {
-      return (SimpleGraphicElement) cells.elementAt(column - 1);
+      return cells.get(column - 1);
     } catch (Exception e) {
       return null;
     }
@@ -269,12 +270,12 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
     String result = "";
 
     result += "<tr>";
-    for (int i = 0; i < cells.size(); i++) {
-      result += ((SimpleGraphicElement) cells.elementAt(i)).print();
+    for (SimpleGraphicElement element : cells) {
+      result += element.print();
     }
     result += "</tr>\n";
-    for (int l = 0; l < sublines.size(); l++) {
-      result += ((ArrayLine) sublines.get(l)).print();
+    for (ArrayLine line : sublines) {
+      result += line.print();
     }
     return result;
   }
@@ -289,13 +290,13 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
 
     result += "<tr>\n";
     result += printPseudoColumn();
-    for (int i = 0; i < cells.size(); i++) {
-      result += ((SimpleGraphicElement) cells.elementAt(i)).print();
+    for (SimpleGraphicElement element : cells) {
+      result += element.print();
       result += printPseudoColumn();
     }
     result += "</tr>\n";
-    for (int l = 0; l < sublines.size(); l++) {
-      result += ((ArrayLine) sublines.get(l)).printWithPseudoColumns();
+    for (ArrayLine line : sublines) {
+      result += line.printWithPseudoColumns();
     }
     return result;
   }

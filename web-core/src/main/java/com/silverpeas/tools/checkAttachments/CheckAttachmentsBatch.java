@@ -14,6 +14,7 @@ import java.util.List;
 import com.silverpeas.tools.checkAttachments.model.CheckAttachmentDetail;
 import com.silverpeas.tools.checkAttachments.model.OrphanAttachment;
 import com.silverpeas.util.ComponentHelper;
+import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
@@ -40,11 +41,10 @@ import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import com.stratelia.webactiv.util.viewGenerator.html.Encode;
 
 public class CheckAttachmentsBatch {
 
-  private final String contextAttachment = "Attachment";
+  private static final String contextAttachment = "Attachment";
   private String language = null;
 
   public CheckAttachmentsBatch() {
@@ -284,7 +284,7 @@ public class CheckAttachmentsBatch {
       RemoteException {
     List<NodePK> nodesPK = (List<NodePK>) pubDetail.getPublicationBm().getAllFatherPK(pubDetail.
         getPK());
-    Collection path = null;
+    Collection<NodeDetail> path = null;
     StringBuffer linkedPathString = new StringBuffer();
     StringBuffer pathString = new StringBuffer();
     if (nodesPK != null && !nodesPK.isEmpty()) {
@@ -292,16 +292,16 @@ public class CheckAttachmentsBatch {
       path = getPath(firstNodePK.getId(), firstNodePK.getInstanceId());
       if (path != null) {
         int nbItemInPath = path.size();
-        Iterator iterator = path.iterator();
+        Iterator<NodeDetail> iterator = path.iterator();
         boolean alreadyCut = false;
         int i = 0;
         NodeDetail nodeInPath = null;
         while (iterator.hasNext()) {
-          nodeInPath = (NodeDetail) iterator.next();
+          nodeInPath = iterator.next();
           if ((i <= beforeAfter) || (i + beforeAfter >= nbItemInPath - 1)) {
             if (!nodeInPath.getNodePK().getId().equals("0")) {
               linkedPathString.append("<a href=\"javascript:onClick=topicGoTo('").append(nodeInPath.
-                  getNodePK().getId()).append("')\">").append(Encode.javaStringToHtmlString(nodeInPath.
+                  getNodePK().getId()).append("')\">").append(EncodeHelper.javaStringToHtmlString(nodeInPath.
                   getName())).append("</a>");
               pathString.append(nodeInPath.getName());
               if (iterator.hasNext()) {

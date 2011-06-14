@@ -25,7 +25,6 @@
 package com.stratelia.webactiv.util.viewGenerator.html.glossary;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyContent;
@@ -33,10 +32,6 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import com.silverpeas.glossary.HighlightGlossaryTerms;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
-import com.stratelia.silverpeas.pdc.model.Axis;
-import com.stratelia.silverpeas.pdc.model.PdcException;
-import com.stratelia.silverpeas.treeManager.model.TreeNode;
 
 /**
  * @author David Derigent
