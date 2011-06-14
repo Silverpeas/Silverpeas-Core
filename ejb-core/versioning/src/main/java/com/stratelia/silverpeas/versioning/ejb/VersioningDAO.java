@@ -983,10 +983,6 @@ public class VersioningDAO {
       throw new VersioningRuntimeException("WorkListDAO.deleteDocument",
           SilverTrace.TRACE_LEVEL_ERROR, "root.EX_NO_CONNECTION");
     }
-    if (documentPK == null) {
-      throw new VersioningRuntimeException("WorkListDAO.deleteDocument",
-          SilverTrace.TRACE_LEVEL_ERROR, "root.EX_NULL_VALUE_OBJECT_OR_PK");
-    }
 
     PreparedStatement prepStmt = null;
 
@@ -1532,7 +1528,7 @@ public class VersioningDAO {
 
       rs = prepStmt.executeQuery();
       while (rs.next()) {
-        results.add(new Integer(rs.getInt(1)).toString());
+        results.add(Integer.toString(rs.getInt(1)));
       }
     } finally {
       DBUtil.close(rs, prepStmt);

@@ -555,12 +555,6 @@ public class VersioningBmEJB implements SessionBean {
         return newVersion;
       }
 
-      if (worker == null) {
-        throw new VersioningRuntimeException(
-            "VersioninBmEJB.addNonOrderedValidatedVersion",
-            SilverpeasRuntimeException.ERROR,
-            "versioning.EX_NOVALIDATOR_IN_VALIDATED_LIST", doc);
-      }
       String docUrl = getDocumentUrl(doc);
 
       try {
