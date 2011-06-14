@@ -32,7 +32,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 
 import com.silverpeas.form.importExport.FormTemplateImportExport;
 import com.silverpeas.form.importExport.XMLModelContentType;
@@ -48,6 +47,7 @@ import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.model.DocumentVersionPK;
+import com.stratelia.silverpeas.versioning.model.Reader;
 import com.stratelia.silverpeas.versioning.model.Worker;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -71,20 +71,20 @@ public class VersioningImportExport {
   private static int BUFFER_SIZE = 1024;
 
   public int importDocuments(String objectId, String componentId,
-      List attachments, int userId, boolean indexIt, String topicId)
+      List<AttachmentDetail> attachments, int userId, boolean indexIt, String topicId)
       throws RemoteException {
     return importDocuments(objectId, componentId, attachments, userId,
         DocumentVersion.TYPE_PUBLIC_VERSION, indexIt, topicId);
   }
 
   public int importDocuments(String objectId, String componentId,
-      List attachments, int userId, boolean indexIt) throws RemoteException {
+      List<AttachmentDetail> attachments, int userId, boolean indexIt) throws RemoteException {
     return importDocuments(objectId, componentId, attachments, userId,
         DocumentVersion.TYPE_PUBLIC_VERSION, indexIt, null);
   }
 
   public int importDocuments(String objectId, String componentId,
-      List attachments, int userId, int versionType, boolean indexIt)
+      List<AttachmentDetail> attachments, int userId, int versionType, boolean indexIt)
       throws RemoteException {
     return importDocuments(objectId, componentId, attachments, userId,
         versionType, indexIt, null);
@@ -99,7 +99,7 @@ public class VersioningImportExport {
    * @throws RemoteException
    */
   public int importDocuments(String objectId, String componentId,
-      List attachments, int userId, int versionType, boolean indexIt,
+      List<AttachmentDetail> attachments, int userId, int versionType, boolean indexIt,
       String topicId) throws RemoteException {
     SilverTrace.info("versioning", "VersioningImportExport.importDocuments()",
         "root.GEN_PARAM_VALUE", componentId);
@@ -110,11 +110,9 @@ public class VersioningImportExport {
     // get existing documents of object
     List<Document> documents = getVersioningBm().getDocuments(pubPK);
 
-    AttachmentDetail attachment = null;
     DocumentVersion version = null;
     Document document = null;
-    for (int a = 0; a < attachments.size(); a++) {
-      attachment = (AttachmentDetail) attachments.get(a);
+    for (AttachmentDetail attachment : attachments) {
       version = new DocumentVersion(attachment);
       version.setAuthorId(userId);
       version.setInstanceId(componentId);
@@ -145,7 +143,7 @@ public class VersioningImportExport {
         DocumentPK docPK = new DocumentPK(-1, "useless", componentId);
         document = new Document(docPK, pubPK, attachment.getLogicalName(), "",
             Document.STATUS_CHECKOUTED, -1, new Date(), null, componentId, new ArrayList<Worker>(),
-            new ArrayList(), 0, 0);
+            new ArrayList<Reader>(), 0, 0);
         if (StringUtil.isDefined(attachment.getTitle())) {
           document.setName(attachment.getTitle());
         }
@@ -394,7 +392,7 @@ public class VersioningImportExport {
             DocumentPK docPK = new DocumentPK(-1, "useless", objectPK.getInstanceId());
             document = new Document(docPK, objectPK, document.getName(),
                 document.getDescription(), Document.STATUS_CHECKOUTED, -1, new Date(), null,
-                objectPK.getInstanceId(), new ArrayList<Worker>(), new ArrayList(), 0, 0);
+                objectPK.getInstanceId(), new ArrayList<Worker>(), new ArrayList<Reader>(), 0, 0);
 
             // et on y ajoute la première version
             if (version.getType() == DocumentVersion.TYPE_PUBLIC_VERSION) {
