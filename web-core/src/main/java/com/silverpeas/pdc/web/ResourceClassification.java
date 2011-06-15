@@ -27,7 +27,9 @@ import com.silverpeas.rest.RESTWebService;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
+import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
+import java.util.List;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -38,6 +40,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
 
 /**
  * A REST Web service that represents the classification of a Silverpeas's resource on the
@@ -66,18 +69,23 @@ public class ResourceClassification extends RESTWebService {
   protected String getComponentId() {
     return this.componentId;
   }
-  
+
   protected String getContentId() {
     return this.contentId;
   }
-  
+
   @GET
   @Produces({MediaType.APPLICATION_JSON})
   public PdcClassificationEntity getPdCClassification() {
     checkUserPriviledges();
     try {
       int silverObjectId = getSilverObjectId(getContentId(), getComponentId());
-      getPdcService().getPositions(silverObjectId, getComponentId());
+      List<ClassifyPosition> positions =
+              getPdcService().getPositions(silverObjectId, getComponentId());
+      String language = getUserPreferences().getLanguage();
+      return PdcClassificationEntity.fromPositions(positions,
+              inLanguage(language)).
+              withURI(getUriInfo().getAbsolutePath());
     } catch (ContentManagerException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (PdcException ex) {
@@ -85,17 +93,16 @@ public class ResourceClassification extends RESTWebService {
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
-    return new PdcClassificationEntity().withURI(getUriInfo().getAbsolutePath());
   }
-  
+
   private int getSilverObjectId(String contentId, String componentId) throws ContentManagerException {
     return getContentManager().getSilverContentId(contentId, componentId);
   }
-  
+
   private PdcBm getPdcService() {
     return this.pdcService;
   }
-  
+
   private ContentManager getContentManager() {
     return this.contentManager;
   }

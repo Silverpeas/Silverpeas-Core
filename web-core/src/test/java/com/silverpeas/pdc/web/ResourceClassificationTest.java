@@ -23,13 +23,18 @@
  */
 package com.silverpeas.pdc.web;
 
+import java.util.List;
 import java.util.UUID;
 import javax.ws.rs.core.Response.Status;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import javax.ws.rs.core.MediaType;
 import com.sun.jersey.api.client.WebResource;
 import com.silverpeas.rest.RESTWebServiceTest;
+import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
+import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import java.util.ArrayList;
+import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -37,6 +42,8 @@ import static org.hamcrest.Matchers.*;
 import static com.silverpeas.rest.RESTWebService.*;
 import static com.silverpeas.pdc.web.PdcClassificationEntityMatcher.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
+import static com.silverpeas.pdc.web.PdcClassification.*;
+import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
 
 /**
  * Unit tests on the different operations that can be applied on the classification of a 
@@ -45,6 +52,8 @@ import static com.silverpeas.pdc.web.TestConstants.*;
  */
 public class ResourceClassificationTest extends RESTWebServiceTest {
 
+  @Inject
+  PdcBmMock pdcBm;
   private String sessionKey;
 
   public ResourceClassificationTest() {
@@ -95,9 +104,9 @@ public class ResourceClassificationTest extends RESTWebServiceTest {
       assertThat(recievedStatus, is(unauthorized));
     }
   }
-  
+
   @Test
-  public void classificationGettingOfAnUnauthorizedResource() {
+  public void classificationGettingOnAnUnauthorizedResource() {
     denieAuthorizationToUsers();
     WebResource resource = resource();
     try {
@@ -111,9 +120,9 @@ public class ResourceClassificationTest extends RESTWebServiceTest {
       assertThat(recievedStatus, is(forbidden));
     }
   }
-  
+
   @Test
-  public void getAClassificationOfAnUnexistingResource() {
+  public void classificationGettingOnAnUnexistingResource() {
     WebResource resource = resource();
     try {
       resource.path(UNKNOWN_RESOURCE_PATH).
@@ -129,11 +138,11 @@ public class ResourceClassificationTest extends RESTWebServiceTest {
 
   /**
    * Asking the classification of a non-classified resource should sent back an undefined
-   * classification. An undefined classification is an object with an empty list of classification
+   * classification. An undefined classification is an object without any classification
    * positions.
    */
   @Test
-  public void getAnUndefinedClassification() {
+  public void undefinedClassificationGetting() {
     PdcClassificationEntity classification = resource().path(RESOURCE_PATH).
             header(HTTP_SESSIONKEY, sessionKey).
             accept(MediaType.APPLICATION_JSON).
@@ -141,5 +150,27 @@ public class ResourceClassificationTest extends RESTWebServiceTest {
     assertNotNull(classification);
     assertThat(classification, is(undefined()));
   }
+
+  @Test
+  public void nominalClassificationGetting() {
+    PdcClassification theClassification =
+            aPdcClassification().onResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID);
+    save(theClassification);
+    PdcClassificationEntity classification = resource().path(RESOURCE_PATH).
+            header(HTTP_SESSIONKEY, sessionKey).
+            accept(MediaType.APPLICATION_JSON).
+            get(PdcClassificationEntity.class);
+    System.out.println(classification);
+    assertNotNull(classification);
+    assertThat(classification, not(undefined()));
+    assertThat(classification, is(equalTo(theWebEntityOf(theClassification))));
+  }
+
+  private void save(final PdcClassification classification) {
+    pdcBm.addClassification(classification);
+  }
   
+  private PdcClassificationEntity theWebEntityOf(final PdcClassification classification) {
+    return PdcClassificationEntity.fromPositions(classification.getPositions(), inLanguage(FRENCH));
+  }
 }

@@ -267,11 +267,9 @@ public class CommentResource extends RESTWebService {
    * @return the corresponding comment entity.
    */
   protected CommentEntity asWebEntity(final Comment comment, URI commentURI) {
-    // TODO REMOVE THIS SPECIFIC AVATAR URL SETTING ONCE IN A MORE RECENT APPLICATION SERVER.
-    // PLEASE SEE CommentAuthorEntity constructor TODO.
     CommentEntity entity = CommentEntity.fromComment(comment).withURI(commentURI);
-    CommentAuthorEntity author = entity.getAuthor();
-    author.setAvatar(getHttpServletContext().getContextPath() + author.getAvatar());
+    //CommentAuthorEntity author = entity.getAuthor();
+    //author.setAvatar(getHttpServletContext().getContextPath() + author.getAvatar());
     return entity;
   }
 

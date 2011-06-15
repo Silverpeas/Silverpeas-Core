@@ -32,5 +32,6 @@ public interface TestConstants {
   static final String CONTENT_ID = "1";
   static final String RESOURCE_PATH = "pdc/" + COMPONENT_INSTANCE_ID + "/" + CONTENT_ID;
   static final String UNKNOWN_RESOURCE_PATH = "pdc/" + COMPONENT_INSTANCE_ID + "/1000";
+  static final String FRENCH = "fr";
   
 }

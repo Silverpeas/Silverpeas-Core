@@ -35,7 +35,7 @@ import static com.silverpeas.pdc.web.TestConstants.*;
 public class PdcClassificationEntityMatcher extends TypeSafeMatcher<PdcClassificationEntity> {
 
   private PdcClassificationEntity expected;
-  private String invalidContext = "";
+  private String whatIsExpected = "";
 
   @Factory
   public static Matcher<PdcClassificationEntity> equalTo(final PdcClassificationEntity expected) {
@@ -53,19 +53,22 @@ public class PdcClassificationEntityMatcher extends TypeSafeMatcher<PdcClassific
     boolean matches = true;
     if (!actual.getURI().toString().endsWith(RESOURCE_PATH)) {
       matches = false;
-      invalidContext += "URI differ: " + actual.getURI();
     }
     if (actual.getClassificationPositions().size() != expected.getClassificationPositions().size()) {
       matches = false;
-      invalidContext += "Not same count of classification positions: "
-              + actual.getClassificationPositions().size();
+    }
+    if (!actual.getClassificationPositions().containsAll(expected.getClassificationPositions())) {
+      matches = false;
+    }
+    if (!matches) {
+      whatIsExpected = expected.toString();
     }
     return matches;
   }
 
   @Override
   public void describeTo(Description description) {
-    description.appendText(invalidContext);
+    description.appendText(whatIsExpected);
   }
 
   private PdcClassificationEntityMatcher() {

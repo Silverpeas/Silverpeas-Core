@@ -29,6 +29,7 @@ import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,7 +43,7 @@ import static com.silverpeas.pdc.web.TestConstants.*;
 @Named("pdcBm")
 public class PdcBmMock extends PdcBmImpl {
 
-  private PdcBm pdcBm;
+  private List<ClassifyPosition> positions = new ArrayList<ClassifyPosition>();
 
   public PdcBmMock() {
     PdcBm pdcService = mock(PdcBm.class);
@@ -64,8 +65,15 @@ public class PdcBmMock extends PdcBmImpl {
   }
 
   private List<ClassifyPosition> aListOfPositions() {
-    List<ClassifyPosition> positions = new ArrayList<ClassifyPosition>();
-    return positions;
+    return this.positions;
+  }
+  
+  public void addClassification(final PdcClassification classification) {
+    if (COMPONENT_INSTANCE_ID.equals(classification.getComponentId()) &&
+            CONTENT_ID.equals(classification.getResourceId())) {
+      this.positions.clear();
+      this.positions.addAll(classification.getPositions());
+    }
   }
   
   private String getContentIdOf(int silverObjectId) {

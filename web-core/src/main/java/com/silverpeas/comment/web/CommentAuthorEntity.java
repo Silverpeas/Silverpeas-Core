@@ -23,6 +23,8 @@
  */
 package com.silverpeas.comment.web;
 
+import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.WebApplicationContext;
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.ui.DisplayI18NHelper;
@@ -156,13 +158,12 @@ public class CommentAuthorEntity implements Serializable {
   private CommentAuthorEntity(final UserDetail userDetail) {
     this.fullName = userDetail.getDisplayedName();
     this.id = userDetail.getId();
-//    TODO WITH A MORE RECENT APPLICATION SERVER
-//    WebApplicationContext context = ContextLoaderListener.getCurrentWebApplicationContext();
-//    if (context != null) {
-//      this.avatar = context.getServletContext().getContextPath() + userDetail.getAvatar();
-//    } else {
-//      this.avatar = userDetail.getAvatar();
-//    }
+    WebApplicationContext context = ContextLoaderListener.getCurrentWebApplicationContext();
+    if (context != null) {
+      this.avatar = context.getServletContext().getContextPath() + userDetail.getAvatar();
+    } else {
+      this.avatar = userDetail.getAvatar();
+    }
     this.avatar = userDetail.getAvatar();
     UserPreferences prefs = getUserPreferences();
     if (prefs != null) {
