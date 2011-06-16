@@ -23,12 +23,15 @@
  */
 package com.silverpeas.pdc.web;
 
+import java.util.Collection;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
+import com.stratelia.silverpeas.pdc.model.Value;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import static com.silverpeas.util.StringUtil.*;
 
 /**
  * A PdC position value is a value of a position of a resource content on a given semantic
@@ -51,26 +54,65 @@ public class PdcPositionValue implements Serializable {
    */
   public static PdcPositionValue fromClassifiyValue(final ClassifyValue value,
           String inLanguage) {
-    PdcPositionValue positionValue = new PdcPositionValue(withLocalizedPathOf(value, inLanguage));
+    List<Value> termPath = value.getFullPath();
+    Value term = value.getFullPath().get(termPath.size() - 1);
+    PdcPositionValue positionValue = new PdcPositionValue(
+            withId(term.getPK().getId()),
+            withLocalizedPathOf(value, inLanguage));
+    String treeId = term.getTreeId();
+    if (isDefined(treeId) && Integer.valueOf(treeId) >= 0) {
+      positionValue.setTreeId(treeId);
+    }
     return positionValue;
   }
-  @XmlElement
+  @XmlElement(required = true)
+  private String id;
+  @XmlElement(defaultValue="")
+  private String treeId = "";
+  @XmlElement(required = true)
   private String path;
   @XmlElement
   private List<String> synonyms = new ArrayList<String>();
 
+  /**
+   * Gets the unique identifier of this position value.
+   * @return the value identifier.
+   */
+  public String getId() {
+    return id;
+  }
+
+  /**
+   * Gets the unique identifier of the tree to which this value belongs.
+   * @return the tree identifier or an empty identifier if the value is a single term (and then
+   * doesn't belong to an hierachical tree of terms)
+   */
+  public String getTreeId() {
+    return treeId;
+  }
+  
+
+  /**
+   * Gets the complete path of this value in the hierarchical tree of terms. Each term in the path
+   * is separated by a '/' character.
+   * If the value doesn't belong to a path, then the single term is returned.
+   * @return the path of this value in an hierarchical tree of terms or the single term.
+   */
   public String getPath() {
     return path;
   }
 
+  /**
+   * Gets the synonyms of this value according to a given thesaurus.
+   * @return a list of synonyms to this value.
+   */
   public List<String> getSynonyms() {
     return synonyms;
   }
 
-  public PdcPositionValue withSynonyms(final List<String> synonyms) {
+  public void setSynonyms(final Collection<String> synonyms) {
     this.synonyms.clear();
     this.synonyms.addAll(synonyms);
-    return this;
   }
 
   @Override
@@ -82,11 +124,17 @@ public class PdcPositionValue implements Serializable {
       return false;
     }
     final PdcPositionValue other = (PdcPositionValue) obj;
+    if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
+      return false;
+    }
+    if ((this.treeId == null) ? (other.treeId != null) : !this.treeId.equals(other.treeId)) {
+      return false;
+    }
     if ((this.path == null) ? (other.path != null) : !this.path.equals(other.path)) {
       return false;
     }
-    if (this.synonyms != other.synonyms &&
-            (this.synonyms == null || !this.synonyms.equals(other.synonyms))) {
+    if (this.synonyms != other.synonyms && (this.synonyms == null || !this.synonyms.equals(
+            other.synonyms))) {
       return false;
     }
     return true;
@@ -95,8 +143,10 @@ public class PdcPositionValue implements Serializable {
   @Override
   public int hashCode() {
     int hash = 7;
-    hash = 79 * hash + (this.path != null ? this.path.hashCode() : 0);
-    hash = 79 * hash + (this.synonyms != null ? this.synonyms.hashCode() : 0);
+    hash = 89 * hash + (this.id != null ? this.id.hashCode() : 0);
+    hash = 89 * hash + (this.treeId != null ? this.treeId.hashCode() : 0);
+    hash = 89 * hash + (this.path != null ? this.path.hashCode() : 0);
+    hash = 89 * hash + (this.synonyms != null ? this.synonyms.hashCode() : 0);
     return hash;
   }
 
@@ -111,18 +161,28 @@ public class PdcPositionValue implements Serializable {
     } else {
       synonymArray.append("]");
     }
-    return "PdcPositionValue{" + "path=" + path + ", synonyms=" + synonymArray.toString() + '}';
+    return "PdcPositionValue{id=" + id + ", treeId=" + treeId + ", path=" + path + ", synonyms="
+            + synonymArray.toString() + '}';
+  }
+  
+  private static String withId(String valueId) {
+    return valueId;
   }
 
   private static String withLocalizedPathOf(final ClassifyValue value, String inLanguage) {
     LocalizedClassifyValue localizedValue = LocalizedClassifyValue.decorate(value, inLanguage);
     return localizedValue.getLocalizedPath();
   }
-  
+
   protected PdcPositionValue() {
   }
+  
+  protected void setTreeId(String treeId) {
+    this.treeId = treeId;
+  }
 
-  private PdcPositionValue(String path) {
+  private PdcPositionValue(String id, String path) {
+    this.id = id;
     this.path = path;
   }
 }

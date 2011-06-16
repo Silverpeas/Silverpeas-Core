@@ -35,6 +35,7 @@
 
   <ctx:annotation-config/>
   <ctx:component-scan base-package="com.silverpeas.pdc"/>
+  <ctx:component-scan base-package="com.silverpeas.thesaurus"/>
   <ctx:component-scan base-package="com.stratelia.silverpeas.pdc"/>
 
 </beans>

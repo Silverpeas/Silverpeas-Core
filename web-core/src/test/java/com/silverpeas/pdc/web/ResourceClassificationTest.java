@@ -23,17 +23,19 @@
  */
 package com.silverpeas.pdc.web;
 
-import java.util.List;
+import com.silverpeas.SilverpeasServiceProvider;
+import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.personalization.service.PersonalizationService;
+import com.silverpeas.thesaurus.ThesaurusException;
 import java.util.UUID;
 import javax.ws.rs.core.Response.Status;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import javax.ws.rs.core.MediaType;
 import com.sun.jersey.api.client.WebResource;
 import com.silverpeas.rest.RESTWebServiceTest;
-import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
-import com.stratelia.silverpeas.pdc.model.ClassifyValue;
+import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import java.util.ArrayList;
+import java.net.URI;
 import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,6 +56,8 @@ public class ResourceClassificationTest extends RESTWebServiceTest {
 
   @Inject
   PdcBmMock pdcBm;
+  @Inject
+  ThesaurusManager thesaurusManager;
   private String sessionKey;
 
   public ResourceClassificationTest() {
@@ -62,6 +66,8 @@ public class ResourceClassificationTest extends RESTWebServiceTest {
 
   @Before
   public void setUpUserSessionAndPdCClassifications() {
+    assertNotNull(pdcBm);
+    assertNotNull(thesaurusManager);
     UserDetail user = aUser();
     sessionKey = authenticate(user);
   }
@@ -152,15 +158,15 @@ public class ResourceClassificationTest extends RESTWebServiceTest {
   }
 
   @Test
-  public void nominalClassificationGetting() {
+  public void nominalClassificationGetting() throws Exception {
     PdcClassification theClassification =
             aPdcClassification().onResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID);
     save(theClassification);
+    enableThesaurus();
     PdcClassificationEntity classification = resource().path(RESOURCE_PATH).
             header(HTTP_SESSIONKEY, sessionKey).
             accept(MediaType.APPLICATION_JSON).
             get(PdcClassificationEntity.class);
-    System.out.println(classification);
     assertNotNull(classification);
     assertThat(classification, not(undefined()));
     assertThat(classification, is(equalTo(theWebEntityOf(theClassification))));
@@ -169,8 +175,20 @@ public class ResourceClassificationTest extends RESTWebServiceTest {
   private void save(final PdcClassification classification) {
     pdcBm.addClassification(classification);
   }
-  
-  private PdcClassificationEntity theWebEntityOf(final PdcClassification classification) {
-    return PdcClassificationEntity.fromPositions(classification.getPositions(), inLanguage(FRENCH));
+
+  private PdcClassificationEntity theWebEntityOf(final PdcClassification classification) throws
+          ThesaurusException {
+    return aPdcClassificationEntity(
+            fromPositions(classification.getPositions()),
+            inLanguage(FRENCH),
+            atURI(URI.create("http://localhost:9998/silverpeas/" + RESOURCE_PATH))).
+            withSynonymsFrom(UserThesaurusHolder.holdThesaurus(thesaurusManager, aUser()));
+  }
+
+  private void enableThesaurus() {
+    PersonalizationService personalization = SilverpeasServiceProvider.getPersonalizationService();
+    UserPreferences prefs = personalization.getUserSettings(USER_ID);
+    prefs.enableThesaurus(true);
+    personalization.saveUserSettings(prefs);
   }
 }

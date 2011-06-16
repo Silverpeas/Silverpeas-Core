@@ -51,6 +51,11 @@ import static org.junit.Assert.*;
  */
 public abstract class RESTWebServiceTest extends AbstractSpringAwareJerseyTest {
 
+  /**
+   * Identifier of the default user to use in the unit tests on the REST-based web service.
+   */
+  public static final String USER_ID_IN_TEST = "2";
+  
   protected static final String CONTEXT_NAME = "silverpeas";
 
   @Inject

@@ -23,13 +23,13 @@
  */
 package com.silverpeas.pdc.web;
 
+import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.rest.RESTWebService;
+import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
-import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
-import java.util.List;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -41,6 +41,7 @@ import javax.ws.rs.core.Response.Status;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
+import static com.silverpeas.pdc.web.UserThesaurusHolder.*;
 
 /**
  * A REST Web service that represents the classification of a Silverpeas's resource on the
@@ -58,6 +59,8 @@ public class ResourceClassification extends RESTWebService {
 
   @Inject
   private PdcBm pdcService;
+  @Inject
+  private ThesaurusManager thesaurusManager;
   @Inject
   private ContentManager contentManager;
   @PathParam("componentId")
@@ -79,13 +82,18 @@ public class ResourceClassification extends RESTWebService {
   public PdcClassificationEntity getPdCClassification() {
     checkUserPriviledges();
     try {
-      int silverObjectId = getSilverObjectId(getContentId(), getComponentId());
-      List<ClassifyPosition> positions =
-              getPdcService().getPositions(silverObjectId, getComponentId());
-      String language = getUserPreferences().getLanguage();
-      return PdcClassificationEntity.fromPositions(positions,
-              inLanguage(language)).
-              withURI(getUriInfo().getAbsolutePath());
+      UserPreferences userPreferences = getUserPreferences();
+      int silverObjectId = getSilverObjectId(getContentId(), getComponentId());   
+      PdcClassificationEntity theClassificationEntity = aPdcClassificationEntity(
+              fromPositions(getPdcService().getPositions(silverObjectId, getComponentId())),
+              inLanguage(userPreferences.getLanguage()),
+              atURI(getUriInfo().getAbsolutePath()));
+      if (userPreferences.isThesaurusEnabled()) {
+        UserThesaurusHolder theUserThesaurus = holdThesaurus(getThesaurusManager(),
+              forUser(getUserDetail()));
+        theClassificationEntity.withSynonymsFrom(theUserThesaurus);
+      }
+      return theClassificationEntity;
     } catch (ContentManagerException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (PdcException ex) {
@@ -105,5 +113,9 @@ public class ResourceClassification extends RESTWebService {
 
   private ContentManager getContentManager() {
     return this.contentManager;
+  }
+
+  private ThesaurusManager getThesaurusManager() {
+    return this.thesaurusManager;
   }
 }

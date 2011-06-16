@@ -26,14 +26,12 @@ package com.silverpeas.pdc.web;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.silverpeas.thesaurus.model.Jargon;
-import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
- * Holder of the thesaurus for a given user.
+ * A holder of the thesaurus for a given user.
  * It provides convenient methods to access thesaurus data for a given user.
  */
 public class UserThesaurusHolder {
@@ -56,30 +54,22 @@ public class UserThesaurusHolder {
   }
 
   /**
-   * Gets the synonyms of the specified term in a String representation. Each synonym of the term
-   * are separated by a comma.
-   * @param term the term as a Value instance.
-   * @return a String representation of the list of synonyms of the specified term. Each synonym in
-   * the list is separated by a comma.
+   * Gets the synonyms of the specified term by using the hold user thesaurus.
+   * @param term the term as a PdcPositionValue instance.
+   * @return a collection of synonyms.
    * @throws ThesaurusException if an error occurs while accessing the thesaurus for getting the
    * synonyms of the specified term.
    */
-  public String getSynonymsOf(final Value term) throws ThesaurusException {
-    String synonyms = "";  
+  public Collection<String> getSynonymsOf(final PdcPositionValue term) throws ThesaurusException {
+    Collection<String> synonyms = null;  
     Jargon jargon = getThesaurus().getJargon(getUser().getId());
     if (jargon != null) {
       String idUser = jargon.getIdUser();
-      Collection<String> termSynonyms = thesaurus.getSynonyms(Long.valueOf(term.getTreeId()),
-              Long.valueOf(term.getPK().getId()), idUser);
-      boolean firstSynonym = true;
-      for (String aSynonym : termSynonyms) {
-        if (firstSynonym) {
-          synonyms += "- " + aSynonym;
-          firstSynonym = false;
-        } else {
-          synonyms += ", " + aSynonym;
-        }
-      }
+      synonyms = thesaurus.getSynonyms(Long.valueOf(term.getTreeId()), 
+              Long.valueOf(term.getId()), idUser);
+    }
+    if (synonyms == null) {
+      synonyms = new ArrayList<String>();
     }
     return synonyms;
   }

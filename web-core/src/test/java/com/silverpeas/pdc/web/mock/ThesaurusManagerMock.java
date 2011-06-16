@@ -21,20 +21,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.pdc.web;
+package com.silverpeas.pdc.web.mock;
 
-import com.silverpeas.rest.RESTWebServiceTest;
+import com.silverpeas.pdc.web.Thesaurus;
+import com.silverpeas.thesaurus.ThesaurusException;
+import com.silverpeas.thesaurus.control.ThesaurusManager;
+import com.silverpeas.thesaurus.model.Jargon;
+import java.util.Collection;
+import javax.inject.Named;
+import static org.mockito.Mockito.*;
+import static com.silverpeas.pdc.web.TestConstants.*;
 
 /**
- * All the constants that are be used in unit tests.
+ * A mock of the thesaurus manager. It mocks of its methods.
  */
-public interface TestConstants {
+@Named("thesaurusManager")
+public class ThesaurusManagerMock extends ThesaurusManager {
   
-  static final String USER_ID = RESTWebServiceTest.USER_ID_IN_TEST;
-  static final String COMPONENT_INSTANCE_ID = "kmelia2";
-  static final String CONTENT_ID = "1";
-  static final String RESOURCE_PATH = "pdc/" + COMPONENT_INSTANCE_ID + "/" + CONTENT_ID;
-  static final String UNKNOWN_RESOURCE_PATH = "pdc/" + COMPONENT_INSTANCE_ID + "/1000";
-  static final String FRENCH = "fr";
+  private Thesaurus thesaurus = new Thesaurus();
+
+  @Override
+  public Jargon getJargon(String idUser) throws ThesaurusException {
+    Jargon jargon = mock(Jargon.class);
+    when(jargon.getIdUser()).thenReturn(USER_ID);
+    return jargon;
+  }
+
+  @Override
+  public Collection<String> getSynonyms(long idTree, long idTerm, String idUser) throws ThesaurusException {
+    return thesaurus.getSynonyms(String.valueOf(idTerm));
+  }
   
 }

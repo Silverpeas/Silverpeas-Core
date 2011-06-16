@@ -23,7 +23,6 @@
  */
 package com.silverpeas.pdc.web;
 
-import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.stratelia.silverpeas.classifyEngine.ClassifyEngineException;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdc.model.Value;

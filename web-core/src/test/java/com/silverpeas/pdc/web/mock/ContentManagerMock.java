@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.pdc.web;
+package com.silverpeas.pdc.web.mock;
 
 import javax.inject.Named;
 import com.stratelia.silverpeas.contentManager.ContentManager;
@@ -30,7 +30,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import static com.silverpeas.pdc.web.TestConstants.*;
 
 /**
- * A decorator of the content manager by mocking some of its methods for testing purpose.
+ * A Mock of the content manager. It mocks some of its method.
  */
 @Named("contentManager")
 public class ContentManagerMock extends ContentManager {

@@ -24,6 +24,8 @@
 package com.silverpeas.pdc.web;
 
 import com.silverpeas.rest.Exposable;
+import com.silverpeas.thesaurus.ThesaurusException;
+import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import edu.emory.mathcs.backport.java.util.Collections;
 import java.net.URI;
@@ -52,12 +54,16 @@ public class PdcPositionEntity implements Exposable {
   private List<PdcPositionValue> positionValues = new ArrayList<PdcPositionValue>();
   @XmlElement(required = true)
   private URI uri;
+  @XmlElement(required = true)
+  private String id;
 
-  public static PdcPositionEntity fromPositionValues(final List<ClassifyValue> values,
-          String inLanguage) {
-    PdcPositionEntity position = new PdcPositionEntity();
-    position.setPositionValues(fromClassifyValues(values, inLanguage));
-    return position;
+  public static PdcPositionEntity fromClassifyPosition(final ClassifyPosition position,
+          String inLanguage,
+          final URI atClassificationURI) {
+    String withId = String.valueOf(position.getPositionId());
+    PdcPositionEntity positionEntity = new PdcPositionEntity(atClassificationURI, withId);
+    positionEntity.setPositionValues(fromClassifyValues(position.getListClassifyValue(), inLanguage));
+    return positionEntity;
   }
 
   @Override
@@ -65,9 +71,8 @@ public class PdcPositionEntity implements Exposable {
     return this.uri;
   }
 
-  public PdcPositionEntity withURI(final URI uri) {
-    this.uri = uri;
-    return this;
+  public String getId() {
+    return id;
   }
 
   /**
@@ -87,11 +92,14 @@ public class PdcPositionEntity implements Exposable {
       return false;
     }
     final PdcPositionEntity other = (PdcPositionEntity) obj;
-    if (this.positionValues != other.positionValues &&
-            (this.positionValues == null || !this.positionValues.equals(other.positionValues))) {
+    if (this.uri != other.uri && (this.uri == null || !this.uri.equals(other.uri))) {
       return false;
     }
-    if (this.uri != other.uri && (this.uri == null || !this.uri.equals(other.uri))) {
+    if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
+      return false;
+    }
+    if (this.positionValues != other.positionValues && (this.positionValues == null
+            || !this.positionValues.equals(other.positionValues))) {
       return false;
     }
     return true;
@@ -100,11 +108,12 @@ public class PdcPositionEntity implements Exposable {
   @Override
   public int hashCode() {
     int hash = 3;
-    hash = 97 * hash + (this.positionValues != null ? this.positionValues.hashCode() : 0);
-    hash = 97 * hash + (this.uri != null ? this.uri.hashCode() : 0);
+    hash = 79 * hash + (this.positionValues != null ? this.positionValues.hashCode() : 0);
+    hash = 79 * hash + (this.uri != null ? this.uri.hashCode() : 0);
+    hash = 79 * hash + (this.id != null ? this.id.hashCode() : 0);
     return hash;
   }
-  
+
   @Override
   public String toString() {
     StringBuilder valueArray = new StringBuilder("[");
@@ -116,7 +125,8 @@ public class PdcPositionEntity implements Exposable {
     } else {
       valueArray.append("]");
     }
-    return "PdcPositionEntity{" + "positionValues=" + valueArray.toString() + ", uri=" + uri + '}';
+    return "PdcPositionEntity{id=" + id + ", uri=" + uri + ", positionValues="
+            + valueArray.toString() + ", uri=" + uri + '}';
   }
 
   private static List<PdcPositionValue> fromClassifyValues(final List<ClassifyValue> values,
@@ -128,11 +138,27 @@ public class PdcPositionEntity implements Exposable {
     return positionValues;
   }
 
-  private PdcPositionEntity() {
+  protected PdcPositionEntity() {
+  }
+
+  private PdcPositionEntity(final URI classificationURI, String positionId) {
+    this.id = positionId;
+    this.uri = URI.create(classificationURI.toString() + "/" + positionId);
   }
 
   private void setPositionValues(final List<PdcPositionValue> values) {
     this.positionValues.clear();
     this.positionValues.addAll(values);
+  }
+
+  /**
+   * Sets the synonyms for each value of this position from the specified thesaurus.
+   * @param userThesaurus a user thesaurus from which synonyms can be get.
+   * @throws ThesaurusException if an error occurs while getting the synonyms of this position's values.
+   */
+  protected void setSynonymsFrom(final UserThesaurusHolder userThesaurus) throws ThesaurusException {
+    for (PdcPositionValue pdcPositionValue : positionValues) {
+      pdcPositionValue.setSynonyms(userThesaurus.getSynonymsOf(pdcPositionValue));
+    }
   }
 }

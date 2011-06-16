@@ -24,6 +24,7 @@
 package com.silverpeas.pdc.web;
 
 import com.silverpeas.rest.Exposable;
+import com.silverpeas.thesaurus.ThesaurusException;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import edu.emory.mathcs.backport.java.util.Collections;
 import java.net.URI;
@@ -62,15 +63,13 @@ public class PdcClassificationEntity implements Exposable {
     return new PdcClassificationEntity();
   }
 
-  /**
-   * Creates a PdC classification from the specified classification positions.
-   * @return a web entity representing the PdC classification with the specified positions on the
-   * axis Pdc.
-   */
-  public static PdcClassificationEntity fromPositions(final List<ClassifyPosition> positions,
-          String inLanguage) {
-    PdcClassificationEntity classification = new PdcClassificationEntity();
-    classification.setClassificationPositions(fromClassifyPositions(positions, inLanguage));
+  public static PdcClassificationEntity aPdcClassificationEntity(
+          final List<ClassifyPosition> fromPositions,
+          String inLanguage,
+          final URI atURI) {
+    PdcClassificationEntity classification = new PdcClassificationEntity(atURI);
+    classification.setClassificationPositions(
+            fromClassifyPositions(fromPositions, inLanguage, atURI));
     return classification;
   }
 
@@ -83,18 +82,43 @@ public class PdcClassificationEntity implements Exposable {
     return language;
   }
 
+  /**
+   * A convenient method to enhance the readability of creators.
+   * @param URI the URI at which the classification is published.
+   * @return the classification URI.
+   */
+  public static URI atURI(final URI uri) {
+    return uri;
+  }
+
+  /**
+   * A convenient method to enhance the readability of creators.
+   * @param positions a list of classify positions.
+   * @return the classify positions.
+   */
+  public static List<ClassifyPosition> fromPositions(final List<ClassifyPosition> positions) {
+    return positions;
+  }
+
   @Override
   public URI getURI() {
     return this.uri;
   }
 
   /**
-   * Sets the URI of this classification entity.
-   * @param uri the URI identifying uniquely in the Web this classification.
-   * @return the itself.
+   * Sets this classification entity with the synonyms of each position value that are present in
+   * the specified user thesaurus.
+   * @param userThesaurus a holder of the thesaurus of the user that asked for this PdC
+   * classification.
+   * @return itself.
+   * @throws ThesaurusException if an error occurs while getting the synonyms of the values of the
+   * different classification positions.
    */
-  public PdcClassificationEntity withURI(final URI uri) {
-    this.uri = uri;
+  public PdcClassificationEntity withSynonymsFrom(final UserThesaurusHolder userThesaurus) throws
+          ThesaurusException {
+    for (PdcPositionEntity pdcPositionEntity : positions) {
+      pdcPositionEntity.setSynonymsFrom(userThesaurus);
+    }
     return this;
   }
 
@@ -119,8 +143,8 @@ public class PdcClassificationEntity implements Exposable {
     if (this.uri != other.uri && (this.uri == null || !this.uri.equals(other.uri))) {
       return false;
     }
-    if (this.positions != other.positions &&
-            (this.positions == null || !this.positions.equals(other.positions))) {
+    if (this.positions != other.positions && (this.positions == null
+            || !this.positions.equals(other.positions))) {
       return false;
     }
     return true;
@@ -151,11 +175,11 @@ public class PdcClassificationEntity implements Exposable {
 
   private static List<PdcPositionEntity> fromClassifyPositions(
           final List<ClassifyPosition> positions,
-          String inLanguage) {
+          String inLanguage,
+          final URI atBaseURI) {
     List<PdcPositionEntity> positionEntities = new ArrayList<PdcPositionEntity>(positions.size());
     for (ClassifyPosition position : positions) {
-      positionEntities.add(PdcPositionEntity.fromPositionValues(position.getListClassifyValue(),
-              inLanguage));
+      positionEntities.add(PdcPositionEntity.fromClassifyPosition(position, inLanguage, atBaseURI));
     }
     return positionEntities;
   }
@@ -163,7 +187,11 @@ public class PdcClassificationEntity implements Exposable {
   private PdcClassificationEntity() {
   }
 
-  private void setClassificationPositions(final List<PdcPositionEntity> positions) {
+  private PdcClassificationEntity(final URI uri) {
+    this.uri = uri;
+  }
+
+  public void setClassificationPositions(final List<PdcPositionEntity> positions) {
     this.positions.clear();
     this.positions.addAll(positions);
   }

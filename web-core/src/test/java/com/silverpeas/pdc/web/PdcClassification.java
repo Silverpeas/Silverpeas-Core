@@ -26,10 +26,8 @@ package com.silverpeas.pdc.web;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdc.model.Value;
-import com.stratelia.silverpeas.treeManager.model.TreeNodeI18N;
 import java.util.ArrayList;
 import java.util.List;
-import static com.silverpeas.pdc.web.TestConstants.*;
 
 /**
  * A classification of a resource on the PdC. This is a representation of a classification for
@@ -70,43 +68,22 @@ public class PdcClassification {
   }
 
   private void fill() {
+    Thesaurus thesaurus = new Thesaurus();
+    List<String> treeIds = thesaurus.getTreeIds();
     List<ClassifyValue> positionValues = new ArrayList<ClassifyValue>();
-    ClassifyValue positionValue = new ClassifyValue(1, "/Pays/France/Isère");
-    List<Value> path = new ArrayList<Value> ();
-    path.add(anI18NValue("1", "1", "Pays", "2011/06/14", "0", "/Pays", 1, 1, "-1"));
-    path.add(anI18NValue("2", "1", "France", "2011/06/14", "0", "/Pays/France", 2, 1, "1"));
-    path.add(anI18NValue("3", "1", "Isère", "2011/06/14", "0", "/Pays/France/Isère", 3, 1, "2"));
-    positionValue.setFullPath(path);
-    positionValues.add(positionValue);
-    
-    positionValue = new ClassifyValue(2, "/Période/Moyen-Age");
-    path = new ArrayList<Value> ();
-    path.add(anI18NValue("4", "2", "Période", "2011/06/14", "0", "/Période", 1, 1, "-1"));
-    path.add(anI18NValue("5", "2", "Moyen-Age", "2011/06/14", "0", "/Période/Moyen-Age", 2, 1, "4"));
-    positionValue.setFullPath(path);
-    positionValues.add(positionValue);
-    
-    ClassifyPosition position = new ClassifyPosition(positionValues);
-    this.positions.add(position);
-
-    positionValues = new ArrayList<ClassifyValue>();
-    positionValue = new ClassifyValue(3, "/Religion/Christianisme");
-    path = new ArrayList<Value> ();
-    path.add(anI18NValue("6", "3", "Religion", "2011/06/14", "0", "/Religion", 1, 1, "-1"));
-    path.add(anI18NValue("7", "3", "Christianisme", "2011/06/14", "0", "/Religion/Christianisme", 2, 1, "6"));
-    positionValue.setFullPath(path);
-    positionValues.add(positionValue);
-    
-    position = new ClassifyPosition(positionValues);
-    this.positions.add(position);
-  }
-  
-  private Value anI18NValue(String id, String treeId, String name, String creationDate,
-      String creatorId, String path, int level, int order, String fatherId) {
-    Value value = new Value(id, treeId, name, creationDate, creatorId, path, level, order, fatherId);
-    value.setLanguage(FRENCH);
-    TreeNodeI18N translation = new TreeNodeI18N(Integer.valueOf(id), FRENCH, name, "");
-    value.addTranslation(translation);
-    return value;
+    for (int i = 0; i < treeIds.size(); i++) {
+      String treeId = treeIds.get(i);
+      List<Value> path = new ArrayList<Value>();
+      path.addAll(thesaurus.getValuesFromTree(treeId));
+      ClassifyValue positionValue =
+              new ClassifyValue(Integer.valueOf(treeId), path.get(path.size() - 1).getPath());
+      positionValue.setFullPath(path);
+      positionValues.add(positionValue);
+      if (i >= 1) {
+        ClassifyPosition position = new ClassifyPosition(positionValues);
+        this.positions.add(position);
+        positionValues = new ArrayList<ClassifyValue>();
+      }
+    }
   }
 }
