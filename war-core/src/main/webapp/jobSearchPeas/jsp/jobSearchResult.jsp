@@ -169,6 +169,7 @@ if(listResult != null) {
 		String desc = null;
 		String creaDate = null;
 		String creaName = null;
+		List<String> listPath = null;
 		String path = null;
 		String url = null;
 		for(int nI=0; nI < listResult.size(); nI++) {
@@ -196,7 +197,16 @@ if(listResult != null) {
 			creaName		= searchResult.getCreaName();
 			arrayLine.addArrayCellText(creaName);
 			
-			path			= searchResult.getPath();
+			listPath			= searchResult.getPath();
+			path = "";
+			boolean first = true;
+			for(int nJ=0; nJ < listPath.size(); nJ++) {
+				if(!first) {
+					path += "<BR>";
+				}
+				path += (String) listPath.get(nJ);
+				first = false;
+			}
 			arrayLine.addArrayCellText(path);
 			
 		}

@@ -230,8 +230,8 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       String nom = publication.getName(getLanguage());
       String desc = publication.getDescription(getLanguage());
       Date dateCrea = publication.getCreationDate();
-     // String nomCrea = getAdminController().getUserDetail(Integer.toString(publication.getCreatorName()getCreatedBy())).getDisplayedName();
-      String nomCrea = publication.getCreatorName();
+      String creaId = publication.getCreatorId();
+      String nomCrea = getAdminController().getUserDetail(creaId).getDisplayedName();
       pubPK = publication.getPK();
       String instanceId = pubPK.getInstanceId();
       List<String> listEmplacement = new ArrayList<String>();
@@ -242,25 +242,15 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         emplacementEspaceComposant += space.getName(getLanguage()) + " > ";
       }
       
-      /*SpaceInstLight spaceIntermed = null;
-      boolean first = true;
-      for(int nI=0; pathSpaces != null && nI < pathSpaces.size(); nI++) {
-        spaceIntermed  = (SpaceInstLight) pathSpaces.get(nI);
-        if(!first) {
-          emplacement += " > ";
-        }
-        emplacement += spaceIntermed.getName(getLanguage());
-        first = false;
-      }*/
       //Composant
       emplacementEspaceComposant += getAdminController().getComponentInstLight(instanceId).getLabel(getLanguage()) + " > ";
       
       //Theme / Sous-theme
       Collection<NodePK> fatherPKs = getPublicationBm().getAllFatherPK(pubPK);
       if (fatherPKs != null) {
-        String emplacement = emplacementEspaceComposant;
         Iterator<NodePK> it = fatherPKs.iterator();
         while (it.hasNext()) {
+          String emplacement = emplacementEspaceComposant;
           NodePK pk = it.next();
           Collection<NodeDetail> path = getNodeBm().getAnotherPath(pk);
           Iterator<NodeDetail> itNode = path.iterator();
@@ -268,8 +258,9 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
             NodeDetail nodeDetail = itNode.next();
             emplacement += nodeDetail.getName(getLanguage()) + " > ";
           }
+          emplacement = emplacement.substring(0, emplacement.length() - 3);
+          listEmplacement.add(emplacement);
         }
-        listEmplacement.add(emplacement);  
       }
       
       String url = publication.getURL();
@@ -369,11 +360,12 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         emplacementDomaine += domain.getName();
       }
       //groupe(s) d'appartenance
+      String emplacement = emplacementDomaine;
       String[] groupIds = getAdminController().getDirectGroupsIdsOfUser(searchField);
       if (groupIds != null && groupIds.length > 0) {
-        String emplacement = emplacementDomaine;
         for (int iGrp = 0; iGrp < groupIds.length; iGrp++) {
           Group group = getOrganizationController().getGroup(groupIds[iGrp]);
+          emplacement = emplacementDomaine;
           //nom du(des) groupe(s) pères
           List<String> groupList = getAdminController().getPathToGroup(groupIds[iGrp]);
           for (String elementGroupId : groupList) {
@@ -381,9 +373,11 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
           }
           //nom du groupe
           emplacement += " > "+ group.getName();
+          listEmplacement.add(emplacement);
         }
-        listEmplacement.add(emplacement);  
-      } 
+      } else {
+        listEmplacement.add(emplacement);
+      }
       
       String url = "/RjobDomainPeas/jsp/groupOpen?groupId="+searchField;
      
