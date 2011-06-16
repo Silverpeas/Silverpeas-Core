@@ -892,7 +892,22 @@
     <description>Simple tag to encode a java String into a XML escaped String.</description>
     <name>encodeXml</name>
     <tag-class>
-      com.stratelia.webactiv.util.viewGenerator.html.XmlEncoderTag
+      com.stratelia.webactiv.util.viewGenerator.html.XMLEncoderTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>Java String</description>
+      <name>string</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to encode a java String into an HTML Paragraph String.</description>
+    <name>encodeHtmlParagraph</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.HtmlParagraphEncoderTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
