@@ -70,6 +70,7 @@ public class ResourceClassificationTest extends RESTWebServiceTest {
     assertNotNull(thesaurusManager);
     UserDetail user = aUser();
     sessionKey = authenticate(user);
+    enableThesaurus();
   }
 
   /**
@@ -158,11 +159,25 @@ public class ResourceClassificationTest extends RESTWebServiceTest {
   }
 
   @Test
-  public void nominalClassificationGetting() throws Exception {
+  public void nominalClassificationWithSynonymsGetting() throws Exception {
     PdcClassification theClassification =
             aPdcClassification().onResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID);
     save(theClassification);
-    enableThesaurus();
+    PdcClassificationEntity classification = resource().path(RESOURCE_PATH).
+            header(HTTP_SESSIONKEY, sessionKey).
+            accept(MediaType.APPLICATION_JSON).
+            get(PdcClassificationEntity.class);
+    assertNotNull(classification);
+    assertThat(classification, not(undefined()));
+    assertThat(classification, is(equalTo(theWebEntityOf(theClassification))));
+  }
+  
+  @Test
+  public void nominalClassificationWithoutAnySynonymsGetting() throws Exception {
+    PdcClassification theClassification = aPdcClassificationWithoutAnySynonyms().
+            onResource(CONTENT_ID).
+            inComponent(COMPONENT_INSTANCE_ID);
+    save(theClassification);
     PdcClassificationEntity classification = resource().path(RESOURCE_PATH).
             header(HTTP_SESSIONKEY, sessionKey).
             accept(MediaType.APPLICATION_JSON).

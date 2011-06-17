@@ -137,7 +137,7 @@ public class Thesaurus {
     return values;
   }
 
-  private Value anI18NValue(String id, String treeId, String name, String creationDate,
+  protected Value anI18NValue(String id, String treeId, String name, String creationDate,
           String creatorId, String path, int level, int order, String fatherId) {
     Value value = new Value(id, treeId, name, creationDate, creatorId, path, level, order, fatherId);
     value.setLanguage(FRENCH);

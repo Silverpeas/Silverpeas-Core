@@ -51,7 +51,7 @@ public class PdcPositionEntity implements Exposable {
 
   private static final long serialVersionUID = 6314816355055147378L;
   @XmlElement
-  private List<PdcPositionValue> positionValues = new ArrayList<PdcPositionValue>();
+  private List<PdcPositionValue> values = new ArrayList<PdcPositionValue>();
   @XmlElement(required = true)
   private URI uri;
   @XmlElement(required = true)
@@ -80,7 +80,7 @@ public class PdcPositionEntity implements Exposable {
    * @return an unmodifiable list of PdC position values.
    */
   public List<PdcPositionValue> getPositionValues() {
-    return Collections.unmodifiableList(positionValues);
+    return Collections.unmodifiableList(values);
   }
 
   @Override
@@ -98,8 +98,8 @@ public class PdcPositionEntity implements Exposable {
     if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
       return false;
     }
-    if (this.positionValues != other.positionValues && (this.positionValues == null
-            || !this.positionValues.equals(other.positionValues))) {
+    if (this.values != other.values && (this.values == null
+            || !this.values.equals(other.values))) {
       return false;
     }
     return true;
@@ -108,7 +108,7 @@ public class PdcPositionEntity implements Exposable {
   @Override
   public int hashCode() {
     int hash = 3;
-    hash = 79 * hash + (this.positionValues != null ? this.positionValues.hashCode() : 0);
+    hash = 79 * hash + (this.values != null ? this.values.hashCode() : 0);
     hash = 79 * hash + (this.uri != null ? this.uri.hashCode() : 0);
     hash = 79 * hash + (this.id != null ? this.id.hashCode() : 0);
     return hash;
@@ -117,7 +117,7 @@ public class PdcPositionEntity implements Exposable {
   @Override
   public String toString() {
     StringBuilder valueArray = new StringBuilder("[");
-    for (PdcPositionValue pdcPositionValue : positionValues) {
+    for (PdcPositionValue pdcPositionValue : values) {
       valueArray.append(pdcPositionValue.toString()).append(", ");
     }
     if (valueArray.length() > 1) {
@@ -147,8 +147,8 @@ public class PdcPositionEntity implements Exposable {
   }
 
   private void setPositionValues(final List<PdcPositionValue> values) {
-    this.positionValues.clear();
-    this.positionValues.addAll(values);
+    this.values.clear();
+    this.values.addAll(values);
   }
 
   /**
@@ -157,7 +157,7 @@ public class PdcPositionEntity implements Exposable {
    * @throws ThesaurusException if an error occurs while getting the synonyms of this position's values.
    */
   protected void setSynonymsFrom(final UserThesaurusHolder userThesaurus) throws ThesaurusException {
-    for (PdcPositionValue pdcPositionValue : positionValues) {
+    for (PdcPositionValue pdcPositionValue : values) {
       pdcPositionValue.setSynonyms(userThesaurus.getSynonymsOf(pdcPositionValue));
     }
   }

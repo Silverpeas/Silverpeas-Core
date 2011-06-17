@@ -45,6 +45,12 @@ public class PdcClassification {
     return classification;
   }
 
+  public static PdcClassification aPdcClassificationWithoutAnySynonyms() {
+    PdcClassification classification = new PdcClassification();
+    classification.fillWithNoSynonyms();
+    return classification;
+  }
+
   public PdcClassification onResource(String resourceId) {
     this.resourceId = resourceId;
     return this;
@@ -85,5 +91,18 @@ public class PdcClassification {
         positionValues = new ArrayList<ClassifyValue>();
       }
     }
+  }
+
+  private void fillWithNoSynonyms() {
+    Thesaurus thesaurus = new Thesaurus();
+    List<ClassifyValue> positionValues = new ArrayList<ClassifyValue>();
+    ClassifyValue positionValue = new ClassifyValue(100, "Technique");
+    List<Value> path = new ArrayList<Value>();
+    path.add(thesaurus.anI18NValue("100", "100", "Technique", "2011/06/16", "0", "/Technique", 0, 0,
+            "-1"));
+    positionValue.setFullPath(path);
+    positionValues.add(positionValue);
+    ClassifyPosition position = new ClassifyPosition(positionValues);
+    this.positions.add(position);
   }
 }

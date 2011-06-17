@@ -63,7 +63,7 @@ public class UserThesaurusHolder {
   public Collection<String> getSynonymsOf(final PdcPositionValue term) throws ThesaurusException {
     Collection<String> synonyms = null;  
     Jargon jargon = getThesaurus().getJargon(getUser().getId());
-    if (jargon != null) {
+    if (jargon != null && term.belongToATree()) {
       String idUser = jargon.getIdUser();
       synonyms = thesaurus.getSynonyms(Long.valueOf(term.getTreeId()), 
               Long.valueOf(term.getId()), idUser);

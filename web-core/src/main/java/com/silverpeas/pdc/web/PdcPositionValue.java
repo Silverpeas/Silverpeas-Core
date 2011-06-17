@@ -91,6 +91,14 @@ public class PdcPositionValue implements Serializable {
     return treeId;
   }
   
+  /**
+   * Is this value is a node in an hierachical semantic tree?
+   * The value belong to a tree when it defines a more exactness meaning for a given position value.
+   * @return true if the value is a node in an hierarchical semantic tree, false otherwise.
+   */
+  public boolean belongToATree() {
+    return isDefined(this.treeId) && !this.treeId.isEmpty();
+  }
 
   /**
    * Gets the complete path of this value in the hierarchical tree of terms. Each term in the path
