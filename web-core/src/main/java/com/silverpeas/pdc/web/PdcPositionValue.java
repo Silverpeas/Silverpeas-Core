@@ -46,7 +46,16 @@ import static com.silverpeas.util.StringUtil.*;
 public class PdcPositionValue implements Serializable {
 
   private static final long serialVersionUID = -6826039385078009600L;
-
+  
+  @XmlElement(required = true)
+  private String id;
+  @XmlElement(defaultValue="")
+  private String treeId = "";
+  @XmlElement(required = true)
+  private String path;
+  @XmlElement
+  private List<String> synonyms = new ArrayList<String>();
+  
   /**
    * Creates a new PdC position value fom the specified PdC classification value.
    * @param value a value of a PdC classification position.
@@ -65,14 +74,15 @@ public class PdcPositionValue implements Serializable {
     }
     return positionValue;
   }
-  @XmlElement(required = true)
-  private String id;
-  @XmlElement(defaultValue="")
-  private String treeId = "";
-  @XmlElement(required = true)
-  private String path;
-  @XmlElement
-  private List<String> synonyms = new ArrayList<String>();
+  
+  /**
+   * Gets the business classification position's value that is represented by this PdC position
+   * value.
+   * @return a ClassifyValue instance.
+   */
+  public ClassifyValue toClassifyValue() {
+    return new ClassifyValue(Integer.valueOf(this.id), path);
+  }
 
   /**
    * Gets the unique identifier of this position value.

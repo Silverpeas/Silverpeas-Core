@@ -23,17 +23,17 @@
  */
 package com.silverpeas.pdc.web;
 
+import com.silverpeas.pdc.web.mock.PdcBmMock;
 import com.silverpeas.SilverpeasServiceProvider;
+import com.silverpeas.pdc.web.mock.ContentManagerMock;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.thesaurus.ThesaurusException;
-import java.util.UUID;
-import javax.ws.rs.core.Response.Status;
-import com.sun.jersey.api.client.UniformInterfaceException;
-import javax.ws.rs.core.MediaType;
 import com.sun.jersey.api.client.WebResource;
 import com.silverpeas.rest.RESTWebServiceTest;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
+import com.stratelia.silverpeas.contentManager.ContentManager;
+import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.net.URI;
 import javax.inject.Inject;
@@ -41,10 +41,7 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-import static com.silverpeas.rest.RESTWebService.*;
-import static com.silverpeas.pdc.web.PdcClassificationEntityMatcher.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
-import static com.silverpeas.pdc.web.PdcClassification.*;
 import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
 
 /**
@@ -52,12 +49,14 @@ import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
  * Silverpeas's resource.
  * For testing purpose, the resource taken in consideration in the tests is a Kmelia publication.
  */
-public class ResourceClassificationTest extends RESTWebServiceTest {
+public abstract class ResourceClassificationTest extends RESTWebServiceTest {
 
   @Inject
-  PdcBmMock pdcBm;
+  private PdcBmMock pdcBm;
   @Inject
-  ThesaurusManager thesaurusManager;
+  private ThesaurusManager thesaurusManager;
+  @Inject
+  ContentManagerMock contentManager;
   private String sessionKey;
 
   public ResourceClassificationTest() {
@@ -81,122 +80,29 @@ public class ResourceClassificationTest extends RESTWebServiceTest {
     WebResource resource = resource();
     assertThat(resource, notNullValue());
   }
-
-  @Test
-  public void classificationGettingByANonAuthenticatedUser() {
-    WebResource resource = resource();
-    try {
-      resource.path(RESOURCE_PATH).
-              accept(MediaType.APPLICATION_JSON).
-              get(PdcClassificationEntity.class);
-      fail("A non authenticated user shouldn't access the classification");
-    } catch (UniformInterfaceException ex) {
-      int recievedStatus = ex.getResponse().getStatus();
-      int unauthorized = Status.UNAUTHORIZED.getStatusCode();
-      assertThat(recievedStatus, is(unauthorized));
-    }
-  }
-
-  @Test
-  public void classificationGettingWithinAnExpiredSession() {
-    WebResource resource = resource();
-    try {
-      resource.path(RESOURCE_PATH).
-              header(HTTP_SESSIONKEY, UUID.randomUUID().toString()).
-              accept(MediaType.APPLICATION_JSON).get(PdcClassificationEntity.class);
-      fail("A non authenticated user shouldn't access the classification");
-    } catch (UniformInterfaceException ex) {
-      int recievedStatus = ex.getResponse().getStatus();
-      int unauthorized = Status.UNAUTHORIZED.getStatusCode();
-      assertThat(recievedStatus, is(unauthorized));
-    }
-  }
-
-  @Test
-  public void classificationGettingOnAnUnauthorizedResource() {
-    denieAuthorizationToUsers();
-    WebResource resource = resource();
-    try {
-      resource.path(RESOURCE_PATH).
-              header(HTTP_SESSIONKEY, sessionKey).
-              accept(MediaType.APPLICATION_JSON).get(PdcClassificationEntity.class);
-      fail("A user shouldn't access the classification of an unauthorized resource");
-    } catch (UniformInterfaceException ex) {
-      int recievedStatus = ex.getResponse().getStatus();
-      int forbidden = Status.FORBIDDEN.getStatusCode();
-      assertThat(recievedStatus, is(forbidden));
-    }
-  }
-
-  @Test
-  public void classificationGettingOnAnUnexistingResource() {
-    WebResource resource = resource();
-    try {
-      resource.path(UNKNOWN_RESOURCE_PATH).
-              header(HTTP_SESSIONKEY, sessionKey).
-              accept(MediaType.APPLICATION_JSON).get(PdcClassificationEntity.class);
-      fail("A user shouldn't get a classification of an unexisting resource");
-    } catch (UniformInterfaceException ex) {
-      int recievedStatus = ex.getResponse().getStatus();
-      int notFound = Status.NOT_FOUND.getStatusCode();
-      assertThat(recievedStatus, is(notFound));
-    }
-  }
-
-  /**
-   * Asking the classification of a non-classified resource should sent back an undefined
-   * classification. An undefined classification is an object without any classification
-   * positions.
-   */
-  @Test
-  public void undefinedClassificationGetting() {
-    PdcClassificationEntity classification = resource().path(RESOURCE_PATH).
-            header(HTTP_SESSIONKEY, sessionKey).
-            accept(MediaType.APPLICATION_JSON).
-            get(PdcClassificationEntity.class);
-    assertNotNull(classification);
-    assertThat(classification, is(undefined()));
-  }
-
-  @Test
-  public void nominalClassificationWithSynonymsGetting() throws Exception {
-    PdcClassification theClassification =
-            aPdcClassification().onResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID);
-    save(theClassification);
-    PdcClassificationEntity classification = resource().path(RESOURCE_PATH).
-            header(HTTP_SESSIONKEY, sessionKey).
-            accept(MediaType.APPLICATION_JSON).
-            get(PdcClassificationEntity.class);
-    assertNotNull(classification);
-    assertThat(classification, not(undefined()));
-    assertThat(classification, is(equalTo(theWebEntityOf(theClassification))));
+  
+  protected String getSessionKey() {
+    return this.sessionKey;
   }
   
-  @Test
-  public void nominalClassificationWithoutAnySynonymsGetting() throws Exception {
-    PdcClassification theClassification = aPdcClassificationWithoutAnySynonyms().
-            onResource(CONTENT_ID).
-            inComponent(COMPONENT_INSTANCE_ID);
-    save(theClassification);
-    PdcClassificationEntity classification = resource().path(RESOURCE_PATH).
-            header(HTTP_SESSIONKEY, sessionKey).
-            accept(MediaType.APPLICATION_JSON).
-            get(PdcClassificationEntity.class);
-    assertNotNull(classification);
-    assertThat(classification, not(undefined()));
-    assertThat(classification, is(equalTo(theWebEntityOf(theClassification))));
+  protected PdcBm getPdcService() {
+    return this.pdcBm;
+  }
+  
+  protected ContentManager getContentManager() {
+    return this.contentManager;
   }
 
-  private void save(final PdcClassification classification) {
+  protected void save(final PdcClassification classification) {
     pdcBm.addClassification(classification);
   }
 
-  private PdcClassificationEntity theWebEntityOf(final PdcClassification classification) throws
+  protected PdcClassificationEntity theWebEntityOf(final PdcClassification classification) throws
           ThesaurusException {
     return aPdcClassificationEntity(
             fromPositions(classification.getPositions()),
             inLanguage(FRENCH),
-            atURI(URI.create("http://localhost:9998/silverpeas/" + RESOURCE_PATH))).
+            atURI(URI.create(CLASSIFICATION_URI))).
             withSynonymsFrom(UserThesaurusHolder.holdThesaurus(thesaurusManager, aUser()));
   }
 

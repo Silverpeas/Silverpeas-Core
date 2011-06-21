@@ -21,15 +21,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.pdc.web;
+package com.silverpeas.pdc.web.mock;
 
+import com.silverpeas.pdc.web.PdcClassification;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -64,6 +64,25 @@ public class PdcBmMock extends PdcBmImpl {
     return aListOfPositions();
   }
 
+  @Override
+  public void deletePosition(int positionId, String sComponentId) throws PdcException {
+    if (!COMPONENT_INSTANCE_ID.equals(sComponentId)) {
+      throw new PdcException(getClass().getSimpleName(), SilverTrace.TRACE_LEVEL_ERROR, "");
+    }
+    ClassifyPosition positionToDelete = null;
+    for (ClassifyPosition position : aListOfPositions()) {
+      if (position.getPositionId() == positionId) {
+        positionToDelete = position;
+        break;
+      }
+    }
+    if (positionToDelete != null) {
+      aListOfPositions().remove(positionToDelete);
+    } else {
+      throw new PdcException(getClass().getSimpleName(), SilverTrace.TRACE_LEVEL_ERROR, "");
+    }
+  }
+
   private List<ClassifyPosition> aListOfPositions() {
     return this.positions;
   }
@@ -72,7 +91,11 @@ public class PdcBmMock extends PdcBmImpl {
     if (COMPONENT_INSTANCE_ID.equals(classification.getComponentId()) &&
             CONTENT_ID.equals(classification.getResourceId())) {
       this.positions.clear();
-      this.positions.addAll(classification.getPositions());
+      int i = 0;
+      for (ClassifyPosition position : classification.getPositions()) {
+        position.setPositionId(i++);
+        positions.add(position);
+      }
     }
   }
   

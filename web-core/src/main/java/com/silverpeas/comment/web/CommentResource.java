@@ -121,7 +121,7 @@ public class CommentResource extends RESTWebService {
    * If the user isn't authorized to save the comment, a 403 is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param commentToSave the comment to save in Silverpeas.
-   * @return the response to the HTTP PÖST request with the JSON representation of the saved comment.
+   * @return the response to the HTTP POST request with the JSON representation of the saved comment.
    */
   @POST
   @Produces(MediaType.APPLICATION_JSON)
