@@ -27,7 +27,9 @@ package com.stratelia.webactiv.util.indexEngine.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.stratelia.webactiv.util.indexEngine.DateFormatter;
 
@@ -84,6 +86,34 @@ public class FullIndexEntry extends IndexEntry implements Serializable {
   }
 
   /**
+   * Add a linked file id to be indexed. We need :
+   * <UL>
+   * <LI>the file id</LI>
+   * </UL>
+   */
+  public void addLinkedFileId(String fileId) {
+   getLinkedFileIdsSet().add(fileId);
+  }
+
+  /**
+   * Add a linked file to be indexed. We need :
+   * <UL>
+   * <LI>the path to the file</LI>
+   * <LI>the encoding of the file</LI>
+   * <LI>the format of the file</LI>
+   * <LI>the language of the file</LI>
+   * </UL>
+   * All this files will be parsed and then indexed but not stored in the index. They may be added
+   * in any order.
+   */
+  public void addLinkedFileContent(String path, String encoding, String format,
+      String lang) {
+    if (path != null) {
+      getLinkedFileList().add(new FileDescription(path, encoding, format, lang));
+    }
+  }
+
+  /**
    * @deprecated use addField(String fieldName, String value) instead
    */
   public void addXMLField(String fieldName, String value) {
@@ -130,6 +160,13 @@ public class FullIndexEntry extends IndexEntry implements Serializable {
   }
 
   /**
+   * Return the List of all the linked files. The returned List is a list of FileDescription.
+   */
+  public List<FileDescription> getLinkedFileContentList() {
+    return getLinkedFileList();
+  }
+
+  /**
    * @deprecated use getFields() instead
    */
   public List<FieldDescription> getXmlFields() {
@@ -148,6 +185,18 @@ public class FullIndexEntry extends IndexEntry implements Serializable {
     return fileList;
   }
 
+  private List<FileDescription> getLinkedFileList() {
+    if (linkedFileList == null)
+      linkedFileList = new ArrayList<FileDescription>();
+    return linkedFileList;
+  }
+
+  public Set<String> getLinkedFileIdsSet() {
+    if (linkedFileIdsList == null)
+      linkedFileIdsList = new HashSet<String>();
+    return linkedFileIdsList;
+  }
+
   public List<FieldDescription> getFields() {
     if (fields == null)
       fields = new ArrayList<FieldDescription>();
@@ -160,5 +209,7 @@ public class FullIndexEntry extends IndexEntry implements Serializable {
    */
   private List<TextDescription> textList = null;
   private List<FileDescription> fileList = null;
+  private List<FileDescription> linkedFileList = null;
   private List<FieldDescription> fields = null;
+  private Set<String> linkedFileIdsList = null;
 }
