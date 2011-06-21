@@ -609,7 +609,10 @@ public class AttachmentController {
     try {
       AttachmentDetail attachDetail = attachmentBm.
           getAttachmentByPrimaryKey(pk);
-      deleteAttachment(attachDetail, invokeCallback);
+      if(attachDetail != null) {
+        //l'attachment existe bien toujours en base
+        deleteAttachment(attachDetail, invokeCallback);
+      }
 
     } catch (Exception fe) {
       throw new AttachmentRuntimeException(
