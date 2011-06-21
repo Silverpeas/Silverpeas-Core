@@ -21,53 +21,20 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
-
 package com.stratelia.webactiv.util.subscribe.control;
 
-import java.util.*;
-import javax.ejb.*;
-import java.sql.*;
-
-import com.stratelia.silverpeas.silvertrace.*;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.*;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.subscribe.ejb.NodeActorLinkDAO;
-import com.stratelia.webactiv.util.subscribe.model.*;
+import com.stratelia.webactiv.util.subscribe.model.SubscribeRuntimeException;
 
-/*
- * CVS Informations
- *
- * $Id: SubscribeBmEJB.java,v 1.2 2004/10/05 13:21:18 dlesimple Exp $
- *
- * $Log: SubscribeBmEJB.java,v $
- * Revision 1.2  2004/10/05 13:21:18  dlesimple
- * Couper/Coller composant
- *
- * Revision 1.1.1.1  2002/08/06 14:47:53  nchaix
- * no message
- *
- * Revision 1.11  2002/01/22 13:39:51  mguillem
- * Stabilisation Lot2
- * Réorganisation des Router et SessionController
- * Suppression dans les fichiers *Exception de 'implements FromModule'
- *
- * Revision 1.10  2002/01/22 10:26:32  mguillem
- * Stabilisation Lot2
- * Réorganisation des Router et SessionController
- * Suppression dans les fichiers *Exception de 'implements FromModule'
- *
- * Revision 1.9  2002/01/21 15:16:12  neysseri
- * Ajout d'une fonctionnalité permettant d'avoir les abonnés à un ensemble de noeuds
- *
- * Revision 1.8  2001/12/26 14:27:42  nchaix
- * no message
- *
- */
+import javax.ejb.CreateException;
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
+import java.sql.Connection;
+import java.util.Collection;
 
 /**
  * Class declaration
@@ -93,27 +60,10 @@ public class SubscribeBmEJB implements SessionBean {
   private Connection getConnection() {
     try {
       Connection con = DBUtil.makeConnection(dbName);
-
       return con;
     } catch (Exception e) {
       throw new SubscribeRuntimeException("SubscribeBmEJB.getConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
-    }
-  }
-
-  /**
-   * Method declaration
-   * @param con
-   * @see
-   */
-  private void freeConnection(Connection con) {
-    if (con != null) {
-      try {
-        con.close();
-      } catch (Exception e) {
-        SilverTrace.error("subscrive", "SubscribeBmEJB.freeConnection",
-            "root.MSG_GEN_CONNECTION_CLOSE_FAILED");
-      }
     }
   }
 
@@ -130,12 +80,12 @@ public class SubscribeBmEJB implements SessionBean {
 
     try {
       con = getConnection();
-      NodeActorLinkDAO.add(con, rootTableName, userId, node);
+      NodeActorLinkDAO.add(con, userId, node);
     } catch (Exception e) {
       throw new SubscribeRuntimeException("SubscribeBmEJB.addSubscribe()",
           SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_ADD_SUBSCRIBE", e);
     } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -152,13 +102,13 @@ public class SubscribeBmEJB implements SessionBean {
 
     try {
       con = getConnection();
-      NodeActorLinkDAO.remove(con, rootTableName, userId, node);
+      NodeActorLinkDAO.remove(con, userId, node);
     } catch (Exception e) {
       throw new SubscribeRuntimeException("SubscribeBmEJB.removeSubscribe()",
           SilverpeasRuntimeException.ERROR,
           "subscribe.CANNOT_REMOVE_SUBSCRIBE", e);
     } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -181,7 +131,7 @@ public class SubscribeBmEJB implements SessionBean {
           SilverpeasRuntimeException.ERROR,
           "subscribe.CANNOT_REMOVE_USER_SUBSCRIBES", e);
     } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -205,7 +155,7 @@ public class SubscribeBmEJB implements SessionBean {
           SilverpeasRuntimeException.ERROR,
           "subscribe.CANNOT_REMOVE_NODE_SUBSCRIBES", e);
     } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -223,7 +173,7 @@ public class SubscribeBmEJB implements SessionBean {
     try {
       con = getConnection();
       Collection result = NodeActorLinkDAO.getNodePKsByActor(con,
-          rootTableName, userId);
+          userId);
 
       return result;
     } catch (Exception e) {
@@ -232,30 +182,10 @@ public class SubscribeBmEJB implements SessionBean {
           SilverpeasRuntimeException.ERROR,
           "subscribe.CANNOT_GET_USER_SUBSCRIBES", e);
     } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
   }
 
-  // NEWD DLE
-  /**
-   * Method declaration
-   * @param userId
-   * @param space
-   * @param componentName
-   * @return
-   * @see
-   */
-  /*
-   * public Collection getUserSubscribePKsBySpaceAndComponent(String userId, String space, String
-   * componentName) { SilverTrace.info("subscribe",
-   * "SubscribeBmEJB.getUserSubscribePKsBySpaceAndComponent", "root.MSG_GEN_ENTER_METHOD");
-   * Connection con = null; try { con = getConnection(); Collection result =
-   * NodeActorLinkDAO.getNodePKsByActorSpaceAndComponent(con, rootTableName, userId, space,
-   * componentName); return result; } catch (Exception e) { throw newSubscribeRuntimeException(
-   * "SubscribeBmEJB.getUserSubscribesPKsByspaceAndcomponent()", SilverpeasRuntimeException.ERROR,
-   * "subscribe.CANNOT_GET_USER_SUBSCRIBES_SPACE_COMPONENT", e); } finally { freeConnection(con); }
-   * }
-   */
   /**
    * Method declaration
    * @param userId
@@ -281,7 +211,7 @@ public class SubscribeBmEJB implements SessionBean {
           SilverpeasRuntimeException.ERROR,
           "subscribe.CANNOT_GET_USER_SUBSCRIBES_SPACE_COMPONENT", e);
     } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -301,7 +231,7 @@ public class SubscribeBmEJB implements SessionBean {
     try {
       con = getConnection();
       Collection result = NodeActorLinkDAO.getActorPKsByNodePK(con,
-          rootTableName, node);
+          node);
 
       return result;
     } catch (Exception e) {
@@ -310,7 +240,7 @@ public class SubscribeBmEJB implements SessionBean {
           SilverpeasRuntimeException.ERROR,
           "subscribe.CANNOT_GET_NODE_SUBSCRIBERS", e);
     } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -330,7 +260,7 @@ public class SubscribeBmEJB implements SessionBean {
           SilverpeasRuntimeException.ERROR,
           "subscribe.CANNOT_GET_NODE_SUBSCRIBERS", e);
     } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
   }
 
