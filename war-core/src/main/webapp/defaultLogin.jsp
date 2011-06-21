@@ -23,15 +23,19 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@page import="com.silverpeas.util.StringUtil"%>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ page isELIgnored="false"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<fmt:setLocale value="${pageContext.request.locale.language}" />
 <%@ include file="headLog.jsp" %>
 
 <%
 ResourceLocator authenticationBundle = new ResourceLocator("com.silverpeas.authentication.multilang.authentication", "");
-
+pageContext.setAttribute("authenticationBundle", authenticationBundle.getResourceBundle());
 String errorCode = request.getParameter("ErrorCode");
-if (!StringUtil.isDefined(errorCode)) {
+if (!com.silverpeas.util.StringUtil.isDefined(errorCode)) {
 	errorCode = "";
 }
 
@@ -41,13 +45,13 @@ if(com.silverpeas.util.StringUtil.isInteger(request.getParameter("DomainId"))) {
   request.setAttribute("Silverpeas_DomainId", domainId);
 }
 %>
-
+<view:setBundle basename="com.silverpeas.authentication.multilang.authentication" />
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title><%=generalMultilang.getString("GML.popupTitle")%></title>
-<link rel="SHORTCUT ICON" href="<%=request.getContextPath()%>/util/icons/favicon.ico"/>
+<title>Prout${pageContext.request.locale.language}<fmt:message key="GML.popupTitle" /></title>
+<link rel="SHORTCUT ICON" href='<c:url value="/util/icons/favicon.ico" />'/>
 <link type="text/css" rel="stylesheet" href="<%=styleSheet%>" />
 
 <!--[if lt IE 8]>
@@ -107,39 +111,41 @@ function checkForm()
 		}
 		else
 		{
-			if (form.storePassword.checked)
-				form.storePassword.click();
+			if (form.storePassword.checked) {
+              form.storePassword.click();
+            }				
 		}		
 	<% } %>
-	form.action="/silverpeas/AuthenticationServlet";
+    form.action='<c:url value="/AuthenticationServlet" />';
 	form.submit();
 }
 
 function loginQuestion() {
 	var form = document.getElementById("EDform");
     if (form.elements["Login"].value.length == 0) {
-        alert("<%=authenticationBundle.getString("authentication.logon.loginMissing") %>");
+      alert('<fmt:message key="authentication.logon.loginMissing" />');
     } else {
-    	form.action = "<%=m_context%>/CredentialsServlet/LoginQuestion";
-    	form.submit();
+      form.action ='<c:url value="/CredentialsServlet/LoginQuestion" />';
+      form.submit();
     }
 }
 
 function resetPassword() {
 	var form = document.getElementById("EDform");
     if (form.elements["Login"].value.length == 0) {
-        alert("<%=authenticationBundle.getString("authentication.logon.loginMissing") %>");
+      alert('<fmt:message key="authentication.logon.loginMissing" />');
     } else {
-    	form.action = "<%=m_context%>/CredentialsServlet/ForgotPassword";
-    	form.submit();
+      form.action ='<c:url value="/CredentialsServlet/ForgotPassword" />';
+      form.submit();
     }
 }
 
 function checkSubmit(ev)
 {
 	var touche = ev.keyCode;
-	if (touche == 13)
-		checkForm();
+	if (touche == 13) {
+      checkForm();
+    }
 }
 -->
 </script>
@@ -147,31 +153,32 @@ function checkSubmit(ev)
 </head>
 <body>
       <form id="EDform" action="javascript:checkForm();" method="post" accept-charset="UTF-8">
-        <div id="top"></div> <!-- Backgroud fonc� -->
-        <div class="page"> <!-- Centrage horizontal des �l�ments (960px) -->
-            <div class="titre"><%=authenticationBundle.getString("authentication.logon.title") %></div>
+        <div id="top"></div> <!-- Backgroud fonce -->
+        <div class="page"> <!-- Centrage horizontal des elements (960px) -->
+          <div class="titre"><fmt:message key="authentication.logon.title"/></div>
             <div id="background"> <!-- image de fond du formulaire -->    	
                 <div class="cadre">   
                     <div id="header">
                         <img src="<%=logo%>" class="logo" alt="logo"/>
                         <p class="information">
 								<% if (!errorCode.equals("") && !errorCode.equals("4")) { %>  
-									<span><%=authenticationBundle.getString("authentication.logon."+errorCode)%></span>
+                                <c:set var="erroMessageKey">authentication.logon.<%=errorCode%></c:set>
+                                <span><fmt:message key="${erroMessageKey}" /></span>
 								<% } else { %>
-									<%=authenticationBundle.getString("authentication.logon.subtitle") %>
+                                <fmt:message key="authentication.logon.subtitle" />
 								<% } %>
                         </p>
                         <div class="clear"></div>
                     </div>   
-                    <p><label><span><%=authenticationBundle.getString("authentication.logon.login") %></span><input type="text" name="Login" id="Login"/><input type="hidden" class="noDisplay" name="cryptedPassword"/></label></p>
-                    <p><label><span><%=authenticationBundle.getString("authentication.logon.password") %></span><input type="password" name="Password" id="Password" onkeydown="checkSubmit(event)"/></label></p>
+                                <p><label><span><fmt:message key="authentication.logon.login" /></span><input type="text" name="Login" id="Login"/><input type="hidden" class="noDisplay" name="cryptedPassword"/></label></p>
+                                <p><label><span><fmt:message key="authentication.logon.password" /></span><input type="password" name="Password" id="Password" onkeydown="checkSubmit(event)"/></label></p>
 							  
 					 <% if (domains != null && domains.size() == 1) { %>
-                            <input class="noDisplay"type="hidden" name="DomainId" value="<%=domainIds.get(0)%>"/>
+                            <input class="noDisplay" type="hidden" name="DomainId" value="<%=domainIds.get(0)%>"/>
                      <%	} else { %>
-                          <p><label><span><%=authenticationBundle.getString("authentication.logon.domain") %></span>
+                          <p><label><span><fmt:message key="authentication.logon.domain" /></span>
 								<select id="DomainId" name="DomainId" size="1">
-									<% if (domains==null ||domains.size()==0) { %>
+									<% if (domains==null ||domains.isEmpty()) { %>
 										<option> --- </option>
 									<%  } else {
 										String dId 		= null;
@@ -194,15 +201,15 @@ function checkSubmit(ev)
 								</select>
                           </label></p> 									
                      <% } %>
-                     <p><a href="#" class="submit" onclick="checkForm();"><img src="<%=request.getContextPath()%>/images/bt-login.png" alt="login"/></a></p>
+                     <p><a href="#" class="submit" onclick="checkForm();"><img src='<c:url value="/images/bt-login.png" />' alt="login"/></a></p>
 					 <% if (rememberPwdActive || forgottenPwdActive) { %>
 						 <p>
 						 <% if (forgottenPwdActive) { %>
 							<span class="forgottenPwd">
 							<% if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) { %>
-								<a href="javascript:loginQuestion()"><%=authenticationBundle.getString("authentication.logon.passwordForgotten") %></a>
+								<a href="javascript:loginQuestion()"><fmt:message key="authentication.logon.passwordForgotten" /></a>
 							<% } else { %>
-							 	<a href="javascript:resetPassword()"><%=authenticationBundle.getString("authentication.logon.passwordReinit") %></a>
+							 	<a href="javascript:resetPassword()"><fmt:message key="authentication.logon.passwordReinit" /></a>
 							<%} %>
 							</span>
 						 <% } %>
@@ -211,13 +218,13 @@ function checkSubmit(ev)
 								<% if (forgottenPwdActive) { %>
 									 | 
 								<% } %>
-								<%=authenticationBundle.getString("authentication.logon.passwordRemember") %> <input type="checkbox" name="storePassword" id="storePassword" value="Yes"/></span>
+								<fmt:message key="authentication.logon.passwordRemember" /> <input type="checkbox" name="storePassword" id="storePassword" value="Yes"/></span>
 						<%	} %>
 						</p>
 					<% } %>
                 </div>  
             </div>
-            <div id="copyright"><%=generalMultilang.getString("GML.trademark")%></div>
+            <div id="copyright"><fmt:message key="GML.trademark" /></div>
         </div>
         </form><!-- Fin class="page" -->
 							  
@@ -225,7 +232,7 @@ function checkSubmit(ev)
 			nbCookiesFound=0;
 			var domainId = <%=domainId%>;
 		
-			/* Si le domainId n'est pas dans la requ�te, alors r�cup�ration depuis le cookie */
+			/* Si le domainId n'est pas dans la requete, alors recuperation depuis le cookie */
 			if(domainId == null && GetCookie("defaultDomain") != null)
 			{ 
 				<% for (int i = 0 ; i < domains.size() && domains.size() > 1; i++) { %>
@@ -253,7 +260,7 @@ function checkSubmit(ev)
 			if (nbCookiesFound==2)
 			{
 				document.getElementById("EDform").cryptedPassword.value = "Yes";
-				<% if (!StringUtil.isDefined(request.getParameter("logout")) && authenticationSettings.getBoolean("autoSubmit", false)) { %>
+				<% if (!com.silverpeas.util.StringUtil.isDefined(request.getParameter("logout")) && authenticationSettings.getBoolean("autoSubmit", false)) { %>
 					document.getElementById("EDform").submit();
 				<% } %>
 			}
