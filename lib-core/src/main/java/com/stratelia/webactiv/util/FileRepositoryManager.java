@@ -45,6 +45,7 @@ import org.apache.commons.io.FilenameUtils;
 public class FileRepositoryManager extends Object {
 
   final static String s_sUpLoadPath = GeneralPropertiesManager.getString("uploadsPath");
+  static final String exportTemplatePath = GeneralPropertiesManager.getString("exportTemplatePath");
   static String s_sIndexUpLoadPath = GeneralPropertiesManager.getString("uploadsIndexPath");
   final static String avatarPath = GeneralPropertiesManager.getString("avatar.path", s_sUpLoadPath +
       File.pathSeparator + "avatar");
@@ -59,7 +60,7 @@ public class FileRepositoryManager extends Object {
     try {
       s_sTempPath = GeneralPropertiesManager.getString("tempPath");
       if (!s_sTempPath.endsWith(File.separator)) {
-        s_sTempPath = s_sTempPath + File.separatorChar;
+        s_sTempPath += File.separatorChar;
       }
     } catch (Exception e) {
       SilverTrace.error("util", "FileRepositoryManager static",
@@ -88,6 +89,15 @@ public class FileRepositoryManager extends Object {
   
   static public String getAvatarPath() {
     return avatarPath;
+  }
+  
+  /**
+   * Gets the path of the repository into which attachments and other files are uploaded in
+   * Silverpeas.
+   * @return the path of the root repository for uploads.
+   */
+  static public String getUploadPath() {
+    return s_sUpLoadPath + File.separator;
   }
 
   // Add by Jean-Claude Groccia
@@ -393,5 +403,17 @@ public class FileRepositoryManager extends Object {
    */
   public static String getIndexUpLoadPath() {
     return s_sIndexUpLoadPath + File.separator;
+  }
+  
+  /**
+   * Gets the path of the repository that contains the templates to use in exports.
+   * @return the path of the export template repository.
+   */
+  public static String getExportTemplateRepository() {
+    String path = exportTemplatePath;
+    if (!path.endsWith("/")) {
+      path += "/";
+    }
+    return path;
   }
 }
