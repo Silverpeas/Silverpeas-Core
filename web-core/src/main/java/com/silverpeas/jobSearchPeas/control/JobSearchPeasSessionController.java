@@ -347,25 +347,27 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       Date dateCrea = null;
       String nomCrea = "";
       List<String> listEmplacement = new ArrayList<String>();
-      String emplacementDomaine = "";
-      String domainId = user.getDomainId();
-      if(domainId == null) {
-        domainId = "-1";
-      }
-      Domain domain = getAdminController().getDomain(domainId);
-      //nom du domaine
-      if("-1".equals(domainId)) {//domaine mixte
-        emplacementDomaine += getString("JSP.domainMixt");  
-      } else {
-        emplacementDomaine += domain.getName();
-      }
+      String emplacement = "";
+      
       //groupe(s) d'appartenance
-      String emplacement = emplacementDomaine;
       String[] groupIds = getAdminController().getDirectGroupsIdsOfUser(searchField);
       if (groupIds != null && groupIds.length > 0) {
         for (int iGrp = 0; iGrp < groupIds.length; iGrp++) {
           Group group = getOrganizationController().getGroup(groupIds[iGrp]);
-          emplacement = emplacementDomaine;
+          
+          String domainId = group.getDomainId();
+          if(domainId == null) {
+            domainId = "-1";
+          }
+          Domain domain = getAdminController().getDomain(domainId);
+          emplacement = "";
+          //nom du domaine
+          if("-1".equals(domainId)) {//domaine mixte
+            emplacement += getString("JSP.domainMixt");  
+          } else {
+            emplacement += domain.getName();
+          }
+          
           //nom du(des) groupe(s) pères
           List<String> groupList = getAdminController().getPathToGroup(groupIds[iGrp]);
           for (String elementGroupId : groupList) {
@@ -376,6 +378,20 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
           listEmplacement.add(emplacement);
         }
       } else {
+        
+        String domainId = user.getDomainId();
+        if(domainId == null) {
+          domainId = "-1";
+        }
+        Domain domain = getAdminController().getDomain(domainId);
+        
+        //nom du domaine
+        if("-1".equals(domainId)) {//domaine mixte
+          emplacement += getString("JSP.domainMixt");  
+        } else {
+          emplacement += domain.getName();
+        }
+        
         listEmplacement.add(emplacement);
       }
       
