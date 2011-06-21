@@ -51,6 +51,14 @@ public class DefaultPersonalizationService implements PersonalizationService {
   private boolean getDefaultWebDAVEditingStatus() {
     return settings.getBoolean("DefaultWebDAVEditingStatus", true);
   }
+  
+  private boolean getDefaultDragNDropStatus() {
+    return settings.getBoolean("DefaultDragNDropStatus", true);
+  }
+  
+  private boolean getDefaultThesaurusStatus() {
+    return settings.getBoolean("DefaultThesaurusStatus", false);
+  }
 
   private UserMenuDisplay getDefaultMenuDisplay() {
     return UserMenuDisplay.valueOf(settings.getString("DefaultMenuDisplay",
@@ -73,6 +81,7 @@ public class DefaultPersonalizationService implements PersonalizationService {
 
   private UserPreferences getDefaultUserSettings(String userId) {
     return new UserPreferences(userId, DisplayI18NHelper.getDefaultLanguage(), DEFAULT_LOOK, "",
-        false, false, getDefaultWebDAVEditingStatus(), getDefaultMenuDisplay());
+        getDefaultThesaurusStatus(), getDefaultDragNDropStatus(), getDefaultWebDAVEditingStatus(),
+        getDefaultMenuDisplay());
   }
 }
