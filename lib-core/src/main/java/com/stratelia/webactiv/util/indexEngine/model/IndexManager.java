@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.MissingResourceException;
+import java.util.Set;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -80,6 +81,7 @@ public class IndexManager {
   public static final String THUMBNAIL_MIMETYPE = "thumbnailMimeType";
   public static final String THUMBNAIL_DIRECTORY = "thumbnailDirectory";
   public static final String SERVER_NAME = "serverName";
+  public static final String EMBEDDED_FILE_IDS = "embeddedFileIds";
   /**
    * Exhaustive list of indexation's operations Used by objects which must be indexed
    */
@@ -104,7 +106,7 @@ public class IndexManager {
 
   /**
    * Add an entry index.
-   * @param indexEntry 
+   * @param indexEntry
    */
   public void addIndexEntry(FullIndexEntry indexEntry) {
     indexEntry.setServerName(serverName);
@@ -173,7 +175,7 @@ public class IndexManager {
   private void removeIndexEntry(IndexWriter writer, IndexEntryPK indexEntry) {
     Term term = new Term(KEY, indexEntry.toString());
     try {
-      // removing document according to indexEntryPK 
+      // removing document according to indexEntryPK
       writer.deleteDocuments(term);
 
       // closing associated index searcher and removing it from cache
@@ -189,7 +191,7 @@ public class IndexManager {
 
   /**
    * Remove an entry index.
-   * @param indexEntry 
+   * @param indexEntry
    */
   public void removeIndexEntry(IndexEntryPK indexEntry) {
     String indexPath = getIndexDirectoryPath(indexEntry);
@@ -233,7 +235,7 @@ public class IndexManager {
   /**
    * Return the analyzer used to parse indexed texts and queries in the locale language.
    * @return the analyzer used to parse indexed texts and queries in the locale language.
-   * @throws IOException  
+   * @throws IOException
    */
   public Analyzer getAnalyzer() throws IOException {
     return getAnalyzer(null);
@@ -503,6 +505,16 @@ public class IndexManager {
       addFile(doc, f);
     }
 
+    List<FileDescription> linkedFiles = indexEntry.getLinkedFileContentList();
+    for (FileDescription linkedFile : linkedFiles) {
+      addFile(doc, linkedFile);
+    }
+
+    Set<String> linkedFileIds = indexEntry.getLinkedFileIdsSet();
+    for (String linkedFileId : linkedFileIds) {
+      doc.add(new Field(EMBEDDED_FILE_IDS, linkedFileId, Store.YES, Index.NOT_ANALYZED));
+    }
+
     List<FieldDescription> list3 = indexEntry.getFields();
     Store storeAction = null;
     for (FieldDescription field : list3) {
@@ -588,7 +600,7 @@ public class IndexManager {
   }
 
   /**
-   * Added by NEY - 22/01/2004 
+   * Added by NEY - 22/01/2004
    * Module Wysiwyg is reused by several modules like publication,...
    * When you add a wysiwyg content to an object (it's the case in kmelia),
    * we call the wysiwyg's method index to index the content of the wysiwyg.
@@ -601,13 +613,14 @@ public class IndexManager {
    * - the object
    * - the wysiwyg
    * @param indexEntry
-   * @return 
+   * @return
    */
   private boolean isWysiwyg(FullIndexEntry indexEntry) {
     return "Wysiwyg".equals(indexEntry.getObjectType())
         && (indexEntry.getComponent().startsWith("kmelia")
         || indexEntry.getComponent().startsWith("kmax"));
   }
+
   /*
    * The lucene index engine parameters.
    */
