@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-// TODO : reporter dans CVS (done)
 package com.stratelia.webactiv.util.subscribe.control;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -46,12 +44,13 @@ import java.util.List;
 public class NodeActorLinkDAO {
 
   public static final String ADD_SUBSCRIPTION =
-      "INSERT INTO subscribe (actorId, nodeId, space, componentName) VALUES (?, ?, ?, ? )";
+          "INSERT INTO subscribe (actorId, nodeId, space, componentName) VALUES (?, ?, ?, ? )";
   public static final String REMOVE_SUBSCRIPTION =
-      "DELETE FROM subscribe WHERE actorId = ? AND nodeId = ? AND componentName = ?";
+          "DELETE FROM subscribe WHERE actorId = ? AND nodeId = ? AND componentName = ?";
   public static final String REMOVE_USER_SUBSCRIPTIONS = "DELETE FROM subscribe WHERE actorId = ?";
   public static final String SELECT_SUBSCRIPTIONS_BY_USER = "SELECT nodeId, componentName FROM subscribe WHERE actorId = ?";
   public static final String SELECT_SUBSCRIBERS_FOR_NODE = "SELECT actorId FROM subscribe WHERE nodeId = ? AND componentName = ?";
+  public static final String SELECT_NODE_FOR_COMPONENT_BY_USER = "SELECT nodeId FROM subscribe WHERE actorId = ? AND componentName = ?";
 
   /**
    * Constructor declaration
@@ -116,10 +115,9 @@ public class NodeActorLinkDAO {
    * @throws SQLException
    * @see
    */
-  public static void removeByUser(Connection con, String tableName, String userId)
-      throws SQLException {
+  public static void removeByUser(Connection con, String userId) throws SQLException {
     SilverTrace.info("subscribe", "NodeActorLinkDAO.removeByUser",
-        "root.MSG_GEN_ENTER_METHOD");
+            "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(REMOVE_USER_SUBSCRIPTIONS);
@@ -140,15 +138,10 @@ public class NodeActorLinkDAO {
    * @throws SQLException
    * @see
    */
-  public static void removeByNodePath(Connection con, String tableName,
-      NodePK node, String path) throws SQLException {
-    SilverTrace.info("subscribe", "NodeActorLinkDAO.removeByNodePath",
-        "root.MSG_GEN_ENTER_METHOD");
-
-    String insertStatement = "delete from " + tableName
-        + " where componentName = ? " + "	and nodeId in ( "
-        + "	select  nodeId from " + node.getTableName()
-        + " where nodePath like '" + path + "%' and " + " instanceId = ? )";
+  public static void removeByNodePath(Connection con, NodePK node, String path) throws SQLException {
+    SilverTrace.info("subscribe", "NodeActorLinkDAO.removeByNodePath", "root.MSG_GEN_ENTER_METHOD");
+    String insertStatement = "DELETE FROM subscribe WHERE componentName = ? AND nodeId IN ( "
+            + "	SELECT nodeId FROM sb_node_node WHERE nodePath LIKE '" + path + "%' AND instanceId = ?)";
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(insertStatement);
@@ -170,9 +163,8 @@ public class NodeActorLinkDAO {
    * @see
    */
   public static Collection<NodePK> getNodePKsByActor(Connection con, String userId)
-      throws SQLException {
-    SilverTrace.info("subscribe", "NodeActorLinkDAO.getNodePKsByActor",
-        "root.MSG_GEN_ENTER_METHOD");
+          throws SQLException {
+    SilverTrace.info("subscribe", "NodeActorLinkDAO.getNodePKsByActor", "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -203,22 +195,19 @@ public class NodeActorLinkDAO {
    * @throws SQLException
    * @see
    */
-  public static Collection getNodePKsByActorComponent(Connection con,
-      String tableName, String userId, String componentName)
-      throws SQLException {
+  public static Collection<NodePK> getNodePKsByActorComponent(Connection con, String userId,
+          String componentName)
+          throws SQLException {
     SilverTrace.info("subscribe", "NodeActorLinkDAO.getNodePKsByActorComponent",
-        "root.MSG_GEN_ENTER_METHOD");
-    String selectStatement = "select nodeId from " + tableName
-        + " where actorId = ? " + " and componentName = ? ";
+            "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-
     try {
-      prepStmt = con.prepareStatement(selectStatement);
+      prepStmt = con.prepareStatement(SELECT_NODE_FOR_COMPONENT_BY_USER);
       prepStmt.setString(1, userId);
       prepStmt.setString(2, componentName);
       rs = prepStmt.executeQuery();
-      ArrayList list = new ArrayList();
+      List<NodePK> list = new ArrayList<NodePK>();
       while (rs.next()) {
         String id = String.valueOf(rs.getInt(1));
         NodePK nodePK = new NodePK(id, null, componentName);
@@ -240,9 +229,9 @@ public class NodeActorLinkDAO {
    * @see
    */
   public static Collection<String> getActorPKsByNodePK(Connection con, NodePK node)
-      throws SQLException {
+          throws SQLException {
     SilverTrace.info("subscribe", "NodeActorLinkDAO.getActorPKsByNodePK",
-        "root.MSG_GEN_ENTER_METHOD");
+            "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -260,32 +249,31 @@ public class NodeActorLinkDAO {
     }
   }
 
-    /*
-    TODO measure performances
-    public static void getActorPKsByNodePK(Connection con, NodePK node, Collection<String> result)
-      throws SQLException {
-    SilverTrace.info("subscribe", "NodeActorLinkDAO.getActorPKsByNodePK",
-        "root.MSG_GEN_ENTER_METHOD");
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(SELECT_SUBSCRIBERS_FOR_NODE);
-      prepStmt.setInt(1, Integer.parseInt(node.getId()));
-      prepStmt.setString(2, node.getComponentName());
-      rs = prepStmt.executeQuery();
-      List<String> list = new ArrayList<String>();
-      while (rs.next()) {
-        result.add(rs.getString(1));
-      }
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
+  /*
+  TODO measure performances
+  public static void getActorPKsByNodePK(Connection con, NodePK node, Collection<String> result)
+  throws SQLException {
+  SilverTrace.info("subscribe", "NodeActorLinkDAO.getActorPKsByNodePK",
+  "root.MSG_GEN_ENTER_METHOD");
+  PreparedStatement prepStmt = null;
+  ResultSet rs = null;
+  try {
+  prepStmt = con.prepareStatement(SELECT_SUBSCRIBERS_FOR_NODE);
+  prepStmt.setInt(1, Integer.parseInt(node.getId()));
+  prepStmt.setString(2, node.getComponentName());
+  rs = prepStmt.executeQuery();
+  List<String> list = new ArrayList<String>();
+  while (rs.next()) {
+  result.add(rs.getString(1));
+  }
+  } finally {
+  DBUtil.close(rs, prepStmt);
+  }
   }*/
-
-  public static Collection getActorPKsByNodePKs(Connection con,
-      String tableName, Collection nodePKs) throws SQLException {
+  public static Collection getActorPKsByNodePKs(java.sql.Connection con,
+          java.util.Collection nodePKs) throws SQLException {
     SilverTrace.info("subscribe", "NodeActorLinkDAO.getActorPKsByNodePKs",
-        "root.MSG_GEN_ENTER_METHOD");
+            "root.MSG_GEN_ENTER_METHOD");
     ArrayList list = new ArrayList();
     if (nodePKs != null && nodePKs.size() > 0) {
       String whereClause = "(";
@@ -295,12 +283,12 @@ public class NodeActorLinkDAO {
         nodePK = (NodePK) it.next();
         whereClause += "nodeId = " + nodePK.getId();
         if (it.hasNext()) {
-          whereClause += " or ";
+          whereClause += " OR ";
         }
       }
       whereClause += ")";
-      String selectStatement = "select distinct(actorId) from " + tableName
-          + " where " + whereClause + " and componentName = ?";
+      String selectStatement = "SELECT DISTINCT(actorId) FROM subscribe WHERE " + whereClause
+              + " AND componentName = ?";
 
       PreparedStatement prepStmt = null;
       ResultSet rs = null;

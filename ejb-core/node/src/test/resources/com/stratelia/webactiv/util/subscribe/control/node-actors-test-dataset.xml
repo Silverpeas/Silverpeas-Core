@@ -1,4 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
-  <subscribe nodeid="0" actorId="1" componentName="kmelia60" />
+  <subscribe nodeid="0" actorId="1" space="100" componentName="kmelia60" />
+  <subscribe nodeid="0" actorId="2" space="100" componentName="kmelia60" />
+  <subscribe nodeid="0" actorId="3" space="100" componentName="kmelia60" />
+  <subscribe nodeid="0" actorId="4" space="100" componentName="kmelia60" />
+  <subscribe nodeid="0" actorId="5" space="100" componentName="kmelia60" />
+  
+  <subscribe nodeid="1" actorId="11" space="100" componentName="kmelia60" />
+  <subscribe nodeid="1" actorId="12" space="100" componentName="kmelia60" />
+  <subscribe nodeid="1" actorId="13" space="100" componentName="kmelia60" />
+  <subscribe nodeid="1" actorId="14" space="100" componentName="kmelia60" />
+  <subscribe nodeid="1" actorId="15" space="100" componentName="kmelia60" />
+  
+  <subscribe nodeid="10" actorId="1" space="100" componentName="kmelia60" />
+  <subscribe nodeid="20" actorId="1" space="100" componentName="kmelia60" />
+  
+  <subscribe nodeid="0" actorId="21" space="100" componentName="kmelia20" />
+  <subscribe nodeid="0" actorId="22" space="100" componentName="kmelia20" />
+  <subscribe nodeid="0" actorId="23" space="100" componentName="kmelia20" />
+  <subscribe nodeid="0" actorId="24" space="100" componentName="kmelia20" />
+  <subscribe nodeid="0" actorId="25" space="100" componentName="kmelia20" />
 </dataset>
