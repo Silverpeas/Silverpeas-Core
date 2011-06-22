@@ -160,8 +160,10 @@ if(listResult != null) {
 		arrayPane.setTitle(resource.getString("JSP.listResult"));
 		arrayPane.addArrayColumn(resource.getString("JSP.name"));
 		arrayPane.addArrayColumn(resource.getString("JSP.desc"));
-		arrayPane.addArrayColumn(resource.getString("JSP.creaDate"));
-		arrayPane.addArrayColumn(resource.getString("JSP.creaName"));
+		if("space".equals(category) || "service".equals(category) || "publication".equals(category)) { 
+			arrayPane.addArrayColumn(resource.getString("JSP.creaDate"));
+			arrayPane.addArrayColumn(resource.getString("JSP.creaName"));
+		}
 		arrayPane.addArrayColumn(resource.getString("JSP.path"));
     
 		SearchResult searchResult = null;
@@ -178,7 +180,7 @@ if(listResult != null) {
 			name			= EncodeHelper.javaStringToHtmlString(searchResult.getName());
 			url				= searchResult.getUrl();
 			ArrayLine arrayLine = arrayPane.addArrayLine();
-			arrayLine.addArrayCellLink(name, "javascript:onClick=linkElement('')");
+			arrayLine.addArrayCellLink(name, url);
 			
 			desc			= searchResult.getDesc();
 			if (desc != null && desc.length() > 200) {
@@ -186,16 +188,18 @@ if(listResult != null) {
 			}
 			arrayLine.addArrayCellText(desc);
 			
-			try	{
-				creaDate = resource.getOutputDate(searchResult.getCreaDate());
-				ArrayCellText cellCreaDate = arrayLine.addArrayCellText(creaDate);
-				cellCreaDate.setCompareOn(searchResult.getCreaDate());
-			} catch (Exception e) {
-				creaDate	= null;
+			if("space".equals(category) || "service".equals(category) || "publication".equals(category)) { 
+				try	{
+					creaDate = resource.getOutputDate(searchResult.getCreaDate());
+					ArrayCellText cellCreaDate = arrayLine.addArrayCellText(creaDate);
+					cellCreaDate.setCompareOn(searchResult.getCreaDate());
+				} catch (Exception e) {
+					creaDate	= null;
+				}
+				
+				creaName		= searchResult.getCreaName();
+				arrayLine.addArrayCellText(creaName);
 			}
-			
-			creaName		= searchResult.getCreaName();
-			arrayLine.addArrayCellText(creaName);
 			
 			listPath			= searchResult.getPath();
 			path = "";
