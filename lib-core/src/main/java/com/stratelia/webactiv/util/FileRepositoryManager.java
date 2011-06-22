@@ -97,7 +97,7 @@ public class FileRepositoryManager extends Object {
    * @return the path of the root repository for uploads.
    */
   static public String getUploadPath() {
-    return s_sUpLoadPath + File.separator;
+    return upLoadPath + File.separator;
   }
 
   // Add by Jean-Claude Groccia
