@@ -49,6 +49,7 @@ import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.SilverpeasSettings;
+import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -405,6 +406,19 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
         fieldValueIndex = fieldValue.trim().replaceAll("##", " ");
       }
       indexEntry.addField(key, fieldValueIndex, language);
+
+      // index embedded linked attachment (links presents in wysiwyg content)
+      try {
+       String content = WysiwygFCKFieldDisplayer.getContentFromFile(indexEntry.getComponent(), indexEntry.getObjectId(), fieldName, language);
+       List<String> embeddedAttachmentIds = WysiwygController.getEmbeddedAttachmentIds(content);
+       WysiwygController.indexEmbeddedLinkedFiles(indexEntry, embeddedAttachmentIds);
+      } catch (UtilException e) {
+           SilverTrace.warn("form", "WysiwygFCKFieldDisplayer.index", "form.incorrect_data",
+                   "Unable to extract linkes files from object" + indexEntry.getObjectId(), e);
+      } catch (WysiwygException e) {
+           SilverTrace.warn("form", "WysiwygFCKFieldDisplayer.index", "form.incorrect_data",
+                   "Unable to extract linkes files from object" + indexEntry.getObjectId(), e);
+      }
     }
   }
 
@@ -418,7 +432,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer {
     String fileName = setContentIntoFile(pageContext.getComponentId(), newObjectId, template.getFieldName(), code, contentLanguage);
     field.setValue(dbKey + fileName, pageContext.getLanguage());
   }
-  
+
   private String getContent(String componentId, String objectId, String fieldName, String code,
       String language) throws
       FormException {

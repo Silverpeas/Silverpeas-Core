@@ -73,6 +73,7 @@ pageTracker._trackPageview();
     </menu>    
     <menu name="How to contribute" collapse="false" inherit="none">
       <item name="Contribution" href="collaboration.html"/>
+      <item name="Code Quality" href="quality.html"/>
     </menu>
     <menu ref="reports" />
     <menu name="SilverpeasConfiguration" collapse="true" inherit="none">
