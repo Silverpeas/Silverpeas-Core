@@ -22,7 +22,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package com.stratelia.webactiv.util.subscribe.control;
+package com.silverpeas.subscribe.service;
 
 import java.util.List;
 import com.google.common.collect.Lists;
@@ -30,6 +30,7 @@ import com.silverpeas.components.model.AbstractJndiCase;
 import com.silverpeas.components.model.SilverpeasJndiCase;
 import java.io.IOException;
 import javax.naming.NamingException;
+
 import org.dbunit.database.IDatabaseConnection;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import java.sql.Connection;
@@ -44,7 +45,7 @@ import static org.hamcrest.Matchers.*;
  * @author ehugonnet
  */
 public class NodeActorLinkDAOPerformanceTest extends AbstractJndiCase {
-private static NodeActorLinkDAO nodeActorLinkDao = new NodeActorLinkDAO();
+private static SubscriptionDAO subscriptionDao = new SubscriptionDAO();
   private static final List<NodePK> nodePks = Lists.asList(new NodePK("0", "100", "kmelia60"),
           new NodePK[]{new NodePK("1", "100", "kmelia60"), new NodePK("10", "100", "kmelia60"),
             new NodePK("20", "100", "kmelia60"), new NodePK("30", "100", "kmelia60"), new NodePK(
@@ -53,7 +54,7 @@ private static NodeActorLinkDAO nodeActorLinkDao = new NodeActorLinkDAO();
   @BeforeClass
   public static void generalSetUp() throws IOException, NamingException, Exception {
     baseTest = new SilverpeasJndiCase(
-            "com/stratelia/webactiv/util/subscribe/control/node-actors-performance-test-dataset.xml",
+            "com/silverpeas/subscribe/service/node-actors-performance-test-dataset.xml",
             "create-database.ddl");
     baseTest.configureJNDIDatasource();
     IDatabaseConnection databaseConnection = baseTest.getDatabaseTester().getConnection();
@@ -65,7 +66,7 @@ private static NodeActorLinkDAO nodeActorLinkDao = new NodeActorLinkDAO();
   }
 
   /**
-   * Test of getActorPKsByNodePKs method, of class NodeActorLinkDAO.
+   * Test of getActorPKsByNodePKs method, of class SubscriptionDAO.
    * @throws Exception 
    */
   //@Test
@@ -75,7 +76,7 @@ private static NodeActorLinkDAO nodeActorLinkDao = new NodeActorLinkDAO();
       Connection connection = dataSetConnection.getConnection();
       long startTime = System.currentTimeMillis();
       for (int i = 0; i < 10000; i++) {
-        Collection<String> result = nodeActorLinkDao.getActorPKsByNodePKs(connection, nodePks);
+        Collection<String> result = subscriptionDao.getActorPKsByNodePKs(connection, nodePks);
         assertThat(result, hasSize(15));
         assertThat(result, hasItem("1"));
         assertThat(result, hasItem("2"));
@@ -107,7 +108,7 @@ private static NodeActorLinkDAO nodeActorLinkDao = new NodeActorLinkDAO();
       Connection connection = dataSetConnection.getConnection();
       long startTime = System.currentTimeMillis();
       for (int i = 0; i < 10000; i++) {
-        Collection<String> result = nodeActorLinkDao.getActorPKsByNodePKs(connection, nodePks);
+        Collection<String> result = subscriptionDao.getActorPKsByNodePKs(connection, nodePks);
         assertThat(result, hasSize(15));
         assertThat(result, hasItem("1"));
         assertThat(result, hasItem("2"));

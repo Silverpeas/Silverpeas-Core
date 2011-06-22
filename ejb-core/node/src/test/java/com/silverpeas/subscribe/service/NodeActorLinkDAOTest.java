@@ -22,7 +22,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package com.stratelia.webactiv.util.subscribe.control;
+package com.silverpeas.subscribe.service;
 
 import java.util.List;
 import com.google.common.collect.Lists;
@@ -30,6 +30,7 @@ import com.silverpeas.components.model.AbstractJndiCase;
 import com.silverpeas.components.model.SilverpeasJndiCase;
 import java.io.IOException;
 import javax.naming.NamingException;
+
 import org.dbunit.database.IDatabaseConnection;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import java.sql.Connection;
@@ -46,11 +47,11 @@ import static org.hamcrest.Matchers.*;
 public class NodeActorLinkDAOTest extends AbstractJndiCase {
   
   private static final String INSTANCE_ID = "kmelia60";
-  private static NodeActorLinkDAO nodeActorLinkDao = new NodeActorLinkDAO();
+  private static SubscriptionDAO subscriptionDao = new SubscriptionDAO();
   @BeforeClass
   public static void generalSetUp() throws IOException, NamingException, Exception {
     baseTest = new SilverpeasJndiCase(
-            "com/stratelia/webactiv/util/subscribe/control/node-actors-test-dataset.xml",
+            "com/silverpeas/subscribe/service/node-actors-test-dataset.xml",
             "create-database.ddl");
     baseTest.configureJNDIDatasource();
     IDatabaseConnection databaseConnection = baseTest.getDatabaseTester().getConnection();
@@ -62,7 +63,7 @@ public class NodeActorLinkDAOTest extends AbstractJndiCase {
   }
 
   /**
-   * Test of add method, of class NodeActorLinkDAO.
+   * Test of add method, of class SubscriptionDAO.
    * @throws Exception 
    */
   @Test
@@ -73,8 +74,8 @@ public class NodeActorLinkDAOTest extends AbstractJndiCase {
       String userId = "100";
       NodePK nodePk = new NodePK("0", INSTANCE_ID);
       nodePk.setSpace("100");
-      nodeActorLinkDao.add(connection, userId, nodePk);
-      Collection<NodePK> result = nodeActorLinkDao.getNodePKsByActorComponent(connection, userId,
+      subscriptionDao.add(connection, userId, nodePk);
+      Collection<NodePK> result = subscriptionDao.getNodePKsByActorComponent(connection, userId,
               INSTANCE_ID);
       assertThat(result, hasSize(1));
       assertThat(result, hasItem(nodePk));
@@ -84,7 +85,7 @@ public class NodeActorLinkDAOTest extends AbstractJndiCase {
   }
 
   /**
-   * Test of remove method, of class NodeActorLinkDAO.
+   * Test of remove method, of class SubscriptionDAO.
    * @throws Exception 
    */
   @Test
@@ -94,12 +95,12 @@ public class NodeActorLinkDAOTest extends AbstractJndiCase {
       Connection connection = dataSetConnection.getConnection();
       String userId = "2";
       NodePK nodePk = new NodePK("0", INSTANCE_ID);
-      Collection<NodePK> result = nodeActorLinkDao.getNodePKsByActorComponent(connection, userId,
+      Collection<NodePK> result = subscriptionDao.getNodePKsByActorComponent(connection, userId,
               INSTANCE_ID);
       assertThat(result, hasSize(1));
       assertThat(result, contains(nodePk));
-      nodeActorLinkDao.remove(connection, userId, nodePk);
-      result = nodeActorLinkDao.getNodePKsByActorComponent(connection, userId, INSTANCE_ID);
+      subscriptionDao.remove(connection, userId, nodePk);
+      result = subscriptionDao.getNodePKsByActorComponent(connection, userId, INSTANCE_ID);
       assertThat(result, hasSize(0));
       assertThat(result, not(hasItem(nodePk)));
     } finally {
@@ -108,7 +109,7 @@ public class NodeActorLinkDAOTest extends AbstractJndiCase {
   }
 
   /**
-   * Test of removeByUser method, of class NodeActorLinkDAO.
+   * Test of removeByUser method, of class SubscriptionDAO.
    * @throws Exception 
    */
   @Test
@@ -117,10 +118,10 @@ public class NodeActorLinkDAOTest extends AbstractJndiCase {
     try {
       Connection connection = dataSetConnection.getConnection();
       String userId = "1";
-      Collection<NodePK> result = nodeActorLinkDao.getNodePKsByActor(connection, userId);
+      Collection<NodePK> result = subscriptionDao.getNodePKsByActor(connection, userId);
       assertThat(result, hasSize(4));
-      nodeActorLinkDao.removeByUser(connection, userId);
-      result = nodeActorLinkDao.getNodePKsByActor(connection, userId);
+      subscriptionDao.removeByUser(connection, userId);
+      result = subscriptionDao.getNodePKsByActor(connection, userId);
       assertThat(result, hasSize(0));
     } finally {
       baseTest.getDatabaseTester().closeConnection(dataSetConnection);
@@ -128,7 +129,7 @@ public class NodeActorLinkDAOTest extends AbstractJndiCase {
   }
 
   /**
-   * Test of removeByNodePath method, of class NodeActorLinkDAO.
+   * Test of removeByNodePath method, of class SubscriptionDAO.
    */
   @Test
   public void testRemoveByNodePath() throws Exception {    
@@ -137,14 +138,14 @@ public class NodeActorLinkDAOTest extends AbstractJndiCase {
       Connection connection = dataSetConnection.getConnection();
       String path = "/0/";
       String userId = "1";
-      Collection<NodePK> result = nodeActorLinkDao.getNodePKsByActorComponent(connection, userId, INSTANCE_ID);
+      Collection<NodePK> result = subscriptionDao.getNodePKsByActorComponent(connection, userId, INSTANCE_ID);
       assertThat(result, hasSize(3));
-      result = nodeActorLinkDao.getNodePKsByActorComponent(connection, "11", INSTANCE_ID);
+      result = subscriptionDao.getNodePKsByActorComponent(connection, "11", INSTANCE_ID);
       assertThat(result, hasSize(1));
-      nodeActorLinkDao.removeByNodePath(connection, INSTANCE_ID, path);
-      result = nodeActorLinkDao.getNodePKsByActorComponent(connection, userId, INSTANCE_ID);
+      subscriptionDao.removeByNodePath(connection, INSTANCE_ID, path);
+      result = subscriptionDao.getNodePKsByActorComponent(connection, userId, INSTANCE_ID);
       assertThat(result, hasSize(2));
-      result = nodeActorLinkDao.getNodePKsByActorComponent(connection, "11", INSTANCE_ID);
+      result = subscriptionDao.getNodePKsByActorComponent(connection, "11", INSTANCE_ID);
       assertThat(result, hasSize(0));
     } finally {
       baseTest.getDatabaseTester().closeConnection(dataSetConnection);
@@ -153,7 +154,7 @@ public class NodeActorLinkDAOTest extends AbstractJndiCase {
   }
 
   /**
-   * Test of getNodePKsByActor method, of class NodeActorLinkDAO.
+   * Test of getNodePKsByActor method, of class SubscriptionDAO.
    * @throws Exception 
    */
   @Test
@@ -162,7 +163,7 @@ public class NodeActorLinkDAOTest extends AbstractJndiCase {
     try {
       Connection connection = dataSetConnection.getConnection();
       String userId = "1";
-      Collection<NodePK> result = nodeActorLinkDao.getNodePKsByActor(connection, userId);
+      Collection<NodePK> result = subscriptionDao.getNodePKsByActor(connection, userId);
       assertThat(result, hasSize(4));
       assertThat(result, hasItem(new NodePK("0", null, INSTANCE_ID)));
       assertThat(result, hasItem(new NodePK("10", null, INSTANCE_ID)));
@@ -174,7 +175,7 @@ public class NodeActorLinkDAOTest extends AbstractJndiCase {
   }
 
   /**
-   * Test of getNodePKsByActorComponent method, of class NodeActorLinkDAO.
+   * Test of getNodePKsByActorComponent method, of class SubscriptionDAO.
    * @throws Exception 
    */
   @Test
@@ -183,7 +184,7 @@ public class NodeActorLinkDAOTest extends AbstractJndiCase {
     try {
       Connection connection = dataSetConnection.getConnection();
       String userId = "1";
-      Collection<NodePK> result = nodeActorLinkDao.getNodePKsByActorComponent(connection, userId,
+      Collection<NodePK> result = subscriptionDao.getNodePKsByActorComponent(connection, userId,
               INSTANCE_ID);
       assertThat(result, hasSize(3));
       assertThat(result, hasItem(new NodePK("0", null, INSTANCE_ID)));
@@ -195,7 +196,7 @@ public class NodeActorLinkDAOTest extends AbstractJndiCase {
   }
 
   /**
-   * Test of getActorPKsByNodePK method, of class NodeActorLinkDAO.
+   * Test of getActorPKsByNodePK method, of class SubscriptionDAO.
    * @throws Exception 
    */
   @Test
@@ -204,7 +205,7 @@ public class NodeActorLinkDAOTest extends AbstractJndiCase {
     try {
       Connection connection = dataSetConnection.getConnection();
       NodePK node = new NodePK("0", "100", INSTANCE_ID);
-      Collection<String> result = nodeActorLinkDao.getActorPKsByNodePK(connection, node);
+      Collection<String> result = subscriptionDao.getActorPKsByNodePK(connection, node);
       assertThat(result, hasSize(5));
       assertThat(result, hasItem("1"));
       assertThat(result, hasItem("2"));
@@ -217,7 +218,7 @@ public class NodeActorLinkDAOTest extends AbstractJndiCase {
   }
 
   /**
-   * Test of getActorPKsByNodePKs method, of class NodeActorLinkDAO.
+   * Test of getActorPKsByNodePKs method, of class SubscriptionDAO.
    * @throws Exception 
    */
   @Test
@@ -227,7 +228,7 @@ public class NodeActorLinkDAOTest extends AbstractJndiCase {
       Connection connection = dataSetConnection.getConnection();
       List<NodePK> nodePks = Lists.asList(new NodePK("0", "100", INSTANCE_ID),
               new NodePK[]{new NodePK("10", "100", INSTANCE_ID)});
-      Collection<String> result = nodeActorLinkDao.getActorPKsByNodePKs(connection, nodePks);
+      Collection<String> result = subscriptionDao.getActorPKsByNodePKs(connection, nodePks);
       assertThat(result, hasSize(5));
       assertThat(result, hasItem("1"));
       assertThat(result, hasItem("2"));

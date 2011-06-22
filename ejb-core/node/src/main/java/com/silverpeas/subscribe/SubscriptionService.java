@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.util.subscribe.control;
+package com.silverpeas.subscribe;
 
 import com.stratelia.webactiv.util.node.model.NodePK;
 import java.util.Collection;
@@ -31,7 +31,7 @@ import java.util.Collection;
  * Interface declaration
  * @author
  */
-public interface SubscribeBm {
+public interface SubscriptionService {
 
   /**
    * addPublicationInNode() This method has to be called each time a publication is added in a node.
@@ -46,7 +46,7 @@ public interface SubscribeBm {
    * @param userId
    * @param node
    */
-  public void removeSubscribe(String userId, NodePK node);
+  public void removeSubscription(String userId, NodePK node);
 
   /**
    * Method declaration
