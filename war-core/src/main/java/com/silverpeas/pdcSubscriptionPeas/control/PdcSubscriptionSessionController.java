@@ -21,15 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.pdcSubscriptionPeas.control;
-
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.ejb.RemoveException;
 
 import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
 import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBm;
@@ -54,7 +46,12 @@ import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.subscribe.control.SubscribeBm;
-import com.stratelia.webactiv.util.subscribe.control.SubscribeBmHome;
+import com.stratelia.webactiv.util.subscribe.control.SubscriberServiceFactory;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import javax.ejb.RemoveException;
 
 public class PdcSubscriptionSessionController extends AbstractComponentSessionController {
 
@@ -63,12 +60,14 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
 
   /**
    * Constructor Creates new PdcSubscription Session Controller
+   * @param mainSessionCtrl 
+   * @param componentContext 
    */
-  public PdcSubscriptionSessionController(
-      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
+  public PdcSubscriptionSessionController(MainSessionController mainSessionCtrl,
+          ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.silverpeas.pdcSubscriptionPeas.multilang.pdcSubscriptionBundle",
-        "com.silverpeas.pdcSubscriptionPeas.settings.pdcSubscriptionPeasIcons");
+            "com.silverpeas.pdcSubscriptionPeas.multilang.pdcSubscriptionBundle",
+            "com.silverpeas.pdcSubscriptionPeas.settings.pdcSubscriptionPeasIcons");
   }
 
   /**
@@ -77,14 +76,12 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
   private void initEJB() {
     if (scBm == null) {
       try {
-        PdcSubscriptionBmHome icEjbHome = (PdcSubscriptionBmHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.PDC_SUBSCRIPTION_EJBHOME,
-            PdcSubscriptionBmHome.class);
+        PdcSubscriptionBmHome icEjbHome = EJBUtilitaire.getEJBObjectRef(
+                JNDINames.PDC_SUBSCRIPTION_EJBHOME, PdcSubscriptionBmHome.class);
         scBm = icEjbHome.create();
       } catch (Exception e) {
-        throw new PdcSubscriptionRuntimeException(
-            "PdcSubscriptionSessionController.initEJB()",
-            SilverTrace.TRACE_LEVEL_ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+        throw new PdcSubscriptionRuntimeException("PdcSubscriptionSessionController.initEJB()",
+                SilverTrace.TRACE_LEVEL_ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     }
   }
@@ -97,71 +94,49 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
   }
 
   private SubscribeBm getSubscribeBm() {
-    SubscribeBm subscribeBm = null;
-    try {
-      SubscribeBmHome subscribeBmHome = (SubscribeBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.SUBSCRIBEBM_EJBHOME, SubscribeBmHome.class);
-      subscribeBm = subscribeBmHome.create();
-    } catch (Exception e) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionSessionController.getSubscribeBm()",
-          SilverTrace.TRACE_LEVEL_ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
-    return subscribeBm;
+    return SubscriberServiceFactory.getSubscribeService();
   }
 
   public NodeBm getNodeBm() {
     NodeBm nodeBm = null;
     try {
-      NodeBmHome nodeBmHome = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
-          JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
+      NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME,
+              NodeBmHome.class);
       nodeBm = nodeBmHome.create();
     } catch (Exception e) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionSessionController.getNodeBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      throw new PdcSubscriptionRuntimeException("PdcSubscriptionSessionController.getNodeBm()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     return nodeBm;
   }
 
   public Collection<Collection<NodeDetail>> getUserSubscribe(String userId) {
+    String currentUserId = userId;
     Collection<Collection<NodeDetail>> subscribe = new ArrayList<Collection<NodeDetail>>();
-    if (!StringUtil.isDefined(userId)) {
-      userId = getUserId();
+    if (!StringUtil.isDefined(currentUserId)) {
+      currentUserId = getUserId();
     }
-    try {
-      Collection<NodePK> list = getSubscribeBm().getUserSubscribePKs(userId);
-      for (NodePK pk : list) {
-        try {
-          Collection<NodeDetail> path = getNodeBm().getPath(pk);
-          subscribe.add(path);
-        } catch (RemoteException e) {
-          // User is subscribe to a non existing component or topic
-          // Do nothing. Process next subscription.
-        }
+    Collection<NodePK> list = getSubscribeBm().getUserSubscribePKs(currentUserId);
+    for (NodePK pk : list) {
+      try {
+        Collection<NodeDetail> path = getNodeBm().getPath(pk);
+        subscribe.add(path);
+      } catch (RemoteException e) {
+        // User is subscribe to a non existing component or topic
+        // Do nothing. Process next subscription.
       }
-    } catch (RemoteException e) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionSessionController.getUserSubscribe()",
-          SilverTrace.TRACE_LEVEL_ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     return subscribe;
   }
 
   public void deleteThemes(String[] themes) {
-    try {
-      for (int i = 0; i < themes.length; i++) {
-        // convertir la chaine en NodePK
-        String nodeId = themes[i].substring(0, themes[i].lastIndexOf("-"));
-        String instanceId = themes[i].substring(themes[i].lastIndexOf("-") + 1,
-            themes[i].length());
-        NodePK node = new NodePK(nodeId, instanceId);
-        getSubscribeBm().removeSubscribe(getUserId(), node);
-      }
-    } catch (RemoteException e) {
-      throw new PdcSubscriptionRuntimeException(
-          "PdcSubscriptionSessionController.getUserSubscribe()",
-          SilverTrace.TRACE_LEVEL_ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    for (int i = 0; i < themes.length; i++) {
+      // convertir la chaine en NodePK
+      String nodeId = themes[i].substring(0, themes[i].lastIndexOf("-"));
+      String instanceId = themes[i].substring(themes[i].lastIndexOf("-") + 1,
+              themes[i].length());
+      NodePK node = new NodePK(nodeId, instanceId);
+      getSubscribeBm().removeSubscribe(getUserId(), node);
     }
   }
 
@@ -181,7 +156,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
   }
 
   public void createPDCSubscription(PDCSubscription subscription)
-      throws RemoteException {
+          throws RemoteException {
     initEJB();
     subscription.setId(scBm.createPDCSubscription(subscription));
   }
@@ -211,11 +186,9 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
   }
 
   private String getLastValueOf(String path) {
-
     String newValueId = path;
     int len = path.length();
     path = path.substring(0, len - 1); // on retire le slash
-
     if (path.equals("/")) {
       newValueId = newValueId.substring(1); // on retire le slash
     } else {
@@ -250,17 +223,16 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     return pathCriteria;
   }
 
+  @Override
   public void close() {
     try {
-      if (scBm != null)
+      if (scBm != null) {
         scBm.remove();
+      }
     } catch (RemoteException e) {
-      SilverTrace.error("pdcSubscription",
-          "PdcSubscriptionSessionController.close", "", e);
+      SilverTrace.error("pdcSubscription", "PdcSubscriptionSessionController.close", "", e);
     } catch (RemoveException e) {
-      SilverTrace.error("pdcSubscription",
-          "PdcSubscriptionSessionController.close", "", e);
+      SilverTrace.error("pdcSubscription", "PdcSubscriptionSessionController.close", "", e);
     }
   }
-
 }

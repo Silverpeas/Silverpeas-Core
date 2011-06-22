@@ -25,7 +25,7 @@
 /*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
  ---*/
 
-package com.stratelia.webactiv.util.subscribe.model;
+package com.stratelia.webactiv.util.subscribe.control;
 
 import com.stratelia.webactiv.util.exception.*;
 
