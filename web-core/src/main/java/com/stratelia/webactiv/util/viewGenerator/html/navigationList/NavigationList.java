@@ -71,7 +71,7 @@ public interface NavigationList extends SimpleGraphicElement {
    * directory, "nbelem" is the number of files you can find in this directory
    */
   public void addItemSubItem(String label, String URL, int nbelem,
-      Collection links);
+      Collection<Link> links);
 
   /**
    * Add an item with label and information in the navigation list

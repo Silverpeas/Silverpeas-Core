@@ -59,7 +59,7 @@ public class FileFolderManager {
    * @param chemin le chemin du repertoire
    * @return une Collection d'objets File qui representent les repertoires (et
    * seulement les repertoires, pas les fichiers) contenus dans le repertoire passe en parametre
-   * @throws UtilException 
+   * @throws UtilException
    */
   public static Collection<File> getAllSubFolder(String chemin) throws UtilException {
     List<File> resultat = new ArrayList<File>();
@@ -144,7 +144,7 @@ public class FileFolderManager {
    * @param chemin le chemin du repertoire du site
    * @return une Collection d'objets File qui representent les fichiers du site
    * web contenus dans le repertoire passe en parametre et ses sous repertoires
-   * @throws UtilException 
+   * @throws UtilException
    */
   public static Collection<File> getAllWebPages(String chemin) throws UtilException {
     List<File> resultat = new ArrayList<File>();
@@ -205,7 +205,7 @@ public class FileFolderManager {
   /**
    * creation d'un repertoire
    * @param chemin le chemin du repertoire
-   * @throws UtilException 
+   * @throws UtilException
    */
   public static void createFolder(String chemin) throws UtilException {
     SilverTrace.info("util", "FileFolderManager.createFolder",
@@ -372,8 +372,16 @@ public class FileFolderManager {
         /* lecture du contenu du fichier */
         FileReader file_read = new FileReader(file);
         BufferedReader flux_in = new BufferedReader(file_read);
-
+        boolean firstLine = true;
         while ((ligne = flux_in.readLine()) != null) {
+          // as readline dont include any line-termination characters, we must add it
+          if (firstLine) {
+            firstLine = false;
+          }
+          else {
+            res = res + "\n";
+          }
+
           res = res + ligne;
           // Debug.debug(700, "util fileFolderManager", "getCode : res = "+res,
           // null, null);

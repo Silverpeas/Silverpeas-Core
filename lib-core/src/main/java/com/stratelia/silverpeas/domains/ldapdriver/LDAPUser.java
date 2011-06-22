@@ -24,42 +24,41 @@
 
 package com.stratelia.silverpeas.domains.ldapdriver;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Vector;
-
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
 import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.DomainDriver;
 import com.stratelia.webactiv.beans.admin.DomainProperty;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Vector;
+
 /**
  * This class reads user infos from the LDAP DB and translate it into the UserDetail format
  * @author tleroi
  */
 
-public class LDAPUser extends Object {
+public class LDAPUser {
   LDAPSettings driverSettings = null;
   LDAPSynchroCache synchroCache = null;
   StringBuffer synchroReport = null;
   boolean synchroInProcess = false;
 
-  protected AbstractDomainDriver driverParent = null;
+  protected DomainDriver driverParent = null;
 
   /**
    * Initialize the settings from the read ones
    * @param driverSettings the settings retreived from the property file
    */
-  public void init(LDAPSettings driverSettings,
-      AbstractDomainDriver driverParent, LDAPSynchroCache synchroCache) {
+  public void init(LDAPSettings driverSettings, DomainDriver driverParent, LDAPSynchroCache synchroCache) {
     this.driverSettings = driverSettings;
     this.driverParent = driverParent;
     this.synchroCache = synchroCache;

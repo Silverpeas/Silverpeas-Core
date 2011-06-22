@@ -35,6 +35,8 @@ import javax.servlet.jsp.tagext.TagSupport;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 
 public class MimeTypeIconTag extends TagSupport {
+  
+  private static final long serialVersionUID = 4375920954086066884L;
   private static final String DEFAULT_STYLE = "unknown";
   private static final Properties STYLES = new Properties();
   static {

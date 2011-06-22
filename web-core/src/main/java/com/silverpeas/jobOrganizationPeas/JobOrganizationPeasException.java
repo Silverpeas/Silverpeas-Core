@@ -50,6 +50,8 @@ import com.stratelia.webactiv.util.exception.*;
  */
 public class JobOrganizationPeasException extends SilverpeasException {
 
+  private static final long serialVersionUID = 3708658501756007680L;
+
   /**
    * Constructor declaration
    * @param callingClass
