@@ -28,28 +28,25 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.subscribe.model.SubscribeRuntimeException;
-
-import javax.ejb.CreateException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collection;
 
 /**
  * Class declaration
  * @author
  */
-public class SubscribeBmEJB implements SessionBean {
+public class SubscribeService implements SubscribeBm {
 
-  private final String rootTableName = "subscribe";
+  private static final long serialVersionUID = 3185180751858450677L;
   private String dbName = JNDINames.SUBSCRIBE_DATASOURCE;
+  private NodeActorLinkDAO nodeActorLinkDao = new NodeActorLinkDAO();
 
   /**
    * Constructor declaration
    * @see
    */
-  public SubscribeBmEJB() {
+  SubscribeService() {
   }
 
   /**
@@ -59,11 +56,10 @@ public class SubscribeBmEJB implements SessionBean {
    */
   private Connection getConnection() {
     try {
-      Connection con = DBUtil.makeConnection(dbName);
-      return con;
+      return DBUtil.makeConnection(dbName);
     } catch (Exception e) {
       throw new SubscribeRuntimeException("SubscribeBmEJB.getConnection()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
+              SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
     }
   }
 
@@ -73,17 +69,17 @@ public class SubscribeBmEJB implements SessionBean {
    * @param node
    * @see
    */
+  @Override
   public void addSubscribe(String userId, NodePK node) {
-    SilverTrace.info("subscribe", "SubscribeBmEJB.addSubscribe",
-        "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("subscribe", "SubscribeBmEJB.addSubscribe", "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
-
     try {
       con = getConnection();
-      NodeActorLinkDAO.add(con, userId, node);
-    } catch (Exception e) {
+      nodeActorLinkDao.add(con, userId, node);
+    } catch (SQLException e) {
+      DBUtil.rollback(con);
       throw new SubscribeRuntimeException("SubscribeBmEJB.addSubscribe()",
-          SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_ADD_SUBSCRIBE", e);
+              SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_ADD_SUBSCRIBE", e);
     } finally {
       DBUtil.close(con);
     }
@@ -95,18 +91,17 @@ public class SubscribeBmEJB implements SessionBean {
    * @param node
    * @see
    */
+  @Override
   public void removeSubscribe(String userId, NodePK node) {
-    SilverTrace.info("subscribe", "SubscribeBmEJB.removeSubscribe",
-        "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("subscribe", "SubscribeBmEJB.removeSubscribe", "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
-
     try {
       con = getConnection();
-      NodeActorLinkDAO.remove(con, userId, node);
-    } catch (Exception e) {
+      nodeActorLinkDao.remove(con, userId, node);
+    } catch (SQLException e) {
+      DBUtil.rollback(con);
       throw new SubscribeRuntimeException("SubscribeBmEJB.removeSubscribe()",
-          SilverpeasRuntimeException.ERROR,
-          "subscribe.CANNOT_REMOVE_SUBSCRIBE", e);
+              SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_REMOVE_SUBSCRIBE", e);
     } finally {
       DBUtil.close(con);
     }
@@ -117,19 +112,18 @@ public class SubscribeBmEJB implements SessionBean {
    * @param userId
    * @see
    */
+  @Override
   public void removeUserSubscribes(String userId) {
     SilverTrace.info("subscribe", "SubscribeBmEJB.removeUserSubscribes",
-        "root.MSG_GEN_ENTER_METHOD");
+            "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
-
     try {
       con = getConnection();
-      NodeActorLinkDAO.removeByUser(con, userId);
-    } catch (Exception e) {
-      throw new SubscribeRuntimeException(
-          "SubscribeBmEJB.removeUserSubscribes()",
-          SilverpeasRuntimeException.ERROR,
-          "subscribe.CANNOT_REMOVE_USER_SUBSCRIBES", e);
+      nodeActorLinkDao.removeByUser(con, userId);
+    } catch (SQLException e) {
+      DBUtil.rollback(con);
+      throw new SubscribeRuntimeException("SubscribeBmEJB.removeUserSubscribes()",
+              SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_REMOVE_USER_SUBSCRIBES", e);
     } finally {
       DBUtil.close(con);
     }
@@ -141,19 +135,18 @@ public class SubscribeBmEJB implements SessionBean {
    * @param path
    * @see
    */
+  @Override
   public void removeNodeSubscribes(NodePK node, String path) {
     SilverTrace.info("subscribe", "SubscribeBmEJB.removeNodeSubscribes",
-        "root.MSG_GEN_ENTER_METHOD");
+            "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
-
     try {
       con = getConnection();
-      NodeActorLinkDAO.removeByNodePath(con, node, path);
-    } catch (Exception e) {
-      throw new SubscribeRuntimeException(
-          "SubscribeBmEJB.removeNodeSubscribes()",
-          SilverpeasRuntimeException.ERROR,
-          "subscribe.CANNOT_REMOVE_NODE_SUBSCRIBES", e);
+      nodeActorLinkDao.removeByNodePath(con, node.getComponentName(), path);
+    } catch (SQLException e) {
+      DBUtil.rollback(con);
+      throw new SubscribeRuntimeException("SubscribeBmEJB.removeNodeSubscribes()",
+              SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_REMOVE_NODE_SUBSCRIBES", e);
     } finally {
       DBUtil.close(con);
     }
@@ -165,22 +158,17 @@ public class SubscribeBmEJB implements SessionBean {
    * @return
    * @see
    */
-  public Collection getUserSubscribePKs(String userId) {
-    SilverTrace.info("subscribe", "SubscribeBmEJB.getUserSubscribePKs",
-        "root.MSG_GEN_ENTER_METHOD");
+  @Override
+  public Collection<NodePK> getUserSubscribePKs(String userId) {
+    SilverTrace.info("subscribe", "SubscribeBmEJB.getUserSubscribePKs", "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
 
     try {
       con = getConnection();
-      Collection result = NodeActorLinkDAO.getNodePKsByActor(con,
-          userId);
-
-      return result;
+      return nodeActorLinkDao.getNodePKsByActor(con, userId);
     } catch (Exception e) {
-      throw new SubscribeRuntimeException(
-          "SubscribeBmEJB.getUserSubscribePKs()",
-          SilverpeasRuntimeException.ERROR,
-          "subscribe.CANNOT_GET_USER_SUBSCRIBES", e);
+      throw new SubscribeRuntimeException("SubscribeBmEJB.getUserSubscribePKs()",
+              SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_GET_USER_SUBSCRIBES", e);
     } finally {
       DBUtil.close(con);
     }
@@ -193,109 +181,60 @@ public class SubscribeBmEJB implements SessionBean {
    * @return
    * @see
    */
-  public Collection getUserSubscribePKsByComponent(String userId,
-      String componentName) {
-    SilverTrace.info("subscribe",
-        "SubscribeBmEJB.getUserSubscribePKsByComponent",
-        "root.MSG_GEN_ENTER_METHOD");
+  @Override
+  public Collection<NodePK> getUserSubscribePKsByComponent(String userId, String componentName) {
+    SilverTrace.info("subscribe", "SubscribeBmEJB.getUserSubscribePKsByComponent",
+            "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
 
     try {
       con = getConnection();
-      Collection result = NodeActorLinkDAO.getNodePKsByActorComponent(con, userId, componentName);
-      return result;
+      return nodeActorLinkDao.getNodePKsByActorComponent(con, userId, componentName);
     } catch (Exception e) {
-      throw new SubscribeRuntimeException(
-          "SubscribeBmEJB.getUserSubscribesPKsByspaceAndcomponent()",
-          SilverpeasRuntimeException.ERROR,
-          "subscribe.CANNOT_GET_USER_SUBSCRIBES_SPACE_COMPONENT", e);
+      throw new SubscribeRuntimeException("SubscribeBmEJB.getUserSubscribesPKsByspaceAndcomponent()",
+              SilverpeasRuntimeException.ERROR,
+              "subscribe.CANNOT_GET_USER_SUBSCRIBES_SPACE_COMPONENT", e);
     } finally {
       DBUtil.close(con);
     }
   }
-
-  // NEWF DLE
-
+  
   /**
    * Method declaration
    * @param node
    * @return
    * @see
    */
-  public Collection getNodeSubscriberDetails(NodePK node) {
+  @Override
+  public Collection<String> getNodeSubscriberDetails(NodePK node) {
     SilverTrace.info("subscribe", "SubscribeBmEJB.getNodeSubscriberDetails",
-        "root.MSG_GEN_ENTER_METHOD");
+            "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
 
     try {
       con = getConnection();
-      Collection result = NodeActorLinkDAO.getActorPKsByNodePK(con,
-          node);
-
-      return result;
+      return nodeActorLinkDao.getActorPKsByNodePK(con, node);
     } catch (Exception e) {
-      throw new SubscribeRuntimeException(
-          "SubscribeBmEJB.getNodeSubscriberDetails()",
-          SilverpeasRuntimeException.ERROR,
-          "subscribe.CANNOT_GET_NODE_SUBSCRIBERS", e);
+      throw new SubscribeRuntimeException("SubscribeBmEJB.getNodeSubscriberDetails()",
+              SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_GET_NODE_SUBSCRIBERS", e);
     } finally {
       DBUtil.close(con);
     }
   }
 
-  public Collection getNodeSubscriberDetails(Collection nodePKs) {
+  @Override
+  public Collection<String> getNodeSubscriberDetails(Collection<NodePK> nodePKs) {
     SilverTrace.info("subscribe", "SubscribeBmEJB.getNodeSubscriberDetails",
-        "root.MSG_GEN_ENTER_METHOD");
+            "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
     try {
       con = getConnection();
-      Collection result = NodeActorLinkDAO.getActorPKsByNodePKs(con, nodePKs);
-
-      return result;
+      return nodeActorLinkDao.getActorPKsByNodePKs(con, nodePKs);
     } catch (Exception e) {
-      throw new SubscribeRuntimeException(
-          "SubscribeBmEJB.getNodeSubscriberDetails()",
-          SilverpeasRuntimeException.ERROR,
-          "subscribe.CANNOT_GET_NODE_SUBSCRIBERS", e);
+      throw new SubscribeRuntimeException("SubscribeBmEJB.getNodeSubscriberDetails()",
+              SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_GET_NODE_SUBSCRIBERS", e);
     } finally {
       DBUtil.close(con);
     }
-  }
-
-  /**
-   * Method declaration
-   * @throws CreateException
-   * @see
-   */
-  public void ejbCreate() throws CreateException {
-  }
-
-  /**
-   * Method declaration
-   * @see
-   */
-  public void ejbRemove() {
-  }
-
-  /**
-   * Method declaration
-   * @see
-   */
-  public void ejbActivate() {
-  }
-
-  /**
-   * Method declaration
-   * @see
-   */
-  public void ejbPassivate() {
-  }
-
-  /**
-   * Method declaration
-   * @param sc
-   * @see
-   */
-  public void setSessionContext(SessionContext sc) {
   }
 }

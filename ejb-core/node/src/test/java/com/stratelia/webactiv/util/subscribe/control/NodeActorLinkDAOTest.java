@@ -24,6 +24,8 @@
  */
 package com.stratelia.webactiv.util.subscribe.control;
 
+import java.util.List;
+import com.google.common.collect.Lists;
 import com.silverpeas.components.model.AbstractJndiCase;
 import com.silverpeas.components.model.SilverpeasJndiCase;
 import java.io.IOException;
@@ -42,9 +44,9 @@ import static org.hamcrest.Matchers.*;
  * @author ehugonnet
  */
 public class NodeActorLinkDAOTest extends AbstractJndiCase {
-
+  
   private static final String INSTANCE_ID = "kmelia60";
-
+  private static NodeActorLinkDAO nodeActorLinkDao = new NodeActorLinkDAO();
   @BeforeClass
   public static void generalSetUp() throws IOException, NamingException, Exception {
     baseTest = new SilverpeasJndiCase(
@@ -55,12 +57,13 @@ public class NodeActorLinkDAOTest extends AbstractJndiCase {
     executeDDL(databaseConnection, baseTest.getDdlFile());
     baseTest.getDatabaseTester().closeConnection(databaseConnection);
   }
-
+  
   public NodeActorLinkDAOTest() {
   }
 
   /**
    * Test of add method, of class NodeActorLinkDAO.
+   * @throws Exception 
    */
   @Test
   public void testAdd() throws Exception {
@@ -70,11 +73,11 @@ public class NodeActorLinkDAOTest extends AbstractJndiCase {
       String userId = "100";
       NodePK nodePk = new NodePK("0", INSTANCE_ID);
       nodePk.setSpace("100");
-      NodeActorLinkDAO.add(connection, userId, nodePk);
-      Collection<NodePK> result = NodeActorLinkDAO.getNodePKsByActorComponent(connection, userId,
+      nodeActorLinkDao.add(connection, userId, nodePk);
+      Collection<NodePK> result = nodeActorLinkDao.getNodePKsByActorComponent(connection, userId,
               INSTANCE_ID);
       assertThat(result, hasSize(1));
-      assertThat(result, contains(nodePk));
+      assertThat(result, hasItem(nodePk));
     } finally {
       baseTest.getDatabaseTester().closeConnection(dataSetConnection);
     }
@@ -82,6 +85,7 @@ public class NodeActorLinkDAOTest extends AbstractJndiCase {
 
   /**
    * Test of remove method, of class NodeActorLinkDAO.
+   * @throws Exception 
    */
   @Test
   public void testRemove() throws Exception {
@@ -90,14 +94,14 @@ public class NodeActorLinkDAOTest extends AbstractJndiCase {
       Connection connection = dataSetConnection.getConnection();
       String userId = "2";
       NodePK nodePk = new NodePK("0", INSTANCE_ID);
-      Collection<NodePK> result = NodeActorLinkDAO.getNodePKsByActorComponent(connection, userId,
+      Collection<NodePK> result = nodeActorLinkDao.getNodePKsByActorComponent(connection, userId,
               INSTANCE_ID);
       assertThat(result, hasSize(1));
       assertThat(result, contains(nodePk));
-      NodeActorLinkDAO.remove(connection, userId, nodePk);
-      result = NodeActorLinkDAO.getNodePKsByActorComponent(connection, userId, INSTANCE_ID);
+      nodeActorLinkDao.remove(connection, userId, nodePk);
+      result = nodeActorLinkDao.getNodePKsByActorComponent(connection, userId, INSTANCE_ID);
       assertThat(result, hasSize(0));
-      assertThat(result, not(contains(nodePk)));
+      assertThat(result, not(hasItem(nodePk)));
     } finally {
       baseTest.getDatabaseTester().closeConnection(dataSetConnection);
     }
@@ -105,6 +109,7 @@ public class NodeActorLinkDAOTest extends AbstractJndiCase {
 
   /**
    * Test of removeByUser method, of class NodeActorLinkDAO.
+   * @throws Exception 
    */
   @Test
   public void testRemoveByUser() throws Exception {
@@ -112,10 +117,10 @@ public class NodeActorLinkDAOTest extends AbstractJndiCase {
     try {
       Connection connection = dataSetConnection.getConnection();
       String userId = "1";
-      Collection<NodePK> result = NodeActorLinkDAO.getNodePKsByActor(connection, userId);
-      assertThat(result, hasSize(3));
-      NodeActorLinkDAO.removeByUser(connection, userId);
-      result = NodeActorLinkDAO.getNodePKsByActor(connection, userId);
+      Collection<NodePK> result = nodeActorLinkDao.getNodePKsByActor(connection, userId);
+      assertThat(result, hasSize(4));
+      nodeActorLinkDao.removeByUser(connection, userId);
+      result = nodeActorLinkDao.getNodePKsByActor(connection, userId);
       assertThat(result, hasSize(0));
     } finally {
       baseTest.getDatabaseTester().closeConnection(dataSetConnection);
@@ -125,32 +130,44 @@ public class NodeActorLinkDAOTest extends AbstractJndiCase {
   /**
    * Test of removeByNodePath method, of class NodeActorLinkDAO.
    */
-  //@Test
-  public void testRemoveByNodePath() throws Exception {
-    System.out.println("removeByNodePath");
-    Connection con = null;
-    String tableName = "";
-    NodePK node = null;
-    String path = "";
-    NodeActorLinkDAO.removeByNodePath(con, node, path);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+  @Test
+  public void testRemoveByNodePath() throws Exception {    
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    try {
+      Connection connection = dataSetConnection.getConnection();
+      String path = "/0/";
+      String userId = "1";
+      Collection<NodePK> result = nodeActorLinkDao.getNodePKsByActorComponent(connection, userId, INSTANCE_ID);
+      assertThat(result, hasSize(3));
+      result = nodeActorLinkDao.getNodePKsByActorComponent(connection, "11", INSTANCE_ID);
+      assertThat(result, hasSize(1));
+      nodeActorLinkDao.removeByNodePath(connection, INSTANCE_ID, path);
+      result = nodeActorLinkDao.getNodePKsByActorComponent(connection, userId, INSTANCE_ID);
+      assertThat(result, hasSize(2));
+      result = nodeActorLinkDao.getNodePKsByActorComponent(connection, "11", INSTANCE_ID);
+      assertThat(result, hasSize(0));
+    } finally {
+      baseTest.getDatabaseTester().closeConnection(dataSetConnection);
+    }
+   
   }
 
   /**
    * Test of getNodePKsByActor method, of class NodeActorLinkDAO.
+   * @throws Exception 
    */
-  //@Test
+  @Test
   public void testGetNodePKsByActor() throws Exception {
     IDatabaseConnection dataSetConnection = baseTest.getConnection();
     try {
       Connection connection = dataSetConnection.getConnection();
       String userId = "1";
-      Collection<NodePK> result = NodeActorLinkDAO.getNodePKsByActor(connection, userId);
-      assertThat(result, hasSize(3));
-      assertThat(result, contains(new NodePK("0", "100", INSTANCE_ID)));
-      assertThat(result, contains(new NodePK("10", "100", INSTANCE_ID)));
-      assertThat(result, contains(new NodePK("20", "100", INSTANCE_ID)));
+      Collection<NodePK> result = nodeActorLinkDao.getNodePKsByActor(connection, userId);
+      assertThat(result, hasSize(4));
+      assertThat(result, hasItem(new NodePK("0", null, INSTANCE_ID)));
+      assertThat(result, hasItem(new NodePK("10", null, INSTANCE_ID)));
+      assertThat(result, hasItem(new NodePK("20", null, INSTANCE_ID)));
+      assertThat(result, hasItem(new NodePK("0", null, "kmelia20")));
     } finally {
       baseTest.getDatabaseTester().closeConnection(dataSetConnection);
     }
@@ -158,50 +175,67 @@ public class NodeActorLinkDAOTest extends AbstractJndiCase {
 
   /**
    * Test of getNodePKsByActorComponent method, of class NodeActorLinkDAO.
+   * @throws Exception 
    */
-  //@Test
+  @Test
   public void testGetNodePKsByActorComponent() throws Exception {
-    System.out.println("getNodePKsByActorComponent");
-    Connection con = null;
-    String tableName = "";
-    String userId = "";
-    String componentName = "";
-    Collection expResult = null;
-    Collection result = NodeActorLinkDAO.getNodePKsByActorComponent(con, userId,
-            componentName);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    try {
+      Connection connection = dataSetConnection.getConnection();
+      String userId = "1";
+      Collection<NodePK> result = nodeActorLinkDao.getNodePKsByActorComponent(connection, userId,
+              INSTANCE_ID);
+      assertThat(result, hasSize(3));
+      assertThat(result, hasItem(new NodePK("0", null, INSTANCE_ID)));
+      assertThat(result, hasItem(new NodePK("10", null, INSTANCE_ID)));
+      assertThat(result, hasItem(new NodePK("20", null, INSTANCE_ID)));
+    } finally {
+      baseTest.getDatabaseTester().closeConnection(dataSetConnection);
+    }
   }
 
   /**
    * Test of getActorPKsByNodePK method, of class NodeActorLinkDAO.
+   * @throws Exception 
    */
-  //@Test
+  @Test
   public void testGetActorPKsByNodePK() throws Exception {
-    System.out.println("getActorPKsByNodePK");
-    Connection con = null;
-    NodePK node = null;
-    Collection expResult = null;
-    Collection result = NodeActorLinkDAO.getActorPKsByNodePK(con, node);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    try {
+      Connection connection = dataSetConnection.getConnection();
+      NodePK node = new NodePK("0", "100", INSTANCE_ID);
+      Collection<String> result = nodeActorLinkDao.getActorPKsByNodePK(connection, node);
+      assertThat(result, hasSize(5));
+      assertThat(result, hasItem("1"));
+      assertThat(result, hasItem("2"));
+      assertThat(result, hasItem("3"));
+      assertThat(result, hasItem("4"));
+      assertThat(result, hasItem("5"));
+    } finally {
+      baseTest.getDatabaseTester().closeConnection(dataSetConnection);
+    }
   }
 
   /**
    * Test of getActorPKsByNodePKs method, of class NodeActorLinkDAO.
+   * @throws Exception 
    */
-  //@Test
+  @Test
   public void testGetActorPKsByNodePKs() throws Exception {
-    System.out.println("getActorPKsByNodePKs");
-    Connection con = null;
-    String tableName = "";
-    Collection nodePKs = null;
-    Collection expResult = null;
-    Collection result = NodeActorLinkDAO.getActorPKsByNodePKs(con, nodePKs);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+    IDatabaseConnection dataSetConnection = baseTest.getConnection();
+    try {
+      Connection connection = dataSetConnection.getConnection();
+      List<NodePK> nodePks = Lists.asList(new NodePK("0", "100", INSTANCE_ID),
+              new NodePK[]{new NodePK("10", "100", INSTANCE_ID)});
+      Collection<String> result = nodeActorLinkDao.getActorPKsByNodePKs(connection, nodePks);
+      assertThat(result, hasSize(5));
+      assertThat(result, hasItem("1"));
+      assertThat(result, hasItem("2"));
+      assertThat(result, hasItem("3"));
+      assertThat(result, hasItem("4"));
+      assertThat(result, hasItem("5"));
+    } finally {
+      baseTest.getDatabaseTester().closeConnection(dataSetConnection);
+    }
   }
 }
