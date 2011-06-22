@@ -27,6 +27,8 @@ import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
 import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBm;
 import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBmHome;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
+import com.silverpeas.subscribe.SubscriptionService;
+import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.classifyEngine.Criteria;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
@@ -45,8 +47,7 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.subscribe.control.SubscribeBm;
-import com.stratelia.webactiv.util.subscribe.control.SubscriberServiceFactory;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -93,8 +94,8 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     return pdcBm;
   }
 
-  private SubscribeBm getSubscribeBm() {
-    return SubscriberServiceFactory.getSubscribeService();
+  private SubscriptionService getSubscribeBm() {
+    return SubscriptionServiceFactory.getSubscribeService();
   }
 
   public NodeBm getNodeBm() {
@@ -136,7 +137,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
       String instanceId = themes[i].substring(themes[i].lastIndexOf("-") + 1,
               themes[i].length());
       NodePK node = new NodePK(nodeId, instanceId);
-      getSubscribeBm().removeSubscribe(getUserId(), node);
+      getSubscribeBm().removeSubscription(getUserId(), node);
     }
   }
 

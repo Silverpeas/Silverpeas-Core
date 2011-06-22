@@ -25,7 +25,7 @@
 /*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
  ---*/
 
-package com.stratelia.webactiv.util.subscribe.control;
+package com.silverpeas.subscribe.service;
 
 import com.stratelia.webactiv.util.exception.*;
 

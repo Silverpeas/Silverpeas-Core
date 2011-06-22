@@ -22,21 +22,23 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package com.stratelia.webactiv.util.subscribe.control;
+package com.silverpeas.subscribe;
+
+import com.silverpeas.subscribe.service.SimpleSubscriptionService;
 
 /**
  *
  * @author ehugonnet
  */
-public class SubscriberServiceFactory {
-  private final static SubscriberServiceFactory instance = new SubscriberServiceFactory();
-  private final SubscribeBm service;
+public class SubscriptionServiceFactory {
+  private final static SubscriptionServiceFactory instance = new SubscriptionServiceFactory();
+  private final SubscriptionService service;
   
-  private SubscriberServiceFactory() {
-    this.service = new SubscribeService();
+  private SubscriptionServiceFactory() {
+    this.service = new SimpleSubscriptionService();
   }
   
-  public static SubscribeBm getSubscribeService() {
+  public static SubscriptionService getSubscribeService() {
     return instance.service;
   }
 }

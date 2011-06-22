@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.util.subscribe.control;
+package com.silverpeas.subscribe.service;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
@@ -42,7 +42,7 @@ import java.util.Set;
  *
  * @author
  */
-public class NodeActorLinkDAO {
+public class SubscriptionDAO {
 
   public static final String ADD_SUBSCRIPTION =
           "INSERT INTO subscribe (actorId, nodeId, space, componentName) VALUES (?, ?, ?, ? )";
@@ -60,7 +60,7 @@ public class NodeActorLinkDAO {
    *
    * @see
    */
-  NodeActorLinkDAO() {
+  SubscriptionDAO() {
   }
 
   /**
@@ -73,7 +73,7 @@ public class NodeActorLinkDAO {
    * @see
    */
   public void add(Connection con, String userId, NodePK node) throws SQLException {
-    SilverTrace.info("subscribe", "NodeActorLinkDAO.add", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("subscribe", "SubscriptionDAO.add", "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(ADD_SUBSCRIPTION);
@@ -97,7 +97,7 @@ public class NodeActorLinkDAO {
    * @see
    */
   public void remove(Connection con, String userId, NodePK node) throws SQLException {
-    SilverTrace.info("subscribe", "NodeActorLinkDAO.remove", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("subscribe", "SubscriptionDAO.remove", "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(REMOVE_SUBSCRIPTION);
@@ -119,7 +119,7 @@ public class NodeActorLinkDAO {
    * @see
    */
   public void removeByUser(Connection con, String userId) throws SQLException {
-    SilverTrace.info("subscribe", "NodeActorLinkDAO.removeByUser",
+    SilverTrace.info("subscribe", "SubscriptionDAO.removeByUser",
             "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement prepStmt = null;
     try {
@@ -164,7 +164,7 @@ public class NodeActorLinkDAO {
    * @see
    */
   public Collection<NodePK> getNodePKsByActor(Connection con, String userId) throws SQLException {
-    SilverTrace.info("subscribe", "NodeActorLinkDAO.getNodePKsByActor", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("subscribe", "SubscriptionDAO.getNodePKsByActor", "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -196,7 +196,7 @@ public class NodeActorLinkDAO {
    */
   public Collection<NodePK> getNodePKsByActorComponent(Connection con, String userId,
           String componentName) throws SQLException {
-    SilverTrace.info("subscribe", "NodeActorLinkDAO.getNodePKsByActorComponent",
+    SilverTrace.info("subscribe", "SubscriptionDAO.getNodePKsByActorComponent",
             "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -227,7 +227,7 @@ public class NodeActorLinkDAO {
    * @see
    */
   public Collection<String> getActorPKsByNodePK(Connection con, NodePK node) throws SQLException {
-    SilverTrace.info("subscribe", "NodeActorLinkDAO.getActorPKsByNodePK",
+    SilverTrace.info("subscribe", "SubscriptionDAO.getActorPKsByNodePK",
             "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -257,7 +257,7 @@ public class NodeActorLinkDAO {
 
   void findActorPKsByNodePK(Connection con, NodePK node, Collection<String> result)
           throws SQLException {
-    SilverTrace.info("subscribe", "NodeActorLinkDAO.getActorPKsByNodePK",
+    SilverTrace.info("subscribe", "SubscriptionDAO.getActorPKsByNodePK",
             "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement prepStmt = null;
     ResultSet rs = null;

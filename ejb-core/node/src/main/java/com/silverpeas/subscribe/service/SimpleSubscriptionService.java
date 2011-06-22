@@ -21,8 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.util.subscribe.control;
+package com.silverpeas.subscribe.service;
 
+import com.silverpeas.subscribe.SubscriptionService;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
@@ -36,17 +37,17 @@ import java.util.Collection;
  * Class declaration
  * @author
  */
-public class SubscribeService implements SubscribeBm {
+public class SimpleSubscriptionService implements SubscriptionService {
 
   private static final long serialVersionUID = 3185180751858450677L;
   private String dbName = JNDINames.SUBSCRIBE_DATASOURCE;
-  private NodeActorLinkDAO nodeActorLinkDao = new NodeActorLinkDAO();
+  private SubscriptionDAO subscriptionDao = new SubscriptionDAO();
 
   /**
    * Constructor declaration
    * @see
    */
-  SubscribeService() {
+  public SimpleSubscriptionService() {
   }
 
   /**
@@ -75,7 +76,7 @@ public class SubscribeService implements SubscribeBm {
     Connection con = null;
     try {
       con = getConnection();
-      nodeActorLinkDao.add(con, userId, node);
+      subscriptionDao.add(con, userId, node);
     } catch (SQLException e) {
       DBUtil.rollback(con);
       throw new SubscribeRuntimeException("SubscribeBmEJB.addSubscribe()",
@@ -87,17 +88,18 @@ public class SubscribeService implements SubscribeBm {
 
   /**
    * Method declaration
+   *
    * @param userId
    * @param node
    * @see
    */
   @Override
-  public void removeSubscribe(String userId, NodePK node) {
+  public void removeSubscription(String userId, NodePK node) {
     SilverTrace.info("subscribe", "SubscribeBmEJB.removeSubscribe", "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
     try {
       con = getConnection();
-      nodeActorLinkDao.remove(con, userId, node);
+      subscriptionDao.remove(con, userId, node);
     } catch (SQLException e) {
       DBUtil.rollback(con);
       throw new SubscribeRuntimeException("SubscribeBmEJB.removeSubscribe()",
@@ -119,7 +121,7 @@ public class SubscribeService implements SubscribeBm {
     Connection con = null;
     try {
       con = getConnection();
-      nodeActorLinkDao.removeByUser(con, userId);
+      subscriptionDao.removeByUser(con, userId);
     } catch (SQLException e) {
       DBUtil.rollback(con);
       throw new SubscribeRuntimeException("SubscribeBmEJB.removeUserSubscribes()",
@@ -142,7 +144,7 @@ public class SubscribeService implements SubscribeBm {
     Connection con = null;
     try {
       con = getConnection();
-      nodeActorLinkDao.removeByNodePath(con, node.getComponentName(), path);
+      subscriptionDao.removeByNodePath(con, node.getComponentName(), path);
     } catch (SQLException e) {
       DBUtil.rollback(con);
       throw new SubscribeRuntimeException("SubscribeBmEJB.removeNodeSubscribes()",
@@ -165,7 +167,7 @@ public class SubscribeService implements SubscribeBm {
 
     try {
       con = getConnection();
-      return nodeActorLinkDao.getNodePKsByActor(con, userId);
+      return subscriptionDao.getNodePKsByActor(con, userId);
     } catch (Exception e) {
       throw new SubscribeRuntimeException("SubscribeBmEJB.getUserSubscribePKs()",
               SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_GET_USER_SUBSCRIBES", e);
@@ -189,7 +191,7 @@ public class SubscribeService implements SubscribeBm {
 
     try {
       con = getConnection();
-      return nodeActorLinkDao.getNodePKsByActorComponent(con, userId, componentName);
+      return subscriptionDao.getNodePKsByActorComponent(con, userId, componentName);
     } catch (Exception e) {
       throw new SubscribeRuntimeException("SubscribeBmEJB.getUserSubscribesPKsByspaceAndcomponent()",
               SilverpeasRuntimeException.ERROR,
@@ -213,7 +215,7 @@ public class SubscribeService implements SubscribeBm {
 
     try {
       con = getConnection();
-      return nodeActorLinkDao.getActorPKsByNodePK(con, node);
+      return subscriptionDao.getActorPKsByNodePK(con, node);
     } catch (Exception e) {
       throw new SubscribeRuntimeException("SubscribeBmEJB.getNodeSubscriberDetails()",
               SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_GET_NODE_SUBSCRIBERS", e);
@@ -229,7 +231,7 @@ public class SubscribeService implements SubscribeBm {
     Connection con = null;
     try {
       con = getConnection();
-      return nodeActorLinkDao.getActorPKsByNodePKs(con, nodePKs);
+      return subscriptionDao.getActorPKsByNodePKs(con, nodePKs);
     } catch (Exception e) {
       throw new SubscribeRuntimeException("SubscribeBmEJB.getNodeSubscriberDetails()",
               SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_GET_NODE_SUBSCRIBERS", e);
