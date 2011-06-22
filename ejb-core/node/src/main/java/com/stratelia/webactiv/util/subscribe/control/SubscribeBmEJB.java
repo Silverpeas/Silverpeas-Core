@@ -124,7 +124,7 @@ public class SubscribeBmEJB implements SessionBean {
 
     try {
       con = getConnection();
-      NodeActorLinkDAO.removeByUser(con, rootTableName, userId);
+      NodeActorLinkDAO.removeByUser(con, userId);
     } catch (Exception e) {
       throw new SubscribeRuntimeException(
           "SubscribeBmEJB.removeUserSubscribes()",
@@ -148,7 +148,7 @@ public class SubscribeBmEJB implements SessionBean {
 
     try {
       con = getConnection();
-      NodeActorLinkDAO.removeByNodePath(con, rootTableName, node, path);
+      NodeActorLinkDAO.removeByNodePath(con, node, path);
     } catch (Exception e) {
       throw new SubscribeRuntimeException(
           "SubscribeBmEJB.removeNodeSubscribes()",
@@ -202,8 +202,7 @@ public class SubscribeBmEJB implements SessionBean {
 
     try {
       con = getConnection();
-      Collection result = NodeActorLinkDAO.getNodePKsByActorComponent(con,
-          rootTableName, userId, componentName);
+      Collection result = NodeActorLinkDAO.getNodePKsByActorComponent(con, userId, componentName);
       return result;
     } catch (Exception e) {
       throw new SubscribeRuntimeException(
@@ -250,8 +249,7 @@ public class SubscribeBmEJB implements SessionBean {
     Connection con = null;
     try {
       con = getConnection();
-      Collection result = NodeActorLinkDAO.getActorPKsByNodePKs(con,
-          rootTableName, nodePKs);
+      Collection result = NodeActorLinkDAO.getActorPKsByNodePKs(con, nodePKs);
 
       return result;
     } catch (Exception e) {
