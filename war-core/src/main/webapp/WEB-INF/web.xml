@@ -538,6 +538,10 @@
     <servlet-name>ExportServlet</servlet-name>
     <servlet-class>com.silverpeas.export.servlets.ExportServlet</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>AjaxServletRSS</servlet-name>
+    <servlet-class>com.silverpeas.lookV5.AjaxServletRSS</servlet-class>
+  </servlet>
   <servlet-mapping>
     <servlet-name>REST Container</servlet-name>
     <url-pattern>/services/*</url-pattern>
@@ -921,6 +925,10 @@
     <servlet-name>ExportServlet</servlet-name>
     <url-pattern>/Export/*</url-pattern>
   </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>AjaxServletRSS</servlet-name>
+    <url-pattern>/RAjaxRSS/*</url-pattern>
+  </servlet-mapping>      
   <jsp-config>
     <jsp-property-group>
       <url-pattern>*.jsp</url-pattern>

@@ -58,6 +58,15 @@ public class StringUtil {
     }
   }
 
+  public static boolean isLong(String id) {
+    try {
+      Long.parseLong(id);
+      return true;
+    } catch (NumberFormatException e) {
+      return false;
+    }
+  }
+
   public static float convertFloat(String value) {
     if (StringUtil.isFloat(value)) {
       return Float.valueOf(value);
@@ -263,6 +272,9 @@ public class StringUtil {
     }
     NumberFormat numberFormat = NumberFormat.getInstance(new Locale(lang));
     return numberFormat.parse(value).floatValue();
+  }
+
+  private StringUtil() {
   }
 
 }
