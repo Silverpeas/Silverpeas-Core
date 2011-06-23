@@ -919,6 +919,14 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       File file = new File(path + File.separator + fileName);
       file.delete();
       destination = getDestination("SpaceLook", jobStartPageSC, request);
+    } else if(function.equals("OpenSpace")) {
+      if (StringUtil.isDefined(request.getParameter("Espace"))) {
+        jobStartPageSC.setSpaceId(request.getParameter("Espace"));
+      } else {
+        jobStartPageSC.setSpaceId(null);
+      }
+      
+      destination = getDestination("StartPageInfo", jobStartPageSC, request);
     }
 
     return destination;

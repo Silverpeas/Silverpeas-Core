@@ -54,6 +54,7 @@ if(category == null) {
 <view:looknfeel />
 <title><%=resource.getString("GML.popupTitle")%></title>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language="javascript">
 function isCorrectForm()
 {
@@ -90,6 +91,34 @@ function validateSearch()
 		document.forms["SearchResultForm"].submit();
 	}
 }
+
+var spaceWindow = window;
+function openSpace(spaceId) {
+	url = '<%=m_context%>/RjobStartPagePeas/jsp/OpenSpace?Espace='+spaceId;
+    windowName = "spaceWindow";
+	larg = "800";
+	haut = "800";
+    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
+    if (!spaceWindow.closed && spaceWindow.name == "spaceWindow") {
+        spaceWindow.close();
+	}
+    spaceWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);
+}
+
+
+var componentWindow = window;
+function openComponent(componentId) {
+	url = '<%=m_context%>/RjobStartPagePeas/jsp/OpenComponent?ComponentId='+componentId;
+    windowName = "componentWindow";
+	larg = "800";
+	haut = "800";
+    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
+    if (!componentWindow.closed && componentWindow.name == "componentWindow") {
+        componentWindow.close();
+	}
+    componentWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);
+}
+
 </script>
 
 </head>
@@ -180,7 +209,7 @@ if(listResult != null) {
 			name			= EncodeHelper.javaStringToHtmlString(searchResult.getName());
 			url				= searchResult.getUrl();
 			ArrayLine arrayLine = arrayPane.addArrayLine();
-			arrayLine.addArrayCellLink(name, url);
+			arrayLine.addArrayCellText("<a href=\"#\" onclick=\"openSpace('"+url+"')\">"+name+"</a>");
 			
 			desc			= searchResult.getDesc();
 			if (desc != null && desc.length() > 200) {

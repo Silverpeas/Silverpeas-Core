@@ -97,6 +97,13 @@ public class JobSearchPeasRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("SearchResult")) {
         String searchField = request.getParameter("SearchField");
         searchField = searchField.trim();//supprime les espaces avant et après la chaine
+        while(searchField.length()>=1 && (searchField.charAt(0) == '*' || searchField.charAt(0) == '?')) {//supprime les * et ? en début de chaine : non supportés par Lucène
+          if(searchField.length() == 1) {
+            searchField = "";
+          } else {
+            searchField = searchField.substring(1);
+          }
+        }
         String category = request.getParameter("Category");
         List<SearchResult> listResult = jobSearchPeasSC.searchResult(searchField, category);
         
