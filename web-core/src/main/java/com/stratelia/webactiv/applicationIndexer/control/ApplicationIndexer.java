@@ -43,6 +43,7 @@ public class ApplicationIndexer extends AbstractIndexer {
     indexAllSpaces();
     indexPersonalComponents();
     indexPdc();
+    indexGroups();
     indexUsers();
   }
 
@@ -206,6 +207,12 @@ public class ApplicationIndexer extends AbstractIndexer {
   public void indexUsers() {
     AdminController admin = new AdminController(null);
     admin.indexAllUsers();
+    admin = null;
+  }
+  
+  public void indexGroups() {
+    AdminController admin = new AdminController(null);
+    admin.indexAllGroups();
     admin = null;
   }
 }

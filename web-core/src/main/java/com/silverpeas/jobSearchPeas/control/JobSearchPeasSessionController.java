@@ -24,6 +24,7 @@
 package com.silverpeas.jobSearchPeas.control;
 
 import java.rmi.NoSuchObjectException;
+
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -32,10 +33,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.jobSearchPeas.SearchResult;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdcPeas.model.QueryParameters;
@@ -193,7 +190,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       String emplacement = getPathSpace(searchField);
       listEmplacement.add(emplacement);
       
-      String url = "";
+      String url = spaceInstLight.getFullId();
      
       SearchResult searchResult = new SearchResult();
       searchResult.setName(nom);
@@ -221,24 +218,6 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
     try {
       QueryParameters queryParameters = new QueryParameters(getLanguage());
       queryParameters.setKeywords(searchField);
-      /*String spaceId = request.getParameter("spaces");
-      pdcSC.getQueryParameters().setSpaceId(spaceId);
-
-      String instanceId = request.getParameter("componentSearch");
-      pdcSC.getQueryParameters().setInstanceId(instanceId);
-      
-      *
-      */
-      
-      /*
-       * queryParameters.setSpaceId(request.getParameter("spaces"));
-      queryParameters.setInstanceId(request.getParameter("componentSearch"));
-      queryParameters.setCreatorId(request.getParameter("authorSearch"));
-      queryParameters.setAfterDate(request.getParameter("createafterdate"));
-      queryParameters.setBeforeDate(request.getParameter("createbeforedate"));
-      queryParameters.setAfterUpdateDate(request.getParameter("updateafterdate"));
-      queryParameters.setBeforeUpdateDate(request.getParameter("updatebeforedate"));
-       */
       
       query = queryParameters.getQueryDescription(getUserId(), "*");
       query.addSpaceComponentPair(null, "Spaces");
@@ -267,23 +246,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         emplacement = getPathSpace(spaceId);
         listEmplacement.add(emplacement);
         
-        /*ComponentInstLight componentInst = getOrganizationController().getComponentInstLight(
-            componentId);
-        if (componentInst != null) {
-          SpaceInstLight spaceInst = getOrganizationController().getSpaceInstLightById(componentInst.getDomainFatherId());
-          String space = null;
-          if (spaceInst != null) {
-            space = spaceInst.getName(getLanguage());
-          } else {
-            space = componentInst.getDomainFatherId();
-          }
-          
-          emplacement = space + " / " + componentInst.getLabel(getLanguage());
-          listEmplacement.add(emplacement);
-          
-        }*/
-        
-        url = URLManager.getSimpleURL(URLManager.URL_SPACE, objectId);
+        url = spaceId;/*URLManager.getSimpleURL(URLManager.URL_SPACE, objectId);*/
         
         SearchResult searchResult = new SearchResult();
         searchResult.setName(result.getTitle(getLanguage()));
@@ -529,39 +492,47 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   }
   
   /**
+   * @param group
+   * @return
+   */
+  private String getPathGroup(Group group) {
+    String emplacement = "";
+    String groupId = group.getId();
+    String domainId = group.getDomainId();
+    if(domainId == null) {
+      domainId = "-1";
+    }
+    Domain domain = getAdminController().getDomain(domainId);
+    //nom du domaine
+    if("-1".equals(domainId)) {//domaine mixte
+      emplacement += getString("JSP.domainMixt");  
+    } else {
+      emplacement += domain.getName();
+    }
+    //nom du(des) groupe(s) pères
+    List<String> groupList = getAdminController().getPathToGroup(groupId);
+    for (String elementGroupId : groupList) {
+      emplacement += " > "+ getAdminController().getGroupName(elementGroupId);
+    }
+    //nom du groupe
+    emplacement += " > "+ group.getName();
+    return emplacement;
+  }
+  
+  /**
    * @param searchField
    * @return
    */
-  private List<SearchResult> searchResultGroup(String searchField) {
+  private List<SearchResult> searchResultGroupId(String searchField) {
     List<SearchResult> listResult = new ArrayList<SearchResult>(); 
-    
-    //id group
     Group group = getAdminController().getGroupById(searchField);
-    if(group != null) {
+    if(group != null && group.getId() != null) {
       String nom = group.getName();
       String desc = group.getDescription();
       Date dateCrea = null;
       String nomCrea = "";
       List<String> listEmplacement = new ArrayList<String>();
-      String emplacement = "";
-      String domainId = group.getDomainId();
-      if(domainId == null) {
-        domainId = "-1";
-      }
-      Domain domain = getAdminController().getDomain(domainId);
-      //nom du domaine
-      if("-1".equals(domainId)) {//domaine mixte
-        emplacement += getString("JSP.domainMixt");  
-      } else {
-        emplacement += domain.getName();
-      }
-      //nom du(des) groupe(s) pères
-      List<String> groupList = getAdminController().getPathToGroup(searchField);
-      for (String elementGroupId : groupList) {
-        emplacement += " > "+ getAdminController().getGroupName(elementGroupId);
-      }
-      //nom du groupe
-      emplacement += " > "+ group.getName();
+      String emplacement = getPathGroup(group);
       listEmplacement.add(emplacement);  
       
       String url = "/RjobDomainPeas/jsp/groupOpen?groupId="+searchField;
@@ -575,22 +546,100 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       searchResult.setUrl(url);
       listResult.add(searchResult);
     }
-    
-    //nom group
-    
-    
     return listResult;
-
   }
   
   /**
-   * @param userId
+   * @param searchField
+   * @return
+   * @throws PdcException 
+   * @throws RemoteException 
+   * @throws ParseException 
+   */
+  private List<SearchResult> searchEngineResultGroup(String searchField) throws PdcException {
+    List<SearchResult> listSearchResult = new ArrayList<SearchResult>(); 
+    MatchingIndexEntry[] plainSearchResults = null;
+    QueryDescription query = null;
+    try {
+      QueryParameters queryParameters = new QueryParameters(getLanguage());
+      queryParameters.setKeywords(searchField);
+     
+      query = queryParameters.getQueryDescription(getUserId(), "*");
+      query.addSpaceComponentPair(null, "groups");
+
+      getSearchEngineBm().search(query);
+      plainSearchResults = getSearchEngineBm().getRange(0,
+          getSearchEngineBm().getResultLength());
+      
+      MatchingIndexEntry result = null;
+      String groupId = null;
+      Group group = null;
+      String emplacement = null;
+      List<String> listEmplacement = null;
+      String url = null;
+      for (int i = 0; i < plainSearchResults.length; i++) {
+        result = plainSearchResults[i];
+
+        groupId = result.getObjectId();
+        group = getAdminController().getGroupById(groupId);
+        listEmplacement = new ArrayList<String>();
+        emplacement = getPathGroup(group);
+        listEmplacement.add(emplacement);
+        
+        url = "";
+        
+        SearchResult searchResult = new SearchResult();
+        searchResult.setName(result.getTitle(getLanguage()));
+        searchResult.setDesc(result.getPreview(getLanguage()));
+        searchResult.setCreaDate(null);
+        searchResult.setCreaName("");
+        searchResult.setPath(listEmplacement);
+        searchResult.setUrl(url);
+        listSearchResult.add(searchResult);
+      }
+    } catch (NoSuchObjectException nsoe) {
+      // an error occurs on searchEngine statefull EJB
+      // interface is not null but the EJB is !
+      // so we set interface to null and we launch again de search.
+      searchBm = null;
+      listSearchResult = searchEngineResultGroup(searchField);
+    } catch (Exception e) {
+      throw new PdcException(
+          "JobSearchPeasSessionController.searchEngineResultComponent",
+          SilverpeasException.ERROR, "pdcPeas.EX_CANT_GET_SEARCH_ENGINE", e);
+    }
+    return listSearchResult;
+    
+  }
+  
+  /**
+   * @param searchField
+   * @return
+   * @throws PdcException 
+   */
+  private List<SearchResult> searchResultGroup(String searchField) throws PdcException {
+    //id group
+    List<SearchResult> listResult = searchResultGroupId(searchField);
+     
+    //nom group
+    List<SearchResult> listSearchResult = searchEngineResultGroup(searchField);
+   
+    //fusion des 2 listes
+    for(SearchResult searchResult : listSearchResult) {
+      listResult.add(searchResult);
+    }
+    return listResult;
+  }
+
+  
+  /**
    * @param user
    * @return
    */
-  private List<String> getListPathUser(String userId, UserDetail user) {
+  private List<String> getListPathUser(UserDetail user) {
     List<String> listEmplacement = new ArrayList<String>();
     String emplacement = "";
+    String userId = user.getId();
     
     //groupe(s) d'appartenance
     String[] groupIds = getAdminController().getDirectGroupsIdsOfUser(userId);
@@ -652,7 +701,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       String desc = user.geteMail();
       Date dateCrea = null;
       String nomCrea = "";
-      List<String> listEmplacement = getListPathUser(searchField, user);
+      List<String> listEmplacement = getListPathUser(user);
       
       String url = "/RjobDomainPeas/jsp/groupOpen?groupId="+searchField;
      
@@ -685,11 +734,6 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       queryParameters.setKeywords(searchField);
      
       query = queryParameters.getQueryDescription(getUserId(), "*");
-      /*Map<String, WAComponent> mapComponent = getAdminController().getAllComponents();
-      Set<String> listComponentId = mapComponent.keySet();
-      for (String componentId : listComponentId) {
-        query.addComponent(componentId);
-      } inutile */
       query.addSpaceComponentPair(null, "users");
 
       getSearchEngineBm().search(query);
@@ -705,8 +749,8 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         result = plainSearchResults[i];
 
         userId = result.getObjectId();
-        user = getAdminController().getUserDetail(searchField);
-        listEmplacement = getListPathUser(userId, user);
+        user = getAdminController().getUserDetail(userId);
+        listEmplacement = getListPathUser(user);
         
         url = URLManager.getApplicationURL() + URLManager.getURL(result.getObjectType()) + result.getPageAndParams();
         
