@@ -635,6 +635,9 @@ public class GroupManager {
       }
       ddManager.organization.group.createGroup(gr);
       String sGroupId = idAsString(gr.id);
+      
+      // index group information
+      ddManager.indexGroup(gr);
 
       // Create the links group_user in Silverpeas
       SynchroReport.info("GroupManager.addGroup()",
@@ -678,6 +681,10 @@ public class GroupManager {
       }
       // Delete the group node from Silverpeas
       ddManager.organization.group.removeGroup(idAsInt(group.getId()));
+      
+      // Delete index of group information
+      ddManager.unindexGroup(group.getId());
+      
       return group.getId();
     } catch (Exception e) {
       SynchroReport.error("GroupManager.deleteGroupById()",
@@ -731,6 +738,9 @@ public class GroupManager {
       // Update the group node
       GroupRow gr = Group2GroupRow(group);
       ddManager.organization.group.updateGroup(gr);
+      
+      // index group information
+      ddManager.indexGroup(gr);
 
       // Update the users if necessary
       SynchroReport.info("GroupManager.updateGroup()", "Maj éventuelle des relations du groupe "
