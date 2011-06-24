@@ -27,7 +27,10 @@ package com.stratelia.webactiv.searchEngine.model;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
@@ -37,6 +40,12 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
  * A MatchingIndexEntry is an IndexEntry completed with a score by the search engine.
  */
 public class MatchingIndexEntry extends IndexEntry implements Serializable {
+
+  /**
+   * List of all linked attachment in wysiwyg content
+   */
+  private List<String> embeddedFileIds;
+
 
   /**
    * list of XML form fields used to sort results
@@ -128,4 +137,26 @@ public class MatchingIndexEntry extends IndexEntry implements Serializable {
    * The score defaults to 0 as if the entry wasn't a matching entry.
    */
   private float score = 0;
+
+
+  /**
+   * Set the list of all linked attachment in wysiwyg content
+   *
+   * @param   embeddedFileIds   attachments ids separated by a blank space
+   */
+  public void setEmbeddedFileIds(String[] embeddedFileIds) {
+    if ( embeddedFileIds == null ) {
+      this.embeddedFileIds = new ArrayList<String>();
+    }
+    else {
+      this.embeddedFileIds = Arrays.asList( embeddedFileIds );
+    }
+  }
+
+  /**
+   * List of all linked attachment in wysiwyg content
+   */
+  public List<String> getEmbeddedFileIds() {
+    return embeddedFileIds;
+  }
 }

@@ -78,3 +78,17 @@ FCKConfig.ToolbarSets["almanach"] = [
 	'/',
 	['FontFormat','FontName','FontSize']
 ] ;
+
+FCKConfig.ToolbarSets["questionreply"] = [
+	['Copy','Paste','PasteText','PasteWord'],
+	['Undo','Redo'],
+	['Link','Unlink'],
+	['Table','Rule','SpecialChar'],
+	'/',
+	['Bold','Italic','Underline','StrikeThrough'],
+	['OrderedList','UnorderedList','-','Outdent','Indent'],
+	['JustifyLeft','JustifyCenter','JustifyRight','JustifyFull'],
+	['TextColor','BGColor'],
+	'/',
+	['FontFormat','FontName','FontSize']
+] ;

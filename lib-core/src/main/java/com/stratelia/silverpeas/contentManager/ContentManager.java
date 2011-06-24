@@ -55,9 +55,55 @@ import javax.inject.Named;
 @Named("contentManager")
 public class ContentManager extends Object implements Serializable {
 
+  private final static List<ContentPeas> s_acContentPeas = new ArrayList<ContentPeas>();
+
+  static {
+    // -------------------------------------------------
+    // We don't have enough time to do the parsing !!!
+    // We hard coded for this time !!!!
+    // -------------------------------------------------
+
+    ContentPeas contentFB = new ContentPeas("fileBoxPlus");
+    ContentPeas contentWP = new ContentPeas("whitePages");
+    ContentPeas contentQR = new ContentPeas("questionReply");
+    ContentPeas contentKMelia = new ContentPeas("kmelia");
+    ContentPeas contentSurvey = new ContentPeas("survey");
+    ContentPeas contentToolbox = new ContentPeas("toolbox");
+    ContentPeas contentQuickInfo = new ContentPeas("quickinfo");
+    ContentPeas contentAlmanach = new ContentPeas("almanach");
+    ContentPeas contentQuizz = new ContentPeas("quizz");
+    ContentPeas contentForums = new ContentPeas("forums");
+    ContentPeas contentPollingStation = new ContentPeas("pollingStation");
+    ContentPeas contentBookmark = new ContentPeas("bookmark");
+    ContentPeas contentChat = new ContentPeas("chat");
+    ContentPeas contentInfoLetter = new ContentPeas("infoLetter");
+    ContentPeas contentEL = new ContentPeas("expertLocator");
+    ContentPeas contentWebSites = new ContentPeas("webSites");
+    ContentPeas contentGallery = new ContentPeas("gallery");
+    ContentPeas contentBlog = new ContentPeas("blog");
+
+    // Put all the existing contents in the array of contents
+    s_acContentPeas.add(contentFB);
+    s_acContentPeas.add(contentWP);
+    s_acContentPeas.add(contentQR);
+    s_acContentPeas.add(contentKMelia);
+    s_acContentPeas.add(contentSurvey);
+    s_acContentPeas.add(contentToolbox);
+    s_acContentPeas.add(contentQuickInfo);
+    s_acContentPeas.add(contentAlmanach);
+    s_acContentPeas.add(contentQuizz);
+    s_acContentPeas.add(contentForums);
+    s_acContentPeas.add(contentPollingStation);
+    s_acContentPeas.add(contentBookmark);
+    s_acContentPeas.add(contentChat);
+    s_acContentPeas.add(contentInfoLetter);
+    s_acContentPeas.add(contentEL);
+    s_acContentPeas.add(contentWebSites);
+    // s_acContentPeas.add(contentDocumentation);
+    s_acContentPeas.add(contentGallery);
+    s_acContentPeas.add(contentBlog);
+  }
   // Container peas
-  private static boolean s_bDescriptorsRead = false;
-  private static ArrayList<ContentPeas> s_acContentPeas = null;
   private static Map<String, String> assoComponentIdInstanceId = null;
   // Association SilverContentId (the key) internalContentId (the value) (cache)
   private static HashMap<String, String> assoSilverContentIdInternalComponentId =
@@ -70,77 +116,16 @@ public class ContentManager extends Object implements Serializable {
 
   static {
     try {
-      assoComponentIdInstanceId = Collections.synchronizedMap(new HashMap<String, String>(loadAsso(
-              null)));
+      assoComponentIdInstanceId = new HashMap<String, String>(loadAsso(null));
     } catch (ContentManagerException e) {
       SilverTrace.error("contentManager", "ContentManager.initStatic",
-              "root.EX_CLASS_NOT_INITIALIZED",
-              "assoComponentIdInstanceId initialization failed !", e);
+          "root.EX_CLASS_NOT_INITIALIZED", "assoComponentIdInstanceId initialization failed !", e);
     }
   }
   // Container manager
   private ContainerManager m_containerManager = null;
 
   public ContentManager() throws ContentManagerException {
-    // If the container descriptors (.xml) have not been read, do it
-    if (!s_bDescriptorsRead) {
-      // -------------------------------------------------
-      // We don't have enough time to do the parsing !!!
-      // We hard coded for this time !!!!
-      // -------------------------------------------------
-
-      ContentPeas contentFB = new ContentPeas("fileBoxPlus");
-      ContentPeas contentWP = new ContentPeas("whitePages");
-      ContentPeas contentQR = new ContentPeas("questionReply");
-      ContentPeas contentKMelia = new ContentPeas("kmelia");
-      ContentPeas contentSurvey = new ContentPeas("survey");
-      ContentPeas contentToolbox = new ContentPeas("toolbox");
-      ContentPeas contentQuickInfo = new ContentPeas("quickinfo");
-      ContentPeas contentAlmanach = new ContentPeas("almanach");
-      ContentPeas contentQuizz = new ContentPeas("quizz");
-      ContentPeas contentForums = new ContentPeas("forums");
-      ContentPeas contentPollingStation = new ContentPeas("pollingStation");
-      ContentPeas contentBookmark = new ContentPeas("bookmark");
-      ContentPeas contentChat = new ContentPeas("chat");
-      ContentPeas contentInfoLetter = new ContentPeas("infoLetter");
-      ContentPeas contentEL = new ContentPeas("expertLocator");
-      ContentPeas contentWebSites = new ContentPeas("webSites");
-      // ContentPeas contentDocumentation = new ContentPeas("documentation");
-      ContentPeas contentGallery = new ContentPeas("gallery");
-      ContentPeas contentBlog = new ContentPeas("blog");
-
-      // Put all the existing contents in the array of contents
-      s_acContentPeas = new ArrayList<ContentPeas>();
-      s_acContentPeas.add(contentFB);
-      s_acContentPeas.add(contentWP);
-      s_acContentPeas.add(contentQR);
-      s_acContentPeas.add(contentKMelia);
-      s_acContentPeas.add(contentSurvey);
-      s_acContentPeas.add(contentToolbox);
-      s_acContentPeas.add(contentQuickInfo);
-      s_acContentPeas.add(contentAlmanach);
-      s_acContentPeas.add(contentQuizz);
-      s_acContentPeas.add(contentForums);
-      s_acContentPeas.add(contentPollingStation);
-      s_acContentPeas.add(contentBookmark);
-      s_acContentPeas.add(contentChat);
-      s_acContentPeas.add(contentInfoLetter);
-      s_acContentPeas.add(contentEL);
-      s_acContentPeas.add(contentWebSites);
-      // s_acContentPeas.add(contentDocumentation);
-      s_acContentPeas.add(contentGallery);
-      s_acContentPeas.add(contentBlog);
-
-      // Set the read flag to true
-      s_bDescriptorsRead = true;
-    }
-
-    // Load the instanceId-componentId cache
-    /*
-     * if (s_asAssoInstanceId == null && s_asAssoComponentId == null) { s_asAssoInstanceId = new
-     * ArrayList(); s_asAssoComponentId = new ArrayList(); this.loadAsso(null); }
-     */
-
     try {
       m_containerManager = new ContainerManager();
     } catch (Exception e) {
@@ -158,7 +143,7 @@ public class ContentManager extends Object implements Serializable {
    * @param sContainerType
    * @param sContentType
    * @return
-   * @throws ContentManagerException 
+   * @throws ContentManagerException
    */
   public int registerNewContentInstance(Connection connection, String sComponentId,
           String sContainerType, String sContentType) throws ContentManagerException {
@@ -218,7 +203,7 @@ public class ContentManager extends Object implements Serializable {
    * @param sComponentId
    * @param sContainerType
    * @param sContentType
-   * @throws ContentManagerException 
+   * @throws ContentManagerException
    */
   public void unregisterNewContentInstance(Connection connection, String sComponentId,
           String sContainerType, String sContentType) throws ContentManagerException {
@@ -260,7 +245,7 @@ public class ContentManager extends Object implements Serializable {
    * Return the ContentPeas corresponding to the given componentId
    * @param sComponentId
    * @return
-   * @throws ContentManagerException 
+   * @throws ContentManagerException
    */
   public ContentPeas getContentPeas(String sComponentId) throws ContentManagerException {
     // Get the ContentType
@@ -299,7 +284,7 @@ public class ContentManager extends Object implements Serializable {
    * all the silverpeas contents (documentation, ....)
    * @param sContentType
    * @param asUserContentRoles
-   * @return 
+   * @return
    */
   public List<URLIcone> getContentURLIcones(String sContentType, List<String> asUserContentRoles) {
     // !!!!!!! HARD CODED FOR THE MOMENT (call th econtentPeas instead)
@@ -383,8 +368,8 @@ public class ContentManager extends Object implements Serializable {
         URLIcone uiCreation;
 
         uiCreation = new URLIcone();
-        uiCreation.setIconePath(URLManager.getApplicationURL()
-                + "/util/icons/expertLocator_to_add.gif");
+        uiCreation.setIconePath(
+            URLManager.getApplicationURL() + "/util/icons/expertLocator_to_add.gif");
         // uiCreation.setAlternateText("Créer une fiche");
         uiCreation.setAlternateText("expertLocator.CreateAUsercard");
         uiCreation.setActionURL("createQuery");
@@ -416,24 +401,24 @@ public class ContentManager extends Object implements Serializable {
         URLIcone uiCreation;
 
         uiCreation = new URLIcone();
-        uiCreation.setIconePath(URLManager.getApplicationURL()
-                + "/util/icons/questionReply_addQ.gif");
+        uiCreation.setIconePath(
+            URLManager.getApplicationURL() + "/util/icons/questionReply_addQ.gif");
         // uiCreation.setAlternateText("Poser une question");
         uiCreation.setAlternateText("questionReply.AriseAQuestion");
         uiCreation.setActionURL("CreateQQuery");
         auURLIcones.add(uiCreation);
 
         uiCreation = new URLIcone();
-        uiCreation.setIconePath(URLManager.getApplicationURL()
-                + "/util/icons/questionReply_addQR.gif");
+        uiCreation.setIconePath(
+            URLManager.getApplicationURL() + "/util/icons/questionReply_addQR.gif");
         // uiCreation.setAlternateText("Ajouter une FAQ");
         uiCreation.setAlternateText("questionReply.AddAFAQ");
         uiCreation.setActionURL("CreateQueryQR");
         auURLIcones.add(uiCreation);
 
         uiCreation = new URLIcone();
-        uiCreation.setIconePath(URLManager.getApplicationURL()
-                + "/util/icons/questionReply_viewList.gif");
+        uiCreation.setIconePath(
+            URLManager.getApplicationURL() + "/util/icons/questionReply_viewList.gif");
         // uiCreation.setAlternateText("Visualiser toutes les questions");
         uiCreation.setAlternateText("questionReply.AllQuestions");
         uiCreation.setActionURL("ConsultReceiveQuestions");
@@ -442,16 +427,16 @@ public class ContentManager extends Object implements Serializable {
         URLIcone uiCreation;
 
         uiCreation = new URLIcone();
-        uiCreation.setIconePath(URLManager.getApplicationURL()
-                + "/util/icons/questionReply_addQ.gif");
+        uiCreation.setIconePath(
+            URLManager.getApplicationURL() + "/util/icons/questionReply_addQ.gif");
         // uiCreation.setAlternateText("Poser une question");
         uiCreation.setAlternateText("questionReply.AriseAQuestion");
         uiCreation.setActionURL("CreateQQuery");
         auURLIcones.add(uiCreation);
 
         uiCreation = new URLIcone();
-        uiCreation.setIconePath(URLManager.getApplicationURL()
-                + "/util/icons/questionReply_viewList.gif");
+        uiCreation.setIconePath(
+            URLManager.getApplicationURL() + "/util/icons/questionReply_viewList.gif");
         // uiCreation.setAlternateText("Visualiser toutes les questions");
         uiCreation.setAlternateText("questionReply.AllQuestions");
         uiCreation.setActionURL("ConsultReceiveQuestions");
@@ -755,8 +740,7 @@ public class ContentManager extends Object implements Serializable {
 
         // add the result into the sortedSet
         if (silverContentId != -1) {
-          // le composant dont instanceId et objectId courant
-          // fait partie du PDC
+          // le composant dont instanceId et objectId courant fait partie du PDC
           alSilverContentId.add(Integer.valueOf(silverContentId));
         }
 
@@ -784,7 +768,7 @@ public class ContentManager extends Object implements Serializable {
   }
 
   private String getInternalContentIdFromCache(String sSilverContentId) {
-    return (String) assoSilverContentIdInternalComponentId.get(sSilverContentId);
+    return assoSilverContentIdInternalComponentId.get(sSilverContentId);
   }
 
   private void putInternalContentIdIntoCache(String sSilverContentId,
@@ -797,8 +781,7 @@ public class ContentManager extends Object implements Serializable {
    * Return the InternalContentId corresponding to the given SilverContentId Called when a content
    * remove a document
    */
-  public String getInternalContentId(int nSilverContentId)
-          throws ContentManagerException {
+  public String getInternalContentId(int nSilverContentId) throws ContentManagerException {
     String sSilverContentId = String.valueOf(nSilverContentId);
     String sInternalContentId = getInternalContentIdFromCache(sSilverContentId);
     if (sInternalContentId == null) {
@@ -843,43 +826,18 @@ public class ContentManager extends Object implements Serializable {
   /**
    * Return the content instance Id corresponding to the componentId
    */
-  public int getContentInstanceId(String sComponentId)
-          throws ContentManagerException {
+  public int getContentInstanceId(String sComponentId) throws ContentManagerException {
     int contentInstanceId = -1;
 
-    // Find the index of the component in the cache
-    /*
-     * int nIndex = 0; for (nIndex = 0; nIndex < s_asAssoComponentId.size(); nIndex++) { if
-     * (((String) s_asAssoComponentId.get(nIndex)).equals(sComponentId)) { contentInstanceId =
-     * ((Integer) s_asAssoInstanceId.get(nIndex)).intValue(); break; } }
-     */
-
     String sContentInstanceId = getInstanceId(sComponentId);
-
-    // check the index
-    // if (nIndex < 0 || s_asAssoComponentId.size() == 0 || nIndex >
-    // s_asAssoComponentId.size() - 1)
     if (sContentInstanceId != null) {
       contentInstanceId = Integer.parseInt(sContentInstanceId);
     } else {
-      // throw new
-      // ContentManagerException("ContentManager.getContentInstanceId",SilverpeasException.ERROR,"contentManager.EX_CANNOT_FOUND_COMPONENTID",
-      // "sComponentId: " + sComponentId);
-
       // the given instance is not registered. This code is used to maintains
       // compatibility with previous versions.
       String componentName = extractComponentNameFromInstanceId(sComponentId);
       contentInstanceId = registerNewContentInstance(null, sComponentId,
-              "containerPDC", componentName);
-
-      // The container must be registered too.
-      /*
-       * ContainerManager containerManager = new ContainerManager();
-       * containerManager.registerNewContainerInstance(null, sComponentId, "containerPDC",
-       * componentName);
-       */
-
-      // loadAsso(null);
+          "containerPDC", componentName);
     }
 
     return contentInstanceId;
@@ -907,9 +865,8 @@ public class ContentManager extends Object implements Serializable {
     return assoComponentIdInstanceId;
   }
 
-  private String getInstanceId(String componentId)
-          throws ContentManagerException {
-    return (String) getAsso().get(componentId);
+  private String getInstanceId(String componentId) throws ContentManagerException {
+    return getAsso().get(componentId);
   }
 
   private void addAsso(String componentId, int instanceId)
@@ -923,7 +880,7 @@ public class ContentManager extends Object implements Serializable {
 
   // Load the cache instanceId-componentId
   private static Map<String, String> loadAsso(Connection connection)
-          throws ContentManagerException {
+      throws ContentManagerException {
     boolean bCloseConnection = false;
     PreparedStatement prepStmt = null;
     ResultSet resSet = null;
@@ -967,7 +924,7 @@ public class ContentManager extends Object implements Serializable {
   }
 
   public JoinStatement getPositionsByGenericSearch(String authorId,
-          String afterDate, String beforeDate) throws ContentManagerException {
+      String afterDate, String beforeDate) throws ContentManagerException {
     StringBuilder sSQLStatement = new StringBuilder(1000);
 
     JoinStatement joinStatement = new JoinStatement();
@@ -1010,8 +967,7 @@ public class ContentManager extends Object implements Serializable {
    * @param alSilverContentId - la liste de silvercontentId silvercontentId
    * @return la liste contenant les instances
    */
-  public List<String> getInstanceId(List<Integer> alSilverContentId)
-          throws ContentManagerException {
+  public List<String> getInstanceId(List<Integer> alSilverContentId) throws ContentManagerException {
     Connection connection = null;
     StringBuffer sSQLStatement = new StringBuffer();
     PreparedStatement prepStmt = null;

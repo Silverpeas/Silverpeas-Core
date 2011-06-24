@@ -57,6 +57,7 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.SilverpeasSettings;
+import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -1150,7 +1151,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
       return PublicationDAO.getDistributionTree(con, instanceId, statusSubQuery, checkVisibility);
     } catch (Exception e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getDistributionTree()",
-          SilverpeasRuntimeException.ERROR, "publication.GETTING_NUMBER_OF_PUBLICATIONS_FAILED", 
+          SilverpeasRuntimeException.ERROR, "publication.GETTING_NUMBER_OF_PUBLICATIONS_FAILED",
           "instanceId = " + instanceId, e);
     } finally {
       freeConnection(con);
@@ -1429,6 +1430,15 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
             String wysiwygPath = WysiwygController.getWysiwygPath(pubPK.getInstanceId(),
                 pubPK.getId(), language);
             indexEntry.addFileContent(wysiwygPath, null, "text/html", language);
+
+            // index embedded linked attachment (links presents in wysiwyg content)
+            try {
+              List<String> embeddedAttachmentIds = WysiwygController.getEmbeddedAttachmentIds(wysiwygContent);
+              WysiwygController.indexEmbeddedLinkedFiles(indexEntry, embeddedAttachmentIds);
+            } catch (WysiwygException e) {
+                  SilverTrace.warn("form", "PublicationBmEJB.updateIndexEntryWithWysiwygContent", "root.MSG_GEN_ENTER_METHOD",
+                          "Unable to extract linked files from object" + indexEntry.getObjectId(), e);
+            }
           }
         }
         /*

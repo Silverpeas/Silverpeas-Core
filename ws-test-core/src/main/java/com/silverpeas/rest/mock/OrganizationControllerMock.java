@@ -58,4 +58,10 @@ public class OrganizationControllerMock extends OrganizationController {
   public void clearAll() {
     users.clear();
   }
+
+  @Override
+  public String[] getUserProfiles(String userId, String componentId) {
+    return ((UserDetailWithProfiles) users.get(userId)).getUserProfiles(componentId);
+  }
+
 }
