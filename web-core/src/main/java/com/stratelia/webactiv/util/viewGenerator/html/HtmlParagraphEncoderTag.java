@@ -22,46 +22,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.rest.mock;
+package com.stratelia.webactiv.util.viewGenerator.html;
 
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import java.util.HashMap;
-import java.util.Map;
-import javax.inject.Named;
+import com.silverpeas.util.EncodeHelper;
+import java.io.IOException;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.TagSupport;
 
 /**
- * A mock the OrganizationController objects for testing purpose.
+ * Transform a Java String into a HTML paragraph compatible String.
  */
-@Named("organizationController")
-public class OrganizationControllerMock extends OrganizationController {
-  private static final long serialVersionUID = -3271734262141821655L;
-
-  private Map<String, UserDetail> users = new HashMap<String, UserDetail>();
+public class HtmlParagraphEncoderTag extends TagSupport {
+  private static final long serialVersionUID = -7747695403360864218L;
+  private String string;
 
   @Override
-  public UserDetail getUserDetail(String sUserId) {
-    return users.get(sUserId);
+  public int doStartTag() throws JspException {
+    try {
+      pageContext.getOut().print(EncodeHelper.javaStringToHtmlParagraphe(string));
+    } catch (IOException ex) {
+      throw new JspException("Silverpeas Java to html paragraph Converter Tag", ex);
+    }
+    return EVAL_PAGE;
   }
 
-  /**
-   * Adds a new user for tests.
-   * @param userDetail the detail about the user to add for tests.
-   */
-  public void addUserDetail(final UserDetail userDetail) {
-    users.put(userDetail.getId(), userDetail);
+  public String getString() {
+    return string;
   }
 
-  /**
-   * Clears all of the data used in tests.
-   */
-  public void clearAll() {
-    users.clear();
+  public void setString(String string) {
+    this.string = string;
   }
-
-  @Override
-  public String[] getUserProfiles(String userId, String componentId) {
-    return ((UserDetailWithProfiles) users.get(userId)).getUserProfiles(componentId);
-  }
-
 }

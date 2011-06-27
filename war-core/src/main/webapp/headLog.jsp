@@ -43,18 +43,18 @@ String m_context = request.getContextPath();
 
 // Get the authentication settings
 ResourceLocator authenticationSettings		= new ResourceLocator("com.silverpeas.authentication.settings.authenticationSettings", "");
-ResourceLocator homePageBundle = new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", "");
+ResourceLocator homePageBundle = new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", request.getLocale().getLanguage());
 
 // Get the logo to print
-ResourceLocator general				= new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
-ResourceLocator generalMultilang	= new ResourceLocator("com.stratelia.webactiv.multilang.generalMultilang", "");
+ResourceLocator general = new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
+ResourceLocator generalMultilang = new ResourceLocator("com.stratelia.webactiv.multilang.generalMultilang", request.getLocale().getLanguage());
 
 String logo = general.getString("logo", m_context+"/images/logo.jpg");
-String styleSheet = general.getString("defaultStyleSheet", m_context+"/style.css");
+String styleSheet = general.getString("defaultLoginStyleSheet", m_context+"/style.css");
 
 // Is "forgotten password" feature active ?
 String pwdResetBehavior = general.getString("forgottenPwdActive", "reinit");    
-boolean forgottenPwdActive = !pwdResetBehavior.equalsIgnoreCase("false");
+boolean forgottenPwdActive = !"false".equalsIgnoreCase(pwdResetBehavior);
 boolean rememberPwdActive = authenticationSettings.getBoolean("cookieEnabled", false);
 
 // Get a LoginPasswordAuthentication object
