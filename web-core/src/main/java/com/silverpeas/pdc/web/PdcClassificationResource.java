@@ -49,18 +49,21 @@ import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
 import static com.silverpeas.pdc.web.UserThesaurusHolder.*;
 
 /**
- * A REST Web service that represents the classification of a Silverpeas's resource on the
+ * A REST Web resource that represents the classification of a Silverpeas's resource on the
  * classification plan (named PdC).
  * 
- * The classification of a resource is defined by a its different positions on the axis of the
- * PdC. A position is then a set of one or more axis values. Each position of a classification can
- * be accessed through this web service by an URI; the classification positions are uniquely
- * identified by an URI.
+ * A classification on the PdC is defined by the different positions of the classified resource 
+ * on the axis of the PdC. A position is then a set of one or more values in the different axis of
+ * the PdC.
+ * 
+ * The positions of a given classification can be accessed with this Web resource by the URI of the
+ * position; classifications and positions are exposed in the Web by Silverpeas and are thus
+ * uniquely identified by an URI in the Web.
  */
 @Service
 @Scope("request")
 @Path("pdc/{componentId}/{contentId}")
-public class ResourceClassification extends RESTWebService {
+public class PdcClassificationResource extends RESTWebService {
 
   @Inject
   private PdcBm pdcService;

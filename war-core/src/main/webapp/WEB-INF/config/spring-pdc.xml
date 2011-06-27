@@ -37,6 +37,9 @@
   <ctx:component-scan base-package="com.silverpeas.pdc"/>
   <ctx:component-scan base-package="com.silverpeas.thesaurus"/>
   <ctx:component-scan base-package="com.stratelia.silverpeas.pdc"/>
+  
+  <bean id="pdcServiceFactory" class="com.silverpeas.pdc.PdcServiceFactory"
+        factory-method="getFactory"/>
 
 </beans>
 

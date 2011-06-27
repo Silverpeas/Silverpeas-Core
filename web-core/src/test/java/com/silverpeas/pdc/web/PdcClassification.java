@@ -81,8 +81,9 @@ public class PdcClassification {
       String treeId = treeIds.get(i);
       List<Value> path = new ArrayList<Value>();
       path.addAll(thesaurus.getValuesFromTree(treeId));
-      ClassifyValue positionValue =
-              new ClassifyValue(Integer.valueOf(treeId), path.get(path.size() - 1).getPath());
+      Value value = path.get(path.size() - 1);
+      ClassifyValue positionValue = new ClassifyValue(Integer.valueOf(value.getAxisId()),
+              value.getPath() + value.getPK().getId() + "/");
       positionValue.setFullPath(path);
       positionValues.add(positionValue);
       if (i >= 1) {
@@ -96,7 +97,7 @@ public class PdcClassification {
   private void fillWithNoSynonyms() {
     Thesaurus thesaurus = new Thesaurus();
     List<ClassifyValue> positionValues = new ArrayList<ClassifyValue>();
-    ClassifyValue positionValue = new ClassifyValue(100, "Technique");
+    ClassifyValue positionValue = new ClassifyValue(100, "/100/");
     List<Value> path = new ArrayList<Value>();
     path.add(thesaurus.anI18NValue("100", "100", "Technique", "2011/06/16", "0", "/Technique", 0, 0,
             "-1"));

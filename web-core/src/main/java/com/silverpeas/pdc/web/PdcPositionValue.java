@@ -23,14 +23,19 @@
  */
 package com.silverpeas.pdc.web;
 
+import com.silverpeas.pdc.PdcServiceFactory;
+import com.stratelia.silverpeas.pdc.control.PdcBm;
+import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
 import java.util.Collection;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdc.model.Value;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import static com.silverpeas.util.StringUtil.*;
 
 /**
@@ -41,14 +46,24 @@ import static com.silverpeas.util.StringUtil.*;
  * deeper exactness about the value. For example, in a geographic axis, the value France can be
  * a tree in which it is splited into regions, departments, towns, and so on. So, a more accurate
  * PdC position value can be made with the path France/Isère/Grenoble instead of only France.
+ * 
+ * In an international context, the terms require to be translated according to the language of the
+ * user that requested the position's value. So, the values of positions are actually represented
+ * by an identifier that is used as a key to get the correct translated term. Thus, in an
+ * hierarchical semantic tree, the path of a term is in fact represented by a path of identifiers
+ * from which a path of translated terms can be easily retrieved.
  */
 @XmlRootElement
 public class PdcPositionValue implements Serializable {
 
   private static final long serialVersionUID = -6826039385078009600L;
   
+  private static PdcBm pdcService = new PdcBmImpl();
+  
   @XmlElement(required = true)
   private String id;
+  @XmlElement(required = true)
+  private int axisId;
   @XmlElement(defaultValue="")
   private String treeId = "";
   @XmlElement(required = true)
@@ -59,6 +74,7 @@ public class PdcPositionValue implements Serializable {
   /**
    * Creates a new PdC position value fom the specified PdC classification value.
    * @param value a value of a PdC classification position.
+   * @param inLanguage  the language in which the terms of the value should be translated.
    * @return a representation of the PdC position value.
    */
   public static PdcPositionValue fromClassifiyValue(final ClassifyValue value,
@@ -66,7 +82,8 @@ public class PdcPositionValue implements Serializable {
     List<Value> termPath = value.getFullPath();
     Value term = value.getFullPath().get(termPath.size() - 1);
     PdcPositionValue positionValue = new PdcPositionValue(
-            withId(term.getPK().getId()),
+            withId(value.getValue()),
+            inAxis(value.getAxisId()),
             withLocalizedPathOf(value, inLanguage));
     String treeId = term.getTreeId();
     if (isDefined(treeId) && Integer.valueOf(treeId) >= 0) {
@@ -81,15 +98,36 @@ public class PdcPositionValue implements Serializable {
    * @return a ClassifyValue instance.
    */
   public ClassifyValue toClassifyValue() {
-    return new ClassifyValue(Integer.valueOf(this.id), path);
+    ClassifyValue value = new ClassifyValue(axisId, id);
+    
+    return value;
   }
 
   /**
-   * Gets the unique identifier of this position value.
+   * Gets the unique identifier of this position.
    * @return the value identifier.
    */
   public String getId() {
     return id;
+  }
+  
+  /**
+   * Gets the unique identifier of the term of this value. If the term belongs to a semantic tree
+   * (not a single term), it is the one of the last term of the path in the tree.
+   * @return the term identifier.
+   */
+  @XmlTransient
+  public String getTermId() {
+    String[] idNodes = id.split("/");
+    return idNodes[idNodes.length - 1];
+  }
+
+  /**
+   * Gets the unique identifier of the PdC's axis related by this value.
+   * @return the PdC's axis identifier.
+   */
+  public int getAxisId() {
+    return axisId;
   }
 
   /**
@@ -122,10 +160,10 @@ public class PdcPositionValue implements Serializable {
 
   /**
    * Gets the synonyms of this value according to a given thesaurus.
-   * @return a list of synonyms to this value.
+   * @return an unmodifiable list of synonyms to this value.
    */
   public List<String> getSynonyms() {
-    return synonyms;
+    return Collections.unmodifiableList(synonyms);
   }
 
   public void setSynonyms(final Collection<String> synonyms) {
@@ -145,6 +183,9 @@ public class PdcPositionValue implements Serializable {
     if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
       return false;
     }
+    if (this.axisId != other.axisId) {
+      return false;
+    }
     if ((this.treeId == null) ? (other.treeId != null) : !this.treeId.equals(other.treeId)) {
       return false;
     }
@@ -161,10 +202,11 @@ public class PdcPositionValue implements Serializable {
   @Override
   public int hashCode() {
     int hash = 7;
-    hash = 89 * hash + (this.id != null ? this.id.hashCode() : 0);
-    hash = 89 * hash + (this.treeId != null ? this.treeId.hashCode() : 0);
-    hash = 89 * hash + (this.path != null ? this.path.hashCode() : 0);
-    hash = 89 * hash + (this.synonyms != null ? this.synonyms.hashCode() : 0);
+    hash = 59 * hash + (this.id != null ? this.id.hashCode() : 0);
+    hash = 59 * hash + this.axisId;
+    hash = 59 * hash + (this.treeId != null ? this.treeId.hashCode() : 0);
+    hash = 59 * hash + (this.path != null ? this.path.hashCode() : 0);
+    hash = 59 * hash + (this.synonyms != null ? this.synonyms.hashCode() : 0);
     return hash;
   }
 
@@ -179,12 +221,16 @@ public class PdcPositionValue implements Serializable {
     } else {
       synonymArray.append("]");
     }
-    return "PdcPositionValue{id=" + id + ", treeId=" + treeId + ", path=" + path + ", synonyms="
-            + synonymArray.toString() + '}';
+    return "PdcPositionValue{id=" + getId() + ", axisId=" + getAxisId() + ", treeId=" + getTreeId() + ", path=" + getPath() +
+            ", synonyms=" + synonymArray.toString() + '}';
   }
   
   private static String withId(String valueId) {
     return valueId;
+  }
+  
+  private static int inAxis(int axisId) {
+    return axisId;
   }
 
   private static String withLocalizedPathOf(final ClassifyValue value, String inLanguage) {
@@ -199,8 +245,14 @@ public class PdcPositionValue implements Serializable {
     this.treeId = treeId;
   }
 
-  private PdcPositionValue(String id, String path) {
+  private PdcPositionValue(String id, int axisId, String path) {
     this.id = id;
+    this.axisId = axisId;
     this.path = path;
+  }
+  
+  private PdcBm getPdcManager() {
+    PdcServiceFactory factory = PdcServiceFactory.getFactory();
+    return factory.getPdcManager();
   }
 }

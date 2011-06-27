@@ -54,19 +54,20 @@ public class UserThesaurusHolder {
   }
 
   /**
-   * Gets the synonyms of the specified term by using the hold user thesaurus.
-   * @param term the term as a PdcPositionValue instance.
+   * Gets the synonyms of the specified position value by using the hold user thesaurus. The 
+   * synonyms are thoses of the term backed by the value.
+   * @param value the value as a PdcPositionValue instance.
    * @return a collection of synonyms.
    * @throws ThesaurusException if an error occurs while accessing the thesaurus for getting the
    * synonyms of the specified term.
    */
-  public Collection<String> getSynonymsOf(final PdcPositionValue term) throws ThesaurusException {
+  public Collection<String> getSynonymsOf(final PdcPositionValue value) throws ThesaurusException {
     Collection<String> synonyms = null;  
     Jargon jargon = getThesaurus().getJargon(getUser().getId());
-    if (jargon != null && term.belongToATree()) {
+    if (jargon != null && value.belongToATree()) {
       String idUser = jargon.getIdUser();
-      synonyms = thesaurus.getSynonyms(Long.valueOf(term.getTreeId()), 
-              Long.valueOf(term.getId()), idUser);
+      synonyms = thesaurus.getSynonyms(Long.valueOf(value.getTreeId()), 
+              Long.valueOf(value.getTermId()), idUser);
     }
     if (synonyms == null) {
       synonyms = new ArrayList<String>();

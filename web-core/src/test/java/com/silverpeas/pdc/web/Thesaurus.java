@@ -137,25 +137,50 @@ public class Thesaurus {
     return values;
   }
 
+  /**
+   * Builds a Value with translated names from the specified parameters.
+   * @param id the identifier of the value.
+   * @param treeId the identifier of the semantic tree in which the value is defined,
+   * @param name the non translated name of the value (the value itself in the tree).
+   * @param creationDate the date at which this value was created in the PdC.
+   * @param creatorId the identifier of the creator.
+   * @param path the path of the father node in the tree to which this value belongs to.
+   * @param level the level of the value.
+   * @param order the order of the value between its siblings.
+   * @param fatherId the identifier of the value father in the tree.
+   * @return a Value instance.
+   */
   protected Value anI18NValue(String id, String treeId, String name, String creationDate,
           String creatorId, String path, int level, int order, String fatherId) {
     Value value = new Value(id, treeId, name, creationDate, creatorId, path, level, order, fatherId);
     value.setLanguage(FRENCH);
-    TreeNodeI18N translation = new TreeNodeI18N(Integer.valueOf(id), FRENCH, name, "");
+    value.setAxisId(Integer.valueOf(treeId));
+    int nodeId = Integer.valueOf(id);
+    TreeNodeI18N translation = new TreeNodeI18N(nodeId, FRENCH, name, "");
     value.addTranslation(translation);
     return value;
   }
   
+  /**
+   * The path of the node in the hierarchic semantic tree to which the specified term belongs.
+   * For example, for a term of id 3 located at /0/2/3, the path of the term is /0/2/.
+   * @param termId the identifier of the term.
+   * @return the path of the node at which is located the specified term.
+   */
   private String pathInTreeOfTerm(String termId) {
-    String path = "";
+    StringBuilder path = new StringBuilder("/");
     Term term = terms.get(termId);
     if (term != null) {
       List<Term> termsInTree = trees.get(term.getTreeId());
-      for (Term aTermInTree : termsInTree) {
-        path += "/" + aTermInTree.getName();
+      for(int i = 0; i < termsInTree.size(); i++) {
+        Term aTermInTree = termsInTree.get(i);
+        if (aTermInTree.getId().equals(termId)) {
+          break;
+        }
+        path.append(aTermInTree.getId()).append("/");
       }
     }
-    return path;
+    return path.toString();
   }
   
   private static class Term {
