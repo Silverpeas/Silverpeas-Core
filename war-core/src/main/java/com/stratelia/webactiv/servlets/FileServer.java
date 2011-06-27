@@ -51,7 +51,6 @@ import com.stratelia.silverpeas.versioning.model.DocumentVersionPK;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -60,6 +59,8 @@ import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
+import com.stratelia.webactiv.util.FileServerUtils;
+import static com.stratelia.webactiv.util.FileServerUtils.*;
 
 /**
  * Class declaration
@@ -69,6 +70,8 @@ import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 public class FileServer extends HttpServlet {
 
   private static final long serialVersionUID = 6377810839728682983L;
+
+  
 
   /**
    * @param spaceId
@@ -172,22 +175,22 @@ public class FileServer extends HttpServlet {
   public void doPost(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     SilverTrace.info("peasUtil", "FileServer.doPost", "root.MSG_GEN_ENTER_METHOD");
-    String mimeType = req.getParameter("MimeType");
-    String sourceFile = req.getParameter("SourceFile");
-    String directory = req.getParameter("Directory");
-    String archiveIt = req.getParameter("ArchiveIt");
-    String dirType = req.getParameter("DirType");
-    String userId = req.getParameter("UserId");
-    String componentId = req.getParameter("ComponentId");
-    String typeUpload = req.getParameter("TypeUpload");
-    String zip = req.getParameter("zip");
-    String fileName = req.getParameter("fileName");
+    String mimeType = req.getParameter(MIME_TYPE_PARAMETER);
+    String sourceFile = req.getParameter(SOURCE_FILE_PARAMETER);
+    String directory = req.getParameter(DIRECTORY_PARAMETER);
+    String archiveIt = req.getParameter(ARCHIVE_IT_PARAMETER);
+    String dirType = req.getParameter(DIR_TYPE_PARAMETER);
+    String userId = req.getParameter(USER_ID_PARAMETER);
+    String componentId = req.getParameter(COMPONENT_ID_PARAMETER);
+    String typeUpload = req.getParameter(TYPE_UPLOAD_PARAMETER);
+    String zip = req.getParameter(ZIP_PARAMETER);
+    String fileName = req.getParameter(FILE_NAME_PARAMETER);
     String tempDirectory = FileRepositoryManager.getTemporaryPath("useless",
         componentId);
     File tempFile = null;
 
-    String attachmentId = req.getParameter("attachmentId");
-    String language = req.getParameter("lang");
+    String attachmentId = req.getParameter(ATTACHMENT_ID_PARAMETER);
+    String language = req.getParameter(LANGUAGE_PARAMETER);
     AttachmentDetail attachment = null;
     long fileSize = 0;
     if (StringUtil.isDefined(attachmentId)) {
@@ -204,9 +207,9 @@ public class FileServer extends HttpServlet {
       }
     }
 
-    String documentId = req.getParameter("DocumentId");
+    String documentId = req.getParameter(DOCUMENT_ID_PARAMETER);
     if (StringUtil.isDefined(documentId)) {
-      String versionId = req.getParameter("VersionId");
+      String versionId = req.getParameter(VERSION_ID_PARAMETER);
       VersioningUtil versioning = new VersioningUtil();
       DocumentVersionPK versionPK = new DocumentVersionPK(Integer.parseInt(versionId), "useless",
           componentId);
@@ -283,8 +286,8 @@ public class FileServer extends HttpServlet {
 
     if ((archiveIt != null) && (archiveIt.length() > 0)
         && (!archiveIt.equals("null"))) {
-      String nodeId = req.getParameter("NodeId");
-      String pubId = req.getParameter("PubId");
+      String nodeId = req.getParameter(NODE_ID_PARAMETER);
+      String pubId = req.getParameter(PUBLICATION_ID_PARAMETER);
       ForeignPK pubPK = null;
 
       try {
