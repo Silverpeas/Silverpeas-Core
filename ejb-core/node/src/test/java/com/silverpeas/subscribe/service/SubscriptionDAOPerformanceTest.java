@@ -44,8 +44,8 @@ import static org.hamcrest.Matchers.*;
  *
  * @author ehugonnet
  */
-public class NodeActorLinkDAOPerformanceTest extends AbstractJndiCase {
-private static SubscriptionDAO subscriptionDao = new SubscriptionDAO();
+public class SubscriptionDAOPerformanceTest extends AbstractJndiCase {
+private static SubscriptionDao subscriptionDao = new SubscriptionDao();
   private static final List<NodePK> nodePks = Lists.asList(new NodePK("0", "100", "kmelia60"),
           new NodePK[]{new NodePK("1", "100", "kmelia60"), new NodePK("10", "100", "kmelia60"),
             new NodePK("20", "100", "kmelia60"), new NodePK("30", "100", "kmelia60"), new NodePK(
@@ -62,11 +62,11 @@ private static SubscriptionDAO subscriptionDao = new SubscriptionDAO();
     baseTest.getDatabaseTester().closeConnection(databaseConnection);
   }
 
-  public NodeActorLinkDAOPerformanceTest() {
+  public SubscriptionDAOPerformanceTest() {
   }
 
   /**
-   * Test of getActorPKsByNodePKs method, of class SubscriptionDAO.
+   * Test of getActorPKsByNodePKs method, of class SubscriptionDao.
    * @throws Exception 
    */
   //@Test
@@ -76,7 +76,7 @@ private static SubscriptionDAO subscriptionDao = new SubscriptionDAO();
       Connection connection = dataSetConnection.getConnection();
       long startTime = System.currentTimeMillis();
       for (int i = 0; i < 10000; i++) {
-        Collection<String> result = subscriptionDao.getActorPKsByNodePKs(connection, nodePks);
+        Collection<String> result = subscriptionDao.getSubscribers(connection, nodePks);
         assertThat(result, hasSize(15));
         assertThat(result, hasItem("1"));
         assertThat(result, hasItem("2"));
@@ -108,7 +108,7 @@ private static SubscriptionDAO subscriptionDao = new SubscriptionDAO();
       Connection connection = dataSetConnection.getConnection();
       long startTime = System.currentTimeMillis();
       for (int i = 0; i < 10000; i++) {
-        Collection<String> result = subscriptionDao.getActorPKsByNodePKs(connection, nodePks);
+        Collection<String> result = subscriptionDao.getSubscribers(connection, nodePks);
         assertThat(result, hasSize(15));
         assertThat(result, hasItem("1"));
         assertThat(result, hasItem("2"));

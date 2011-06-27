@@ -23,6 +23,9 @@
  */
 package com.silverpeas.comment.web.json;
 
+import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.personalization.service.MockablePersonalizationService;
+import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.web.CommentEntity;
@@ -40,6 +43,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.junit.Assert.*;
 import static com.silverpeas.comment.web.json.JSONCommentMatcher.*;
 import static com.silverpeas.export.ExportDescriptor.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests on the exporting in JSON of comment instances.
@@ -56,6 +60,8 @@ public class JSONCommentExportingTest {
   private static int counter = 0;
   @Inject
   private JSONCommentExporter jsonExporter;
+  @Inject
+  private MockablePersonalizationService personalisationService;
 
   public JSONCommentExportingTest() {
   }
@@ -63,6 +69,12 @@ public class JSONCommentExportingTest {
   @Before
   public void checkDependenciesInjection() {
     assertNotNull(jsonExporter);
+    assertNotNull(personalisationService);
+    PersonalizationService mockService = mock(PersonalizationService.class);
+    UserPreferences settings = new UserPreferences();
+    settings.setLanguage("fr");
+    when(mockService.getUserSettings(anyString())).thenReturn(settings);
+    personalisationService.setPersonalizationService(mockService);
   }
 
   @Test
@@ -97,13 +109,11 @@ public class JSONCommentExportingTest {
   private CommentEntity aCommentOf(UserDetail user) throws URISyntaxException {
     String offset = String.valueOf(counter++);
     Comment aComment = new Comment(new CommentPK(commentId + offset, componentId),
-        new PublicationPK(publicationId, componentId), Integer.valueOf(user.getId()),
-        user.getDisplayedName(), "Ceci est un commentaire " + offset, "2002/11/12", "2002/11/12");
+            new PublicationPK(publicationId, componentId), Integer.valueOf(user.getId()),
+            user.getDisplayedName(), "Ceci est un commentaire " + offset, "2002/11/12", "2002/11/12");
     aComment.setOwnerDetail(user);
     CommentEntity entity = CommentEntity.fromComment(aComment).
-        withURI(new URI("http://localhost/silverpeas/services/comments/" + commentId));
+            withURI(new URI("http://localhost/silverpeas/services/comments/" + commentId));
     return entity;
   }
 }
-
-

@@ -29,6 +29,8 @@ import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBmHome;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.service.NodeSubscription;
+import com.silverpeas.subscribe.service.Subscription;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.classifyEngine.Criteria;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
@@ -47,7 +49,6 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -95,7 +96,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
   }
 
   private SubscriptionService getSubscribeBm() {
-    return SubscriptionServiceFactory.getSubscribeService();
+    return SubscriptionServiceFactory.getFactory().getSubscribeService();
   }
 
   public NodeBm getNodeBm() {
@@ -117,14 +118,13 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     if (!StringUtil.isDefined(currentUserId)) {
       currentUserId = getUserId();
     }
-    Collection<NodePK> list = getSubscribeBm().getUserSubscribePKs(currentUserId);
-    for (NodePK pk : list) {
+    Collection<? extends Subscription> list = getSubscribeBm().getUserSubscriptions(currentUserId);
+    for (Subscription subscription : list) {
       try {
-        Collection<NodeDetail> path = getNodeBm().getPath(pk);
+        Collection<NodeDetail> path = getNodeBm().getPath((NodePK)subscription.getTopic());
         subscribe.add(path);
       } catch (RemoteException e) {
-        // User is subscribe to a non existing component or topic
-        // Do nothing. Process next subscription.
+        // User subscribed to a non existing component or topic .Do nothing. Process next subscription.
       }
     }
     return subscribe;
@@ -136,8 +136,8 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
       String nodeId = themes[i].substring(0, themes[i].lastIndexOf("-"));
       String instanceId = themes[i].substring(themes[i].lastIndexOf("-") + 1,
               themes[i].length());
-      NodePK node = new NodePK(nodeId, instanceId);
-      getSubscribeBm().removeSubscription(getUserId(), node);
+      NodeSubscription subscription = new NodeSubscription(getUserId(), new NodePK(nodeId, instanceId));
+      getSubscribeBm().unsubscribe(subscription);
     }
   }
 

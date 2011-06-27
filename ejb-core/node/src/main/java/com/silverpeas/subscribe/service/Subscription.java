@@ -22,28 +22,19 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package com.silverpeas.subscribe;
+package com.silverpeas.subscribe.service;
 
-import javax.inject.Inject;
+import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
  *
  * @author ehugonnet
  */
-public class SubscriptionServiceFactory {
-  private final static SubscriptionServiceFactory instance = new SubscriptionServiceFactory();
-  @Inject
-  private SubscriptionService service;
+public interface Subscription {
+  final String COMPONENT_SUBSCRIPTION = "component";
+  public WAPrimaryKey getTopic();
   
-  private SubscriptionServiceFactory() {
-    //service = new SimpleSubscriptionService();
-  }
+  public String getSubscriber();
   
-  public static SubscriptionServiceFactory getFactory() {
-    return instance;
-  }
-  
-  public SubscriptionService getSubscribeService() {
-    return service;
-  }
+  public boolean isComponentSubscription();
 }

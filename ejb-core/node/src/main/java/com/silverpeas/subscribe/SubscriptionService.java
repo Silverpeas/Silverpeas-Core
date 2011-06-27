@@ -24,7 +24,10 @@
 
 package com.silverpeas.subscribe;
 
+import com.silverpeas.subscribe.service.Subscription;
+import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.node.model.NodePK;
+
 import java.util.Collection;
 
 /**
@@ -34,65 +37,71 @@ import java.util.Collection;
 public interface SubscriptionService {
 
   /**
-   * addPublicationInNode() This method has to be called each time a publication is added in a node.
-   * This will enable to send email if some users are subscribers of this node.
-   * @param userId
-   * @param node
+   * Subscribe to a specific node
+   * @param subscription
    */
-  public void addSubscribe(String userId, NodePK node);
+  public void subscribe(Subscription subscription);
 
   /**
    * Method declaration
-   * @param userId
-   * @param node
+   * @param subscription
    */
-  public void removeSubscription(String userId, NodePK node);
+  public void unsubscribe(Subscription subscription);
 
   /**
    * Method declaration
+   *
+   *
    * @param userId
    * @see
    */
-  public void removeUserSubscribes(String userId);
+  public void unsubscribe(String userId);
 
   /**
    * Method declaration
+   *
    * @param node
    * @param path
    * @see
    */
-  public void removeNodeSubscribes(NodePK node, String path);
+  public void unsubscribeByPath(NodePK node, String path);
 
   /**
    * Method declaration
+   *
    * @param userId
    * @return
    * @see
    */
-  public Collection<NodePK> getUserSubscribePKs(String userId);
+  public Collection<? extends Subscription> getUserSubscriptions(String userId);
   
   /**
    * Method declaration
+   *
    * @param userId
    * @param componentName
    * @return
    * @see
    */
-  public Collection<NodePK> getUserSubscribePKsByComponent(String userId, String componentName);
+  public Collection<? extends Subscription> getUserSubscriptionsByComponent(String userId,
+      String componentName);
 
   /**
    * Method declaration
-   * @param node
+   *
+   * @param pk
    * @return a Collection of userId
    * @see
    */
-  public Collection<String> getNodeSubscriberDetails(NodePK node);
-
+  public Collection<String> getSubscribers(WAPrimaryKey pk);
+  
+  
   /**
-   * Method declaration
-   * @param nodePKs
-   * @return a Collection of userId
-   * @see
+   * 
+   * @param user
+   * @param componentName
+   * @return 
    */
-  public Collection<String> getNodeSubscriberDetails(Collection<NodePK> nodePKs);
+  public boolean isSubscribedToComponent(String user, String componentName);
+
 }
