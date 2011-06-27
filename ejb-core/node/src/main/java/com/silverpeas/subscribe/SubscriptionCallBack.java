@@ -49,7 +49,7 @@ public class SubscriptionCallBack implements CallBack {
               + ", extraParam = " + extraParam.toString());
       return;
     }
-    getSubscribeBm().removeUserSubscribes(Integer.toString(iParam));
+    getSubscribeBm().unsubscribe(Integer.toString(iParam));
   }
 
   /*
@@ -63,6 +63,6 @@ public class SubscriptionCallBack implements CallBack {
   }
 
   public SubscriptionService getSubscribeBm() {
-    return SubscriptionServiceFactory.getSubscribeService();
+    return SubscriptionServiceFactory.getFactory().getSubscribeService();
   }
 }

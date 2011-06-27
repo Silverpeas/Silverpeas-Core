@@ -23,6 +23,9 @@
  */
 package com.silverpeas.comment.web.json;
 
+import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.personalization.service.MockablePersonalizationService;
+import com.silverpeas.personalization.service.PersonalizationService;
 import java.util.List;
 import com.silverpeas.comment.model.CommentPK;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
@@ -47,6 +50,7 @@ import static org.hamcrest.Matchers.*;
 import static com.silverpeas.comment.web.json.JSONCommentFields.*;
 import static com.silverpeas.comment.web.CommentEntityMatcher.*;
 import static com.silverpeas.export.ImportDescriptor.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests on the importing from JSON of comment instances.
@@ -63,6 +67,8 @@ public class JSONCommentImportingTest {
   private static int counter = 0;
   @Inject
   private JSONCommentImporter jsonImporter;
+  @Inject
+  private MockablePersonalizationService personalisationService;
 
   public JSONCommentImportingTest() {
   }
@@ -70,6 +76,12 @@ public class JSONCommentImportingTest {
   @Before
   public void checkDependenciesInjection() {
     assertNotNull(jsonImporter);
+    assertNotNull(personalisationService);
+    PersonalizationService mockService = mock(PersonalizationService.class);
+    UserPreferences settings = new UserPreferences();
+    settings.setLanguage("fr");
+    when(mockService.getUserSettings(anyString())).thenReturn(settings);
+    personalisationService.setPersonalizationService(mockService);
   }
 
   @Test

@@ -22,28 +22,26 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package com.silverpeas.subscribe;
+package com.silverpeas.util;
 
-import javax.inject.Inject;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import org.springframework.context.annotation.Primary;
 
 /**
- *
+ * Extension of Spring @Primary annoation to have something more like CDI.
  * @author ehugonnet
  */
-public class SubscriptionServiceFactory {
-  private final static SubscriptionServiceFactory instance = new SubscriptionServiceFactory();
-  @Inject
-  private SubscriptionService service;
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+@Documented
+@Primary
+public @interface Default {
+
   
-  private SubscriptionServiceFactory() {
-    //service = new SimpleSubscriptionService();
-  }
-  
-  public static SubscriptionServiceFactory getFactory() {
-    return instance;
-  }
-  
-  public SubscriptionService getSubscribeService() {
-    return service;
-  }
 }
