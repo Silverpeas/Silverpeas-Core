@@ -87,8 +87,7 @@ public class ContainerPeas extends Object {
   public ContainerInterface getContainerInterface() throws Exception {
     if (m_containerInterface == null) {
       Class containerInterface = Class.forName(m_sContainerInterface);
-      m_containerInterface = (ContainerInterface) containerInterface
-          .newInstance();
+      m_containerInterface = (ContainerInterface) containerInterface.newInstance();
     }
 
     return m_containerInterface;
