@@ -40,7 +40,7 @@
 String displaySynonymsAxis(Boolean activeThesaurus, Jargon jargon, int axisId) throws ThesaurusException {
 	String synonyms = "";
 	boolean first = true;
-	if (jargon != null && activeThesaurus.booleanValue()) {//activ�
+	if (jargon != null && activeThesaurus.booleanValue()) {//activated
 		//synonymes du terme
 		String				idUser			= jargon.getIdUser();
 		ThesaurusManager	thesaurus		= new ThesaurusManager();
@@ -66,7 +66,7 @@ String displaySynonymsValue(Boolean activeThesaurus, Jargon jargon, Value value)
 	boolean first		= true;
 	String	idTree		= value.getTreeId();
 	String	idTerm		= value.getPK().getId();
-	if (jargon != null && activeThesaurus.booleanValue()) {//activ�
+	if (jargon != null && activeThesaurus.booleanValue()) {//activated
 		//synonymes du terme
 		String				idUser			= jargon.getIdUser();
 		ThesaurusManager	thesaurus		= new ThesaurusManager();
@@ -261,7 +261,7 @@ if (updateBeforeDate == null)
   	updateBeforeDate = "";
 
 
-//r�cup�ration des donn�es pour l'espace de recherche
+// Retrieve data search space
 Vector searchDomains			= (Vector) request.getAttribute("searchDomains");
 String currentSearchDomainId	= (String) request.getAttribute("currentSearchDomainId");
 currentSearchDomainId = (currentSearchDomainId==null) ? "SILVERPEAS" : currentSearchDomainId;
@@ -299,9 +299,7 @@ int autocompletionMinChars = SilverpeasSettings.readInt(resourceSearchEngine, "a
 <html>
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel />
 <link rel="stylesheet" type="text/css" href="<%=m_context%>/util/styleSheets/jquery.autocomplete.css" media="screen">
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
@@ -853,7 +851,7 @@ if (!activeSelection.booleanValue() && !isPDCSubscription)
           </td>
         </tr>
         <tr align="center">
-              <td valign="top" nowrap align="left" class="txtlibform"><%=resource.getString("pdcPeas.requestSelect")%></span>
+              <td valign="top" nowrap align="left" class="txtlibform"><%=resource.getString("pdcPeas.requestSelect")%>
               </td>
               <td align="left">
                 <select name="iCenterId" size="1" onChange="javascript:loadICenter()">
@@ -928,8 +926,8 @@ if (activeSelection.booleanValue() || searchType == 2 || isPDCSubscription) {
 }
 out.println(frame.printAfter());
 %>
-</CENTER>
 </form>
+</center>
 <%
 	out.println(window.printAfter());
 %>
