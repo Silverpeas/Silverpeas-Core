@@ -529,6 +529,9 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
             pdcSC.setSearchType(Integer.parseInt(searchType));
           }
         }
+        // Set component search type
+        pdcSC.setDataType(request.getParameter("dataType"));
+        
         pdcSC.setSelectedSilverContents(new ArrayList<GlobalSilverResult>());
         // This is the main function of global search
         boolean pdcUsedDuringSearch = false;
@@ -1510,6 +1513,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
     pdcSC.setSortValue(1);
     pdcSC.getQueryParameters().setXmlTitle(null);
     pdcSC.clearXmlTemplateAndData();
+    pdcSC.setDataType(PdcSearchSessionController.ALL_DATA_TYPE);
   }
 
   /**
@@ -1863,6 +1867,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter {
         request.setAttribute("SearchType", Integer.valueOf(pdcSC.getSearchType()));
         request.setAttribute("XmlSearchVisible", Boolean.valueOf(pdcSC.isXmlSearchVisible()));
         request.setAttribute("WebTabs", GoogleTabsUtil.getTabs());
+        // Add component search type
+        request.setAttribute("ComponentSearchType", pdcSC.getSearchTypeConfig());
         return "/pdcPeas/jsp/globalSearch.jsp";
       }
     }

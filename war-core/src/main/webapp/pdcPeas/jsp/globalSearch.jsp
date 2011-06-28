@@ -28,8 +28,13 @@
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.silverpeas.pdcSubscription.model.PDCSubscription"%>
 <%@ page import="com.silverpeas.util.EncodeHelper"%>
+<%@ page import="com.stratelia.silverpeas.pdcPeas.vo.SearchTypeConfigurationVO"%>
 <%@ include file="checkAdvancedSearch.jsp"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
+<c:set var="dataTypes" value="${requestScope.ComponentSearchType}"></c:set>
+
 <%!
 
 String displaySynonymsAxis(Boolean activeThesaurus, Jargon jargon, int axisId) throws ThesaurusException {
@@ -202,8 +207,9 @@ String			sortOrder			= (String) request.getAttribute("SortOrder");
 List			webTabs				= (List) request.getAttribute("WebTabs");
 
 boolean isXmlSearchVisible = false;
-if (XmlSearch != null)
+if (XmlSearch != null) {
 	isXmlSearchVisible = XmlSearch.booleanValue();
+}
 
 if (activeSelection == null) {
 	activeSelection = new Boolean(false);
@@ -263,8 +269,9 @@ currentSearchDomainId = (currentSearchDomainId==null) ? "SILVERPEAS" : currentSe
 boolean			isEmptySearchContext = true;
 SearchCriteria	searchCriteria		= null;
 
-if (showSndSearchAxis == null)
+if (showSndSearchAxis == null) {
     showSndSearchAxis = "NO";
+}
 
 // l'objet SearchContext n'est pas vide
 if (searchContext != null && searchContext.getCriterias().size() > 0){
@@ -284,14 +291,14 @@ Button searchButton = (Button) gef.getFormButton(resource.getString("pdcPeas.sea
 
 ResourceLocator resourceSearchEngine = new ResourceLocator(
         "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", "");
-        int autocompletionMinChars = SilverpeasSettings.readInt(resourceSearchEngine, "autocompletion.minChars", 3);
+int autocompletionMinChars = SilverpeasSettings.readInt(resourceSearchEngine, "autocompletion.minChars", 3);
 
 %>
 
 
 <html>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
    out.println(gef.getLookStyleSheet());
 %>
@@ -573,8 +580,8 @@ function deleteUser()
  });
  
 </script>
-</HEAD>
-<BODY onLoad="onLoadStart();">
+</head>
+<body onLoad="onLoadStart();">
 <%
 if (!isPDCSubscription) {
 	browseBar.setComponentName(resource.getString("pdcPeas.SearchPage"));
@@ -616,7 +623,7 @@ if (!isPDCSubscription) {
 }
 out.println(window.printBefore());
 %>
-<CENTER>
+<center>
 <form name="AdvancedSearch" action="ViewAdvancedSearch" method="post">
   <!-- champs cach� pour voir ou non les axes secondaires -->
   <input type="hidden" name="ShowSndSearchAxis" value="<%=showSndSearchAxis%>">
@@ -641,12 +648,12 @@ out.println(window.printBefore());
       	out.println(frame.printBefore());
       	out.println(board.printBefore());
   %>
-        <TABLE CELLPADDING="5" CELLSPACING="0" BORDER="0" width="100%">
+        <table cellpadding="5" cellspacing="0" border="0" width="100%">
 		<tr>
         	<td valign="top" nowrap align="left" class="txtlibform" width="30%"><%=resource.getString("pdcSubscription.Name")%> :</td>
             <td align="left"><input type="text" name="scName" size="50" maxlength="100" value="<%=scResName%>"><input type="hidden" name="isPDCSubscription" value="true"></td>
         </tr>
-        </TABLE>
+        </table>
   <%    
   		out.println(board.printAfter());
   		out.println("<br>");
@@ -775,9 +782,9 @@ if (!activeSelection.booleanValue() && !isPDCSubscription)
              %>
              </select></td>
 	    </tr>
+        <!-- Affichage des composants -->
+        <tr align="center">
 			<%
-				// Affichage des composants
-				out.println("<tr align=\"center\">");
 				out.println("<td valign=\"top\" nowrap align=\"left\"><span class=\"txtlibform\">"+resource.getString("pdcPeas.ComponentSelect")+"</span></td>");
 				out.println("<td align=\"left\">");
 				out.println("<select name=\"componentSearch\" size=1 onChange=\"javascript:viewAdvancedSearch()\">");
@@ -793,8 +800,23 @@ if (!activeSelection.booleanValue() && !isPDCSubscription)
 				}
 				out.println("</select>");
 				out.println("</td>");
-				out.println("</tr>");
 			%>
+        </tr>
+        <!-- Affichage du type des publications -->
+        <tr align="center" id="searchDataTypeTRID">
+          <td valign="top" nowrap align="left"><span class="txtlibform"><%=resource.getString("pdcPeas.searchType")%></span></td>
+          <td align="left">
+    <select name="dataType">
+      <option value="0"></option>
+  <c:if test="${not empty dataTypes}">
+    <c:forEach var="dataType" items="${dataTypes}">
+      <option value="<c:out value="${dataType.configId}"/>"><c:out value="${dataType.name}"/></option>
+    </c:forEach>
+  </c:if>
+    </select>
+          </td>
+        </tr>
+        
           <tr align="center">
           <td valign="top" nowrap align="left" class="txtlibform"><%=resource.getString("pdcPeas.AuthorSelect")%></td>
 				<td align="left">
@@ -912,5 +934,5 @@ out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
 <view:progressMessage/>
-</BODY>
-</HTML>
+</body>
+</html>
