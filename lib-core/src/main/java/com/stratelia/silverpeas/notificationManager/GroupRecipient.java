@@ -1,3 +1,7 @@
+package com.stratelia.silverpeas.notificationManager;
+
+import com.stratelia.webactiv.beans.admin.Group;
+
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
@@ -21,31 +25,44 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+public class GroupRecipient {
 
-package com.stratelia.silverpeas.notificationManager.model;
+  private String groupId;
 
-import java.util.List;
-import java.util.Set;
+  public GroupRecipient(String groupId) {
+    this.groupId = groupId;
+  }
 
-import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.UserRecipient;
+  public GroupRecipient(Group group) {
+    this.groupId = group.getId();
+  }
 
-/**
- * Interface declaration
- * @author
- */
-public interface SendedNotificationInterface {
 
-  public void saveNotifUser(NotificationMetaData metaData, Set<UserRecipient> usersSet)
-      throws NotificationManagerException;
+  public String getGroupId() {
+    return groupId;
+  }
 
-  public List<SendedNotificationDetail> getAllNotifByUser(String userId)
-      throws NotificationManagerException;
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final GroupRecipient other = (GroupRecipient) obj;
+    if ((this.groupId == null) ? (other.groupId != null) : !this.groupId.equals(other.groupId)) {
+      return false;
+    }
+    return true;
+  }
 
-  public SendedNotificationDetail getNotification(int notifId) throws NotificationManagerException;
-
-  public void deleteNotif(int notifId) throws NotificationManagerException;
-
-  public void deleteNotifByUser(String userId) throws NotificationManagerException;
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 29 * hash + (this.groupId != null ? this.groupId.hashCode() : 0);
+    return hash;
+  }
+  
+  
 }

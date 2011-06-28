@@ -25,20 +25,19 @@
 package com.stratelia.silverpeas.notificationManager;
 
 import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import java.util.Collections;
 
 public class NotificationMetaData implements java.io.Serializable {
 
@@ -49,8 +48,8 @@ public class NotificationMetaData implements java.io.Serializable {
   private String source;
   private String link;
   private String sessionId;
-  private Collection<String> userRecipients;
-  private Collection<String> groupRecipients;
+  private Collection<UserRecipient> userRecipients;
+  private Collection<GroupRecipient> groupRecipients;
   private Connection connection; // usefull to send notification from ejb part
   private String componentId;
   private boolean isAnswerAllowed = false;
@@ -99,8 +98,8 @@ public class NotificationMetaData implements java.io.Serializable {
     source = "";
     link = "";
     sessionId = "";
-    userRecipients = new ArrayList<String>();
-    groupRecipients = new ArrayList<String>();
+    userRecipients = new ArrayList<UserRecipient>();
+    groupRecipients = new ArrayList<GroupRecipient>();
     connection = null;
     componentId = "";
     isAnswerAllowed = false;
@@ -261,7 +260,7 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Set answer allowed
-   * @param if answer allowed
+   * @param answerAllowed if answer allowed
    */
   public void setAnswerAllowed(boolean answerAllowed) {
     this.isAnswerAllowed = answerAllowed;
@@ -317,81 +316,87 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Set message user recipients
-   * @param userRecipients the user ids that must receive this message
+   * @param users the user ids that must receive this message
    */
-  public void setUserRecipients(Collection<String> userRecipients) {
-    this.userRecipients = userRecipients;
+  public void setUserRecipients(Collection<UserRecipient> users) {
+    if(users != null) {
+    this.userRecipients =  new ArrayList<UserRecipient>(users);
+    }else {
+      this.userRecipients = new ArrayList<UserRecipient>();
+    }
   }
 
   /**
    * Get message user recipients
    * @return the message user recipients
    */
-  public Collection<String> getUserRecipients() {
+  public Collection<UserRecipient> getUserRecipients() {
     return userRecipients;
   }
 
   /**
    * Add a user recipient to user recipients
-   * @param userId id of user that must be added
+   * @param user recpient that must be added
    */
-  public void addUserRecipient(String userId) {
-    userRecipients.add(userId);
+  public void addUserRecipient(UserRecipient user) {
+    userRecipients.add(user);
   }
 
   /**
    * Add a user recipient to user recipients
-   * @param userIds user ids to be added as an array of String
+   * @param users users to be added
    */
-  public void addUserRecipients(String[] userIds) {
-    if (userIds != null) {
-      userRecipients.addAll(Arrays.asList(userIds));
+  public void addUserRecipients(UserRecipient[] users) {
+    if (users != null) {
+      this.userRecipients.addAll(Arrays.asList(users));
     }
   }
-
-  /**
+  
+   /**
    * Add a user recipient to user recipients
-   * @param users users to be added as an array of UserDetail objects
+   * @param users users to be added
    */
-  public void addUserRecipients(UserDetail[] users) {
-    for (int i = 0; users != null && i < users.length; i++) {
-      if (users[i] != null) {
-        userRecipients.add(users[i].getId());
-      }
+  public void addUserRecipients(Collection<UserRecipient> users) {
+    if (users != null) {
+      this.userRecipients.addAll(users);
     }
   }
 
   /**
    * Set message group recipients
-   * @param groupRecipients the group ids that must receive this message
+   * @param groups the groups that must receive this message
    */
-  public void setGroupRecipients(Collection<String> groupRecipients) {
-    this.groupRecipients = groupRecipients;
+  public void setGroupRecipients(Collection<GroupRecipient> groups) {
+    if(groups != null) {
+    this.groupRecipients = new ArrayList<GroupRecipient>(groups);
+    }else {
+      this.groupRecipients = new ArrayList<GroupRecipient>();
+    }
   }
 
   /**
    * Get message group recipients
    * @return the message group recipients
    */
-  public Collection<String> getGroupRecipients() {
+  public Collection<GroupRecipient> getGroupRecipients() {
     return Collections.unmodifiableCollection(groupRecipients);
   }
 
   /**
    * Add a group recipient to group recipients
-   * @param groupId id of group that must be added
+   * @param group group that must be added
    */
-  public void addGroupRecipient(String groupId) {
-    groupRecipients.add(groupId);
+  public void addGroupRecipient(GroupRecipient group) {
+    groupRecipients.add(group);
   }
 
   /**
    * Add group recipients to group recipients
-   * @param groupIds group ids to be added as an array of String
+   * @param groups
    */
-  public void addGroupRecipients(String[] groupIds) {
-    if (groupIds != null) {
-      groupRecipients.addAll(Arrays.asList(groupIds));
+  public void addGroupRecipients(Collection<GroupRecipient> groups) {
+    if (groups != null) {
+      groupRecipients.addAll(groups);
     }
   }
 
