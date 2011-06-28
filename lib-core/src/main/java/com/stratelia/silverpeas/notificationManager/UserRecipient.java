@@ -1,3 +1,7 @@
+package com.stratelia.silverpeas.notificationManager;
+
+import com.stratelia.webactiv.beans.admin.UserDetail;
+
 /**
  * Copyright (C) 2000 - 2011 Silverpeas
  *
@@ -21,31 +25,41 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+public class UserRecipient {
 
-package com.stratelia.silverpeas.notificationManager.model;
+  private String userId;
 
-import java.util.List;
-import java.util.Set;
+  public UserRecipient(String userId) {
+    this.userId = userId;
+  }
 
-import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.UserRecipient;
+  public UserRecipient(UserDetail userDetail) {
+    this.userId = userDetail.getId();
+  }
 
-/**
- * Interface declaration
- * @author
- */
-public interface SendedNotificationInterface {
+  public String getUserId() {
+    return userId;
+  }
 
-  public void saveNotifUser(NotificationMetaData metaData, Set<UserRecipient> usersSet)
-      throws NotificationManagerException;
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final UserRecipient other = (UserRecipient) obj;
+    if ((this.userId == null) ? (other.userId != null) : !this.userId.equals(other.userId)) {
+      return false;
+    }
+    return true;
+  }
 
-  public List<SendedNotificationDetail> getAllNotifByUser(String userId)
-      throws NotificationManagerException;
-
-  public SendedNotificationDetail getNotification(int notifId) throws NotificationManagerException;
-
-  public void deleteNotif(int notifId) throws NotificationManagerException;
-
-  public void deleteNotifByUser(String userId) throws NotificationManagerException;
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 89 * hash + (this.userId != null ? this.userId.hashCode() : 0);
+    return hash;
+  }
 }

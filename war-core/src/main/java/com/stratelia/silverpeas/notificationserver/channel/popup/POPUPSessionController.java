@@ -27,6 +27,7 @@ package com.stratelia.silverpeas.notificationserver.channel.popup;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -119,7 +120,7 @@ public class POPUPSessionController extends AbstractComponentSessionController {
       notifMetaData.setSource(getUserDetail().getDisplayedName());
       notifMetaData.setSender(getUserId());
       notifMetaData.setAnswerAllowed(true);
-      notifMetaData.addUserRecipient(userId);
+      notifMetaData.addUserRecipient(new UserRecipient(userId));
       notificationSender.notifyUser(NotificationParameters.ADDRESS_BASIC_POPUP,
           notifMetaData);
     } catch (Exception ex) {

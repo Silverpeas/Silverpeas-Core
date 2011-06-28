@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.notificationManager.model;
 
 import java.sql.Connection;
@@ -32,6 +31,7 @@ import java.util.Set;
 
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
@@ -47,81 +47,85 @@ public class SendedNotificationInterfaceImpl implements SendedNotificationInterf
   public SendedNotificationInterfaceImpl() {
   }
 
-  public void saveNotifUser(NotificationMetaData metaData, Set<String> usersSet)
-      throws NotificationManagerException {
+  @Override
+  public void saveNotifUser(NotificationMetaData metaData, Set<UserRecipient> usersSet)
+          throws NotificationManagerException {
     Connection con = initCon();
     try {
 
       List<String> users = new ArrayList<String>();
-      Iterator<String> it = usersSet.iterator();
-      while (it.hasNext()) {
-        String userId = it.next();
-        users.add(userId);
+      Iterator<UserRecipient> it = usersSet.iterator();
+      for (UserRecipient user : usersSet) {
+        users.add(user.getUserId());
       }
       SendedNotificationDetail notif =
-          new SendedNotificationDetail(Integer.parseInt(metaData.getSender()), metaData
-          .getMessageType(), metaData.getDate(), metaData.getTitle("fr"), metaData.getSource(),
-          metaData.getLink(), metaData.getSessionId(), metaData.getComponentId(), metaData
-          .getContent("fr"));
+              new SendedNotificationDetail(Integer.parseInt(metaData.getSender()), metaData.
+              getMessageType(), metaData.getDate(), metaData.getTitle("fr"), metaData.getSource(),
+              metaData.getLink(), metaData.getSessionId(), metaData.getComponentId(), metaData.
+              getContent("fr"));
       notif.setUsers(users);
       int id = SendedNotificationDAO.saveNotifUser(con, notif);
       notif.setNotifId(id);
     } catch (Exception e) {
       throw new NotificationManagerException("NotificationInterface.saveNotifUser()",
-          SilverpeasRuntimeException.ERROR, "root.MSG_GET_NOTIFICATION", e);
+              SilverpeasRuntimeException.ERROR, "root.MSG_GET_NOTIFICATION", e);
     } finally {
       // fermer la connexion
       closeConnection(con);
     }
   }
 
+  @Override
   public List<SendedNotificationDetail> getAllNotifByUser(String userId)
-      throws NotificationManagerException {
+          throws NotificationManagerException {
     Connection con = initCon();
     try {
       return SendedNotificationDAO.getAllNotifByUser(con, userId);
     } catch (Exception e) {
       throw new NotificationManagerException("NotificationInterface.getAllNotifByUser()",
-          SilverpeasRuntimeException.ERROR, "root.MSG_GET_NOTIFICATION", e);
+              SilverpeasRuntimeException.ERROR, "root.MSG_GET_NOTIFICATION", e);
     } finally {
       // fermer la connexion
       closeConnection(con);
     }
   }
 
+  @Override
   public SendedNotificationDetail getNotification(int notifId) throws NotificationManagerException {
     Connection con = initCon();
     try {
       return SendedNotificationDAO.getNotif(con, notifId);
     } catch (Exception e) {
       throw new NotificationManagerException("NotificationInterface.getNotification()",
-          SilverpeasRuntimeException.ERROR, "root.MSG_GET_NOTIFICATION", e);
+              SilverpeasRuntimeException.ERROR, "root.MSG_GET_NOTIFICATION", e);
     } finally {
       // fermer la connexion
       closeConnection(con);
     }
   }
 
+  @Override
   public void deleteNotif(int notifId) throws NotificationManagerException {
     Connection con = initCon();
     try {
       SendedNotificationDAO.deleteNotif(con, notifId);
     } catch (Exception e) {
       throw new NotificationManagerException("NotificationInterface.deleteNotif()",
-          SilverpeasRuntimeException.ERROR, "root.MSG_GET_NOTIFICATION", e);
+              SilverpeasRuntimeException.ERROR, "root.MSG_GET_NOTIFICATION", e);
     } finally {
       // fermer la connexion
       closeConnection(con);
     }
   }
 
+  @Override
   public void deleteNotifByUser(String userId) throws NotificationManagerException {
     Connection con = initCon();
     try {
       SendedNotificationDAO.deleteNotifByUser(con, userId);
     } catch (Exception e) {
       throw new NotificationManagerException("NotificationInterface.deleteNotifByUser()",
-          SilverpeasRuntimeException.ERROR, "root.MSG_GET_NOTIFICATION", e);
+              SilverpeasRuntimeException.ERROR, "root.MSG_GET_NOTIFICATION", e);
     } finally {
       // fermer la connexion
       closeConnection(con);
@@ -134,17 +138,18 @@ public class SendedNotificationInterfaceImpl implements SendedNotificationInterf
       return con;
     } catch (Exception e) {
       throw new NotificationManagerException("NotificationInterfaceImpl.initCon()",
-          SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
+              SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
     }
   }
 
   private void closeConnection(Connection con) {
     try {
-      if (con != null)
+      if (con != null) {
         con.close();
+      }
     } catch (Exception e) {
       SilverTrace.error("attachment", "NotificationInterfaceImpl.closeConnection()",
-          "root.EX_CONNECTION_CLOSE_FAILED", "", e);
+              "root.EX_CONNECTION_CLOSE_FAILED", "", e);
     }
   }
 }

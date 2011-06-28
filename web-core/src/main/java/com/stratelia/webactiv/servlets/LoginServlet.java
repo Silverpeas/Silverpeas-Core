@@ -28,6 +28,7 @@ import com.stratelia.silverpeas.notificationManager.NotificationManagerException
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -181,7 +182,7 @@ public class LoginServlet extends HttpServlet {
           NotificationParameters.NORMAL, messages.getString("passwordExpirationAlert"), messages.
           getString("passwordExpirationMessage"));
       notifMetaData.setSender(fromUserId);
-      notifMetaData.addUserRecipient(userId);
+      notifMetaData.addUserRecipient(new UserRecipient(userId));
       sender.notifyUser(NotificationParameters.ADDRESS_BASIC_POPUP, notifMetaData);
     } catch (NotificationManagerException e) {
       SilverTrace.warn("peasCore", "LoginServlet.alertUserAboutPwdExpiration",
