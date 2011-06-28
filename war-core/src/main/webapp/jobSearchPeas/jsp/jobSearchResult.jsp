@@ -105,6 +105,18 @@ function openSpace(spaceId) {
     spaceWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);
 }
 
+var subSpaceWindow = window;
+function openSubSpace(rootSpaceId, subSpaceId) {
+	url = '<%=m_context%>/RjobStartPagePeas/jsp/OpenSubSpace?Espace='+rootSpaceId+'&SousEspace='+subSpaceId;
+    windowName = "subSpaceWindow";
+	larg = "800";
+	haut = "800";
+    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
+    if (!subSpaceWindow.closed && subSpaceWindow.name == "subSpaceWindow") {
+        subSpaceWindow.close();
+	}
+    subSpaceWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);
+}
 
 var componentWindow = window;
 function openComponent(componentId) {
@@ -119,6 +131,35 @@ function openComponent(componentId) {
     componentWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);
 }
 
+function openPublication(permalink) {
+	window.location.href = permalink;
+}
+
+var groupWindow = window;
+function openGroup(groupId) {
+	url = '<%=m_context%>/RjobDomainPeas/jsp/groupOpen?groupId='+groupId;
+    windowName = "groupWindow";
+	larg = "800";
+	haut = "800";
+    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
+    if (!groupWindow.closed && groupWindow.name == "componentWindow") {
+        groupWindow.close();
+	}
+    groupWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);
+}
+
+var userWindow = window;
+function openUser(userId) {
+	url = '<%=m_context%>/RjobDomainPeas/jsp/userOpen?userId='+userId;
+    windowName = "userWindow";
+	larg = "800";
+	haut = "800";
+    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
+    if (!userWindow.closed && userWindow.name == "componentWindow") {
+        userWindow.close();
+	}
+    userWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);
+}
 </script>
 
 </head>
@@ -209,7 +250,7 @@ if(listResult != null) {
 			name			= EncodeHelper.javaStringToHtmlString(searchResult.getName());
 			url				= searchResult.getUrl();
 			ArrayLine arrayLine = arrayPane.addArrayLine();
-			arrayLine.addArrayCellText("<a href=\"#\" onclick=\"openSpace('"+url+"')\">"+name+"</a>");
+			arrayLine.addArrayCellText("<a href=\"#\" onclick=\""+url+"\">"+name+"</a>");
 			
 			desc			= searchResult.getDesc();
 			if (desc != null && desc.length() > 200) {

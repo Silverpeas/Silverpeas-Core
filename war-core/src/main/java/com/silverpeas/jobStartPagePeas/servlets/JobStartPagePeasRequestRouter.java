@@ -59,6 +59,7 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -920,8 +921,23 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter {
       file.delete();
       destination = getDestination("SpaceLook", jobStartPageSC, request);
     } else if(function.equals("OpenSpace")) {
+      jobStartPageSC.init();
+      
+      if (StringUtil.isDefined(request.getParameter("Espace"))) {
+          jobStartPageSC.setSpaceId(request.getParameter("Espace"));
+      } else {
+        jobStartPageSC.setSpaceId(null);
+      }
+      
+      destination = getDestination("StartPageInfo", jobStartPageSC, request);
+    } else if(function.equals("OpenSubSpace")) {
+      jobStartPageSC.init();
+      
       if (StringUtil.isDefined(request.getParameter("Espace"))) {
         jobStartPageSC.setSpaceId(request.getParameter("Espace"));
+        if (StringUtil.isDefined(request.getParameter("SousEspace"))) {
+          jobStartPageSC.setSubSpaceId(request.getParameter("SousEspace"));
+        } 
       } else {
         jobStartPageSC.setSpaceId(null);
       }

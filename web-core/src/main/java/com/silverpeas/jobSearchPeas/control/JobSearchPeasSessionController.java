@@ -74,7 +74,12 @@ import edu.emory.mathcs.backport.java.util.Collections;
 public class JobSearchPeasSessionController extends AbstractComponentSessionController {
   
   private AdminController myAdminController = null;
+  private PublicationBm publicationBm = null;
+  private NodeBm nodeBm = null;
   private SearchEngineBm searchBm = null;
+  private String searchField = null;
+  private String category = null;
+  private List<SearchResult> listResult = null;
   
   /**
    * Standard Session Controller Constructeur
@@ -106,15 +111,16 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @return
    */
   private PublicationBm getPublicationBm() {
-    PublicationBm publicationBm = null;
-    try {
-      PublicationBmHome publicationBmHome =
-          (PublicationBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-          PublicationBmHome.class);
-      publicationBm = publicationBmHome.create();
-    } catch (Exception e) {
-      throw new PublicationRuntimeException("JobSearchPeasSessionController.getPublicationBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    if (publicationBm == null) {
+      try {
+        PublicationBmHome publicationBmHome =
+            (PublicationBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+            PublicationBmHome.class);
+        publicationBm = publicationBmHome.create();
+      } catch (Exception e) {
+        throw new PublicationRuntimeException("JobSearchPeasSessionController.getPublicationBm()",
+            SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      }
     }
     return publicationBm;
   }
@@ -123,14 +129,15 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @return
    */
   private NodeBm getNodeBm() {
-    NodeBm nodeBm = null;
-    try {
-      NodeBmHome nodeBmHome =
-          (NodeBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
-      nodeBm = nodeBmHome.create();
-    } catch (Exception e) {
-      throw new PublicationRuntimeException("JobSearchPeasSessionController.getNodeBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    if (nodeBm == null) {
+      try {
+        NodeBmHome nodeBmHome =
+            (NodeBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
+        nodeBm = nodeBmHome.create();
+      } catch (Exception e) {
+        throw new PublicationRuntimeException("JobSearchPeasSessionController.getNodeBm()",
+            SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      }
     }
     return nodeBm;
   }
@@ -155,6 +162,52 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
     return searchBm;
   }
   
+  /**
+   * @return
+   */
+  public String getSearchField() {
+    return searchField;
+  }
+
+  /**
+   * @param searchField
+   */
+  public void setSearchField(String searchField) {
+    this.searchField = searchField;
+  }
+
+  /**
+   * @return
+   */
+  public String getCategory() {
+    return category;
+  }
+
+
+  /**
+   * @param category
+   */
+  public void setCategory(String category) {
+    this.category = category;
+  }
+
+
+  /**
+   * @return
+   */
+  public List<SearchResult> getListResult() {
+    return listResult;
+  }
+
+
+  /**
+   * @param listResult
+   */
+  public void setListResult(List<SearchResult> listResult) {
+    this.listResult = listResult;
+  }
+
+
   /**
    * @param spaceId
    * @return
@@ -190,7 +243,17 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       String emplacement = getPathSpace(searchField);
       listEmplacement.add(emplacement);
       
-      String url = spaceInstLight.getFullId();
+      String url = "";
+      if(spaceInstLight.isRoot()) {
+        url = "openSpace('"+spaceInstLight.getFullId()+"')";
+      } else {
+        SpaceInstLight rootSpaceInstLight = spaceInstLight;
+        while(! rootSpaceInstLight.isRoot()) {
+          String fatherId = rootSpaceInstLight.getFatherId();
+          rootSpaceInstLight = getAdminController().getSpaceInstLight(fatherId);
+        }
+        url = "openSubSpace('"+rootSpaceInstLight.getFullId()+"', '"+spaceInstLight.getFullId()+"')";
+      }
      
       SearchResult searchResult = new SearchResult();
       searchResult.setName(nom);
@@ -233,6 +296,8 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       String spaceId = null;
       String emplacement = null;
       List<String> listEmplacement = null;
+      SpaceInstLight spaceInstLight = null;
+      SpaceInstLight rootSpaceInstLight = null;
       String url = null;
       for (int i = 0; i < plainSearchResults.length; i++) {
         result = plainSearchResults[i];
@@ -246,7 +311,20 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         emplacement = getPathSpace(spaceId);
         listEmplacement.add(emplacement);
         
-        url = spaceId;/*URLManager.getSimpleURL(URLManager.URL_SPACE, objectId);*/
+        url = "";
+        spaceInstLight = getAdminController().getSpaceInstLight(spaceId);
+        if(spaceInstLight != null) {
+          if(spaceInstLight.isRoot()) {
+            url = "openSpace('"+spaceInstLight.getFullId()+"')";
+          } else {
+            rootSpaceInstLight = spaceInstLight;
+            while(! rootSpaceInstLight.isRoot()) {
+              String fatherId = rootSpaceInstLight.getFatherId();
+              rootSpaceInstLight = getAdminController().getSpaceInstLight(fatherId);
+            }
+            url = "openSubSpace('"+rootSpaceInstLight.getFullId()+"', '"+spaceInstLight.getFullId()+"')";
+          }  
+        }
         
         SearchResult searchResult = new SearchResult();
         searchResult.setName(result.getTitle(getLanguage()));
@@ -325,8 +403,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       String emplacement = getPathComponent(searchField);
       listEmplacement.add(emplacement);
       
-      String url = "";
-      //RjobStartPagePeas/jsp/OpenComponent?ComponentId='+componentId;
+      String url = "openComponent('"+componentInstLight.getId()+"')";
      
       SearchResult searchResult = new SearchResult();
       searchResult.setName(nom);
@@ -380,7 +457,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         emplacement = getPathComponent(componentId);
         listEmplacement.add(emplacement);
         
-        url = URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentId);
+        url = "openComponent('"+componentId+"')";
         
         SearchResult searchResult = new SearchResult();
         searchResult.setName(result.getTitle(getLanguage()));
@@ -434,9 +511,17 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   private List<SearchResult> searchResultPublication(String searchField) throws RemoteException {
     List<SearchResult> listResult = new ArrayList<SearchResult>(); 
     
+    PublicationDetail publication = null;
+    PublicationPK pubPK = null;
+    
     //id publication
-    PublicationPK pubPK = new PublicationPK(searchField);
-    PublicationDetail publication = getPublicationBm().getDetail(pubPK);
+    try {
+      Integer.parseInt(searchField);
+      pubPK = new PublicationPK(searchField);
+      publication = getPublicationBm().getDetail(pubPK);
+    } catch(NumberFormatException e) {
+      publication = null;
+    }
     
     if(publication != null) {
       String nom = publication.getName(getLanguage());
@@ -477,8 +562,8 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         }
       }
       
-      String url = publication.getURL();
-     
+      String url = "openPublication('"+URLManager.getSimpleURL(URLManager.URL_PUBLI, pubPK.getId())+"')";
+      
       SearchResult searchResult = new SearchResult();
       searchResult.setName(nom);
       searchResult.setDesc(desc);
@@ -535,7 +620,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       String emplacement = getPathGroup(group);
       listEmplacement.add(emplacement);  
       
-      String url = "/RjobDomainPeas/jsp/groupOpen?groupId="+searchField;
+      String url = "openGroup('"+group.getId()+"')";
      
       SearchResult searchResult = new SearchResult();
       searchResult.setName(nom);
@@ -586,7 +671,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         emplacement = getPathGroup(group);
         listEmplacement.add(emplacement);
         
-        url = "";
+        url = "openGroup('"+groupId+"')";
         
         SearchResult searchResult = new SearchResult();
         searchResult.setName(result.getTitle(getLanguage()));
@@ -703,7 +788,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       String nomCrea = "";
       List<String> listEmplacement = getListPathUser(user);
       
-      String url = "/RjobDomainPeas/jsp/groupOpen?groupId="+searchField;
+      String url = "openUser('"+user.getId()+"')";
      
       SearchResult searchResult = new SearchResult();
       searchResult.setName(nom);
@@ -752,7 +837,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         user = getAdminController().getUserDetail(userId);
         listEmplacement = getListPathUser(user);
         
-        url = URLManager.getApplicationURL() + URLManager.getURL(result.getObjectType()) + result.getPageAndParams();
+        url = "openUser('"+userId+"')";
         
         SearchResult searchResult = new SearchResult();
         searchResult.setName(result.getTitle(getLanguage()));

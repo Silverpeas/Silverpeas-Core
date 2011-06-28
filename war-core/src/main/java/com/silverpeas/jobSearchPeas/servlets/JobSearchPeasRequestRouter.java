@@ -93,6 +93,9 @@ public class JobSearchPeasRequestRouter extends ComponentRequestRouter {
 
     try {
       if (function.equals("Main")) {
+        request.setAttribute("IdOrName", jobSearchPeasSC.getSearchField());
+        request.setAttribute("Category", jobSearchPeasSC.getCategory());
+        request.setAttribute("ListResult", jobSearchPeasSC.getListResult());
         destination = "/jobSearchPeas/jsp/jobSearchResult.jsp";
       } else if (function.equals("SearchResult")) {
         String searchField = request.getParameter("SearchField");
@@ -104,12 +107,17 @@ public class JobSearchPeasRequestRouter extends ComponentRequestRouter {
             searchField = searchField.substring(1);
           }
         }
-        String category = request.getParameter("Category");
-        List<SearchResult> listResult = jobSearchPeasSC.searchResult(searchField, category);
+        jobSearchPeasSC.setSearchField(searchField);
         
-        request.setAttribute("IdOrName", searchField);
-        request.setAttribute("Category", category);
-        request.setAttribute("ListResult", listResult);
+        String category = request.getParameter("Category");
+        jobSearchPeasSC.setCategory(category);
+        
+        List<SearchResult> listResult = jobSearchPeasSC.searchResult(searchField, category);
+        jobSearchPeasSC.setListResult(listResult);
+        
+        request.setAttribute("IdOrName", jobSearchPeasSC.getSearchField());
+        request.setAttribute("Category", jobSearchPeasSC.getCategory());
+        request.setAttribute("ListResult", jobSearchPeasSC.getListResult());
         destination = "/jobSearchPeas/jsp/jobSearchResult.jsp";
       }
     } catch (Exception e) {
