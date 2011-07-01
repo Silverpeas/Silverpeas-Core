@@ -25,6 +25,7 @@
 package com.silverpeas.attachment.web;
 
 import com.silverpeas.rest.Exposable;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import java.net.URI;
@@ -62,11 +63,15 @@ public class AttachmentEntity implements Exposable {
   private String info;
   @XmlElement(required = true)
   private URI uri;
+  @XmlElement(required = true)
+  private String icon;
+  @XmlElement(required = true)
+  private String permalink;
 
   public static AttachmentEntity fromAttachment(AttachmentDetail detail) {
     AttachmentEntity entity = new AttachmentEntity();
     try {
-      entity.uri = new URI(detail.getWebURL());
+      entity.uri = new URI(URLManager.getApplicationURL() + detail.getWebURL());
     } catch (URISyntaxException e) {
       throw new AttachmentRuntimeException("AttachmentEntity.fromAttachment(",
               AttachmentRuntimeException.ERROR, "Couldn't build the URI to the attachment", e);
@@ -81,6 +86,8 @@ public class AttachmentEntity implements Exposable {
     entity.author = detail.getAuthor();
     entity.title = detail.getTitle();
     entity.type = detail.getType();
+    entity.icon = detail.getAttachmentIcon();
+    entity.permalink = URLManager.getSimpleURL(URLManager.URL_FILE, detail.getPK().getId());
     return entity;
   }
 
@@ -98,6 +105,8 @@ public class AttachmentEntity implements Exposable {
     entity.author = detail.getAuthor(lang);
     entity.title = detail.getTitle(lang);
     entity.type = detail.getType(lang);
+    entity.icon = detail.getAttachmentIcon(lang);
+    entity.permalink = URLManager.getSimpleURL(URLManager.URL_FILE, detail.getPK().getId());
     return entity;
   }
 

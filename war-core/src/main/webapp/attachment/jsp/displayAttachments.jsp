@@ -24,18 +24,22 @@
 
 --%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@page import="java.io.IOException"%>
 <%@ include file="checkAttachment.jsp"%>
 
-<script type="text/javascript" src="<%=m_Context%>/attachment/jsp/javaScript/dragAndDrop.js"></script>
-<script type="text/javascript" src="<%=m_Context%>/util/javaScript/upload_applet.js"></script>
+<script type="text/javascript" src='<c:url value="/attachment/jsp/javaScript/dragAndDrop.js" />' ></script>
+<script type="text/javascript" src='<c:url value="/util/javaScript/upload_applet.js" />' ></script>
 
-<script type="text/javascript" src="<%=m_Context%>/util/yui/yahoo-dom-event/yahoo-dom-event.js"></script>
-<script type="text/javascript" src="<%=m_Context%>/util/yui/container/container_core-min.js"></script>
-<script type="text/javascript" src="<%=m_Context%>/util/yui/animation/animation-min.js"></script>
-<script type="text/javascript" src="<%=m_Context%>/util/yui/menu/menu-min.js"></script>
-<link rel="stylesheet" type="text/css" href="<%=m_Context%>/util/yui/menu/assets/menu.css"/>
+<script type="text/javascript" src='<c:url value="/util/yui/yahoo-dom-event/yahoo-dom-event.js" /> '></script>
+<script type="text/javascript" src='<c:url value="/util/yui/container/container_core-min.js" />' ></script>
+<script type="text/javascript" src='<c:url value="/util/yui/animation/animation-min.js" />' ></script>
+<script type="text/javascript" src='<c:url value="/util/yui/menu/menu-min.js" />' ></script>
+<link rel="stylesheet" type="text/css" href='<c:url value="/util/yui/menu/assets/menu.css" />'/>
 
 <%
       //initialisation des variables
@@ -114,11 +118,9 @@
       boolean indexIt = StringUtil.getBooleanValue(sIndexIt);
       session.setAttribute("Silverpeas_Attachment_IndexIt", Boolean.valueOf(indexIt));
 
-      //Example: http://myserver
-
       AttachmentPK foreignKey = new AttachmentPK(id, componentId);
 
-      Vector attachments = AttachmentController.searchAttachmentByPKAndContext(foreignKey, context);
+      Collection attachments = AttachmentController.searchAttachmentByPKAndContext(foreignKey, context);
       Iterator itAttachments = attachments.iterator();
 
       if (itAttachments.hasNext() || (StringUtil.isDefined(profile) && !profile.equals("user"))) {
@@ -129,29 +131,25 @@
 
         if (attachmentPosition != null && "right".equals(attachmentPosition)) {
           out.println("<table class=\"attachments\">");
-          out.println(
-              "<tr><td class=\"header\"><img src=\"" + m_Context + "/util/icons/attachedFiles.gif\" class=\"picto\"/></td></tr>");
+          out.println("<tr><td class=\"header\"><img src=\"" + m_Context + "/util/icons/attachedFiles.gif\" class=\"picto\"/></td></tr>");
         } else {
           out.println("<TABLE border=\"0\">");
           out.println(
               "<tr><td align=\"center\" colspan=\"" + (2 * nbAttachmentPerLine - 1) + "\"><img src=\"" + m_Context + "/util/icons/attachedFiles.gif\"/></td></tr>");
         }
 
-        AttachmentDetail attachmentDetail = null;
-        String author = "";
-        String title = "";
-        String info = "";
-        String url = "";
+
         int a = 1;
         out.println("<tr><td>");
         out.println("<ul id=\"attachmentList\">");
         while (itAttachments.hasNext()) {
-          attachmentDetail = (AttachmentDetail) itAttachments.next();
-          title = attachmentDetail.getTitle(contentLanguage);
+          String author = "";
+          AttachmentDetail attachmentDetail = (AttachmentDetail) itAttachments.next();
+          String title = attachmentDetail.getTitle(contentLanguage);
           if (!StringUtil.isDefined(title) || !showTitle) {
             title = attachmentDetail.getLogicalName(contentLanguage);
           }
-          info = attachmentDetail.getInfo(contentLanguage);
+          String info = attachmentDetail.getInfo(contentLanguage);
           if (StringUtil.isDefined(attachmentDetail.getAuthor(contentLanguage))) {
             author = "<br/><i>" + attachmentDetail.getAuthor(contentLanguage) + "</i>";
           }
@@ -176,7 +174,7 @@
                 getAttachmentIcon(contentLanguage) + "\" class=\"icon\"/>");
           }
 
-          url = m_Context +  attachmentDetail.getAttachmentURL(contentLanguage);
+          String url = m_Context +  attachmentDetail.getAttachmentURL(contentLanguage);
           if (fromAlias) {
             url = attachmentDetail.getAliasURL(contentLanguage);
           }
@@ -246,8 +244,7 @@
   <a href="#" onClick="changeView3d(<%=attachmentDetail.getPK().getId()%>)"><img name="iconeView<%=attachmentDetail.getPK().getId()%>" valign="top" border="0" src="<%=URLManager.getApplicationURL()%>/util/icons/masque3D.gif"></a>
 </div>
 <div id="<%=attachmentDetail.getPK().getId()%>" style="display: none">
-  <OBJECT classid="CLSID:A31CCCB0-46A8-11D3-A726-005004B35102"
-          width="300" height="200" id="XV" >
+  <OBJECT classid="CLSID:A31CCCB0-46A8-11D3-A726-005004B35102" width="300" height="200" id="XV" >
     <PARAM NAME="ModelName" VALUE="<%=url%>">
     <PARAM NAME="BorderWidth" VALUE="1">
     <PARAM NAME="ReferenceFrame" VALUE="1">
@@ -615,7 +612,6 @@
 
     function sortAttachments(orderedList)
     {
-      //alert(orderedList);
       $.get('<%=m_Context%>/Attachment', { orderedList:orderedList,Action:'Sort'},
       function(data){
         data = data.replace(/^\s+/g,'').replace(/\s+$/g,'');
@@ -625,7 +621,6 @@
         }
       }, 'text');
       if (pageMustBeReloadingAfterSorting) {
-	      //force page reloading to reinit menus
 	      reloadIncludingPage();
       }
     }
