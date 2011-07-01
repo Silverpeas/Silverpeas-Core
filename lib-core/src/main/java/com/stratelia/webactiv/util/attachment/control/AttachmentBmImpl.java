@@ -40,7 +40,8 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDAO;
+import com.stratelia.webactiv.util.attachment.model.AttachmentDao;
+import com.stratelia.webactiv.util.attachment.model.SimpleAttachmentDao;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetailI18N;
 import com.stratelia.webactiv.util.attachment.model.AttachmentI18NDAO;
@@ -49,24 +50,28 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 public class AttachmentBmImpl implements AttachmentBm {
+  
+  private AttachmentDao dao;
 
   public AttachmentBmImpl() {
+    dao = new SimpleAttachmentDao();
+  }
+  
+  public AttachmentBmImpl(AttachmentDao dao) {
+    this.dao = dao;
   }
 
   @Override
-  public AttachmentDetail createAttachment(AttachmentDetail attachDetail)
-      throws AttachmentException {
+  public AttachmentDetail createAttachment(AttachmentDetail attachDetail) throws AttachmentException {
     Connection con = getConnection();
     try {
-      return AttachmentDAO.insertRow(con, attachDetail);
+      return dao.insertRow(con, attachDetail);
     } catch (SQLException se) {
       throw new AttachmentException("AttachmentBmImpl.createAttachment()",
-          SilverpeasException.ERROR,
-          "attachment.EX_RECORD_NOT_CREATE_ATTACHMENT", se);
+          SilverpeasException.ERROR, "attachment.EX_RECORD_NOT_CREATE_ATTACHMENT", se);
     } catch (UtilException ue) {
       throw new AttachmentException("AttachmentBmImpl.createAttachment()",
-          SilverpeasException.ERROR,
-          "attachment.EX_RECORD_NOT_CREATE_ATTACHMENT", ue);
+          SilverpeasException.ERROR, "attachment.EX_RECORD_NOT_CREATE_ATTACHMENT", ue);
     } finally {
       closeConnection(con);
     }
@@ -77,14 +82,11 @@ public class AttachmentBmImpl implements AttachmentBm {
     Connection con = getConnection();
     try {
       boolean updateDefault = false;
-      AttachmentDetail oldAttachment = AttachmentDAO.findByPrimaryKey(con, attachDetail.getPK());
+      AttachmentDetail oldAttachment = dao.findByPrimaryKey(con, attachDetail.getPK());
       String oldLang = oldAttachment.getLanguage();
 
       if (attachDetail.isRemoveTranslation()) {
-        // Remove of a translation is required
-        // if (oldLang.equalsIgnoreCase(attachDetail.getLanguage()))
         if ("-1".equals(attachDetail.getTranslationId())) {
-          // Default language = translation
           List<AttachmentDetailI18N> translations = AttachmentI18NDAO.getTranslations(con,
               attachDetail.getPK());
 
@@ -139,7 +141,7 @@ public class AttachmentBmImpl implements AttachmentBm {
         }
       }
       if (updateDefault) {
-        AttachmentDAO.updateRow(con, attachDetail);
+        dao.updateRow(con, attachDetail);
       }
     } catch (SQLException se) {
       throw new AttachmentException("AttachmentBmImpl.updateAttachment()",
@@ -154,7 +156,7 @@ public class AttachmentBmImpl implements AttachmentBm {
       throws AttachmentException {
     Connection con = getConnection();
     try {
-      return AttachmentDAO.findByForeignKey(con, foreignKey);
+      return dao.findByForeignKey(con, foreignKey);
     } catch (SQLException se) {
       throw new AttachmentException(
           "AttachmentBmImpl.getAttachmentsByForeignKey()",
@@ -168,7 +170,7 @@ public class AttachmentBmImpl implements AttachmentBm {
       throws AttachmentException {
     Connection con = getConnection();
     try {
-      return AttachmentDAO.findByWorkerId(con, workerId);
+      return dao.findByWorkerId(con, workerId);
     } catch (SQLException se) {
       throw new AttachmentException(
           "AttachmentBmImpl.getAttachmentsByWorkerId()",
@@ -182,7 +184,7 @@ public class AttachmentBmImpl implements AttachmentBm {
       throws AttachmentException {
     Connection con = getConnection();
     try {
-      return AttachmentDAO.findPrevious(con, ad);
+      return dao.findPrevious(con, ad);
     } catch (SQLException se) {
       throw new AttachmentException("AttachmentBmImpl.findPrevious()",
           SilverpeasException.ERROR, "attachment.EX_RECORD_NOT_LOAD", se);
@@ -195,7 +197,7 @@ public class AttachmentBmImpl implements AttachmentBm {
       throws AttachmentException {
     Connection con = getConnection();
     try {
-      return AttachmentDAO.findNext(con, ad);
+      return dao.findNext(con, ad);
     } catch (SQLException se) {
       throw new AttachmentException("AttachmentBmImpl.findNext()",
           SilverpeasException.ERROR, "attachment.EX_RECORD_NOT_LOAD", se);
@@ -208,7 +210,7 @@ public class AttachmentBmImpl implements AttachmentBm {
       throws AttachmentException {
     Connection con = getConnection();
     try {
-      return AttachmentDAO.findByPrimaryKey(con, primaryKey);
+      return dao.findByPrimaryKey(con, primaryKey);
     } catch (SQLException se) {
       throw new AttachmentException("AttachmentBmImpl.createAttachment()",
           SilverpeasException.ERROR, "attachment.EX_RECORD_NOT_LOAD", se);
@@ -221,7 +223,7 @@ public class AttachmentBmImpl implements AttachmentBm {
       String nameAttribut, String valueAttribut) throws AttachmentException {
     Connection con = getConnection();
     try {
-      return AttachmentDAO.findByPKAndParam(con, foreignKey, nameAttribut,
+      return dao.findByPKAndParam(con, foreignKey, nameAttribut,
           valueAttribut);
     } catch (SQLException se) {
       throw new AttachmentException("AttachmentBmImpl.createAttachment()",
@@ -246,7 +248,7 @@ public class AttachmentBmImpl implements AttachmentBm {
           "parameter con is not null, this connection is used !");
     }
     try {
-      return AttachmentDAO.findByPKAndContext(con, foreignKey, context);
+      return dao.findByPKAndContext(con, foreignKey, context);
     } catch (SQLException se) {
       throw new AttachmentException("AttachmentBmImpl.createAttachment()",
           SilverpeasException.ERROR, "attachment.EX_RECORD_NOT_LOAD", se);
@@ -261,7 +263,7 @@ public class AttachmentBmImpl implements AttachmentBm {
     try {
       AttachmentI18NDAO.removeTranslations(con, primaryKey);
 
-      AttachmentDAO.deleteAttachment(con, primaryKey);
+      dao.deleteAttachment(con, primaryKey);
     } catch (SQLException se) {
       throw new AttachmentException("AttachmentBmImpl.createAttachment()",
           SilverpeasException.ERROR, "attachment_MSG_NOT_DELETE_FILE", se);
@@ -274,7 +276,7 @@ public class AttachmentBmImpl implements AttachmentBm {
       throws AttachmentException {
     Connection con = getConnection();
     try {
-      AttachmentDAO.updateForeignKey(con, pk, foreignKey);
+      dao.updateForeignKey(con, pk, foreignKey);
     } catch (SQLException se) {
       throw new AttachmentException("AttachmentBmImpl.updateForeignKey()",
           SilverpeasException.ERROR, "EX_RECORD_NOT_UPDATE_ATTACHMENT", se);
@@ -287,7 +289,7 @@ public class AttachmentBmImpl implements AttachmentBm {
       throws AttachmentException {
     Connection con = getConnection();
     try {
-      return AttachmentDAO.getAllAttachmentByDate(con, date, alert);
+      return dao.getAllAttachmentByDate(con, date, alert);
     } catch (SQLException se) {
       throw new AttachmentException("AttachmentBmImpl.createAttachment()",
           SilverpeasException.ERROR, "attachment.EX_RECORD_NOT_LOAD", se);
@@ -299,7 +301,7 @@ public class AttachmentBmImpl implements AttachmentBm {
   public Collection<AttachmentDetail> getAllAttachmentToLib(Date date) throws AttachmentException {
     Connection con = getConnection();
     try {
-      return AttachmentDAO.getAllAttachmentToLib(con, date);
+      return dao.getAllAttachmentToLib(con, date);
     } catch (SQLException se) {
       throw new AttachmentException("AttachmentBmImpl.createAttachment()",
           SilverpeasException.ERROR, "attachment.EX_RECORD_NOT_LOAD", se);
@@ -338,12 +340,12 @@ public class AttachmentBmImpl implements AttachmentBm {
     Connection con = getConnection();
     try {
       if (!I18NHelper.isI18N || !StringUtil.isDefined(language)) {
-        AttachmentDAO.updateXmlForm(con, pk, xmlFormName);
+        dao.updateXmlForm(con, pk, xmlFormName);
       } else {
-        AttachmentDetail attachment = AttachmentDAO.findByPrimaryKey(con, pk);
+        AttachmentDetail attachment = dao.findByPrimaryKey(con, pk);
         if (!StringUtil.isDefined(attachment.getLanguage())
             || attachment.getLanguage().equals(language)) {
-          AttachmentDAO.updateXmlForm(con, pk, xmlFormName);
+          dao.updateXmlForm(con, pk, xmlFormName);
         } else {
           AttachmentI18NDAO.updateXmlForm(con, pk, language, xmlFormName);
         }
@@ -359,7 +361,7 @@ public class AttachmentBmImpl implements AttachmentBm {
   public void sortAttachments(List<AttachmentPK> attachmentPKs) throws AttachmentException {
     Connection con = getConnection();
     try {
-      AttachmentDAO.sortAttachments(con, attachmentPKs);
+      dao.sortAttachments(con, attachmentPKs);
     } catch (SQLException se) {
       throw new AttachmentException("AttachmentBmImpl.sortAttachments()",
           SilverpeasException.ERROR, "EX_ERROR_WHEN_SORTING_ATTACHMENTS", se);

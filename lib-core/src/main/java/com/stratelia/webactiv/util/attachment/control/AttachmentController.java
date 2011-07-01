@@ -65,7 +65,7 @@ import java.util.Vector;
 
 public class AttachmentController {
 
-  private static final AttachmentBm attachmentBm = new AttachmentBmImpl();
+  private static AttachmentBm attachmentBm = new AttachmentBmImpl();
   public final static String CONTEXT_ATTACHMENTS = "Attachment" + File.separatorChar + "Images"
       + File.separatorChar;
   // For Office files direct update
@@ -80,6 +80,14 @@ public class AttachmentController {
    * the constructor.
    */
   public AttachmentController() {
+  }
+  
+  /**
+   * For tests only
+   * @param attachmentManager 
+   */
+  AttachmentController(AttachmentBm attachmentManager) {
+    AttachmentController.attachmentBm = attachmentManager;
   }
 
   /**
