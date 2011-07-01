@@ -49,6 +49,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Class declaration
@@ -57,23 +58,23 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 public class OnlineFileServer extends HttpServlet {
 
   private static final long serialVersionUID = -6153872618631360113L;
-  HttpSession session;
-  PrintWriter out;
 
+  @Override
   public void init(ServletConfig config) {
     try {
       super.init(config);
     } catch (ServletException se) {
-      SilverTrace.fatal("peasUtil", "FileServer.init",
-          "peasUtil.CANNOT_ACCESS_SUPERCLASS");
+      SilverTrace.fatal("peasUtil", "FileServer.init", "peasUtil.CANNOT_ACCESS_SUPERCLASS");
     }
   }
 
+  @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     doPost(req, res);
   }
 
+  @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     SilverTrace.info("peasUtil", "OnlineFileServer.doPost",
@@ -102,8 +103,7 @@ public class OnlineFileServer extends HttpServlet {
     if (StringUtil.isDefined(documentId)) {
       String versionId = req.getParameter("VersionId");
       VersioningUtil versioning = new VersioningUtil();
-      DocumentVersionPK versionPK = new DocumentVersionPK(Integer
-          .parseInt(versionId), "useless", componentId);
+      DocumentVersionPK versionPK = new DocumentVersionPK(Integer .parseInt(versionId), "useless", componentId);
       DocumentVersion version = versioning.getDocumentVersion(versionPK);
 
       if (version != null) {
@@ -116,11 +116,8 @@ public class OnlineFileServer extends HttpServlet {
       }
     }
 
-    String filePath = FileRepositoryManager.getAbsolutePath(componentId)
-        + directory + File.separator + sourceFile;
-
+    String filePath = FileRepositoryManager.getAbsolutePath(componentId)  + directory + File.separator + sourceFile;
     res.setContentType(mimeType);
-
     display(res, filePath);
   }
 
@@ -131,8 +128,7 @@ public class OnlineFileServer extends HttpServlet {
    * this String is null that an exception had been catched the html document generated is empty !!
    * also, we display a warning html page
    */
-  private void display(HttpServletResponse res, String htmlFilePath)
-      throws IOException {
+  private void display(HttpServletResponse res, String htmlFilePath) throws IOException {
     OutputStream out2 = res.getOutputStream();
     int read;
     BufferedInputStream input = null; // for the html document generated
@@ -173,35 +169,20 @@ public class OnlineFileServer extends HttpServlet {
 
   // Add By Mohammed Hguig
 
-  private void displayWarningHtmlCode(HttpServletResponse res)
-      throws IOException {
-    StringReader sr = null;
-    OutputStream out2 = res.getOutputStream();
-    int read;
+  private void displayWarningHtmlCode(HttpServletResponse res) throws IOException {
+    StringReader message = null;
+    OutputStream output = res.getOutputStream();
     ResourceLocator resourceLocator = new ResourceLocator(
         "com.stratelia.webactiv.util.peasUtil.multiLang.fileServerBundle", "");
-
-    sr = new StringReader(resourceLocator.getString("warning"));
+    message = new StringReader(resourceLocator.getString("warning"));
     try {
-      read = sr.read();
-      while (read != -1) {
-        SilverTrace.info("peasUtil", "OnlineFileServer.displayHtmlCode()",
-            "root.MSG_GEN_ENTER_METHOD", " StringReader read " + read);
-        out2.write(read); // writes bytes into the response
-        read = sr.read();
-      }
+      IOUtils.copy(message, output);     
     } catch (Exception e) {
       SilverTrace.warn("peasUtil", "OnlineFileServer.displayWarningHtmlCode",
           "root.EX_CANT_READ_FILE", "warning properties");
     } finally {
-      try {
-        if (sr != null)
-          sr.close();
-        out2.close();
-      } catch (Exception e) {
-        SilverTrace.warn("peasUtil", "OnlineFileServer.displayHtmlCode",
-            "root.EX_CANT_READ_FILE", "close failed");
-      }
+      IOUtils.closeQuietly(output);
+      IOUtils.closeQuietly(message);
     }
   }
 
