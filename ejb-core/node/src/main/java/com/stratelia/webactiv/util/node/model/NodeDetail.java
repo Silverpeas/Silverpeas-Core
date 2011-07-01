@@ -21,29 +21,26 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.node.model;
-
-import java.util.Collection;
 
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import java.io.Serializable;
+import java.util.Collection;
 
 /**
  * This object contains the description of a node (own attributes and children attributes)
  * @author Nicolas Eysseric
  * @version 1.0
  */
-public class NodeDetail extends AbstractI18NBean implements java.io.Serializable {
+public class NodeDetail extends AbstractI18NBean implements Serializable {
 
   private static final long serialVersionUID = -1401884517616404337L;
   public final static String DEFAULT_TYPE = "default";
   public final static String FILE_LINK_TYPE = "file_link";
-
   public final static String STATUS_VISIBLE = "Visible";
   public final static String STATUS_INVISIBLE = "Invisible";
-
   private NodePK nodePK;
   private String name;
   private String description;
@@ -55,18 +52,14 @@ public class NodeDetail extends AbstractI18NBean implements java.io.Serializable
   private String modelId = null;
   private String status = null;
   private NodePK fatherPK;
-
   // a NodeDetail collection
   private Collection<NodeDetail> childrenDetails;
   private String type = DEFAULT_TYPE;
   private int order = 0;
-
   private int rightsDependsOn = -1;
-
   private int nbObjects = -1; // No persistence - usefull to store nb objects
   // contained by this node
   private String userRole = null; // No persistence - usefull to store user role
-
   private boolean useId = false;
 
   /**
@@ -74,17 +67,16 @@ public class NodeDetail extends AbstractI18NBean implements java.io.Serializable
    * @since 1.0
    */
   public NodeDetail() {
-    init("0", "", "", "", "", "", "0", "0");
+    init(NodePK.ROOT_NODE_ID, "", "", "", "", "", "0", NodePK.ROOT_NODE_ID);
   }
 
   /**
    * Create a new NodeDetail
    * @since 1.0
    */
-
   private void init(String id, String name, String description,
-      String creationDate, String creatorId, String path, String level,
-      String fatherId) {
+          String creationDate, String creatorId, String path, String level,
+          String fatherId) {
     this.nodePK = new NodePK(id);
     this.name = name;
     this.description = description;
@@ -98,8 +90,8 @@ public class NodeDetail extends AbstractI18NBean implements java.io.Serializable
   }
 
   private void init(String id, String name, String description,
-      String creationDate, String creatorId, String path, String level,
-      String fatherId, String type) {
+          String creationDate, String creatorId, String path, String level,
+          String fatherId, String type) {
     this.nodePK = new NodePK(id);
     this.name = name;
     this.description = description;
@@ -119,9 +111,9 @@ public class NodeDetail extends AbstractI18NBean implements java.io.Serializable
    * @param name The node name
    * @param description The node description
    * @param creationDate A string which represent the creation date
-   * @param creatorName The name of the node creator
+   * @param creatorId The name of the node creator
    * @param path The node path
-   * @param int The node level (root level = 1)
+   * @param level The node level (root level = 1)
    * @param fatherPK The nodePK of the father
    * @param childrenDetails A NodeDetail collection which contains each child
    * @see java.util.Collection
@@ -129,9 +121,9 @@ public class NodeDetail extends AbstractI18NBean implements java.io.Serializable
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
    */
-  public NodeDetail(NodePK nodePK, String name, String description,
-      String creationDate, String creatorId, String path, int level,
-      NodePK fatherPK, Collection<NodeDetail> childrenDetails) {
+  public NodeDetail(NodePK nodePK, String name, String description, String creationDate,
+          String creatorId, String path, int level, NodePK fatherPK,
+          Collection<NodeDetail> childrenDetails) {
     this.nodePK = nodePK;
     this.name = name;
     this.description = description;
@@ -150,32 +142,29 @@ public class NodeDetail extends AbstractI18NBean implements java.io.Serializable
    * @param name The node name
    * @param description The node description
    * @param creationDate A string which represent the creation date
-   * @param creatorName The name of the node creator
+   * @param creatorId The name of the node creator
    * @param path The node path
-   * @param int The node level (root level = 1)
+   * @param level The node level (root level = 1)
    * @param fatherId The id of the father
-   * @param childrenDetails A NodeDetail collection which contains each child
    * @see java.util.Collection
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
    */
-  public NodeDetail(String id, String name, String description,
-      String creationDate, String creatorId, String path, String level,
-      String fatherId) {
+  public NodeDetail(String id, String name, String description, String creationDate,
+          String creatorId, String path, String level, String fatherId) {
     init(id, name, description, creationDate, creatorId, path, level, fatherId);
   }
 
   public NodeDetail(String id, String name, String description,
-      String creationDate, String creatorId, String path, String level,
-      String fatherId, String type) {
-    init(id, name, description, creationDate, creatorId, path, level, fatherId,
-        type);
+          String creationDate, String creatorId, String path, String level,
+          String fatherId, String type) {
+    init(id, name, description, creationDate, creatorId, path, level, fatherId, type);
   }
 
   public NodeDetail(NodePK nodePK, String name, String description,
-      String creationDate, String creatorId, String path, int level,
-      NodePK fatherPK, String modelId, String status,
-      Collection<NodeDetail> childrenDetails, String type) {
+          String creationDate, String creatorId, String path, int level,
+          NodePK fatherPK, String modelId, String status,
+          Collection<NodeDetail> childrenDetails, String type) {
     this.nodePK = nodePK;
     this.name = name;
     this.description = description;
@@ -192,9 +181,9 @@ public class NodeDetail extends AbstractI18NBean implements java.io.Serializable
   }
 
   public NodeDetail(String id, String name, String description,
-      String creationDate, String creatorId, String path, int level,
-      String fatherId, String modelId, String status,
-      Collection<NodeDetail> childrenDetails, String type) {
+          String creationDate, String creatorId, String path, int level,
+          String fatherId, String modelId, String status,
+          Collection<NodeDetail> childrenDetails, String type) {
     this.nodePK = new NodePK(id);
     this.name = name;
     this.description = description;
@@ -211,8 +200,8 @@ public class NodeDetail extends AbstractI18NBean implements java.io.Serializable
   }
 
   public NodeDetail(NodePK nodePK, String name, String description,
-      String creationDate, String creatorId, String path, int level,
-      NodePK fatherPK, String modelId, String status, Collection<NodeDetail> childrenDetails) {
+          String creationDate, String creatorId, String path, int level,
+          NodePK fatherPK, String modelId, String status, Collection<NodeDetail> childrenDetails) {
     this.nodePK = nodePK;
     this.name = name;
     this.description = description;
@@ -228,8 +217,8 @@ public class NodeDetail extends AbstractI18NBean implements java.io.Serializable
   }
 
   public NodeDetail(String id, String name, String description,
-      String creationDate, String creatorId, String path, int level,
-      String fatherId, String modelId, String status, Collection<NodeDetail> childrenDetails) {
+          String creationDate, String creatorId, String path, int level,
+          String fatherId, String modelId, String status, Collection<NodeDetail> childrenDetails) {
     this.nodePK = new NodePK(id);
     this.name = name;
     this.description = description;
@@ -267,16 +256,18 @@ public class NodeDetail extends AbstractI18NBean implements java.io.Serializable
   }
 
   public String getName(String language) {
-    if (!I18NHelper.isI18N)
+    if (!I18NHelper.isI18N) {
       return getName();
+    }
 
     NodeI18NDetail s = (NodeI18NDetail) getTranslations().get(language);
-    if (s == null)
+    if (s == null) {
       s = (NodeI18NDetail) getNextTranslation();
-    if (s == null)
+    }
+    if (s == null) {
       return getName();
-    else
-      return s.getName();
+    }
+    return s.getName();
   }
 
   /**
@@ -289,13 +280,14 @@ public class NodeDetail extends AbstractI18NBean implements java.io.Serializable
   }
 
   public String getDescription(String language) {
-    if (!I18NHelper.isI18N)
+    if (!I18NHelper.isI18N) {
       return getDescription();
+    }
 
     NodeI18NDetail s = (NodeI18NDetail) getTranslations().get(language);
-    if (s == null)
+    if (s == null) {
       s = (NodeI18NDetail) getNextTranslation();
-
+    }
     return s.getDescription();
   }
 
@@ -388,8 +380,8 @@ public class NodeDetail extends AbstractI18NBean implements java.io.Serializable
   }
 
   /**
-   * Set the creator name
-   * @param name The creator name
+   * Set the creator id
+   * @param creatorId The creator id
    * @since 1.0
    */
   public void setCreatorId(String creatorId) {
@@ -435,7 +427,7 @@ public class NodeDetail extends AbstractI18NBean implements java.io.Serializable
    * @param id
    */
   public void setId(int id) {
-    getNodePK().setId(Integer.toString(id));
+    getNodePK().setId(java.lang.Integer.toString(id));
   }
 
   /**
@@ -478,11 +470,12 @@ public class NodeDetail extends AbstractI18NBean implements java.io.Serializable
    * Converts the contents of the key into a readable String.
    * @return The string representation of this object
    */
+  @Override
   public String toString() {
     return "(pk = " + getNodePK().toString() + ", name = " + getName()
-        + ", path = " + getPath() + ", level = " + getLevel() + ", fatherPK = "
-        + getFatherPK().toString() + ", type = " + type + ", order = "
-        + getOrder() + ")";
+            + ", path = " + getPath() + ", level = " + getLevel() + ", fatherPK = "
+            + getFatherPK().toString() + ", type = " + type + ", order = "
+            + getOrder() + ")";
   }
 
   public String getType() {
@@ -493,11 +486,14 @@ public class NodeDetail extends AbstractI18NBean implements java.io.Serializable
     this.type = type;
   }
 
+  @Override
   public boolean equals(Object other) {
-    if (!(other instanceof NodeDetail))
+    if (!(other instanceof NodeDetail)) {
       return false;
+    }
     return (getNodePK().getId().equals(((NodeDetail) other).getNodePK().getId()))
-        && (getNodePK().getComponentName().equals(((NodeDetail) other).getNodePK().getComponentName()));
+            && (getNodePK().getComponentName().equals(((NodeDetail) other).getNodePK().
+            getComponentName()));
   }
 
   @Override
@@ -523,14 +519,14 @@ public class NodeDetail extends AbstractI18NBean implements java.io.Serializable
 
   public String getLink() {
     return URLManager.getSimpleURL(URLManager.URL_TOPIC, getNodePK().getId(),
-        getNodePK().getInstanceId());
+            getNodePK().getInstanceId());
   }
 
   public String getPermalink() {
-    if (URLManager.displayUniversalLinks())
-      return URLManager.getSimpleURL(URLManager.URL_TOPIC, getNodePK().getId(),
-          getNodePK().getInstanceId());
-
+    if (URLManager.displayUniversalLinks()) {
+      return URLManager.getSimpleURL(URLManager.URL_TOPIC, this.nodePK.getId(), this.nodePK.
+              getInstanceId());
+    }
     return null;
   }
 
@@ -551,7 +547,7 @@ public class NodeDetail extends AbstractI18NBean implements java.io.Serializable
   }
 
   public void setRightsDependsOnMe() {
-    this.rightsDependsOn = Integer.parseInt(getNodePK().getId());
+    this.rightsDependsOn = Integer.parseInt(this.nodePK.getId());
   }
 
   public boolean haveLocalRights() {
@@ -559,8 +555,7 @@ public class NodeDetail extends AbstractI18NBean implements java.io.Serializable
   }
 
   public boolean haveInheritedRights() {
-    return haveRights()
-        && Integer.parseInt(getNodePK().getId()) != rightsDependsOn;
+    return haveRights() && !haveLocalRights();
   }
 
   public boolean haveRights() {

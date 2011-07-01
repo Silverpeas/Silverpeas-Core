@@ -65,7 +65,7 @@ import java.util.Vector;
 
 public class AttachmentController {
 
-  private static final AttachmentBm attachmentBm = new AttachmentBmImpl();
+  static final AttachmentBm attachmentBm = new AttachmentBmImpl();
   public final static String CONTEXT_ATTACHMENTS = "Attachment" + File.separatorChar + "Images"
       + File.separatorChar;
   // For Office files direct update
