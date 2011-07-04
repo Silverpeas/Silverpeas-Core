@@ -84,7 +84,7 @@ public class PdcClassificationEntity implements Exposable {
 
   /**
    * A convenient method to enhance the readability of creators.
-   * @param URI the URI at which the classification is published.
+   * @param uri the URI at which the classification is published.
    * @return the classification URI.
    */
   public static URI atURI(final URI uri) {

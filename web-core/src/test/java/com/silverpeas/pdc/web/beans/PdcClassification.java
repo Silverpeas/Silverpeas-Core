@@ -21,13 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.pdc.web;
+package com.silverpeas.pdc.web.beans;
 
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdc.model.Value;
 import java.util.ArrayList;
 import java.util.List;
+import static com.silverpeas.pdc.web.beans.ClassificationPlan.*;
 
 /**
  * A classification of a resource on the PdC. This is a representation of a classification for
@@ -51,6 +52,10 @@ public class PdcClassification {
     return classification;
   }
 
+  public static PdcClassification anEmptyPdcClassification() {
+    return new PdcClassification();
+  }
+
   public PdcClassification onResource(String resourceId) {
     this.resourceId = resourceId;
     return this;
@@ -69,41 +74,78 @@ public class PdcClassification {
     return positions;
   }
 
+  public void setPositions(final List<ClassifyPosition> positions) {
+    this.positions.clear();
+    this.positions.addAll(positions);
+  }
+
   public String getResourceId() {
     return resourceId;
   }
 
+  private PdcClassification() {
+
+  }
+
   private void fill() {
-    Thesaurus thesaurus = new Thesaurus();
-    List<String> treeIds = thesaurus.getTreeIds();
+    ClassificationPlan pdc = aClassificationPlan();
+    
     List<ClassifyValue> positionValues = new ArrayList<ClassifyValue>();
-    for (int i = 0; i < treeIds.size(); i++) {
-      String treeId = treeIds.get(i);
-      List<Value> path = new ArrayList<Value>();
-      path.addAll(thesaurus.getValuesFromTree(treeId));
-      Value value = path.get(path.size() - 1);
-      ClassifyValue positionValue = new ClassifyValue(Integer.valueOf(value.getAxisId()),
-              value.getPath() + value.getPK().getId() + "/");
-      positionValue.setFullPath(path);
-      positionValues.add(positionValue);
-      if (i >= 1) {
-        ClassifyPosition position = new ClassifyPosition(positionValues);
-        this.positions.add(position);
-        positionValues = new ArrayList<ClassifyValue>();
-      }
-    }
+    List<Value> values = pdc.getValuesOfAxisByName("Pays");
+    Value value = findTerm("Grenoble", values);
+    ClassifyValue classifyValue = new ClassifyValue(toValueId(value.getAxisId()),
+            toValue(value.getFullPath()));
+    classifyValue.setFullPath(pdc.getPathInTreeOfValue(value));
+    positionValues.add(classifyValue);  
+    values = pdc.getValuesOfAxisByName("Période");
+    value = findTerm("Moyen-Age", values);
+    classifyValue = new ClassifyValue(toValueId(value.getAxisId()),
+            toValue(value.getFullPath()));
+    classifyValue.setFullPath(pdc.getPathInTreeOfValue(value));
+    positionValues.add(classifyValue);
+    positions.add(new ClassifyPosition(positionValues));
+    
+    positionValues = new ArrayList<ClassifyValue>();
+    values = pdc.getValuesOfAxisByName("Religion");
+    value = findTerm("Christianisme", values);
+    classifyValue = new ClassifyValue(toValueId(value.getAxisId()),
+            toValue(value.getFullPath()));
+    classifyValue.setFullPath(pdc.getPathInTreeOfValue(value));
+    positionValues.add(classifyValue);  
+    positions.add(new ClassifyPosition(positionValues));
   }
 
   private void fillWithNoSynonyms() {
-    Thesaurus thesaurus = new Thesaurus();
+    ClassificationPlan pdc = aClassificationPlan();
     List<ClassifyValue> positionValues = new ArrayList<ClassifyValue>();
-    ClassifyValue positionValue = new ClassifyValue(100, "/100/");
-    List<Value> path = new ArrayList<Value>();
-    path.add(thesaurus.anI18NValue("100", "100", "Technique", "2011/06/16", "0", "/Technique", 0, 0,
-            "-1"));
-    positionValue.setFullPath(path);
-    positionValues.add(positionValue);
-    ClassifyPosition position = new ClassifyPosition(positionValues);
-    this.positions.add(position);
+    List<Value> values = pdc.getValuesOfAxisByName("Technologie");
+    Value value = values.get(0);
+    ClassifyValue classifyValue = new ClassifyValue(toValueId(value.getAxisId()),
+            toValue(value.getFullPath()));
+    classifyValue.setFullPath(pdc.getPathInTreeOfValue(value));
+    positionValues.add(classifyValue);
+    positions.add(new ClassifyPosition(positionValues));
+  }
+  
+  private Value findTerm(String term, final List<Value> inValues) {
+    Value valueOfTerm = null;
+    for (Value value : inValues) {
+      if (value.getName().equals(term)) {
+        valueOfTerm = value;
+        break;
+      }
+    }
+    if (valueOfTerm == null) {
+      throw new RuntimeException("The term to find should exist!");
+    }
+    return valueOfTerm;
+  }
+  
+  private String toValue(String pathOfTerm) {
+    return pathOfTerm.substring(0, pathOfTerm.length() - 1);
+  }
+  
+  private int toValueId(String id) {
+    return Integer.valueOf(id);
   }
 }

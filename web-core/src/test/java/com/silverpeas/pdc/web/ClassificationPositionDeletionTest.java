@@ -23,124 +23,83 @@
  */
 package com.silverpeas.pdc.web;
 
+import com.silverpeas.thesaurus.ThesaurusException;
+import javax.inject.Inject;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.silverpeas.rest.ResourceDeletionTest;
 import java.util.List;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.sun.jersey.api.client.UniformInterfaceException;
-import java.util.UUID;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
-import static com.silverpeas.rest.RESTWebService.*;
-import static com.silverpeas.pdc.web.PdcClassification.*;
+import static com.silverpeas.pdc.web.beans.PdcClassification.*;
+import static com.silverpeas.pdc.web.TestResources.*;
 
 /**
  * Unit tests on the deletion of existing positions in the PdC classification of a resource.
  * PdC).
  */
-public class ClassificationPositionDeletionTest extends ResourceClassificationTest {
+public class ClassificationPositionDeletionTest extends ResourceDeletionTest {
+
+  @Inject
+  private TestResources testResources;
+  private String sessionKey;
+  private UserDetail theUser;
+
+  public ClassificationPositionDeletionTest() {
+    super(JAVA_PACKAGE, SPRING_CONTEXT);
+  }
 
   @Before
   public void prepareAPdcClassification() {
-    save(aPdcClassification().onResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID));
-  }
-
-  @Test
-  public void deletionOfAPdcPositionByANonAuthenticatedUser() throws Exception {
-    try {
-      resource().path(RESOURCE_PATH + "/" + aPdcPositionId()).
-              accept(MediaType.APPLICATION_JSON).
-              delete();
-      fail("A non authenticated user shouldn't delete a position in a resource's PdC classification");
-    } catch (UniformInterfaceException ex) {
-      int recievedStatus = ex.getResponse().getStatus();
-      int unauthorized = Status.UNAUTHORIZED.getStatusCode();
-      assertThat(recievedStatus, is(unauthorized));
-    }
-  }
-
-  @Test
-  public void deletionOfAPdcPositionWithADeprecatedSession() throws Exception {
-    try {
-      resource().path(RESOURCE_PATH + "/" + aPdcPositionId()).
-              header(HTTP_SESSIONKEY, UUID.randomUUID().toString()).
-              accept(MediaType.APPLICATION_JSON).
-              delete();
-      fail("A user with a deprecated session shouldn't delete a position in a resource's PdC classification");
-    } catch (UniformInterfaceException ex) {
-      int recievedStatus = ex.getResponse().getStatus();
-      int unauthorized = Status.UNAUTHORIZED.getStatusCode();
-      assertThat(recievedStatus, is(unauthorized));
-    }
-  }
-
-  @Test
-  public void deletionOfAPdcPositionForANonAuthorizedResource() throws Exception {
-    denieAuthorizationToUsers();
-    try {
-      resource().path(RESOURCE_PATH + "/" + aPdcPositionId()).
-              header(HTTP_SESSIONKEY, getSessionKey()).
-              accept(MediaType.APPLICATION_JSON).
-              delete();
-      fail("A user shouldn't delete a position in an unauthorized resource's PdC classification");
-    } catch (UniformInterfaceException ex) {
-      int recievedStatus = ex.getResponse().getStatus();
-      int forbidden = Status.FORBIDDEN.getStatusCode();
-      assertThat(recievedStatus, is(forbidden));
-    }
-  }
-
-  @Test
-  public void deletionOfAPdcPositionInAnUnexistingPdcClassification() throws Exception {
-    try {
-      resource().path(UNKNOWN_RESOURCE_PATH + "/" + aPdcPositionId()).
-              header(HTTP_SESSIONKEY, getSessionKey()).
-              accept(MediaType.APPLICATION_JSON).
-              delete();
-      fail("A user shouldn't delete a position in a PdC classification of an unexisting resource");
-    } catch (UniformInterfaceException ex) {
-      int recievedStatus = ex.getResponse().getStatus();
-      int notFound = Status.NOT_FOUND.getStatusCode();
-      assertThat(recievedStatus, is(notFound));
-    }
+    assertNotNull(testResources);
+    theUser = aUser();
+    sessionKey = authenticate(theUser);
+    testResources.enableThesaurus();
+    testResources.save(
+            aPdcClassification().onResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID));
   }
 
   @Test
   public void deletionOfAnUnexistingPositionInAPdcClassification() {
     try {
-      resource().path(RESOURCE_PATH + "/1000").
-              header(HTTP_SESSIONKEY, getSessionKey()).
-              accept(MediaType.APPLICATION_JSON).
-              delete();
+      deleteAt(CONTENT_CLASSIFICATION_PATH + "/1000");
       fail("A user shouldn't delete an unexisting position in a resource's PdC classification");
     } catch (UniformInterfaceException ex) {
-      int recievedStatus = ex.getResponse().getStatus();
+      int receivedStatus = ex.getResponse().getStatus();
       int notFound = Status.NOT_FOUND.getStatusCode();
-      assertThat(recievedStatus, is(notFound));
+      assertThat(receivedStatus, is(notFound));
     }
   }
 
   @Test
   public void deletionOfAPositionInAPdcClassification() throws Exception {
     int positionId = aPdcPositionId();
-    resource().path(RESOURCE_PATH + "/" + positionId).
-            header(HTTP_SESSIONKEY, getSessionKey()).
-            accept(MediaType.APPLICATION_JSON).
-            delete();
+    deleteAt(CONTENT_CLASSIFICATION_PATH + "/" + positionId);
     assertPosition(positionId, isDeleted());
   }
 
-  private int aPdcPositionId() throws Exception {
-    int silverObjectId = getContentManager().getSilverContentId(CONTENT_ID, COMPONENT_INSTANCE_ID);
-    return getPdcService().getPositions(silverObjectId, COMPONENT_INSTANCE_ID).get(0).getPositionId();
+  private int aPdcPositionId() {
+    int positionId = -1;
+    try {
+      int silverObjectId = testResources.getContentManager().getSilverContentId(CONTENT_ID,
+              COMPONENT_INSTANCE_ID);
+      positionId = testResources.getPdcService().getPositions(silverObjectId, COMPONENT_INSTANCE_ID).
+              get(0).getPositionId();
+    } catch (Exception ex) {
+      fail(ex.getMessage());
+    }
+    return positionId;
   }
 
   private void assertPosition(int positionId, boolean isDeleted) throws Exception {
-    int silverObjectId = getContentManager().getSilverContentId(CONTENT_ID, COMPONENT_INSTANCE_ID);
-    List<ClassifyPosition> positions = getPdcService().getPositions(silverObjectId,
+    int silverObjectId = testResources.getContentManager().getSilverContentId(CONTENT_ID,
+            COMPONENT_INSTANCE_ID);
+    List<ClassifyPosition> positions = testResources.getPdcService().getPositions(silverObjectId,
             COMPONENT_INSTANCE_ID);
     boolean position = true;
     for (ClassifyPosition classifyPosition : positions) {
@@ -153,5 +112,37 @@ public class ClassificationPositionDeletionTest extends ResourceClassificationTe
 
   private static boolean isDeleted() {
     return true;
+  }
+
+  @Override
+  public String aResourceURI() {
+    return CONTENT_CLASSIFICATION_PATH + "/" + aPdcPositionId();
+  }
+
+  @Override
+  public String anUnexistingResourceURI() {
+    return UNKNOWN_CONTENT_CLASSIFICATION_PATH + "/" + aPdcPositionId();
+  }
+
+  @Override
+  public PdcClassificationEntity aResource() {
+    PdcClassificationEntity entity = null;
+    try {
+      entity = testResources.toWebEntity(aPdcClassification().onResource(CONTENT_ID).inComponent(
+              COMPONENT_INSTANCE_ID), theUser);
+    } catch (ThesaurusException ex) {
+      fail(ex.getMessage());
+    }
+    return entity;
+  }
+
+  @Override
+  public String getSessionKey() {
+    return sessionKey;
+  }
+
+  @Override
+  public Class<?> getWebEntityClass() {
+    return PdcClassificationEntity.class;
   }
 }

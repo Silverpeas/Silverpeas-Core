@@ -23,93 +23,111 @@
  */
 package com.silverpeas.pdc.web;
 
+import com.silverpeas.pdc.web.beans.PdcClassification;
+import javax.inject.Named;
 import com.silverpeas.pdc.web.mock.PdcBmMock;
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.pdc.web.mock.ContentManagerMock;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.thesaurus.ThesaurusException;
-import com.sun.jersey.api.client.WebResource;
-import com.silverpeas.rest.RESTWebServiceTest;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
+import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import javax.inject.Inject;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
 import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
 
 /**
- * Unit tests on the different operations that can be applied on the classification of a 
- * Silverpeas's resource.
- * For testing purpose, the resource taken in consideration in the tests is a Kmelia publication.
+ * Resources required by the unit tests on the PdC web resources.
+ * It manages all of the resources required by the tests.
  */
-public abstract class ResourceClassificationTest extends RESTWebServiceTest {
+@Named
+public class TestResources {
 
+  /**
+   * Java package in which are defined the web resources and their representation (web entities).
+   */
+  public static final String JAVA_PACKAGE = "com.silverpeas.pdc.web";
+  /**
+   * The IoC context within which the tests should be ran.
+   */
+  public static final String SPRING_CONTEXT = "spring-pdc-webservice.xml";
   @Inject
   private PdcBmMock pdcBm;
   @Inject
   private ThesaurusManager thesaurusManager;
   @Inject
   ContentManagerMock contentManager;
-  private String sessionKey;
 
-  public ResourceClassificationTest() {
-    super("com.silverpeas.pdc.web", "spring-pdc-webservice.xml");
-  }
-
-  @Before
-  public void setUpUserSessionAndPdCClassifications() {
-    assertNotNull(pdcBm);
-    assertNotNull(thesaurusManager);
-    UserDetail user = aUser();
-    sessionKey = authenticate(user);
-    enableThesaurus();
+  /**
+   * Gets the PdC business service used in tests.
+   * @return a PdcBm object.
+   */
+  public PdcBm getPdcService() {
+    return this.pdcBm;
   }
 
   /**
-   * A test to validate the REST service is correctly deployed.
+   * Gets the manager of resource's content used in tests.
+   * @return a ContentManager instance.
    */
-  @Test
-  public void validateTestCase() {
-    WebResource resource = resource();
-    assertThat(resource, notNullValue());
-  }
-  
-  protected String getSessionKey() {
-    return this.sessionKey;
-  }
-  
-  protected PdcBm getPdcService() {
-    return this.pdcBm;
-  }
-  
-  protected ContentManager getContentManager() {
+  public ContentManager getContentManager() {
     return this.contentManager;
   }
 
-  protected void save(final PdcClassification classification) {
+  /**
+   * Saves the specified PdC classification in the current test context.
+   * @param classification the classification on which the test will work.
+   */
+  public void save(final PdcClassification classification) {
     pdcBm.addClassification(classification);
   }
 
-  protected PdcClassificationEntity theWebEntityOf(final PdcClassification classification) throws
-          ThesaurusException {
+  /**
+   * Gets the current PdC classification used in the test.
+   * @return the PdC classification in use in the test or null if no classification were saved.
+   */
+  public PdcClassification getPdcClassification() {
+   return pdcBm.getClassification(CONTENT_ID, COMPONENT_INSTANCE_ID);
+  }
+
+  /**
+   * Converts the specified classification of a resource on the PdC to its web representation (web
+   * entity).
+   * @param classification the PdC classification of a resource.
+   * @param forUser for whom user the web entity should be built.
+   * @return the web entity representing the specified PdC classification and for the specified user.
+   * @throws ThesaurusException if an error occurs while settings the synonyms.
+   */
+  public PdcClassificationEntity toWebEntity(final PdcClassification classification,
+          final UserDetail forUser) throws ThesaurusException {
     return aPdcClassificationEntity(
             fromPositions(classification.getPositions()),
             inLanguage(FRENCH),
             atURI(URI.create(CLASSIFICATION_URI))).
-            withSynonymsFrom(UserThesaurusHolder.holdThesaurus(thesaurusManager, aUser()));
+            withSynonymsFrom(UserThesaurusHolder.holdThesaurus(thesaurusManager, forUser));
   }
 
-  private void enableThesaurus() {
+  /**
+   * Enables the thesaurus for the users used in the tests. Once enabled, the synonyms for each
+   * value of the PdC axis will be fetched from the users thesaurus.
+   */
+  public void enableThesaurus() {
     PersonalizationService personalization = SilverpeasServiceProvider.getPersonalizationService();
     UserPreferences prefs = personalization.getUserSettings(USER_ID);
     prefs.enableThesaurus(true);
     personalization.saveUserSettings(prefs);
   }
+  
+  private void saveAPdCFor(String componentId) {
+    List<UsedAxis> pdcAxis = new ArrayList<UsedAxis>();
+    UsedAxis axis = new UsedAxis(0, componentId, 0, 0, 0, 1);
+  }
+
 }

@@ -21,21 +21,39 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.pdc.web;
+package com.silverpeas.pdc.web.beans;
 
-import com.silverpeas.rest.RESTWebServiceTest;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * All the constants that are be used in unit tests.
+ * A thesaurus to use in tests.
+ * The thesaurus manages the synonyms of terms in a classification plan (named PdC).
  */
-public interface TestConstants {
-  
-  static final String USER_ID = RESTWebServiceTest.USER_ID_IN_TEST;
-  static final String COMPONENT_INSTANCE_ID = "kmelia2";
-  static final String CONTENT_ID = "1";
-  static final String CONTENT_CLASSIFICATION_PATH = "pdc/" + COMPONENT_INSTANCE_ID + "/" + CONTENT_ID;
-  static final String UNKNOWN_CONTENT_CLASSIFICATION_PATH = "pdc/kmelia3/2";
-  static final String FRENCH = "fr";
-  static final String CLASSIFICATION_URI = "http://localhost:9998/silverpeas/" + CONTENT_CLASSIFICATION_PATH;
-  
+public class Thesaurus {
+
+  /**
+   * Gets the synonym of the specified term.
+   * @param term the term.
+   * @return a collection of synonyms. If no synonyms exist for the term, then an empty collection
+   * is returned.
+   */
+  public Collection<String> getSynonyms(String term) {
+    Set<String> synonyms = new HashSet<String>();
+    if ("religion".equalsIgnoreCase(term)) {
+      synonyms.add("culte");
+      synonyms.add("doctrine");
+      synonyms.add("théologie");
+    } else if ("période".equalsIgnoreCase(term)) {
+      synonyms.add("âge");
+      synonyms.add("ère");
+      synonyms.add("époque");
+    } else if ("pays".equalsIgnoreCase(term)) {
+      synonyms.add("nation");
+      synonyms.add("région");
+    }
+    return synonyms;
+  }
+
 }

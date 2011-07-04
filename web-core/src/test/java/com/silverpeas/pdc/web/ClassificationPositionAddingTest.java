@@ -23,74 +23,131 @@
  */
 package com.silverpeas.pdc.web;
 
-import java.util.UUID;
+import com.silverpeas.pdc.web.beans.ClassificationPlan;
+import com.silverpeas.pdc.web.beans.PdcClassification;
+import com.silverpeas.rest.ResourceCreationTest;
+import com.stratelia.silverpeas.pdc.model.Value;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.sun.jersey.api.client.ClientResponse;
-import java.util.ArrayList;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
+
+import javax.inject.Inject;
+import javax.ws.rs.core.Response.Status;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.silverpeas.pdc.web.TestResources.JAVA_PACKAGE;
+import static com.silverpeas.pdc.web.TestResources.SPRING_CONTEXT;
+import static com.silverpeas.pdc.web.beans.PdcClassification.aPdcClassification;
+import static com.silverpeas.pdc.web.beans.ClassificationPlan.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
-import static com.silverpeas.rest.RESTWebService.*;
-import static com.silverpeas.pdc.web.PdcClassification.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Unit tests on the adding of a new position within the PdC classification of a resource.
  * PdC).
  */
-public class ClassificationPositionAddingTest extends ResourceClassificationTest {
+public class ClassificationPositionAddingTest extends ResourceCreationTest {
   
-  @Test
-  public void addingOfANewPdcPositionByANonAuthenticatedUser() {
-    ClientResponse response = resource().path(RESOURCE_PATH).
-        accept(MediaType.APPLICATION_JSON).
-        type(MediaType.APPLICATION_JSON).
-        post(ClientResponse.class, aNewPdcPosition());
-    int recievedStatus = response.getStatus();
-    int unauthorized = Status.UNAUTHORIZED.getStatusCode();
-    assertThat(recievedStatus, is(unauthorized));
+  @Inject
+  private TestResources testResources;
+  private String sessionKey;
+  private UserDetail theUser;
+  private PdcClassification theClassification;
+  
+  public ClassificationPositionAddingTest() {
+    super(JAVA_PACKAGE, SPRING_CONTEXT);
+  }
+  
+  @Before
+  public void setUpUserSessionAndPdCClassifications() {
+    assertNotNull(testResources);
+    theUser = aUser();
+    sessionKey = authenticate(theUser);
+    testResources.enableThesaurus();
+    theClassification =
+            aPdcClassification().onResource(CONTENT_ID).inComponent(COMPONENT_INSTANCE_ID);
+    testResources.save(theClassification);
   }
   
   @Test
-  public void addingOfANewPdcPositionWithADeprecatedSession() {
-    ClientResponse response = resource().path(RESOURCE_PATH).
-        header(HTTP_SESSIONKEY, UUID.randomUUID().toString()).
-        accept(MediaType.APPLICATION_JSON).
-        type(MediaType.APPLICATION_JSON).
-        post(ClientResponse.class, aNewPdcPosition());
-    int recievedStatus = response.getStatus();
-    int unauthorized = Status.UNAUTHORIZED.getStatusCode();
-    assertThat(recievedStatus, is(unauthorized));
-  }
-  
-  @Test
-  public void addingOfANewPdcPositionForANonAuthorizedResource() {
-    denieAuthorizationToUsers();
-    ClientResponse response = resource().path(RESOURCE_PATH).
-        header(HTTP_SESSIONKEY, getSessionKey()).
-        accept(MediaType.APPLICATION_JSON).
-        type(MediaType.APPLICATION_JSON).
-        post(ClientResponse.class, aNewPdcPosition());
-    int recievedStatus = response.getStatus();
-    int forbidden = Status.FORBIDDEN.getStatusCode();
-    assertThat(recievedStatus, is(forbidden));
-  }
-  
-  @Test
-  public void addingOfANewPdcPositionToAnUnexistingPdcClassification() {
-    ClientResponse response = resource().path(UNKNOWN_RESOURCE_PATH).
-        header(HTTP_SESSIONKEY, getSessionKey()).
-        accept(MediaType.APPLICATION_JSON).
-        type(MediaType.APPLICATION_JSON).
-        post(ClientResponse.class, aNewPdcPosition());
-    int recievedStatus = response.getStatus();
+  public void addingANewPdcPositionToAnUnexistingPdcClassification() {
+    ClientResponse response = post(aNewPdcPosition(), at(anUnexistingResourceURI()));
+    int receivedStatus = response.getStatus();
     int notFound = Status.NOT_FOUND.getStatusCode();
-    assertThat(recievedStatus, is(notFound));
+    assertThat(receivedStatus, is(notFound));
+  }
+  
+  @Test
+  public void addingANewPdcPositionWithoutAnyValues() {
+    ClientResponse response = post(aPdcPositionWithoutAnyValues(), at(aResourceURI()));
+    int receivedStatus = response.getStatus();
+    int badRequest = Status.BAD_REQUEST.getStatusCode();
+    assertThat(receivedStatus, is(badRequest));
+  }
+  
+  @Test
+  public void addingANewPdcPosition() throws Exception {
+    ClientResponse response = post(aNewPdcPosition(), at(aResourceURI()));
+    int receivedStatus = response.getStatus();
+    int created = Status.CREATED.getStatusCode();
+    assertThat(receivedStatus, is(created));
+    assertThat(response.getEntity(PdcClassificationEntity.class), equalTo(theWebEntityOf(
+            theClassification())));
   }
 
-  private PdcPositionEntity aNewPdcPosition() {
+  private PdcClassification theClassification() {
+    return testResources.getPdcClassification();
+  }
+
+  private PdcPositionEntity aPdcPositionWithoutAnyValues() {
     ArrayList<PdcPositionValue> positionsValues = new ArrayList<PdcPositionValue>();
     return PdcPositionEntity.createNewPositionWith(positionsValues);
+  }
+  
+  private PdcPositionEntity aNewPdcPosition() {
+    ClassificationPlan pdc = aClassificationPlan();
+    ArrayList<PdcPositionValue> positionsValues = new ArrayList<PdcPositionValue>();
+    List<Value> values = pdc.getValuesOfAxisByName("Période");
+    Value value = values.get(values.size() - 1);
+    PdcPositionValue positionValue = PdcPositionValue.aPositionValue(Integer.valueOf(value.getAxisId()),
+              value.getPath() + value.getPK().getId() + "/");
+    positionValue.setTreeId(value.getTreeId());
+    positionsValues.add(positionValue);
+    return PdcPositionEntity.createNewPositionWith(positionsValues);
+  }
+
+  @Override
+  public String aResourceURI() {
+    return CONTENT_CLASSIFICATION_PATH;
+  }
+
+  @Override
+  public String anUnexistingResourceURI() {
+    return UNKNOWN_CONTENT_CLASSIFICATION_PATH;
+  }
+
+  @Override
+  public PdcPositionEntity aResource() {
+    return aNewPdcPosition();
+  }
+
+  @Override
+  public String getSessionKey() {
+    return sessionKey;
+  }
+
+  @Override
+  public Class<?> getWebEntityClass() {
+    return PdcClassificationEntity.class;
+  }
+  
+  private PdcClassificationEntity theWebEntityOf(final PdcClassification classification) throws
+          Exception {
+    return testResources.toWebEntity(classification, theUser);
   }
 }

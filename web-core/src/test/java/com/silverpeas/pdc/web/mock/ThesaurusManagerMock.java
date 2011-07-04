@@ -23,14 +23,18 @@
  */
 package com.silverpeas.pdc.web.mock;
 
-import com.silverpeas.pdc.web.Thesaurus;
+import com.silverpeas.pdc.web.beans.ClassificationPlan;
+import com.silverpeas.pdc.web.beans.Thesaurus;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.silverpeas.thesaurus.model.Jargon;
+import com.stratelia.silverpeas.pdc.model.Value;
 import java.util.Collection;
+import java.util.List;
 import javax.inject.Named;
 import static org.mockito.Mockito.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
+import static com.silverpeas.pdc.web.beans.ClassificationPlan.*;
 
 /**
  * A mock of the thesaurus manager. It mocks of its methods.
@@ -49,7 +53,16 @@ public class ThesaurusManagerMock extends ThesaurusManager {
 
   @Override
   public Collection<String> getSynonyms(long idTree, long idTerm, String idUser) throws ThesaurusException {
-    return thesaurus.getSynonyms(String.valueOf(idTerm));
+    Collection<String> synonyms = null;
+    ClassificationPlan pdc = aClassificationPlan();
+    List<Value> values = pdc.getValuesOfAxisById(String.valueOf(idTree));
+    for (Value value : values) {
+      if (value.getPK().getId().equals(String.valueOf(idTerm))) {
+        synonyms = thesaurus.getSynonyms(value.getName());
+        break;
+      }
+    }
+    return synonyms;
   }
   
 }

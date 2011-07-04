@@ -61,7 +61,7 @@ public class UserThesaurusHolder {
    * @throws ThesaurusException if an error occurs while accessing the thesaurus for getting the
    * synonyms of the specified term.
    */
-  public Collection<String> getSynonymsOf(final PdcPositionValue value) throws ThesaurusException {
+  public Collection<String> getSynonymsOf(final PdcValue value) throws ThesaurusException {
     Collection<String> synonyms = null;  
     Jargon jargon = getThesaurus().getJargon(getUser().getId());
     if (jargon != null && value.belongToATree()) {

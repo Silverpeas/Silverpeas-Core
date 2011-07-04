@@ -23,19 +23,29 @@
  */
 package com.silverpeas.pdc.web.mock;
 
-import com.silverpeas.pdc.web.PdcClassification;
+import com.silverpeas.pdc.web.beans.ClassificationPlan;
+import com.silverpeas.pdc.web.beans.PdcClassification;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
+import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
+import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdc.model.PdcException;
+import com.stratelia.silverpeas.pdc.model.UsedAxis;
+import com.stratelia.silverpeas.pdc.model.Value;
+import com.stratelia.silverpeas.pdc.model.ValuePK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Named;
+
 import static org.mockito.Mockito.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
+import static com.silverpeas.pdc.web.beans.PdcClassification.*;
+import static com.silverpeas.pdc.web.beans.ClassificationPlan.*;
 
 /**
  * A decorator of the PdcBm implementation by mocking some of its services for testing purpose.
@@ -44,6 +54,7 @@ import static com.silverpeas.pdc.web.TestConstants.*;
 public class PdcBmMock extends PdcBmImpl {
 
   private List<ClassifyPosition> positions = new ArrayList<ClassifyPosition>();
+  private List<UsedAxis> axis = new ArrayList<UsedAxis>();
 
   public PdcBmMock() {
     PdcBm pdcService = mock(PdcBm.class);
@@ -56,19 +67,15 @@ public class PdcBmMock extends PdcBmImpl {
 
   @Override
   public List<ClassifyPosition> getPositions(int silverObjectId, String sComponentId) throws
-          PdcException {
+      PdcException {
     String contentId = getContentIdOf(silverObjectId);
-    if (!COMPONENT_INSTANCE_ID.equals(sComponentId) || !CONTENT_ID.equals(contentId)) {
-      throw new PdcException(getClass().getSimpleName(), SilverTrace.TRACE_LEVEL_ERROR, "");
-    }
+    assertContentExists(contentId, in(sComponentId));
     return aListOfPositions();
   }
 
   @Override
   public void deletePosition(int positionId, String sComponentId) throws PdcException {
-    if (!COMPONENT_INSTANCE_ID.equals(sComponentId)) {
-      throw new PdcException(getClass().getSimpleName(), SilverTrace.TRACE_LEVEL_ERROR, "");
-    }
+    assertComponentExists(sComponentId);
     ClassifyPosition positionToDelete = null;
     for (ClassifyPosition position : aListOfPositions()) {
       if (position.getPositionId() == positionId) {
@@ -83,23 +90,91 @@ public class PdcBmMock extends PdcBmImpl {
     }
   }
 
-  private List<ClassifyPosition> aListOfPositions() {
-    return this.positions;
+  @Override
+  public int addPosition(int silverObjectId, ClassifyPosition position, String sComponentId)
+      throws PdcException {
+    String contentId = getContentIdOf(silverObjectId);
+    assertContentExists(contentId, in(sComponentId));
+    addPosition(position);
+    return position.getPositionId();
+  }
+
+  @Override
+  public AxisHeader getAxisHeader(String axisId, boolean setTranslations) {
+    return super.getAxisHeader(axisId, setTranslations);
+  }
+
+  @Override
+  public List<UsedAxis> getUsedAxisByInstanceId(String instanceId) throws PdcException {
+    return super.getUsedAxisByInstanceId(instanceId);
   }
   
+  
+
   public void addClassification(final PdcClassification classification) {
     if (COMPONENT_INSTANCE_ID.equals(classification.getComponentId()) &&
-            CONTENT_ID.equals(classification.getResourceId())) {
+        CONTENT_ID.equals(classification.getResourceId())) {
       this.positions.clear();
-      int i = 0;
       for (ClassifyPosition position : classification.getPositions()) {
-        position.setPositionId(i++);
-        positions.add(position);
+        addPosition(position);
       }
     }
   }
   
+  public void addUsedAxis(final List<UsedAxis> axis) {
+    axis.addAll(axis);
+  }
+
+  public PdcClassification getClassification(String contentId, String inComponentId) {
+    PdcClassification classification = null;
+    if (COMPONENT_INSTANCE_ID.equals(inComponentId) &&
+        CONTENT_ID.equals(contentId) && !positions.isEmpty()) {
+      classification = anEmptyPdcClassification().onResource(CONTENT_ID).
+          inComponent(COMPONENT_INSTANCE_ID);
+      classification.setPositions(positions);
+    }
+    return classification;
+  }
+
+  private List<ClassifyPosition> aListOfPositions() {
+    return this.positions;
+  }
+
+  private void addPosition(final ClassifyPosition position) {
+    ClassificationPlan pdc = aClassificationPlan();
+    for (ClassifyValue classifyValue: position.getValues()) {
+      if (classifyValue.getFullPath() == null || classifyValue.getFullPath().isEmpty()) {
+        Value value = new Value();
+        value.setAxisId(classifyValue.getAxisId());
+        String path = classifyValue.getValue();
+        path = path.substring(0, path.length() - 1);
+        int indexOfTermId = path.lastIndexOf("/") + 1;
+        value.setValuePK(new ValuePK(path.substring(indexOfTermId)));
+        value.setPath(path.substring(0, indexOfTermId));
+        classifyValue.setFullPath(pdc.getPathInTreeOfValue(value));
+      }
+    }
+    position.setPositionId(positions.size());
+    positions.add(position);
+  }
+
+  private void assertContentExists(String contentId, String inComponentId) throws PdcException {
+    if (!COMPONENT_INSTANCE_ID.equals(inComponentId) || !CONTENT_ID.equals(contentId)) {
+      throw new PdcException(getClass().getSimpleName(), SilverTrace.TRACE_LEVEL_ERROR, "");
+    }
+  }
+
+  private void assertComponentExists(String componentId) throws PdcException {
+    if (!COMPONENT_INSTANCE_ID.equals(componentId)) {
+      throw new PdcException(getClass().getSimpleName(), SilverTrace.TRACE_LEVEL_ERROR, "");
+    }
+  }
+
   private String getContentIdOf(int silverObjectId) {
     return String.valueOf(silverObjectId);
+  }
+
+  private static String in(String component) {
+    return component;
   }
 }

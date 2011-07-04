@@ -37,13 +37,14 @@
  * - uri: the URI of the position on the PdC in the web,
  * - id: the unique identifier of the position,
  * - values: an array with the position's values.
- * Each position's value can be either a single one or a path in an hierachical semantic tree (for
- * example Geography/France/Isère/Grenoble with a tree representing an hierarchical geographic
+ * Each position's value can be either a single term or a branch of terms in an hierachical semantic
+ * tree (for example Geography/France/Isère/Grenoble with a tree representing an hierarchical geographic
  * structuration). A value should contain at least the following attributes:
- * - id: the unique identifier of the value,
+ * - id: the unique identifier of the value in the form of an absolute path relative to its axis,
  * - treeId: the unique identifier of the tree to which the value belongs. The identifier is empty
- * if the value is a single one,
- * - path: the path in the tree or the single value,
+ * if the value is a single term,
+ * - meaning: the meaning vehiculed by the value. It is either a path of terms in a hierarchic
+ * semantic tree or a single term,
  * - synonyms: an array with the synonyms of this value as found in the user thesaurus.
  */
 (function( $ ){
@@ -203,7 +204,7 @@
           $('<div>').addClass('pdcposition' + posId ).append($('<span>').html(settings.positionLabel + ' ' + posId));
             
         $.each(position.values, function(valindex, value) {
-          values.push('<li>' + value.path + '<i>' + value.synonyms.join(', ') + '</i></li>');
+          values.push('<li>' + value.meaning + '<i>' + value.synonyms.join(', ') + '</i></li>');
         });
             
         if (settings.mode == 'edition') {

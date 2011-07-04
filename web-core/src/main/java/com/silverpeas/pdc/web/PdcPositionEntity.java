@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import static com.silverpeas.util.StringUtil.*;
 
 /**
  * The Web representation of the position of a Silverpeas's resource in the classification plan
@@ -95,7 +96,11 @@ public class PdcPositionEntity implements Exposable {
     for (PdcPositionValue value : values) {
       classifyValues.add(value.toClassifyValue());
     }
-    return new ClassifyPosition(Integer.valueOf(id), classifyValues);
+    int positionId = -1;
+    if (isDefined(id)) {
+      positionId = Integer.valueOf(id);
+    }
+    return new ClassifyPosition(positionId, classifyValues);
   }
 
   @Override

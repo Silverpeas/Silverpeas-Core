@@ -23,15 +23,14 @@
  */
 package com.silverpeas.pdc.web;
 
+import java.util.List;
 import java.net.URI;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.rest.RESTWebService;
-import com.silverpeas.thesaurus.control.ThesaurusManager;
-import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
+import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
@@ -46,7 +45,7 @@ import javax.ws.rs.core.Response.Status;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
-import static com.silverpeas.pdc.web.UserThesaurusHolder.*;
+import static com.silverpeas.pdc.web.PdcServiceProvider.*;
 
 /**
  * A REST Web resource that represents the classification of a Silverpeas's resource on the
@@ -66,11 +65,7 @@ import static com.silverpeas.pdc.web.UserThesaurusHolder.*;
 public class PdcClassificationResource extends RESTWebService {
 
   @Inject
-  private PdcBm pdcService;
-  @Inject
-  private ThesaurusManager thesaurusManager;
-  @Inject
-  private ContentManager contentManager;
+  private PdcServiceProvider pdcServiceProvider;
   @PathParam("componentId")
   private String componentId;
   @PathParam("contentId")
@@ -108,7 +103,7 @@ public class PdcClassificationResource extends RESTWebService {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
   }
-  
+
   /**
    * Deletes the specified existing position by its unique identifier.
    * If the PdC position doesn't exist, a 404 HTTP code is returned.
@@ -123,7 +118,7 @@ public class PdcClassificationResource extends RESTWebService {
   public void deletePdcPosition(@PathParam("positionId") int positionId) {
     checkUserPriviledges();
     try {
-      getPdcService().deletePosition(positionId, getComponentId());
+      pdcServiceProvider().deletePosition(positionId, inComponentOfId(getComponentId()));
     } catch (PdcException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (Exception ex) {
@@ -134,7 +129,8 @@ public class PdcClassificationResource extends RESTWebService {
   /**
    * Adds a new position on the PdC into the classification of the resource identified by the
    * requested URI.
-   * If the JSON representation of the position isn't correct, then a 400 HTTP code is returned.
+   * If the JSON representation of the position isn't correct (no values), then a 400 HTTP code is
+   * returned.
    * If the user isn't authentified, a 401 HTTP code is returned.
    * If the user isn't authorized to access the comment, a 403 is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
@@ -148,9 +144,16 @@ public class PdcClassificationResource extends RESTWebService {
   @Consumes(MediaType.APPLICATION_JSON)
   public Response addPdcPosition(final PdcPositionEntity newPosition) {
     checkUserPriviledges();
+    if (newPosition.getPositionValues().isEmpty()) {
+      throw new WebApplicationException(Status.BAD_REQUEST);
+    }
     try {
-      String positionId = String.valueOf(getPdcService().addPosition(getSilverObjectId(), newPosition.
-              toClassifyPosition(), getComponentId()));
+      ClassifyPosition position = newPosition.toClassifyPosition();
+      pdcServiceProvider().addPosition(
+              position,
+              forContentOfId(getContentId()),
+              inComponentOfId(getComponentId()));
+      String positionId = String.valueOf(position.getPositionId());
       URI newPositionURI = getUriInfo().getAbsolutePathBuilder().path(positionId).build();
       return Response.created(newPositionURI).
               entity(thePdcClassificationOfTheRequestedResource()).
@@ -164,33 +167,24 @@ public class PdcClassificationResource extends RESTWebService {
     }
   }
 
-  private int getSilverObjectId() throws ContentManagerException {
-    return getContentManager().getSilverContentId(getContentId(), getComponentId());
-  }
-
   private PdcClassificationEntity thePdcClassificationOfTheRequestedResource() throws Exception {
     UserPreferences userPreferences = getUserPreferences();
+    List<ClassifyPosition> contentPositions = pdcServiceProvider().getAllPositions(
+            forContentOfId(getContentId()),
+            inComponentOfId(getComponentId()));
     PdcClassificationEntity theClassificationEntity = aPdcClassificationEntity(
-            fromPositions(getPdcService().getPositions(getSilverObjectId(), getComponentId())),
+            fromPositions(contentPositions),
             inLanguage(userPreferences.getLanguage()),
             atURI(getUriInfo().getAbsolutePath()));
     if (userPreferences.isThesaurusEnabled()) {
-      UserThesaurusHolder theUserThesaurus = holdThesaurus(getThesaurusManager(),
-              forUser(getUserDetail()));
+      UserThesaurusHolder theUserThesaurus = 
+              pdcServiceProvider().getThesaurusOfUser(getUserDetail());
       theClassificationEntity.withSynonymsFrom(theUserThesaurus);
     }
     return theClassificationEntity;
   }
 
-  private PdcBm getPdcService() {
-    return this.pdcService;
-  }
-
-  private ContentManager getContentManager() {
-    return this.contentManager;
-  }
-
-  private ThesaurusManager getThesaurusManager() {
-    return this.thesaurusManager;
+  private PdcServiceProvider pdcServiceProvider() {
+    return pdcServiceProvider;
   }
 }

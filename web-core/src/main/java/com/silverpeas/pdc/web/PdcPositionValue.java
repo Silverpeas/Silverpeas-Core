@@ -23,53 +23,35 @@
  */
 package com.silverpeas.pdc.web;
 
-import com.silverpeas.pdc.PdcServiceFactory;
-import com.stratelia.silverpeas.pdc.control.PdcBm;
-import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
-import java.util.Collection;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdc.model.Value;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import static com.silverpeas.util.StringUtil.*;
 
 /**
- * A PdC position value is a value of a position of a resource content on a given semantic
- * axis of the PdC.
+ * A PdC position value is a value of a position of a resource content on a given axis of the PdC.
  * 
- * A PdC position value can be a single term or a path of terms in an hierarchical tree carrying a
- * deeper exactness about the value. For example, in a geographic axis, the value France can be
- * a tree in which it is splited into regions, departments, towns, and so on. So, a more accurate
- * PdC position value can be made with the path France/Isère/Grenoble instead of only France.
+ * A PdC axis can be compound either of terms or of hierarchical semantic trees. An example of a such
+ * trees in a geographic axis can be a division of each country into different administrative 
+ * geographic area; for example France can be a tree splitted into regions -> departments -> towns.
+ * So, a PdC position value can be then a single term or a path of terms in a such semantic tree.
+ * For example, in a geographic axis, a position value can be a path such as France/Isère/Grenoble.
  * 
  * In an international context, the terms require to be translated according to the language of the
- * user that requested the position's value. So, the values of positions are actually represented
+ * user that requested the position's value. So, the values in an axis are actually represented
  * by an identifier that is used as a key to get the correct translated term. Thus, in an
- * hierarchical semantic tree, the path of a term is in fact represented by a path of identifiers
- * from which a path of translated terms can be easily retrieved.
+ * hierarchical semantic tree, the branch modeled by a value is in fact represented by a path of
+ * the term identifiers from which a path of the translated terms can be easily retrieved.
  */
 @XmlRootElement
-public class PdcPositionValue implements Serializable {
+public class PdcPositionValue extends PdcValue {
 
   private static final long serialVersionUID = -6826039385078009600L;
   
-  private static PdcBm pdcService = new PdcBmImpl();
-  
-  @XmlElement(required = true)
-  private String id;
-  @XmlElement(required = true)
-  private int axisId;
-  @XmlElement(defaultValue="")
-  private String treeId = "";
-  @XmlElement(required = true)
-  private String path;
-  @XmlElement
-  private List<String> synonyms = new ArrayList<String>();
+  @XmlElement(required=true)
+  private String meaning;
   
   /**
    * Creates a new PdC position value fom the specified PdC classification value.
@@ -84,7 +66,7 @@ public class PdcPositionValue implements Serializable {
     PdcPositionValue positionValue = new PdcPositionValue(
             withId(value.getValue()),
             inAxis(value.getAxisId()),
-            withLocalizedPathOf(value, inLanguage));
+            withTranslatedMeaningOf(value, inLanguage));
     String treeId = term.getTreeId();
     if (isDefined(treeId) && Integer.valueOf(treeId) >= 0) {
       positionValue.setTreeId(treeId);
@@ -93,82 +75,35 @@ public class PdcPositionValue implements Serializable {
   }
   
   /**
+   * Gets a value of a position in the PdC by specifying both the axis to which the value
+   * belongs and its identifier.
+   * @param axisId the identifier of the axis to which the value belongs.
+   * @param valueId the identifier of the value itself.
+   * @return a PdC position value.
+   */
+  public static PdcPositionValue aPositionValue(int axisId, String valueId) {
+    return new PdcPositionValue(valueId, axisId, "");
+  }
+  
+  /**
    * Gets the business classification position's value that is represented by this PdC position
    * value.
    * @return a ClassifyValue instance.
    */
   public ClassifyValue toClassifyValue() {
-    ClassifyValue value = new ClassifyValue(axisId, id);
-    
+    ClassifyValue value = new ClassifyValue(getAxisId(), getId());
     return value;
   }
 
   /**
-   * Gets the unique identifier of this position.
-   * @return the value identifier.
+   * Gets the meaning vehiculed by this value. If the value is a single term, then the
+   * meaning is just that translated term. In the case the value is a branch in an hierarchical
+   * semantic tree, then the meaning is made up of the path of the translated terms in the branch;
+   * then each term in the branch is separated by a slash character.
+   * @return the meaning vehiculed by this value.
    */
-  public String getId() {
-    return id;
-  }
-  
-  /**
-   * Gets the unique identifier of the term of this value. If the term belongs to a semantic tree
-   * (not a single term), it is the one of the last term of the path in the tree.
-   * @return the term identifier.
-   */
-  @XmlTransient
-  public String getTermId() {
-    String[] idNodes = id.split("/");
-    return idNodes[idNodes.length - 1];
-  }
-
-  /**
-   * Gets the unique identifier of the PdC's axis related by this value.
-   * @return the PdC's axis identifier.
-   */
-  public int getAxisId() {
-    return axisId;
-  }
-
-  /**
-   * Gets the unique identifier of the tree to which this value belongs.
-   * @return the tree identifier or an empty identifier if the value is a single term (and then
-   * doesn't belong to an hierachical tree of terms)
-   */
-  public String getTreeId() {
-    return treeId;
-  }
-  
-  /**
-   * Is this value is a node in an hierachical semantic tree?
-   * The value belong to a tree when it defines a more exactness meaning for a given position value.
-   * @return true if the value is a node in an hierarchical semantic tree, false otherwise.
-   */
-  public boolean belongToATree() {
-    return isDefined(this.treeId) && !this.treeId.isEmpty();
-  }
-
-  /**
-   * Gets the complete path of this value in the hierarchical tree of terms. Each term in the path
-   * is separated by a '/' character.
-   * If the value doesn't belong to a path, then the single term is returned.
-   * @return the path of this value in an hierarchical tree of terms or the single term.
-   */
-  public String getPath() {
-    return path;
-  }
-
-  /**
-   * Gets the synonyms of this value according to a given thesaurus.
-   * @return an unmodifiable list of synonyms to this value.
-   */
-  public List<String> getSynonyms() {
-    return Collections.unmodifiableList(synonyms);
-  }
-
-  public void setSynonyms(final Collection<String> synonyms) {
-    this.synonyms.clear();
-    this.synonyms.addAll(synonyms);
+  public String getMeaning() {
+    return meaning;
   }
 
   @Override
@@ -180,20 +115,10 @@ public class PdcPositionValue implements Serializable {
       return false;
     }
     final PdcPositionValue other = (PdcPositionValue) obj;
-    if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
+    if (!super.equals(other)) {
       return false;
     }
-    if (this.axisId != other.axisId) {
-      return false;
-    }
-    if ((this.treeId == null) ? (other.treeId != null) : !this.treeId.equals(other.treeId)) {
-      return false;
-    }
-    if ((this.path == null) ? (other.path != null) : !this.path.equals(other.path)) {
-      return false;
-    }
-    if (this.synonyms != other.synonyms && (this.synonyms == null || !this.synonyms.equals(
-            other.synonyms))) {
+    if ((this.meaning == null) ? (other.meaning != null) : !this.meaning.equals(other.meaning)) {
       return false;
     }
     return true;
@@ -202,18 +127,15 @@ public class PdcPositionValue implements Serializable {
   @Override
   public int hashCode() {
     int hash = 7;
-    hash = 59 * hash + (this.id != null ? this.id.hashCode() : 0);
-    hash = 59 * hash + this.axisId;
-    hash = 59 * hash + (this.treeId != null ? this.treeId.hashCode() : 0);
-    hash = 59 * hash + (this.path != null ? this.path.hashCode() : 0);
-    hash = 59 * hash + (this.synonyms != null ? this.synonyms.hashCode() : 0);
+    hash = 59 * hash + super.hashCode();
+    hash = 59 * hash + (this.meaning != null ? this.meaning.hashCode() : 0);
     return hash;
   }
 
   @Override
   public String toString() {
     StringBuilder synonymArray = new StringBuilder("[");
-    for (String synonym : synonyms) {
+    for (String synonym : getSynonyms()) {
       synonymArray.append(synonym).append(", ");
     }
     if (synonymArray.length() > 1) {
@@ -221,7 +143,7 @@ public class PdcPositionValue implements Serializable {
     } else {
       synonymArray.append("]");
     }
-    return "PdcPositionValue{id=" + getId() + ", axisId=" + getAxisId() + ", treeId=" + getTreeId() + ", path=" + getPath() +
+    return "PdcPositionValue{id=" + getId() + ", axisId=" + getAxisId() + ", treeId=" + getTreeId() + ", meaning=" + getMeaning() +
             ", synonyms=" + synonymArray.toString() + '}';
   }
   
@@ -233,26 +155,18 @@ public class PdcPositionValue implements Serializable {
     return axisId;
   }
 
-  private static String withLocalizedPathOf(final ClassifyValue value, String inLanguage) {
+  private static String withTranslatedMeaningOf(final ClassifyValue value, String inLanguage) {
     LocalizedClassifyValue localizedValue = LocalizedClassifyValue.decorate(value, inLanguage);
     return localizedValue.getLocalizedPath();
   }
 
   protected PdcPositionValue() {
+    super();
   }
   
-  protected void setTreeId(String treeId) {
-    this.treeId = treeId;
-  }
 
   private PdcPositionValue(String id, int axisId, String path) {
-    this.id = id;
-    this.axisId = axisId;
-    this.path = path;
-  }
-  
-  private PdcBm getPdcManager() {
-    PdcServiceFactory factory = PdcServiceFactory.getFactory();
-    return factory.getPdcManager();
+    super(id, axisId);
+    this.meaning = path;
   }
 }
