@@ -23,14 +23,15 @@
  */
 package com.silverpeas.pdc.web.beans;
 
+import com.silverpeas.util.i18n.Translation;
+import com.stratelia.silverpeas.pdc.model.AxisHeader;
+import com.stratelia.silverpeas.pdc.model.AxisHeaderI18N;
 import com.stratelia.silverpeas.treeManager.model.TreeNodeI18N;
 import java.util.List;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.pdc.model.Value;
 import edu.emory.mathcs.backport.java.util.Collections;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 import static com.silverpeas.pdc.web.TestConstants.*;
 
 /**
@@ -40,7 +41,7 @@ import static com.silverpeas.pdc.web.TestConstants.*;
 public class ClassificationPlan {
 
   private static final ClassificationPlan instance = new ClassificationPlan();
-  private Set<UsedAxis> pdcAxis = new HashSet<UsedAxis>();
+  private List<UsedAxis> pdcAxis = new ArrayList<UsedAxis>();
 
   /**
    * Gets an instance of the classification plan to use in the tests.
@@ -54,10 +55,26 @@ public class ClassificationPlan {
 
   /**
    * Gets the axis of this classification plan.
-   * @return a set of the axis of this classification plan.
+   * @return an unmodifiable list with the axis of this classification plan.
    */
-  public Set<UsedAxis> getAxis() {
-    return pdcAxis;
+  public List<UsedAxis> getAxis() {
+    return Collections.unmodifiableList(pdcAxis);
+  }
+
+  /**
+   * Gets some meta information about the specified axis.
+   * @param axisId the unique identifier of the axis in the classification plan.
+   * @return an AxisHeader instance.
+   */
+  public AxisHeader getAxisHeader(String axisId) {
+    int index = Integer.valueOf(axisId) - 1;
+    UsedAxis axis = pdcAxis.get(index);
+    AxisHeader header = new AxisHeader(axisId, axis._getAxisName(), axis._getAxisType(),
+            axis.getAxisId(), axis.getAxisId());
+    Translation translationInFrench = new AxisHeaderI18N(axis.getAxisId(), FRENCH,
+            axis._getAxisName(), "");
+    header.addTranslation(translationInFrench);
+    return header;
   }
 
   /**
@@ -138,10 +155,10 @@ public class ClassificationPlan {
     values.add(aValue("0", "1", "Pays", "/", 0, 0, "-1"));
     values.add(aValue("1", "1", "France", "/0/", 1, 0, "0"));
     values.add(aValue("2", "1", "Isère", "/0/1/", 2, 0, "1"));
-    values.add(aValue("3", "1", "Grenoble", "/0/1/2", 3, 0, "2"));
+    values.add(aValue("3", "1", "Grenoble", "/0/1/2/", 3, 0, "2"));
     values.add(aValue("4", "1", "Charente-Maritime", "/0/1/", 2, 1, "1"));
     values.add(aValue("5", "1", "Royan", "/0/1/4/", 3, 0, "4"));
-    values.add(aValue("6", "1", "Italie", "/", 0, 1, "-1"));
+    values.add(aValue("6", "1", "Italie", "/0/", 0, 1, "-1"));
     anAxis._setAxisValues(values);
     pdcAxis.add(anAxis);
 
@@ -174,7 +191,7 @@ public class ClassificationPlan {
     anAxis._setAxisType("P");
     anAxis._setAxisRootId(4);
     values = new ArrayList<Value>();
-    values.add(aValue("100", "4", "Technologie", "/", 0, 0, "-1"));
+    values.add(aValue("0", "4", "Technologie", "/", 0, 0, "-1"));
     anAxis._setAxisValues(values);
     pdcAxis.add(anAxis);
   }

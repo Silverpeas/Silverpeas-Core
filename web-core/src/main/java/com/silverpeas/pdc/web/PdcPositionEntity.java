@@ -154,20 +154,20 @@ public class PdcPositionEntity implements Exposable {
   @Override
   public String toString() {
     StringBuilder valueArray = new StringBuilder("[");
-    for (PdcPositionValue pdcPositionValue : values) {
+    for (PdcPositionValue pdcPositionValue : getPositionValues()) {
       valueArray.append(pdcPositionValue.toString()).append(", ");
     }
     if (valueArray.length() > 1) {
-      valueArray.replace(valueArray.length() - 1, valueArray.length(), "]");
+      valueArray.replace(valueArray.length() - 2, valueArray.length(), "]");
     } else {
       valueArray.append("]");
     }
     String uriAsStr = "";
-    if (uri != null)  {
-      uriAsStr = uri.toString();
+    if (getURI() != null)  {
+      uriAsStr = getURI().toString();
     }
-    return "PdcPositionEntity{id=" + id + ", uri=" + uriAsStr + ", values="
-            + valueArray.toString() + " '}'";
+    return "PdcPositionEntity{id=" + getId() + ", uri=" + uriAsStr + ", values="
+            + valueArray.toString() + "}";
   }
 
   private static List<PdcPositionValue> fromClassifyValues(final List<ClassifyValue> values,

@@ -30,32 +30,26 @@ import org.hamcrest.TypeSafeMatcher;
 import static com.silverpeas.pdc.web.TestConstants.*;
 
 /**
- * A matcher of PdcClassificationEntity objects to be used in unit tests.
+ * A matcher of PdcEntity objects to be used in unit tests.
  */
-public class PdcClassificationEntityMatcher extends TypeSafeMatcher<PdcClassificationEntity> {
+public class PdcEntityMatcher extends TypeSafeMatcher<PdcEntity> {
 
-  private PdcClassificationEntity expected;
+  private PdcEntity expected;
   private String whatIsExpected = "";
 
   @Factory
-  public static Matcher<PdcClassificationEntity> equalTo(final PdcClassificationEntity expected) {
-    return new PdcClassificationEntityMatcher().withExpectedPdcClassificationEntity(expected);
-  }
-
-  @Factory
-  public static Matcher<PdcClassificationEntity> undefined() {
-    PdcClassificationEntity expected = PdcClassificationEntity.undefinedClassification();
-    return new PdcClassificationEntityMatcher().withExpectedPdcClassificationEntity(expected);
+  public static Matcher<PdcEntity> equalTo(final PdcEntity expected) {
+    return new PdcEntityMatcher().withExpectedPdcEntity(expected);
   }
 
   @Override
-  protected boolean matchesSafely(PdcClassificationEntity actual) {
+  protected boolean matchesSafely(PdcEntity actual) {
     boolean matches = true;
-    if ((!expected.isUndefined() && !actual.isUndefined()) && !actual.getURI().equals(expected.getURI())) {
+    if (!actual.getURI().equals(expected.getURI())) {
       matches = false;
-    } else if (actual.getClassificationPositions().size() != expected.getClassificationPositions().size()) {
+    } else if (actual.getAxis().size() != expected.getAxis().size()) {
       matches = false;
-    } else if (!actual.getClassificationPositions().containsAll(expected.getClassificationPositions())) {
+    } else if (!actual.getAxis().containsAll(expected.getAxis())) {
       matches = false;
     }
     if (!matches) {
@@ -69,12 +63,12 @@ public class PdcClassificationEntityMatcher extends TypeSafeMatcher<PdcClassific
     description.appendText(whatIsExpected);
   }
 
-  private PdcClassificationEntityMatcher() {
+  private PdcEntityMatcher() {
   }
 
-  protected PdcClassificationEntityMatcher withExpectedPdcClassificationEntity(
-          final PdcClassificationEntity classificationEntity) {
-    this.expected = classificationEntity;
+  protected PdcEntityMatcher withExpectedPdcEntity(
+          final PdcEntity pdcEntity) {
+    this.expected = pdcEntity;
     return this;
   }
 }

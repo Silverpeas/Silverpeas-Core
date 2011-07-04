@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * The PdC classification entity represents the web entity of the classification of a Silverpeas's
@@ -99,6 +100,16 @@ public class PdcClassificationEntity implements Exposable {
   public static List<ClassifyPosition> fromPositions(final List<ClassifyPosition> positions) {
     return positions;
   }
+  
+  /**
+   * This web entity represents the undefined classification of a resource on the PdC.
+   * @return true if this web entity is the representation of the undefined classification, false
+   * otherwise.
+   */
+  @XmlTransient
+  public boolean isUndefined() {
+    return uri == null;
+  }
 
   @Override
   public URI getURI() {
@@ -165,7 +176,7 @@ public class PdcClassificationEntity implements Exposable {
       positionArray.append(pdcPositionEntity.toString()).append(", ");
     }
     if (positionArray.length() > 1) {
-      positionArray.replace(positionArray.length() - 1, positionArray.length(), "]");
+      positionArray.replace(positionArray.length() - 2, positionArray.length(), "]");
     } else {
       positionArray.append("]");
     }

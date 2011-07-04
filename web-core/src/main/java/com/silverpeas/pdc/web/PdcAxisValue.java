@@ -113,6 +113,60 @@ public class PdcAxisValue extends PdcValue {
   public void deactivate() {
     this.activated = false;
   }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final PdcAxisValue other = (PdcAxisValue) obj;
+    if (!super.equals(other)) {
+      return false;
+    }
+    if ((this.term == null) ? (other.term != null) : !this.term.equals(other.term)) {
+      return false;
+    }
+    if (this.level != other.level) {
+      return false;
+    }
+    if (this.activated != other.activated) {
+      return false;
+    }
+    if (this.origin != other.origin) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 3;
+    hash = 83 * super.hashCode();
+    hash = 83 * hash + (this.term != null ? this.term.hashCode() : 0);
+    hash = 83 * hash + this.level;
+    hash = 83 * hash + (this.activated ? 1 : 0);
+    hash = 83 * hash + (this.origin ? 1 : 0);
+    return hash;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder synonymArray = new StringBuilder("[");
+    for (String synonym : getSynonyms()) {
+      synonymArray.append(synonym).append(", ");
+    }
+    if (synonymArray.length() > 1) {
+      synonymArray.replace(synonymArray.length() - 2, synonymArray.length(), "]");
+    } else {
+      synonymArray.append("]");
+    }
+    return "PdcAxisValue{id=" + getId() + ", axisId=" + getAxisId() + ", treeId=" + getTreeId() + 
+            "term=" + getTerm() + ", level=" + getLevel() + ", activated=" + isActivated() +
+            ", origin=" + isOrigin() + ", synonyms=" + synonymArray.toString() + '}';
+  }
   
   private static String withId(String id) {
     return id;

@@ -34,6 +34,8 @@ public interface TestConstants {
   static final String COMPONENT_INSTANCE_ID = "kmelia2";
   static final String CONTENT_ID = "1";
   static final String CONTENT_CLASSIFICATION_PATH = "pdc/" + COMPONENT_INSTANCE_ID + "/" + CONTENT_ID;
+  static final String CONTENT_PDC_PATH = "/pdc/" +COMPONENT_INSTANCE_ID + "?contentId=" + CONTENT_ID;
+  static final String UNKNOWN_CONTENT_PDC_PATH = "/pdc/" +COMPONENT_INSTANCE_ID;
   static final String UNKNOWN_CONTENT_CLASSIFICATION_PATH = "pdc/kmelia3/2";
   static final String FRENCH = "fr";
   static final String CLASSIFICATION_URI = "http://localhost:9998/silverpeas/" + CONTENT_CLASSIFICATION_PATH;

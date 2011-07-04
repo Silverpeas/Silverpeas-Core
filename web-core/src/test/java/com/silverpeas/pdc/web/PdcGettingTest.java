@@ -23,8 +23,9 @@
  */
 package com.silverpeas.pdc.web;
 
-import com.silverpeas.pdc.web.mock.PdcBmMock;
+import com.silverpeas.thesaurus.ThesaurusException;
 import java.util.List;
+import com.silverpeas.pdc.web.mock.PdcBmMock;
 import javax.ws.rs.core.Response.Status;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import org.junit.Test;
@@ -37,6 +38,7 @@ import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static com.silverpeas.pdc.web.TestResources.*;
 import static com.silverpeas.pdc.web.TestConstants.*;
+import static com.silverpeas.pdc.web.PdcEntityMatcher.*;
 
 /**
  * Unit tests on the getting of the PdC configured for a given component instance.
@@ -44,7 +46,7 @@ import static com.silverpeas.pdc.web.TestConstants.*;
 public class PdcGettingTest extends ResourceGettingTest {
   
   @Inject
-  private PdcBmMock pdcBm;
+  private TestResources resources;
   private String sessionKey;
   private UserDetail theUser;
   
@@ -75,16 +77,17 @@ public class PdcGettingTest extends ResourceGettingTest {
   public void gettingAPdC() {
     PdcEntity pdc = getAt(aResourceURI(), aPdcEntity());
     assertNotNull(pdc);
+    assertThat(pdc, is(equalTo(pdc)));
   }
 
   @Override
   public String aResourceURI() {
-    return "/pdc/" +COMPONENT_INSTANCE_ID + "?contentId=" + CONTENT_ID;
+    return CONTENT_PDC_PATH;
   }
 
   @Override
   public String anUnexistingResourceURI() {
-    return "/pdc/" +COMPONENT_INSTANCE_ID;
+    return UNKNOWN_CONTENT_PDC_PATH;
   }
 
   @Override
@@ -104,5 +107,9 @@ public class PdcGettingTest extends ResourceGettingTest {
   
   public Class<PdcEntity> aPdcEntity() {
     return PdcEntity.class;
+  }
+  
+  public PdcEntity toWebEntity(List<UsedAxis> axis) throws ThesaurusException {
+    return PdcEntity.aPdcEntity(axis, FRENCH, null, resources.aThesaurusHolderFor(theUser));
   }
 }

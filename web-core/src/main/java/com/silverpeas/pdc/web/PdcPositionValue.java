@@ -139,7 +139,7 @@ public class PdcPositionValue extends PdcValue {
       synonymArray.append(synonym).append(", ");
     }
     if (synonymArray.length() > 1) {
-      synonymArray.replace(synonymArray.length() - 1, synonymArray.length(), "]");
+      synonymArray.replace(synonymArray.length() - 2, synonymArray.length(), "]");
     } else {
       synonymArray.append("]");
     }

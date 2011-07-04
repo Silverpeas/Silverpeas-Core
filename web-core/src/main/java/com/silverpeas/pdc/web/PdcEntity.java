@@ -145,4 +145,45 @@ public class PdcEntity implements Exposable {
   private PdcEntity(final URI atURI) {
     this.uri = atURI;
   }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final PdcEntity other = (PdcEntity) obj;
+    if (this.uri != other.uri && (this.uri == null || !this.uri.equals(other.uri))) {
+      return false;
+    }
+    if (this.axis != other.axis && (this.axis == null || !this.axis.equals(other.axis))) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 47 * hash + (this.uri != null ? this.uri.hashCode() : 0);
+    hash = 47 * hash + (this.axis != null ? this.axis.hashCode() : 0);
+    return hash;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder axisArray = new StringBuilder("[");
+    for (PdcAxis anAxis: getAxis()) {
+      axisArray.append(anAxis.toString()).append(", ");
+    }
+    if (axisArray.length() > 1) {
+      axisArray.replace(axisArray.length() - 2, axisArray.length(), "]");
+    } else {
+      axisArray.append("]");
+    }
+    return "PdcEntity{uri=" + getURI() + ", axis=" + axisArray.toString() + '}';
+  }
+  
 }

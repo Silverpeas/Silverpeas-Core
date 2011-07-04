@@ -101,15 +101,21 @@ public class PdcBmMock extends PdcBmImpl {
 
   @Override
   public AxisHeader getAxisHeader(String axisId, boolean setTranslations) {
-    return super.getAxisHeader(axisId, setTranslations);
+    ClassificationPlan pdc = aClassificationPlan();
+    return pdc.getAxisHeader(axisId);
   }
 
   @Override
   public List<UsedAxis> getUsedAxisByInstanceId(String instanceId) throws PdcException {
-    return super.getUsedAxisByInstanceId(instanceId);
+    ClassificationPlan pdc = aClassificationPlan();
+    return pdc.getAxis();
   }
-  
-  
+
+  @Override
+  public List<Value> getAxisValues(int treeId) throws PdcException {
+    ClassificationPlan pdc = aClassificationPlan();
+    return pdc.getValuesOfAxisById(String.valueOf(treeId));
+  }
 
   public void addClassification(final PdcClassification classification) {
     if (COMPONENT_INSTANCE_ID.equals(classification.getComponentId()) &&

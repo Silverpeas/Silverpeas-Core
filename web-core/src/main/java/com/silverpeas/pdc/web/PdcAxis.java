@@ -146,6 +146,66 @@ public class PdcAxis {
     return this;
   }
 
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final PdcAxis other = (PdcAxis) obj;
+    if (this.id != other.id) {
+      return false;
+    }
+    if (this.mandatory != other.mandatory) {
+      return false;
+    }
+    if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
+      return false;
+    }
+    if ((this.originValue == null) ? (other.originValue != null)
+            : !this.originValue.equals(other.originValue)) {
+      return false;
+    }
+    if ((this.invariantValue == null) ? (other.invariantValue != null)
+            : !this.invariantValue.equals(other.invariantValue)) {
+      return false;
+    }
+    if (this.values != other.values && (this.values == null || !this.values.equals(other.values))) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 3;
+    hash = 53 * hash + this.id;
+    hash = 53 * hash + (this.mandatory ? 1 : 0);
+    hash = 53 * hash + (this.name != null ? this.name.hashCode() : 0);
+    hash = 53 * hash + (this.originValue != null ? this.originValue.hashCode() : 0);
+    hash = 53 * hash + (this.invariantValue != null ? this.invariantValue.hashCode() : 0);
+    hash = 53 * hash + (this.values != null ? this.values.hashCode() : 0);
+    return hash;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder axisValuesArray = new StringBuilder("[");
+    for (PdcAxisValue value : getValues()) {
+      axisValuesArray.append(value.toString()).append(", ");
+    }
+    if (axisValuesArray.length() > 1) {
+      axisValuesArray.replace(axisValuesArray.length() - 2, axisValuesArray.length(), "]");
+    } else {
+      axisValuesArray.append("]");
+    }
+    return "PdcAxis{id=" + getId() + ", name=" + getName() + ", mandatory=" + isMandatory()
+            + ", originValue=" + getOriginValue() + ", invariantValue=" + getInvariantValue()
+            + ", values=" + axisValuesArray.toString() + '}';
+  }
+
   private static List<PdcAxisValue> fromValues(final List<Value> values, String originValueId,
           String inLanguage, final UserThesaurusHolder usingThesaurus) throws ThesaurusException {
     List<PdcAxisValue> axisValues = new ArrayList<PdcAxisValue>();
@@ -173,11 +233,16 @@ public class PdcAxis {
       }
     } else if (originValueId.startsWith(axisValue.getId())) {
       axisValue.deactivate();
+
+
     } else {
       throw new PdcRuntimeException(PdcAxisValue.class.getSimpleName(),
               SilverTrace.TRACE_LEVEL_ERROR, "The origin value of id " + originValueId
-              + " doesn't match with the values of the axis");
+              + " doesn't match with the axis value of id " + axisValue.getId());
     }
+  }
+
+  private PdcAxis() {
   }
 
   private PdcAxis(int axisId, String axisName) {

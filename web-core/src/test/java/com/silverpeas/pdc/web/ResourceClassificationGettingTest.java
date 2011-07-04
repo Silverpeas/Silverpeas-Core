@@ -90,6 +90,7 @@ public class ResourceClassificationGettingTest extends ResourceGettingTest {
     testResources.save(theClassification);
     PdcClassificationEntity classification = getAt(aResourceURI(), PdcClassificationEntity.class);
     assertNotNull(classification);
+    System.out.println(classification);
     assertThat(classification, not(undefined()));
     assertThat(classification, is(equalTo(theWebEntityOf(theClassification))));
   }

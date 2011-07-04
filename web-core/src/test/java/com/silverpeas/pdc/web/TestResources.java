@@ -42,6 +42,7 @@ import java.util.List;
 import javax.inject.Inject;
 import static com.silverpeas.pdc.web.TestConstants.*;
 import static com.silverpeas.pdc.web.PdcClassificationEntity.*;
+import static com.silverpeas.pdc.web.UserThesaurusHolder.*;
 
 /**
  * Resources required by the unit tests on the PdC web resources.
@@ -79,6 +80,15 @@ public class TestResources {
    */
   public ContentManager getContentManager() {
     return this.contentManager;
+  }
+  
+  /**
+   * Gets a holder of thesaurus for the specified user.
+   * @param user the user for which a thesaurus holder should be get.
+   * @return a UserThesaurusHolder instance.
+   */
+  public UserThesaurusHolder aThesaurusHolderFor(final UserDetail user) {
+    return UserThesaurusHolder.holdThesaurus(thesaurusManager, forUser(user));
   }
 
   /**
