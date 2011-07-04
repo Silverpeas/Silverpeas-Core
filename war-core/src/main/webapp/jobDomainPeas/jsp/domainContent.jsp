@@ -113,11 +113,9 @@
         }
     } else if(isDomainSql) {
     	ResourceLocator propDomain = new ResourceLocator(domObject.getPropFileName(), "");
-    	boolean synchroUser = SilverpeasSettings.readBoolean(propDomain, "ExternalSynchro", false);
+    	boolean synchroUser = propDomain.getBoolean("ExternalSynchro", false);
     	if(synchroUser) {
     	    operationPane.addLine();
-		
-			// Domain operations
     	    operationPane.addOperation(resource.getIcon("JDP.domainSqlSynchro"),resource.getString("JDP.domainSynchro"),"javascript:DomainSQLSynchro()");
     	}
     }

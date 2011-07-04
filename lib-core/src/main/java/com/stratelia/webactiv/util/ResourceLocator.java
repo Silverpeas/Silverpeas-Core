@@ -31,20 +31,21 @@ package com.stratelia.webactiv.util;
 
 import com.silverpeas.util.ConfigurationClassLoader;
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.util.ResourceBundleWrapper;
+
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.ResourceBundleWrapper;
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ResourceLocator implements Serializable {
 
@@ -226,10 +227,27 @@ public class ResourceLocator implements Serializable {
    */
   public long getLong(final String sAttribute, long defaultValue) {
     String value = getString(sAttribute);
-    if (value == null || value.trim().isEmpty()) {
+    if (value == null || value.trim().isEmpty()&& !StringUtil.isLong(value)) {
       return defaultValue;
     }
     return Long.parseLong(value);
+  }
+
+  /**
+   * Gets the value as a float of the specified attributes in the resource bundle located by this
+   * ResourceLocator.
+   * It no such attribute exists or has no value, then returns the specified default value.
+   * @param sAttribute the attribute to look up in the resource bundle.
+   * @param defaultValue the default value to return wether no such property exists in the resource
+   * bundle.
+   * @return the value as a float.
+   */
+   public float getFloat(final String sAttribute, float defaultValue) {
+    String value = getString(sAttribute);
+    if (value == null || value.trim().isEmpty()&& !StringUtil.isFloat(value)) {
+      return defaultValue;
+    }
+    return Float.parseFloat(value);
   }
 
   /**
@@ -243,7 +261,7 @@ public class ResourceLocator implements Serializable {
    */
   public int getInteger(final String sAttribute, int defaultValue) {
     String value = getString(sAttribute);
-    if (value == null || value.trim().isEmpty()) {
+    if (value == null || value.trim().isEmpty() && !StringUtil.isInteger(value)) {
       return defaultValue;
     }
     return Integer.parseInt(value);
@@ -277,6 +295,36 @@ public class ResourceLocator implements Serializable {
       return theResult.toString();
     }
     return null;
+  }
+
+
+  /**
+   * Read a String-List from a Settings-file with indexes from 1 to n If max is -1, the functions
+   * reads until the propertie's Id is not found. If max >= 1, the functions returns an array of
+   * 'max' elements (the elements not found are set to "")
+   * @param propNamePrefix
+   * @param propNameSufix
+   * @param max the maximum index (-1 for no maximum value)
+   * @return
+   * @see
+   */
+  public String[] getStringArray(String propNamePrefix, String propNameSufix, int max) {
+    int i = 1;
+    List<String> valret = new ArrayList<String>();
+    while ((i <= max) || (max == -1)) {
+      String s = getString(propNamePrefix + java.lang.Integer.toString(i) + propNameSufix, null);
+      if (s != null) {
+        valret.add(s);
+      } else {
+        if (max == -1) {
+          max = i;
+        } else {
+          valret.add("");
+        }
+      }
+      i++;
+    }
+    return valret.toArray(new String[valret.size()]);
   }
 
   /** Return an enumeration of all keys in the property file loaded
@@ -337,10 +385,9 @@ public class ResourceLocator implements Serializable {
         url = locateResource(object, null, configFile, ext);
         if (url == null) {
           if (object != null) {
-            Class clazz = object.getClass();
-            url = clazz.getResource(configFile);
+            url = object.getClass().getResource(configFile);
             if (url == null) {
-              url = clazz.getResource(configFile + ext);
+              url = object.getClass().getResource(configFile + ext);
             }
           }
         }

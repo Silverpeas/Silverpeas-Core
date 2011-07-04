@@ -23,20 +23,6 @@
  */
 package com.stratelia.webactiv.util.publication.control;
 
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
-
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.notation.ejb.NotationBm;
@@ -56,7 +42,6 @@ import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.Admin;
@@ -103,6 +88,19 @@ import com.stratelia.webactiv.util.publication.model.PublicationI18N;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
+
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * Class declaration
@@ -195,8 +193,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
       pubDetail.setIndexOperation(indexOperation);
       createIndex(pubDetail);
 
-      if (SilverpeasSettings.readBoolean(publicationSettings, "useTagCloud",
-          false)) {
+      if (publicationSettings.getBoolean("useTagCloud", false)) {
         createTagCloud(pubDetail);
       }
     } catch (Exception re) {
@@ -388,8 +385,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
         deleteIndex(detail.getPK());
       }
 
-      if (SilverpeasSettings.readBoolean(publicationSettings, "useTagCloud",
-          false)) {
+      if (publicationSettings.getBoolean("useTagCloud", false)) {
         updateTagCloud(detail);
       }
     } catch (Exception re) {
@@ -1639,14 +1635,12 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
     // Suppression du nuage de tags lors de la suppression de l'index (et pas
     // lors de l'envoi de la publication dans la corbeille).
-    if (SilverpeasSettings.readBoolean(publicationSettings, "useTagCloud",
-        false)) {
+    if (publicationSettings.getBoolean("useTagCloud", false)) {
       deleteTagCloud(pubPK);
     }
 
     // idem pour les notations
-    if (SilverpeasSettings.readBoolean(publicationSettings, "useNotation",
-        false)) {
+    if (publicationSettings.getBoolean("useNotation", false)) {
       deleteNotation(pubPK);
     }
   }

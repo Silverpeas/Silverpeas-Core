@@ -27,19 +27,19 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.authentication.EncryptionFactory;
 import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.util.ResourceLocator;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import org.jasig.cas.client.util.AbstractCasFilter;
+import org.jasig.cas.client.validation.Assertion;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.jasig.cas.client.util.AbstractCasFilter;
-import org.jasig.cas.client.validation.Assertion;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
  * The class AuthenticationServlet is called to authenticate user in Silverpeas
@@ -68,8 +68,7 @@ public class AuthenticationServlet extends HttpServlet {
     // Get the authentication settings
     ResourceLocator authenticationSettings = new ResourceLocator(
         "com.silverpeas.authentication.settings.authenticationSettings", "");
-    boolean cookieEnabled = SilverpeasSettings.readBoolean(authenticationSettings, "cookieEnabled",
-        false);
+    boolean cookieEnabled = authenticationSettings.getBoolean("cookieEnabled", false);
 
     // Get the context
     String sURI = request.getRequestURI();

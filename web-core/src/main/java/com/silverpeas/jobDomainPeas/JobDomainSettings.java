@@ -24,20 +24,19 @@
 
 package com.silverpeas.jobDomainPeas;
 
-import java.util.Arrays;
-import java.util.Comparator;
-
-import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
+
+import java.util.Arrays;
+import java.util.Comparator;
 
 /**
  * This class manage the informations needed for groups navigation and browse PRE-REQUIRED : the
  * Group passed in the constructor MUST BE A VALID GROUP (with Id, etc...)
  * @t.leroi
  */
-public class JobDomainSettings extends SilverpeasSettings {
+public class JobDomainSettings {
 
   public static int m_UsersByPage = 10;
   public static int m_GroupsByPage = 10;
@@ -51,15 +50,13 @@ public class JobDomainSettings extends SilverpeasSettings {
     ResourceLocator rs = new ResourceLocator(
         "com.silverpeas.jobDomainPeas.settings.jobDomainPeasSettings", "");
 
-    m_UsersByPage = readInt(rs, "UsersByPage", 10);
-    m_GroupsByPage = readInt(rs, "GroupsByPage", 10);
-    m_MinLengthLogin = readInt(rs, "MinLengthLogin", 5);
-    m_MinLengthPwd = readInt(rs, "MinLengthPwd", 4);
-    m_BlanksAllowedInPwd = readBoolean(rs, "BlanksAllowedInPwd", true);
-    m_UserAddingAllowedForGroupManagers =
-        readBoolean(rs, "UserAddingAllowedForGroupManagers", false);
-    m_UseCommunityManagement =
-        readBoolean(rs, "UseCommunityManagement", false);
+    m_UsersByPage = rs.getInteger("UsersByPage", 10);
+    m_GroupsByPage = rs.getInteger("GroupsByPage", 10);
+    m_MinLengthLogin = rs.getInteger("MinLengthLogin", 5);
+    m_MinLengthPwd = rs.getInteger("MinLengthPwd", 4);
+    m_BlanksAllowedInPwd = rs.getBoolean("BlanksAllowedInPwd", true);
+    m_UserAddingAllowedForGroupManagers = rs.getBoolean("UserAddingAllowedForGroupManagers", false);
+    m_UseCommunityManagement = rs.getBoolean("UseCommunityManagement", false);
   }
 
   static public void sortGroups(Group[] toSort) {
