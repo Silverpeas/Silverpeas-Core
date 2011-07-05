@@ -103,9 +103,8 @@ public class MainSessionController extends AdminReference implements Clipboard {
   }
 
   public void setAppModeMaintenance(boolean mode) {
-    SilverTrace.info("peasCore",
-        "MainSessionController.setAppModeMaintenance()",
-        "root.MSG_GEN_PARAM_VALUE", "mode=" + new Boolean(mode).toString());
+    SilverTrace.info("peasCore", "MainSessionController.setAppModeMaintenance()",
+        "root.MSG_GEN_PARAM_VALUE", "mode=" + String.valueOf(mode));
     appInMaintenance = mode;
   }
 
