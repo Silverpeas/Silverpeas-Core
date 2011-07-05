@@ -24,10 +24,8 @@
 package com.silverpeas.pdc.web;
 
 import com.silverpeas.thesaurus.ThesaurusException;
-import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.pdc.model.Value;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -211,9 +209,20 @@ public class PdcAxis {
     List<PdcAxisValue> axisValues = new ArrayList<PdcAxisValue>();
     for (Value value : values) {
       PdcAxisValue axisValue = PdcAxisValue.fromValue(value, inLanguage);
-      computeDistanceFromOrigin(axisValue, originValueId);
+      if (isFather(axisValue.getId(), originValueId)) {
+        axisValue.activate();
+        if (axisValue.getId().equals(originValueId)) {
+          axisValue.setAsOriginValue();
+        }
+      } else if(isChild(axisValue.getId(), originValueId)) {
+        axisValue.deactivate();
+      } else {
+        continue;
+      }
       if (usingThesaurus != null) {
         axisValues.add(withSynonym(axisValue, usingThesaurus));
+      } else {
+        axisValues.add(axisValue);
       }
     }
     return axisValues;
@@ -225,21 +234,12 @@ public class PdcAxis {
     return axisValue;
   }
 
-  private static void computeDistanceFromOrigin(final PdcAxisValue axisValue, String originValueId) {
-    if (axisValue.getId().startsWith(originValueId)) {
-      axisValue.activate();
-      if (axisValue.getId().equals(originValueId)) {
-        axisValue.setAsOriginValue();
-      }
-    } else if (originValueId.startsWith(axisValue.getId())) {
-      axisValue.deactivate();
-
-
-    } else {
-      throw new PdcRuntimeException(PdcAxisValue.class.getSimpleName(),
-              SilverTrace.TRACE_LEVEL_ERROR, "The origin value of id " + originValueId
-              + " doesn't match with the axis value of id " + axisValue.getId());
-    }
+  private static boolean isFather(String path, String anotherPath) {
+    return path.startsWith(anotherPath);
+  }
+  
+  private static boolean isChild(String path, String anotherPath) {
+    return anotherPath.startsWith(path);
   }
 
   private PdcAxis() {

@@ -81,7 +81,6 @@
     positionLabel: 'Position',
     addition: {
       call: function() {
-        alert('coucou');
         return true;
       },
       icon: '/silverpeas/pdcPeas/jsp/icons/add.gif',

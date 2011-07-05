@@ -26,6 +26,7 @@ package com.silverpeas.pdc.web;
 import com.stratelia.silverpeas.pdc.model.Value;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import static com.silverpeas.util.StringUtil.*;;
 
 /**
  * A value of a PdC's axis.
@@ -57,10 +58,14 @@ public class PdcAxisValue extends PdcValue {
    * @return a PdcAxisValue instance.
    */
   public static PdcAxisValue fromValue(final Value value, String inLanguage) {
+    String axisId = value.getAxisId();
+    if (!isDefined(axisId) || axisId.equalsIgnoreCase("unknown")) {
+      axisId = value.getTreeId();
+    }
     PdcAxisValue axisValue = new PdcAxisValue(
             withId(value.getFullPath()),
             withTerm(value.getName(inLanguage)),
-            inAxis(value.getAxisId())).
+            inAxis(axisId)).
             inTree(value.getTreeId(), atLevel(value.getLevelNumber()));
     return axisValue;
   }
